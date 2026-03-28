@@ -66,6 +66,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.p-segmented-control__button, .p-tab-buttons__button, .bf-segmented-control__button, .bf-tab-buttons__button)"), "Expected compat CSS to include segmented control buttons.");
   assert(css.includes(":where(.p-breadcrumbs__items, .bf-breadcrumbs__items)"), "Expected compat CSS to include breadcrumb styling.");
   assert(css.includes(":where(.p-pagination__items, .bf-pagination__items)"), "Expected compat CSS to include pagination styling.");
+  assert(css.includes(":where(table, .p-table, .bf-table)"), "Expected compat CSS to include table styling.");
+  assert(css.includes(":where(.p-chip, .p-chip--positive, .p-chip--caution, .p-chip--negative, .p-chip--information, .bf-chip, .bf-chip--positive, .bf-chip--caution, .bf-chip--negative, .bf-chip--information)"), "Expected compat CSS to include chip styling.");
+  assert(css.includes(":where(.p-badge, .p-badge--negative, .bf-badge, .bf-badge--negative)"), "Expected compat CSS to include badge styling.");
+  assert(css.includes(":where(.p-status-label, .p-label, .p-status-label--positive"), "Expected compat CSS to include status label styling.");
+  assert(css.includes(":where(.p-search-box, .bf-search-box)"), "Expected compat CSS to include search-box styling.");
+  assert(css.includes(":where(.p-search-and-filter, .bf-search-and-filter)"), "Expected compat CSS to include search-and-filter styling.");
 }
 
 function validateCommonTokens(tokens: Record<string, unknown>): {

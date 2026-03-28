@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Demo</title>
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-6">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-6">
+</head>
+<body>
+  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
+    <header class="component-demo-header">
+      <div>
+        <h5 class="bf-h5 component-demo-kicker">Table</h5>
+        <h1>Dense data table</h1>
+        <p class="component-demo-meta">Table headers, rows, and captions stay on the compact rhythm and use the real uppercase micro-label treatment.</p>
+      </div>
+      <div class="component-demo-toolbar">
+        <label class="component-demo-toggle" for="baseline-grid-toggle">
+          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
+          Show baseline grid
+        </label>
+      </div>
+    </header>
+
+    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
+      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="table section">
+        <table class="p-table" data-baseline-check="box" data-baseline-label="table component">
+          <caption class="p-table__caption" data-baseline-check="flow" data-baseline-label="table caption">Current export jobs</caption>
+          <thead data-baseline-ignore="true">
+            <tr data-baseline-ignore="true">
+              <th data-baseline-check="flow" data-baseline-label="table heading 1">Job</th>
+              <th data-baseline-check="flow" data-baseline-label="table heading 2">Status</th>
+              <th data-baseline-check="flow" data-baseline-label="table heading 3">Updated</th>
+            </tr>
+          </thead>
+          <tbody data-baseline-ignore="true">
+            <tr data-baseline-ignore="true">
+              <td data-baseline-check="flow" data-baseline-label="table row 1 col 1">Summit opener</td>
+              <td data-baseline-check="flow" data-baseline-label="table row 1 col 2">Saved</td>
+              <td data-baseline-check="flow" data-baseline-label="table row 1 col 3">2m ago</td>
+            </tr>
+            <tr data-baseline-ignore="true">
+              <td data-baseline-check="flow" data-baseline-label="table row 2 col 1">Landscape slate</td>
+              <td data-baseline-check="flow" data-baseline-label="table row 2 col 2">Review</td>
+              <td data-baseline-check="flow" data-baseline-label="table row 2 col 3">9m ago</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-6"></script>
+</body>
+</html>

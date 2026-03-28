@@ -134,6 +134,15 @@ The older grouped pages still exist as convenience overviews:
 - `demo/components/controls.html`
 - `demo/components/surfaces-navigation.html`
 
+The next ported pages already exist in the atlas as preview surfaces, but are not yet part of the automated baseline gate because their rhythm cleanup is still in progress:
+
+- `demo/components/chip.html`
+- `demo/components/badge.html`
+- `demo/components/status-label.html`
+- `demo/components/table.html`
+- `demo/components/search-box.html`
+- `demo/components/search-and-filter.html`
+
 Install Playwright once with:
 
 ```bash
