@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inline Options Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-17">
-  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-17">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-18">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-18">
 </head>
 <body>
   <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
@@ -13,7 +13,7 @@
       <div>
         <h5 class="bf-h5 component-demo-kicker">Inline Options</h5>
         <h1>Operator selector strip</h1>
-        <p class="component-demo-meta">The downstream operator selector now has a canonical inline-options pattern and a temporary alias, so it no longer has to stay in app-local CSS.</p>
+        <p class="component-demo-meta">Inline radio choices now live in a canonical panel pattern instead of app-local styling.</p>
       </div>
       <div class="component-demo-toolbar">
         <label class="component-demo-toggle" for="baseline-grid-toggle">
@@ -24,39 +24,21 @@
     </header>
 
     <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="inline options canonical section">
+      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="inline options section">
         <div class="p-inline-options" data-baseline-check="box" data-baseline-label="inline options canonical">
-          <div class="p-inline-options__heading" data-baseline-check="flow" data-baseline-label="inline options canonical heading">Background Operator</div>
-          <div class="p-inline-options__options" data-baseline-check="box" data-baseline-label="inline options canonical list">
-            <label class="p-inline-options__option" data-baseline-check="box" data-baseline-label="inline options canonical option 1">
+          <div class="p-inline-options__heading" data-baseline-check="flow" data-baseline-label="inline options heading">Background Operator</div>
+          <div class="p-inline-options__options" data-baseline-check="box" data-baseline-label="inline options list">
+            <label class="p-inline-options__option" data-baseline-check="box" data-baseline-label="inline options option 1">
               <input type="radio" name="inline-options-canonical" checked data-baseline-ignore="true">
               <span>Halo</span>
             </label>
-            <label class="p-inline-options__option" data-baseline-check="box" data-baseline-label="inline options canonical option 2">
+            <label class="p-inline-options__option" data-baseline-check="box" data-baseline-label="inline options option 2">
               <input type="radio" name="inline-options-canonical" data-baseline-ignore="true">
               <span>Rays</span>
             </label>
-            <label class="p-inline-options__option" data-baseline-check="box" data-baseline-label="inline options canonical option 3">
+            <label class="p-inline-options__option" data-baseline-check="box" data-baseline-label="inline options option 3">
               <input type="radio" name="inline-options-canonical" data-baseline-ignore="true">
               <span>Field</span>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="inline options legacy section">
-        <div class="operator-selector" data-baseline-check="box" data-baseline-label="inline options legacy">
-          <div class="operator-selector__heading" data-baseline-check="flow" data-baseline-label="inline options legacy heading">
-            <span class="bf-form__label">Background Operator</span>
-          </div>
-          <div class="operator-selector__options" data-baseline-check="box" data-baseline-label="inline options legacy list">
-            <label class="operator-selector__option" data-baseline-check="box" data-baseline-label="inline options legacy option 1">
-              <input type="radio" name="inline-options-legacy" checked data-baseline-ignore="true">
-              <span>Halo</span>
-            </label>
-            <label class="operator-selector__option" data-baseline-check="box" data-baseline-label="inline options legacy option 2">
-              <input type="radio" name="inline-options-legacy" data-baseline-ignore="true">
-              <span>Rays</span>
             </label>
           </div>
         </div>
@@ -64,6 +46,6 @@
     </section>
   </main>
 
-  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-17"></script>
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-18"></script>
 </body>
 </html>

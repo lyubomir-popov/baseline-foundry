@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choice Row Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-17">
-  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-17">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-18">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-18">
 </head>
 <body>
   <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
@@ -13,7 +13,7 @@
       <div>
         <h5 class="bf-h5 component-demo-kicker">Choice Row</h5>
         <h1>Selectable dense radio rows</h1>
-        <p class="component-demo-meta">These rows replace the downstream <code>preset-radio-row</code> styling and give the panel preset a canonical selectable-row family.</p>
+        <p class="component-demo-meta">These rows give the panel preset a canonical selectable-row family for dense preset and output choices.</p>
       </div>
       <div class="component-demo-toolbar">
         <label class="component-demo-toggle" for="baseline-grid-toggle">
@@ -24,45 +24,28 @@
     </header>
 
     <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="choice row canonical section">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="choice row canonical kicker">Canonical</h5>
-        <div class="p-choice-list" data-baseline-check="box" data-baseline-label="choice row canonical list">
-          <label class="p-choice-row" data-baseline-check="box" data-baseline-label="choice row canonical 1">
+      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="choice row section">
+        <div class="p-choice-list" data-baseline-check="box" data-baseline-label="choice row list">
+          <label class="p-choice-row" data-baseline-check="box" data-baseline-label="choice row 1">
             <input type="radio" name="choice-row-canonical" checked data-baseline-ignore="true">
             <span class="p-choice-row__name">Landscape 1280x720</span>
             <span class="p-choice-row__meta">Active</span>
           </label>
-          <label class="p-choice-row" data-baseline-check="box" data-baseline-label="choice row canonical 2">
+          <label class="p-choice-row" data-baseline-check="box" data-baseline-label="choice row 2">
             <input type="radio" name="choice-row-canonical" data-baseline-ignore="true">
             <span class="p-choice-row__name">Portrait 1080x1920</span>
             <span class="p-choice-row__meta">Secondary</span>
           </label>
-          <label class="p-choice-row" data-baseline-check="box" data-baseline-label="choice row canonical 3">
+          <label class="p-choice-row" data-baseline-check="box" data-baseline-label="choice row 3">
             <input type="radio" name="choice-row-canonical" data-baseline-ignore="true">
             <span class="p-choice-row__name">Square 1080x1080</span>
             <span class="p-choice-row__meta">Available</span>
           </label>
         </div>
       </section>
-
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="choice row legacy section">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="choice row legacy kicker">Legacy Alias</h5>
-        <div class="bf-stack" data-baseline-check="box" data-baseline-label="choice row legacy list">
-          <label class="preset-radio-row" data-baseline-check="box" data-baseline-label="choice row legacy 1">
-            <input type="radio" name="choice-row-legacy" checked data-baseline-ignore="true">
-            <span class="preset-radio-name">Document target A</span>
-            <span class="preset-radio-status">Landscape 1280x720 Ã¢â‚¬Â¢ Active</span>
-          </label>
-          <label class="preset-radio-row" data-baseline-check="box" data-baseline-label="choice row legacy 2">
-            <input type="radio" name="choice-row-legacy" data-baseline-ignore="true">
-            <span class="preset-radio-name">Document target B</span>
-            <span class="preset-radio-status">Portrait 1080x1920</span>
-          </label>
-        </div>
-      </section>
     </section>
   </main>
 
-  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-17"></script>
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-18"></script>
 </body>
 </html>

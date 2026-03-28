@@ -11,6 +11,11 @@ Goal:
 - identify which local rules are still justified because they are app-specific
 - identify which local rules should become the next `baseline-foundry` porting priorities
 
+Important note:
+
+- `baseline-foundry` no longer keeps downstream alias selectors for these patterns.
+- The migration target is the canonical Foundry markup and classes, not a like-for-like class-name swap.
+
 ## Executive Summary
 
 The file falls into four buckets:
@@ -18,7 +23,7 @@ The file falls into four buckets:
 1. Delete and replace now:
    drawer/backdrop logic, pinned-aside resize behavior, equal-width dense tabs, selectable preset/output rows, style/mapping palette cards, compact color-input sizing, operator-selector strips, fill-height panel behavior, checkbox-field density overrides, dense action-row helpers, most slider-pair styling, helper text/meta styling, and some generic wrapper grids.
 2. Replace with markup changes:
-   several local `display: grid` wrappers should become `bf-stack`, `bf-cluster`, `u-fixed-width`, or the shipped tabs/forms/panel shell.
+   several local `display: grid` wrappers should become `bf-stack`, `bf-cluster`, `bf-fixed-width`, or the shipped tabs/forms/panel shell.
 3. Port next into `baseline-foundry`:
    only if swap testing proves they are truly reusable, a canonical stage-centering shell helper for `viewer-panel__content`-style composition.
 4. Keep local:
@@ -30,17 +35,17 @@ The file falls into four buckets:
 |---|---|---|
 | `styles.css:86-106` `.drawer-backdrop` | Delete. This is superseded by the package drawer shell. | `l-application__overlay`, `l-aside.is-overlay` / `is-drawer`, `l-application.is-drawer-expanded`, `p-panel__toggle`, and `initPanelDrawers()` from `baseline-foundry` |
 | `styles.css:47-84` `.bf-application__aside-resize-handle` | Delete or reduce to app-only overrides. The package now ships the pinned-aside resize runtime and visible handle treatment. | `l-application__aside-resize-handle` / `bf-application__aside-resize-handle` plus `initResizableAsides()` and the built-in `is-resizing-aside` shell state |
-| `styles.css:299-341` `.config-tabs`, `.output-profile-tabs` | Delete. The package now ships equal-width dense tab modifiers and keeps the downstream aliases. | canonical `p-tabs--equal` / `bf-tabs--equal`, plus alias support for `config-tabs` and `output-profile-tabs` |
-| `styles.css:363-384` `.preset-radio-row*` | Delete. This pattern is now a shipped component, not a local app card. | canonical `p-choice-row` / `bf-choice-row` and `p-choice-list`, plus alias support for `preset-radio-row`, `preset-radio-name`, and `preset-radio-status` |
-| `styles.css:417-462` `.style-palette*` | Delete. This pattern is now a shipped component, not a local app-only palette grid. | canonical `p-option-grid` / `bf-option-grid` and `p-option-card` / `bf-option-card`, plus alias support for `style-palette`, `style-palette__button`, `style-palette__label`, and `style-palette__meta` |
-| `styles.css:244-258` `.slider-pair` | Mostly delete. The package already owns the horizontal/stacked range wrapper and number-input pairing. | `.p-slider__wrapper`, `.slider-pair`, `.slider-pair--stacked`, `.p-slider__input`, plus `initRangeControls()` |
+| `styles.css:299-341` `.config-tabs`, `.output-profile-tabs` | Delete. Move the markup to the canonical equal-width tab modifier. | canonical `p-tabs--equal` / `bf-tabs--equal` |
+| `styles.css:363-384` `.preset-radio-row*` | Delete. Move the markup to the canonical choice-row component. | canonical `p-choice-row` / `bf-choice-row` and `p-choice-list` |
+| `styles.css:417-462` `.style-palette*` | Delete. Move the markup to the canonical option-grid and option-card components. | canonical `p-option-grid` / `bf-option-grid` and `p-option-card` / `bf-option-card` |
+| `styles.css:244-258` `.slider-pair` | Mostly delete. The package already owns the horizontal/stacked range wrapper and number-input pairing. | `.p-slider__wrapper`, `.p-slider__wrapper--stacked`, `.p-slider__input`, plus `initRangeControls()` |
 | `styles.css:343-345` `.output-profile-meta` | Delete if the markup switches to shipped helper text. | `bf-form-help` / `p-form-help-text` |
-| `styles.css:242-246` `.control-help` | Delete. Tight helper text is now a shipped modifier rather than app-local spacing repair. | `.p-form-help-text.is-tight` / `.bf-form-help.is-tight`, with alias support for `.control-help` |
-| `styles.css:286-290` `.control-color` | Delete. Compact color input sizing is now a shipped treatment. | canonical `.p-color-input` / `.bf-color-input`, with alias support for `.control-color` |
-| `styles.css:497-527` `.operator-selector*` | Delete. This is now a shipped inline-options micro-pattern rather than a one-off app strip. | canonical `.p-inline-options` / `.bf-inline-options`, with alias support for `.operator-selector*` |
-| `styles.css:177-184` `.drawer-panel` | Delete. Fill-height panel behavior is now a shipped helper rather than a downstream-only shell rule. | `.p-panel.is-fill` / `.bf-panel.is-fill`, with alias support for `.drawer-panel` |
+| `styles.css:242-246` `.control-help` | Delete. Tight helper text is now a shipped modifier rather than app-local spacing repair. | `.p-form-help-text.is-tight` / `.bf-form-help.is-tight` |
+| `styles.css:286-290` `.control-color` | Delete. Compact color input sizing is now a shipped treatment. | canonical `.p-color-input` / `.bf-color-input` |
+| `styles.css:497-527` `.operator-selector*` | Delete. This is now a shipped inline-options micro-pattern rather than a one-off app strip. | canonical `.p-inline-options` / `.bf-inline-options` |
+| `styles.css:177-184` `.drawer-panel` | Delete. Fill-height panel behavior is now a shipped helper rather than a downstream-only shell rule. | `.p-panel.is-fill` / `.bf-panel.is-fill` |
 | `styles.css:186-196` checkbox-field overrides under `.mascot-app` | Delete. Dense checkbox-field rhythm is now owned package-side. | shipped checkbox/group density rules in `baseline-foundry` |
-| `styles.css:200-211` `.playback-export-actions` | Delete. Dense action-row overflow handling is now a shipped helper. | `.p-actions.is-nowrap` / `.bf-actions.is-nowrap`, with alias support for `.playback-export-actions` |
+| `styles.css:200-211` `.playback-export-actions` | Delete. Dense action-row overflow handling is now a shipped helper. | `.p-actions.is-nowrap` / `.bf-actions.is-nowrap` |
 | `styles.css:391-401` `.control-composite` range styling | Mostly delete. The range fill/background behavior is already owned upstream. | `input[type='range']` styling from `baseline-foundry` plus `initRangeControls()` |
 | `styles.css:409-410` `.control-checkbox` | Delete. This margin reset is already covered by the shipped checkbox/control styles. | shipped checkbox/form control styles |
 | `styles.css:386-389` `.preset-empty` | Delete and use base text/help styling directly. | `bf-body` or `bf-form-help` depending on the semantic role |
@@ -68,7 +73,7 @@ These are not really "component CSS" so much as layout wrappers that should beco
 | `styles.css:260-274` `.preset-panel-content`, `.config-section`, `.config-group`, `.editor-form`, `.config-sections` | Remove local wrapper classes over time. | `bf-stack` with default/tight spacing |
 | `styles.css:347-360` `.preset-toolbar`, `.preset-selection`, `.preset-radio-list` | Replace the layout part now; the row-card visual part still needs a component. | `bf-stack`, optionally `bf-cluster` for horizontal action groupings |
 | `styles.css:464-476` `.main-actions`, `.preset-section-header`, `.preset-panel-section` | Replace the layout wrappers now. | `bf-stack` / `bf-cluster` |
-| `styles.css:109-120` `.viewer-panel__content` | No direct class yet, but most of this is already a composition problem, not a missing framework. | `u-fixed-width` plus `bf-stack` / panel shell composition; keep only the genuinely stage-centering bits local |
+| `styles.css:109-120` `.viewer-panel__content` | No direct class yet, but most of this is already a composition problem, not a missing framework. | `bf-fixed-width` plus `bf-stack` / panel shell composition; keep only the genuinely stage-centering bits local |
 
 Relevant upstream layout primitives:
 
@@ -90,6 +95,7 @@ Local block:
 Reason:
 
 - most of this is already composition rather than missing component CSS, but it still has enough repeated structure that we may eventually want a canonical stage-centering helper.
+- Real downstream bug observed on 2026-03-28: if the consumer does not hard-clamp the shell to the viewport, a long pinned inspector can stretch the shared app row and push the non-scrolling stage below the fold. `brand-layout-ops` now fixes that locally by bounding the shell and moving overflow into the inspector content, but this is the clearest current argument for a tiny upstream stage-shell helper if the pattern repeats.
 
 Priority:
 
@@ -122,7 +128,7 @@ If the downstream agent wants the fastest reduction in local CSS, this is the or
 1. Delete and replace the drawer/backdrop system first; do not keep the old `body.drawer-open` + `.drawer-backdrop` path once `baseline-foundry` drawer mode is wired in.
 2. Replace only the layout wrappers that can become `bf-stack` / `bf-cluster` without changing semantics.
 3. Leave stage/authoring CSS alone for now.
-4. Do not invent new app-local replacements for `preset-radio-row`, `style-palette`, or equal-width panel tabs; treat those as upstream `baseline-foundry` gaps and either port them there or keep the existing local CSS temporarily.
+4. Do not preserve old local class names for `preset-radio-row`, `style-palette`, or equal-width panel tabs; switch the markup to the canonical Foundry components instead.
 5. After each removal tranche, verify the panel in narrow widths, especially sliders, tabs, accordion groups, and drawer mode.
 
 ## Bottom Line

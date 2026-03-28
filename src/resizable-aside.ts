@@ -120,15 +120,17 @@ function getWidthBounds(application: HTMLElement, aside: HTMLElement, handle: HT
     ?? aside.dataset.asideResizeMax
     ?? application.dataset.asideResizeMax;
   const minValue = minFromDataset
-    ?? computedStyle.getPropertyValue("--bf-app-aside-width-narrow")
-    ?? computedStyle.getPropertyValue("--vr-application-aside-width-narrow");
+    ?? computedStyle.getPropertyValue("--bf-app-aside-width-min")
+    ?? computedStyle.getPropertyValue("--vr-application-aside-width-min")
+    ?? computedStyle.getPropertyValue("--bf-app-drawer-width-small")
+    ?? computedStyle.getPropertyValue("--vr-application-drawer-width-small");
   const maxValue = maxFromDataset
     ?? computedStyle.getPropertyValue("--bf-app-aside-width-max")
     ?? computedStyle.getPropertyValue("--vr-application-aside-width-max")
-    ?? computedStyle.getPropertyValue("--bf-app-aside-width-wide")
-    ?? computedStyle.getPropertyValue("--vr-application-aside-width-wide");
-  const minPx = resolveCssLengthPx(application, minValue, 288);
-  const maxPx = resolveCssLengthPx(application, maxValue, 480);
+    ?? computedStyle.getPropertyValue("--bf-app-drawer-width-medium-max")
+    ?? computedStyle.getPropertyValue("--vr-application-drawer-width-medium-max");
+  const minPx = resolveCssLengthPx(application, minValue, 240);
+  const maxPx = resolveCssLengthPx(application, maxValue, 640);
 
   return {
     minPx,
@@ -147,7 +149,7 @@ function getCurrentWidthPx(application: HTMLElement, aside: HTMLElement): number
     application,
     computedStyle.getPropertyValue("--bf-app-aside-width")
       || computedStyle.getPropertyValue("--vr-application-aside-width"),
-    480
+    465
   );
 }
 
