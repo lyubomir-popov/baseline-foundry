@@ -1085,7 +1085,8 @@ ${typeStyles(body, { fontWeight: 600, includeCase: false })}  color: var(--vr-co
 
 :where(.bf-theme, .vr-theme) :where(table, .p-table, .bf-table) {
   border: 0;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   caption-side: bottom;
   line-height: ${body.lineHeight};
   margin: 0;
@@ -1106,28 +1107,29 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   color: var(--vr-color-text-default);
   margin: 0;
   overflow: hidden;
-  padding-bottom: calc((var(--vr-baseline) * 0.75) - var(--vr-border-width));
   padding-inline: calc(var(--vr-baseline) * 0.75);
-  padding-top: calc((var(--vr-baseline) * 0.25) + ${body.nudgeTop});
   text-align: left;
   text-overflow: ellipsis;
   vertical-align: top;
 }
 
+:where(.bf-theme, .vr-theme) :where(td) {
+  padding-bottom: calc((var(--vr-control-block-size-dense) - ${body.lineHeight}) / 2);
+  padding-top: calc((var(--vr-control-block-size-dense) - ${body.lineHeight}) / 2);
+}
+
 :where(.bf-theme, .vr-theme) :where(thead th) {
 ${typeStyles(h5)}  color: var(--vr-color-text-muted);
-  padding-top: calc((var(--vr-baseline) * 0.5) + ${h5.nudgeTop});
+  box-shadow: inset 0 -1px 0 var(--vr-color-border-default);
+  padding-bottom: calc(((var(--vr-control-block-size-dense) - ${h5.lineHeight}) / 2) - ${h5.nudgeTop});
+  padding-top: calc(((var(--vr-control-block-size-dense) - ${h5.lineHeight}) / 2) + ${h5.nudgeTop});
 }
 
-:where(.bf-theme, .vr-theme) :where(thead tr) {
-  border-bottom: var(--vr-border-width) solid var(--vr-color-border-default);
+:where(.bf-theme, .vr-theme) :where(tbody tr + tr td, tfoot td) {
+  box-shadow: inset 0 1px 0 var(--vr-color-border-low-contrast);
 }
 
-:where(.bf-theme, .vr-theme) :where(tbody tr + tr, tfoot tr) {
-  border-top: var(--vr-border-width) solid var(--vr-color-border-low-contrast);
-}
-
-:where(.bf-theme, .vr-theme) :where(tbody tr:hover) {
+:where(.bf-theme, .vr-theme) :where(tbody tr:hover td) {
   background: color-mix(in srgb, var(--vr-color-background-hover) 68%, transparent);
 }
 
@@ -1173,6 +1175,7 @@ ${typeStyles(h5)}  color: var(--vr-color-text-muted);
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-chip__lead, .p-chip__value, .bf-chip__lead, .bf-chip__value) {
+  display: block;
   margin: 0;
   min-inline-size: 0;
   overflow: hidden;
@@ -1293,12 +1296,12 @@ ${typeStyles(h5)}  margin: 0;
 
 :where(.bf-theme, .vr-theme) :where(.p-search-box__reset, .p-search-box__button, .bf-search-box__reset, .bf-search-box__button) {
   align-items: center;
-  block-size: calc(var(--vr-control-block-size) - (var(--vr-border-width) * 2));
+  block-size: var(--vr-control-block-size);
   display: inline-flex;
   inline-size: calc(var(--vr-baseline) * 2);
   justify-content: center;
   position: absolute;
-  top: var(--vr-border-width);
+  top: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-box__reset, .bf-search-box__reset) {
@@ -1352,28 +1355,27 @@ ${typeStyles(h5)}  margin: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter, .bf-search-and-filter) {
-  border-bottom: var(--vr-border-width) solid var(--vr-color-border-high-contrast);
   display: grid;
   margin: 0;
   position: relative;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__search-container, .bf-search-and-filter__search-container) {
-  align-items: flex-start;
-  background-color: var(--vr-color-background-inputs);
+  align-items: stretch;
+  background: transparent;
+  box-shadow: inset 0 -1px 0 var(--vr-color-border-high-contrast);
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--vr-baseline) * 0.5);
+  gap: var(--vr-field-gap);
   margin: 0;
-  min-block-size: var(--vr-control-block-size);
-  overflow: hidden;
-  padding-block: calc(var(--vr-baseline) * 0.25);
-  padding-inline: calc(var(--vr-baseline) * 0.75) calc(var(--vr-baseline) * 4.5) calc(var(--vr-baseline) * 0.25) calc(var(--vr-baseline) * 0.75);
+  min-block-size: 0;
+  overflow: visible;
+  padding: 0;
   position: relative;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__search-container[aria-expanded='false'], .bf-search-and-filter__search-container[aria-expanded='false']) {
-  block-size: var(--vr-control-block-size);
+  min-block-size: var(--vr-control-block-size);
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__box, .bf-search-and-filter__box) {
@@ -1391,17 +1393,17 @@ ${typeStyles(h5)}  margin: 0;
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__search-button, .bf-search-and-filter__search-button) {
   appearance: none;
   background: transparent;
-  block-size: calc(var(--vr-control-block-size) - (var(--vr-border-width) * 2));
+  block-size: var(--vr-control-block-size);
   border: 0;
   color: var(--vr-color-text-default);
   cursor: pointer;
   inline-size: calc(var(--vr-baseline) * 2);
-  inset-inline-end: var(--vr-border-width);
+  inset-inline-end: 0;
   margin: 0;
   padding: 0;
   position: absolute;
   text-indent: -9999px;
-  top: var(--vr-border-width);
+  top: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__search-button, .bf-search-and-filter__search-button)::before {
@@ -1438,24 +1440,27 @@ ${typeStyles(h5)}  margin: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__clear, .bf-search-and-filter__clear) {
-  block-size: calc(var(--vr-control-block-size) - (var(--vr-border-width) * 2));
+  block-size: var(--vr-control-block-size);
   inline-size: calc(var(--vr-baseline) * 2);
   inset-inline-end: calc(var(--vr-baseline) * 2);
   position: absolute;
-  top: var(--vr-border-width);
+  top: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__selected-count, .bf-search-and-filter__selected-count) {
 ${typeStyles(h5)}  appearance: none;
+  align-items: flex-start;
   background: transparent;
   border: 0;
   color: var(--vr-color-link-default);
   cursor: pointer;
+  display: inline-flex;
   margin: 0;
-  padding: ${h5.nudgeTop} 0 0;
-  position: absolute;
-  right: calc(var(--vr-baseline) * 0.75);
-  top: calc(var(--vr-baseline) * 0.5);
+  min-block-size: var(--vr-control-block-size);
+  padding-bottom: calc(((var(--vr-control-block-size) - ${h5.lineHeight}) / 2) - ${h5.nudgeTop});
+  padding-inline: 0;
+  padding-top: calc(((var(--vr-control-block-size) - ${h5.lineHeight}) / 2) + ${h5.nudgeTop});
+  position: static;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__search-container[aria-expanded='true'], .bf-search-and-filter__search-container[aria-expanded='true']) :where(.p-search-and-filter__selected-count, .bf-search-and-filter__selected-count) {
@@ -1516,6 +1521,7 @@ ${typeStyles(h5)}  appearance: none;
 :where(.bf-theme, .vr-theme) :where(.p-filter-panel-section__heading, .bf-filter-panel-section__heading) {
 ${typeStyles(h5)}  color: var(--vr-color-text-muted);
   margin: 0;
+  padding-bottom: calc(var(--vr-baseline) - ${h5.nudgeTop});
   padding-top: ${h5.nudgeTop};
 }
 
@@ -1539,6 +1545,194 @@ ${typeStyles(h5)}  color: var(--vr-color-text-muted);
   padding: 0;
   position: absolute;
   right: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree, .p-list-tree, .bf-list-tree) {
+  list-style: none;
+  margin: 0;
+  padding-left: calc(var(--vr-baseline) * 0.5);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree, .p-list-tree, .bf-list-tree) :where(.vr-list-tree, .p-list-tree, .bf-list-tree) {
+  display: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree, .p-list-tree, .bf-list-tree) :where(.vr-list-tree[aria-hidden='false'], .p-list-tree[aria-hidden='false'], .bf-list-tree[aria-hidden='false']) {
+  display: block;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__item, .p-list-tree__item, .bf-list-tree__item) {
+  margin: 0;
+  padding-left: calc(var(--vr-baseline) * 1.5);
+  position: relative;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__link, .p-list-tree__link, .bf-list-tree__link) {
+${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-default);
+  cursor: pointer;
+  display: block;
+  margin: 0;
+  min-block-size: var(--vr-control-block-size-dense);
+  padding-block: calc((var(--vr-control-block-size-dense) - ${body.lineHeight}) / 2);
+  text-decoration: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__link, .p-list-tree__link, .bf-list-tree__link):hover {
+  color: var(--vr-color-link-default);
+  text-decoration: underline;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__link.is-active, .p-list-tree__link.is-active, .bf-list-tree__link.is-active) {
+  color: var(--vr-color-link-default);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__link, .p-list-tree__link, .bf-list-tree__link):focus {
+  outline: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__link, .p-list-tree__link, .bf-list-tree__link):focus-visible {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree__toggle) {
+${typeStyles(body, { includeCase: false })}  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--vr-color-text-default);
+  cursor: pointer;
+  display: inline-flex;
+  gap: calc(var(--vr-baseline) * 0.5);
+  margin: 0 0 0 calc(var(--vr-baseline) * -1.5);
+  min-block-size: var(--vr-control-block-size-dense);
+  padding-block: calc((var(--vr-control-block-size-dense) - ${body.lineHeight}) / 2);
+  padding-inline: calc(var(--vr-baseline) * 0.25) calc(var(--vr-baseline) * 0.5);
+  text-align: left;
+  width: 100%;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree__toggle):hover {
+  background: var(--vr-color-background-hover);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree__toggle):focus {
+  outline: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree__toggle):focus-visible {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree__toggle)::before {
+  background-image: var(--vr-icon-chevron-down);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  block-size: 1rem;
+  content: "";
+  flex: 0 0 1rem;
+  inline-size: 1rem;
+  transform: rotate(-90deg);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__toggle[aria-expanded='true'], .p-list-tree__toggle[aria-expanded='true'], .bf-list-tree__toggle[aria-expanded='true'])::before {
+  transform: rotate(0deg);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu, .vr-contextual-menu--left, .p-contextual-menu--left, .bf-contextual-menu--left, .vr-contextual-menu--center, .p-contextual-menu--center, .bf-contextual-menu--center) {
+  display: inline-block;
+  margin: 0;
+  position: relative;
+  vertical-align: top;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__dropdown, .p-contextual-menu__dropdown, .bf-contextual-menu__dropdown) {
+  background: var(--vr-color-background-default);
+  border: var(--vr-border-width) solid var(--vr-color-border-default);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  display: none;
+  list-style: none;
+  margin: 0;
+  max-inline-size: 21rem;
+  min-inline-size: 10rem;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: calc(100% - var(--vr-border-width));
+  width: fit-content;
+  z-index: 9;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__dropdown[aria-hidden='false'], .p-contextual-menu__dropdown[aria-hidden='false'], .bf-contextual-menu__dropdown[aria-hidden='false']) {
+  display: block;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu--left, .p-contextual-menu--left, .bf-contextual-menu--left) :where(.vr-contextual-menu__dropdown, .p-contextual-menu__dropdown, .bf-contextual-menu__dropdown) {
+  left: 0;
+  right: auto;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu--center, .p-contextual-menu--center, .bf-contextual-menu--center) :where(.vr-contextual-menu__dropdown, .p-contextual-menu__dropdown, .bf-contextual-menu__dropdown) {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__group, .p-contextual-menu__group, .bf-contextual-menu__group) {
+  display: block;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__group, .p-contextual-menu__group, .bf-contextual-menu__group) + :where(.vr-contextual-menu__group, .p-contextual-menu__group, .bf-contextual-menu__group) {
+  box-shadow: inset 0 1px 0 var(--vr-color-border-default);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu__link) {
+${typeStyles(body, { includeCase: false })}  background: transparent;
+  border: 0;
+  clear: both;
+  color: var(--vr-color-text-default);
+  cursor: pointer;
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  padding-block: calc((var(--vr-control-block-size-dense) - ${body.lineHeight}) / 2);
+  padding-inline: var(--vr-panel-padding-inline);
+  text-align: left;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu__link):visited {
+  color: var(--vr-color-text-default);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu__link):hover {
+  background: var(--vr-color-background-hover);
+  text-decoration: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu__link):active {
+  background: var(--vr-color-background-active);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu__link):focus {
+  outline: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu__link):focus-visible {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link.is-disabled, .p-contextual-menu__link.is-disabled, .bf-contextual-menu__link.is-disabled, .vr-contextual-menu__link[disabled], .p-contextual-menu__link[disabled], .bf-contextual-menu__link[disabled]) {
+  color: var(--vr-color-text-muted);
+  cursor: default;
+  pointer-events: none;
 }
 
 :where(.bf-theme, .vr-theme) :where(nav.p-pagination, nav.bf-pagination) {

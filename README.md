@@ -117,12 +117,20 @@ The current baseline-gated demo pages are:
 - `demo/components/file-input.html`
 - `demo/components/validation.html`
 - `demo/components/switch.html`
+- `demo/components/chip.html`
+- `demo/components/badge.html`
+- `demo/components/status-label.html`
+- `demo/components/table.html`
+- `demo/components/search-box.html`
+- `demo/components/search-and-filter.html`
+- `demo/components/list-tree.html`
 - `demo/components/tabs.html`
 - `demo/components/accordion.html`
 - `demo/components/modal.html`
 - `demo/components/segmented-control.html`
 - `demo/components/breadcrumbs.html`
 - `demo/components/pagination.html`
+- `demo/components/contextual-menu.html`
 - `demo/components/divider.html`
 - `demo/components/cards.html`
 - `demo/components/brand-layout-ops-sample.html`
@@ -133,15 +141,6 @@ The older grouped pages still exist as convenience overviews:
 
 - `demo/components/controls.html`
 - `demo/components/surfaces-navigation.html`
-
-The next ported pages already exist in the atlas as preview surfaces, but are not yet part of the automated baseline gate because their rhythm cleanup is still in progress:
-
-- `demo/components/chip.html`
-- `demo/components/badge.html`
-- `demo/components/status-label.html`
-- `demo/components/table.html`
-- `demo/components/search-box.html`
-- `demo/components/search-and-filter.html`
 
 Install Playwright once with:
 
@@ -228,6 +227,8 @@ See:
 Browser-safe exports:
 
 - `initBaselineGridToggles`
+- `initContextualMenus`
+- `initListTree`
 - `setupBaselineGridToggle`
 
 Node/build exports:

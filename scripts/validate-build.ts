@@ -75,6 +75,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.p-status-label, .p-label, .p-status-label--positive"), "Expected compat CSS to include status label styling.");
   assert(css.includes(":where(.p-search-box, .bf-search-box)"), "Expected compat CSS to include search-box styling.");
   assert(css.includes(":where(.p-search-and-filter, .bf-search-and-filter)"), "Expected compat CSS to include search-and-filter styling.");
+  assert(css.includes(":where(.vr-list-tree, .p-list-tree, .bf-list-tree)"), "Expected compat CSS to include list-tree styling.");
+  assert(css.includes(":where(.vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu"), "Expected compat CSS to include contextual-menu styling.");
 }
 
 function validateCommonTokens(tokens: Record<string, unknown>): {

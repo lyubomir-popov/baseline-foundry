@@ -338,6 +338,12 @@ a {
   color: inherit;
 }
 
+.component-demo-table-text {
+  display: block;
+  line-height: inherit;
+  margin: 0;
+}
+
 .component-demo-micro-row .component-demo-meta-value {
   color: var(--component-demo-muted);
 }

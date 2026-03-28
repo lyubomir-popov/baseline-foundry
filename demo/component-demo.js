@@ -1,6 +1,8 @@
-import { initAccordions, initBaselineGridToggles, initRangeControls, initTabs } from "../dist/index.js?v=20260328-panel-refresh-8";
+import { initAccordions, initBaselineGridToggles, initContextualMenus, initListTree, initRangeControls, initTabs } from "../dist/index.js?v=20260328-panel-refresh-9";
 
 initBaselineGridToggles();
+initContextualMenus();
+initListTree();
 initRangeControls();
 initTabs();
 initAccordions();
@@ -29,12 +31,14 @@ const NAV_ITEMS = [
   { title: "Table", href: "table.html" },
   { title: "Search box", href: "search-box.html" },
   { title: "Search and filter", href: "search-and-filter.html" },
+  { title: "List tree", href: "list-tree.html" },
   { title: "Tabs", href: "tabs.html" },
   { title: "Accordion", href: "accordion.html" },
   { title: "Modal", href: "modal.html" },
   { title: "Segmented control", href: "segmented-control.html" },
   { title: "Breadcrumbs", href: "breadcrumbs.html" },
   { title: "Pagination", href: "pagination.html" },
+  { title: "Contextual menu", href: "contextual-menu.html" },
   { title: "Divider", href: "divider.html" },
   { title: "Cards", href: "cards.html" },
   null,
@@ -100,3 +104,4 @@ function injectNav() {
 }
 
 injectNav();
+

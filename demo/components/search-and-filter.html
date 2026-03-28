@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search and Filter Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-8">
-  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-8">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-9">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-9">
 </head>
 <body>
   <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
@@ -24,40 +24,57 @@
     </header>
 
     <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="search and filter section">
-        <div class="p-search-and-filter" data-baseline-check="box" data-baseline-label="search and filter component">
-          <div class="p-search-and-filter__search-container" aria-expanded="true" data-baseline-check="box" data-baseline-label="search and filter container">
-            <div class="p-search-and-filter__box" data-baseline-check="box" data-baseline-label="search and filter box">
-              <input class="p-search-and-filter__input p-form-validation__input" type="search" value="Ubuntu" data-baseline-check="box" data-baseline-label="search and filter input">
-              <button class="p-search-and-filter__clear" type="button" data-baseline-check="box" data-baseline-label="search and filter clear">Clear</button>
-              <button class="p-search-and-filter__search-button" type="button" data-baseline-check="box" data-baseline-label="search and filter search">Search</button>
+      <section class="component-demo-surface component-demo-specimens" data-baseline-ignore="true">
+        <div class="component-demo-specimen">
+          <div class="p-search-and-filter" data-baseline-ignore="true">
+            <div class="p-search-and-filter__search-container" aria-expanded="false" data-baseline-check="box" data-baseline-label="search and filter collapsed container">
+              <div class="p-search-and-filter__box" data-baseline-check="box" data-baseline-label="search and filter collapsed box">
+                <input class="p-search-and-filter__input p-form-validation__input" type="search" value="Ubuntu" data-baseline-check="box" data-baseline-label="search and filter collapsed input">
+                <button class="p-search-and-filter__clear" type="button" data-baseline-check="box" data-baseline-label="search and filter collapsed clear">Clear</button>
+                <button class="p-search-and-filter__search-button" type="button" data-baseline-check="box" data-baseline-label="search and filter collapsed search">Search</button>
+              </div>
+              <button class="p-search-and-filter__selected-count" type="button" data-baseline-check="box" data-baseline-label="search and filter selected count">6 selected</button>
             </div>
-            <button class="p-search-and-filter__selected-count" type="button" data-baseline-check="box" data-baseline-label="search and filter selected count">6 selected</button>
+            <div class="p-search-and-filter__panel" aria-hidden="true" data-baseline-ignore="true"></div>
           </div>
-          <div class="p-search-and-filter__panel" aria-hidden="false" data-baseline-check="box" data-baseline-label="search and filter panel">
-            <section class="p-filter-panel-section" data-baseline-check="box" data-baseline-label="search filter section one">
-              <h5 class="p-filter-panel-section__heading" data-baseline-check="flow" data-baseline-label="search filter heading">Format</h5>
-              <div class="p-filter-panel-section__chips" aria-expanded="true" data-baseline-check="box" data-baseline-label="search filter chips">
-                <button class="p-chip is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 1">Landscape</button>
-                <button class="p-chip is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 2">Square</button>
-                <button class="p-chip--information is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 3">Portrait</button>
+        </div>
+
+        <div class="component-demo-specimen">
+          <div class="p-search-and-filter" data-baseline-ignore="true">
+            <div class="p-search-and-filter__search-container" aria-expanded="true" data-baseline-check="box" data-baseline-label="search and filter expanded container">
+              <div class="p-search-and-filter__box" data-baseline-check="box" data-baseline-label="search and filter expanded box">
+                <input class="p-search-and-filter__input p-form-validation__input" type="search" value="Ubuntu" data-baseline-check="box" data-baseline-label="search and filter expanded input">
+                <button class="p-search-and-filter__clear" type="button" data-baseline-check="box" data-baseline-label="search and filter expanded clear">Clear</button>
+                <button class="p-search-and-filter__search-button" type="button" data-baseline-check="box" data-baseline-label="search and filter expanded search">Search</button>
               </div>
-            </section>
-            <section class="p-filter-panel-section" data-baseline-check="box" data-baseline-label="search filter section two">
-              <h5 class="p-filter-panel-section__heading" data-baseline-check="flow" data-baseline-label="search filter heading two">Status</h5>
-              <div class="p-filter-panel-section__chips" aria-expanded="true" data-baseline-check="box" data-baseline-label="search filter chips two">
-                <button class="p-chip--positive is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 4">Saved</button>
-                <button class="p-chip--caution is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 5">Review</button>
-              </div>
-            </section>
+              <button class="p-search-and-filter__selected-count" type="button" data-baseline-ignore="true">6 selected</button>
+            </div>
+            <div class="p-search-and-filter__panel" aria-hidden="false" data-baseline-check="box" data-baseline-label="search and filter panel">
+              <section class="p-filter-panel-section" data-baseline-check="box" data-baseline-label="search filter section one">
+                <h5 class="p-filter-panel-section__heading" data-baseline-check="flow" data-baseline-label="search filter heading">Format</h5>
+                <div class="p-filter-panel-section__chips" aria-expanded="true" data-baseline-check="box" data-baseline-label="search filter chips">
+                  <button class="p-chip is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 1">Landscape</button>
+                  <button class="p-chip is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 2">Square</button>
+                  <button class="p-chip--information is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 3">Portrait</button>
+                </div>
+              </section>
+              <section class="p-filter-panel-section" data-baseline-check="box" data-baseline-label="search filter section two">
+                <h5 class="p-filter-panel-section__heading" data-baseline-check="flow" data-baseline-label="search filter heading two">Status</h5>
+                <div class="p-filter-panel-section__chips" aria-expanded="true" data-baseline-check="box" data-baseline-label="search filter chips two">
+                  <button class="p-chip--positive is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 4">Saved</button>
+                  <button class="p-chip--caution is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 5">Review</button>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
       </section>
     </section>
   </main>
 
-  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-8"></script>
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-9"></script>
 </body>
 </html>
+
 
 
