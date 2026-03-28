@@ -16,11 +16,11 @@ Goal:
 The file falls into four buckets:
 
 1. Delete and replace now:
-   drawer/backdrop logic, pinned-aside resize behavior, most slider-pair styling, some helper text/meta styling, and some generic wrapper grids.
+   drawer/backdrop logic, pinned-aside resize behavior, equal-width dense tabs, selectable preset/output rows, style/mapping palette cards, compact color-input sizing, operator-selector strips, most slider-pair styling, helper text/meta styling, and some generic wrapper grids.
 2. Replace with markup changes:
    several local `display: grid` wrappers should become `bf-stack`, `bf-cluster`, `u-fixed-width`, or the shipped tabs/forms/panel shell.
 3. Port next into `baseline-foundry`:
-   equal-width dense tab modifiers, preset radio rows, palette cards, resize-handle polish, color-input sizing, and a small operator-selector pattern.
+   a minimal fill-height panel helper, any checkbox-field density rules that still survive as downstream overrides, and a canonical action-row helper for dense panel footers/export clusters.
 4. Keep local:
    stage rendering, authoring overlays, selection handles, inline stage editor, and other canvas/editor-specific styling.
 
@@ -30,8 +30,14 @@ The file falls into four buckets:
 |---|---|---|
 | `styles.css:86-106` `.drawer-backdrop` | Delete. This is superseded by the package drawer shell. | `l-application__overlay`, `l-aside.is-overlay` / `is-drawer`, `l-application.is-drawer-expanded`, `p-panel__toggle`, and `initPanelDrawers()` from `baseline-foundry` |
 | `styles.css:47-84` `.bf-application__aside-resize-handle` | Delete or reduce to app-only overrides. The package now ships the pinned-aside resize runtime and visible handle treatment. | `l-application__aside-resize-handle` / `bf-application__aside-resize-handle` plus `initResizableAsides()` and the built-in `is-resizing-aside` shell state |
+| `styles.css:299-341` `.config-tabs`, `.output-profile-tabs` | Delete. The package now ships equal-width dense tab modifiers and keeps the downstream aliases. | canonical `p-tabs--equal` / `bf-tabs--equal`, plus alias support for `config-tabs` and `output-profile-tabs` |
+| `styles.css:363-384` `.preset-radio-row*` | Delete. This pattern is now a shipped component, not a local app card. | canonical `p-choice-row` / `bf-choice-row` and `p-choice-list`, plus alias support for `preset-radio-row`, `preset-radio-name`, and `preset-radio-status` |
+| `styles.css:417-462` `.style-palette*` | Delete. This pattern is now a shipped component, not a local app-only palette grid. | canonical `p-option-grid` / `bf-option-grid` and `p-option-card` / `bf-option-card`, plus alias support for `style-palette`, `style-palette__button`, `style-palette__label`, and `style-palette__meta` |
 | `styles.css:244-258` `.slider-pair` | Mostly delete. The package already owns the horizontal/stacked range wrapper and number-input pairing. | `.p-slider__wrapper`, `.slider-pair`, `.slider-pair--stacked`, `.p-slider__input`, plus `initRangeControls()` |
 | `styles.css:343-345` `.output-profile-meta` | Delete if the markup switches to shipped helper text. | `bf-form-help` / `p-form-help-text` |
+| `styles.css:242-246` `.control-help` | Delete. Tight helper text is now a shipped modifier rather than app-local spacing repair. | `.p-form-help-text.is-tight` / `.bf-form-help.is-tight`, with alias support for `.control-help` |
+| `styles.css:286-290` `.control-color` | Delete. Compact color input sizing is now a shipped treatment. | canonical `.p-color-input` / `.bf-color-input`, with alias support for `.control-color` |
+| `styles.css:497-527` `.operator-selector*` | Delete. This is now a shipped inline-options micro-pattern rather than a one-off app strip. | canonical `.p-inline-options` / `.bf-inline-options`, with alias support for `.operator-selector*` |
 | `styles.css:391-401` `.control-composite` range styling | Mostly delete. The range fill/background behavior is already owned upstream. | `input[type='range']` styling from `baseline-foundry` plus `initRangeControls()` |
 | `styles.css:409-410` `.control-checkbox` | Delete. This margin reset is already covered by the shipped checkbox/control styles. | shipped checkbox/form control styles |
 | `styles.css:386-389` `.preset-empty` | Delete and use base text/help styling directly. | `bf-body` or `bf-form-help` depending on the semantic role |
@@ -42,6 +48,8 @@ Relevant upstream package surface:
 - `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:628`
 - `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:791`
 - `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:947`
+- `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:1007`
+- `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:1040`
 - `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:2394`
 - `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:2422`
 - `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:2466`
@@ -70,149 +78,73 @@ Relevant upstream layout primitives:
 
 These are the strongest candidates for the next upstream component pass. They are repeatable product UI patterns, not one-off app hacks.
 
-### 1. Equal-width dense panel tabs
+### 1. Full-height fill panel helper
 
 Local block:
 
-- `styles.css:299-341`
-
-Reason:
-
-- `baseline-foundry` ships the base tabs component, but not the `config-tabs` / `output-profile-tabs` modifier that turns tab lists into equal-width wrapped button rows for dense panel use.
-
-Current package baseline:
-
-- `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:947`
-
-Recommended upstream addition:
-
-- a modifier such as `bf-tabs--equal`, `bf-tabs--grid`, or `bf-tabs--panel`
-
-Priority:
-
-- very high
-
-### 2. Preset radio row cards
-
-Local block:
-
-- `styles.css:363-384`
-
-Used by:
-
-- `main.ts` in the downstream app for preset selection rows
-
-Reason:
-
-- this is a real reusable component family: a selectable row/card with radio, name, and status.
-
-Recommended upstream addition:
-
-- `bf-choice-row` / `bf-choice-card`
-
-Priority:
-
-- very high
-
-### 3. Style palette cards
-
-Local block:
-
-- `styles.css:417-462`
-
-Used by:
-
-- `content-format-section.ts`
-- `paragraph-styles-section.ts`
-
-Reason:
-
-- this is another real reusable component family: dense selectable option cards with label + meta, hover + active state.
-
-Recommended upstream addition:
-
-- `bf-option-grid`
-- `bf-option-card`
-
-Priority:
-
-- very high
-
-### 4. Tight helper-text modifier
-
-Local block:
-
-- `styles.css:293-297`
-
-Reason:
-
-- the negative top margin means the app is compensating for spacing at the usage level. The base helper text exists, but the "tight under field" variant is not a first-class modifier.
-
-Current package baseline:
-
-- `C:\Users\lyubo\work\repos\baseline-foundry\src\css-compat.ts:155`
-
-Recommended upstream addition:
-
-- a modifier such as `bf-form-help.is-tight`
-
-Priority:
-
-- medium
-
-### 5. Color input sizing
-
-Local block:
-
-- `styles.css:403-406`
-
-Reason:
-
-- color inputs are still treated ad hoc downstream.
-
-Recommended upstream addition:
-
-- a compact color-field modifier or dedicated color input component styling
-
-Priority:
-
-- medium
-
-### 6. Operator selector micro-pattern
-
-Local block:
-
-- `styles.css:497-527`
-
-Reason:
-
-- this is small, but it is still a repeatable inline radio-options pattern between major shell sections.
-
-Recommended upstream addition:
-
-- only if it appears in more than one place after the first cleanup
-
-Priority:
-
-- low to medium
-
-### 7. Full-height fill panel helper
-
-Local block:
-
-- `styles.css:235-242` `.drawer-panel`
+- `styles.css:177-184` `.drawer-panel`
 
 Reason:
 
 - most of this is already covered by `p-panel`, but `min-height: 100%` / fill behavior is still being asserted locally.
 
+Priority:
+
+- low to medium
+
 Recommended upstream addition:
 
 - a minimal fill modifier if the downstream app still needs it after the drawer shell swap, for example `p-panel.is-fill`
 
+### 2. Dense checkbox-field compaction overrides
+
+Local block:
+
+- `styles.css:186-196`
+
+Reason:
+
+- downstream still overrides checkbox field/control spacing and minimum row height under `.mascot-app`. If those overrides still matter after swap testing, the density rule should live package-side rather than in app-local CSS.
+
 Priority:
 
-- low to medium
+- medium
+
+Recommended upstream addition:
+
+- a small dense checkbox-field modifier or a tighter default for the compact panel preset if the current package rhythm still leaves these rows feeling different from the rest of the dense control surface
+
+### 3. Dense action-row helper
+
+Local block:
+
+- `styles.css:200-211`
+
+Reason:
+
+- the downstream app still uses a no-wrap, horizontally scrollable export-actions row. This is a real panel pattern and would be better as a package-side action primitive than as one-off flex CSS.
+
+Priority:
+
+- medium
+
+Recommended upstream addition:
+
+- a canonical action-row helper, for example `.p-actions` / `.bf-actions`, with optional nowrap/scroll behavior for dense toolbars and panel footers
+
+### 4. Centered viewer-panel content shell
+
+Local block:
+
+- `styles.css:109-120` `.viewer-panel__content`
+
+Reason:
+
+- most of this is already composition rather than missing component CSS, but it still has enough repeated structure that we may eventually want a canonical stage-centering helper.
+
+Priority:
+
+- low
 
 ## Keep Local
 
@@ -234,11 +166,7 @@ If the downstream agent wants the fastest reduction in local CSS, this is the or
 2. Remove local slider-pair and range-fill helper CSS and use the shipped slider wrapper surface plus `initRangeControls()`.
 3. Replace plain wrapper grids with `bf-stack` / `bf-cluster` where no visual treatment is involved.
 4. Replace `output-profile-meta`, `preset-empty`, and similar plain text helpers with `bf-form-help` / base text styling.
-5. Port upstream the two missing high-value selectable patterns:
-   - preset radio rows
-   - style palette cards
-6. Port upstream the equal-width panel tabs modifier.
-7. Re-test whether any remaining local helper-text, color-input, or operator-selector CSS still needs to exist at all.
+5. Re-test whether the remaining `.drawer-panel` fill helper, checkbox-field overrides, and export-action row helper are still needed once the downstream app is fully on the current shell primitives.
 
 ## Suggested Instructions For The Brand Layout Ops Agent
 
@@ -250,4 +178,4 @@ If the downstream agent wants the fastest reduction in local CSS, this is the or
 
 ## Bottom Line
 
-The local stylesheet is no longer "all necessary." A meaningful chunk is removable now, especially the drawer implementation and some range/help/layout rules. The biggest remaining blockers are not shell basics anymore; they are the selectable card patterns and the dense equal-width tab modifiers. Those should be the next upstream `baseline-foundry` priorities if the goal is to retire most of `overlay-preview/src/styles.css`.
+The local stylesheet is no longer "all necessary." A meaningful chunk is removable now, especially the drawer implementation and many of the panel pattern rules. The biggest remaining blockers are smaller shell helpers rather than missing component families: fill-height panel behavior, checkbox-field density overrides, and a dense action-row helper. Those are the next upstream `baseline-foundry` priorities if the goal is to retire most of `overlay-preview/src/styles.css`.

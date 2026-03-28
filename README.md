@@ -46,6 +46,7 @@ The package currently focuses on:
 - a compact compatibility control-matrix surface for dense inspector rows (`grid-row`, `col-*`, and `slider-pair--stacked`), while `bf-grid` remains the canonical page/layout grid
 - an overlay drawer-panel shell mode for temporary inspectors (`l-aside.is-overlay`, backdrop, and `p-panel__toggle`)
 - a resizable pinned-aside shell mode for desktop inspectors (`l-aside.is-pinned`, `l-application__aside-resize-handle`, and `initResizableAsides()`)
+- dense downstream panel patterns for equal-width tabs, selectable radio rows, style/mapping option cards, tight helper text, compact color inputs, and inline operator strips
 - baseline grid inspection utility
 
 It intentionally does not try to be a full component framework yet.
@@ -116,6 +117,7 @@ The current baseline-gated demo pages are:
 - `demo/components/drawer-panel.html`
 - `demo/components/button.html`
 - `demo/components/text-input.html`
+- `demo/components/color-input.html`
 - `demo/components/select.html`
 - `demo/components/checkbox.html`
 - `demo/components/radio.html`
@@ -132,8 +134,11 @@ The current baseline-gated demo pages are:
 - `demo/components/code-snippet.html`
 - `demo/components/list-tree.html`
 - `demo/components/tabs.html`
+- `demo/components/panel-tabs.html`
 - `demo/components/accordion.html`
 - `demo/components/modal.html`
+- `demo/components/choice-row.html`
+- `demo/components/inline-options.html`
 - `demo/components/segmented-control.html`
 - `demo/components/breadcrumbs.html`
 - `demo/components/pagination.html`
@@ -141,6 +146,7 @@ The current baseline-gated demo pages are:
 - `demo/components/tooltip.html`
 - `demo/components/divider.html`
 - `demo/components/cards.html`
+- `demo/components/option-card.html`
 - `demo/components/brand-layout-ops-sample.html`
 - `demo/components/panel-pressure.html`
 - `demo/components/narrow-panel.html`
@@ -206,6 +212,12 @@ The build ships two first-class defaults:
 
 - `prose`: the root default, aimed at editorial and portfolio-style composition
 - `panel`: a compact `0.75rem` body preset for dense control surfaces and `brand-layout-ops` pressure testing
+
+The current parity order is deliberate:
+
+- make the shared component surface trustworthy under `panel` first
+- then bring the same components to parity under `prose`
+- then decide whether preset switching should stay as stylesheet swapping or become scoped runtime preset switching
 
 Typography utilities are generated from `roles` in `config/foundation-theme.json`. If a role like `lead`, `eyebrow`, or `meta` is absent, the generated CSS will not create a fallback class for it. If extra roles are added, matching `.bf-<role>` utilities are emitted automatically.
 

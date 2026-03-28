@@ -162,6 +162,10 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   overflow-wrap: anywhere;
 }
 
+:where(.bf-theme, .vr-theme) :where(.p-form-help-text.is-tight, .bf-form-help.is-tight, .control-help) {
+  margin-top: calc(var(--vr-baseline) * -1);
+}
+
 :where(.bf-theme, .vr-theme) :where(.p-form__group, .bf-field) {
   display: grid;
   gap: var(--vr-field-gap);
@@ -226,6 +230,12 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 ) {
   block-size: var(--vr-control-block-size-dense);
   padding-block: calc((var(--vr-control-block-size-dense) - ${body.lineHeight} - (var(--vr-border-width) * 2)) / 2);
+}
+
+:where(.bf-theme, .vr-theme) :where(input[type='color'].p-color-input, input[type='color'].bf-color-input, input[type='color'].control-color) {
+  inline-size: 4rem;
+  min-block-size: var(--vr-control-block-size);
+  padding: calc(var(--vr-baseline) * 0.5);
 }
 
 :where(.bf-theme, .vr-theme) :where(
@@ -896,6 +906,70 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   margin-bottom: 0;
 }
 
+:where(.bf-theme, .vr-theme) :where(.p-option-grid, .bf-option-grid, .style-palette) {
+  display: grid;
+  gap: calc(var(--vr-baseline) * 2.5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-option-card, .bf-option-card, .style-palette__button) {
+  align-content: start;
+  align-items: start;
+  background: color-mix(in srgb, var(--vr-color-background-default) 88%, black 12%);
+  border: var(--vr-border-width) solid var(--vr-color-border-default);
+  color: var(--vr-color-text-default);
+  display: grid;
+  gap: var(--vr-field-gap);
+  margin: 0;
+  min-block-size: calc((var(--vr-control-block-size) * 2) + var(--vr-baseline));
+  min-inline-size: 0;
+  padding-block-end: calc(var(--vr-panel-padding-block) - var(--vr-border-width));
+  padding-block-start: calc(var(--vr-panel-padding-block) - var(--vr-border-width));
+  padding-inline: var(--vr-panel-padding-inline);
+  text-align: left;
+}
+
+:where(.bf-theme, .vr-theme) :where(button.p-option-card, button.bf-option-card, button.style-palette__button) {
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+
+:where(.bf-theme, .vr-theme) :where(button.p-option-card:hover:not(:disabled), button.bf-option-card:hover:not(:disabled), button.style-palette__button:hover:not(:disabled)) {
+  background: var(--vr-color-background-hover);
+  border-color: var(--vr-color-focus);
+  transform: translateY(-1px);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-option-card.is-active, .bf-option-card.is-active, .style-palette__button.is-active),
+:where(.bf-theme, .vr-theme) :where(button.p-option-card:disabled, button.bf-option-card:disabled, button.style-palette__button:disabled) {
+  background: color-mix(in srgb, var(--vr-color-background-active) 82%, var(--vr-color-focus) 18%);
+  border-color: var(--vr-color-focus);
+  color: var(--vr-color-text-default);
+}
+
+:where(.bf-theme, .vr-theme) :where(button.p-option-card:focus-visible, button.bf-option-card:focus-visible, button.style-palette__button:focus-visible) {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-option-card__label, .bf-option-card__label, .style-palette__label) {
+${typeStyles(body, { fontWeight: 600, includeCase: false })}  display: block;
+  margin: 0;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-option-card__meta, .bf-option-card__meta, .style-palette__meta) {
+${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
+  display: block;
+  margin: 0;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-option-card__meta.is-quiet, .bf-option-card__meta.is-quiet) {
+  color: var(--vr-color-text-inactive);
+}
+
 :where(.bf-theme, .vr-theme) :where(.p-divider, .bf-divider) {
   align-items: start;
   container-type: inline-size;
@@ -1006,6 +1080,128 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
 
 :where(.bf-theme, .vr-theme) :where(.p-tabs__panel, .bf-tabs__panel)[aria-hidden='true'] {
   display: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-tabs--equal, .bf-tabs--equal, .config-tabs, .output-profile-tabs) {
+  --vr-tabs-equal-min: 8rem;
+}
+
+:where(.bf-theme, .vr-theme) :where(.output-profile-tabs) {
+  --vr-tabs-equal-min: 10rem;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-tabs--equal, .bf-tabs--equal, .config-tabs, .output-profile-tabs) :where(.p-tabs__list, .bf-tabs__list) {
+  display: grid;
+  gap: calc(var(--vr-baseline) * 2);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--vr-tabs-equal-min)), 1fr));
+  overflow: visible;
+  white-space: normal;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-tabs--equal, .bf-tabs--equal, .config-tabs, .output-profile-tabs) :where(.p-tabs__item, .bf-tabs__item) {
+  min-inline-size: 0;
+  white-space: normal;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-tabs--equal, .bf-tabs--equal, .config-tabs, .output-profile-tabs) :where(.p-tabs__link, .bf-tabs__link) {
+  display: flex;
+  inline-size: 100%;
+  text-align: center;
+  white-space: normal;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-choice-list, .bf-choice-list) {
+  display: grid;
+  gap: var(--vr-field-gap);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-choice-row, .bf-choice-row, .preset-radio-row) {
+  align-items: center;
+  background: var(--vr-color-background-default);
+  border: var(--vr-border-width) solid var(--vr-color-border-default);
+  color: var(--vr-color-text-default);
+  cursor: pointer;
+  display: grid;
+  gap: calc(var(--vr-baseline) * 0.75);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin: 0;
+  min-block-size: var(--vr-control-block-size);
+  min-inline-size: 0;
+  padding-block: calc((var(--vr-control-block-size) - ${body.lineHeight} - (var(--vr-border-width) * 2)) / 2);
+  padding-inline: var(--vr-control-inline-padding);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-choice-row:hover, .bf-choice-row:hover, .preset-radio-row:hover) {
+  background: var(--vr-color-background-hover);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-choice-row:focus-within, .bf-choice-row:focus-within, .preset-radio-row:focus-within) {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-choice-row input[type='radio'], .bf-choice-row input[type='radio'], .preset-radio-row input[type='radio']) {
+  margin: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-choice-row__name, .bf-choice-row__name, .preset-radio-name) {
+${typeStyles(body, { fontWeight: 600, includeCase: false })}  display: block;
+  margin: 0;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-choice-row__meta, .bf-choice-row__meta, .preset-radio-status) {
+${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
+  display: block;
+  margin: 0;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-choice-row.is-active, .bf-choice-row.is-active, .preset-radio-row.is-active),
+:where(.bf-theme, .vr-theme) :where(.p-choice-row:has(input[type='radio']:checked), .bf-choice-row:has(input[type='radio']:checked), .preset-radio-row:has(input[type='radio']:checked)) {
+  background: var(--vr-color-background-active);
+  border-color: var(--vr-color-focus);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-inline-options, .bf-inline-options, .operator-selector) {
+  border-bottom: var(--vr-border-width) solid var(--vr-color-border-default);
+  display: grid;
+  gap: var(--vr-field-gap);
+  padding-block-end: calc(var(--vr-panel-padding-block) - var(--vr-border-width));
+  padding-block-start: var(--vr-panel-padding-block);
+  padding-inline: var(--vr-panel-padding-inline);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-inline-options__heading, .bf-inline-options__heading, .operator-selector__heading) {
+${typeStyles(h5)}  color: var(--vr-color-text-muted);
+  display: block;
+  margin: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-inline-options__heading, .bf-inline-options__heading, .operator-selector__heading) :where(.p-form__label, .bf-form__label) {
+  color: inherit;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-inline-options__options, .bf-inline-options__options, .operator-selector__options) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--vr-baseline) * 3);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-inline-options__option, .bf-inline-options__option, .operator-selector__option) {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: var(--vr-field-gap);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-inline-options__option, .bf-inline-options__option, .operator-selector__option) input[type='radio'] {
+  margin: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-segmented-control, .p-tab-buttons, .bf-segmented-control, .bf-tab-buttons) {

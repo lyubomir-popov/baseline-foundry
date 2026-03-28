@@ -88,6 +88,13 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.vr-code-snippet, .p-code-snippet, .bf-code-snippet)"), "Expected compat CSS to include code-snippet styling.");
   assert(css.includes(":where(.vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon) {\n  cursor: copy;"), "Expected compat CSS to include copyable code-snippet blocks.");
   assert(css.includes(":where(.vr-list-tree, .p-list-tree, .bf-list-tree)"), "Expected compat CSS to include list-tree styling.");
+  assert(css.includes(":where(.p-tabs--equal, .bf-tabs--equal, .config-tabs, .output-profile-tabs)"), "Expected compat CSS to include equal-width dense tab modifiers and downstream aliases.");
+  assert(css.includes(":where(.p-choice-row, .bf-choice-row, .preset-radio-row)"), "Expected compat CSS to include the choice-row component and downstream preset alias.");
+  assert(css.includes(":where(.p-inline-options, .bf-inline-options, .operator-selector)"), "Expected compat CSS to include the inline-options component and downstream operator-selector alias.");
+  assert(css.includes(":where(.p-option-grid, .bf-option-grid, .style-palette)"), "Expected compat CSS to include the option-grid component and downstream palette alias.");
+  assert(css.includes(":where(.p-option-card, .bf-option-card, .style-palette__button)"), "Expected compat CSS to include the option-card component and downstream palette-card alias.");
+  assert(css.includes(":where(.p-form-help-text.is-tight, .bf-form-help.is-tight, .control-help)"), "Expected compat CSS to include the tight helper-text modifier and downstream control-help alias.");
+  assert(css.includes("input[type='color'].control-color"), "Expected compat CSS to include the compact color-input alias.");
   assert(css.includes(":where(.vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu"), "Expected compat CSS to include contextual-menu styling.");
   assert(css.includes(":where(.vr-tooltip, .p-tooltip, .bf-tooltip"), "Expected compat CSS to include tooltip styling.");
   assert(css.includes(":where(.p-panel__toggle, .bf-panel__toggle)"), "Expected compat CSS to include panel toggle styling.");
