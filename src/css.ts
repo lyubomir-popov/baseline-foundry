@@ -181,7 +181,9 @@ html.u-baseline-grid::after {
 }
 
 :where(.bf-theme, .vr-theme) :where(img, picture, svg, video) {
+  block-size: auto;
   display: block;
+  inline-size: auto;
   max-inline-size: 100%;
 }
 

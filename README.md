@@ -99,6 +99,7 @@ All component demos now:
 - load with the baseline grid hidden by default
 - let you toggle the grid on page-by-page for inspection
 - use real `h5` section labels instead of demo-local kicker styling
+- keep a dedicated narrow-panel regression page in the automated gate so dense controls and media must still fit a tight rail
 
 The current baseline-gated demo pages are:
 
@@ -136,6 +137,7 @@ The current baseline-gated demo pages are:
 - `demo/components/cards.html`
 - `demo/components/brand-layout-ops-sample.html`
 - `demo/components/panel-pressure.html`
+- `demo/components/narrow-panel.html`
 - `demo/components/editorial-pressure.html`
 
 The older grouped pages still exist as convenience overviews:
@@ -267,6 +269,8 @@ The component demos now also include two realistic pressure-test surfaces:
 
 - a `brand-layout-ops`-style panel composition using the compact `panel` preset
 - a future portfolio/editorial composition
+
+There is also a dedicated narrow-panel regression page in `demo/components/narrow-panel.html`. It keeps a deliberately tight rail in the browser gate so text inputs, selects, slider pairs, search wrappers, and a video specimen cannot quietly overflow their container.
 
 There is also a read-only `brand-layout-ops` shell sample page in `demo/components/brand-layout-ops-sample.html`, copied from the downstream app's stage-plus-inspector structure so layout work can be compared here without editing that repo. The automated gate treats that page as a shell-level reference, while the dedicated `controls` and `surfaces-navigation` pages remain the authoritative low-level verification surfaces for dense fields, buttons, tabs, accordion tabs, overlays, card surfaces, navigation-adjacent controls, switches, file input, and validation states.
 

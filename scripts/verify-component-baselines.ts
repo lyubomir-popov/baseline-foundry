@@ -15,12 +15,21 @@ interface BaselineCheckResult {
   passed: boolean;
 }
 
+interface OverflowCheckResult {
+  label: string;
+  overflowLeftPx: number;
+  overflowRightPx: number;
+  passed: boolean;
+}
+
 interface ComponentVerificationResult {
   baselinePx: number;
   captureHeightPx: number;
   captureHeightErrorPx: number;
   checks: BaselineCheckResult[];
   failures: BaselineCheckResult[];
+  overflowChecks: OverflowCheckResult[];
+  overflowFailures: OverflowCheckResult[];
   missingCoverage: string[];
 }
 
@@ -32,6 +41,8 @@ interface ComponentVerificationReport {
   captureHeightErrorPx: number;
   checks: BaselineCheckResult[];
   failures: BaselineCheckResult[];
+  overflowChecks: OverflowCheckResult[];
+  overflowFailures: OverflowCheckResult[];
   missingCoverage: string[];
 }
 
@@ -43,6 +54,10 @@ function describeFailure(component: ComponentVerificationReport, failure: Baseli
 
 function describeMissingCoverage(component: ComponentVerificationReport, label: string): string {
   return `${component.name} -> missing data-baseline-check for ${label}`;
+}
+
+function describeOverflowFailure(component: ComponentVerificationReport, failure: OverflowCheckResult): string {
+  return `${component.name} -> ${failure.label} overflows container by left ${failure.overflowLeftPx.toFixed(2)}px, right ${failure.overflowRightPx.toFixed(2)}px`;
 }
 
 async function openBrowser(): Promise<import("playwright").Browser> {
@@ -78,12 +93,21 @@ async function verifyComponentPage(
       passed: boolean;
     }
 
+    interface OverflowCheckResult {
+      label: string;
+      overflowLeftPx: number;
+      overflowRightPx: number;
+      passed: boolean;
+    }
+
     interface ComponentVerificationResult {
       baselinePx: number;
       captureHeightPx: number;
       captureHeightErrorPx: number;
       checks: BaselineCheckResult[];
       failures: BaselineCheckResult[];
+      overflowChecks: OverflowCheckResult[];
+      overflowFailures: OverflowCheckResult[];
       missingCoverage: string[];
     }
 
@@ -106,6 +130,7 @@ async function verifyComponentPage(
     const baselinePx = probe.getBoundingClientRect().height;
     probe.remove();
     const checks: BaselineCheckResult[] = [];
+    const overflowChecks: OverflowCheckResult[] = [];
     const coverageSelector = [
       "h1",
       "h2",
@@ -189,6 +214,30 @@ async function verifyComponentPage(
     }
 
     const failures = checks.filter(check => !check.passed);
+    const overflowTargets = Array.from(captureRoot.querySelectorAll<HTMLElement>("[data-overflow-check]"));
+    for (const element of overflowTargets) {
+      if (element.getClientRects().length === 0) {
+        continue;
+      }
+
+      const container = element.closest<HTMLElement>("[data-overflow-container]") ?? captureRoot;
+      const rect = element.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const overflowLeftPx = Math.max(0, containerRect.left - rect.left);
+      const overflowRightPx = Math.max(0, rect.right - containerRect.right);
+      const label = (element.dataset.baselineLabel ?? "").replace(/\s+/g, " ").trim()
+        || (element.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 80)
+        || element.tagName.toLowerCase();
+
+      overflowChecks.push({
+        label,
+        overflowLeftPx,
+        overflowRightPx,
+        passed: overflowLeftPx <= tolerance && overflowRightPx <= tolerance
+      });
+    }
+
+    const overflowFailures = overflowChecks.filter(check => !check.passed);
     const missingCoverage = Array.from(captureRoot.querySelectorAll<HTMLElement>(coverageSelector))
       .filter(element => element.getClientRects().length > 0)
       .filter(element => element.dataset.baselineIgnore !== "true")
@@ -208,6 +257,8 @@ async function verifyComponentPage(
       captureHeightErrorPx: rootMeasureErrorPx,
       checks,
       failures,
+      overflowChecks,
+      overflowFailures,
       missingCoverage
     };
 
@@ -222,6 +273,8 @@ async function verifyComponentPage(
     captureHeightErrorPx: result.captureHeightErrorPx,
     checks: result.checks,
     failures: result.failures,
+    overflowChecks: result.overflowChecks,
+    overflowFailures: result.overflowFailures,
     missingCoverage: result.missingCoverage
   };
 }
@@ -253,9 +306,10 @@ async function main(): Promise<void> {
     await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 
     const failures = report.flatMap(component => component.failures.map(failure => describeFailure(component, failure)));
+    const overflowFailures = report.flatMap(component => component.overflowFailures.map(failure => describeOverflowFailure(component, failure)));
     const missingCoverage = report.flatMap(component => component.missingCoverage.map(label => describeMissingCoverage(component, label)));
-    if (failures.length > 0 || missingCoverage.length > 0) {
-      throw new Error(`Baseline verification failed.\n${[...failures, ...missingCoverage].join("\n")}`);
+    if (failures.length > 0 || overflowFailures.length > 0 || missingCoverage.length > 0) {
+      throw new Error(`Baseline verification failed.\n${[...failures, ...overflowFailures, ...missingCoverage].join("\n")}`);
     }
   } finally {
     await browser.close();

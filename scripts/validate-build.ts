@@ -39,6 +39,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-baseline-grid-color: rgba(15, 23, 42, 0.12);"), "Expected baseline-grid overlays to declare a default line color.");
   assert(css.includes(":where(.bf-theme, .vr-theme) .u-baseline-grid {\n  --bf-baseline-grid-color: rgba(20, 22, 28, 0.12);"), "Expected light themes to provide a visible baseline-grid line color.");
   assert(css.includes(":where(.bf-theme[data-bf-tone='dark'], .vr-theme[data-bf-tone='dark'], .vr-theme.is-dark) .u-baseline-grid {\n  --bf-baseline-grid-color: rgba(255, 255, 255, 0.16);"), "Expected dark themes to provide a visible baseline-grid line color.");
+  assert(css.includes(":where(.bf-theme, .vr-theme) :where(img, picture, svg, video) {\n  block-size: auto;\n  display: block;\n  inline-size: auto;\n  max-inline-size: 100%;"), "Expected shared media to stay fluid inside narrow containers.");
   assert(css.includes("--bf-grid-columns: 16;"), "Expected the grid CSS to include the 16-column mode.");
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");
@@ -59,9 +60,14 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".u-baseline-grid"), "Expected CSS to include the baseline grid utility.");
   assert(css.includes("border-bottom: var(--vr-border-width) solid var(--vr-color-border-high-contrast);"), "Expected compat form controls to use the flatter PVR-style bottom border treatment.");
   assert(!css.includes("border: var(--vr-border-width) solid var(--vr-color-border-high-contrast);\n  border-radius: var(--vr-radius);\n  color: var(--vr-color-text-default);\n  block-size: var(--vr-control-block-size);"), "Expected compat form controls to avoid the old full-box field styling.");
+  assert(!css.includes("min-inline-size: 8em;"), "Expected compat text-like controls to avoid hard minimum widths that break narrow panels.");
   assert(css.includes("input[type='file'])::file-selector-button"), "Expected compat CSS to include dense file input styling.");
+  assert(css.includes(":where(.p-form__control, .bf-control) {\n  display: grid;\n  gap: var(--vr-field-gap);\n  min-inline-size: 0;"), "Expected form controls to allow shrinking inside narrow containers.");
   assert(css.includes(":where(.p-slider__wrapper--stacked, .bf-slider--stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--vr-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
   assert(css.includes("inline-size: min(100%, 5rem);"), "Expected slider number inputs to use the compact PVR width.");
+  assert(css.includes("flex-wrap: wrap;"), "Expected inline slider pairs to wrap instead of overflowing narrow rails.");
+  assert(css.includes("flex: 0 1 5rem;"), "Expected slider number inputs to shrink before overflowing.");
+  assert(!css.includes("min-inline-size: 5rem;"), "Expected slider number inputs to avoid a hard minimum width.");
   assert(css.includes(":where(.p-switch__slider, .bf-switch__slider)"), "Expected compat CSS to include switch styling.");
   assert(css.includes(":where(.p-form-validation__message, .bf-validation-message)"), "Expected compat CSS to include validation message styling.");
   assert(css.includes(":where(.p-card, .p-card--highlighted, .p-card--overlay, .p-card--muted, .bf-card, .bf-card--highlighted, .bf-card--overlay, .bf-card--muted)"), "Expected compat CSS to include card surfaces.");
@@ -75,6 +81,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.p-status-label, .p-label, .p-status-label--positive"), "Expected compat CSS to include status label styling.");
   assert(css.includes(":where(.p-search-box, .bf-search-box)"), "Expected compat CSS to include search-box styling.");
   assert(css.includes(":where(.p-search-and-filter, .bf-search-and-filter)"), "Expected compat CSS to include search-and-filter styling.");
+  assert(css.includes(":where(.p-search-and-filter__box, .bf-search-and-filter__box) {\n  display: inline-flex;\n  flex: 1 1 12rem;\n  max-inline-size: 100%;\n  min-inline-size: 0;"), "Expected search-and-filter boxes to shrink inside narrow rails.");
   assert(css.includes(":where(.vr-list-tree, .p-list-tree, .bf-list-tree)"), "Expected compat CSS to include list-tree styling.");
   assert(css.includes(":where(.vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu"), "Expected compat CSS to include contextual-menu styling.");
   assert(css.includes(":where(.vr-tooltip, .p-tooltip, .bf-tooltip"), "Expected compat CSS to include tooltip styling.");

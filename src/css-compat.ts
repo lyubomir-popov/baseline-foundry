@@ -164,6 +164,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
 :where(.bf-theme, .vr-theme) :where(.p-form__control, .bf-control) {
   display: grid;
   gap: var(--vr-field-gap);
+  min-inline-size: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-form__group--checkbox, .bf-field--checkbox) {
@@ -205,7 +206,8 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   color: var(--vr-color-text-default);
   block-size: var(--vr-control-block-size);
   inline-size: 100%;
-  min-inline-size: 8em;
+  max-inline-size: 100%;
+  min-inline-size: 0;
   padding-block: calc((var(--vr-control-block-size) - ${body.lineHeight} - (var(--vr-border-width) * 2)) / 2);
   padding-inline: var(--vr-control-inline-padding);
 }
@@ -310,7 +312,9 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   border-top: var(--vr-border-width) solid transparent;
   color: var(--vr-color-text-default);
   block-size: var(--vr-control-block-size);
+  max-inline-size: 100%;
   min-block-size: var(--vr-control-block-size);
+  min-inline-size: 0;
   padding-block: calc((var(--vr-control-block-size) - ${body.lineHeight} - (var(--vr-border-width) * 2)) / 2);
   padding-inline: 0;
   width: 100%;
@@ -345,10 +349,11 @@ ${typeStyles(h6, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-slider__input, .bf-slider__input) {
+  flex: 0 1 5rem;
   inline-size: min(100%, 5rem);
   justify-self: end;
   max-inline-size: 100%;
-  min-inline-size: 5rem;
+  min-inline-size: 0;
   text-align: right;
 }
 
@@ -605,10 +610,13 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-slider__wrapper, .bf-slider) {
-  align-items: center;
+  align-items: flex-end;
   display: inline-flex;
+  flex-wrap: wrap;
   gap: var(--vr-field-gap);
   inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-slider__wrapper--stacked, .bf-slider--stacked) {
@@ -619,6 +627,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-slider__wrapper, .bf-slider) :where(input[type='range']) {
+  flex: 1 1 8rem;
   inline-size: 100%;
   min-inline-size: 0;
 }
@@ -1285,7 +1294,10 @@ ${typeStyles(h5)}  margin: 0;
 
 :where(.bf-theme, .vr-theme) :where(.p-search-box, .bf-search-box) {
   display: flex;
+  inline-size: 100%;
   margin: 0;
+  max-inline-size: 100%;
+  min-inline-size: 0;
   position: relative;
 }
 
@@ -1356,7 +1368,10 @@ ${typeStyles(h5)}  margin: 0;
 
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter, .bf-search-and-filter) {
   display: grid;
+  inline-size: 100%;
   margin: 0;
+  max-inline-size: 100%;
+  min-inline-size: 0;
   position: relative;
 }
 
@@ -1381,7 +1396,8 @@ ${typeStyles(h5)}  margin: 0;
 :where(.bf-theme, .vr-theme) :where(.p-search-and-filter__box, .bf-search-and-filter__box) {
   display: inline-flex;
   flex: 1 1 12rem;
-  min-inline-size: 10rem;
+  max-inline-size: 100%;
+  min-inline-size: 0;
   position: relative;
 }
 
