@@ -36,6 +36,9 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("@container (width >= 72rem)"), "Expected CSS to avoid the older 72rem 16-column threshold.");
   assert(css.includes(":where(.bf-theme[data-bf-tone='dark'], .vr-theme[data-bf-tone='dark'], .vr-theme.is-dark)"), "Expected generated CSS to include a core dark-tone override.");
   assert(css.includes("--bf-color-bg: var(--vf-color-background-default, #171717);"), "Expected generated CSS to switch core background tokens in dark mode.");
+  assert(css.includes("--bf-baseline-grid-color: rgba(15, 23, 42, 0.12);"), "Expected baseline-grid overlays to declare a default line color.");
+  assert(css.includes(":where(.bf-theme, .vr-theme) .u-baseline-grid {\n  --bf-baseline-grid-color: rgba(20, 22, 28, 0.12);"), "Expected light themes to provide a visible baseline-grid line color.");
+  assert(css.includes(":where(.bf-theme[data-bf-tone='dark'], .vr-theme[data-bf-tone='dark'], .vr-theme.is-dark) .u-baseline-grid {\n  --bf-baseline-grid-color: rgba(255, 255, 255, 0.16);"), "Expected dark themes to provide a visible baseline-grid line color.");
   assert(css.includes("--bf-grid-columns: 16;"), "Expected the grid CSS to include the 16-column mode.");
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");

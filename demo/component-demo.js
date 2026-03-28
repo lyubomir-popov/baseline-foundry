@@ -1,4 +1,4 @@
-import { initAccordions, initBaselineGridToggles, initRangeControls, initTabs } from "../dist/index.js";
+import { initAccordions, initBaselineGridToggles, initRangeControls, initTabs } from "../dist/index.js?v=20260328-panel-refresh-8";
 
 initBaselineGridToggles();
 initRangeControls();

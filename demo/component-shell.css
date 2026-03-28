@@ -20,7 +20,7 @@ a {
 }
 
 .component-demo-page {
-  --bf-baseline-grid-color: rgba(255, 255, 255, 0.12);
+  --bf-baseline-grid-color: rgba(255, 255, 255, 0.16);
   --component-demo-rule: rgba(255, 255, 255, 0.12);
   --component-demo-surface: rgba(33, 33, 33, 0.88);
   --component-demo-muted: #c8c8c8;

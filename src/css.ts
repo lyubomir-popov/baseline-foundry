@@ -172,6 +172,14 @@ html.u-baseline-grid::after {
   box-sizing: border-box;
 }
 
+:where(.bf-theme, .vr-theme) .u-baseline-grid {
+  --bf-baseline-grid-color: rgba(20, 22, 28, 0.12);
+}
+
+:where(.bf-theme[data-bf-tone='dark'], .vr-theme[data-bf-tone='dark'], .vr-theme.is-dark) .u-baseline-grid {
+  --bf-baseline-grid-color: rgba(255, 255, 255, 0.16);
+}
+
 :where(.bf-theme, .vr-theme) :where(img, picture, svg, video) {
   display: block;
   max-inline-size: 100%;
