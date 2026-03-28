@@ -24,11 +24,9 @@ async function readAsideWidth(page: import("playwright").Page): Promise<number> 
   return page.locator(".l-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
 }
 
-async function main(): Promise<void> {
-  const rootDir = path.resolve(".");
+async function verifyPinnedAsideResize(origin: string): Promise<void> {
   const storageKey = "demo:application-shell-aside";
   const route = "/demo/components/application-shell.html";
-  const { server, origin } = await createStaticServer(rootDir);
   const browser = await openBrowser();
 
   try {
@@ -91,10 +89,145 @@ async function main(): Promise<void> {
     await waitForFonts(page);
     const resetWidth = await readAsideWidth(page);
     assert(Math.abs(resetWidth - initialWidth) <= 2, `Expected double-click reset to restore the default aside width. Default ${initialWidth}px, got ${resetWidth}px.`);
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyDrawerOverlay(origin: string): Promise<void> {
+  const route = "/demo/components/drawer-panel.html";
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 900 }
+    });
+
+    await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+
+    const application = page.locator(".l-application");
+    const drawer = page.locator("#drawer-panel-demo");
+    const overlay = page.locator(".l-application__overlay");
+    const toggle = page.locator("[data-panel-drawer-toggle]");
+
+    await application.waitFor({ state: "visible" });
+    await drawer.waitFor({ state: "visible" });
+
+    const openGeometry = await page.evaluate(() => {
+      const app = document.querySelector(".l-application");
+      const aside = document.querySelector<HTMLElement>("#drawer-panel-demo");
+      if (!(app instanceof HTMLElement) || !(aside instanceof HTMLElement)) {
+        return null;
+      }
+
+      const appRect = app.getBoundingClientRect();
+      const asideRect = aside.getBoundingClientRect();
+      return {
+        appTop: appRect.top,
+        appBottom: appRect.bottom,
+        appRight: appRect.right,
+        asideTop: asideRect.top,
+        asideBottom: asideRect.bottom,
+        asideRight: asideRect.right,
+        asideWidth: asideRect.width,
+        asideHeight: asideRect.height
+      };
+    });
+
+    assert(openGeometry, "Expected drawer geometry to be measurable.");
+    assert(openGeometry.asideHeight >= openGeometry.appBottom - openGeometry.appTop - 2, `Expected open drawer to span the application height. App ${openGeometry.appBottom - openGeometry.appTop}px, drawer ${openGeometry.asideHeight}px.`);
+    assert(Math.abs(openGeometry.asideTop - openGeometry.appTop) <= 2, `Expected open drawer to attach to the top edge of the application. App top ${openGeometry.appTop}px, drawer top ${openGeometry.asideTop}px.`);
+    assert(Math.abs(openGeometry.asideBottom - openGeometry.appBottom) <= 2, `Expected open drawer to attach to the bottom edge of the application. App bottom ${openGeometry.appBottom}px, drawer bottom ${openGeometry.asideBottom}px.`);
+    assert(Math.abs(openGeometry.asideRight - openGeometry.appRight) <= 2, `Expected open drawer to attach to the right edge of the application. App right ${openGeometry.appRight}px, drawer right ${openGeometry.asideRight}px.`);
+    assert(openGeometry.asideWidth >= 320, `Expected open drawer to have a substantial visible width. Got ${openGeometry.asideWidth}px.`);
+
+    await toggle.click();
+    await page.waitForTimeout(220);
+    const closedState = await page.evaluate(() => {
+      const app = document.querySelector(".l-application");
+      const aside = document.querySelector<HTMLElement>("#drawer-panel-demo");
+      const overlayElement = document.querySelector<HTMLElement>(".l-application__overlay");
+      if (!(app instanceof HTMLElement) || !(aside instanceof HTMLElement) || !(overlayElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        appOpen: app.classList.contains("is-drawer-expanded"),
+        drawerOpen: aside.classList.contains("is-open"),
+        ariaHidden: aside.getAttribute("aria-hidden"),
+        overlayHidden: overlayElement.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(closedState, "Expected closed drawer state to be measurable.");
+    assert(!closedState.appOpen, "Expected drawer toggle to remove the application open class.");
+    assert(!closedState.drawerOpen, "Expected drawer toggle to remove the drawer open class.");
+    assert(closedState.ariaHidden === "true", `Expected closed drawer aria-hidden to be true, got ${closedState.ariaHidden}.`);
+    assert(closedState.overlayHidden === "true", `Expected closed overlay aria-hidden to be true, got ${closedState.overlayHidden}.`);
+
+    await toggle.click();
+    await page.waitForTimeout(220);
+    const reopenedState = await page.evaluate(() => {
+      const app = document.querySelector(".l-application");
+      const aside = document.querySelector<HTMLElement>("#drawer-panel-demo");
+      if (!(app instanceof HTMLElement) || !(aside instanceof HTMLElement)) {
+        return null;
+      }
+
+      const asideRect = aside.getBoundingClientRect();
+      return {
+        appOpen: app.classList.contains("is-drawer-expanded"),
+        drawerOpen: aside.classList.contains("is-open"),
+        ariaHidden: aside.getAttribute("aria-hidden"),
+        asideHeight: asideRect.height
+      };
+    });
+
+    assert(reopenedState, "Expected reopened drawer state to be measurable.");
+    assert(reopenedState.appOpen, "Expected drawer toggle to restore the application open class.");
+    assert(reopenedState.drawerOpen, "Expected drawer toggle to restore the drawer open class.");
+    assert(reopenedState.ariaHidden === "false", `Expected reopened drawer aria-hidden to be false, got ${reopenedState.ariaHidden}.`);
+    assert(reopenedState.asideHeight >= 200, `Expected reopened drawer to remain visibly tall. Got ${reopenedState.asideHeight}px.`);
+
+    const overlayBox = await overlay.boundingBox();
+    assert(overlayBox, "Expected overlay to expose a measurable bounding box.");
+    await page.mouse.click(
+      Math.max(overlayBox.x + 24, 240),
+      overlayBox.y + (overlayBox.height / 2)
+    );
+    await page.waitForTimeout(220);
+    const overlayCloseState = await page.evaluate(() => {
+      const app = document.querySelector(".l-application");
+      const aside = document.querySelector<HTMLElement>("#drawer-panel-demo");
+      if (!(app instanceof HTMLElement) || !(aside instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        appOpen: app.classList.contains("is-drawer-expanded"),
+        drawerOpen: aside.classList.contains("is-open")
+      };
+    });
+
+    assert(overlayCloseState, "Expected overlay-close drawer state to be measurable.");
+    assert(!overlayCloseState.appOpen && !overlayCloseState.drawerOpen, "Expected clicking the overlay to close the drawer.");
+  } finally {
+    await browser.close();
+  }
+}
+
+async function main(): Promise<void> {
+  const rootDir = path.resolve(".");
+  const { server, origin } = await createStaticServer(rootDir);
+
+  try {
+    await verifyPinnedAsideResize(origin);
+    await verifyDrawerOverlay(origin);
 
     console.log("Component behavior verification passed.");
   } finally {
-    await browser.close();
     await closeServer(server);
   }
 }

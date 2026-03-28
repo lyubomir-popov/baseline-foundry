@@ -113,8 +113,7 @@ a {
 }
 
 .component-atlas {
-  display: grid;
-  gap: 1.5rem;
+  min-inline-size: 0;
 }
 
 .component-atlas--plain {
@@ -642,14 +641,10 @@ a {
 }
 
 .component-index-section {
-  display: grid;
-  gap: 1rem;
+  min-inline-size: 0;
 }
 
 .component-index-list {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
   list-style: none;
   margin: 0;
   padding: 0;
@@ -726,30 +721,6 @@ a {
 
 .component-index-card-link:focus-visible .component-index-card__name {
   text-decoration: underline;
-}
-
-@media (max-width: 1440px) {
-  .component-index-list {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 1120px) {
-  .component-index-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 840px) {
-  .component-index-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 560px) {
-  .component-index-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 720px) {

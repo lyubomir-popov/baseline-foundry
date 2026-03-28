@@ -1,4 +1,4 @@
-import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-15";
+import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-16";
 
 initBaselineGridToggles();
 initCodeSnippets();

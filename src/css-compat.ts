@@ -2651,16 +2651,22 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
 }
 
 :where(.bf-theme, .vr-theme) :where(.l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer) {
-  block-size: 100%;
+  align-self: stretch;
+  block-size: auto;
   box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38);
+  bottom: 0;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
   inline-size: min(100%, var(--vr-application-aside-width));
-  inset-block: 0;
-  inset-inline-end: 0;
+  justify-self: end;
+  left: auto;
   max-inline-size: 100%;
   min-block-size: 100%;
   pointer-events: none;
   position: absolute;
-  transform: translateX(calc(100% + var(--vr-baseline)));
+  right: 0;
+  top: 0;
+  transform: translateX(100%);
   transition: transform 160ms ease, visibility 160ms ease, box-shadow 160ms ease;
   visibility: hidden;
   z-index: 30;

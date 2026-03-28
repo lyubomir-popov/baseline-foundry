@@ -1,4 +1,4 @@
-const THUMBNAIL_VERSION = "20260328-panel-refresh-15";
+const THUMBNAIL_VERSION = "20260328-panel-refresh-16";
 
 function screenshotUrl(href) {
   const slug = href.split("/").pop()?.replace(/\.html$/i, "");
