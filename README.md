@@ -125,6 +125,7 @@ The current baseline-gated demo pages are:
 - `demo/components/table.html`
 - `demo/components/search-box.html`
 - `demo/components/search-and-filter.html`
+- `demo/components/code-snippet.html`
 - `demo/components/list-tree.html`
 - `demo/components/tabs.html`
 - `demo/components/accordion.html`
@@ -232,6 +233,7 @@ See:
 Browser-safe exports:
 
 - `initBaselineGridToggles`
+- `initCodeSnippets`
 - `initContextualMenus`
 - `initListTree`
 - `initTooltips`
@@ -275,6 +277,8 @@ The component demos now also include two realistic pressure-test surfaces:
 There is also a dedicated narrow-panel regression page in `demo/components/narrow-panel.html`. It keeps a deliberately tight rail in the browser gate so text inputs, selects, slider pairs, search wrappers, and a video specimen cannot quietly overflow their container.
 
 There is also a dedicated dense parameter-matrix regression page in `demo/components/parameter-matrix.html`. It protects the downstream `grid-row` / `col-*` / `slider-pair--stacked` control pattern so inspector rows stay baseline-aligned and do not collapse back into the broad page-grid behavior.
+
+There is also a dedicated code-snippet regression page in `demo/components/code-snippet.html`. It keeps copyable command blocks, stacked headers, and numbered code lines inside the same baseline gate as the rest of the dense panel surface.
 
 There is also a read-only `brand-layout-ops` shell sample page in `demo/components/brand-layout-ops-sample.html`, copied from the downstream app's stage-plus-inspector structure so layout work can be compared here without editing that repo. The automated gate treats that page as a shell-level reference, while the dedicated `controls` and `surfaces-navigation` pages remain the authoritative low-level verification surfaces for dense fields, buttons, tabs, accordion tabs, overlays, card surfaces, navigation-adjacent controls, switches, file input, and validation states.
 

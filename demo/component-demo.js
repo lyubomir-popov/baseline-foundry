@@ -1,6 +1,7 @@
-import { initAccordions, initBaselineGridToggles, initContextualMenus, initListTree, initRangeControls, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-10";
+import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initRangeControls, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-13";
 
 initBaselineGridToggles();
+initCodeSnippets();
 initContextualMenus();
 initListTree();
 initRangeControls();
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
   { title: "Table", href: "table.html" },
   { title: "Search box", href: "search-box.html" },
   { title: "Search and filter", href: "search-and-filter.html" },
+  { title: "Code snippet", href: "code-snippet.html" },
   { title: "List tree", href: "list-tree.html" },
   { title: "Tabs", href: "tabs.html" },
   { title: "Accordion", href: "accordion.html" },
@@ -46,6 +48,7 @@ const NAV_ITEMS = [
   null,
   { title: "Panel pressure test", href: "panel-pressure.html" },
   { title: "Editorial pressure test", href: "editorial-pressure.html" },
+  { title: "Parameter matrix", href: "parameter-matrix.html" },
   { title: "Brand Layout Ops sample", href: "brand-layout-ops-sample.html" },
   null,
   { title: "Controls overview", href: "controls.html" },

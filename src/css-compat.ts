@@ -2125,6 +2125,166 @@ ${typeStyles(h6, { includeCase: false })}  appearance: none;
   padding: 0;
 }
 
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet, .p-code-snippet, .bf-code-snippet) {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet.is-bordered, .p-code-snippet.is-bordered, .bf-code-snippet.is-bordered) {
+  box-shadow: inset 0 0 0 var(--vr-border-width) var(--vr-color-border-default);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__header, .p-code-snippet__header, .bf-code-snippet__header) {
+  align-items: start;
+  background: var(--vr-color-background-active);
+  box-shadow: inset 0 -1px 0 var(--vr-color-border-default);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__header.is-stacked, .p-code-snippet__header.is-stacked, .bf-code-snippet__header.is-stacked) {
+  flex-direction: column;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__title, .p-code-snippet__title, .bf-code-snippet__title) {
+${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-default);
+  flex: 1 1 14rem;
+  margin: 0;
+  overflow-wrap: anywhere;
+  padding-block: var(--vr-panel-padding-block);
+  padding-inline: var(--vr-panel-padding-inline);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__dropdowns, .p-code-snippet__dropdowns, .bf-code-snippet__dropdowns) {
+  display: flex;
+  flex: 1 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-inline-start: auto;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__header.is-stacked, .p-code-snippet__header.is-stacked, .bf-code-snippet__header.is-stacked) :where(.vr-code-snippet__dropdowns, .p-code-snippet__dropdowns, .bf-code-snippet__dropdowns) {
+  justify-content: stretch;
+  margin-inline-start: 0;
+  box-shadow: inset 0 1px 0 var(--vr-color-border-default);
+  width: 100%;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__dropdown, .p-code-snippet__dropdown, .bf-code-snippet__dropdown) {
+${typeStyles(body, { includeCase: false })}  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--vr-color-text-default);
+  cursor: pointer;
+  margin: 0;
+  min-block-size: calc(${body.lineHeight} + (var(--vr-panel-padding-block) * 2));
+  min-inline-size: 0;
+  padding-block: var(--vr-panel-padding-block);
+  padding-inline: var(--vr-panel-padding-inline);
+  text-align: start;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__dropdown, .p-code-snippet__dropdown, .bf-code-snippet__dropdown) + :where(.vr-code-snippet__dropdown, .p-code-snippet__dropdown, .bf-code-snippet__dropdown) {
+  box-shadow: inset 1px 0 0 var(--vr-color-border-default);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__dropdown, .p-code-snippet__dropdown, .bf-code-snippet__dropdown):focus {
+  outline: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__dropdown, .p-code-snippet__dropdown, .bf-code-snippet__dropdown):focus-visible {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block, .p-code-snippet__block, .bf-code-snippet__block, .vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon, .vr-code-snippet__block--numbered, .p-code-snippet__block--numbered, .bf-code-snippet__block--numbered) {
+  background: var(--vr-color-background-alt);
+  color: var(--vr-color-text-default);
+  display: block;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: ${body.fontSize};
+  line-height: ${body.lineHeight};
+  margin: 0;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overflow-x: auto;
+  padding-block: var(--vr-panel-padding-block);
+  padding-inline: var(--vr-panel-padding-inline);
+  tab-size: 2;
+  white-space: pre;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block, .p-code-snippet__block, .bf-code-snippet__block, .vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon, .vr-code-snippet__block--numbered, .p-code-snippet__block--numbered, .bf-code-snippet__block--numbered) > :where(code) {
+  display: block;
+  font: inherit;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block.is-wrapped, .p-code-snippet__block.is-wrapped, .bf-code-snippet__block.is-wrapped, .vr-code-snippet__block--icon.is-wrapped, .p-code-snippet__block--icon.is-wrapped, .bf-code-snippet__block--icon.is-wrapped) {
+  white-space: pre-wrap;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon) {
+  cursor: copy;
+  padding-inline-start: calc(var(--vr-panel-padding-inline) + (var(--vr-baseline) * 3));
+  position: relative;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon)::before {
+${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
+  content: "$";
+  inset-inline-start: var(--vr-panel-padding-inline);
+  inset-block-start: var(--vr-panel-padding-block);
+  position: absolute;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon.is-windows-prompt, .p-code-snippet__block--icon.is-windows-prompt, .bf-code-snippet__block--icon.is-windows-prompt)::before {
+  content: ">";
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon.is-url, .p-code-snippet__block--icon.is-url, .bf-code-snippet__block--icon.is-url)::before {
+  content: "\\1F517";
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon.is-copied, .p-code-snippet__block--icon.is-copied, .bf-code-snippet__block--icon.is-copied) {
+  background: color-mix(in srgb, var(--vr-color-background-alt) 78%, var(--vr-color-background-information-default));
+  box-shadow: inset 0 0 0 1px var(--vr-color-border-information);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon):focus {
+  outline: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon):focus-visible {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--numbered, .p-code-snippet__block--numbered, .bf-code-snippet__block--numbered) {
+  counter-reset: code-line;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__line, .p-code-snippet__line, .bf-code-snippet__line) {
+  counter-increment: code-line;
+  display: block;
+  min-block-size: ${body.lineHeight};
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--numbered, .p-code-snippet__block--numbered, .bf-code-snippet__block--numbered) :where(.vr-code-snippet__line, .p-code-snippet__line, .bf-code-snippet__line)::before {
+  color: var(--vr-color-text-muted);
+  content: counter(code-line);
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  min-inline-size: calc(var(--vr-baseline) * 5);
+  padding-inline-end: var(--vr-panel-padding-inline);
+  text-align: right;
+  user-select: none;
+}
+
 :where(.bf-theme, .vr-theme) :where(.grid-row, .bf-control-grid, .p-equal-height-row, .p-equal-height-row--wrap) {
   container-type: inline-size;
   display: grid;

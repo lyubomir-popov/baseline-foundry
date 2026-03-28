@@ -28,6 +28,7 @@ export const componentPages: ComponentPage[] = [
   { name: "table", route: "/demo/components/table.html" },
   { name: "search-box", route: "/demo/components/search-box.html" },
   { name: "search-and-filter", route: "/demo/components/search-and-filter.html" },
+  { name: "code-snippet", route: "/demo/components/code-snippet.html" },
   { name: "list-tree", route: "/demo/components/list-tree.html" },
   { name: "tabs", route: "/demo/components/tabs.html" },
   { name: "accordion", route: "/demo/components/accordion.html" },

@@ -1,5 +1,6 @@
 export { initAccordions, toggleAccordionButton } from "./accordion.js";
 export { initBaselineGridToggles, setupBaselineGridToggle } from "./baseline-grid.js";
+export { initCodeSnippets } from "./code-snippet.js";
 export { initContextualMenus } from "./contextual-menu.js";
 export { initListTree } from "./list-tree.js";
 export { initRangeControls, setupRangeControl, updateRangeFill } from "./range-controls.js";
@@ -7,6 +8,7 @@ export { initTabs } from "./tabs.js";
 export { initTooltips } from "./tooltip.js";
 export type { AccordionInitOptions } from "./accordion.js";
 export type { BaselineGridInitOptions } from "./baseline-grid.js";
+export type { CodeSnippetInitOptions } from "./code-snippet.js";
 export type { ContextualMenuInitOptions } from "./contextual-menu.js";
 export type { ListTreeInitOptions } from "./list-tree.js";
 export type { RangeControlsInitOptions } from "./range-controls.js";

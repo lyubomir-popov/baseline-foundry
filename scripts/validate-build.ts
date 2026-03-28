@@ -85,6 +85,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.p-search-box, .bf-search-box)"), "Expected compat CSS to include search-box styling.");
   assert(css.includes(":where(.p-search-and-filter, .bf-search-and-filter)"), "Expected compat CSS to include search-and-filter styling.");
   assert(css.includes(":where(.p-search-and-filter__box, .bf-search-and-filter__box) {\n  display: inline-flex;\n  flex: 1 1 12rem;\n  max-inline-size: 100%;\n  min-inline-size: 0;"), "Expected search-and-filter boxes to shrink inside narrow rails.");
+  assert(css.includes(":where(.vr-code-snippet, .p-code-snippet, .bf-code-snippet)"), "Expected compat CSS to include code-snippet styling.");
+  assert(css.includes(":where(.vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon) {\n  cursor: copy;"), "Expected compat CSS to include copyable code-snippet blocks.");
   assert(css.includes(":where(.vr-list-tree, .p-list-tree, .bf-list-tree)"), "Expected compat CSS to include list-tree styling.");
   assert(css.includes(":where(.vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu"), "Expected compat CSS to include contextual-menu styling.");
   assert(css.includes(":where(.vr-tooltip, .p-tooltip, .bf-tooltip"), "Expected compat CSS to include tooltip styling.");
