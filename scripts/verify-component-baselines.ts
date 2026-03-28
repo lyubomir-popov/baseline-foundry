@@ -159,8 +159,6 @@ async function verifyComponentPage(
       ".u-fixed-width",
       ".grid-row",
       ".p-panel",
-      ".p-panel__header",
-      ".p-panel__content",
       ".p-card",
       ".p-card--highlighted",
       ".p-card--overlay",

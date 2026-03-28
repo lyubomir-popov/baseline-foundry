@@ -44,6 +44,7 @@ The package currently focuses on:
 - section, strip, stack, cluster, and fixed-width layout primitives
 - container-query grid primitives with a `4 / 8 / 16` column structure, power-of-2 spans, and Canonical `620px` / `1681px` column-count thresholds
 - a compact compatibility control-matrix surface for dense inspector rows (`grid-row`, `col-*`, and `slider-pair--stacked`), while `bf-grid` remains the canonical page/layout grid
+- an overlay drawer-panel shell mode for temporary inspectors (`l-aside.is-overlay`, backdrop, and `p-panel__toggle`)
 - baseline grid inspection utility
 
 It intentionally does not try to be a full component framework yet.
@@ -110,6 +111,7 @@ The current baseline-gated demo pages are:
 - `demo/components/layout.html`
 - `demo/components/grid.html`
 - `demo/components/application-shell.html`
+- `demo/components/drawer-panel.html`
 - `demo/components/button.html`
 - `demo/components/text-input.html`
 - `demo/components/select.html`
@@ -236,6 +238,7 @@ Browser-safe exports:
 - `initCodeSnippets`
 - `initContextualMenus`
 - `initListTree`
+- `initPanelDrawers`
 - `initTooltips`
 - `setupBaselineGridToggle`
 
@@ -273,6 +276,8 @@ The component demos now also include two realistic pressure-test surfaces:
 
 - a `brand-layout-ops`-style panel composition using the compact `panel` preset
 - a future portfolio/editorial composition
+
+There is also a dedicated overlay drawer-panel page in `demo/components/drawer-panel.html`. It keeps the temporary inspector mode honest: the drawer must sit over the stage rather than resizing it, and its header, controls, fields, and actions still have to pass the same baseline gate as the rest of the panel surface.
 
 There is also a dedicated narrow-panel regression page in `demo/components/narrow-panel.html`. It keeps a deliberately tight rail in the browser gate so text inputs, selects, slider pairs, search wrappers, and a video specimen cannot quietly overflow their container.
 

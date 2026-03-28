@@ -3,6 +3,7 @@ export { initBaselineGridToggles, setupBaselineGridToggle } from "./baseline-gri
 export { initCodeSnippets } from "./code-snippet.js";
 export { initContextualMenus } from "./contextual-menu.js";
 export { initListTree } from "./list-tree.js";
+export { initPanelDrawers } from "./panel-drawer.js";
 export { initRangeControls, setupRangeControl, updateRangeFill } from "./range-controls.js";
 export { initTabs } from "./tabs.js";
 export { initTooltips } from "./tooltip.js";
@@ -11,6 +12,7 @@ export type { BaselineGridInitOptions } from "./baseline-grid.js";
 export type { CodeSnippetInitOptions } from "./code-snippet.js";
 export type { ContextualMenuInitOptions } from "./contextual-menu.js";
 export type { ListTreeInitOptions } from "./list-tree.js";
+export type { PanelDrawerInitOptions } from "./panel-drawer.js";
 export type { RangeControlsInitOptions } from "./range-controls.js";
 export type { ComponentTokens, LayoutTokens, ThemeComponentsConfig, ThemeConfig, ThemeTokens, TypographyToken } from "./types.js";
 export type { TabsInitOptions } from "./tabs.js";

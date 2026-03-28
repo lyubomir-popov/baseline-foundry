@@ -1,9 +1,10 @@
-import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initRangeControls, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-13";
+import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-13";
 
 initBaselineGridToggles();
 initCodeSnippets();
 initContextualMenus();
 initListTree();
+initPanelDrawers();
 initRangeControls();
 initTabs();
 initTooltips();
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { title: "Layout primitives", href: "layout.html" },
   { title: "Grid primitives", href: "grid.html" },
   { title: "Application shell", href: "application-shell.html" },
+  { title: "Drawer panel", href: "drawer-panel.html" },
   null,
   { title: "Button", href: "button.html" },
   { title: "Text input", href: "text-input.html" },

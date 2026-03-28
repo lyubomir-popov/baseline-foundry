@@ -90,6 +90,10 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.vr-list-tree, .p-list-tree, .bf-list-tree)"), "Expected compat CSS to include list-tree styling.");
   assert(css.includes(":where(.vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu"), "Expected compat CSS to include contextual-menu styling.");
   assert(css.includes(":where(.vr-tooltip, .p-tooltip, .bf-tooltip"), "Expected compat CSS to include tooltip styling.");
+  assert(css.includes(":where(.p-panel__toggle, .bf-panel__toggle)"), "Expected compat CSS to include panel toggle styling.");
+  assert(css.includes(":where(.l-application__overlay, .bf-application__overlay)"), "Expected compat CSS to include application drawer overlay styling.");
+  assert(css.includes(":where(.l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer)"), "Expected compat CSS to include overlay drawer aside styling.");
+  assert(css.includes(".is-drawer-expanded"), "Expected compat CSS to include the drawer-expanded application state.");
 }
 
 function validateCommonTokens(tokens: Record<string, unknown>): {

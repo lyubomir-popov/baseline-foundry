@@ -13,6 +13,7 @@ export const componentPages: ComponentPage[] = [
   { name: "layout", route: "/demo/components/layout.html" },
   { name: "grid", route: "/demo/components/grid.html" },
   { name: "application-shell", route: "/demo/components/application-shell.html" },
+  { name: "drawer-panel", route: "/demo/components/drawer-panel.html" },
   { name: "button", route: "/demo/components/button.html" },
   { name: "text-input", route: "/demo/components/text-input.html" },
   { name: "select", route: "/demo/components/select.html" },

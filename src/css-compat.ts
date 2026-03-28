@@ -788,6 +788,37 @@ ${typeStyles(h4, { includeCase: false })}  min-inline-size: 0;
   margin-inline-start: auto;
 }
 
+:where(.bf-theme, .vr-theme) :where(.p-panel__toggle, .bf-panel__toggle) {
+${typeStyles(h6, { includeCase: false })}  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--vr-color-text-default);
+  cursor: pointer;
+  display: inline-flex;
+  gap: calc(var(--vr-baseline) * 0.5);
+  justify-content: flex-start;
+  margin: 0;
+  min-block-size: var(--vr-control-block-size-dense);
+  min-inline-size: 0;
+  padding-block: calc((var(--vr-control-block-size-dense) - ${h6.lineHeight}) / 2);
+  padding-inline: 0;
+  text-align: left;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-panel__toggle:hover, .bf-panel__toggle:hover) {
+  color: var(--vr-color-link-default);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-panel__toggle:focus, .bf-panel__toggle:focus) {
+  outline: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-panel__toggle:focus-visible, .bf-panel__toggle:focus-visible) {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: 2px;
+}
+
 :where(.bf-theme, .vr-theme) :where(.p-panel__content, .bf-panel__content) {
   flex: 1 1 auto;
   min-block-size: 0;
@@ -2340,6 +2371,8 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) min-content;
   min-block-size: 100%;
+  overflow: hidden;
+  position: relative;
   width: 100%;
 }
 
@@ -2358,6 +2391,23 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
   overflow: auto;
 }
 
+:where(.bf-theme, .vr-theme) :where(.l-application__overlay, .bf-application__overlay) {
+  background: var(--vr-color-background-overlay);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 160ms ease, visibility 160ms ease;
+  visibility: hidden;
+  z-index: 20;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-application.is-drawer-expanded, .bf-application.is-drawer-expanded) > :where(.l-application__overlay, .bf-application__overlay) {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
 :where(.bf-theme, .vr-theme) :where(.l-aside, .bf-aside) {
   background: var(--vr-color-background-default);
   border-inline-start: var(--vr-border-width) solid var(--vr-color-border-default);
@@ -2369,12 +2419,47 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
   position: relative;
 }
 
+:where(.bf-theme, .vr-theme) :where(.l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer) {
+  block-size: 100%;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38);
+  inline-size: min(100%, var(--vr-application-aside-width));
+  inset-block: 0;
+  inset-inline-end: 0;
+  max-inline-size: 100%;
+  min-block-size: 100%;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(calc(100% + var(--vr-baseline)));
+  transition: transform 160ms ease, visibility 160ms ease, box-shadow 160ms ease;
+  visibility: hidden;
+  z-index: 30;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-aside.is-overlay.is-narrow, .bf-aside.is-overlay.is-narrow, .l-aside.is-drawer.is-narrow, .bf-aside.is-drawer.is-narrow) {
+  inline-size: min(100%, var(--vr-application-aside-width-narrow));
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-aside.is-overlay.is-wide, .bf-aside.is-overlay.is-wide, .l-aside.is-drawer.is-wide, .bf-aside.is-drawer.is-wide) {
+  inline-size: min(100%, var(--vr-application-aside-width-wide));
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-application.is-drawer-expanded, .bf-application.is-drawer-expanded) > :where(.l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer),
+:where(.bf-theme, .vr-theme) :where(.l-aside.is-overlay.is-open, .bf-aside.is-overlay.is-open, .l-aside.is-drawer.is-open, .bf-aside.is-drawer.is-open) {
+  pointer-events: auto;
+  transform: translateX(0);
+  visibility: visible;
+}
+
 :where(.bf-theme, .vr-theme) :where(.l-aside.is-collapsed, .bf-aside.is-collapsed) {
   display: none;
 }
 
 :where(.bf-theme, .vr-theme) :where(.l-aside.is-pinned, .bf-aside.is-pinned) {
   display: block;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer) :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle) {
+  display: none;
 }
 
 :where(.bf-theme, .vr-theme) :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle) {
