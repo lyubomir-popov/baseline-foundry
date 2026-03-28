@@ -1735,6 +1735,121 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   pointer-events: none;
 }
 
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip, .p-tooltip, .bf-tooltip, [class*='vr-tooltip--'], [class*='p-tooltip--'], [class*='bf-tooltip--']) {
+  display: inline-flex;
+  position: relative;
+  text-decoration: inherit;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip.is-detached, .p-tooltip.is-detached, .bf-tooltip.is-detached, [class*='vr-tooltip--'].is-detached, [class*='p-tooltip--'].is-detached, [class*='bf-tooltip--'].is-detached) {
+  display: inline-grid;
+  gap: var(--vr-field-gap);
+  position: relative;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message) {
+${typeStyles(body, { includeCase: false })}  background-color: var(--vr-color-background-alt);
+  box-shadow: inset 0 0 0 var(--vr-border-width) var(--vr-color-border-default), 0 12px 32px rgba(0, 0, 0, 0.24);
+  color: var(--vr-color-text-default);
+  inline-size: max-content;
+  left: 0;
+  margin: 0;
+  max-inline-size: min(20rem, calc(100vw - (var(--vr-baseline) * 4)));
+  opacity: 0;
+  padding-block: ${body.nudgeTop} calc(var(--vr-baseline) - ${body.nudgeTop});
+  padding-inline: var(--vr-panel-padding-inline);
+  pointer-events: none;
+  position: absolute;
+  top: 100%;
+  transform: translateY(calc(var(--vr-baseline) - var(--vr-border-width)));
+  visibility: hidden;
+  white-space: normal;
+  z-index: 12;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip, .p-tooltip, .bf-tooltip, [class*='vr-tooltip--'], [class*='p-tooltip--'], [class*='bf-tooltip--']):is(:hover, :focus-within) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message),
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip.is-detached, .p-tooltip.is-detached, .bf-tooltip.is-detached, [class*='vr-tooltip--'].is-detached, [class*='p-tooltip--'].is-detached, [class*='bf-tooltip--'].is-detached) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message) {
+  opacity: 1;
+  visibility: visible;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message)::before {
+  block-size: 0;
+  border-bottom: calc(var(--vr-baseline) * 0.5) solid var(--vr-color-background-alt);
+  border-inline: calc(var(--vr-baseline) * 0.5) solid transparent;
+  bottom: 100%;
+  content: "";
+  inline-size: 0;
+  left: calc(var(--vr-baseline) * 0.75);
+  position: absolute;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip.is-detached, .p-tooltip.is-detached, .bf-tooltip.is-detached, [class*='vr-tooltip--'].is-detached, [class*='p-tooltip--'].is-detached, [class*='bf-tooltip--'].is-detached) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message) {
+  left: auto;
+  pointer-events: auto;
+  position: static;
+  top: auto;
+  transform: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip.is-detached, .p-tooltip.is-detached, .bf-tooltip.is-detached, [class*='vr-tooltip--'].is-detached, [class*='p-tooltip--'].is-detached, [class*='bf-tooltip--'].is-detached) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message)::before {
+  content: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--btm-center, .p-tooltip--btm-center, .bf-tooltip--btm-center) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message) {
+  left: 50%;
+  transform: translate(-50%, calc(var(--vr-baseline) - var(--vr-border-width)));
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--btm-center, .p-tooltip--btm-center, .bf-tooltip--btm-center) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message)::before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--btm-right, .p-tooltip--btm-right, .bf-tooltip--btm-right) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message) {
+  left: auto;
+  right: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--btm-right, .p-tooltip--btm-right, .bf-tooltip--btm-right) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message)::before {
+  left: auto;
+  right: calc(var(--vr-baseline) * 0.75);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--top-left, .p-tooltip--top-left, .bf-tooltip--top-left, .vr-tooltip--top-center, .p-tooltip--top-center, .bf-tooltip--top-center, .vr-tooltip--top-right, .p-tooltip--top-right, .bf-tooltip--top-right) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message) {
+  bottom: 100%;
+  top: auto;
+  transform: translateY(calc(var(--vr-baseline) * -1));
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--top-left, .p-tooltip--top-left, .bf-tooltip--top-left, .vr-tooltip--top-center, .p-tooltip--top-center, .bf-tooltip--top-center, .vr-tooltip--top-right, .p-tooltip--top-right, .bf-tooltip--top-right) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message)::before {
+  border-bottom: 0;
+  border-inline: calc(var(--vr-baseline) * 0.5) solid transparent;
+  border-top: calc(var(--vr-baseline) * 0.5) solid var(--vr-color-background-alt);
+  bottom: auto;
+  top: 100%;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--top-center, .p-tooltip--top-center, .bf-tooltip--top-center) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message) {
+  left: 50%;
+  transform: translate(-50%, calc(var(--vr-baseline) * -1));
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--top-center, .p-tooltip--top-center, .bf-tooltip--top-center) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message)::before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--top-right, .p-tooltip--top-right, .bf-tooltip--top-right) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message) {
+  left: auto;
+  right: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.vr-tooltip--top-right, .p-tooltip--top-right, .bf-tooltip--top-right) > :where(.vr-tooltip__message, .p-tooltip__message, .bf-tooltip__message)::before {
+  left: auto;
+  right: calc(var(--vr-baseline) * 0.75);
+}
+
 :where(.bf-theme, .vr-theme) :where(nav.p-pagination, nav.bf-pagination) {
   display: block;
 }

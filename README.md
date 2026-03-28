@@ -131,6 +131,7 @@ The current baseline-gated demo pages are:
 - `demo/components/breadcrumbs.html`
 - `demo/components/pagination.html`
 - `demo/components/contextual-menu.html`
+- `demo/components/tooltip.html`
 - `demo/components/divider.html`
 - `demo/components/cards.html`
 - `demo/components/brand-layout-ops-sample.html`
@@ -229,6 +230,7 @@ Browser-safe exports:
 - `initBaselineGridToggles`
 - `initContextualMenus`
 - `initListTree`
+- `initTooltips`
 - `setupBaselineGridToggle`
 
 Node/build exports:

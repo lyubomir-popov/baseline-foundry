@@ -36,6 +36,7 @@ export const componentPages: ComponentPage[] = [
   { name: "breadcrumbs", route: "/demo/components/breadcrumbs.html" },
   { name: "pagination", route: "/demo/components/pagination.html" },
   { name: "contextual-menu", route: "/demo/components/contextual-menu.html" },
+  { name: "tooltip", route: "/demo/components/tooltip.html" },
   { name: "divider", route: "/demo/components/divider.html" },
   { name: "cards", route: "/demo/components/cards.html" },
   { name: "panel-pressure", route: "/demo/components/panel-pressure.html" },

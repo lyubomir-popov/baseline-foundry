@@ -1,10 +1,11 @@
-import { initAccordions, initBaselineGridToggles, initContextualMenus, initListTree, initRangeControls, initTabs } from "../dist/index.js?v=20260328-panel-refresh-9";
+import { initAccordions, initBaselineGridToggles, initContextualMenus, initListTree, initRangeControls, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-10";
 
 initBaselineGridToggles();
 initContextualMenus();
 initListTree();
 initRangeControls();
 initTabs();
+initTooltips();
 initAccordions();
 
 const NAV_ITEMS = [
@@ -39,6 +40,7 @@ const NAV_ITEMS = [
   { title: "Breadcrumbs", href: "breadcrumbs.html" },
   { title: "Pagination", href: "pagination.html" },
   { title: "Contextual menu", href: "contextual-menu.html" },
+  { title: "Tooltip", href: "tooltip.html" },
   { title: "Divider", href: "divider.html" },
   { title: "Cards", href: "cards.html" },
   null,
@@ -104,4 +106,5 @@ function injectNav() {
 }
 
 injectNav();
+
 
