@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout Primitives Demo</title>
+  <link rel="stylesheet" href="../../dist/styles.css?v=20260328-panel-refresh-5">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-5">
+</head>
+<body>
+  <main class="component-demo-page bf-theme" data-bf-tone="dark">
+    <header class="component-demo-header">
+      <div>
+        <h5 class="bf-h5 component-demo-kicker">Layout</h5>
+        <h1>Section, stack, cluster, and measure primitives</h1>
+        <p class="component-demo-meta">These are the non-grid layout pieces the repo owns today. The page avoids bespoke demo-only spacing so the primitives stay visible.</p>
+      </div>
+      <div class="component-demo-toolbar">
+        <label class="component-demo-toggle" for="baseline-grid-toggle">
+          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
+          Show baseline grid
+        </label>
+      </div>
+    </header>
+
+    <section class="component-demo-stage component-demo-layout-preview" id="component-grid-target" data-component-capture>
+      <section class="bf-section">
+        <div class="component-demo-layout-card bf-measure" data-baseline-check="box" data-baseline-label="measure card">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="measure kicker">Measure</h5>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="measure body">The fixed reading measure should stay calm even when the outer page stretches much wider.</p>
+        </div>
+      </section>
+
+      <section class="bf-strip">
+        <div class="bf-stack">
+          <div class="component-demo-layout-card" data-baseline-check="box" data-baseline-label="stack card 1">
+            <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="stack kicker">Stack</h5>
+            <p class="bf-body" data-baseline-check="flow" data-baseline-label="stack body">Stack is for discrete blocks, not prose flow.</p>
+          </div>
+          <div class="component-demo-layout-card" data-baseline-check="box" data-baseline-label="stack card 2">
+            <p class="bf-body" data-baseline-check="flow" data-baseline-label="stack support body">The gap itself should stay on the rhythm.</p>
+          </div>
+          <div class="component-demo-layout-card" data-baseline-check="box" data-baseline-label="cluster card">
+            <div class="bf-cluster component-demo-cluster" data-baseline-check="box" data-baseline-label="cluster row">
+              <span class="component-demo-chip" data-baseline-check="box" data-baseline-label="cluster chip 1">Cluster</span>
+              <span class="component-demo-chip" data-baseline-check="box" data-baseline-label="cluster chip 2">Toolbar</span>
+              <span class="component-demo-chip" data-baseline-check="box" data-baseline-label="cluster chip 3">Tags</span>
+              <span class="component-demo-chip" data-baseline-check="box" data-baseline-label="cluster chip 4">Actions</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-5"></script>
+</body>
+</html>

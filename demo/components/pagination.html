@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagination Demo</title>
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-5">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-5">
+</head>
+<body>
+  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
+    <header class="component-demo-header">
+      <div>
+        <h5 class="bf-h5 component-demo-kicker">Pagination</h5>
+        <h1>Compact pagination controls</h1>
+        <p class="component-demo-meta">Pagination buttons, previous/next affordances, and truncation tokens all stay on the compact baseline model.</p>
+      </div>
+      <div class="component-demo-toolbar">
+        <label class="component-demo-toggle" for="baseline-grid-toggle">
+          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
+          Show baseline grid
+        </label>
+      </div>
+    </header>
+
+    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
+      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="pagination section">
+        <nav class="p-pagination" aria-label="Pagination" data-baseline-check="box" data-baseline-label="pagination component">
+          <ul class="p-pagination__items" data-baseline-check="box" data-baseline-label="pagination list">
+            <li class="p-pagination__item" data-baseline-ignore="true"><a class="p-pagination__link--previous" href="#" aria-label="Previous page" data-baseline-check="box" data-baseline-label="pagination previous">Previous</a></li>
+            <li class="p-pagination__item" data-baseline-ignore="true"><a class="p-pagination__link" href="#" data-baseline-check="box" data-baseline-label="pagination page 1">1</a></li>
+            <li class="p-pagination__item" data-baseline-ignore="true"><a class="p-pagination__link" href="#" aria-current="page" data-baseline-check="box" data-baseline-label="pagination page 2">2</a></li>
+            <li class="p-pagination__item" data-baseline-ignore="true"><span class="p-pagination__item--truncation" data-baseline-check="box" data-baseline-label="pagination truncation">...</span></li>
+            <li class="p-pagination__item" data-baseline-ignore="true"><a class="p-pagination__link" href="#" data-baseline-check="box" data-baseline-label="pagination page 8">8</a></li>
+            <li class="p-pagination__item" data-baseline-ignore="true"><a class="p-pagination__link--next" href="#" aria-label="Next page" data-baseline-check="box" data-baseline-label="pagination next">Next</a></li>
+          </ul>
+        </nav>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-5"></script>
+</body>
+</html>

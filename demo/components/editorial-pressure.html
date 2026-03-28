@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editorial Pressure Test</title>
+  <link rel="stylesheet" href="../../dist/styles.css?v=20260328-panel-refresh-5">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-5">
+</head>
+<body>
+  <main class="component-demo-page bf-theme" data-bf-tone="dark">
+    <header class="component-demo-header">
+      <div>
+        <h5 class="bf-h5 component-demo-kicker">Editorial Pressure</h5>
+        <h1>Portfolio and essay-style composition</h1>
+        <p class="component-demo-meta">This page pressure-tests the same Sans default against a future portfolio/editorial use case: hero text, supporting narrative, quote treatment, and a figure-led grid composition.</p>
+      </div>
+      <div class="component-demo-toolbar">
+        <label class="component-demo-toggle" for="baseline-grid-toggle">
+          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
+          Show baseline grid
+        </label>
+      </div>
+    </header>
+
+    <article class="component-demo-stage" id="component-grid-target" data-component-capture>
+      <section class="bf-section">
+        <div class="bf-prose bf-measure">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="editorial kicker">Field notes</h5>
+          <h1 data-baseline-check="flow" data-baseline-label="editorial hero heading">A restrained Sans rhythm can still carry narrative work if the hierarchy stays disciplined.</h1>
+          <p data-baseline-check="flow" data-baseline-label="editorial hero body">The future portfolio does not need a sprawling framework surface. It needs a dependable prose system, a clear grid, and enough compositional range to hold essays, projects, and quiet supporting metadata.</p>
+        </div>
+      </section>
+
+      <section class="bf-section">
+        <div class="bf-grid-scope">
+          <div class="bf-grid">
+          <figure class="component-demo-figure bf-span-8" data-baseline-check="box" data-baseline-label="editorial figure"></figure>
+          <aside class="component-demo-quote-card bf-span-4" data-baseline-check="box" data-baseline-label="editorial quote card">
+            <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="editorial quote kicker">Note</h5>
+            <p class="bf-body" data-baseline-check="flow" data-baseline-label="editorial quote body">Two font sizes per page should remain the norm, not an aspiration we break casually.</p>
+          </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="bf-section">
+        <div class="bf-prose bf-measure">
+          <h2 data-baseline-check="flow" data-baseline-label="editorial section heading">The point is not minimalism for its own sake.</h2>
+          <p data-baseline-check="flow" data-baseline-label="editorial paragraph 1">The point is to keep the surface lean while making each primitive fully trustworthy. When a heading, list, quote, card, or figure lands on the rhythm without special pleading, the system becomes easier to reuse and much easier to evolve.</p>
+          <p data-baseline-check="flow" data-baseline-label="editorial paragraph 2">That matters just as much for a personal portfolio as it does for a dense production interface. The content changes, but the discipline around baseline, spacing ownership, and compositional clarity should not.</p>
+          <blockquote data-baseline-check="flow" data-baseline-label="editorial blockquote">
+            Keep the invariant small and strong. Let the compositions grow out of it.
+          </blockquote>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-5"></script>
+</body>
+</html>

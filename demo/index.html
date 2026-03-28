@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baseline Foundry Demo</title>
+  <link rel="stylesheet" href="../dist/styles.css?v=20260328-panel-refresh-5">
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    .demo-shell {
+      min-height: 100vh;
+      padding-bottom: 4rem;
+    }
+
+    .demo-hero {
+      border-bottom: 1px solid var(--bf-color-rule);
+      display: grid;
+      gap: 1.5rem;
+      padding-block: 3rem;
+    }
+
+    .demo-layout {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 1fr);
+    }
+
+    .demo-panel {
+      border-top: 1px solid var(--bf-color-rule);
+      padding-block: calc(1rem - 1px) 1rem;
+    }
+
+    .demo-panel h3 {
+      margin-top: 0;
+    }
+
+    .demo-token-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .demo-swatch {
+      background: var(--bf-color-rule);
+      block-size: 0.75rem;
+      border-radius: 999px;
+      inline-size: 100%;
+      margin-top: 0.5rem;
+    }
+
+    .demo-grid-card {
+      border-top: 1px solid var(--bf-color-rule);
+      padding-block: calc(1rem - 1px) 1rem;
+    }
+
+    .demo-grid-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .demo-footer {
+      border-top: 1px solid var(--bf-color-rule);
+      color: var(--bf-color-muted);
+      margin-top: 4rem;
+      padding-top: 1rem;
+    }
+
+    .demo-note {
+      color: var(--bf-color-muted);
+    }
+
+    @media (max-width: 900px) {
+      .demo-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bf-theme" data-bf-tone="dark">
+  <main class="demo-shell" id="demo-grid-target">
+    <div class="bf-page">
+      <header class="demo-hero">
+        <div class="bf-prose">
+          <h5 class="bf-h5">Baseline Foundry</h5>
+          <h1 class="bf-h1">A lean baseline-aligned system for prose rhythm and grid composition.</h1>
+          <p>This repo keeps the metric-driven baseline model but narrows the surface to typography, editorial flow, section rhythm, and a responsive grid, now using IBM Plex Sans as the editorial metric source for this confirmation pass.</p>
+        </div>
+        <div class="bf-cluster">
+          <label>
+            <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="demo-grid-target">
+            Show baseline grid
+          </label>
+          <a href="../dist/tokens.json">Open tokens</a>
+          <a href="./panel.html">Panel preset demo</a>
+          <a href="./components/index.html">Component demos</a>
+        </div>
+      </header>
+
+      <section class="bf-section">
+        <div class="demo-layout">
+          <article class="bf-prose">
+            <h5 class="bf-h5">Editorial spacing</h5>
+            <h2>The default flow is element-owned.</h2>
+            <p>Paragraphs, headings, lists, and quotes carry their own vertical spacing so content remains substitutable. Parents do not need to know what comes next in order to space it correctly.</p>
+            <p>That makes this repo a better home for prose, documentation, and future portfolio content than the broader compatibility package it was forked from.</p>
+            <blockquote>
+              Baseline alignment stays immutable. Everything else has to earn its place as a durable primitive.
+            </blockquote>
+            <h3>What ships right now</h3>
+            <ul>
+              <li>IBM Plex metric-driven typescale</li>
+              <li>Editorial prose defaults</li>
+              <li>Section and strip rhythm</li>
+              <li>Stack, cluster, page, measure, and grid primitives</li>
+            </ul>
+            <hr class="bf-rule">
+            <p class="demo-note">The page reads the generated token file live, so the demo always reflects the current local build.</p>
+          </article>
+
+          <aside class="bf-stack">
+            <section class="demo-panel">
+              <h3>Live token sample</h3>
+              <div class="demo-token-list" id="token-list"></div>
+            </section>
+
+            <section class="demo-panel">
+              <h3>Layout values</h3>
+              <div class="demo-token-list">
+                <div class="bf-token-row">
+                  <strong>Measure</strong>
+                  <span id="measure-value"></span>
+                  <div class="demo-swatch"></div>
+                </div>
+                <div class="bf-token-row">
+                  <strong>Grid gap</strong>
+                  <span id="grid-gap-value"></span>
+                </div>
+                <div class="bf-token-row">
+                  <strong>Section rhythm</strong>
+                  <span id="section-space-value"></span>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="bf-section is-deep">
+        <div class="bf-stack" data-space="loose">
+          <div class="bf-prose">
+            <h5 class="bf-h5">Grid primitives</h5>
+            <h2>The grid is container-aware and deliberately strict.</h2>
+            <p>Instead of shipping named shell objects, the system provides a responsive grid that scales from 4 to 8 to 16 columns as the container grows. Spans follow power-of-2 divisions so layouts stay aligned and resist arbitrary drift.</p>
+          </div>
+
+          <div class="bf-grid">
+            <div class="demo-grid-card bf-span-4">
+              <h3 class="bf-h4">Span 4</h3>
+              <p>Quarter-width module on the largest grid, half-width on the medium grid.</p>
+            </div>
+            <div class="demo-grid-card bf-span-8">
+              <h3 class="bf-h4">Span 8</h3>
+              <p>Half-width primary module that still becomes full-width when the container narrows.</p>
+            </div>
+            <div class="demo-grid-card bf-span-4">
+              <h3 class="bf-h4">Span 4</h3>
+              <p>Companion block that lands cleanly on the same keyline system.</p>
+            </div>
+            <div class="demo-grid-card bf-span-2">
+              <h3 class="bf-h4">Span 2</h3>
+              <p>Smaller metadata or utility module for wide containers.</p>
+            </div>
+            <div class="demo-grid-card bf-span-2">
+              <h3 class="bf-h4">Span 2</h3>
+              <p>Pairs cleanly with another narrow block instead of creating thirds.</p>
+            </div>
+            <div class="demo-grid-card bf-span-4">
+              <h3 class="bf-h4">Span 4</h3>
+              <p>Power-of-2 spans keep nested and adjacent layouts more predictable.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="demo-footer">
+        Demo URL: http://127.0.0.1:4174/demo/
+      </footer>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initBaselineGridToggles } from "../dist/index.js";
+
+    initBaselineGridToggles();
+
+    const tokenList = document.querySelector("#token-list");
+
+    fetch("../dist/tokens.json")
+      .then(response => response.json())
+      .then(tokens => {
+        if (!(tokenList instanceof HTMLElement)) {
+          return;
+        }
+
+        const tokenNames = Object.keys(tokens.roles ?? {});
+
+        tokenList.innerHTML = tokenNames
+          .map(name => {
+            const token = tokens.roles?.[name];
+            if (!token) {
+              return "";
+            }
+
+            return `
+              <div class="bf-token-row">
+                <strong>${name}</strong>
+                <span>${token.fontSize} / ${token.lineHeight}</span>
+                <span>weight ${token.fontWeight}</span>
+                <span>nudge ${token.nudgeTop}</span>
+              </div>
+            `;
+          })
+          .join("");
+
+        const measure = document.querySelector("#measure-value");
+        const gridGap = document.querySelector("#grid-gap-value");
+        const sectionSpace = document.querySelector("#section-space-value");
+
+        if (measure) measure.textContent = tokens.layout.measure;
+        if (gridGap) gridGap.textContent = `${tokens.layout.gridGapInline} inline / ${tokens.layout.gridGapBlock} block`;
+        if (sectionSpace) sectionSpace.textContent = `${tokens.layout.sectionSpace} default / ${tokens.layout.sectionSpaceDeep} deep`;
+      })
+      .catch(error => {
+        if (tokenList instanceof HTMLElement) {
+          tokenList.innerHTML = `<p>Unable to load tokens.json: ${error}</p>`;
+        }
+      });
+  </script>
+</body>
+</html>

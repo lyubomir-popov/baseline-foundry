@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "lib": ["ES2022", "DOM"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src/baseline-grid.ts",
+    "src/baseline-nudge-generator.d.ts",
+    "src/build.ts",
+    "src/css-grid.ts",
+    "src/css.ts",
+    "src/index.ts",
+    "src/presets.ts",
+    "src/types.ts"
+  ]
+}

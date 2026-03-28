@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prose Flow Demo</title>
+  <link rel="stylesheet" href="../../dist/styles.css?v=20260328-panel-refresh-5">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-5">
+</head>
+<body>
+  <main class="component-demo-page bf-theme" data-bf-tone="dark">
+    <header class="component-demo-header">
+      <div>
+        <h5 class="bf-h5 component-demo-kicker">Prose Flow</h5>
+        <h1>Editorial rhythm in context</h1>
+        <p class="component-demo-meta">Paragraphs, lists, quotes, and rules are isolated here so their baseline compensation can be checked without surrounding layout noise.</p>
+      </div>
+      <div class="component-demo-toolbar">
+        <label class="component-demo-toggle" for="baseline-grid-toggle">
+          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
+          Show baseline grid
+        </label>
+      </div>
+    </header>
+
+    <article class="component-demo-stage bf-prose" id="component-grid-target" data-component-capture>
+      <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="prose kicker">Editorial spacing</h5>
+      <h2 data-baseline-check="flow" data-baseline-label="prose h2">The flow is element-owned and baseline-compensated.</h2>
+      <p data-baseline-check="flow" data-baseline-label="prose paragraph 1">Paragraphs keep their own spacing so content can be substituted without parent wrappers learning new rules or special cases.</p>
+      <p data-baseline-check="flow" data-baseline-label="prose paragraph 2">That principle matters just as much in a lean design system as it does in a broader framework. The smaller the surface, the less room there is for hidden exceptions.</p>
+      <blockquote data-baseline-check="flow" data-baseline-label="prose blockquote">
+        Baseline alignment stays immutable. The component surface can shrink, but the rhythm contract should not.
+      </blockquote>
+      <h3 data-baseline-check="flow" data-baseline-label="prose h3">List behavior</h3>
+      <ul data-baseline-check="flow" data-baseline-label="unordered list">
+        <li data-baseline-check="box" data-baseline-label="list item 1">Unordered lists use the body-text nudge.</li>
+        <li data-baseline-check="box" data-baseline-label="list item 2">Each item keeps bottom compensation instead of ad hoc inter-item margin.</li>
+        <li data-baseline-check="box" data-baseline-label="list item 3">The list block still resolves to whole rhythm increments.</li>
+      </ul>
+      <hr class="bf-rule" data-baseline-check="flow" data-baseline-label="prose rule">
+      <p class="bf-body component-demo-note" data-baseline-check="flow" data-baseline-label="prose note">The prose sample ends with a final paragraph so the last-child compensation remains visible in the capture.</p>
+    </article>
+  </main>
+
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-5"></script>
+</body>
+</html>

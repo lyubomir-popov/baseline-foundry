@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Demo</title>
+  <link rel="stylesheet" href="../../dist/styles.css?v=20260328-panel-refresh-5">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-5">
+</head>
+<body>
+  <main class="component-demo-page component-demo-page--wide bf-theme" data-bf-tone="dark">
+    <header class="component-demo-header">
+      <div>
+        <h5 class="bf-h5 component-demo-kicker">Grid</h5>
+        <h1>Container-aware 4 / 8 / 16 grid</h1>
+        <p class="component-demo-meta">This isolates the current power-of-2 span model at the Canonical `4 / 8 / 16` thresholds so the capture still exercises the widest bracket.</p>
+      </div>
+      <div class="component-demo-toolbar">
+        <label class="component-demo-toggle" for="baseline-grid-toggle">
+          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
+          Show baseline grid
+        </label>
+      </div>
+    </header>
+
+    <section class="component-demo-stage" id="component-grid-target" data-component-capture>
+      <div class="bf-grid component-demo-grid">
+        <div class="component-demo-grid-card bf-span-4" data-baseline-check="box" data-baseline-label="grid card span 4A">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="grid kicker 4A">Span 4</h5>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="grid body 4A">Quarter-width at the widest container.</p>
+        </div>
+        <div class="component-demo-grid-card bf-span-8" data-baseline-check="box" data-baseline-label="grid card span 8">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="grid kicker 8">Span 8</h5>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="grid body 8">Primary half-width module.</p>
+        </div>
+        <div class="component-demo-grid-card bf-span-4" data-baseline-check="box" data-baseline-label="grid card span 4B">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="grid kicker 4B">Span 4</h5>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="grid body 4B">Companion panel aligned to the same keylines.</p>
+        </div>
+        <div class="component-demo-grid-card bf-span-2" data-baseline-check="box" data-baseline-label="grid card span 2A">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="grid kicker 2A">Span 2</h5>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="grid body 2A">Narrow metadata cell.</p>
+        </div>
+        <div class="component-demo-grid-card bf-span-2" data-baseline-check="box" data-baseline-label="grid card span 2B">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="grid kicker 2B">Span 2</h5>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="grid body 2B">Second narrow utility cell.</p>
+        </div>
+        <div class="component-demo-grid-card bf-span-4" data-baseline-check="box" data-baseline-label="grid card span 4C">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="grid kicker 4C">Span 4</h5>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="grid body 4C">A medium block that avoids arbitrary thirds.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-5"></script>
+</body>
+</html>
