@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Brand Layout Ops Sample</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-13">
-  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-13">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260328-panel-refresh-14">
+  <link rel="stylesheet" href="../component-shell.css?v=20260328-panel-refresh-14">
 </head>
 <body>
   <main class="component-demo-page component-demo-page--panel brand-layout-ops-sample vr-theme is-dark" data-bf-tone="dark">
@@ -13,7 +13,7 @@
       <div>
         <h5 class="bf-h5 component-demo-kicker">Brand Layout Ops sample</h5>
         <h1>Read-only shell pull-in from the downstream app</h1>
-        <p class="component-demo-meta">This page mirrors the actual preview shell structure from <code>brand-layout-ops</code> without touching that repo: a fixed-width stage in <code>l-main</code>, a pinned inspector in <code>l-aside</code>, and the same panel, tabs, accordion, and form primitives the app uses today.</p>
+        <p class="component-demo-meta">This page mirrors the actual preview shell structure from <code>brand-layout-ops</code> without touching that repo: a fixed-width stage in <code>l-main</code>, a pinned inspector in <code>l-aside</code>, the same panel/tabs/accordion/form primitives the app uses today, and the same resizable pinned-aside behavior.</p>
       </div>
       <div class="component-demo-toolbar">
         <label class="component-demo-toggle" for="baseline-grid-toggle">
@@ -24,7 +24,7 @@
     </header>
 
     <section class="component-demo-stage" id="component-grid-target">
-      <div class="l-application mascot-app is-dark" data-baseline-ignore="true">
+      <div class="l-application mascot-app is-dark" data-aside-resize-storage-key="demo:brand-layout-ops-sample-aside" data-baseline-ignore="true">
         <main class="l-main" data-baseline-ignore="true">
           <div class="u-fixed-width viewer-panel__content" data-baseline-ignore="true">
             <section class="stage" aria-label="Animated halo field sample">
@@ -43,6 +43,7 @@
             aria-controls="control-drawer"
             aria-label="Resize control panel"
             aria-orientation="vertical"
+            data-baseline-ignore="true"
           ></div>
           <div class="p-panel drawer-panel" data-component-capture data-baseline-check="box" data-baseline-label="brand layout ops panel">
             <div class="p-panel__header is-sticky">
@@ -134,7 +135,7 @@
     </section>
   </main>
 
-  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-13"></script>
+  <script type="module" src="../component-demo.js?v=20260328-panel-refresh-14"></script>
 </body>
 </html>
 

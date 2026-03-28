@@ -45,6 +45,7 @@ The package currently focuses on:
 - container-query grid primitives with a `4 / 8 / 16` column structure, power-of-2 spans, and Canonical `620px` / `1681px` column-count thresholds
 - a compact compatibility control-matrix surface for dense inspector rows (`grid-row`, `col-*`, and `slider-pair--stacked`), while `bf-grid` remains the canonical page/layout grid
 - an overlay drawer-panel shell mode for temporary inspectors (`l-aside.is-overlay`, backdrop, and `p-panel__toggle`)
+- a resizable pinned-aside shell mode for desktop inspectors (`l-aside.is-pinned`, `l-application__aside-resize-handle`, and `initResizableAsides()`)
 - baseline grid inspection utility
 
 It intentionally does not try to be a full component framework yet.
@@ -102,6 +103,7 @@ All component demos now:
 - let you toggle the grid on page-by-page for inspection
 - use real `h5` section labels instead of demo-local kicker styling
 - keep a dedicated narrow-panel regression page in the automated gate so dense controls and media must still fit a tight rail
+- share a browser behavior check for the pinned-aside resize flow so the handle, persistence, and keyboard controls stay real
 
 The current baseline-gated demo pages are:
 
@@ -166,6 +168,12 @@ Run the browser-enforced baseline verification with:
 
 ```bash
 npm run verify:components
+```
+
+Run the browser-enforced resize behavior verification with:
+
+```bash
+npm run verify:behavior
 ```
 
 Or do both in one pass:
@@ -239,6 +247,7 @@ Browser-safe exports:
 - `initContextualMenus`
 - `initListTree`
 - `initPanelDrawers`
+- `initResizableAsides`
 - `initTooltips`
 - `setupBaselineGridToggle`
 

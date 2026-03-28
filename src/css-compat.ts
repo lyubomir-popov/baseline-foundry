@@ -37,6 +37,7 @@ export function compatCss(tokens: ThemeTokens): string {
   --bf-accordion-indent: ${components.accordionIndent};
   --bf-app-aside-width: 30rem;
   --bf-app-aside-width-narrow: 18rem;
+  --bf-app-aside-width-max: 42rem;
   --bf-app-aside-width-wide: min(100vw, 42rem);
   --bf-app-navigation-width: 15rem;
   --bf-app-navigation-width-collapsed: calc(var(--bf-baseline) * 4);
@@ -56,6 +57,7 @@ export function compatCss(tokens: ThemeTokens): string {
   --vr-grid-max-inline-size: var(--bf-content-max-width);
   --vr-application-aside-width: var(--bf-app-aside-width);
   --vr-application-aside-width-narrow: var(--bf-app-aside-width-narrow);
+  --vr-application-aside-width-max: var(--bf-app-aside-width-max);
   --vr-application-aside-width-wide: var(--bf-app-aside-width-wide);
   --vr-application-navigation-width: var(--bf-app-navigation-width);
   --vr-application-navigation-width-collapsed: var(--bf-app-navigation-width-collapsed);
@@ -2463,11 +2465,48 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
 }
 
 :where(.bf-theme, .vr-theme) :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle) {
+  background: transparent;
+  border: 0;
+  cursor: ew-resize;
+  display: none;
   inset-block: 0;
-  inset-inline-start: calc(var(--vr-baseline) * -1);
+  inset-inline-start: calc(var(--vr-baseline) * -3);
+  outline: none;
   position: absolute;
-  width: calc(var(--vr-baseline) * 2);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  width: calc(var(--vr-baseline) * 6);
   z-index: 3;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-application.has-pinned-aside, .bf-application.has-pinned-aside, .l-application:has(> .l-aside.is-pinned), .bf-application:has(> .bf-aside.is-pinned))
+  :where(.l-aside.is-pinned, .bf-aside.is-pinned)
+  > :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle) {
+  display: block;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle)::after {
+  background: var(--vr-color-border-default);
+  border-radius: 999px;
+  content: "";
+  inset-block: var(--vr-panel-padding-block);
+  inset-inline-start: calc(50% - 1px);
+  opacity: 0.95;
+  position: absolute;
+  transition: background-color 120ms ease, opacity 120ms ease;
+  width: 2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle):hover::after,
+:where(.bf-theme, .vr-theme) :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle):focus-visible::after,
+:where(.bf-theme, .vr-theme) :where(.l-application.is-resizing-aside, .bf-application.is-resizing-aside) :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle)::after {
+  background: var(--vr-color-focus);
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle):focus-visible {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
 }
 `;
 }

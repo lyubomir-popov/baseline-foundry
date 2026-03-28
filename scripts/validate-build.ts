@@ -94,6 +94,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.l-application__overlay, .bf-application__overlay)"), "Expected compat CSS to include application drawer overlay styling.");
   assert(css.includes(":where(.l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer)"), "Expected compat CSS to include overlay drawer aside styling.");
   assert(css.includes(".is-drawer-expanded"), "Expected compat CSS to include the drawer-expanded application state.");
+  assert(css.includes("--bf-app-aside-width-max: 42rem;"), "Expected compat CSS to expose a dedicated maximum pinned-aside width token.");
+  assert(css.includes("--vr-application-aside-width-max: var(--bf-app-aside-width-max);"), "Expected compat CSS to expose the maximum pinned-aside width through the legacy alias.");
+  assert(css.includes(":where(.l-application__aside-resize-handle, .bf-application__aside-resize-handle)"), "Expected compat CSS to include the pinned-aside resize handle selector.");
+  assert(css.includes("cursor: ew-resize;"), "Expected compat CSS to make the resize handle advertise horizontal resizing.");
+  assert(css.includes("touch-action: none;"), "Expected compat CSS to make the resize handle safe for pointer dragging.");
+  assert(css.includes(":where(.l-application.is-resizing-aside, .bf-application.is-resizing-aside)"), "Expected compat CSS to expose the resizing application state.");
 }
 
 function validateCommonTokens(tokens: Record<string, unknown>): {

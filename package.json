@@ -33,9 +33,11 @@
     "demo:serve": "vite --host 127.0.0.1 --port 4174 --open /demo/",
     "demo": "npm run build && npm run demo:serve",
     "test:build": "tsx scripts/validate-build.ts",
+    "test:behavior": "tsx scripts/verify-component-behavior.ts",
     "test:components": "tsx scripts/verify-component-baselines.ts",
-    "test": "npm run build && npm run test:build && npm run test:components",
+    "test": "npm run build && npm run test:build && npm run test:components && npm run test:behavior",
     "playwright:install": "playwright install chromium",
+    "verify:behavior": "npm run build && tsx scripts/verify-component-behavior.ts",
     "verify:components": "npm run build && tsx scripts/verify-component-baselines.ts",
     "screenshots:components": "npm run build && tsx scripts/capture-component-screenshots.ts",
     "qa:components": "npm run build && tsx scripts/capture-component-screenshots.ts && tsx scripts/verify-component-baselines.ts"

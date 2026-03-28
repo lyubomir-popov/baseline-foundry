@@ -446,7 +446,11 @@ a {
   --vf-color-border-default: #4b4b4b;
   --vf-color-border-high-contrast: #6a6a6a;
   --vf-color-border-low-contrast: #3a3a3a;
+  --bf-app-aside-width: 30rem;
+  --bf-app-aside-width-max: 30rem;
+  --bf-app-aside-width-wide: min(100vw, 30rem);
   --vr-application-aside-width: 30rem;
+  --vr-application-aside-width-max: 30rem;
   --vr-application-aside-width-wide: min(100vw, 30rem);
   background: #202020;
   min-block-size: 100%;
