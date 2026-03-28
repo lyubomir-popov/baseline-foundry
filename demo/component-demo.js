@@ -1,4 +1,4 @@
-import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-14";
+import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initTabs, initTooltips } from "../dist/index.js?v=20260328-panel-refresh-15";
 
 initBaselineGridToggles();
 initCodeSnippets();
@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   { title: "Drawer panel", href: "drawer-panel.html" },
   null,
   { title: "Button", href: "button.html" },
+  { title: "Actions", href: "actions.html" },
   { title: "Text input", href: "text-input.html" },
   { title: "Color input", href: "color-input.html" },
   { title: "Select", href: "select.html" },

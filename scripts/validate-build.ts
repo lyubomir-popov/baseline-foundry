@@ -64,6 +64,8 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("min-inline-size: 8em;"), "Expected compat text-like controls to avoid hard minimum widths that break narrow panels.");
   assert(css.includes("input[type='file'])::file-selector-button"), "Expected compat CSS to include dense file input styling.");
   assert(css.includes(":where(.p-form__control, .bf-control) {\n  display: grid;\n  gap: var(--vr-field-gap);\n  min-inline-size: 0;"), "Expected form controls to allow shrinking inside narrow containers.");
+  assert(css.includes(":where(.p-form__group--checkbox, .bf-field--checkbox) :where(.p-form__control, .bf-control) {\n  gap: 0;"), "Expected checkbox field controls to avoid downstream gap overrides.");
+  assert(css.includes("min-block-size: max(var(--vr-control-block-size-dense), calc("), "Expected checkbox and radio rows to use the dense control height as a minimum.");
   assert(css.includes(":where(.grid-row, .bf-control-grid, .p-equal-height-row, .p-equal-height-row--wrap)"), "Expected compat CSS to include the dense control-grid helper surface.");
   assert(css.includes(":where(.p-slider__wrapper--stacked, .bf-slider--stacked, .slider-pair--stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--vr-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
   assert(css.includes(".slider-pair--stacked"), "Expected compat CSS to include the downstream stacked-slider alias.");
@@ -95,6 +97,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.p-option-card, .bf-option-card, .style-palette__button)"), "Expected compat CSS to include the option-card component and downstream palette-card alias.");
   assert(css.includes(":where(.p-form-help-text.is-tight, .bf-form-help.is-tight, .control-help)"), "Expected compat CSS to include the tight helper-text modifier and downstream control-help alias.");
   assert(css.includes("input[type='color'].control-color"), "Expected compat CSS to include the compact color-input alias.");
+  assert(css.includes(":where(.p-actions, .bf-actions, .main-actions, .playback-export-actions)"), "Expected compat CSS to include the actions-row helper and downstream aliases.");
+  assert(css.includes(":where(.p-panel.is-fill, .bf-panel.is-fill, .drawer-panel)"), "Expected compat CSS to include the fill-height panel helper and downstream drawer-panel alias.");
   assert(css.includes(":where(.vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu"), "Expected compat CSS to include contextual-menu styling.");
   assert(css.includes(":where(.vr-tooltip, .p-tooltip, .bf-tooltip"), "Expected compat CSS to include tooltip styling.");
   assert(css.includes(":where(.p-panel__toggle, .bf-panel__toggle)"), "Expected compat CSS to include panel toggle styling.");

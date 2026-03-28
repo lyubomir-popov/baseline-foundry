@@ -183,6 +183,10 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   gap: 0;
 }
 
+:where(.bf-theme, .vr-theme) :where(.p-form__group--checkbox, .bf-field--checkbox) :where(.p-form__control, .bf-control) {
+  gap: 0;
+}
+
 :where(.bf-theme, .vr-theme) :where(fieldset, .p-form__fieldset, .bf-fieldset) {
   border: var(--vr-border-width) solid var(--vr-color-border-default);
   margin: 0;
@@ -382,6 +386,7 @@ ${typeStyles(h6, { includeCase: false })}  appearance: none;
 
 :where(.bf-theme, .vr-theme) :where(.p-checkbox, .bf-checkbox, .p-radio, .bf-radio) {
   margin: 0;
+  min-block-size: max(var(--vr-control-block-size-dense), calc(${body.lineHeight} + var(--vr-baseline)));
   position: relative;
 }
 
@@ -400,7 +405,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-default)
   cursor: pointer;
   display: block;
   margin-bottom: 0;
-  min-block-size: calc(${body.lineHeight} + var(--vr-baseline));
+  min-block-size: max(var(--vr-control-block-size-dense), calc(${body.lineHeight} + var(--vr-baseline)));
   padding-inline-start: calc(var(--vr-control-visual-size) + var(--vr-field-gap));
   position: relative;
 }
@@ -754,6 +759,28 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   padding-block: calc((var(--vr-control-block-size-dense) - ${h6.lineHeight} - (var(--vr-border-width) * 2)) / 2);
 }
 
+:where(.bf-theme, .vr-theme) :where(.p-actions, .bf-actions, .main-actions, .playback-export-actions) {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vr-field-gap);
+  min-inline-size: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-actions[data-align='end'], .bf-actions[data-align='end'], .p-actions.is-end, .bf-actions.is-end, .main-actions) {
+  justify-content: flex-end;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-actions.is-nowrap, .bf-actions.is-nowrap, .playback-export-actions) {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-actions.is-nowrap, .bf-actions.is-nowrap, .playback-export-actions) > * {
+  flex: 0 0 auto;
+}
+
 :where(.bf-theme, .vr-theme) :where(.p-panel, .bf-panel) {
   background: var(--vr-color-background-default);
   border: var(--vr-border-width) solid var(--vr-color-border-default);
@@ -763,6 +790,12 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   inline-size: 100%;
   max-inline-size: 100%;
   min-block-size: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-panel.is-fill, .bf-panel.is-fill, .drawer-panel) {
+  max-inline-size: none;
+  min-block-size: 100%;
+  resize: none;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-panel__header, .bf-panel__header) {

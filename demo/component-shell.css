@@ -643,35 +643,113 @@ a {
 
 .component-index-section {
   display: grid;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .component-index-list {
   display: grid;
-  gap: 0;
+  gap: 1rem;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .component-index-item {
-  border-top: 1px solid var(--component-demo-rule);
-  display: grid;
-  gap: 0.25rem;
-  padding-block: calc(var(--bf-baseline) - 1px) var(--bf-baseline);
+  min-inline-size: 0;
 }
 
-.component-index-item:first-child {
-  padding-top: 0;
-  border-top: 0;
+.component-index-item .component-demo-meta {
+  display: none;
 }
 
-.component-index-item a {
+.component-index-card-link {
+  color: inherit;
+  display: block;
   text-decoration: none;
 }
 
-.component-index-item a:hover {
+.component-index-card {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.component-index-card__frame {
+  aspect-ratio: 3 / 2;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)),
+    var(--component-demo-surface);
+  border: 1px solid var(--component-demo-rule);
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+
+.component-index-card__frame.is-missing {
+  align-items: center;
+  display: grid;
+  position: relative;
+}
+
+.component-index-card__frame.is-missing::after {
+  color: var(--component-demo-muted);
+  content: "Capture missing";
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.component-index-card__image {
+  block-size: 100%;
+  display: block;
+  inline-size: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.component-index-card__name {
+  color: inherit;
+  margin: 0;
+  text-decoration: none;
+}
+
+.component-index-card-link:hover .component-index-card__frame,
+.component-index-card-link:focus-visible .component-index-card__frame {
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.component-index-card-link:focus-visible {
+  outline: none;
+}
+
+.component-index-card-link:focus-visible .component-index-card__name {
   text-decoration: underline;
+}
+
+@media (max-width: 1440px) {
+  .component-index-list {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1120px) {
+  .component-index-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 840px) {
+  .component-index-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .component-index-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {

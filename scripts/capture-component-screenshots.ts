@@ -6,6 +6,9 @@ import { closeServer, componentPages, createStaticServer, waitForFonts } from ".
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const outputDir = path.resolve("tmp/screenshots/components");
+  const screenshotVersion = "20260328-panel-refresh-15";
+  const thumbnailWidth = 360;
+  const thumbnailHeight = 240;
   await fs.mkdir(outputDir, { recursive: true });
 
   const { server, origin } = await createStaticServer(rootDir);
@@ -17,7 +20,15 @@ async function main(): Promise<void> {
       viewport: { width: 2200, height: 1600 }
     });
 
-    const manifest = [] as Array<{ name: string; route: string; screenshotPath: string; }>;
+    const manifest = [] as Array<{
+      name: string;
+      route: string;
+      screenshotPath: string;
+      screenshotUrl: string;
+      thumbnailWidth: number;
+      thumbnailHeight: number;
+      version: string;
+    }>;
 
     for (const componentPage of componentPages) {
       const url = `${origin}${componentPage.route}`;
@@ -30,7 +41,11 @@ async function main(): Promise<void> {
       manifest.push({
         name: componentPage.name,
         route: componentPage.route,
-        screenshotPath
+        screenshotPath,
+        screenshotUrl: `/tmp/screenshots/components/${componentPage.name}.png?v=${screenshotVersion}`,
+        thumbnailWidth,
+        thumbnailHeight,
+        version: screenshotVersion
       });
 
       console.log(`Captured ${componentPage.name}: ${screenshotPath}`);

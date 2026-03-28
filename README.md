@@ -46,7 +46,8 @@ The package currently focuses on:
 - a compact compatibility control-matrix surface for dense inspector rows (`grid-row`, `col-*`, and `slider-pair--stacked`), while `bf-grid` remains the canonical page/layout grid
 - an overlay drawer-panel shell mode for temporary inspectors (`l-aside.is-overlay`, backdrop, and `p-panel__toggle`)
 - a resizable pinned-aside shell mode for desktop inspectors (`l-aside.is-pinned`, `l-application__aside-resize-handle`, and `initResizableAsides()`)
-- dense downstream panel patterns for equal-width tabs, selectable radio rows, style/mapping option cards, tight helper text, compact color inputs, and inline operator strips
+- dense downstream panel patterns for equal-width tabs, selectable radio rows, style/mapping option cards, tight helper text, compact color inputs, inline operator strips, and dense action rows
+- a fill-height panel helper for drawer and pinned inspector shells
 - baseline grid inspection utility
 
 It intentionally does not try to be a full component framework yet.
@@ -95,7 +96,7 @@ The demo runs at:
 ## Component QA
 
 The repo also includes isolated component demo pages for visual rhythm checks.
-The atlas at `demo/components/index.html` is now a plain index of the real baseline-gated files: each saved component gets its own HTML page so it can be checked in isolation instead of being buried inside one grouped controls page.
+The atlas at `demo/components/index.html` is now a visual index of the real baseline-gated files: each saved component gets its own HTML page, Playwright captures a screenshot for it, and the atlas turns those captures into linked preview tiles so the current surface can be scanned at a glance.
 
 All component demos now:
 
@@ -116,6 +117,7 @@ The current baseline-gated demo pages are:
 - `demo/components/application-shell.html`
 - `demo/components/drawer-panel.html`
 - `demo/components/button.html`
+- `demo/components/actions.html`
 - `demo/components/text-input.html`
 - `demo/components/color-input.html`
 - `demo/components/select.html`
@@ -191,6 +193,8 @@ npm run qa:components
 The screenshots and manifest are written to:
 
 - `tmp/screenshots/components/`
+
+Those screenshots also power the visual atlas at `demo/components/index.html`, so run `npm run screenshots:components` when new demos are added or the saved preview set changes.
 
 The baseline verification report is also written to:
 

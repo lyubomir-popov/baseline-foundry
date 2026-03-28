@@ -15,6 +15,7 @@ export const componentPages: ComponentPage[] = [
   { name: "application-shell", route: "/demo/components/application-shell.html" },
   { name: "drawer-panel", route: "/demo/components/drawer-panel.html" },
   { name: "button", route: "/demo/components/button.html" },
+  { name: "actions", route: "/demo/components/actions.html" },
   { name: "text-input", route: "/demo/components/text-input.html" },
   { name: "color-input", route: "/demo/components/color-input.html" },
   { name: "select", route: "/demo/components/select.html" },

@@ -167,6 +167,8 @@ async function verifyComponentPage(
       ".bf-choice-row",
       ".p-inline-options",
       ".bf-inline-options",
+      ".p-actions",
+      ".bf-actions",
       ".p-option-card",
       ".bf-option-card",
       ".p-divider__block",
