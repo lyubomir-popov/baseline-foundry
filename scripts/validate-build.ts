@@ -32,8 +32,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes("font-weight: 100 700;"), "Expected generated CSS to expose the variable weight range.");
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px threshold for the 16-column grid.");
-  assert(!css.includes("@container (width >= 42rem)"), "Expected CSS to avoid the older 42rem 8-column threshold.");
-  assert(!css.includes("@container (width >= 72rem)"), "Expected CSS to avoid the older 72rem 16-column threshold.");
+  assert(!css.includes("@container (width >= 42rem) {\n  .bf-grid"), "Expected grid CSS to avoid the older 42rem 8-column threshold.");
+  assert(!css.includes("@container (width >= 72rem) {\n  .bf-grid"), "Expected grid CSS to avoid the older 72rem 16-column threshold.");
+  assert(!css.includes(":where(.bf-grid, .grid-row, .vr-grid-row)"), "Expected the broad page grid to avoid re-owning the compat grid-row selector.");
   assert(css.includes(":where(.bf-theme[data-bf-tone='dark'], .vr-theme[data-bf-tone='dark'], .vr-theme.is-dark)"), "Expected generated CSS to include a core dark-tone override.");
   assert(css.includes("--bf-color-bg: var(--vf-color-background-default, #171717);"), "Expected generated CSS to switch core background tokens in dark mode.");
   assert(css.includes("--bf-baseline-grid-color: rgba(15, 23, 42, 0.12);"), "Expected baseline-grid overlays to declare a default line color.");
@@ -63,7 +64,9 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("min-inline-size: 8em;"), "Expected compat text-like controls to avoid hard minimum widths that break narrow panels.");
   assert(css.includes("input[type='file'])::file-selector-button"), "Expected compat CSS to include dense file input styling.");
   assert(css.includes(":where(.p-form__control, .bf-control) {\n  display: grid;\n  gap: var(--vr-field-gap);\n  min-inline-size: 0;"), "Expected form controls to allow shrinking inside narrow containers.");
-  assert(css.includes(":where(.p-slider__wrapper--stacked, .bf-slider--stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--vr-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
+  assert(css.includes(":where(.grid-row, .bf-control-grid, .p-equal-height-row, .p-equal-height-row--wrap)"), "Expected compat CSS to include the dense control-grid helper surface.");
+  assert(css.includes(":where(.p-slider__wrapper--stacked, .bf-slider--stacked, .slider-pair--stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--vr-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
+  assert(css.includes(".slider-pair--stacked"), "Expected compat CSS to include the downstream stacked-slider alias.");
   assert(css.includes("inline-size: min(100%, 5rem);"), "Expected slider number inputs to use the compact PVR width.");
   assert(css.includes("flex-wrap: wrap;"), "Expected inline slider pairs to wrap instead of overflowing narrow rails.");
   assert(css.includes("flex: 0 1 5rem;"), "Expected slider number inputs to shrink before overflowing.");

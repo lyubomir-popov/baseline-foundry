@@ -147,18 +147,24 @@ export function compatCss(tokens: ThemeTokens): string {
 
 :where(.bf-theme, .vr-theme) :where(.p-form__label, .bf-form__label) {
 ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-default);
+  display: block;
+  overflow-wrap: anywhere;
+  text-align: start;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-form-help-text, .bf-form-help) {
 ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
+  display: block;
   margin-bottom: 0;
   max-inline-size: 42ch;
+  overflow-wrap: anywhere;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-form__group, .bf-field) {
   display: grid;
   gap: var(--vr-field-gap);
   margin: 0;
+  min-inline-size: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-form__control, .bf-control) {
@@ -609,7 +615,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   border-bottom-color: var(--vr-color-border-caution);
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-slider__wrapper, .bf-slider) {
+:where(.bf-theme, .vr-theme) :where(.p-slider__wrapper, .bf-slider, .slider-pair) {
   align-items: flex-end;
   display: inline-flex;
   flex-wrap: wrap;
@@ -619,14 +625,14 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   min-inline-size: 0;
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-slider__wrapper--stacked, .bf-slider--stacked) {
+:where(.bf-theme, .vr-theme) :where(.p-slider__wrapper--stacked, .bf-slider--stacked, .slider-pair--stacked) {
   align-items: stretch;
   display: grid;
   gap: var(--vr-field-gap);
   grid-template-columns: minmax(0, 1fr);
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-slider__wrapper, .bf-slider) :where(input[type='range']) {
+:where(.bf-theme, .vr-theme) :where(.p-slider__wrapper, .bf-slider, .slider-pair) :where(input[type='range']) {
   flex: 1 1 8rem;
   inline-size: 100%;
   min-inline-size: 0;
@@ -2117,6 +2123,52 @@ ${typeStyles(h6, { includeCase: false })}  appearance: none;
   color: var(--vr-color-text-default);
   cursor: pointer;
   padding: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.grid-row, .bf-control-grid, .p-equal-height-row, .p-equal-height-row--wrap) {
+  container-type: inline-size;
+  display: grid;
+  gap: var(--vr-field-gap);
+  grid-template-columns: minmax(0, 1fr);
+  min-inline-size: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.col-1, .col-2, .col-3, .col-4, .bf-control-grid__item, .p-equal-height-row__col) {
+  display: grid;
+  gap: var(--vr-field-gap);
+  min-inline-size: 0;
+}
+
+@container (width >= 28rem) {
+  :where(.bf-theme, .vr-theme) :where(.grid-row, .bf-control-grid, .p-equal-height-row--wrap) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.col-2, .col-3, .col-4, .bf-control-grid__item--span-2, .bf-control-grid__item--span-3, .bf-control-grid__item--span-4) {
+    grid-column: span 2;
+  }
+}
+
+@container (width >= 42rem) {
+  :where(.bf-theme, .vr-theme) :where(.grid-row, .bf-control-grid, .p-equal-height-row, .p-equal-height-row--wrap) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.col-1, .bf-control-grid__item--span-1) {
+    grid-column: span 1;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.col-2, .bf-control-grid__item--span-2) {
+    grid-column: span 2;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.col-3, .bf-control-grid__item--span-3) {
+    grid-column: span 3;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.col-4, .bf-control-grid__item--span-4) {
+    grid-column: span 4;
+  }
 }
 
 :where(.bf-theme, .vr-theme) :where(.l-application, .bf-application) {

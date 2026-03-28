@@ -43,6 +43,7 @@ The package currently focuses on:
 - strip rhythm that lives on the bottom edge rather than adding mirrored top spacing
 - section, strip, stack, cluster, and fixed-width layout primitives
 - container-query grid primitives with a `4 / 8 / 16` column structure, power-of-2 spans, and Canonical `620px` / `1681px` column-count thresholds
+- a compact compatibility control-matrix surface for dense inspector rows (`grid-row`, `col-*`, and `slider-pair--stacked`), while `bf-grid` remains the canonical page/layout grid
 - baseline grid inspection utility
 
 It intentionally does not try to be a full component framework yet.
@@ -138,6 +139,7 @@ The current baseline-gated demo pages are:
 - `demo/components/brand-layout-ops-sample.html`
 - `demo/components/panel-pressure.html`
 - `demo/components/narrow-panel.html`
+- `demo/components/parameter-matrix.html`
 - `demo/components/editorial-pressure.html`
 
 The older grouped pages still exist as convenience overviews:
@@ -271,6 +273,8 @@ The component demos now also include two realistic pressure-test surfaces:
 - a future portfolio/editorial composition
 
 There is also a dedicated narrow-panel regression page in `demo/components/narrow-panel.html`. It keeps a deliberately tight rail in the browser gate so text inputs, selects, slider pairs, search wrappers, and a video specimen cannot quietly overflow their container.
+
+There is also a dedicated dense parameter-matrix regression page in `demo/components/parameter-matrix.html`. It protects the downstream `grid-row` / `col-*` / `slider-pair--stacked` control pattern so inspector rows stay baseline-aligned and do not collapse back into the broad page-grid behavior.
 
 There is also a read-only `brand-layout-ops` shell sample page in `demo/components/brand-layout-ops-sample.html`, copied from the downstream app's stage-plus-inspector structure so layout work can be compared here without editing that repo. The automated gate treats that page as a shell-level reference, while the dedicated `controls` and `surfaces-navigation` pages remain the authoritative low-level verification surfaces for dense fields, buttons, tabs, accordion tabs, overlays, card surfaces, navigation-adjacent controls, switches, file input, and validation states.
 

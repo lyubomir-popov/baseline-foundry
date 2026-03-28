@@ -360,6 +360,13 @@ a {
   min-inline-size: 0;
 }
 
+.component-demo-parameter-rail {
+  display: grid;
+  gap: var(--vr-field-gap, 0.75rem);
+  inline-size: min(100%, 19rem);
+  min-inline-size: 0;
+}
+
 .component-demo-media-test {
   aspect-ratio: 16 / 9;
   background:

@@ -42,6 +42,7 @@ export const componentPages: ComponentPage[] = [
   { name: "panel-pressure", route: "/demo/components/panel-pressure.html" },
   { name: "editorial-pressure", route: "/demo/components/editorial-pressure.html" },
   { name: "narrow-panel", route: "/demo/components/narrow-panel.html" },
+  { name: "parameter-matrix", route: "/demo/components/parameter-matrix.html" },
   { name: "brand-layout-ops-sample", route: "/demo/components/brand-layout-ops-sample.html" }
 ];
 
