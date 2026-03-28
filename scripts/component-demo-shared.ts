@@ -5,15 +5,16 @@ import path from "node:path";
 export interface ComponentPage {
   name: string;
   route: string;
+  captureProfile?: "fit" | "wide";
 }
 
 export const componentPages: ComponentPage[] = [
-  { name: "typography", route: "/demo/components/typography.html" },
-  { name: "prose", route: "/demo/components/prose.html" },
-  { name: "layout", route: "/demo/components/layout.html" },
-  { name: "grid", route: "/demo/components/grid.html" },
-  { name: "application-shell", route: "/demo/components/application-shell.html" },
-  { name: "drawer-panel", route: "/demo/components/drawer-panel.html" },
+  { name: "typography", route: "/demo/components/typography.html", captureProfile: "wide" },
+  { name: "prose", route: "/demo/components/prose.html", captureProfile: "wide" },
+  { name: "layout", route: "/demo/components/layout.html", captureProfile: "wide" },
+  { name: "grid", route: "/demo/components/grid.html", captureProfile: "wide" },
+  { name: "application-shell", route: "/demo/components/application-shell.html", captureProfile: "wide" },
+  { name: "drawer-panel", route: "/demo/components/drawer-panel.html", captureProfile: "wide" },
   { name: "button", route: "/demo/components/button.html" },
   { name: "actions", route: "/demo/components/actions.html" },
   { name: "text-input", route: "/demo/components/text-input.html" },
@@ -28,7 +29,7 @@ export const componentPages: ComponentPage[] = [
   { name: "chip", route: "/demo/components/chip.html" },
   { name: "badge", route: "/demo/components/badge.html" },
   { name: "status-label", route: "/demo/components/status-label.html" },
-  { name: "table", route: "/demo/components/table.html" },
+  { name: "table", route: "/demo/components/table.html", captureProfile: "wide" },
   { name: "search-box", route: "/demo/components/search-box.html" },
   { name: "search-and-filter", route: "/demo/components/search-and-filter.html" },
   { name: "code-snippet", route: "/demo/components/code-snippet.html" },
@@ -47,11 +48,11 @@ export const componentPages: ComponentPage[] = [
   { name: "divider", route: "/demo/components/divider.html" },
   { name: "cards", route: "/demo/components/cards.html" },
   { name: "option-card", route: "/demo/components/option-card.html" },
-  { name: "panel-pressure", route: "/demo/components/panel-pressure.html" },
-  { name: "editorial-pressure", route: "/demo/components/editorial-pressure.html" },
-  { name: "narrow-panel", route: "/demo/components/narrow-panel.html" },
-  { name: "parameter-matrix", route: "/demo/components/parameter-matrix.html" },
-  { name: "brand-layout-ops-sample", route: "/demo/components/brand-layout-ops-sample.html" }
+  { name: "panel-pressure", route: "/demo/components/panel-pressure.html", captureProfile: "wide" },
+  { name: "editorial-pressure", route: "/demo/components/editorial-pressure.html", captureProfile: "wide" },
+  { name: "narrow-panel", route: "/demo/components/narrow-panel.html", captureProfile: "wide" },
+  { name: "parameter-matrix", route: "/demo/components/parameter-matrix.html", captureProfile: "wide" },
+  { name: "brand-layout-ops-sample", route: "/demo/components/brand-layout-ops-sample.html", captureProfile: "wide" }
 ];
 
 const contentTypes = new Map<string, string>([

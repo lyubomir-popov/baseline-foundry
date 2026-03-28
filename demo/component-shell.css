@@ -674,9 +674,10 @@ a {
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)),
     var(--component-demo-surface);
   border: 1px solid var(--component-demo-rule);
-  display: block;
+  display: grid;
   min-inline-size: 0;
   overflow: hidden;
+  place-items: center;
   transition: border-color 140ms ease, transform 140ms ease;
 }
 
@@ -698,8 +699,8 @@ a {
   block-size: 100%;
   display: block;
   inline-size: 100%;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain;
+  object-position: center;
 }
 
 .component-index-card__name {

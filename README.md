@@ -96,7 +96,7 @@ The demo runs at:
 ## Component QA
 
 The repo also includes isolated component demo pages for visual rhythm checks.
-The atlas at `demo/components/index.html` is now a visual index of the real baseline-gated files: each saved component gets its own HTML page, Playwright captures a screenshot for it, and the atlas turns those captures into linked preview tiles so the current surface can be scanned at a glance.
+The atlas at `demo/components/index.html` is now a visual index of the real baseline-gated files: each saved component gets its own HTML page, Playwright captures a screenshot for it, and the atlas turns those captures into linked preview tiles so the current surface can be scanned at a glance. Atomic controls are now captured from their fitted specimen footprint rather than from a full padded demo window, while layout and shell pages still use a wider capture profile.
 
 All component demos now:
 
@@ -194,7 +194,7 @@ The screenshots and manifest are written to:
 
 - `tmp/screenshots/components/`
 
-Those screenshots also power the visual atlas at `demo/components/index.html`, so run `npm run screenshots:components` when new demos are added or the saved preview set changes.
+Those screenshots also power the visual atlas at `demo/components/index.html`, so run `npm run screenshots:components` when new demos are added or the saved preview set changes. The atlas frames now use `object-fit: contain`, so the saved previews can stay legible even when different components naturally want different capture widths.
 
 The baseline verification report is also written to:
 
