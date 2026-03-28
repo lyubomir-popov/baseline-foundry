@@ -42,7 +42,7 @@ The package currently focuses on:
 - prose flow boundaries that keep baseline compensation on the last child
 - strip rhythm that lives on the bottom edge rather than adding mirrored top spacing
 - section, strip, stack, cluster, and fixed-width layout primitives
-- container-query grid primitives with a `4 / 8 / 16` column structure, power-of-2 spans, and Canonical `620px` / `1681px` column-count thresholds
+- container-query grid primitives with a `4 / 8 / 16` column structure, power-of-2 spans, Canonical `620px` / `1681px` container thresholds for column counts, and Canonical viewport-controlled gutters/margins (`16px`, `24px`, `32px`)
 - a compact compatibility control-matrix surface for dense inspector rows (`grid-row`, `col-*`, and `slider-pair--stacked`), while `bf-grid` remains the canonical page/layout grid
 - an overlay drawer-panel shell mode for temporary inspectors (`l-aside.is-overlay`, backdrop, and `p-panel__toggle`)
 - a resizable pinned-aside shell mode for desktop inspectors (`l-aside.is-pinned`, `l-application__aside-resize-handle`, and `initResizableAsides()`)
@@ -208,7 +208,7 @@ The default theme uses IBM Plex Sans Variable Roman as the generated metric sour
 
 - typography roles
 - spacing tokens derived from the baseline unit
-- layout values for section rhythm, measure, outer margins, and grid gaps
+- layout values for section rhythm, measure, and x-small base grid spacing, with the Canonical grid spec promoting gutters and outer margins responsively at the viewport level
 - component values for border width, control sizes, visual control size, field gaps, panel padding, and accordion indent
 - runtime font-face metadata for the IBM Plex Sans variable files
 

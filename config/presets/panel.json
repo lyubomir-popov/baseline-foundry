@@ -107,7 +107,7 @@
     "stripSpaceBaselineUnits": 12,
     "gridGapInlineBaselineUnits": 4,
     "gridGapBlockBaselineUnits": 4,
-    "pageMarginBaselineUnits": 6
+    "pageMarginBaselineUnits": 4
   },
   "components": {
     "borderWidthPx": 1,

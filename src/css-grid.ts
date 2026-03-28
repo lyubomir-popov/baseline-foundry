@@ -12,7 +12,27 @@ export function gridCss(): string {
   const legacyMediumSpans = [1, 2, 3, 4, 5, 6, 7, 8].map(span => legacySpanRule(span, "  ")).join("\n");
   const legacyLargeSpans = [1, 2, 3, 4, 5, 6, 7, 8].map(span => legacySpanRule(span, "  ")).join("\n");
 
-  return `:where(.bf-theme, .vr-theme) :where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .u-fixed-width, .p-panel__content, .p-accordion__panel, .l-main, .l-aside) {
+  return `:where(.bf-theme, .vr-theme) {
+  --bf-grid-gap-inline: 1rem;
+  --bf-grid-gap-block: 1rem;
+  --bf-page-margin: 1rem;
+}
+
+@media (width >= 38.75rem) {
+  :where(.bf-theme, .vr-theme) {
+    --bf-grid-gap-inline: 1.5rem;
+    --bf-grid-gap-block: 1.5rem;
+    --bf-page-margin: 1.5rem;
+  }
+}
+
+@media (width >= 64.75rem) {
+  :where(.bf-theme, .vr-theme) {
+    --bf-page-margin: 2rem;
+  }
+}
+
+:where(.bf-theme, .vr-theme) :where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .u-fixed-width, .p-panel__content, .p-accordion__panel, .l-main, .l-aside) {
   container-type: inline-size;
 }
 

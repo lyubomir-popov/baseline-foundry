@@ -105,9 +105,9 @@
     "sectionSpaceBaselineUnits": 8,
     "sectionSpaceDeepBaselineUnits": 16,
     "stripSpaceBaselineUnits": 8,
-    "gridGapInlineBaselineUnits": 3,
-    "gridGapBlockBaselineUnits": 3,
-    "pageMarginBaselineUnits": 4
+    "gridGapInlineBaselineUnits": 2,
+    "gridGapBlockBaselineUnits": 2,
+    "pageMarginBaselineUnits": 2
   },
   "components": {
     "borderWidthPx": 1,
