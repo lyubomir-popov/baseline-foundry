@@ -268,8 +268,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   input[type='url'],
   textarea,
   select
-):focus {
-  background-color: var(--vr-color-background-active);
+):focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -285,6 +284,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   textarea,
   select
 ):focus-visible {
+  background-color: var(--vr-color-background-active);
   outline: 2px solid var(--vr-color-focus);
   outline-offset: 2px;
 }
@@ -573,7 +573,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   background-color: var(--vr-color-background-caution-hover);
 }
 
-:where(.bf-theme, .vr-theme) :where(.is-caution, .bf-validation--caution) :where(.p-form-validation__input, .bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus {
+:where(.bf-theme, .vr-theme) :where(.is-caution, .bf-validation--caution) :where(.p-form-validation__input, .bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--vr-color-background-caution-active);
 }
 
@@ -594,7 +594,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   background-color: var(--vr-color-background-negative-hover);
 }
 
-:where(.bf-theme, .vr-theme) :where(.is-error, .bf-validation--error, .has-error) :where(.p-form-validation__input, .bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus {
+:where(.bf-theme, .vr-theme) :where(.is-error, .bf-validation--error, .has-error) :where(.p-form-validation__input, .bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--vr-color-background-negative-active);
 }
 
@@ -615,7 +615,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   background-color: var(--vr-color-background-positive-hover);
 }
 
-:where(.bf-theme, .vr-theme) :where(.is-success, .bf-validation--success, .has-success) :where(.p-form-validation__input, .bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus {
+:where(.bf-theme, .vr-theme) :where(.is-success, .bf-validation--success, .has-success) :where(.p-form-validation__input, .bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--vr-color-background-positive-active);
 }
 
@@ -664,7 +664,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   padding: 0;
 }
 
-:where(.bf-theme, .vr-theme) :where(input[type='range']):focus {
+:where(.bf-theme, .vr-theme) :where(input[type='range']):focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -745,7 +745,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   background-color: var(--vr-color-background-hover);
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-button, .p-button--base, .bf-button, .bf-button--base):focus {
+:where(.bf-theme, .vr-theme) :where(.p-button, .p-button--base, .bf-button, .bf-button--base):focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -855,7 +855,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   color: var(--vr-color-link-default);
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-panel__toggle:focus, .bf-panel__toggle:focus) {
+:where(.bf-theme, .vr-theme) :where(.p-panel__toggle:focus:not(:focus-visible), .bf-panel__toggle:focus:not(:focus-visible)) {
   outline: none;
 }
 
@@ -1092,7 +1092,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   color: var(--vr-color-text-default);
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-tabs__link:focus, .bf-tabs__link:focus) {
+:where(.bf-theme, .vr-theme) :where(.p-tabs__link:focus:not(:focus-visible), .bf-tabs__link:focus:not(:focus-visible)) {
   outline: none;
 }
 
@@ -1168,7 +1168,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   background: var(--vr-color-background-hover);
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-choice-row:focus-within, .bf-choice-row:focus-within, .preset-radio-row:focus-within) {
+:where(.bf-theme, .vr-theme) :where(.p-choice-row:has(:focus-visible), .bf-choice-row:has(:focus-visible), .preset-radio-row:has(:focus-visible)) {
   outline: 2px solid var(--vr-color-focus);
   outline-offset: -2px;
 }
@@ -1296,7 +1296,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   background-color: var(--vr-color-background-hover);
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-segmented-control__button:focus, .p-tab-buttons__button:focus, .bf-segmented-control__button:focus, .bf-tab-buttons__button:focus) {
+:where(.bf-theme, .vr-theme) :where(.p-segmented-control__button:focus:not(:focus-visible), .p-tab-buttons__button:focus:not(:focus-visible), .bf-segmented-control__button:focus:not(:focus-visible), .bf-tab-buttons__button:focus:not(:focus-visible)) {
   outline: none;
 }
 
@@ -1625,7 +1625,7 @@ ${typeStyles(h5)}  margin: 0;
   transform-origin: left center;
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-search-box__reset:focus, .p-search-box__button:focus, .bf-search-box__reset:focus, .bf-search-box__button:focus) {
+:where(.bf-theme, .vr-theme) :where(.p-search-box__reset:focus:not(:focus-visible), .p-search-box__button:focus:not(:focus-visible), .bf-search-box__reset:focus:not(:focus-visible), .bf-search-box__button:focus:not(:focus-visible)) {
   outline: none;
 }
 
@@ -1714,7 +1714,7 @@ ${typeStyles(h5)}  margin: 0;
   transform-origin: left center;
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-search-and-filter__search-button:focus, .p-search-and-filter__selected-count:focus, .bf-search-and-filter__search-button:focus, .bf-search-and-filter__selected-count:focus) {
+:where(.bf-theme, .vr-theme) :where(.p-search-and-filter__search-button:focus:not(:focus-visible), .p-search-and-filter__selected-count:focus:not(:focus-visible), .bf-search-and-filter__search-button:focus:not(:focus-visible), .bf-search-and-filter__selected-count:focus:not(:focus-visible)) {
   outline: none;
 }
 
@@ -1872,7 +1872,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-default)
   color: var(--vr-color-link-default);
 }
 
-:where(.bf-theme, .vr-theme) :where(.vr-list-tree__link, .p-list-tree__link, .bf-list-tree__link):focus {
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__link, .p-list-tree__link, .bf-list-tree__link):focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -1901,7 +1901,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   background: var(--vr-color-background-hover);
 }
 
-:where(.bf-theme, .vr-theme) :where(.vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree__toggle):focus {
+:where(.bf-theme, .vr-theme) :where(.vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree__toggle):focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -2004,7 +2004,7 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   background: var(--vr-color-background-active);
 }
 
-:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu__link):focus {
+:where(.bf-theme, .vr-theme) :where(.vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu__link):focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -2187,7 +2187,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   background-color: var(--vr-color-background-hover);
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-pagination__link:focus, .p-pagination__link--previous:focus, .p-pagination__link--next:focus, .bf-pagination__link:focus, .bf-pagination__link--previous:focus, .bf-pagination__link--next:focus) {
+:where(.bf-theme, .vr-theme) :where(.p-pagination__link:focus:not(:focus-visible), .p-pagination__link--previous:focus:not(:focus-visible), .p-pagination__link--next:focus:not(:focus-visible), .bf-pagination__link:focus:not(:focus-visible), .bf-pagination__link--previous:focus:not(:focus-visible), .bf-pagination__link--next:focus:not(:focus-visible)) {
   outline: none;
 }
 
@@ -2279,7 +2279,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   text-align: left;
 }
 
-:where(.bf-theme, .vr-theme) :where(.p-accordion__tab, .bf-accordion__tab):focus {
+:where(.bf-theme, .vr-theme) :where(.p-accordion__tab, .bf-accordion__tab):focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -2455,7 +2455,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   box-shadow: inset 1px 0 0 var(--vr-color-border-default);
 }
 
-:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__dropdown, .p-code-snippet__dropdown, .bf-code-snippet__dropdown):focus {
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__dropdown, .p-code-snippet__dropdown, .bf-code-snippet__dropdown):focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -2517,7 +2517,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
   box-shadow: inset 0 0 0 1px var(--vr-color-border-information);
 }
 
-:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon):focus {
+:where(.bf-theme, .vr-theme) :where(.vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet__block--icon):focus:not(:focus-visible) {
   outline: none;
 }
 
