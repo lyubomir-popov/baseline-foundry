@@ -6,7 +6,7 @@ export interface RangeControlsInitOptions {
 }
 
 const DEFAULT_RANGE_SELECTOR = "input[type='range']";
-const DEFAULT_NUMBER_SELECTOR = ".bf-slider__input, .p-slider__input";
+const DEFAULT_NUMBER_SELECTOR = ".bf-slider-input, .p-slider__input";
 const DEFAULT_WRAPPER_SELECTOR = ".bf-slider, .p-slider__wrapper";
 
 function clamp(value: number, min: number, max: number): number {

@@ -2,7 +2,7 @@ export interface AccordionInitOptions {
   root?: ParentNode;
 }
 
-const TAB_SELECTOR = ".bf-accordion__tab, .p-accordion__tab";
+const TAB_SELECTOR = ".bf-accordion-tab, .p-accordion__tab";
 
 export function toggleAccordionButton(button: HTMLElement): void {
   const panelId = button.getAttribute("aria-controls");

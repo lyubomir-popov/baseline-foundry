@@ -2,8 +2,8 @@ export interface ListTreeInitOptions {
   root?: ParentNode;
 }
 
-const TOGGLE_SELECTOR = ".vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree__toggle";
-const ITEM_SELECTOR = ".vr-list-tree__item, .p-list-tree__item, .bf-list-tree__item";
+const TOGGLE_SELECTOR = ".vr-list-tree__toggle, .p-list-tree__toggle, .bf-list-tree-toggle";
+const ITEM_SELECTOR = ".vr-list-tree__item, .p-list-tree__item, .bf-list-tree-item";
 const LIST_SELECTOR = ".vr-list-tree, .p-list-tree, .bf-list-tree";
 
 function getNestedList(item: HTMLElement, toggle: HTMLElement): HTMLElement | null {

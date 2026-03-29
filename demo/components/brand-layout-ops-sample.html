@@ -47,73 +47,73 @@
             aria-orientation="vertical"
             data-baseline-ignore="true"
           ></div>
-          <div class="p-panel is-fill" data-component-capture data-baseline-check="box" data-baseline-label="brand layout ops panel">
-            <div class="p-panel__header is-sticky">
-              <h1 class="p-panel__title" data-baseline-check="flow" data-baseline-label="brand layout ops panel title">Brand Layout Ops</h1>
-              <div class="p-panel__controls">
-                <button class="p-button--base is-dense" type="button" data-baseline-check="box" data-baseline-label="brand layout ops close button">Close</button>
+          <div class="bf-panel is-fill" data-component-capture data-baseline-check="box" data-baseline-label="brand layout ops panel">
+            <div class="bf-panel-header is-sticky">
+              <h1 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="brand layout ops panel title">Brand Layout Ops</h1>
+              <div class="bf-panel-controls">
+                <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="brand layout ops close button">Close</button>
               </div>
             </div>
-            <div class="p-panel__content" data-baseline-ignore="true">
+            <div class="bf-panel-content" data-baseline-ignore="true">
               <div class="config-sections">
-                <div class="p-tabs p-tabs--equal">
-                  <ul class="p-tabs__list" role="tablist" data-baseline-ignore="true">
-                    <li class="p-tabs__item" data-baseline-ignore="true">
-                      <button class="p-tabs__link" type="button" role="tab" aria-selected="true" aria-controls="brand-layout-ops-sample-panel-1">Document</button>
+                <div class="bf-tabs bf-tabs is-equal">
+                  <ul class="bf-tabs-list" role="tablist" data-baseline-ignore="true">
+                    <li class="bf-tabs-item" data-baseline-ignore="true">
+                      <button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="brand-layout-ops-sample-panel-1">Document</button>
                     </li>
-                    <li class="p-tabs__item" data-baseline-ignore="true">
-                      <button class="p-tabs__link" type="button" role="tab" aria-selected="false" aria-controls="brand-layout-ops-sample-panel-2">Output</button>
+                    <li class="bf-tabs-item" data-baseline-ignore="true">
+                      <button class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="brand-layout-ops-sample-panel-2">Output</button>
                     </li>
-                    <li class="p-tabs__item" data-baseline-ignore="true">
-                      <button class="p-tabs__link" type="button" role="tab" aria-selected="false" aria-controls="brand-layout-ops-sample-panel-3">Export</button>
+                    <li class="bf-tabs-item" data-baseline-ignore="true">
+                      <button class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="brand-layout-ops-sample-panel-3">Export</button>
                     </li>
                   </ul>
-                  <div id="brand-layout-ops-sample-panel-1" class="p-tabs__panel" role="tabpanel" aria-hidden="false">
-                    <div class="p-accordion">
-                      <ul class="p-accordion__list" data-baseline-ignore="true">
-                        <li class="p-accordion__group" data-baseline-ignore="true">
-                          <div class="p-accordion__heading">
-                            <button class="p-accordion__tab" type="button" aria-expanded="true" aria-controls="brand-layout-ops-sample-section-layout">Layout grid</button>
+                  <div id="brand-layout-ops-sample-panel-1" class="bf-tabs-panel" role="tabpanel" aria-hidden="false">
+                    <div class="bf-accordion">
+                      <ul class="bf-accordion-list" data-baseline-ignore="true">
+                        <li class="bf-accordion-group" data-baseline-ignore="true">
+                          <div class="bf-accordion-heading">
+                            <button class="bf-accordion-tab" type="button" aria-expanded="true" aria-controls="brand-layout-ops-sample-section-layout">Layout grid</button>
                           </div>
-                          <section id="brand-layout-ops-sample-section-layout" class="p-accordion__panel config-group" aria-hidden="false" data-baseline-ignore="true">
-                            <div class="p-form__group">
-                              <label class="p-form__label u-no-margin--bottom" for="brand-layout-ops-sample-profile">Output profile</label>
-                              <div class="p-form__control">
-                                <select id="brand-layout-ops-sample-profile" class="p-form-validation__input is-dense">
+                          <section id="brand-layout-ops-sample-section-layout" class="bf-accordion-panel config-group" aria-hidden="false" data-baseline-ignore="true">
+                            <div class="bf-field">
+                              <label class="bf-form-label" for="brand-layout-ops-sample-profile">Output profile</label>
+                              <div class="bf-control">
+                                <select id="brand-layout-ops-sample-profile" class="bf-input is-dense">
                                   <option>Landscape 1280x720</option>
                                   <option>Instagram 1080x1350</option>
                                   <option>Story 1080x1920</option>
                                 </select>
                               </div>
-                              <p class="p-form-help-text is-tight">Document-owned profile selection feeding the current stage and export defaults.</p>
+                              <p class="bf-form-help is-tight">Document-owned profile selection feeding the current stage and export defaults.</p>
                             </div>
 
-                            <div class="p-form__group">
-                              <label class="p-form__label u-no-margin--bottom" for="brand-layout-ops-sample-grid">Grid density</label>
-                              <div class="p-form__control">
-                                <div class="p-slider__wrapper">
+                            <div class="bf-field">
+                              <label class="bf-form-label" for="brand-layout-ops-sample-grid">Grid density</label>
+                              <div class="bf-control">
+                                <div class="bf-slider">
                                   <input id="brand-layout-ops-sample-grid" type="range" min="0" max="100" value="64">
-                                  <input class="p-form-validation__input p-slider__input is-dense" type="number" min="0" max="100" value="64">
+                                  <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="100" value="64">
                                 </div>
                               </div>
                             </div>
 
-                            <div class="p-form__group p-form__group--checkbox">
-                              <div class="p-form__control">
-                                <div class="p-checkbox">
-                                  <input id="brand-layout-ops-sample-safe" class="p-checkbox__input" type="checkbox" checked>
-                                  <label class="p-checkbox__label" for="brand-layout-ops-sample-safe">Show safe area guides</label>
+                            <div class="bf-field bf-field is-checkbox">
+                              <div class="bf-control">
+                                <div class="bf-checkbox">
+                                  <input id="brand-layout-ops-sample-safe" class="bf-checkbox-input" type="checkbox" checked>
+                                  <label class="bf-checkbox-label" for="brand-layout-ops-sample-safe">Show safe area guides</label>
                                 </div>
                               </div>
                             </div>
                           </section>
                         </li>
 
-                        <li class="p-accordion__group" data-baseline-ignore="true">
-                          <div class="p-accordion__heading">
-                            <button class="p-accordion__tab" type="button" aria-expanded="false" aria-controls="brand-layout-ops-sample-section-style">Style palette</button>
+                        <li class="bf-accordion-group" data-baseline-ignore="true">
+                          <div class="bf-accordion-heading">
+                            <button class="bf-accordion-tab" type="button" aria-expanded="false" aria-controls="brand-layout-ops-sample-section-style">Style palette</button>
                           </div>
-                          <section id="brand-layout-ops-sample-section-style" class="p-accordion__panel config-group" aria-hidden="true" data-baseline-ignore="true">
+                          <section id="brand-layout-ops-sample-section-style" class="bf-accordion-panel config-group" aria-hidden="true" data-baseline-ignore="true">
                             <p class="output-profile-meta">Representative secondary section, kept here only so the shell mirrors the real panel stack depth.</p>
                           </section>
                         </li>
@@ -121,11 +121,11 @@
                     </div>
                   </div>
 
-                  <div id="brand-layout-ops-sample-panel-2" class="p-tabs__panel" role="tabpanel" aria-hidden="true" data-baseline-ignore="true">
+                  <div id="brand-layout-ops-sample-panel-2" class="bf-tabs-panel" role="tabpanel" aria-hidden="true" data-baseline-ignore="true">
                     <p class="output-profile-meta">Output targets and scene family controls live here in the downstream app.</p>
                   </div>
 
-                  <div id="brand-layout-ops-sample-panel-3" class="p-tabs__panel" role="tabpanel" aria-hidden="true" data-baseline-ignore="true">
+                  <div id="brand-layout-ops-sample-panel-3" class="bf-tabs-panel" role="tabpanel" aria-hidden="true" data-baseline-ignore="true">
                     <p class="output-profile-meta">Export actions and frame range settings live here in the downstream app.</p>
                   </div>
                 </div>

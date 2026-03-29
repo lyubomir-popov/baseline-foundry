@@ -4,7 +4,7 @@ export interface ResizableAsideInitOptions {
 
 const APPLICATION_SELECTOR = ".l-application, .bf-application";
 const PINNED_ASIDE_SELECTOR = ".l-aside.is-pinned, .bf-aside.is-pinned";
-const HANDLE_SELECTOR = ".l-application__aside-resize-handle, .bf-application__aside-resize-handle";
+const HANDLE_SELECTOR = ".l-application__aside-resize-handle, .bf-application-aside-resize-handle";
 const DEFAULT_STEP_PX = 16;
 const DEFAULT_STORAGE_PREFIX = "baseline-foundry-aside-width";
 const RESIZING_CLASS = "is-resizing-aside";

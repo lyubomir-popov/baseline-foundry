@@ -61,12 +61,12 @@ export function gridCss(): string {
   min-inline-size: 0;
 }
 
-:where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) {
+:where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid.is-controls) {
   container-type: inline-size;
   gap: var(--vr-field-gap);
 }
 
-:where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control, .bf-grid__item--control-pair) {
+:where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control, .bf-grid-item.is-control-pair) {
   grid-column: auto / span 4;
 }
 
@@ -81,11 +81,11 @@ ${baseSpans}
     --bf-grid-columns: 8;
   }
 
-  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control) {
+  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {
     grid-column: auto / span 2;
   }
 
-  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control-pair) {
+  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {
     grid-column: auto / span 4;
   }
 
@@ -97,11 +97,11 @@ ${mediumSpans}
     --bf-grid-columns: 16;
   }
 
-  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control) {
+  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {
     grid-column: auto / span 4;
   }
 
-  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control-pair) {
+  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {
     grid-column: auto / span 8;
   }
 

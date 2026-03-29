@@ -6,7 +6,7 @@ const APPLICATION_SELECTOR = ".l-application, .bf-application";
 const DRAWER_SELECTOR = ".l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer";
 const TOGGLE_SELECTOR = "[data-panel-drawer-toggle]";
 const CLOSE_SELECTOR = "[data-panel-drawer-close]";
-const OVERLAY_SELECTOR = ".l-application__overlay, .bf-application__overlay";
+const OVERLAY_SELECTOR = ".l-application__overlay, .bf-application-overlay";
 const APPLICATION_OPEN_CLASS = "is-drawer-expanded";
 const DRAWER_OPEN_CLASS = "is-open";
 

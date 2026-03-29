@@ -16,7 +16,7 @@
         <p class="component-demo-meta">This is the temporary panel mode: it sits over the working area, keeps the stage width intact, and reuses the same dense panel rhythm as the pinned inspector.</p>
       </div>
       <div class="component-demo-toolbar">
-        <button class="p-panel__toggle" type="button" data-panel-drawer-toggle aria-controls="drawer-panel-demo" aria-expanded="true">Toggle drawer</button>
+        <button class="bf-panel-toggle" type="button" data-panel-drawer-toggle aria-controls="drawer-panel-demo" aria-expanded="true">Toggle drawer</button>
         <label class="component-demo-toggle" for="baseline-grid-toggle">
           <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
           Show baseline grid
@@ -40,29 +40,29 @@
         <div class="l-application__overlay" data-panel-drawer-close aria-controls="drawer-panel-demo" aria-hidden="false" data-baseline-ignore="true"></div>
 
         <aside id="drawer-panel-demo" class="l-aside is-overlay is-open" aria-hidden="false" aria-label="Temporary inspector drawer">
-          <section class="p-panel is-fill" data-baseline-check="box" data-baseline-label="drawer panel shell">
-            <div class="p-panel__header is-sticky">
-              <h2 class="p-panel__title" data-baseline-check="flow" data-baseline-label="drawer panel title">Quick settings</h2>
-              <div class="p-panel__controls" data-baseline-check="box" data-baseline-label="drawer panel controls">
-                <button class="p-panel__toggle" type="button" data-panel-drawer-close data-panel-drawer-autofocus aria-controls="drawer-panel-demo" data-baseline-check="box" data-baseline-label="drawer panel close toggle">Close</button>
+          <section class="bf-panel is-fill" data-baseline-check="box" data-baseline-label="drawer panel shell">
+            <div class="bf-panel-header is-sticky">
+              <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="drawer panel title">Quick settings</h2>
+              <div class="bf-panel-controls" data-baseline-check="box" data-baseline-label="drawer panel controls">
+                <button class="bf-panel-toggle" type="button" data-panel-drawer-close data-panel-drawer-autofocus aria-controls="drawer-panel-demo" data-baseline-check="box" data-baseline-label="drawer panel close toggle">Close</button>
               </div>
             </div>
 
-            <div class="p-panel__content component-demo-compat-stack">
+            <div class="bf-panel-content component-demo-compat-stack">
               <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="drawer panel kicker">Overlay mode</h5>
               <p class="bf-body" data-baseline-check="flow" data-baseline-label="drawer panel intro">Use the drawer when settings should be close at hand but should not permanently steal width from the stage.</p>
 
-              <div class="p-form__group" data-baseline-check="box" data-baseline-label="drawer text field">
-                <label class="p-form__label u-no-margin--bottom" for="drawer-name" data-baseline-check="flow" data-baseline-label="drawer text label">Preset name</label>
-                <div class="p-form__control" data-baseline-check="box" data-baseline-label="drawer text control">
-                  <input id="drawer-name" class="p-form-validation__input is-dense" type="text" value="Studio export" data-baseline-check="box" data-baseline-label="drawer text input">
+              <div class="bf-field" data-baseline-check="box" data-baseline-label="drawer text field">
+                <label class="bf-form-label" for="drawer-name" data-baseline-check="flow" data-baseline-label="drawer text label">Preset name</label>
+                <div class="bf-control" data-baseline-check="box" data-baseline-label="drawer text control">
+                  <input id="drawer-name" class="bf-input is-dense" type="text" value="Studio export" data-baseline-check="box" data-baseline-label="drawer text input">
                 </div>
               </div>
 
-              <div class="p-form__group" data-baseline-check="box" data-baseline-label="drawer select field">
-                <label class="p-form__label u-no-margin--bottom" for="drawer-output" data-baseline-check="flow" data-baseline-label="drawer select label">Output profile</label>
-                <div class="p-form__control" data-baseline-check="box" data-baseline-label="drawer select control">
-                  <select id="drawer-output" class="p-form-validation__input is-dense" data-baseline-check="box" data-baseline-label="drawer select">
+              <div class="bf-field" data-baseline-check="box" data-baseline-label="drawer select field">
+                <label class="bf-form-label" for="drawer-output" data-baseline-check="flow" data-baseline-label="drawer select label">Output profile</label>
+                <div class="bf-control" data-baseline-check="box" data-baseline-label="drawer select control">
+                  <select id="drawer-output" class="bf-input is-dense" data-baseline-check="box" data-baseline-label="drawer select">
                     <option selected>Landscape 1280x720</option>
                     <option>Portrait 1080x1920</option>
                     <option>Square 1080x1080</option>
@@ -70,18 +70,18 @@
                 </div>
               </div>
 
-              <div class="p-form__group p-form__group--checkbox" data-baseline-check="box" data-baseline-label="drawer checkbox field">
-                <div class="p-form__control" data-baseline-check="box" data-baseline-label="drawer checkbox control">
-                  <div class="p-checkbox" data-baseline-check="box" data-baseline-label="drawer checkbox">
-                    <input id="drawer-grid" class="p-checkbox__input" type="checkbox" checked data-baseline-ignore="true">
-                    <label class="p-checkbox__label" for="drawer-grid" data-baseline-check="flow" data-baseline-label="drawer checkbox label">Show safe area guides</label>
+              <div class="bf-field bf-field is-checkbox" data-baseline-check="box" data-baseline-label="drawer checkbox field">
+                <div class="bf-control" data-baseline-check="box" data-baseline-label="drawer checkbox control">
+                  <div class="bf-checkbox" data-baseline-check="box" data-baseline-label="drawer checkbox">
+                    <input id="drawer-grid" class="bf-checkbox-input" type="checkbox" checked data-baseline-ignore="true">
+                    <label class="bf-checkbox-label" for="drawer-grid" data-baseline-check="flow" data-baseline-label="drawer checkbox label">Show safe area guides</label>
                   </div>
                 </div>
               </div>
 
-              <div class="p-actions" data-baseline-check="box" data-baseline-label="drawer action row">
-                <button class="p-button--base is-dense" type="button" data-baseline-check="box" data-baseline-label="drawer secondary action">Cancel</button>
-                <button class="p-button is-dense" type="button" data-baseline-check="box" data-baseline-label="drawer primary action">Apply</button>
+              <div class="bf-actions" data-baseline-check="box" data-baseline-label="drawer action row">
+                <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="drawer secondary action">Cancel</button>
+                <button class="bf-button is-dense" type="button" data-baseline-check="box" data-baseline-label="drawer primary action">Apply</button>
               </div>
             </div>
           </section>
