@@ -220,6 +220,30 @@ html.u-baseline-grid::after {
   inline-size: min(100%, var(--bf-measure));
 }
 
+:where(.bf-theme, .vr-theme) :where(.bf-stage-shell) {
+  --bf-stage-shell-gap: var(--bf-space-3);
+  align-content: center;
+  align-items: center;
+  display: grid;
+  gap: var(--bf-stage-shell-gap);
+  justify-items: center;
+  min-block-size: 100%;
+  min-inline-size: 0;
+  padding-block: var(--bf-space-4);
+}
+
+:where(.bf-theme, .vr-theme) :where(.bf-stage-shell[data-space='tight']) {
+  --bf-stage-shell-gap: var(--bf-space-2);
+}
+
+:where(.bf-theme, .vr-theme) :where(.bf-stage-shell[data-space='loose']) {
+  --bf-stage-shell-gap: var(--bf-space-4);
+}
+
+:where(.bf-theme, .vr-theme) :where(.bf-stage-shell > *) {
+  min-inline-size: 0;
+}
+
 :where(.bf-theme, .vr-theme) :where(.bf-stack) {
   --bf-stack-space: var(--bf-space-3);
   display: grid;

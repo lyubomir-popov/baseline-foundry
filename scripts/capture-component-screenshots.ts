@@ -86,7 +86,7 @@ async function computeCaptureClip(
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const outputDir = path.resolve("tmp/screenshots/components");
-  const screenshotVersion = "20260328-panel-refresh-18";
+  const screenshotVersion = "20260329-panel-refresh-19";
   const thumbnailWidth = 360;
   const thumbnailHeight = 240;
   await fs.mkdir(outputDir, { recursive: true });

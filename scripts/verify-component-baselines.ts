@@ -157,6 +157,7 @@ async function verifyComponentPage(
       ".component-demo-compat-shell",
       ".component-demo-compat-stage",
       ".bf-fixed-width",
+      ".bf-stage-shell",
       ".bf-control-grid",
       ".bf-control-grid__item",
       ".p-panel",

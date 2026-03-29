@@ -14,6 +14,7 @@ export const componentPages: ComponentPage[] = [
   { name: "layout", route: "/demo/components/layout.html", captureProfile: "wide" },
   { name: "grid", route: "/demo/components/grid.html", captureProfile: "wide" },
   { name: "application-shell", route: "/demo/components/application-shell.html", captureProfile: "wide" },
+  { name: "stage-shell", route: "/demo/components/stage-shell.html", captureProfile: "wide" },
   { name: "drawer-panel", route: "/demo/components/drawer-panel.html", captureProfile: "wide" },
   { name: "button", route: "/demo/components/button.html" },
   { name: "actions", route: "/demo/components/actions.html" },

@@ -416,6 +416,40 @@ a {
   padding-inline: calc(var(--bf-baseline) * 4);
 }
 
+.component-demo-stage-shell-frame {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(246, 183, 60, 0.18), transparent 20%),
+    radial-gradient(circle at 80% 24%, rgba(255, 255, 255, 0.08), transparent 18%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 35%),
+    #202020;
+  box-shadow: inset 0 0 0 1px var(--component-demo-rule);
+  min-block-size: calc(var(--bf-baseline) * 56);
+  min-inline-size: 0;
+}
+
+.component-demo-stage-shell-preview {
+  aspect-ratio: 16 / 9;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 20% 18%, rgba(246, 183, 60, 0.22), transparent 22%),
+    #202020;
+  background-size: 2rem 2rem, 2rem 2rem, auto, auto;
+  inline-size: min(100%, calc(var(--bf-baseline) * 96));
+  min-inline-size: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.component-demo-stage-shell-preview::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent);
+  block-size: 1px;
+  content: "";
+  inset-block-start: 50%;
+  inset-inline: 0;
+  position: absolute;
+}
+
 .component-demo-compat-aside {
   min-block-size: 0;
 }
@@ -453,16 +487,6 @@ a {
   background: #202020;
   min-block-size: 100%;
   width: 100%;
-}
-
-.brand-layout-ops-sample .viewer-panel__content {
-  align-content: center;
-  align-items: center;
-  display: grid;
-  gap: 0.75rem;
-  min-block-size: 100%;
-  padding-block: 1rem;
-  place-items: center;
 }
 
 .brand-layout-ops-sample .stage {

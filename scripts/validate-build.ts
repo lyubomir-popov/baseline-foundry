@@ -67,6 +67,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-grid"), "Expected CSS to include grid selectors.");
   assert(css.includes(".bf-section"), "Expected CSS to include section selectors.");
   assert(css.includes(".bf-stack"), "Expected CSS to include stack selectors.");
+  assert(css.includes(".bf-stage-shell"), "Expected CSS to include the stage-shell helper.");
   assert(css.includes(".u-baseline-grid"), "Expected CSS to include the baseline grid utility.");
   assert(css.includes("border-bottom: var(--vr-border-width) solid var(--vr-color-border-high-contrast);"), "Expected compat form controls to use the flatter PVR-style bottom border treatment.");
   assert(!css.includes("border: var(--vr-border-width) solid var(--vr-color-border-high-contrast);\n  border-radius: var(--vr-radius);\n  color: var(--vr-color-text-default);\n  block-size: var(--vr-control-block-size);"), "Expected compat form controls to avoid the old full-box field styling.");

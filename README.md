@@ -41,7 +41,7 @@ The package currently focuses on:
 - prose defaults for headings, paragraphs, lists, blockquotes, and rules
 - prose flow boundaries that keep baseline compensation on the last child
 - strip rhythm that lives on the bottom edge rather than adding mirrored top spacing
-- section, strip, stack, cluster, and fixed-width layout primitives
+- section, strip, stack, cluster, fixed-width, and stage-shell layout primitives
 - container-query grid primitives with a `4 / 8 / 16` column structure, power-of-2 spans, Canonical `620px` / `1681px` container thresholds for column counts, and Canonical viewport-controlled gutters/margins (`16px`, `24px`, `32px`)
 - a canonical dense control-grid surface for inspector rows (`bf-control-grid`, `bf-control-grid__item`, and stacked `p-slider__wrapper` pairs), while `bf-grid` remains the canonical page/layout grid
 - an overlay drawer shell mode for temporary inspectors (`l-aside.is-overlay`, backdrop, `p-panel__toggle`, and Canonical small/medium/large size modifiers)
@@ -115,6 +115,7 @@ The current baseline-gated demo pages are:
 - `demo/components/layout.html`
 - `demo/components/grid.html`
 - `demo/components/application-shell.html`
+- `demo/components/stage-shell.html`
 - `demo/components/drawer-panel.html`
 - `demo/components/button.html`
 - `demo/components/actions.html`
@@ -292,6 +293,7 @@ The demo shows:
 - flow-boundary handling for prose
 - section and strip spacing
 - fixed-width layout
+- stage-shell centering for bounded preview areas
 - stack and cluster primitives
 - responsive container-query grid with stricter power-of-2 spans and Canonical thresholds
 - the generated tokens loaded live from `dist/tokens.json`

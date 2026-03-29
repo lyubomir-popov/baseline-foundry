@@ -18,15 +18,13 @@ Important note:
 
 ## Executive Summary
 
-The file falls into four buckets:
+The file falls into three buckets:
 
 1. Delete and replace now:
    drawer/backdrop logic, pinned-aside resize behavior, equal-width dense tabs, selectable preset/output rows, style/mapping palette cards, compact color-input sizing, operator-selector strips, fill-height panel behavior, checkbox-field density overrides, dense action-row helpers, most slider-pair styling, helper text/meta styling, and some generic wrapper grids.
 2. Replace with markup changes:
    several local `display: grid` wrappers should become `bf-stack`, `bf-cluster`, `bf-fixed-width`, or the shipped tabs/forms/panel shell.
-3. Port next into `baseline-foundry`:
-   only if swap testing proves they are truly reusable, a canonical stage-centering shell helper for `viewer-panel__content`-style composition.
-4. Keep local:
+3. Keep local:
    stage rendering, authoring overlays, selection handles, inline stage editor, and other canvas/editor-specific styling.
 
 ## Replace Now
@@ -73,7 +71,7 @@ These are not really "component CSS" so much as layout wrappers that should beco
 | `styles.css:260-274` `.preset-panel-content`, `.config-section`, `.config-group`, `.editor-form`, `.config-sections` | Remove local wrapper classes over time. | `bf-stack` with default/tight spacing |
 | `styles.css:347-360` `.preset-toolbar`, `.preset-selection`, `.preset-radio-list` | Replace the layout part now; the row-card visual part still needs a component. | `bf-stack`, optionally `bf-cluster` for horizontal action groupings |
 | `styles.css:464-476` `.main-actions`, `.preset-section-header`, `.preset-panel-section` | Replace the layout wrappers now. | `bf-stack` / `bf-cluster` |
-| `styles.css:109-120` `.viewer-panel__content` | No direct class yet, but most of this is already a composition problem, not a missing framework. | `bf-fixed-width` plus `bf-stack` / panel shell composition; keep only the genuinely stage-centering bits local |
+| `styles.css:109-120` `.viewer-panel__content` | Replace now. The package now ships the centered main-stage shell helper instead of leaving this as local shell composition. | `.bf-stage-shell` plus `bf-fixed-width`, keeping only app-specific stage visuals local |
 
 Relevant upstream layout primitives:
 
@@ -82,24 +80,9 @@ Relevant upstream layout primitives:
 - `C:\Users\lyubo\work\repos\baseline-foundry\src\css.ts:223`
 - `C:\Users\lyubo\work\repos\baseline-foundry\src\css.ts:237`
 
-## No Shipped Analog Yet: Port Next Into Baseline Foundry
+## No Shipped Analog Yet
 
-These are the strongest candidates for the next upstream component pass. They are repeatable product UI patterns, not one-off app hacks.
-
-### 1. Centered viewer-panel content shell
-
-Local block:
-
-- `styles.css:109-120` `.viewer-panel__content`
-
-Reason:
-
-- most of this is already composition rather than missing component CSS, but it still has enough repeated structure that we may eventually want a canonical stage-centering helper.
-- Real downstream bug observed on 2026-03-28: if the consumer does not hard-clamp the shell to the viewport, a long pinned inspector can stretch the shared app row and push the non-scrolling stage below the fold. `brand-layout-ops` now fixes that locally by bounding the shell and moving overflow into the inspector content, but this is the clearest current argument for a tiny upstream stage-shell helper if the pattern repeats.
-
-Priority:
-
-- low
+There is no strong reusable blocker left in this audited shell slice. The remaining local CSS is genuinely app-specific stage/editor work rather than missing panel-system primitives.
 
 ## Keep Local
 
@@ -121,7 +104,7 @@ If the downstream agent wants the fastest reduction in local CSS, this is the or
 2. Remove local slider-pair and range-fill helper CSS and use the shipped slider wrapper surface plus `initRangeControls()`.
 3. Replace plain wrapper grids with `bf-stack` / `bf-cluster` where no visual treatment is involved.
 4. Replace `output-profile-meta`, `preset-empty`, and similar plain text helpers with `bf-form-help` / base text styling.
-5. Re-test whether the remaining `viewer-panel__content` shell should stay local composition or deserves a small upstream helper after the downstream app is fully on the current shell primitives.
+5. Keep the app-specific stage/editor visuals local and only upstream another shell helper if swap testing reveals a new repeatable pattern.
 
 ## Suggested Instructions For The Brand Layout Ops Agent
 
@@ -133,4 +116,4 @@ If the downstream agent wants the fastest reduction in local CSS, this is the or
 
 ## Bottom Line
 
-The local stylesheet is no longer "all necessary." A meaningful chunk is removable now, especially the drawer implementation and many of the panel pattern rules. The biggest remaining discussion point is not a control family anymore but a shell-composition question: whether the stage-centering `viewer-panel__content` pattern should stay local or become a tiny upstream helper. Everything else in this audited dense-panel slice now has a direct `baseline-foundry` replacement path.
+The local stylesheet is no longer "all necessary." A meaningful chunk is removable now, especially the drawer implementation and many of the panel pattern rules. The former stage-centering shell gap is now covered by `bf-stage-shell`, so the remaining local CSS in this audited slice is mostly genuine stage/editor behavior rather than missing panel-system primitives.
