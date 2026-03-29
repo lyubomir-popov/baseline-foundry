@@ -4,74 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Narrow Panel Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Narrow Panel</h5>
-        <h1>Narrow-rail overflow regression</h1>
-        <p class="component-demo-meta">This is the dedicated squeeze test for compact inspector content: text inputs, selects, slider pairs, search, and media must all stay inside a deliberately narrow rail without losing baseline alignment.</p>
-      </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
-          Show baseline grid
-        </label>
-      </div>
-    </header>
+<body class="vr-theme" data-bf-tone="dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="narrow panel section">
+ <div style="display:grid;gap:var(--vr-field-gap,0.75rem);inline-size:min(100%,12rem);min-inline-size:0" data-overflow-container data-baseline-check="box" data-baseline-label="narrow panel rail">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel text field">
+ <label class="bf-form-label" for="narrow-panel-title" data-baseline-check="flow" data-baseline-label="narrow panel title label">Title</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="narrow panel title control">
+ <input id="narrow-panel-title" class="bf-input is-dense" type="text" value="Ubuntu Summit" data-baseline-check="box" data-baseline-label="narrow panel title input" data-overflow-check>
+ </div>
+ </div>
 
-    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="narrow panel section">
-        <div class="component-demo-narrow-rail" data-overflow-container data-baseline-check="box" data-baseline-label="narrow panel rail">
-          <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel text field">
-            <label class="bf-form-label" for="narrow-panel-title" data-baseline-check="flow" data-baseline-label="narrow panel title label">Title</label>
-            <div class="bf-control" data-baseline-check="box" data-baseline-label="narrow panel title control">
-              <input id="narrow-panel-title" class="bf-input is-dense" type="text" value="Ubuntu Summit" data-baseline-check="box" data-baseline-label="narrow panel title input" data-overflow-check>
-            </div>
-          </div>
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel select field">
+ <label class="bf-form-label" for="narrow-panel-profile" data-baseline-check="flow" data-baseline-label="narrow panel profile label">Profile</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="narrow panel profile control">
+ <select id="narrow-panel-profile" class="bf-input is-dense" data-baseline-check="box" data-baseline-label="narrow panel profile select" data-overflow-check>
+ <option>Landscape 1280x720</option>
+ <option>Instagram 1080x1350</option>
+ </select>
+ </div>
+ </div>
 
-          <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel select field">
-            <label class="bf-form-label" for="narrow-panel-profile" data-baseline-check="flow" data-baseline-label="narrow panel profile label">Profile</label>
-            <div class="bf-control" data-baseline-check="box" data-baseline-label="narrow panel profile control">
-              <select id="narrow-panel-profile" class="bf-input is-dense" data-baseline-check="box" data-baseline-label="narrow panel profile select" data-overflow-check>
-                <option>Landscape 1280x720</option>
-                <option>Instagram 1080x1350</option>
-              </select>
-            </div>
-          </div>
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel range field">
+ <label class="bf-form-label" for="narrow-panel-range" data-baseline-check="flow" data-baseline-label="narrow panel range label">Grid density</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="narrow panel range control">
+ <div class="bf-slider" data-baseline-check="box" data-baseline-label="narrow panel range wrapper" data-overflow-check>
+ <input id="narrow-panel-range" type="range" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="narrow panel range input">
+ <input class="bf-slider-input is-dense" type="number" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="narrow panel range number input">
+ </div>
+ </div>
+ </div>
 
-          <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel range field">
-            <label class="bf-form-label" for="narrow-panel-range" data-baseline-check="flow" data-baseline-label="narrow panel range label">Grid density</label>
-            <div class="bf-control" data-baseline-check="box" data-baseline-label="narrow panel range control">
-              <div class="bf-slider" data-baseline-check="box" data-baseline-label="narrow panel range wrapper" data-overflow-check>
-                <input id="narrow-panel-range" type="range" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="narrow panel range input">
-                <input class="bf-slider-input is-dense" type="number" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="narrow panel range number input">
-              </div>
-            </div>
-          </div>
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel search field">
+ <label class="bf-form-label" for="narrow-panel-search" data-baseline-check="flow" data-baseline-label="narrow panel search label">Search</label>
+ <div class="bf-search-box" data-baseline-check="box" data-baseline-label="narrow panel search box" data-overflow-check>
+ <input id="narrow-panel-search" class="bf-search-box-input bf-input is-dense" type="search" value="Ubuntu Summit" data-baseline-check="box" data-baseline-label="narrow panel search input">
+ <button class="bf-search-box-reset" type="button" data-baseline-check="box" data-baseline-label="narrow panel search reset">Reset</button>
+ <button class="bf-search-box-button" type="button" data-baseline-check="box" data-baseline-label="narrow panel search button">Search</button>
+ </div>
+ </div>
 
-          <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel search field">
-            <label class="bf-form-label" for="narrow-panel-search" data-baseline-check="flow" data-baseline-label="narrow panel search label">Search</label>
-            <div class="bf-search-box" data-baseline-check="box" data-baseline-label="narrow panel search box" data-overflow-check>
-              <input id="narrow-panel-search" class="bf-search-box-input bf-input is-dense" type="search" value="Ubuntu Summit" data-baseline-check="box" data-baseline-label="narrow panel search input">
-              <button class="bf-search-box-reset" type="button" data-baseline-check="box" data-baseline-label="narrow panel search reset">Reset</button>
-              <button class="bf-search-box-button" type="button" data-baseline-check="box" data-baseline-label="narrow panel search button">Search</button>
-            </div>
-          </div>
-
-          <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel media field">
-            <label class="bf-form-label" for="narrow-panel-video" data-baseline-check="flow" data-baseline-label="narrow panel media label">Preview</label>
-            <video id="narrow-panel-video" class="component-demo-media-test" muted playsinline data-baseline-check="box" data-baseline-label="narrow panel video" data-overflow-check></video>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="narrow panel media field">
+ <label class="bf-form-label" for="narrow-panel-video" data-baseline-check="flow" data-baseline-label="narrow panel media label">Preview</label>
+ <video id="narrow-panel-video" style="aspect-ratio:16/9;background:radial-gradient(circle at 20% 18%,rgba(15,98,254,0.2),transparent 22%),linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02)),#101010;border:1px solid var(--demo-rule);inline-size:100%" muted playsinline data-baseline-check="box" data-baseline-label="narrow panel video" data-overflow-check></video>
+ </div>
+ </div>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>
-

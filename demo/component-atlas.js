@@ -22,7 +22,7 @@ function enhanceAtlas() {
     }
 
     const name = link.textContent?.trim() ?? "";
-    const meta = item.querySelector(".component-demo-meta")?.textContent?.trim() ?? "";
+    const meta = item.querySelector(".demo-meta")?.textContent?.trim() ?? "";
     const imageUrl = screenshotUrl(link.getAttribute("href") ?? "");
     if (!imageUrl || !name) {
       continue;

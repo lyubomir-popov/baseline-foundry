@@ -4,49 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Color Input Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Color Input</h5>
-        <h1>Compact color field sizing</h1>
-        <p class="component-demo-meta">Compact color input sizing is now part of the canonical field surface.</p>
-      </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
-          Show baseline grid
-        </label>
-      </div>
-    </header>
-
-    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="color input section">
-        <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="color input row">
-          <div class="bf-grid-item is-control-pair" data-baseline-ignore="true">
-            <div class="bf-field" data-baseline-check="box" data-baseline-label="color input canonical field">
-              <label class="bf-form-label" for="color-input-canonical" data-baseline-check="flow" data-baseline-label="color input canonical label">Primary</label>
-              <div class="bf-control" data-baseline-check="box" data-baseline-label="color input canonical control">
-                <input id="color-input-canonical" class="bf-color-input" type="color" value="#f6b73c" data-baseline-check="box" data-baseline-label="color input canonical">
-              </div>
-            </div>
-          </div>
-          <div class="bf-grid-item is-control-pair" data-baseline-ignore="true">
-            <div class="bf-field" data-baseline-check="box" data-baseline-label="color input secondary field">
-              <label class="bf-form-label" for="color-input-secondary" data-baseline-check="flow" data-baseline-label="color input secondary label">Accent</label>
-              <div class="bf-control" data-baseline-check="box" data-baseline-label="color input secondary control">
-                <input id="color-input-secondary" class="bf-color-input" type="color" value="#6699cc" data-baseline-check="box" data-baseline-label="color input secondary">
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+<body class="vr-theme" data-bf-tone="dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="color input section">
+ <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="color input row">
+ <div class="bf-grid-item is-control-pair" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="color input canonical field">
+ <label class="bf-form-label" for="color-input-canonical" data-baseline-check="flow" data-baseline-label="color input canonical label">Primary</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="color input canonical control">
+ <input id="color-input-canonical" class="bf-color-input" type="color" value="#f6b73c" data-baseline-check="box" data-baseline-label="color input canonical">
+ </div>
+ </div>
+ </div>
+ <div class="bf-grid-item is-control-pair" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="color input secondary field">
+ <label class="bf-form-label" for="color-input-secondary" data-baseline-check="flow" data-baseline-label="color input secondary label">Accent</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="color input secondary control">
+ <input id="color-input-secondary" class="bf-color-input" type="color" value="#6699cc" data-baseline-check="box" data-baseline-label="color input secondary">
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>

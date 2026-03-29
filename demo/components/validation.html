@@ -4,59 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Validation Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Validation</h5>
-        <h1>Field validation states</h1>
-        <p class="component-demo-meta">Success, caution, and error messaging stay on the same field rhythm as the compact panel controls.</p>
-      </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
-          Show baseline grid
-        </label>
-      </div>
-    </header>
+<body class="vr-theme" data-bf-tone="dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="validation section">
+ <div class="bf-field is-success" data-baseline-check="box" data-baseline-label="validation success field">
+ <label class="bf-form-label" for="validation-success" data-baseline-check="flow" data-baseline-label="validation success label">Slug</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="validation success control">
+ <input id="validation-success" class="bf-input is-dense" type="text" value="ubuntu-summit-lockup" data-baseline-check="box" data-baseline-label="validation success input">
+ </div>
+ <p class="bf-validation-message" data-baseline-check="flow" data-baseline-label="validation success message">Saved and synced to export defaults.</p>
+ </div>
 
-    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="validation section">
-        <div class="bf-field is-success" data-baseline-check="box" data-baseline-label="validation success field">
-          <label class="bf-form-label" for="validation-success" data-baseline-check="flow" data-baseline-label="validation success label">Slug</label>
-          <div class="bf-control" data-baseline-check="box" data-baseline-label="validation success control">
-            <input id="validation-success" class="bf-input is-dense" type="text" value="ubuntu-summit-lockup" data-baseline-check="box" data-baseline-label="validation success input">
-          </div>
-          <p class="bf-validation-message" data-baseline-check="flow" data-baseline-label="validation success message">Saved and synced to export defaults.</p>
-        </div>
+ <div class="bf-field is-caution" data-baseline-check="box" data-baseline-label="validation caution field">
+ <label class="bf-form-label" for="validation-caution" data-baseline-check="flow" data-baseline-label="validation caution label">Title width</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="validation caution control">
+ <input id="validation-caution" class="bf-input is-dense" type="text" value="Needs review" data-baseline-check="box" data-baseline-label="validation caution input">
+ </div>
+ <p class="bf-validation-message" data-baseline-check="flow" data-baseline-label="validation caution message">The longest preset may wrap at narrow widths.</p>
+ </div>
 
-        <div class="bf-field is-caution" data-baseline-check="box" data-baseline-label="validation caution field">
-          <label class="bf-form-label" for="validation-caution" data-baseline-check="flow" data-baseline-label="validation caution label">Title width</label>
-          <div class="bf-control" data-baseline-check="box" data-baseline-label="validation caution control">
-            <input id="validation-caution" class="bf-input is-dense" type="text" value="Needs review" data-baseline-check="box" data-baseline-label="validation caution input">
-          </div>
-          <p class="bf-validation-message" data-baseline-check="flow" data-baseline-label="validation caution message">The longest preset may wrap at narrow widths.</p>
-        </div>
-
-        <div class="bf-field is-error" data-baseline-check="box" data-baseline-label="validation error field">
-          <label class="bf-form-label" for="validation-error" data-baseline-check="flow" data-baseline-label="validation error label">Export path</label>
-          <div class="bf-control" data-baseline-check="box" data-baseline-label="validation error control">
-            <input id="validation-error" class="bf-input is-dense" type="text" placeholder="Choose a path" data-baseline-check="box" data-baseline-label="validation error input">
-          </div>
-          <p class="bf-validation-message" data-baseline-check="flow" data-baseline-label="validation error message">A writable export destination is required.</p>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+ <div class="bf-field is-error" data-baseline-check="box" data-baseline-label="validation error field">
+ <label class="bf-form-label" for="validation-error" data-baseline-check="flow" data-baseline-label="validation error label">Export path</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="validation error control">
+ <input id="validation-error" class="bf-input is-dense" type="text" placeholder="Choose a path" data-baseline-check="box" data-baseline-label="validation error input">
+ </div>
+ <p class="bf-validation-message" data-baseline-check="flow" data-baseline-label="validation error message">A writable export destination is required.</p>
+ </div>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>
-
-
-
-
-

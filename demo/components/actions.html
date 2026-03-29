@@ -4,47 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Actions Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Actions</h5>
-        <h1>Dense action rows and overflow strips</h1>
-        <p class="component-demo-meta">This is the flex-row helper for panel footers, toolbar actions, and export strips. It replaces the local downstream action wrappers with a package-side primitive.</p>
-      </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
-          Show baseline grid
-        </label>
-      </div>
-    </header>
+<body class="vr-theme" data-bf-tone="dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="actions section">
+ <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="actions kicker">Canonical row</h5>
+ <div class="bf-actions" data-baseline-check="box" data-baseline-label="actions row">
+ <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions secondary">Cancel</button>
+ <button class="bf-button is-dense" type="button" data-baseline-check="box" data-baseline-label="actions primary">Apply</button>
+ </div>
+ </section>
 
-    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="actions section">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="actions kicker">Canonical row</h5>
-        <div class="bf-actions" data-baseline-check="box" data-baseline-label="actions row">
-          <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions secondary">Cancel</button>
-          <button class="bf-button is-dense" type="button" data-baseline-check="box" data-baseline-label="actions primary">Apply</button>
-        </div>
-      </section>
-
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="actions nowrap section">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="actions nowrap kicker">Scrollable strip</h5>
-        <div class="bf-actions is-nowrap" data-baseline-check="box" data-baseline-label="actions nowrap row">
-          <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export png">PNG</button>
-          <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export svg">SVG</button>
-          <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export gif">GIF</button>
-          <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export mp4">MP4</button>
-          <button class="bf-button is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export final">Export all</button>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+ <section class="bf-stack" data-baseline-check="box" data-baseline-label="actions nowrap section">
+ <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="actions nowrap kicker">Scrollable strip</h5>
+ <div class="bf-actions is-nowrap" data-baseline-check="box" data-baseline-label="actions nowrap row">
+ <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export png">PNG</button>
+ <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export svg">SVG</button>
+ <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export gif">GIF</button>
+ <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export mp4">MP4</button>
+ <button class="bf-button is-dense" type="button" data-baseline-check="box" data-baseline-label="actions export final">Export all</button>
+ </div>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>

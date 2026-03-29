@@ -4,87 +4,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Pressure Test</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--panel bf-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Panel Pressure</h5>
-        <h1>`brand-layout-ops` style control surface</h1>
-        <p class="component-demo-meta">This page pressure-tests the compact panel preset against the dense arrangement the downstream project actually needs: canvas summary, property groups, metadata, and stacked inspector content.</p>
-      </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
-          Show baseline grid
-        </label>
-      </div>
-    </header>
+<body class="bf-theme" data-bf-tone="dark" data-component-capture>
+<section class="bf-span-4" data-baseline-check="box" data-baseline-label="panel navigation card">
+ <div >
+ <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="panel nav kicker">Document</h5>
+ <p class="bf-h5" data-baseline-check="flow" data-baseline-label="panel nav state">Draft</p>
+ </div>
+ <p class="bf-body" data-baseline-check="flow" data-baseline-label="panel nav body">Ubuntu Summit lockup with linked title sizing and export defaults.</p>
+ <div style="display:grid;gap:calc(var(--bf-baseline)*3)">
+ <div data-baseline-check="box" data-baseline-label="panel micro row 1">
+ <p class="bf-h5" data-baseline-check="box" data-baseline-label="panel micro label 1">Format</p>
+ <p class="bf-body" data-baseline-check="box" data-baseline-label="panel micro value 1">16:9 social</p>
+ </div>
+ <div data-baseline-check="box" data-baseline-label="panel micro row 2">
+ <p class="bf-h5" data-baseline-check="box" data-baseline-label="panel micro label 2">Halo</p>
+ <p class="bf-body" data-baseline-check="box" data-baseline-label="panel micro value 2">Medium</p>
+ </div>
+ <div data-baseline-check="box" data-baseline-label="panel micro row 3">
+ <p class="bf-h5" data-baseline-check="box" data-baseline-label="panel micro label 3">Grid</p>
+ <p class="bf-body" data-baseline-check="box" data-baseline-label="panel micro value 3">Visible</p>
+ </div>
+ </div>
+ </section>
 
-    <section class="component-demo-stage component-demo-shell-grid" id="component-grid-target">
-      <div class="bf-grid-scope">
-        <div class="bf-grid" data-component-capture>
-        <section class="component-demo-surface bf-span-4" data-baseline-check="box" data-baseline-label="panel navigation card">
-          <div class="component-demo-surface-title">
-            <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="panel nav kicker">Document</h5>
-            <p class="bf-h5" data-baseline-check="flow" data-baseline-label="panel nav state">Draft</p>
-          </div>
-          <p class="bf-body" data-baseline-check="flow" data-baseline-label="panel nav body">Ubuntu Summit lockup with linked title sizing and export defaults.</p>
-            <div class="component-demo-micro-list">
-              <div class="component-demo-micro-row" data-baseline-check="box" data-baseline-label="panel micro row 1">
-                <p class="bf-h5 component-demo-inline-label" data-baseline-check="box" data-baseline-label="panel micro label 1">Format</p>
-                <p class="bf-body component-demo-inline-value component-demo-meta-value" data-baseline-check="box" data-baseline-label="panel micro value 1">16:9 social</p>
-              </div>
-              <div class="component-demo-micro-row" data-baseline-check="box" data-baseline-label="panel micro row 2">
-                <p class="bf-h5 component-demo-inline-label" data-baseline-check="box" data-baseline-label="panel micro label 2">Halo</p>
-                <p class="bf-body component-demo-inline-value component-demo-meta-value" data-baseline-check="box" data-baseline-label="panel micro value 2">Medium</p>
-              </div>
-              <div class="component-demo-micro-row" data-baseline-check="box" data-baseline-label="panel micro row 3">
-                <p class="bf-h5 component-demo-inline-label" data-baseline-check="box" data-baseline-label="panel micro label 3">Grid</p>
-                <p class="bf-body component-demo-inline-value component-demo-meta-value" data-baseline-check="box" data-baseline-label="panel micro value 3">Visible</p>
-              </div>
-            </div>
-        </section>
+ <section class="bf-span-8" data-baseline-check="box" data-baseline-label="panel canvas card">
+ <div class="bf-prose">
+ <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="panel canvas kicker">Preview</h5>
+ <p class="bf-h3" data-baseline-check="flow" data-baseline-label="panel canvas heading">The shell stays readable while the main stage stays dominant.</p>
+ <p data-baseline-check="flow" data-baseline-label="panel canvas body">This panel-facing stress case pairs a narrow metadata rail with a broader working area while keeping both on the same baseline and gap system.</p>
+ </div>
+ </section>
 
-        <section class="component-demo-surface bf-span-8" data-baseline-check="box" data-baseline-label="panel canvas card">
-          <div class="bf-prose">
-            <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="panel canvas kicker">Preview</h5>
-            <p class="bf-h3" data-baseline-check="flow" data-baseline-label="panel canvas heading">The shell stays readable while the main stage stays dominant.</p>
-            <p data-baseline-check="flow" data-baseline-label="panel canvas body">This panel-facing stress case pairs a narrow metadata rail with a broader working area while keeping both on the same baseline and gap system.</p>
-          </div>
-        </section>
+ <section class="bf-span-4" data-baseline-check="box" data-baseline-label="panel properties card">
+ <div class="bf-prose">
+ <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="panel properties kicker">Properties</h5>
+ <p class="bf-h4" data-baseline-check="flow" data-baseline-label="panel properties heading">Linked sizing</p>
+ <ul data-baseline-check="flow" data-baseline-label="panel properties list">
+ <li data-baseline-check="box" data-baseline-label="panel properties item 1">Title and logo scale together.</li>
+ <li data-baseline-check="box" data-baseline-label="panel properties item 2">Section gaps stay calm in narrow rails.</li>
+ <li data-baseline-check="box" data-baseline-label="panel properties item 3">Metadata labels remain readable at body size.</li>
+ </ul>
+ </div>
+ </section>
 
-        <section class="component-demo-surface bf-span-4" data-baseline-check="box" data-baseline-label="panel properties card">
-          <div class="bf-prose">
-            <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="panel properties kicker">Properties</h5>
-            <p class="bf-h4" data-baseline-check="flow" data-baseline-label="panel properties heading">Linked sizing</p>
-            <ul data-baseline-check="flow" data-baseline-label="panel properties list">
-              <li data-baseline-check="box" data-baseline-label="panel properties item 1">Title and logo scale together.</li>
-              <li data-baseline-check="box" data-baseline-label="panel properties item 2">Section gaps stay calm in narrow rails.</li>
-              <li data-baseline-check="box" data-baseline-label="panel properties item 3">Metadata labels remain readable at body size.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="component-demo-surface bf-span-4" data-baseline-check="box" data-baseline-label="panel export card">
-          <div class="bf-prose">
-            <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="panel export kicker">Export</h5>
-            <p class="bf-h4" data-baseline-check="flow" data-baseline-label="panel export heading">Persistent defaults</p>
-            <p data-baseline-check="flow" data-baseline-label="panel export body">The same rhythm needs to survive in controls that are dense, revisited often, and packed with short-form labels.</p>
-          </div>
-        </section>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+ <section class="bf-span-4" data-baseline-check="box" data-baseline-label="panel export card">
+ <div class="bf-prose">
+ <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="panel export kicker">Export</h5>
+ <p class="bf-h4" data-baseline-check="flow" data-baseline-label="panel export heading">Persistent defaults</p>
+ <p data-baseline-check="flow" data-baseline-label="panel export body">The same rhythm needs to survive in controls that are dense, revisited often, and packed with short-form labels.</p>
+ </div>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>
-
-
-
-
-

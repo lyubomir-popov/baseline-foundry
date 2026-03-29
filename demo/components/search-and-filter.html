@@ -4,79 +4,55 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search and Filter Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Search and Filter</h5>
-        <h1>Dense search/filter panel</h1>
-        <p class="component-demo-meta">Search input, selected count, and the filter panel now live as a proper compact component page rather than only inside PVR.</p>
-      </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
-          Show baseline grid
-        </label>
-      </div>
-    </header>
+<body class="vr-theme" data-bf-tone="dark" data-component-capture>
+<section class="bf-stack" data-baseline-ignore="true">
+ <div >
+ <div class="bf-search-and-filter" data-baseline-ignore="true">
+ <div class="bf-search-and-filter-search-container" aria-expanded="false" data-baseline-check="box" data-baseline-label="search and filter collapsed container">
+ <div class="bf-search-and-filter-box" data-baseline-check="box" data-baseline-label="search and filter collapsed box">
+ <input class="bf-search-and-filter-input bf-input" type="search" value="Ubuntu" data-baseline-check="box" data-baseline-label="search and filter collapsed input">
+ <button class="bf-search-and-filter-clear" type="button" data-baseline-check="box" data-baseline-label="search and filter collapsed clear">Clear</button>
+ <button class="bf-search-and-filter-search-button" type="button" data-baseline-check="box" data-baseline-label="search and filter collapsed search">Search</button>
+ </div>
+ <button class="bf-search-and-filter-selected-count" type="button" data-baseline-check="box" data-baseline-label="search and filter selected count">6 selected</button>
+ </div>
+ <div class="bf-search-and-filter-panel" aria-hidden="true" data-baseline-ignore="true"></div>
+ </div>
+ </div>
 
-    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-specimens" data-baseline-ignore="true">
-        <div class="component-demo-specimen">
-          <div class="bf-search-and-filter" data-baseline-ignore="true">
-            <div class="bf-search-and-filter-search-container" aria-expanded="false" data-baseline-check="box" data-baseline-label="search and filter collapsed container">
-              <div class="bf-search-and-filter-box" data-baseline-check="box" data-baseline-label="search and filter collapsed box">
-                <input class="bf-search-and-filter-input bf-input" type="search" value="Ubuntu" data-baseline-check="box" data-baseline-label="search and filter collapsed input">
-                <button class="bf-search-and-filter-clear" type="button" data-baseline-check="box" data-baseline-label="search and filter collapsed clear">Clear</button>
-                <button class="bf-search-and-filter-search-button" type="button" data-baseline-check="box" data-baseline-label="search and filter collapsed search">Search</button>
-              </div>
-              <button class="bf-search-and-filter-selected-count" type="button" data-baseline-check="box" data-baseline-label="search and filter selected count">6 selected</button>
-            </div>
-            <div class="bf-search-and-filter-panel" aria-hidden="true" data-baseline-ignore="true"></div>
-          </div>
-        </div>
-
-        <div class="component-demo-specimen">
-          <div class="bf-search-and-filter" data-baseline-ignore="true">
-            <div class="bf-search-and-filter-search-container" aria-expanded="true" data-baseline-check="box" data-baseline-label="search and filter expanded container">
-              <div class="bf-search-and-filter-box" data-baseline-check="box" data-baseline-label="search and filter expanded box">
-                <input class="bf-search-and-filter-input bf-input" type="search" value="Ubuntu" data-baseline-check="box" data-baseline-label="search and filter expanded input">
-                <button class="bf-search-and-filter-clear" type="button" data-baseline-check="box" data-baseline-label="search and filter expanded clear">Clear</button>
-                <button class="bf-search-and-filter-search-button" type="button" data-baseline-check="box" data-baseline-label="search and filter expanded search">Search</button>
-              </div>
-              <button class="bf-search-and-filter-selected-count" type="button" data-baseline-ignore="true">6 selected</button>
-            </div>
-            <div class="bf-search-and-filter-panel" aria-hidden="false" data-baseline-check="box" data-baseline-label="search and filter panel">
-              <section class="bf-filter-panel-section" data-baseline-check="box" data-baseline-label="search filter section one">
-                <h5 class="bf-filter-panel-section-heading" data-baseline-check="flow" data-baseline-label="search filter heading">Format</h5>
-                <div class="bf-filter-panel-section-chips" aria-expanded="true" data-baseline-check="box" data-baseline-label="search filter chips">
-                  <button class="bf-chip is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 1">Landscape</button>
-                  <button class="bf-chip is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 2">Square</button>
-                  <button class="bf-chip is-information is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 3">Portrait</button>
-                </div>
-              </section>
-              <section class="bf-filter-panel-section" data-baseline-check="box" data-baseline-label="search filter section two">
-                <h5 class="bf-filter-panel-section-heading" data-baseline-check="flow" data-baseline-label="search filter heading two">Status</h5>
-                <div class="bf-filter-panel-section-chips" aria-expanded="true" data-baseline-check="box" data-baseline-label="search filter chips two">
-                  <button class="bf-chip is-positive is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 4">Saved</button>
-                  <button class="bf-chip is-caution is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 5">Review</button>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+ <div >
+ <div class="bf-search-and-filter" data-baseline-ignore="true">
+ <div class="bf-search-and-filter-search-container" aria-expanded="true" data-baseline-check="box" data-baseline-label="search and filter expanded container">
+ <div class="bf-search-and-filter-box" data-baseline-check="box" data-baseline-label="search and filter expanded box">
+ <input class="bf-search-and-filter-input bf-input" type="search" value="Ubuntu" data-baseline-check="box" data-baseline-label="search and filter expanded input">
+ <button class="bf-search-and-filter-clear" type="button" data-baseline-check="box" data-baseline-label="search and filter expanded clear">Clear</button>
+ <button class="bf-search-and-filter-search-button" type="button" data-baseline-check="box" data-baseline-label="search and filter expanded search">Search</button>
+ </div>
+ <button class="bf-search-and-filter-selected-count" type="button" data-baseline-ignore="true">6 selected</button>
+ </div>
+ <div class="bf-search-and-filter-panel" aria-hidden="false" data-baseline-check="box" data-baseline-label="search and filter panel">
+ <section class="bf-filter-panel-section" data-baseline-check="box" data-baseline-label="search filter section one">
+ <h5 class="bf-filter-panel-section-heading" data-baseline-check="flow" data-baseline-label="search filter heading">Format</h5>
+ <div class="bf-filter-panel-section-chips" aria-expanded="true" data-baseline-check="box" data-baseline-label="search filter chips">
+ <button class="bf-chip is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 1">Landscape</button>
+ <button class="bf-chip is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 2">Square</button>
+ <button class="bf-chip is-information is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 3">Portrait</button>
+ </div>
+ </section>
+ <section class="bf-filter-panel-section" data-baseline-check="box" data-baseline-label="search filter section two">
+ <h5 class="bf-filter-panel-section-heading" data-baseline-check="flow" data-baseline-label="search filter heading two">Status</h5>
+ <div class="bf-filter-panel-section-chips" aria-expanded="true" data-baseline-check="box" data-baseline-label="search filter chips two">
+ <button class="bf-chip is-positive is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 4">Saved</button>
+ <button class="bf-chip is-caution is-inline" type="button" data-baseline-check="box" data-baseline-label="search filter chip 5">Review</button>
+ </div>
+ </section>
+ </div>
+ </div>
+ </div>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>
-
-
-
-
-

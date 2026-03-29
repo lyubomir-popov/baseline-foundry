@@ -4,51 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Badge Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Badge</h5>
-        <h1>Dense badge tokens</h1>
-        <p class="component-demo-meta">Badges sit on the compact scale and can also be embedded inside chips.</p>
-      </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
-          Show baseline grid
-        </label>
-      </div>
-    </header>
+<body class="vr-theme" data-bf-tone="dark" data-component-capture>
+<section class="bf-stack" data-baseline-ignore="true">
+ <div data-baseline-check="box" data-baseline-label="badge standalone specimen">
+ <div class="bf-cluster" data-baseline-check="box" data-baseline-label="badge standalone row">
+ <span class="bf-badge" data-baseline-check="box" data-baseline-label="badge default">3</span>
+ <span class="bf-badge is-negative" data-baseline-check="box" data-baseline-label="badge negative">9</span>
+ </div>
+ </div>
 
-    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-specimens" data-baseline-ignore="true">
-        <div class="component-demo-specimen" data-baseline-check="box" data-baseline-label="badge standalone specimen">
-          <div class="component-demo-cluster" data-baseline-check="box" data-baseline-label="badge standalone row">
-            <span class="bf-badge" data-baseline-check="box" data-baseline-label="badge default">3</span>
-            <span class="bf-badge is-negative" data-baseline-check="box" data-baseline-label="badge negative">9</span>
-          </div>
-        </div>
-
-        <div class="component-demo-specimen" data-baseline-check="box" data-baseline-label="badge nested specimen">
-          <div class="component-demo-cluster" data-baseline-check="box" data-baseline-label="badge nested row">
-            <button class="bf-chip" type="button" data-baseline-check="box" data-baseline-label="badge chip">
-              <span class="bf-chip-value" data-baseline-ignore="true">Layers</span>
-              <span class="bf-badge" data-baseline-check="box" data-baseline-label="badge nested">12</span>
-            </button>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+ <div data-baseline-check="box" data-baseline-label="badge nested specimen">
+ <div class="bf-cluster" data-baseline-check="box" data-baseline-label="badge nested row">
+ <button class="bf-chip" type="button" data-baseline-check="box" data-baseline-label="badge chip">
+ <span class="bf-chip-value" data-baseline-ignore="true">Layers</span>
+ <span class="bf-badge" data-baseline-check="box" data-baseline-label="badge nested">12</span>
+ </button>
+ </div>
+ </div>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>
-
-
-
-
-

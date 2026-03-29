@@ -67,7 +67,16 @@ export function initBaselineGridToggles(options: BaselineGridInitOptions = {}): 
   const toggleSelector = options.toggleSelector ?? ".js-baseline-toggle[aria-controls]";
   const toggles = document.querySelectorAll<HTMLInputElement>(toggleSelector);
 
-  toggles.forEach(toggle => {
-    setupBaselineGridToggle(toggle, options);
-  });
+  if (toggles.length > 0) {
+    toggles.forEach(toggle => {
+      setupBaselineGridToggle(toggle, options);
+    });
+  } else if (options.defaultEnabled) {
+    // No toggle found — apply grid directly to body when default-on
+    const targetClassName = options.targetClassName ?? "u-baseline-grid";
+    document.body.classList.add(targetClassName);
+    const themeRoot = document.querySelector<HTMLElement>("[data-bf-tone], .bf-theme, .vr-theme");
+    const gridColor = isDarkTone(themeRoot) ? "rgba(255, 255, 255, 0.16)" : "rgba(20, 22, 28, 0.12)";
+    document.body.style.setProperty("--bf-baseline-grid-color", gridColor);
+  }
 }

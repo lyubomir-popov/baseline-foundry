@@ -4,172 +4,153 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parameter Matrix Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--panel vr-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Parameter Matrix</h5>
-        <h1>Dense inspector row layout</h1>
-        <p class="component-demo-meta">This page pressure-tests the canonical dense control grid used for inspector-style parameter matrices.</p>
-      </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
-          Show baseline grid
-        </label>
-      </div>
-    </header>
+<body class="vr-theme" data-bf-tone="dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="parameter matrix section">
+ <div style="display:grid;gap:var(--vr-field-gap,0.75rem);inline-size:min(100%,19rem);min-inline-size:0" data-overflow-container data-baseline-check="box" data-baseline-label="parameter matrix rail">
+ <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="parameter matrix kicker">Halo Field</h5>
 
-    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
-      <section class="component-demo-surface component-demo-flow-box" data-baseline-check="box" data-baseline-label="parameter matrix section">
-        <div class="component-demo-parameter-rail" data-overflow-container data-baseline-check="box" data-baseline-label="parameter matrix rail">
-          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="parameter matrix kicker">Halo Field</h5>
+ <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="parameter matrix row 1" data-overflow-check>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix scale field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-scale" data-baseline-check="flow" data-baseline-label="parameter matrix scale label">Scale</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix scale control">
+ <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix scale slider" data-overflow-check>
+ <input id="parameter-matrix-scale" type="range" min="0.1" max="2" step="0.01" value="1">
+ <input class="bf-input bf-slider-input is-dense" type="number" min="0.1" max="2" step="0.01" value="1" data-baseline-check="box" data-baseline-label="parameter matrix scale number" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
 
-          <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="parameter matrix row 1" data-overflow-check>
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix scale field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-scale" data-baseline-check="flow" data-baseline-label="parameter matrix scale label">Scale</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix scale control">
-                  <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix scale slider" data-overflow-check>
-                    <input id="parameter-matrix-scale" type="range" min="0.1" max="2" step="0.01" value="1">
-                    <input class="bf-input bf-slider-input is-dense" type="number" min="0.1" max="2" step="0.01" value="1" data-baseline-check="box" data-baseline-label="parameter matrix scale number" data-overflow-check>
-                  </div>
-                </div>
-              </div>
-            </div>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix radial scale field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-radial" data-baseline-check="flow" data-baseline-label="parameter matrix radial scale label">Radial Scale</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix radial scale control">
+ <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix radial scale slider" data-overflow-check>
+ <input id="parameter-matrix-radial" type="range" min="0.1" max="2" step="0.01" value="1">
+ <input class="bf-input bf-slider-input is-dense" type="number" min="0.1" max="2" step="0.01" value="1" data-baseline-check="box" data-baseline-label="parameter matrix radial scale number" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
 
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix radial scale field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-radial" data-baseline-check="flow" data-baseline-label="parameter matrix radial scale label">Radial Scale</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix radial scale control">
-                  <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix radial scale slider" data-overflow-check>
-                    <input id="parameter-matrix-radial" type="range" min="0.1" max="2" step="0.01" value="1">
-                    <input class="bf-input bf-slider-input is-dense" type="number" min="0.1" max="2" step="0.01" value="1" data-baseline-check="box" data-baseline-label="parameter matrix radial scale number" data-overflow-check>
-                  </div>
-                </div>
-              </div>
-            </div>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix center offset field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-center" data-baseline-check="flow" data-baseline-label="parameter matrix center offset label">Center Y Offset</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix center offset control">
+ <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix center offset slider" data-overflow-check>
+ <input id="parameter-matrix-center" type="range" min="-500" max="500" step="1" value="82">
+ <input class="bf-input bf-slider-input is-dense" type="number" min="-500" max="500" step="1" value="82" data-baseline-check="box" data-baseline-label="parameter matrix center offset number" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
 
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix center offset field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-center" data-baseline-check="flow" data-baseline-label="parameter matrix center offset label">Center Y Offset</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix center offset control">
-                  <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix center offset slider" data-overflow-check>
-                    <input id="parameter-matrix-center" type="range" min="-500" max="500" step="1" value="82">
-                    <input class="bf-input bf-slider-input is-dense" type="number" min="-500" max="500" step="1" value="82" data-baseline-check="box" data-baseline-label="parameter matrix center offset number" data-overflow-check>
-                  </div>
-                </div>
-              </div>
-            </div>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix inner radius field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-inner" data-baseline-check="flow" data-baseline-label="parameter matrix inner radius label">Inner Radius</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix inner radius control">
+ <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix inner radius slider" data-overflow-check>
+ <input id="parameter-matrix-inner" type="range" min="0" max="1" step="0.001" value="0.2">
+ <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="1" step="0.001" value="0.2" data-baseline-check="box" data-baseline-label="parameter matrix inner radius number" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
 
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix inner radius field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-inner" data-baseline-check="flow" data-baseline-label="parameter matrix inner radius label">Inner Radius</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix inner radius control">
-                  <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix inner radius slider" data-overflow-check>
-                    <input id="parameter-matrix-inner" type="range" min="0" max="1" step="0.001" value="0.2">
-                    <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="1" step="0.001" value="0.2" data-baseline-check="box" data-baseline-label="parameter matrix inner radius number" data-overflow-check>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+ <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="parameter matrix row 2" data-overflow-check>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix outer radius field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-outer" data-baseline-check="flow" data-baseline-label="parameter matrix outer radius label">Outer Radius</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix outer radius control">
+ <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix outer radius slider" data-overflow-check>
+ <input id="parameter-matrix-outer" type="range" min="0" max="1" step="0.001" value="0.513">
+ <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="1" step="0.001" value="0.513" data-baseline-check="box" data-baseline-label="parameter matrix outer radius number" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
 
-          <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="parameter matrix row 2" data-overflow-check>
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix outer radius field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-outer" data-baseline-check="flow" data-baseline-label="parameter matrix outer radius label">Outer Radius</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix outer radius control">
-                  <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix outer radius slider" data-overflow-check>
-                    <input id="parameter-matrix-outer" type="range" min="0" max="1" step="0.001" value="0.513">
-                    <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="1" step="0.001" value="0.513" data-baseline-check="box" data-baseline-label="parameter matrix outer radius number" data-overflow-check>
-                  </div>
-                </div>
-              </div>
-            </div>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix spokes field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-spokes" data-baseline-check="flow" data-baseline-label="parameter matrix spokes label">Spokes</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix spokes control">
+ <input id="parameter-matrix-spokes" class="bf-input is-dense" type="number" min="4" max="120" step="1" value="60" data-baseline-check="box" data-baseline-label="parameter matrix spokes input" data-overflow-check>
+ </div>
+ </div>
+ </div>
 
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix spokes field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-spokes" data-baseline-check="flow" data-baseline-label="parameter matrix spokes label">Spokes</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix spokes control">
-                  <input id="parameter-matrix-spokes" class="bf-input is-dense" type="number" min="4" max="120" step="1" value="60" data-baseline-check="box" data-baseline-label="parameter matrix spokes input" data-overflow-check>
-                </div>
-              </div>
-            </div>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix orbits field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-orbits" data-baseline-check="flow" data-baseline-label="parameter matrix orbits label">Orbits</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix orbits control">
+ <input id="parameter-matrix-orbits" class="bf-input is-dense" type="number" min="1" max="16" step="1" value="8" data-baseline-check="box" data-baseline-label="parameter matrix orbits input" data-overflow-check>
+ </div>
+ </div>
+ </div>
 
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix orbits field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-orbits" data-baseline-check="flow" data-baseline-label="parameter matrix orbits label">Orbits</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix orbits control">
-                  <input id="parameter-matrix-orbits" class="bf-input is-dense" type="number" min="1" max="16" step="1" value="8" data-baseline-check="box" data-baseline-label="parameter matrix orbits input" data-overflow-check>
-                </div>
-              </div>
-            </div>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix min active field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-min-active" data-baseline-check="flow" data-baseline-label="parameter matrix min active label">Min Active Orbits</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix min active control">
+ <input id="parameter-matrix-min-active" class="bf-input is-dense" type="number" min="1" max="16" step="1" value="3" data-baseline-check="box" data-baseline-label="parameter matrix min active input" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
 
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix min active field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-min-active" data-baseline-check="flow" data-baseline-label="parameter matrix min active label">Min Active Orbits</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix min active control">
-                  <input id="parameter-matrix-min-active" class="bf-input is-dense" type="number" min="1" max="16" step="1" value="3" data-baseline-check="box" data-baseline-label="parameter matrix min active input" data-overflow-check>
-                </div>
-              </div>
-            </div>
-          </div>
+ <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="parameter matrix row 3" data-overflow-check>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix base angle field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-base-angle" data-baseline-check="flow" data-baseline-label="parameter matrix base angle label">Base Angle</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix base angle control">
+ <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix base angle slider" data-overflow-check>
+ <input id="parameter-matrix-base-angle" type="range" min="-180" max="180" step="0.1" value="0">
+ <input class="bf-input bf-slider-input is-dense" type="number" min="-180" max="180" step="0.1" value="0" data-baseline-check="box" data-baseline-label="parameter matrix base angle number" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
 
-          <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="parameter matrix row 3" data-overflow-check>
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix base angle field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-base-angle" data-baseline-check="flow" data-baseline-label="parameter matrix base angle label">Base Angle</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix base angle control">
-                  <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix base angle slider" data-overflow-check>
-                    <input id="parameter-matrix-base-angle" type="range" min="-180" max="180" step="0.1" value="0">
-                    <input class="bf-input bf-slider-input is-dense" type="number" min="-180" max="180" step="0.1" value="0" data-baseline-check="box" data-baseline-label="parameter matrix base angle number" data-overflow-check>
-                  </div>
-                </div>
-              </div>
-            </div>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix pattern offset field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-pattern" data-baseline-check="flow" data-baseline-label="parameter matrix pattern offset label">Pattern Offset</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix pattern offset control">
+ <input id="parameter-matrix-pattern" class="bf-input is-dense" type="number" min="-120" max="120" step="1" value="1" data-baseline-check="box" data-baseline-label="parameter matrix pattern offset input" data-overflow-check>
+ </div>
+ </div>
+ </div>
 
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix pattern offset field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-pattern" data-baseline-check="flow" data-baseline-label="parameter matrix pattern offset label">Pattern Offset</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix pattern offset control">
-                  <input id="parameter-matrix-pattern" class="bf-input is-dense" type="number" min="-120" max="120" step="1" value="1" data-baseline-check="box" data-baseline-label="parameter matrix pattern offset input" data-overflow-check>
-                </div>
-              </div>
-            </div>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix start radius field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-start-radius" data-baseline-check="flow" data-baseline-label="parameter matrix start radius label">Start Radius</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix start radius control">
+ <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix start radius slider" data-overflow-check>
+ <input id="parameter-matrix-start-radius" type="range" min="0" max="400" step="1" value="150">
+ <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="400" step="1" value="150" data-baseline-check="box" data-baseline-label="parameter matrix start radius number" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
 
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix start radius field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-start-radius" data-baseline-check="flow" data-baseline-label="parameter matrix start radius label">Start Radius</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix start radius control">
-                  <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix start radius slider" data-overflow-check>
-                    <input id="parameter-matrix-start-radius" type="range" min="0" max="400" step="1" value="150">
-                    <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="400" step="1" value="150" data-baseline-check="box" data-baseline-label="parameter matrix start radius number" data-overflow-check>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="bf-grid-item is-control" data-baseline-ignore="true">
-              <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix end radius field">
-                <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-end-radius" data-baseline-check="flow" data-baseline-label="parameter matrix end radius label">End Radius Extra</label>
-                <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix end radius control">
-                  <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix end radius slider" data-overflow-check>
-                    <input id="parameter-matrix-end-radius" type="range" min="0" max="400" step="1" value="120">
-                    <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="400" step="1" value="120" data-baseline-check="box" data-baseline-label="parameter matrix end radius number" data-overflow-check>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+ <div class="bf-grid-item is-control" data-baseline-ignore="true">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="parameter matrix end radius field">
+ <label class="bf-form-label bf-u-no-margin is-bottom" for="parameter-matrix-end-radius" data-baseline-check="flow" data-baseline-label="parameter matrix end radius label">End Radius Extra</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="parameter matrix end radius control">
+ <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="parameter matrix end radius slider" data-overflow-check>
+ <input id="parameter-matrix-end-radius" type="range" min="0" max="400" step="1" value="120">
+ <input class="bf-input bf-slider-input is-dense" type="number" min="0" max="400" step="1" value="120" data-baseline-check="box" data-baseline-label="parameter matrix end radius number" data-overflow-check>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>

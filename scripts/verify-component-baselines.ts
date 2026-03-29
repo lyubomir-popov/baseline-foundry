@@ -148,14 +148,7 @@ async function verifyComponentPage(
       "textarea",
       "select",
       "button",
-      ".component-demo-layout-card",
-      ".component-demo-grid-card",
-      ".component-demo-surface",
-      ".component-demo-quote-card",
-      ".component-demo-figure",
-      ".component-demo-micro-row",
-      ".component-demo-compat-shell",
-      ".component-demo-compat-stage",
+
       ".bf-fixed-width",
       ".bf-stage-shell",
       ".bf-grid.is-controls",
@@ -256,7 +249,6 @@ async function verifyComponentPage(
       .filter(element => element.getClientRects().length > 0)
       .filter(element => element.dataset.baselineIgnore !== "true")
       .filter(element => !element.closest("[data-baseline-ignore='true']"))
-      .filter(element => !element.classList.contains("component-demo-label"))
       .filter(element => !element.hasAttribute("data-baseline-check"))
       .map(element => {
         const label = (element.dataset.baselineLabel ?? "").replace(/\s+/g, " ").trim()

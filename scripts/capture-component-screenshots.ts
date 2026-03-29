@@ -30,24 +30,12 @@ async function computeCaptureClip(
       throw new Error("No [data-component-capture] root found.");
     }
 
-    const ignoredSelectors = [
-      ".component-demo-kicker",
-      ".component-demo-label",
-      ".component-demo-note",
-      ".component-demo-meta"
-    ];
+    const ignoredSelectors: string[] = [];
 
     if (mode === "fit") {
       ignoredSelectors.push(
-        ".component-demo-surface",
-        ".component-demo-flow-box",
-        ".component-demo-cluster",
-        ".component-demo-stack",
-        ".component-demo-specimens",
-        ".component-demo-specimen",
-        ".component-demo-card",
-        ".component-demo-grid-card",
-        ".component-demo-layout-card",
+        ".bf-stack",
+        ".bf-cluster",
         ".p-form__group",
         ".p-form__control",
         ".p-slider__wrapper"

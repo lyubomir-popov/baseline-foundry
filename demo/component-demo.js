@@ -11,22 +11,6 @@ initTabs();
 initTooltips();
 initAccordions();
 
-function normalizeBaselineToggleLabels() {
-  const labels = document.querySelectorAll(".component-demo-toggle");
-
-  labels.forEach(label => {
-    const textNode = Array.from(label.childNodes).find(node => {
-      return node.nodeType === Node.TEXT_NODE && node.textContent?.includes("Show baseline grid");
-    });
-
-    if (textNode) {
-      textNode.textContent = " Baseline grid";
-    }
-  });
-}
-
-normalizeBaselineToggleLabels();
-
 const NAV_ITEMS = [
   { title: "Component atlas", href: "index.html" },
   null,
@@ -82,15 +66,12 @@ const NAV_ITEMS = [
 ];
 
 function injectNav() {
-  const page = document.querySelector(".component-demo-page");
-  if (!page) {
-    return;
-  }
 
   const current = location.pathname.split("/").pop() || "index.html";
   const nav = document.createElement("nav");
   nav.className = "component-demo-nav";
   nav.setAttribute("aria-label", "Component demos");
+  nav.dataset.baselineIgnore = "true";
 
   const toggle = document.createElement("button");
   toggle.className = "component-demo-nav__toggle";
