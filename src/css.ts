@@ -3,7 +3,7 @@ import { compatCss } from "./css-compat.js";
 import type { ThemeFontFile, ThemeTokens, TypographyToken } from "./types.js";
 
 function alignmentVars(token: TypographyToken): string {
-  return `  --bf-space-after-sem-editorial: calc(${token.spaceAfter} - var(--bf-baseline));\n  --bf-computed-line-height: ${token.lineHeight};\n  --bf-metrics-start-nudge: ${token.nudgeTop};\n  --bf-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-cap-baseline-position: calc((var(--bf-computed-line-height) + 1cap) / 2);\n  --bf-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-cap-baseline-position), var(--bf-baseline)));\n  --bf-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-cap-start-nudge));\n`;
+  return `  --bf-space-after-sem-editorial: calc(${token.spaceAfter} - var(--bf-baseline));\n  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);\n  --bf-computed-line-height: ${token.lineHeight};\n  --bf-metrics-start-nudge: ${token.nudgeTop};\n  --bf-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-cap-baseline-position: calc((var(--bf-computed-line-height) + 1cap) / 2);\n  --bf-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-cap-baseline-position), var(--bf-baseline)));\n  --bf-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-cap-start-nudge));\n  --bf-selected-start-nudge: var(--bf-cap-start-nudge);\n  --bf-selected-end-nudge: var(--bf-cap-end-nudge);\n`;
 }
 
 function fontFormat(path: string): string {
@@ -70,12 +70,42 @@ function selectorsForRole(roleName: string): string[] {
   return [...semanticSelectors, `:where(.bf-theme, .vr-theme) .bf-${roleName}`];
 }
 
+function innerSelectorsForRole(roleName: string): string[] {
+  const semanticSelectors = SEMANTIC_SELECTORS_BY_ROLE[roleName] ?? [];
+  const innerParts = semanticSelectors.map(s =>
+    s.replace(":where(.bf-theme, .vr-theme) ", "")
+  );
+  return [...innerParts, `.bf-${roleName}`];
+}
+
+function scopedOverrideRule(scope: string, roles: Record<string, TypographyToken>, body: string): string {
+  const selectors: string[] = [];
+  for (const roleName of Object.keys(roles)) {
+    for (const inner of innerSelectorsForRole(roleName)) {
+      selectors.push(`:where(${scope}) ${inner}`);
+    }
+  }
+  return `${selectors.join(",\n")} {\n${body}}\n`;
+}
+
 export function generateFoundryCss(tokens: ThemeTokens): string {
   const body = tokens.roles.body;
   const fontFaces = tokens.fontFiles.map(fontFaceRule).filter(Boolean).join("\n");
   const roleRules = Object.entries(tokens.roles)
     .map(([roleName, token]) => textRule(selectorsForRole(roleName), token, EXTRA_STYLES_BY_ROLE[roleName] ?? ""))
     .join("\n");
+
+  const metricsEngineOverride = scopedOverrideRule(
+    ".bf-engine-metrics",
+    tokens.roles,
+    "  --bf-selected-start-nudge: var(--bf-metrics-start-nudge);\n  --bf-selected-end-nudge: var(--bf-metrics-end-nudge);\n"
+  );
+
+  const appTierOverride = scopedOverrideRule(
+    ".bf-tier-app",
+    tokens.roles,
+    "  --bf-semantic-space-after: 0rem;\n"
+  );
 
   if (!body) {
     throw new Error("Theme tokens require a body role.");
@@ -119,9 +149,6 @@ html.u-baseline-grid::after {
 }
 
 :where(.bf-theme, .vr-theme) {
-  --bf-selected-start-nudge: var(--bf-metrics-start-nudge, 0rem);
-  --bf-selected-end-nudge: var(--bf-metrics-end-nudge, 0rem);
-  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);
   --bf-baseline: ${tokens.baselineUnit};
   --bf-space-0: 0rem;
   --bf-space-1: var(--bf-baseline);
@@ -154,24 +181,6 @@ html.u-baseline-grid::after {
   font-style: ${body.fontStyle ?? "normal"};
   font-weight: ${body.fontWeight ?? 400};
   line-height: ${body.lineHeight};
-}
-
-:where(.bf-theme.bf-engine-metrics, .vr-theme.bf-engine-metrics) {
-  --bf-selected-start-nudge: var(--bf-metrics-start-nudge, 0rem);
-  --bf-selected-end-nudge: var(--bf-metrics-end-nudge, 0rem);
-}
-
-:where(.bf-theme.bf-engine-cap, .vr-theme.bf-engine-cap) {
-  --bf-selected-start-nudge: var(--bf-cap-start-nudge, 0rem);
-  --bf-selected-end-nudge: var(--bf-cap-end-nudge, 0rem);
-}
-
-:where(.bf-theme.bf-tier-editorial, .vr-theme.bf-tier-editorial) {
-  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);
-}
-
-:where(.bf-theme.bf-tier-app, .vr-theme.bf-tier-app) {
-  --bf-semantic-space-after: 0rem;
 }
 
 :where(.bf-theme[data-bf-tone='dark'], .vr-theme[data-bf-tone='dark'], .vr-theme.is-dark) {
@@ -300,8 +309,11 @@ html.u-baseline-grid::after {
 
 ${roleRules}
 
+${metricsEngineOverride}
+${appTierOverride}
 :where(.bf-theme, .vr-theme) :where(.bf-prose ul, .bf-prose ol) {
   --bf-space-after-sem-editorial: calc(${body.spaceAfter} - var(--bf-baseline));
+  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);
   margin: 0 0 var(--bf-semantic-space-after);
   padding-inline-start: var(--bf-space-4);
 }

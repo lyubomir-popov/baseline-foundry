@@ -58,11 +58,11 @@ function validateCommonCss(css: string): void {
   assert(css.includes("text-transform: uppercase;"), "Expected CSS to include the h5 uppercase treatment.");
   assert(!css.includes("font-variant-caps: all-small-caps;"), "Expected CSS to avoid the old h5 faux small-caps treatment.");
   assert(css.includes("letter-spacing: 0.07em;"), "Expected CSS to include the h5 uppercase tracking.");
-  assert(css.includes(":where(.bf-theme.bf-engine-cap, .vr-theme.bf-engine-cap)"), "Expected generated CSS to include the cap-engine runtime flag selector.");
+  assert(css.includes(":where(.bf-engine-metrics)"), "Expected generated CSS to include the metrics-engine override selector.");
   assert(css.includes(":where(.bf-theme.bf-tier-app, .vr-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
-  assert(css.includes("--bf-selected-start-nudge: var(--bf-metrics-start-nudge, 0rem);"), "Expected generated CSS to default to the metrics baseline engine.");
-  assert(css.includes("--bf-body-selected-start-nudge: var(--bf-body-metrics-start-nudge);"), "Expected compat CSS to default body-aligned controls to the metrics engine.");
-  assert(css.includes("--bf-h6-selected-start-nudge: var(--bf-h6-cap-start-nudge);"), "Expected compat CSS to expose h6 alignment through the cap-engine selector.");
+  assert(css.includes("--bf-selected-start-nudge: var(--bf-cap-start-nudge);"), "Expected generated CSS to default to the cap baseline engine.");
+  assert(css.includes("--bf-body-selected-start-nudge: var(--bf-body-cap-start-nudge);"), "Expected compat CSS to default body-aligned controls to the cap engine.");
+  assert(css.includes("--bf-h6-selected-start-nudge: var(--bf-h6-metrics-start-nudge);"), "Expected compat CSS to expose h6 alignment through the metrics-engine override.");
   assert(css.includes("--bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);"), "Expected generated CSS to default to editorial semantic spacing.");
   assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-prose > :last-child) {\n  margin-bottom: 0;"), "Expected prose flow boundaries to trim semantic trailing space now that baseline compensation lives inside the element box.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
