@@ -39,6 +39,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-page-margin: 1rem;"), "Expected CSS to define the x-small 16px outer margin.");
   assert(css.includes("--bf-grid-gap-inline: 1.5rem;"), "Expected CSS to define the small-and-up 24px grid gutter.");
   assert(css.includes("--bf-page-margin: 1.5rem;"), "Expected CSS to define the small 24px outer margin.");
+  assert(css.includes("@media (width >= 64.75rem) {\n  :where(.bf-theme, .vr-theme) {\n    --bf-grid-gap-inline: 2rem;\n    --bf-grid-gap-block: 2rem;\n    --bf-page-margin: 2rem;"), "Expected CSS to widen the default editorial gutter to 32px at large breakpoints.");
+  assert(css.includes(":where(.bf-theme.bf-tier-app, .vr-theme.bf-tier-app) {\n    --bf-grid-gap-inline: 1.5rem;\n    --bf-grid-gap-block: 1.5rem;"), "Expected CSS to keep app-tier gutters at 24px inside the large-breakpoint override.");
   assert(css.includes("--bf-page-margin: 2rem;"), "Expected CSS to define the large-and-up 32px outer margin.");
   assert(!css.includes("@container (width >= 42rem) {\n  .bf-grid"), "Expected grid CSS to avoid the older 42rem 8-column threshold.");
   assert(!css.includes("@container (width >= 72rem) {\n  .bf-grid"), "Expected grid CSS to avoid the older 72rem 16-column threshold.");
@@ -84,7 +86,11 @@ function validateCommonCss(css: string): void {
   assert(css.includes("min-block-size: max(var(--vr-control-block-size-dense), calc("), "Expected checkbox and radio rows to use the dense control height as a minimum.");
   assert(css.includes("var(--bf-body-selected-start-nudge)"), "Expected compat controls to consume the selected body alignment nudge.");
   assert(css.includes("var(--bf-h6-selected-end-nudge)"), "Expected compat controls to consume the selected h6 alignment nudge.");
-  assert(css.includes(":where(.bf-control-grid) {\n  container-type: inline-size;\n  display: grid;"), "Expected compat CSS to include the canonical dense control-grid helper surface.");
+  assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) {\n  container-type: inline-size;\n  gap: var(--vr-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
+  assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control, .bf-grid__item--control-pair) {\n  grid-column: auto / span 4;"), "Expected grid CSS to include the default dense control-grid recipe spans.");
+  assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column grid.");
+  assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column grid.");
+  assert(!css.includes(".bf-control-grid"), "Expected generated CSS to omit the deprecated bf-control-grid helper.");
   assert(css.includes(":where(.p-slider__wrapper--stacked, .bf-slider--stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--vr-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
   assert(!css.includes(".slider-pair"), "Expected compat CSS to omit the downstream slider wrapper aliases.");
   assert(!css.includes(".slider-pair--stacked"), "Expected compat CSS to omit the downstream stacked-slider alias.");

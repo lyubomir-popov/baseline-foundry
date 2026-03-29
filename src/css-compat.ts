@@ -2617,52 +2617,6 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
   user-select: none;
 }
 
-:where(.bf-theme, .vr-theme) :where(.bf-control-grid) {
-  container-type: inline-size;
-  display: grid;
-  gap: var(--vr-field-gap);
-  grid-template-columns: minmax(0, 1fr);
-  min-inline-size: 0;
-}
-
-:where(.bf-theme, .vr-theme) :where(.bf-control-grid__item) {
-  display: grid;
-  gap: var(--vr-field-gap);
-  min-inline-size: 0;
-}
-
-@container (width >= 28rem) {
-  :where(.bf-theme, .vr-theme) :where(.bf-control-grid) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  :where(.bf-theme, .vr-theme) :where(.bf-control-grid__item--span-2, .bf-control-grid__item--span-3, .bf-control-grid__item--span-4) {
-    grid-column: span 2;
-  }
-}
-
-@container (width >= 42rem) {
-  :where(.bf-theme, .vr-theme) :where(.bf-control-grid) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  :where(.bf-theme, .vr-theme) :where(.bf-control-grid__item--span-1) {
-    grid-column: span 1;
-  }
-
-  :where(.bf-theme, .vr-theme) :where(.bf-control-grid__item--span-2) {
-    grid-column: span 2;
-  }
-
-  :where(.bf-theme, .vr-theme) :where(.bf-control-grid__item--span-3) {
-    grid-column: span 3;
-  }
-
-  :where(.bf-theme, .vr-theme) :where(.bf-control-grid__item--span-4) {
-    grid-column: span 4;
-  }
-}
-
 :where(.bf-theme, .vr-theme) :where(.l-application, .bf-application) {
   background: var(--vr-color-background-default);
   display: grid;

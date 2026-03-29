@@ -43,7 +43,7 @@ The package currently focuses on:
 - strip rhythm that lives on the bottom edge rather than adding mirrored top spacing
 - section, strip, stack, cluster, fixed-width, and stage-shell layout primitives
 - container-query grid primitives with a `4 / 8 / 16` column structure, power-of-2 spans, Canonical `620px` / `1681px` container thresholds for column counts, and Canonical viewport-controlled gutters/margins (`16px`, `24px`, `32px`)
-- a canonical dense control-grid surface for inspector rows (`bf-control-grid`, `bf-control-grid__item`, and stacked `p-slider__wrapper` pairs), while `bf-grid` remains the canonical page/layout grid
+- a dense `bf-grid` control recipe for inspector rows (`bf-grid bf-grid--controls` with `bf-grid__item--control`, `bf-grid__item--control-pair`, and stacked `p-slider__wrapper` pairs), rather than a second standalone grid primitive
 - an overlay drawer shell mode for temporary inspectors (`l-aside.is-overlay`, backdrop, `p-panel__toggle`, and Canonical small/medium/large size modifiers)
 - a resizable pinned-aside shell mode for desktop inspectors (`l-aside.is-pinned`, `l-application__aside-resize-handle`, and `initResizableAsides()`)
 - dense panel patterns for equal-width tabs, selectable radio rows, style/mapping option cards, tight helper text, compact color inputs, inline option strips, and dense action rows
@@ -328,7 +328,7 @@ There is also a dedicated overlay drawer-panel page in `demo/components/drawer-p
 
 There is also a dedicated narrow-panel regression page in `demo/components/narrow-panel.html`. It keeps a deliberately tight rail in the browser gate so text inputs, selects, slider pairs, search wrappers, and a video specimen cannot quietly overflow their container.
 
-There is also a dedicated dense parameter-matrix regression page in `demo/components/parameter-matrix.html`. It protects the canonical `bf-control-grid` plus stacked `p-slider__wrapper` pattern so inspector rows stay baseline-aligned without collapsing back into the broad page-grid behavior.
+There is also a dedicated dense parameter-matrix regression page in `demo/components/parameter-matrix.html`. It protects the `bf-grid bf-grid--controls` recipe plus stacked `p-slider__wrapper` pattern so inspector rows stay baseline-aligned inside the same `4 / 8 / 16` grid model as the rest of the package.
 
 There is also a dedicated code-snippet regression page in `demo/components/code-snippet.html`. It keeps copyable command blocks, stacked headers, and numbered code lines inside the same baseline gate as the rest of the dense panel surface.
 
@@ -342,4 +342,4 @@ If you resume this repo in a new chat, read:
 
 1. `llm-handoff-context.md`
 2. `docs/rebuild-plan.md`
-3. `AGENTS.md`
+3. `.github/agents/agent.md`

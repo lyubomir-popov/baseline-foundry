@@ -22,7 +22,14 @@ export function gridCss(): string {
 
 @media (width >= 64.75rem) {
   :where(.bf-theme, .vr-theme) {
+    --bf-grid-gap-inline: 2rem;
+    --bf-grid-gap-block: 2rem;
     --bf-page-margin: 2rem;
+  }
+
+  :where(.bf-theme.bf-tier-app, .vr-theme.bf-tier-app) {
+    --bf-grid-gap-inline: 1.5rem;
+    --bf-grid-gap-block: 1.5rem;
   }
 }
 
@@ -53,6 +60,15 @@ export function gridCss(): string {
   min-inline-size: 0;
 }
 
+:where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) {
+  container-type: inline-size;
+  gap: var(--vr-field-gap);
+}
+
+:where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control, .bf-grid__item--control-pair) {
+  grid-column: auto / span 4;
+}
+
 :where(.bf-theme, .vr-theme) :where(.bf-span-full) {
   grid-column: 1 / -1 !important;
 }
@@ -64,12 +80,28 @@ ${baseSpans}
     --bf-grid-columns: 8;
   }
 
+  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control) {
+    grid-column: auto / span 2;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control-pair) {
+    grid-column: auto / span 4;
+  }
+
 ${mediumSpans}
 }
 
 @container (width >= 105.0625rem) {
   :where(.bf-theme, .vr-theme) :where(.bf-grid) {
     --bf-grid-columns: 16;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control) {
+    grid-column: auto / span 4;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control-pair) {
+    grid-column: auto / span 8;
   }
 
 ${largeSpans}

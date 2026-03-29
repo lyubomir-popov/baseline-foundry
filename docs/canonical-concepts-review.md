@@ -25,7 +25,7 @@ The right response for `baseline-foundry` is still not "copy Canonical wholesale
 
 - keep editorial, non-zero baseline alignment as the default center
 - selectively adopt the Canonical grid and authoring ideas where they sharpen the system
-- reserve the application-tier mechanics for a later second preset or app mode, not for the default editorial surface
+- keep application-tier layout mechanics compatible with baseline alignment instead of treating them as a zero-nudge escape hatch
 
 ## What changed in the newer specs
 
@@ -174,9 +174,9 @@ We should not copy:
 
 What transfers is the method, not the literal scale.
 
-### 3. Application zero-nudge as the default center
+### 3. Application simplification as the default center
 
-The updated specs are even clearer that app tier can intentionally use zero nudges.
+The updated specs are even clearer that Canonical app tier can intentionally simplify toward zero nudges.
 
 That is reasonable for Canonical's multi-tier system.
 It should still not become the center of this repo.
@@ -184,8 +184,9 @@ It should still not become the center of this repo.
 For `baseline-foundry`:
 
 - baseline-aligned editorial text remains the defining proposition
-- a zero-nudge app preset can exist later
-- it should not replace the editorial default model
+- app layouts can still use container-owned semantic gaps
+- text-bearing app-tier controls and components should still align to the baseline grid
+- any cap-based engine should be judged by whether it preserves that alignment with less complexity, not by whether it removes the requirement
 
 ### 4. Unresolved baseline-unit messaging
 
@@ -207,6 +208,7 @@ For now, `baseline-foundry` should keep its own baseline-unit choice explicit an
 - IBM Plex metric-driven token generation
 - element-owned spacing in prose
 - small primitive surface
+- baseline alignment as a cross-tier invariant even when app layouts move semantic spacing ownership to containers
 
 ### Strong candidates for the next roadmap step
 
@@ -219,13 +221,18 @@ For now, `baseline-foundry` should keep its own baseline-unit choice explicit an
    - automatic last-child reset
    - possibly the precision compensation variant for non-zero nudge contexts
 
-3. Promote invariants into repo-level checks and docs:
+3. Make the app-tier stance explicit in the runtime contract:
+   - layout containers such as `bf-stack` can own semantic gaps
+   - child controls and text still align to the baseline grid
+   - the engine choice is about how that alignment is achieved, not whether it is required
+
+4. Promote invariants into repo-level checks and docs:
    - substitutability
    - locality
    - no double spacing
    - grid alignment
 
-4. Tighten the typography surface around the newer Canonical method:
+5. Tighten the typography surface around the newer Canonical method:
    - fewer distinct sizes
    - clearer weight arithmetic
    - explicit measure guidance
@@ -238,8 +245,8 @@ That is where the Canonical app tier becomes useful.
 A future app preset could reasonably adopt:
 
 - `14px` base size
-- zero-nudge tokens
-- spacing-neutral components in app containers
+- container-owned semantic gaps
+- baseline-aligned controls and text via metrics nudges or cap-based alignment
 - the `4` / `8` / `16` app grid
 - panel/drawer-oriented layout rules
 
