@@ -139,6 +139,7 @@ The current baseline-gated demo pages are:
 - `demo/components/tabs.html`
 - `demo/components/panel-tabs.html`
 - `demo/components/accordion.html`
+- `demo/components/engine-smoke.html`
 - `demo/components/modal.html`
 - `demo/components/choice-row.html`
 - `demo/components/inline-options.html`
@@ -329,6 +330,8 @@ There is also a dedicated overlay drawer-panel page in `demo/components/drawer-p
 There is also a dedicated narrow-panel regression page in `demo/components/narrow-panel.html`. It keeps a deliberately tight rail in the browser gate so text inputs, selects, slider pairs, search wrappers, and a video specimen cannot quietly overflow their container.
 
 There is also a dedicated dense parameter-matrix regression page in `demo/components/parameter-matrix.html`. It protects the `bf-grid bf-grid--controls` recipe plus stacked `p-slider__wrapper` pattern so inspector rows stay baseline-aligned inside the same `4 / 8 / 16` grid model as the rest of the package.
+
+There is also a dedicated baseline-engine smoke page in `demo/components/engine-smoke.html`. It renders the same compact app-tier inspector slice twice, once under `.bf-engine-metrics` and once under `.bf-engine-cap`, so the cap path is judged against the same text input, select, button, and accordion specimens instead of being trusted by abstraction.
 
 There is also a dedicated code-snippet regression page in `demo/components/code-snippet.html`. It keeps copyable command blocks, stacked headers, and numbered code lines inside the same baseline gate as the rest of the dense panel surface.
 

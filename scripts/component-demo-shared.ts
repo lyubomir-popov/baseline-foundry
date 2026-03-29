@@ -38,6 +38,7 @@ export const componentPages: ComponentPage[] = [
   { name: "tabs", route: "/demo/components/tabs.html" },
   { name: "panel-tabs", route: "/demo/components/panel-tabs.html" },
   { name: "accordion", route: "/demo/components/accordion.html" },
+  { name: "engine-smoke", route: "/demo/components/engine-smoke.html", captureProfile: "wide" },
   { name: "modal", route: "/demo/components/modal.html" },
   { name: "choice-row", route: "/demo/components/choice-row.html" },
   { name: "inline-options", route: "/demo/components/inline-options.html" },

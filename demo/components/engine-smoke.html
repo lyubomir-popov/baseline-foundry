@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baseline Engine Smoke Demo</title>
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+</head>
+<body>
+  <main class="component-demo-page component-demo-page--wide vr-theme" data-bf-tone="dark">
+    <header class="component-demo-header">
+      <div>
+        <h5 class="bf-h5 component-demo-kicker">Baseline Engine Smoke</h5>
+        <h1>App-tier metrics versus cap</h1>
+        <p class="component-demo-meta">The same compact inspector slice is rendered twice under the app tier: once with the trusted metrics nudges and once with the cap-unit engine. The existing baseline gate judges both paths on the same controls, spacing, and accordion body transition.</p>
+      </div>
+      <div class="component-demo-toolbar">
+        <label class="component-demo-toggle" for="baseline-grid-toggle">
+          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
+          Show baseline grid
+        </label>
+      </div>
+    </header>
+
+    <section class="component-demo-stage component-demo-stack" id="component-grid-target" data-component-capture>
+      <section class="component-demo-surface component-demo-flow-box vr-theme bf-tier-app bf-engine-metrics" data-baseline-check="box" data-baseline-label="engine smoke metrics section">
+        <div class="component-demo-parameter-rail" data-overflow-container data-baseline-check="box" data-baseline-label="engine smoke metrics rail">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="engine smoke metrics kicker">Metrics engine</h5>
+          <p class="component-demo-note" data-baseline-check="flow" data-baseline-label="engine smoke metrics note">This is the current trusted path for app-tier text-bearing controls.</p>
+
+          <div class="p-form__group" data-baseline-check="box" data-baseline-label="engine smoke metrics text field">
+            <label class="p-form__label u-no-margin--bottom" for="engine-smoke-title-metrics" data-baseline-check="flow" data-baseline-label="engine smoke metrics text label">Title</label>
+            <div class="p-form__control" data-baseline-check="box" data-baseline-label="engine smoke metrics text control">
+              <input id="engine-smoke-title-metrics" class="p-form-validation__input is-dense" type="text" value="Ubuntu Summit" data-baseline-check="box" data-baseline-label="engine smoke metrics text input" data-overflow-check>
+            </div>
+            <p class="p-form-help-text u-no-margin--bottom" data-baseline-check="flow" data-baseline-label="engine smoke metrics text help">The app-tier container owns the gap, but the field itself still has to land on the grid.</p>
+          </div>
+
+          <div class="p-form__group" data-baseline-check="box" data-baseline-label="engine smoke metrics select field">
+            <label class="p-form__label u-no-margin--bottom" for="engine-smoke-profile-metrics" data-baseline-check="flow" data-baseline-label="engine smoke metrics select label">Output profile</label>
+            <div class="p-form__control" data-baseline-check="box" data-baseline-label="engine smoke metrics select control">
+              <select id="engine-smoke-profile-metrics" class="p-form-validation__input is-dense" data-baseline-check="box" data-baseline-label="engine smoke metrics select input" data-overflow-check>
+                <option>Landscape 1280x720</option>
+                <option>Square 1080x1080</option>
+                <option>Portrait 1080x1920</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="component-demo-cluster" data-baseline-check="box" data-baseline-label="engine smoke metrics actions" data-overflow-check>
+            <button class="p-button is-dense" type="button" data-baseline-check="box" data-baseline-label="engine smoke metrics primary button">Apply</button>
+            <button class="p-button--base is-dense" type="button" data-baseline-check="box" data-baseline-label="engine smoke metrics base button">Reset</button>
+          </div>
+
+          <div class="p-accordion" data-baseline-check="box" data-baseline-label="engine smoke metrics accordion">
+            <ul class="p-accordion__list" data-baseline-ignore="true">
+              <li class="p-accordion__group" data-baseline-ignore="true">
+                <div class="p-accordion__heading">
+                  <button class="p-accordion__tab" type="button" aria-expanded="true" aria-controls="engine-smoke-panel-metrics" data-baseline-check="box" data-baseline-label="engine smoke metrics accordion tab">Playback</button>
+                </div>
+                <div id="engine-smoke-panel-metrics" class="p-accordion__panel" aria-hidden="false" data-baseline-check="box" data-baseline-label="engine smoke metrics accordion panel">
+                  <p class="bf-body" data-baseline-check="flow" data-baseline-label="engine smoke metrics accordion body">If the engine is trustworthy, the tab and the panel body should keep the same clean baseline step used elsewhere in the compact inspector surface.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="component-demo-surface component-demo-flow-box vr-theme bf-tier-app bf-engine-cap" data-baseline-check="box" data-baseline-label="engine smoke cap section">
+        <div class="component-demo-parameter-rail" data-overflow-container data-baseline-check="box" data-baseline-label="engine smoke cap rail">
+          <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="engine smoke cap kicker">Cap engine</h5>
+          <p class="component-demo-note" data-baseline-check="flow" data-baseline-label="engine smoke cap note">This page gives the cap-unit path the same app-tier control slice and the same baseline gate as the metrics engine.</p>
+
+          <div class="p-form__group" data-baseline-check="box" data-baseline-label="engine smoke cap text field">
+            <label class="p-form__label u-no-margin--bottom" for="engine-smoke-title-cap" data-baseline-check="flow" data-baseline-label="engine smoke cap text label">Title</label>
+            <div class="p-form__control" data-baseline-check="box" data-baseline-label="engine smoke cap text control">
+              <input id="engine-smoke-title-cap" class="p-form-validation__input is-dense" type="text" value="Ubuntu Summit" data-baseline-check="box" data-baseline-label="engine smoke cap text input" data-overflow-check>
+            </div>
+            <p class="p-form-help-text u-no-margin--bottom" data-baseline-check="flow" data-baseline-label="engine smoke cap text help">If the cap path is viable, this control stack should pass without separate one-off padding math.</p>
+          </div>
+
+          <div class="p-form__group" data-baseline-check="box" data-baseline-label="engine smoke cap select field">
+            <label class="p-form__label u-no-margin--bottom" for="engine-smoke-profile-cap" data-baseline-check="flow" data-baseline-label="engine smoke cap select label">Output profile</label>
+            <div class="p-form__control" data-baseline-check="box" data-baseline-label="engine smoke cap select control">
+              <select id="engine-smoke-profile-cap" class="p-form-validation__input is-dense" data-baseline-check="box" data-baseline-label="engine smoke cap select input" data-overflow-check>
+                <option>Landscape 1280x720</option>
+                <option>Square 1080x1080</option>
+                <option>Portrait 1080x1920</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="component-demo-cluster" data-baseline-check="box" data-baseline-label="engine smoke cap actions" data-overflow-check>
+            <button class="p-button is-dense" type="button" data-baseline-check="box" data-baseline-label="engine smoke cap primary button">Apply</button>
+            <button class="p-button--base is-dense" type="button" data-baseline-check="box" data-baseline-label="engine smoke cap base button">Reset</button>
+          </div>
+
+          <div class="p-accordion" data-baseline-check="box" data-baseline-label="engine smoke cap accordion">
+            <ul class="p-accordion__list" data-baseline-ignore="true">
+              <li class="p-accordion__group" data-baseline-ignore="true">
+                <div class="p-accordion__heading">
+                  <button class="p-accordion__tab" type="button" aria-expanded="true" aria-controls="engine-smoke-panel-cap" data-baseline-check="box" data-baseline-label="engine smoke cap accordion tab">Playback</button>
+                </div>
+                <div id="engine-smoke-panel-cap" class="p-accordion__panel" aria-hidden="false" data-baseline-check="box" data-baseline-label="engine smoke cap accordion panel">
+                  <p class="bf-body" data-baseline-check="flow" data-baseline-label="engine smoke cap accordion body">The cap-unit path does not get a softer gate. It has to keep the same row-to-panel rhythm under the same compact app-tier conditions.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
+</body>
+</html>
