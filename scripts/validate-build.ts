@@ -56,10 +56,14 @@ function validateCommonCss(css: string): void {
   assert(css.includes("text-transform: uppercase;"), "Expected CSS to include the h5 uppercase treatment.");
   assert(!css.includes("font-variant-caps: all-small-caps;"), "Expected CSS to avoid the old h5 faux small-caps treatment.");
   assert(css.includes("letter-spacing: 0.07em;"), "Expected CSS to include the h5 uppercase tracking.");
-  assert(css.includes("margin-bottom: var(--bf-space-after-comp, 0rem);"), "Expected prose flow boundaries to keep baseline compensation.");
+  assert(css.includes(":where(.bf-theme.bf-engine-cap, .vr-theme.bf-engine-cap)"), "Expected generated CSS to include the cap-engine runtime flag selector.");
+  assert(css.includes(":where(.bf-theme.bf-tier-app, .vr-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
+  assert(css.includes("--bf-selected-start-nudge: var(--bf-metrics-start-nudge, 0rem);"), "Expected generated CSS to default to the metrics baseline engine.");
+  assert(css.includes("--bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);"), "Expected generated CSS to default to editorial semantic spacing.");
+  assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-prose > :last-child) {\n  margin-bottom: 0;"), "Expected prose flow boundaries to trim semantic trailing space now that baseline compensation lives inside the element box.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
-  assert(css.includes("padding-block-end: var(--bf-space-after-comp);"), "Expected list items to preserve baseline compensation.");
-  assert(css.includes("margin: 0 0 var(--bf-space-after-sem);"), "Expected list containers to use semantic spacing without double-applying compensation.");
+  assert(css.includes("padding-block-end: var(--bf-selected-end-nudge);"), "Expected list items to preserve baseline compensation through the selected engine.");
+  assert(css.includes("margin: 0 0 var(--bf-semantic-space-after);"), "Expected list containers to use tier-selected semantic spacing without double-applying compensation.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
   assert(css.includes("margin: 0 0 calc(var(--bf-space-3) - 1px);"), "Expected rules to compensate their 1px thickness against the baseline rhythm.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
@@ -253,7 +257,8 @@ function validatePanelTheme(tokens: Record<string, unknown>, css: string): void 
   assert(components.controlMinBlockSize === "1.75rem", "Expected the panel preset control height to add one more baseline unit of breathing room.");
   assert(components.controlMinBlockSizeDense === "1.5rem", "Expected the panel preset dense control height to add one more baseline unit of breathing room.");
 
-  assert(typeof roles.body.nudgeTop === "string" && css.includes(`padding-top: ${roles.body.nudgeTop};`), "Expected compact list items to use the panel preset body nudge.");
+  assert(typeof roles.body.nudgeTop === "string" && css.includes(`--bf-metrics-start-nudge: ${roles.body.nudgeTop};`), "Expected compact list items to expose the panel preset metrics nudge.");
+  assert(css.includes("padding-block-start: var(--bf-selected-start-nudge);"), "Expected compact list items to use the selected engine's start nudge.");
   assert(css.includes("--vr-control-visual-size: var(--bf-control-visual-size);"), "Expected compat CSS to expose a dedicated visual control size variable.");
   assert(css.includes("block-size: var(--vr-control-visual-size);"), "Expected compat CSS to size checkbox/radio/thumb visuals from the dedicated control visual token.");
 }

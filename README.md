@@ -218,6 +218,22 @@ The build ships two first-class defaults:
 - `prose`: the root default, aimed at editorial and portfolio-style composition
 - `panel`: a compact `0.75rem` body preset for dense control surfaces and `brand-layout-ops` pressure testing
 
+The next refactor moves away from treating one of those as the implicit base and the other as a derivative override. The intended runtime contract is:
+
+- equal first-class tiers at the top level, starting with `.bf-tier-editorial` and `.bf-tier-app`
+- a separate baseline-engine flag, starting with `.bf-engine-metrics` and `.bf-engine-cap`
+
+The current rollout rule is conservative:
+
+- metrics-derived nudges remain the trusted default
+- the cap-unit engine is being added as an opt-in path
+- the baseline screenshot gate decides whether the cap path is good enough, not taste or implementation neatness
+
+The architectural split is also explicit now:
+
+- baseline compensation stays element-owned for every text-bearing element and component
+- semantic spacing is tier-owned: editorial keeps role-owned spacing, app tier zeros `spaceAfter` and expects container gaps
+
 The current parity order is deliberate:
 
 - make the shared component surface trustworthy under `panel` first

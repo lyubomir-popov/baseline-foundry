@@ -32,10 +32,11 @@ This repo is not the place for broad framework parity.
 ## Principles
 
 1. Baseline alignment is immutable.
-2. Editorial spacing is element-owned by default.
-3. Layout primitives are explicit and small.
-4. Compatibility concerns should not drive the public API here.
-5. Additions must earn their place as durable primitives.
+2. Baseline compensation and semantic spacing are separate responsibilities.
+3. Editorial spacing is element-owned by default.
+4. Layout primitives are explicit and small.
+5. Compatibility concerns should not drive the public API here.
+6. Additions must earn their place as durable primitives.
 
 ## Phases
 
@@ -62,6 +63,15 @@ This repo is not the place for broad framework parity.
 - [x] Compare against the Canonical spec work and document transferable concepts
 - [x] Decide which concepts become core rules versus optional future extensions
 - [ ] Add any missing validation needed to protect the baseline invariant
+
+### Phase 5 - Tier and engine refactor
+
+- [ ] Promote editorial and app modes to equal first-class runtime tiers rather than treating the compact panel build as an override of the prose default
+- [ ] Split tier choice from baseline engine choice so `.bf-tier-*` and `.bf-engine-*` can switch independently at the top level
+- [ ] Keep baseline compensation element-owned in every tier, while semantic spacing becomes tier-selected (`editorial` role-owned, `app` zeroed + container gaps)
+- [ ] Preserve the current metrics-derived engine as the trusted baseline and add the cap-unit engine as an opt-in runtime alternative until QA proves it can carry the invariant safely
+- [ ] Migrate text-bearing components so their internal baseline compensation follows the selected engine instead of relying on ad hoc control-height math alone
+- [ ] Extend validation so the screenshot gate and build checks cover the new tier and engine contract before any default flips
 
 ## Current architectural stance
 
@@ -108,6 +118,9 @@ This repo is not the place for broad framework parity.
 - The new `surfaces-navigation` page owns the newly ported navigation-adjacent and surface primitives, so those PVR borrowings now live under the same browser-enforced baseline gate as the older control and shell work.
 - Browser QA now checks behavior as well as rhythm: `npm test` includes Playwright coverage for pinned-aside resize flow and overlay-drawer attachment/toggle behavior, so the shell cannot silently lose drag, keyboard, reset, persistence, or visible temporary-inspector geometry while the CSS still looks plausible.
 - The sequencing for presets is now explicit: achieve real component parity and downstream confidence under the compact panel preset first, then bring the same component surface to parity under the prose/default preset, and only after that decide whether preset switching belongs to stylesheet swaps, multi-preset bundles, or scoped runtime attributes.
+- That sequencing is now being superseded by a more explicit runtime model: the next refactor should turn the prose and app surfaces into equal first-class tiers, expose them through top-level classes rather than asymmetric preset semantics, and let a separate baseline-engine flag choose between metrics-derived nudges and the cap-unit engine.
+- The current rollout rule is strict: the metrics engine remains the default until the cap-unit engine survives the same baseline screenshot gate and downstream pressure tests. The baseline invariant is the acceptance test, not a preference.
+- The core architectural split for that refactor is now explicit too: baseline compensation stays element-owned for every text-bearing element and component, while semantic spacing becomes a tier policy. Editorial keeps role-owned `spaceAfter`; app tier zeros semantic spacing and expects container-owned gaps.
 - The widened grid demo shell and larger Playwright viewport keep 16-column behavior under test even after the Canonical thresholds moved the widest bracket out to `1681px`.
 - The grid demo itself no longer hides behind a demo-local gap declaration; the visible spacing now comes from the generated Foundry grid so gutter regressions show up immediately in the demo and screenshot flow.
 - The next high-value borrow area is now the real downstream swap test itself plus any final spacing invariants that still need to be promoted into stronger repo-level validation.

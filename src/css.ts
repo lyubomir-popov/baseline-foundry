@@ -2,8 +2,8 @@ import { gridCss } from "./css-grid.js";
 import { compatCss } from "./css-compat.js";
 import type { ThemeFontFile, ThemeTokens, TypographyToken } from "./types.js";
 
-function spacingVars(token: TypographyToken): string {
-  return `  --bf-space-after-comp: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-space-after-sem: calc(${token.marginBottom} - var(--bf-space-after-comp));\n`;
+function alignmentVars(token: TypographyToken): string {
+  return `  --bf-space-after-sem-editorial: calc(${token.spaceAfter} - var(--bf-baseline));\n  --bf-computed-line-height: ${token.lineHeight};\n  --bf-metrics-start-nudge: ${token.nudgeTop};\n  --bf-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-cap-baseline-position: calc((var(--bf-computed-line-height) + 1cap) / 2);\n  --bf-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-cap-baseline-position), var(--bf-baseline)));\n  --bf-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-cap-start-nudge));\n`;
 }
 
 function fontFormat(path: string): string {
@@ -40,7 +40,7 @@ function textRule(selectors: string[], token: TypographyToken, extra = ""): stri
   const fontVariantCaps = token.fontVariantCaps ? `  font-variant-caps: ${token.fontVariantCaps};\n` : "";
   const letterSpacing = token.letterSpacing ? `  letter-spacing: ${token.letterSpacing};\n` : "";
   const textTransform = token.textTransform ? `  text-transform: ${token.textTransform};\n` : "";
-  return `${selectors.join(",\n")} {\n${spacingVars(token)}  font-family: ${token.fontStack};\n  font-size: ${token.fontSize};\n  font-style: ${token.fontStyle ?? "normal"};\n  font-weight: ${token.fontWeight ?? 400};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${token.lineHeight};\n  margin: 0 0 calc(var(--bf-space-after-sem) + var(--bf-space-after-comp));\n  padding-top: ${token.nudgeTop};\n${extra}}\n`;
+  return `${selectors.join(",\n")} {\n${alignmentVars(token)}  font-family: ${token.fontStack};\n  font-size: ${token.fontSize};\n  font-style: ${token.fontStyle ?? "normal"};\n  font-weight: ${token.fontWeight ?? 400};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: var(--bf-computed-line-height);\n  margin: 0 0 var(--bf-semantic-space-after);\n  padding-block-end: var(--bf-selected-end-nudge);\n  padding-block-start: var(--bf-selected-start-nudge);\n${extra}}\n`;
 }
 
 const SEMANTIC_SELECTORS_BY_ROLE: Record<string, string[]> = {
@@ -119,6 +119,9 @@ html.u-baseline-grid::after {
 }
 
 :where(.bf-theme, .vr-theme) {
+  --bf-selected-start-nudge: var(--bf-metrics-start-nudge, 0rem);
+  --bf-selected-end-nudge: var(--bf-metrics-end-nudge, 0rem);
+  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);
   --bf-baseline: ${tokens.baselineUnit};
   --bf-space-0: 0rem;
   --bf-space-1: var(--bf-baseline);
@@ -151,6 +154,24 @@ html.u-baseline-grid::after {
   font-style: ${body.fontStyle ?? "normal"};
   font-weight: ${body.fontWeight ?? 400};
   line-height: ${body.lineHeight};
+}
+
+:where(.bf-theme.bf-engine-metrics, .vr-theme.bf-engine-metrics) {
+  --bf-selected-start-nudge: var(--bf-metrics-start-nudge, 0rem);
+  --bf-selected-end-nudge: var(--bf-metrics-end-nudge, 0rem);
+}
+
+:where(.bf-theme.bf-engine-cap, .vr-theme.bf-engine-cap) {
+  --bf-selected-start-nudge: var(--bf-cap-start-nudge, 0rem);
+  --bf-selected-end-nudge: var(--bf-cap-end-nudge, 0rem);
+}
+
+:where(.bf-theme.bf-tier-editorial, .vr-theme.bf-tier-editorial) {
+  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);
+}
+
+:where(.bf-theme.bf-tier-app, .vr-theme.bf-tier-app) {
+  --bf-semantic-space-after: 0rem;
 }
 
 :where(.bf-theme[data-bf-tone='dark'], .vr-theme[data-bf-tone='dark'], .vr-theme.is-dark) {
@@ -270,36 +291,38 @@ html.u-baseline-grid::after {
 }
 
 :where(.bf-theme, .vr-theme) :where(.bf-prose > :last-child) {
-  margin-bottom: var(--bf-space-after-comp, 0rem);
+  margin-bottom: 0;
 }
 
 ${roleRules}
 
 :where(.bf-theme, .vr-theme) :where(.bf-prose ul, .bf-prose ol) {
-  ${spacingVars(body).trim()}
-  margin: 0 0 var(--bf-space-after-sem);
+  --bf-space-after-sem-editorial: calc(${body.spaceAfter} - var(--bf-baseline));
+  margin: 0 0 var(--bf-semantic-space-after);
   padding-inline-start: var(--bf-space-4);
 }
 
 :where(.bf-theme, .vr-theme) :where(.bf-prose li) {
+  ${alignmentVars(body).trim()}
   margin: 0;
-  padding-block-end: var(--bf-space-after-comp);
-  padding-top: ${body.nudgeTop};
+  padding-block-end: var(--bf-selected-end-nudge);
+  padding-block-start: var(--bf-selected-start-nudge);
 }
 
 :where(.bf-theme, .vr-theme) :where(.bf-prose blockquote) {
-  ${spacingVars(body).trim()}
+  ${alignmentVars(body).trim()}
   border-inline-start: 1px solid var(--bf-color-rule);
   color: var(--bf-color-muted);
   font-family: ${body.fontStack};
   font-size: ${body.fontSize};
   font-style: ${body.fontStyle ?? "normal"};
   font-weight: ${body.fontWeight ?? 400};
-  line-height: ${body.lineHeight};
-  margin: 0 0 calc(var(--bf-space-after-sem) + var(--bf-space-after-comp));
+  line-height: var(--bf-computed-line-height);
+  margin: 0 0 var(--bf-semantic-space-after);
   max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));
+  padding-block-end: var(--bf-selected-end-nudge);
   padding-inline-start: var(--bf-space-3);
-  padding-top: ${body.nudgeTop};
+  padding-top: var(--bf-selected-start-nudge);
 }
 
 :where(.bf-theme, .vr-theme) :where(.bf-rule, .bf-prose hr) {
