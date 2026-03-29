@@ -234,6 +234,10 @@ The architectural split is also explicit now:
 - baseline compensation stays element-owned for every text-bearing element and component
 - semantic spacing is tier-owned: editorial keeps role-owned spacing, app tier zeros `spaceAfter` and expects container gaps
 
+That contract now reaches the first compat tranche too. Text-entry and action controls such as inputs, file controls, buttons, tabs, segmented controls, pagination, search/filter controls, tooltip text, accordion tabs, and the panel toggle now read role-level selected nudge variables from the chosen engine.
+
+Some row-style surfaces still sit outside that primitive on purpose. Tables, list-tree rows, and chips are currently left on centered row math because the screenshot gate showed they are not the same problem as text-entry controls.
+
 The current parity order is deliberate:
 
 - make the shared component surface trustworthy under `panel` first

@@ -17,12 +17,52 @@ function typeStyles(token: TypographyToken, options: {
   return `  font-family: ${token.fontStack};\n  font-size: ${token.fontSize};\n  font-style: ${token.fontStyle ?? "normal"};\n  font-weight: ${options.fontWeight ?? token.fontWeight ?? 400};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${token.lineHeight};\n`;
 }
 
+function roleAlignmentVars(roleName: string, token: TypographyToken): string {
+  return `  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-metrics-start-nudge: ${token.nudgeTop};\n  --bf-${roleName}-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-${roleName}-cap-baseline-position: calc((var(--bf-${roleName}-line-height) + 1cap) / 2);\n  --bf-${roleName}-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-${roleName}-cap-baseline-position), var(--bf-baseline)));\n  --bf-${roleName}-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-${roleName}-cap-start-nudge));\n  --bf-${roleName}-selected-start-nudge: var(--bf-${roleName}-metrics-start-nudge);\n  --bf-${roleName}-selected-end-nudge: var(--bf-${roleName}-metrics-end-nudge);\n`;
+}
+
+function roleLineHeightVar(roleName: string): string {
+  return `var(--bf-${roleName}-line-height)`;
+}
+
+function roleSelectedStartNudgeVar(roleName: string): string {
+  return `var(--bf-${roleName}-selected-start-nudge)`;
+}
+
+function roleSelectedEndNudgeVar(roleName: string): string {
+  return `var(--bf-${roleName}-selected-end-nudge)`;
+}
+
+function controlPadding(blockSize: string, lineHeightVar: string, startVar: string, endVar: string, borderTotal = "0rem"): string {
+  const basePadding = `(((${blockSize} - ${lineHeightVar} - var(--vr-baseline) - ${borderTotal}) / 2))`;
+
+  return `  padding-block-end: calc(${basePadding} + ${endVar});\n  padding-block-start: calc(${basePadding} + ${startVar});\n`;
+}
+
+function alignedVisualStart(lineHeightVar: string, visualSize: string, startVar: string, offset = "0rem"): string {
+  if (offset === "0rem") {
+    return `calc(${startVar} + ((${lineHeightVar} - ${visualSize}) / 2))`;
+  }
+
+  return `calc(${startVar} + ((${lineHeightVar} - ${visualSize}) / 2) + ${offset})`;
+}
+
 export function compatCss(tokens: ThemeTokens): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
   const h6 = tokens.roles.h6 ?? body;
   const components = tokens.components;
+  const controlBorderTotal = "(var(--vr-border-width) * 2)";
+  const bodyLineHeight = roleLineHeightVar("body");
+  const bodySelectedStartNudge = roleSelectedStartNudgeVar("body");
+  const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
+  const h5LineHeight = roleLineHeightVar("h5");
+  const h5SelectedStartNudge = roleSelectedStartNudgeVar("h5");
+  const h5SelectedEndNudge = roleSelectedEndNudgeVar("h5");
+  const h6LineHeight = roleLineHeightVar("h6");
+  const h6SelectedStartNudge = roleSelectedStartNudgeVar("h6");
+  const h6SelectedEndNudge = roleSelectedEndNudgeVar("h6");
 
   return `:where(.bf-theme, .vr-theme) {
   --bf-border-width: ${components.borderWidth};
@@ -47,7 +87,7 @@ export function compatCss(tokens: ThemeTokens): string {
   --bf-app-navigation-width: 15rem;
   --bf-app-navigation-width-collapsed: calc(var(--bf-baseline) * 4);
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
-  --vr-baseline: var(--bf-baseline);
+${roleAlignmentVars("body", body)}${roleAlignmentVars("h4", h4)}${roleAlignmentVars("h5", h5)}${roleAlignmentVars("h6", h6)}  --vr-baseline: var(--bf-baseline);
   --vr-border-width: var(--bf-border-width);
   --vr-radius: var(--bf-radius);
   --vr-control-inline-padding: var(--bf-control-inline-padding);
@@ -105,6 +145,28 @@ export function compatCss(tokens: ThemeTokens): string {
   --vr-color-focus: var(--vf-color-focus, var(--bf-color-accent, #0f62fe));
   --vr-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
   color: var(--vr-color-text-default);
+}
+
+:where(.bf-theme.bf-engine-metrics, .vr-theme.bf-engine-metrics) {
+  --bf-body-selected-start-nudge: var(--bf-body-metrics-start-nudge);
+  --bf-body-selected-end-nudge: var(--bf-body-metrics-end-nudge);
+  --bf-h4-selected-start-nudge: var(--bf-h4-metrics-start-nudge);
+  --bf-h4-selected-end-nudge: var(--bf-h4-metrics-end-nudge);
+  --bf-h5-selected-start-nudge: var(--bf-h5-metrics-start-nudge);
+  --bf-h5-selected-end-nudge: var(--bf-h5-metrics-end-nudge);
+  --bf-h6-selected-start-nudge: var(--bf-h6-metrics-start-nudge);
+  --bf-h6-selected-end-nudge: var(--bf-h6-metrics-end-nudge);
+}
+
+:where(.bf-theme.bf-engine-cap, .vr-theme.bf-engine-cap) {
+  --bf-body-selected-start-nudge: var(--bf-body-cap-start-nudge);
+  --bf-body-selected-end-nudge: var(--bf-body-cap-end-nudge);
+  --bf-h4-selected-start-nudge: var(--bf-h4-cap-start-nudge);
+  --bf-h4-selected-end-nudge: var(--bf-h4-cap-end-nudge);
+  --bf-h5-selected-start-nudge: var(--bf-h5-cap-start-nudge);
+  --bf-h5-selected-end-nudge: var(--bf-h5-cap-end-nudge);
+  --bf-h6-selected-start-nudge: var(--bf-h6-cap-start-nudge);
+  --bf-h6-selected-end-nudge: var(--bf-h6-cap-end-nudge);
 }
 
 :where(.vr-theme.is-dark),
@@ -234,8 +296,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
-  padding-block: calc((var(--vr-control-block-size) - ${body.lineHeight} - (var(--vr-border-width) * 2)) / 2);
-  padding-inline: var(--vr-control-inline-padding);
+${controlPadding("var(--vr-control-block-size)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: var(--vr-control-inline-padding);
 }
 
 :where(.bf-theme, .vr-theme) :where(
@@ -243,7 +304,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   .bf-input.is-dense
 ) {
   block-size: var(--vr-control-block-size-dense);
-  padding-block: calc((var(--vr-control-block-size-dense) - ${body.lineHeight} - (var(--vr-border-width) * 2)) / 2);
+${controlPadding("var(--vr-control-block-size-dense)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}
 }
 
 :where(.bf-theme, .vr-theme) :where(input[type='color'].p-color-input, input[type='color'].bf-color-input) {
@@ -347,8 +408,7 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   max-inline-size: 100%;
   min-block-size: var(--vr-control-block-size);
   min-inline-size: 0;
-  padding-block: calc((var(--vr-control-block-size) - ${body.lineHeight} - (var(--vr-border-width) * 2)) / 2);
-  padding-inline: 0;
+${controlPadding("var(--vr-control-block-size)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: 0;
   width: 100%;
 }
 
@@ -360,8 +420,7 @@ ${typeStyles(h6, { includeCase: false })}  appearance: none;
   color: var(--vr-color-text-default);
   cursor: pointer;
   margin-inline-end: var(--vr-field-gap);
-  padding-block: calc((var(--vr-control-block-size-dense) - ${h6.lineHeight} - (var(--vr-border-width) * 2)) / 2);
-  padding-inline: var(--vr-control-inline-padding);
+${controlPadding("var(--vr-control-block-size-dense)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}  padding-inline: var(--vr-control-inline-padding);
 }
 
 :where(.bf-theme, .vr-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -396,7 +455,7 @@ ${typeStyles(h6, { includeCase: false })}  appearance: none;
 
 :where(.bf-theme, .vr-theme) :where(.p-checkbox, .bf-checkbox, .p-radio, .bf-radio) {
   margin: 0;
-  min-block-size: max(var(--vr-control-block-size-dense), calc(${body.lineHeight} + var(--vr-baseline)));
+  min-block-size: max(var(--vr-control-block-size-dense), calc(${bodyLineHeight} + var(--vr-baseline)));
   position: relative;
 }
 
@@ -407,7 +466,7 @@ ${typeStyles(h6, { includeCase: false })}  appearance: none;
   margin: 0;
   opacity: 0;
   position: absolute;
-  top: calc((${body.lineHeight} - var(--vr-control-visual-size)) / 2);
+  top: ${alignedVisualStart(bodyLineHeight, "var(--vr-control-visual-size)", bodySelectedStartNudge)};
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-checkbox__label, .bf-checkbox__label, .p-radio__label, .bf-radio__label) {
@@ -415,7 +474,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-default)
   cursor: pointer;
   display: block;
   margin-bottom: 0;
-  min-block-size: max(var(--vr-control-block-size-dense), calc(${body.lineHeight} + var(--vr-baseline)));
+  min-block-size: max(var(--vr-control-block-size-dense), calc(${bodyLineHeight} + var(--vr-baseline)));
   padding-inline-start: calc(var(--vr-control-visual-size) + var(--vr-field-gap));
   position: relative;
 }
@@ -432,7 +491,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-default)
   border: var(--vr-border-width) solid var(--vr-color-border-high-contrast);
   inline-size: var(--vr-control-visual-size);
   inset-inline-start: 0;
-  inset-block-start: calc((${body.lineHeight} - var(--vr-control-visual-size)) / 2);
+  inset-block-start: ${alignedVisualStart(bodyLineHeight, "var(--vr-control-visual-size)", bodySelectedStartNudge)};
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-checkbox__label:hover, .bf-checkbox__label:hover, .p-radio__label:hover, .bf-radio__label:hover)::before {
@@ -445,7 +504,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-default)
   border-left: calc(var(--vr-border-width) * 2) solid var(--vr-color-background-default);
   inline-size: calc(var(--vr-control-visual-size) * 0.6);
   inset-inline-start: calc(var(--vr-control-visual-size) * 0.2);
-  inset-block-start: calc(((${body.lineHeight} - var(--vr-control-visual-size)) / 2) + (var(--vr-control-visual-size) * 0.18));
+  inset-block-start: ${alignedVisualStart(bodyLineHeight, "var(--vr-control-visual-size)", bodySelectedStartNudge, "(var(--vr-control-visual-size) * 0.18)")};
   opacity: 0;
   transform: rotate(-45deg);
 }
@@ -460,7 +519,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-default)
   border-radius: 50%;
   inline-size: calc(var(--vr-control-visual-size) * 0.45);
   inset-inline-start: calc(var(--vr-control-visual-size) * 0.275);
-  inset-block-start: calc(((${body.lineHeight} - var(--vr-control-visual-size)) / 2) + (var(--vr-control-visual-size) * 0.275));
+  inset-block-start: ${alignedVisualStart(bodyLineHeight, "var(--vr-control-visual-size)", bodySelectedStartNudge, "(var(--vr-control-visual-size) * 0.275)")};
   opacity: 0;
 }
 
@@ -502,7 +561,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-default)
 :where(.bf-theme, .vr-theme) :where(.p-switch__input, .bf-switch__input) {
   block-size: var(--vr-control-visual-size);
   inline-size: calc(var(--vr-control-visual-size) * 2);
-  inset-block-start: calc((${body.lineHeight} - var(--vr-control-visual-size)) / 2);
+  inset-block-start: ${alignedVisualStart(bodyLineHeight, "var(--vr-control-visual-size)", bodySelectedStartNudge)};
   inset-inline-start: 0;
   margin: 0;
   opacity: 0;
@@ -569,7 +628,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   border-radius: 50%;
   content: "";
   inline-size: calc(var(--vr-control-visual-size) * 0.5);
-  inset-block-start: calc((${body.lineHeight} - (var(--vr-control-visual-size) * 0.5)) / 2);
+  inset-block-start: ${alignedVisualStart(bodyLineHeight, "(var(--vr-control-visual-size) * 0.5)", bodySelectedStartNudge)};
   inset-inline-start: 0;
   position: absolute;
 }
@@ -741,8 +800,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   display: inline-flex;
   justify-content: center;
   block-size: var(--vr-control-block-size);
-  padding-block: calc((var(--vr-control-block-size) - ${h6.lineHeight} - (var(--vr-border-width) * 2)) / 2);
-  padding-inline: var(--vr-control-inline-padding);
+${controlPadding("var(--vr-control-block-size)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}  padding-inline: var(--vr-control-inline-padding);
   text-align: center;
   text-decoration: none;
 }
@@ -766,7 +824,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
 
 :where(.bf-theme, .vr-theme) :where(.p-button.is-dense, .p-button--base.is-dense, .bf-button.is-dense, .bf-button--base.is-dense) {
   block-size: var(--vr-control-block-size-dense);
-  padding-block: calc((var(--vr-control-block-size-dense) - ${h6.lineHeight} - (var(--vr-border-width) * 2)) / 2);
+${controlPadding("var(--vr-control-block-size-dense)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-actions, .bf-actions) {
@@ -856,7 +914,8 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   margin: 0;
   min-block-size: var(--vr-control-block-size-dense);
   min-inline-size: 0;
-  padding-block: calc((var(--vr-control-block-size-dense) - ${h6.lineHeight}) / 2);
+  padding-block-end: calc((((var(--vr-control-block-size-dense) - ${h6LineHeight} - var(--vr-baseline) - 0rem) / 2)) + ${h6SelectedEndNudge});
+  padding-block-start: calc((((var(--vr-control-block-size-dense) - ${h6LineHeight} - var(--vr-baseline) - 0rem) / 2)) + ${h6SelectedStartNudge});
   padding-inline: 0;
   text-align: left;
 }
@@ -1092,8 +1151,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   gap: calc(var(--vr-baseline) * 0.5);
   justify-content: center;
   min-block-size: var(--vr-control-block-size-dense);
-  padding-block: calc((var(--vr-control-block-size-dense) - ${h6.lineHeight} - (var(--vr-border-width) * 2)) / 2);
-  padding-inline: var(--vr-control-inline-padding);
+${controlPadding("var(--vr-control-block-size-dense)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}  padding-inline: var(--vr-control-inline-padding);
   text-decoration: none;
 }
 
@@ -1166,8 +1224,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   margin: 0;
   min-block-size: var(--vr-control-block-size);
   min-inline-size: 0;
-  padding-block: calc((var(--vr-control-block-size) - ${body.lineHeight} - (var(--vr-border-width) * 2)) / 2);
-  padding-inline: var(--vr-control-inline-padding);
+${controlPadding("var(--vr-control-block-size)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: var(--vr-control-inline-padding);
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-choice-row:hover, .bf-choice-row:hover) {
@@ -1280,8 +1337,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   max-inline-size: 100%;
   min-block-size: var(--vr-control-block-size);
   overflow: hidden;
-  padding-block: calc((var(--vr-control-block-size) - ${h6.lineHeight} - (var(--vr-border-width) * 2)) / 2);
-  padding-inline: var(--vr-control-inline-padding);
+${controlPadding("var(--vr-control-block-size)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}  padding-inline: var(--vr-control-inline-padding);
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -1320,7 +1376,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
 
 :where(.bf-theme, .vr-theme) :where(.p-segmented-control.is-dense .p-segmented-control__button, .p-tab-buttons.is-dense .p-tab-buttons__button, .bf-segmented-control.is-dense .bf-segmented-control__button, .bf-tab-buttons.is-dense .bf-tab-buttons__button) {
   min-block-size: var(--vr-control-block-size-dense);
-  padding-block: calc((var(--vr-control-block-size-dense) - ${h6.lineHeight} - (var(--vr-border-width) * 2)) / 2);
+${controlPadding("var(--vr-control-block-size-dense)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-breadcrumbs, .bf-breadcrumbs) {
@@ -1503,7 +1559,9 @@ ${typeStyles(h5)}  display: inline-flex;
   color: var(--vr-status-color);
   display: inline-block;
 ${typeStyles(h5)}  margin: 0;
-  padding: ${h5.nudgeTop} calc(var(--vr-baseline) * 0.75) 0;
+  padding-block-end: 0;
+  padding-block-start: ${h5SelectedStartNudge};
+  padding-inline: calc(var(--vr-baseline) * 0.75);
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
@@ -1747,9 +1805,9 @@ ${typeStyles(h5)}  appearance: none;
   display: inline-flex;
   margin: 0;
   min-block-size: var(--vr-control-block-size);
-  padding-bottom: calc(((var(--vr-control-block-size) - ${h5.lineHeight}) / 2) - ${h5.nudgeTop});
+  padding-block-end: calc((((var(--vr-control-block-size) - ${h5LineHeight} - var(--vr-baseline) - 0rem) / 2)) + ${h5SelectedEndNudge});
   padding-inline: 0;
-  padding-top: calc(((var(--vr-control-block-size) - ${h5.lineHeight}) / 2) + ${h5.nudgeTop});
+  padding-block-start: calc((((var(--vr-control-block-size) - ${h5LineHeight} - var(--vr-baseline) - 0rem) / 2)) + ${h5SelectedStartNudge});
   position: static;
 }
 
@@ -1785,7 +1843,9 @@ ${typeStyles(h5)}  appearance: none;
   cursor: pointer;
   margin: 0;
   overflow: hidden;
-  padding: ${body.nudgeTop} 0 0;
+  padding-block-end: 0;
+  padding-block-start: ${bodySelectedStartNudge};
+  padding-inline: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1811,8 +1871,8 @@ ${typeStyles(h5)}  appearance: none;
 :where(.bf-theme, .vr-theme) :where(.p-filter-panel-section__heading, .bf-filter-panel-section__heading) {
 ${typeStyles(h5)}  color: var(--vr-color-text-muted);
   margin: 0;
-  padding-bottom: calc(var(--vr-baseline) - ${h5.nudgeTop});
-  padding-top: ${h5.nudgeTop};
+  padding-block-end: ${h5SelectedEndNudge};
+  padding-block-start: ${h5SelectedStartNudge};
 }
 
 :where(.bf-theme, .vr-theme) :where(.p-filter-panel-section__chips, .bf-filter-panel-section__chips) {
@@ -1988,7 +2048,8 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   display: block;
   margin: 0;
   overflow: hidden;
-  padding-block: calc((var(--vr-control-block-size-dense) - ${body.lineHeight}) / 2);
+  padding-block-end: calc((((var(--vr-control-block-size-dense) - ${bodyLineHeight} - var(--vr-baseline) - 0rem) / 2)) + ${bodySelectedEndNudge});
+  padding-block-start: calc((((var(--vr-control-block-size-dense) - ${bodyLineHeight} - var(--vr-baseline) - 0rem) / 2)) + ${bodySelectedStartNudge});
   padding-inline: var(--vr-panel-padding-inline);
   text-align: left;
   text-decoration: none;
@@ -2046,7 +2107,8 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--vr-color-ba
   margin: 0;
   max-inline-size: min(20rem, calc(100vw - (var(--vr-baseline) * 4)));
   opacity: 0;
-  padding-block: ${body.nudgeTop} calc(var(--vr-baseline) - ${body.nudgeTop});
+  padding-block-end: ${bodySelectedEndNudge};
+  padding-block-start: ${bodySelectedStartNudge};
   padding-inline: var(--vr-panel-padding-inline);
   pointer-events: none;
   position: absolute;
@@ -2167,7 +2229,8 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--vr-color-ba
 :where(.bf-theme, .vr-theme) :where(.p-pagination__item--truncation, .bf-pagination__item--truncation) {
 ${typeStyles(body, { includeCase: false })}  color: var(--vr-color-text-muted);
   min-block-size: var(--vr-control-block-size-dense);
-  padding-block: calc((var(--vr-control-block-size-dense) - ${body.lineHeight}) / 2);
+  padding-block-end: calc((((var(--vr-control-block-size-dense) - ${bodyLineHeight} - var(--vr-baseline) - 0rem) / 2)) + ${bodySelectedEndNudge});
+  padding-block-start: calc((((var(--vr-control-block-size-dense) - ${bodyLineHeight} - var(--vr-baseline) - 0rem) / 2)) + ${bodySelectedStartNudge});
   padding-inline: calc(var(--vr-baseline) * 0.5);
 }
 
@@ -2183,7 +2246,8 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   justify-content: center;
   min-block-size: var(--vr-control-block-size-dense);
   min-inline-size: calc(var(--vr-baseline) * 2.5);
-  padding-block: calc((var(--vr-control-block-size-dense) - ${h6.lineHeight} - (var(--vr-border-width) * 2)) / 2);
+  padding-block-end: calc((((var(--vr-control-block-size-dense) - ${h6LineHeight} - var(--vr-baseline) - ${controlBorderTotal}) / 2)) + ${h6SelectedEndNudge});
+  padding-block-start: calc((((var(--vr-control-block-size-dense) - ${h6LineHeight} - var(--vr-baseline) - ${controlBorderTotal}) / 2)) + ${h6SelectedStartNudge});
   padding-inline: calc(var(--vr-baseline) * 0.75);
   text-align: center;
   text-decoration: none;

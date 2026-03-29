@@ -59,6 +59,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme.bf-engine-cap, .vr-theme.bf-engine-cap)"), "Expected generated CSS to include the cap-engine runtime flag selector.");
   assert(css.includes(":where(.bf-theme.bf-tier-app, .vr-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
   assert(css.includes("--bf-selected-start-nudge: var(--bf-metrics-start-nudge, 0rem);"), "Expected generated CSS to default to the metrics baseline engine.");
+  assert(css.includes("--bf-body-selected-start-nudge: var(--bf-body-metrics-start-nudge);"), "Expected compat CSS to default body-aligned controls to the metrics engine.");
+  assert(css.includes("--bf-h6-selected-start-nudge: var(--bf-h6-cap-start-nudge);"), "Expected compat CSS to expose h6 alignment through the cap-engine selector.");
   assert(css.includes("--bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);"), "Expected generated CSS to default to editorial semantic spacing.");
   assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-prose > :last-child) {\n  margin-bottom: 0;"), "Expected prose flow boundaries to trim semantic trailing space now that baseline compensation lives inside the element box.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
@@ -80,6 +82,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.p-form__control, .bf-control) {\n  display: grid;\n  gap: var(--vr-field-gap);\n  min-inline-size: 0;"), "Expected form controls to allow shrinking inside narrow containers.");
   assert(css.includes(":where(.p-form__group--checkbox, .bf-field--checkbox) :where(.p-form__control, .bf-control) {\n  gap: 0;"), "Expected checkbox field controls to avoid downstream gap overrides.");
   assert(css.includes("min-block-size: max(var(--vr-control-block-size-dense), calc("), "Expected checkbox and radio rows to use the dense control height as a minimum.");
+  assert(css.includes("var(--bf-body-selected-start-nudge)"), "Expected compat controls to consume the selected body alignment nudge.");
+  assert(css.includes("var(--bf-h6-selected-end-nudge)"), "Expected compat controls to consume the selected h6 alignment nudge.");
   assert(css.includes(":where(.bf-control-grid) {\n  container-type: inline-size;\n  display: grid;"), "Expected compat CSS to include the canonical dense control-grid helper surface.");
   assert(css.includes(":where(.p-slider__wrapper--stacked, .bf-slider--stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--vr-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
   assert(!css.includes(".slider-pair"), "Expected compat CSS to omit the downstream slider wrapper aliases.");
