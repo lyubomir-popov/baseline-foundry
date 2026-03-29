@@ -87,6 +87,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("var(--bf-body-selected-start-nudge)"), "Expected compat controls to consume the selected body alignment nudge.");
   assert(css.includes("var(--bf-h6-selected-end-nudge)"), "Expected compat controls to consume the selected h6 alignment nudge.");
   assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) {\n  container-type: inline-size;\n  gap: var(--vr-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
+  assert(css.includes(":where(.bf-theme, .vr-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
   assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control, .bf-grid__item--control-pair) {\n  grid-column: auto / span 4;"), "Expected grid CSS to include the default dense control-grid recipe spans.");
   assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column grid.");
   assert(css.includes(":where(.bf-theme, .vr-theme) :where(.bf-grid.bf-grid--controls) > :where(.bf-grid__item--control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column grid.");

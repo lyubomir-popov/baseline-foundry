@@ -101,8 +101,9 @@ The atlas at `demo/components/index.html` is now a visual index of the real base
 All component demos now:
 
 - default to the dark theme
-- load with the baseline grid hidden by default
-- let you toggle the grid on page-by-page for inspection
+- load with the baseline grid visible by default
+- let you toggle the grid off page-by-page when you want a cleaner read
+- keep the shared demo shell minimal instead of wrapping every specimen in card chrome
 - use real `h5` section labels instead of demo-local kicker styling
 - keep a dedicated narrow-panel regression page in the automated gate so dense controls and media must still fit a tight rail
 - share a browser behavior check for the pinned-aside resize flow so the handle, persistence, and keyboard controls stay real

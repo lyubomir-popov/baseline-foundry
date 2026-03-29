@@ -74,21 +74,14 @@ a {
   accent-color: #0f62fe;
 }
 
-.component-demo-card,
-.component-demo-stage {
-  border: 1px solid var(--component-demo-rule);
-}
-
 .component-demo-card {
-  padding-block-end: calc(var(--bf-baseline) * 2 - 1px);
-  padding-block-start: calc(var(--bf-baseline) * 2 - 1px);
-  padding-inline: 1rem;
+  min-inline-size: 0;
+  padding: 0;
 }
 
 .component-demo-stage {
-  padding-block-end: calc(var(--bf-baseline) * 3 - 1px);
-  padding-block-start: calc(var(--bf-baseline) * 3 - 1px);
-  padding-inline: 1.5rem;
+  min-inline-size: 0;
+  padding: 0;
 }
 
 .component-demo-stack {
@@ -241,12 +234,8 @@ a {
 
 .component-demo-layout-card,
 .component-demo-grid-card {
-  background: var(--component-demo-surface);
-  border: 1px solid var(--component-demo-rule);
   min-inline-size: 0;
-  padding-block-end: calc(var(--bf-baseline) * 2 - 1px);
-  padding-block-start: calc(var(--bf-baseline) * 2 - 1px);
-  padding-inline: 1rem;
+  padding: 0;
 }
 
 .component-demo-cluster {
@@ -276,16 +265,12 @@ a {
 }
 
 .component-demo-surface {
-  background: var(--vr-color-background-alt, var(--component-demo-surface));
-  border: 1px solid var(--component-demo-rule);
-  padding-block-end: calc(var(--vr-panel-padding-block, 1rem) - 1px);
-  padding-block-start: calc(var(--vr-panel-padding-block, 1rem) - 1px);
-  padding-inline: var(--vr-panel-padding-inline, 1rem);
+  min-inline-size: 0;
+  padding: 0;
 }
 
 .component-demo-page--panel .component-demo-surface {
-  padding-block-end: calc(var(--vr-panel-padding-block, 0.75rem) - 1px);
-  padding-block-start: calc(var(--vr-panel-padding-block, 0.75rem) - 1px);
+  padding: 0;
 }
 
 .component-demo-surface-title {

@@ -44,14 +44,14 @@ function textRule(selectors: string[], token: TypographyToken, extra = ""): stri
 }
 
 const SEMANTIC_SELECTORS_BY_ROLE: Record<string, string[]> = {
-  body: [":where(.bf-theme, .vr-theme) .bf-prose p"],
-  h1: [":where(.bf-theme, .vr-theme) .bf-prose h1"],
-  h2: [":where(.bf-theme, .vr-theme) .bf-prose h2"],
-  h3: [":where(.bf-theme, .vr-theme) .bf-prose h3"],
-  h4: [":where(.bf-theme, .vr-theme) .bf-prose h4"],
-  h5: [":where(.bf-theme, .vr-theme) .bf-prose h5"],
-  h6: [":where(.bf-theme, .vr-theme) .bf-prose h6"],
-  meta: [":where(.bf-theme, .vr-theme) .bf-prose figcaption"]
+  body: [":where(.bf-theme, .vr-theme) :where(p)", ":where(.bf-theme, .vr-theme) .bf-prose p"],
+  h1: [":where(.bf-theme, .vr-theme) :where(h1)", ":where(.bf-theme, .vr-theme) .bf-prose h1"],
+  h2: [":where(.bf-theme, .vr-theme) :where(h2)", ":where(.bf-theme, .vr-theme) .bf-prose h2"],
+  h3: [":where(.bf-theme, .vr-theme) :where(h3)", ":where(.bf-theme, .vr-theme) .bf-prose h3"],
+  h4: [":where(.bf-theme, .vr-theme) :where(h4)", ":where(.bf-theme, .vr-theme) .bf-prose h4"],
+  h5: [":where(.bf-theme, .vr-theme) :where(h5)", ":where(.bf-theme, .vr-theme) .bf-prose h5"],
+  h6: [":where(.bf-theme, .vr-theme) :where(h6)", ":where(.bf-theme, .vr-theme) .bf-prose h6"],
+  meta: [":where(.bf-theme, .vr-theme) :where(figcaption)", ":where(.bf-theme, .vr-theme) .bf-prose figcaption"]
 };
 
 const EXTRA_STYLES_BY_ROLE: Record<string, string> = {
@@ -199,6 +199,10 @@ html.u-baseline-grid::after {
 
 :where(.bf-theme[data-bf-tone='dark'], .vr-theme[data-bf-tone='dark'], .vr-theme.is-dark) .u-baseline-grid {
   --bf-baseline-grid-color: rgba(255, 255, 255, 0.16);
+}
+
+:where(.bf-theme, .vr-theme) :where(h1, h2, h3, h4, h5, h6, p, blockquote, figure, ul, ol, dl, pre) {
+  margin: 0;
 }
 
 :where(.bf-theme, .vr-theme) :where(img, picture, svg, video) {

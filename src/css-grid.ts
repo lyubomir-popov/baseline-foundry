@@ -33,7 +33,8 @@ export function gridCss(): string {
   }
 }
 
-:where(.bf-theme, .vr-theme) :where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .p-panel__content, .p-accordion__panel, .l-main, .l-aside) {
+:where(.bf-theme, .vr-theme) :where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .p-panel__content, .p-accordion__panel, .l-main, .l-aside),
+:where(.bf-theme, .vr-theme):where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .p-panel__content, .p-accordion__panel, .l-main, .l-aside) {
   container-type: inline-size;
 }
 

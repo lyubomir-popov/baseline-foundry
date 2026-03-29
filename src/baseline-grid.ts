@@ -1,4 +1,5 @@
 export interface BaselineGridInitOptions {
+  defaultEnabled?: boolean;
   toggleSelector?: string;
   targetClassName?: string;
 }
@@ -49,7 +50,11 @@ export function setupBaselineGridToggle(toggle: HTMLInputElement, options: Basel
   }
 
   const targetClassName = options.targetClassName ?? "u-baseline-grid";
-  toggle.checked = target.classList.contains(targetClassName);
+  const defaultEnabled = options.defaultEnabled ?? false;
+  const isEnabled = target.classList.contains(targetClassName) || (defaultEnabled && toggle.dataset.baselineDefault !== "off");
+
+  target.classList.toggle(targetClassName, isEnabled);
+  toggle.checked = isEnabled;
   syncBaselineGridColor(toggle, target);
 
   toggle.addEventListener("change", () => {

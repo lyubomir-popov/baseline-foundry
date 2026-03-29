@@ -1,6 +1,6 @@
 import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initTabs, initTooltips } from "../dist/index.js?v=20260329-panel-refresh-19";
 
-initBaselineGridToggles();
+initBaselineGridToggles({ defaultEnabled: true });
 initCodeSnippets();
 initContextualMenus();
 initListTree();
@@ -10,6 +10,22 @@ initResizableAsides();
 initTabs();
 initTooltips();
 initAccordions();
+
+function normalizeBaselineToggleLabels() {
+  const labels = document.querySelectorAll(".component-demo-toggle");
+
+  labels.forEach(label => {
+    const textNode = Array.from(label.childNodes).find(node => {
+      return node.nodeType === Node.TEXT_NODE && node.textContent?.includes("Show baseline grid");
+    });
+
+    if (textNode) {
+      textNode.textContent = " Baseline grid";
+    }
+  });
+}
+
+normalizeBaselineToggleLabels();
 
 const NAV_ITEMS = [
   { title: "Component atlas", href: "index.html" },
