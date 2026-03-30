@@ -2,14 +2,15 @@
 
 ## Goal
 
-Ship a lean, versatile design-system foundation centered on:
+Ship a lean, screenshot-oriented design-system foundation centered on:
 
 - real font metrics
 - baseline-aligned typography
 - element-owned editorial spacing
 - explicit grid and layout primitives
+- spec-first demo pages that can switch tiers over the same content
 
-This repo is not the place for broad framework parity.
+This repo is not the place for broad framework parity or faux documentation-site chrome.
 
 ## Scope In
 
@@ -19,6 +20,7 @@ This repo is not the place for broad framework parity.
 - baseline utilities
 - section and strip rhythm
 - stack, cluster, fixed-width, and grid primitives
+- spec-focused demo pages for screenshot capture and tier comparison
 - small demo and validation surface
 
 ## Scope Out For Now
@@ -27,60 +29,70 @@ This repo is not the place for broad framework parity.
 - navigation systems
 - feedback components
 - tables, forms, and shell chrome as first-class package goals
+- faux documentation-site framing and placeholder copy
+- continued parity work on explicitly removed Vanilla patterns
 - large compatibility alias layers
 
 ## Principles
 
-1. Baseline alignment is immutable.
+1. Editorial baseline alignment is immutable; app-tier follows the Canonical zero-nudge simplification.
 2. Baseline compensation and semantic spacing are separate responsibilities.
 3. Editorial spacing is element-owned by default.
 4. Layout primitives are explicit and small.
 5. Compatibility concerns should not drive the public API here.
 6. Additions must earn their place as durable primitives.
 7. Single-direction margin declarations: all text-bearing elements are reset to `margin: 0` inside the theme scope, then only `margin-block-end` is reintroduced by styled roles via `var(--bf-semantic-space-after)`. No element ever carries `margin-block-start` from the system. This follows the Harry Roberts single-direction margin pattern and keeps vertical rhythm predictable when elements compose in any order.
-8. Element qualifiers align by default: bare `<h1>`–`<h6>`, `<p>`, and `<figcaption>` inside a `bf-theme` / `vr-theme` scope receive baseline-alignment nudges, font sizing, and spacing automatically. Role classes (`bf-h1`, `bf-body`, etc.) exist only as overrides — for cross-element styling (e.g. a `<p>` that should look like a heading) — not as a prerequisite for basic alignment.
-9. Flat `bf-` naming convention: all component selectors use the `bf-` prefix with single-dash separation (`bf-form-group`, `bf-accordion-tab`, `bf-search-box`). No BEM double underscores (`__`) or double dashes (`--`). Variants and states use `is-*` modifiers or `data-*` attributes (`is-dense`, `is-base`, `data-align="end"`). The inherited `p-*` Vanilla prefix is retired; the compat layer will emit `bf-` names as primary selectors and keep `p-*` as deprecated aliases only during the transition.
+8. Element qualifiers align by default: bare `<h1>`–`<h6>`, `<p>`, and `<figcaption>` inside a `bf-theme` scope receive baseline-alignment nudges, font sizing, and spacing automatically. Role classes (`bf-h1`, `bf-body`, etc.) exist only as overrides — for cross-element styling (e.g. a `<p>` that should look like a heading) — not as a prerequisite for basic alignment.
+9. Flat `bf-` naming convention: all component selectors use the `bf-` prefix with single-dash separation (`bf-form-group`, `bf-accordion-tab`, `bf-search-box`). No BEM double underscores (`__`) or double dashes (`--`). Variants and states use `is-*` modifiers or `data-*` attributes (`is-dense`, `is-base`, `data-align="end"`). The inherited `p-*` Vanilla prefix is retired from the shipped surface; public runtime CSS, demos, and verification now target only `bf-*` names.
 10. Dogfooding: demo pages must use only framework vocabulary (`bf-*` classes, `is-*` / `data-*` modifiers). No `component-demo-*` scaffolding classes that duplicate what the framework already provides. If a demo needs local styling that the framework cannot express, that is a signal the framework is missing a primitive — add the primitive, don't paper over the gap with demo-local CSS.
 
-## Phases
+## Demo And Parity Reset (updated 2026-03-30)
 
-### Phase 1 - Lean fork
+### Primary job
 
-- [x] Replace inherited package identity, docs, and demo with lean-system equivalents
-- [x] Reduce the compiled surface to the intended primitives only
-- [x] Set the new demo to a separate local port
+The demo surface is not trying to behave like a public design-system website. Its job is to generate simple, screenshot-stable examples for the specs while letting the same specimen switch quickly between tiers. Any content, chrome, or framing that does not help that job is noise.
 
-### Phase 2 - Editorial core
+### Demo-shell rules
 
-- [x] Establish IBM Plex-based typescale
-- [x] Implement prose rhythm for headings, paragraphs, lists, quotes, and rules
-- [x] Validate baseline alignment from real font metrics
+- Keep the shell minimal: light/dark switch, baseline-grid switch, editorial/app tier control, and specimen content only on the home page.
+- Keep the combined home specimen off `bf-page`. `--bf-content-max-width` is a measured editorial-page constraint, not a grid-proof constraint; prose should stay readable through `bf-prose`, while the wide grid specimen must be able to expand past the `1681px` 16-column threshold.
+- Remove card framing from the spec pages. If a boxed surface is genuinely needed later, port the real Vanilla card behavior, including the border-thickness-aware rhythm compensation, instead of inventing ad hoc shell styling.
+- Keep tier controls on the same Vanilla-aligned control-height and inset contract as the rest of the form/button surface.
+- Use only package-side `bf-*` primitives in the demo shell. If the required surface does not exist yet, add the primitive instead of adding demo-local stand-ins.
 
-### Phase 3 - Layout core
+The `/demo/` index is the primary combined specimen surface now: a simple tier and tone control strip at the top, then typography, spacing, and grid examples underneath. The documentation tier stays generated, but it is deprioritized in the main selector for now.
 
-- [x] Implement page, section, strip, stack, cluster, and fixed-width primitives
-- [x] Implement container-query grid primitives
-- [x] Keep the grid versatile enough for both editorial and future app contexts
+### Immediate spec-example plan
+
+1. Rebuild the typography chapter as a minimal `h1`-through-`h6` plus paragraph specimen page.
+2. Rebuild the spacing chapter as a side-by-side editorial/app comparison that shows element-owned spacing on one side and nested container-owned gaps on the other.
+3. Rebuild the grid chapter around real Canonical spec figures rather than placeholder copy, using hard-stop background guides to show columns and gutters. Treat `canonical-specs/specs/grid/v0.3/images/` and the corresponding Markdown as the source of truth for those specimen layouts.
+4. Extend the grid chapter beyond the already-landed home-page `4 / 8 / 16` specimens with the nested-grid example, the centered viewport/editorial max-width example, and the application example with site navigation plus an 8-column main region.
+
+### App-shell follow-up
+
+Keep rehearsing the real application shell only where it supports downstream swap work: panel shadow, panel/header spacing, close-button treatment, and sliding/resizable aside structure should be pulled toward Vanilla within the current token/runtime model rather than through hardcoded one-off values.
+
+### Font direction to evaluate
+
+Evaluate making Ubuntu Sans Variable the default project font while keeping IBM Plex as the panel-specific line. This is a metric and runtime decision, not a demo-only aesthetic swap.
+
+### Active parity filter
+
+The parity snapshot below remains a full inventory, but it is not a blanket implementation backlog. The following Vanilla patterns are removed from active parity scope unless a later downstream need reopens them: `article-block`, `article-pagination`, `blog`, `divider`, `in-page-navigation`, `list-tree`, `matrix`, `media-container`, `media-object`, `navigation-reduced`, `newsletter-signup`, `status-label`, `suru`, `table-expanding`, `table-mobile-card`, `table-of-contents`, `table-sortable`, and `tooltips`.
+
+## Remaining phases
 
 ### Phase 4 - Concept hardening
 
-- [x] Compare against the Canonical spec work and document transferable concepts
-- [x] Decide which concepts become core rules versus optional future extensions
 - [ ] Add any missing validation needed to protect the baseline invariant
 
 ### Phase 5 - Tier and engine refactor
 
-- [ ] Promote editorial and app modes to equal first-class runtime tiers rather than treating the compact panel build as an override of the prose default
 - [ ] Split tier choice from baseline engine choice so `.bf-tier-*` and `.bf-engine-*` can switch independently at the top level
-- [ ] Keep baseline compensation and baseline alignment element-owned in every tier, including app-tier text-bearing controls and components, while semantic spacing becomes tier-selected (`editorial` role-owned, `app` zeroed + container gaps)
-- [x] Evaluate whether the `pragma` cap-unit approach actually simplifies baseline-aligned text in container-owned app layouts; the cap formula `(line-height + 1cap) / 2` is an approximation of the baseline position that can diverge from real font metrics — for h1 at 42px on an 8px grid, the ~1.6px position error crosses a grid boundary, flipping the nudge by almost a full baseline unit (1.3px cap vs 7.6px metrics). Metrics-derived nudges remain the default; cap is preserved as an opt-in override via `.bf-engine-cap` for contexts where font metrics are unavailable
-- [x] Collapse the temporary `bf-control-grid` helper back into `bf-grid` recipes so both page regions and narrow panels resolve to the same spec `4 / 8 / 16` column contexts from container width alone
-- [x] Make the grid tier-aware so editorial keeps the rewrite's wider large/x-large gutters while app keeps the denser application gutter values
+- [ ] Make `.bf-tier-app` a true zero-nudge, container-owned runtime line while editorial and other baseline-aligned surfaces remain engine-switchable
 - [ ] Migrate text-bearing components so their internal baseline compensation follows the selected engine instead of relying on ad hoc control-height math alone
-- [ ] Extend validation so the screenshot gate and build checks cover the new tier and engine contract before any default flips
-- [ ] Rename all `p-*` component selectors to flat `bf-*` names (single-dash, no BEM `__` / `--`); keep `p-*` as deprecated compat aliases during transition
 - [ ] Sweep parasite classes from all demo pages: replace every `component-demo-*` class that duplicates a framework primitive with the real `bf-*` equivalent; if a demo genuinely needs something the framework cannot express, add the missing primitive rather than keeping demo-local CSS
-- [ ] Convert engine-smoke.html as the first fully-bf demo page (proof of the new naming, element-qualifier alignment, and no parasite classes)
 
 ## Current architectural stance
 
@@ -88,62 +100,98 @@ This repo is not the place for broad framework parity.
 - `baseline-foundry` is the clean forward line.
 - Borrow only the parts of the older package that survive as lean primitives.
 - Borrow from the Canonical spec where it sharpens the model, especially around editorial spacing and grid discipline.
-- The latest Canonical refresh has already informed three concrete changes here: stronger prose flow-boundary handling, a stricter grid model (`4` / `8` / `16`, power-of-2 spans), and adoption of the Canonical application container thresholds for column-count switches (`620px` and `1681px`).
-- The latest grid rewrite now directly governs spacing in the grid layer too: container queries decide only the column count, while viewport breakpoints decide gutters and outer margins. The generated grid now follows that split directly: default/editorial surfaces step up to `32px` gutters at large/x-large, while `.bf-tier-app` keeps the denser `24px` gutter there and shares the same `32px` outer margin.
 - For Foundry's purposes, the meaningful seam is editorial vs app. Documentation can ride the editorial side for now instead of becoming a separate implementation track.
-- Foundry intentionally keeps baseline alignment in the app tier. The Canonical spec work had to accommodate stakeholders who preferred simpler application guidance, but this repo is explicitly choosing the more sophisticated path: app layouts use container-owned semantic spacing, while text-bearing controls and components still stay baseline-aligned. There is no conflict between those rules: a `bf-stack` or similar layout container can own a semantic gap, while each child still uses engine-selected nudges or cap-based alignment to land its own text and control box on the baseline grid.
+- The Canonical spacing spec is explicit about the app/editorial split: application UIs use container-owned spacing with prescribed zero nudges, while editorial flow keeps element-owned spacing and baseline alignment. Foundry should follow that seam instead of treating app-tier as a baseline-aligned variant of the editorial line.
 - `bf-grid` is the only grid primitive now. Dense inspector rows and parameter matrices ride a `bf-grid--controls` recipe with control-span modifiers rather than preserving a second canonical grid surface.
-- The container-type selector now carries both a descendant and a compound form so `container-type: inline-size` still applies when the theme scope class (`bf-theme` / `vr-theme`) and a container class (`bf-grid-scope`, `bf-page`, etc.) land on the same element. Without the compound selector the container query for column counts had no container to evaluate and the grid was stuck at 4 columns.
-- The stage-centering shell question is now resolved upstream too: `bf-stage-shell` is the tiny canonical helper for centering a bounded preview/stage surface inside `l-main`, so the downstream sample no longer needs a local `viewer-panel__content` layout class just to center a fixed-width stage.
-- The default type preset has been reset from the temporary two-size simplification to the fuller editorial rationale: three size tiers overall, paired heading weights within each tier, and `h5` as bold uppercase with tracking rather than faux small caps.
-- The build now ships two first-class defaults instead of one: the prose default at the root `dist/` output, and a compact `panel` preset under `dist/presets/panel/`. The panel preset preserves the same paired-weight logic but scales the system down to a `0.75rem` body so `brand-layout-ops` can be pressure-tested against this repo instead of only against `portable-vertical-rhythm`.
-- The panel preset is now genuinely source-of-truth driven instead of "dense by compat CSS accident": `config/foundation-theme.json` and `config/presets/panel.json` both carry a `components` block, the build emits component tokens from it, and the compat layer reads those values for border width, radius, field gaps, control heights, panel padding, accordion indent, inline padding, and visual control size.
-- The compat visual treatment has been pulled back toward the known Vanilla / `portable-vertical-rhythm` direction: flatter bottom-border inputs, square dense controls, tighter button sizing, and shell spacing that comes from the panel preset instead of demo-local overrides.
-- The panel compat layer now covers a broader and more honest PVR slice: cards, divider blocks, segmented controls, breadcrumbs, pagination, switches, file input, and validation states have all been ported into `baseline-foundry` and exercised in isolated demos rather than being tracked only as abstract parity goals.
-- The next downstream panel tranche is now upstream too: equal-width dense panel tabs, selectable preset/output rows, and style/mapping palette cards all have canonical package-side selectors, and the demos now exercise only those selectors rather than preserving downstream aliases.
-- Overlay drawer panels are now part of that compat shell as well: `l-application` can expose a backdrop, `l-aside.is-overlay` / `is-drawer` can sit over the stage instead of resizing it, `p-panel__toggle` provides the lightweight shell control, and `initPanelDrawers` supplies toggle, backdrop, and Escape behavior. The drawer geometry has now been corrected so the overlay spans the full shell height and reads like a real right-edge temporary inspector rather than collapsing into the zero-height `aside` track. The drawer mode has its own saved `drawer-panel` demo plus Playwright behavior coverage for edge attachment, toggle state, and backdrop close.
-- Pinned desktop asides are now resizable upstream as well: `l-application__aside-resize-handle` has package-side visuals, the shell exposes Canonical width tokens for small/medium/large drawers plus explicit pinned min/max bounds, and `initResizableAsides` now provides drag, keyboard resizing, double-click reset, persistence, and ARIA updates instead of leaving that logic in downstream app CSS/JS.
-- A concrete regression inherited from `portable-vertical-rhythm` has now been corrected here: checkbox/radio glyphs and slider thumbs were previously keyed off the baseline unit, which collapsed them to `4px` in the compact preset. They now use a dedicated visual control size token instead.
-- Another inherited compatibility bug has now been corrected here as well: card surfaces were still using uncompensated top padding, which left the whole card body 1px off the baseline rhythm. Cards now compensate their top padding the same way the rest of the dense panel surfaces do.
-- Live inspection also pushed the compact panel preset one step denser-but-safer: standard controls now use `1.75rem` block size and dense controls use `1.5rem`, which gives tabs, accordion rows, checkboxes/radios, and text inputs one extra baseline unit of breathing room without leaving the PVR/Vanilla density band.
-- The theme scope now resets `margin: 0` on all text-bearing HTML elements (`h1`–`h6`, `p`, `blockquote`, `figure`, `ul`/`ol`/`dl`, `pre`) using a low-specificity `:where()` rule. This replaces browser defaults with the single-direction margin contract: only the styled bf- role classes add back `margin-block-end` via `var(--bf-semantic-space-after)`. Bare elements inside the theme scope get zero margin, which prevents stray browser spacing from breaking baseline rhythm.
-- The engine-smoke comparison confirms that the cap-unit approach (`--bf-cap-start-nudge: calc(baseline - mod((lineHeight + 1cap) / 2, baseline))`) aligns text to baseline purely from CSS runtime values, without build-time font-metrics extraction. Initial visual inspection shows cap-engine elements landing on the grid without per-element nudge overrides, which supports the hypothesis that cap may simplify or replace the metrics engine for text alignment in container-owned app layouts.
-- Narrow-container resilience is now part of the compact preset contract: text-like fields, file inputs, search wrappers, and slider pairs no longer enforce hard minimum inline sizes, slider pairs can wrap instead of overlapping, and shared media stays fluid with `max-inline-size: 100%`.
-- Runtime font loading now lives in generated CSS instead of the demo shell: `config/foundation-theme.json` can describe runtime font-face metadata, the build strips runtime-only entries before baseline token generation, and `dist/styles.css` emits the matching `@font-face` rules for IBM Plex Sans Variable in the current confirmation pass.
-- Runtime font-face paths are now rewritten per output directory, so preset builds under `dist/presets/` keep working `@font-face` URLs instead of inheriting root-relative asset paths accidentally.
-- The core Foundry tone system now responds to `data-bf-tone` as well, not just the compat layer. That fixes a real mismatch where the prose demo background stayed light while the compat-driven text had already gone dark-mode.
-- The live root demos now also paint `body` directly from the Foundry theme variables and use a fresh cache-busted stylesheet key, because a stale-browser report showed that relying on the generated class background alone was not enough to make the live `4174` demo trustworthy during rapid iteration.
-- Interactive controls now follow `:focus-visible` discipline more consistently: visible focus rings and focus-state wrappers are reserved for keyboard-style focus, while mouse focus no longer triggers the same outlines on buttons, tabs, choice rows, menus, pagination, or form fields.
-- Typography rule generation is now driven by `roles` in `foundation-theme.json` instead of a hardcoded role list. If `lead`, `eyebrow`, or `meta` are not present, the build does not emit them; if additional roles are present, utility classes are emitted for them automatically. Semantic prose selectors are still layered only onto the standard role names that exist (`body`, `h1`-`h6`, `meta` for `figcaption`).
-- Strip rhythm now follows the spacing-spec bottom-only rule: `bf-strip` carries block-end separation instead of symmetric block padding, leaving entry spacing to the preceding context and the strip's own contents.
-- Visual QA now includes isolated component demo pages plus Playwright screenshot capture, borrowed from `portable-vertical-rhythm` but narrowed to the primitives this repo actually owns: typography, prose, layout, and grid.
-- Those component demos now also declare their rhythm-critical specimens explicitly, and Playwright verifies them in-browser as part of `npm test` rather than leaving screenshot review entirely manual.
-- The component demo index is now a real visual atlas rather than a bare link list, so the repo has a visible coverage snapshot for what has already been ported from PVR and what remains intentionally out of scope for now. Playwright captures each saved component page, and the atlas turns those captures into linked preview tiles so the surface can be scanned quickly before opening an individual demo.
-- The visual atlas is no longer based on full-window demo crops for every page. Atomic control pages now use a fitted capture profile that clips to the real specimen footprint, while layout, shell, and pressure-test pages keep a wider capture profile so context stays legible. The atlas frames use contained previews instead of `cover`, which makes the saved component surface much more useful as an actual scan view.
-- The demos now default to the dark theme, the baseline grid starts on by default, shared example wrappers no longer add card chrome, and section labels are rendered as real `h5` headings instead of demo-local kicker paragraphs. That keeps inspection honest and the demo shell minimal while still tying the chrome back to the JSON-driven type system.
-- The grouped control and surface overview pages are no longer the primary inspection units. The baseline gate now runs against one saved HTML file per component family, so buttons, inputs, selects, checkboxes, radios, range pairs, file input, validation states, switches, tabs, accordion, modal, segmented control, breadcrumbs, pagination, divider, and cards can each be checked on their own.
-- The former preview slice has now been cleaned up and promoted into the automated baseline gate: chips, badges, status labels, tables, search box, and search-and-filter all have dedicated saved demo pages and green browser-enforced baseline checks.
-- The next parity slice has started moving past pure form/data surfaces: list-tree, contextual-menu, tooltip, and code-snippet now have their own runtime modules, generated CSS, saved component pages, and baseline-gated demos instead of existing only in `portable-vertical-rhythm`.
-- The pressure-test demos now deliberately split by preset: the `brand-layout-ops` style panel surface uses the compact `panel` preset, while the future portfolio/editorial surface stays on the prose default. Both pass the same baseline gate as the lower-level demos.
-- There is now a dedicated narrow-panel regression surface in `demo/components/narrow-panel.html`, and the browser gate checks container overflow there in addition to baseline alignment so shrink/wrap behavior stays honest in tight inspector rails.
-- There is now a dedicated parameter-matrix regression surface in `demo/components/parameter-matrix.html`, and it is baseline-gated specifically to protect the canonical dense control-grid plus stacked slider-wrapper pattern in narrow inspector rails.
-- The pulled `brand-layout-ops` sample page now participates in QA only at the shell level. The dedicated `controls` page owns the low-level form/tab/accordion assertions, so the sample page stays useful as a downstream layout reference without becoming a second component-test matrix.
-- The downstream style audit now has a sharper boundary: drawer and pinned-aside resize behavior are replaceable now from `baseline-foundry`, and the former "missing" dense panel slice is upstream too as canonical package markup: equal-width dense tabs, choice rows, option cards, tight help-text modifiers, compact color input sizing, inline option strips, fill-height panel behavior, checkbox-field density handling, and dense action-row overflow helpers are all shipped package-side.
-- The new `surfaces-navigation` page owns the newly ported navigation-adjacent and surface primitives, so those PVR borrowings now live under the same browser-enforced baseline gate as the older control and shell work.
-- Browser QA now checks behavior as well as rhythm: `npm test` includes Playwright coverage for pinned-aside resize flow and overlay-drawer attachment/toggle behavior, so the shell cannot silently lose drag, keyboard, reset, persistence, or visible temporary-inspector geometry while the CSS still looks plausible.
-- The sequencing for presets is now explicit: achieve real component parity and downstream confidence under the compact panel preset first, then bring the same component surface to parity under the prose/default preset, and only after that decide whether preset switching belongs to stylesheet swaps, multi-preset bundles, or scoped runtime attributes.
-- That sequencing is now being superseded by a more explicit runtime model: the next refactor should turn the prose and app surfaces into equal first-class tiers, expose them through top-level classes rather than asymmetric preset semantics, and let a separate baseline-engine flag choose between metrics-derived nudges and the cap-unit engine.
-- The current rollout rule is strict: the metrics engine is the default. The routing variables (`--bf-selected-start-nudge`, `--bf-selected-end-nudge`, `--bf-semantic-space-after`) are emitted per-element in each text role rule, fixing the earlier root-level resolution bug. The cap formula `(line-height + 1cap) / 2` was evaluated as a potential default but produces incorrect nudges for larger font sizes because it approximates the baseline position — for h1 at 42px with an 8px grid, the ~1.6px position error crosses a grid boundary, causing the nudge to flip by almost a full baseline unit (-6.3px drift). The `.bf-engine-cap` class is preserved as an opt-in override for contexts where font metrics are unavailable. The compat layer follows the same metrics-default pattern with role-scoped variables.
-- That evaluation now has a dedicated first-pass surface: `demo/components/engine-smoke.html` renders the same app-tier text input, select, button row, and accordion slice once under `.bf-engine-metrics` and once under `.bf-engine-cap`, and the normal component baseline gate checks both copies.
-- The first run is green: the component screenshot flow captures `engine-smoke`, and the baseline verifier reports `Verified engine-smoke: 40 checks, 0 failures`.
-- The core architectural split for that refactor is now explicit too: baseline compensation stays element-owned for every text-bearing element and component in both tiers, including app-tier controls, while semantic spacing becomes a tier policy. Editorial keeps role-owned `spaceAfter`; app tier zeros semantic spacing and expects container-owned gaps.
-- The first compat tranche has landed under that model: role-level selected nudge variables now feed actual text-entry and action controls such as inputs, file controls, buttons, tabs, segmented controls, pagination, search/filter controls, tooltip text, accordion tabs, and the panel toggle.
-- That same pass also exposed a boundary that should stay explicit in the plan: row-style surfaces measured as centered boxes, such as tables, list-tree rows, and chips, did not tolerate the new control primitive cleanly and were reverted to their older centered math. They need a second primitive or an explicit exemption, not another round of ad hoc forcing.
-- The widened grid demo shell and larger Playwright viewport keep 16-column behavior under test even after the Canonical thresholds moved the widest bracket out to `1681px`.
-- The grid demo itself no longer hides behind a demo-local gap declaration; the visible spacing now comes from the generated Foundry grid so gutter regressions show up immediately in the demo and screenshot flow.
-- The grid layer itself now ships the editorial/app gutter split at large breakpoints, and build validation checks that default/editorial surfaces widen to `2rem` while `.bf-tier-app` holds the denser `1.5rem` gutter.
-- Dense panel recipes no longer depend on a separate `bf-control-grid` primitive: the saved demos and browser gate now exercise `bf-grid bf-grid--controls`, with recipe-specific item spans carrying the inspector layout behavior.
-- Bare HTML text elements (`h1`–`h6`, `p`, `figcaption`) now receive full baseline alignment, sizing, and spacing inside any `bf-theme` / `vr-theme` scope without requiring explicit role classes. The `:where()` element selectors keep specificity at zero so role-class overrides still win naturally.
-- The `p-*` Vanilla BEM naming convention is being retired. All component selectors are moving to flat `bf-` single-dash names with `is-*` / `data-*` modifiers for state. The compat layer will dual-emit `p-*` aliases during the transition but `bf-*` is the primary API going forward.
-- Demo pages are now required to dogfood the framework: any `component-demo-*` class that duplicates a framework primitive is a bug, not scaffolding. If a demo genuinely cannot be expressed with `bf-*` vocabulary, the correct fix is to add or extend the primitive, not to add demo-local CSS.
-- The next high-value borrow area is now the real downstream swap test itself plus any final spacing invariants that still need to be promoted into stronger repo-level validation.
+- The grid model is fixed: `4` / `8` / `16` columns, power-of-2 spans, and Canonical container thresholds at `620px` and `1681px`.
+- Grid column count is container-driven, while gutters and page margins remain token- and viewport-driven. Editorial/default surfaces widen to the looser large-breakpoint gutter, while `.bf-tier-app` stays denser.
+- The build/runtime model stays tier-first: `editorial`, `documentation`, and `app` are first-class outputs, with the documentation tier generated but not treated as a separate primary demo track.
+- Metrics-derived nudges remain the default only for baseline-aligned surfaces. `.bf-engine-cap` stays opt-in, and `.bf-tier-app` remains a non-baseline surface built around container-owned spacing and zero semantic spacing.
+- The demo shell must dogfood `bf-*` primitives only. Use `bf-prose` for readable measure, but keep the screenshot-first home and wide grid specimens off `bf-page` so the 16-column proof can actually reach its threshold.
+- Color semantics follow Vanilla's core light/dark token structure. Default light stays on white/grayscale/black, paper remains opt-in, and tiers do not get their own palette identities.
+- Compact inline surfaces should not borrow body/h5 roles opportunistically. Chips, badges, and status labels need explicit compact UI type contracts and Vanilla-style padding/min-width derivation so parity comes from token math rather than ad hoc baseline fractions.
+- Parity work is filtered by real downstream swap pressure. The inventory below is reference material, not a promise to port every remaining Vanilla pattern.
+- Three design questions remain explicitly open: how row-style centered surfaces should relate to the engine model, whether the compact panel preset should tighten further after more swap rehearsal, and whether Ubuntu Sans Variable should replace IBM Plex outside the panel line.
+
+## Vanilla Pattern Parity Snapshot (updated 2026-03-30)
+
+This is the bird's-eye inventory for Vanilla pattern-layer parity. The source of truth for the inventory is `vanilla-framework/scss/_patterns_*.scss`, which currently yields 65 pattern entries.
+
+Status meanings:
+
+- `Shipped` — `baseline-foundry` exposes a package-side `bf-*` surface and already exercises it in demos and/or runtime modules.
+- `Partial` — some useful primitive exists, but the full Vanilla pattern is not yet represented as a clear package-side feature.
+- `Superseded` — Foundry intentionally covers the same job with smaller primitives or the tier model instead of aiming for a 1:1 pattern port.
+- `Missing` — no current package-side equivalent.
+
+Summary counts: `Shipped 25`, `Partial 8`, `Superseded 9`, `Missing 23`.
+
+| Vanilla pattern | Status | Current Foundry surface | Remaining gap / note |
+|---|---|---|---|
+| `accordion` | Shipped | `bf-accordion`, runtime module, saved demo | Keep aligned with engine/tier cleanup |
+| `article-block` | Missing | None | No package-side equivalent yet |
+| `article-pagination` | Partial | `bf-pagination` | Generic pagination exists; no article-specific wrapper/pattern |
+| `badge` | Shipped | `bf-badge` | Variant coverage can expand if downstream pressure appears |
+| `blog` | Missing | None | Out of current repo scope |
+| `breadcrumbs` | Shipped | `bf-breadcrumbs` | Current surface covers the core pattern |
+| `buttons` | Shipped | `bf-button`, `bf-actions` | Positive/negative tokens exist; variant surface can still broaden |
+| `card` | Shipped | `bf-card` | Shared card surface exists; avoid demo-local shell framing |
+| `chip` | Shipped | `bf-chip` | Neutral/action semantics track Vanilla tokens |
+| `code-snippet` | Shipped | `bf-code-snippet`, runtime module | Keep demo and runtime in sync |
+| `contextual-menu` | Shipped | `bf-contextual-menu`, runtime module | Core menu/dropdown behavior is upstream |
+| `cta` | Missing | None | No package-side equivalent yet |
+| `data-spotlight` | Missing | None | Out of current repo scope |
+| `divided-section` | Missing | None | No dedicated equivalent |
+| `divider` | Shipped | `bf-divider` | Core horizontal/vertical block split is shipped |
+| `equal-height-row` | Superseded | `bf-grid`, `bf-cluster`, `bf-stage-shell` | Foundry prefers layout primitives over a dedicated equal-height pattern |
+| `form-help-text` | Shipped | `bf-form-help`, `bf-form-help.is-tight` | Core helper-text parity is upstream |
+| `form-password-toggle` | Missing | None | No password-toggle pattern yet |
+| `forms` | Partial | `bf-field`, `bf-control`, `bf-input`, `bf-select`, file/color/range demos | Core controls ship, but there is no single broad VF-style forms pattern layer |
+| `form-tick-elements` | Shipped | `bf-checkbox`, `bf-radio` | Core tick elements are upstream |
+| `form-validation` | Shipped | `bf-validation-message`, validation states | Validation surface ships and is demo-covered |
+| `grid` | Superseded | `bf-grid`, `bf-grid--controls`, `bf-page`, `bf-section` | Foundry uses the Canonical-inspired `4 / 8 / 16` primitive instead of VF grid parity |
+| `grid-8` | Superseded | `bf-grid` container queries | Separate `grid-8` pattern is intentionally collapsed into the main grid primitive |
+| `heading-icon` | Missing | None | No direct equivalent |
+| `headings` | Superseded | tier role tokens, `bf-h1`…`bf-h6` utilities, semantic element styling | Tier/type system replaces a separate headings pattern layer |
+| `icons` | Partial | themed internal chevrons and control glyphs | No public icon catalog/pattern surface |
+| `image` | Missing | None | No dedicated image pattern |
+| `in-page-navigation` | Missing | None | No dedicated equivalent yet |
+| `links` | Partial | semantic link styling in generated CSS | Base link treatment ships, but no broad VF links pattern suite |
+| `lists` | Partial | prose lists, `bf-list-tree` | Editorial lists ship; wider list-pattern suite does not |
+| `list-tree` | Shipped | `bf-list-tree`, runtime module | Saved demo and runtime coverage exist |
+| `logo-section` | Missing | None | Out of current repo scope |
+| `matrix` | Partial | parameter-matrix regression page | Pressure-test surface exists, but not yet a clean general package pattern |
+| `media-container` | Missing | None | No dedicated equivalent |
+| `media-object` | Missing | None | No dedicated equivalent |
+| `modal` | Shipped | `bf-modal`, runtime module | Core modal surface is upstream |
+| `muted-heading` | Missing | None | No dedicated equivalent |
+| `navigation` | Partial | application shell, drawer helpers, `bf-side-navigation` | Foundry covers real shell/navigation slices, not the full VF navigation suite |
+| `navigation-reduced` | Missing | None | No reduced-navigation pattern |
+| `newsletter-signup` | Missing | None | Out of current repo scope |
+| `notifications` | Missing | None | No notification pattern yet |
+| `pagination` | Shipped | `bf-pagination` | Core page-navigation surface is upstream |
+| `pricing-block` | Missing | None | Out of current repo scope |
+| `pull-quotes` | Superseded | prose `blockquote` styling | Editorial quote handling lives in prose rather than a separate pattern |
+| `resources-block` | Missing | None | Out of current repo scope |
+| `rule` | Superseded | `bf-rule`, prose `hr` | Core editorial rule behavior ships without a separate VF pattern wrapper |
+| `search-and-filter` | Shipped | `bf-search-and-filter`, runtime module | Core filter/search compound surface is upstream |
+| `search-box` | Shipped | `bf-search-box` | Saved demo coverage exists |
+| `section` | Superseded | `bf-section`, `bf-page`, `bf-fixed-width` | Foundry uses smaller layout primitives instead of VF section parity |
+| `segmented-control` | Shipped | `bf-segmented-control` | Core segmented buttons are upstream |
+| `separator` | Superseded | `bf-divider`, `bf-rule` | Divider/rule primitives cover the same job |
+| `side-navigation` | Shipped | `bf-side-navigation`, runtime module | App-tier parity surface exists |
+| `side-navigation-expandable` | Shipped | expandable behavior is included in `bf-side-navigation` | No separate split needed in Foundry |
+| `slider` | Shipped | `bf-slider`, range controls runtime | Horizontal/stacked slider pairing is upstream |
+| `status-label` | Shipped | `bf-status-label`, `bf-label` | Core status surface is upstream |
+| `strip` | Superseded | `bf-strip` | Foundry strip primitive replaces VF strip parity |
+| `suru` | Missing | None | Out of current repo scope |
+| `switch` | Shipped | `bf-switch` | Core switch surface is upstream |
+| `table-expanding` | Missing | `bf-table` base only | Expanding-row variant does not exist yet |
+| `table-icons` | Partial | `bf-table` base only | Generic table ships; icon-specific pattern does not |
+| `table-mobile-card` | Missing | `bf-table` base only | Mobile-card variant does not exist yet |
+| `table-of-contents` | Missing | None | No dedicated equivalent |
+| `table-sortable` | Missing | `bf-table` base only | Sortable behavior/pattern does not exist yet |
+| `tabs` | Shipped | `bf-tabs`, `bf-tabs.is-equal`, panel-tabs demo, runtime module | Core tab surface is upstream |
+| `tooltips` | Shipped | `bf-tooltip`, runtime module | Core tooltip surface is upstream |
+
+Near-term remaining work should come from the `Partial` rows that still matter for the current product direction: `forms`, `navigation`, `table-icons`, `links`, `lists`, and `icons`. Treat the rows named in the active parity filter above as inventory-only unless scope changes.

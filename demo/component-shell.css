@@ -4,9 +4,9 @@
    ─────────────────────────────────────────────────────── */
 
 :root {
-  --demo-rule: rgba(255, 255, 255, 0.12);
-  --demo-surface: rgba(33, 33, 33, 0.88);
-  --demo-muted: #c8c8c8;
+  --demo-rule: rgba(255, 255, 255, 0.2);
+  --demo-surface: rgba(32, 32, 32, 0.92);
+  --demo-muted: rgba(255, 255, 255, 0.6);
   color-scheme: dark;
 }
 
@@ -17,15 +17,21 @@
 }
 
 body {
-  background: #171717;
-  color: #f3f3f3;
+  background: var(--bf-color-bg, #262626);
+  color: var(--bf-color-text, #ffffff);
   margin: 0;
   min-height: 100vh;
   padding: 1.5rem;
 }
 
-a {
-  color: inherit;
+body.bf-tier-app {
+  background: var(--bf-app-demo-page-bg, #f7f7f7);
+  color: var(--bf-color-text-default, #111111);
+  color-scheme: light;
+}
+
+body.bf-tier-app a {
+  color: var(--bf-color-link-default, #0066cc);
 }
 
 /* ── brand-layout-ops-sample (one-off demo) ───────────── */
@@ -52,9 +58,6 @@ a {
   --bf-app-aside-width: 30rem;
   --bf-app-aside-width-max: 30rem;
   --bf-app-aside-width-wide: min(100vw, 30rem);
-  --vr-application-aside-width: 30rem;
-  --vr-application-aside-width-max: 30rem;
-  --vr-application-aside-width-wide: min(100vw, 30rem);
   background: #202020;
   min-block-size: 100%;
   width: 100%;
@@ -64,7 +67,7 @@ a {
   --stage-aspect-ratio: 1.7777778;
   aspect-ratio: 16 / 9;
   background:
-    radial-gradient(circle at 20% 18%, rgba(246, 183, 60, 0.22), transparent 22%),
+    radial-gradient(circle at 20% 18%, rgba(102, 153, 204, 0.22), transparent 22%),
     radial-gradient(circle at 76% 28%, rgba(255, 255, 255, 0.08), transparent 18%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 35%),
     #202020;
@@ -112,7 +115,7 @@ a {
   position: absolute;
 }
 
-.brand-layout-ops-sample .p-panel.is-fill {
+.brand-layout-ops-sample :where(.bf-panel.is-fill) {
   display: flex;
   flex-direction: column;
   inline-size: 100%;
@@ -126,25 +129,25 @@ a {
   gap: 0.75rem;
 }
 
-.brand-layout-ops-sample .p-slider__wrapper {
+.brand-layout-ops-sample :where(.bf-slider) {
   align-items: stretch;
   display: grid;
   gap: 0.375rem;
 }
 
-.brand-layout-ops-sample .p-slider__wrapper input[type="range"] {
+.brand-layout-ops-sample :where(.bf-slider) input[type="range"] {
   inline-size: 100%;
   min-inline-size: 0;
 }
 
-.brand-layout-ops-sample .p-slider__wrapper .p-slider__input {
+.brand-layout-ops-sample :where(.bf-slider) :where(.bf-slider-input) {
   inline-size: min(100%, 5rem);
   justify-self: end;
   max-inline-size: 100%;
   min-inline-size: 0;
 }
 
-.brand-layout-ops-sample .p-form-help-text.is-tight,
+.brand-layout-ops-sample :where(.bf-form-help.is-tight),
 .brand-layout-ops-sample .output-profile-meta {
   margin: 0;
   max-inline-size: 42ch;
@@ -160,9 +163,15 @@ a {
   max-inline-size: 36rem;
 }
 
+[data-demo-toolbar] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 /* ── Navigation sidebar (injected by component-demo.js) ── */
 
-.component-demo-nav {
+[data-demo-nav] {
   --_nav-width: 13rem;
   display: flex;
   flex-direction: column;
@@ -174,7 +183,7 @@ a {
   z-index: 1000;
 }
 
-.component-demo-nav__toggle {
+[data-demo-nav-toggle] {
   align-items: center;
   background: var(--demo-surface);
   border: 1px solid var(--demo-rule);
@@ -193,7 +202,7 @@ a {
   z-index: 1001;
 }
 
-.component-demo-nav__list {
+[data-demo-nav-list] {
   background: var(--demo-surface);
   border-right: 1px solid var(--demo-rule);
   display: none;
@@ -206,11 +215,11 @@ a {
   padding: 3rem 0 1rem;
 }
 
-.component-demo-nav__list.is-open {
+[data-demo-nav-list].is-open {
   display: flex;
 }
 
-.component-demo-nav__list li a {
+[data-demo-nav-list] li a {
   color: var(--demo-muted);
   display: block;
   font-size: 0.75rem;
@@ -220,50 +229,50 @@ a {
   transition: background 0.1s, color 0.1s;
 }
 
-.component-demo-nav__list li a:hover {
+[data-demo-nav-list] li a:hover {
   background: rgba(255, 255, 255, 0.08);
   color: inherit;
 }
 
-.component-demo-nav__list li a[aria-current="page"] {
-  background: rgba(15, 98, 254, 0.1);
-  color: #0f62fe;
+[data-demo-nav-list] li a[aria-current="page"] {
+  background: rgba(0, 102, 204, 0.12);
+  color: #0066cc;
   font-weight: 600;
 }
 
-.component-demo-nav__separator {
+[data-demo-nav-separator] {
   border-top: 1px solid var(--demo-rule);
   margin: 0.375rem 1rem;
 }
 
 /* ── Component atlas index page ─────────────────────────── */
 
-.component-index-section {
+[data-demo-index-section] {
   min-inline-size: 0;
 }
 
-.component-index-list {
+[data-demo-index-list] {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.component-index-item {
+[data-demo-index-item] {
   min-inline-size: 0;
 }
 
-.component-index-card-link {
+[data-demo-index-card-link] {
   color: inherit;
   display: block;
   text-decoration: none;
 }
 
-.component-index-card {
+[data-demo-index-card] {
   display: grid;
   gap: 0.5rem;
 }
 
-.component-index-card__frame {
+[data-demo-index-frame] {
   aspect-ratio: 3 / 2;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)),
@@ -276,13 +285,13 @@ a {
   transition: border-color 140ms ease, transform 140ms ease;
 }
 
-.component-index-card__frame.is-missing {
+[data-demo-index-frame].is-missing {
   align-items: center;
   display: grid;
   position: relative;
 }
 
-.component-index-card__frame.is-missing::after {
+[data-demo-index-frame].is-missing::after {
   color: var(--demo-muted);
   content: "Capture missing";
   font-size: 0.75rem;
@@ -290,7 +299,7 @@ a {
   text-transform: uppercase;
 }
 
-.component-index-card__image {
+[data-demo-index-image] {
   block-size: 100%;
   display: block;
   inline-size: 100%;
@@ -298,22 +307,22 @@ a {
   object-position: center;
 }
 
-.component-index-card__name {
+[data-demo-index-name] {
   color: inherit;
   margin: 0;
   text-decoration: none;
 }
 
-.component-index-card-link:hover .component-index-card__frame,
-.component-index-card-link:focus-visible .component-index-card__frame {
+[data-demo-index-card-link]:hover [data-demo-index-frame],
+[data-demo-index-card-link]:focus-visible [data-demo-index-frame] {
   border-color: rgba(255, 255, 255, 0.28);
   transform: translateY(-1px);
 }
 
-.component-index-card-link:focus-visible {
+[data-demo-index-card-link]:focus-visible {
   outline: none;
 }
 
-.component-index-card-link:focus-visible .component-index-card__name {
+[data-demo-index-card-link]:focus-visible [data-demo-index-name] {
   text-decoration: underline;
 }

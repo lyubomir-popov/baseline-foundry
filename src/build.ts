@@ -1,13 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { generateFoundryCss } from "./css.js";
-import type { PresetName } from "./presets.js";
-import { resolvePresetPath } from "./presets.js";
+import type { BuiltInThemeName, PresetName, TierName } from "./presets.js";
+import { presetNames, resolveBuiltInThemePath, resolvePresetPath, resolveTierPath, tierNames } from "./presets.js";
 import type {
   BaselineGeneratorElementToken,
   BaselineGeneratorTokens,
   BuildThemeResult,
   ComponentTokens,
+  DeriveBaselineTokensResult,
   ThemeConfig,
   ThemeElementConfig,
   ThemeTokens,
@@ -198,6 +199,22 @@ function buildThemeTokens(config: ThemeConfig, baselineTokens: BaselineGenerator
   };
 }
 
+function inferBuiltInPresetName(resolvedConfigPath: string): BuiltInThemeName | undefined {
+  for (const tierName of tierNames) {
+    if (resolvedConfigPath === resolveTierPath(tierName)) {
+      return tierName;
+    }
+  }
+
+  for (const presetName of presetNames) {
+    if (resolvedConfigPath === resolveBuiltInThemePath(presetName)) {
+      return presetName;
+    }
+  }
+
+  return undefined;
+}
+
 async function buildTheme(
   resolvedConfigPath: string,
   distDir: string,
@@ -223,7 +240,7 @@ async function buildTheme(
 
   const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
   const tokens = buildThemeTokens(runtimeConfig, baselineTokens);
-  const css = generateFoundryCss(tokens);
+  const css = generateFoundryCss(tokens, { presetName: inferBuiltInPresetName(resolvedConfigPath) });
 
   const tokensPath = path.join(resolvedDistDir, "tokens.json");
   const cssPath = path.join(resolvedDistDir, "styles.css");
@@ -242,7 +259,7 @@ async function buildTheme(
 }
 
 export async function buildThemeFromConfig(
-  configPath = path.resolve("config/foundation-theme.json"),
+  configPath = path.resolve("config/tiers/editorial.json"),
   options: { distDir?: string; baselineDir?: string; } = {}
 ): Promise<BuildThemeResult> {
   const resolvedConfigPath = path.resolve(configPath);
@@ -251,9 +268,46 @@ export async function buildThemeFromConfig(
   return buildTheme(resolvedConfigPath, distDir, baselineDir);
 }
 
+export async function buildThemeFromTier(tier: TierName): Promise<BuildThemeResult> {
+  return buildThemeFromConfig(resolveTierPath(tier), {
+    distDir: path.join("dist", "tiers", tier),
+    baselineDir: path.join("generated", "baseline", "tiers", tier)
+  });
+}
+
 export async function buildThemeFromPreset(preset: PresetName): Promise<BuildThemeResult> {
   return buildThemeFromConfig(resolvePresetPath(preset), {
     distDir: path.join("dist", "presets", preset),
     baselineDir: path.join("generated", "baseline", preset)
   });
+}
+
+export async function deriveBaselineTokensFromConfig(
+  configPath = path.resolve("config/tiers/editorial.json"),
+  options: { baselineDir?: string; } = {}
+): Promise<DeriveBaselineTokensResult> {
+  const resolvedConfigPath = path.resolve(configPath);
+  const baselineDir = options.baselineDir ?? "generated/baseline";
+  const resolvedBaselineDir = path.resolve(baselineDir);
+
+  await ensureDirectory(resolvedBaselineDir);
+
+  const config = await readThemeConfig(resolvedConfigPath);
+  const baselineConfigFileName = `${path.parse(resolvedConfigPath).name}.baseline.json`;
+  const baselineConfigPath = path.join(resolvedBaselineDir, baselineConfigFileName);
+
+  await fs.writeFile(
+    baselineConfigPath,
+    `${JSON.stringify(createBaselineConfig(config, resolvedConfigPath, baselineConfigPath), null, 2)}\n`,
+    "utf8"
+  );
+
+  const tokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
+
+  return {
+    configPath: resolvedConfigPath,
+    baselineConfigPath,
+    baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
+    tokens
+  };
 }

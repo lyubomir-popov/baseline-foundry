@@ -33,8 +33,8 @@ const CLASS_REPLACEMENTS: Record<string, string> = {
 
 // These get replaced with inline styles
 const INLINE_STYLE_CLASSES: Record<string, string> = {
-  "component-demo-narrow-rail": "display:grid;gap:var(--vr-field-gap,0.75rem);inline-size:min(100%,12rem);min-inline-size:0",
-  "component-demo-parameter-rail": "display:grid;gap:var(--vr-field-gap,0.75rem);inline-size:min(100%,19rem);min-inline-size:0",
+  "component-demo-narrow-rail": "display:grid;gap:var(--bf-field-gap,0.75rem);inline-size:min(100%,12rem);min-inline-size:0",
+  "component-demo-parameter-rail": "display:grid;gap:var(--bf-field-gap,0.75rem);inline-size:min(100%,19rem);min-inline-size:0",
   "component-demo-shell-grid": "display:grid;gap:1.5rem",
   "component-demo-micro-list": "display:grid;gap:calc(var(--bf-baseline)*3)",
 };
@@ -85,9 +85,8 @@ function processClassAttributes(html: string): string {
 }
 
 function extractTheme(html: string): { theme: string; tone: string } {
-  // Find theme class: vr-theme or bf-theme
-  const themeMatch = html.match(/class="[^"]*\b(vr-theme|bf-theme)\b/);
-  const theme = themeMatch?.[1] ?? "vr-theme";
+  const themeMatch = html.match(/class="[^"]*\b(bf-theme)\b/);
+  const theme = themeMatch?.[1] ?? "bf-theme";
 
   // Find tone
   const toneMatch = html.match(/data-bf-tone="([^"]*)"/);

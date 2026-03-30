@@ -10,7 +10,7 @@ function screenshotUrl(href) {
 }
 
 function enhanceAtlas() {
-  const items = document.querySelectorAll(".component-index-item");
+  const items = document.querySelectorAll("[data-demo-index-item]");
   if (items.length === 0) {
     return;
   }
@@ -22,20 +22,20 @@ function enhanceAtlas() {
     }
 
     const name = link.textContent?.trim() ?? "";
-    const meta = item.querySelector(".demo-meta")?.textContent?.trim() ?? "";
+    const meta = link.dataset.demoMeta ?? item.querySelector("[data-demo-meta]")?.textContent?.trim() ?? "";
     const imageUrl = screenshotUrl(link.getAttribute("href") ?? "");
     if (!imageUrl || !name) {
       continue;
     }
 
     const card = document.createElement("span");
-    card.className = "component-index-card";
+    card.dataset.demoIndexCard = "true";
 
     const frame = document.createElement("span");
-    frame.className = "component-index-card__frame";
+    frame.dataset.demoIndexFrame = "true";
 
     const image = document.createElement("img");
-    image.className = "component-index-card__image";
+    image.dataset.demoIndexImage = "true";
     image.src = imageUrl;
     image.alt = `${name} preview`;
     image.loading = "lazy";
@@ -46,7 +46,7 @@ function enhanceAtlas() {
     });
 
     const label = document.createElement("p");
-    label.className = "component-index-card__name";
+    label.dataset.demoIndexName = "true";
     label.textContent = name;
 
     frame.appendChild(image);
@@ -58,7 +58,7 @@ function enhanceAtlas() {
     }
 
     link.textContent = "";
-    link.classList.add("component-index-card-link");
+    link.dataset.demoIndexCardLink = "true";
     link.appendChild(card);
   }
 }

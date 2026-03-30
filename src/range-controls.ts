@@ -6,8 +6,8 @@ export interface RangeControlsInitOptions {
 }
 
 const DEFAULT_RANGE_SELECTOR = "input[type='range']";
-const DEFAULT_NUMBER_SELECTOR = ".bf-slider-input, .p-slider__input";
-const DEFAULT_WRAPPER_SELECTOR = ".bf-slider, .p-slider__wrapper";
+const DEFAULT_NUMBER_SELECTOR = ".bf-slider-input";
+const DEFAULT_WRAPPER_SELECTOR = ".bf-slider";
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -28,7 +28,7 @@ export function updateRangeFill(range: HTMLInputElement): void {
   const { min, max } = getBounds(range);
   const value = Number(range.value || min);
   const percent = ((clamp(value, min, max) - min) / (max - min)) * 100;
-  range.style.setProperty("--vr-range-fill-percent", `${percent}%`);
+  range.style.setProperty("--bf-range-fill-percent", `${percent}%`);
 }
 
 function findPairedNumberInput(range: HTMLInputElement, options: RangeControlsInitOptions): HTMLInputElement | null {

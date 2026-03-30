@@ -23,7 +23,7 @@ Start by reading in baseline-foundry:
 
 Key baseline-foundry files:
 - config/presets/panel.json
-- src/css-compat.ts
+- src/css-components.ts
 - src/build.ts
 - src/types.ts
 - demo/components/controls.html

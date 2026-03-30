@@ -1,248 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-spec-root="..">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baseline Foundry Demo</title>
-  <link rel="stylesheet" href="../dist/styles.css?v=20260329-panel-refresh-19">
-  <style>
-    :root {
-      color-scheme: dark;
-    }
-
-    body {
-      background: var(--bf-color-bg);
-      color: var(--bf-color-text);
-      margin: 0;
-    }
-
-    .demo-shell {
-      min-height: 100vh;
-      padding-bottom: 4rem;
-    }
-
-    .demo-hero {
-      border-bottom: 1px solid var(--bf-color-rule);
-      display: grid;
-      gap: 1.5rem;
-      padding-block: 3rem;
-    }
-
-    .demo-layout {
-      display: grid;
-      gap: 2rem;
-      grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 1fr);
-    }
-
-    .demo-panel {
-      border-top: 1px solid var(--bf-color-rule);
-      padding-block: calc(1rem - 1px) 1rem;
-    }
-
-    .demo-panel h3 {
-      margin-top: 0;
-    }
-
-    .demo-token-list {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .demo-swatch {
-      background: var(--bf-color-rule);
-      block-size: 0.75rem;
-      border-radius: 999px;
-      inline-size: 100%;
-      margin-top: 0.5rem;
-    }
-
-    .demo-grid-card {
-      border-top: 1px solid var(--bf-color-rule);
-      padding-block: calc(1rem - 1px) 1rem;
-    }
-
-    .demo-grid-card p:last-child {
-      margin-bottom: 0;
-    }
-
-    .demo-footer {
-      border-top: 1px solid var(--bf-color-rule);
-      color: var(--bf-color-muted);
-      margin-top: 4rem;
-      padding-top: 1rem;
-    }
-
-    .demo-note {
-      color: var(--bf-color-muted);
-    }
-
-    @media (max-width: 900px) {
-      .demo-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <title>Baseline Foundry Living Spec</title>
+  <link id="spec-tier-stylesheet" rel="stylesheet" href="../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="./spec-shell.css">
 </head>
-<body class="bf-theme" data-bf-tone="dark">
-  <main class="demo-shell" id="demo-grid-target">
-    <div class="bf-page">
-      <header class="demo-hero">
-        <div class="bf-prose">
-          <h5 class="bf-h5">Baseline Foundry</h5>
-          <h1 class="bf-h1">A lean baseline-aligned system for prose rhythm and grid composition.</h1>
-          <p>This repo keeps the metric-driven baseline model but narrows the surface to typography, editorial flow, section rhythm, and a responsive grid, now using IBM Plex Sans as the editorial metric source for this confirmation pass.</p>
-        </div>
-        <div class="bf-cluster">
-          <label>
-            <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="demo-grid-target">
-            Show baseline grid
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-spec-shell data-spec-home id="spec-grid-target">
+    <header data-spec-home-header>
+      <div data-spec-toolbar>
+        <div data-spec-switches>
+          <label class="bf-switch" data-spec-switch>
+            <input class="bf-switch-input" data-spec-tone-toggle type="checkbox">
+            <span class="bf-switch-slider" aria-hidden="true"></span>
+            <span class="bf-switch-label">Dark theme</span>
           </label>
-          <a href="../dist/tokens.json">Open tokens</a>
-          <a href="./panel.html">Panel preset demo</a>
-          <a href="./components/index.html">Component demos</a>
+
+          <label class="bf-switch" data-spec-switch>
+            <input class="bf-switch-input" data-spec-baseline-toggle type="checkbox" aria-controls="spec-grid-target">
+            <span class="bf-switch-slider" aria-hidden="true"></span>
+            <span class="bf-switch-label">Baseline grid</span>
+          </label>
         </div>
-      </header>
 
-      <section class="bf-section">
-        <div class="demo-layout">
-          <article class="bf-prose">
-            <h5 class="bf-h5">Editorial spacing</h5>
-            <h2>The default flow is element-owned.</h2>
-            <p>Paragraphs, headings, lists, and quotes carry their own vertical spacing so content remains substitutable. Parents do not need to know what comes next in order to space it correctly.</p>
-            <p>That makes this repo a better home for prose, documentation, and future portfolio content than the broader compatibility package it was forked from.</p>
-            <blockquote>
-              Baseline alignment stays immutable. Everything else has to earn its place as a durable primitive.
-            </blockquote>
-            <h3>What ships right now</h3>
-            <ul>
-              <li>IBM Plex metric-driven typescale</li>
-              <li>Editorial prose defaults</li>
-              <li>Section and strip rhythm</li>
-              <li>Stack, cluster, page, measure, and grid primitives</li>
-            </ul>
-            <hr class="bf-rule">
-            <p class="demo-note">The page reads the generated token file live, so the demo always reflects the current local build.</p>
-          </article>
-
-          <aside class="bf-stack">
-            <section class="demo-panel">
-              <h3>Live token sample</h3>
-              <div class="demo-token-list" id="token-list"></div>
-            </section>
-
-            <section class="demo-panel">
-              <h3>Layout values</h3>
-              <div class="demo-token-list">
-                <div class="bf-token-row">
-                  <strong>Measure</strong>
-                  <span id="measure-value"></span>
-                  <div class="demo-swatch"></div>
-                </div>
-                <div class="bf-token-row">
-                  <strong>Grid gap</strong>
-                  <span id="grid-gap-value"></span>
-                </div>
-                <div class="bf-token-row">
-                  <strong>Section rhythm</strong>
-                  <span id="section-space-value"></span>
-                </div>
-              </div>
-            </section>
-          </aside>
+        <div class="bf-field" data-spec-tier-field>
+          <label class="bf-form-label" for="spec-tier-select">Tier</label>
+          <div class="bf-control">
+            <select id="spec-tier-select" data-spec-tier-select>
+              <option value="editorial">Editorial</option>
+              <option value="app">App</option>
+            </select>
+          </div>
         </div>
-      </section>
+      </div>
+    </header>
 
-      <section class="bf-section is-deep">
-        <div class="bf-stack" data-space="loose">
+    <section class="bf-section" data-spec-section>
+      <div class="bf-prose" data-spec-typography-specimen>
+        <h1>Lorem ipsum dolor sit amet.</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <h2>Consectetur adipiscing elit.</h2>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <h3>Sed do eiusmod tempor.</h3>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        <h4>Ut labore et dolore.</h4>
+        <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <h5>Minim veniam</h5>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <h6>Quis nostrud</h6>
+        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+      </div>
+    </section>
+
+    <section class="bf-section" data-spec-section>
+      <div class="bf-grid bf-grid-scope">
+        <div class="bf-span-4">
           <div class="bf-prose">
-            <h5 class="bf-h5">Grid primitives</h5>
-            <h2>The grid is container-aware and deliberately strict.</h2>
-            <p>Instead of shipping named shell objects, the system provides a responsive grid that scales from 4 to 8 to 16 columns as the container grows. Spans follow power-of-2 divisions so layouts stay aligned and resist arbitrary drift.</p>
+            <h3>Lorem ipsum dolor</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+            <p>Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris.</p>
+          </div>
+        </div>
+
+        <form class="bf-span-4 bf-stack" data-spec-field-stack>
+          <div class="bf-field">
+            <label class="bf-form-label" for="spec-name">Lorem label</label>
+            <div class="bf-control">
+              <input class="bf-input" id="spec-name" type="text" value="Lorem ipsum dolor">
+            </div>
           </div>
 
-          <div class="bf-grid">
-            <div class="demo-grid-card bf-span-4">
-              <h3 class="bf-h4">Span 4</h3>
-              <p>Quarter-width module on the largest grid, half-width on the medium grid.</p>
+          <div class="bf-field">
+            <label class="bf-form-label" for="spec-purpose">Dolor sit</label>
+            <div class="bf-control">
+              <select id="spec-purpose">
+                <option>Consectetur adipiscing</option>
+                <option selected>Sed do eiusmod</option>
+                <option>Tempor incididunt</option>
+              </select>
             </div>
-            <div class="demo-grid-card bf-span-8">
-              <h3 class="bf-h4">Span 8</h3>
-              <p>Half-width primary module that still becomes full-width when the container narrows.</p>
+          </div>
+
+          <div class="bf-field">
+            <label class="bf-form-label" for="spec-notes">Amet note</label>
+            <div class="bf-control">
+              <input class="bf-input" id="spec-notes" type="text" value="Ut labore et dolore magna aliqua">
             </div>
-            <div class="demo-grid-card bf-span-4">
-              <h3 class="bf-h4">Span 4</h3>
-              <p>Companion block that lands cleanly on the same keyline system.</p>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="bf-section" data-spec-section>
+      <div data-spec-grid-examples>
+        <div data-spec-grid-sample>
+          <div class="bf-prose" data-spec-grid-meta>
+            <h3>240px to 619px</h3>
+          </div>
+
+          <div class="bf-grid-scope" data-spec-grid-stage data-size="small">
+            <div class="bf-grid" data-spec-grid-guide aria-hidden="true">
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
             </div>
-            <div class="demo-grid-card bf-span-2">
-              <h3 class="bf-h4">Span 2</h3>
-              <p>Smaller metadata or utility module for wide containers.</p>
-            </div>
-            <div class="demo-grid-card bf-span-2">
-              <h3 class="bf-h4">Span 2</h3>
-              <p>Pairs cleanly with another narrow block instead of creating thirds.</p>
-            </div>
-            <div class="demo-grid-card bf-span-4">
-              <h3 class="bf-h4">Span 4</h3>
-              <p>Power-of-2 spans keep nested and adjacent layouts more predictable.</p>
+
+            <div class="bf-grid" data-spec-grid-content>
+              <div class="bf-span-1"><p class="bf-h6">Lorem</p><p>Lorem ipsum dolor.</p></div>
+              <div class="bf-span-1"><p class="bf-h6">Ipsum</p><p>Sed do eiusmod.</p></div>
+              <div class="bf-span-1"><p class="bf-h6">Dolor</p><p>Tempor incididunt.</p></div>
+              <div class="bf-span-1"><p class="bf-h6">Amet</p><p>Ut labore magna.</p></div>
+              <div class="bf-span-2"><p class="bf-h6">Consectetur</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p></div>
+              <div class="bf-span-2"><p class="bf-h6">Adipiscing</p><p>Sed do eiusmod tempor incididunt ut labore et dolore.</p></div>
             </div>
           </div>
         </div>
-      </section>
 
-      <footer class="demo-footer">
-        Demo URL: http://127.0.0.1:4174/demo/
-      </footer>
-    </div>
+        <div data-spec-grid-sample>
+          <div class="bf-prose" data-spec-grid-meta>
+            <h3>620px and up</h3>
+          </div>
+
+          <div class="bf-grid-scope" data-spec-grid-stage data-size="medium">
+            <div class="bf-grid" data-spec-grid-guide aria-hidden="true">
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+            </div>
+
+            <div class="bf-grid" data-spec-grid-content>
+              <div class="bf-span-2"><p class="bf-h6">Lorem</p><p>Lorem ipsum dolor sit amet.</p></div>
+              <div class="bf-span-2"><p class="bf-h6">Ipsum</p><p>Consectetur adipiscing elit.</p></div>
+              <div class="bf-span-2"><p class="bf-h6">Dolor</p><p>Sed do eiusmod tempor.</p></div>
+              <div class="bf-span-2"><p class="bf-h6">Amet</p><p>Ut labore et dolore.</p></div>
+              <div class="bf-span-4"><p class="bf-h6">Consectetur</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p></div>
+              <div class="bf-span-4"><p class="bf-h6">Adipiscing</p><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div data-spec-grid-sample>
+          <div class="bf-prose" data-spec-grid-meta>
+            <h3>1681px and up</h3>
+          </div>
+
+          <div class="bf-grid-scope" data-spec-grid-stage data-size="large">
+            <div class="bf-grid" data-spec-grid-guide aria-hidden="true">
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+              <div class="bf-span-1"></div>
+            </div>
+
+            <div class="bf-grid" data-spec-grid-content>
+              <div class="bf-span-4"><p class="bf-h6">Lorem</p><p>Lorem ipsum dolor sit amet, consectetur.</p></div>
+              <div class="bf-span-4"><p class="bf-h6">Ipsum</p><p>Adipiscing elit sed do eiusmod tempor.</p></div>
+              <div class="bf-span-4"><p class="bf-h6">Dolor</p><p>Incididunt ut labore et dolore magna.</p></div>
+              <div class="bf-span-4"><p class="bf-h6">Amet</p><p>Aliqua ut enim ad minim veniam.</p></div>
+              <div class="bf-span-8"><p class="bf-h6">Consectetur</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p></div>
+              <div class="bf-span-8"><p class="bf-h6">Adipiscing</p><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <script type="module">
-    import { initBaselineGridToggles } from "../dist/index.js?v=20260329-panel-refresh-19";
-
-    initBaselineGridToggles();
-
-    const tokenList = document.querySelector("#token-list");
-
-    fetch("../dist/tokens.json")
-      .then(response => response.json())
-      .then(tokens => {
-        if (!(tokenList instanceof HTMLElement)) {
-          return;
-        }
-
-        const tokenNames = Object.keys(tokens.roles ?? {});
-
-        tokenList.innerHTML = tokenNames
-          .map(name => {
-            const token = tokens.roles?.[name];
-            if (!token) {
-              return "";
-            }
-
-            return `
-              <div class="bf-token-row">
-                <strong>${name}</strong>
-                <span>${token.fontSize} / ${token.lineHeight}</span>
-                <span>weight ${token.fontWeight}</span>
-                <span>nudge ${token.nudgeTop}</span>
-              </div>
-            `;
-          })
-          .join("");
-
-        const measure = document.querySelector("#measure-value");
-        const gridGap = document.querySelector("#grid-gap-value");
-        const sectionSpace = document.querySelector("#section-space-value");
-
-        if (measure) measure.textContent = tokens.layout.measure;
-        if (gridGap) gridGap.textContent = `${tokens.layout.gridGapInline} inline / ${tokens.layout.gridGapBlock} block`;
-        if (sectionSpace) sectionSpace.textContent = `${tokens.layout.sectionSpace} default / ${tokens.layout.sectionSpaceDeep} deep`;
-      })
-      .catch(error => {
-        if (tokenList instanceof HTMLElement) {
-          tokenList.innerHTML = `<p>Unable to load tokens.json: ${error}</p>`;
-        }
-      });
-  </script>
+  <script type="module" src="./spec-shell.js"></script>
 </body>
 </html>
 

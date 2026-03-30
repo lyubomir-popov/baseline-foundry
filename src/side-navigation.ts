@@ -2,15 +2,15 @@ export interface SideNavigationInitOptions {
   root?: ParentNode;
 }
 
-const ROOT_SELECTOR = ".p-side-navigation, .p-side-navigation--icons, .p-side-navigation--accordion, .p-side-navigation--raw-html, .bf-side-navigation";
-const DRAWER_SELECTOR = ".p-side-navigation__drawer, .bf-side-navigation-drawer";
-const OVERLAY_SELECTOR = ".p-side-navigation__overlay, .bf-side-navigation-overlay";
-const TOGGLE_SELECTOR = ".p-side-navigation__toggle, .p-side-navigation__toggle--in-drawer, .bf-side-navigation-toggle";
-const EXPAND_SELECTOR = ".p-side-navigation__expand, .p-side-navigation__accordion-button, .bf-side-navigation-expand, .bf-side-navigation-accordion-button";
-const ITEM_SELECTOR = ".p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item";
-const LIST_SELECTOR = ".p-side-navigation__list, .bf-side-navigation-list";
-const LINK_SELECTOR = ".p-side-navigation__link, .bf-side-navigation-link";
-const TEXT_SELECTOR = ".p-side-navigation__text, .bf-side-navigation-text";
+const ROOT_SELECTOR = ".bf-side-navigation";
+const DRAWER_SELECTOR = ".bf-side-navigation-drawer";
+const OVERLAY_SELECTOR = ".bf-side-navigation-overlay";
+const TOGGLE_SELECTOR = ".bf-side-navigation-toggle";
+const EXPAND_SELECTOR = ".bf-side-navigation-expand, .bf-side-navigation-accordion-button";
+const ITEM_SELECTOR = ".bf-side-navigation-item";
+const LIST_SELECTOR = ".bf-side-navigation-list";
+const LINK_SELECTOR = ".bf-side-navigation-link";
+const TEXT_SELECTOR = ".bf-side-navigation-text";
 const LARGE_BREAKPOINT = "(min-width: 64.75rem)";
 const DRAWER_EXPANDED_CLASS = "is-drawer-expanded";
 const DRAWER_COLLAPSED_CLASS = "is-drawer-collapsed";

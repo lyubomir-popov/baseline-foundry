@@ -3,225 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baseline Foundry Panel Demo</title>
-  <link rel="stylesheet" href="../dist/presets/panel/styles.css?v=20260329-panel-refresh-19">
-  <style>
-    :root {
-      color-scheme: dark;
-    }
-
-    body {
-      background: var(--bf-color-bg);
-      color: var(--bf-color-text);
-      margin: 0;
-    }
-
-    .demo-shell {
-      min-height: 100vh;
-      padding-bottom: 3rem;
-    }
-
-    .demo-hero {
-      border-bottom: 1px solid var(--bf-color-rule);
-      display: grid;
-      gap: 1rem;
-      padding-block-end: 2rem;
-    }
-
-    .demo-layout {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: minmax(16rem, 20rem) minmax(0, 1fr);
-    }
-
-    .demo-panel {
-      border-top: 1px solid var(--bf-color-rule);
-      padding-block: calc(0.75rem - 1px) 0.75rem;
-    }
-
-    .demo-panel h3 {
-      margin-top: 0;
-    }
-
-    .demo-token-list {
-      display: grid;
-      gap: 0.75rem;
-    }
-
-    .demo-property-list {
-      display: grid;
-      gap: 0.75rem;
-    }
-
-    .demo-property-row {
-      border-top: 1px solid var(--bf-color-rule);
-      display: grid;
-      gap: 0.25rem 1rem;
-      grid-template-columns: minmax(0, 1fr) auto;
-      padding-top: calc(0.5rem - 1px);
-    }
-
-    .demo-property-row:first-child {
-      border-top: 0;
-      padding-top: 0;
-    }
-
-    .demo-canvas {
-      align-content: start;
-      aspect-ratio: 16 / 10;
-      background:
-        linear-gradient(135deg, rgba(15, 98, 254, 0.12), rgba(255, 255, 255, 0.08)),
-        linear-gradient(180deg, rgba(20, 22, 28, 0.08), rgba(20, 22, 28, 0.02));
-      border: 1px solid var(--bf-color-rule);
-      display: grid;
-      padding: 1rem;
-    }
-
-    .demo-chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .demo-chip {
-      background: transparent;
-      border: 1px solid var(--bf-color-rule);
-      border-radius: 999px;
-      padding: 0.25rem 0.5rem;
-    }
-
-    .demo-footer {
-      border-top: 1px solid var(--bf-color-rule);
-      color: var(--bf-color-muted);
-      margin-top: 3rem;
-      padding-top: 0.75rem;
-    }
-
-    .demo-note {
-      color: var(--bf-color-muted);
-    }
-
-    @media (max-width: 1100px) {
-      .demo-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <title>Baseline Foundry Panel Preset</title>
+  <link rel="stylesheet" href="../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="./spec-shell.css">
 </head>
 <body class="bf-theme" data-bf-tone="dark">
-  <main class="demo-shell" id="demo-grid-target">
-    <div class="bf-page">
-      <header class="demo-hero">
-        <div class="bf-prose">
-          <h5 class="bf-h5">Panel preset</h5>
-          <h1 class="bf-h1">A compact baseline-aligned default for dense control surfaces.</h1>
-          <p>This preset keeps the paired-weight system and vertical-rhythm discipline, but scales the default down to a `0.75rem` body so we can pressure-test `brand-layout-ops` against the new package instead of the older compatibility repo.</p>
-        </div>
-        <div class="bf-cluster">
-          <label>
-            <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="demo-grid-target">
-            Show baseline grid
-          </label>
-          <a href="../dist/presets/panel/tokens.json">Open panel tokens</a>
-          <a href="./components/panel-pressure.html">Open panel pressure page</a>
-          <a href="./index.html">Back to prose demo</a>
-        </div>
-      </header>
+  <main class="bf-page" data-spec-shell id="demo-grid-target">
+    <header data-spec-hero>
+      <div class="bf-prose">
+        <h5 class="bf-h5">Panel preset</h5>
+        <h1 class="bf-h1">A secondary compatibility line for dense control surfaces.</h1>
+        <p>The panel preset remains important for downstream pressure tests, but it now sits beside the tier-first model instead of defining the repo's default mental model.</p>
+      </div>
+      <div data-spec-actions>
+        <label class="bf-body" data-spec-checkbox>
+          <input data-spec-baseline-toggle type="checkbox" aria-controls="demo-grid-target">
+          Show baseline grid
+        </label>
+        <a href="../dist/presets/panel/tokens.json">Open panel tokens</a>
+        <a href="./components/panel-pressure.html">Panel pressure page</a>
+        <a href="./index.html">Back to living spec</a>
+      </div>
+    </header>
 
-      <section class="bf-section">
-        <div class="demo-layout">
-          <aside class="bf-stack">
-            <section class="demo-panel">
-              <h5 class="bf-h5">Document</h5>
-              <p class="bf-h4">Ubuntu Summit lockup</p>
-              <div class="demo-property-list">
-                <div class="demo-property-row">
-                  <strong>Format</strong>
-                  <span>16:9 social</span>
-                </div>
-                <div class="demo-property-row">
-                  <strong>Density</strong>
-                  <span>Panel default</span>
-                </div>
-                <div class="demo-property-row">
-                  <strong>Grid</strong>
-                  <span>8 columns</span>
-                </div>
-              </div>
-            </section>
+    <section class="bf-section">
+      <div data-spec-layout="aside">
+        <aside class="bf-card">
+          <h3 class="bf-h3">Preset summary</h3>
+          <div data-spec-token-list>
+            <div data-spec-token-row>
+              <strong>Body size</strong>
+              <code id="panel-body-size">0.75rem / 1rem</code>
+            </div>
+            <div data-spec-token-row>
+              <strong>Control size</strong>
+              <span id="panel-control-size">-</span>
+            </div>
+            <div data-spec-token-row>
+              <strong>Field gap</strong>
+              <code id="panel-field-gap">-</code>
+            </div>
+          </div>
+        </aside>
 
-            <section class="demo-panel">
-              <h5 class="bf-h5">Panel token sample</h5>
-              <div class="demo-token-list" id="token-list"></div>
-            </section>
-          </aside>
+        <article class="bf-card">
+          <div class="bf-prose">
+            <h3 class="bf-h3">Why it still exists</h3>
+            <p>The compact line is still the fastest way to pressure-test dense inspector work against `brand-layout-ops`. The important cleanup is architectural: panel is now clearly a preset, not a disguised stand-in for editorial or app.</p>
+          </div>
+          <div data-spec-callout>
+            <p class="bf-body">Use the living spec for tier policy. Use the panel preset for downstream dense-surface rehearsal.</p>
+          </div>
+        </article>
+      </div>
+    </section>
 
-          <section class="bf-stack">
-            <section class="demo-panel">
-              <div class="bf-prose">
-                <h5 class="bf-h5">Preview</h5>
-                <p class="bf-h3">The compact scale keeps control-heavy work calm without reverting to the old framework surface.</p>
-                <p class="demo-note">This is the path toward testing `brand-layout-ops` against `baseline-foundry` directly.</p>
-              </div>
-            </section>
+    <section class="bf-section is-deep">
+      <div class="bf-grid">
+        <article class="bf-card bf-span-4">
+          <h3 class="bf-h3">Document</h3>
+          <div data-spec-token-list>
+            <div data-spec-token-row>
+              <strong>Format</strong>
+              <span>16:9 social</span>
+            </div>
+            <div data-spec-token-row>
+              <strong>Density</strong>
+              <span>Panel preset</span>
+            </div>
+            <div data-spec-token-row>
+              <strong>Grid</strong>
+              <span>8 columns</span>
+            </div>
+          </div>
+        </article>
 
-            <section class="demo-canvas">
-              <div class="bf-prose">
-                <h5 class="bf-h5">Canvas summary</h5>
-                <p class="bf-h4">Linked title sizing, asset state, and export defaults can all stay on one rhythm.</p>
-              </div>
-              <div class="demo-chip-row">
-                <span class="demo-chip">Draft</span>
-                <span class="demo-chip">With halo</span>
-                <span class="demo-chip">Grid visible</span>
-                <span class="demo-chip">Linked logo</span>
-              </div>
-            </section>
-          </section>
-        </div>
-      </section>
+        <article class="bf-card bf-span-8">
+          <div class="bf-prose">
+            <h3 class="bf-h3">Preview</h3>
+            <p class="bf-h4">The compact scale keeps control-heavy work calm without falling back to the old compatibility package.</p>
+            <p class="bf-body" data-spec-note">This page stays as a secondary demo surface while the main `/demo/` route now belongs to the tier-first living spec.</p>
+          </div>
+          <div data-spec-stack-sample>
+            <div>Draft</div>
+            <div>With halo</div>
+            <div>Grid visible</div>
+            <div>Linked logo</div>
+          </div>
+        </article>
+      </div>
+    </section>
 
-      <footer class="demo-footer">
-        Panel demo URL: http://127.0.0.1:4174/demo/panel.html
-      </footer>
-    </div>
+    <footer data-spec-footer>
+      Panel preset page at http://127.0.0.1:4174/demo/panel.html.
+    </footer>
   </main>
 
   <script type="module">
-    import { initBaselineGridToggles } from "../dist/index.js?v=20260329-panel-refresh-19";
+    import { initBaselineGridToggles } from "../dist/index.js";
 
-    initBaselineGridToggles();
+    initBaselineGridToggles({ toggleSelector: "[data-spec-baseline-toggle][aria-controls]" });
 
-    const tokenList = document.querySelector("#token-list");
+    const controlSize = document.querySelector("#panel-control-size");
+    const fieldGap = document.querySelector("#panel-field-gap");
+    const bodySize = document.querySelector("#panel-body-size");
 
     fetch("../dist/presets/panel/tokens.json")
       .then(response => response.json())
       .then(tokens => {
-        if (!(tokenList instanceof HTMLElement)) {
-          return;
+        const body = tokens.roles?.body;
+        if (body && bodySize instanceof HTMLElement) {
+          bodySize.textContent = `${body.fontSize} / ${body.lineHeight}`;
         }
 
-        const tokenNames = Object.keys(tokens.roles ?? {});
-        tokenList.innerHTML = tokenNames
-          .map(name => {
-            const token = tokens.roles?.[name];
-            if (!token) {
-              return "";
-            }
+        if (controlSize instanceof HTMLElement) {
+          controlSize.textContent = `${tokens.components.controlMinBlockSize} default / ${tokens.components.controlMinBlockSizeDense} dense`;
+        }
 
-            return `
-              <div class="bf-token-row">
-                <strong>${name}</strong>
-                <span>${token.fontSize} / ${token.lineHeight}</span>
-                <span>weight ${token.fontWeight}</span>
-              </div>
-            `;
-          })
-          .join("");
+        if (fieldGap instanceof HTMLElement) {
+          fieldGap.textContent = tokens.components.fieldGap;
+        }
       })
       .catch(error => {
-        if (tokenList instanceof HTMLElement) {
-          tokenList.innerHTML = `<p>Unable to load panel tokens.json: ${error}</p>`;
+        if (controlSize instanceof HTMLElement) {
+          controlSize.textContent = `Unable to load panel tokens: ${error}`;
         }
       });
   </script>

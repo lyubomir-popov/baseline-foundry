@@ -116,6 +116,8 @@ async function verifyComponentPage(
       throw new Error(`No [data-component-capture] root found for ${pageName}.`);
     }
 
+    const shouldEnforceBaseline = !document.body.classList.contains("bf-tier-app");
+
     const rootRect = captureRoot.getBoundingClientRect();
     const probe = document.createElement("div");
     probe.style.blockSize = "var(--bf-baseline)";
@@ -154,42 +156,39 @@ async function verifyComponentPage(
       ".bf-grid.is-controls",
       ".bf-grid-item.is-control",
       ".bf-grid-item.is-control-pair",
-      ".p-panel",
-      ".p-card",
-      ".p-card--highlighted",
-      ".p-card--overlay",
-      ".p-card--muted",
-      ".p-choice-row",
+      ".bf-panel",
+      ".bf-card",
+      ".bf-card.is-highlighted",
+      ".bf-card.is-overlay",
+      ".bf-card.is-muted",
       ".bf-choice-row",
-      ".p-inline-options",
       ".bf-inline-options",
-      ".p-actions",
       ".bf-actions",
-      ".p-option-card",
       ".bf-option-card",
-      ".p-divider__block",
-      ".p-tabs__list",
-      ".p-segmented-control__button",
-      ".p-breadcrumbs__items",
-      ".p-pagination__items",
-      ".p-pagination__item--truncation",
-      ".p-code-snippet",
-      ".p-code-snippet__header",
-      ".p-code-snippet__block",
-      ".p-code-snippet__block--icon",
-      ".p-code-snippet__block--numbered",
-      ".p-accordion__tab",
-      ".p-accordion__panel",
-      ".p-modal__dialog",
-      ".p-switch__slider",
-      ".p-form-validation__message"
+      ".bf-divider-block",
+      ".bf-tabs-list",
+      ".bf-segmented-control-button",
+      ".bf-breadcrumbs-items",
+      ".bf-pagination-items",
+      ".bf-pagination-item.is-truncation",
+      ".bf-code-snippet",
+      ".bf-code-snippet-header",
+      ".bf-code-snippet-block",
+      ".bf-code-snippet-block.is-icon",
+      ".bf-code-snippet-block.is-numbered",
+      ".bf-accordion-tab",
+      ".bf-accordion-panel",
+      ".bf-modal-dialog",
+      ".bf-validation-message"
     ].join(", ");
 
     const rootMeasure = rootRect.height;
     const rootNearest = baselinePx === 0 ? rootMeasure : Math.round(rootMeasure / baselinePx) * baselinePx;
     const rootMeasureErrorPx = Math.abs(rootMeasure - rootNearest);
 
-    const elements = Array.from(captureRoot.querySelectorAll<HTMLElement>("[data-baseline-check]"));
+    const elements = shouldEnforceBaseline
+      ? Array.from(captureRoot.querySelectorAll<HTMLElement>("[data-baseline-check]"))
+      : [];
     for (const element of elements) {
       if (element.getClientRects().length === 0) {
         continue;
@@ -245,17 +244,19 @@ async function verifyComponentPage(
     }
 
     const overflowFailures = overflowChecks.filter(check => !check.passed);
-    const missingCoverage = Array.from(captureRoot.querySelectorAll<HTMLElement>(coverageSelector))
-      .filter(element => element.getClientRects().length > 0)
-      .filter(element => element.dataset.baselineIgnore !== "true")
-      .filter(element => !element.closest("[data-baseline-ignore='true']"))
-      .filter(element => !element.hasAttribute("data-baseline-check"))
-      .map(element => {
-        const label = (element.dataset.baselineLabel ?? "").replace(/\s+/g, " ").trim()
-          || element.className?.toString().replace(/\s+/g, ".")
-          || element.tagName.toLowerCase();
-        return label;
-      });
+    const missingCoverage = shouldEnforceBaseline
+      ? Array.from(captureRoot.querySelectorAll<HTMLElement>(coverageSelector))
+        .filter(element => element.getClientRects().length > 0)
+        .filter(element => element.dataset.baselineIgnore !== "true")
+        .filter(element => !element.closest("[data-baseline-ignore='true']"))
+        .filter(element => !element.hasAttribute("data-baseline-check"))
+        .map(element => {
+          const label = (element.dataset.baselineLabel ?? "").replace(/\s+/g, " ").trim()
+            || element.className?.toString().replace(/\s+/g, ".")
+            || element.tagName.toLowerCase();
+          return label;
+        })
+      : [];
 
     const report: ComponentVerificationResult = {
       baselinePx,

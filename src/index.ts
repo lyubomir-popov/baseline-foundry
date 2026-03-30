@@ -20,6 +20,19 @@ export type { PanelDrawerInitOptions } from "./panel-drawer.js";
 export type { RangeControlsInitOptions } from "./range-controls.js";
 export type { ResizableAsideInitOptions } from "./resizable-aside.js";
 export type { SideNavigationInitOptions } from "./side-navigation.js";
-export type { ComponentTokens, LayoutTokens, ThemeComponentsConfig, ThemeConfig, ThemeTokens, TypographyToken } from "./types.js";
+export type {
+	BaselineGeneratorTokens,
+	BuildThemeResult,
+	ComponentTokens,
+	DeriveBaselineTokensResult,
+	LayoutTokens,
+	ThemeComponentsConfig,
+	ThemeConfig,
+	ThemeElementConfig,
+	ThemeFontFile,
+	ThemeLayoutConfig,
+	ThemeTokens,
+	TypographyToken
+} from "./types.js";
 export type { TabsInitOptions } from "./tabs.js";
 export type { TooltipInitOptions } from "./tooltip.js";

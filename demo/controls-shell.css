@@ -1,0 +1,66 @@
+[data-controls-panels] {
+  display: grid;
+  gap: var(--bf-space-4, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+}
+
+[data-controls-panel] {
+  min-block-size: 100%;
+}
+
+[data-controls-panel] :where(.bf-panel) {
+  min-block-size: 100%;
+}
+
+[data-controls-panel] :where(.bf-panel-header) {
+  align-items: start;
+}
+
+[data-controls-stack] {
+  display: grid;
+  gap: var(--bf-field-gap);
+}
+
+[data-controls-inline] {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bf-field-gap);
+}
+
+[data-controls-color-grid] {
+  display: grid;
+  gap: var(--bf-field-gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+}
+
+[data-controls-menu-panel] {
+  padding-block-end: calc(var(--bf-control-block-size) * 3);
+}
+
+[data-controls-modal] {
+  inline-size: min(100%, 30rem);
+}
+
+[data-controls-modal] :where(.bf-modal-dialog) {
+  inline-size: 100%;
+}
+
+[data-controls-panel] :where(.bf-pagination-items),
+[data-controls-panel] :where(.bf-breadcrumbs-items) {
+  flex-wrap: wrap;
+}
+
+[data-controls-panel] :where(.bf-contextual-menu) {
+  inline-size: max-content;
+  max-inline-size: 100%;
+}
+
+[data-controls-panel] :where(.bf-search-and-filter) {
+  max-inline-size: 100%;
+}
+
+[data-controls-panel] :where(.bf-tooltip.is-detached) {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+}

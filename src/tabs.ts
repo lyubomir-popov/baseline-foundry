@@ -2,9 +2,9 @@ export interface TabsInitOptions {
   root?: ParentNode;
 }
 
-const TAB_SELECTOR = ".bf-tabs-link, .p-tabs__link";
-const PANEL_SELECTOR = ".bf-tabs-panel, .p-tabs__panel";
-const LIST_SELECTOR = ".bf-tabs-list, .p-tabs__list";
+const TAB_SELECTOR = ".bf-tabs-link";
+const PANEL_SELECTOR = ".bf-tabs-panel";
+const LIST_SELECTOR = ".bf-tabs-list";
 
 function activateTab(tab: HTMLElement): void {
   const list = tab.closest<HTMLElement>(LIST_SELECTOR);

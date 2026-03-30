@@ -2,8 +2,8 @@ export interface TooltipInitOptions {
   root?: ParentNode;
 }
 
-const TOOLTIP_SELECTOR = ".vr-tooltip, .p-tooltip, .bf-tooltip, [class*='p-tooltip--'], [class*='vr-tooltip--'], [class*='bf-tooltip--']";
-const MESSAGE_SELECTOR = ".vr-tooltip__message, .p-tooltip__message, .bf-tooltip-message";
+const TOOLTIP_SELECTOR = ".bf-tooltip, [class*='bf-tooltip--']";
+const MESSAGE_SELECTOR = ".bf-tooltip-message";
 
 export function initTooltips(options: TooltipInitOptions = {}): () => void {
   const root = options.root ?? document;

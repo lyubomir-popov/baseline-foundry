@@ -27,6 +27,12 @@ The file falls into three buckets:
 3. Keep local:
    stage rendering, authoring overlays, selection handles, inline stage editor, and other canvas/editor-specific styling.
 
+Follow-up audit on 2026-03-30:
+
+- The live `brand-layout-ops` preview now renders credibly against current `baseline-foundry` without depending on missing upstream panel primitives.
+- The remaining stale `p-*` class usage found during the latest audit lives in `apps/overlay-preview/src/paragraph-styles-section.ts`, but that module is currently unreferenced dead code rather than part of the live inspector path.
+- The practical swap risk is therefore downstream cleanup and dead-code removal, not another upstream Foundry port.
+
 ## Replace Now
 
 | Local block | Recommendation | Replace with |

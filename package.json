@@ -19,10 +19,18 @@
     },
     "./styles.css": "./dist/styles.css",
     "./tokens.json": "./dist/tokens.json",
+    "./tiers/editorial.css": "./dist/tiers/editorial/styles.css",
+    "./tiers/documentation.css": "./dist/tiers/documentation/styles.css",
+    "./tiers/app.css": "./dist/tiers/app/styles.css",
+    "./tiers/editorial.tokens.json": "./dist/tiers/editorial/tokens.json",
+    "./tiers/documentation.tokens.json": "./dist/tiers/documentation/tokens.json",
+    "./tiers/app.tokens.json": "./dist/tiers/app/tokens.json",
     "./presets/prose.css": "./dist/presets/prose/styles.css",
     "./presets/panel.css": "./dist/presets/panel/styles.css",
+    "./presets/app-tier.css": "./dist/presets/app-tier/styles.css",
     "./presets/prose.tokens.json": "./dist/presets/prose/tokens.json",
-    "./presets/panel.tokens.json": "./dist/presets/panel/tokens.json"
+    "./presets/panel.tokens.json": "./dist/presets/panel/tokens.json",
+    "./presets/app-tier.tokens.json": "./dist/presets/app-tier/tokens.json"
   },
   "scripts": {
     "clean": "powershell -NoProfile -Command \"if (Test-Path dist) { Remove-Item dist -Recurse -Force }; if (Test-Path generated\\baseline) { Remove-Item generated\\baseline -Recurse -Force }\"",
@@ -37,12 +45,16 @@
     "test:components": "tsx scripts/verify-component-baselines.ts",
     "test": "npm run build && npm run test:build && npm run test:components && npm run test:behavior",
     "playwright:install": "playwright install chromium",
+    "compare:controls": "npm run build && tsx scripts/compare-controls.ts",
+    "compare:inline-surfaces": "npm run build && tsx scripts/compare-inline-surfaces.ts",
     "verify:behavior": "npm run build && tsx scripts/verify-component-behavior.ts",
     "verify:components": "npm run build && tsx scripts/verify-component-baselines.ts",
     "screenshots:components": "npm run build && tsx scripts/capture-component-screenshots.ts",
     "qa:components": "npm run build && tsx scripts/capture-component-screenshots.ts && tsx scripts/verify-component-baselines.ts",
+    "build:app": "tsx examples/app-tier/build.ts",
+    "demo:app": "npm run build:app && vite --host 127.0.0.1 --port 4175 --open /examples/app-tier/",
     "build:app-tier": "tsx examples/app-tier/build.ts",
-    "demo:app-tier": "npm run build:app-tier && vite --host 127.0.0.1 --port 4175 --open /examples/app-tier/"
+    "demo:app-tier": "npm run demo:app"
   },
   "keywords": [
     "baseline-grid",

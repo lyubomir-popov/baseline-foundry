@@ -125,3 +125,10 @@ export interface BuildThemeResult {
   tokens: ThemeTokens;
   css: string;
 }
+
+export interface DeriveBaselineTokensResult {
+  configPath: string;
+  baselineConfigPath: string;
+  baselineTokensPath: string;
+  tokens: BaselineGeneratorTokens;
+}

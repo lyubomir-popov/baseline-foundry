@@ -1,6 +1,9 @@
-import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips } from "../dist/index.js?v=20260330-application-layout-01";
+import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips } from "../dist/index.js";
 
-initBaselineGridToggles({ defaultEnabled: true });
+initBaselineGridToggles({
+  defaultEnabled: true,
+  toggleSelector: ".js-baseline-toggle[aria-controls], [data-demo-baseline-toggle][aria-controls]"
+});
 initApplicationLayouts();
 initCodeSnippets();
 initContextualMenus();
@@ -14,6 +17,8 @@ initTooltips();
 initAccordions();
 
 const NAV_ITEMS = [
+  { title: "Living spec", href: "../index.html" },
+  { title: "Controls page", href: "../controls.html" },
   { title: "Component atlas", href: "index.html" },
   null,
   { title: "Typography roles", href: "typography.html" },
@@ -48,6 +53,7 @@ const NAV_ITEMS = [
   { title: "Panel tabs", href: "panel-tabs.html" },
   { title: "Accordion", href: "accordion.html" },
   { title: "Side navigation", href: "side-navigation.html" },
+  { title: "Baseline engine smoke", href: "engine-smoke.html" },
   { title: "Modal", href: "modal.html" },
   { title: "Choice row", href: "choice-row.html" },
   { title: "Inline options", href: "inline-options.html" },
@@ -70,29 +76,28 @@ const NAV_ITEMS = [
 ];
 
 function injectNav() {
-
-  const current = location.pathname.split("/").pop() || "index.html";
+  const currentPath = location.pathname;
   const nav = document.createElement("nav");
-  nav.className = "component-demo-nav";
+  nav.dataset.demoNav = "true";
   nav.setAttribute("aria-label", "Component demos");
   nav.dataset.baselineIgnore = "true";
 
   const toggle = document.createElement("button");
-  toggle.className = "component-demo-nav__toggle";
+  toggle.dataset.demoNavToggle = "true";
   toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-controls", "component-demo-nav-list");
-  toggle.textContent = "Nav";
+  toggle.setAttribute("aria-controls", "demo-nav-list");
+  toggle.textContent = "Index";
   toggle.title = "Toggle navigation";
   nav.appendChild(toggle);
 
   const list = document.createElement("ul");
-  list.id = "component-demo-nav-list";
-  list.className = "component-demo-nav__list";
+  list.id = "demo-nav-list";
+  list.dataset.demoNavList = "true";
 
   for (const item of NAV_ITEMS) {
     if (item === null) {
       const separator = document.createElement("li");
-      separator.className = "component-demo-nav__separator";
+      separator.dataset.demoNavSeparator = "true";
       separator.setAttribute("role", "separator");
       list.appendChild(separator);
       continue;
@@ -102,7 +107,7 @@ function injectNav() {
     const link = document.createElement("a");
     link.href = item.href;
     link.textContent = item.title;
-    if (item.href === current) {
+    if (new URL(item.href, location.href).pathname === currentPath) {
       link.setAttribute("aria-current", "page");
     }
     li.appendChild(link);

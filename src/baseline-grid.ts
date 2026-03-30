@@ -14,17 +14,17 @@ function isDarkTone(element: Element | null): boolean {
 }
 
 function getThemeRoot(toggle: HTMLInputElement, target: HTMLElement): HTMLElement | null {
-  const toggleThemeRoot = toggle.closest<HTMLElement>("[data-bf-tone], .bf-theme, .vr-theme");
+  const toggleThemeRoot = toggle.closest<HTMLElement>("[data-bf-tone], .bf-theme");
   if (toggleThemeRoot) {
     return toggleThemeRoot;
   }
 
-  const targetThemeRoot = target.closest<HTMLElement>("[data-bf-tone], .bf-theme, .vr-theme");
+  const targetThemeRoot = target.closest<HTMLElement>("[data-bf-tone], .bf-theme");
   if (targetThemeRoot) {
     return targetThemeRoot;
   }
 
-  return document.querySelector<HTMLElement>("[data-bf-tone], .bf-theme, .vr-theme");
+  return document.querySelector<HTMLElement>("[data-bf-tone], .bf-theme");
 }
 
 function syncBaselineGridColor(toggle: HTMLInputElement, target: HTMLElement): void {
@@ -75,7 +75,7 @@ export function initBaselineGridToggles(options: BaselineGridInitOptions = {}): 
     // No toggle found — apply grid directly to body when default-on
     const targetClassName = options.targetClassName ?? "u-baseline-grid";
     document.body.classList.add(targetClassName);
-    const themeRoot = document.querySelector<HTMLElement>("[data-bf-tone], .bf-theme, .vr-theme");
+    const themeRoot = document.querySelector<HTMLElement>("[data-bf-tone], .bf-theme");
     const gridColor = isDarkTone(themeRoot) ? "rgba(255, 255, 255, 0.16)" : "rgba(20, 22, 28, 0.12)";
     document.body.style.setProperty("--bf-baseline-grid-color", gridColor);
   }

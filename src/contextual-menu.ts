@@ -2,10 +2,10 @@ export interface ContextualMenuInitOptions {
   root?: ParentNode;
 }
 
-const TOGGLE_SELECTOR = ".vr-contextual-menu__toggle, .p-contextual-menu__toggle, .bf-contextual-menu-toggle";
-const DROPDOWN_SELECTOR = ".vr-contextual-menu__dropdown, .p-contextual-menu__dropdown, .bf-contextual-menu-dropdown";
-const MENU_SELECTOR = ".vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu, .vr-contextual-menu--left, .p-contextual-menu--left, .bf-contextual-menu.is-left, .vr-contextual-menu--center, .p-contextual-menu--center, .bf-contextual-menu.is-center";
-const LINK_SELECTOR = ".vr-contextual-menu__link, .p-contextual-menu__link, .bf-contextual-menu-link";
+const TOGGLE_SELECTOR = ".bf-contextual-menu-toggle";
+const DROPDOWN_SELECTOR = ".bf-contextual-menu-dropdown";
+const MENU_SELECTOR = ".bf-contextual-menu";
+const LINK_SELECTOR = ".bf-contextual-menu-link";
 
 function queryAllWithinRoot<T extends Element>(root: ParentNode, selector: string): T[] {
   const elements = Array.from(root.querySelectorAll<T>(selector));

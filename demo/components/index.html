@@ -4,272 +4,123 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Baseline Foundry Component Atlas</title>
-  <link rel="stylesheet" href="../../dist/styles.css?v=20260329-panel-refresh-19">
-  <link rel="stylesheet" href="../component-shell.css?v=20260329-panel-refresh-19">
+  <link rel="stylesheet" href="../../dist/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body>
-  <main class="component-demo-page component-demo-page--wide bf-theme" data-bf-tone="dark">
-    <header class="component-demo-header">
-      <div>
-        <h5 class="bf-h5 component-demo-kicker">Baseline Foundry</h5>
-        <h1>Component atlas and baseline gate</h1>
-        <p class="component-demo-meta">This is the single index of the saved demo files. Every component listed here has its own HTML page so it can be checked in isolation against the baseline grid. The grouped overview pages remain, but the files below are the actual per-component inspection surfaces.</p>
+<body class="bf-theme" data-bf-tone="dark">
+  <main class="bf-page bf-stack" data-space="loose">
+    <header class="bf-section bf-stack" data-space="tight">
+      <div class="bf-prose">
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas kicker">Baseline Foundry</h5>
+        <h1 data-baseline-check="flow" data-baseline-label="atlas title">Component atlas and baseline gate</h1>
+        <p data-baseline-check="flow" data-baseline-label="atlas intro">This is the single index of the saved demo files. Every component listed here has its own HTML page so it can be checked in isolation against the baseline grid. The grouped overview pages remain, but the files below are the actual per-component inspection surfaces.</p>
       </div>
-      <div class="component-demo-toolbar">
-        <label class="component-demo-toggle" for="baseline-grid-toggle">
-          <input id="baseline-grid-toggle" class="js-baseline-toggle" type="checkbox" aria-controls="component-grid-target">
+      <div data-demo-toolbar>
+        <label class="bf-body">
+          <input data-demo-baseline-toggle type="checkbox" aria-controls="component-grid-target">
           Show baseline grid
         </label>
+        <a href="../index.html">Living spec</a>
       </div>
     </header>
 
-    <section class="component-demo-stage component-atlas component-atlas--plain bf-grid-scope bf-stack" data-space="loose" id="component-grid-target" data-component-capture>
-      <section class="component-index-section bf-stack" data-space="tight">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="atlas foundations kicker">Foundations</h5>
-        <ul class="component-index-list bf-grid">
-          <li class="component-index-item bf-span-2">
-            <a href="./typography.html" data-baseline-check="flow" data-baseline-label="atlas typography link">Typography roles</a>
-            <p class="component-demo-meta">JSON-driven type roles, the three-tier scale, and the current paired-weight logic.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./prose.html" data-baseline-check="flow" data-baseline-label="atlas prose link">Prose flow</a>
-            <p class="component-demo-meta">Editorial spacing, lists, rules, blockquotes, and flow boundaries.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./layout.html" data-baseline-check="flow" data-baseline-label="atlas layout link">Layout primitives</a>
-            <p class="component-demo-meta">Page, section, strip, stack, cluster, and fixed-width primitives.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./grid.html" data-baseline-check="flow" data-baseline-label="atlas grid link">Grid primitives</a>
-            <p class="component-demo-meta">Container-query 4 / 8 / 16 grid with power-of-2 spans.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./application-shell.html" data-baseline-check="flow" data-baseline-label="atlas application shell link">Application shell</a>
-            <p class="component-demo-meta">Pinned aside, fixed-width stage, panel scaffold, and upstream resize behavior.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./application-layout.html" data-baseline-check="flow" data-baseline-label="atlas application layout link">Application layout</a>
-            <p class="component-demo-meta">Top navigation bar, collapsible left navigation, overlay inspector, and pinned summary column.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./stage-shell.html" data-baseline-check="flow" data-baseline-label="atlas stage shell link">Stage shell</a>
-            <p class="component-demo-meta">Centered main-stage shell for bounded preview areas inside the application main column.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./drawer-panel.html" data-baseline-check="flow" data-baseline-label="atlas drawer panel link">Drawer panel</a>
-            <p class="component-demo-meta">Temporary overlay inspector that sits over the stage instead of resizing it.</p>
-          </li>
+    <section class="bf-grid-scope bf-stack" data-space="loose" id="component-grid-target" data-component-capture>
+      <section class="bf-stack" data-space="tight" data-demo-index-section>
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas foundations">Foundations</h5>
+        <ul class="bf-grid" data-demo-index-list>
+          <li class="bf-span-2" data-demo-index-item><a href="./typography.html" data-demo-meta="JSON-driven type roles, the three-tier scale, and the current paired-weight logic.">Typography roles</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./prose.html" data-demo-meta="Editorial spacing, lists, rules, blockquotes, and flow boundaries.">Prose flow</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./layout.html" data-demo-meta="Page, section, strip, stack, cluster, and fixed-width primitives.">Layout primitives</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./grid.html" data-demo-meta="Container-query 4 / 8 / 16 grid with power-of-2 spans.">Grid primitives</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./application-shell.html" data-demo-meta="Pinned aside, fixed-width stage, panel scaffold, and upstream resize behavior.">Application shell</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./application-layout.html" data-demo-meta="Top navigation bar, collapsible left navigation, overlay inspector, and pinned summary column.">Application layout</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./stage-shell.html" data-demo-meta="Centered main-stage shell for bounded preview areas inside the application main column.">Stage shell</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./drawer-panel.html" data-demo-meta="Temporary overlay inspector that sits over the stage instead of resizing it.">Drawer panel</a></li>
         </ul>
       </section>
 
-      <section class="component-index-section bf-stack" data-space="tight">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="atlas form kicker">Form elements and controls</h5>
-        <ul class="component-index-list bf-grid">
-          <li class="component-index-item bf-span-2">
-            <a href="./button.html" data-baseline-check="flow" data-baseline-label="atlas button link">Button</a>
-            <p class="component-demo-meta">Primary and base dense panel buttons.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./actions.html" data-baseline-check="flow" data-baseline-label="atlas actions link">Actions</a>
-            <p class="component-demo-meta">Canonical action rows and scrollable export strips for dense panels.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./text-input.html" data-baseline-check="flow" data-baseline-label="atlas text input link">Text input</a>
-            <p class="component-demo-meta">Dense text field with label and help text.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./color-input.html" data-baseline-check="flow" data-baseline-label="atlas color input link">Color input</a>
-            <p class="component-demo-meta">Compact color-field sizing for inspector controls.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./select.html" data-baseline-check="flow" data-baseline-label="atlas select link">Select</a>
-            <p class="component-demo-meta">Dense select field with the shared bottom-border treatment.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./checkbox.html" data-baseline-check="flow" data-baseline-label="atlas checkbox link">Checkbox</a>
-            <p class="component-demo-meta">Checkbox row with dedicated glyph sizing.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./radio.html" data-baseline-check="flow" data-baseline-label="atlas radio link">Radio</a>
-            <p class="component-demo-meta">Radio row with the same dense label rhythm.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./range.html" data-baseline-check="flow" data-baseline-label="atlas range link">Range</a>
-            <p class="component-demo-meta">Slider and number-input pair.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./file-input.html" data-baseline-check="flow" data-baseline-label="atlas file input link">File input</a>
-            <p class="component-demo-meta">Dense file selector field.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./validation.html" data-baseline-check="flow" data-baseline-label="atlas validation link">Validation</a>
-            <p class="component-demo-meta">Success, caution, and error field messaging.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./switch.html" data-baseline-check="flow" data-baseline-label="atlas switch link">Switch</a>
-            <p class="component-demo-meta">Switch track, thumb, and label.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./search-box.html" data-baseline-check="flow" data-baseline-label="atlas search box link">Search box</a>
-            <p class="component-demo-meta">Dense inline search field with reset and search affordances.</p>
-          </li>
-            <li class="component-index-item bf-span-2">
-              <a href="./search-and-filter.html" data-baseline-check="flow" data-baseline-label="atlas search and filter link">Search and filter</a>
-              <p class="component-demo-meta">Expandable search/filter surface with selected count and chip groups.</p>
-            </li>
-            <li class="component-index-item bf-span-2">
-              <a href="./code-snippet.html" data-baseline-check="flow" data-baseline-label="atlas code snippet link">Code snippet</a>
-              <p class="component-demo-meta">Copyable command blocks and numbered code surfaces for dense panel and docs use.</p>
-            </li>
-            <li class="component-index-item bf-span-2">
-              <a href="./list-tree.html" data-baseline-check="flow" data-baseline-label="atlas list tree link">List tree</a>
-              <p class="component-demo-meta">Compact nested navigation tree with expandable branches.</p>
-            </li>
+      <section class="bf-stack" data-space="tight" data-demo-index-section>
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas controls">Form elements and controls</h5>
+        <ul class="bf-grid" data-demo-index-list>
+          <li class="bf-span-2" data-demo-index-item><a href="./button.html" data-demo-meta="Primary and base dense panel buttons.">Button</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./actions.html" data-demo-meta="Canonical action rows and scrollable export strips for dense panels.">Actions</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./text-input.html" data-demo-meta="Dense text field with label and help text.">Text input</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./color-input.html" data-demo-meta="Compact color-field sizing for inspector controls.">Color input</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./select.html" data-demo-meta="Dense select field with the shared bottom-border treatment.">Select</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./checkbox.html" data-demo-meta="Checkbox row with dedicated glyph sizing.">Checkbox</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./radio.html" data-demo-meta="Radio row with the same dense label rhythm.">Radio</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./range.html" data-demo-meta="Slider and number-input pair.">Range</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./file-input.html" data-demo-meta="Dense file selector field.">File input</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./validation.html" data-demo-meta="Success, caution, and error field messaging.">Validation</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./switch.html" data-demo-meta="Switch track, thumb, and label.">Switch</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./search-box.html" data-demo-meta="Dense inline search field with reset and search affordances.">Search box</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./search-and-filter.html" data-demo-meta="Expandable search/filter surface with selected count and chip groups.">Search and filter</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./code-snippet.html" data-demo-meta="Copyable command blocks and numbered code surfaces for dense panel and docs use.">Code snippet</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./list-tree.html" data-demo-meta="Compact nested navigation tree with expandable branches.">List tree</a></li>
         </ul>
       </section>
 
-      <section class="component-index-section bf-stack" data-space="tight">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="atlas data display kicker">Data display</h5>
-        <ul class="component-index-list bf-grid">
-          <li class="component-index-item bf-span-2">
-            <a href="./chip.html" data-baseline-check="flow" data-baseline-label="atlas chip link">Chip</a>
-            <p class="component-demo-meta">Dense chip variants with the real uppercase micro-label lead treatment.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./badge.html" data-baseline-check="flow" data-baseline-label="atlas badge link">Badge</a>
-            <p class="component-demo-meta">Standalone and nested badge tokens.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./status-label.html" data-baseline-check="flow" data-baseline-label="atlas status label link">Status label</a>
-            <p class="component-demo-meta">Compact semantic labels for draft, saved, caution, info, and error states.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./table.html" data-baseline-check="flow" data-baseline-label="atlas table link">Table</a>
-            <p class="component-demo-meta">Dense data table with baseline-safe headers, rows, and caption.</p>
-          </li>
+      <section class="bf-stack" data-space="tight" data-demo-index-section>
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas data display">Data display</h5>
+        <ul class="bf-grid" data-demo-index-list>
+          <li class="bf-span-2" data-demo-index-item><a href="./chip.html" data-demo-meta="Dense chip variants with the real uppercase micro-label lead treatment.">Chip</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./badge.html" data-demo-meta="Standalone and nested badge tokens.">Badge</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./status-label.html" data-demo-meta="Compact semantic labels for draft, saved, caution, info, and error states.">Status label</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./table.html" data-demo-meta="Dense data table with baseline-safe headers, rows, and caption.">Table</a></li>
         </ul>
       </section>
 
-      <section class="component-index-section bf-stack" data-space="tight">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="atlas nav kicker">Navigation and disclosure</h5>
-        <ul class="component-index-list bf-grid">
-          <li class="component-index-item bf-span-2">
-            <a href="./tabs.html" data-baseline-check="flow" data-baseline-label="atlas tabs link">Tabs</a>
-            <p class="component-demo-meta">Dense tab row and panel body.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./panel-tabs.html" data-baseline-check="flow" data-baseline-label="atlas panel tabs link">Panel tabs</a>
-            <p class="component-demo-meta">Equal-width dense tab rows for inspector panels and compact view switching.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./accordion.html" data-baseline-check="flow" data-baseline-label="atlas accordion link">Accordion</a>
-            <p class="component-demo-meta">Compact accordion rows and panel spacing.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./side-navigation.html" data-baseline-check="flow" data-baseline-label="atlas side navigation link">Side navigation</a>
-            <p class="component-demo-meta">Responsive nested side navigation for docs drawers and application asides.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./engine-smoke.html" data-baseline-check="flow" data-baseline-label="atlas engine smoke link">Baseline engine smoke</a>
-            <p class="component-demo-meta">The same app-tier inspector slice rendered under metrics and cap so both engines face the same baseline gate.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./segmented-control.html" data-baseline-check="flow" data-baseline-label="atlas segmented link">Segmented control</a>
-            <p class="component-demo-meta">Dense segmented buttons.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./breadcrumbs.html" data-baseline-check="flow" data-baseline-label="atlas breadcrumbs link">Breadcrumbs</a>
-            <p class="component-demo-meta">Compact breadcrumb trail.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./pagination.html" data-baseline-check="flow" data-baseline-label="atlas pagination link">Pagination</a>
-            <p class="component-demo-meta">Previous/next buttons, pages, and truncation.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./contextual-menu.html" data-baseline-check="flow" data-baseline-label="atlas contextual menu link">Contextual menu</a>
-            <p class="component-demo-meta">Dense dropdown action menu with grouped items.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./tooltip.html" data-baseline-check="flow" data-baseline-label="atlas tooltip link">Tooltip</a>
-            <p class="component-demo-meta">Detached tooltip surface for baseline-safe help content.</p>
-          </li>
+      <section class="bf-stack" data-space="tight" data-demo-index-section>
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas navigation">Navigation and disclosure</h5>
+        <ul class="bf-grid" data-demo-index-list>
+          <li class="bf-span-2" data-demo-index-item><a href="./tabs.html" data-demo-meta="Dense tab row and panel body.">Tabs</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./panel-tabs.html" data-demo-meta="Equal-width dense tab rows for inspector panels and compact view switching.">Panel tabs</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./accordion.html" data-demo-meta="Compact accordion rows and panel spacing.">Accordion</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./side-navigation.html" data-demo-meta="Responsive nested side navigation for docs drawers and application asides.">Side navigation</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./engine-smoke.html" data-demo-meta="The same compact inspector slice rendered under metrics and cap so both engines face the same baseline gate.">Baseline engine smoke</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./segmented-control.html" data-demo-meta="Dense segmented buttons.">Segmented control</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./breadcrumbs.html" data-demo-meta="Compact breadcrumb trail.">Breadcrumbs</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./pagination.html" data-demo-meta="Previous/next buttons, pages, and truncation.">Pagination</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./contextual-menu.html" data-demo-meta="Dense dropdown action menu with grouped items.">Contextual menu</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./tooltip.html" data-demo-meta="Detached tooltip surface for baseline-safe help content.">Tooltip</a></li>
         </ul>
       </section>
 
-      <section class="component-index-section bf-stack" data-space="tight">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="atlas surface kicker">Surfaces and overlays</h5>
-        <ul class="component-index-list bf-grid">
-          <li class="component-index-item bf-span-2">
-            <a href="./choice-row.html" data-baseline-check="flow" data-baseline-label="atlas choice row link">Choice row</a>
-            <p class="component-demo-meta">Selectable dense radio rows for presets and output targets.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./inline-options.html" data-baseline-check="flow" data-baseline-label="atlas inline options link">Inline options</a>
-            <p class="component-demo-meta">Inline radio choices for compact panel sections and operator switching.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./modal.html" data-baseline-check="flow" data-baseline-label="atlas modal link">Modal</a>
-            <p class="component-demo-meta">Dense modal header, body, and footer.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./divider.html" data-baseline-check="flow" data-baseline-label="atlas divider link">Divider</a>
-            <p class="component-demo-meta">Split surface blocks with compensated borders.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./cards.html" data-baseline-check="flow" data-baseline-label="atlas cards link">Cards</a>
-            <p class="component-demo-meta">Default, highlighted, and muted card variants.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./option-card.html" data-baseline-check="flow" data-baseline-label="atlas option card link">Option card</a>
-            <p class="component-demo-meta">Dense selectable and read-only option cards for style and mapping palettes.</p>
-          </li>
+      <section class="bf-stack" data-space="tight" data-demo-index-section>
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas surfaces">Surfaces and overlays</h5>
+        <ul class="bf-grid" data-demo-index-list>
+          <li class="bf-span-2" data-demo-index-item><a href="./choice-row.html" data-demo-meta="Selectable dense radio rows for presets and output targets.">Choice row</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./inline-options.html" data-demo-meta="Inline radio choices for compact panel sections and operator switching.">Inline options</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./modal.html" data-demo-meta="Dense modal header, body, and footer.">Modal</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./divider.html" data-demo-meta="Split surface blocks with compensated borders.">Divider</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./cards.html" data-demo-meta="Default, highlighted, and muted card variants.">Cards</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./option-card.html" data-demo-meta="Dense selectable and read-only option cards for style and mapping palettes.">Option card</a></li>
         </ul>
       </section>
 
-      <section class="component-index-section bf-stack" data-space="tight">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="atlas pressure kicker">Pressure tests and references</h5>
-        <ul class="component-index-list bf-grid">
-          <li class="component-index-item bf-span-2">
-            <a href="./panel-pressure.html" data-baseline-check="flow" data-baseline-label="atlas panel pressure link">Panel pressure test</a>
-            <p class="component-demo-meta">Dense control rhythm under realistic inspector pressure.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./narrow-panel.html" data-baseline-check="flow" data-baseline-label="atlas narrow panel link">Narrow panel regression</a>
-            <p class="component-demo-meta">Squeeze test for dense controls and media inside a deliberately narrow rail.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./parameter-matrix.html" data-baseline-check="flow" data-baseline-label="atlas parameter matrix link">Parameter matrix</a>
-            <p class="component-demo-meta">Dense multi-field inspector rows using the canonical control grid and stacked slider wrapper.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./editorial-pressure.html" data-baseline-check="flow" data-baseline-label="atlas editorial pressure link">Editorial pressure test</a>
-            <p class="component-demo-meta">Portfolio-facing long-form composition on the prose preset.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./brand-layout-ops-sample.html" data-baseline-check="flow" data-baseline-label="atlas brandops link">Brand Layout Ops sample</a>
-            <p class="component-demo-meta">Read-only downstream shell reference with the same pinned-aside resize behavior, without touching the active app repo.</p>
-          </li>
+      <section class="bf-stack" data-space="tight" data-demo-index-section>
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas pressure tests">Pressure tests and references</h5>
+        <ul class="bf-grid" data-demo-index-list>
+          <li class="bf-span-2" data-demo-index-item><a href="./panel-pressure.html" data-demo-meta="Dense control rhythm under realistic inspector pressure.">Panel pressure test</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./narrow-panel.html" data-demo-meta="Squeeze test for dense controls and media inside a deliberately narrow rail.">Narrow panel regression</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./parameter-matrix.html" data-demo-meta="Dense multi-field inspector rows using the canonical control grid and stacked slider wrapper.">Parameter matrix</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./editorial-pressure.html" data-demo-meta="Portfolio-facing long-form composition on the editorial tier.">Editorial pressure test</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./brand-layout-ops-sample.html" data-demo-meta="Read-only downstream shell reference with the same pinned-aside resize behavior, without touching the active app repo.">Brand Layout Ops sample</a></li>
         </ul>
       </section>
 
-      <section class="component-index-section bf-stack" data-space="tight">
-        <h5 class="bf-h5 component-demo-kicker" data-baseline-check="flow" data-baseline-label="atlas overview kicker">Overview pages</h5>
-        <ul class="component-index-list bf-grid">
-          <li class="component-index-item bf-span-2">
-            <a href="./controls.html" data-baseline-check="flow" data-baseline-label="atlas controls overview link">Controls overview</a>
-            <p class="component-demo-meta">Older grouped page kept as a convenience overview, not as the primary inspection unit.</p>
-          </li>
-          <li class="component-index-item bf-span-2">
-            <a href="./surfaces-navigation.html" data-baseline-check="flow" data-baseline-label="atlas surfaces overview link">Surfaces overview</a>
-            <p class="component-demo-meta">Grouped surface/navigation page kept for comparison while the per-component pages take over the baseline gate.</p>
-          </li>
+      <section class="bf-stack" data-space="tight" data-demo-index-section>
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas overview">Overview pages</h5>
+        <ul class="bf-grid" data-demo-index-list>
+          <li class="bf-span-2" data-demo-index-item><a href="./controls.html" data-demo-meta="Grouped controls page kept as a convenience overview, not the primary inspection unit.">Controls overview</a></li>
+          <li class="bf-span-2" data-demo-index-item><a href="./surfaces-navigation.html" data-demo-meta="Grouped surfaces page kept as a convenience overview, not the primary inspection unit.">Surfaces overview</a></li>
         </ul>
       </section>
     </section>
   </main>
 
-  <script type="module" src="../component-demo.js?v=20260329-panel-refresh-19"></script>
-  <script type="module" src="../component-atlas.js?v=20260329-panel-refresh-19"></script>
+  <script type="module" src="../component-atlas.js"></script>
+  <script type="module" src="../component-demo.js"></script>
 </body>
 </html>
 

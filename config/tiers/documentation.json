@@ -1,0 +1,124 @@
+{
+  "baselineUnit": 0.5,
+  "fontFiles": [
+    {
+      "family": "plex-sans",
+      "path": "../../assets/fonts/IBMPlexSansVar-Roman.woff",
+      "cssFamily": "IBM Plex Sans",
+      "fontStyle": "normal",
+      "fontWeight": "100 700",
+      "fontDisplay": "swap"
+    },
+    {
+      "family": "plex-sans-italic",
+      "path": "../../assets/fonts/IBMPlexSansVar-Italic.woff",
+      "cssFamily": "IBM Plex Sans",
+      "fontStyle": "italic",
+      "fontWeight": "100 700",
+      "fontDisplay": "swap",
+      "runtimeOnly": true
+    }
+  ],
+  "fontStacks": {
+    "plex-sans": "\"IBM Plex Sans\", \"Segoe UI\", system-ui, sans-serif"
+  },
+  "elements": [
+    {
+      "identifier": "body",
+      "fontSize": 0.9375,
+      "lineHeight": 3,
+      "spaceAfter": 2,
+      "fontFamily": "plex-sans",
+      "fontWeight": 400,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h6",
+      "fontSize": 0.9375,
+      "lineHeight": 3,
+      "spaceAfter": 2,
+      "fontFamily": "plex-sans",
+      "fontWeight": 600,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h5",
+      "fontSize": 0.9375,
+      "lineHeight": 3,
+      "spaceAfter": 2,
+      "fontFamily": "plex-sans",
+      "fontWeight": 600,
+      "fontStyle": "normal",
+      "letterSpacing": "0.07em",
+      "textTransform": "uppercase"
+    },
+    {
+      "identifier": "h4",
+      "fontSize": 1.375,
+      "lineHeight": 4,
+      "spaceAfter": 2,
+      "fontFamily": "plex-sans",
+      "fontWeight": 400,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h3",
+      "fontSize": 1.375,
+      "lineHeight": 4,
+      "spaceAfter": 2,
+      "fontFamily": "plex-sans",
+      "fontWeight": 600,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h2",
+      "fontSize": 2.25,
+      "lineHeight": 5,
+      "spaceAfter": 2,
+      "fontFamily": "plex-sans",
+      "fontWeight": 400,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h1",
+      "fontSize": 2.25,
+      "lineHeight": 5,
+      "spaceAfter": 2,
+      "fontFamily": "plex-sans",
+      "fontWeight": 600,
+      "fontStyle": "normal"
+    }
+  ],
+  "roles": {
+    "body": "body",
+    "h1": "h1",
+    "h2": "h2",
+    "h3": "h3",
+    "h4": "h4",
+    "h5": "h5",
+    "h6": "h6"
+  },
+  "layout": {
+    "contentMaxWidthRem": 96,
+    "contentPaddingInlineRem": 1.5,
+    "measureRem": 38,
+    "sectionSpaceBaselineUnits": 6,
+    "sectionSpaceDeepBaselineUnits": 12,
+    "stripSpaceBaselineUnits": 6,
+    "gridGapInlineBaselineUnits": 3,
+    "gridGapBlockBaselineUnits": 3,
+    "pageMarginBaselineUnits": 3
+  },
+  "components": {
+    "borderWidthPx": 1,
+    "radiusRem": 0,
+    "controlInlinePaddingRem": 0.875,
+    "controlVisualSizeRem": 0.875,
+    "fieldGapBaselineUnits": 1,
+    "panelPaddingInlineBaselineUnits": 2,
+    "panelPaddingBlockBaselineUnits": 2,
+    "accordionIndentBaselineUnits": 3,
+    "controlMinBlockSizeBaselineUnits": 4.5,
+    "controlMinBlockSizeDenseBaselineUnits": 4
+  }
+}

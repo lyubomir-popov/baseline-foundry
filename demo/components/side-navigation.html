@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Side Navigation Demo</title>
-  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../../dist/presets/app-tier/styles.css">
   <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body class="vr-theme" data-bf-tone="dark">
+<body class="bf-theme bf-tier-app" data-component-capture>
 <section class="bf-stack" data-space="loose" data-baseline-ignore="true" style="padding:calc(var(--bf-baseline) * 4)">
  <section class="bf-stack" data-baseline-check="box" data-baseline-label="side navigation docs section">
  <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="side navigation docs kicker">Documentation drawer</h5>
@@ -64,7 +64,7 @@
  </main>
  <aside id="component-side-navigation-aside" class="bf-aside is-pinned is-small" data-baseline-ignore="true">
  <div class="bf-application-aside-resize-handle" role="separator" tabindex="0" aria-controls="component-side-navigation-aside" aria-label="Resize panel" aria-orientation="vertical" data-baseline-ignore="true"></div>
- <nav class="bf-side-navigation" aria-label="Application navigation" data-baseline-ignore="true" style="padding-block:var(--vr-panel-padding-block)">
+ <nav class="bf-side-navigation" aria-label="Application navigation" data-baseline-ignore="true" style="padding-block:var(--bf-panel-padding-block)">
  <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="side navigation app list one">
  <li class="bf-side-navigation-item is-title" data-baseline-check="box" data-baseline-label="side navigation app title"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Workspace</span></a></li>
  <li class="bf-side-navigation-item has-active-child" data-baseline-check="box" data-baseline-label="side navigation app item one"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Machines</span></a>
@@ -74,12 +74,12 @@
  <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app nested item three"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Deployment</span><span class="bf-side-navigation-status"><span class="bf-status-label is-caution">3</span></span></a></li>
  </ul>
  </li>
- <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app item two"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Networking</span></a></li>
- <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app item three"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Users</span><span class="bf-side-navigation-status"><span class="bf-chip is-information">Beta</span></span></a></li>
+ <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Networking</span></a></li>
+ <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Users</span><span class="bf-side-navigation-status"><span class="bf-chip is-information">Beta</span></span></a></li>
  </ul>
- <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="side navigation app list two">
- <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app item four"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Feedback</span></a></li>
- <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app item five"><span class="bf-side-navigation-text"><span class="bf-side-navigation-label">Version 0.4.0</span><span class="bf-side-navigation-status"><span class="bf-chip is-caution">Beta</span></span></span></li>
+ <ul class="bf-side-navigation-list">
+ <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Feedback</span></a></li>
+ <li class="bf-side-navigation-item"><span class="bf-side-navigation-text"><span class="bf-side-navigation-label">Version 0.4.0</span><span class="bf-side-navigation-status"><span class="bf-chip is-caution">Beta</span></span></span></li>
  </ul>
  </nav>
  </aside>

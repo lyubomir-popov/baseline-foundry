@@ -1,9 +1,32 @@
-import { buildThemeFromConfig, buildThemeFromPreset } from "../src/build.ts";
-import { presetDescriptions, presetNames } from "../src/presets.ts";
+import { buildThemeFromConfig, buildThemeFromPreset, buildThemeFromTier } from "../src/build.ts";
+import { isPresetName, isTierName, presetDescriptions, presetNames, tierDescriptions, tierNames } from "../src/presets.ts";
 import type { PresetName } from "../src/presets.ts";
+import type { TierName } from "../src/presets.ts";
 
 async function main(): Promise<void> {
   const arg = process.argv[2];
+
+  if (arg === "--list-tiers") {
+    console.log("Available tiers:");
+    for (const name of tierNames) {
+      console.log(`  ${name} - ${tierDescriptions[name]}`);
+    }
+    return;
+  }
+
+  if (arg && arg.startsWith("--tier=")) {
+    const tier = arg.replace("--tier=", "");
+    if (!isTierName(tier)) {
+      console.error(`Unknown tier "${tier}". Use --list-tiers to see available tiers.`);
+      process.exit(1);
+    }
+
+    const result = await buildThemeFromTier(tier as TierName);
+    console.log(`Generated theme tier "${tier}"`);
+    console.log(`  tokens: ${result.tokensPath}`);
+    console.log(`  css:    ${result.cssPath}`);
+    return;
+  }
 
   if (arg === "--list-presets") {
     console.log("Available presets:");
@@ -14,13 +37,13 @@ async function main(): Promise<void> {
   }
 
   if (arg && arg.startsWith("--preset=")) {
-    const preset = arg.replace("--preset=", "") as PresetName;
-    if (!presetNames.includes(preset)) {
+    const preset = arg.replace("--preset=", "");
+    if (!isPresetName(preset)) {
       console.error(`Unknown preset "${preset}". Use --list-presets to see available presets.`);
       process.exit(1);
     }
 
-    const result = await buildThemeFromPreset(preset);
+    const result = await buildThemeFromPreset(preset as PresetName);
     console.log(`Generated theme preset "${preset}"`);
     console.log(`  tokens: ${result.tokensPath}`);
     console.log(`  css:    ${result.cssPath}`);
@@ -33,6 +56,13 @@ async function main(): Promise<void> {
 
   if (arg) {
     return;
+  }
+
+  for (const tier of tierNames) {
+    const tierResult = await buildThemeFromTier(tier);
+    console.log(`Generated tier "${tier}"`);
+    console.log(`  tokens: ${tierResult.tokensPath}`);
+    console.log(`  css:    ${tierResult.cssPath}`);
   }
 
   for (const preset of presetNames) {

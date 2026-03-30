@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en" data-spec-root="..">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baseline Foundry Controls</title>
+  <link id="spec-tier-stylesheet" rel="stylesheet" href="../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="./spec-shell.css">
+  <link rel="stylesheet" href="./controls-shell.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-spec-shell data-spec-home id="controls-grid-target">
+    <header data-spec-home-header>
+      <div data-spec-toolbar>
+        <div data-spec-switches>
+          <label class="bf-switch" data-spec-switch>
+            <input class="bf-switch-input" data-spec-tone-toggle type="checkbox">
+            <span class="bf-switch-slider" aria-hidden="true"></span>
+            <span class="bf-switch-label">Dark theme</span>
+          </label>
+
+          <label class="bf-switch" data-spec-switch>
+            <input class="bf-switch-input" data-spec-baseline-toggle type="checkbox" aria-controls="controls-grid-target">
+            <span class="bf-switch-slider" aria-hidden="true"></span>
+            <span class="bf-switch-label">Baseline grid</span>
+          </label>
+        </div>
+
+        <div class="bf-field" data-spec-tier-field>
+          <label class="bf-form-label" for="controls-tier-select">Tier</label>
+          <div class="bf-control">
+            <select id="controls-tier-select" data-spec-tier-select>
+              <option value="editorial">Editorial</option>
+              <option value="app">App</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="bf-prose" data-spec-section-heading>
+        <h1>Controls</h1>
+        <p>One large page of inputs, toggles, navigation, and dense panel-side recipes under the same theme, baseline-grid, and tier switches.</p>
+      </div>
+
+      <div data-spec-links>
+        <a href="./index.html">Spec home</a>
+        <a href="./controls.html" aria-current="page">Controls</a>
+        <a href="./components/index.html">Atlas</a>
+      </div>
+    </header>
+
+    <section class="bf-section" data-spec-section>
+      <div class="bf-prose" data-spec-section-heading>
+        <h2>Core fields</h2>
+        <p>Dense text entry, search, selection, file and color inputs, range pairs, and validation states.</p>
+      </div>
+
+      <div data-controls-panels>
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Text and search</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <div class="bf-field">
+                <label class="bf-form-label" for="controls-title">Title</label>
+                <div class="bf-control">
+                  <input id="controls-title" class="bf-input is-dense" type="text" value="Ubuntu Summit">
+                </div>
+                <p class="bf-form-help">Compact control rows still leave one full baseline unit of breathing room.</p>
+              </div>
+
+              <div class="bf-field">
+                <label class="bf-form-label" for="controls-alias">Document alias</label>
+                <div class="bf-control">
+                  <input id="controls-alias" class="bf-input is-dense" type="text" value="summit-lockup-title">
+                </div>
+                <p class="bf-form-help is-tight">Tight helper text stays in the package token model.</p>
+              </div>
+
+              <div class="bf-field">
+                <label class="bf-form-label" for="controls-profile">Output profile</label>
+                <div class="bf-control">
+                  <select id="controls-profile">
+                    <option>Landscape 1280x720</option>
+                    <option>Square 1080x1080</option>
+                    <option>Portrait 1080x1920</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="bf-search-box">
+                <input class="bf-search-box-input bf-input" type="search" value="Ubuntu Summit">
+                <button class="bf-search-box-reset" type="button">Reset</button>
+                <button class="bf-search-box-button" type="button">Search</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Color, file, and range</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <div data-controls-color-grid>
+                <div class="bf-field">
+                  <label class="bf-form-label" for="controls-primary-color">Primary</label>
+                  <div class="bf-control">
+                    <input id="controls-primary-color" class="bf-color-input" type="color" value="#0066cc">
+                  </div>
+                </div>
+
+                <div class="bf-field">
+                  <label class="bf-form-label" for="controls-accent-color">Accent</label>
+                  <div class="bf-control">
+                    <input id="controls-accent-color" class="bf-color-input" type="color" value="#6699cc">
+                  </div>
+                </div>
+              </div>
+
+              <div class="bf-field">
+                <label class="bf-form-label" for="controls-source-asset">Source asset</label>
+                <div class="bf-control">
+                  <input id="controls-source-asset" type="file">
+                </div>
+                <p class="bf-form-help">The selector button and field row stay on the same dense token set.</p>
+              </div>
+
+              <div class="bf-field">
+                <label class="bf-form-label" for="controls-opacity">Halo opacity</label>
+                <div class="bf-control">
+                  <div class="bf-slider is-stacked">
+                    <input id="controls-opacity" type="range" min="0" max="100" value="64">
+                    <input class="bf-slider-input" type="number" min="0" max="100" value="64">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Validation and filtering</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <div class="bf-field is-success">
+                <label class="bf-form-label" for="controls-success">Slug</label>
+                <div class="bf-control">
+                  <input id="controls-success" class="bf-input is-dense" type="text" value="ubuntu-summit-lockup">
+                </div>
+                <p class="bf-validation-message">Saved and synced to export defaults.</p>
+              </div>
+
+              <div class="bf-field is-caution">
+                <label class="bf-form-label" for="controls-caution">Title width</label>
+                <div class="bf-control">
+                  <input id="controls-caution" class="bf-input is-dense" type="text" value="Needs review">
+                </div>
+                <p class="bf-validation-message">The longest preset may wrap at narrow widths.</p>
+              </div>
+
+              <div class="bf-field is-error">
+                <label class="bf-form-label" for="controls-error">Export path</label>
+                <div class="bf-control">
+                  <input id="controls-error" class="bf-input is-dense" type="text" placeholder="Choose a path">
+                </div>
+                <p class="bf-validation-message">A writable export destination is required.</p>
+              </div>
+
+              <div class="bf-search-and-filter">
+                <div class="bf-search-and-filter-search-container" aria-expanded="true">
+                  <div class="bf-search-and-filter-box">
+                    <input class="bf-search-and-filter-input bf-input" type="search" value="Ubuntu">
+                    <button class="bf-search-and-filter-clear" type="button">Clear</button>
+                    <button class="bf-search-and-filter-search-button" type="button">Search</button>
+                  </div>
+                  <button class="bf-search-and-filter-selected-count" type="button">6 selected</button>
+                </div>
+                <div class="bf-search-and-filter-panel" aria-hidden="false">
+                  <section class="bf-filter-panel-section">
+                    <h5 class="bf-filter-panel-section-heading">Format</h5>
+                    <div class="bf-filter-panel-section-chips" aria-expanded="true">
+                      <button class="bf-chip is-inline" type="button">Landscape</button>
+                      <button class="bf-chip is-inline" type="button">Square</button>
+                      <button class="bf-chip is-information is-inline" type="button">Portrait</button>
+                    </div>
+                  </section>
+                  <section class="bf-filter-panel-section">
+                    <h5 class="bf-filter-panel-section-heading">Status</h5>
+                    <div class="bf-filter-panel-section-chips" aria-expanded="true">
+                      <button class="bf-chip is-positive is-inline" type="button">Saved</button>
+                      <button class="bf-chip is-caution is-inline" type="button">Review</button>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="bf-section" data-spec-section>
+      <div class="bf-prose" data-spec-section-heading>
+        <h2>Choice and toggles</h2>
+        <p>Boolean controls, explicit option picking, segmented rows, action groups, and inline status controls.</p>
+      </div>
+
+      <div data-controls-panels>
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Checkboxes, radios, and switch</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <div class="bf-field is-checkbox">
+                <div class="bf-control">
+                  <div class="bf-checkbox">
+                    <input id="controls-checkbox" class="bf-checkbox-input" type="checkbox" checked>
+                    <label class="bf-checkbox-label" for="controls-checkbox">Show safe area guides</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bf-field is-radio">
+                <div class="bf-control">
+                  <div class="bf-radio">
+                    <input id="controls-radio" class="bf-radio-input" name="controls-output-mode" type="radio" checked>
+                    <label class="bf-radio-label" for="controls-radio">Keep linked sizing</label>
+                  </div>
+                </div>
+              </div>
+
+              <label class="bf-switch">
+                <input class="bf-switch-input" type="checkbox" checked>
+                <span class="bf-switch-slider" aria-hidden="true"></span>
+                <span class="bf-switch-label">Enable export safe area guides</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Choice rows and inline options</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <div class="bf-choice-list">
+                <label class="bf-choice-row">
+                  <input type="radio" name="controls-choice-row" checked>
+                  <span class="bf-choice-row-name">Landscape 1280x720</span>
+                  <span class="bf-choice-row-meta">Active</span>
+                </label>
+                <label class="bf-choice-row">
+                  <input type="radio" name="controls-choice-row">
+                  <span class="bf-choice-row-name">Portrait 1080x1920</span>
+                  <span class="bf-choice-row-meta">Secondary</span>
+                </label>
+                <label class="bf-choice-row">
+                  <input type="radio" name="controls-choice-row">
+                  <span class="bf-choice-row-name">Square 1080x1080</span>
+                  <span class="bf-choice-row-meta">Available</span>
+                </label>
+              </div>
+
+              <div class="bf-inline-options">
+                <div class="bf-inline-options-heading">Background operator</div>
+                <div class="bf-inline-options-options">
+                  <label class="bf-inline-options-option">
+                    <input type="radio" name="controls-inline-options" checked>
+                    <span>Halo</span>
+                  </label>
+                  <label class="bf-inline-options-option">
+                    <input type="radio" name="controls-inline-options">
+                    <span>Rays</span>
+                  </label>
+                  <label class="bf-inline-options-option">
+                    <input type="radio" name="controls-inline-options">
+                    <span>Field</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Segmented rows, actions, and status</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <div class="bf-segmented-control is-dense">
+                <ul class="bf-segmented-control-list">
+                  <li class="bf-segmented-control-item"><button class="bf-segmented-control-button is-active" type="button" aria-pressed="true">Frame</button></li>
+                  <li class="bf-segmented-control-item"><button class="bf-segmented-control-button" type="button" aria-pressed="false">Text</button></li>
+                  <li class="bf-segmented-control-item"><button class="bf-segmented-control-button" type="button" aria-pressed="false">Export</button></li>
+                </ul>
+              </div>
+
+              <div class="bf-actions">
+                <button class="bf-button is-base is-dense" type="button">Cancel</button>
+                <button class="bf-button is-dense" type="button">Apply</button>
+              </div>
+
+              <div class="bf-actions is-nowrap">
+                <button class="bf-button is-base is-dense" type="button">PNG</button>
+                <button class="bf-button is-base is-dense" type="button">SVG</button>
+                <button class="bf-button is-base is-dense" type="button">GIF</button>
+                <button class="bf-button is-base is-dense" type="button">MP4</button>
+                <button class="bf-button is-dense" type="button">Export all</button>
+              </div>
+
+              <div class="bf-cluster">
+                <button class="bf-chip" type="button">
+                  <span class="bf-chip-lead">Mode</span>
+                  <span class="bf-chip-value">Frame</span>
+                </button>
+                <button class="bf-chip is-positive" type="button">Saved</button>
+                <button class="bf-chip is-caution" type="button">Review</button>
+                <button class="bf-chip is-negative" type="button">Error</button>
+              </div>
+
+              <div class="bf-cluster">
+                <span class="bf-badge">3</span>
+                <span class="bf-badge is-negative">9</span>
+                <span class="bf-status-label">Draft</span>
+                <span class="bf-status-label is-positive">Saved</span>
+                <span class="bf-status-label is-caution">Review</span>
+                <span class="bf-status-label is-information">Linked</span>
+                <span class="bf-status-label is-negative">Error</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="bf-section" data-spec-section>
+      <div class="bf-prose" data-spec-section-heading>
+        <h2>Navigation and disclosure</h2>
+        <p>Tabs, accordion, breadcrumbs, pagination, contextual menus, tooltips, and modal framing on the same page.</p>
+      </div>
+
+      <div data-controls-panels>
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Tabs and accordion</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <div class="bf-tabs">
+                <ul class="bf-tabs-list" role="tablist">
+                  <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="controls-tab-panel-1">Document</button></li>
+                  <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="controls-tab-panel-2" tabindex="-1">Export</button></li>
+                </ul>
+                <div id="controls-tab-panel-1" class="bf-tabs-panel" role="tabpanel" aria-hidden="false">
+                  <p class="bf-body">Document-scoped controls can sit on the same dense baseline model as the rest of the inspector.</p>
+                </div>
+                <div id="controls-tab-panel-2" class="bf-tabs-panel" role="tabpanel" aria-hidden="true">
+                  <p class="bf-body">Hidden export panel.</p>
+                </div>
+              </div>
+
+              <div class="bf-tabs bf-tabs is-equal">
+                <ul class="bf-tabs-list" role="tablist">
+                  <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="controls-equal-tabs-1">Document</button></li>
+                  <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="controls-equal-tabs-2" tabindex="-1">Output</button></li>
+                  <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="controls-equal-tabs-3" tabindex="-1">Export</button></li>
+                </ul>
+                <div id="controls-equal-tabs-1" class="bf-tabs-panel" role="tabpanel" aria-hidden="false">
+                  <p class="bf-body">Equal-width dense tabs share the same row without local layout glue.</p>
+                </div>
+                <div id="controls-equal-tabs-2" class="bf-tabs-panel" role="tabpanel" aria-hidden="true">
+                  <p class="bf-body">Hidden output tab.</p>
+                </div>
+                <div id="controls-equal-tabs-3" class="bf-tabs-panel" role="tabpanel" aria-hidden="true">
+                  <p class="bf-body">Hidden export tab.</p>
+                </div>
+              </div>
+
+              <div class="bf-accordion">
+                <ul class="bf-accordion-list">
+                  <li class="bf-accordion-group">
+                    <div class="bf-accordion-heading">
+                      <button class="bf-accordion-tab" type="button" aria-expanded="true" aria-controls="controls-accordion-1">Playback</button>
+                    </div>
+                    <div id="controls-accordion-1" class="bf-accordion-panel" aria-hidden="false">
+                      <p class="bf-body">Accordion tabs intentionally stay at body size rather than turning into fake headings.</p>
+                    </div>
+                  </li>
+                  <li class="bf-accordion-group">
+                    <div class="bf-accordion-heading">
+                      <button class="bf-accordion-tab" type="button" aria-expanded="false" aria-controls="controls-accordion-2">Defaults</button>
+                    </div>
+                    <div id="controls-accordion-2" class="bf-accordion-panel" aria-hidden="true">
+                      <p class="bf-body">Hidden accordion content.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Breadcrumbs and pagination</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <nav class="bf-breadcrumbs" aria-label="Breadcrumb">
+                <ol class="bf-breadcrumbs-items">
+                  <li class="bf-breadcrumbs-item"><a href="#">Workspace</a></li>
+                  <li class="bf-breadcrumbs-item"><a href="#">Layouts</a></li>
+                  <li class="bf-breadcrumbs-item"><span aria-current="page">Brand Ops</span></li>
+                </ol>
+              </nav>
+
+              <nav class="bf-pagination" aria-label="Pagination">
+                <ul class="bf-pagination-items">
+                  <li class="bf-pagination-item"><a class="bf-pagination-link is-previous" href="#" aria-label="Previous page">Previous</a></li>
+                  <li class="bf-pagination-item"><a class="bf-pagination-link" href="#">1</a></li>
+                  <li class="bf-pagination-item"><a class="bf-pagination-link" href="#" aria-current="page">2</a></li>
+                  <li class="bf-pagination-item"><span class="bf-pagination-item is-truncation">...</span></li>
+                  <li class="bf-pagination-item"><a class="bf-pagination-link" href="#">8</a></li>
+                  <li class="bf-pagination-item"><a class="bf-pagination-link is-next" href="#" aria-label="Next page">Next</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </section>
+
+        <section data-controls-panel>
+          <div class="bf-panel">
+            <div class="bf-panel-header">
+              <h3 class="bf-panel-title">Menus, tooltips, and modal framing</h3>
+            </div>
+            <div class="bf-panel-content" data-controls-stack>
+              <div class="bf-contextual-menu" data-controls-menu-panel>
+                <button class="bf-button is-base is-dense bf-contextual-menu-toggle" type="button" aria-expanded="true">Actions</button>
+                <ul class="bf-contextual-menu-dropdown" aria-hidden="false">
+                  <li class="bf-contextual-menu-group">
+                    <button class="bf-contextual-menu-link" type="button">Duplicate layout</button>
+                    <button class="bf-contextual-menu-link" type="button">Create variant</button>
+                  </li>
+                  <li class="bf-contextual-menu-group">
+                    <button class="bf-contextual-menu-link" type="button">Archive preset</button>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="bf-tooltip is-detached">
+                <button class="bf-button is-base is-dense" type="button">Aspect ratio help</button>
+                <p class="bf-tooltip-message" aria-hidden="false">Ratios lock the stage while export presets inherit the final canvas size.</p>
+              </div>
+
+              <div data-controls-modal>
+                <div class="bf-modal-dialog">
+                  <div class="bf-modal-header">
+                    <h2 class="bf-modal-title">Export PNG Sequence</h2>
+                    <button class="bf-modal-close" type="button">Close</button>
+                  </div>
+                  <div class="bf-modal-body">
+                    <p class="bf-form-help">The export dialog shares the same spacing and field rhythm as the rest of the package.</p>
+                  </div>
+                  <div class="bf-modal-footer">
+                    <button class="bf-button is-base" type="button">Cancel</button>
+                    <button class="bf-button" type="button">Export</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./controls-page.js"></script>
+</body>
+</html>

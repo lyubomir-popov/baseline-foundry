@@ -36,9 +36,9 @@ async function computeCaptureClip(
       ignoredSelectors.push(
         ".bf-stack",
         ".bf-cluster",
-        ".p-form__group",
-        ".p-form__control",
-        ".p-slider__wrapper"
+        ".bf-field",
+        ".bf-control",
+        ".bf-slider"
       );
     }
 

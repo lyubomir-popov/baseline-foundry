@@ -4,7 +4,7 @@ export interface CodeSnippetInitOptions {
   copiedDurationMs?: number;
 }
 
-const COPY_SELECTOR = ".vr-code-snippet__block--icon, .p-code-snippet__block--icon, .bf-code-snippet-block.is-icon";
+const COPY_SELECTOR = ".bf-code-snippet-block.is-icon";
 
 function getCopyBlock(target: EventTarget | null): HTMLElement | null {
   if (!(target instanceof Element)) {

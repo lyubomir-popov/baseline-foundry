@@ -121,14 +121,14 @@ function getWidthBounds(application: HTMLElement, aside: HTMLElement, handle: HT
     ?? application.dataset.asideResizeMax;
   const minValue = minFromDataset
     ?? computedStyle.getPropertyValue("--bf-app-aside-width-min")
-    ?? computedStyle.getPropertyValue("--vr-application-aside-width-min")
+    ?? computedStyle.getPropertyValue("--bf-application-aside-width-min")
     ?? computedStyle.getPropertyValue("--bf-app-drawer-width-small")
-    ?? computedStyle.getPropertyValue("--vr-application-drawer-width-small");
+    ?? computedStyle.getPropertyValue("--bf-application-drawer-width-small");
   const maxValue = maxFromDataset
     ?? computedStyle.getPropertyValue("--bf-app-aside-width-max")
-    ?? computedStyle.getPropertyValue("--vr-application-aside-width-max")
+    ?? computedStyle.getPropertyValue("--bf-application-aside-width-max")
     ?? computedStyle.getPropertyValue("--bf-app-drawer-width-medium-max")
-    ?? computedStyle.getPropertyValue("--vr-application-drawer-width-medium-max");
+    ?? computedStyle.getPropertyValue("--bf-application-drawer-width-medium-max");
   const minPx = resolveCssLengthPx(application, minValue, 240);
   const maxPx = resolveCssLengthPx(application, maxValue, 640);
 
@@ -148,7 +148,7 @@ function getCurrentWidthPx(application: HTMLElement, aside: HTMLElement): number
   return resolveCssLengthPx(
     application,
     computedStyle.getPropertyValue("--bf-app-aside-width")
-      || computedStyle.getPropertyValue("--vr-application-aside-width"),
+      || computedStyle.getPropertyValue("--bf-application-aside-width"),
     465
   );
 }
@@ -239,7 +239,7 @@ function applyWidth(application: HTMLElement, aside: HTMLElement, handle: HTMLEl
   const nextWidthPx = clamp(widthPx, minPx, maxPx);
 
   application.style.setProperty("--bf-app-aside-width", `${nextWidthPx}px`);
-  application.style.setProperty("--vr-application-aside-width", `${nextWidthPx}px`);
+  application.style.setProperty("--bf-application-aside-width", `${nextWidthPx}px`);
   updateHandleA11y(application, aside, handle, nextWidthPx);
 
   if (persist) {
@@ -252,7 +252,7 @@ function applyWidth(application: HTMLElement, aside: HTMLElement, handle: HTMLEl
 function resetWidth(application: HTMLElement, aside: HTMLElement, handle: HTMLElement, storageKey: string | null): void {
   clearPersistedWidth(storageKey);
   application.style.removeProperty("--bf-app-aside-width");
-  application.style.removeProperty("--vr-application-aside-width");
+  application.style.removeProperty("--bf-application-aside-width");
   updateHandleA11y(application, aside, handle);
 }
 
