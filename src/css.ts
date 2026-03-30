@@ -3,7 +3,7 @@ import { compatCss } from "./css-compat.js";
 import type { ThemeFontFile, ThemeTokens, TypographyToken } from "./types.js";
 
 function alignmentVars(token: TypographyToken): string {
-  return `  --bf-space-after-sem-editorial: calc(${token.spaceAfter} - var(--bf-baseline));\n  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);\n  --bf-computed-line-height: ${token.lineHeight};\n  --bf-metrics-start-nudge: ${token.nudgeTop};\n  --bf-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-cap-baseline-position: calc((var(--bf-computed-line-height) + 1cap) / 2);\n  --bf-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-cap-baseline-position), var(--bf-baseline)));\n  --bf-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-cap-start-nudge));\n  --bf-selected-start-nudge: var(--bf-cap-start-nudge);\n  --bf-selected-end-nudge: var(--bf-cap-end-nudge);\n`;
+  return `  --bf-space-after-sem-editorial: calc(${token.spaceAfter} - var(--bf-baseline));\n  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);\n  --bf-computed-line-height: ${token.lineHeight};\n  --bf-metrics-start-nudge: ${token.nudgeTop};\n  --bf-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-cap-baseline-position: calc((var(--bf-computed-line-height) + 1cap) / 2);\n  --bf-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-cap-baseline-position), var(--bf-baseline)));\n  --bf-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-cap-start-nudge));\n  --bf-selected-start-nudge: var(--bf-metrics-start-nudge);\n  --bf-selected-end-nudge: var(--bf-metrics-end-nudge);\n`;
 }
 
 function fontFormat(path: string): string {
@@ -95,10 +95,10 @@ export function generateFoundryCss(tokens: ThemeTokens): string {
     .map(([roleName, token]) => textRule(selectorsForRole(roleName), token, EXTRA_STYLES_BY_ROLE[roleName] ?? ""))
     .join("\n");
 
-  const metricsEngineOverride = scopedOverrideRule(
-    ".bf-engine-metrics",
+  const capEngineOverride = scopedOverrideRule(
+    ".bf-engine-cap",
     tokens.roles,
-    "  --bf-selected-start-nudge: var(--bf-metrics-start-nudge);\n  --bf-selected-end-nudge: var(--bf-metrics-end-nudge);\n"
+    "  --bf-selected-start-nudge: var(--bf-cap-start-nudge);\n  --bf-selected-end-nudge: var(--bf-cap-end-nudge);\n"
   );
 
   const appTierOverride = scopedOverrideRule(
@@ -309,7 +309,7 @@ html.u-baseline-grid::after {
 
 ${roleRules}
 
-${metricsEngineOverride}
+${capEngineOverride}
 ${appTierOverride}
 :where(.bf-theme, .vr-theme) :where(.bf-prose ul, .bf-prose ol) {
   --bf-space-after-sem-editorial: calc(${body.spaceAfter} - var(--bf-baseline));

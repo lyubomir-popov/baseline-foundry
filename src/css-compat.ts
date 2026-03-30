@@ -18,7 +18,7 @@ function typeStyles(token: TypographyToken, options: {
 }
 
 function roleAlignmentVars(roleName: string, token: TypographyToken): string {
-  return `  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-metrics-start-nudge: ${token.nudgeTop};\n  --bf-${roleName}-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-${roleName}-cap-baseline-position: calc((var(--bf-${roleName}-line-height) + 1cap) / 2);\n  --bf-${roleName}-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-${roleName}-cap-baseline-position), var(--bf-baseline)));\n  --bf-${roleName}-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-${roleName}-cap-start-nudge));\n  --bf-${roleName}-selected-start-nudge: var(--bf-${roleName}-cap-start-nudge);\n  --bf-${roleName}-selected-end-nudge: var(--bf-${roleName}-cap-end-nudge);\n`;
+  return `  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-metrics-start-nudge: ${token.nudgeTop};\n  --bf-${roleName}-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-${roleName}-cap-baseline-position: calc((var(--bf-${roleName}-line-height) + 1cap) / 2);\n  --bf-${roleName}-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-${roleName}-cap-baseline-position), var(--bf-baseline)));\n  --bf-${roleName}-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-${roleName}-cap-start-nudge));\n  --bf-${roleName}-selected-start-nudge: var(--bf-${roleName}-metrics-start-nudge);\n  --bf-${roleName}-selected-end-nudge: var(--bf-${roleName}-metrics-end-nudge);\n`;
 }
 
 function roleLineHeightVar(roleName: string): string {
@@ -147,15 +147,15 @@ ${roleAlignmentVars("body", body)}${roleAlignmentVars("h4", h4)}${roleAlignmentV
   color: var(--vr-color-text-default);
 }
 
-:where(.bf-theme.bf-engine-metrics, .vr-theme.bf-engine-metrics) {
-  --bf-body-selected-start-nudge: var(--bf-body-metrics-start-nudge);
-  --bf-body-selected-end-nudge: var(--bf-body-metrics-end-nudge);
-  --bf-h4-selected-start-nudge: var(--bf-h4-metrics-start-nudge);
-  --bf-h4-selected-end-nudge: var(--bf-h4-metrics-end-nudge);
-  --bf-h5-selected-start-nudge: var(--bf-h5-metrics-start-nudge);
-  --bf-h5-selected-end-nudge: var(--bf-h5-metrics-end-nudge);
-  --bf-h6-selected-start-nudge: var(--bf-h6-metrics-start-nudge);
-  --bf-h6-selected-end-nudge: var(--bf-h6-metrics-end-nudge);
+:where(.bf-theme.bf-engine-cap, .vr-theme.bf-engine-cap) {
+  --bf-body-selected-start-nudge: var(--bf-body-cap-start-nudge);
+  --bf-body-selected-end-nudge: var(--bf-body-cap-end-nudge);
+  --bf-h4-selected-start-nudge: var(--bf-h4-cap-start-nudge);
+  --bf-h4-selected-end-nudge: var(--bf-h4-cap-end-nudge);
+  --bf-h5-selected-start-nudge: var(--bf-h5-cap-start-nudge);
+  --bf-h5-selected-end-nudge: var(--bf-h5-cap-end-nudge);
+  --bf-h6-selected-start-nudge: var(--bf-h6-cap-start-nudge);
+  --bf-h6-selected-end-nudge: var(--bf-h6-cap-end-nudge);
 }
 
 :where(.vr-theme.is-dark),
