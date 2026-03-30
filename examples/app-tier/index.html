@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>App Tier Examples – Baseline Foundry</title>
+  <link rel="stylesheet" href="dist/styles.css">
+  <link rel="stylesheet" href="app-tier.css">
+  <style>
+    body {
+      margin: 0;
+      background: var(--bf-color-bg);
+      color: var(--bf-color-text);
+    }
+    .index-wrapper {
+      max-width: 50rem;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .index-wrapper h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      line-height: 2rem;
+      margin-block-end: 0.5rem;
+    }
+    .index-wrapper p {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      margin-block-end: 1rem;
+    }
+    .index-wrapper ul {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .index-wrapper a {
+      color: #06c;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+    .index-wrapper a:hover { text-decoration: underline; }
+    .spec-note {
+      border: 1px solid var(--bf-color-rule);
+      padding: 1rem;
+      margin-block-end: 1.5rem;
+      font-size: 0.75rem;
+      line-height: 1.125rem;
+    }
+    .spec-note dt { font-weight: 600; margin-block-end: 0.125rem; }
+    .spec-note dd { margin: 0 0 0.5rem; }
+  </style>
+</head>
+<body class="bf-theme bf-tier-app">
+  <div class="index-wrapper">
+    <h1>App Tier Examples</h1>
+    <p>
+      Standalone examples using the application-tier model from the
+      grid spec (v0.2) and spacing spec (v0.4), with the
+      <code>docs-typescale</code> app-tier font settings (Ubuntu Sans).
+    </p>
+
+    <dl class="spec-note">
+      <dt>Typography</dt>
+      <dd>Ubuntu Sans · body 0.875rem/1.25rem · headings per docs-typescale/config/typography-config-apps.json</dd>
+
+      <dt>Spacing model</dt>
+      <dd>Container-owned (spacing spec §2.4) · zero nudges (§2.6.3) · gap-based vertical rhythm</dd>
+
+      <dt>Grid</dt>
+      <dd>Container-based · 4/8/16 columns · power-of-2 spans · 1.5rem app gutters at large (grid spec §2.3)</dd>
+
+      <dt>Layout pattern</dt>
+      <dd>8-col grid · heading span-2 (left) · form span-4 (middle) · 2 cols empty (right)</dd>
+    </dl>
+
+    <h2 style="font-size: 1.125rem; font-weight: 600; line-height: 1.5rem; margin-block-end: 0.5rem;">Pages</h2>
+    <ul>
+      <li><a href="settings.html">Settings page</a> — MAAS network, commissioning, DNS, NTP, proxy settings</li>
+      <li><a href="machine-config.html">Machine configuration</a> — Add machine form with two-column inner fields</li>
+      <li><a href="subnets.html">Subnets</a> — List table, status indicators, subnet detail form</li>
+      <li><a href="machines.html">Machines</a> — Dashboard cards with nested density, machine list table</li>
+      <li><a href="users.html">Users</a> — User table, add user form, notification banners</li>
+    </ul>
+  </div>
+</body>
+</html>

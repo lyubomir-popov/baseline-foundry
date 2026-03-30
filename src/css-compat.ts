@@ -1981,6 +1981,313 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   transform: rotate(0deg);
 }
 
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation, .p-side-navigation--icons, .p-side-navigation--accordion, .p-side-navigation--raw-html, .bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
+  color: var(--vr-color-text-inactive);
+  display: block;
+  inline-size: 100%;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__drawer, .bf-side-navigation-drawer) {
+  background: var(--vr-color-background-default);
+  bottom: 0;
+  color: var(--vr-color-text-default);
+  inline-size: 100%;
+  left: 0;
+  overflow: auto;
+  position: fixed;
+  top: 0;
+  transform: translateX(-100%);
+  transition: transform 160ms ease, visibility 160ms ease, box-shadow 160ms ease;
+  visibility: visible;
+  z-index: 102;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation, .p-side-navigation--icons, .p-side-navigation--accordion, .p-side-navigation--raw-html, .bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-expanded) :where(.p-side-navigation__drawer, .bf-side-navigation-drawer) {
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38);
+  transform: translateX(0);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation, .p-side-navigation--icons, .p-side-navigation--accordion, .p-side-navigation--raw-html, .bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-hidden) :where(.p-side-navigation__drawer, .bf-side-navigation-drawer) {
+  display: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__overlay, .bf-side-navigation-overlay) {
+  background: var(--vr-color-background-overlay);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 160ms ease, visibility 160ms ease;
+  visibility: hidden;
+  z-index: 101;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation, .p-side-navigation--icons, .p-side-navigation--accordion, .p-side-navigation--raw-html, .bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-expanded) :where(.p-side-navigation__overlay, .bf-side-navigation-overlay) {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__drawer-header, .bf-side-navigation-drawer-header) {
+  background: var(--vr-color-background-default);
+  border-bottom: var(--vr-border-width) solid var(--vr-color-border-low-contrast);
+  margin-bottom: calc(var(--vr-baseline) * 2);
+  padding-bottom: calc(var(--vr-panel-padding-block) - var(--vr-border-width));
+  padding-inline: var(--vr-panel-padding-inline);
+  padding-top: var(--vr-panel-padding-block);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__toggle, .p-side-navigation__toggle--in-drawer, .bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer) {
+${typeStyles(body, { includeCase: false })}  align-items: center;
+  appearance: none;
+  background: var(--vr-color-background-default);
+  border: var(--vr-border-width) solid var(--vr-color-border-high-contrast);
+  border-radius: var(--vr-radius);
+  color: var(--vr-color-text-default);
+  cursor: pointer;
+  display: inline-flex;
+  gap: calc(var(--vr-baseline) * 0.5);
+  justify-content: center;
+  margin: 0;
+  min-block-size: var(--vr-control-block-size);
+${controlPadding("var(--vr-control-block-size)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: var(--vr-control-inline-padding);
+  text-decoration: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__toggle, .bf-side-navigation-toggle)::before {
+  background-image: var(--vr-icon-chevron-down);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  block-size: 1rem;
+  content: "";
+  inline-size: 1rem;
+  transform: rotate(-90deg);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__toggle--in-drawer, .bf-side-navigation-toggle.is-in-drawer)::before {
+  background-image: var(--vr-icon-chevron-down);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  block-size: 1rem;
+  content: "";
+  inline-size: 1rem;
+  transform: rotate(90deg);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__toggle:hover, .p-side-navigation__toggle--in-drawer:hover, .bf-side-navigation-toggle:hover) {
+  background: var(--vr-color-background-hover);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__toggle:focus:not(:focus-visible), .p-side-navigation__toggle--in-drawer:focus:not(:focus-visible), .bf-side-navigation-toggle:focus:not(:focus-visible)) {
+  outline: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__toggle:focus-visible, .p-side-navigation__toggle--in-drawer:focus-visible, .bf-side-navigation-toggle:focus-visible) {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__heading, .p-side-navigation__heading--linked, .bf-side-navigation-heading, .bf-side-navigation-heading.is-linked) {
+${typeStyles(body, { fontWeight: 600, includeCase: false })}  display: block;
+  margin: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__list, .bf-side-navigation-list) {
+  border-bottom: var(--vr-border-width) solid var(--vr-color-border-low-contrast);
+  list-style: none;
+  margin: 0 0 calc(var(--vr-baseline) * 2);
+  padding: 0 0 calc(var(--vr-baseline) * 2);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__list:last-of-type, .bf-side-navigation-list:last-of-type) {
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title) {
+  margin: 0;
+  position: relative;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__link, .p-side-navigation__text, .p-side-navigation__accordion-button, .bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
+${typeStyles(body, { includeCase: false })}  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--vr-color-text-inactive);
+  display: flex;
+  gap: calc(var(--vr-baseline) * 0.5);
+  inline-size: 100%;
+  justify-content: flex-start;
+  margin: 0;
+  min-block-size: var(--vr-control-block-size-dense);
+${controlPadding("var(--vr-control-block-size-dense)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, "0rem")}  padding-inline: var(--vr-panel-padding-inline);
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__item--title, .bf-side-navigation-item.is-title) > :where(.p-side-navigation__link, .p-side-navigation__text, .bf-side-navigation-link, .bf-side-navigation-text) {
+  color: var(--vr-color-text-default);
+  font-weight: 600;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__heading, .p-side-navigation__heading--linked, .bf-side-navigation-heading, .bf-side-navigation-heading.is-linked),
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__list) > :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title) > :where(.p-side-navigation__link, .p-side-navigation__text, .p-side-navigation__accordion-button, .bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
+  padding-inline-start: var(--vr-panel-padding-inline);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  > :where(.p-side-navigation__link, .p-side-navigation__text, .p-side-navigation__accordion-button, .bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
+  padding-inline-start: calc(var(--vr-panel-padding-inline) + (var(--vr-baseline) * 2));
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  > :where(.p-side-navigation__link, .p-side-navigation__text, .p-side-navigation__accordion-button, .bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
+  padding-inline-start: calc(var(--vr-panel-padding-inline) + (var(--vr-baseline) * 4));
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  :where(.p-side-navigation__item, .p-side-navigation__item--title, .bf-side-navigation-item, .bf-side-navigation-item.is-title)
+  > :where(.p-side-navigation__link, .p-side-navigation__text, .p-side-navigation__accordion-button, .bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
+  padding-inline-start: calc(var(--vr-panel-padding-inline) + (var(--vr-baseline) * 6));
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__link:hover, .p-side-navigation__text:hover, .p-side-navigation__accordion-button:hover, .bf-side-navigation-link:hover, .bf-side-navigation-accordion-button:hover) {
+  background: var(--vr-color-background-hover);
+  color: var(--vr-color-text-default);
+  text-decoration: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__link:focus:not(:focus-visible), .p-side-navigation__accordion-button:focus:not(:focus-visible), .bf-side-navigation-link:focus:not(:focus-visible), .bf-side-navigation-accordion-button:focus:not(:focus-visible)) {
+  outline: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__link:focus-visible, .p-side-navigation__accordion-button:focus-visible, .bf-side-navigation-link:focus-visible, .bf-side-navigation-accordion-button:focus-visible) {
+  outline: 2px solid var(--vr-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__link.is-active, .p-side-navigation__link[aria-current='page'], .p-side-navigation__link[aria-current='true'], .bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true']) {
+  background: var(--vr-color-background-active);
+  box-shadow: inset 2px 0 0 var(--vr-color-text-default);
+  color: var(--vr-color-text-default);
+  cursor: default;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__item.has-active-child, .bf-side-navigation-item.has-active-child) > :where(.p-side-navigation__link, .bf-side-navigation-link) {
+  color: var(--vr-color-text-default);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__accordion-button, .bf-side-navigation-accordion-button)::before,
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__expand, .bf-side-navigation-expand)::before {
+  background-image: var(--vr-icon-chevron-down);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  block-size: 1rem;
+  content: "";
+  flex: 0 0 1rem;
+  inline-size: 1rem;
+  transition: transform 120ms ease;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__accordion-button[aria-expanded='false'], .p-side-navigation__expand[aria-expanded='false'], .bf-side-navigation-accordion-button[aria-expanded='false'], .bf-side-navigation-expand[aria-expanded='false'])::before {
+  transform: rotate(-90deg);
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__expand, .bf-side-navigation-expand) {
+${typeStyles(body, { includeCase: false })}  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  inset-block-start: 0;
+  margin: 0;
+  min-block-size: var(--vr-control-block-size-dense);
+  padding-inline: calc(var(--vr-baseline) * 0.5);
+  position: absolute;
+  right: 0;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__list[aria-expanded='false'], .bf-side-navigation-list[aria-expanded='false']) {
+  block-size: 0;
+  margin-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding-bottom: 0;
+  transform: translate3d(0, calc(var(--vr-baseline) * -0.5), 0);
+  visibility: hidden;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__list[aria-expanded='true'], .bf-side-navigation-list[aria-expanded='true']) {
+  block-size: auto;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  visibility: visible;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__label, .bf-side-navigation-label) {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__status, .bf-side-navigation-status) {
+  align-items: center;
+  display: inline-flex;
+  margin-inline-start: auto;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation--icons, .bf-side-navigation.is-icons) :where(.p-side-navigation__icon, .bf-side-navigation-icon) {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 1rem;
+  inline-size: 1rem;
+  justify-content: center;
+}
+
+:where(.bf-theme, .vr-theme) :where(.p-side-navigation__icon, .bf-side-navigation-icon) > svg {
+  block-size: 1rem;
+  display: block;
+  inline-size: 1rem;
+}
+
+@media (min-width: 64.75rem) {
+  :where(.bf-theme, .vr-theme) :where(.p-side-navigation__toggle, .p-side-navigation__toggle--in-drawer, .bf-side-navigation-toggle),
+  :where(.bf-theme, .vr-theme) :where(.p-side-navigation__drawer-header, .bf-side-navigation-drawer-header),
+  :where(.bf-theme, .vr-theme) :where(.p-side-navigation__overlay, .bf-side-navigation-overlay) {
+    display: none;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.p-side-navigation__drawer, .bf-side-navigation-drawer),
+  :where(.bf-theme, .vr-theme) :where(.p-side-navigation, .p-side-navigation--icons, .p-side-navigation--accordion, .p-side-navigation--raw-html, .bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-expanded) :where(.p-side-navigation__drawer, .bf-side-navigation-drawer) {
+    box-shadow: none;
+    display: block;
+    max-inline-size: none;
+    overflow: visible;
+    position: static;
+    transform: translateX(0);
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.p-side-navigation.is-sticky, .p-side-navigation--icons.is-sticky, .p-side-navigation--accordion.is-sticky, .bf-side-navigation.is-sticky) {
+    max-block-size: 100dvh;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+  }
+}
+
 :where(.bf-theme, .vr-theme) :where(.vr-contextual-menu, .p-contextual-menu, .bf-contextual-menu, .vr-contextual-menu--left, .p-contextual-menu--left, .bf-contextual-menu.is-left, .vr-contextual-menu--center, .p-contextual-menu--center, .bf-contextual-menu.is-center) {
   display: inline-block;
   margin: 0;
@@ -2620,6 +2927,101 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
   width: 100%;
 }
 
+:where(.bf-theme, .vr-theme) :where(.l-application.has-navigation, .bf-application.has-navigation),
+:where(.bf-theme, .vr-theme) :where(.l-application):has(> .l-navigation),
+:where(.bf-theme, .vr-theme) :where(.bf-application):has(> .bf-navigation) {
+  grid-template-areas:
+    "navigation-bar"
+    "main"
+    "aside";
+  grid-template-rows: min-content minmax(0, 1fr) min-content;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation-bar, .bf-navigation-bar) {
+  background: var(--vr-color-background-alt);
+  border-bottom: var(--vr-border-width) solid var(--vr-color-border-low-contrast);
+  grid-area: navigation-bar;
+  min-block-size: var(--vr-navigation-bar-min-block-size);
+  min-inline-size: 0;
+  position: relative;
+  z-index: 40;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation, .bf-navigation) {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  min-block-size: 0;
+  min-inline-size: 0;
+  pointer-events: none;
+  position: relative;
+  z-index: 41;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation__overlay, .bf-navigation-overlay) {
+  background: var(--vr-color-background-overlay);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 160ms ease, visibility 160ms ease;
+  visibility: hidden;
+  z-index: 41;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation:not(.is-collapsed), .bf-navigation:not(.is-collapsed)) > :where(.l-navigation__overlay, .bf-navigation-overlay) {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation__drawer, .bf-navigation-drawer) {
+  background: var(--vr-color-background-alt);
+  block-size: 100dvh;
+  border-inline-end: var(--vr-border-width) solid var(--vr-color-border-low-contrast);
+  bottom: 0;
+  inline-size: min(100%, var(--vr-application-navigation-width));
+  left: 0;
+  max-inline-size: 100%;
+  overflow: auto;
+  pointer-events: auto;
+  position: fixed;
+  top: 0;
+  transform: translateX(-100%);
+  transition: transform 160ms ease, box-shadow 160ms ease, visibility 160ms ease;
+  visibility: hidden;
+  z-index: 42;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation:not(.is-collapsed), .bf-navigation:not(.is-collapsed)) > :where(.l-navigation__drawer, .bf-navigation-drawer) {
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38);
+  transform: translateX(0);
+  visibility: visible;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation.is-collapsed, .bf-navigation.is-collapsed) :where(.is-fading-when-collapsed, .p-side-navigation__heading, .bf-side-navigation-heading, .p-side-navigation__label, .bf-side-navigation-label, .p-side-navigation__status, .bf-side-navigation-status) {
+  max-inline-size: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation.is-collapsed, .bf-navigation.is-collapsed) :where(.p-side-navigation__list .p-side-navigation__list, .bf-side-navigation-list .bf-side-navigation-list) {
+  display: none;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation.is-collapsed, .bf-navigation.is-collapsed) :where(.p-side-navigation__link, .p-side-navigation__text, .bf-side-navigation-link, .bf-side-navigation-text) {
+  justify-content: center;
+  padding-inline: calc(var(--vr-baseline) * 1.25);
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation.is-collapsed, .bf-navigation.is-collapsed) :where(.p-side-navigation__list, .bf-side-navigation-list) {
+  border-bottom-color: transparent;
+}
+
+:where(.bf-theme, .vr-theme) :where(.l-navigation.is-collapsed, .bf-navigation.is-collapsed) :where(.p-side-navigation__item--title > .p-side-navigation__link, .p-side-navigation__item--title > .p-side-navigation__text, .bf-side-navigation-item.is-title > .bf-side-navigation-link, .bf-side-navigation-item.is-title > .bf-side-navigation-text) {
+  padding-inline: calc(var(--vr-baseline) * 1.25);
+}
+
 :where(.bf-theme, .vr-theme) :where(.l-application.has-pinned-aside, .bf-application.has-pinned-aside),
 :where(.bf-theme, .vr-theme) :where(.l-application):has(> .l-aside.is-pinned),
 :where(.bf-theme, .vr-theme) :where(.bf-application):has(> .bf-aside.is-pinned) {
@@ -2775,6 +3177,58 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--vr-color-text-muted);
 :where(.bf-theme, .vr-theme) :where(.l-application__aside-resize-handle, .bf-application-aside-resize-handle):focus-visible {
   outline: 2px solid var(--vr-color-focus);
   outline-offset: -2px;
+}
+
+@media (min-width: 64.75rem) {
+  :where(.bf-theme, .vr-theme) :where(.l-application.has-navigation, .bf-application.has-navigation),
+  :where(.bf-theme, .vr-theme) :where(.l-application):has(> .l-navigation),
+  :where(.bf-theme, .vr-theme) :where(.bf-application):has(> .bf-navigation) {
+    grid-template-areas:
+      "navigation-bar navigation-bar"
+      "navigation main";
+    grid-template-columns: minmax(0, var(--vr-application-navigation-width)) minmax(0, 1fr);
+    grid-template-rows: min-content minmax(0, 1fr);
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.l-application.has-navigation.has-pinned-aside, .bf-application.has-navigation.has-pinned-aside),
+  :where(.bf-theme, .vr-theme) :where(.l-application.has-navigation):has(> .l-aside.is-pinned),
+  :where(.bf-theme, .vr-theme) :where(.bf-application.has-navigation):has(> .bf-aside.is-pinned),
+  :where(.bf-theme, .vr-theme) :where(.l-application:has(> .l-navigation)):has(> .l-aside.is-pinned),
+  :where(.bf-theme, .vr-theme) :where(.bf-application:has(> .bf-navigation)):has(> .bf-aside.is-pinned) {
+    grid-template-areas:
+      "navigation-bar navigation-bar navigation-bar"
+      "navigation main aside";
+    grid-template-columns: minmax(0, var(--vr-application-navigation-width)) minmax(0, 1fr) minmax(0, var(--vr-application-aside-width));
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.l-application:has(> .l-navigation.is-collapsed), .bf-application:has(> .bf-navigation.is-collapsed)) {
+    --vr-application-navigation-width: var(--vr-application-navigation-width-collapsed);
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.l-navigation, .bf-navigation) {
+    grid-area: navigation;
+    pointer-events: auto;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.l-navigation__overlay, .bf-navigation-overlay) {
+    display: none;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.l-navigation__drawer, .bf-navigation-drawer),
+  :where(.bf-theme, .vr-theme) :where(.l-navigation:not(.is-collapsed), .bf-navigation:not(.is-collapsed)) > :where(.l-navigation__drawer, .bf-navigation-drawer) {
+    block-size: auto;
+    box-shadow: none;
+    inline-size: 100%;
+    min-block-size: 0;
+    position: static;
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  :where(.bf-theme, .vr-theme) :where(.l-navigation.is-pinned, .bf-navigation.is-pinned) {
+    position: sticky;
+    top: 0;
+  }
 }
 `;
 }

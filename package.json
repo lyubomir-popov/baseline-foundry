@@ -40,7 +40,9 @@
     "verify:behavior": "npm run build && tsx scripts/verify-component-behavior.ts",
     "verify:components": "npm run build && tsx scripts/verify-component-baselines.ts",
     "screenshots:components": "npm run build && tsx scripts/capture-component-screenshots.ts",
-    "qa:components": "npm run build && tsx scripts/capture-component-screenshots.ts && tsx scripts/verify-component-baselines.ts"
+    "qa:components": "npm run build && tsx scripts/capture-component-screenshots.ts && tsx scripts/verify-component-baselines.ts",
+    "build:app-tier": "tsx examples/app-tier/build.ts",
+    "demo:app-tier": "npm run build:app-tier && vite --host 127.0.0.1 --port 4175 --open /examples/app-tier/"
   },
   "keywords": [
     "baseline-grid",

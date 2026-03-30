@@ -1,12 +1,14 @@
-import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initTabs, initTooltips } from "../dist/index.js?v=20260329-panel-refresh-19";
+import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips } from "../dist/index.js?v=20260330-application-layout-01";
 
 initBaselineGridToggles({ defaultEnabled: true });
+initApplicationLayouts();
 initCodeSnippets();
 initContextualMenus();
 initListTree();
 initPanelDrawers();
 initRangeControls();
 initResizableAsides();
+initSideNavigations();
 initTabs();
 initTooltips();
 initAccordions();
@@ -19,6 +21,7 @@ const NAV_ITEMS = [
   { title: "Layout primitives", href: "layout.html" },
   { title: "Grid primitives", href: "grid.html" },
   { title: "Application shell", href: "application-shell.html" },
+  { title: "Application layout", href: "application-layout.html" },
   { title: "Stage shell", href: "stage-shell.html" },
   { title: "Drawer panel", href: "drawer-panel.html" },
   null,
@@ -44,6 +47,7 @@ const NAV_ITEMS = [
   { title: "Tabs", href: "tabs.html" },
   { title: "Panel tabs", href: "panel-tabs.html" },
   { title: "Accordion", href: "accordion.html" },
+  { title: "Side navigation", href: "side-navigation.html" },
   { title: "Modal", href: "modal.html" },
   { title: "Choice row", href: "choice-row.html" },
   { title: "Inline options", href: "inline-options.html" },

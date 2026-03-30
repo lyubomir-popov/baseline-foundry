@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>App Tier – Subnet List (MAAS)</title>
+  <link rel="stylesheet" href="dist/styles.css">
+  <link rel="stylesheet" href="app-tier.css">
+  <style>
+    body {
+      margin: 0;
+      background: var(--bf-color-bg);
+      color: var(--bf-color-text);
+    }
+  </style>
+</head>
+<body class="bf-theme bf-tier-app">
+
+  <div class="bf-fixed-width">
+    <!-- Page header -->
+    <div class="bf-section">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Subnets</h1>
+        <button class="bf-button">Add subnet</button>
+      </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="bf-validation is-caution" style="margin-block-end: 1.5rem;">
+      <p class="bf-validation-message">DHCP is not enabled on any VLAN</p>
+      <p>MAAS requires DHCP on at least one VLAN to commission and deploy machines.</p>
+    </div>
+
+    <!-- Subnet table — full width, no grid split needed (grid spec §7.2) -->
+    <table class="bf-table">
+      <thead>
+        <tr>
+          <th>Fabric</th>
+          <th>VLAN</th>
+          <th>DHCP</th>
+          <th>Subnet</th>
+          <th>Available IPs</th>
+          <th>Space</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>fabric-0</td>
+          <td>untagged</td>
+          <td><span class="bf-status-label is-negative">No</span></td>
+          <td>10.0.0.0/24</td>
+          <td>230</td>
+          <td><span class="bf-chip">default</span></td>
+        </tr>
+        <tr>
+          <td>fabric-0</td>
+          <td>10</td>
+          <td><span class="bf-status-label is-positive">Yes</span></td>
+          <td>10.10.0.0/24</td>
+          <td>198</td>
+          <td><span class="bf-chip">management</span></td>
+        </tr>
+        <tr>
+          <td>fabric-0</td>
+          <td>20</td>
+          <td><span class="bf-status-label is-positive">Yes</span></td>
+          <td>10.20.0.0/24</td>
+          <td>245</td>
+          <td><span class="bf-chip">storage</span></td>
+        </tr>
+        <tr>
+          <td>fabric-1</td>
+          <td>untagged</td>
+          <td><span class="bf-status-label is-negative">No</span></td>
+          <td>192.168.1.0/24</td>
+          <td>120</td>
+          <td><span class="bf-chip">external</span></td>
+        </tr>
+        <tr>
+          <td>fabric-1</td>
+          <td>30</td>
+          <td><span class="bf-status-label">Relay</span></td>
+          <td>192.168.30.0/24</td>
+          <td>250</td>
+          <td><span class="bf-chip">dmz</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Subnet detail (below table, uses grid: span-2 label | span-4 detail) -->
+    <div style="margin-block-start: 2rem;">
+      <div class="bf-grid" style="margin-block-end: 2rem;">
+        <div class="bf-span-2">
+          <h2 class="bf-h2" style="border: none; padding: 0; margin: 0;">10.0.0.0/24</h2>
+          <p style="font-size: 0.75rem; color: var(--bf-color-muted);">
+            fabric-0, untagged
+          </p>
+        </div>
+
+        <div class="bf-span-4">
+          <div class="bf-stack">
+            <div class="bf-field">
+              <label class="bf-form-label" for="subnet-name">Name</label>
+              <div class="bf-control">
+                <input type="text" id="subnet-name" class="bf-input" value="10.0.0.0/24">
+              </div>
+            </div>
+
+            <div class="bf-field">
+              <label class="bf-form-label" for="gateway-ip">Gateway IP</label>
+              <div class="bf-control">
+                <input type="text" id="gateway-ip" class="bf-input" value="10.0.0.1">
+              </div>
+            </div>
+
+            <div class="bf-field">
+              <label class="bf-form-label" for="dns-servers">DNS servers</label>
+              <div class="bf-control">
+                <input type="text" id="dns-servers" class="bf-input" value="10.0.0.1" placeholder="Comma-separated">
+              </div>
+            </div>
+
+            <!-- Two-column for related short fields -->
+            <div class="bf-grid" style="--bf-grid-columns: 4; gap: 1rem;">
+              <div class="bf-span-2">
+                <div class="bf-field">
+                  <label class="bf-form-label" for="range-start">Dynamic range start</label>
+                  <div class="bf-control">
+                    <input type="text" id="range-start" class="bf-input" value="10.0.0.200">
+                  </div>
+                </div>
+              </div>
+              <div class="bf-span-2">
+                <div class="bf-field">
+                  <label class="bf-form-label" for="range-end">Dynamic range end</label>
+                  <div class="bf-control">
+                    <input type="text" id="range-end" class="bf-input" value="10.0.0.254">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bf-field is-checkbox">
+              <div class="bf-control">
+                <div class="bf-checkbox">
+                  <input id="subnet-managed-allocation" class="bf-checkbox-input" type="checkbox">
+                  <label class="bf-checkbox-label" for="subnet-managed-allocation">Managed allocation (MAAS manages IPs in this subnet)</label>
+                </div>
+                <div class="bf-checkbox">
+                  <input id="subnet-dns-resolution" class="bf-checkbox-input" type="checkbox" checked>
+                  <label class="bf-checkbox-label" for="subnet-dns-resolution">Allow DNS resolution for this subnet</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="bf-actions">
+              <button class="bf-button">Save subnet</button>
+              <button class="bf-button is-base">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

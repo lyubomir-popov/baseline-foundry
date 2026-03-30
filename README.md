@@ -46,6 +46,7 @@ The package currently focuses on:
 - a dense `bf-grid` control recipe for inspector rows (`bf-grid bf-grid--controls` with `bf-grid__item--control`, `bf-grid__item--control-pair`, and stacked `p-slider__wrapper` pairs), rather than a second standalone grid primitive
 - an overlay drawer shell mode for temporary inspectors (`l-aside.is-overlay`, backdrop, `p-panel__toggle`, and Canonical small/medium/large size modifiers)
 - a resizable pinned-aside shell mode for desktop inspectors (`l-aside.is-pinned`, `l-application__aside-resize-handle`, and `initResizableAsides()`)
+- an application-layout shell that adds a top navigation bar and collapsible left navigation while still composing with the existing drawer and pinned-aside primitives
 - dense panel patterns for equal-width tabs, selectable radio rows, style/mapping option cards, tight helper text, compact color inputs, inline option strips, and dense action rows
 - a fill-height panel helper for drawer and pinned inspector shells
 - baseline grid inspection utility
@@ -116,6 +117,7 @@ The current baseline-gated demo pages are:
 - `demo/components/layout.html`
 - `demo/components/grid.html`
 - `demo/components/application-shell.html`
+- `demo/components/application-layout.html`
 - `demo/components/stage-shell.html`
 - `demo/components/drawer-panel.html`
 - `demo/components/button.html`
@@ -285,6 +287,7 @@ Browser-safe exports:
 - `initCodeSnippets`
 - `initContextualMenus`
 - `initListTree`
+- `initApplicationLayouts`
 - `initPanelDrawers`
 - `initResizableAsides`
 - `initTooltips`

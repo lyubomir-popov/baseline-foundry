@@ -37,6 +37,7 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
 
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    await page.addStyleTag({ content: ".component-demo-nav{pointer-events:none !important;}" });
     await page.evaluate(key => localStorage.removeItem(key), storageKey);
     await page.reload({ waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -218,6 +219,136 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
   }
 }
 
+async function verifyApplicationLayout(origin: string): Promise<void> {
+  const route = "/demo/components/application-layout.html";
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 960 }
+    });
+
+    await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+
+    const navigation = page.locator("#application-layout-navigation");
+    const menuToggle = page.locator("[data-application-layout-toggle]").first();
+    const pinToggle = page.locator("[data-application-layout-pin]");
+
+    await navigation.waitFor({ state: "visible" });
+    await menuToggle.waitFor({ state: "visible" });
+
+    const collapsedWidth = await navigation.evaluate(element => element.getBoundingClientRect().width);
+    assert(collapsedWidth <= 96, `Expected collapsed application navigation to stay narrow. Got ${collapsedWidth}px.`);
+
+    await menuToggle.click({ force: true });
+    await page.waitForTimeout(180);
+
+    const expandedState = await page.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const toggleElement = document.querySelector<HTMLElement>("[data-application-layout-toggle]");
+      if (!(navigationElement instanceof HTMLElement) || !(toggleElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        collapsed: navigationElement.classList.contains("is-collapsed"),
+        width: navigationElement.getBoundingClientRect().width,
+        expanded: toggleElement.getAttribute("aria-expanded")
+      };
+    });
+
+    assert(expandedState, "Expected expanded application layout state to be measurable.");
+    assert(!expandedState.collapsed, "Expected application navigation toggle to expand the navigation.");
+    assert(expandedState.width >= 220, `Expected expanded application navigation to be visibly wide. Got ${expandedState.width}px.`);
+    assert(expandedState.expanded === "true", `Expected application navigation toggle to expose aria-expanded=true, got ${expandedState.expanded}.`);
+
+    await pinToggle.evaluate(element => {
+      if (element instanceof HTMLElement) {
+        element.click();
+      }
+    });
+    await page.waitForTimeout(120);
+
+    const pinnedState = await page.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const pinElement = document.querySelector<HTMLElement>("[data-application-layout-pin]");
+      if (!(navigationElement instanceof HTMLElement) || !(pinElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        pinned: navigationElement.classList.contains("is-pinned"),
+        pressed: pinElement.getAttribute("aria-pressed")
+      };
+    });
+
+    assert(pinnedState, "Expected pinned application layout state to be measurable.");
+    assert(pinnedState.pinned, "Expected pin control to apply the pinned navigation state.");
+    assert(pinnedState.pressed === "true", `Expected pin control aria-pressed=true after toggling, got ${pinnedState.pressed}.`);
+
+    const mobilePage = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 900, height: 960 }
+    });
+
+    await mobilePage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+    await waitForFonts(mobilePage);
+    await mobilePage.addStyleTag({ content: ".component-demo-nav{pointer-events:none !important;}" });
+
+    const mobileToggle = mobilePage.locator("[data-application-layout-toggle]").first();
+    await mobileToggle.click({ force: true });
+    await mobilePage.waitForTimeout(180);
+
+    const mobileOpenState = await mobilePage.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const overlayElement = document.querySelector<HTMLElement>(".l-navigation__overlay");
+      const drawerElement = document.querySelector<HTMLElement>(".l-navigation__drawer");
+      if (!(navigationElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement) || !(drawerElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        collapsed: navigationElement.classList.contains("is-collapsed"),
+        overlayHidden: overlayElement.getAttribute("aria-hidden"),
+        drawerHidden: drawerElement.getAttribute("aria-hidden"),
+        drawerLeft: drawerElement.getBoundingClientRect().left
+      };
+    });
+
+    assert(mobileOpenState, "Expected mobile application layout state to be measurable.");
+    assert(!mobileOpenState.collapsed, "Expected mobile application layout toggle to open the drawer.");
+    assert(mobileOpenState.overlayHidden === "false", `Expected mobile navigation overlay to be visible, got aria-hidden=${mobileOpenState.overlayHidden}.`);
+    assert(mobileOpenState.drawerHidden === "false", `Expected mobile navigation drawer to be visible, got aria-hidden=${mobileOpenState.drawerHidden}.`);
+    assert(mobileOpenState.drawerLeft >= -2, `Expected mobile navigation drawer to be aligned to the viewport edge, got left=${mobileOpenState.drawerLeft}.`);
+
+    await mobilePage.keyboard.press("Escape");
+    await mobilePage.waitForTimeout(180);
+
+    const mobileClosedState = await mobilePage.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const overlayElement = document.querySelector<HTMLElement>(".l-navigation__overlay");
+      if (!(navigationElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        collapsed: navigationElement.classList.contains("is-collapsed"),
+        overlayHidden: overlayElement.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(mobileClosedState, "Expected mobile closed application layout state to be measurable.");
+    assert(mobileClosedState.collapsed, "Expected Escape to collapse the mobile navigation drawer.");
+    assert(mobileClosedState.overlayHidden === "true", `Expected mobile navigation overlay to hide after Escape, got aria-hidden=${mobileClosedState.overlayHidden}.`);
+
+    await mobilePage.close();
+  } finally {
+    await browser.close();
+  }
+}
+
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const { server, origin } = await createStaticServer(rootDir);
@@ -225,6 +356,7 @@ async function main(): Promise<void> {
   try {
     await verifyPinnedAsideResize(origin);
     await verifyDrawerOverlay(origin);
+    await verifyApplicationLayout(origin);
 
     console.log("Component behavior verification passed.");
   } finally {

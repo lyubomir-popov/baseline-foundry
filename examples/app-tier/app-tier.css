@@ -1,0 +1,133 @@
+/*
+ * App-tier overrides
+ *
+ * Per the spacing spec §2.6.3, app tier is zero-nudge:
+ *   - All nudge tokens are zeroed (no baseline alignment)
+ *   - Controls inherit body styling with symmetric padding
+ *   - Element spacing is zeroed (container-owned model)
+ *   - Containers own spacing via gap
+ *
+ * Per the grid spec §2.3, app tier uses:
+ *   - 1.5rem (24px) gutters at Large and X-Large
+ *   - 2rem (32px) outer margins at Large and X-Large
+ *   - Container-based column switching (4/8/16)
+ */
+
+/* === Tokens === */
+.bf-tier-app {
+  /* Colours */
+  --bf-color-bg: #fff;
+  --vf-color-background-default: #fff;
+  --vr-color-background-inputs: #f2f2f2;
+  --bf-color-surface: #f2f2f2;
+  --bf-color-rule: #757575;
+  --vr-color-border-default: #757575;
+  --vr-color-border-high-contrast: #757575;
+  --vr-color-link: #06c;
+
+  /* Shape */
+  --vr-radius: 0;
+
+  /* Control sizing */
+  --bf-control-inline-padding: 1rem;
+  --vr-control-inline-padding: 1rem;
+  --bf-control-block-size: 2.25rem;
+  --vr-control-block-size: 2.25rem;
+
+  /* Zero all nudges → symmetric control padding */
+  --bf-selected-start-nudge: 0rem;
+  --bf-selected-end-nudge: 0rem;
+  --bf-body-selected-start-nudge: 0rem;
+  --bf-body-selected-end-nudge: 0rem;
+  --bf-h6-selected-start-nudge: 0rem;
+  --bf-h6-selected-end-nudge: 0rem;
+  --bf-h5-selected-start-nudge: 0rem;
+  --bf-h5-selected-end-nudge: 0rem;
+  --bf-h4-selected-start-nudge: 0rem;
+  --bf-h4-selected-end-nudge: 0rem;
+  --bf-h3-selected-start-nudge: 0rem;
+  --bf-h3-selected-end-nudge: 0rem;
+  --bf-h2-selected-start-nudge: 0rem;
+  --bf-h2-selected-end-nudge: 0rem;
+  --bf-h1-selected-start-nudge: 0rem;
+  --bf-h1-selected-end-nudge: 0rem;
+}
+
+/* === Zero-nudge: no baseline alignment on text === */
+.bf-tier-app h1,
+.bf-tier-app h2,
+.bf-tier-app h3,
+.bf-tier-app h4,
+.bf-tier-app h5,
+.bf-tier-app h6,
+.bf-tier-app p,
+.bf-tier-app label,
+.bf-tier-app .bf-body,
+.bf-tier-app .bf-h1,
+.bf-tier-app .bf-h2,
+.bf-tier-app .bf-h3,
+.bf-tier-app .bf-h4,
+.bf-tier-app .bf-h5,
+.bf-tier-app .bf-h6 {
+  padding-block-start: 0;
+  padding-block-end: 0;
+  margin-block-end: 0;
+}
+
+/* === UI controls: inherit body styling, not italic === */
+.bf-tier-app .bf-form-label,
+.bf-tier-app .bf-form-help,
+.bf-tier-app .bf-button,
+.bf-tier-app .bf-button.is-base,
+.bf-tier-app .bf-status-label,
+.bf-tier-app .bf-chip,
+.bf-tier-app .bf-checkbox-label,
+.bf-tier-app .bf-radio-label,
+.bf-tier-app .bf-tabs-link,
+.bf-tier-app .bf-accordion-tab,
+.bf-tier-app .bf-validation-message {
+  font-family: inherit;
+  font-style: normal;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+}
+
+.bf-tier-app .bf-input,
+.bf-tier-app .bf-button,
+.bf-tier-app .bf-button.is-base {
+  font-family: inherit;
+  font-style: normal;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+}
+
+.bf-tier-app .bf-input,
+.bf-tier-app .bf-button,
+.bf-tier-app .bf-button.is-base {
+  padding-block-start: calc((var(--vr-control-block-size) - var(--bf-body-line-height) - var(--vr-baseline) - (var(--vr-border-width) * 2)) / 2);
+  padding-block-end: calc((var(--vr-control-block-size) - var(--bf-body-line-height) - var(--vr-baseline) - (var(--vr-border-width) * 2)) / 2);
+}
+
+.bf-tier-app .bf-input.is-dense,
+.bf-tier-app .bf-button.is-dense,
+.bf-tier-app .bf-button.is-base.is-dense {
+  padding-block-start: calc((var(--vr-control-block-size-dense) - var(--bf-body-line-height) - var(--vr-baseline) - (var(--vr-border-width) * 2)) / 2);
+  padding-block-end: calc((var(--vr-control-block-size-dense) - var(--bf-body-line-height) - var(--vr-baseline) - (var(--vr-border-width) * 2)) / 2);
+}
+
+.bf-tier-app a {
+  color: #06c;
+}
+
+/* === Utility: screen-reader only === */
+.u-sr-only {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
