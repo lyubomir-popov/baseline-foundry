@@ -387,6 +387,10 @@ function numericCssValue(value: string, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function withinTolerance(left: number, right: number, tolerance: number): boolean {
+  return Math.abs(left - right) <= tolerance;
+}
+
 function buildSummary(report: Omit<Report, "summary" | "findings">): string[] {
   const vanillaChip = report.vanilla.metrics["chip-basic"];
   const foundryChip = report.foundry.metrics["chip-basic"];
@@ -401,7 +405,7 @@ function buildSummary(report: Omit<Report, "summary" | "findings">): string[] {
 
   return [
     `chip-basic: | vanilla start/end inset ${formatNumber(vanillaChip.contentStartInset)}/${formatNumber(vanillaChip.contentEndInset)}px | foundry start/end inset ${formatNumber(foundryChip.contentStartInset)}/${formatNumber(foundryChip.contentEndInset)}px | vanilla value ${formatNumber(vanillaChip.parts.value?.fontSize ?? 0)}/${formatNumber(vanillaChip.parts.value?.lineHeight ?? 0)}px | foundry value ${formatNumber(foundryChip.parts.value?.fontSize ?? 0)}/${formatNumber(foundryChip.parts.value?.lineHeight ?? 0)}px`,
-    `chip-lead: | vanilla lead ${formatNumber(vanillaLead.parts.lead?.fontSize ?? 0)}/${formatNumber(vanillaLead.parts.lead?.lineHeight ?? 0)}px caps=${vanillaLead.parts.lead?.fontVariantCaps ?? ""} tracking=${vanillaLead.parts.lead?.letterSpacing ?? ""} | foundry lead ${formatNumber(foundryLead.parts.lead?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.lead?.lineHeight ?? 0)}px transform=${foundryLead.parts.lead?.textTransform ?? ""} tracking=${foundryLead.parts.lead?.letterSpacing ?? ""} | vanilla value ${formatNumber(vanillaLead.parts.value?.fontSize ?? 0)}/${formatNumber(vanillaLead.parts.value?.lineHeight ?? 0)}px | foundry value ${formatNumber(foundryLead.parts.value?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.value?.lineHeight ?? 0)}px`,
+    `chip-lead: | vanilla lead ${formatNumber(vanillaLead.parts.lead?.fontSize ?? 0)}/${formatNumber(vanillaLead.parts.lead?.lineHeight ?? 0)}px caps=${vanillaLead.parts.lead?.fontVariantCaps ?? ""} tracking=${vanillaLead.parts.lead?.letterSpacing ?? ""} | foundry lead ${formatNumber(foundryLead.parts.lead?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.lead?.lineHeight ?? 0)}px caps=${foundryLead.parts.lead?.fontVariantCaps ?? ""} tracking=${foundryLead.parts.lead?.letterSpacing ?? ""} transform=${foundryLead.parts.lead?.textTransform ?? ""} | vanilla value ${formatNumber(vanillaLead.parts.value?.fontSize ?? 0)}/${formatNumber(vanillaLead.parts.value?.lineHeight ?? 0)}px | foundry value ${formatNumber(foundryLead.parts.value?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.value?.lineHeight ?? 0)}px`,
     `badge-single: | vanilla size ${formatNumber(vanillaBadge.inlineSize)}x${formatNumber(vanillaBadge.blockSize)}px | foundry size ${formatNumber(foundryBadge.inlineSize)}x${formatNumber(foundryBadge.blockSize)}px | vanilla aspect delta ${formatNumber(vanillaBadge.aspectDelta)}px | foundry aspect delta ${formatNumber(foundryBadge.aspectDelta)}px`,
     `chip-badge: | vanilla badge gap ${formatNumber(vanillaChipBadge.badgeGap ?? 0)}px | foundry badge gap ${formatNumber(foundryChipBadge.badgeGap ?? 0)}px | vanilla badge end inset ${formatNumber(vanillaChipBadge.contentEndInset)}px | foundry badge end inset ${formatNumber(foundryChipBadge.contentEndInset)}px`,
     `status-default: | vanilla label ${formatNumber(vanillaStatus.fontSize)}/${formatNumber(vanillaStatus.lineHeight)}px ${vanillaStatus.textTransform} | foundry label ${formatNumber(foundryStatus.fontSize)}/${formatNumber(foundryStatus.lineHeight)}px ${foundryStatus.textTransform} | vanilla inline padding ${formatNumber(vanillaStatus.paddingInlineStart)}/${formatNumber(vanillaStatus.paddingInlineEnd)}px | foundry inline padding ${formatNumber(foundryStatus.paddingInlineStart)}/${formatNumber(foundryStatus.paddingInlineEnd)}px`
@@ -420,12 +424,47 @@ function buildFindings(report: Omit<Report, "summary" | "findings">): string[] {
   const vanillaStatus = report.vanilla.metrics["status-default"];
   const foundryStatus = report.foundry.metrics["status-default"];
 
+  const chipInsetsMatch = withinTolerance(foundryChip.contentStartInset, vanillaChip.contentStartInset, 0.75)
+    && withinTolerance(foundryChip.contentEndInset, vanillaChip.contentEndInset, 0.75);
+  const chipValueMatch = withinTolerance(foundryChip.parts.value?.fontSize ?? 0, vanillaChip.parts.value?.fontSize ?? 0, 0.5)
+    && withinTolerance(foundryChip.parts.value?.lineHeight ?? 0, vanillaChip.parts.value?.lineHeight ?? 0, 0.5);
+  const leadCapsMatch = (foundryLead.parts.lead?.fontVariantCaps ?? "normal") === (vanillaLead.parts.lead?.fontVariantCaps ?? "normal");
+  const leadTrackingMatch = withinTolerance(
+    numericCssValue(foundryLead.parts.lead?.letterSpacing ?? "0", 0),
+    numericCssValue(vanillaLead.parts.lead?.letterSpacing ?? "0", 0),
+    0.2
+  );
+  const leadValueMatch = withinTolerance(foundryLead.parts.value?.fontSize ?? 0, vanillaLead.parts.value?.fontSize ?? 0, 0.5)
+    && withinTolerance(foundryLead.parts.value?.lineHeight ?? 0, vanillaLead.parts.value?.lineHeight ?? 0, 0.5);
+  const badgeWidthClose = withinTolerance(foundryBadge.inlineSize, vanillaBadge.inlineSize, 1);
+  const badgeHeightClose = withinTolerance(foundryBadge.blockSize, vanillaBadge.blockSize, 0.5);
+  const badgeAspectClose = withinTolerance(foundryBadge.aspectDelta, vanillaBadge.aspectDelta, 1);
+  const badgeGapMatch = withinTolerance(foundryChipBadge.badgeGap ?? 0, vanillaChipBadge.badgeGap ?? 0, 0.5);
+  const badgeEndInsetClose = withinTolerance(foundryChipBadge.contentEndInset, vanillaChipBadge.contentEndInset, 0.75);
+  const statusTypeMatch = withinTolerance(foundryStatus.fontSize, vanillaStatus.fontSize, 0.5)
+    && withinTolerance(foundryStatus.lineHeight, vanillaStatus.lineHeight, 0.5);
+  const statusPaddingMatch = withinTolerance(foundryStatus.paddingInlineStart, vanillaStatus.paddingInlineStart, 0.5)
+    && withinTolerance(foundryStatus.paddingInlineEnd, vanillaStatus.paddingInlineEnd, 0.5);
+  const statusCaseMatch = (foundryStatus.textTransform || "none") === (vanillaStatus.textTransform || "none");
+
   return [
-    `Chip padding is structurally under-derived in Foundry: the panel preset chip uses ${formatNumber(foundryChip.contentStartInset)}px/${formatNumber(foundryChip.contentEndInset)}px side insets versus Vanilla's ${formatNumber(vanillaChip.contentStartInset)}px/${formatNumber(vanillaChip.contentEndInset)}px because Foundry ties chip spacing to generic baseline fractions instead of Vanilla's small horizontal spacing token plus border-thickness compensation.`,
-    `Chip typography is collapsed in Foundry: Vanilla gives the lead a distinct small-caps contract (caps=${vanillaLead.parts.lead?.fontVariantCaps ?? ""}, tracking ${vanillaLead.parts.lead?.letterSpacing ?? ""}) while the value sits on the small-text line (${formatNumber(vanillaLead.parts.value?.fontSize ?? 0)}/${formatNumber(vanillaLead.parts.value?.lineHeight ?? 0)}px). Foundry instead keeps the value on inherited body text (${formatNumber(foundryLead.parts.value?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.value?.lineHeight ?? 0)}px) and maps the lead to the h5 uppercase role (${formatNumber(foundryLead.parts.lead?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.lead?.lineHeight ?? 0)}px, ${foundryLead.parts.lead?.textTransform ?? ""}).`,
-    `Badge geometry diverges because Foundry derives the standalone badge from h5 styling rather than Vanilla's x-small badge formula: the shortest Vanilla badge is ${formatNumber(vanillaBadge.inlineSize)}x${formatNumber(vanillaBadge.blockSize)}px with an aspect delta of ${formatNumber(vanillaBadge.aspectDelta)}px, while the Foundry badge is ${formatNumber(foundryBadge.inlineSize)}x${formatNumber(foundryBadge.blockSize)}px with an aspect delta of ${formatNumber(foundryBadge.aspectDelta)}px.`,
-    `Nested badge spacing is under-compensated in Foundry: Vanilla pushes the badge ${formatNumber(vanillaChipBadge.badgeGap ?? 0)}px away from the chip value and lets it overhang the chip edge slightly, while Foundry keeps only ${formatNumber(foundryChipBadge.badgeGap ?? 0)}px of gap and no trailing compensation.`,
-    `Status labels are on the wrong text contract in Foundry: Vanilla uses an x-small label with no uppercase transform and ${formatNumber(vanillaStatus.paddingInlineStart)}/${formatNumber(vanillaStatus.paddingInlineEnd)}px inline padding, while Foundry currently uses the h5 uppercase role with ${formatNumber(foundryStatus.paddingInlineStart)}/${formatNumber(foundryStatus.paddingInlineEnd)}px inline padding.`
+    chipInsetsMatch && chipValueMatch
+      ? `Chip padding now matches the Vanilla compact contract: Foundry uses ${formatNumber(foundryChip.contentStartInset)}px/${formatNumber(foundryChip.contentEndInset)}px side insets around ${formatNumber(foundryChip.parts.value?.fontSize ?? 0)}/${formatNumber(foundryChip.parts.value?.lineHeight ?? 0)}px value text, which is in line with the panel-preset target.`
+      : `Chip padding still differs from Vanilla: Foundry is at ${formatNumber(foundryChip.contentStartInset)}px/${formatNumber(foundryChip.contentEndInset)}px side insets versus ${formatNumber(vanillaChip.contentStartInset)}/${formatNumber(vanillaChip.contentEndInset)}px in Vanilla.`,
+    leadCapsMatch && leadTrackingMatch && leadValueMatch
+      ? `Chip lead/value typography now routes through the dedicated compact UI roles: the lead uses real small-caps with ${foundryLead.parts.lead?.letterSpacing ?? "0"} tracking and the value sits on the ${formatNumber(foundryLead.parts.value?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.value?.lineHeight ?? 0)}px small-text line, matching the Vanilla split contract.`
+      : `Chip lead/value typography still differs from Vanilla: Foundry lead caps=${foundryLead.parts.lead?.fontVariantCaps ?? "normal"}, tracking ${foundryLead.parts.lead?.letterSpacing ?? "0"}, value ${formatNumber(foundryLead.parts.value?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.value?.lineHeight ?? 0)}px.`,
+    badgeWidthClose && badgeHeightClose && badgeAspectClose
+      ? `Standalone badge geometry is effectively converged: Foundry's shortest badge is ${formatNumber(foundryBadge.inlineSize)}x${formatNumber(foundryBadge.blockSize)}px versus Vanilla's ${formatNumber(vanillaBadge.inlineSize)}x${formatNumber(vanillaBadge.blockSize)}px, leaving only a small residual aspect delta of ${formatNumber(foundryBadge.aspectDelta)}px.`
+      : `Standalone badge geometry still differs from Vanilla: Foundry measures ${formatNumber(foundryBadge.inlineSize)}x${formatNumber(foundryBadge.blockSize)}px versus ${formatNumber(vanillaBadge.inlineSize)}x${formatNumber(vanillaBadge.blockSize)}px in Vanilla.`,
+    badgeGapMatch && badgeEndInsetClose
+      ? `Nested badge spacing is aligned with the chip contract: Foundry matches Vanilla's ${formatNumber(foundryChipBadge.badgeGap ?? 0)}px badge gap and stays within ${formatNumber(Math.abs(foundryChipBadge.contentEndInset - vanillaChipBadge.contentEndInset))}px on the trailing inset.`
+      : badgeGapMatch
+        ? `Nested badge spacing now matches the inter-part gap, but the trailing inset remains slightly tighter in Foundry (${formatNumber(foundryChipBadge.contentEndInset)}px versus ${formatNumber(vanillaChipBadge.contentEndInset)}px).`
+        : `Nested badge spacing still differs from Vanilla: Foundry keeps ${formatNumber(foundryChipBadge.badgeGap ?? 0)}px of gap versus ${formatNumber(vanillaChipBadge.badgeGap ?? 0)}px in Vanilla.`,
+    statusTypeMatch && statusPaddingMatch && statusCaseMatch
+      ? `Status labels now match the Vanilla x-small contract: Foundry uses ${formatNumber(foundryStatus.fontSize)}/${formatNumber(foundryStatus.lineHeight)}px text with no uppercase transform and ${formatNumber(foundryStatus.paddingInlineStart)}/${formatNumber(foundryStatus.paddingInlineEnd)}px inline padding.`
+      : `Status labels still differ from Vanilla: Foundry uses ${formatNumber(foundryStatus.fontSize)}/${formatNumber(foundryStatus.lineHeight)}px text, transform=${foundryStatus.textTransform || "none"}, and ${formatNumber(foundryStatus.paddingInlineStart)}/${formatNumber(foundryStatus.paddingInlineEnd)}px inline padding.`
   ];
 }
 

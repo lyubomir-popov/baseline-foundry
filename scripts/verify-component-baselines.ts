@@ -190,6 +190,10 @@ async function verifyComponentPage(
       ? Array.from(captureRoot.querySelectorAll<HTMLElement>("[data-baseline-check]"))
       : [];
     for (const element of elements) {
+      if (element.dataset.baselineIgnore === "true") {
+        continue;
+      }
+
       if (element.getClientRects().length === 0) {
         continue;
       }

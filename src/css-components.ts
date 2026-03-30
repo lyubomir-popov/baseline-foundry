@@ -53,6 +53,10 @@ export function componentsCss(tokens: ThemeTokens): string {
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
   const h6 = tokens.roles.h6 ?? body;
+  const uiHeading = tokens.roles["ui-heading"] ?? h6;
+  const uiSmall = tokens.roles["ui-small"] ?? body;
+  const uiSmallCaps = tokens.roles["ui-small-caps"] ?? uiSmall;
+  const uiXSmall = tokens.roles["ui-x-small"] ?? h5;
   const components = tokens.components;
   const controlBorderTotal = "(var(--bf-border-width) * 2)";
   const bodyLineHeight = roleLineHeightVar("body");
@@ -93,6 +97,12 @@ export function componentsCss(tokens: ThemeTokens): string {
   --bf-app-navigation-width: 15rem;
   --bf-app-navigation-width-collapsed: 3rem;
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
+  --bf-ui-chip-padding-inline: calc(${uiSmall.lineHeight} * 0.4);
+  --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-control-inline-padding) * 0.25) - var(--bf-border-width)));
+  --bf-ui-chip-block-size: calc(${uiSmall.lineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
+  --bf-ui-badge-padding-inline: calc(${uiXSmall.lineHeight} * 0.25);
+  --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
+  --bf-ui-status-padding-block: ${uiXSmall.nudgeTop};
 ${roleAlignmentVars("body", body)}${roleAlignmentVars("h4", h4)}${roleAlignmentVars("h5", h5)}${roleAlignmentVars("h6", h6)}  --bf-grid-max-inline-size: var(--bf-content-max-width);
   --bf-application-drawer-width-icon: var(--bf-app-drawer-width-icon);
   --bf-application-drawer-width-small: var(--bf-app-drawer-width-small);
@@ -162,7 +172,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-form-help) {
-${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
+${typeStyles(uiSmall, { includeCase: false })}  color: var(--bf-color-text-muted);
   display: block;
   margin-bottom: 0;
   max-inline-size: 42ch;
@@ -1141,7 +1151,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-inline-options-heading) {
-${typeStyles(h5)}  color: var(--bf-color-text-muted);
+${typeStyles(uiSmallCaps)}  color: var(--bf-color-text-muted);
   display: block;
   margin: 0;
 }
@@ -1264,7 +1274,7 @@ ${controlPadding("var(--bf-control-block-size-dense)", h6LineHeight, h6SelectedS
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) {
-${typeStyles(body, { fontWeight: 600, includeCase: false })}  color: var(--bf-color-text-muted);
+${typeStyles(uiSmallCaps)}  color: var(--bf-color-text-muted);
   margin: 0;
   min-inline-size: 0;
 }
@@ -1325,10 +1335,12 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(thead th) {
-${typeStyles(h5)}  color: var(--bf-color-text-muted);
+${typeStyles(uiXSmall, { includeCase: false })}  color: var(--bf-color-text-muted);
   box-shadow: inset 0 -1px 0 var(--bf-color-border-default);
-  padding-bottom: calc(((var(--bf-control-block-size-dense) - ${h5.lineHeight}) / 2) - ${h5.nudgeTop});
-  padding-top: calc(((var(--bf-control-block-size-dense) - ${h5.lineHeight}) / 2) + ${h5.nudgeTop});
+  letter-spacing: 0.04em;
+  padding-bottom: calc(((var(--bf-control-block-size-dense) - ${uiXSmall.lineHeight}) / 2) - ${uiXSmall.nudgeTop});
+  padding-top: calc(((var(--bf-control-block-size-dense) - ${uiXSmall.lineHeight}) / 2) + ${uiXSmall.nudgeTop});
+  text-transform: uppercase;
 }
 
 :where(.bf-theme) :where(tbody tr + tr td, tfoot td) {
@@ -1346,21 +1358,22 @@ ${typeStyles(h5)}  color: var(--bf-color-text-muted);
   --bf-ui-chip-background: var(--bf-color-background-neutral-default);
   --bf-ui-chip-background-hover: var(--bf-color-background-neutral-hover);
   --bf-ui-chip-background-active: var(--bf-color-background-neutral-active);
-  align-items: center;
+${typeStyles(uiSmall, { includeCase: false })}  align-items: baseline;
   background-color: var(--bf-ui-chip-background);
   border: var(--bf-border-width) solid var(--bf-ui-chip-border);
-  border-radius: 999px;
+  border-radius: 1rem;
   color: var(--bf-color-text-default);
   display: inline-flex;
-  gap: calc(var(--bf-baseline) * 0.5);
-  margin: 0 var(--bf-field-gap) var(--bf-field-gap) 0;
+  gap: 0;
+  margin: 0 var(--bf-ui-chip-padding-inline) var(--bf-field-gap) 0;
   max-inline-size: 100%;
-  min-block-size: var(--bf-control-block-size-dense);
-  padding-block: calc((var(--bf-control-block-size-dense) - ${body.lineHeight} - (var(--bf-border-width) * 2)) / 2);
-  padding-inline: calc(var(--bf-baseline) * 0.75);
+  min-block-size: var(--bf-ui-chip-block-size);
+  padding-block: var(--bf-ui-chip-padding-block);
+  padding-inline: var(--bf-ui-chip-padding-inline);
   position: relative;
   text-decoration: none;
-  vertical-align: middle;
+  user-select: none;
+  vertical-align: calc(var(--bf-border-width) - ${body.nudgeTop});
   white-space: nowrap;
 }
 
@@ -1412,54 +1425,63 @@ ${typeStyles(h5)}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-chip-lead, .bf-chip-value) {
-  display: block;
+${typeStyles(uiSmall, { includeCase: false })}  color: var(--bf-color-text-default);
+  display: inline;
   margin: 0;
   min-inline-size: 0;
   overflow: hidden;
+  padding: 0;
   text-overflow: ellipsis;
+  vertical-align: baseline;
 }
 
 :where(.bf-theme) :where(.bf-chip-lead) {
-${typeStyles(h5)}  color: var(--bf-color-text-muted);
+${typeStyles(uiSmallCaps)}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before {
+${typeStyles(uiXSmall, { includeCase: false })}  color: var(--bf-color-text-muted);
   color: var(--bf-color-text-muted);
   content: ": ";
 }
 
 :where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative) {
-  align-items: center;
+${typeStyles(uiXSmall, { includeCase: false })}  align-items: center;
   background-color: var(--bf-color-text-default);
-  border-radius: 999px;
+  border-radius: 1rem;
+  box-sizing: content-box;
   color: var(--bf-color-background-default);
-${typeStyles(h5)}  display: inline-flex;
-  justify-content: center;
+  display: inline-block;
   margin: 0;
-  min-inline-size: calc(${h5.lineHeight} - (var(--bf-baseline) * 0.5));
-  padding-inline: calc(var(--bf-baseline) * 0.25);
+  max-inline-size: 4ch;
+  min-width: calc(${uiXSmall.lineHeight} - (var(--bf-ui-badge-padding-inline) * 2));
+  overflow: hidden;
+  padding-block: 0;
+  padding-inline: var(--bf-ui-badge-padding-inline);
   text-align: center;
+  text-indent: 0;
 }
 
 :where(.bf-theme) :where(.bf-badge.is-negative) {
-  background-color: var(--bf-color-border-negative);
-  color: var(--bf-color-text-default);
+  background-color: var(--bf-color-button-negative-default);
+  color: var(--bf-color-button-negative-text);
 }
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) :where(.bf-badge, .bf-badge.is-negative) {
-  margin-inline-start: calc(var(--bf-baseline) * 0.25);
+  align-self: center;
+  margin-inline-end: var(--bf-ui-badge-overhang);
+  margin-inline-start: var(--bf-ui-chip-padding-inline);
 }
 
 :where(.bf-theme) :where(.bf-status-label, .bf-label, .bf-status-label.is-positive, .bf-label.is-positive, .bf-status-label.is-caution, .bf-label.is-caution, .bf-status-label.is-information, .bf-label.is-information, .bf-status-label.is-negative, .bf-label.is-negative) {
   --bf-ui-status-background: color-mix(in srgb, var(--bf-color-background-alt) 70%, black);
-  --bf-ui-status-color: var(--bf-color-text-default);
+  --bf-ui-status-color: var(--bf-color-button-positive-text);
   background-color: var(--bf-ui-status-background);
   color: var(--bf-ui-status-color);
   display: inline-block;
-${typeStyles(h5)}  margin: 0;
-  padding-block-end: 0;
-  padding-block-start: ${h5SelectedStartNudge};
-  padding-inline: calc(var(--bf-baseline) * 0.75);
+${typeStyles(uiXSmall, { includeCase: false })}  margin: 0;
+  padding-block: var(--bf-ui-status-padding-block);
+  padding-inline: var(--bf-ui-chip-padding-inline);
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
@@ -1467,7 +1489,7 @@ ${typeStyles(h5)}  margin: 0;
 
 :where(.bf-theme) :where(.bf-status-label.is-positive, .bf-label.is-positive) {
   --bf-ui-status-background: var(--bf-color-border-positive);
-  --bf-ui-status-color: var(--bf-color-text-default);
+  --bf-ui-status-color: var(--bf-color-button-positive-text);
 }
 
 :where(.bf-theme) :where(.bf-status-label.is-caution, .bf-label.is-caution) {
@@ -1477,12 +1499,12 @@ ${typeStyles(h5)}  margin: 0;
 
 :where(.bf-theme) :where(.bf-status-label.is-information, .bf-label.is-information) {
   --bf-ui-status-background: var(--bf-color-border-information);
-  --bf-ui-status-color: var(--bf-color-text-default);
+  --bf-ui-status-color: var(--bf-color-button-positive-text);
 }
 
 :where(.bf-theme) :where(.bf-status-label.is-negative, .bf-label.is-negative) {
   --bf-ui-status-background: var(--bf-color-border-negative);
-  --bf-ui-status-color: var(--bf-color-text-default);
+  --bf-ui-status-color: var(--bf-color-button-negative-text);
 }
 
 :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear) {
@@ -1501,6 +1523,7 @@ ${typeStyles(h5)}  margin: 0;
 :where(.bf-theme) :where(.bf-chip-dismiss) {
   block-size: 1rem;
   inline-size: 1rem;
+  margin-inline-start: var(--bf-ui-badge-padding-inline);
 }
 
 :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::before,
@@ -1694,7 +1717,7 @@ ${typeStyles(h5)}  margin: 0;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-selected-count) {
-${typeStyles(h5)}  appearance: none;
+${typeStyles(body, { includeCase: false })}  appearance: none;
   align-items: flex-start;
   background: transparent;
   border: 0;
@@ -1703,9 +1726,9 @@ ${typeStyles(h5)}  appearance: none;
   display: inline-flex;
   margin: 0;
   min-block-size: var(--bf-control-block-size);
-  padding-block-end: calc((((var(--bf-control-block-size) - ${h5LineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${h5SelectedEndNudge});
+  padding-block-end: calc((((var(--bf-control-block-size) - ${bodyLineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${bodySelectedEndNudge});
   padding-inline: 0;
-  padding-block-start: calc((((var(--bf-control-block-size) - ${h5LineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${h5SelectedStartNudge});
+  padding-block-start: calc((((var(--bf-control-block-size) - ${bodyLineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${bodySelectedStartNudge});
   position: static;
 }
 
@@ -1767,10 +1790,9 @@ ${typeStyles(h5)}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-filter-panel-section-heading) {
-${typeStyles(h5)}  color: var(--bf-color-text-muted);
+${typeStyles(uiHeading, { includeCase: false })}  color: var(--bf-color-text-muted);
   margin: 0;
-  padding-block-end: ${h5SelectedEndNudge};
-  padding-block-start: ${h5SelectedStartNudge};
+  padding-block: 0;
 }
 
 :where(.bf-theme) :where(.bf-filter-panel-section-chips) {
@@ -2687,7 +2709,7 @@ ${typeStyles(h6, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-title) {
-${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-default);
+${typeStyles(uiHeading, { includeCase: false })}  color: var(--bf-color-text-default);
   flex: 1 1 14rem;
   margin: 0;
   overflow-wrap: anywhere;
