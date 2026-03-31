@@ -7,10 +7,6 @@ const TIER_OPTIONS = [
   { value: "app", label: "App" }
 ];
 
-function tierStylesheetHref(tierName) {
-  return `/dist/tiers/${tierName}/styles.css`;
-}
-
 function tierClassName(tierName) {
   return `bf-tier-${tierName}`;
 }
@@ -29,19 +25,13 @@ function applyTone(tone, baselineToggle) {
   }
 }
 
-function applyTier(tierName, stylesheetLink) {
-  stylesheetLink.href = tierStylesheetHref(tierName);
+function applyTier(tierName) {
   document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app");
   document.body.classList.add("bf-theme", tierClassName(tierName));
   document.body.dataset.bfTier = tierName;
 }
 
 export function initExamplePage() {
-  const tierStylesheet = document.querySelector("#example-tier-stylesheet");
-  if (!(tierStylesheet instanceof HTMLLinkElement)) {
-    return;
-  }
-
   const currentTier = document.body.dataset.bfTier ?? (document.body.classList.contains("bf-tier-app") ? "app" : "editorial");
   const captureTarget = document.querySelector("[data-example-grid-target]") ?? document.body;
   const targetId = ensureTargetId(captureTarget, "example-grid-target");
@@ -77,7 +67,7 @@ export function initExamplePage() {
       return;
     }
 
-    applyTier(event.currentTarget.value, tierStylesheet);
+    applyTier(event.currentTarget.value);
     if (event.currentTarget.value === "editorial") {
       controls.baselineToggle.checked = true;
       controls.baselineToggle.dispatchEvent(new Event("change"));

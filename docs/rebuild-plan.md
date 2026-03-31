@@ -70,11 +70,13 @@ All non-deprecated Vanilla components are in scope for minimal `bf-*` demo ports
 
 - [ ] Add any missing validation needed to protect the baseline invariant
 
-### Phase 5 - Tier and engine refactor
+### Phase 5 - Tier and engine refactor (partially complete)
 
-- [ ] Split tier choice from baseline engine choice so `.bf-tier-*` and `.bf-engine-*` can switch independently at the top level
-- [ ] Make `.bf-tier-app` a true zero-nudge, container-owned runtime line while editorial and other baseline-aligned surfaces remain engine-switchable
-- [ ] Migrate text-bearing components so their internal baseline compensation follows the selected engine instead of relying on ad hoc control-height math alone
+- [x] Split tier choice from baseline engine choice — tiers now switch via `.bf-tier-*` class on the theme root; cap engine is demoted to `.bf-engine-cap` demo overlay
+- [x] Make `.bf-tier-app` a true zero-nudge, container-owned runtime line — layout containers (Stack, Cluster, Stage-shell) reset child spacing; app tier overrides zero all nudges
+- [x] Simplify per-element CSS: literal values instead of 10-variable alignment chain; 3 component vars per role instead of 8
+- [x] Tier override pipeline: `TierOverride` type + `buildTierOverrides()` generates scoped overrides for all non-base tiers in a single stylesheet
+- [ ] Parasite class sweep — remove remaining downstream component aliases
 
 ### Phase 6 — Font switch + canonical alignment ✅
 

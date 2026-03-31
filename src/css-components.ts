@@ -1,5 +1,13 @@
 import { foundryComponentColorVars } from "./vanilla-theme-colors.js";
-import type { ThemeTokens, TypographyToken } from "./types.js";
+import type { ThemeTokens, TierOverride, TypographyToken } from "./types.js";
+
+function parseRemValue(rem: string): number {
+  return Number.parseFloat(rem.replace("rem", ""));
+}
+
+function toRemLiteral(value: number): string {
+  return `${Math.round(value * 100000) / 100000}rem`;
+}
 
 function typeStyles(token: TypographyToken, options: {
   fontWeight?: number;
@@ -18,8 +26,10 @@ function typeStyles(token: TypographyToken, options: {
   return `  font-family: ${token.fontStack};\n  font-size: ${token.fontSize};\n  font-style: ${token.fontStyle ?? "normal"};\n  font-weight: ${options.fontWeight ?? token.fontWeight ?? 400};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${token.lineHeight};\n`;
 }
 
-function roleAlignmentVars(roleName: string, token: TypographyToken): string {
-  return `  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-metrics-start-nudge: ${token.nudgeTop};\n  --bf-${roleName}-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-${roleName}-cap-baseline-position: calc((var(--bf-${roleName}-line-height) + 1cap) / 2);\n  --bf-${roleName}-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-${roleName}-cap-baseline-position), var(--bf-baseline)));\n  --bf-${roleName}-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-${roleName}-cap-start-nudge));\n  --bf-${roleName}-selected-start-nudge: var(--bf-${roleName}-metrics-start-nudge);\n  --bf-${roleName}-selected-end-nudge: var(--bf-${roleName}-metrics-end-nudge);\n`;
+function roleAlignmentVars(roleName: string, token: TypographyToken, baselineUnit: string): string {
+  const nt = parseRemValue(token.nudgeTop);
+  const endNudge = nt === 0 ? "0rem" : toRemLiteral(parseRemValue(baselineUnit) - nt);
+  return `  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};\n`;
 }
 
 function roleLineHeightVar(roleName: string): string {
@@ -27,11 +37,11 @@ function roleLineHeightVar(roleName: string): string {
 }
 
 function roleSelectedStartNudgeVar(roleName: string): string {
-  return `var(--bf-${roleName}-selected-start-nudge)`;
+  return `var(--bf-${roleName}-nudge-start)`;
 }
 
 function roleSelectedEndNudgeVar(roleName: string): string {
-  return `var(--bf-${roleName}-selected-end-nudge)`;
+  return `var(--bf-${roleName}-nudge-end)`;
 }
 
 function controlPadding(blockSize: string, lineHeightVar: string, startVar: string, endVar: string, borderTotal = "0rem"): string {
@@ -48,11 +58,12 @@ function alignedVisualStart(lineHeightVar: string, visualSize: string, startVar:
   return `calc(${startVar} + ((${lineHeightVar} - ${visualSize}) / 2) + ${offset})`;
 }
 
-export function componentsCss(tokens: ThemeTokens): string {
+export function componentsCss(tokens: ThemeTokens, tierOverrides?: TierOverride[]): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
   const h6 = tokens.roles.h6 ?? body;
+  const baselineUnit = tokens.baselineUnit;
   const components = tokens.components;
   const controlBorderTotal = "(var(--bf-border-width) * 2)";
   const bodyLineHeight = roleLineHeightVar("body");
@@ -99,7 +110,7 @@ export function componentsCss(tokens: ThemeTokens): string {
   --bf-ui-badge-padding-inline: calc(${h5.lineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
   --bf-ui-status-padding-block: ${h5.nudgeTop};
-${roleAlignmentVars("body", body)}${roleAlignmentVars("h4", h4)}${roleAlignmentVars("h5", h5)}${roleAlignmentVars("h6", h6)}  --bf-grid-max-inline-size: var(--bf-content-max-width);
+${roleAlignmentVars("body", body, baselineUnit)}${roleAlignmentVars("h4", h4, baselineUnit)}${roleAlignmentVars("h5", h5, baselineUnit)}${roleAlignmentVars("h6", h6, baselineUnit)}  --bf-grid-max-inline-size: var(--bf-content-max-width);
   --bf-application-drawer-width-icon: var(--bf-app-drawer-width-icon);
   --bf-application-drawer-width-small: var(--bf-app-drawer-width-small);
   --bf-application-drawer-width-small-max: var(--bf-app-drawer-width-small-max);
@@ -117,27 +128,30 @@ ${foundryComponentColorVars("light")}
   color: var(--bf-color-text-default);
 }
 
+/* DEMO ONLY — Cap-derived component nudges are unreliable (ascender ≠ cap height). */
 :where(.bf-theme.bf-engine-cap) {
-  --bf-body-selected-start-nudge: var(--bf-body-cap-start-nudge);
-  --bf-body-selected-end-nudge: var(--bf-body-cap-end-nudge);
-  --bf-h4-selected-start-nudge: var(--bf-h4-cap-start-nudge);
-  --bf-h4-selected-end-nudge: var(--bf-h4-cap-end-nudge);
-  --bf-h5-selected-start-nudge: var(--bf-h5-cap-start-nudge);
-  --bf-h5-selected-end-nudge: var(--bf-h5-cap-end-nudge);
-  --bf-h6-selected-start-nudge: var(--bf-h6-cap-start-nudge);
-  --bf-h6-selected-end-nudge: var(--bf-h6-cap-end-nudge);
+  --bf-body-nudge-start: calc(var(--bf-baseline) - mod(calc((${body.lineHeight} + 1cap) / 2), var(--bf-baseline)));
+  --bf-body-nudge-end: calc(var(--bf-baseline) - var(--bf-body-nudge-start));
+  --bf-h4-nudge-start: calc(var(--bf-baseline) - mod(calc((${h4.lineHeight} + 1cap) / 2), var(--bf-baseline)));
+  --bf-h4-nudge-end: calc(var(--bf-baseline) - var(--bf-h4-nudge-start));
+  --bf-h5-nudge-start: calc(var(--bf-baseline) - mod(calc((${h5.lineHeight} + 1cap) / 2), var(--bf-baseline)));
+  --bf-h5-nudge-end: calc(var(--bf-baseline) - var(--bf-h5-nudge-start));
+  --bf-h6-nudge-start: calc(var(--bf-baseline) - mod(calc((${h6.lineHeight} + 1cap) / 2), var(--bf-baseline)));
+  --bf-h6-nudge-end: calc(var(--bf-baseline) - var(--bf-h6-nudge-start));
 }
 
-:where(.bf-theme.bf-tier-app) {
-  --bf-body-selected-start-nudge: 0rem;
-  --bf-body-selected-end-nudge: 0rem;
-  --bf-h4-selected-start-nudge: 0rem;
-  --bf-h4-selected-end-nudge: 0rem;
-  --bf-h5-selected-start-nudge: 0rem;
-  --bf-h5-selected-end-nudge: 0rem;
-  --bf-h6-selected-start-nudge: 0rem;
-  --bf-h6-selected-end-nudge: 0rem;
-}
+${(tierOverrides ?? []).map(override => {
+  const tierRoles = ["body", "h4", "h5", "h6"] as const;
+  const props = tierRoles.map(roleName => {
+    const overrideToken = override.roles[roleName];
+    if (!overrideToken) return "";
+    const bu = override.baselineUnit ?? baselineUnit;
+    const nt = parseRemValue(overrideToken.nudgeTop);
+    const endNudge = nt === 0 ? "0rem" : toRemLiteral(parseRemValue(bu) - nt);
+    return `  --bf-${roleName}-line-height: ${overrideToken.lineHeight};\n  --bf-${roleName}-nudge-start: ${overrideToken.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};`;
+  }).filter(Boolean).join("\n");
+  return `:where(.bf-theme.${override.className}) {\n  --bf-control-baseline-reserve: 0rem;\n${props}\n}\n`;
+}).join("\n")}
 
 :where(.bf-theme.is-dark),
 :where(.bf-theme.is-dark) {

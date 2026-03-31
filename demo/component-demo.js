@@ -20,11 +20,11 @@ function detectSurface(stylesheetLink) {
     return "panel";
   }
 
-  if (href.includes("/dist/tiers/documentation/styles.css")) {
+  if (document.body.classList.contains("bf-tier-documentation")) {
     return "documentation";
   }
 
-  if (href.includes("/dist/tiers/app/styles.css") || href.includes("/dist/presets/app-tier/styles.css")) {
+  if (document.body.classList.contains("bf-tier-app")) {
     return "app";
   }
 
@@ -32,16 +32,10 @@ function detectSurface(stylesheetLink) {
 }
 
 function surfaceHref(surface) {
-  switch (surface) {
-    case "panel":
-      return "/dist/presets/panel/styles.css";
-    case "documentation":
-      return "/dist/tiers/documentation/styles.css";
-    case "app":
-      return "/dist/tiers/app/styles.css";
-    default:
-      return "/dist/tiers/editorial/styles.css";
+  if (surface === "panel") {
+    return "/dist/presets/panel/styles.css";
   }
+  return "/dist/tiers/editorial/styles.css";
 }
 
 function applySurface(surface, stylesheetLink) {

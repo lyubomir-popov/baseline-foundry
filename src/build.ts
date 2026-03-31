@@ -12,6 +12,7 @@ import type {
   ThemeConfig,
   ThemeElementConfig,
   ThemeTokens,
+  TierOverride,
   TypographyToken
 } from "./types.js";
 
@@ -216,6 +217,84 @@ function inferBuiltInPresetName(resolvedConfigPath: string): BuiltInThemeName | 
   return undefined;
 }
 
+function buildZeroNudgeTierTokens(config: ThemeConfig): ThemeTokens {
+  const roles: Record<string, TypographyToken> = {};
+  const elements: Record<string, TypographyToken> = {};
+
+  for (const element of config.elements) {
+    const fontFamily = element.fontFamily ?? config.fontFiles[0]?.family ?? "sans";
+    const fontStack = config.fontStacks[fontFamily] ?? fontFamily;
+    const lineHeight = toRem(element.lineHeight * config.baselineUnit);
+    const spaceAfter = toRem(element.spaceAfter * config.baselineUnit);
+
+    const token: TypographyToken = {
+      identifier: element.identifier,
+      fontSize: `${element.fontSize}rem`,
+      lineHeight,
+      fontFamily,
+      fontStack,
+      fontWeight: element.fontWeight,
+      fontStyle: element.fontStyle,
+      spaceAfter,
+      nudgeTop: "0rem",
+      marginBottom: spaceAfter,
+      fontVariantCaps: element.fontVariantCaps,
+      letterSpacing: element.letterSpacing,
+      textTransform: element.textTransform
+    };
+
+    elements[element.identifier] = token;
+  }
+
+  for (const [roleName, identifier] of Object.entries(config.roles)) {
+    const token = elements[identifier];
+    if (token) roles[roleName] = token;
+  }
+
+  return {
+    baselineUnit: toRem(config.baselineUnit),
+    fontFiles: config.fontFiles,
+    fontStacks: config.fontStacks,
+    roles,
+    elements,
+    layout: {
+      contentMaxWidth: toRem(config.layout.contentMaxWidthRem),
+      contentPaddingInline: toRem(config.layout.contentPaddingInlineRem),
+      measure: toRem(config.layout.measureRem),
+      sectionSpace: toRem(config.layout.sectionSpaceBaselineUnits * config.baselineUnit),
+      sectionSpaceShallow: toRem(config.layout.sectionSpaceShallowBaselineUnits * config.baselineUnit),
+      sectionSpaceDeep: toRem(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
+      stripSpace: toRem(config.layout.stripSpaceBaselineUnits * config.baselineUnit),
+      gridGapInline: toRem(config.layout.gridGapInlineBaselineUnits * config.baselineUnit),
+      gridGapBlock: toRem(config.layout.gridGapBlockBaselineUnits * config.baselineUnit),
+      pageMargin: toRem(config.layout.pageMarginBaselineUnits * config.baselineUnit)
+    },
+    components: buildComponentTokens(config)
+  };
+}
+
+async function buildTierOverrides(resolvedConfigPath: string): Promise<TierOverride[]> {
+  const overrides: TierOverride[] = [];
+  const currentTier = inferBuiltInPresetName(resolvedConfigPath);
+
+  for (const tierName of tierNames) {
+    if (tierName === currentTier || (currentTier === "prose" && tierName === "editorial") || (currentTier === "app-tier" && tierName === "app")) {
+      continue;
+    }
+    const tierConfigPath = resolveTierPath(tierName);
+    const tierConfig = await readThemeConfig(tierConfigPath);
+    const tierTokens = buildZeroNudgeTierTokens(tierConfig);
+    overrides.push({
+      className: `bf-tier-${tierName}`,
+      roles: tierTokens.roles,
+      baselineUnit: tierTokens.baselineUnit,
+      tokens: tierTokens
+    });
+  }
+
+  return overrides;
+}
+
 async function buildTheme(
   resolvedConfigPath: string,
   distDir: string,
@@ -241,7 +320,8 @@ async function buildTheme(
 
   const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
   const tokens = buildThemeTokens(runtimeConfig, baselineTokens);
-  const css = generateFoundryCss(tokens, { presetName: inferBuiltInPresetName(resolvedConfigPath) });
+  const tierOverrides = await buildTierOverrides(resolvedConfigPath);
+  const css = generateFoundryCss(tokens, { presetName: inferBuiltInPresetName(resolvedConfigPath), tierOverrides });
 
   const tokensPath = path.join(resolvedDistDir, "tokens.json");
   const cssPath = path.join(resolvedDistDir, "styles.css");

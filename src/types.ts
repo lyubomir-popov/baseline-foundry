@@ -134,3 +134,10 @@ export interface DeriveBaselineTokensResult {
   baselineTokensPath: string;
   tokens: BaselineGeneratorTokens;
 }
+
+export interface TierOverride {
+  className: string;
+  roles: Record<string, TypographyToken>;
+  baselineUnit?: string;
+  tokens?: ThemeTokens;
+}

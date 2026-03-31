@@ -4,15 +4,6 @@ export function appTierPresetCss(): string {
   --bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);
   --bf-app-panel-shadow: 0 1px 1px rgba(0, 0, 0, 0.14), 0 2px 2px -1px rgba(0, 0, 0, 0.12), 0 0 3px rgba(0, 0, 0, 0.12);
   --bf-radius: 0;
-  --bf-control-baseline-reserve: 0rem;
-  --bf-body-selected-start-nudge: 0rem;
-  --bf-body-selected-end-nudge: 0rem;
-  --bf-h4-selected-start-nudge: 0rem;
-  --bf-h4-selected-end-nudge: 0rem;
-  --bf-h5-selected-start-nudge: 0rem;
-  --bf-h5-selected-end-nudge: 0rem;
-  --bf-h6-selected-start-nudge: 0rem;
-  --bf-h6-selected-end-nudge: 0rem;
   color-scheme: light;
 }
 

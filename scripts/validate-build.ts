@@ -104,17 +104,15 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");
   assert(css.includes("text-transform: uppercase;"), "Expected CSS to include the table-header uppercase treatment.");
-  assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine override selector.");
+  assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine demo override selector.");
   assert(css.includes(":where(.bf-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
-  assert(css.includes("--bf-semantic-space-after: 0rem;\n  --bf-selected-start-nudge: 0rem;\n  --bf-selected-end-nudge: 0rem;"), "Expected app-tier runtime overrides to zero semantic spacing and selected nudges.");
-  assert(css.includes("--bf-selected-start-nudge: var(--bf-metrics-start-nudge);"), "Expected generated CSS to default to the metrics baseline engine.");
-  assert(css.includes("--bf-body-selected-start-nudge: var(--bf-body-metrics-start-nudge);"), "Expected generated CSS to default body-aligned controls to the metrics engine.");
-  assert(css.includes("--bf-h6-selected-start-nudge: var(--bf-h6-cap-start-nudge);"), "Expected generated CSS to expose h6 alignment through the cap-engine override.");
-  assert(css.includes("--bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);"), "Expected generated CSS to default to editorial semantic spacing.");
+  assert(css.includes("--bf-body-nudge-start: 0rem;\n  --bf-body-nudge-end: 0rem;"), "Expected app-tier runtime overrides to zero body nudges.");
+  assert(css.includes("--bf-body-nudge-start:") && css.includes("--bf-body-nudge-end:"), "Expected generated CSS to define body alignment nudge variables.");
+  assert(css.includes("--bf-h6-nudge-start:") && css.includes("--bf-h6-nudge-end:"), "Expected generated CSS to define h6 alignment nudge variables.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose > :last-child) {\n  margin-bottom: 0;"), "Expected prose flow boundaries to trim semantic trailing space now that baseline compensation lives inside the element box.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
-  assert(css.includes("padding-block-end: var(--bf-selected-end-nudge);"), "Expected list items to preserve baseline compensation through the selected engine.");
-  assert(css.includes("margin: 0 0 var(--bf-semantic-space-after);"), "Expected list containers to use tier-selected semantic spacing without double-applying compensation.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0;\n  padding-block-end:"), "Expected list items to use literal baseline compensation.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  margin-bottom:"), "Expected list containers to use literal semantic spacing.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
   assert(css.includes("margin: 0 0 calc(var(--bf-space-3) - 1px);"), "Expected rules to compensate their 1px thickness against the baseline rhythm.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
@@ -132,8 +130,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-tick-box-offset: calc((var(--bf-tick-row-block-size) - var(--bf-control-visual-size)) / 2);"), "Expected generated CSS to derive tick-box placement from the dense control row variables.");
   assert(css.includes("--bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding));"), "Expected generated CSS to derive tick label spacing from the control inline padding token.");
   assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
-  assert(css.includes("var(--bf-body-selected-start-nudge)"), "Expected controls to consume the selected body alignment nudge.");
-  assert(css.includes("var(--bf-body-selected-end-nudge)"), "Expected controls to consume the selected body alignment nudge on both edges.");
+  assert(css.includes("var(--bf-body-nudge-start)"), "Expected controls to consume the body alignment nudge.");
+  assert(css.includes("var(--bf-body-nudge-end)"), "Expected controls to consume the body alignment nudge on both edges.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control, .bf-grid-item.is-control-pair) {\n  grid-column: auto / span 4;"), "Expected grid CSS to include the default dense control-grid recipe spans.");
@@ -246,7 +244,7 @@ function validateAppTierCss(css: string): void {
   assert(css.includes('UbuntuSans[wdth,wght].ttf'), "Expected the app-tier preset CSS to point to the Ubuntu Sans variable font.");
   assert(css.includes('font-weight: 100 900;'), "Expected the app-tier preset CSS to expose the Ubuntu Sans variable weight range.");
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
-  assert(css.includes('--bf-body-selected-start-nudge: 0rem;'), "Expected the app-tier preset CSS to zero app-tier body nudges.");
+  assert(css.includes('--bf-body-nudge-start: 0rem;'), "Expected the app-tier preset CSS to zero app-tier body nudges.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
   assert(css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to expose the lighter app-panel shadow token.");
   assert(css.includes('box-shadow: var(--bf-app-panel-shadow);'), "Expected the app-tier preset CSS to apply the shared app-panel shadow token.");
@@ -426,8 +424,8 @@ function validatePanelTheme(tokens: Record<string, unknown>, css: string): void 
   assert(components.controlMinBlockSize === "1.75rem", "Expected the panel preset control height to add one more baseline unit of breathing room.");
   assert(components.controlMinBlockSizeDense === "1.5rem", "Expected the panel preset dense control height to add one more baseline unit of breathing room.");
 
-  assert(typeof roles.body.nudgeTop === "string" && css.includes(`--bf-metrics-start-nudge: ${roles.body.nudgeTop};`), "Expected compact list items to expose the panel preset metrics nudge.");
-  assert(css.includes("padding-block-start: var(--bf-selected-start-nudge);"), "Expected compact list items to use the selected engine's start nudge.");
+  assert(typeof roles.body.nudgeTop === "string" && css.includes(`--bf-body-nudge-start: ${roles.body.nudgeTop};`), "Expected compact list items to expose the panel preset body nudge.");
+  assert(css.includes("padding-block-start: var(--bf-body-nudge-start);"), "Expected compact list items to use the body nudge start variable.");
   assert(css.includes("--bf-control-visual-size: 0.75rem;"), "Expected the panel preset CSS to expose a dedicated visual control size token.");
   assert(css.includes("block-size: var(--bf-control-visual-size);"), "Expected checkbox/radio/thumb visuals to size from the dedicated control visual token.");
 }
