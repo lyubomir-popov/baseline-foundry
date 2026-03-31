@@ -51,12 +51,16 @@ function controlPadding(blockSize: string, lineHeightVar: string, startVar: stri
 }
 
 // Vanilla-model margin: snap (2×nudge + lineHeight) to the next baseline-grid
-// multiple, then add spaceAfter.  box = 2×nudge + lineHeight (borders cancel).
+// multiple, then add spaceAfter. box = 2×nudge + lineHeight (borders cancel).
 function controlMarginBottom(nudge: string, lineHeight: string, baselineUnit: string, spaceAfter: string): string {
   const bU = parseRemValue(baselineUnit);
   const boxHeight = 2 * parseRemValue(nudge) + parseRemValue(lineHeight);
   const compensation = Math.ceil(boxHeight / bU) * bU - boxHeight;
   return toRemLiteral(compensation + parseRemValue(spaceAfter));
+}
+
+function controlMarginBottomExpression(lineHeightVar: string, startVar: string, spaceAfter: string): string {
+  return `calc(${spaceAfter} + mod(calc(var(--bf-baseline) - mod(calc(${lineHeightVar} + (${startVar} * 2)), var(--bf-baseline))), var(--bf-baseline)))`;
 }
 
 function alignedVisualStart(lineHeightVar: string, visualSize: string, startVar: string, offset = "0rem"): string {
@@ -149,8 +153,13 @@ ${foundryComponentColorVars("light")}
   --bf-h6-nudge-end: calc(var(--bf-baseline) - var(--bf-h6-nudge-start));
 }
 
+:where(.bf-theme.bf-engine-cap) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+  margin-bottom: ${controlMarginBottomExpression(bodyLineHeight, bodySelectedStartNudge, body.spaceAfter)};
+}
+
 ${(tierOverrides ?? []).map(override => {
   const tierRoles = ["body", "h4", "h5", "h6"] as const;
+  const bodyOverride = override.roles.body;
   const props = tierRoles.map(roleName => {
     const overrideToken = override.roles[roleName];
     if (!overrideToken) return "";
@@ -159,7 +168,10 @@ ${(tierOverrides ?? []).map(override => {
     const endNudge = nt === 0 ? "0rem" : toRemLiteral(parseRemValue(bu) - nt);
     return `  --bf-${roleName}-line-height: ${overrideToken.lineHeight};\n  --bf-${roleName}-nudge-start: ${overrideToken.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};`;
   }).filter(Boolean).join("\n");
-  return `:where(.bf-theme.${override.className}) {\n  --bf-control-baseline-reserve: 0rem;\n${props}\n}\n`;
+  const inputMarginRule = bodyOverride
+    ? `:where(.bf-theme.${override.className}) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {\n  margin-bottom: ${controlMarginBottom(bodyOverride.nudgeTop, bodyOverride.lineHeight, override.baselineUnit ?? baselineUnit, bodyOverride.spaceAfter)};\n}\n`
+    : "";
+  return `:where(.bf-theme.${override.className}) {\n  --bf-control-baseline-reserve: 0rem;\n${props}\n}\n${inputMarginRule}`;
 }).join("\n")}
 
 :where(.bf-theme.is-dark),

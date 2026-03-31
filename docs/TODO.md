@@ -84,7 +84,7 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Pre-existing items
 
-- [ ] **`spaceAfter` for controls** — text elements use `spaceAfter` as their rhythm margin. Controls use `controlMarginBottom()` which computes: `ceil((2×nudge + lineHeight) / bU) × bU − (2×nudge + lineHeight) + spaceAfter`. See "Control baseline-grid invariant" above. Remove `controlMinBlockSize` / `controlMinBlockSizeDense` from types, config JSON, and build pipeline. Remove `controlPadding()` function and all `.is-dense` control rules.
+- [ ] **`spaceAfter` for controls** — input proof of concept is validated: `bf-input` now uses symmetric padding plus control margin compensation and passes the full suite, including cap-engine and tier-override cases. Next: roll the same model through buttons, selects/search affordances, segmented controls, tabs, side-navigation links, and any remaining `controlPadding()` / `controlMinBlockSize` usage. Then remove `controlMinBlockSize` / `controlMinBlockSizeDense` from types, config JSON, and build pipeline, and delete `.is-dense` control rules.
 - [ ] Parasite class sweep — remove remaining downstream component aliases
 - [ ] Baseline invariant validation — add missing build-time checks
 - [ ] Typographic specimen page — editorial multi-column layout demo at `demo/spec/typographic-specimen.html`
