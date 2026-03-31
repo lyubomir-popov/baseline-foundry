@@ -18,7 +18,7 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 4. Layout primitives are explicit and small.
 5. Compatibility concerns should not drive the public API.
 6. Additions must earn their place as durable primitives.
-7. Single-direction margin declarations: `margin: 0` reset, then literal `margin-block-end` only (`spaceAfter - baselineUnit`). No `margin-block-start`.
+7. Single-direction margin declarations: `margin: 0` reset, then literal `margin-block-end` where applicable. No `margin-block-start`.
 8. Element qualifiers align by default: bare `<h1>`–`<h6>`, `<p>`, `<figcaption>` in `bf-theme` get nudges, sizing, spacing automatically.
 9. Flat `bf-` naming: single-dash, `is-*` modifiers only, no BEM, no `p-*`.
 10. Dogfooding: demos use only `bf-*` / `is-*`. Missing primitive → add it after confirmation from the user.
@@ -27,6 +27,7 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 13. Three layout primitives: `bf-grid`, `bf-stack`, `bf-cluster`. Section spacing via `bf-section` modifiers.
 14. No `ui-*` roles: component typography derives from body/heading tier tokens.
 15. Minimal demo content: Latin lorem ipsum only.
+16. **Control padding follows the Vanilla model** — see "Control baseline-grid invariant" below.
 
 ## Demo rules
 
@@ -42,10 +43,25 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 ## Current architecture
 
 - Editorial = baseline-aligned, element-owned spacing. App = zero-nudge, container-owned.
-- **Literal CSS values** — `margin-bottom`, `padding-block-start`, `padding-block-end` are literal per role. Margin-bottom = `spaceAfter` as authored in config (no hidden subtraction). ⚠️ *Review: the previous formula subtracted baselineUnit from spaceAfter, making config values opaque — user flagged this as wrong.*
+- **Literal CSS values** — `margin-bottom`, `padding-block-start`, `padding-block-end` are literal per role.
 - **Layout container child reset** — `.bf-stack > *`, `.bf-cluster > *`, `.bf-stage-shell > *` reset `margin-bottom: 0; padding-block: 0;` (§5.3).
 - **Simplified component vars** — 3 per role: `--bf-{role}-line-height`, `--bf-{role}-nudge-start`, `--bf-{role}-nudge-end`.
 - **Tier overrides via class toggle** — single editorial stylesheet with scoped `.bf-tier-app` / `.bf-tier-documentation` overrides. Tier switching = class toggle on `<body>`.
+
+### Control baseline-grid invariant
+
+This is the Vanilla Framework's approach to input/button/select sizing. **Do not invent an alternative.** The trick:
+
+1. **Symmetric padding** = `nudge − border-width`, applied to both `padding-block-start` and `padding-block-end`. This places the text baseline on the grid — identical to how a `<p>` with the same font aligns.
+2. **No explicit `block-size`** target. The control's natural height = `2 × nudge + line-height` (borders cancel because `padding = nudge − border`). This height is typically **not** a whole multiple of the baseline unit, and that's fine.
+3. **`margin-bottom` snaps the full block to the grid.** Formula: `ceil(boxHeight / baselineUnit) × baselineUnit − boxHeight + spaceAfter`. The compensation fraction ensures the next element starts on a grid line.
+4. **The border-bottom floats** between grid lines. That's cosmetically acceptable — the invariant is that text baselines and block boundaries land on the grid, not decoration.
+
+Consequences:
+- There is no `--bf-control-block-size` variable. Controls do not target a height.
+- There is no `.is-dense` modifier on individual controls. Density comes from the **tier** (different `baselineUnit` and nudge values).
+- A paragraph, input, button, and select sharing the same font size all share the same baseline alignment when placed side by side.
+- The `controlPadding()` back-calculation that previously existed was wrong — it reversed the causality (target height → derive padding) instead of letting consistent padding produce a natural height.
 - `bf-grid`: `4`/`8`/`16` columns, power-of-2 spans, `620px`/`1681px` thresholds.
 - Tier-first build: `editorial`, `documentation`, `app`.
 - Metrics-derived nudges default; `.bf-engine-cap` is demo-only; `.bf-tier-app` zeroes nudges.
@@ -68,7 +84,7 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Pre-existing items
 
-- [ ] **`spaceAfter - baselineUnit` opacity** — config says one value, CSS emits another. User flagged: authored `spaceAfter` should be the literal margin-bottom, not reduced by a hidden baselineUnit subtraction. Audit `src/css.ts` and `src/css-components.ts` for this formula and decide whether to make config values match output 1:1.
+- [ ] **`spaceAfter` for controls** — text elements use `spaceAfter` as their rhythm margin. Controls use `controlMarginBottom()` which computes: `ceil((2×nudge + lineHeight) / bU) × bU − (2×nudge + lineHeight) + spaceAfter`. See "Control baseline-grid invariant" above. Remove `controlMinBlockSize` / `controlMinBlockSizeDense` from types, config JSON, and build pipeline. Remove `controlPadding()` function and all `.is-dense` control rules.
 - [ ] Parasite class sweep — remove remaining downstream component aliases
 - [ ] Baseline invariant validation — add missing build-time checks
 - [ ] Typographic specimen page — editorial multi-column layout demo at `demo/spec/typographic-specimen.html`

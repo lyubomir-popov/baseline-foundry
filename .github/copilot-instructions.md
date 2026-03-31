@@ -85,6 +85,7 @@ In that mode:
 - Grid and layout primitives stay small and composable.
 - Prefer canonical primitives over named one-off patterns.
 - Treat this repo as the lean forward line, not the compatibility line.
+- **Control padding follows the Vanilla model** — symmetric `padding-block: nudge − border`, no explicit `block-size`, margin-bottom snaps the block to the grid. No `--bf-control-block-size` var, no `.is-dense` per-control modifier. Density comes from the tier. See `docs/TODO.md` → "Control baseline-grid invariant" for the full explanation.
 
 ## First checks
 

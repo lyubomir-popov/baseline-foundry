@@ -50,6 +50,15 @@ function controlPadding(blockSize: string, lineHeightVar: string, startVar: stri
   return `  padding-block-end: calc(${basePadding} + ${endVar});\n  padding-block-start: calc(${basePadding} + ${startVar});\n`;
 }
 
+// Vanilla-model margin: snap (2×nudge + lineHeight) to the next baseline-grid
+// multiple, then add spaceAfter.  box = 2×nudge + lineHeight (borders cancel).
+function controlMarginBottom(nudge: string, lineHeight: string, baselineUnit: string, spaceAfter: string): string {
+  const bU = parseRemValue(baselineUnit);
+  const boxHeight = 2 * parseRemValue(nudge) + parseRemValue(lineHeight);
+  const compensation = Math.ceil(boxHeight / bU) * bU - boxHeight;
+  return toRemLiteral(compensation + parseRemValue(spaceAfter));
+}
+
 function alignedVisualStart(lineHeightVar: string, visualSize: string, startVar: string, offset = "0rem"): string {
   if (offset === "0rem") {
     return `calc(${startVar} + ((${lineHeightVar} - ${visualSize}) / 2))`;
@@ -237,16 +246,12 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   border-top: var(--bf-border-width) solid transparent;
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
-  block-size: var(--bf-control-block-size);
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
-${controlPadding("var(--bf-control-block-size)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
-}
-
-:where(.bf-theme) :where(.bf-input.is-dense) {
-  block-size: var(--bf-control-block-size-dense);
-${controlPadding("var(--bf-control-block-size-dense)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}
+  margin-bottom: ${controlMarginBottom(body.nudgeTop, body.lineHeight, baselineUnit, body.spaceAfter)};
+  padding-block: calc(${bodySelectedStartNudge} - var(--bf-border-width));
+  padding-inline: var(--bf-control-inline-padding);
 }
 
 :where(.bf-theme) :where(input[type='color'].bf-color-input) {
