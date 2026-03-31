@@ -144,8 +144,7 @@ ${foundryComponentColorVars("light")}
 }
 
 :where(.bf-theme.is-dark),
-:where(.bf-theme[data-bf-tone='dark']),
-:where(.bf-theme[data-bf-tone='dark']) {
+:where(.bf-theme.is-dark) {
 ${foundryComponentColorVars("dark")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
   --bf-ui-icon-search: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.964 1a5.964 5.964 0 014.709 9.623l4.303 4.305-1.06 1.06-4.306-4.305A5.964 5.964 0 116.963 1zm0 1.5a4.464 4.464 0 100 8.927 4.464 4.464 0 000-8.927z' fill='%23fff' fill-rule='nonzero'/%3E%3C/svg%3E");
@@ -153,8 +152,8 @@ ${foundryComponentColorVars("dark")}
 }
 
 :where(.bf-theme.bf-theme--light),
-:where(.bf-theme[data-bf-tone='light']),
-:where(.bf-theme[data-bf-tone='light']) {
+:where(.bf-theme.is-light),
+:where(.bf-theme.is-light) {
   color-scheme: light;
 }
 
@@ -727,7 +726,7 @@ ${controlPadding("var(--bf-control-block-size-dense)", bodyLineHeight, bodySelec
   min-inline-size: 0;
 }
 
-:where(.bf-theme) :where(.bf-actions[data-align='end'], .bf-actions.is-end) {
+:where(.bf-theme) :where(.bf-actions.is-end) {
   justify-content: flex-end;
 }
 

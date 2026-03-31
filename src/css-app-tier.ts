@@ -92,7 +92,6 @@ export function appTierPresetCss(): string {
   --bf-stack-space: var(--bf-space-2);
 }
 
-:where(.bf-theme.bf-tier-app) :where(.bf-stack[data-space='tight']),
 :where(.bf-theme.bf-tier-app) :where(.bf-stack.is-flush) {
   --bf-stack-space: 0px;
 }
@@ -105,7 +104,6 @@ export function appTierPresetCss(): string {
   --bf-stack-space: var(--bf-space-1);
 }
 
-:where(.bf-theme.bf-tier-app) :where(.bf-stack[data-space='loose']),
 :where(.bf-theme.bf-tier-app) :where(.bf-stack.is-loose) {
   --bf-stack-space: var(--bf-space-3);
 }

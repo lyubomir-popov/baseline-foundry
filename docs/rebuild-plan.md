@@ -2,36 +2,25 @@
 
 ## Goal
 
-Ship a lean, screenshot-oriented design-system foundation centered on:
-
-- real font metrics
-- baseline-aligned typography
-- element-owned editorial spacing
-- explicit grid and layout primitives
-- spec-first demo pages that can switch tiers over the same content
-
-This repo is not the place for broad framework parity or faux documentation-site chrome.
+Provide the **minimal testing surface** for evaluating the canonical typography, spacing, and grid specs. Output: spec examples, screenshots for specs, edge-case isolation for all non-deprecated Vanilla components — not a finished design-system site.
 
 ## Scope In
 
-- typography tokens
-- prose flow
-- spacing rules
-- baseline utilities
-- section and strip rhythm
-- stack, cluster, fixed-width, and grid primitives
+- typography tokens and baseline-aligned typescale (all three tiers)
+- prose flow and element-owned editorial spacing
+- baseline utilities, section and strip rhythm
+- `bf-grid`, `bf-stack`, `bf-cluster`, `bf-section` layout primitives
 - spec-focused demo pages for screenshot capture and tier comparison
-- small demo and validation surface
+- **all non-deprecated Vanilla components** as minimal `bf-*` ports (for edge-case isolation)
+- clean font swapping: Ubuntu Sans default, IBM Plex available as a brand-ops tier
 
-## Scope Out For Now
+## Scope Out
 
-- broad application component sets
-- navigation systems
-- feedback components
-- tables, forms, and shell chrome as first-class package goals
 - faux documentation-site framing and placeholder copy
-- continued parity work on explicitly removed Vanilla patterns
 - large compatibility alias layers
+- `ui-*` role classes (component typography uses body/heading tokens directly)
+- `data-*` CSS selectors for any styling purpose
+- ad-hoc layout scaffolding beyond the three layout primitives
 
 ## Principles
 
@@ -41,13 +30,15 @@ This repo is not the place for broad framework parity or faux documentation-site
 4. Layout primitives are explicit and small.
 5. Compatibility concerns should not drive the public API here.
 6. Additions must earn their place as durable primitives.
-7. Single-direction margin declarations: all text-bearing elements are reset to `margin: 0` inside the theme scope, then only `margin-block-end` is reintroduced by styled roles via `var(--bf-semantic-space-after)`. No element ever carries `margin-block-start` from the system. This follows the Harry Roberts single-direction margin pattern and keeps vertical rhythm predictable when elements compose in any order.
-8. Element qualifiers align by default: bare `<h1>`–`<h6>`, `<p>`, and `<figcaption>` inside a `bf-theme` scope receive baseline-alignment nudges, font sizing, and spacing automatically. Role classes (`bf-h1`, `bf-body`, etc.) exist only as overrides — for cross-element styling (e.g. a `<p>` that should look like a heading) — not as a prerequisite for basic alignment.
-9. Flat `bf-` naming convention: all component selectors use the `bf-` prefix with single-dash separation (`bf-form-group`, `bf-accordion-tab`, `bf-search-box`). No BEM double underscores (`__`) or double dashes (`--`). Variants and states use `is-*` modifiers or `data-*` attributes (`is-dense`, `is-base`, `data-align="end"`). The inherited `p-*` Vanilla prefix is retired from the shipped surface; public runtime CSS, demos, and verification now target only `bf-*` names.
-10. Dogfooding: demo pages must use only framework vocabulary (`bf-*` classes, `is-*` / `data-*` modifiers). No `component-demo-*` scaffolding classes that duplicate what the framework already provides. If a demo needs local styling that the framework cannot express, that is a signal the framework is missing a primitive — add the primitive, don't paper over the gap with demo-local CSS.
-11. No styled `data-*` attributes: if a `data-*` attribute appears in any CSS selector as a styling hook, that is a failure. `data-*` may only be used as JS-only query hooks (event binding, DOM lookup) with **zero** CSS rules targeting them. All visual styling goes through class selectors.
-12. No decorative containers: non-component containers must never carry backgrounds, borders, or inner padding. Only actual framework components (panels, cards, controls) may have visual decoration. If a `<div>` or `<section>` that exists solely for layout has a border or background, that is a failure.
-13. Only three layout primitives for page structure: `bf-grid`, `bf-stack`, `bf-cluster`. Section spacing uses `bf-section` / `bf-section.is-shallow` / `bf-section.is-deep`. No ad-hoc layout scaffolding.
+7. Single-direction margin declarations: all text-bearing elements are reset to `margin: 0` inside the theme scope, then only `margin-block-end` is reintroduced by styled roles via `var(--bf-semantic-space-after)`. No element ever carries `margin-block-start` from the system.
+8. Element qualifiers align by default: bare `<h1>`–`<h6>`, `<p>`, and `<figcaption>` inside a `bf-theme` scope receive baseline-alignment nudges, font sizing, and spacing automatically. Role classes (`bf-h1`, `bf-body`, etc.) exist only as overrides.
+9. Flat `bf-` naming convention: all component selectors use `bf-` prefix with single-dash separation. Variants and states use `is-*` class modifiers **only**. No BEM `__`/`--`. The `p-*` Vanilla prefix is retired from the shipped surface.
+10. Dogfooding: demo pages must use only framework vocabulary (`bf-*` classes, `is-*` modifiers). If a demo needs something the framework cannot express, add the missing primitive.
+11. **No styled `data-*` attributes**: `data-*` may only be used as JS-only query hooks (event binding, DOM lookup) with **zero** CSS rules targeting them. All visual styling goes through `bf-*` or `is-*` class selectors.
+12. No decorative containers: non-component containers must never carry backgrounds, borders, or inner padding. Only framework components may have visual decoration.
+13. Only three layout primitives for page structure: `bf-grid`, `bf-stack`, `bf-cluster`. Section spacing uses `bf-section` / `bf-section.is-shallow` / `bf-section.is-deep`.
+14. **No `ui-*` roles**: component typography derives from body/h5/h6 tier tokens. No separate `ui-heading`, `ui-small`, `ui-small-caps`, or `ui-x-small` role classes.
+15. **Minimal demo content**: all demo text is Latin lorem ipsum. No explanatory prose, marketing copy, or framework documentation in demos.
 
 ## Demo rules (reference)
 
@@ -61,9 +52,19 @@ This repo is not the place for broad framework parity or faux documentation-site
 
 ### Active parity filter
 
-The parity snapshot below is reference, not a blanket backlog. These Vanilla patterns are removed from active scope unless a downstream need reopens them: `article-block`, `article-pagination`, `blog`, `divider`, `in-page-navigation`, `list-tree`, `matrix`, `media-container`, `media-object`, `navigation-reduced`, `newsletter-signup`, `status-label`, `suru`, `table-expanding`, `table-mobile-card`, `table-of-contents`, `table-sortable`, `tooltips`.
+All non-deprecated Vanilla components are in scope for minimal `bf-*` demo ports. These **deprecated** Vanilla patterns are permanently excluded: `article-block`, `article-pagination`, `blog`, `newsletter-signup`, `suru`.
 
 ## Remaining phases
+
+### Phase 8 — Data-attribute cleanup + ui-class removal
+
+- [ ] Migrate all `data-bf-tone` CSS selectors to `is-dark`/`is-light` classes
+- [ ] Migrate all `data-space` CSS selectors to `is-flush`/`is-tight`/`is-loose` classes
+- [ ] Migrate all `data-align` CSS selectors to `is-end` class
+- [ ] Migrate `[data-spec-shell]` to `.spec-shell` class
+- [ ] Remove `ui-heading`, `ui-small`, `ui-small-caps`, `ui-x-small` from all tier configs
+- [ ] Update all HTML pages and JS files for new class-based API
+- [ ] Delete `examples/app-tier/` entirely
 
 ### Phase 4 - Concept hardening
 
@@ -74,7 +75,6 @@ The parity snapshot below is reference, not a blanket backlog. These Vanilla pat
 - [ ] Split tier choice from baseline engine choice so `.bf-tier-*` and `.bf-engine-*` can switch independently at the top level
 - [ ] Make `.bf-tier-app` a true zero-nudge, container-owned runtime line while editorial and other baseline-aligned surfaces remain engine-switchable
 - [ ] Migrate text-bearing components so their internal baseline compensation follows the selected engine instead of relying on ad hoc control-height math alone
-- [ ] Sweep parasite classes from all demo pages: replace every `component-demo-*` class that duplicates a framework primitive with the real `bf-*` equivalent; if a demo genuinely needs something the framework cannot express, add the missing primitive rather than keeping demo-local CSS
 
 ### Phase 6 — Font switch + canonical alignment ✅
 
@@ -173,24 +173,20 @@ Root cause: weights were adapted for IBM Plex Sans's narrower axis. Font switch 
 
 Root cause: documentation tier was never aligned to canonical; values are ad-hoc Plex adaptations.
 
-### Fix plan (execution order)
+### Fix plan (execution order) — RESOLVED ✅
 
-1. **Phase 6a — Font switch**: Download Ubuntu Sans Variable, update all three tier configs to use it, regenerate font metrics and nudges.
-2. **Phase 6b — Editorial weights**: Align H1–H6 weights to canonical (500/200/500/300/550/550), remove H5 uppercase.
-3. **Phase 6c — Documentation overhaul**: Set bU=0.25rem, sizes/weights/lineHeights/spaceAfter to match canonical exactly.
-4. **Phase 6d — Verify**: Rebuild, run tests, screenshot comparison.
+All typescale drift resolved in Phase 6. All tiers now match canonical exactly.
 
 ## Current architectural stance (condensed)
 
 - Editorial = baseline-aligned, element-owned spacing. App = zero-nudge, container-owned.
 - `bf-grid` is the only grid primitive (`4`/`8`/`16` columns, power-of-2 spans, `620px`/`1681px` thresholds).
-- Tier-first build: `editorial`, `documentation`, `app`. Documentation rides editorial for now.
+- Tier-first build: `editorial`, `documentation`, `app`.
 - Metrics-derived nudges default for baseline surfaces; `.bf-engine-cap` opt-in; `.bf-tier-app` zeroes nudges.
-- Demo shell dogfoods `bf-*` only. No `data-*` attribute styling for layout.
-- Compact inline surfaces use explicit `ui-*` roles, not body/h5.
-- Parity work is filtered by downstream swap pressure, not a blanket backlog.
-- Open design questions: row-style surface engine participation, panel preset density.
-- Decided: Ubuntu Sans Variable is the production font for all tiers (IBM Plex was testing-only).
+- Demo shell dogfoods `bf-*` and `is-*` only. No `data-*` attribute styling.
+- No `ui-*` role classes — component typography derives from body/heading tier tokens.
+- All non-deprecated Vanilla components in scope for minimal `bf-*` demo ports.
+- Ubuntu Sans Variable is the production font for all tiers; IBM Plex reserved for brand-ops preset.
 
 ## Vanilla Pattern Parity Snapshot (updated 2026-03-30)
 

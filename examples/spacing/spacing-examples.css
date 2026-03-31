@@ -17,7 +17,7 @@ body.bf-tier-app {
   background: var(--vf-color-background-alt, #f7f7f7);
 }
 
-[data-example-grid-target] {
+.example-grid-target {
   display: grid;
   gap: var(--bf-section-space, 4rem);
   padding: max(var(--bf-page-margin, 1rem), 1rem);
@@ -174,11 +174,11 @@ body.bf-tier-app {
   padding: 0.75rem;
 }
 
-.spacing-density-zone[data-gap="0"] {
+.spacing-density-zone.is-gap-zero {
   --zone-gap: 0;
 }
 
-.spacing-density-zone[data-gap="8"] {
+.spacing-density-zone.is-gap-base {
   --zone-gap: 0.5rem;
 }
 

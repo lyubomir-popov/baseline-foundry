@@ -18,7 +18,6 @@
   padding-inline: max(var(--bf-page-margin, 1rem), 1rem);
 }
 
-body[data-bf-tone="dark"] .pc-bar,
 body.is-dark .pc-bar {
   background: color-mix(in srgb, var(--bf-color-background-default, #262626) 90%, transparent);
 }

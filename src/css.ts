@@ -191,12 +191,12 @@ ${vanillaThemeColorVars("light")}${foundryThemeRootColorVars("light")}
   line-height: ${body.lineHeight};
 }
 
-:where(.bf-theme[data-bf-tone='dark'], .bf-theme.is-dark) {
+:where(.bf-theme.is-dark) {
 ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
   color-scheme: dark;
 }
 
-:where(.bf-theme[data-bf-tone='light']) {
+:where(.bf-theme.is-light) {
   color-scheme: light;
 }
 
@@ -210,8 +210,8 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
   --bf-baseline-grid-color: ${BASELINE_GRID_LIGHT_THEME_COLOR};
 }
 
-:where(.bf-theme[data-bf-tone='dark'], .bf-theme.is-dark).u-baseline-grid,
-:where(.bf-theme[data-bf-tone='dark'], .bf-theme.is-dark) .u-baseline-grid {
+:where(.bf-theme.is-dark).u-baseline-grid,
+:where(.bf-theme.is-dark) .u-baseline-grid {
   --bf-baseline-grid-color: ${BASELINE_GRID_DARK_THEME_COLOR};
 }
 
@@ -284,11 +284,11 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
   padding-block: var(--bf-space-4);
 }
 
-:where(.bf-theme) :where(.bf-stage-shell[data-space='tight']) {
+:where(.bf-theme) :where(.bf-stage-shell.is-tight) {
   --bf-stage-shell-gap: var(--bf-space-2);
 }
 
-:where(.bf-theme) :where(.bf-stage-shell[data-space='loose']) {
+:where(.bf-theme) :where(.bf-stage-shell.is-loose) {
   --bf-stage-shell-gap: var(--bf-space-4);
 }
 
@@ -302,7 +302,6 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
   gap: var(--bf-stack-space);
 }
 
-:where(.bf-theme) :where(.bf-stack[data-space='tight']),
 :where(.bf-theme) :where(.bf-stack.is-flush) {
   --bf-stack-space: 0px;
 }
@@ -315,7 +314,6 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
   --bf-stack-space: var(--bf-space-1);
 }
 
-:where(.bf-theme) :where(.bf-stack[data-space='loose']),
 :where(.bf-theme) :where(.bf-stack.is-loose) {
   --bf-stack-space: var(--bf-space-2);
 }

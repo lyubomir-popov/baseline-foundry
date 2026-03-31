@@ -16,11 +16,12 @@ function tierClassName(tierName) {
 }
 
 function currentTone() {
-  return document.body.dataset.bfTone === "dark" ? "dark" : "light";
+  return document.body.classList.contains("is-dark") ? "dark" : "light";
 }
 
 function applyTone(tone, baselineToggle) {
-  document.body.dataset.bfTone = tone;
+  document.body.classList.toggle("is-dark", tone === "dark");
+  document.body.classList.toggle("is-light", tone === "light");
   document.documentElement.style.colorScheme = tone;
 
   if (baselineToggle instanceof HTMLInputElement) {

@@ -56,7 +56,7 @@ The typography article adds explicit guidance around:
 - line-height multiples tied to the baseline unit
 - heading spacing treated as layout, not ad hoc typography styling
 
-Those ideas are highly transferable even though the typeface itself is Ubuntu Sans and this repo uses IBM Plex Serif.
+Those ideas are directly applicable since this repo also uses Ubuntu Sans Variable.
 
 ## What is worth borrowing
 
@@ -133,7 +133,7 @@ The transferable pieces are:
 - use heading spacing as a layout rule, not a local improvisation
 - keep a readable default measure around `40em`
 
-This is compatible with IBM Plex Serif even though the article itself is written around Ubuntu Sans.
+This is directly applicable since this repo also uses Ubuntu Sans Variable.
 
 ### 5. Border compensation and box-model honesty
 
@@ -161,18 +161,9 @@ with different base sizes, different nudge behavior, and different authoring gui
 
 This repo should keep one strong editorial-first default until actual reuse pressure proves a second preset is necessary.
 
-### 2. Ubuntu Sans-specific values and heading pairings
+### 2. ~~Ubuntu Sans-specific values and heading pairings~~ RESOLVED
 
-The Canonical typography values are tied to Ubuntu Sans, their brand, and their documentation/application constraints.
-
-We should not copy:
-
-- exact sizes
-- exact weight pairings
-- small-caps defaults
-- app/docs-specific base sizes
-
-What transfers is the method, not the literal scale.
+> **Update (2026-03-31):** This repo now uses Ubuntu Sans Variable as its production font. Canonical typography values are directly usable. All three tier configs match the canonical source of truth exactly.
 
 ### 3. Application simplification as the default center
 
@@ -197,7 +188,7 @@ There is still a tension between the documents:
 
 That is not a blocker, but it means we should not blindly inherit the Canonical baseline-unit story until their cross-spec wording settles.
 
-For now, `baseline-foundry` should keep its own baseline-unit choice explicit and self-consistent.
+For now, `baseline-foundry` keeps its own baseline-unit values explicit and self-consistent: editorial 0.5rem (8px), documentation 0.25rem (4px), app 0.5rem (8px). These match the canonical configs.
 
 ## Updated recommendation for `baseline-foundry`
 

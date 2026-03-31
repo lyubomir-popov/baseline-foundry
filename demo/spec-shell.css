@@ -17,7 +17,7 @@ body {
   min-height: 100vh;
 }
 
-[data-spec-shell] {
+.spec-shell {
   min-block-size: 100vh;
   padding-block-end: var(--bf-section-space, 4rem);
 }

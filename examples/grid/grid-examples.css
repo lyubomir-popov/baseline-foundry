@@ -21,7 +21,7 @@ a {
   color: inherit;
 }
 
-[data-example-grid-target] {
+.example-grid-target {
   display: grid;
   gap: var(--bf-section-space, 4rem);
   padding: max(var(--bf-page-margin, 1rem), 1rem);
@@ -118,7 +118,7 @@ a {
   min-block-size: 100%;
 }
 
-.example-grid-frame:has([data-grid-overlay-toggle]:not(:checked)) .example-column-guide {
+.example-grid-frame:has(.example-grid-overlay-toggle:not(:checked)) .example-column-guide {
   opacity: 0;
 }
 
@@ -243,21 +243,21 @@ a {
   transition: transform 140ms ease;
 }
 
-.example-app-shell:has([data-overlay-toggle]:checked) .example-app-overlay {
+.example-app-shell:has(.example-overlay-toggle:checked) .example-app-overlay {
   transform: translateX(0);
 }
 
-.example-app-shell:has([data-nav-toggle]:not(:checked)) {
+.example-app-shell:has(.example-nav-toggle:not(:checked)) {
   --left-panel-width: 0rem;
 }
 
-.example-app-shell:has([data-nav-toggle]:not(:checked)) .example-app-nav {
+.example-app-shell:has(.example-nav-toggle:not(:checked)) .example-app-nav {
   opacity: 0;
   overflow: hidden;
   padding-inline: 0;
 }
 
-.example-app-shell:has([data-nav-toggle]:not(:checked)) .example-app-main {
+.example-app-shell:has(.example-nav-toggle:not(:checked)) .example-app-main {
   grid-column: 2 / span 2;
 }
 
@@ -275,7 +275,7 @@ a {
   overflow: hidden;
 }
 
-.example-panel-reflow:has([data-panel-open]:checked) .example-panel-reflow-shell {
+.example-panel-reflow:has(.example-panel-toggle:checked) .example-panel-reflow-shell {
   --reflow-panel-width: 19rem;
 }
 
@@ -298,11 +298,11 @@ a {
   gap: 1rem;
 }
 
-.example-gutter-compare .example-surface[data-gutter="editorial"] {
+.example-gutter-compare .example-surface.is-gutter-editorial {
   --bf-grid-gap-inline: 2rem;
 }
 
-.example-gutter-compare .example-surface[data-gutter="app"] {
+.example-gutter-compare .example-surface.is-gutter-app {
   --bf-grid-gap-inline: 1.5rem;
 }
 

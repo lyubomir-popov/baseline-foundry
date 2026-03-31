@@ -134,7 +134,7 @@ function supportedTierNames() {
 }
 
 function currentTone() {
-  return document.body.dataset.bfTone === "dark" ? "dark" : "light";
+  return document.body.classList.contains("is-dark") ? "dark" : "light";
 }
 
 function updateStatus(message) {
@@ -157,7 +157,8 @@ function syncBaselineGridColor() {
 }
 
 function applyTone(tone, { persist = true } = {}) {
-  document.body.dataset.bfTone = tone;
+  document.body.classList.toggle("is-dark", tone === "dark");
+  document.body.classList.toggle("is-light", tone === "light");
   document.documentElement.style.colorScheme = tone;
 
   if (toneToggle instanceof HTMLInputElement) {

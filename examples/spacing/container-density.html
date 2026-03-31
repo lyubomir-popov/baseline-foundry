@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-app" data-bf-tone="light">
-  <main data-example-grid-target>
+  <main class="example-grid-target">
     <section class="spacing-fixed-width spacing-hero bf-prose">
       <h1>Container density</h1>
       <p>The card itself uses a 16px gap, while the inner zones intentionally run at `0px`, chart-spacing, and `8px` to show nested density inside a single app-surface card.</p>
@@ -18,7 +18,7 @@
     <section class="spacing-fixed-width spacing-grid-two">
       <article class="spacing-density-card">
         <h2 class="bf-h4">Structured density</h2>
-        <section class="spacing-density-zone" data-gap="0">
+        <section class="spacing-density-zone is-gap-zero">
           <div class="spacing-density-row"><strong>Disk</strong><span>480GB SSD</span></div>
           <div class="spacing-density-row"><strong>Allocated</strong><span>320GB</span></div>
           <div class="spacing-density-row"><strong>Free</strong><span>160GB</span></div>
@@ -26,7 +26,7 @@
         <section class="spacing-density-zone">
           <div class="spacing-demo-box" style="min-block-size:calc(var(--bf-baseline, 0.5rem) * 14)"></div>
         </section>
-        <section class="spacing-density-zone" data-gap="8">
+        <section class="spacing-density-zone is-gap-base">
           <button class="bf-button is-base">Detach</button>
           <button class="bf-button">Allocate</button>
         </section>
