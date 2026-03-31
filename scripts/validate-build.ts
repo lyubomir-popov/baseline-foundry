@@ -130,8 +130,11 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-tick-box-offset: calc((var(--bf-tick-row-block-size) - var(--bf-control-visual-size)) / 2);"), "Expected generated CSS to derive tick-box placement from the dense control row variables.");
   assert(css.includes("--bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding));"), "Expected generated CSS to derive tick label spacing from the control inline padding token.");
   assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
-  assert(css.includes("var(--bf-body-nudge-start)"), "Expected controls to consume the body alignment nudge.");
-  assert(css.includes("var(--bf-body-nudge-end)"), "Expected controls to consume the body alignment nudge on both edges.");
+  assert(css.includes("--bf-control-block-padding:"), "Expected generated CSS to define the regular control block padding token.");
+  assert(css.includes("--bf-control-block-padding-compact:"), "Expected generated CSS to define the compact control block padding token.");
+  assert(css.includes("--bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));"), "Expected generated CSS to derive regular control box size from the control block padding token.");
+  assert(css.includes("padding-block: max(0rem, calc(var(--bf-control-block-padding) - var(--bf-border-width)));"), "Expected bordered controls to use the explicit control block padding token.");
+  assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact inline surfaces to use the compact control block padding token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control, .bf-grid-item.is-control-pair) {\n  grid-column: auto / span 4;"), "Expected grid CSS to include the default dense control-grid recipe spans.");
@@ -231,10 +234,12 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(roles.h1 && roles.h2 && roles.h3 && roles.h4 && roles.h5 && roles.h6, "Expected generated tokens to include the standard heading roles.");
   assert(fontFiles.some(fontFile => fontFile.family === "ubuntu-sans"), "Expected generated tokens to include the Ubuntu Sans font.");
   assert(components.borderWidth, "Expected generated tokens to include component border width.");
+  assert(components.controlBlockPadding, "Expected generated tokens to include regular control block padding.");
+  assert(components.controlCompactBlockPadding, "Expected generated tokens to include compact control block padding.");
   assert(components.controlInlinePadding, "Expected generated tokens to include component padding.");
   assert(components.controlVisualSize, "Expected generated tokens to include component visual size.");
-  assert(components.controlMinBlockSize, "Expected generated tokens to include component control size.");
-  assert(components.controlMinBlockSizeDense, "Expected generated tokens to include component dense control size.");
+  assert(!("controlMinBlockSize" in components), "Expected generated tokens to stop exposing legacy control height tokens.");
+  assert(!("controlMinBlockSizeDense" in components), "Expected generated tokens to stop exposing legacy dense control height tokens.");
 
   return { roles, layout, components };
 }
@@ -268,9 +273,11 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(roles.h2.fontWeight === 300, "Expected the app-tier preset h2 to use the lighter Ubuntu Sans pairing.");
   assert(layout.gridGapInline === '1.5rem', "Expected the app-tier preset inline grid gap token to stay at the 24px application gutter.");
   assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 32px application outer margin.");
+  assert(components.controlBlockPadding === '0.5rem', "Expected the app-tier preset regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
+  assert(components.controlCompactBlockPadding === '0.375rem', "Expected the app-tier preset compact control block padding to preserve the legacy 2rem inline control box height.");
   assert(components.controlInlinePadding === '1rem', "Expected the app-tier preset control padding to come from the app-tier components block.");
-  assert(components.controlMinBlockSize === '2.25rem', "Expected the app-tier preset control height to come from the app-tier components block.");
-  assert(components.controlMinBlockSizeDense === '2rem', "Expected the app-tier preset dense control height to come from the app-tier components block.");
+  assert(!("controlMinBlockSize" in components), "Expected the app-tier preset tokens to stop exposing legacy control height tokens.");
+  assert(!("controlMinBlockSizeDense" in components), "Expected the app-tier preset tokens to stop exposing legacy dense control height tokens.");
   assert(css.includes('.bf-h1'), "Expected the app-tier preset CSS to emit role utility selectors like the other presets.");
 }
 
@@ -295,15 +302,15 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   assert(layout.pageMargin === "1.5rem", "Expected the documentation tier page margin token to be 1.5rem.");
   assert(layout.sectionSpace === "3rem", "Expected the documentation tier section rhythm to be 3rem.");
   assert(layout.sectionSpaceDeep === "6rem", "Expected the documentation tier deep section rhythm to be 6rem.");
+  assert(components.controlBlockPadding === "0.5rem", "Expected the documentation tier regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
+  assert(components.controlCompactBlockPadding === "0.375rem", "Expected the documentation tier compact control block padding to preserve the legacy 2rem inline control box height.");
   assert(components.controlInlinePadding === "0.875rem", "Expected the documentation tier control padding to tighten slightly.");
   assert(components.controlVisualSize === "0.875rem", "Expected the documentation tier visual control size to tighten slightly.");
-  assert(components.controlMinBlockSize === "2.25rem", "Expected the documentation tier control height to be 2.25rem.");
-  assert(components.controlMinBlockSizeDense === "2rem", "Expected the documentation tier dense control height to be 2rem.");
   assert(css.includes('.bf-h1'), "Expected the documentation tier CSS to emit role utility selectors.");
 }
 
 function validateLivingSpecHome(html: string): void {
-  assert(html.includes('data-page-tier-options="editorial,app"'), "Expected index.html to declare the supported shared-bar tiers.");
+  assert(html.includes('data-page-tier-options="editorial,documentation,app"'), "Expected index.html to declare the supported shared-bar tiers.");
   assert(html.includes('./dist/tiers/editorial/styles.css'), "Expected index.html to load the editorial tier output by default.");
   assert(html.includes('class="bf-grid pc-grid-guide"'), "Expected index.html to include grid guide specimens.");
   assert(html.includes('bf-grid-scope'), "Expected index.html to include bf-grid-scope container query scopes.");
@@ -323,13 +330,13 @@ function validateLivingSpecHome(html: string): void {
 }
 
 function validateLivingSpecControls(html: string, css: string): void {
-  assert(html.includes('data-page-tier-options="editorial,app"'), "Expected demo/controls.html to declare the supported shared-bar tiers.");
+  assert(html.includes('data-page-tier-options="editorial,documentation,app"'), "Expected demo/controls.html to declare the supported shared-bar tiers.");
   assert(html.includes('../dist/tiers/app/styles.css'), "Expected demo/controls.html to default to the app tier output.");
   assert(html.includes('<h2>Core fields</h2>'), "Expected demo/controls.html to expose the core fields section heading.");
   assert(!html.includes('data-controls-hero'), "Expected demo/controls.html hero section to be removed.");
   assert(!html.includes('data-controls-summary'), "Expected demo/controls.html summary aside to be removed.");
   assert(html.includes('class="bf-search-and-filter"'), "Expected demo/controls.html to include the search-and-filter control family.");
-  assert(html.includes('class="bf-segmented-control is-dense"'), "Expected demo/controls.html to include the segmented-control family.");
+  assert(html.includes('class="bf-segmented-control"'), "Expected demo/controls.html to include the segmented-control family.");
   assert(html.includes('bf-contextual-menu'), "Expected demo/controls.html to include the contextual-menu family.");
   assert(html.includes('class="bf-modal-dialog"'), "Expected demo/controls.html to include modal framing.");
   assert(html.includes('src="./controls-page.js"'), "Expected demo/controls.html to boot through the dedicated controls-page runtime.");
@@ -369,9 +376,9 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.pageMargin === "1rem", "Expected the prose default page margin token to provide the x-small 16px margin.");
   assert(layout.sectionSpace === "4rem", "Expected the prose default section rhythm to be 4rem.");
   assert(components.radius === "0rem", "Expected the prose default controls to stay square, matching the compat visual direction.");
+  assert(components.controlBlockPadding === "0.5rem", "Expected the prose default regular control block padding to preserve the 2.5rem editorial control box height without a dedicated block-size token.");
+  assert(components.controlCompactBlockPadding === "0.25rem", "Expected the prose default compact control block padding to support tighter inline surfaces.");
   assert(components.controlVisualSize === "1rem", "Expected the prose default control glyphs to use a dedicated 1rem visual size.");
-  assert(components.controlMinBlockSize === "2.5rem", "Expected the prose default control height to come from the theme components block.");
-  assert(components.controlMinBlockSizeDense === "2rem", "Expected the prose default dense control height to come from the theme components block.");
 
   for (const roleName of Object.keys(roles)) {
     assert(css.includes(`.bf-${roleName}`), `Expected generated CSS to include the configured "${roleName}" utility selector.`);
@@ -421,11 +428,11 @@ function validatePanelTheme(tokens: Record<string, unknown>, css: string): void 
   assert(components.panelPaddingInline === "1rem", "Expected the panel preset panel padding to come from the dense components block.");
   assert(components.panelPaddingBlock === "1rem", "Expected the panel preset panel padding to come from the dense components block.");
   assert(components.accordionIndent === "0.75rem", "Expected the panel preset accordion indent to come from the dense components block.");
-  assert(components.controlMinBlockSize === "1.75rem", "Expected the panel preset control height to add one more baseline unit of breathing room.");
-  assert(components.controlMinBlockSizeDense === "1.5rem", "Expected the panel preset dense control height to add one more baseline unit of breathing room.");
+  assert(components.controlBlockPadding === "0.375rem", "Expected the panel preset regular control block padding to preserve the legacy 1.75rem control box height without a dedicated block-size token.");
+  assert(components.controlCompactBlockPadding === "0.25rem", "Expected the panel preset compact control block padding to preserve the legacy 1.5rem inline control box height.");
 
   assert(typeof roles.body.nudgeTop === "string" && css.includes(`--bf-body-nudge-start: ${roles.body.nudgeTop};`), "Expected compact list items to expose the panel preset body nudge.");
-  assert(css.includes("padding-block-start: var(--bf-body-nudge-start);"), "Expected compact list items to use the body nudge start variable.");
+  assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact list items to use the compact control block padding token.");
   assert(css.includes("--bf-control-visual-size: 0.75rem;"), "Expected the panel preset CSS to expose a dedicated visual control size token.");
   assert(css.includes("block-size: var(--bf-control-visual-size);"), "Expected checkbox/radio/thumb visuals to size from the dedicated control visual token.");
 }

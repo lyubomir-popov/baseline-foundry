@@ -36,7 +36,7 @@
               <code id="panel-body-size">0.75rem / 1rem</code>
             </div>
             <div data-spec-token-row>
-              <strong>Control size</strong>
+              <strong>Control padding</strong>
               <span id="panel-control-size">-</span>
             </div>
             <div data-spec-token-row>
@@ -117,7 +117,7 @@
         }
 
         if (controlSize instanceof HTMLElement) {
-          controlSize.textContent = `${tokens.components.controlMinBlockSize} default / ${tokens.components.controlMinBlockSizeDense} dense`;
+          controlSize.textContent = `${tokens.components.controlBlockPadding} inset / ${tokens.components.controlCompactBlockPadding} compact`;
         }
 
         if (fieldGap instanceof HTMLElement) {

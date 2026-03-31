@@ -19,9 +19,9 @@ Demo: `http://127.0.0.1:4174/`
 
 ## Current state
 
-Clean sibling to `portable-vertical-rhythm`: real font metrics, editorial-first baseline alignment, Canonical `4/8/16` grid, tier-first build model (`editorial`, `documentation`, `app`). All three tiers use Ubuntu Sans Variable matching canonical weights exactly. Architecture refactor landed: literal CSS values, layout container child reset, tier overrides via class toggle, simplified component vars (3 per role). The Vanilla-model control invariant is now documented canonically, and the `bf-input` proof of concept is validated: symmetric `padding-block: nudge - border`, no explicit block-size, grid compensation via control `margin-bottom`, full test suite green. Remaining work is bulk rollout to the rest of the control family and removal of the old control-block-size system.
+Clean sibling to `portable-vertical-rhythm`: real font metrics, editorial-first baseline alignment, Canonical `4/8/16` grid, tier-first build model (`editorial`, `documentation`, `app`). All three tiers use Ubuntu Sans Variable matching canonical weights exactly. The latest control-spacing milestone is landed across the control family: buttons, inputs, selects, pagination, tabs, segmented controls, navigation links, drawers, panel surfaces, and related demos now size from explicit regular/compact control block padding tokens instead of body-nudge-derived target-height math. Root and component typography now consume role-scoped vars, so body-sized components track the active tier instead of freezing editorial literals. Legacy `controlMinBlockSize*` plumbing is removed from types, config, build output, and validation, the screenshot capture pipeline ignores empty selector entries safely, and both `npm test` and `npm run qa:components` are green.
 
-**Living-spec audit complete.** No `p-*` parasites. No deprecated patterns in demos. No styled `data-*` attributes. Identified 6 cleanup items (see `docs/TODO.md` § "Audit findings"): `l-*` alias hygiene in demos + CSS, `bf-theme--light` alias, dead `bf-panel-logo` selector, `bf-label`/`bf-status-label` redundancy, `bf-u-no-margin.is-bottom` naming. New: OS tier concept triaged from inbox.
+**Living-spec audit complete.** No `p-*` parasites. No deprecated patterns in demos. No styled `data-*` attributes. Remaining cleanup items are tracked in `docs/TODO.md`: `l-*` alias hygiene in demos + CSS, `bf-theme--light` alias, dead `bf-panel-logo` selector, `bf-label`/`bf-status-label` redundancy, `bf-u-no-margin.is-bottom` naming, plus a follow-up audit to keep tier token surfaces explicit when new properties are added. OS tier remains triaged as an addendum item.
 
 ## Where to look
 
@@ -47,8 +47,10 @@ Clean sibling to `portable-vertical-rhythm`: real font metrics, editorial-first 
 
 - Editorial baseline alignment is sacred. Do not reintroduce app-tier nudges without spec decision.
 - Controls follow the Vanilla model: symmetric `padding-block = nudge - border`, no explicit `block-size`, and `margin-bottom` snaps the full control block to the grid. See `docs/TODO.md` → `Control baseline-grid invariant`.
+- Control density comes from tier tokens, not per-component `.is-dense` rules or target-height vars.
 - Layout containers (Stack, Cluster, Stage-shell) own child spacing via child reset. No margin/padding on text elements inside stacks.
 - Tier switching = class-based (`.bf-tier-app` / `.bf-tier-documentation` on theme root). No stylesheet swapping.
+- Component and root typography must read role-scoped vars for the active tier; do not reintroduce frozen editorial literals.
 - Cap engine (`.bf-engine-cap`) is demo-only — drifts at larger sizes.
 - No `data-*` CSS selectors. No `ui-*` roles. Only `body` + `h1`–`h6` are valid roles.
 - IBM Plex is brand-layout-ops only; baseline-foundry uses Ubuntu Sans exclusively.

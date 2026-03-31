@@ -47,7 +47,7 @@ async function computeCaptureClip(
     const candidates = Array.from(
       captureRoot.querySelectorAll<HTMLElement>("[data-baseline-check], [data-overflow-check]")
     )
-      .filter(element => !element.matches(ignoredSelector))
+      .filter(element => !ignoredSelector || !element.matches(ignoredSelector))
       .filter(element => !element.closest("[data-capture-ignore='true']"))
       .filter(element => element.getClientRects().length > 0)
       .map(element => ({ rect: element.getBoundingClientRect() }));

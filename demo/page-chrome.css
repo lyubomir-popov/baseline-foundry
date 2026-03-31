@@ -13,7 +13,7 @@
   flex-wrap: wrap;
   gap: 0.25rem 0.75rem;
   justify-content: space-between;
-  min-block-size: calc(var(--bf-control-block-size-dense, 2rem) + 0.5rem);
+  min-block-size: calc(var(--bf-control-box-size-compact, 1.75rem) + 0.5rem);
   padding-block: 0.25rem;
   padding-inline: max(var(--bf-page-margin, 1rem), 1rem);
 }

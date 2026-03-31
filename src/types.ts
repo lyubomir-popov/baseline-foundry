@@ -37,14 +37,14 @@ export interface ThemeLayoutConfig {
 export interface ThemeComponentsConfig {
   borderWidthPx: number;
   radiusRem: number;
+  controlBlockPaddingRem: number;
+  controlCompactBlockPaddingRem?: number;
   controlInlinePaddingRem: number;
   controlVisualSizeRem: number;
   fieldGapBaselineUnits: number;
   panelPaddingInlineBaselineUnits: number;
   panelPaddingBlockBaselineUnits: number;
   accordionIndentBaselineUnits: number;
-  controlMinBlockSizeBaselineUnits: number;
-  controlMinBlockSizeDenseBaselineUnits?: number;
 }
 
 export interface ThemeConfig {
@@ -98,14 +98,14 @@ export interface LayoutTokens {
 export interface ComponentTokens {
   borderWidth: string;
   radius: string;
+  controlBlockPadding: string;
+  controlCompactBlockPadding: string;
   controlInlinePadding: string;
   controlVisualSize: string;
   fieldGap: string;
   panelPaddingInline: string;
   panelPaddingBlock: string;
   accordionIndent: string;
-  controlMinBlockSize: string;
-  controlMinBlockSizeDense: string;
 }
 
 export interface ThemeTokens {

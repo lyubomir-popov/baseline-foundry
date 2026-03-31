@@ -151,16 +151,16 @@ function buildComponentTokens(config: ThemeConfig): ComponentTokens {
   return {
     borderWidth: `${config.components.borderWidthPx}px`,
     radius: toRem(config.components.radiusRem),
+    controlBlockPadding: toRem(config.components.controlBlockPaddingRem),
+    controlCompactBlockPadding: toRem(
+      config.components.controlCompactBlockPaddingRem ?? config.components.controlBlockPaddingRem
+    ),
     controlInlinePadding: toRem(config.components.controlInlinePaddingRem),
     controlVisualSize: toRem(config.components.controlVisualSizeRem),
     fieldGap: toRem(config.components.fieldGapBaselineUnits * config.baselineUnit),
     panelPaddingInline: toRem(config.components.panelPaddingInlineBaselineUnits * config.baselineUnit),
     panelPaddingBlock: toRem(config.components.panelPaddingBlockBaselineUnits * config.baselineUnit),
-    accordionIndent: toRem(config.components.accordionIndentBaselineUnits * config.baselineUnit),
-    controlMinBlockSize: toRem(config.components.controlMinBlockSizeBaselineUnits * config.baselineUnit),
-    controlMinBlockSizeDense: toRem(
-      (config.components.controlMinBlockSizeDenseBaselineUnits ?? config.components.controlMinBlockSizeBaselineUnits) * config.baselineUnit
-    )
+    accordionIndent: toRem(config.components.accordionIndentBaselineUnits * config.baselineUnit)
   };
 }
 

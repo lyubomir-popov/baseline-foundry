@@ -5,7 +5,6 @@ const TIER_STORAGE_KEY = "baseline-foundry:living-spec-tier";
 const TONE_STORAGE_KEY = "baseline-foundry:living-spec-tone";
 const rootPrefix = document.documentElement.dataset.specRoot ?? "..";
 let activeTierLoad = 0;
-let tierStylesheet = null;
 let tierSelect = null;
 let toneToggle = null;
 
@@ -39,8 +38,12 @@ function cacheBust(url) {
   return `${url}${sep}t=${Date.now()}`;
 }
 
-function stylesheetUrl(tierName) {
-  return cacheBust(assetUrl(`dist/tiers/${tierName}/styles.css`));
+function runtimeStylesheetUrl() {
+  return cacheBust(assetUrl("dist/tiers/editorial/styles.css"));
+}
+
+function stylesheetArtifactUrl(tierName) {
+  return assetUrl(`dist/tiers/${tierName}/styles.css`);
 }
 
 function tokensUrl(tierName) {
@@ -73,7 +76,7 @@ function renderTokens(tokens) {
   setText('[data-spec-token="grid-gap"]', `${layout.gridGapInline ?? "-"} inline / ${layout.gridGapBlock ?? "-"} block`);
   setText('[data-spec-token="page-margin"]', layout.pageMargin ?? "-");
   setText('[data-spec-token="section-space"]', `${layout.sectionSpace ?? "-"} default / ${layout.sectionSpaceDeep ?? "-"} deep`);
-  setText('[data-spec-token="control-size"]', `${components.controlMinBlockSize ?? "-"} default / ${components.controlMinBlockSizeDense ?? "-"} dense`);
+  setText('[data-spec-token="control-size"]', `${components.controlBlockPadding ?? "-"} inset / ${components.controlCompactBlockPadding ?? "-"} compact`);
   setText('[data-spec-token="role-count"]', String(Object.keys(roles).length));
 
   if (roleList instanceof HTMLElement) {
@@ -187,10 +190,6 @@ async function applyTier(tierName) {
     tierSelect.value = tierName;
   }
 
-  if (tierStylesheet instanceof HTMLLinkElement) {
-    tierStylesheet.href = stylesheetUrl(tierName);
-  }
-
   document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app");
   document.body.classList.add("bf-theme", tier.className);
   document.body.dataset.bfTier = tierName;
@@ -198,7 +197,7 @@ async function applyTier(tierName) {
   setText("[data-spec-current-tier]", tier.label);
   setText("[data-spec-tier-description]", tier.description);
   setText("[data-spec-tier-detail]", tier.detail);
-  setLink("css", stylesheetUrl(tierName));
+  setLink("css", stylesheetArtifactUrl(tierName));
   setLink("tokens", tokensUrl(tierName));
   updateStatus();
 
@@ -230,10 +229,15 @@ export async function initSpecRuntime({ initComponents } = {}) {
     throw new Error("Missing #spec-tier-stylesheet link.");
   }
 
-  tierStylesheet = stylesheetLink;
+  stylesheetLink.href = runtimeStylesheetUrl();
 
   const supportedTiers = supportedTierNames().map(name => ({ value: name, label: tierConfig[name]?.label ?? name }));
-  const currentTier = document.body.dataset.bfTier ?? (document.body.classList.contains("bf-tier-app") ? "app" : "editorial");
+  const currentTier = document.body.dataset.bfTier
+    ?? (document.body.classList.contains("bf-tier-app")
+      ? "app"
+      : document.body.classList.contains("bf-tier-documentation")
+        ? "documentation"
+        : "editorial");
   const baselineTarget = document.querySelector(".spec-shell") ?? document.body;
   const baselineTargetId = ensureTargetId(baselineTarget, "spec-grid-target");
   const chrome = injectPageChrome({

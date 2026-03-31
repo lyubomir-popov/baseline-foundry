@@ -144,13 +144,13 @@
   "components": {
     "borderWidthPx": 1,
     "radiusRem": 0,
+    "controlBlockPaddingRem": 0.375,
+    "controlCompactBlockPaddingRem": 0.25,
     "controlInlinePaddingRem": 0.75,
     "controlVisualSizeRem": 0.75,
     "fieldGapBaselineUnits": 1,
     "panelPaddingInlineBaselineUnits": 4,
     "panelPaddingBlockBaselineUnits": 4,
-    "accordionIndentBaselineUnits": 3,
-    "controlMinBlockSizeBaselineUnits": 7,
-    "controlMinBlockSizeDenseBaselineUnits": 6
+    "accordionIndentBaselineUnits": 3
   }
 }

@@ -240,11 +240,11 @@ html.u-baseline-grid::after {
 ${vanillaThemeColorVars("light")}${foundryThemeRootColorVars("light")}
   background: var(--bf-color-bg);
   color: var(--bf-color-text);
-  font-family: ${body.fontStack};
-  font-size: ${body.fontSize};
-  font-style: ${body.fontStyle ?? "normal"};
-  font-weight: ${body.fontWeight ?? 400};
-  line-height: ${body.lineHeight};
+  font-family: var(--bf-body-font-family, ${body.fontStack});
+  font-size: var(--bf-body-font-size, ${body.fontSize});
+  font-style: var(--bf-body-font-style, ${body.fontStyle ?? "normal"});
+  font-weight: var(--bf-body-font-weight, ${body.fontWeight ?? 400});
+  line-height: var(--bf-body-line-height, ${body.lineHeight});
 }
 
 :where(.bf-theme.is-dark) {
@@ -394,7 +394,7 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
 }
 
 :where(.bf-theme) :where(.bf-cluster) {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-space-2);

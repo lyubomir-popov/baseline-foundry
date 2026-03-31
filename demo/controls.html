@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="./spec-shell.css">
   <link rel="stylesheet" href="./controls-shell.css">
 </head>
-<body class="bf-theme bf-tier-app is-light" data-page-tier-options="editorial,app">
+<body class="bf-theme bf-tier-app is-light" data-page-tier-options="editorial,documentation,app">
   <main class="spec-shell" data-spec-home id="controls-grid-target">
 
     <section class="bf-section" data-spec-section>
@@ -27,7 +27,7 @@
               <div class="bf-field">
                 <label class="bf-form-label" for="controls-title">Title</label>
                 <div class="bf-control">
-                  <input id="controls-title" class="bf-input is-dense" type="text" value="Ubuntu Summit">
+                  <input id="controls-title" class="bf-input" type="text" value="Ubuntu Summit">
                 </div>
                 <p class="bf-form-help">Compact control rows still leave one full baseline unit of breathing room.</p>
               </div>
@@ -35,7 +35,7 @@
               <div class="bf-field">
                 <label class="bf-form-label" for="controls-alias">Document alias</label>
                 <div class="bf-control">
-                  <input id="controls-alias" class="bf-input is-dense" type="text" value="summit-lockup-title">
+                  <input id="controls-alias" class="bf-input" type="text" value="summit-lockup-title">
                 </div>
                 <p class="bf-form-help is-tight">Tight helper text stays in the package token model.</p>
               </div>
@@ -112,7 +112,7 @@
               <div class="bf-field is-success">
                 <label class="bf-form-label" for="controls-success">Slug</label>
                 <div class="bf-control">
-                  <input id="controls-success" class="bf-input is-dense" type="text" value="ubuntu-summit-lockup">
+                  <input id="controls-success" class="bf-input" type="text" value="ubuntu-summit-lockup">
                 </div>
                 <p class="bf-validation-message">Saved and synced to export defaults.</p>
               </div>
@@ -120,7 +120,7 @@
               <div class="bf-field is-caution">
                 <label class="bf-form-label" for="controls-caution">Title width</label>
                 <div class="bf-control">
-                  <input id="controls-caution" class="bf-input is-dense" type="text" value="Needs review">
+                  <input id="controls-caution" class="bf-input" type="text" value="Needs review">
                 </div>
                 <p class="bf-validation-message">The longest preset may wrap at narrow widths.</p>
               </div>
@@ -128,7 +128,7 @@
               <div class="bf-field is-error">
                 <label class="bf-form-label" for="controls-error">Export path</label>
                 <div class="bf-control">
-                  <input id="controls-error" class="bf-input is-dense" type="text" placeholder="Choose a path">
+                  <input id="controls-error" class="bf-input" type="text" placeholder="Choose a path">
                 </div>
                 <p class="bf-validation-message">A writable export destination is required.</p>
               </div>
@@ -257,7 +257,7 @@
               <h3 class="bf-panel-title">Segmented rows, actions, and status</h3>
             </div>
             <div class="bf-panel-content bf-controls-stack">
-              <div class="bf-segmented-control is-dense">
+              <div class="bf-segmented-control">
                 <ul class="bf-segmented-control-list">
                   <li class="bf-segmented-control-item"><button class="bf-segmented-control-button is-active" type="button" aria-pressed="true">Frame</button></li>
                   <li class="bf-segmented-control-item"><button class="bf-segmented-control-button" type="button" aria-pressed="false">Text</button></li>
@@ -266,16 +266,16 @@
               </div>
 
               <div class="bf-actions">
-                <button class="bf-button is-base is-dense" type="button">Cancel</button>
-                <button class="bf-button is-dense" type="button">Apply</button>
+                <button class="bf-button is-base" type="button">Cancel</button>
+                <button class="bf-button" type="button">Apply</button>
               </div>
 
               <div class="bf-actions is-nowrap">
-                <button class="bf-button is-base is-dense" type="button">PNG</button>
-                <button class="bf-button is-base is-dense" type="button">SVG</button>
-                <button class="bf-button is-base is-dense" type="button">GIF</button>
-                <button class="bf-button is-base is-dense" type="button">MP4</button>
-                <button class="bf-button is-dense" type="button">Export all</button>
+                <button class="bf-button is-base" type="button">PNG</button>
+                <button class="bf-button is-base" type="button">SVG</button>
+                <button class="bf-button is-base" type="button">GIF</button>
+                <button class="bf-button is-base" type="button">MP4</button>
+                <button class="bf-button" type="button">Export all</button>
               </div>
 
               <div class="bf-cluster">
@@ -405,7 +405,7 @@
             </div>
             <div class="bf-panel-content bf-controls-stack">
               <div class="bf-contextual-menu bf-controls-menu-panel">
-                <button class="bf-button is-base is-dense bf-contextual-menu-toggle" type="button" aria-expanded="true">Actions</button>
+                <button class="bf-button is-base bf-contextual-menu-toggle" type="button" aria-expanded="true">Actions</button>
                 <ul class="bf-contextual-menu-dropdown" aria-hidden="false">
                   <li class="bf-contextual-menu-group">
                     <button class="bf-contextual-menu-link" type="button">Duplicate layout</button>
@@ -418,7 +418,7 @@
               </div>
 
               <div class="bf-tooltip is-detached">
-                <button class="bf-button is-base is-dense" type="button">Aspect ratio help</button>
+                <button class="bf-button is-base" type="button">Aspect ratio help</button>
                 <p class="bf-tooltip-message" aria-hidden="false">Ratios lock the stage while export presets inherit the final canvas size.</p>
               </div>
 

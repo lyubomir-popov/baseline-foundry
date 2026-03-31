@@ -2,6 +2,25 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Control-family padding and tier typography rollout (2026-03-31)
+
+- [x] Replaced body-nudge-derived target-height math with explicit regular/compact control block padding tokens across the control family.
+- [x] Rolled the padding model through buttons, inputs, selects, tabs, pagination, segmented controls, navigation links, drawer/panel surfaces, and the related demo/spec pages.
+- [x] Tuned documentation, app, and panel compact padding values so dense controls preserve the expected visual heights while still landing on the baseline grid.
+- [x] Switched root prose and body-sized components to role-scoped typography vars so documentation/app tiers no longer freeze editorial body sizing.
+- [x] Fixed screenshot capture to ignore empty selector entries instead of crashing the component QA pipeline.
+- [x] Removed legacy `controlMinBlockSize*` config/build/type/validation plumbing and deleted stale compat artifacts that no longer matched the shipped API.
+- [x] Aligned checkbox/radio/switch label wrappers with the control rhythm, including explicit non-inline switch label handling.
+- [x] Verified the milestone with both `npm test` and `npm run qa:components`.
+
+## Homepage/runtime alignment (2026-03-31)
+
+- [x] Living-spec homepage/spec runtime now uses the shared editorial stylesheet with class-based tier switching instead of tier-by-tier stylesheet swapping.
+- [x] Homepage, spec chapters, and controls page now advertise the same `editorial` / `documentation` / `app` shared-bar tier set.
+- [x] The minimal `text-input` component demo is now the clean paragraph/input baseline comparison surface, using `bf-cluster` with top-aligned children instead of the temporary homepage probe.
+- [x] Root-caused the stale Vite CSS behavior to Vite ignoring `outDir` in dev when `build.emptyOutDir` is enabled.
+- [x] Fixed the dev server by setting `build.emptyOutDir = false` in `vite.config.ts`, which keeps `dist/**` watched and invalidates generated CSS without a server restart.
+
 ## Phases completed (from TODO.md)
 
 ### Phase 1 — Foundation tokens and prose flow
@@ -64,7 +83,7 @@ Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and
 - [x] Tier selector switches stylesheets correctly
 - [x] `spec-runtime.js` passes all runtime init functions to page entry points
 - [x] All tests pass: build validation, component baseline verification, behavior verification
-- [x] Pagination links use same `--bf-control-block-size` as buttons (matching Vanilla `@extend %vf-button-base`)
+- [x] Pagination links share the same explicit control inset model as buttons, so their box size comes from line-height plus block padding instead of a target block-size var
 - [x] Search icon uses proper SVG `background-image` instead of hand-drawn CSS shapes
 - [x] Accordion chevron-to-text gap uses `--bf-control-inline-padding`
 - [x] Playwright screenshot capture pipeline
@@ -129,11 +148,13 @@ Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and
 
 ## User notes items completed (from AGENT-INBOX.md)
 
+- [x] Documentation-tier inputs and other body-sized components now follow the active tier body font size instead of freezing editorial 16px values.
+- [x] Checkbox/radio/switch label text wrappers now align with control rhythm instead of relying on plain inline text.
 - [x] Add 3 controls (theme, baseline, tier) to all individual component examples — global bar at top with space-between, excluded from screenshots
 - [x] Hamburger-activated aside listing every page using sidenav, available on every page, icon in top bar
 - [x] Side navigation no longer overlaps content on desktop
 - [x] Search field uses proper SVG icons instead of hand-drawn CSS shapes
-- [x] Pagination links match button height via `--bf-control-block-size`
+- [x] Pagination links match button height via the shared control block padding and derived control box size
 - [x] Accordion chevron-to-text spacing fixed to use `--bf-control-inline-padding`
 - [x] Bold removed from body-text UI components (pagination, breadcrumbs, buttons, tabs use body text styles)
 - [x] Spec examples generated from `grid-examples.prompt.md` and `spacing-examples.prompt.md` — 9 grid + 10 spacing

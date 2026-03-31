@@ -45,7 +45,8 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 - Editorial = baseline-aligned, element-owned spacing. App = zero-nudge, container-owned.
 - **Literal CSS values** — `margin-bottom`, `padding-block-start`, `padding-block-end` are literal per role.
 - **Layout container child reset** — `.bf-stack > *`, `.bf-cluster > *`, `.bf-stage-shell > *` reset `margin-bottom: 0; padding-block: 0;` (§5.3).
-- **Simplified component vars** — 3 per role: `--bf-{role}-line-height`, `--bf-{role}-nudge-start`, `--bf-{role}-nudge-end`.
+- **Role-scoped typography vars** — root prose and body-sized components read tier-scoped family/size/weight/line-height vars instead of editorial literals.
+- **Explicit control padding vars** — regular and compact control block padding tokens drive box size; no target-height back-calculation or legacy control block-size tokens.
 - **Tier overrides via class toggle** — single editorial stylesheet with scoped `.bf-tier-app` / `.bf-tier-documentation` overrides. Tier switching = class toggle on `<body>`.
 
 ### Control baseline-grid invariant
@@ -84,7 +85,7 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Pre-existing items
 
-- [ ] **`spaceAfter` for controls** — input proof of concept is validated: `bf-input` now uses symmetric padding plus control margin compensation and passes the full suite, including cap-engine and tier-override cases. Next: roll the same model through buttons, selects/search affordances, segmented controls, tabs, side-navigation links, and any remaining `controlPadding()` / `controlMinBlockSize` usage. Then remove `controlMinBlockSize` / `controlMinBlockSizeDense` from types, config JSON, and build pipeline, and delete `.is-dense` control rules.
+- [ ] Tier token-surface audit — when adding new role or control properties, keep every tier explicit instead of relying on editorial defaults to fill gaps. The control-padding rollout fixed the body-size mismatch, but the broader completeness rule still needs a deliberate audit pass.
 - [ ] Parasite class sweep — remove remaining downstream component aliases
 - [ ] Baseline invariant validation — add missing build-time checks
 - [ ] Typographic specimen page — editorial multi-column layout demo at `demo/spec/typographic-specimen.html`
