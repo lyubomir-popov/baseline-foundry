@@ -1,6 +1,7 @@
 import { gridCss } from "./css-grid.js";
 import { componentsCss } from "./css-components.js";
 import { appTierPresetCss } from "./css-app-tier.js";
+import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "./baseline-grid-theme.js";
 import { foundryThemeRootColorVars, vanillaThemeColorVars } from "./vanilla-theme-colors.js";
 import type { BuiltInThemeName } from "./presets.js";
 import type { ThemeFontFile, ThemeTokens, TypographyToken } from "./types.js";
@@ -122,7 +123,7 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
   }
 
   return `${fontFaces}${fontFaces ? "\n" : ""}.u-baseline-grid {
-  --bf-baseline-grid-color: rgba(15, 23, 42, 0.12);
+  --bf-baseline-grid-color: ${BASELINE_GRID_DEFAULT_COLOR};
   --bf-baseline-grid-page-color: transparent;
   --bf-baseline-grid-offset: 0rem;
   --bf-baseline-grid-size: var(--bf-baseline, ${tokens.baselineUnit});
@@ -203,12 +204,14 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
   box-sizing: border-box;
 }
 
+:where(.bf-theme).u-baseline-grid,
 :where(.bf-theme) .u-baseline-grid {
-  --bf-baseline-grid-color: rgba(20, 22, 28, 0.12);
+  --bf-baseline-grid-color: ${BASELINE_GRID_LIGHT_THEME_COLOR};
 }
 
+:where(.bf-theme[data-bf-tone='dark'], .bf-theme.is-dark).u-baseline-grid,
 :where(.bf-theme[data-bf-tone='dark'], .bf-theme.is-dark) .u-baseline-grid {
-  --bf-baseline-grid-color: rgba(255, 255, 255, 0.16);
+  --bf-baseline-grid-color: ${BASELINE_GRID_DARK_THEME_COLOR};
 }
 
 :where(.bf-theme) :where(h1, h2, h3, h4, h5, h6, p, blockquote, figure, ul, ol, dl, pre) {

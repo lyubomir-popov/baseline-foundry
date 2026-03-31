@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "../src/baseline-grid-theme.js";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -50,10 +51,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes("font-family: \"Ubuntu Sans\";"), "Expected generated CSS to register the Ubuntu Sans family.");
   assert(css.includes("UbuntuSans[wdth,wght].ttf"), "Expected generated CSS to point to the Ubuntu Sans variable font.");
   assert(css.includes("font-weight: 100 900;"), "Expected generated CSS to expose the Ubuntu Sans variable weight range.");
-  assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px threshold for the 8-column grid.");
-  assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px threshold for the 16-column grid.");
+  assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px container threshold for the app-tier 8-column grid.");
+  assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px container threshold for the app-tier 16-column grid.");
   assert(css.includes("@media (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px viewport breakpoint for gutters and outer margins.");
   assert(css.includes("@media (width >= 64.75rem)"), "Expected CSS to use the Canonical 1036px viewport breakpoint for large outer margins.");
+  assert(css.includes("@media (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px viewport breakpoint for the editorial 16-column grid.");
+  assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected app-tier page to be fluid (no max-width cap).");
   assert(css.includes("--bf-grid-gap-inline: 1rem;"), "Expected CSS to define the x-small 16px grid gutter.");
   assert(css.includes("--bf-grid-gap-block: 1rem;"), "Expected CSS to define the x-small 16px grid gap.");
   assert(css.includes("--bf-page-margin: 1rem;"), "Expected CSS to define the x-small 16px outer margin.");
@@ -94,9 +97,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(a:focus-visible) {\n  outline: 2px solid var(--bf-color-focus);"), "Expected generated CSS to style raw link focus with the semantic focus token.");
   assert(!css.includes("#f5f1e8"), "Expected generated CSS to avoid the old paper-like default background fallback.");
   assert(!css.includes("#0f62fe"), "Expected generated CSS to avoid the old non-Vanilla light link fallback.");
-  assert(css.includes("--bf-baseline-grid-color: rgba(15, 23, 42, 0.12);"), "Expected baseline-grid overlays to declare a default line color.");
-  assert(css.includes(":where(.bf-theme) .u-baseline-grid {\n  --bf-baseline-grid-color: rgba(20, 22, 28, 0.12);"), "Expected light themes to provide a visible baseline-grid line color.");
-  assert(css.includes(":where(.bf-theme[data-bf-tone='dark'], .bf-theme.is-dark) .u-baseline-grid {\n  --bf-baseline-grid-color: rgba(255, 255, 255, 0.16);"), "Expected dark themes to provide a visible baseline-grid line color.");
+  assert(css.includes(`--bf-baseline-grid-color: ${BASELINE_GRID_DEFAULT_COLOR};`), "Expected baseline-grid overlays to declare a default line color.");
+  assert(css.includes(`:where(.bf-theme).u-baseline-grid,\n:where(.bf-theme) .u-baseline-grid {\n  --bf-baseline-grid-color: ${BASELINE_GRID_LIGHT_THEME_COLOR};`), "Expected light themes to provide a subtle baseline-grid line color, even when the grid class is on the theme root.");
+  assert(css.includes(`:where(.bf-theme[data-bf-tone='dark'], .bf-theme.is-dark).u-baseline-grid,\n:where(.bf-theme[data-bf-tone='dark'], .bf-theme.is-dark) .u-baseline-grid {\n  --bf-baseline-grid-color: ${BASELINE_GRID_DARK_THEME_COLOR};`), "Expected dark themes to provide a subtle baseline-grid line color, even when the grid class is on the theme root.");
   assert(css.includes(":where(.bf-theme) :where(img, picture, svg, video) {\n  block-size: auto;\n  display: block;\n  inline-size: auto;\n  max-inline-size: 100%;"), "Expected shared media to stay fluid inside narrow containers.");
   assert(css.includes("--bf-grid-columns: 16;"), "Expected the grid CSS to include the 16-column mode.");
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
@@ -138,8 +141,10 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control, .bf-grid-item.is-control-pair) {\n  grid-column: auto / span 4;"), "Expected grid CSS to include the default dense control-grid recipe spans.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column grid.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column grid.");
+  assert(css.includes(":where(.bf-theme):not(.bf-tier-app) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column viewport grid.");
+  assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column container grid.");
+  assert(css.includes(":where(.bf-theme):not(.bf-tier-app) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column viewport grid.");
+  assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column container grid.");
   assert(!css.includes(".bf-control-grid"), "Expected generated CSS to omit the deprecated bf-control-grid helper.");
   assert(css.includes(":where(.bf-slider.is-stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--bf-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
   assert(!css.includes(".slider-pair"), "Expected compat CSS to omit the downstream slider wrapper aliases.");

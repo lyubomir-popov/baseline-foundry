@@ -4,36 +4,6 @@ export interface BaselineGridInitOptions {
   targetClassName?: string;
 }
 
-function isDarkTone(element: Element | null): boolean {
-  if (!(element instanceof HTMLElement)) {
-    return false;
-  }
-
-  const tone = element.getAttribute("data-bf-tone");
-  return tone === "dark" || element.classList.contains("is-dark");
-}
-
-function getThemeRoot(toggle: HTMLInputElement, target: HTMLElement): HTMLElement | null {
-  const toggleThemeRoot = toggle.closest<HTMLElement>("[data-bf-tone], .bf-theme");
-  if (toggleThemeRoot) {
-    return toggleThemeRoot;
-  }
-
-  const targetThemeRoot = target.closest<HTMLElement>("[data-bf-tone], .bf-theme");
-  if (targetThemeRoot) {
-    return targetThemeRoot;
-  }
-
-  return document.querySelector<HTMLElement>("[data-bf-tone], .bf-theme");
-}
-
-function syncBaselineGridColor(toggle: HTMLInputElement, target: HTMLElement): void {
-  const themeRoot = getThemeRoot(toggle, target);
-  const gridColor = isDarkTone(themeRoot) ? "rgba(255, 255, 255, 0.16)" : "rgba(20, 22, 28, 0.12)";
-
-  target.style.setProperty("--bf-baseline-grid-color", gridColor);
-}
-
 function getTargetElement(toggle: HTMLInputElement): HTMLElement | null {
   const targetId = toggle.getAttribute("aria-controls");
   if (!targetId) {
@@ -55,10 +25,8 @@ export function setupBaselineGridToggle(toggle: HTMLInputElement, options: Basel
 
   target.classList.toggle(targetClassName, isEnabled);
   toggle.checked = isEnabled;
-  syncBaselineGridColor(toggle, target);
 
   toggle.addEventListener("change", () => {
-    syncBaselineGridColor(toggle, target);
     target.classList.toggle(targetClassName, toggle.checked);
   });
 }
@@ -72,11 +40,8 @@ export function initBaselineGridToggles(options: BaselineGridInitOptions = {}): 
       setupBaselineGridToggle(toggle, options);
     });
   } else if (options.defaultEnabled) {
-    // No toggle found — apply grid directly to body when default-on
+    // No toggle found; apply grid directly to body when default-on.
     const targetClassName = options.targetClassName ?? "u-baseline-grid";
     document.body.classList.add(targetClassName);
-    const themeRoot = document.querySelector<HTMLElement>("[data-bf-tone], .bf-theme");
-    const gridColor = isDarkTone(themeRoot) ? "rgba(255, 255, 255, 0.16)" : "rgba(20, 22, 28, 0.12)";
-    document.body.style.setProperty("--bf-baseline-grid-color", gridColor);
   }
 }
