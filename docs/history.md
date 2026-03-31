@@ -88,6 +88,45 @@ Items moved here from `llm-handoff-context.md`, `docs/rebuild-plan.md`, `README.
 - [x] Baseline-box verification scoped to editorial/layout surfaces only
 - [x] Dense inline specimens verified by `compare:inline-surfaces` script
 
+### Phase 5 — Tier and engine refactor (partial — remaining item in active plan)
+
+- [x] Split tier choice from baseline engine choice — tiers switch via `.bf-tier-*` class; cap engine demoted to `.bf-engine-cap` demo overlay
+- [x] Make `.bf-tier-app` a true zero-nudge, container-owned runtime line — layout containers reset child spacing; app tier overrides zero all nudges
+- [x] Simplify per-element CSS: literal values instead of 10-variable alignment chain; 3 component vars per role instead of 8
+- [x] Tier override pipeline: `TierOverride` type + `buildTierOverrides()` generates scoped overrides for all non-base tiers in a single stylesheet
+
+### Phase 6 — Font switch + canonical alignment ✅
+
+- [x] Download Ubuntu Sans Variable, update all three tier configs
+- [x] Align editorial weights to canonical (500/200/500/300/550/550), remove H5 `uppercase`
+- [x] Overhaul documentation tier — bU=0.25rem, sizes/weights/lineHeights/spaceAfter match canonical exactly
+- [x] Regenerate font metrics, nudge tokens, and CSS for all tiers
+- [x] All tests pass
+
+### Phase 7 — Demo and parity cleanup ✅
+
+- [x] Generate spec examples from grid/spacing prompts (9 grid + 10 spacing)
+- [x] Visual parity audit for all Partial rows
+- [x] Controls gallery regressions verified
+- [x] Controls page cleanup (hero removed, data-* migrated, padding fixed, index pages added)
+- [x] Full visual parity verification against Vanilla for all controls
+
+### Phase 8 — Data-attribute cleanup + ui-class removal ✅
+
+- [x] Migrate all `data-bf-tone`/`data-space`/`data-align`/`data-spec-shell` CSS selectors to `is-*`/class selectors
+- [x] Remove `ui-heading`, `ui-small`, `ui-small-caps`, `ui-x-small` from all tier configs
+- [x] Update all HTML pages and JS files for new class-based API
+- [x] Delete `examples/app-tier/` entirely
+
+### Architecture refactor (2026-07-16) ✅
+
+- [x] Literal CSS values — no more 10-variable chain
+- [x] Layout container child reset (`bf-stack`, `bf-cluster`, `bf-stage-shell` children)
+- [x] Simplified component vars (8→3 per role)
+- [x] Tier overrides via class toggle (single stylesheet)
+- [x] Cap engine demoted to demo-only
+- [x] TierOverride pipeline in build.ts
+
 ## User notes items completed (from USER.NOTES.MD)
 
 - [x] Add 3 controls (theme, baseline, tier) to all individual component examples — global bar at top with space-between, excluded from screenshots
@@ -97,6 +136,12 @@ Items moved here from `llm-handoff-context.md`, `docs/rebuild-plan.md`, `README.
 - [x] Pagination links match button height via `--bf-control-block-size`
 - [x] Accordion chevron-to-text spacing fixed to use `--bf-control-inline-padding`
 - [x] Bold removed from body-text UI components (pagination, breadcrumbs, buttons, tabs use body text styles)
+- [x] Spec examples generated from `grid-examples.prompt.md` and `spacing-examples.prompt.md` — 9 grid + 10 spacing
+- [x] Visual parity audit completed for Partial rows (forms, navigation, table-icons, links, lists, icons)
+- [x] Controls gallery regressions verified: chips use `all-small-caps`, button backgrounds match page, body-text UI at weight 400
+- [x] Ubuntu Sans Variable switch completed (Phase 6)
+- [x] Controls page cleanup: hero/summary removed, data-* attribute styling migrated, input/button padding symmetric, sidenav drawer fixed, index pages at `/` and `/demo/`
+- [x] Visual parity verification against Vanilla for all controls — audit complete
 
 ## Parity scope trim (settled decisions)
 
