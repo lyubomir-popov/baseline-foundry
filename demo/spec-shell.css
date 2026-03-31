@@ -17,13 +17,12 @@ body {
   min-height: 100vh;
 }
 
-.spec-shell {
+[data-spec-shell] {
   min-block-size: 100vh;
   padding-block-end: var(--bf-section-space, 4rem);
-  padding-inline: max(var(--bf-page-margin, 1rem), var(--bf-content-padding-inline, 1rem));
 }
 
-.spec-grid-guide > * {
+.pc-grid-guide > * {
   background: color-mix(in srgb, #ff4f90 18%, var(--bf-color-background-default));
   box-shadow: inset 0 0 0 1px color-mix(in srgb, #ff4f90 50%, var(--bf-color-rule));
   min-block-size: calc(var(--bf-baseline, 0.5rem) * 4);

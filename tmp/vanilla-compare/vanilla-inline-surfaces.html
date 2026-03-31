@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanilla Inline Surface Comparison</title>
+  <link rel="stylesheet" href="./vanilla-inline-surfaces.css">
+  <link rel="stylesheet" href="./compare-shell.css">
+</head>
+<body>
+  <section class="compare-stack">
+    <p class="compare-note">Vanilla chip, badge, and status-label examples rendered from the local SCSS source.</p>
+
+    <div class="compare-group">
+      <button class="p-chip" data-surface="chip-basic">
+        <span class="p-chip__value" data-part="value">21.10</span>
+      </button>
+
+      <button class="p-chip" data-surface="chip-lead">
+        <span class="p-chip__lead" data-part="lead">Owner</span>
+        <span class="p-chip__value" data-part="value">Bob</span>
+      </button>
+
+      <button class="p-chip" data-surface="chip-badge">
+        <span class="p-chip__value" data-part="value">Users</span>
+        <span class="p-badge" data-part="badge" aria-label="9 users exist">9</span>
+      </button>
+    </div>
+
+    <div class="compare-group">
+      <span class="p-badge" data-surface="badge-single" aria-label="9 items exist">9</span>
+      <span class="p-badge" data-surface="badge-wide" aria-label="more than 999 items exist">999+</span>
+    </div>
+
+    <div class="compare-group">
+      <div class="p-status-label" data-surface="status-default">Default</div>
+    </div>
+  </section>
+</body>
+</html>

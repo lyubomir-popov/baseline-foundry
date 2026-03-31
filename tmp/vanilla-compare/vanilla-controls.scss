@@ -1,0 +1,19 @@
+@import "../../../vanilla-framework/_index.scss";
+
+@include vanilla;
+
+body {
+  background: #171717;
+  color: #ffffff;
+}
+
+.compare-stack {
+  font-family: "Ubuntu", "Segoe UI", system-ui, sans-serif;
+}
+
+.compare-stack .p-switch__label,
+.compare-stack .p-checkbox__label,
+.compare-stack .p-radio__label,
+.compare-stack .compare-note {
+  color: #ffffff;
+}

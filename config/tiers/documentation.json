@@ -77,7 +77,8 @@
       "spaceAfter": 1,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 500,
-      "fontStyle": "normal"
+      "fontStyle": "normal",
+      "fontVariantCaps": "all-small-caps"
     },
     {
       "identifier": "h4",

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foundry Control Comparison</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="./compare-shell.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="dark">
+  <section class="compare-stack">
+    <p class="compare-note">Foundry editorial-tier switch and tick elements rendered from the current package output.</p>
+
+    <label class="bf-switch" data-control="switch">
+      <input type="checkbox" class="bf-switch-input" checked aria-label="Toggle baseline grid">
+      <span class="bf-switch-slider" aria-hidden="true"></span>
+      <span class="bf-switch-label">Baseline grid</span>
+    </label>
+
+    <div class="bf-checkbox" data-control="checkbox">
+      <input id="compare-checkbox" type="checkbox" class="bf-checkbox-input" checked aria-label="Show safe area guides">
+      <label for="compare-checkbox" class="bf-checkbox-label">Show safe area guides</label>
+    </div>
+
+    <div class="bf-radio" data-control="radio">
+      <input id="compare-radio" type="radio" class="bf-radio-input" checked aria-label="Keep linked sizing">
+      <label for="compare-radio" class="bf-radio-label">Keep linked sizing</label>
+    </div>
+  </section>
+</body>
+</html>

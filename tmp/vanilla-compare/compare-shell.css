@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.compare-stack {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 44rem;
+}
+
+.compare-note {
+  margin: 0;
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.compare-group {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}

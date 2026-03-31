@@ -77,7 +77,8 @@
       "spaceAfter": 2,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 550,
-      "fontStyle": "normal"
+      "fontStyle": "normal",
+      "fontVariantCaps": "all-small-caps"
     },
     {
       "identifier": "h4",
@@ -134,7 +135,7 @@
     "contentPaddingInlineRem": 1,
     "measureRem": 40,
     "sectionSpaceBaselineUnits": 8,
-    "sectionSpaceShallowBaselineUnits": 4,
+    "sectionSpaceShallowBaselineUnits": 3,
     "sectionSpaceDeepBaselineUnits": 16,
     "stripSpaceBaselineUnits": 8,
     "gridGapInlineBaselineUnits": 2,

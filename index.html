@@ -8,16 +8,16 @@
   <link rel="stylesheet" href="./demo/spec-shell.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light" data-page-tier-options="editorial,app">
-  <main class="spec-shell" id="spec-grid-target">
+  <main class="bf-page" data-spec-shell id="spec-grid-target">
 
-    <div class="bf-stack bf-section">
+    <!-- <div class="bf-stack bf-section">
       <nav class="bf-cluster">
         <a href="./demo/spec/typography.html">Typography</a>
         <a href="./demo/spec/spacing.html">Spacing</a>
         <a href="./demo/spec/grid.html">Grid</a>
         <a href="./demo/controls.html">Controls</a>
       </nav>
-    </div>
+    </div> -->
 
     <div class="bf-stack bf-section">
       <h1>H1: Lorem ipsum dolor sit amet</h1>
@@ -30,27 +30,31 @@
     </div>
 
     <div class="bf-stack bf-section">
-      <div class="bf-stack bf-grid-scope" style="max-inline-size: 18rem">
+      <div class="bf-stack bf-grid-scope" style="resize: horizontal; overflow: hidden; inline-size: 38.6875rem; min-inline-size: 15rem">
         <h3>240 – 619 px</h3>
-        <div class="bf-grid spec-grid-guide" aria-hidden="true">
+        <div class="bf-grid pc-grid-guide" aria-hidden="true">
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
-        </div>
-        <div class="bf-grid">
-          <div class="bf-span-1"><p>Lorem</p></div>
-          <div class="bf-span-1"><p>Ipsum</p></div>
-          <div class="bf-span-1"><p>Dolor</p></div>
-          <div class="bf-span-1"><p>Sit</p></div>
-          <div class="bf-span-2"><p>Amet consectetur adipiscing</p></div>
-          <div class="bf-span-2"><p>Elit sed do eiusmod</p></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
         </div>
       </div>
 
-      <div class="bf-stack bf-grid-scope" style="max-inline-size: 48rem">
+      <div class="bf-stack bf-grid-scope" style="resize: horizontal; overflow: hidden; inline-size: 64.6875rem; min-inline-size: 15rem">
         <h3>620 px +</h3>
-        <div class="bf-grid spec-grid-guide" aria-hidden="true">
+        <div class="bf-grid pc-grid-guide" aria-hidden="true">
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
@@ -59,20 +63,20 @@
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
-        </div>
-        <div class="bf-grid">
-          <div class="bf-span-2"><p>Lorem ipsum</p></div>
-          <div class="bf-span-2"><p>Dolor sit amet</p></div>
-          <div class="bf-span-2"><p>Consectetur</p></div>
-          <div class="bf-span-2"><p>Adipiscing elit</p></div>
-          <div class="bf-span-4"><p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p></div>
-          <div class="bf-span-4"><p>Ut enim ad minim veniam quis nostrud exercitation ullamco</p></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
+          <div class="bf-span-1"></div>
         </div>
       </div>
 
-      <div class="bf-stack bf-grid-scope" style="max-inline-size: min(100%, 112rem)">
+      <div class="bf-stack bf-grid-scope" style="resize: horizontal; overflow: hidden; inline-size: 105.0625rem; min-inline-size: 15rem">
         <h3>1681 px +</h3>
-        <div class="bf-grid spec-grid-guide" aria-hidden="true">
+        <div class="bf-grid pc-grid-guide" aria-hidden="true">
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
@@ -89,19 +93,94 @@
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
           <div class="bf-span-1"></div>
-        </div>
-        <div class="bf-grid">
-          <div class="bf-span-4"><p>Lorem ipsum dolor sit</p></div>
-          <div class="bf-span-4"><p>Amet consectetur adipiscing</p></div>
-          <div class="bf-span-4"><p>Elit sed do eiusmod</p></div>
-          <div class="bf-span-4"><p>Tempor incididunt ut</p></div>
-          <div class="bf-span-8"><p>Labore et dolore magna aliqua ut enim ad minim veniam quis nostrud</p></div>
-          <div class="bf-span-8"><p>Exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat</p></div>
         </div>
       </div>
     </div>
 
     <div class="bf-stack bf-section">
+      <h2>Lorem ipsum</h2>
+
+      <div class="bf-stack bf-grid-scope" style="resize: horizontal; overflow: hidden; inline-size: 64.6875rem; min-inline-size: 15rem">
+        <h3>Spacing density</h3>
+        <div class="bf-grid">
+          <div class="bf-span-2">
+            <div class="bf-stack is-flush">
+              <h5>is-flush (0)</h5>
+              <p>Neque porro quisquam est qui dolorem ipsum.</p>
+            </div>
+          </div>
+
+          <div class="bf-span-2">
+            <div class="bf-stack is-dense">
+              <h4>is-dense</h4>
+              <div class="bf-stack is-flush">
+                <h5>Ut enim ad minima</h5>
+                <p>Quis nostrum exercitationem ullam corporis.</p>
+              </div>
+              <div class="bf-stack is-flush">
+                <h5>Nemo enim ipsam</h5>
+                <p>Consectetur adipisci velit sed quia.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bf-span-2">
+            <div class="bf-stack is-loose">
+            <h2>is-loose</h2>
+            <div class="bf-stack is-dense">
+              <h4>is-dense</h4>
+              <div class="bf-stack is-flush">
+                <h5>Ut enim ad minima</h5>
+                <p>Quis nostrum exercitationem ullam corporis.</p>
+              </div>
+              <div class="bf-stack is-flush">
+                <h5>Nemo enim ipsam</h5>
+                <p>Consectetur adipisci velit sed quia.</p>
+              </div>
+            </div>
+            <div class="bf-stack is-dense">
+              <h4>is-dense</h4>
+              <div class="bf-stack is-flush">
+                <h5>Ut enim ad minima</h5>
+                <p>Quis nostrum exercitationem ullam corporis.</p>
+              </div>
+              <div class="bf-stack is-flush">
+                <h5>Nemo enim ipsam</h5>
+                <p>Consectetur adipisci velit sed quia.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bf-stack bf-section">
+      <h2>Section spacing</h2>
+      <div class="bf-grid">
+        <div class="bf-span-2">
+          <div class="bf-stack is-section-shallow">
+            <p>is-section-shallow</p>
+            <p>Neque porro quisquam est qui dolorem ipsum.</p>
+          </div>
+        </div>
+
+        <div class="bf-span-2">
+          <div class="bf-stack is-section">
+            <p>is-section</p>
+            <p>Neque porro quisquam est qui dolorem ipsum.</p>
+          </div>
+        </div>
+
+        <div class="bf-span-2">
+          <div class="bf-stack is-section-deep">
+            <p>is-section-deep</p>
+            <p>Neque porro quisquam est qui dolorem ipsum.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="bf-stack bf-section">
       <h2>Lorem ipsum</h2>
       <div class="bf-grid">
         <div class="bf-span-4">
@@ -134,7 +213,7 @@
           </ul>
         </div>
       </div>
-    </div>
+    </div> -->
 
   </main>
 

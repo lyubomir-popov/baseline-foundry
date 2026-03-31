@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../canonical-specs"
+		},
+		{
+			"path": "../portable-vertical-rhythm"
+		},
+		{
+			"path": "../brand-layout-ops"
+		},
+		{
+			"path": "../docs-typescale"
+		},
+		{
+			"path": "../vanilla-framework"
+		}
+	],
+	"settings": {}
+}

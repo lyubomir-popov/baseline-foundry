@@ -51,11 +51,10 @@ function validateCommonCss(css: string): void {
   assert(css.includes("font-family: \"Ubuntu Sans\";"), "Expected generated CSS to register the Ubuntu Sans family.");
   assert(css.includes("UbuntuSans[wdth,wght].ttf"), "Expected generated CSS to point to the Ubuntu Sans variable font.");
   assert(css.includes("font-weight: 100 900;"), "Expected generated CSS to expose the Ubuntu Sans variable weight range.");
-  assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px container threshold for the app-tier 8-column grid.");
-  assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px container threshold for the app-tier 16-column grid.");
+  assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px threshold for the 8-column grid.");
+  assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px threshold for the 16-column grid.");
   assert(css.includes("@media (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px viewport breakpoint for gutters and outer margins.");
   assert(css.includes("@media (width >= 64.75rem)"), "Expected CSS to use the Canonical 1036px viewport breakpoint for large outer margins.");
-  assert(css.includes("@media (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px viewport breakpoint for the editorial 16-column grid.");
   assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected app-tier page to be fluid (no max-width cap).");
   assert(css.includes("--bf-grid-gap-inline: 1rem;"), "Expected CSS to define the x-small 16px grid gutter.");
   assert(css.includes("--bf-grid-gap-block: 1rem;"), "Expected CSS to define the x-small 16px grid gap.");
@@ -141,10 +140,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control, .bf-grid-item.is-control-pair) {\n  grid-column: auto / span 4;"), "Expected grid CSS to include the default dense control-grid recipe spans.");
-  assert(css.includes(":where(.bf-theme):not(.bf-tier-app) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column viewport grid.");
-  assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column container grid.");
-  assert(css.includes(":where(.bf-theme):not(.bf-tier-app) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column viewport grid.");
-  assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column container grid.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column grid.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column grid.");
   assert(!css.includes(".bf-control-grid"), "Expected generated CSS to omit the deprecated bf-control-grid helper.");
   assert(css.includes(":where(.bf-slider.is-stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--bf-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
   assert(!css.includes(".slider-pair"), "Expected compat CSS to omit the downstream slider wrapper aliases.");
@@ -330,10 +327,10 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
 function validateLivingSpecHome(html: string): void {
   assert(html.includes('data-page-tier-options="editorial,app"'), "Expected index.html to declare the supported shared-bar tiers.");
   assert(html.includes('./dist/tiers/editorial/styles.css'), "Expected index.html to load the editorial tier output by default.");
-  assert(html.includes('class="bf-grid spec-grid-guide"'), "Expected index.html to include grid guide specimens.");
+  assert(html.includes('class="bf-grid pc-grid-guide"'), "Expected index.html to include grid guide specimens.");
   assert(html.includes('bf-grid-scope'), "Expected index.html to include bf-grid-scope container query scopes.");
   assert(html.includes('bf-span-1'), "Expected index.html to include bf-span column spans.");
-  assert(!html.includes('<main class="bf-page"'), "Expected index.html to keep the home specimen shell off bf-page so the large grid can reach the 16-column threshold.");
+  assert(html.includes('<main class="bf-page"'), "Expected index.html to use bf-page as the editorial container (centered, max-width capped).");
   assert(!html.includes('data-spec-chapter-nav'), "Expected index.html to stop behaving like a chapter overview page.");
   assert(!html.includes('bf-card'), "Expected index.html to avoid card framing on the screenshot-first home surface.");
   assert(!html.includes('Simple tier-switched specimens for the specs.'), "Expected index.html to avoid the old explanatory intro copy.");
@@ -386,7 +383,7 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   assert(roles.h5.fontWeight === 550, "Expected the prose default h5 to use the canonical semi-bold weight.");
   assert(roles.h6.fontWeight === 550, "Expected the prose default h6 to use the canonical semi-bold weight.");
   assert(!roles.h5.textTransform, "Expected the prose default h5 to avoid uppercase now that canonical weights are used.");
-  assert(!roles.h5.fontVariantCaps, "Expected the prose default h5 to avoid font-variant small-caps settings.");
+  assert(roles.h5.fontVariantCaps === "all-small-caps", "Expected the prose default h5 to use true small-caps.");
   assert(!roles.h5.letterSpacing, "Expected the prose default h5 to avoid letterSpacing now that canonical weights are used.");
   assert(roles["ui-heading"].fontSize === "1rem", "Expected the prose default ui-heading role font size to be 1rem.");
   assert(roles["ui-small"].fontSize === "0.875rem", "Expected the prose default ui-small role font size to be 0.875rem.");
@@ -480,8 +477,8 @@ function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, comp
   assert(componentShellCss.includes('.brand-layout-ops-sample :where(.bf-form-help.is-tight),'), "Expected the sample-shell CSS to style bf-form-help through the bf-only selector.");
   assert(!componentShellCss.includes('.p-'), "Expected the sample-shell CSS to omit deprecated p-* selectors.");
   assert(!componentShellCss.includes('--vr-'), "Expected the sample-shell CSS to omit deprecated vr-* variables.");
-  assert(specShellCss.includes('.spec-shell {'), "Expected the living-spec shell to expose the spec-shell class for page framing.");
-  assert(specShellCss.includes('.spec-grid-guide > * {'), "Expected the living-spec shell to include the grid-guide specimen styling.");
+  assert(specShellCss.includes('[data-spec-shell] {'), "Expected the living-spec shell to expose the data-spec-shell attribute selector for page framing.");
+  assert(specShellCss.includes('.pc-grid-guide > * {'), "Expected the living-spec shell to include the grid-guide specimen styling.");
   assert(!specShellCss.includes("[data-spec-card]"), "Expected the living-spec shell to avoid ad hoc data-spec-card selectors.");
   assert(!specShellCss.includes("[data-spec-grid-card]"), "Expected the living-spec shell to avoid ad hoc grid-card selectors.");
   assert(!specShellCss.includes("[data-spec-surface]"), "Expected the living-spec shell to avoid boxed surface wrappers.");

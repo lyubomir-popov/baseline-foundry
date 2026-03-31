@@ -82,16 +82,44 @@ export function appTierPresetCss(): string {
   background: var(--vf-color-background-default, #ffffff);
 }
 
-:where(.bf-theme.bf-tier-app) :where(.bf-stack) {
-  --bf-stack-space: var(--bf-space-1);
+:where(.bf-theme.bf-tier-app) :where(.bf-section),
+:where(.bf-theme.bf-tier-app) :where(.bf-section.is-shallow),
+:where(.bf-theme.bf-tier-app) :where(.bf-section.is-deep) {
+  margin-block-end: 0;
 }
 
-:where(.bf-theme.bf-tier-app) :where(.bf-stack[data-space='tight']) {
+:where(.bf-theme.bf-tier-app) :where(.bf-stack) {
+  --bf-stack-space: var(--bf-space-2);
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-stack[data-space='tight']),
+:where(.bf-theme.bf-tier-app) :where(.bf-stack.is-flush) {
   --bf-stack-space: 0px;
 }
 
-:where(.bf-theme.bf-tier-app) :where(.bf-stack[data-space='loose']) {
-  --bf-stack-space: var(--bf-space-2);
+:where(.bf-theme.bf-tier-app) :where(.bf-stack.is-extra-dense) {
+  --bf-stack-space: var(--bf-space-half);
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-stack.is-dense) {
+  --bf-stack-space: var(--bf-space-1);
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-stack[data-space='loose']),
+:where(.bf-theme.bf-tier-app) :where(.bf-stack.is-loose) {
+  --bf-stack-space: var(--bf-space-3);
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-stack.is-section-shallow) {
+  --bf-stack-space: var(--bf-section-space-shallow);
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-stack.is-section) {
+  --bf-stack-space: var(--bf-section-space);
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-stack.is-section-deep) {
+  --bf-stack-space: var(--bf-section-space-deep);
 }
 `;
 }

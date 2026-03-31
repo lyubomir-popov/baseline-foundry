@@ -113,9 +113,10 @@ All font, weight, size, lineHeight, and spaceAfter drift items resolved with the
 | Large gutters (apps) | 1.5rem | 1.5rem (`.bf-tier-app` override) | Match |
 | Large margins | 2rem | 2rem | Match |
 | Row gap = gutter | Yes | Same var for both axes | Match |
-| Container queries for apps | Required | `@container` queries | Match |
-
-Minor gap: `bf-page` uses `max-inline-size` even in app tier; grid spec says apps should be fluid edge-to-edge. Low priority — only matters when app tier uses `bf-page` directly.
+| Column switching queries | Container-based (all tiers) | `@container` queries (universal) | Match — `.bf-page` is the canonical grid container for all tiers |
+| App page fluid | No max-width | `.bf-tier-app .bf-page { max-inline-size: none }` | Match |
+| Editorial page max-width | Centered + capped | `.bf-page { max-inline-size: var(--bf-content-max-width) }` | Match — container width mirrors viewport in production |
+| Gutter/margin escalation | Viewport-based | `@media` queries (all tiers) | Match |
 
 ### Spacing — PASS (with documentation-tier drift)
 

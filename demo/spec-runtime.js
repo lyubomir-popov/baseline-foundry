@@ -34,12 +34,17 @@ function assetUrl(relativePath) {
   return new URL(`${rootPrefix}/${relativePath}`, window.location.href).toString();
 }
 
+function cacheBust(url) {
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}t=${Date.now()}`;
+}
+
 function stylesheetUrl(tierName) {
-  return assetUrl(`dist/tiers/${tierName}/styles.css`);
+  return cacheBust(assetUrl(`dist/tiers/${tierName}/styles.css`));
 }
 
 function tokensUrl(tierName) {
-  return assetUrl(`dist/tiers/${tierName}/tokens.json`);
+  return cacheBust(assetUrl(`dist/tiers/${tierName}/tokens.json`));
 }
 
 function setText(selector, value) {

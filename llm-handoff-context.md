@@ -19,9 +19,11 @@ npm install && npm run setup:demo-font && npm run build && npm run demo
 
 Demo: `http://127.0.0.1:4174/`
 
-## Current state (updated 2026-04-01)
+## Current state (updated 2026-03-31)
 
 Clean sibling to `portable-vertical-rhythm`: real font metrics, editorial-first baseline alignment, Canonical `4 / 8 / 16` grid primitives, tier-first runtime/build model (`editorial`, `documentation`, `app`). All three tiers now use **Ubuntu Sans Variable** with canonical weights (500/200/500/300/550/550 editorial pattern). Documentation tier overhauled to bU=0.25rem with sizes, lineHeights, and spaceAfter matching canonical exactly. All tests pass (build validation, component baselines, behavior).
+
+Grid implements Grid spec v0.3 tier semantics using **universal `@container` queries** for column switching (all tiers). `.bf-page` is the canonical grid container: in editorial/docs it is centered + max-width capped, so container width mirrors viewport in production; in app tier it is fluid (`max-inline-size: none`). Gutter/margin escalation uses `@media` queries. This approach satisfies spec intent while allowing fixed-width demo containers to show correct column counts across tiers.
 
 Phase 7 — Demo and parity cleanup — **COMPLETE**:
 - **Living-spec pages** (index, typography, spacing, grid) gutted and rewritten: only `bf-grid`, `bf-stack`, `bf-cluster`, `bf-section` layout primitives. All text is Latin lorem ipsum. No heroes, cards, or decorative containers.
