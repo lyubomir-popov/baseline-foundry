@@ -234,7 +234,7 @@ export async function initSpecRuntime({ initComponents } = {}) {
 
   const supportedTiers = supportedTierNames().map(name => ({ value: name, label: tierConfig[name]?.label ?? name }));
   const currentTier = document.body.dataset.bfTier ?? (document.body.classList.contains("bf-tier-app") ? "app" : "editorial");
-  const baselineTarget = document.querySelector("[data-spec-shell]") ?? document.body;
+  const baselineTarget = document.querySelector(".spec-shell") ?? document.body;
   const baselineTargetId = ensureTargetId(baselineTarget, "spec-grid-target");
   const chrome = injectPageChrome({
     controls: {

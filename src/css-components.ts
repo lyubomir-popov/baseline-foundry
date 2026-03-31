@@ -53,10 +53,6 @@ export function componentsCss(tokens: ThemeTokens): string {
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
   const h6 = tokens.roles.h6 ?? body;
-  const uiHeading = tokens.roles["ui-heading"] ?? h6;
-  const uiSmall = tokens.roles["ui-small"] ?? body;
-  const uiSmallCaps = tokens.roles["ui-small-caps"] ?? uiSmall;
-  const uiXSmall = tokens.roles["ui-x-small"] ?? h5;
   const components = tokens.components;
   const controlBorderTotal = "(var(--bf-border-width) * 2)";
   const bodyLineHeight = roleLineHeightVar("body");
@@ -97,12 +93,12 @@ export function componentsCss(tokens: ThemeTokens): string {
   --bf-app-navigation-width: 15rem;
   --bf-app-navigation-width-collapsed: 3rem;
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
-  --bf-ui-chip-padding-inline: calc(${uiSmall.lineHeight} * 0.4);
+  --bf-ui-chip-padding-inline: calc(${body.lineHeight} * 0.4);
   --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-control-inline-padding) * 0.25) - var(--bf-border-width)));
-  --bf-ui-chip-block-size: calc(${uiSmall.lineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
-  --bf-ui-badge-padding-inline: calc(${uiXSmall.lineHeight} * 0.25);
+  --bf-ui-chip-block-size: calc(${body.lineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
+  --bf-ui-badge-padding-inline: calc(${h5.lineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
-  --bf-ui-status-padding-block: ${uiXSmall.nudgeTop};
+  --bf-ui-status-padding-block: ${h5.nudgeTop};
 ${roleAlignmentVars("body", body)}${roleAlignmentVars("h4", h4)}${roleAlignmentVars("h5", h5)}${roleAlignmentVars("h6", h6)}  --bf-grid-max-inline-size: var(--bf-content-max-width);
   --bf-application-drawer-width-icon: var(--bf-app-drawer-width-icon);
   --bf-application-drawer-width-small: var(--bf-app-drawer-width-small);
@@ -177,7 +173,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 }
 
 :where(.bf-theme) :where(.bf-form-help) {
-${typeStyles(uiSmall, { includeCase: false })}  color: var(--bf-color-text-muted);
+${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   display: block;
   margin-bottom: 0;
   max-inline-size: 42ch;
@@ -1120,7 +1116,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-inline-options-heading) {
-${typeStyles(uiSmallCaps)}  color: var(--bf-color-text-muted);
+${typeStyles(body)}  color: var(--bf-color-text-muted);
   display: block;
   margin: 0;
 }
@@ -1243,7 +1239,7 @@ ${controlPadding("var(--bf-control-block-size-dense)", bodyLineHeight, bodySelec
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) {
-${typeStyles(uiSmallCaps)}  color: var(--bf-color-text-muted);
+${typeStyles(body)}  color: var(--bf-color-text-muted);
   margin: 0;
   min-inline-size: 0;
 }
@@ -1304,11 +1300,11 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(thead th) {
-${typeStyles(uiXSmall, { includeCase: false })}  color: var(--bf-color-text-muted);
+${typeStyles(h5, { includeCase: false })}  color: var(--bf-color-text-muted);
   box-shadow: inset 0 -1px 0 var(--bf-color-border-default);
   letter-spacing: 0.04em;
-  padding-bottom: calc(((var(--bf-control-block-size-dense) - ${uiXSmall.lineHeight}) / 2) - ${uiXSmall.nudgeTop});
-  padding-top: calc(((var(--bf-control-block-size-dense) - ${uiXSmall.lineHeight}) / 2) + ${uiXSmall.nudgeTop});
+  padding-bottom: calc(((var(--bf-control-block-size-dense) - ${h5.lineHeight}) / 2) - ${h5.nudgeTop});
+  padding-top: calc(((var(--bf-control-block-size-dense) - ${h5.lineHeight}) / 2) + ${h5.nudgeTop});
   text-transform: uppercase;
 }
 
@@ -1327,7 +1323,7 @@ ${typeStyles(uiXSmall, { includeCase: false })}  color: var(--bf-color-text-mute
   --bf-ui-chip-background: var(--bf-color-background-neutral-default);
   --bf-ui-chip-background-hover: var(--bf-color-background-neutral-hover);
   --bf-ui-chip-background-active: var(--bf-color-background-neutral-active);
-${typeStyles(uiSmall, { includeCase: false })}  align-items: baseline;
+${typeStyles(body, { includeCase: false })}  align-items: baseline;
   background-color: var(--bf-ui-chip-background);
   border: var(--bf-border-width) solid var(--bf-ui-chip-border);
   border-radius: 1rem;
@@ -1394,7 +1390,7 @@ ${typeStyles(uiSmall, { includeCase: false })}  align-items: baseline;
 }
 
 :where(.bf-theme) :where(.bf-chip-lead, .bf-chip-value) {
-${typeStyles(uiSmall, { includeCase: false })}  color: var(--bf-color-text-default);
+${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
   display: inline;
   margin: 0;
   min-inline-size: 0;
@@ -1405,17 +1401,17 @@ ${typeStyles(uiSmall, { includeCase: false })}  color: var(--bf-color-text-defau
 }
 
 :where(.bf-theme) :where(.bf-chip-lead) {
-${typeStyles(uiSmallCaps)}  color: var(--bf-color-text-muted);
+${typeStyles(body)}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before {
-${typeStyles(uiXSmall, { includeCase: false })}  color: var(--bf-color-text-muted);
+${typeStyles(h5, { includeCase: false })}  color: var(--bf-color-text-muted);
   color: var(--bf-color-text-muted);
   content: ": ";
 }
 
 :where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative) {
-${typeStyles(uiXSmall, { includeCase: false })}  align-items: center;
+${typeStyles(h5, { includeCase: false })}  align-items: center;
   background-color: var(--bf-color-text-default);
   border-radius: 1rem;
   box-sizing: content-box;
@@ -1423,7 +1419,7 @@ ${typeStyles(uiXSmall, { includeCase: false })}  align-items: center;
   display: inline-block;
   margin: 0;
   max-inline-size: 4ch;
-  min-width: calc(${uiXSmall.lineHeight} - (var(--bf-ui-badge-padding-inline) * 2));
+  min-width: calc(${h5.lineHeight} - (var(--bf-ui-badge-padding-inline) * 2));
   overflow: hidden;
   padding-block: 0;
   padding-inline: var(--bf-ui-badge-padding-inline);
@@ -1448,7 +1444,7 @@ ${typeStyles(uiXSmall, { includeCase: false })}  align-items: center;
   background-color: var(--bf-ui-status-background);
   color: var(--bf-ui-status-color);
   display: inline-block;
-${typeStyles(uiXSmall, { includeCase: false })}  margin: 0;
+${typeStyles(h5, { includeCase: false })}  margin: 0;
   padding-block: var(--bf-ui-status-padding-block);
   padding-inline: var(--bf-ui-chip-padding-inline);
   text-align: center;
@@ -1749,7 +1745,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-filter-panel-section-heading) {
-${typeStyles(uiHeading, { includeCase: false })}  color: var(--bf-color-text-muted);
+${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   margin: 0;
   padding-block: 0;
 }
@@ -2668,7 +2664,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-title) {
-${typeStyles(uiHeading, { includeCase: false })}  color: var(--bf-color-text-default);
+${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-default);
   flex: 1 1 14rem;
   margin: 0;
   overflow-wrap: anywhere;
