@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Example: Nested Grid</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/app/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./grid-examples.css">
+</head>
+<body class="bf-theme bf-tier-app" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="example-fixed-width example-hero">
+      <div class="bf-prose">
+        <h1>Nested grid</h1>
+        <p>The child grid reuses the same power-of-two logic inside a parent span, so the inner columns line up with the outer keylines instead of inventing a second spacing system.</p>
+      </div>
+    </section>
+
+    <section class="example-fixed-width example-stack">
+      <div class="example-frame bf-grid-scope">
+        <div class="bf-grid">
+          <article class="bf-span-4 example-card is-strong"><h2 class="bf-h4">Parent span 4</h2><p>The child grid below subdivides this half-width cell into `2 + 2`.</p>
+            <div class="bf-grid bf-grid-scope">
+              <div class="bf-span-2 example-card"><h3 class="bf-h5">Child span 2</h3><p>Left child aligns to the parent start edge.</p></div>
+              <div class="bf-span-2 example-card"><h3 class="bf-h5">Child span 2</h3><p>Right child aligns to the parent end edge.</p></div>
+            </div>
+          </article>
+          <article class="bf-span-4 example-card"><h2 class="bf-h4">Parent span 4</h2><p>Sibling content proves the outer 8-column rhythm survives the nesting.</p></article>
+        </div>
+      </div>
+
+      <div class="example-frame bf-grid-scope">
+        <div class="bf-grid">
+          <article class="bf-span-4 example-card is-soft"><h2 class="bf-h4">16-col parent · span 4</h2><p>Second-level proof of the octree pattern.</p>
+            <div class="bf-grid bf-grid-scope">
+              <div class="bf-span-2 example-card"><h3 class="bf-h5">Child span 2</h3><p>Aligned to the same keylines.</p></div>
+              <div class="bf-span-2 example-card"><h3 class="bf-h5">Child span 2</h3><p>No thirds, no drift.</p></div>
+            </div>
+          </article>
+          <article class="bf-span-8 example-card"><h2 class="bf-h4">Span 8 companion</h2><p>The larger neighboring block makes the nested cell boundaries easier to read at wide sizes.</p></article>
+          <article class="bf-span-4 example-card"><h2 class="bf-h4">Span 4 companion</h2><p>Everything still resolves to 4 / 8 / 16 from the container width alone.</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

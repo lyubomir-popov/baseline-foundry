@@ -134,6 +134,7 @@
     "contentPaddingInlineRem": 1,
     "measureRem": 40,
     "sectionSpaceBaselineUnits": 8,
+    "sectionSpaceShallowBaselineUnits": 3,
     "sectionSpaceDeepBaselineUnits": 16,
     "stripSpaceBaselineUnits": 8,
     "gridGapInlineBaselineUnits": 3,

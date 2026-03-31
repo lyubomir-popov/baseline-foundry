@@ -7,9 +7,9 @@ import type { ThemeFontFile, ThemeTokens, TypographyToken } from "./types.js";
 
 // Keep this policy in source and in emitted CSS: the cap approximation
 // `(line-height + 1cap) / 2` matches pragma's formula but drifts enough at
-// larger IBM Plex Sans heading sizes to cross baseline boundaries and flip the
-// nudge. Metrics stays default; `.bf-engine-cap` is opt-in only.
-const BASELINE_ENGINE_POLICY_COMMENT = "/* Metrics-derived nudges are the default. The cap approximation ((line-height + 1cap) / 2) can drift enough at larger IBM Plex Sans heading sizes to cross a baseline boundary and flip the nudge, so .bf-engine-cap stays opt-in only. */";
+// larger heading sizes to cross baseline boundaries and flip the nudge.
+// Metrics stays default; `.bf-engine-cap` is opt-in only.
+const BASELINE_ENGINE_POLICY_COMMENT = "/* Metrics-derived nudges are the default. The cap approximation ((line-height + 1cap) / 2) can drift enough at larger heading sizes to cross a baseline boundary and flip the nudge, so .bf-engine-cap stays opt-in only. */";
 
 function alignmentVars(token: TypographyToken): string {
   return `  --bf-space-after-sem-editorial: calc(${token.spaceAfter} - var(--bf-baseline));\n  --bf-semantic-space-after: var(--bf-space-after-sem-editorial, 0rem);\n  --bf-computed-line-height: ${token.lineHeight};\n  --bf-metrics-start-nudge: ${token.nudgeTop};\n  --bf-metrics-end-nudge: calc(var(--bf-baseline) - ${token.nudgeTop});\n  --bf-cap-baseline-position: calc((var(--bf-computed-line-height) + 1cap) / 2);\n  --bf-cap-start-nudge: calc(var(--bf-baseline) - mod(var(--bf-cap-baseline-position), var(--bf-baseline)));\n  --bf-cap-end-nudge: calc(var(--bf-baseline) - var(--bf-cap-start-nudge));\n  --bf-selected-start-nudge: var(--bf-metrics-start-nudge);\n  --bf-selected-end-nudge: var(--bf-metrics-end-nudge);\n`;
@@ -173,6 +173,7 @@ html.u-baseline-grid::after {
   --bf-content-padding-inline: ${tokens.layout.contentPaddingInline};
   --bf-measure: ${tokens.layout.measure};
   --bf-section-space: ${tokens.layout.sectionSpace};
+  --bf-section-space-shallow: ${tokens.layout.sectionSpaceShallow};
   --bf-section-space-deep: ${tokens.layout.sectionSpaceDeep};
   --bf-strip-space: ${tokens.layout.stripSpace};
   --bf-grid-gap-inline: ${tokens.layout.gridGapInline};
@@ -237,7 +238,7 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
 }
 
 :where(.bf-theme) :where(code) {
-  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-family: "Ubuntu Sans Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.95em;
 }
 
@@ -249,6 +250,10 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
 
 :where(.bf-theme) :where(.bf-section) {
   margin-block-end: var(--bf-section-space);
+}
+
+:where(.bf-theme) :where(.bf-section.is-shallow) {
+  margin-block-end: var(--bf-section-space-shallow);
 }
 
 :where(.bf-theme) :where(.bf-section.is-deep) {
@@ -288,17 +293,17 @@ ${vanillaThemeColorVars("dark")}${foundryThemeRootColorVars("dark")}
 }
 
 :where(.bf-theme) :where(.bf-stack) {
-  --bf-stack-space: var(--bf-space-3);
+  --bf-stack-space: 0px;
   display: grid;
   gap: var(--bf-stack-space);
 }
 
 :where(.bf-theme) :where(.bf-stack[data-space='tight']) {
-  --bf-stack-space: var(--bf-space-2);
+  --bf-stack-space: 0px;
 }
 
 :where(.bf-theme) :where(.bf-stack[data-space='loose']) {
-  --bf-stack-space: var(--bf-space-4);
+  --bf-stack-space: var(--bf-space-2);
 }
 
 :where(.bf-theme) :where(.bf-cluster) {

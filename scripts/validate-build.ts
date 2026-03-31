@@ -47,10 +47,9 @@ function validateAppTierDemoPage(pageName: string, html: string): void {
 
 function validateCommonCss(css: string): void {
   assert(css.includes("@font-face"), "Expected generated CSS to include runtime font-face rules.");
-  assert(css.includes("font-family: \"IBM Plex Sans\";"), "Expected generated CSS to register the IBM Plex Sans family.");
-  assert(css.includes("IBMPlexSansVar-Roman.woff"), "Expected generated CSS to point to the IBM Plex Sans variable Roman font.");
-  assert(css.includes("IBMPlexSansVar-Italic.woff"), "Expected generated CSS to point to the IBM Plex Sans variable Italic font.");
-  assert(css.includes("font-weight: 100 700;"), "Expected generated CSS to expose the variable weight range.");
+  assert(css.includes("font-family: \"Ubuntu Sans\";"), "Expected generated CSS to register the Ubuntu Sans family.");
+  assert(css.includes("UbuntuSans[wdth,wght].ttf"), "Expected generated CSS to point to the Ubuntu Sans variable font.");
+  assert(css.includes("font-weight: 100 900;"), "Expected generated CSS to expose the Ubuntu Sans variable weight range.");
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px threshold for the 16-column grid.");
   assert(css.includes("@media (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px viewport breakpoint for gutters and outer margins.");
@@ -102,10 +101,10 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-grid-columns: 16;"), "Expected the grid CSS to include the 16-column mode.");
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");
-  assert(css.includes("text-transform: uppercase;"), "Expected CSS to include the h5 uppercase treatment.");
+  assert(css.includes("text-transform: uppercase;"), "Expected CSS to include the table-header uppercase treatment.");
   assert(css.includes(":where(.bf-theme) .bf-ui-small-caps {"), "Expected CSS to emit the dedicated ui-small-caps role utility.");
   assert(css.includes("font-variant-caps: all-small-caps;"), "Expected CSS to route compact small-caps styling through the dedicated ui-small-caps role.");
-  assert(css.includes("letter-spacing: 0.07em;"), "Expected CSS to include the h5 uppercase tracking.");
+  assert(css.includes("letter-spacing: 0.05em;"), "Expected CSS to include the small-caps tracking.");
   assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine override selector.");
   assert(css.includes(":where(.bf-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
   assert(css.includes("--bf-semantic-space-after: 0rem;\n  --bf-selected-start-nudge: 0rem;\n  --bf-selected-end-nudge: 0rem;"), "Expected app-tier runtime overrides to zero semantic spacing and selected nudges.");
@@ -135,7 +134,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding));"), "Expected generated CSS to derive tick label spacing from the control inline padding token.");
   assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
   assert(css.includes("var(--bf-body-selected-start-nudge)"), "Expected controls to consume the selected body alignment nudge.");
-  assert(css.includes("var(--bf-h6-selected-end-nudge)"), "Expected controls to consume the selected h6 alignment nudge.");
+  assert(css.includes("var(--bf-body-selected-end-nudge)"), "Expected controls to consume the selected body alignment nudge on both edges.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control, .bf-grid-item.is-control-pair) {\n  grid-column: auto / span 4;"), "Expected grid CSS to include the default dense control-grid recipe spans.");
@@ -152,7 +151,6 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-switch-slider)"), "Expected generated CSS to include switch styling.");
   assert(css.includes(":where(.bf-validation-message)"), "Expected generated CSS to include validation message styling.");
   assert(css.includes(":where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)"), "Expected generated CSS to include card surfaces.");
-  assert(css.includes(":where(.bf-divider)"), "Expected generated CSS to include divider surfaces.");
   assert(css.includes(":where(.bf-segmented-control-button, .bf-tab-buttons-button)"), "Expected generated CSS to include segmented control buttons.");
   assert(css.includes(":where(.bf-breadcrumbs-items)"), "Expected generated CSS to include breadcrumb styling.");
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
@@ -238,8 +236,7 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(roles["ui-small"], 'Expected generated tokens to include a "ui-small" role.');
   assert(roles["ui-small-caps"], 'Expected generated tokens to include a "ui-small-caps" role.');
   assert(roles["ui-x-small"], 'Expected generated tokens to include a "ui-x-small" role.');
-  assert(fontFiles.some(fontFile => fontFile.family === "plex-sans"), "Expected generated tokens to include the IBM Plex Sans Roman font.");
-  assert(fontFiles.some(fontFile => fontFile.family === "plex-sans-italic"), "Expected generated tokens to include the IBM Plex Sans Italic font metadata.");
+  assert(fontFiles.some(fontFile => fontFile.family === "ubuntu-sans"), "Expected generated tokens to include the Ubuntu Sans font.");
   assert(components.borderWidth, "Expected generated tokens to include component border width.");
   assert(components.controlInlinePadding, "Expected generated tokens to include component padding.");
   assert(components.controlVisualSize, "Expected generated tokens to include component visual size.");
@@ -256,7 +253,8 @@ function validateAppTierCss(css: string): void {
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
   assert(css.includes('--bf-body-selected-start-nudge: 0rem;'), "Expected the app-tier preset CSS to zero app-tier body nudges.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
-  assert(css.includes('box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);'), "Expected the app-tier preset CSS to restore the lighter Vanilla-style panel shadow.");
+  assert(css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to expose the lighter app-panel shadow token.");
+  assert(css.includes('box-shadow: var(--bf-app-panel-shadow);'), "Expected the app-tier preset CSS to apply the shared app-panel shadow token.");
   assert(!css.includes('.p-'), "Expected the app-tier preset CSS to omit deprecated p-* selectors.");
   assert(!css.includes('.vr-'), "Expected the app-tier preset CSS to omit deprecated vr-* selectors.");
 }
@@ -295,15 +293,15 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   const { roles, layout, components } = validateCommonTokens(tokens);
   const fontSizes = new Set(Object.values(roles).map(role => role.fontSize).filter(Boolean));
 
-  assert(roles.body.fontFamily === "plex-sans", "Expected the documentation tier body role to stay on plex-sans.");
-  assert(roles.body.fontSize === "0.9375rem", "Expected the documentation tier body role font size to be 0.9375rem.");
-  assert(roles.body.lineHeight === "1.5rem", "Expected the documentation tier body line height to be 1.5rem.");
-  assert(roles.h1.fontSize === "2.25rem", "Expected the documentation tier h1 role font size to be 2.25rem.");
-  assert(roles.h2.fontWeight === 400, "Expected the documentation tier h2 to keep the lighter paired weight.");
-  assert(roles.h3.fontSize === "1.375rem", "Expected the documentation tier h3 role font size to be 1.375rem.");
-  assert(roles.h4.fontSize === "1.375rem", "Expected the documentation tier h4 role font size to be 1.375rem.");
-  assert(roles.h5.fontSize === "0.9375rem", "Expected the documentation tier h5 role font size to stay near body size.");
-  assert(roles.h6.fontSize === "0.9375rem", "Expected the documentation tier h6 role font size to stay near body size.");
+  assert(roles.body.fontFamily === "ubuntu-sans", "Expected the documentation tier body role to use ubuntu-sans.");
+  assert(roles.body.fontSize === "0.875rem", "Expected the documentation tier body role font size to be 0.875rem.");
+  assert(roles.body.lineHeight === "1.25rem", "Expected the documentation tier body line height to be 1.25rem.");
+  assert(roles.h1.fontSize === "2rem", "Expected the documentation tier h1 role font size to be 2rem.");
+  assert(roles.h2.fontWeight === 300, "Expected the documentation tier h2 to keep the lighter paired weight.");
+  assert(roles.h3.fontSize === "1.5rem", "Expected the documentation tier h3 role font size to be 1.5rem.");
+  assert(roles.h4.fontSize === "1.5rem", "Expected the documentation tier h4 role font size to be 1.5rem.");
+  assert(roles.h5.fontSize === "1.125rem", "Expected the documentation tier h5 role font size to be 1.125rem.");
+  assert(roles.h6.fontSize === "1.125rem", "Expected the documentation tier h6 role font size to be 1.125rem.");
   assert(roles["ui-heading"].fontSize === "1rem", "Expected the documentation tier ui-heading role font size to be 1rem.");
   assert(roles["ui-small"].fontSize === "0.875rem", "Expected the documentation tier ui-small role font size to be 0.875rem.");
   assert(roles["ui-small-caps"].fontVariantCaps === "all-small-caps", "Expected the documentation tier ui-small-caps role to use real small-caps.");
@@ -325,51 +323,43 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
 }
 
 function validateLivingSpecHome(html: string): void {
-  assert(html.includes('data-spec-tier-select'), "Expected demo/index.html to expose the tier selector.");
-  assert(html.includes('data-spec-tone-toggle'), "Expected demo/index.html to expose the tone switch.");
-  assert(html.includes('data-spec-baseline-toggle'), "Expected demo/index.html to expose the baseline-grid switch.");
-  assert(html.includes('option value="editorial"'), "Expected demo/index.html to expose the editorial tier option.");
-  assert(html.includes('option value="app"'), "Expected demo/index.html to expose the app tier option.");
-  assert(!html.includes('option value="documentation"'), "Expected demo/index.html to deprioritize the documentation tier on the home-page selector.");
-  assert(html.includes('../dist/tiers/editorial/styles.css'), "Expected demo/index.html to load the editorial tier output by default.");
-  assert(html.includes('data-spec-grid-stage data-size="small"'), "Expected demo/index.html to include the small grid specimen.");
-  assert(html.includes('data-spec-grid-stage data-size="medium"'), "Expected demo/index.html to include the medium grid specimen.");
-  assert(html.includes('data-spec-grid-stage data-size="large"'), "Expected demo/index.html to include the large grid specimen.");
-  assert(!html.includes('<main class="bf-page"'), "Expected demo/index.html to keep the home specimen shell off bf-page so the large grid can reach the 16-column threshold.");
-  assert(!html.includes('data-spec-chapter-nav'), "Expected demo/index.html to stop behaving like a chapter overview page.");
-  assert(!html.includes('bf-card'), "Expected demo/index.html to avoid card framing on the screenshot-first home surface.");
-  assert(!html.includes('Simple tier-switched specimens for the specs.'), "Expected demo/index.html to avoid the old explanatory intro copy.");
-  assert(!html.includes('Current tier snapshot'), "Expected demo/index.html to avoid the old tier snapshot block.");
-  assert(!html.includes('data-spec-tier-description'), "Expected demo/index.html to avoid the old tier description text block.");
-  assert(!html.includes('data-spec-tier-detail'), "Expected demo/index.html to avoid the old tier detail text block.");
-  assert(!html.includes('data-spec-status'), "Expected demo/index.html to avoid the old live status text block.");
-  assert(!html.includes('data-spec-token-list'), "Expected demo/index.html to avoid the old token snapshot list.");
-  assert(!html.includes('data-spec-card'), "Expected demo/index.html to avoid ad hoc data-spec-card surfaces.");
-  assert(!html.includes('data-spec-surface'), "Expected demo/index.html to avoid boxed surface wrappers on the home page.");
+  assert(html.includes('data-page-tier-options="editorial,app"'), "Expected index.html to declare the supported shared-bar tiers.");
+  assert(html.includes('./dist/tiers/editorial/styles.css'), "Expected index.html to load the editorial tier output by default.");
+  assert(html.includes('class="bf-grid spec-grid-guide"'), "Expected index.html to include grid guide specimens.");
+  assert(html.includes('bf-grid-scope'), "Expected index.html to include bf-grid-scope container query scopes.");
+  assert(html.includes('bf-span-1'), "Expected index.html to include bf-span column spans.");
+  assert(!html.includes('<main class="bf-page"'), "Expected index.html to keep the home specimen shell off bf-page so the large grid can reach the 16-column threshold.");
+  assert(!html.includes('data-spec-chapter-nav'), "Expected index.html to stop behaving like a chapter overview page.");
+  assert(!html.includes('bf-card'), "Expected index.html to avoid card framing on the screenshot-first home surface.");
+  assert(!html.includes('Simple tier-switched specimens for the specs.'), "Expected index.html to avoid the old explanatory intro copy.");
+  assert(!html.includes('Current tier snapshot'), "Expected index.html to avoid the old tier snapshot block.");
+  assert(!html.includes('data-spec-tier-description'), "Expected index.html to avoid the old tier description text block.");
+  assert(!html.includes('data-spec-tier-detail'), "Expected index.html to avoid the old tier detail text block.");
+  assert(!html.includes('data-spec-status'), "Expected index.html to avoid the old live status text block.");
+  assert(!html.includes('data-spec-token-list'), "Expected index.html to avoid the old token snapshot list.");
+  assert(!html.includes('data-spec-card'), "Expected index.html to avoid ad hoc data-spec-card surfaces.");
+  assert(!html.includes('data-spec-surface'), "Expected index.html to avoid boxed surface wrappers on the home page.");
+  assert(!html.includes('data-spec-grid-stage'), "Expected index.html to avoid old data-spec-grid-stage specimens.");
 }
 
 function validateLivingSpecControls(html: string, css: string): void {
-  assert(html.includes('data-spec-tier-select'), "Expected demo/controls.html to expose the tier selector.");
-  assert(html.includes('data-spec-tone-toggle'), "Expected demo/controls.html to expose the tone switch.");
-  assert(html.includes('data-spec-baseline-toggle'), "Expected demo/controls.html to expose the baseline-grid switch.");
-  assert(html.includes('option value="editorial"'), "Expected demo/controls.html to expose the editorial tier option.");
-  assert(html.includes('option value="app"'), "Expected demo/controls.html to expose the app tier option.");
-  assert(!html.includes('option value="documentation"'), "Expected demo/controls.html to keep the documentation tier off the primary controls-page selector.");
-  assert(html.includes('<h1>Controls</h1>'), "Expected demo/controls.html to expose the dedicated top-level controls heading.");
-  assert(html.includes('href="./index.html"'), "Expected demo/controls.html to link back to the living spec home.");
-  assert(html.includes('href="./components/index.html"'), "Expected demo/controls.html to link into the component atlas.");
+  assert(html.includes('data-page-tier-options="editorial,app"'), "Expected demo/controls.html to declare the supported shared-bar tiers.");
+  assert(html.includes('../dist/tiers/app/styles.css'), "Expected demo/controls.html to default to the app tier output.");
+  assert(html.includes('<h2>Core fields</h2>'), "Expected demo/controls.html to expose the core fields section heading.");
+  assert(!html.includes('data-controls-hero'), "Expected demo/controls.html hero section to be removed.");
+  assert(!html.includes('data-controls-summary'), "Expected demo/controls.html summary aside to be removed.");
   assert(html.includes('class="bf-search-and-filter"'), "Expected demo/controls.html to include the search-and-filter control family.");
   assert(html.includes('class="bf-segmented-control is-dense"'), "Expected demo/controls.html to include the segmented-control family.");
-  assert(html.includes('class="bf-contextual-menu"'), "Expected demo/controls.html to include the contextual-menu family.");
+  assert(html.includes('bf-contextual-menu'), "Expected demo/controls.html to include the contextual-menu family.");
   assert(html.includes('class="bf-modal-dialog"'), "Expected demo/controls.html to include modal framing.");
   assert(html.includes('src="./controls-page.js"'), "Expected demo/controls.html to boot through the dedicated controls-page runtime.");
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), "Expected demo/controls.html to avoid deprecated p-* markup and stay fully bf-* dogfooded.");
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(html), "Expected demo/controls.html to avoid deprecated vr-* markup and stay fully bf-* dogfooded.");
 
-  assert(css.includes('[data-controls-panels] {'), "Expected demo/controls-shell.css to define the top-level control-panel grid.");
-  assert(css.includes('[data-controls-panel] :where(.bf-panel) {'), "Expected demo/controls-shell.css to keep each bf-panel stretched inside the panel grid.");
-  assert(css.includes('[data-controls-menu-panel] {'), "Expected demo/controls-shell.css to reserve extra space for contextual-menu dropdowns.");
-  assert(css.includes('[data-controls-modal] {'), "Expected demo/controls-shell.css to define the modal specimen width.");
+  assert(css.includes('.bf-controls-panels {'), "Expected demo/controls-shell.css to define the top-level control-panel grid.");
+  assert(css.includes('.bf-controls-panel :where(.bf-panel) {'), "Expected demo/controls-shell.css to keep each bf-panel stretched inside the panel grid.");
+  assert(css.includes('.bf-controls-menu-panel {'), "Expected demo/controls-shell.css to reserve extra space for contextual-menu dropdowns.");
+  assert(css.includes('.bf-controls-modal {'), "Expected demo/controls-shell.css to define the modal specimen width.");
 }
 
 function validateDefaultTheme(tokens: Record<string, unknown>, css: string): void {
@@ -377,22 +367,22 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   const fontSizes = new Set(Object.values(roles).map(role => role.fontSize).filter(Boolean));
 
   assert(roles.body.fontSize === "1rem", "Expected the prose default body role font size to be 1rem.");
-  assert(roles.body.fontFamily === "plex-sans", "Expected the prose default body role font family to be plex-sans.");
+  assert(roles.body.fontFamily === "ubuntu-sans", "Expected the prose default body role font family to be ubuntu-sans.");
   assert(roles.h1.fontSize === "2.625rem", "Expected the prose default h1 role font size to be 2.625rem.");
   assert(roles.h2.fontSize === "2.625rem", "Expected the prose default h2 role font size to be 2.625rem.");
   assert(roles.h3.fontSize === "1.5rem", "Expected the prose default h3 role font size to be 1.5rem.");
   assert(roles.h4.fontSize === "1.5rem", "Expected the prose default h4 role font size to be 1.5rem.");
   assert(roles.h5.fontSize === "1rem", "Expected the prose default h5 role font size to stay at the body size.");
   assert(roles.h6.fontSize === "1rem", "Expected the prose default h6 role font size to stay at the body size.");
-  assert(roles.h1.fontWeight === 600, "Expected the prose default h1 to be the heavier member of the top pair.");
-  assert(roles.h2.fontWeight === 400, "Expected the prose default h2 to sit 200 weight units below h1.");
-  assert(roles.h3.fontWeight === 600, "Expected the prose default h3 to be the heavier member of the middle pair.");
-  assert(roles.h4.fontWeight === 400, "Expected the prose default h4 to sit 200 weight units below h3.");
-  assert(roles.h5.fontWeight === 600, "Expected the prose default h5 to be bold uppercase.");
-  assert(roles.h6.fontWeight === 600, "Expected the prose default h6 to be bold at the body size.");
-  assert(roles.h5.textTransform === "uppercase", "Expected the prose default h5 to use uppercase.");
+  assert(roles.h1.fontWeight === 500, "Expected the prose default h1 to be the heavier member of the top pair.");
+  assert(roles.h2.fontWeight === 200, "Expected the prose default h2 to sit 300 weight units below h1.");
+  assert(roles.h3.fontWeight === 500, "Expected the prose default h3 to be the heavier member of the middle pair.");
+  assert(roles.h4.fontWeight === 300, "Expected the prose default h4 to sit 200 weight units below h3.");
+  assert(roles.h5.fontWeight === 550, "Expected the prose default h5 to use the canonical semi-bold weight.");
+  assert(roles.h6.fontWeight === 550, "Expected the prose default h6 to use the canonical semi-bold weight.");
+  assert(!roles.h5.textTransform, "Expected the prose default h5 to avoid uppercase now that canonical weights are used.");
   assert(!roles.h5.fontVariantCaps, "Expected the prose default h5 to avoid font-variant small-caps settings.");
-  assert(roles.h5.letterSpacing === "0.07em", "Expected the prose default h5 to use uppercase tracking.");
+  assert(!roles.h5.letterSpacing, "Expected the prose default h5 to avoid letterSpacing now that canonical weights are used.");
   assert(roles["ui-heading"].fontSize === "1rem", "Expected the prose default ui-heading role font size to be 1rem.");
   assert(roles["ui-small"].fontSize === "0.875rem", "Expected the prose default ui-small role font size to be 0.875rem.");
   assert(roles["ui-small-caps"].fontVariantCaps === "all-small-caps", "Expected the prose default ui-small-caps role to use real small-caps.");
@@ -433,15 +423,15 @@ function validatePanelTheme(tokens: Record<string, unknown>, css: string): void 
   assert(roles.h4.lineHeight === "1.5rem", "Expected the panel preset h4 line height to be 1.5rem.");
   assert(roles.h5.fontSize === "0.75rem", "Expected the panel preset h5 role font size to stay at the compact body size.");
   assert(roles.h6.fontSize === "0.75rem", "Expected the panel preset h6 role font size to stay at the compact body size.");
-  assert(roles.h1.fontWeight === 600, "Expected the panel preset h1 to be the heavier member of the top pair.");
-  assert(roles.h2.fontWeight === 400, "Expected the panel preset h2 to sit 200 weight units below h1.");
-  assert(roles.h3.fontWeight === 600, "Expected the panel preset h3 to be the heavier member of the middle pair.");
-  assert(roles.h4.fontWeight === 400, "Expected the panel preset h4 to sit 200 weight units below h3.");
-  assert(roles.h5.fontWeight === 600, "Expected the panel preset h5 to stay bold uppercase.");
-  assert(roles.h6.fontWeight === 600, "Expected the panel preset h6 to stay bold at the compact body size.");
-  assert(roles.h5.textTransform === "uppercase", "Expected the panel preset h5 to use uppercase.");
+  assert(roles.h1.fontWeight === 500, "Expected the panel preset h1 to be the heavier member of the top pair.");
+  assert(roles.h2.fontWeight === 200, "Expected the panel preset h2 to sit 300 weight units below h1.");
+  assert(roles.h3.fontWeight === 500, "Expected the panel preset h3 to be the heavier member of the middle pair.");
+  assert(roles.h4.fontWeight === 300, "Expected the panel preset h4 to sit 200 weight units below h3.");
+  assert(roles.h5.fontWeight === 550, "Expected the panel preset h5 to use the canonical semi-bold weight.");
+  assert(roles.h6.fontWeight === 550, "Expected the panel preset h6 to use the canonical semi-bold weight.");
+  assert(!roles.h5.textTransform, "Expected the panel preset h5 to avoid uppercase now that canonical weights are used.");
   assert(!roles.h5.fontVariantCaps, "Expected the panel preset h5 to avoid font-variant small-caps settings.");
-  assert(roles.h5.letterSpacing === "0.07em", "Expected the panel preset h5 to use uppercase tracking.");
+  assert(!roles.h5.letterSpacing, "Expected the panel preset h5 to avoid letterSpacing now that canonical weights are used.");
   assert(roles["ui-heading"].fontSize === "1rem", "Expected the panel preset ui-heading role font size to be 1rem.");
   assert(roles["ui-small"].fontSize === "0.875rem", "Expected the panel preset ui-small role font size to be 0.875rem.");
   assert(roles["ui-small-caps"].fontVariantCaps === "all-small-caps", "Expected the panel preset ui-small-caps role to use real small-caps.");
@@ -485,15 +475,14 @@ function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, comp
   assert(componentShellCss.includes('.brand-layout-ops-sample :where(.bf-form-help.is-tight),'), "Expected the sample-shell CSS to style bf-form-help through the bf-only selector.");
   assert(!componentShellCss.includes('.p-'), "Expected the sample-shell CSS to omit deprecated p-* selectors.");
   assert(!componentShellCss.includes('--vr-'), "Expected the sample-shell CSS to omit deprecated vr-* variables.");
-  assert(specShellCss.includes('[data-spec-switches] {'), "Expected the living-spec shell to expose a simple switch cluster for the home-page controls.");
-  assert(specShellCss.includes('[data-spec-home] {'), "Expected the living-spec shell to expose a wide home-shell hook separate from bf-page.");
-  assert(specShellCss.includes('[data-spec-grid-stage][data-size="small"] {'), "Expected the living-spec shell to define the small grid specimen width.");
-  assert(specShellCss.includes('max-inline-size: min(100%, 112rem);'), "Expected the living-spec shell to leave enough room for the 16-column grid specimen.");
-  assert(specShellCss.includes('[data-spec-grid-guide] > * {'), "Expected the living-spec shell to include the grid-guide specimen styling.");
-  assert(specShellCss.includes("outline: 2px solid var(--bf-color-focus);"), "Expected the living-spec shell to expose visible focus styling on interactive controls.");
+  assert(specShellCss.includes('.spec-shell {'), "Expected the living-spec shell to expose the spec-shell class for page framing.");
+  assert(specShellCss.includes('.spec-grid-guide > * {'), "Expected the living-spec shell to include the grid-guide specimen styling.");
   assert(!specShellCss.includes("[data-spec-card]"), "Expected the living-spec shell to avoid ad hoc data-spec-card selectors.");
   assert(!specShellCss.includes("[data-spec-grid-card]"), "Expected the living-spec shell to avoid ad hoc grid-card selectors.");
   assert(!specShellCss.includes("[data-spec-surface]"), "Expected the living-spec shell to avoid boxed surface wrappers.");
+  assert(!specShellCss.includes("[data-spec-home]"), "Expected the living-spec shell to avoid old data-spec-home selectors.");
+  assert(!specShellCss.includes("[data-spec-switches]"), "Expected the living-spec shell to avoid old data-spec-switches selectors.");
+  assert(!specShellCss.includes("[data-spec-grid-stage]"), "Expected the living-spec shell to avoid old data-spec-grid-stage selectors.");
 }
 
 function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
@@ -529,7 +518,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/tooltip.html")),
     readTextArtifact(path.resolve("demo/components/list-tree.html")),
     readTextArtifact(path.resolve("demo/components/code-snippet.html")),
-    readTextArtifact(path.resolve("demo/index.html")),
+    readTextArtifact(path.resolve("index.html")),
     readTextArtifact(path.resolve("demo/controls.html"))
   ]);
 

@@ -3,103 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baseline Foundry Typography Chapter</title>
+  <title>Baseline Foundry Typography</title>
   <link id="spec-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
   <link rel="stylesheet" href="../spec-shell.css">
 </head>
-<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="bf-page" data-spec-shell id="spec-grid-target">
-    <header data-spec-hero>
-      <div data-spec-bar>
-        <div class="bf-prose">
-          <h5 class="bf-h5">Chapter 1</h5>
-          <h1 class="bf-h1">Typography is tiered, not hardcoded.</h1>
-          <p data-spec-tier-description>Element-owned prose rhythm for long-form composition and the widest IBM Plex reading measure.</p>
-        </div>
-        <aside class="bf-card" data-spec-controls>
-          <label>
-            <span class="bf-h5">Tier</span>
-            <select data-spec-tier-select>
-              <option value="editorial">Editorial</option>
-              <option value="documentation">Documentation</option>
-              <option value="app">App</option>
-            </select>
-          </label>
-          <p class="bf-body" data-spec-tier-detail>This tier keeps the loosest section rhythm and the editorial-first grid contract.</p>
-          <div data-spec-actions>
-            <a data-spec-artifact="css" href="../../dist/tiers/editorial/styles.css">Tier CSS</a>
-            <a data-spec-artifact="tokens" href="../../dist/tiers/editorial/tokens.json">Tier tokens</a>
-          </div>
-          <label class="bf-body" data-spec-checkbox>
-            <input data-spec-baseline-toggle type="checkbox" aria-controls="spec-grid-target">
-            Show baseline grid
-          </label>
-          <p class="bf-body" data-spec-status>Editorial tier active.</p>
-        </aside>
-      </div>
-      <nav data-spec-chapter-nav aria-label="Living spec chapters">
-        <a href="../index.html">Overview</a>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light" data-page-tier-options="editorial,app">
+  <main class="spec-shell" id="spec-grid-target">
+
+    <div class="bf-stack bf-section">
+      <nav class="bf-cluster">
+        <a href="../../index.html">Home</a>
         <a href="./typography.html" aria-current="page">Typography</a>
         <a href="./spacing.html">Spacing</a>
         <a href="./grid.html">Grid</a>
       </nav>
-    </header>
+    </div>
 
-    <section class="bf-section">
-      <div data-spec-layout="aside">
-        <article class="bf-card">
-          <div class="bf-prose">
-            <h3 class="bf-h3">Same chapter, different typographic contracts.</h3>
-            <p>The selector above swaps the generated stylesheet and token feed between the three canonical tiers. The content below stays fixed so the differences in font family, display scale, line height, and reading measure are immediately visible.</p>
-          </div>
-          <div class="bf-prose">
-            <h1 class="bf-h1">Tier-first type keeps the repo honest.</h1>
-            <h2 class="bf-h2">No more pretending panel or app is just a derivative editorial theme.</h2>
-            <h3 class="bf-h3">The same hierarchy is expressed with different proportions.</h3>
-            <h4 class="bf-h4">Documentation tightens the measure; app drops into Ubuntu Sans.</h4>
-            <h5 class="bf-h5">Section marker</h5>
-            <h6 class="bf-h6">Utility label</h6>
-            <p>Body copy is where the tier differences settle into actual reading experience. Editorial stays broad and generous, documentation compresses for scanning, and app shifts to the shell-facing application contract.</p>
-          </div>
-        </article>
-
-        <aside class="bf-card">
-          <h3 class="bf-h3">Current tier snapshot</h3>
-          <div data-spec-token-list>
-            <div data-spec-token-row>
-              <strong>Baseline unit</strong>
-              <code data-spec-token="baseline">0.5rem</code>
-            </div>
-            <div data-spec-token-row>
-              <strong>Measure</strong>
-              <code data-spec-token="measure">40rem</code>
-            </div>
-            <div data-spec-token-row>
-              <strong>Role count</strong>
-              <span data-spec-token="role-count">7</span>
-            </div>
-            <div data-spec-token-row>
-              <strong>Control block size</strong>
-              <span data-spec-token="control-size">-</span>
-            </div>
-          </div>
-        </aside>
+    <div class="bf-stack bf-section">
+      <div class="bf-prose">
+        <h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>
+        <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <h2>Duis aute irure dolor in reprehenderit in voluptate</h2>
+        <p>Velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <h3>Ut enim ad minima veniam quis nostrum exercitationem</h3>
+        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+        <h4>Neque porro quisquam est qui dolorem</h4>
+        <p>Ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+        <h5>Quis autem vel eum iure</h5>
+        <p>Reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.</p>
+        <h6>At vero eos et accusamus</h6>
+        <p>Et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate.</p>
       </div>
-    </section>
+    </div>
 
-    <section class="bf-section is-deep">
-      <article class="bf-card">
-        <div class="bf-prose">
-          <h3 class="bf-h3">Resolved roles</h3>
-          <p>These are the actual generated role tokens for the selected tier, not a hand-maintained table.</p>
-        </div>
-        <div data-spec-role-list></div>
-      </article>
-    </section>
+    <div class="bf-stack bf-section">
+      <h2>Lorem ipsum</h2>
+      <div class="bf-stack" data-spec-role-list></div>
+    </div>
 
-    <footer data-spec-footer>
-      Typography chapter for the living spec. The selector persists across chapters.
-    </footer>
   </main>
 
   <script type="module" src="../spec-shell.js"></script>

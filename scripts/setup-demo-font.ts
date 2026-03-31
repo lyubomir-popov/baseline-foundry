@@ -9,12 +9,8 @@ interface FontAsset {
 
 const FONT_ASSETS: FontAsset[] = [
   {
-    fileName: "IBMPlexSansVar-Roman.woff",
-    url: "https://raw.githubusercontent.com/IBM/plex/master/packages/plex-sans-variable/fonts/complete/woff/IBM%20Plex%20Sans%20Var-Roman.woff"
-  },
-  {
-    fileName: "IBMPlexSansVar-Italic.woff",
-    url: "https://raw.githubusercontent.com/IBM/plex/master/packages/plex-sans-variable/fonts/complete/woff/IBM%20Plex%20Sans%20Var-Italic.woff"
+    fileName: "UbuntuSans[wdth,wght].ttf",
+    url: "https://github.com/google/fonts/raw/main/ofl/ubuntusans/UbuntuSans%5Bwdth%2Cwght%5D.ttf"
   }
 ];
 

@@ -49,13 +49,11 @@ export const componentPages: ComponentPage[] = [
   { name: "pagination", route: "/demo/components/pagination.html" },
   { name: "contextual-menu", route: "/demo/components/contextual-menu.html" },
   { name: "tooltip", route: "/demo/components/tooltip.html" },
-  { name: "divider", route: "/demo/components/divider.html" },
   { name: "cards", route: "/demo/components/cards.html" },
   { name: "option-card", route: "/demo/components/option-card.html" },
   { name: "panel-pressure", route: "/demo/components/panel-pressure.html", captureProfile: "wide" },
   { name: "editorial-pressure", route: "/demo/components/editorial-pressure.html", captureProfile: "wide" },
   { name: "narrow-panel", route: "/demo/components/narrow-panel.html", captureProfile: "wide" },
-  { name: "parameter-matrix", route: "/demo/components/parameter-matrix.html", captureProfile: "wide" },
   { name: "brand-layout-ops-sample", route: "/demo/components/brand-layout-ops-sample.html", captureProfile: "wide" }
 ];
 

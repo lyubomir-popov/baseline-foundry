@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spacing Example: Nudge Baseline</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./spacing-examples.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="spacing-fixed-width spacing-hero bf-prose">
+      <h1>Nudge baseline</h1>
+      <p>The editorial stack uses nudges to land baselines on the 4px grid. Toggling to the app state removes those nudges and the lines drift.</p>
+      <div class="spacing-actions">
+        <button class="bf-button is-base is-dense" data-nudge-toggle type="button" aria-pressed="false">Show app-tier zero-nudge state</button>
+      </div>
+    </section>
+
+    <section class="spacing-fixed-width spacing-grid-two">
+      <article class="spacing-baseline-box spacing-baseline-overlay bf-prose" data-nudge-editorial>
+        <h1>Editorial</h1>
+        <p class="spacing-gap-label">h1 nudge aligns to the baseline</p>
+        <h2>Heading</h2>
+        <p class="spacing-gap-label">h2 nudge aligns to the baseline</p>
+        <p>Paragraph baseline sits on the same repeating 4px line.</p>
+        <p class="spacing-gap-label">Paragraph nudge = metrics-derived</p>
+      </article>
+
+      <article class="spacing-baseline-box spacing-baseline-overlay bf-prose spacing-hidden" data-nudge-app>
+        <h1 class="bf-h1">App state</h1>
+        <p class="spacing-gap-label">Selected nudges = 0</p>
+        <h2 class="bf-h2">Heading</h2>
+        <p class="spacing-gap-label">Selected nudges = 0</p>
+        <p>Without the editorial nudges, the baselines no longer line up to the overlay with the same precision.</p>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+  <script type="module">
+    const toggle = document.querySelector("[data-nudge-toggle]");
+    const editorial = document.querySelector("[data-nudge-editorial]");
+    const app = document.querySelector("[data-nudge-app]");
+
+    toggle?.addEventListener("click", () => {
+      const nextPressed = toggle.getAttribute("aria-pressed") !== "true";
+      toggle.setAttribute("aria-pressed", String(nextPressed));
+      toggle.textContent = nextPressed ? "Show editorial nudge state" : "Show app-tier zero-nudge state";
+      editorial?.classList.toggle("spacing-hidden", nextPressed);
+      app?.classList.toggle("spacing-hidden", !nextPressed);
+    });
+  </script>
+</body>
+</html>

@@ -10,7 +10,7 @@ function screenshotUrl(href) {
 }
 
 function enhanceAtlas() {
-  const items = document.querySelectorAll("[data-demo-index-item]");
+  const items = document.querySelectorAll(".demo-index-item");
   if (items.length === 0) {
     return;
   }
@@ -29,13 +29,13 @@ function enhanceAtlas() {
     }
 
     const card = document.createElement("span");
-    card.dataset.demoIndexCard = "true";
+    card.classList.add("demo-index-card");
 
     const frame = document.createElement("span");
-    frame.dataset.demoIndexFrame = "true";
+    frame.classList.add("demo-index-frame");
 
     const image = document.createElement("img");
-    image.dataset.demoIndexImage = "true";
+    image.classList.add("demo-index-image");
     image.src = imageUrl;
     image.alt = `${name} preview`;
     image.loading = "lazy";
@@ -46,7 +46,7 @@ function enhanceAtlas() {
     });
 
     const label = document.createElement("p");
-    label.dataset.demoIndexName = "true";
+    label.classList.add("demo-index-name");
     label.textContent = name;
 
     frame.appendChild(image);
@@ -58,7 +58,7 @@ function enhanceAtlas() {
     }
 
     link.textContent = "";
-    link.dataset.demoIndexCardLink = "true";
+    link.classList.add("demo-index-card-link");
     link.appendChild(card);
   }
 }

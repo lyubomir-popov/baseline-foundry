@@ -38,7 +38,7 @@
     "build:theme": "tsx scripts/build-theme.ts",
     "build:lib": "tsc -p tsconfig.json",
     "build": "npm run build:theme && npm run build:lib",
-    "demo:serve": "vite --host 127.0.0.1 --port 4174 --open /demo/",
+    "demo:serve": "vite",
     "demo": "npm run build && npm run demo:serve",
     "test:build": "tsx scripts/validate-build.ts",
     "test:behavior": "tsx scripts/verify-component-behavior.ts",
@@ -52,7 +52,7 @@
     "screenshots:components": "npm run build && tsx scripts/capture-component-screenshots.ts",
     "qa:components": "npm run build && tsx scripts/capture-component-screenshots.ts && tsx scripts/verify-component-baselines.ts",
     "build:app": "tsx examples/app-tier/build.ts",
-    "demo:app": "npm run build:app && vite --host 127.0.0.1 --port 4175 --open /examples/app-tier/",
+    "demo:app": "npm run build:app && vite --host 127.0.0.1 --port 4175 --strictPort --open /examples/app-tier/",
     "build:app-tier": "tsx examples/app-tier/build.ts",
     "demo:app-tier": "npm run demo:app"
   },

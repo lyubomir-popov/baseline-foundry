@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Example: Docs Layout</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./grid-examples.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="example-fixed-width example-hero">
+      <div class="bf-prose">
+        <h1>Docs layout</h1>
+        <p>A three-region documentation layout keeps the left navigation, central content, and right table of contents explicit at wide widths. On smaller widths the navigation becomes a drawer and the TOC stacks above the article.</p>
+      </div>
+    </section>
+
+    <section class="example-fixed-width example-docs-layout">
+      <aside class="example-docs-nav">
+        <div class="bf-side-navigation is-drawer-collapsed is-drawer-hidden">
+          <button class="bf-side-navigation-toggle" type="button" aria-controls="docs-layout-side-navigation" aria-expanded="false">Section navigation</button>
+          <div class="bf-side-navigation-overlay" aria-controls="docs-layout-side-navigation" aria-hidden="true"></div>
+          <nav class="bf-side-navigation-drawer" id="docs-layout-side-navigation" aria-label="Documentation sections">
+            <div class="bf-side-navigation-drawer-header">
+              <button class="bf-side-navigation-toggle is-in-drawer" type="button" aria-controls="docs-layout-side-navigation" aria-expanded="false">Close</button>
+            </div>
+            <h3 class="bf-side-navigation-heading">Get started</h3>
+            <ul class="bf-side-navigation-list">
+              <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#">Overview</a></li>
+              <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#">Install MAAS</a></li>
+              <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" aria-current="page" href="#">Commission machines</a></li>
+            </ul>
+            <h3 class="bf-side-navigation-heading">Operate</h3>
+            <ul class="bf-side-navigation-list">
+              <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#">Images</a></li>
+              <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#">Storage</a></li>
+              <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#">Networking</a></li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      <article class="example-docs-content">
+        <div class="bf-card example-surface bf-prose">
+          <h2>Commissioning and hardware testing</h2>
+          <p>The center column stays on a readable editorial measure while the surrounding navigation remains narrow and utilitarian.</p>
+          <p>Resize down and the table of contents moves above the article body while the left nav becomes a drawer overlay instead of consuming permanent width.</p>
+        </div>
+      </article>
+
+      <aside class="example-docs-toc">
+        <div class="bf-card">
+          <h3 class="bf-h5">On this page</h3>
+          <ol>
+            <li>Boot sources</li>
+            <li>Power parameters</li>
+            <li>Network discovery</li>
+            <li>Custom scripts</li>
+          </ol>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

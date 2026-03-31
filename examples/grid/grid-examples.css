@@ -1,0 +1,369 @@
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bf-color-bg, #ffffff);
+  color: var(--bf-color-text-default, #111111);
+  margin: 0;
+  min-height: 100vh;
+}
+
+body.bf-tier-app {
+  background: var(--vf-color-background-alt, #f7f7f7);
+}
+
+a {
+  color: inherit;
+}
+
+[data-example-grid-target] {
+  display: grid;
+  gap: var(--bf-section-space, 4rem);
+  padding: max(var(--bf-page-margin, 1rem), 1rem);
+  padding-block-end: var(--bf-section-space, 4rem);
+}
+
+.example-fixed-width {
+  inline-size: min(100%, 112rem);
+  margin-inline: auto;
+}
+
+.example-hero,
+.example-stack {
+  display: grid;
+  gap: var(--bf-space-3, 1.5rem);
+}
+
+.example-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.example-muted {
+  color: var(--bf-color-muted, rgba(0, 0, 0, 0.6));
+}
+
+.example-frame,
+.example-shell,
+.example-card,
+.example-surface,
+.example-rail,
+.example-aside-card {
+  background: var(--bf-color-background-default, #ffffff);
+  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+}
+
+.example-frame,
+.example-shell,
+.example-surface {
+  padding: 1rem;
+}
+
+.example-card {
+  display: grid;
+  gap: 0.5rem;
+  min-block-size: calc(var(--bf-baseline, 0.5rem) * 14);
+  padding: 1rem;
+}
+
+.example-card > * {
+  margin: 0;
+}
+
+.example-card.is-strong {
+  background: color-mix(in srgb, var(--bf-color-background-default, #ffffff) 92%, #0f95a1 8%);
+}
+
+.example-card.is-soft {
+  background: color-mix(in srgb, var(--bf-color-background-default, #ffffff) 96%, #0066cc 4%);
+}
+
+.example-grid-stage {
+  display: grid;
+  gap: 1rem;
+}
+
+.example-grid-frame {
+  display: grid;
+  gap: 1rem;
+}
+
+.example-grid-shell {
+  position: relative;
+}
+
+.example-grid-shell .bf-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.example-column-guide {
+  inset: 1rem;
+  opacity: 1;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 120ms ease;
+}
+
+.example-column-guide .bf-span-1 {
+  background: color-mix(in srgb, #ff4f90 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #ff4f90 55%, rgba(0, 0, 0, 0.1));
+  min-block-size: 100%;
+}
+
+.example-grid-frame:has([data-grid-overlay-toggle]:not(:checked)) .example-column-guide {
+  opacity: 0;
+}
+
+.example-hero-grid,
+.example-two-up,
+.example-site-main,
+.example-docs-layout,
+.example-gutter-compare {
+  display: grid;
+  gap: var(--bf-grid-gap-block, 1.5rem) var(--bf-grid-gap-inline, 1.5rem);
+}
+
+.example-hero-grid,
+.example-two-up,
+.example-site-main,
+.example-gutter-compare {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.example-media {
+  background:
+    linear-gradient(135deg, rgba(0, 102, 204, 0.12), rgba(15, 149, 161, 0.12)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04), transparent 35%),
+    var(--bf-color-background-default, #ffffff);
+  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  min-block-size: calc(var(--bf-baseline, 0.5rem) * 28);
+}
+
+.example-docs-layout {
+  align-items: start;
+  grid-template-columns: minmax(15rem, 2fr) minmax(0, 4fr) minmax(12rem, 2fr);
+}
+
+.example-docs-nav .bf-side-navigation-drawer {
+  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  box-shadow: none;
+}
+
+.example-docs-nav .bf-side-navigation-toggle {
+  margin-block-end: 1rem;
+}
+
+.example-docs-content,
+.example-docs-toc,
+.example-docs-content .bf-card,
+.example-docs-toc .bf-card {
+  min-inline-size: 0;
+}
+
+.example-docs-toc .bf-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.example-docs-toc ol {
+  margin: 0;
+  padding-inline-start: 1rem;
+}
+
+.example-docs-toc li + li {
+  margin-top: 0.5rem;
+}
+
+.example-app-shell {
+  background: var(--vf-color-background-alt, #f7f7f7);
+  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  display: grid;
+  grid-template-columns: 2rem minmax(0, var(--left-panel-width, 15rem)) minmax(0, 1fr);
+  min-block-size: calc(var(--bf-baseline, 0.5rem) * 56);
+  overflow: hidden;
+  position: relative;
+}
+
+.example-app-rail {
+  background: #111111;
+}
+
+.example-app-nav {
+  background: var(--bf-color-background-default, #ffffff);
+  border-inline-end: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.example-app-main {
+  display: grid;
+  gap: 1rem;
+  min-inline-size: 0;
+  padding: 1rem;
+}
+
+.example-app-main-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.example-app-main-grid,
+.example-panel-grid {
+  min-inline-size: 0;
+}
+
+.example-app-main-grid .example-card,
+.example-panel-grid .example-card {
+  min-block-size: calc(var(--bf-baseline, 0.5rem) * 18);
+}
+
+.example-app-overlay {
+  background: var(--bf-color-background-default, #ffffff);
+  border-inline-start: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  box-shadow: -24px 0 48px rgba(0, 0, 0, 0.12);
+  inline-size: min(100%, 29.0625rem);
+  inset-block: 0;
+  inset-inline-end: 0;
+  padding: 1rem;
+  position: absolute;
+  transform: translateX(100%);
+  transition: transform 140ms ease;
+}
+
+.example-app-shell:has([data-overlay-toggle]:checked) .example-app-overlay {
+  transform: translateX(0);
+}
+
+.example-app-shell:has([data-nav-toggle]:not(:checked)) {
+  --left-panel-width: 0rem;
+}
+
+.example-app-shell:has([data-nav-toggle]:not(:checked)) .example-app-nav {
+  opacity: 0;
+  overflow: hidden;
+  padding-inline: 0;
+}
+
+.example-app-shell:has([data-nav-toggle]:not(:checked)) .example-app-main {
+  grid-column: 2 / span 2;
+}
+
+.example-panel-reflow {
+  display: grid;
+  gap: 1rem;
+}
+
+.example-panel-reflow-shell {
+  background: var(--vf-color-background-alt, #f7f7f7);
+  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  display: grid;
+  grid-template-columns: minmax(0, var(--reflow-panel-width, 0rem)) minmax(0, 1fr);
+  min-block-size: calc(var(--bf-baseline, 0.5rem) * 44);
+  overflow: hidden;
+}
+
+.example-panel-reflow:has([data-panel-open]:checked) .example-panel-reflow-shell {
+  --reflow-panel-width: 19rem;
+}
+
+.example-panel-sidebar {
+  background: var(--bf-color-background-default, #ffffff);
+  border-inline-end: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.example-panel-main {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.example-tier-group {
+  display: grid;
+  gap: 1rem;
+}
+
+.example-gutter-compare .example-surface[data-gutter="editorial"] {
+  --bf-grid-gap-inline: 2rem;
+}
+
+.example-gutter-compare .example-surface[data-gutter="app"] {
+  --bf-grid-gap-inline: 1.5rem;
+}
+
+.example-span-demo,
+.example-span-row {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.example-span-bars {
+  align-items: stretch;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.example-span-bar {
+  align-items: center;
+  background: color-mix(in srgb, #0066cc 14%, var(--bf-color-background-default, #ffffff));
+  border: 1px solid color-mix(in srgb, #0066cc 38%, rgba(0, 0, 0, 0.12));
+  display: flex;
+  justify-content: space-between;
+  min-block-size: calc(var(--bf-baseline, 0.5rem) * 7);
+  padding: 0.75rem 1rem;
+}
+
+.example-span-bar.is-invalid {
+  background: transparent;
+  border-style: dashed;
+  color: var(--bf-color-muted, rgba(0, 0, 0, 0.6));
+  grid-column: 1 / span 3;
+}
+
+.example-callout {
+  background: color-mix(in srgb, var(--bf-color-background-default, #ffffff) 92%, #0f95a1 8%);
+  border-inline-start: 3px solid var(--bf-color-accent, #0f95a1);
+  padding: 0.875rem 1rem;
+}
+
+.example-callout > * {
+  margin: 0;
+}
+
+.example-callout > * + * {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 80rem) {
+  .example-docs-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .example-docs-toc {
+    order: -1;
+  }
+}
+
+@media (max-width: 70rem) {
+  .example-hero-grid,
+  .example-two-up,
+  .example-site-main,
+  .example-gutter-compare {
+    grid-template-columns: 1fr;
+  }
+}

@@ -35,7 +35,7 @@ function roleSelectedEndNudgeVar(roleName: string): string {
 }
 
 function controlPadding(blockSize: string, lineHeightVar: string, startVar: string, endVar: string, borderTotal = "0rem"): string {
-  const basePadding = `(((${blockSize} - ${lineHeightVar} - var(--bf-baseline) - ${borderTotal}) / 2))`;
+  const basePadding = `(((${blockSize} - ${lineHeightVar} - var(--bf-control-baseline-reserve, var(--bf-baseline)) - ${borderTotal}) / 2))`;
 
   return `  padding-block-end: calc(${basePadding} + ${endVar});\n  padding-block-start: calc(${basePadding} + ${startVar});\n`;
 }
@@ -117,6 +117,7 @@ ${roleAlignmentVars("body", body)}${roleAlignmentVars("h4", h4)}${roleAlignmentV
   --bf-application-navigation-width-collapsed: var(--bf-app-navigation-width-collapsed);
 ${foundryComponentColorVars("light")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
+  --bf-ui-icon-search: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.964 1a5.964 5.964 0 014.709 9.623l4.303 4.305-1.06 1.06-4.306-4.305A5.964 5.964 0 116.963 1zm0 1.5a4.464 4.464 0 100 8.927 4.464 4.464 0 000-8.927z' fill='%23111' fill-rule='nonzero'/%3E%3C/svg%3E");
   color: var(--bf-color-text-default);
 }
 
@@ -147,6 +148,7 @@ ${foundryComponentColorVars("light")}
 :where(.bf-theme[data-bf-tone='dark']) {
 ${foundryComponentColorVars("dark")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
+  --bf-ui-icon-search: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.964 1a5.964 5.964 0 014.709 9.623l4.303 4.305-1.06 1.06-4.306-4.305A5.964 5.964 0 116.963 1zm0 1.5a4.464 4.464 0 100 8.927 4.464 4.464 0 000-8.927z' fill='%23fff' fill-rule='nonzero'/%3E%3C/svg%3E");
   color-scheme: dark;
 }
 
@@ -160,12 +162,16 @@ ${foundryComponentColorVars("dark")}
   margin: 0;
 }
 
+.bf-theme button {
+  font: inherit;
+}
+
 :where(.bf-theme) :where(.u-no-margin--bottom, .bf-u-no-margin.is-bottom) {
   margin-bottom: 0 !important;
 }
 
 :where(.bf-theme) :where(.bf-form-label) {
-${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-default);
+${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
   display: block;
   overflow-wrap: anywhere;
   text-align: start;
@@ -289,14 +295,14 @@ ${controlPadding("var(--bf-control-block-size)", bodyLineHeight, bodySelectedSta
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button {
-${typeStyles(h6, { includeCase: false })}  appearance: none;
+${typeStyles(body, { includeCase: false })}  appearance: none;
   background: var(--bf-color-background-alt);
   border: var(--bf-border-width) solid var(--bf-color-border-default);
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   cursor: pointer;
   margin-inline-end: var(--bf-field-gap);
-${controlPadding("var(--bf-control-block-size-dense)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding("var(--bf-control-block-size-dense)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -667,7 +673,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-button, .bf-button.is-base) {
-${typeStyles(h6, { includeCase: false })}  align-items: center;
+${typeStyles(body, { includeCase: false })}  align-items: center;
   appearance: none;
   background-color: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
@@ -677,17 +683,26 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   display: inline-flex;
   justify-content: center;
   block-size: var(--bf-control-block-size);
-${controlPadding("var(--bf-control-block-size)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding("var(--bf-control-block-size)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
   text-align: center;
   text-decoration: none;
 }
 
 :where(.bf-theme) :where(.bf-button) {
-  background-color: var(--bf-color-background-active);
+  background-color: var(--bf-color-background-default);
 }
 
-:where(.bf-theme) :where(.bf-button, .bf-button.is-base):hover {
+:where(.bf-theme) :where(.bf-button.is-base) {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+:where(.bf-theme) :where(.bf-button:hover, .bf-button.is-base:hover) {
   background-color: var(--bf-color-background-hover);
+}
+
+:where(.bf-theme) :where(.bf-button:not(.is-base):is(:active, [aria-pressed='true'])) {
+  background-color: var(--bf-color-background-active);
 }
 
 :where(.bf-theme) :where(.bf-button, .bf-button.is-base):focus:not(:focus-visible) {
@@ -701,7 +716,7 @@ ${controlPadding("var(--bf-control-block-size)", h6LineHeight, h6SelectedStartNu
 
 :where(.bf-theme) :where(.bf-button.is-dense, .bf-button.is-base.is-dense) {
   block-size: var(--bf-control-block-size-dense);
-${controlPadding("var(--bf-control-block-size-dense)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}
+${controlPadding("var(--bf-control-block-size-dense)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}
 }
 
 :where(.bf-theme) :where(.bf-actions) {
@@ -779,7 +794,7 @@ ${typeStyles(h4, { includeCase: false })}  min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-panel-toggle) {
-${typeStyles(h6, { includeCase: false })}  align-items: center;
+${typeStyles(body, { includeCase: false })}  align-items: center;
   appearance: none;
   background: transparent;
   border: 0;
@@ -791,8 +806,8 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   margin: 0;
   min-block-size: var(--bf-control-block-size-dense);
   min-inline-size: 0;
-  padding-block-end: calc((((var(--bf-control-block-size-dense) - ${h6LineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${h6SelectedEndNudge});
-  padding-block-start: calc((((var(--bf-control-block-size-dense) - ${h6LineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${h6SelectedStartNudge});
+  padding-block-end: calc((((var(--bf-control-block-size-dense) - ${bodyLineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${bodySelectedEndNudge});
+  padding-block-start: calc((((var(--bf-control-block-size-dense) - ${bodyLineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${bodySelectedStartNudge});
   padding-inline: 0;
   text-align: left;
 }
@@ -949,51 +964,6 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   color: var(--bf-color-text-inactive);
 }
 
-:where(.bf-theme) :where(.bf-divider) {
-  align-items: start;
-  container-type: inline-size;
-  display: grid;
-  gap: 0;
-}
-
-:where(.bf-theme) :where(.bf-divider-block) {
-  color: var(--bf-color-text-default);
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-block-start: var(--bf-panel-padding-block);
-  position: relative;
-}
-
-:where(.bf-theme) :where(.bf-divider-block):not(:first-child)::before {
-  background-color: var(--bf-color-border-default);
-  block-size: var(--bf-border-width);
-  content: "";
-  inset-inline: 0;
-  position: absolute;
-  top: 0;
-}
-
-@container (width >= 32rem) {
-  :where(.bf-theme) :where(.bf-divider) {
-    grid-auto-columns: minmax(0, 1fr);
-    grid-auto-flow: column;
-  }
-
-  :where(.bf-theme) :where(.bf-divider-block) {
-    padding-block-end: 0;
-    padding-block-start: 0;
-    padding-inline: var(--bf-panel-padding-inline);
-  }
-
-  :where(.bf-theme) :where(.bf-divider-block):not(:first-child)::before {
-    block-size: auto;
-    inline-size: var(--bf-border-width);
-    inset-block: 0;
-    inset-inline-end: auto;
-    inset-inline-start: 0;
-    top: auto;
-  }
-}
-
 :where(.bf-theme) :where(.bf-tabs) {
   display: grid;
   min-inline-size: 0;
@@ -1018,7 +988,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-tabs-link) {
-${typeStyles(h6, { includeCase: false })}  align-items: center;
+${typeStyles(body, { includeCase: false })}  align-items: center;
   background: transparent;
   border: 0;
   border-bottom: calc(var(--bf-border-width) * 2) solid transparent;
@@ -1027,8 +997,8 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   display: inline-flex;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
-  min-block-size: var(--bf-control-block-size-dense);
-${controlPadding("var(--bf-control-block-size-dense)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
+  min-block-size: var(--bf-control-block-size);
+${controlPadding("var(--bf-control-block-size)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
   text-decoration: none;
 }
 
@@ -1202,7 +1172,7 @@ ${typeStyles(uiSmallCaps)}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) {
-${typeStyles(h6, { includeCase: false })}  align-items: center;
+${typeStyles(body, { includeCase: false })}  align-items: center;
   appearance: none;
   background-color: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
@@ -1214,7 +1184,7 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   max-inline-size: 100%;
   min-block-size: var(--bf-control-block-size);
   overflow: hidden;
-${controlPadding("var(--bf-control-block-size)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding("var(--bf-control-block-size)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}  padding-inline: var(--bf-control-inline-padding);
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -1253,7 +1223,7 @@ ${controlPadding("var(--bf-control-block-size)", h6LineHeight, h6SelectedStartNu
 
 :where(.bf-theme) :where(.bf-segmented-control.is-dense .bf-segmented-control-button, .bf-tab-buttons.is-dense .bf-tab-buttons-button) {
   min-block-size: var(--bf-control-block-size-dense);
-${controlPadding("var(--bf-control-block-size-dense)", h6LineHeight, h6SelectedStartNudge, h6SelectedEndNudge, controlBorderTotal)}
+${controlPadding("var(--bf-control-block-size-dense)", bodyLineHeight, bodySelectedStartNudge, bodySelectedEndNudge, controlBorderTotal)}
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs) {
@@ -1587,27 +1557,22 @@ ${typeStyles(uiXSmall, { includeCase: false })}  margin: 0;
 }
 
 :where(.bf-theme) :where(.bf-search-box-button)::before {
-  block-size: 0.625rem;
-  border: 2px solid currentColor;
-  border-radius: 50%;
+  background-image: var(--bf-ui-icon-search);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  block-size: 1rem;
   content: "";
-  inline-size: 0.625rem;
+  inline-size: 1rem;
   left: 50%;
   position: absolute;
-  top: 45%;
-  transform: translate(-60%, -55%);
+  text-indent: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 :where(.bf-theme) :where(.bf-search-box-button)::after {
-  background: currentColor;
-  block-size: 2px;
-  content: "";
-  inline-size: 0.45rem;
-  left: 55%;
-  position: absolute;
-  top: 58%;
-  transform: rotate(45deg);
-  transform-origin: left center;
+  content: none;
 }
 
 :where(.bf-theme) :where(.bf-search-box-reset:focus:not(:focus-visible), .bf-search-box-button:focus:not(:focus-visible)) {
@@ -1676,27 +1641,22 @@ ${typeStyles(uiXSmall, { includeCase: false })}  margin: 0;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-search-button)::before {
-  block-size: 0.625rem;
-  border: 2px solid currentColor;
-  border-radius: 50%;
+  background-image: var(--bf-ui-icon-search);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  block-size: 1rem;
   content: "";
-  inline-size: 0.625rem;
+  inline-size: 1rem;
   left: 50%;
   position: absolute;
-  top: 45%;
-  transform: translate(-60%, -55%);
+  text-indent: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-search-button)::after {
-  background: currentColor;
-  block-size: 2px;
-  content: "";
-  inline-size: 0.45rem;
-  left: 55%;
-  position: absolute;
-  top: 58%;
-  transform: rotate(45deg);
-  transform-origin: left center;
+  content: none;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-search-button:focus:not(:focus-visible), .bf-search-and-filter-selected-count:focus:not(:focus-visible)) {
@@ -2455,14 +2415,14 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 
 :where(.bf-theme) :where(.bf-pagination-item.is-truncation) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
-  min-block-size: var(--bf-control-block-size-dense);
-  padding-block-end: calc((((var(--bf-control-block-size-dense) - ${bodyLineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${bodySelectedEndNudge});
-  padding-block-start: calc((((var(--bf-control-block-size-dense) - ${bodyLineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${bodySelectedStartNudge});
+  min-block-size: var(--bf-control-block-size);
+  padding-block-end: calc((((var(--bf-control-block-size) - ${bodyLineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${bodySelectedEndNudge});
+  padding-block-start: calc((((var(--bf-control-block-size) - ${bodyLineHeight} - var(--bf-baseline) - 0rem) / 2)) + ${bodySelectedStartNudge});
   padding-inline: calc(var(--bf-baseline) * 0.5);
 }
 
 :where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) {
-${typeStyles(h6, { includeCase: false })}  align-items: center;
+${typeStyles(body, { includeCase: false })}  align-items: center;
   background-color: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
   border-radius: var(--bf-radius);
@@ -2471,11 +2431,11 @@ ${typeStyles(h6, { includeCase: false })}  align-items: center;
   display: inline-flex;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
-  min-block-size: var(--bf-control-block-size-dense);
-  min-inline-size: calc(var(--bf-baseline) * 2.5);
-  padding-block-end: calc((((var(--bf-control-block-size-dense) - ${h6LineHeight} - var(--bf-baseline) - ${controlBorderTotal}) / 2)) + ${h6SelectedEndNudge});
-  padding-block-start: calc((((var(--bf-control-block-size-dense) - ${h6LineHeight} - var(--bf-baseline) - ${controlBorderTotal}) / 2)) + ${h6SelectedStartNudge});
-  padding-inline: calc(var(--bf-baseline) * 0.75);
+  min-block-size: var(--bf-control-block-size);
+  min-inline-size: var(--bf-control-block-size);
+  padding-block-end: calc((((var(--bf-control-block-size) - ${bodyLineHeight} - var(--bf-baseline) - ${controlBorderTotal}) / 2)) + ${bodySelectedEndNudge});
+  padding-block-start: calc((((var(--bf-control-block-size) - ${bodyLineHeight} - var(--bf-baseline) - ${controlBorderTotal}) / 2)) + ${bodySelectedStartNudge});
+  padding-inline: var(--bf-control-inline-padding);
   text-align: center;
   text-decoration: none;
 }
@@ -2595,7 +2555,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   display: inline-block;
   flex: none;
   inline-size: 1rem;
-  margin-inline-end: calc(var(--bf-baseline) * 3);
+  margin-inline-end: var(--bf-control-inline-padding);
   transition: transform 120ms ease;
 }
 
@@ -2675,7 +2635,7 @@ ${typeStyles(h4, { includeCase: false })}}
 }
 
 :where(.bf-theme) :where(.bf-modal-close) {
-${typeStyles(h6, { includeCase: false })}  appearance: none;
+${typeStyles(body, { includeCase: false })}  appearance: none;
   background: transparent;
   border: 0;
   color: var(--bf-color-text-default);
@@ -2764,7 +2724,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   background: var(--bf-color-background-alt);
   color: var(--bf-color-text-default);
   display: block;
-  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: "Ubuntu Sans Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: ${body.fontSize};
   line-height: ${body.lineHeight};
   margin: 0;

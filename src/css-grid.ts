@@ -52,7 +52,7 @@ export function gridCss(): string {
 :where(.bf-theme) :where(.bf-grid) {
   --bf-grid-columns: 4;
   display: grid;
-  gap: var(--bf-grid-gap-block) var(--bf-grid-gap-inline);
+  gap: 0 var(--bf-grid-gap-inline);
   grid-template-columns: repeat(var(--bf-grid-columns), minmax(0, 1fr));
 }
 

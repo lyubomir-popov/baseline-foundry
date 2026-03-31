@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Example: Column Span Rule</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./grid-examples.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="example-fixed-width example-hero">
+      <div class="bf-prose">
+        <h1>Column span rule</h1>
+        <p>The visual rule is simple: spans can only bisect. Valid spans are 8, 4, 2, and 1 on the 8-column grid, then 16, 8, 4, 2, and 1 on the 16-column grid. Thirds are explicitly outside the system.</p>
+      </div>
+    </section>
+
+    <section class="example-fixed-width example-span-demo">
+      <article class="example-surface example-span-row bf-grid-scope">
+        <div class="bf-prose"><h2>8-column grid</h2></div>
+        <div class="bf-grid example-span-bars">
+          <div class="bf-span-8 example-span-bar"><strong>Span 8</strong><span>Full row</span></div>
+          <div class="bf-span-4 example-span-bar"><strong>Span 4</strong><span>Half row</span></div>
+          <div class="bf-span-2 example-span-bar"><strong>Span 2</strong><span>Quarter row</span></div>
+          <div class="bf-span-1 example-span-bar"><strong>Span 1</strong><span>Utility cell</span></div>
+          <div class="example-span-bar is-invalid"><strong>Invalid</strong><span>Thirds are not allowed</span></div>
+        </div>
+      </article>
+
+      <article class="example-surface example-span-row bf-grid-scope">
+        <div class="bf-prose"><h2>16-column grid</h2></div>
+        <div class="bf-grid example-span-bars">
+          <div class="bf-span-16 example-span-bar"><strong>Span 16</strong><span>Full row</span></div>
+          <div class="bf-span-8 example-span-bar"><strong>Span 8</strong><span>Half row</span></div>
+          <div class="bf-span-4 example-span-bar"><strong>Span 4</strong><span>Quarter row</span></div>
+          <div class="bf-span-2 example-span-bar"><strong>Span 2</strong><span>Eighth row</span></div>
+          <div class="bf-span-1 example-span-bar"><strong>Span 1</strong><span>Sixteenth row</span></div>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

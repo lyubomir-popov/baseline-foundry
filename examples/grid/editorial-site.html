@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Example: Editorial Site</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./grid-examples.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="example-fixed-width example-hero example-hero-grid">
+      <div class="bf-prose">
+        <h1>Editorial site</h1>
+        <p>A centered page keeps the outer margins growing at the wider breakpoint, while the hero, card row, and two-column text block reuse the same `bf-fixed-width` and `bf-grid` primitives.</p>
+      </div>
+      <div class="example-media" aria-hidden="true"></div>
+    </section>
+
+    <section class="example-fixed-width bf-grid bf-grid-scope">
+      <article class="bf-span-2 example-card"><h2 class="bf-h4">Story card</h2><p>Quarter-width card at 8 columns and narrower at 16.</p></article>
+      <article class="bf-span-2 example-card is-soft"><h2 class="bf-h4">Story card</h2><p>Uses the same card framing without needing extra wrappers.</p></article>
+      <article class="bf-span-2 example-card"><h2 class="bf-h4">Story card</h2><p>Large margins remain viewport-controlled, not container-local.</p></article>
+      <article class="bf-span-2 example-card is-strong"><h2 class="bf-h4">Story card</h2><p>The row stacks cleanly when the container collapses to 4 columns.</p></article>
+    </section>
+
+    <section class="example-fixed-width example-site-main">
+      <article class="bf-prose example-surface">
+        <h2>Measured editorial column</h2>
+        <p>The left column keeps the broader Ubuntu Sans editorial reading measure and uses element-owned flow spacing instead of container-owned gaps.</p>
+        <p>Because the main page width is still capped by `bf-fixed-width`, the outer margins can breathe without turning the prose itself into a full-width slab.</p>
+      </article>
+      <article class="bf-prose example-surface">
+        <h2>Secondary column</h2>
+        <p>The paired text block demonstrates the `50 / 50` composition from the spec without inventing a one-off page shell or a custom marketing grid.</p>
+        <p>Resizing the page shows the two-column content collapse back into a single editorial flow at the narrow breakpoint.</p>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

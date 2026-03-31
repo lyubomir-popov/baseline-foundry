@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spacing Example: Substitutability</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./spacing-examples.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="spacing-fixed-width spacing-hero bf-prose">
+      <h1>Substitutability</h1>
+      <p>Container-owned spacing keeps identical gaps when the control changes. Element-owned editorial flow changes spacing semantically when the content type changes.</p>
+    </section>
+
+    <section class="spacing-fixed-width spacing-grid-two">
+      <article class="spacing-surface spacing-stack is-container-owned">
+        <h2 class="bf-h4">Container-owned</h2>
+        <button class="bf-button">Button</button>
+        <input class="bf-input" type="text" value="Text input">
+        <select><option>Select</option></select>
+        <p class="spacing-gap-label">Gap stays identical because the container owns it.</p>
+      </article>
+
+      <article class="spacing-surface bf-prose">
+        <h2>Element-owned</h2>
+        <p>The heading below changes the resolved spacing because the content semantics changed.</p>
+        <h3>Swapped heading</h3>
+        <p>The prose system intentionally treats this differently from an `h2`.</p>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

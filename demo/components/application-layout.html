@@ -7,18 +7,18 @@
   <link rel="stylesheet" href="../../dist/presets/app-tier/styles.css">
   <link rel="stylesheet" href="../component-shell.css">
 </head>
-<body class="bf-theme bf-tier-app">
+<body class="bf-theme bf-tier-app" data-bf-tone="light" data-component-capture>
   <div class="l-application has-navigation has-pinned-aside" data-aside-resize-storage-key="demo:application-layout-aside" data-baseline-ignore="true" style="min-block-size:calc(var(--bf-baseline) * 72)">
     <div class="l-navigation-bar" data-baseline-ignore="true">
-      <section class="bf-panel is-fill" data-component-capture data-baseline-ignore="true">
+      <section class="bf-panel is-fill" data-baseline-ignore="true">
         <div class="bf-panel-header" data-baseline-ignore="true">
           <div class="bf-stack" data-space="tight" data-baseline-ignore="true">
-            <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout title">Model Control</h2>
-            <p class="bf-form-help is-tight is-fading-when-collapsed" data-baseline-check="flow" data-baseline-label="application layout subtitle">Vanilla-style application layout ported onto baseline-foundry primitives.</p>
+            <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout title">MAAS control plane</h2>
+            <p class="bf-form-help is-tight is-fading-when-collapsed" data-baseline-check="flow" data-baseline-label="application layout subtitle">Light application chrome, collapsible navigation, and pinned inspector structure pulled toward the Vanilla shell line.</p>
           </div>
           <div class="bf-panel-controls" data-baseline-check="box" data-baseline-label="application layout top controls">
-            <button class="bf-button is-base is-dense" type="button" data-application-layout-toggle aria-controls="application-layout-navigation" aria-expanded="false" data-baseline-check="box" data-baseline-label="application layout nav toggle">Menu</button>
-            <button class="bf-button is-dense" type="button" data-panel-drawer-toggle aria-controls="application-layout-drawer" aria-expanded="false" data-baseline-check="box" data-baseline-label="application layout aside toggle">Inspector</button>
+            <button class="bf-button is-base is-dense" type="button" data-application-layout-toggle aria-controls="application-layout-navigation" aria-expanded="false" data-baseline-check="box" data-baseline-label="application layout nav toggle">Navigation</button>
+            <button class="bf-button is-dense" type="button" data-panel-drawer-toggle aria-controls="application-layout-drawer" aria-expanded="false" data-baseline-check="box" data-baseline-label="application layout aside toggle">Activity</button>
           </div>
         </div>
       </section>
@@ -30,8 +30,8 @@
         <section class="bf-panel is-fill" data-baseline-ignore="true">
           <div class="bf-panel-header is-sticky" data-baseline-ignore="true">
             <div class="bf-stack" data-space="tight" data-baseline-ignore="true">
-              <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout nav title">Workspace</h2>
-              <p class="bf-form-help is-tight is-fading-when-collapsed" data-baseline-check="flow" data-baseline-label="application layout nav meta">Collapsed and pinned states match the left-column application contract.</p>
+              <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout nav title">Cluster</h2>
+              <p class="bf-form-help is-tight is-fading-when-collapsed" data-baseline-check="flow" data-baseline-label="application layout nav meta">The left rail stays narrow when collapsed, expands as a drawer on smaller widths, and pins cleanly on desktop.</p>
             </div>
             <div class="bf-panel-controls" data-baseline-check="box" data-baseline-label="application layout nav controls">
               <button class="bf-button is-base is-dense" type="button" data-application-layout-pin aria-controls="application-layout-navigation" aria-pressed="false" data-baseline-check="box" data-baseline-label="application layout pin toggle">Pin</button>
@@ -46,7 +46,7 @@
                     <span class="bf-side-navigation-icon" aria-hidden="true">
                       <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="12" height="12" rx="2" fill="currentColor" opacity="0.8"/></svg>
                     </span>
-                    <span class="bf-side-navigation-label">Overview</span>
+                    <span class="bf-side-navigation-label">Dashboard</span>
                   </a>
                 </li>
                 <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav item one">
@@ -54,8 +54,8 @@
                     <span class="bf-side-navigation-icon" aria-hidden="true">
                       <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 4h10M3 8h10M3 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     </span>
-                    <span class="bf-side-navigation-label">Models</span>
-                    <span class="bf-side-navigation-status"><span class="bf-chip is-information">8</span></span>
+                    <span class="bf-side-navigation-label">Machines</span>
+                    <span class="bf-side-navigation-status"><span class="bf-chip is-information">132</span></span>
                   </a>
                 </li>
                 <li class="bf-side-navigation-item has-active-child" data-baseline-check="box" data-baseline-label="application layout nav item two">
@@ -63,12 +63,12 @@
                     <span class="bf-side-navigation-icon" aria-hidden="true">
                       <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="5" r="2.25" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 13c1.25-2.25 3-3.25 4.5-3.25S11.25 10.75 12.5 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     </span>
-                    <span class="bf-side-navigation-label">Operators</span>
+                    <span class="bf-side-navigation-label">Storage</span>
                   </a>
                   <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="application layout nav nested list">
-                    <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav nested item one"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Ownership</span></a></li>
-                    <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav nested item two"><a class="bf-side-navigation-link" aria-current="page" href="#"><span class="bf-side-navigation-label">Alerts</span><span class="bf-side-navigation-status"><span class="bf-status-label is-caution">2</span></span></a></li>
-                    <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav nested item three"><span class="bf-side-navigation-text"><span class="bf-side-navigation-label">Escalations</span><span class="bf-side-navigation-status"><span class="bf-chip is-positive">Ready</span></span></span></li>
+                    <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav nested item one"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Volumes</span></a></li>
+                    <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav nested item two"><a class="bf-side-navigation-link" aria-current="page" href="#"><span class="bf-side-navigation-label">Commissioning</span><span class="bf-side-navigation-status"><span class="bf-status-label is-caution">3</span></span></a></li>
+                    <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav nested item three"><span class="bf-side-navigation-text"><span class="bf-side-navigation-label">Ready images</span><span class="bf-side-navigation-status"><span class="bf-chip is-positive">12</span></span></span></li>
                   </ul>
                 </li>
                 <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav item three">
@@ -76,13 +76,13 @@
                     <span class="bf-side-navigation-icon" aria-hidden="true">
                       <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 4.5h10M3 8h10M3 11.5h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     </span>
-                    <span class="bf-side-navigation-label">Activity</span>
+                    <span class="bf-side-navigation-label">Networking</span>
                   </a>
                 </li>
               </ul>
               <ul class="bf-side-navigation-list is-fading-when-collapsed" data-baseline-check="box" data-baseline-label="application layout nav list two">
-                <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav item four"><span class="bf-side-navigation-text"><span class="bf-side-navigation-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2.5 13 5v6L8 13.5 3 11V5l5-2.5Z" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="bf-side-navigation-label">Release 0.4.0</span></span></li>
-                <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav item five"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="bf-side-navigation-label">Create model</span></a></li>
+                <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav item four"><span class="bf-side-navigation-text"><span class="bf-side-navigation-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2.5 13 5v6L8 13.5 3 11V5l5-2.5Z" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="bf-side-navigation-label">Region us-east-1</span></span></li>
+                <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="application layout nav item five"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="bf-side-navigation-label">Add machine</span></a></li>
               </ul>
             </nav>
           </div>
@@ -96,55 +96,55 @@
           <div class="bf-stack" data-space="tight" data-baseline-ignore="true">
             <nav class="bf-breadcrumbs" aria-label="Model navigation" data-baseline-check="box" data-baseline-label="application layout breadcrumbs">
               <ol class="bf-breadcrumbs-items">
-                <li class="bf-breadcrumbs-item"><a href="#">Models</a></li>
-                <li class="bf-breadcrumbs-item"><span aria-current="page">Alerts</span></li>
+                <li class="bf-breadcrumbs-item"><a href="#">MAAS</a></li>
+                <li class="bf-breadcrumbs-item"><span aria-current="page">Commissioning</span></li>
               </ol>
             </nav>
-            <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout main title">8 models: 3 blocked, 2 alerts, 3 running</h2>
+            <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout main title">8 machines are queued for commissioning, 3 need operator action</h2>
           </div>
           <div class="bf-panel-controls" data-baseline-check="box" data-baseline-label="application layout main controls">
             <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="application layout refresh">Refresh</button>
-            <button class="bf-button is-dense" type="button" data-panel-drawer-toggle aria-controls="application-layout-drawer" aria-expanded="false" data-baseline-check="box" data-baseline-label="application layout open drawer">Open aside</button>
+            <button class="bf-button is-dense" type="button" data-panel-drawer-toggle aria-controls="application-layout-drawer" aria-expanded="false" data-baseline-check="box" data-baseline-label="application layout open drawer">View activity</button>
           </div>
         </div>
         <div class="bf-panel-content" data-baseline-ignore="true" style="display:grid;gap:calc(var(--bf-baseline) * 3)">
           <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="application layout summary grid">
-            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout stat one"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout stat title one">Blocked</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout stat body one">3 models need operator action.</p></div>
-            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout stat two"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout stat title two">Alerts</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout stat body two">2 models are reporting degraded health.</p></div>
-            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout stat three"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout stat title three">Running</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout stat body three">3 models are fully green.</p></div>
+            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout stat one"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout stat title one">Queued</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout stat body one">8 machines are waiting for the next step.</p></div>
+            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout stat two"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout stat title two">Blocked</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout stat body two">3 machines still need storage remediation.</p></div>
+            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout stat three"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout stat title three">Ready</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout stat body three">21 images are ready to deploy across zones.</p></div>
           </div>
 
           <table class="bf-table" aria-label="Application layout model table" data-baseline-check="box" data-baseline-label="application layout table">
             <thead>
               <tr>
                 <th>Status</th>
-                <th>Model</th>
-                <th>Owner</th>
-                <th>Region</th>
+                <th>Machine</th>
+                <th>Zone</th>
+                <th>Power</th>
                 <th>Updated</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><span class="bf-status-label is-caution">Blocked</span></td>
-                <td><a href="#">hadoopspark</a></td>
-                <td>gomboli</td>
-                <td>google/us-east1</td>
-                <td>2026-03-29</td>
+                <td><a href="#">maas-worker-17</a></td>
+                <td>dc-a/rack-4</td>
+                <td>Error</td>
+                <td>2026-03-29 10:42</td>
               </tr>
               <tr>
                 <td><span class="bf-status-label is-information">Alert</span></td>
-                <td><a href="#">canonical-kubernetes</a></td>
-                <td>platform</td>
-                <td>google/us-central1</td>
-                <td>2026-03-30</td>
+                <td><a href="#">maas-db-03</a></td>
+                <td>dc-a/rack-2</td>
+                <td>On</td>
+                <td>2026-03-30 08:15</td>
               </tr>
               <tr>
                 <td><span class="bf-status-label is-positive">Running</span></td>
-                <td><a href="#">release-pipeline</a></td>
-                <td>delivery</td>
-                <td>google/europe-west1</td>
-                <td>2026-03-30</td>
+                <td><a href="#">maas-gateway-01</a></td>
+                <td>edge/rack-1</td>
+                <td>On</td>
+                <td>2026-03-30 09:52</td>
               </tr>
             </tbody>
           </table>
@@ -157,23 +157,23 @@
     <aside id="application-layout-drawer" class="l-aside is-overlay is-small" aria-hidden="true" aria-label="Activity inspector" data-baseline-ignore="true">
       <section class="bf-panel is-fill" data-baseline-ignore="true">
         <div class="bf-panel-header is-sticky" data-baseline-ignore="true">
-          <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout aside title">Activity inspector</h2>
+          <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout aside title">Event stream</h2>
           <div class="bf-panel-controls" data-baseline-check="box" data-baseline-label="application layout aside controls">
             <button class="bf-button is-base is-dense" type="button" data-panel-drawer-close data-panel-drawer-autofocus aria-controls="application-layout-drawer" data-baseline-check="box" data-baseline-label="application layout aside close">Close</button>
           </div>
         </div>
         <div class="bf-panel-content" data-baseline-ignore="true" style="display:grid;gap:var(--bf-field-gap)">
-          <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout aside kicker">Current alert</h5>
-          <p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout aside body">The overlay aside still uses the shared drawer runtime, so the full application layout composes instead of forking the shell primitives.</p>
+          <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout aside kicker">Current activity</h5>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout aside body">The overlay aside still rides the shared drawer runtime, but the content now reads like a real MAAS-style activity stream instead of a generic placeholder inspector.</p>
           <div class="bf-field" data-baseline-check="box" data-baseline-label="application layout aside field">
-            <label class="bf-form-label" for="application-layout-owner" data-baseline-check="flow" data-baseline-label="application layout aside label">Assigned owner</label>
+            <label class="bf-form-label" for="application-layout-owner" data-baseline-check="flow" data-baseline-label="application layout aside label">Selected zone</label>
             <div class="bf-control" data-baseline-check="box" data-baseline-label="application layout aside control">
-              <input id="application-layout-owner" class="bf-input is-dense" type="text" value="platform" data-baseline-check="box" data-baseline-label="application layout aside input">
+              <input id="application-layout-owner" class="bf-input is-dense" type="text" value="dc-a/rack-4" data-baseline-check="box" data-baseline-label="application layout aside input">
             </div>
           </div>
           <div class="bf-actions" data-baseline-check="box" data-baseline-label="application layout aside actions">
-            <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="application layout aside secondary">Dismiss</button>
-            <button class="bf-button is-dense" type="button" data-baseline-check="box" data-baseline-label="application layout aside primary">Escalate</button>
+            <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="application layout aside secondary">Acknowledge</button>
+            <button class="bf-button is-dense" type="button" data-baseline-check="box" data-baseline-label="application layout aside primary">Retry commissioning</button>
           </div>
         </div>
       </section>
@@ -183,17 +183,17 @@
       <div class="l-application__aside-resize-handle" role="separator" tabindex="0" aria-controls="application-layout-summary" aria-label="Resize panel" aria-orientation="vertical" data-baseline-ignore="true"></div>
       <section class="bf-panel is-fill" data-baseline-ignore="true">
         <div class="bf-panel-header is-sticky" data-baseline-ignore="true">
-          <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout summary title">Summary</h2>
+          <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application layout summary title">Machine summary</h2>
           <div class="bf-panel-controls" data-baseline-check="box" data-baseline-label="application layout summary controls">
             <button class="bf-button is-base is-dense" type="button" data-baseline-check="box" data-baseline-label="application layout summary action">Export</button>
           </div>
         </div>
         <div class="bf-panel-content" data-baseline-ignore="true" style="display:grid;gap:var(--bf-field-gap)">
           <div class="bf-grid is-controls" data-baseline-check="box" data-baseline-label="application layout summary grid">
-            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout summary item one"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout summary title one">Region</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout summary body one">us-central1</p></div>
-            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout summary item two"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout summary title two">Credential</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout summary body two">clean-algebra-206308</p></div>
+            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout summary item one"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout summary title one">Zone</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout summary body one">dc-a/rack-4</p></div>
+            <div class="bf-grid-item is-control-pair" data-baseline-check="box" data-baseline-label="application layout summary item two"><h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application layout summary title two">Image</h5><p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout summary body two">ubuntu-24.04-lts</p></div>
           </div>
-          <p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout summary body three">The pinned summary column keeps the existing resizeable aside behavior and width bounds.</p>
+          <p class="bf-body" data-baseline-check="flow" data-baseline-label="application layout summary body three">The pinned summary column still uses the shared resizable-aside behavior, but the content is now framed like a real machine summary rail.</p>
         </div>
       </section>
     </aside>

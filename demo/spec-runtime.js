@@ -1,16 +1,19 @@
+import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initRangeControls, initSideNavigations, initTabs, initTooltips } from "../dist/index.js";
+import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
+
 const TIER_STORAGE_KEY = "baseline-foundry:living-spec-tier";
 const TONE_STORAGE_KEY = "baseline-foundry:living-spec-tone";
-const tierStylesheet = document.querySelector("#spec-tier-stylesheet");
-const tierSelect = document.querySelector("[data-spec-tier-select]");
-const toneToggle = document.querySelector("[data-spec-tone-toggle]");
 const rootPrefix = document.documentElement.dataset.specRoot ?? "..";
 let activeTierLoad = 0;
+let tierStylesheet = null;
+let tierSelect = null;
+let toneToggle = null;
 
 const tierConfig = {
   editorial: {
     label: "Editorial",
     className: "bf-tier-editorial",
-    description: "Element-owned prose rhythm for long-form composition and the widest IBM Plex reading measure.",
+    description: "Element-owned prose rhythm for long-form composition and the widest Ubuntu Sans reading measure.",
     detail: "This tier keeps the loosest section rhythm and the editorial-first grid contract."
   },
   documentation: {
@@ -73,7 +76,7 @@ function renderTokens(tokens) {
       .map(([roleName, token]) => {
         const fontWeight = token?.fontWeight ?? "-";
         return `
-          <div data-spec-token-row>
+          <div class="bf-cluster">
             <strong>${roleName}</strong>
             <code>${token?.fontSize ?? "-"} / ${token?.lineHeight ?? "-"}</code>
             <span>weight ${fontWeight}</span>
@@ -117,15 +120,12 @@ function storeTone(tone) {
 }
 
 function supportedTierNames() {
-  if (!(tierSelect instanceof HTMLSelectElement)) {
-    return Object.keys(tierConfig);
-  }
-
-  const supported = Array.from(tierSelect.options)
-    .map(option => option.value)
+  const allowed = document.body.dataset.pageTierOptions
+    ?.split(",")
+    .map(option => option.trim())
     .filter(option => option in tierConfig);
 
-  return supported.length > 0 ? supported : Object.keys(tierConfig);
+  return allowed && allowed.length > 0 ? allowed : Object.keys(tierConfig);
 }
 
 function currentTone() {
@@ -219,12 +219,42 @@ async function applyTier(tierName) {
 }
 
 export async function initSpecRuntime({ initComponents } = {}) {
-  const moduleUrl = assetUrl("dist/index.js");
-  const componentModule = await import(moduleUrl);
-  componentModule.initBaselineGridToggles({ toggleSelector: "[data-spec-baseline-toggle][aria-controls]" });
+  const stylesheetLink = document.querySelector("#spec-tier-stylesheet");
+  if (!(stylesheetLink instanceof HTMLLinkElement)) {
+    throw new Error("Missing #spec-tier-stylesheet link.");
+  }
+
+  tierStylesheet = stylesheetLink;
+
+  const supportedTiers = supportedTierNames().map(name => ({ value: name, label: tierConfig[name]?.label ?? name }));
+  const currentTier = document.body.dataset.bfTier ?? (document.body.classList.contains("bf-tier-app") ? "app" : "editorial");
+  const baselineTarget = document.querySelector("[data-spec-shell]") ?? document.body;
+  const baselineTargetId = ensureTargetId(baselineTarget, "spec-grid-target");
+  const chrome = injectPageChrome({
+    controls: {
+      baselineLabel: "Baseline grid",
+      selectedTier: currentTier,
+      showBaseline: true,
+      showTone: true,
+      tierOptions: supportedTiers
+    },
+    currentPath: window.location.pathname
+  });
+
+  if (!(chrome.tierSelect instanceof HTMLSelectElement) || !(chrome.toneToggle instanceof HTMLInputElement) || !(chrome.baselineToggle instanceof HTMLInputElement) || !baselineTargetId) {
+    throw new Error("Unable to create the shared page chrome controls.");
+  }
+
+  chrome.baselineToggle.setAttribute("aria-controls", baselineTargetId);
+  chrome.baselineToggle.dataset.baselineDefault = currentTier === "editorial" ? "on" : "off";
+  initBaselineGridToggles({ toggleSelector: "[data-page-chrome-baseline-toggle][aria-controls]", defaultEnabled: true });
+  initSideNavigations();
+
+  tierSelect = chrome.tierSelect;
+  toneToggle = chrome.toneToggle;
 
   if (typeof initComponents === "function") {
-    await initComponents(componentModule);
+    await initComponents({ initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initRangeControls, initSideNavigations, initTabs, initTooltips });
   }
 
   if (toneToggle instanceof HTMLInputElement) {
@@ -242,10 +272,10 @@ export async function initSpecRuntime({ initComponents } = {}) {
   }
 
   const preferredTier = readStoredTier();
-  const supportedTiers = supportedTierNames();
-  const initialTier = preferredTier && supportedTiers.includes(preferredTier)
+  const supportedTierNamesList = supportedTierNames();
+  const initialTier = preferredTier && supportedTierNamesList.includes(preferredTier)
     ? preferredTier
-    : (supportedTiers.includes("editorial") ? "editorial" : supportedTiers[0]);
+    : (supportedTierNamesList.includes("editorial") ? "editorial" : supportedTierNamesList[0]);
   const preferredTone = readStoredTone();
 
   applyTone(preferredTone === "dark" ? "dark" : "light", { persist: false });

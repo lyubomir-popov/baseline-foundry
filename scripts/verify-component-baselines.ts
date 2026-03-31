@@ -165,7 +165,6 @@ async function verifyComponentPage(
       ".bf-inline-options",
       ".bf-actions",
       ".bf-option-card",
-      ".bf-divider-block",
       ".bf-tabs-list",
       ".bf-segmented-control-button",
       ".bf-breadcrumbs-items",

@@ -4,50 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Baseline Foundry Controls</title>
-  <link id="spec-tier-stylesheet" rel="stylesheet" href="../dist/tiers/editorial/styles.css">
+  <link id="spec-tier-stylesheet" rel="stylesheet" href="../dist/tiers/app/styles.css">
   <link rel="stylesheet" href="./spec-shell.css">
   <link rel="stylesheet" href="./controls-shell.css">
 </head>
-<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+<body class="bf-theme bf-tier-app" data-bf-tone="light" data-page-tier-options="editorial,app">
   <main data-spec-shell data-spec-home id="controls-grid-target">
-    <header data-spec-home-header>
-      <div data-spec-toolbar>
-        <div data-spec-switches>
-          <label class="bf-switch" data-spec-switch>
-            <input class="bf-switch-input" data-spec-tone-toggle type="checkbox">
-            <span class="bf-switch-slider" aria-hidden="true"></span>
-            <span class="bf-switch-label">Dark theme</span>
-          </label>
-
-          <label class="bf-switch" data-spec-switch>
-            <input class="bf-switch-input" data-spec-baseline-toggle type="checkbox" aria-controls="controls-grid-target">
-            <span class="bf-switch-slider" aria-hidden="true"></span>
-            <span class="bf-switch-label">Baseline grid</span>
-          </label>
-        </div>
-
-        <div class="bf-field" data-spec-tier-field>
-          <label class="bf-form-label" for="controls-tier-select">Tier</label>
-          <div class="bf-control">
-            <select id="controls-tier-select" data-spec-tier-select>
-              <option value="editorial">Editorial</option>
-              <option value="app">App</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="bf-prose" data-spec-section-heading>
-        <h1>Controls</h1>
-        <p>One large page of inputs, toggles, navigation, and dense panel-side recipes under the same theme, baseline-grid, and tier switches.</p>
-      </div>
-
-      <div data-spec-links>
-        <a href="./index.html">Spec home</a>
-        <a href="./controls.html" aria-current="page">Controls</a>
-        <a href="./components/index.html">Atlas</a>
-      </div>
-    </header>
 
     <section class="bf-section" data-spec-section>
       <div class="bf-prose" data-spec-section-heading>
@@ -55,13 +17,13 @@
         <p>Dense text entry, search, selection, file and color inputs, range pairs, and validation states.</p>
       </div>
 
-      <div data-controls-panels>
-        <section data-controls-panel>
+      <div class="bf-controls-panels">
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Text and search</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
+            <div class="bf-panel-content bf-controls-stack">
               <div class="bf-field">
                 <label class="bf-form-label" for="controls-title">Title</label>
                 <div class="bf-control">
@@ -98,13 +60,13 @@
           </div>
         </section>
 
-        <section data-controls-panel>
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Color, file, and range</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
-              <div data-controls-color-grid>
+            <div class="bf-panel-content bf-controls-stack">
+              <div class="bf-controls-color-grid">
                 <div class="bf-field">
                   <label class="bf-form-label" for="controls-primary-color">Primary</label>
                   <div class="bf-control">
@@ -141,12 +103,12 @@
           </div>
         </section>
 
-        <section data-controls-panel>
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Validation and filtering</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
+            <div class="bf-panel-content bf-controls-stack">
               <div class="bf-field is-success">
                 <label class="bf-form-label" for="controls-success">Slug</label>
                 <div class="bf-control">
@@ -210,13 +172,13 @@
         <p>Boolean controls, explicit option picking, segmented rows, action groups, and inline status controls.</p>
       </div>
 
-      <div data-controls-panels>
-        <section data-controls-panel>
+      <div class="bf-controls-panels">
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Checkboxes, radios, and switch</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
+            <div class="bf-panel-content bf-controls-stack">
               <div class="bf-field is-checkbox">
                 <div class="bf-control">
                   <div class="bf-checkbox">
@@ -244,12 +206,12 @@
           </div>
         </section>
 
-        <section data-controls-panel>
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Choice rows and inline options</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
+            <div class="bf-panel-content bf-controls-stack">
               <div class="bf-choice-list">
                 <label class="bf-choice-row">
                   <input type="radio" name="controls-choice-row" checked>
@@ -289,12 +251,12 @@
           </div>
         </section>
 
-        <section data-controls-panel>
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Segmented rows, actions, and status</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
+            <div class="bf-panel-content bf-controls-stack">
               <div class="bf-segmented-control is-dense">
                 <ul class="bf-segmented-control-list">
                   <li class="bf-segmented-control-item"><button class="bf-segmented-control-button is-active" type="button" aria-pressed="true">Frame</button></li>
@@ -347,13 +309,13 @@
         <p>Tabs, accordion, breadcrumbs, pagination, contextual menus, tooltips, and modal framing on the same page.</p>
       </div>
 
-      <div data-controls-panels>
-        <section data-controls-panel>
+      <div class="bf-controls-panels">
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Tabs and accordion</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
+            <div class="bf-panel-content bf-controls-stack">
               <div class="bf-tabs">
                 <ul class="bf-tabs-list" role="tablist">
                   <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="controls-tab-panel-1">Document</button></li>
@@ -408,12 +370,12 @@
           </div>
         </section>
 
-        <section data-controls-panel>
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Breadcrumbs and pagination</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
+            <div class="bf-panel-content bf-controls-stack">
               <nav class="bf-breadcrumbs" aria-label="Breadcrumb">
                 <ol class="bf-breadcrumbs-items">
                   <li class="bf-breadcrumbs-item"><a href="#">Workspace</a></li>
@@ -436,13 +398,13 @@
           </div>
         </section>
 
-        <section data-controls-panel>
+        <section class="bf-controls-panel">
           <div class="bf-panel">
             <div class="bf-panel-header">
               <h3 class="bf-panel-title">Menus, tooltips, and modal framing</h3>
             </div>
-            <div class="bf-panel-content" data-controls-stack>
-              <div class="bf-contextual-menu" data-controls-menu-panel>
+            <div class="bf-panel-content bf-controls-stack">
+              <div class="bf-contextual-menu bf-controls-menu-panel">
                 <button class="bf-button is-base is-dense bf-contextual-menu-toggle" type="button" aria-expanded="true">Actions</button>
                 <ul class="bf-contextual-menu-dropdown" aria-hidden="false">
                   <li class="bf-contextual-menu-group">
@@ -460,7 +422,7 @@
                 <p class="bf-tooltip-message" aria-hidden="false">Ratios lock the stage while export presets inherit the final canvas size.</p>
               </div>
 
-              <div data-controls-modal>
+              <div class="bf-controls-modal">
                 <div class="bf-modal-dialog">
                   <div class="bf-modal-header">
                     <h2 class="bf-modal-title">Export PNG Sequence</h2>

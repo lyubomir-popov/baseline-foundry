@@ -14,8 +14,8 @@ export const tierNames: readonly TierName[] = ["editorial", "documentation", "ap
 export const presetNames: readonly PresetName[] = ["prose", "panel", "app-tier"] as const;
 
 export const tierDescriptions: Record<TierName, string> = {
-  editorial: "Editorial first: IBM Plex Sans, element-owned prose rhythm, and the widest baseline-aligned measure.",
-  documentation: "Documentation first: IBM Plex Sans with a tighter doc measure, denser gutters, and calmer chapter reading rhythm.",
+  editorial: "Editorial first: Ubuntu Sans, element-owned prose rhythm, and the widest baseline-aligned measure.",
+  documentation: "Documentation first: Ubuntu Sans with a tighter doc measure, denser gutters, and calmer chapter reading rhythm.",
   app: "Application first: Ubuntu Sans, Canonical-style light chrome, and container-owned spacing under .bf-tier-app."
 };
 

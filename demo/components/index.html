@@ -15,7 +15,7 @@
         <h1 data-baseline-check="flow" data-baseline-label="atlas title">Component atlas and baseline gate</h1>
         <p data-baseline-check="flow" data-baseline-label="atlas intro">This is the single index of the saved demo files. Every component listed here has its own HTML page so it can be checked in isolation against the baseline grid. The grouped overview pages remain, but the files below are the actual per-component inspection surfaces.</p>
       </div>
-      <div data-demo-toolbar>
+      <div class="demo-toolbar">
         <label class="bf-body">
           <input data-demo-baseline-toggle type="checkbox" aria-controls="component-grid-target">
           Show baseline grid
@@ -25,95 +25,93 @@
     </header>
 
     <section class="bf-grid-scope bf-stack" data-space="loose" id="component-grid-target" data-component-capture>
-      <section class="bf-stack" data-space="tight" data-demo-index-section>
+      <section class="bf-stack demo-index-section" data-space="tight">
         <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas foundations">Foundations</h5>
-        <ul class="bf-grid" data-demo-index-list>
-          <li class="bf-span-2" data-demo-index-item><a href="./typography.html" data-demo-meta="JSON-driven type roles, the three-tier scale, and the current paired-weight logic.">Typography roles</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./prose.html" data-demo-meta="Editorial spacing, lists, rules, blockquotes, and flow boundaries.">Prose flow</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./layout.html" data-demo-meta="Page, section, strip, stack, cluster, and fixed-width primitives.">Layout primitives</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./grid.html" data-demo-meta="Container-query 4 / 8 / 16 grid with power-of-2 spans.">Grid primitives</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./application-shell.html" data-demo-meta="Pinned aside, fixed-width stage, panel scaffold, and upstream resize behavior.">Application shell</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./application-layout.html" data-demo-meta="Top navigation bar, collapsible left navigation, overlay inspector, and pinned summary column.">Application layout</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./stage-shell.html" data-demo-meta="Centered main-stage shell for bounded preview areas inside the application main column.">Stage shell</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./drawer-panel.html" data-demo-meta="Temporary overlay inspector that sits over the stage instead of resizing it.">Drawer panel</a></li>
+        <ul class="bf-grid demo-index-list">
+          <li class="bf-span-2 demo-index-item"><a href="./typography.html" data-demo-meta="JSON-driven type roles, the three-tier scale, and the current paired-weight logic.">Typography roles</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./prose.html" data-demo-meta="Editorial spacing, lists, rules, blockquotes, and flow boundaries.">Prose flow</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./layout.html" data-demo-meta="Page, section, strip, stack, cluster, and fixed-width primitives.">Layout primitives</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./grid.html" data-demo-meta="Container-query 4 / 8 / 16 grid with power-of-2 spans.">Grid primitives</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./application-shell.html" data-demo-meta="Pinned aside, fixed-width stage, panel scaffold, and upstream resize behavior.">Application shell</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./application-layout.html" data-demo-meta="Top navigation bar, collapsible left navigation, overlay inspector, and pinned summary column.">Application layout</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./stage-shell.html" data-demo-meta="Centered main-stage shell for bounded preview areas inside the application main column.">Stage shell</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./drawer-panel.html" data-demo-meta="Temporary overlay inspector that sits over the stage instead of resizing it.">Drawer panel</a></li>
         </ul>
       </section>
 
-      <section class="bf-stack" data-space="tight" data-demo-index-section>
+      <section class="bf-stack demo-index-section" data-space="tight">
         <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas controls">Form elements and controls</h5>
-        <ul class="bf-grid" data-demo-index-list>
-          <li class="bf-span-2" data-demo-index-item><a href="./button.html" data-demo-meta="Primary and base dense panel buttons.">Button</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./actions.html" data-demo-meta="Canonical action rows and scrollable export strips for dense panels.">Actions</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./text-input.html" data-demo-meta="Dense text field with label and help text.">Text input</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./color-input.html" data-demo-meta="Compact color-field sizing for inspector controls.">Color input</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./select.html" data-demo-meta="Dense select field with the shared bottom-border treatment.">Select</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./checkbox.html" data-demo-meta="Checkbox row with dedicated glyph sizing.">Checkbox</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./radio.html" data-demo-meta="Radio row with the same dense label rhythm.">Radio</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./range.html" data-demo-meta="Slider and number-input pair.">Range</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./file-input.html" data-demo-meta="Dense file selector field.">File input</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./validation.html" data-demo-meta="Success, caution, and error field messaging.">Validation</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./switch.html" data-demo-meta="Switch track, thumb, and label.">Switch</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./search-box.html" data-demo-meta="Dense inline search field with reset and search affordances.">Search box</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./search-and-filter.html" data-demo-meta="Expandable search/filter surface with selected count and chip groups.">Search and filter</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./code-snippet.html" data-demo-meta="Copyable command blocks and numbered code surfaces for dense panel and docs use.">Code snippet</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./list-tree.html" data-demo-meta="Compact nested navigation tree with expandable branches.">List tree</a></li>
+        <ul class="bf-grid demo-index-list">
+          <li class="bf-span-2 demo-index-item"><a href="./button.html" data-demo-meta="Primary and base dense panel buttons.">Button</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./actions.html" data-demo-meta="Canonical action rows and scrollable export strips for dense panels.">Actions</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./text-input.html" data-demo-meta="Dense text field with label and help text.">Text input</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./color-input.html" data-demo-meta="Compact color-field sizing for inspector controls.">Color input</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./select.html" data-demo-meta="Dense select field with the shared bottom-border treatment.">Select</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./checkbox.html" data-demo-meta="Checkbox row with dedicated glyph sizing.">Checkbox</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./radio.html" data-demo-meta="Radio row with the same dense label rhythm.">Radio</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./range.html" data-demo-meta="Slider and number-input pair.">Range</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./file-input.html" data-demo-meta="Dense file selector field.">File input</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./validation.html" data-demo-meta="Success, caution, and error field messaging.">Validation</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./switch.html" data-demo-meta="Switch track, thumb, and label.">Switch</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./search-box.html" data-demo-meta="Dense inline search field with reset and search affordances.">Search box</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./search-and-filter.html" data-demo-meta="Expandable search/filter surface with selected count and chip groups.">Search and filter</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./code-snippet.html" data-demo-meta="Copyable command blocks and numbered code surfaces for dense panel and docs use.">Code snippet</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./list-tree.html" data-demo-meta="Compact nested navigation tree with expandable branches.">List tree</a></li>
         </ul>
       </section>
 
-      <section class="bf-stack" data-space="tight" data-demo-index-section>
+      <section class="bf-stack demo-index-section" data-space="tight">
         <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas data display">Data display</h5>
-        <ul class="bf-grid" data-demo-index-list>
-          <li class="bf-span-2" data-demo-index-item><a href="./chip.html" data-demo-meta="Dense chip variants with the real uppercase micro-label lead treatment.">Chip</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./badge.html" data-demo-meta="Standalone and nested badge tokens.">Badge</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./status-label.html" data-demo-meta="Compact semantic labels for draft, saved, caution, info, and error states.">Status label</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./table.html" data-demo-meta="Dense data table with baseline-safe headers, rows, and caption.">Table</a></li>
+        <ul class="bf-grid demo-index-list">
+          <li class="bf-span-2 demo-index-item"><a href="./chip.html" data-demo-meta="Dense chip variants with the real uppercase micro-label lead treatment.">Chip</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./badge.html" data-demo-meta="Standalone and nested badge tokens.">Badge</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./status-label.html" data-demo-meta="Compact semantic labels for draft, saved, caution, info, and error states.">Status label</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./table.html" data-demo-meta="Dense data table with baseline-safe headers, rows, and caption.">Table</a></li>
         </ul>
       </section>
 
-      <section class="bf-stack" data-space="tight" data-demo-index-section>
+      <section class="bf-stack demo-index-section" data-space="tight">
         <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas navigation">Navigation and disclosure</h5>
-        <ul class="bf-grid" data-demo-index-list>
-          <li class="bf-span-2" data-demo-index-item><a href="./tabs.html" data-demo-meta="Dense tab row and panel body.">Tabs</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./panel-tabs.html" data-demo-meta="Equal-width dense tab rows for inspector panels and compact view switching.">Panel tabs</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./accordion.html" data-demo-meta="Compact accordion rows and panel spacing.">Accordion</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./side-navigation.html" data-demo-meta="Responsive nested side navigation for docs drawers and application asides.">Side navigation</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./engine-smoke.html" data-demo-meta="The same compact inspector slice rendered under metrics and cap so both engines face the same baseline gate.">Baseline engine smoke</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./segmented-control.html" data-demo-meta="Dense segmented buttons.">Segmented control</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./breadcrumbs.html" data-demo-meta="Compact breadcrumb trail.">Breadcrumbs</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./pagination.html" data-demo-meta="Previous/next buttons, pages, and truncation.">Pagination</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./contextual-menu.html" data-demo-meta="Dense dropdown action menu with grouped items.">Contextual menu</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./tooltip.html" data-demo-meta="Detached tooltip surface for baseline-safe help content.">Tooltip</a></li>
+        <ul class="bf-grid demo-index-list">
+          <li class="bf-span-2 demo-index-item"><a href="./tabs.html" data-demo-meta="Dense tab row and panel body.">Tabs</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./panel-tabs.html" data-demo-meta="Equal-width dense tab rows for inspector panels and compact view switching.">Panel tabs</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./accordion.html" data-demo-meta="Compact accordion rows and panel spacing.">Accordion</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./side-navigation.html" data-demo-meta="Responsive nested side navigation for docs drawers and application asides.">Side navigation</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./engine-smoke.html" data-demo-meta="The same compact inspector slice rendered under metrics and cap so both engines face the same baseline gate.">Baseline engine smoke</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./segmented-control.html" data-demo-meta="Dense segmented buttons.">Segmented control</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./breadcrumbs.html" data-demo-meta="Compact breadcrumb trail.">Breadcrumbs</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./pagination.html" data-demo-meta="Previous/next buttons, pages, and truncation.">Pagination</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./contextual-menu.html" data-demo-meta="Dense dropdown action menu with grouped items.">Contextual menu</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./tooltip.html" data-demo-meta="Detached tooltip surface for baseline-safe help content.">Tooltip</a></li>
         </ul>
       </section>
 
-      <section class="bf-stack" data-space="tight" data-demo-index-section>
+      <section class="bf-stack demo-index-section" data-space="tight">
         <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas surfaces">Surfaces and overlays</h5>
-        <ul class="bf-grid" data-demo-index-list>
-          <li class="bf-span-2" data-demo-index-item><a href="./choice-row.html" data-demo-meta="Selectable dense radio rows for presets and output targets.">Choice row</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./inline-options.html" data-demo-meta="Inline radio choices for compact panel sections and operator switching.">Inline options</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./modal.html" data-demo-meta="Dense modal header, body, and footer.">Modal</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./divider.html" data-demo-meta="Split surface blocks with compensated borders.">Divider</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./cards.html" data-demo-meta="Default, highlighted, and muted card variants.">Cards</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./option-card.html" data-demo-meta="Dense selectable and read-only option cards for style and mapping palettes.">Option card</a></li>
+        <ul class="bf-grid demo-index-list">
+          <li class="bf-span-2 demo-index-item"><a href="./choice-row.html" data-demo-meta="Selectable dense radio rows for presets and output targets.">Choice row</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./inline-options.html" data-demo-meta="Inline radio choices for compact panel sections and operator switching.">Inline options</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./modal.html" data-demo-meta="Dense modal header, body, and footer.">Modal</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./cards.html" data-demo-meta="Default, highlighted, and muted card variants.">Cards</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./option-card.html" data-demo-meta="Dense selectable and read-only option cards for style and mapping palettes.">Option card</a></li>
         </ul>
       </section>
 
-      <section class="bf-stack" data-space="tight" data-demo-index-section>
+      <section class="bf-stack demo-index-section" data-space="tight">
         <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas pressure tests">Pressure tests and references</h5>
-        <ul class="bf-grid" data-demo-index-list>
-          <li class="bf-span-2" data-demo-index-item><a href="./panel-pressure.html" data-demo-meta="Dense control rhythm under realistic inspector pressure.">Panel pressure test</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./narrow-panel.html" data-demo-meta="Squeeze test for dense controls and media inside a deliberately narrow rail.">Narrow panel regression</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./parameter-matrix.html" data-demo-meta="Dense multi-field inspector rows using the canonical control grid and stacked slider wrapper.">Parameter matrix</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./editorial-pressure.html" data-demo-meta="Portfolio-facing long-form composition on the editorial tier.">Editorial pressure test</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./brand-layout-ops-sample.html" data-demo-meta="Read-only downstream shell reference with the same pinned-aside resize behavior, without touching the active app repo.">Brand Layout Ops sample</a></li>
+        <ul class="bf-grid demo-index-list">
+          <li class="bf-span-2 demo-index-item"><a href="./panel-pressure.html" data-demo-meta="Dense control rhythm under realistic inspector pressure.">Panel pressure test</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./narrow-panel.html" data-demo-meta="Squeeze test for dense controls and media inside a deliberately narrow rail.">Narrow panel regression</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./editorial-pressure.html" data-demo-meta="Portfolio-facing long-form composition on the editorial tier.">Editorial pressure test</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./brand-layout-ops-sample.html" data-demo-meta="Read-only downstream shell reference with the same pinned-aside resize behavior, without touching the active app repo.">Brand Layout Ops sample</a></li>
         </ul>
       </section>
 
-      <section class="bf-stack" data-space="tight" data-demo-index-section>
+      <section class="bf-stack demo-index-section" data-space="tight">
         <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="atlas overview">Overview pages</h5>
-        <ul class="bf-grid" data-demo-index-list>
-          <li class="bf-span-2" data-demo-index-item><a href="./controls.html" data-demo-meta="Grouped controls page kept as a convenience overview, not the primary inspection unit.">Controls overview</a></li>
-          <li class="bf-span-2" data-demo-index-item><a href="./surfaces-navigation.html" data-demo-meta="Grouped surfaces page kept as a convenience overview, not the primary inspection unit.">Surfaces overview</a></li>
+        <ul class="bf-grid demo-index-list">
+          <li class="bf-span-2 demo-index-item"><a href="./controls.html" data-demo-meta="Grouped controls page kept as a convenience overview, not the primary inspection unit.">Controls overview</a></li>
+          <li class="bf-span-2 demo-index-item"><a href="./surfaces-navigation.html" data-demo-meta="Grouped surfaces page kept as a convenience overview, not the primary inspection unit.">Surfaces overview</a></li>
         </ul>
       </section>
     </section>

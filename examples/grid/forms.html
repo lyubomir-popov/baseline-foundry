@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Example: Forms</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./grid-examples.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="example-fixed-width example-hero">
+      <div class="bf-prose">
+        <h1>Forms</h1>
+        <p>The same login and settings forms can switch between editorial and app tiers so the gutter and margin changes are visible on identical markup. The newsletter split stays as the explicit `50 / 50` example.</p>
+      </div>
+      <div class="example-actions">
+        <button class="bf-button is-base is-dense" data-forms-tier-toggle type="button" aria-pressed="false">Switch first two forms to app tier</button>
+      </div>
+    </section>
+
+    <section class="example-fixed-width example-stack">
+      <div class="example-tier-group" data-forms-tier-group>
+        <div class="example-frame bf-grid bf-grid-scope">
+          <article class="bf-span-4 example-surface">
+            <form class="bf-stack">
+              <h2 class="bf-h4">Login</h2>
+              <div class="bf-field"><label class="bf-form-label" for="login-email">Email</label><div class="bf-control"><input id="login-email" class="bf-input" type="email" value="admin@example.com"></div></div>
+              <div class="bf-field"><label class="bf-form-label" for="login-password">Password</label><div class="bf-control"><input id="login-password" class="bf-input" type="password" value="correct-horse"></div></div>
+              <button class="bf-button" type="submit">Sign in</button>
+            </form>
+          </article>
+          <div class="bf-span-4"></div>
+        </div>
+
+        <div class="example-frame bf-grid bf-grid-scope">
+          <article class="bf-span-4 example-surface">
+            <form class="bf-stack">
+              <h2 class="bf-h4">Settings</h2>
+              <div class="bf-field"><label class="bf-form-label" for="settings-name">Cluster name</label><div class="bf-control"><input id="settings-name" class="bf-input" type="text" value="maas-region-a"></div></div>
+              <div class="bf-field"><label class="bf-form-label" for="settings-zone">Zone</label><div class="bf-control"><select id="settings-zone"><option>dc-a/rack-1</option><option selected>dc-a/rack-4</option></select></div></div>
+            </form>
+          </article>
+          <div class="bf-span-4"></div>
+        </div>
+      </div>
+
+      <div class="example-frame example-two-up">
+        <article class="example-surface bf-prose">
+          <h2>Contact request</h2>
+          <p>Use the left half for contact content and the right half for the compact newsletter capture.</p>
+        </article>
+        <form class="example-surface bf-stack">
+          <div class="bf-field"><label class="bf-form-label" for="newsletter-email">Email</label><div class="bf-control"><input id="newsletter-email" class="bf-input" type="email" placeholder="you@example.com"></div></div>
+          <button class="bf-button" type="submit">Join newsletter</button>
+        </form>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+  <script type="module">
+    const toggle = document.querySelector("[data-forms-tier-toggle]");
+    const group = document.querySelector("[data-forms-tier-group]");
+
+    toggle?.addEventListener("click", () => {
+      const nextPressed = toggle.getAttribute("aria-pressed") !== "true";
+      toggle.setAttribute("aria-pressed", String(nextPressed));
+      toggle.textContent = nextPressed ? "Switch first two forms to editorial tier" : "Switch first two forms to app tier";
+      group?.classList.toggle("bf-tier-app", nextPressed);
+      group?.classList.toggle("bf-tier-editorial", !nextPressed);
+    });
+  </script>
+</body>
+</html>

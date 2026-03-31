@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Example: Gutter Comparison</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./grid-examples.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="example-fixed-width example-hero">
+      <div class="bf-prose">
+        <h1>Gutter comparison</h1>
+        <p>The same 8-column card row is rendered twice. Only the gutter value changes: editorial uses `2rem` at large, app uses `1.5rem`.</p>
+      </div>
+    </section>
+
+    <section class="example-fixed-width example-gutter-compare">
+      <article class="example-surface" data-gutter="editorial">
+        <div class="bf-prose"><h2>Editorial · 2rem gutter</h2></div>
+        <div class="bf-grid">
+          <div class="bf-span-2 example-card"><p>Card</p></div>
+          <div class="bf-span-2 example-card"><p>Card</p></div>
+          <div class="bf-span-2 example-card"><p>Card</p></div>
+          <div class="bf-span-2 example-card"><p>Card</p></div>
+        </div>
+      </article>
+
+      <article class="example-surface bf-tier-app" data-gutter="app">
+        <div class="bf-prose"><h2>App · 1.5rem gutter</h2></div>
+        <div class="bf-grid">
+          <div class="bf-span-2 example-card"><p>Card</p></div>
+          <div class="bf-span-2 example-card"><p>Card</p></div>
+          <div class="bf-span-2 example-card"><p>Card</p></div>
+          <div class="bf-span-2 example-card"><p>Card</p></div>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

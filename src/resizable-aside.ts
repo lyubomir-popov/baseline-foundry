@@ -319,6 +319,7 @@ function setupApplication(application: HTMLElement): () => void {
     const shellRect = application.getBoundingClientRect();
     application.classList.add(RESIZING_CLASS);
     handle.setPointerCapture(event.pointerId);
+    let finished = false;
 
     const onPointerMove = (moveEvent: PointerEvent): void => {
       const nextWidthPx = shellRect.right - moveEvent.clientX;
@@ -326,8 +327,17 @@ function setupApplication(application: HTMLElement): () => void {
     };
 
     const finishResize = (): void => {
+      if (finished) {
+        return;
+      }
+
+      finished = true;
       application.classList.remove(RESIZING_CLASS);
       applyWidth(application, aside, handle, storageKey, getCurrentWidthPx(application, aside), true);
+      handle.removeEventListener("pointermove", onPointerMove);
+      handle.removeEventListener("pointerup", finishResize);
+      handle.removeEventListener("pointercancel", finishResize);
+      handle.removeEventListener("lostpointercapture", finishResize);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", finishResize);
       window.removeEventListener("pointercancel", finishResize);
@@ -337,6 +347,10 @@ function setupApplication(application: HTMLElement): () => void {
       }
     };
 
+    handle.addEventListener("pointermove", onPointerMove);
+    handle.addEventListener("pointerup", finishResize, { once: true });
+    handle.addEventListener("pointercancel", finishResize, { once: true });
+    handle.addEventListener("lostpointercapture", finishResize, { once: true });
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", finishResize, { once: true });
     window.addEventListener("pointercancel", finishResize, { once: true });

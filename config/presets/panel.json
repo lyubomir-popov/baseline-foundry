@@ -2,25 +2,16 @@
   "baselineUnit": 0.25,
   "fontFiles": [
     {
-      "family": "plex-sans",
-      "path": "../../assets/fonts/IBMPlexSansVar-Roman.woff",
-      "cssFamily": "IBM Plex Sans",
+      "family": "ubuntu-sans",
+      "path": "../../assets/fonts/UbuntuSans[wdth,wght].ttf",
+      "cssFamily": "Ubuntu Sans",
       "fontStyle": "normal",
-      "fontWeight": "100 700",
+      "fontWeight": "100 900",
       "fontDisplay": "swap"
-    },
-    {
-      "family": "plex-sans-italic",
-      "path": "../../assets/fonts/IBMPlexSansVar-Italic.woff",
-      "cssFamily": "IBM Plex Sans",
-      "fontStyle": "italic",
-      "fontWeight": "100 700",
-      "fontDisplay": "swap",
-      "runtimeOnly": true
     }
   ],
   "fontStacks": {
-    "plex-sans": "\"IBM Plex Sans\", \"Segoe UI\", system-ui, sans-serif"
+    "ubuntu-sans": "\"Ubuntu Sans\", \"Segoe UI\", system-ui, sans-serif"
   },
   "elements": [
     {
@@ -28,7 +19,7 @@
       "fontSize": 0.75,
       "lineHeight": 4,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
+      "fontFamily": "ubuntu-sans",
       "fontWeight": 400,
       "fontStyle": "normal"
     },
@@ -37,7 +28,7 @@
       "fontSize": 1,
       "lineHeight": 6,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
+      "fontFamily": "ubuntu-sans",
       "fontWeight": 600,
       "fontStyle": "normal"
     },
@@ -46,7 +37,7 @@
       "fontSize": 0.875,
       "lineHeight": 5,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
+      "fontFamily": "ubuntu-sans",
       "fontWeight": 400,
       "fontStyle": "normal"
     },
@@ -55,7 +46,7 @@
       "fontSize": 0.875,
       "lineHeight": 5,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
+      "fontFamily": "ubuntu-sans",
       "fontWeight": 400,
       "fontStyle": "normal",
       "fontVariantCaps": "all-small-caps",
@@ -66,7 +57,7 @@
       "fontSize": 0.75,
       "lineHeight": 4,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
+      "fontFamily": "ubuntu-sans",
       "fontWeight": 600,
       "fontStyle": "normal"
     },
@@ -75,8 +66,8 @@
       "fontSize": 0.75,
       "lineHeight": 4,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
-      "fontWeight": 600,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 550,
       "fontStyle": "normal"
     },
     {
@@ -84,19 +75,17 @@
       "fontSize": 0.75,
       "lineHeight": 4,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
-      "fontWeight": 600,
-      "fontStyle": "normal",
-      "letterSpacing": "0.07em",
-      "textTransform": "uppercase"
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 550,
+      "fontStyle": "normal"
     },
     {
       "identifier": "h4",
       "fontSize": 1.125,
       "lineHeight": 6,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
-      "fontWeight": 400,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 300,
       "fontStyle": "normal"
     },
     {
@@ -104,8 +93,8 @@
       "fontSize": 1.125,
       "lineHeight": 6,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
-      "fontWeight": 600,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 500,
       "fontStyle": "normal"
     },
     {
@@ -113,8 +102,8 @@
       "fontSize": 1.96875,
       "lineHeight": 9,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
-      "fontWeight": 400,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 200,
       "fontStyle": "normal"
     },
     {
@@ -122,8 +111,8 @@
       "fontSize": 1.96875,
       "lineHeight": 9,
       "spaceAfter": 3,
-      "fontFamily": "plex-sans",
-      "fontWeight": 600,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 500,
       "fontStyle": "normal"
     }
   ],
@@ -145,6 +134,7 @@
     "contentPaddingInlineRem": 0.75,
     "measureRem": 30,
     "sectionSpaceBaselineUnits": 12,
+    "sectionSpaceShallowBaselineUnits": 6,
     "sectionSpaceDeepBaselineUnits": 24,
     "stripSpaceBaselineUnits": 12,
     "gridGapInlineBaselineUnits": 4,

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spacing Example: Element vs Container</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./spacing-examples.css">
+</head>
+<body class="bf-theme bf-tier-editorial" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="spacing-fixed-width spacing-hero">
+      <div class="bf-prose">
+        <h1>Element vs container spacing</h1>
+        <p>The left column keeps element-owned editorial flow. The right column uses a uniform container gap so the spacing belongs to the wrapper instead of the content elements.</p>
+      </div>
+      <div class="spacing-actions">
+        <button class="bf-button is-base is-dense" data-spacing-tier-toggle type="button" aria-pressed="false">Switch specimen to app tier</button>
+      </div>
+    </section>
+
+    <section class="spacing-fixed-width spacing-grid-two" data-tier-specimen>
+      <article class="spacing-surface spacing-stack bf-prose">
+        <h2>Element-owned flow</h2>
+        <p class="spacing-gap-label">Gap after this h2 comes from the element rule.</p>
+        <p>Paragraph spacing stays semantic, so swapping content types changes the resolved gap.</p>
+        <p class="spacing-gap-label">Paragraph gap follows the prose contract.</p>
+        <p>A second paragraph keeps the same semantic after-space.</p>
+        <figure class="spacing-demo-box">
+          <figcaption>Figure with its own larger after-space.</figcaption>
+        </figure>
+        <h2>Second heading</h2>
+        <p>The margin values belong to the elements themselves.</p>
+      </article>
+
+      <article class="spacing-surface spacing-stack is-container-owned">
+        <h2 class="bf-h4">Container-owned stack</h2>
+        <p class="spacing-gap-label">Every row is separated by the same `gap` value.</p>
+        <p>Paragraph spacing no longer changes when the content type changes.</p>
+        <p>A second paragraph uses the same container gap.</p>
+        <figure class="spacing-demo-box">
+          <figcaption>Figure is just another row in the stack.</figcaption>
+        </figure>
+        <h2 class="bf-h4">Second heading</h2>
+        <p>The wrapper owns the spacing, not the elements.</p>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+  <script type="module">
+    const toggle = document.querySelector("[data-spacing-tier-toggle]");
+    const specimen = document.querySelector("[data-tier-specimen]");
+
+    toggle?.addEventListener("click", () => {
+      const nextPressed = toggle.getAttribute("aria-pressed") !== "true";
+      toggle.setAttribute("aria-pressed", String(nextPressed));
+      toggle.textContent = nextPressed ? "Switch specimen to editorial tier" : "Switch specimen to app tier";
+      specimen?.classList.toggle("bf-tier-app", nextPressed);
+      specimen?.classList.toggle("bf-tier-editorial", !nextPressed);
+    });
+  </script>
+</body>
+</html>

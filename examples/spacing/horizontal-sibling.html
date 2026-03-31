@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spacing Example: Horizontal Sibling</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/app/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./spacing-examples.css">
+</head>
+<body class="bf-theme bf-tier-app" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="spacing-fixed-width spacing-hero bf-prose">
+      <h1>Horizontal sibling spacing</h1>
+      <p>Buttons and chips use an explicit horizontal gap when the row owns spacing. The raw browser-default rows underneath show how little structure you get without the container.</p>
+    </section>
+
+    <section class="spacing-fixed-width spacing-grid-two">
+      <article class="spacing-surface spacing-stack">
+        <div class="spacing-inline-row">
+          <button class="bf-button is-base">Cancel</button>
+          <button class="bf-button is-base">Save draft</button>
+          <button class="bf-button">Deploy</button>
+        </div>
+        <p class="spacing-gap-label">Button row gap = 12px</p>
+
+        <div class="spacing-inline-row">
+          <span class="bf-chip">Stable</span>
+          <span class="bf-chip is-information">Beta</span>
+          <span class="bf-chip is-positive">Ready</span>
+          <span class="bf-chip is-caution">Review</span>
+          <span class="bf-chip is-negative">Error</span>
+        </div>
+        <p class="spacing-gap-label">Chip row gap = 12px</p>
+      </article>
+
+      <article class="spacing-demo-box spacing-stack">
+        <div class="spacing-inline-raw">
+          <button class="bf-button is-base">Cancel</button>
+          <button class="bf-button is-base">Save draft</button>
+          <button class="bf-button">Deploy</button>
+        </div>
+
+        <div class="spacing-inline-raw">
+          <span class="bf-chip">Stable</span>
+          <span class="bf-chip is-information">Beta</span>
+          <span class="bf-chip is-positive">Ready</span>
+          <span class="bf-chip is-caution">Review</span>
+          <span class="bf-chip is-negative">Error</span>
+        </div>
+
+        <p class="spacing-gap-label">Without the container row, sibling spacing falls back to ad hoc inline behavior.</p>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

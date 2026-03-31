@@ -26,6 +26,7 @@ export interface ThemeLayoutConfig {
   contentPaddingInlineRem: number;
   measureRem: number;
   sectionSpaceBaselineUnits: number;
+  sectionSpaceShallowBaselineUnits: number;
   sectionSpaceDeepBaselineUnits: number;
   stripSpaceBaselineUnits: number;
   gridGapInlineBaselineUnits: number;
@@ -86,6 +87,7 @@ export interface LayoutTokens {
   contentPaddingInline: string;
   measure: string;
   sectionSpace: string;
+  sectionSpaceShallow: string;
   sectionSpaceDeep: string;
   stripSpace: string;
   gridGapInline: string;

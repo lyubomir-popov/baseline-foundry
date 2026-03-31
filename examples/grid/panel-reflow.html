@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Example: Panel Reflow</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/app/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./grid-examples.css">
+</head>
+<body class="bf-theme bf-tier-app" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="example-fixed-width example-hero">
+      <div class="bf-prose">
+        <h1>Panel reflow</h1>
+        <p>The left panel width alone pushes the main dashboard through the container threshold. No JavaScript changes the cards; a pure width change is enough to trigger the grid reflow.</p>
+      </div>
+    </section>
+
+    <section class="example-fixed-width example-panel-reflow">
+      <label class="bf-switch" for="panel-reflow-toggle">
+        <input class="bf-switch-input" id="panel-reflow-toggle" data-panel-open type="checkbox">
+        <span class="bf-switch-slider" aria-hidden="true"></span>
+        <span class="bf-switch-label">Open left panel</span>
+      </label>
+
+      <div class="example-panel-reflow-shell">
+        <aside class="example-panel-sidebar">
+          <h2 class="bf-h5">Filter panel</h2>
+          <p class="bf-body">When opened, this panel narrows the main area past the `8 → 4` container threshold.</p>
+        </aside>
+        <section class="example-panel-main bf-grid-scope">
+          <div class="bf-grid example-panel-grid">
+            <article class="bf-span-4 example-card"><h3 class="bf-h5">Machines</h3><p>Commissioning queue summary.</p></article>
+            <article class="bf-span-4 example-card is-soft"><h3 class="bf-h5">Storage</h3><p>Volume health overview.</p></article>
+            <article class="bf-span-4 example-card"><h3 class="bf-h5">Images</h3><p>Newest synced images.</p></article>
+            <article class="bf-span-4 example-card is-strong"><h3 class="bf-h5">Alerts</h3><p>Current infrastructure warnings.</p></article>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

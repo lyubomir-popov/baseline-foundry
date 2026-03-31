@@ -189,6 +189,7 @@ function buildThemeTokens(config: ThemeConfig, baselineTokens: BaselineGenerator
       contentPaddingInline: toRem(config.layout.contentPaddingInlineRem),
       measure: toRem(config.layout.measureRem),
       sectionSpace: toRem(config.layout.sectionSpaceBaselineUnits * config.baselineUnit),
+      sectionSpaceShallow: toRem(config.layout.sectionSpaceShallowBaselineUnits * config.baselineUnit),
       sectionSpaceDeep: toRem(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
       stripSpace: toRem(config.layout.stripSpaceBaselineUnits * config.baselineUnit),
       gridGapInline: toRem(config.layout.gridGapInlineBaselineUnits * config.baselineUnit),

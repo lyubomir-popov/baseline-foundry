@@ -1,66 +1,77 @@
-[data-controls-panels] {
+.bf-controls-panels {
   display: grid;
-  gap: var(--bf-space-4, 2rem);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: var(--bf-space-3, 1.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 }
 
-[data-controls-panel] {
+.bf-controls-panel {
   min-block-size: 100%;
 }
 
-[data-controls-panel] :where(.bf-panel) {
+.bf-controls-panel :where(.bf-panel) {
+  background: var(--bf-color-background-default);
+  border: 1px solid var(--bf-color-border-default);
+  box-shadow: var(--bf-app-panel-shadow, 0 1px 1px rgba(0, 0, 0, 0.14), 0 2px 2px -1px rgba(0, 0, 0, 0.12), 0 0 3px rgba(0, 0, 0, 0.12));
   min-block-size: 100%;
 }
 
-[data-controls-panel] :where(.bf-panel-header) {
-  align-items: start;
+.bf-controls-panel :where(.bf-panel-header) {
+  align-items: center;
 }
 
-[data-controls-stack] {
+.bf-controls-panel :where(.bf-panel-title) {
+  font-family: inherit;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5rem;
+}
+
+.bf-controls-stack {
   display: grid;
   gap: var(--bf-field-gap);
 }
 
-[data-controls-inline] {
+.bf-controls-inline {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
 }
 
-[data-controls-color-grid] {
+.bf-controls-color-grid {
   display: grid;
   gap: var(--bf-field-gap);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
 }
 
-[data-controls-menu-panel] {
+.bf-controls-menu-panel {
   padding-block-end: calc(var(--bf-control-block-size) * 3);
 }
 
-[data-controls-modal] {
+.bf-controls-modal {
   inline-size: min(100%, 30rem);
 }
 
-[data-controls-modal] :where(.bf-modal-dialog) {
+.bf-controls-modal :where(.bf-modal-dialog) {
   inline-size: 100%;
 }
 
-[data-controls-panel] :where(.bf-pagination-items),
-[data-controls-panel] :where(.bf-breadcrumbs-items) {
+.bf-controls-panel :where(.bf-pagination-items),
+.bf-controls-panel :where(.bf-breadcrumbs-items) {
   flex-wrap: wrap;
 }
 
-[data-controls-panel] :where(.bf-contextual-menu) {
+.bf-controls-panel :where(.bf-contextual-menu) {
   inline-size: max-content;
   max-inline-size: 100%;
 }
 
-[data-controls-panel] :where(.bf-search-and-filter) {
+.bf-controls-panel :where(.bf-search-and-filter) {
   max-inline-size: 100%;
 }
 
-[data-controls-panel] :where(.bf-tooltip.is-detached) {
+.bf-controls-panel :where(.bf-tooltip.is-detached) {
   inline-size: fit-content;
   max-inline-size: 100%;
 }

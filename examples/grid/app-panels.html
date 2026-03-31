@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid Example: App Panels</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/app/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./grid-examples.css">
+</head>
+<body class="bf-theme bf-tier-app" data-bf-tone="light">
+  <main data-example-grid-target>
+    <section class="example-fixed-width example-hero">
+      <div class="bf-prose">
+        <h1>App panels</h1>
+        <p>An icon rail, a small navigation panel, an independently reflowing main area, and a medium overlay drawer show the Canonical application shell behavior without relying on extra layout systems.</p>
+      </div>
+    </section>
+
+    <section class="example-fixed-width example-stack">
+      <div class="example-actions">
+        <label class="bf-button is-base is-dense" for="app-panels-nav-toggle">Toggle left panel</label>
+        <label class="bf-button is-dense" for="app-panels-overlay-toggle">Toggle right drawer</label>
+      </div>
+
+      <div class="example-app-shell">
+        <input id="app-panels-nav-toggle" data-nav-toggle type="checkbox" checked hidden>
+        <input id="app-panels-overlay-toggle" data-overlay-toggle type="checkbox" hidden>
+        <div class="example-app-rail" aria-hidden="true"></div>
+        <aside class="example-app-nav">
+          <h2 class="bf-h5">Navigation</h2>
+          <p class="bf-body example-muted">240px small drawer width.</p>
+          <div class="example-callout"><p class="bf-body">Closing the left panel gives the main region more container width without changing the page viewport.</p></div>
+        </aside>
+        <section class="example-app-main bf-grid-scope">
+          <div class="example-app-main-header">
+            <div>
+              <h2 class="bf-h4">Machine inventory</h2>
+              <p class="bf-body example-muted">The cards below reflow from the main container width, not from the overall page width.</p>
+            </div>
+          </div>
+          <div class="bf-grid example-app-main-grid">
+            <article class="bf-span-4 example-card"><h3 class="bf-h5">Ready</h3><p>24 machines are ready for allocation.</p></article>
+            <article class="bf-span-4 example-card is-soft"><h3 class="bf-h5">Queued</h3><p>11 machines are in commissioning.</p></article>
+            <article class="bf-span-4 example-card"><h3 class="bf-h5">Storage</h3><p>4 disks need remediation.</p></article>
+            <article class="bf-span-4 example-card is-strong"><h3 class="bf-h5">Images</h3><p>12 images are ready to deploy.</p></article>
+          </div>
+        </section>
+        <aside class="example-app-overlay">
+          <h2 class="bf-h5">Overlay drawer</h2>
+          <p class="bf-body">The medium drawer overlays the main region instead of resizing it, which matches the spec’s right-side temporary panel behavior.</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

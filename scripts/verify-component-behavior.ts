@@ -20,6 +20,19 @@ async function openBrowser(): Promise<import("playwright").Browser> {
   }
 }
 
+async function disableDemoChromeHitTesting(page: import("playwright").Page): Promise<void> {
+  await page.addStyleTag({
+    content: [
+      ".component-demo-nav,",
+      ".component-demo-nav *,",
+      "[data-page-chrome],",
+      "[data-page-chrome] * {",
+      "  pointer-events: none !important;",
+      "}"
+    ].join("\n")
+  });
+}
+
 async function readAsideWidth(page: import("playwright").Page): Promise<number> {
   return page.locator(".l-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
 }
@@ -37,16 +50,18 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
 
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(page);
-    await page.addStyleTag({ content: ".component-demo-nav{pointer-events:none !important;}" });
+  await disableDemoChromeHitTesting(page);
     await page.evaluate(key => localStorage.removeItem(key), storageKey);
     await page.reload({ waitUntil: "networkidle" });
     await waitForFonts(page);
+  await disableDemoChromeHitTesting(page);
 
     const handle = page.locator(".l-application__aside-resize-handle");
     const aside = page.locator(".l-aside.is-pinned");
     const application = page.locator(".l-application");
     await handle.waitFor({ state: "visible" });
     await aside.waitFor({ state: "visible" });
+    await handle.scrollIntoViewIfNeeded();
 
     const initialWidth = await readAsideWidth(page);
     const ariaValueNow = Number.parseFloat(await handle.getAttribute("aria-valuenow") ?? "");
@@ -68,6 +83,7 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
 
     await page.reload({ waitUntil: "networkidle" });
     await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
     const persistedWidth = await readAsideWidth(page);
     assert(Math.abs(persistedWidth - resizedWidth) <= 2, `Expected resized aside width to persist after reload. Resized ${resizedWidth}px, reloaded ${persistedWidth}px.`);
 
@@ -75,11 +91,13 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
     const maxWidth = Number.parseFloat(await handle.getAttribute("aria-valuemax") ?? "");
     assert(Number.isFinite(minWidth) && Number.isFinite(maxWidth), "Expected resize handle to expose aria-valuemin and aria-valuemax.");
 
+    await handle.scrollIntoViewIfNeeded();
     await handle.focus();
     await page.keyboard.press("Home");
     const homeWidth = await readAsideWidth(page);
     assert(Math.abs(homeWidth - minWidth) <= 2, `Expected Home to clamp the aside to its minimum width. Min ${minWidth}px, got ${homeWidth}px.`);
 
+    await handle.scrollIntoViewIfNeeded();
     await handle.focus();
     await page.keyboard.press("End");
     const endWidth = await readAsideWidth(page);
@@ -88,6 +106,7 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
     await handle.dblclick();
     await page.reload({ waitUntil: "networkidle" });
     await waitForFonts(page);
+  await disableDemoChromeHitTesting(page);
     const resetWidth = await readAsideWidth(page);
     assert(Math.abs(resetWidth - initialWidth) <= 2, `Expected double-click reset to restore the default aside width. Default ${initialWidth}px, got ${resetWidth}px.`);
   } finally {
@@ -107,6 +126,7 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
 
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+  await disableDemoChromeHitTesting(page);
 
     const application = page.locator(".l-application");
     const drawer = page.locator("#drawer-panel-demo");
@@ -231,6 +251,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+  await disableDemoChromeHitTesting(page);
 
     const navigation = page.locator("#application-layout-navigation");
     const menuToggle = page.locator("[data-application-layout-toggle]").first();
@@ -295,7 +316,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     await mobilePage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(mobilePage);
-    await mobilePage.addStyleTag({ content: ".component-demo-nav{pointer-events:none !important;}" });
+  await disableDemoChromeHitTesting(mobilePage);
 
     const mobileToggle = mobilePage.locator("[data-application-layout-toggle]").first();
     await mobileToggle.click({ force: true });
