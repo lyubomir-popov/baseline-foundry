@@ -21,6 +21,8 @@ Demo: `http://127.0.0.1:4174/`
 
 Clean sibling to `portable-vertical-rhythm`: real font metrics, editorial-first baseline alignment, Canonical `4/8/16` grid, tier-first build model (`editorial`, `documentation`, `app`). All three tiers use Ubuntu Sans Variable matching canonical weights exactly. Architecture refactor landed: literal CSS values, layout container child reset, tier overrides via class toggle, simplified component vars (3 per role). All tests pass.
 
+**Living-spec audit complete.** No `p-*` parasites. No deprecated patterns in demos. No styled `data-*` attributes. Identified 6 cleanup items (see `docs/TODO.md` § "Audit findings"): `l-*` alias hygiene in demos + CSS, `bf-theme--light` alias, dead `bf-panel-logo` selector, `bf-label`/`bf-status-label` redundancy, `bf-u-no-margin.is-bottom` naming. New: OS tier concept triaged from inbox.
+
 ## Where to look
 
 | What | Where |

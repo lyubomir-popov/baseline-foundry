@@ -34,7 +34,7 @@ async function disableDemoChromeHitTesting(page: import("playwright").Page): Pro
 }
 
 async function readAsideWidth(page: import("playwright").Page): Promise<number> {
-  return page.locator(".l-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
+  return page.locator(".bf-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
 }
 
 async function verifyPinnedAsideResize(origin: string): Promise<void> {
@@ -56,9 +56,9 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
     await waitForFonts(page);
   await disableDemoChromeHitTesting(page);
 
-    const handle = page.locator(".l-application__aside-resize-handle");
-    const aside = page.locator(".l-aside.is-pinned");
-    const application = page.locator(".l-application");
+    const handle = page.locator(".bf-application-aside-resize-handle");
+    const aside = page.locator(".bf-aside.is-pinned");
+    const application = page.locator(".bf-application");
     await handle.waitFor({ state: "visible" });
     await aside.waitFor({ state: "visible" });
     await handle.scrollIntoViewIfNeeded();
@@ -128,16 +128,16 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
     await waitForFonts(page);
   await disableDemoChromeHitTesting(page);
 
-    const application = page.locator(".l-application");
+    const application = page.locator(".bf-application");
     const drawer = page.locator("#drawer-panel-demo");
-    const overlay = page.locator(".l-application__overlay");
+    const overlay = page.locator(".bf-application-overlay");
     const toggle = page.locator("[data-panel-drawer-toggle]");
 
     await application.waitFor({ state: "visible" });
     await drawer.waitFor({ state: "visible" });
 
     const openGeometry = await page.evaluate(() => {
-      const app = document.querySelector(".l-application");
+      const app = document.querySelector(".bf-application");
       const aside = document.querySelector<HTMLElement>("#drawer-panel-demo");
       if (!(app instanceof HTMLElement) || !(aside instanceof HTMLElement)) {
         return null;
@@ -167,9 +167,9 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
     await toggle.click();
     await page.waitForTimeout(220);
     const closedState = await page.evaluate(() => {
-      const app = document.querySelector(".l-application");
+      const app = document.querySelector(".bf-application");
       const aside = document.querySelector<HTMLElement>("#drawer-panel-demo");
-      const overlayElement = document.querySelector<HTMLElement>(".l-application__overlay");
+      const overlayElement = document.querySelector<HTMLElement>(".bf-application-overlay");
       if (!(app instanceof HTMLElement) || !(aside instanceof HTMLElement) || !(overlayElement instanceof HTMLElement)) {
         return null;
       }
@@ -191,7 +191,7 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
     await toggle.click();
     await page.waitForTimeout(220);
     const reopenedState = await page.evaluate(() => {
-      const app = document.querySelector(".l-application");
+      const app = document.querySelector(".bf-application");
       const aside = document.querySelector<HTMLElement>("#drawer-panel-demo");
       if (!(app instanceof HTMLElement) || !(aside instanceof HTMLElement)) {
         return null;
@@ -220,7 +220,7 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
     );
     await page.waitForTimeout(220);
     const overlayCloseState = await page.evaluate(() => {
-      const app = document.querySelector(".l-application");
+      const app = document.querySelector(".bf-application");
       const aside = document.querySelector<HTMLElement>("#drawer-panel-demo");
       if (!(app instanceof HTMLElement) || !(aside instanceof HTMLElement)) {
         return null;
@@ -324,8 +324,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     const mobileOpenState = await mobilePage.evaluate(() => {
       const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
-      const overlayElement = document.querySelector<HTMLElement>(".l-navigation__overlay");
-      const drawerElement = document.querySelector<HTMLElement>(".l-navigation__drawer");
+      const overlayElement = document.querySelector<HTMLElement>(".bf-navigation-overlay");
+      const drawerElement = document.querySelector<HTMLElement>(".bf-navigation-drawer");
       if (!(navigationElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement) || !(drawerElement instanceof HTMLElement)) {
         return null;
       }
@@ -349,7 +349,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     const mobileClosedState = await mobilePage.evaluate(() => {
       const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
-      const overlayElement = document.querySelector<HTMLElement>(".l-navigation__overlay");
+      const overlayElement = document.querySelector<HTMLElement>(".bf-navigation-overlay");
       if (!(navigationElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement)) {
         return null;
       }

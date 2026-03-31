@@ -161,8 +161,6 @@ ${foundryComponentColorVars("dark")}
   color-scheme: dark;
 }
 
-:where(.bf-theme.bf-theme--light),
-:where(.bf-theme.is-light),
 :where(.bf-theme.is-light) {
   color-scheme: light;
 }
@@ -175,9 +173,7 @@ ${foundryComponentColorVars("dark")}
   font: inherit;
 }
 
-:where(.bf-theme) :where(.u-no-margin--bottom, .bf-u-no-margin.is-bottom) {
-  margin-bottom: 0 !important;
-}
+
 
 :where(.bf-theme) :where(.bf-form-label) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
@@ -779,7 +775,7 @@ ${controlPadding("var(--bf-control-block-size-dense)", bodyLineHeight, bodySelec
   padding-inline: var(--bf-panel-padding-inline);
 }
 
-:where(.bf-theme) :where(.bf-panel-header) > :where(.bf-panel-title, .bf-panel-logo) {
+:where(.bf-theme) :where(.bf-panel-header) > :where(.bf-panel-title) {
   min-inline-size: 0;
 }
 
