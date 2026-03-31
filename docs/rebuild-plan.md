@@ -60,7 +60,9 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 - [ ] Parasite class sweep — remove remaining downstream component aliases
 - [ ] Baseline invariant validation — add missing build-time checks
 - [ ] Typographic specimen page — editorial multi-column layout demo at `demo/spec/typographic-specimen.html`
-- [ ] Page chrome polish — cluster layout for switches + tier dropdown (side by side, not stacked)
+- [ ] Page chrome polish — `pc-controls` cluster should not wrap when space is available; switches + tier dropdown side by side
+- [ ] bf-panel audit — current generated surface (borders, headers, sticky, panel-title/controls/logo) is hallucinated; Vanilla's panels are application-layout-only and simpler. Strip to what's real or remove.
+- [ ] controls.html cleanup — replace `bf-panel` bordered containers with plain grid classes; no need for decorative containers here
 
 ### Parity gaps (pursue on downstream demand)
 
