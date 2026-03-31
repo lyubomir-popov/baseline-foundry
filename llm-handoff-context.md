@@ -28,7 +28,7 @@ Clean sibling to `portable-vertical-rhythm`: real font metrics, editorial-first 
 | Active tasks + principles + architecture | `docs/rebuild-plan.md` |
 | Longer-term stages + parity inventory | `docs/product-roadmap.md` |
 | Completed work log | `docs/history.md` |
-| User inbox (triage first) | `docs/USER.NOTES.MD` |
+| User inbox (triage first) | `docs/AGENT-INBOX.md` |
 
 ## Key files
 

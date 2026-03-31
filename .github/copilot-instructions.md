@@ -4,7 +4,7 @@
 
 | File | Role | Who writes |
 |------|------|-----------|
-| `docs/USER.NOTES.MD` | **Inbox.** User drops notes to avoid interrupting agent. | User writes, agent drains |
+| `docs/AGENT-INBOX.md` | **Inbox.** User drops notes to avoid interrupting agent. | User writes, agent drains |
 | `llm-handoff-context.md` | **Cold start.** Repo orientation, current state, key files, critical invariants. | Agent updates when state changes |
 | `docs/rebuild-plan.md` | **Active plan.** Principles, architecture, short-term tasks. | Agent updates every session |
 | `docs/product-roadmap.md` | **Long-term.** Stages, parity inventory, future directions. | Agent updates rarely |
@@ -14,7 +14,7 @@
 
 ### The inbox pattern
 
-`docs/USER.NOTES.MD` is the user's write-only channel. At session start, the agent must:
+`docs/AGENT-INBOX.md` is the user's write-only channel. At session start, the agent must:
 
 1. Read the inbox.
 2. Triage each item into `docs/rebuild-plan.md` (near-term) or `docs/product-roadmap.md` (longer-term).
@@ -38,7 +38,7 @@ This lets the user drop thoughts asynchronously without derailing agent work.
 ### Session start
 
 1. Read `llm-handoff-context.md` for orientation.
-2. Check `docs/USER.NOTES.MD` — triage items into plan or roadmap, then empty it.
+2. Check `docs/AGENT-INBOX.md` — triage items into plan or roadmap, then empty it.
 3. Read `docs/rebuild-plan.md` for current tasks.
 
 ### During work
@@ -50,8 +50,13 @@ This lets the user drop thoughts asynchronously without derailing agent work.
 
 1. Update `llm-handoff-context.md` if the current-state paragraph is stale.
 2. Update `docs/rebuild-plan.md` with any new tasks that emerged.
-3. Ensure `docs/USER.NOTES.MD` is empty.
+3. Ensure `docs/AGENT-INBOX.md` is empty.
 4. **Do not** create new markdown files to document changes unless explicitly requested.
+
+## Repo boundary
+
+- Work in this repo only unless the user explicitly redirects elsewhere.
+- Sibling repos (`canonical-specs`, `docs-typescale`, `portable-vertical-rhythm`, `brand-layout-ops`) are read-only references.
 
 ## Commit message discipline
 
@@ -76,15 +81,27 @@ In that mode:
 - Layout containers own child spacing; text elements don't carry margins inside stacks.
 - Demo shell dogfoods `bf-*` and `is-*` only.
 - Ubuntu Sans Variable for all tiers; IBM Plex is brand-layout-ops only.
+- Font metrics must come from real font files.
+- Grid and layout primitives stay small and composable.
+- Prefer canonical primitives over named one-off patterns.
+- Treat this repo as the lean forward line, not the compatibility line.
+
+## First checks
+
+```bash
+npm test
+```
+
+Add `npm run qa:components` or `npm run screenshots:components` when component demos or visual regression surfaces change.
 
 ## How to port this convention to another project
 
-1. Copy this file as `AGENTS.md` in the new repo root.
+1. Copy this file as `.github/copilot-instructions.md` in the new repo.
 2. Create `llm-handoff-context.md` at root with: orientation, current state, key files, invariants.
 3. Create `docs/rebuild-plan.md` with: principles, architecture, active TODO.
 4. Create `docs/product-roadmap.md` with: stages, inventory.
 5. Create `docs/history.md` with a completed-work log.
-6. Create `docs/USER.NOTES.MD` as an empty inbox.
+6. Create `docs/AGENT-INBOX.md` as an empty inbox.
 7. Delete any other TODO/status/handoff files. One inbox + one cold-start + one plan + one roadmap + one archive is the maximum.
 
 The key insight: every piece of status information lives in exactly one place. If you find yourself writing the same fact in two files, delete one.

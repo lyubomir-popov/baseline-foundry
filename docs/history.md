@@ -1,6 +1,6 @@
 # History — Completed Work
 
-Items moved here from `llm-handoff-context.md`, `docs/rebuild-plan.md`, `README.md`, and `docs/USER.NOTES.MD` to keep the active backlogs lean.
+Items moved here from `llm-handoff-context.md`, `docs/rebuild-plan.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
 ## Phases completed (from rebuild-plan.md)
 
@@ -127,7 +127,7 @@ Items moved here from `llm-handoff-context.md`, `docs/rebuild-plan.md`, `README.
 - [x] Cap engine demoted to demo-only
 - [x] TierOverride pipeline in build.ts
 
-## User notes items completed (from USER.NOTES.MD)
+## User notes items completed (from AGENT-INBOX.md)
 
 - [x] Add 3 controls (theme, baseline, tier) to all individual component examples — global bar at top with space-between, excluded from screenshots
 - [x] Hamburger-activated aside listing every page using sidenav, available on every page, icon in top bar
