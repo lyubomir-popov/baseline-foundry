@@ -14,7 +14,7 @@ This repo is the forward-looking line: smaller, more versatile, and centered on 
 
 ## Principles
 
-See `docs/rebuild-plan.md` for the full set. Summary:
+See `docs/TODO.md` for the full set. Summary:
 
 - Baseline alignment is non-negotiable.
 - Editorial spacing is element-owned; app-tier is zero-nudge, container-owned.
@@ -352,5 +352,5 @@ The demo surface at `/` shows editorial prose rhythm, tier switching, dark theme
 If you resume this repo in a new chat, read:
 
 1. `llm-handoff-context.md`
-2. `docs/rebuild-plan.md`
+2. `docs/TODO.md`
 3. `.github/agents/agent.md`

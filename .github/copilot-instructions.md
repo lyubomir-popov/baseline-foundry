@@ -6,7 +6,7 @@
 |------|------|-----------|
 | `docs/AGENT-INBOX.md` | **Inbox.** User drops notes to avoid interrupting agent. | User writes, agent drains |
 | `llm-handoff-context.md` | **Cold start.** Repo orientation, current state, key files, critical invariants. | Agent updates when state changes |
-| `docs/rebuild-plan.md` | **Active plan.** Principles, architecture, short-term tasks. | Agent updates every session |
+| `docs/TODO.md` | **Active plan.** Principles, architecture, short-term tasks. | Agent updates every session |
 | `docs/product-roadmap.md` | **Long-term.** Stages, parity inventory, future directions. | Agent updates rarely |
 | `docs/history.md` | **Archive.** Completed work log. | Agent appends when tasks complete |
 
@@ -17,7 +17,7 @@
 `docs/AGENT-INBOX.md` is the user's write-only channel. At session start, the agent must:
 
 1. Read the inbox.
-2. Triage each item into `docs/rebuild-plan.md` (near-term) or `docs/product-roadmap.md` (longer-term).
+2. Triage each item into `docs/TODO.md` (near-term) or `docs/product-roadmap.md` (longer-term).
 3. Empty the file back to its header template.
 
 This lets the user drop thoughts asynchronously without derailing agent work.
@@ -26,8 +26,8 @@ This lets the user drop thoughts asynchronously without derailing agent work.
 
 | Information | Goes in |
 |-------------|---------|
-| "What should the next chat do?" | `docs/rebuild-plan.md` → Active TODO |
-| "Why did we make this architectural decision?" | `docs/rebuild-plan.md` → Principles or Architecture |
+| "What should the next chat do?" | `docs/TODO.md` → Active TODO |
+| "Why did we make this architectural decision?" | `docs/TODO.md` → Principles or Architecture |
 | "What does the product become long-term?" | `docs/product-roadmap.md` |
 | "What's been done?" | `docs/history.md` |
 | "Quick scratch notes for this session only" | `/memories/session/` (Copilot memory) |
@@ -39,17 +39,17 @@ This lets the user drop thoughts asynchronously without derailing agent work.
 
 1. Read `llm-handoff-context.md` for orientation.
 2. Check `docs/AGENT-INBOX.md` — triage items into plan or roadmap, then empty it.
-3. Read `docs/rebuild-plan.md` for current tasks.
+3. Read `docs/TODO.md` for current tasks.
 
 ### During work
 
-- Mark tasks done in `docs/rebuild-plan.md` as you complete them.
+- Mark tasks done in `docs/TODO.md` as you complete them.
 - Move completed items to `docs/history.md`.
 
 ### Session end
 
 1. Update `llm-handoff-context.md` if the current-state paragraph is stale.
-2. Update `docs/rebuild-plan.md` with any new tasks that emerged.
+2. Update `docs/TODO.md` with any new tasks that emerged.
 3. Ensure `docs/AGENT-INBOX.md` is empty.
 4. **Do not** create new markdown files to document changes unless explicitly requested.
 
@@ -70,7 +70,7 @@ In that mode:
 
 1. Work through the current plan until you hit a real blocker, not a minor ambiguity.
 2. Make small validated checkpoint commits after substantive chunks.
-3. Re-read `docs/rebuild-plan.md` after major chunks and periodically re-audit alignment.
+3. Re-read `docs/TODO.md` after major chunks and periodically re-audit alignment.
 4. Update the canonical docs as work lands so the next chat can continue cold.
 5. Do not stop just to ask whether to continue unless the next best move is genuinely unclear or risky.
 
@@ -98,7 +98,7 @@ Add `npm run qa:components` or `npm run screenshots:components` when component d
 
 1. Copy this file as `.github/copilot-instructions.md` in the new repo.
 2. Create `llm-handoff-context.md` at root with: orientation, current state, key files, invariants.
-3. Create `docs/rebuild-plan.md` with: principles, architecture, active TODO.
+3. Create `docs/TODO.md` with: principles, architecture, active TODO.
 4. Create `docs/product-roadmap.md` with: stages, inventory.
 5. Create `docs/history.md` with a completed-work log.
 6. Create `docs/AGENT-INBOX.md` as an empty inbox.

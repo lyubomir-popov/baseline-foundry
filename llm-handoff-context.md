@@ -25,7 +25,7 @@ Clean sibling to `portable-vertical-rhythm`: real font metrics, editorial-first 
 
 | What | Where |
 |------|-------|
-| Active tasks + principles + architecture | `docs/rebuild-plan.md` |
+| Active tasks + principles + architecture | `docs/TODO.md` |
 | Longer-term stages + parity inventory | `docs/product-roadmap.md` |
 | Completed work log | `docs/history.md` |
 | User inbox (triage first) | `docs/AGENT-INBOX.md` |

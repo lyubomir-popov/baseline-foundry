@@ -1,8 +1,8 @@
 # History — Completed Work
 
-Items moved here from `llm-handoff-context.md`, `docs/rebuild-plan.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
+Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
-## Phases completed (from rebuild-plan.md)
+## Phases completed (from TODO.md)
 
 ### Phase 1 — Foundation tokens and prose flow
 
