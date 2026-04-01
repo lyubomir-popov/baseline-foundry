@@ -77,8 +77,7 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Current follow-up
 
-- [ ] Focused control follow-up — batch-port the restored input/button padding rationale to the rest of the control family only after the user signs off on the standalone button proof.
-- [ ] Baseline residual from the focused trial — root-cause `cards -> card button 3` (muted-card cumulative offset, `~0.52px`) before claiming the component suite green again.
+- [ ] Table baseline residual — root-cause the remaining `table` flow-offset failures (`headings` and `body cells`) now that the padded-control occupied-block rollout is green.
 
 ### Audit findings (living-spec review)
 

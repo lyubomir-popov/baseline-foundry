@@ -106,6 +106,8 @@ export function componentsCss(tokens: ThemeTokens, tierOverrides?: TierOverride[
   const inputBlockPaddingVar = "var(--bf-input-block-padding)";
   const buttonBlockPaddingVar = "var(--bf-button-block-padding)";
   const bodyLineHeight = roleLineHeightVar("body", body.lineHeight);
+  const inputMarginBottom = controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, body.spaceAfter);
+  const buttonMarginBottom = controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, body.spaceAfter);
   const bodySelectedStartNudge = roleSelectedStartNudgeVar("body", body.nudgeTop);
   const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
   const h4LineHeight = roleLineHeightVar("h4", h4.lineHeight);
@@ -178,7 +180,7 @@ ${foundryComponentColorVars("light")}
 }
 
 :where(.bf-theme.bf-engine-cap) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
-  margin-bottom: ${controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, body.spaceAfter)};
+  margin-bottom: ${inputMarginBottom};
 }
 
 ${(tierOverrides ?? []).map(override => {
@@ -286,7 +288,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
-  margin-bottom: ${controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, body.spaceAfter)};
+  margin-bottom: ${inputMarginBottom};
 ${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
 }
 
@@ -332,10 +334,10 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
   border-top: var(--bf-border-width) solid transparent;
   color: var(--bf-color-text-default);
+  margin-bottom: ${inputMarginBottom};
   max-inline-size: 100%;
-  min-block-size: var(--bf-control-box-size);
   min-inline-size: 0;
-${controlPadding(controlBlockPaddingVar)}  padding-inline: 0;
+${controlPadding(inputBlockPaddingVar)}  padding-inline: 0;
   width: 100%;
 }
 
@@ -727,7 +729,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-block;
-  margin-bottom: ${controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, body.spaceAfter)};
+  margin-bottom: ${buttonMarginBottom};
 ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
   text-align: center;
   text-decoration: none;
@@ -872,7 +874,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   padding-inline: var(--bf-panel-padding-inline);
 }
 
-:where(.bf-theme) :where(.bf-panel-content) > :last-child {
+:where(.bf-theme) :where(.bf-panel-content) > :last-child:not(:where(.bf-button, .bf-button.is-base, .bf-input, input, textarea, select, input[type='file'], .bf-search-box, .bf-search-and-filter-search-container, .bf-choice-row, .bf-segmented-control-button, .bf-tab-buttons-button, .bf-pagination-link, .bf-side-navigation-toggle)) {
   margin-bottom: 0;
 }
 
@@ -934,8 +936,8 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   max-block-size: calc(var(--bf-control-visual-size) * 2);
 }
 
-:where(.bf-theme) :where(.bf-card-inner) > :last-child,
-:where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted) > :last-child {
+:where(.bf-theme) :where(.bf-card-inner) > :last-child:not(:where(.bf-button, .bf-button.is-base, .bf-input, input, textarea, select, input[type='file'], .bf-search-box, .bf-search-and-filter-search-container, .bf-choice-row, .bf-segmented-control-button, .bf-tab-buttons-button, .bf-pagination-link, .bf-side-navigation-toggle)),
+:where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted) > :last-child:not(:where(.bf-button, .bf-button.is-base, .bf-input, input, textarea, select, input[type='file'], .bf-search-box, .bf-search-and-filter-search-container, .bf-choice-row, .bf-segmented-control-button, .bf-tab-buttons-button, .bf-pagination-link, .bf-side-navigation-toggle)) {
   margin-bottom: 0;
 }
 
@@ -1036,8 +1038,8 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   display: inline-flex;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
-  min-block-size: var(--bf-control-box-size);
-${controlPadding(controlBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+  margin-bottom: ${buttonMarginBottom};
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
   text-decoration: none;
 }
 
@@ -1107,10 +1109,9 @@ ${controlPadding(controlBlockPaddingVar)}  padding-inline: var(--bf-control-inli
   display: grid;
   gap: calc(var(--bf-baseline) * 0.75);
   grid-template-columns: auto minmax(0, 1fr) auto;
-  margin: 0;
-  min-block-size: var(--bf-control-box-size);
+  margin: 0 0 ${buttonMarginBottom};
   min-inline-size: 0;
-${controlPadding(controlBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
 }
 
 :where(.bf-theme) :where(.bf-choice-row:hover) {
@@ -1220,10 +1221,10 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   cursor: pointer;
   display: inline-flex;
   justify-content: center;
+  margin-bottom: ${buttonMarginBottom};
   max-inline-size: 100%;
-  min-block-size: var(--bf-control-box-size);
   overflow: hidden;
-${controlPadding(controlBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -1552,7 +1553,7 @@ ${typeStyles(h5, { includeCase: false })}  margin: 0;
 :where(.bf-theme) :where(.bf-search-box) {
   display: flex;
   inline-size: 100%;
-  margin: 0;
+  margin: 0 0 ${inputMarginBottom};
   max-inline-size: 100%;
   min-inline-size: 0;
   position: relative;
@@ -1634,7 +1635,7 @@ ${typeStyles(h5, { includeCase: false })}  margin: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
-  margin: 0;
+  margin: 0 0 ${inputMarginBottom};
   min-block-size: 0;
   overflow: visible;
   padding: 0;
@@ -1719,8 +1720,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   cursor: pointer;
   display: inline-flex;
   margin: 0;
-  min-block-size: var(--bf-control-box-size);
-  padding-block: var(--bf-control-block-padding);
+  padding-block: ${buttonBlockPaddingVar};
   padding-inline: 0;
   position: static;
 }
@@ -1975,9 +1975,8 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   display: inline-flex;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
-  margin: 0;
-  min-block-size: var(--bf-control-box-size);
-${controlPadding(controlBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+  margin: 0 0 ${buttonMarginBottom};
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
   text-decoration: none;
 }
 
@@ -2462,9 +2461,9 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   display: inline-flex;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
-  min-block-size: var(--bf-control-box-size);
+  margin-bottom: ${buttonMarginBottom};
   min-inline-size: var(--bf-control-box-size);
-${controlPadding(controlBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
   text-align: center;
   text-decoration: none;
 }

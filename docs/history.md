@@ -2,6 +2,14 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Control-suite occupied-block rollout + demo alignment (2026-04-01)
+
+- [x] Extended the restored Vanilla-model occupied-block compensation from the focused button/input trial across the remaining padded, bordered control family.
+- [x] Updated `scripts/verify-component-baselines.ts` to measure occupied block height (`border box + margin-bottom`) consistently instead of treating control border boxes as the snapped quantity.
+- [x] Narrowed composite demo checks so `search-box`, `search-and-filter`, and `narrow-panel` verify the actual control surfaces instead of incidental wrappers or internal plumbing.
+- [x] Removed the app-tier component-demo shell override that hid the baseline grid and changed component demos to boot editorial by default instead of the panel preset.
+- [x] Re-verified the rollout with `npm run test:components`; all affected control surfaces now pass, and only the separate `table` flow-offset issue remains.
+
 ## Focused button proof + tier-override correction (2026-04-01)
 
 - [x] Fixed shared tier-override generation so documentation/editorial keep computed nudges and only `app` zeroes nudges in the shared stylesheet.

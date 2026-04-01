@@ -202,7 +202,7 @@ async function verifyComponentPage(
       const mode = (element.dataset.baselineCheck === "box" ? "box" : "flow") satisfies CheckMode;
       const marginBottom = Number.parseFloat(styles.marginBottom) || 0;
       const offsetPx = rect.top - rootRect.top;
-      const measurePx = mode === "flow" ? rect.height + marginBottom : rect.height;
+      const measurePx = rect.height + marginBottom;
       const offsetNearest = baselinePx === 0 ? offsetPx : Math.round(offsetPx / baselinePx) * baselinePx;
       const measureNearest = baselinePx === 0 ? measurePx : Math.round(measurePx / baselinePx) * baselinePx;
       const offsetErrorPx = Math.abs(offsetPx - offsetNearest);
