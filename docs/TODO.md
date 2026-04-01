@@ -46,7 +46,7 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 - **Literal CSS values** — `margin-bottom`, `padding-block-start`, `padding-block-end` are literal per role.
 - **Layout container child reset** — `.bf-stack > *`, `.bf-cluster > *`, `.bf-stage-shell > *` reset `margin-bottom: 0; padding-block: 0;` (§5.3).
 - **Role-scoped typography vars** — root prose and body-sized components read tier-scoped family/size/weight/line-height vars instead of editorial literals.
-- **Explicit control padding vars** — regular and compact control block padding tokens drive box size; no target-height back-calculation or legacy control block-size tokens.
+- **Tier-selectable control padding vars** — inputs/selects/buttons can resolve block padding from real body nudges in nudged tiers and fixed fallback padding in `app`; no target-height back-calculation or legacy control block-size tokens.
 - **Tier overrides via class toggle** — single editorial stylesheet with scoped `.bf-tier-app` / `.bf-tier-documentation` overrides. Tier switching = class toggle on `<body>`.
 
 ### Control baseline-grid invariant
@@ -54,13 +54,14 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 This is the Vanilla Framework's approach to input/button/select sizing. **Do not invent an alternative.** The trick:
 
 1. **Symmetric padding** = `nudge − border-width`, applied to both `padding-block-start` and `padding-block-end`. This places the text baseline on the grid — identical to how a `<p>` with the same font aligns.
-2. **No explicit `block-size`** target. The control's natural height = `2 × nudge + line-height` (borders cancel because `padding = nudge − border`). This height is typically **not** a whole multiple of the baseline unit, and that's fine.
-3. **`margin-bottom` snaps the full block to the grid.** Formula: `ceil(boxHeight / baselineUnit) × baselineUnit − boxHeight + spaceAfter`. The compensation fraction ensures the next element starts on a grid line.
-4. **The border-bottom floats** between grid lines. That's cosmetically acceptable — the invariant is that text baselines and block boundaries land on the grid, not decoration.
+2. **No explicit `block-size`** target. The control's natural border-box height = `2 × nudge + line-height` (borders cancel because `padding = nudge − border`). That border box is typically **not** a whole multiple of the baseline unit, and that's fine.
+3. **`margin-bottom` is two terms added together.** Formula: `margin-bottom = compensation + spaceAfter`, where `compensation = ceil(borderBoxHeight / baselineUnit) × baselineUnit − borderBoxHeight`. The compensation term gets from the control's natural border-box height to the next exact baseline multiple; `spaceAfter` preserves the semantic gap expected for body-sized text.
+4. **The occupied block is what snaps to the grid.** `occupiedBlock = borderBoxHeight + margin-bottom`. When controls stack correctly, the top border and the text baseline repeat on grid lines, and the occupied block repeats on exact baseline steps. The border box alone is allowed to be fractional relative to the grid.
 
 Consequences:
 - There is no `--bf-control-block-size` variable. Controls do not target a height.
 - There is no `.is-dense` modifier on individual controls. Density comes from the **tier** (different `baselineUnit` and nudge values).
+- The quantity that must be a baseline multiple is the occupied block (`border box + margin-bottom`), not the raw border box.
 - A paragraph, input, button, and select sharing the same font size all share the same baseline alignment when placed side by side.
 - The `controlPadding()` back-calculation that previously existed was wrong — it reversed the causality (target height → derive padding) instead of letting consistent padding produce a natural height.
 - `bf-grid`: `4`/`8`/`16` columns, power-of-2 spans, `620px`/`1681px` thresholds.
@@ -73,6 +74,11 @@ Consequences:
 Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 6).
 
 ## Active TODO
+
+### Current follow-up
+
+- [ ] Focused control follow-up — batch-port the restored input/button padding rationale to the rest of the control family only after the user signs off on the standalone button proof.
+- [ ] Baseline residual from the focused trial — root-cause `cards -> card button 3` (muted-card cumulative offset, `~0.52px`) before claiming the component suite green again.
 
 ### Audit findings (living-spec review)
 

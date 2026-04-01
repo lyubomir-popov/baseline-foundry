@@ -2,10 +2,10 @@ import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCo
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 
 const SURFACE_OPTIONS = [
-  { value: "panel", label: "Panel" },
   { value: "editorial", label: "Editorial" },
   { value: "documentation", label: "Docs" },
-  { value: "app", label: "App" }
+  { value: "app", label: "App" },
+  { value: "panel", label: "Panel" }
 ];
 
 function resolveStylesheetLink() {
@@ -15,11 +15,6 @@ function resolveStylesheetLink() {
 }
 
 function detectSurface(stylesheetLink) {
-  const href = stylesheetLink?.getAttribute("href") ?? "";
-  if (href.includes("/dist/presets/panel/styles.css")) {
-    return "panel";
-  }
-
   if (document.body.classList.contains("bf-tier-documentation")) {
     return "documentation";
   }
@@ -76,6 +71,7 @@ if (!(stylesheetLink instanceof HTMLLinkElement)) {
 }
 
 const initialSurface = detectSurface(stylesheetLink);
+applySurface(initialSurface, stylesheetLink);
 const chrome = injectPageChrome({
   controls: {
     selectedTier: initialSurface,

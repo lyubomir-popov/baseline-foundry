@@ -2,6 +2,14 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Focused button proof + tier-override correction (2026-04-01)
+
+- [x] Fixed shared tier-override generation so documentation/editorial keep computed nudges and only `app` zeroes nudges in the shared stylesheet.
+- [x] Restored the text-input proof-of-concept spacing rationale for inputs/selects via tier-selectable block-padding vars with fixed `app` fallback padding.
+- [x] Applied the same rationale to buttons, removed the explicit button min-block-size dependency, and restored Vanilla-style inline-block button layout instead of flex centering.
+- [x] Verified `demo/components/button.html` in Playwright with the actual button text baseline landing within `0.1px` of the `4px` baseline grid.
+- [x] Clarified the cold-start docs so new agents know `margin-bottom = compensation + spaceAfter` and that the occupied block, not the raw border box, is what must land on the baseline grid.
+
 ## Control-family padding and tier typography rollout (2026-03-31)
 
 - [x] Replaced body-nudge-derived target-height math with explicit regular/compact control block padding tokens across the control family.

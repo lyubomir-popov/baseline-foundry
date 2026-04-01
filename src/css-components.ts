@@ -101,9 +101,10 @@ export function componentsCss(tokens: ThemeTokens, tierOverrides?: TierOverride[
   const h6 = tokens.roles.h6 ?? body;
   const baselineUnit = tokens.baselineUnit;
   const components = tokens.components;
-  const controlBorderTotal = "(var(--bf-border-width) * 2)";
   const controlBlockPaddingVar = "var(--bf-control-block-padding)";
   const controlCompactBlockPaddingVar = "var(--bf-control-block-padding-compact)";
+  const inputBlockPaddingVar = "var(--bf-input-block-padding)";
+  const buttonBlockPaddingVar = "var(--bf-button-block-padding)";
   const bodyLineHeight = roleLineHeightVar("body", body.lineHeight);
   const bodySelectedStartNudge = roleSelectedStartNudgeVar("body", body.nudgeTop);
   const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
@@ -117,6 +118,8 @@ export function componentsCss(tokens: ThemeTokens, tierOverrides?: TierOverride[
   --bf-radius: ${components.radius};
 ${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components.controlInlinePadding};
   --bf-control-visual-size: ${components.controlVisualSize};
+  --bf-input-block-padding: ${bodySelectedStartNudge};
+  --bf-button-block-padding: ${bodySelectedStartNudge};
   --bf-field-gap: ${components.fieldGap};
   --bf-switch-row-block-size: var(--bf-body-line-height);
   --bf-switch-track-offset: calc((var(--bf-switch-row-block-size) - var(--bf-control-visual-size)) / 2);
@@ -175,13 +178,16 @@ ${foundryComponentColorVars("light")}
 }
 
 :where(.bf-theme.bf-engine-cap) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
-  margin-bottom: ${controlMarginBottomExpression(bodyLineHeight, controlBlockPaddingVar, body.spaceAfter)};
+  margin-bottom: ${controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, body.spaceAfter)};
 }
 
 ${(tierOverrides ?? []).map(override => {
   const tierRoles = ["body", "h4", "h5", "h6"] as const;
   const bodyOverride = override.roles.body;
   const overrideComponents = override.tokens?.components ?? components;
+  const inputBlockPadding = bodyOverride && parseRemValue(bodyOverride.nudgeTop) > 0
+    ? bodyOverride.nudgeTop
+    : overrideComponents.controlBlockPadding;
   const props = tierRoles.map(roleName => {
     const overrideToken = override.roles[roleName];
     if (!overrideToken) return "";
@@ -190,10 +196,7 @@ ${(tierOverrides ?? []).map(override => {
     const endNudge = nt === 0 ? "0rem" : toRemLiteral(parseRemValue(bu) - nt);
     return `  --bf-${roleName}-line-height: ${overrideToken.lineHeight};\n  --bf-${roleName}-nudge-start: ${overrideToken.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};`;
   }).filter(Boolean).join("\n");
-  const inputMarginRule = bodyOverride
-    ? `:where(.bf-theme.${override.className}) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {\n  margin-bottom: ${controlMarginBottom(overrideComponents.controlBlockPadding, bodyOverride.lineHeight, override.baselineUnit ?? baselineUnit, bodyOverride.spaceAfter)};\n}\n`
-    : "";
-  return `:where(.bf-theme.${override.className}) {\n  --bf-control-baseline-reserve: 0rem;\n${props}\n${componentAlignmentVars(overrideComponents)}\n}\n${inputMarginRule}`;
+  return `:where(.bf-theme.${override.className}) {\n  --bf-control-baseline-reserve: 0rem;\n  --bf-input-block-padding: ${inputBlockPadding};\n  --bf-button-block-padding: ${inputBlockPadding};\n${props}\n${componentAlignmentVars(overrideComponents)}\n}\n`;
 }).join("\n")}
 
 :where(.bf-theme.is-dark),
@@ -283,9 +286,8 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
-  margin-bottom: ${controlMarginBottom(components.controlBlockPadding, body.lineHeight, baselineUnit, body.spaceAfter)};
-  padding-block: max(0rem, calc(var(--bf-control-block-padding) - var(--bf-border-width)));
-  padding-inline: var(--bf-control-inline-padding);
+  margin-bottom: ${controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, body.spaceAfter)};
+${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
 }
 
 :where(.bf-theme) :where(input[type='color'].bf-color-input) {
@@ -718,17 +720,15 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-button, .bf-button.is-base) {
-${typeStyles(body, { includeCase: false })}  align-items: center;
-  appearance: none;
+${typeStyles(body, { includeCase: false })}  appearance: none;
   background-color: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   cursor: pointer;
-  display: inline-flex;
-  justify-content: center;
-  min-block-size: var(--bf-control-box-size);
-${controlPadding(controlBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+  display: inline-block;
+  margin-bottom: ${controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, body.spaceAfter)};
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
   text-align: center;
   text-decoration: none;
 }

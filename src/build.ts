@@ -273,7 +273,26 @@ function buildZeroNudgeTierTokens(config: ThemeConfig): ThemeTokens {
   };
 }
 
-async function buildTierOverrides(resolvedConfigPath: string): Promise<TierOverride[]> {
+async function buildComputedTierTokens(resolvedConfigPath: string, baselineDir: string): Promise<ThemeTokens> {
+  const config = await readThemeConfig(resolvedConfigPath);
+  const resolvedBaselineDir = path.resolve(baselineDir);
+
+  await ensureDirectory(resolvedBaselineDir);
+
+  const baselineConfigFileName = `${path.parse(resolvedConfigPath).name}.baseline.json`;
+  const baselineConfigPath = path.join(resolvedBaselineDir, baselineConfigFileName);
+
+  await fs.writeFile(
+    baselineConfigPath,
+    `${JSON.stringify(createBaselineConfig(config, resolvedConfigPath, baselineConfigPath), null, 2)}\n`,
+    "utf8"
+  );
+
+  const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
+  return buildThemeTokens(config, baselineTokens);
+}
+
+async function buildTierOverrides(resolvedConfigPath: string, baselineDir: string): Promise<TierOverride[]> {
   const overrides: TierOverride[] = [];
   const currentTier = inferBuiltInPresetName(resolvedConfigPath);
 
@@ -281,9 +300,12 @@ async function buildTierOverrides(resolvedConfigPath: string): Promise<TierOverr
     if (tierName === currentTier || (currentTier === "prose" && tierName === "editorial") || (currentTier === "app-tier" && tierName === "app")) {
       continue;
     }
+
     const tierConfigPath = resolveTierPath(tierName);
-    const tierConfig = await readThemeConfig(tierConfigPath);
-    const tierTokens = buildZeroNudgeTierTokens(tierConfig);
+    const tierTokens = tierName === "app"
+      ? buildZeroNudgeTierTokens(await readThemeConfig(tierConfigPath))
+      : await buildComputedTierTokens(tierConfigPath, path.join(baselineDir, "tier-overrides", tierName));
+
     overrides.push({
       className: `bf-tier-${tierName}`,
       roles: tierTokens.roles,
@@ -320,7 +342,7 @@ async function buildTheme(
 
   const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
   const tokens = buildThemeTokens(runtimeConfig, baselineTokens);
-  const tierOverrides = await buildTierOverrides(resolvedConfigPath);
+  const tierOverrides = await buildTierOverrides(resolvedConfigPath, resolvedBaselineDir);
   const css = generateFoundryCss(tokens, { presetName: inferBuiltInPresetName(resolvedConfigPath), tierOverrides });
 
   const tokensPath = path.join(resolvedDistDir, "tokens.json");

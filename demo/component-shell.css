@@ -26,16 +26,6 @@ body {
   padding: 0;
 }
 
-body.bf-tier-app {
-  background: var(--bf-app-demo-page-bg, #f7f7f7);
-  color: var(--bf-color-text-default, #111111);
-  color-scheme: light;
-}
-
-body.bf-tier-app a {
-  color: var(--bf-color-link-default, #0066cc);
-}
-
 /* ── brand-layout-ops-sample (one-off demo) ───────────── */
 
 .brand-layout-ops-sample {
@@ -173,10 +163,6 @@ body.bf-tier-app a {
 
 .pc-content {
   padding: 1.5rem;
-}
-
-body.bf-tier-app .pc-content {
-  padding: 1rem;
 }
 
 /* ── Component atlas index page ─────────────────────────── */

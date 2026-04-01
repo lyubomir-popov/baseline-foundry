@@ -18,7 +18,7 @@ Metric-driven typography from Ubuntu Sans Variable, editorial typescale, prose s
 
 All non-deprecated Vanilla components as minimal `bf-*` demos. Currently: 24 shipped, 7 partial, 9 superseded, 25 missing. Clean font swapping (Ubuntu Sans default; IBM Plex for brand-ops tier). Purpose: edge-case isolation for spec evaluation and screenshot capture.
 
-**Key invariant for this stage:** Control sizing (buttons, inputs, selects) follows the Vanilla model — symmetric `padding-block = nudge − border`, no explicit `block-size` target, `margin-bottom` snaps the block to the baseline grid. See `docs/TODO.md` → "Control baseline-grid invariant" for the full explanation. All controls sharing a font size align to the same baseline as a `<p>`.
+**Key invariant for this stage:** Control sizing (buttons, inputs, selects) follows the Vanilla model — symmetric `padding-block = nudge − border`, no explicit `block-size` target, and `margin-bottom = compensation + spaceAfter`, where `compensation = ceil(borderBoxHeight / baselineUnit) × baselineUnit − borderBoxHeight`. The occupied block (`border box + margin-bottom`) snaps to the baseline grid; the raw border box usually does not. See `docs/TODO.md` → "Control baseline-grid invariant" for the full explanation. All controls sharing a font size align to the same baseline as a `<p>`.
 
 ### Stage 4 — Consumer hardening
 
