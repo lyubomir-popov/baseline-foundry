@@ -25,6 +25,7 @@ async function main(): Promise<void> {
     console.log(`Generated theme tier "${tier}"`);
     console.log(`  tokens: ${result.tokensPath}`);
     console.log(`  css:    ${result.cssPath}`);
+    console.log(`  surfaces: ${result.surfaceManifestPath}`);
     return;
   }
 
@@ -47,12 +48,14 @@ async function main(): Promise<void> {
     console.log(`Generated theme preset "${preset}"`);
     console.log(`  tokens: ${result.tokensPath}`);
     console.log(`  css:    ${result.cssPath}`);
+    console.log(`  surfaces: ${result.surfaceManifestPath}`);
     return;
   }
 
   const defaultResult = await buildThemeFromConfig(arg || undefined);
   console.log(`Generated default theme tokens: ${defaultResult.tokensPath}`);
   console.log(`Generated default theme css: ${defaultResult.cssPath}`);
+  console.log(`Generated default theme surfaces: ${defaultResult.surfaceManifestPath}`);
 
   if (arg) {
     return;
@@ -63,6 +66,7 @@ async function main(): Promise<void> {
     console.log(`Generated tier "${tier}"`);
     console.log(`  tokens: ${tierResult.tokensPath}`);
     console.log(`  css:    ${tierResult.cssPath}`);
+    console.log(`  surfaces: ${tierResult.surfaceManifestPath}`);
   }
 
   for (const preset of presetNames) {
@@ -70,6 +74,7 @@ async function main(): Promise<void> {
     console.log(`Generated preset "${preset}"`);
     console.log(`  tokens: ${presetResult.tokensPath}`);
     console.log(`  css:    ${presetResult.cssPath}`);
+    console.log(`  surfaces: ${presetResult.surfaceManifestPath}`);
   }
 }
 

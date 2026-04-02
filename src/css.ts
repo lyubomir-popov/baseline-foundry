@@ -4,7 +4,7 @@ import { appTierPresetCss } from "./css-app-tier.js";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "./baseline-grid-theme.js";
 import { foundryThemeRootColorVars, vanillaThemeColorVars } from "./vanilla-theme-colors.js";
 import type { BuiltInThemeName } from "./presets.js";
-import type { ThemeFontFile, ThemeTokens, TierOverride, TypographyToken } from "./types.js";
+import type { ThemeFontFile, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
 
 function parseRemValue(rem: string): number {
   return Number.parseFloat(rem.replace("rem", ""));
@@ -54,36 +54,101 @@ function semanticMarginBottom(spaceAfter: string, baselineUnit: string): string 
   return toRemLiteral(parseRemValue(spaceAfter) - parseRemValue(baselineUnit));
 }
 
-function textRule(selectors: string[], token: TypographyToken, baselineUnit: string, extra = ""): string {
-  const fontVariantCaps = token.fontVariantCaps ? `  font-variant-caps: ${token.fontVariantCaps};\n` : "";
-  const letterSpacing = token.letterSpacing ? `  letter-spacing: ${token.letterSpacing};\n` : "";
-  const textTransform = token.textTransform ? `  text-transform: ${token.textTransform};\n` : "";
-  const mb = semanticMarginBottom(token.spaceAfter, baselineUnit);
-  return `${selectors.join(",\n")} {\n  font-family: ${token.fontStack};\n  font-size: ${token.fontSize};\n  font-style: ${token.fontStyle ?? "normal"};\n  font-weight: ${token.fontWeight ?? 400};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${token.lineHeight};\n  margin-bottom: ${mb};\n  padding-block-end: ${nudgeEnd(baselineUnit, token.nudgeTop)};\n  padding-block-start: ${token.nudgeTop};\n${extra}}\n`;
+function roleFontFamilyVar(roleName: string, fallback?: string): string {
+  return fallback ? `var(--bf-${roleName}-font-family, ${fallback})` : `var(--bf-${roleName}-font-family)`;
 }
 
-function tierOverrideTextRule(scope: string, selectors: string[], token: TypographyToken, baseToken: TypographyToken, baselineUnit: string, baseBaselineUnit: string): string {
-  const props: string[] = [];
-  if (token.fontSize !== baseToken.fontSize) props.push(`  font-size: ${token.fontSize};`);
-  if (token.fontWeight !== baseToken.fontWeight) props.push(`  font-weight: ${token.fontWeight ?? 400};`);
-  if ((token.fontStyle ?? "normal") !== (baseToken.fontStyle ?? "normal")) props.push(`  font-style: ${token.fontStyle ?? "normal"};`);
-  if (token.lineHeight !== baseToken.lineHeight) props.push(`  line-height: ${token.lineHeight};`);
-  const overrideMb = semanticMarginBottom(token.spaceAfter, baselineUnit);
-  const baseMb = semanticMarginBottom(baseToken.spaceAfter, baseBaselineUnit);
-  if (overrideMb !== baseMb) props.push(`  margin-bottom: ${overrideMb};`);
-  if (token.nudgeTop !== baseToken.nudgeTop || nudgeEnd(baselineUnit, token.nudgeTop) !== nudgeEnd(baseBaselineUnit, baseToken.nudgeTop)) {
-    props.push(`  padding-block-start: ${token.nudgeTop};`);
-    props.push(`  padding-block-end: ${nudgeEnd(baselineUnit, token.nudgeTop)};`);
-  }
-  if (token.fontVariantCaps !== baseToken.fontVariantCaps) {
-    props.push(token.fontVariantCaps ? `  font-variant-caps: ${token.fontVariantCaps};` : `  font-variant-caps: normal;`);
-  }
-  if (token.letterSpacing !== baseToken.letterSpacing) {
-    props.push(token.letterSpacing ? `  letter-spacing: ${token.letterSpacing};` : `  letter-spacing: normal;`);
-  }
-  if (props.length === 0) return "";
-  const scopedSelectors = selectors.map(s => s.replace(":where(.bf-theme)", `:where(.bf-theme.${scope})`));
-  return `${scopedSelectors.join(",\n")} {\n${props.join("\n")}\n}\n`;
+function roleFontSizeVar(roleName: string, fallback?: string): string {
+  return fallback ? `var(--bf-${roleName}-font-size, ${fallback})` : `var(--bf-${roleName}-font-size)`;
+}
+
+function roleFontStyleVar(roleName: string, fallback?: string): string {
+  return fallback ? `var(--bf-${roleName}-font-style, ${fallback})` : `var(--bf-${roleName}-font-style)`;
+}
+
+function roleFontWeightVar(roleName: string, fallback?: number): string {
+  return fallback !== undefined ? `var(--bf-${roleName}-font-weight, ${fallback})` : `var(--bf-${roleName}-font-weight)`;
+}
+
+function roleLineHeightVar(roleName: string, fallback?: string): string {
+  return fallback ? `var(--bf-${roleName}-line-height, ${fallback})` : `var(--bf-${roleName}-line-height)`;
+}
+
+function roleFontVariantCapsVar(roleName: string, fallback = "normal"): string {
+  return `var(--bf-${roleName}-font-variant-caps, ${fallback})`;
+}
+
+function roleLetterSpacingVar(roleName: string, fallback = "normal"): string {
+  return `var(--bf-${roleName}-letter-spacing, ${fallback})`;
+}
+
+function roleTextTransformVar(roleName: string, fallback = "none"): string {
+  return `var(--bf-${roleName}-text-transform, ${fallback})`;
+}
+
+function roleMarginBottomVar(roleName: string, fallback: string): string {
+  return `var(--bf-${roleName}-margin-bottom, ${fallback})`;
+}
+
+function roleNudgeStartVar(roleName: string, fallback: string): string {
+  return `var(--bf-${roleName}-nudge-start, ${fallback})`;
+}
+
+function roleNudgeEndVar(roleName: string, fallback: string): string {
+  return `var(--bf-${roleName}-nudge-end, ${fallback})`;
+}
+
+const ROLE_STYLE_DEFAULTS: Record<string, {
+  fontVariantCaps?: string;
+  letterSpacing?: string;
+  textTransform?: string;
+}> = {
+  h1: { letterSpacing: "-0.03em" },
+  h2: { letterSpacing: "-0.025em" },
+  h3: { letterSpacing: "-0.02em" },
+  h4: { letterSpacing: "-0.015em" },
+  eyebrow: { letterSpacing: "0.08em", textTransform: "uppercase" }
+};
+
+function textRule(roleName: string, selectors: string[], token: TypographyToken, baselineUnit: string, extra = ""): string {
+  const styleDefaults = ROLE_STYLE_DEFAULTS[roleName] ?? {};
+  const marginBottom = semanticMarginBottom(token.spaceAfter, baselineUnit);
+  const nudgeStart = token.nudgeTop;
+  const nudgeFinish = nudgeEnd(baselineUnit, token.nudgeTop);
+  return `${selectors.join(",\n")} {\n  font-family: ${roleFontFamilyVar(roleName, token.fontStack)};\n  font-size: ${roleFontSizeVar(roleName, token.fontSize)};\n  font-style: ${roleFontStyleVar(roleName, token.fontStyle ?? "normal")};\n  font-weight: ${roleFontWeightVar(roleName, token.fontWeight ?? 400)};\n  font-variant-caps: ${roleFontVariantCapsVar(roleName, token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal")};\n  letter-spacing: ${roleLetterSpacingVar(roleName, token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal")};\n  text-transform: ${roleTextTransformVar(roleName, token.textTransform ?? styleDefaults.textTransform ?? "none")};\n  line-height: ${roleLineHeightVar(roleName, token.lineHeight)};\n  margin-bottom: ${roleMarginBottomVar(roleName, marginBottom)};\n  padding-block-end: ${roleNudgeEndVar(roleName, nudgeFinish)};\n  padding-block-start: ${roleNudgeStartVar(roleName, nudgeStart)};\n${extra}}\n`;
+}
+
+function roleVarDeclarations(roleName: string, token: TypographyToken, baselineUnit: string): string {
+  const styleDefaults = ROLE_STYLE_DEFAULTS[roleName] ?? {};
+  return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-margin-bottom: ${semanticMarginBottom(token.spaceAfter, baselineUnit)};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${nudgeEnd(baselineUnit, token.nudgeTop)};\n`;
+}
+
+function themeSurfaceRule(selector: string, tokens: ThemeTokens): string {
+  return `${selector} {\n  --bf-baseline: ${tokens.baselineUnit};\n  --bf-space-0: 0rem;\n  --bf-space-half: calc(var(--bf-baseline) / 2);\n  --bf-space-1: var(--bf-baseline);\n  --bf-space-2: calc(var(--bf-baseline) * 2);\n  --bf-space-3: calc(var(--bf-baseline) * 3);\n  --bf-space-4: calc(var(--bf-baseline) * 4);\n  --bf-space-6: calc(var(--bf-baseline) * 6);\n  --bf-space-8: calc(var(--bf-baseline) * 8);\n  --bf-space-12: calc(var(--bf-baseline) * 12);\n  --bf-space-16: calc(var(--bf-baseline) * 16);\n  --bf-content-max-width: ${tokens.layout.contentMaxWidth};\n  --bf-content-padding-inline: ${tokens.layout.contentPaddingInline};\n  --bf-measure: ${tokens.layout.measure};\n  --bf-section-space: ${tokens.layout.sectionSpace};\n  --bf-section-space-shallow: ${tokens.layout.sectionSpaceShallow};\n  --bf-section-space-deep: ${tokens.layout.sectionSpaceDeep};\n  --bf-strip-space: ${tokens.layout.stripSpace};\n  --bf-grid-gap-inline: ${tokens.layout.gridGapInline};\n  --bf-grid-gap-block: ${tokens.layout.gridGapBlock};\n  --bf-page-margin: ${tokens.layout.pageMargin};\n${Object.entries(tokens.roles).map(([roleName, token]) => roleVarDeclarations(roleName, token, tokens.baselineUnit)).join("")} }\n`;
+}
+
+function collectFontFiles(tokens: ThemeTokens, themeSurfaces: ThemeSurface[]): ThemeFontFile[] {
+  const seen = new Set<string>();
+  const fontFiles = [tokens, ...themeSurfaces.map(surface => surface.tokens)]
+    .flatMap(surfaceTokens => surfaceTokens.fontFiles)
+    .filter(fontFile => Boolean(fontFile.cssFamily));
+
+  return fontFiles.filter(fontFile => {
+    const key = [
+      fontFile.cssFamily,
+      fontFile.path,
+      fontFile.fontStyle ?? "normal",
+      fontFile.fontWeight ?? "400",
+      fontFile.fontDisplay ?? "swap"
+    ].join("|");
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
 }
 
 function capEngineDemoRule(selectors: string[], token: TypographyToken): string {
@@ -108,11 +173,9 @@ const SEMANTIC_SELECTORS_BY_ROLE: Record<string, string[]> = {
 const EXTRA_STYLES_BY_ROLE: Record<string, string> = {
   body: "  max-inline-size: var(--bf-measure);\n",
   lead: "  color: var(--bf-color-muted);\n  max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));\n",
-  h1: "  letter-spacing: -0.03em;\n  max-inline-size: calc(var(--bf-measure) + var(--bf-space-6));\n",
-  h2: "  letter-spacing: -0.025em;\n  max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));\n",
-  h3: "  letter-spacing: -0.02em;\n",
-  h4: "  letter-spacing: -0.015em;\n",
-  eyebrow: "  color: var(--bf-color-muted);\n  letter-spacing: 0.08em;\n  text-transform: uppercase;\n",
+  h1: "  max-inline-size: calc(var(--bf-measure) + var(--bf-space-6));\n",
+  h2: "  max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));\n",
+  eyebrow: "  color: var(--bf-color-muted);\n",
   meta: "  color: var(--bf-color-muted);\n"
 };
 
@@ -121,56 +184,23 @@ function selectorsForRole(roleName: string): string[] {
   return [...semanticSelectors, `:where(.bf-theme) .bf-${roleName}`];
 }
 
-function innerSelectorsForRole(roleName: string): string[] {
-  const semanticSelectors = SEMANTIC_SELECTORS_BY_ROLE[roleName] ?? [];
-  const innerParts = semanticSelectors.map(s =>
-    s.replace(":where(.bf-theme) ", "")
-  );
-  return [...innerParts, `.bf-${roleName}`];
-}
-
-function tierLayoutOverrides(scope: string, overrideTokens: ThemeTokens, baseTokens: ThemeTokens): string {
-  const props: string[] = [];
-  const ol = overrideTokens.layout;
-  const bl = baseTokens.layout;
-  if (ol.sectionSpace !== bl.sectionSpace) props.push(`  --bf-section-space: ${ol.sectionSpace};`);
-  if (ol.sectionSpaceShallow !== bl.sectionSpaceShallow) props.push(`  --bf-section-space-shallow: ${ol.sectionSpaceShallow};`);
-  if (ol.sectionSpaceDeep !== bl.sectionSpaceDeep) props.push(`  --bf-section-space-deep: ${ol.sectionSpaceDeep};`);
-  if (ol.gridGapInline !== bl.gridGapInline) props.push(`  --bf-grid-gap-inline: ${ol.gridGapInline};`);
-  if (ol.gridGapBlock !== bl.gridGapBlock) props.push(`  --bf-grid-gap-block: ${ol.gridGapBlock};`);
-  if (ol.pageMargin !== bl.pageMargin) props.push(`  --bf-page-margin: ${ol.pageMargin};`);
-  if (ol.measure !== bl.measure) props.push(`  --bf-measure: ${ol.measure};`);
-  if (ol.contentMaxWidth !== bl.contentMaxWidth) props.push(`  --bf-content-max-width: ${ol.contentMaxWidth};`);
-  if (ol.stripSpace !== bl.stripSpace) props.push(`  --bf-strip-space: ${ol.stripSpace};`);
-  if (props.length === 0) return "";
-  return `:where(.bf-theme.${scope}) {\n${props.join("\n")}\n}\n`;
-}
-
-export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: BuiltInThemeName; tierOverrides?: TierOverride[]; } = {}): string {
+export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: BuiltInThemeName; themeSurfaces?: ThemeSurface[]; } = {}): string {
   const body = tokens.roles.body;
   const baselineUnit = tokens.baselineUnit;
-  const fontFaces = tokens.fontFiles.map(fontFaceRule).filter(Boolean).join("\n");
+  const themeSurfaces = options.themeSurfaces ?? [];
+  const fontFaces = collectFontFiles(tokens, themeSurfaces).map(fontFaceRule).filter(Boolean).join("\n");
   const roleRules = Object.entries(tokens.roles)
-    .map(([roleName, token]) => textRule(selectorsForRole(roleName), token, baselineUnit, EXTRA_STYLES_BY_ROLE[roleName] ?? ""))
+    .map(([roleName, token]) => textRule(roleName, selectorsForRole(roleName), token, baselineUnit, EXTRA_STYLES_BY_ROLE[roleName] ?? ""))
     .join("\n");
 
   const capEngineDemo = `/* DEMO ONLY — Cap-derived nudges are unreliable (ascender ≠ cap height).\n   The approximation (line-height + 1cap) / 2 drifts at larger sizes.\n   Kept as a reference for why metrics-derived nudges are used instead. */\n` +
     Object.entries(tokens.roles)
       .map(([roleName, token]) => capEngineDemoRule(selectorsForRole(roleName), token))
       .join("\n");
-
-  const tierOverrideCss = (options.tierOverrides ?? []).map(override => {
-    const textOverrides = Object.entries(override.roles)
-      .map(([roleName, token]) => {
-        const baseToken = tokens.roles[roleName];
-        if (!baseToken) return "";
-        return tierOverrideTextRule(override.className, selectorsForRole(roleName), token, baseToken, override.baselineUnit ?? baselineUnit, baselineUnit);
-      })
-      .filter(Boolean)
-      .join("\n");
-    const layoutOverrides = override.tokens ? tierLayoutOverrides(override.className, override.tokens, tokens) : "";
-    return `${textOverrides}\n${layoutOverrides}`;
-  }).join("\n");
+  const scopedThemeCss = themeSurfaces
+    .filter(surface => surface.className)
+    .map(surface => themeSurfaceRule(`:where(.bf-theme.${surface.className})`, surface.tokens))
+    .join("\n");
 
   const presetCss = options.presetName === "app" || options.presetName === "app-tier" ? `\n${appTierPresetCss()}` : "";
 
@@ -215,28 +245,10 @@ html.u-baseline-grid::after {
   z-index: -1;
 }
 
+${themeSurfaceRule(":where(.bf-theme)", tokens)}
+${scopedThemeCss}
+
 :where(.bf-theme) {
-  --bf-baseline: ${tokens.baselineUnit};
-  --bf-space-0: 0rem;
-  --bf-space-half: calc(var(--bf-baseline) / 2);
-  --bf-space-1: var(--bf-baseline);
-  --bf-space-2: calc(var(--bf-baseline) * 2);
-  --bf-space-3: calc(var(--bf-baseline) * 3);
-  --bf-space-4: calc(var(--bf-baseline) * 4);
-  --bf-space-6: calc(var(--bf-baseline) * 6);
-  --bf-space-8: calc(var(--bf-baseline) * 8);
-  --bf-space-12: calc(var(--bf-baseline) * 12);
-  --bf-space-16: calc(var(--bf-baseline) * 16);
-  --bf-content-max-width: ${tokens.layout.contentMaxWidth};
-  --bf-content-padding-inline: ${tokens.layout.contentPaddingInline};
-  --bf-measure: ${tokens.layout.measure};
-  --bf-section-space: ${tokens.layout.sectionSpace};
-  --bf-section-space-shallow: ${tokens.layout.sectionSpaceShallow};
-  --bf-section-space-deep: ${tokens.layout.sectionSpaceDeep};
-  --bf-strip-space: ${tokens.layout.stripSpace};
-  --bf-grid-gap-inline: ${tokens.layout.gridGapInline};
-  --bf-grid-gap-block: ${tokens.layout.gridGapBlock};
-  --bf-page-margin: ${tokens.layout.pageMargin};
 ${vanillaThemeColorVars("light")}${foundryThemeRootColorVars("light")}
   background: var(--bf-color-bg);
   color: var(--bf-color-text);
@@ -417,30 +429,29 @@ ${roleRules}
 
 ${capEngineDemo}
 
-${tierOverrideCss}
 :where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {
-  margin-bottom: ${semanticMarginBottom(body.spaceAfter, baselineUnit)};
+  margin-bottom: ${roleMarginBottomVar("body", semanticMarginBottom(body.spaceAfter, baselineUnit))};
   padding-inline-start: var(--bf-space-4);
 }
 
 :where(.bf-theme) :where(.bf-prose li) {
   margin: 0;
-  padding-block-end: ${nudgeEnd(baselineUnit, body.nudgeTop)};
-  padding-block-start: ${body.nudgeTop};
+  padding-block-end: ${roleNudgeEndVar("body", nudgeEnd(baselineUnit, body.nudgeTop))};
+  padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
 }
 
 :where(.bf-theme) :where(.bf-prose blockquote) {
   border-inline-start: 1px solid var(--bf-color-rule);
   color: var(--bf-color-muted);
-  font-family: ${body.fontStack};
-  font-size: ${body.fontSize};
-  font-style: ${body.fontStyle ?? "normal"};
-  font-weight: ${body.fontWeight ?? 400};
-  line-height: ${body.lineHeight};
-  margin-bottom: ${semanticMarginBottom(body.spaceAfter, baselineUnit)};
+  font-family: ${roleFontFamilyVar("body", body.fontStack)};
+  font-size: ${roleFontSizeVar("body", body.fontSize)};
+  font-style: ${roleFontStyleVar("body", body.fontStyle ?? "normal")};
+  font-weight: ${roleFontWeightVar("body", body.fontWeight ?? 400)};
+  line-height: ${roleLineHeightVar("body", body.lineHeight)};
+  margin-bottom: ${roleMarginBottomVar("body", semanticMarginBottom(body.spaceAfter, baselineUnit))};
   max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));
-  padding-block-end: ${nudgeEnd(baselineUnit, body.nudgeTop)};
-  padding-block-start: ${body.nudgeTop};
+  padding-block-end: ${roleNudgeEndVar("body", nudgeEnd(baselineUnit, body.nudgeTop))};
+  padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
   padding-inline-start: var(--bf-space-3);
 }
 
@@ -464,7 +475,7 @@ ${tierOverrideCss}
   padding-top: 0;
 }
 
-${componentsCss(tokens, options.tierOverrides)}
+${componentsCss(tokens, themeSurfaces)}
 
 ${gridCss()}${presetCss}
 `;

@@ -16,17 +16,17 @@ Metric-driven typography from Ubuntu Sans Variable, editorial typescale, prose s
 
 ### Stage 3 — Spec-driven component surface (in progress)
 
-All non-deprecated Vanilla components as minimal `bf-*` demos. Currently: 24 shipped, 7 partial, 9 superseded, 25 missing. Clean font swapping (Ubuntu Sans default; IBM Plex for brand-ops tier). Purpose: edge-case isolation for spec evaluation and screenshot capture.
+All non-deprecated Vanilla components as minimal `bf-*` demos. Currently: 27 shipped, 4 partial, 9 superseded, 25 missing. Independent theme surfaces now ship as complete scoped token sets with stored font metrics, so alternate fonts can sit beside the canonical Ubuntu tiers without relying on editorial-base diffs. Purpose: edge-case isolation for spec evaluation and screenshot capture.
 
 **Key invariant for this stage:** Control sizing (buttons, inputs, selects) follows the Vanilla model — symmetric `padding-block = nudge − border`, no explicit `block-size` target, and `margin-bottom = compensation + spaceAfter`, where `compensation = ceil(borderBoxHeight / baselineUnit) × baselineUnit − borderBoxHeight`. The occupied block (`border box + margin-bottom`) snaps to the baseline grid; the raw border box usually does not. See `docs/TODO.md` → "Control baseline-grid invariant" for the full explanation. All controls sharing a font size align to the same baseline as a `<p>`.
 
 ### Stage 4 — Consumer hardening
 
-Clearer token semantics, stronger validation, canonical documentation for authors.
+Clearer token semantics, stronger validation, multi-surface build inputs, and canonical documentation for authors consuming full scoped theme surfaces plus stored metrics manifests.
 
 ### Stage 5 — Optional extensions
 
-Brand-specific preset lines, React primitives, additional composed patterns. Only if justified by downstream demand.
+Brand-specific surface lines, React primitives, additional composed patterns. Only if justified by downstream demand.
 
 ## Vanilla pattern parity inventory
 
@@ -39,7 +39,7 @@ Source of truth: `vanilla-framework/scss/_patterns_*.scss` (65 pattern entries).
 | Superseded | Covered by smaller Foundry primitives or the tier model |
 | Missing | No current equivalent |
 
-Counts: **Shipped 24 · Partial 7 · Superseded 9 · Missing 25**
+Counts: **Shipped 27 · Partial 4 · Superseded 9 · Missing 25**
 
 | Pattern | Status | Foundry surface | Gap |
 |---|---|---|---|
@@ -59,18 +59,18 @@ Counts: **Shipped 24 · Partial 7 · Superseded 9 · Missing 25**
 | `equal-height-row` | Superseded | `bf-grid`, `bf-cluster` | — |
 | `form-help-text` | Shipped | `bf-form-help` | — |
 | `form-password-toggle` | Missing | — | — |
-| `forms` | Partial | `bf-field`, `bf-control`, `bf-input`, `bf-select` | Missing: inline/stacked layout, group wrapper, validation icons |
+| `forms` | Partial | `bf-field`, `bf-control`, `bf-input`, `bf-select` | Missing: group wrapper, validation icons |
 | `form-tick-elements` | Shipped | `bf-checkbox`, `bf-radio` | Minor: indeterminate state |
 | `form-validation` | Shipped | `bf-validation-message` | — |
 | `grid` | Superseded | `bf-grid` (Canonical 4/8/16) | — |
 | `grid-8` | Superseded | `bf-grid` @container | — |
 | `heading-icon` | Missing | — | — |
 | `headings` | Superseded | tier role tokens | — |
-| `icons` | Partial | internal chevrons/glyphs | Missing: `.bf-icon.is-{name}` + size modifiers |
+| `icons` | Shipped | `bf-icon` | Search / close / chevron plus success/error-grey state glyphs shipped; broader catalog can follow on demand |
 | `image` | Missing | — | — |
 | `in-page-navigation` | Missing | — | — |
-| `links` | Partial | semantic link styles | Missing: soft, skip, back-to-top, anchor, inverted |
-| `lists` | Partial | prose lists, `bf-list-tree` | Missing: `.bf-list`, `.is-divided`, inline list |
+| `links` | Partial | semantic link styles, `bf-skip-link` | Missing: back-to-top, anchor, inverted |
+| `lists` | Shipped | prose lists, `bf-list`, `bf-inline-list`, `bf-list-tree` | — |
 | `list-tree` | Shipped | `bf-list-tree` + runtime | — |
 | `logo-section` | Missing | — | Out of scope |
 | `matrix` | Missing | — | Removed in scope trim |
@@ -78,7 +78,7 @@ Counts: **Shipped 24 · Partial 7 · Superseded 9 · Missing 25**
 | `media-object` | Missing | — | — |
 | `modal` | Shipped | `bf-modal` + runtime | — |
 | `muted-heading` | Missing | — | — |
-| `navigation` | Partial | side-nav + drawer helpers | Missing: top-nav, mobile nav, search-in-nav |
+| `navigation` | Partial | `bf-side-navigation`, `bf-top-navigation` + runtime | Missing: mega-nav |
 | `navigation-reduced` | Missing | — | — |
 | `notifications` | Missing | — | — |
 | `pagination` | Shipped | `bf-pagination` | — |
@@ -95,7 +95,7 @@ Counts: **Shipped 24 · Partial 7 · Superseded 9 · Missing 25**
 | `strip` | Superseded | `bf-strip` | — |
 | `switch` | Shipped | `bf-switch` | — |
 | `table-expanding` | Missing | `bf-table` base only | — |
-| `table-icons` | Partial | `bf-table` base only | Missing: icon-cell placeholder |
+| `table-icons` | Shipped | `bf-table` + `.is-icon-placeholder` cells | — |
 | `table-mobile-card` | Missing | `bf-table` base only | — |
 | `table-of-contents` | Missing | — | — |
 | `table-sortable` | Missing | `bf-table` base only | — |

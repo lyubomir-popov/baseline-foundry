@@ -12,16 +12,23 @@ async function assertExists(filePath: string): Promise<void> {
   await fs.access(filePath);
 }
 
-async function readThemeArtifacts(baseDir: string): Promise<{ tokens: Record<string, unknown>; css: string; }> {
+async function readThemeArtifacts(baseDir: string): Promise<{
+  tokens: Record<string, unknown>;
+  css: string;
+  surfaces: Record<string, unknown>;
+}> {
   const tokensPath = path.join(baseDir, "tokens.json");
   const cssPath = path.join(baseDir, "styles.css");
+  const surfacesPath = path.join(baseDir, "surfaces.json");
 
   await assertExists(tokensPath);
   await assertExists(cssPath);
+  await assertExists(surfacesPath);
 
   return {
     tokens: JSON.parse(await fs.readFile(tokensPath, "utf8")) as Record<string, unknown>,
-    css: await fs.readFile(cssPath, "utf8")
+    css: await fs.readFile(cssPath, "utf8"),
+    surfaces: JSON.parse(await fs.readFile(surfacesPath, "utf8")) as Record<string, unknown>
   };
 }
 
@@ -306,6 +313,28 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(css.includes('.bf-h1'), "Expected the app-tier preset CSS to emit role utility selectors like the other presets.");
 }
 
+function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefaultSurface: string): void {
+  const defaultSurface = manifest.defaultSurface;
+  const surfaces = (manifest.surfaces ?? {}) as Record<string, Record<string, unknown>>;
+  const appSurface = surfaces.app ?? {};
+  const appTokens = (appSurface.tokens ?? {}) as Record<string, unknown>;
+  const appRoles = (appTokens.roles ?? {}) as Record<string, Record<string, unknown>>;
+  const appMetrics = (appSurface.metrics ?? {}) as Record<string, unknown>;
+  const appMetricElements = (appMetrics.elements ?? {}) as Record<string, Record<string, unknown>>;
+
+  assert(defaultSurface === expectedDefaultSurface, `Expected surfaces.json to default to "${expectedDefaultSurface}".`);
+  assert(Object.keys(surfaces).length > 0, "Expected surfaces.json to expose at least one named surface.");
+  assert(surfaces[expectedDefaultSurface], `Expected surfaces.json to include the default "${expectedDefaultSurface}" surface entry.`);
+  assert(surfaces.editorial, 'Expected surfaces.json to include the "editorial" surface entry.');
+  assert(surfaces.documentation, 'Expected surfaces.json to include the "documentation" surface entry.');
+  assert(surfaces.app, 'Expected surfaces.json to include the "app" surface entry.');
+  assert(surfaces.editorial.className === "bf-tier-editorial", 'Expected the editorial surface to expose the bf-tier-editorial class hook.');
+  assert(surfaces.documentation.className === "bf-tier-documentation", 'Expected the documentation surface to expose the bf-tier-documentation class hook.');
+  assert(surfaces.app.className === "bf-tier-app", 'Expected the app surface to expose the bf-tier-app class hook.');
+  assert(appRoles.body?.nudgeTop === "0rem", "Expected the app surface runtime tokens to stay zero-nudge.");
+  assert(appMetricElements.body?.nudgeTop && appMetricElements.body.nudgeTop !== "0rem", "Expected the app surface metrics to retain the computed font-derived nudge data.");
+}
+
 function validateDocumentationTheme(tokens: Record<string, unknown>, css: string): void {
   const { roles, layout, components } = validateCommonTokens(tokens);
   const fontSizes = new Set(Object.values(roles).map(role => role.fontSize).filter(Boolean));
@@ -566,6 +595,13 @@ async function main(): Promise<void> {
   validateDefaultTheme(prosePreset.tokens, prosePreset.css);
   validatePanelTheme(panelPreset.tokens, panelPreset.css);
   validateAppTierTheme(appTierPreset.tokens, appTierPreset.css);
+  validateSurfaceManifest(defaultTheme.surfaces, "editorial");
+  validateSurfaceManifest(editorialTier.surfaces, "editorial");
+  validateSurfaceManifest(documentationTier.surfaces, "documentation");
+  validateSurfaceManifest(appTier.surfaces, "app");
+  validateSurfaceManifest(prosePreset.surfaces, "editorial");
+  validateSurfaceManifest(panelPreset.surfaces, "panel");
+  validateSurfaceManifest(appTierPreset.surfaces, "app");
   validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss);
   validateLivingSpecHome(demoIndexHtml);
   validateLivingSpecControls(demoControlsHtml, controlsShellCss);

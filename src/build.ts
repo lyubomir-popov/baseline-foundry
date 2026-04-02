@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { generateFoundryCss } from "./css.js";
 import type { BuiltInThemeName, PresetName, TierName } from "./presets.js";
-import { presetNames, resolveBuiltInThemePath, resolvePresetPath, resolveTierPath, tierNames } from "./presets.js";
+import { normalizeBuiltInThemeName, presetNames, resolveBuiltInThemePath, resolvePresetPath, resolveTierPath, tierNames } from "./presets.js";
 import type {
   BaselineGeneratorElementToken,
   BaselineGeneratorTokens,
@@ -11,8 +11,9 @@ import type {
   DeriveBaselineTokensResult,
   ThemeConfig,
   ThemeElementConfig,
+  ThemeSurface,
+  ThemeSurfaceManifest,
   ThemeTokens,
-  TierOverride,
   TypographyToken
 } from "./types.js";
 
@@ -217,6 +218,54 @@ function inferBuiltInPresetName(resolvedConfigPath: string): BuiltInThemeName | 
   return undefined;
 }
 
+function inferSurfaceName(resolvedConfigPath: string): string {
+  const builtInName = inferBuiltInPresetName(resolvedConfigPath);
+  if (builtInName) {
+    return normalizeBuiltInThemeName(builtInName);
+  }
+
+  return path.parse(resolvedConfigPath).name;
+}
+
+function surfaceClassName(surfaceName: string): string | undefined {
+  return tierNames.includes(surfaceName as TierName) ? `bf-tier-${surfaceName}` : undefined;
+}
+
+function runtimeMetricsTokens(
+  baselineTokens: BaselineGeneratorTokens,
+  runtimeFontFiles: ThemeConfig["fontFiles"]
+): BaselineGeneratorTokens {
+  const metricFamilies = new Set(
+    Object.values(baselineTokens.elements)
+      .map(token => token.fontFamily)
+      .filter((family): family is string => typeof family === "string")
+  );
+
+  return {
+    ...baselineTokens,
+    fontFiles: runtimeFontFiles
+      .filter(fontFile => !fontFile.runtimeOnly)
+      .filter(fontFile => metricFamilies.size === 0 || metricFamilies.has(fontFile.family))
+      .map(fontFile => ({ ...fontFile }))
+  };
+}
+
+function buildSurfaceManifest(defaultSurface: string, surfaces: ThemeSurface[]): ThemeSurfaceManifest {
+  return {
+    defaultSurface,
+    surfaces: Object.fromEntries(
+      surfaces.map(surface => [surface.name, {
+        className: surface.className,
+        configPath: surface.configPath,
+        baselineConfigPath: surface.baselineConfigPath,
+        baselineTokensPath: surface.baselineTokensPath,
+        tokens: surface.tokens,
+        metrics: surface.metrics
+      }])
+    )
+  };
+}
+
 function buildZeroNudgeTierTokens(config: ThemeConfig): ThemeTokens {
   const roles: Record<string, TypographyToken> = {};
   const elements: Record<string, TypographyToken> = {};
@@ -273,9 +322,19 @@ function buildZeroNudgeTierTokens(config: ThemeConfig): ThemeTokens {
   };
 }
 
-async function buildComputedTierTokens(resolvedConfigPath: string, baselineDir: string): Promise<ThemeTokens> {
+async function buildThemeSurface(
+  name: string,
+  resolvedConfigPath: string,
+  baselineDir: string,
+  outputDir: string,
+  options: {
+    className?: string;
+    zeroNudge?: boolean;
+  } = {}
+): Promise<ThemeSurface> {
   const config = await readThemeConfig(resolvedConfigPath);
   const resolvedBaselineDir = path.resolve(baselineDir);
+  const resolvedOutputDir = path.resolve(outputDir);
 
   await ensureDirectory(resolvedBaselineDir);
 
@@ -289,32 +348,52 @@ async function buildComputedTierTokens(resolvedConfigPath: string, baselineDir: 
   );
 
   const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
-  return buildThemeTokens(config, baselineTokens);
+  const runtimeConfig: ThemeConfig = {
+    ...config,
+    fontFiles: createRuntimeFontFiles(config, resolvedConfigPath, resolvedOutputDir)
+  };
+
+  return {
+    name,
+    className: options.className,
+    configPath: resolvedConfigPath,
+    baselineConfigPath,
+    baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
+    tokens: options.zeroNudge ? buildZeroNudgeTierTokens(runtimeConfig) : buildThemeTokens(runtimeConfig, baselineTokens),
+    metrics: runtimeMetricsTokens(baselineTokens, runtimeConfig.fontFiles)
+  };
 }
 
-async function buildTierOverrides(resolvedConfigPath: string, baselineDir: string): Promise<TierOverride[]> {
-  const overrides: TierOverride[] = [];
-  const currentTier = inferBuiltInPresetName(resolvedConfigPath);
+async function buildRelatedTierSurfaces(
+  resolvedConfigPath: string,
+  currentSurfaceName: string,
+  baselineDir: string,
+  outputDir: string
+): Promise<ThemeSurface[]> {
+  if (!inferBuiltInPresetName(resolvedConfigPath)) {
+    return [];
+  }
+
+  const surfaces: ThemeSurface[] = [];
 
   for (const tierName of tierNames) {
-    if (tierName === currentTier || (currentTier === "prose" && tierName === "editorial") || (currentTier === "app-tier" && tierName === "app")) {
+    if (tierName === currentSurfaceName) {
       continue;
     }
 
-    const tierConfigPath = resolveTierPath(tierName);
-    const tierTokens = tierName === "app"
-      ? buildZeroNudgeTierTokens(await readThemeConfig(tierConfigPath))
-      : await buildComputedTierTokens(tierConfigPath, path.join(baselineDir, "tier-overrides", tierName));
-
-    overrides.push({
-      className: `bf-tier-${tierName}`,
-      roles: tierTokens.roles,
-      baselineUnit: tierTokens.baselineUnit,
-      tokens: tierTokens
-    });
+    surfaces.push(await buildThemeSurface(
+      tierName,
+      resolveTierPath(tierName),
+      path.join(baselineDir, "surfaces", tierName),
+      outputDir,
+      {
+        className: `bf-tier-${tierName}`,
+        zeroNudge: tierName === "app"
+      }
+    ));
   }
 
-  return overrides;
+  return surfaces;
 }
 
 async function buildTheme(
@@ -328,36 +407,48 @@ async function buildTheme(
   await ensureDirectory(resolvedDistDir);
   await ensureDirectory(resolvedBaselineDir);
 
-  const config = await readThemeConfig(resolvedConfigPath);
-  const runtimeConfig: ThemeConfig = {
-    ...config,
-    fontFiles: createRuntimeFontFiles(config, resolvedConfigPath, resolvedDistDir)
-  };
-  const baselineConfigPath = path.join(resolvedBaselineDir, "foundation-theme.baseline.json");
-  await fs.writeFile(
-    baselineConfigPath,
-    `${JSON.stringify(createBaselineConfig(config, resolvedConfigPath, baselineConfigPath), null, 2)}\n`,
-    "utf8"
+  const builtInName = inferBuiltInPresetName(resolvedConfigPath);
+  const defaultSurfaceName = inferSurfaceName(resolvedConfigPath);
+  const defaultSurface = await buildThemeSurface(
+    defaultSurfaceName,
+    resolvedConfigPath,
+    resolvedBaselineDir,
+    resolvedDistDir,
+    {
+      className: surfaceClassName(defaultSurfaceName),
+      zeroNudge: normalizeBuiltInThemeName(builtInName ?? defaultSurfaceName as BuiltInThemeName) === "app" && builtInName !== undefined
+    }
   );
-
-  const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
-  const tokens = buildThemeTokens(runtimeConfig, baselineTokens);
-  const tierOverrides = await buildTierOverrides(resolvedConfigPath, resolvedBaselineDir);
-  const css = generateFoundryCss(tokens, { presetName: inferBuiltInPresetName(resolvedConfigPath), tierOverrides });
+  const relatedSurfaces = await buildRelatedTierSurfaces(
+    resolvedConfigPath,
+    defaultSurfaceName,
+    resolvedBaselineDir,
+    resolvedDistDir
+  );
+  const surfaces = [defaultSurface, ...relatedSurfaces];
+  const surfaceManifest = buildSurfaceManifest(defaultSurfaceName, surfaces);
+  const css = generateFoundryCss(defaultSurface.tokens, {
+    presetName: builtInName,
+    themeSurfaces: surfaces.filter(surface => surface.className)
+  });
 
   const tokensPath = path.join(resolvedDistDir, "tokens.json");
   const cssPath = path.join(resolvedDistDir, "styles.css");
-  await fs.writeFile(tokensPath, `${JSON.stringify(tokens, null, 2)}\n`, "utf8");
+  const surfaceManifestPath = path.join(resolvedDistDir, "surfaces.json");
+  await fs.writeFile(tokensPath, `${JSON.stringify(defaultSurface.tokens, null, 2)}\n`, "utf8");
   await fs.writeFile(cssPath, css, "utf8");
+  await fs.writeFile(surfaceManifestPath, `${JSON.stringify(surfaceManifest, null, 2)}\n`, "utf8");
 
   return {
     configPath: resolvedConfigPath,
-    baselineConfigPath,
-    baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
+    baselineConfigPath: defaultSurface.baselineConfigPath,
+    baselineTokensPath: defaultSurface.baselineTokensPath,
     tokensPath,
     cssPath,
-    tokens,
-    css
+    surfaceManifestPath,
+    tokens: defaultSurface.tokens,
+    css,
+    surfaces: surfaceManifest
   };
 }
 

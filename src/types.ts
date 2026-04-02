@@ -118,14 +118,40 @@ export interface ThemeTokens {
   components: ComponentTokens;
 }
 
+export interface ThemeSurface {
+  name: string;
+  className?: string;
+  configPath: string;
+  baselineConfigPath: string;
+  baselineTokensPath: string;
+  tokens: ThemeTokens;
+  metrics: BaselineGeneratorTokens;
+}
+
+export interface ThemeSurfaceManifestEntry {
+  className?: string;
+  configPath: string;
+  baselineConfigPath: string;
+  baselineTokensPath: string;
+  tokens: ThemeTokens;
+  metrics: BaselineGeneratorTokens;
+}
+
+export interface ThemeSurfaceManifest {
+  defaultSurface: string;
+  surfaces: Record<string, ThemeSurfaceManifestEntry>;
+}
+
 export interface BuildThemeResult {
   configPath: string;
   baselineConfigPath: string;
   baselineTokensPath: string;
   tokensPath: string;
   cssPath: string;
+  surfaceManifestPath: string;
   tokens: ThemeTokens;
   css: string;
+  surfaces: ThemeSurfaceManifest;
 }
 
 export interface DeriveBaselineTokensResult {
@@ -133,11 +159,4 @@ export interface DeriveBaselineTokensResult {
   baselineConfigPath: string;
   baselineTokensPath: string;
   tokens: BaselineGeneratorTokens;
-}
-
-export interface TierOverride {
-  className: string;
-  roles: Record<string, TypographyToken>;
-  baselineUnit?: string;
-  tokens?: ThemeTokens;
 }

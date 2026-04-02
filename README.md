@@ -27,18 +27,25 @@ Build output includes:
 
 - `dist/styles.css`
 - `dist/tokens.json`
+- `dist/surfaces.json`
 - `dist/tiers/editorial/styles.css`
 - `dist/tiers/editorial/tokens.json`
+- `dist/tiers/editorial/surfaces.json`
 - `dist/tiers/documentation/styles.css`
 - `dist/tiers/documentation/tokens.json`
+- `dist/tiers/documentation/surfaces.json`
 - `dist/tiers/app/styles.css`
 - `dist/tiers/app/tokens.json`
+- `dist/tiers/app/surfaces.json`
 - `dist/presets/prose/styles.css`
 - `dist/presets/prose/tokens.json`
+- `dist/presets/prose/surfaces.json`
 - `dist/presets/panel/styles.css`
 - `dist/presets/panel/tokens.json`
+- `dist/presets/panel/surfaces.json`
 - `dist/presets/app-tier/styles.css`
 - `dist/presets/app-tier/tokens.json`
+- `dist/presets/app-tier/surfaces.json`
 - `dist/index.js`
 - `dist/build.js`
 
@@ -143,7 +150,7 @@ The baseline verification report is also written to:
 
 ## Theme Model
 
-The default theme uses Ubuntu Sans Variable and generates metric-driven typography tokens, spacing tokens, layout values, and component density tokens. Three first-class tiers plus one secondary preset:
+The default theme uses Ubuntu Sans Variable and generates metric-driven typography tokens, spacing tokens, layout values, component density tokens, and a published surface manifest. Three first-class tiers plus one secondary preset:
 
 | Tier/Preset | Purpose |
 |---|---|
@@ -154,7 +161,33 @@ The default theme uses Ubuntu Sans Variable and generates metric-driven typograp
 
 Legacy aliases: `prose` → editorial, `app-tier` → app.
 
-Runtime contract: tier choice is top-level (`.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`), engine choice is separate (`.bf-engine-metrics`, `.bf-engine-cap`). Editorial keeps element-owned compensation; app-tier follows zero nudges, zero semantic spacing, container-owned gaps.
+Independent surface contract:
+
+- each built-in tier emits a complete scoped token surface instead of inheriting editorial defaults through diffs
+- tier choice is a top-level class on any `.bf-theme` container: `.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`
+- multiple containers can coexist side by side under the same stylesheet
+- `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface
+- `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest
+
+Example:
+
+```html
+<section class="bf-theme bf-tier-editorial">
+	<div class="bf-prose">
+		<h1>Editorial surface</h1>
+		<p>Metric-derived nudges stay on.</p>
+	</div>
+</section>
+
+<section class="bf-theme bf-tier-app">
+	<div class="bf-prose">
+		<h1>App surface</h1>
+		<p>Runtime nudges are zeroed, but the stored font metrics still exist in surfaces.json.</p>
+	</div>
+</section>
+```
+
+Engine choice remains separate: `.bf-engine-metrics` is the default production path, `.bf-engine-cap` is demo-only.
 
 See `config/tiers/` and `config/presets/` for the source configs.
 
@@ -184,18 +217,25 @@ Static assets:
 
 - `baseline-foundry/styles.css`
 - `baseline-foundry/tokens.json`
+- `baseline-foundry/surfaces.json`
 - `baseline-foundry/tiers/editorial.css`
 - `baseline-foundry/tiers/editorial.tokens.json`
+- `baseline-foundry/tiers/editorial.surfaces.json`
 - `baseline-foundry/tiers/documentation.css`
 - `baseline-foundry/tiers/documentation.tokens.json`
+- `baseline-foundry/tiers/documentation.surfaces.json`
 - `baseline-foundry/tiers/app.css`
 - `baseline-foundry/tiers/app.tokens.json`
+- `baseline-foundry/tiers/app.surfaces.json`
 - `baseline-foundry/presets/prose.css`
 - `baseline-foundry/presets/prose.tokens.json`
+- `baseline-foundry/presets/prose.surfaces.json`
 - `baseline-foundry/presets/panel.css`
 - `baseline-foundry/presets/panel.tokens.json`
+- `baseline-foundry/presets/panel.surfaces.json`
 - `baseline-foundry/presets/app-tier.css`
 - `baseline-foundry/presets/app-tier.tokens.json`
+- `baseline-foundry/presets/app-tier.surfaces.json`
 
 ## Downstream Fonts
 
@@ -298,7 +338,7 @@ That does three things:
 
 1. writes the reduced baseline-generator input JSON
 2. runs `@lyubomir-popov/baseline-nudge-generator`
-3. emits `tokens.json` and `styles.css` for the downstream font
+3. emits `tokens.json`, `styles.css`, and `surfaces.json` for the downstream font or surface set
 
 ### Derive nudges only
 
@@ -333,7 +373,7 @@ import { generateFromConfig } from "@lyubomir-popov/baseline-nudge-generator";
 await generateFromConfig(".generated/baseline/ubuntu/ubuntu-foundry-theme.baseline.json", ".generated/baseline/ubuntu");
 ```
 
-The generated `tokens.json` then contains the derived metric nudges per element, including `nudgeTop`, which `baseline-foundry` turns into `--bf-metrics-start-nudge`.
+The generated `tokens.json` then contains the derived metric nudges per element, including `nudgeTop`, which `baseline-foundry` turns into the scoped `--bf-<role>-nudge-start` / `--bf-<role>-nudge-end` variables inside each emitted surface.
 
 ### Practical downstream advice
 

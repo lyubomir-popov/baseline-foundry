@@ -1,5 +1,5 @@
 import { foundryComponentColorVars } from "./vanilla-theme-colors.js";
-import type { ComponentTokens, ThemeTokens, TierOverride, TypographyToken } from "./types.js";
+import type { ComponentTokens, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
 
 function parseRemValue(rem: string): number {
   return Number.parseFloat(rem.replace("rem", ""));
@@ -94,7 +94,7 @@ function alignedVisualStart(lineHeightVar: string, visualSize: string, startVar:
   return `calc(${startVar} + ((${lineHeightVar} - ${visualSize}) / 2) + ${offset})`;
 }
 
-export function componentsCss(tokens: ThemeTokens, tierOverrides?: TierOverride[]): string {
+export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[]): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
@@ -207,25 +207,30 @@ ${foundryComponentColorVars("light")}
   margin-bottom: ${inputMarginBottom};
 }
 
-${(tierOverrides ?? []).map(override => {
+${(themeSurfaces ?? []).map(surface => {
+  if (!surface.className) {
+    return "";
+  }
+
   const tierRoles = ["body", "h4", "h5", "h6"] as const;
-  const bodyOverride = override.roles.body;
-  const overrideComponents = override.tokens?.components ?? components;
-  const inputBlockPadding = bodyOverride && parseRemValue(bodyOverride.nudgeTop) > 0
-    ? bodyOverride.nudgeTop
-    : overrideComponents.controlBlockPadding;
-  const tableRowPadding = bodyOverride && parseRemValue(bodyOverride.nudgeTop) > 0
-    ? bodyOverride.nudgeTop
-    : overrideComponents.controlCompactBlockPadding;
+  const surfaceTokens = surface.tokens;
+  const bodySurface = surfaceTokens.roles.body;
+  const surfaceComponents = surfaceTokens.components;
+  const inputBlockPadding = bodySurface && parseRemValue(bodySurface.nudgeTop) > 0
+    ? bodySurface.nudgeTop
+    : surfaceComponents.controlBlockPadding;
+  const tableRowPadding = bodySurface && parseRemValue(bodySurface.nudgeTop) > 0
+    ? bodySurface.nudgeTop
+    : surfaceComponents.controlCompactBlockPadding;
   const props = tierRoles.map(roleName => {
-    const overrideToken = override.roles[roleName];
-    if (!overrideToken) return "";
-    const bu = override.baselineUnit ?? baselineUnit;
-    const nt = parseRemValue(overrideToken.nudgeTop);
+    const surfaceRole = surfaceTokens.roles[roleName];
+    if (!surfaceRole) return "";
+    const bu = surfaceTokens.baselineUnit ?? baselineUnit;
+    const nt = parseRemValue(surfaceRole.nudgeTop);
     const endNudge = nt === 0 ? "0rem" : toRemLiteral(parseRemValue(bu) - nt);
-    return `  --bf-${roleName}-line-height: ${overrideToken.lineHeight};\n  --bf-${roleName}-nudge-start: ${overrideToken.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};`;
+    return `  --bf-${roleName}-line-height: ${surfaceRole.lineHeight};\n  --bf-${roleName}-nudge-start: ${surfaceRole.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};`;
   }).filter(Boolean).join("\n");
-  return `:where(.bf-theme.${override.className}) {\n  --bf-control-baseline-reserve: 0rem;\n  --bf-input-block-padding: ${inputBlockPadding};\n  --bf-button-block-padding: ${inputBlockPadding};\n  --bf-table-row-padding: ${tableRowPadding};\n${props}\n${componentAlignmentVars(overrideComponents)}\n}\n`;
+  return `:where(.bf-theme.${surface.className}) {\n  --bf-control-baseline-reserve: 0rem;\n  --bf-input-block-padding: ${inputBlockPadding};\n  --bf-button-block-padding: ${inputBlockPadding};\n  --bf-table-row-padding: ${tableRowPadding};\n${props}\n${componentAlignmentVars(surfaceComponents)}\n}\n`;
 }).join("\n")}
 
 :where(.bf-theme.is-dark),

@@ -2,6 +2,71 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Independent surface contract + metrics manifest (2026-04-02)
+
+- [x] Replaced the build-time tier override model with full scoped theme surfaces so `editorial`, `documentation`, and `app` each emit complete variable sets under their own `.bf-tier-*` container class.
+- [x] Added publishable `surfaces.json` artifacts to `dist/`, the built-in tier outputs, and the preset outputs so runtime tokens and the stored font-metric inputs live together in a downstream-safe manifest.
+- [x] Split app runtime tokens from app font metrics: `app` remains zero-nudge at runtime, but its computed metric nudges are still retained in the surface manifest for audit, comparison, and future multi-font surface work.
+- [x] Updated build validation and the canonical docs so the repo now describes independent surfaces as the target architecture instead of editorial-base diffs.
+
+## BF-only shell cleanup + resize signoff (2026-04-02)
+
+- [x] Removed the remaining `l-*` compatibility selectors from the application-shell/navigation/aside runtime and generated CSS, leaving the layout shell on `bf-*` selectors only.
+- [x] Updated `scripts/validate-build.ts` so build validation now asserts the bf-only shell selectors and rejects legacy `l-*` layout selectors in generated CSS.
+- [x] Fixed the application-shell resize-handle race by re-syncing `aria-valuenow` from the rendered aside width after the shell settles, which closes the `verifyPinnedAsideResize` blocker and returns the full `npm test` suite to green.
+
+## Top-navigation dropdown closure (2026-04-02)
+
+- [x] Audited Vanilla's navigation dropdown selectors and behavior before porting the next navigation parity slice.
+- [x] Extended `bf-top-navigation` runtime, generated CSS, and the standalone demo with dropdown toggles, layered desktop menus, inline mobile expansion, right-aligned account actions, and shared Escape / outside-click dismissal.
+- [x] Extended `scripts/validate-build.ts` and `scripts/verify-component-behavior.ts` so dropdown selectors, demo markup, and desktop/mobile interaction expectations are part of the repo contracts.
+- [x] Verified the slice with `npm run qa:components` plus a targeted Playwright top-navigation pass covering dropdown open/close, search/dropdown mutual exclusion, right-aligned dropdowns, and mobile Escape dismissal; the full `npm test` suite remains separately blocked by the application-shell resize assertion tracked in `docs/TODO.md`.
+
+## List-state + table-icon closure (2026-04-02)
+
+- [x] Audited Vanilla's `lists` state selectors, `table-icons` placeholder rules, and the shared grey success/error SVG definitions before porting the follow-through.
+- [x] Extended `bf-icon` with theme-aware success/error-grey glyphs and reused that geometry for `bf-list-item.is-ticked`, `bf-list-item.is-crossed`, and `bf-table` icon-placeholder cells.
+- [x] Updated the standalone `icon`, `list`, and `table` demos so the new states are dogfooded directly in the parity pages.
+- [x] Extended `scripts/validate-build.ts` with selector and demo assertions for the new icon, list, and table states.
+- [x] Verified the closure with both `npm test` and `npm run qa:components`; `icon`, `list`, and `table` now pass screenshot capture and baseline verification (`21`, `28`, and `9` checks respectively, `0` failures).
+
+## Icon parity slice (2026-04-02)
+
+- [x] Audited Vanilla's `icons` and `table-icons` Sass before porting, then scoped the first pass to the shared glyphs this repo already needed most: search, close, and directional chevrons.
+- [x] Shipped a reusable `bf-icon` primitive with Vanilla-style size modifiers and theme-aware embedded assets instead of scattering one-off icon rules across unrelated components.
+- [x] Added `demo/components/icon.html` plus the component index/catalog wiring so the new surface is visible alongside the rest of the parity suite.
+- [x] Extended `scripts/validate-build.ts` so icon selectors and the new demo page are part of the static contract checks.
+- [x] Verified the addition with both `npm test` and `npm run qa:components`; the new `icon` page passes screenshot capture and baseline verification (`19` icon checks, `0` failures).
+
+## Navigation + list parity burst (2026-04-01)
+
+- [x] Audited Vanilla navigation Sass, templates, and scripts before porting, then shipped a dedicated `bf-top-navigation` surface with responsive menu reveal, shared search-box integration, and desktop/mobile state sync instead of relying on app-shell helpers.
+- [x] Registered `top-navigation` in the component catalog, build validation, and behavior verification, then closed the remaining baseline drift by switching the divider treatment to an inset-shadow/header-row compensation model.
+- [x] Ported Vanilla basic/divided/ordered lists as `bf-list`, inline metadata lists as `bf-inline-list.is-middot`, and the accessibility skip-link pattern as `bf-skip-link`, each with standalone component demos and atlas/catalog wiring.
+- [x] Extended `scripts/validate-build.ts` and `scripts/verify-component-behavior.ts` so the new surfaces are part of static validation and skip-link activation/focus coverage.
+- [x] Closed the final list/inline-list residual by moving baseline probes onto the actual `li` boxes and making inline-list items measurable `inline-block` rows with nudge-derived block padding.
+- [x] Verified the burst with `npm test` and `npm run qa:components`; `top-navigation`, `list`, `inline-list`, and `skip-link` all pass baseline verification and screenshot capture.
+
+## Form atlas inspection page (2026-04-01)
+
+- [x] Added `demo/components/form-atlas.html`, a minimal manual verification surface with `bf-cluster` rows that start with a reference paragraph containing `test` and then place four compact form controls beside it.
+- [x] Registered the form atlas in the component index, shared page catalog, and component screenshot/baseline page list so it behaves like the rest of the demo suite.
+- [x] Aligned the atlas segmented-control markup with the baseline verifier coverage rules and re-ran `npm run test:components`; `form-atlas` now verifies cleanly and only the separate `table` flow-offset issue remains.
+- [x] Added a compact comparison row for paragraph vs. checkbox/radio/switch alignment and removed width-bearing atlas-cell wrappers there so the controls sit close together for visual inspection.
+- [x] Captured the compare row across editorial, documentation, app, and panel surfaces, root-caused the mismatch to missing body nudge padding on `bf-checkbox-label`, `bf-radio-label`, and `bf-switch-label`, and fixed those primitives in `src/css-components.ts`.
+- [x] Ran a second four-surface inspection pass, root-caused the remaining docs/app drift to raw-centered checkbox/radio box and switch-track offsets, switched those visuals to `alignedVisualStart(...)`, and re-verified that `tabs`, `panel-tabs`, `segmented-control`, `choice-row`, `inline-options`, `range`, and the updated tick/switch family all pass while only the separate `table` flow-offset residual remains.
+- [x] Expanded `form-atlas` into a one-page control-family inspection surface with left-reference rows for `tabs`, equal tabs, `choice-row`, `inline-options`, `range`, `file-input`, and `validation`; the atlas now verifies cleanly with `72` checks and no failures.
+- [x] Added a manual `table` specimen to `form-atlas` so the same inspection page now shows the table role too, while keeping that row out of the baseline gate until the standalone `table` flow-offset residual is fixed.
+- [x] Restored the canonical range rows to an inline editorial layout by adding `.bf-field.is-range`, switching the main slider demos away from forced `.is-stacked`, fixing the runtime fill variable name, and re-checking the updated editorial screenshots under `tmp/screenshots/slider-inline-check/`.
+- [x] Added the explicit narrow-width slider field variant via `.bf-field.is-range.is-stacked`, wired it into `range`, `form-atlas`, and `narrow-panel`, and re-verified the stacked editorial captures under `tmp/screenshots/slider-stacked-check/`.
+- [x] Closed the last inline range regression by making `.bf-field.is-range` a fixed two-column grid and the default `.bf-slider` a no-wrap row, then re-captured the affected editorial inline surfaces under `tmp/screenshots/slider-inline-recheck/`.
+- [x] Closed the final vertical slider regression by giving `.bf-form-label` the body nudge padding and top-aligning the inline slider row, which brought the editorial atlas measurements to `labelVsReference = 0` and `numberVsReference = 0`; confirmed in `tmp/screenshots/slider-inline-post-nudge/`.
+- [x] Finished the slider visual-alignment pass by replacing the temporary `--bf-slider-visual-shift` workaround with a thin native range-input model: the input itself now renders the `2px` rail, `--bf-slider-track-offset` places that rail on the active body line, the WebKit track stays transparent, and the runtime fill still comes from `--bf-slider-fill-percent`.
+- [x] Re-ran `npm run build`, `npm run test:components`, and the slider inspection captures under `tmp/screenshots/slider-visual-offset-check/` plus `tmp/screenshots/slider-geometry-inspect/`; the follow-up geometry script confirmed `trackTransform: none`, empty `sliderVisualShift`, and `rangeTop - labelTop = --bf-slider-track-offset` in both editorial and app, so the final slider signoff is complete and only the separate `table` flow-offset residual remains.
+- [x] Softened `thead th` from uppercase `h5` styling to bold body text so table headers read as labels instead of mini headings.
+- [x] Reworked the standalone `table` closure from the temporary row-start padding fix to the explicit symmetric row formula: table rows now use one padding value (`bodyNudge` in nudged tiers, compact fallback in `app`), keep the separator inside the row box as a real border, and solve line-height from `rowBlockSize − 2 × rowPadding − borderWidth`.
+- [x] Documented that compensated row model in `docs/TODO.md` as the reusable invariant for tables and other repeated rows where text sits between rules and `margin-bottom` is unavailable.
+
 ## Control-suite occupied-block rollout + demo alignment (2026-04-01)
 
 - [x] Extended the restored Vanilla-model occupied-block compensation from the focused button/input trial across the remaining padded, bordered control family.
@@ -128,7 +193,7 @@ Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and
 - [x] Split tier choice from baseline engine choice — tiers switch via `.bf-tier-*` class; cap engine demoted to `.bf-engine-cap` demo overlay
 - [x] Make `.bf-tier-app` a true zero-nudge, container-owned runtime line — layout containers reset child spacing; app tier overrides zero all nudges
 - [x] Simplify per-element CSS: literal values instead of 10-variable alignment chain; 3 component vars per role instead of 8
-- [x] Tier override pipeline: `TierOverride` type + `buildTierOverrides()` generates scoped overrides for all non-base tiers in a single stylesheet
+- [x] Tier override pipeline: `TierOverride` type + `buildTierOverrides()` generated scoped overrides for all non-base tiers in a single stylesheet at the time; this path is now superseded by the independent surface manifest recorded above.
 
 ### Phase 6 — Font switch + canonical alignment ✅
 
@@ -158,9 +223,9 @@ Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and
 - [x] Literal CSS values — no more 10-variable chain
 - [x] Layout container child reset (`bf-stack`, `bf-cluster`, `bf-stage-shell` children)
 - [x] Simplified component vars (8→3 per role)
-- [x] Tier overrides via class toggle (single stylesheet)
+- [x] Tier overrides via class toggle (single stylesheet at the time; later superseded by full independent scoped surfaces)
 - [x] Cap engine demoted to demo-only
-- [x] TierOverride pipeline in build.ts
+- [x] TierOverride pipeline in build.ts (later superseded by the full surface-manifest build path)
 
 ## User notes items completed (from AGENT-INBOX.md)
 

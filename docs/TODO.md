@@ -6,7 +6,7 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 
 ## Scope
 
-**In:** typography tokens, baseline-aligned typescale (all tiers), prose flow, element-owned editorial spacing, baseline utilities, section/strip rhythm, `bf-grid`/`bf-stack`/`bf-cluster`/`bf-section` layout primitives, spec-focused demo pages, all non-deprecated Vanilla components as `bf-*` ports, Ubuntu Sans default + IBM Plex brand-ops tier.
+**In:** typography tokens, baseline-aligned typescale (all tiers), prose flow, element-owned editorial spacing, baseline utilities, section/strip rhythm, `bf-grid`/`bf-stack`/`bf-cluster`/`bf-section` layout primitives, spec-focused demo pages, all non-deprecated Vanilla components as `bf-*` ports, Ubuntu Sans canonical built-ins, and adjacent metric-derived surfaces for additional fonts when needed.
 
 **Out:** documentation-site framing, compatibility alias layers, `ui-*` role classes, `data-*` CSS selectors, ad-hoc layout scaffolding.
 
@@ -47,7 +47,9 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 - **Layout container child reset** — `.bf-stack > *`, `.bf-cluster > *`, `.bf-stage-shell > *` reset `margin-bottom: 0; padding-block: 0;` (§5.3).
 - **Role-scoped typography vars** — root prose and body-sized components read tier-scoped family/size/weight/line-height vars instead of editorial literals.
 - **Tier-selectable control padding vars** — inputs/selects/buttons can resolve block padding from real body nudges in nudged tiers and fixed fallback padding in `app`; no target-height back-calculation or legacy control block-size tokens.
-- **Tier overrides via class toggle** — single editorial stylesheet with scoped `.bf-tier-app` / `.bf-tier-documentation` overrides. Tier switching = class toggle on `<body>`.
+- **Compensated row boxes for marginless repeats** — tables and similar text-between-rules rows use a fixed row box with an in-box border, nudge-derived padding, and a solved line-height instead of fake inset borders or zero-top padding hacks.
+- **Independent surface contract** — each built-in tier emits a complete scoped token surface (`.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`) instead of inheriting editorial defaults through diffs. Tier switching = class toggle on any `.bf-theme` container, and multiple containers can coexist side by side.
+- **Publishable surface manifest** — `dist/surfaces.json` stores every shipped surface's runtime tokens plus the font-metric artifact used to derive them. `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest.
 
 ### Control baseline-grid invariant
 
@@ -66,8 +68,25 @@ Consequences:
 - The `controlPadding()` back-calculation that previously existed was wrong — it reversed the causality (target height → derive padding) instead of letting consistent padding produce a natural height.
 - `bf-grid`: `4`/`8`/`16` columns, power-of-2 spans, `620px`/`1681px` thresholds.
 - Tier-first build: `editorial`, `documentation`, `app`.
-- Metrics-derived nudges default; `.bf-engine-cap` is demo-only; `.bf-tier-app` zeroes nudges.
-- Ubuntu Sans Variable for all tiers; IBM Plex reserved for brand-ops preset.
+- Metrics-derived nudges default; `.bf-engine-cap` is demo-only; `.bf-tier-app` zeroes runtime nudges but keeps stored metric data for audit and side-by-side comparison.
+- Ubuntu Sans Variable for the canonical built-ins; other fonts belong in their own metric-derived surfaces, not in override diffs.
+
+### Marginless row-box invariant
+
+Use this for **tables and any other repeated rows where text is sandwiched between rules and `margin-bottom` is unavailable**. This is the row analogue of the control invariant above.
+
+1. **Snap the row box, not the text node.** The repeated quantity is the cell or row border box because table rows and similar grouped rows cannot rely on inter-row margins.
+2. **Keep the separator inside the box.** Use a real border that participates in the row-height math instead of an inset shadow that visually adds a line without consuming layout space.
+3. **Use one symmetric row padding value.** General principle: in nudged tiers use the active body nudge; in zero-nudge tiers such as `app`, fall back to a fixed compact row padding value. Do not let the bottom padding collapse to a token that was never meant to be the row inset.
+4. **Solve line-height from the target row block size.** Formula: `rowLineHeight = rowBlockSize − (2 × rowPadding) − borderWidth`. Choose the row height first as an exact multiple of the baseline unit, then let the text line-height be the remainder after symmetric padding and the in-box border are accounted for.
+5. **Use a tier-specific fallback only when the tier intentionally abandons nudged alignment.** `app` can use a fixed compact row padding value instead of a body nudge, but the model stays the same: fixed row block size, symmetric padding, real in-box border, solved line-height.
+6. **Verify rows as boxes, then visually inspect the text.** Box checks prove row rhythm; visual inspection confirms the symmetric text sandwich remains correct.
+
+Consequences:
+- The reusable recipe is: `rowBlockSize = n × baselineUnit`, `rowPadding = bodyNudge` in nudged tiers or `compactRowPadding` in zero-nudge tiers, `rowLineHeight = rowBlockSize − 2 × rowPadding − borderWidth`.
+- This keeps the text visually centered between the rules and makes the border compensation explicit instead of hiding it in asymmetric padding.
+- The technique generalizes beyond tables to any stacked, ruled rows where the content lives between two lines and margin cannot carry the rhythm.
+- If the separator is only decorative and should not affect rhythm, keep it out of the box math; if it is the actual row boundary, it belongs inside the compensated row box.
 
 ## Spec conformance
 
@@ -77,12 +96,14 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Current follow-up
 
-- [ ] Table baseline residual — root-cause the remaining `table` flow-offset failures (`headings` and `body cells`) now that the padded-control occupied-block rollout is green.
+- Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
+- Next architecture follow-up: accept multi-font named surface registries in one build so IBM Plex or downstream white-label experiments can ship beside the canonical Ubuntu surfaces without reintroducing override coupling.
+- The latest parity burst now also closes Vanilla-style top-navigation dropdowns: `bf-top-navigation` ships desktop layered dropdown menus plus mobile inline expansion, static validation covers the new selectors and demo markup, `npm run qa:components` is green, and the new dropdown paths pass targeted Playwright verification.
+- Full repo `npm test` is green again after the application-shell resize-handle follow-up: the resizable-aside runtime now re-syncs `aria-valuenow` from the rendered aside width after the shell settles, so the behavior harness no longer races the first-load layout state.
+- Next downstream-demand parity gap is navigation mega-nav; broader link and form-surface follow-ups remain demand-driven.
 
 ### Audit findings (living-spec review)
 
-- [ ] **`l-*` alias cleanup in demos** — 4 demo files use Vanilla `l-*` layout classes (`l-application`, `l-navigation`, `l-aside`, `l-main`, etc.) instead of `bf-*` equivalents. Dogfooding rule requires `bf-*` only. Affected: `application-layout.html`, `application-shell.html`, `brand-layout-ops-sample.html`, `drawer-panel.html` (~25 instances).
-- [ ] **`l-*` dual selectors in CSS** — `css-app-tier.ts`, `css-grid.ts`, and 3 runtime TS files (`application-layout.ts`, `resizable-aside.ts`, `panel-drawer.ts`) emit dual `l-*` / `bf-*` selectors. Decide: keep as compatibility layer (document as intentional) or prune to `bf-*` only.
 - [ ] **`bf-theme--light` compatibility alias** — `css-components.ts:164` emits `.bf-theme.bf-theme--light` alongside `.bf-theme.is-light`. Inconsistent with `.is-dark` naming. Remove alias or document as deprecated.
 - [ ] **`bf-panel-logo` dead selector** — CSS references `.bf-panel-logo` in header flex rule (line 782) but no HTML ever uses it. Remove from CSS.
 - [ ] **`bf-label` redundant alias** — `bf-status-label` is duplicated as `bf-label` throughout `css-components.ts` (5 compound rules). Pick one name.
@@ -90,7 +111,8 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Pre-existing items
 
-- [ ] Tier token-surface audit — when adding new role or control properties, keep every tier explicit instead of relying on editorial defaults to fill gaps. The control-padding rollout fixed the body-size mismatch, but the broader completeness rule still needs a deliberate audit pass.
+- [ ] Surface completeness audit — when adding new role or control properties, land them in the explicit scoped surface blocks and `surfaces.json` manifest instead of letting editorial fallbacks fill the gap.
+- [ ] Multi-font surface registry — let one build ingest multiple named configs so alternate fonts can ship beside canonical tiers as first-class surfaces rather than preset aliases.
 - [ ] Parasite class sweep — remove remaining downstream component aliases
 - [ ] Baseline invariant validation — add missing build-time checks
 - [ ] Typographic specimen page — editorial multi-column layout demo at `demo/spec/typographic-specimen.html`
@@ -106,13 +128,6 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 | Priority | Gap | Pattern area |
 |---|---|---|
-| P1 | Top navigation bar (`.bf-top-navigation`) | navigation |
-| P1 | Icon class system (`.bf-icon.is-{name}` + size modifiers) | icons |
-| P1 | Basic + divided list (`.bf-list`, `.is-divided`) | lists |
-| P2 | Skip link (`.bf-skip-link`) — accessibility | links |
 | ~P2~ | ~Soft link (`.bf-link.is-soft`)~ | ~links~ | **Deprecated — not accessible, do not port** |
 | ~P2~ | ~Form layout modes (`.bf-form.is-inline`)~ | ~forms~ | **Superseded by `bf-cluster`** |
-| P2 | Inline list + middot (`.bf-inline-list`, `.is-middot`) | lists |
-| P3 | Table cell icon placeholder | table-icons |
-| P3 | Ticked/crossed list items | lists |
-| P3 | Navigation dropdowns | navigation |
+| P3 | Navigation mega-nav | navigation |
