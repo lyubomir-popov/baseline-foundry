@@ -853,7 +853,7 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 
 :where(.bf-theme) :where(.bf-actions.is-nowrap) {
   flex-wrap: nowrap;
-:where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {
+  overflow-x: auto;
   scrollbar-width: thin;
 }
 
@@ -867,22 +867,22 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
   color: var(--bf-color-text-default);
   display: flex;
   flex-direction: column;
-:where(.bf-theme) :where(.bf-status-label.is-positive) {
+  inline-size: 100%;
   max-inline-size: 100%;
   min-block-size: 0;
 }
 
-:where(.bf-theme) :where(.bf-status-label.is-caution) {
+:where(.bf-theme) :where(.bf-panel.is-fill) {
   max-inline-size: none;
   min-block-size: 100%;
   resize: none;
 }
-:where(.bf-theme) :where(.bf-status-label.is-information) {
+
 :where(.bf-theme) :where(.bf-panel-header) {
   align-items: start;
   border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
   display: flex;
-:where(.bf-theme) :where(.bf-status-label.is-negative) {
+  flex-wrap: wrap;
   gap: var(--bf-field-gap);
   justify-content: space-between;
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
@@ -1780,7 +1780,7 @@ ${typeStyles(h5, { includeCase: false })}  align-items: center;
   margin-inline-start: var(--bf-ui-chip-padding-inline);
 }
 
-  :where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {
+:where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {
   --bf-ui-status-background: color-mix(in srgb, var(--bf-color-background-alt) 70%, black);
   --bf-ui-status-color: var(--bf-color-button-positive-text);
   background-color: var(--bf-ui-status-background);
@@ -1794,22 +1794,22 @@ ${typeStyles(h5, { includeCase: false })}  margin: 0;
   white-space: nowrap;
 }
 
-  :where(.bf-theme) :where(.bf-status-label.is-positive) {
+:where(.bf-theme) :where(.bf-status-label.is-positive) {
   --bf-ui-status-background: var(--bf-color-border-positive);
   --bf-ui-status-color: var(--bf-color-button-positive-text);
 }
 
-  :where(.bf-theme) :where(.bf-status-label.is-caution) {
+:where(.bf-theme) :where(.bf-status-label.is-caution) {
   --bf-ui-status-background: var(--bf-color-border-caution);
   --bf-ui-status-color: #111111;
 }
 
-  :where(.bf-theme) :where(.bf-status-label.is-information) {
+:where(.bf-theme) :where(.bf-status-label.is-information) {
   --bf-ui-status-background: var(--bf-color-border-information);
   --bf-ui-status-color: var(--bf-color-button-positive-text);
 }
 
-  :where(.bf-theme) :where(.bf-status-label.is-negative) {
+:where(.bf-theme) :where(.bf-status-label.is-negative) {
   --bf-ui-status-background: var(--bf-color-border-negative);
   --bf-ui-status-color: var(--bf-color-button-negative-text);
 }
