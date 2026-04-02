@@ -27,3 +27,27 @@ body {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, #ff4f90 50%, var(--bf-color-rule));
   min-block-size: calc(var(--bf-baseline, 0.5rem) * 4);
 }
+
+.specimen-hero {
+  inline-size: min(100%, calc(var(--bf-measure, 40rem) * 1.2));
+}
+
+.specimen-meta {
+  gap: var(--bf-space-1, 0.5rem) var(--bf-space-2, 1rem);
+}
+
+.specimen-columns {
+  align-items: start;
+  display: grid;
+  gap: var(--bf-grid-gap-block, 1.5rem) var(--bf-grid-gap-inline, 1.5rem);
+}
+
+.specimen-column {
+  min-inline-size: 0;
+}
+
+@media (width >= 38.75rem) {
+  .specimen-columns {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+  }
+}

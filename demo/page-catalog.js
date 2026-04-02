@@ -7,7 +7,8 @@ export const overviewPages = [
 export const specChapterPages = [
   { title: "Typography chapter", href: "/demo/spec/typography.html" },
   { title: "Spacing chapter", href: "/demo/spec/spacing.html" },
-  { title: "Grid chapter", href: "/demo/spec/grid.html" }
+  { title: "Grid chapter", href: "/demo/spec/grid.html" },
+  { title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" }
 ];
 
 export const componentSections = [

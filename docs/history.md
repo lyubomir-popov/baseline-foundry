@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Typographic specimen chapter (2026-04-02)
+
+- [x] Added `demo/spec/typographic-specimen.html` as a new living-spec chapter with the shared tier-switching page chrome and a longer-form editorial specimen built from prose primitives instead of ad hoc framed surfaces.
+- [x] Extended `demo/spec-shell.css` with the responsive specimen layout helpers needed for the new two-column editorial chapter, while keeping the narrow fallback as a single-column flow.
+- [x] Registered the chapter in `demo/page-catalog.js`, updated the existing spec-chapter local nav links, and added build validation so the specimen page and page-catalog entry are now part of the static contract.
+
 ## Page chrome polish (2026-04-02)
 
 - [x] Tightened the shared `demo/page-chrome.css` contract so the `pc-controls` cluster no longer wraps onto two rows at roomy desktop widths.

@@ -632,6 +632,18 @@ function validateTopNavigationDemo(topNavigationHtml: string): void {
   assert(topNavigationHtml.includes("bf-top-navigation-dropdown is-right"), "Expected top-navigation.html to demo the right-aligned dropdown variant.");
 }
 
+function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml: string): void {
+  assert(pageCatalogJs.includes('{ title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" }'), "Expected the page catalog to register the typographic specimen chapter.");
+  assert(specimenHtml.includes('<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app">'), "Expected typographic-specimen.html to boot as a shared tier-switching spec page.");
+  assert(specimenHtml.includes('<main class="bf-page spec-shell" id="spec-grid-target">'), "Expected typographic-specimen.html to use the shared spec shell container.");
+  assert(specimenHtml.includes('<a href="./typographic-specimen.html" aria-current="page">Specimen</a>'), "Expected typographic-specimen.html to expose the current-page spec nav link.");
+  assert(specimenHtml.includes('class="bf-cluster specimen-meta"'), "Expected typographic-specimen.html to include the compact specimen metadata row.");
+  assert(specimenHtml.includes('class="specimen-columns"'), "Expected typographic-specimen.html to include the responsive multi-column specimen layout.");
+  assert(specimenHtml.includes('class="bf-prose specimen-column"'), "Expected typographic-specimen.html to use prose columns inside the specimen layout.");
+  assert(!specimenHtml.includes('bf-panel'), "Expected typographic-specimen.html to avoid decorative panel wrappers.");
+  assert(!specimenHtml.includes('bf-card'), "Expected typographic-specimen.html to avoid decorative card wrappers.");
+}
+
 async function main(): Promise<void> {
   const defaultTheme = await readThemeArtifacts(path.resolve("dist"));
   const editorialTier = await readThemeArtifacts(path.resolve("dist/tiers/editorial"));
@@ -641,12 +653,13 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml] = await Promise.all([
+  const [engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml, typographicSpecimenHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
     readTextArtifact(path.resolve("demo/component-shell.css")),
     readTextArtifact(path.resolve("demo/spec-shell.css")),
     readTextArtifact(path.resolve("demo/page-chrome.css")),
+    readTextArtifact(path.resolve("demo/page-catalog.js")),
     readTextArtifact(path.resolve("demo/controls-shell.css")),
     readTextArtifact(path.resolve("demo/components/application-layout.html")),
     readTextArtifact(path.resolve("demo/components/tabs.html")),
@@ -664,7 +677,8 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/code-snippet.html")),
     readTextArtifact(path.resolve("demo/components/skip-link.html")),
     readTextArtifact(path.resolve("index.html")),
-    readTextArtifact(path.resolve("demo/controls.html"))
+    readTextArtifact(path.resolve("demo/controls.html")),
+    readTextArtifact(path.resolve("demo/spec/typographic-specimen.html"))
   ]);
 
   runInvariant("Common CSS (default)", () => validateCommonCss(defaultTheme.css));
@@ -697,6 +711,7 @@ async function main(): Promise<void> {
   runInvariant("App tier demo (side-navigation)", () => validateAppTierDemoPage("side-navigation.html", sideNavigationHtml));
   runInvariant("Parity surface demos", () => validateParitySurfaceDemos(iconHtml, listHtml, tableHtml));
   runInvariant("Top navigation demo", () => validateTopNavigationDemo(topNavigationHtml));
+  runInvariant("Typographic specimen", () => validateTypographicSpecimen(pageCatalogJs, typographicSpecimenHtml));
   runInvariant("bf-only demo family", () => validateBfOnlyDemoFamily({
     applicationLayout: applicationLayoutHtml,
     tabs: tabsHtml,
