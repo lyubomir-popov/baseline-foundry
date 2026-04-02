@@ -124,7 +124,8 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 ### Current follow-up
 
 - Workflow modal upstreaming for `brand-layout-ops` now ships in `baseline-foundry`: `bf-modal.is-workflow` provides the canonical medium-large authoring shell with fixed header/footer bars and an internally scrolling body, while `bf-modal.is-workflow.is-resizable` adds optional resize without downstream-local modal sizing/layout CSS.
-- Highest-priority downstream follow-up is now top-navigation chevron spacing/animation: compare the current `brand-layout-ops` implementation against `baseline-foundry`, upstream any local arrow-spacing or motion fixes that still live downstream, and remove the text/crashing chevron behavior from the panel/app surfaces.
+- Top-navigation chevron spacing and motion parity now ships in `baseline-foundry`: closed dropdown toggles keep the chevron pointed downward, active toggles rotate it upward, and the shared contract now matches the downstream `brand-layout-ops` authoring shell without chevron-specific overrides.
+- Highest-priority non-downstream cleanup is now the `bf-panel` audit: the current generated surface is still more opinionated than Vanilla's real application-layout panels, so strip the hallucinated border/header/logo surface back to the canonical subset or remove it.
 - Engine smoke now ships as a single generated multi-font bundle at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that manifest through the shared page chrome so the 8rem/4rem cap-drift comparison can switch between `IBM Plex Sans` and `Ubuntu Sans` without changing route.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
 - Custom builds can now emit named sibling surfaces in one stylesheet + manifest via `buildThemeFromConfig({ surfaceLabel, additionalSurfaces })`, which closes the immediate multi-font registry follow-up for downstream white-label experiments.
@@ -154,10 +155,6 @@ Not adopted (taste-driven, already settled):
 Decision gate:
 
 - Do not replace the compensated metrics default with any cap-based mode until a four-way specimen exists and has been reviewed across at least IBM Plex Sans and Ubuntu Sans at body, `h2`, and `h1` scales.
-
-### New: top-navigation chevron cleanup (from inbox)
-
-- [ ] **Top-navigation chevron spacing and motion parity** — compare `brand-layout-ops` against `baseline-foundry`, upstream any local fixes for dropdown-chevron spacing and arrow animation, and remove the current text collision in the panel/app surfaces.
 
 ### Pre-existing items
 

@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Top-navigation chevron cleanup (2026-04-02)
+
+- [x] Matched the shared top-navigation dropdown chevron motion to the downstream `brand-layout-ops` contract: closed toggles now point downward and active toggles rotate upward.
+- [x] Removed the now-redundant desktop-only chevron rotation override from the shared CSS source by making the base top-navigation contract canonical across breakpoints.
+- [x] Tightened `validate-build.ts` so generated CSS now asserts the closed `0deg` and active `180deg` top-navigation chevron states directly.
+
 ## Workflow modal upstream contract (2026-04-02)
 
 - [x] Upstreamed the `brand-layout-ops` shell-modal behavior as an official `baseline-foundry` contract: `bf-modal.is-workflow` now provides the medium-large authoring shell with fixed header/footer bars and a scrolling body, and `bf-modal.is-workflow.is-resizable` adds optional resize.

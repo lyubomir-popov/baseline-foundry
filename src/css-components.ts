@@ -2605,12 +2605,12 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   position: absolute;
   right: var(--bf-top-navigation-link-padding-inline);
   top: 0;
-  transform: rotate(-90deg);
+  transform: rotate(0deg);
   transition: transform 160ms ease;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {
-  transform: rotate(0deg);
+  transform: rotate(180deg);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
@@ -2755,14 +2755,6 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link),
   :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page']) {
     box-shadow: inset 0 calc(var(--bf-border-width) * -2) 0 var(--bf-color-text-default);
-  }
-
-  :where(.bf-theme) :where(.bf-top-navigation-dropdown-toggle)::after {
-    transform: rotate(0deg);
-  }
-
-  :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {
-    transform: rotate(180deg);
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
