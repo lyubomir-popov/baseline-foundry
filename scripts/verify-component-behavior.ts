@@ -394,16 +394,17 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-dropdown-toggle");
       const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
       const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+      const searchElement = document.querySelector<HTMLElement>(".bf-top-navigation-search");
 
-      if (!(navigationElement instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+      if (!(navigationElement instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement) || !(searchElement instanceof HTMLElement)) {
         return null;
       }
 
       const dropdownStyles = getComputedStyle(dropdownElement);
 
       return {
-        menuOpen: navigationElement.classList.contains("has-menu-open"),
-        searchOpen: navigationElement.classList.contains("has-search-open"),
+        menuOpen: Array.from(navigationElement.querySelectorAll<HTMLElement>(".bf-top-navigation-menu-toggle")).some(toggle => toggle.getAttribute("aria-expanded") === "true"),
+        searchOpen: searchElement.getAttribute("aria-hidden") === "false",
         dropdownActive: dropdownItem.classList.contains("is-active"),
         expanded: dropdownToggle.getAttribute("aria-expanded"),
         hidden: dropdownElement.getAttribute("aria-hidden"),
@@ -439,8 +440,8 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       }
 
       return {
-        searchOpen: navigationElement.classList.contains("has-search-open"),
-        menuOpen: navigationElement.classList.contains("has-menu-open"),
+        searchOpen: searchElement.getAttribute("aria-hidden") === "false",
+        menuOpen: Array.from(navigationElement.querySelectorAll<HTMLElement>(".bf-top-navigation-menu-toggle")).some(toggle => toggle.getAttribute("aria-expanded") === "true"),
         searchHidden: searchElement.getAttribute("aria-hidden"),
         overlayHidden: overlayElement.getAttribute("aria-hidden"),
         activeElementTag: document.activeElement?.tagName ?? null,
@@ -477,8 +478,8 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       }
 
       return {
-        searchOpen: navigationElement.classList.contains("has-search-open"),
-        menuOpen: navigationElement.classList.contains("has-menu-open"),
+        searchOpen: searchElement.getAttribute("aria-hidden") === "false",
+        menuOpen: Array.from(navigationElement.querySelectorAll<HTMLElement>(".bf-top-navigation-menu-toggle")).some(toggle => toggle.getAttribute("aria-expanded") === "true"),
         searchHidden: searchElement.getAttribute("aria-hidden"),
         overlayHidden: overlayElement.getAttribute("aria-hidden")
       };
@@ -559,15 +560,16 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       const navigationElement = document.querySelector<HTMLElement>("#top-navigation-default");
       const navElement = document.querySelector<HTMLElement>(".bf-top-navigation-nav");
       const menuToggle = document.querySelector<HTMLElement>(".bf-top-navigation-menu-toggle");
+      const searchElement = document.querySelector<HTMLElement>(".bf-top-navigation-search");
 
-      if (!(navigationElement instanceof HTMLElement) || !(navElement instanceof HTMLElement) || !(menuToggle instanceof HTMLElement)) {
+      if (!(navigationElement instanceof HTMLElement) || !(navElement instanceof HTMLElement) || !(menuToggle instanceof HTMLElement) || !(searchElement instanceof HTMLElement)) {
         return null;
       }
 
       const navStyles = getComputedStyle(navElement);
       return {
-        menuOpen: navigationElement.classList.contains("has-menu-open"),
-        searchOpen: navigationElement.classList.contains("has-search-open"),
+        menuOpen: Array.from(navigationElement.querySelectorAll<HTMLElement>(".bf-top-navigation-menu-toggle")).some(toggle => toggle.getAttribute("aria-expanded") === "true"),
+        searchOpen: searchElement.getAttribute("aria-hidden") === "false",
         navHidden: navElement.getAttribute("aria-hidden"),
         navDisplay: navStyles.display,
         expanded: menuToggle.getAttribute("aria-expanded")
@@ -591,16 +593,17 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-dropdown-toggle");
       const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
       const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+      const searchElement = document.querySelector<HTMLElement>(".bf-top-navigation-search");
 
-      if (!(navigationElement instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+      if (!(navigationElement instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement) || !(searchElement instanceof HTMLElement)) {
         return null;
       }
 
       const dropdownStyles = getComputedStyle(dropdownElement);
 
       return {
-        menuOpen: navigationElement.classList.contains("has-menu-open"),
-        searchOpen: navigationElement.classList.contains("has-search-open"),
+        menuOpen: Array.from(navigationElement.querySelectorAll<HTMLElement>(".bf-top-navigation-menu-toggle")).some(toggle => toggle.getAttribute("aria-expanded") === "true"),
+        searchOpen: searchElement.getAttribute("aria-hidden") === "false",
         dropdownActive: dropdownItem.classList.contains("is-active"),
         expanded: dropdownToggle.getAttribute("aria-expanded"),
         hidden: dropdownElement.getAttribute("aria-hidden"),
@@ -626,14 +629,15 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-dropdown-toggle");
       const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
       const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+      const searchElement = document.querySelector<HTMLElement>(".bf-top-navigation-search");
 
-      if (!(navigationElement instanceof HTMLElement) || !(navElement instanceof HTMLElement) || !(menuToggle instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+      if (!(navigationElement instanceof HTMLElement) || !(navElement instanceof HTMLElement) || !(menuToggle instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement) || !(searchElement instanceof HTMLElement)) {
         return null;
       }
 
       return {
-        menuOpen: navigationElement.classList.contains("has-menu-open"),
-        searchOpen: navigationElement.classList.contains("has-search-open"),
+        menuOpen: Array.from(navigationElement.querySelectorAll<HTMLElement>(".bf-top-navigation-menu-toggle")).some(toggle => toggle.getAttribute("aria-expanded") === "true"),
+        searchOpen: searchElement.getAttribute("aria-hidden") === "false",
         navHidden: navElement.getAttribute("aria-hidden"),
         expanded: menuToggle.getAttribute("aria-expanded"),
         dropdownActive: dropdownItem.classList.contains("is-active"),

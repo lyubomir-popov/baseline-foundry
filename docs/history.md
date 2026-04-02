@@ -13,6 +13,8 @@ Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and
 - [x] Removed the last surviving downstream validation aliases from `src/css-components.ts`: `.has-error`, `.has-success`, and `.has-warning` no longer mirror the canonical `is-*` validation state contract.
 - [x] Confirmed those aliases were not used anywhere in the demo or runtime sources before removal, so the cleanup closes dead compatibility surface rather than changing live markup expectations.
 - [x] Tightened `scripts/validate-build.ts` so generated CSS now fails if any of the removed `.has-*` validation aliases reappear.
+- [x] Removed the last live `has-*` helper classes from the BF demo/runtime surface: application layout now derives its shell from real child structure, side-navigation parent highlighting derives from nested `aria-current`, and top-navigation open state now lives in runtime state plus ARIA instead of root helper classes.
+- [x] Tightened `scripts/validate-build.ts` again so demo HTML and generated CSS now fail if `has-*` helper classes reappear anywhere in the BF authoring surface.
 
 ## Typographic specimen chapter (2026-04-02)
 

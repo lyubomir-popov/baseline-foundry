@@ -57,6 +57,7 @@ async function readTextArtifact(filePath: string): Promise<string> {
 function validateBfOnlyDemoPage(pageName: string, html: string): void {
   assert(html.includes('<body class="bf-theme is-dark"'), `Expected ${pageName} to dogfood the bf-theme root.`);
   assert(html.includes("data-component-capture"), `Expected ${pageName} to expose a data-component-capture root for screenshot and baseline tooling.`);
+  assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${pageName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated p-* markup and stay fully bf-* dogfooded.`);
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated vr-* markup and stay fully bf-* dogfooded.`);
 }
@@ -66,6 +67,7 @@ function validateAppTierDemoPage(pageName: string, html: string): void {
   assert(html.includes('<body class="bf-theme bf-tier-app is-light"'), `Expected ${pageName} to dogfood the bf-theme + bf-tier-app root.`);
   assert(html.includes("data-component-capture"), `Expected ${pageName} to expose a data-component-capture root for screenshot and baseline tooling.`);
   assert(!html.includes('is-dark'), `Expected ${pageName} to avoid the dark demo tone now that it is an app-tier parity surface.`);
+  assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${pageName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated p-* markup and stay fully bf-* dogfooded.`);
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated vr-* markup and stay fully bf-* dogfooded.`);
 }
@@ -81,6 +83,8 @@ async function validateComponentPageTierConsistency(componentDemoJs: string): Pr
 
   for (const fileName of componentPageNames) {
     const html = await readTextArtifact(path.join(componentDir, fileName));
+
+    assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${fileName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
 
     if (fileName === "engine-smoke.html") {
       assert(html.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to keep its experiment-specific stylesheet bundle.");
@@ -210,6 +214,7 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".has-error"), "Expected generated CSS to omit the deprecated has-error validation alias.");
   assert(!css.includes(".has-success"), "Expected generated CSS to omit the deprecated has-success validation alias.");
   assert(!css.includes(".has-warning"), "Expected generated CSS to omit the deprecated has-warning validation alias.");
+  assert(!/\.has-[a-z][a-z0-9-]*/.test(css), "Expected generated CSS to omit deprecated has-* helper selectors.");
   assert(css.includes(":where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)"), "Expected generated CSS to include card surfaces.");
   assert(css.includes(":where(.bf-segmented-control-button, .bf-tab-buttons-button)"), "Expected generated CSS to include segmented control buttons.");
   assert(css.includes(":where(.bf-breadcrumbs-items)"), "Expected generated CSS to include breadcrumb styling.");

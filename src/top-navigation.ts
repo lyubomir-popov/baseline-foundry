@@ -13,8 +13,6 @@ const MENU_TOGGLE_SELECTOR = ".bf-top-navigation-menu-toggle";
 const SEARCH_TOGGLE_SELECTOR = ".bf-top-navigation-search-toggle";
 const OVERLAY_SELECTOR = ".bf-top-navigation-search-overlay";
 const DROPDOWN_ACTIVE_CLASS = "is-active";
-const MENU_OPEN_CLASS = "has-menu-open";
-const SEARCH_OPEN_CLASS = "has-search-open";
 const LARGE_BREAKPOINT = "(min-width: 64.75rem)";
 
 let generatedIdCounter = 0;
@@ -22,6 +20,8 @@ let generatedIdCounter = 0;
 const lastMenuTriggerByRoot = new WeakMap<HTMLElement, HTMLElement>();
 const lastSearchTriggerByRoot = new WeakMap<HTMLElement, HTMLElement>();
 const lastDropdownTriggerByRoot = new WeakMap<HTMLElement, HTMLElement>();
+const menuOpenRoots = new WeakSet<HTMLElement>();
+const searchOpenRoots = new WeakSet<HTMLElement>();
 
 function queryAllWithinRoot<T extends Element>(root: ParentNode, selector: string): T[] {
   const elements = Array.from(root.querySelectorAll<T>(selector));
@@ -99,11 +99,29 @@ function isLargeViewport(target: HTMLElement): boolean {
 }
 
 function isMenuOpen(topNavigation: HTMLElement): boolean {
-  return topNavigation.classList.contains(MENU_OPEN_CLASS);
+  return menuOpenRoots.has(topNavigation);
 }
 
 function isSearchOpen(topNavigation: HTMLElement): boolean {
-  return topNavigation.classList.contains(SEARCH_OPEN_CLASS);
+  return searchOpenRoots.has(topNavigation);
+}
+
+function setMenuOpen(topNavigation: HTMLElement, isOpen: boolean): void {
+  if (isOpen) {
+    menuOpenRoots.add(topNavigation);
+    return;
+  }
+
+  menuOpenRoots.delete(topNavigation);
+}
+
+function setSearchOpen(topNavigation: HTMLElement, isOpen: boolean): void {
+  if (isOpen) {
+    searchOpenRoots.add(topNavigation);
+    return;
+  }
+
+  searchOpenRoots.delete(topNavigation);
 }
 
 function isDropdownOpen(dropdownItem: HTMLElement): boolean {
@@ -217,7 +235,8 @@ function closeAll(topNavigation: HTMLElement, restoreFocus: boolean): void {
   const hadMenuOpen = isMenuOpen(topNavigation);
   const hadDropdownOpen = hasOpenDropdown(topNavigation);
 
-  topNavigation.classList.remove(MENU_OPEN_CLASS, SEARCH_OPEN_CLASS);
+  setMenuOpen(topNavigation, false);
+  setSearchOpen(topNavigation, false);
   closeDropdowns(topNavigation);
   updateA11y(topNavigation);
 
@@ -241,9 +260,9 @@ function closeAll(topNavigation: HTMLElement, restoreFocus: boolean): void {
 }
 
 function openMenu(topNavigation: HTMLElement, trigger?: HTMLElement): void {
-  topNavigation.classList.remove(SEARCH_OPEN_CLASS);
+  setSearchOpen(topNavigation, false);
   closeDropdowns(topNavigation);
-  topNavigation.classList.add(MENU_OPEN_CLASS);
+  setMenuOpen(topNavigation, true);
   updateA11y(topNavigation);
 
   if (trigger) {
@@ -253,8 +272,8 @@ function openMenu(topNavigation: HTMLElement, trigger?: HTMLElement): void {
 
 function openSearch(topNavigation: HTMLElement, trigger?: HTMLElement): void {
   closeDropdowns(topNavigation);
-  topNavigation.classList.remove(MENU_OPEN_CLASS);
-  topNavigation.classList.add(SEARCH_OPEN_CLASS);
+  setMenuOpen(topNavigation, false);
+  setSearchOpen(topNavigation, true);
   updateA11y(topNavigation);
 
   if (trigger) {
@@ -270,7 +289,7 @@ function openDropdown(topNavigation: HTMLElement, trigger: HTMLElement): void {
     return;
   }
 
-  topNavigation.classList.remove(SEARCH_OPEN_CLASS);
+  setSearchOpen(topNavigation, false);
   closeDropdowns(topNavigation, dropdownItem);
   updateA11y(topNavigation);
   lastDropdownTriggerByRoot.set(topNavigation, trigger);
@@ -281,11 +300,11 @@ function syncInitialState(root: ParentNode): void {
     ensureRelationships(topNavigation);
 
     if (isLargeViewport(topNavigation)) {
-      topNavigation.classList.remove(MENU_OPEN_CLASS);
+      setMenuOpen(topNavigation, false);
     }
 
     if (isMenuOpen(topNavigation) && isSearchOpen(topNavigation)) {
-      topNavigation.classList.remove(MENU_OPEN_CLASS);
+      setMenuOpen(topNavigation, false);
     }
 
     if (isSearchOpen(topNavigation) || (!isLargeViewport(topNavigation) && !isMenuOpen(topNavigation))) {

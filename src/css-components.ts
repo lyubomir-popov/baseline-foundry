@@ -2494,7 +2494,7 @@ ${typeStyles(body, { fontWeight: 500, includeCase: false })}  align-items: cente
   min-inline-size: 0;
 }
 
-:where(.bf-theme) :where(.bf-top-navigation.has-menu-open, .bf-top-navigation.has-search-open) :where(.bf-top-navigation-nav) {
+:where(.bf-theme) :where(.bf-top-navigation-nav[aria-hidden='false']) {
   display: flex;
 }
 
@@ -2662,7 +2662,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   inline-size: 1rem;
 }
 
-:where(.bf-theme) :where(.bf-top-navigation.has-search-open) :where(.bf-top-navigation-search-toggle)::after {
+:where(.bf-theme) :where(.bf-top-navigation-search-toggle[aria-pressed='true'])::after {
   background-image: var(--bf-ui-icon-close);
 }
 
@@ -2678,11 +2678,11 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   padding-inline: var(--bf-top-navigation-link-padding-inline);
 }
 
-:where(.bf-theme) :where(.bf-top-navigation.has-search-open) :where(.bf-top-navigation-search) {
+:where(.bf-theme) :where(.bf-top-navigation-search[aria-hidden='false']) {
   display: block;
 }
 
-:where(.bf-theme) :where(.bf-top-navigation.has-search-open) :where(.bf-top-navigation-nav) > :where(.bf-top-navigation-list) {
+:where(.bf-theme) :where(.bf-top-navigation:has(.bf-top-navigation-search[aria-hidden='false'])) :where(.bf-top-navigation-nav) > :where(.bf-top-navigation-list) {
   display: none;
 }
 
@@ -2794,14 +2794,14 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
     z-index: 0;
   }
 
-  :where(.bf-theme) :where(.bf-top-navigation.has-search-open) :where(.bf-top-navigation-search-overlay) {
+  :where(.bf-theme) :where(.bf-top-navigation-search-overlay[aria-hidden='false']) {
     opacity: 0.5;
     pointer-events: auto;
     visibility: visible;
   }
 }
 
-:where(.bf-theme) :where(.bf-side-navigation-item.has-active-child) > :where(.bf-side-navigation-link) {
+:where(.bf-theme) :where(.bf-side-navigation-item:has(> .bf-side-navigation-list [aria-current='page']), .bf-side-navigation-item:has(> .bf-side-navigation-list [aria-current='true'])) > :where(.bf-side-navigation-link, .bf-side-navigation-accordion-button) {
   color: var(--bf-color-text-default);
 }
 
@@ -3574,8 +3574,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   width: 100%;
 }
 
-:where(.bf-theme) :where(.bf-application.has-navigation),
-:where(.bf-theme) :where(.bf-application):has(> .bf-navigation) {
+:where(.bf-theme) :where(.bf-application:has(> .bf-navigation)) {
   grid-template-areas:
     "navigation-bar"
     "main"
@@ -3668,8 +3667,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   padding-inline: calc(var(--bf-baseline) * 1.25);
 }
 
-:where(.bf-theme) :where(.bf-application.has-pinned-aside),
-:where(.bf-theme) :where(.bf-application):has(> .bf-aside.is-pinned) {
+:where(.bf-theme) :where(.bf-application:has(> .bf-aside.is-pinned:not(.is-collapsed))) {
   grid-template-areas: "main aside";
   grid-template-columns: minmax(0, 1fr) minmax(0, var(--bf-application-aside-width));
   grid-template-rows: minmax(0, 1fr);
@@ -3795,8 +3793,8 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   z-index: 3;
 }
 
-:where(.bf-theme) :where(.bf-application.has-pinned-aside, .bf-application:has(> .bf-aside.is-pinned))
-  :where(.bf-aside.is-pinned)
+:where(.bf-theme) :where(.bf-application:has(> .bf-aside.is-pinned:not(.is-collapsed)))
+  :where(.bf-aside.is-pinned:not(.is-collapsed))
   > :where(.bf-application-aside-resize-handle) {
   display: block;
 }
@@ -3825,8 +3823,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 @media (min-width: 64.75rem) {
-  :where(.bf-theme) :where(.bf-application.has-navigation),
-  :where(.bf-theme) :where(.bf-application):has(> .bf-navigation) {
+  :where(.bf-theme) :where(.bf-application:has(> .bf-navigation)) {
     grid-template-areas:
       "navigation-bar navigation-bar"
       "navigation main";
@@ -3834,9 +3831,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     grid-template-rows: min-content minmax(0, 1fr);
   }
 
-  :where(.bf-theme) :where(.bf-application.has-navigation.has-pinned-aside),
-  :where(.bf-theme) :where(.bf-application.has-navigation):has(> .bf-aside.is-pinned),
-  :where(.bf-theme) :where(.bf-application:has(> .bf-navigation)):has(> .bf-aside.is-pinned) {
+  :where(.bf-theme) :where(.bf-application:has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed)) {
     grid-template-areas:
       "navigation-bar navigation-bar navigation-bar"
       "navigation main aside";
