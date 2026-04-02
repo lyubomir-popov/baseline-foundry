@@ -2,6 +2,14 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## IBM Plex large-type engine smoke (2026-04-02)
+
+- [x] Added a dedicated IBM Plex Sans experiment config with generated nudges for a deliberately aggressive scale: H1 `8rem / 9rem`, H2 `4rem / 5rem`, plus supporting smaller roles.
+- [x] Extended the theme build script so the experiment emits its own stylesheet, tokens, and surface manifest under `dist/experiments/ibm-plex-engine-smoke/`.
+- [x] Taught the shared component demo runtime to respect a page that pins a custom generated stylesheet through a locked manifest mode, so the shared header still works without resetting the page back to the default Ubuntu surfaces.
+- [x] Reworked `demo/components/engine-smoke.html` to load the IBM Plex experiment directly and focus the specimen on the cap-drift comparison at the oversized display steps.
+- [x] Verified the whole path with `npm test` and reopened the live demo page on the running Vite server.
+
 ## Independent surface contract + metrics manifest (2026-04-02)
 
 - [x] Replaced the build-time tier override model with full scoped theme surfaces so `editorial`, `documentation`, and `app` each emit complete variable sets under their own `.bf-tier-*` container class.

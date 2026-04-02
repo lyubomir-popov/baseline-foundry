@@ -96,6 +96,7 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Current follow-up
 
+- IBM Plex large-type engine smoke now ships as a dedicated generated experiment at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that stylesheet through the shared page chrome so the 8rem/4rem cap-drift comparison is always using calculated nudges from the IBM Plex font file.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
 - Next architecture follow-up: accept multi-font named surface registries in one build so IBM Plex or downstream white-label experiments can ship beside the canonical Ubuntu surfaces without reintroducing override coupling.
 - The latest parity burst now also closes Vanilla-style top-navigation dropdowns: `bf-top-navigation` ships desktop layered dropdown menus plus mobile inline expansion, static validation covers the new selectors and demo markup, `npm run qa:components` is green, and the new dropdown paths pass targeted Playwright verification.

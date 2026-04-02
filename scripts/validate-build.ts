@@ -264,7 +264,7 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(roleNames.length > 0, "Expected generated tokens to include typography roles.");
   assert(roles.body, 'Expected generated tokens to include a "body" role.');
   assert(roles.h1 && roles.h2 && roles.h3 && roles.h4 && roles.h5 && roles.h6, "Expected generated tokens to include the standard heading roles.");
-  assert(fontFiles.some(fontFile => fontFile.family === "ubuntu-sans"), "Expected generated tokens to include the Ubuntu Sans font.");
+  assert(fontFiles.length > 0, "Expected generated tokens to include at least one font file.");
   assert(components.borderWidth, "Expected generated tokens to include component border width.");
   assert(components.controlBlockPadding, "Expected generated tokens to include regular control block padding.");
   assert(components.controlCompactBlockPadding, "Expected generated tokens to include compact control block padding.");
@@ -313,6 +313,21 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(css.includes('.bf-h1'), "Expected the app-tier preset CSS to emit role utility selectors like the other presets.");
 }
 
+function validateIbmPlexEngineSmokeTheme(tokens: Record<string, unknown>, css: string): void {
+  const { roles, layout } = validateCommonTokens(tokens);
+  const fontFiles = (tokens.fontFiles ?? []) as Array<Record<string, unknown>>;
+
+  assert(fontFiles.some(fontFile => fontFile.family === "ibm-plex-sans"), "Expected the IBM Plex smoke tokens to include IBM Plex Sans font metadata.");
+  assert(roles.body.fontFamily === "ibm-plex-sans", "Expected the IBM Plex smoke body role to use IBM Plex Sans.");
+  assert(roles.h1.fontSize === "8rem", "Expected the IBM Plex smoke h1 role font size to be 8rem.");
+  assert(roles.h1.lineHeight === "9rem", "Expected the IBM Plex smoke h1 line height to be 9rem.");
+  assert(roles.h2.fontSize === "4rem", "Expected the IBM Plex smoke h2 role font size to be 4rem.");
+  assert(roles.h2.lineHeight === "5rem", "Expected the IBM Plex smoke h2 line height to be 5rem.");
+  assert(layout.contentMaxWidth === "120rem", "Expected the IBM Plex smoke surface to widen the page for the large comparison headings.");
+  assert(css.includes('font-family: "IBM Plex Sans";'), "Expected the IBM Plex smoke CSS to register the IBM Plex Sans family.");
+  assert(css.includes('IBMPlexSansVar-Roman.woff'), "Expected the IBM Plex smoke CSS to point to the IBM Plex Sans variable font asset.");
+}
+
 function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefaultSurface: string): void {
   const defaultSurface = manifest.defaultSurface;
   const surfaces = (manifest.surfaces ?? {}) as Record<string, Record<string, unknown>>;
@@ -333,6 +348,22 @@ function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefa
   assert(surfaces.app.className === "bf-tier-app", 'Expected the app surface to expose the bf-tier-app class hook.');
   assert(appRoles.body?.nudgeTop === "0rem", "Expected the app surface runtime tokens to stay zero-nudge.");
   assert(appMetricElements.body?.nudgeTop && appMetricElements.body.nudgeTop !== "0rem", "Expected the app surface metrics to retain the computed font-derived nudge data.");
+}
+
+function validateCustomSurfaceManifest(manifest: Record<string, unknown>, expectedDefaultSurface: string): void {
+  const defaultSurface = manifest.defaultSurface;
+  const surfaces = (manifest.surfaces ?? {}) as Record<string, Record<string, unknown>>;
+  const expectedSurface = surfaces[expectedDefaultSurface] ?? {};
+  const metrics = (expectedSurface.metrics ?? {}) as Record<string, unknown>;
+  const metricElements = (metrics.elements ?? {}) as Record<string, Record<string, unknown>>;
+
+  assert(defaultSurface === expectedDefaultSurface, `Expected surfaces.json to default to "${expectedDefaultSurface}".`);
+  assert(Object.keys(surfaces).length === 1, `Expected the custom experiment manifest to expose exactly one surface, got ${Object.keys(surfaces).length}.`);
+  assert(expectedSurface, `Expected surfaces.json to include the custom "${expectedDefaultSurface}" surface entry.`);
+  assert(metricElements.h1?.nudgeTop !== undefined, "Expected the custom experiment manifest to include the computed h1 metric entry.");
+  assert(metricElements.h2?.nudgeTop !== undefined, "Expected the custom experiment manifest to include the computed h2 metric entry.");
+  assert(metricElements.body?.nudgeTop && metricElements.body.nudgeTop !== "0rem", "Expected the custom experiment manifest to retain a non-zero body metric nudge.");
+  assert(metricElements.h3?.nudgeTop && metricElements.h3.nudgeTop !== "0rem", "Expected the custom experiment manifest to retain a non-zero intermediate heading nudge.");
 }
 
 function validateDocumentationTheme(tokens: Record<string, unknown>, css: string): void {
@@ -492,7 +523,9 @@ function validatePanelTheme(tokens: Record<string, unknown>, css: string): void 
 }
 
 function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, componentShellCss: string, specShellCss: string): void {
-  assert(engineSmokeHtml.includes('<body class="bf-theme is-dark" data-component-capture>'), "Expected engine-smoke.html to dogfood the bf-theme root instead of the older vr-theme alias.");
+  assert(engineSmokeHtml.includes('<body class="bf-theme is-dark" data-component-capture data-page-surface-mode="locked-manifest">'), "Expected engine-smoke.html to pin the generated IBM Plex manifest while still using the shared component chrome.");
+  assert(engineSmokeHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to load the generated IBM Plex smoke stylesheet.");
+  assert(engineSmokeHtml.includes('H1 = 8rem / 9rem') && engineSmokeHtml.includes('H2 = 4rem / 5rem'), "Expected engine-smoke.html to describe the oversized IBM Plex comparison scale.");
   assert(engineSmokeHtml.includes('class="bf-engine-metrics bf-span-4"'), "Expected engine-smoke.html to include the metrics runtime contract on the first specimen section.");
   assert(engineSmokeHtml.includes('class="bf-engine-cap bf-span-4"'), "Expected engine-smoke.html to include the cap runtime contract on the second specimen section.");
   assert(!engineSmokeHtml.includes("bf-tier-app"), "Expected engine-smoke.html to stay off the app tier now that app UI follows the zero-nudge spacing contract.");
@@ -555,6 +588,7 @@ async function main(): Promise<void> {
   const prosePreset = await readThemeArtifacts(path.resolve("dist/presets/prose"));
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
+  const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
   const [engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
@@ -587,7 +621,6 @@ async function main(): Promise<void> {
   validateCommonCss(panelPreset.css);
   validateAppTierCss(appTier.css);
   validateAppTierCss(appTierPreset.css);
-
   validateDefaultTheme(defaultTheme.tokens, defaultTheme.css);
   validateDefaultTheme(editorialTier.tokens, editorialTier.css);
   validateDocumentationTheme(documentationTier.tokens, documentationTier.css);
@@ -595,6 +628,7 @@ async function main(): Promise<void> {
   validateDefaultTheme(prosePreset.tokens, prosePreset.css);
   validatePanelTheme(panelPreset.tokens, panelPreset.css);
   validateAppTierTheme(appTierPreset.tokens, appTierPreset.css);
+  validateIbmPlexEngineSmokeTheme(ibmPlexEngineSmoke.tokens, ibmPlexEngineSmoke.css);
   validateSurfaceManifest(defaultTheme.surfaces, "editorial");
   validateSurfaceManifest(editorialTier.surfaces, "editorial");
   validateSurfaceManifest(documentationTier.surfaces, "documentation");
@@ -602,6 +636,7 @@ async function main(): Promise<void> {
   validateSurfaceManifest(prosePreset.surfaces, "editorial");
   validateSurfaceManifest(panelPreset.surfaces, "panel");
   validateSurfaceManifest(appTierPreset.surfaces, "app");
+  validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke");
   validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss);
   validateLivingSpecHome(demoIndexHtml);
   validateLivingSpecControls(demoControlsHtml, controlsShellCss);

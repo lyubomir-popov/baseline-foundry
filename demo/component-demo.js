@@ -8,6 +8,92 @@ const SURFACE_OPTIONS = [
   { value: "panel", label: "Panel" }
 ];
 
+function isLockedManifestMode() {
+  return document.body.dataset.pageSurfaceMode === "locked-manifest";
+}
+
+function titleCaseSurface(value) {
+  if (value === "ibm-plex-engine-smoke") {
+    return "IBM Plex";
+  }
+
+  return value
+    .split(/[-_]/g)
+    .map(part => {
+      const lower = part.toLowerCase();
+      if (lower === "ibm") {
+        return "IBM";
+      }
+
+      if (lower === "app") {
+        return "App";
+      }
+
+      if (lower === "documentation") {
+        return "Docs";
+      }
+
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join(" ");
+}
+
+function surfaceManifestHref(stylesheetLink) {
+  return stylesheetLink.href.replace(/styles\.css(?:\?.*)?$/i, "surfaces.json");
+}
+
+async function loadSurfaceManifest(stylesheetLink) {
+  const response = await fetch(surfaceManifestHref(stylesheetLink), { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Unable to load the component surface manifest (${response.status}).`);
+  }
+
+  return response.json();
+}
+
+function manifestSurfaceOptions(manifest) {
+  const surfaces = manifest?.surfaces ?? {};
+  return Object.keys(surfaces).map(name => ({
+    value: name,
+    label: titleCaseSurface(name)
+  }));
+}
+
+function detectManifestSurface(manifest) {
+  const surfaces = manifest?.surfaces ?? {};
+  const bodySurface = document.body.dataset.bfTier;
+
+  if (bodySurface && surfaces[bodySurface]) {
+    return bodySurface;
+  }
+
+  for (const [name, surface] of Object.entries(surfaces)) {
+    if (surface && typeof surface === "object" && typeof surface.className === "string" && document.body.classList.contains(surface.className)) {
+      return name;
+    }
+  }
+
+  return manifest?.defaultSurface ?? Object.keys(surfaces)[0] ?? "editorial";
+}
+
+function applyManifestSurface(surfaceName, manifest, stylesheetLink) {
+  const surfaces = manifest?.surfaces ?? {};
+  const selectedSurface = surfaces[surfaceName];
+  const classNames = Object.values(surfaces)
+    .map(surface => surface?.className)
+    .filter(className => typeof className === "string");
+
+  stylesheetLink.href = stylesheetLink.dataset.lockedHref ?? stylesheetLink.href;
+  document.body.classList.remove(...classNames);
+  document.body.classList.add("bf-theme");
+
+  if (selectedSurface && typeof selectedSurface.className === "string") {
+    document.body.classList.add(selectedSurface.className);
+  }
+
+  document.body.dataset.bfTier = surfaceName;
+}
+
 function resolveStylesheetLink() {
   return Array.from(document.querySelectorAll("link[rel='stylesheet']")).find(link => {
     if (!(link instanceof HTMLLinkElement)) {
@@ -73,89 +159,134 @@ function baselineShouldDefaultToOn(surface) {
   return surface === "editorial";
 }
 
-const stylesheetLink = resolveStylesheetLink();
+async function initLockedManifestMode(stylesheetLink) {
+  stylesheetLink.dataset.lockedHref = stylesheetLink.href;
+  const manifest = await loadSurfaceManifest(stylesheetLink);
+  const initialSurface = detectManifestSurface(manifest);
+  applyManifestSurface(initialSurface, manifest, stylesheetLink);
 
-if (!(stylesheetLink instanceof HTMLLinkElement)) {
-  throw new Error("Unable to find the component page stylesheet link.");
-}
-
-const initialSurface = detectSurface(stylesheetLink);
-applySurface(initialSurface, stylesheetLink);
-const chrome = injectPageChrome({
-  controls: {
-    selectedTier: initialSurface,
-    showBaseline: true,
-    showTone: true,
-    tierAriaLabel: "Surface",
-    tierOptions: SURFACE_OPTIONS
-  },
-  currentPath: window.location.pathname,
-  wrapBodyContent: true
-});
-
-let captureTarget = document.querySelector("[data-component-capture]") ?? document.body;
-if (captureTarget === document.body && chrome.contentWrapper instanceof HTMLElement) {
-  document.body.removeAttribute("data-component-capture");
-  chrome.contentWrapper.setAttribute("data-component-capture", "");
-  captureTarget = chrome.contentWrapper;
-}
-
-const captureTargetId = ensureTargetId(captureTarget, "component-grid-target");
-
-let baselineMode = "auto";
-
-if (chrome.baselineToggle instanceof HTMLInputElement && captureTargetId) {
-  chrome.baselineToggle.setAttribute("aria-controls", captureTargetId);
-  chrome.baselineToggle.dataset.baselineDefault = baselineShouldDefaultToOn(initialSurface) ? "on" : "off";
-}
-
-initBaselineGridToggles({
-  defaultEnabled: true,
-  toggleSelector: "[data-page-chrome-baseline-toggle][aria-controls]"
-});
-
-if (chrome.toneToggle instanceof HTMLInputElement) {
-  chrome.toneToggle.checked = currentTone() === "dark";
-  chrome.toneToggle.addEventListener("change", event => {
-    const nextTone = event.currentTarget instanceof HTMLInputElement && event.currentTarget.checked ? "dark" : "light";
-    applyTone(nextTone, chrome.baselineToggle);
+  const chrome = injectPageChrome({
+    controls: {
+      selectedTier: initialSurface,
+      showBaseline: true,
+      showTone: true,
+      tierAriaLabel: "Surface",
+      tierOptions: manifestSurfaceOptions(manifest)
+    },
+    currentPath: window.location.pathname,
+    wrapBodyContent: true
   });
+
+  return {
+    chrome,
+    initialSurface,
+    applySurface: surface => applyManifestSurface(surface, manifest, stylesheetLink),
+    baselineShouldDefaultToOn: surface => surface !== "app"
+  };
 }
 
-if (chrome.baselineToggle instanceof HTMLInputElement) {
-  chrome.baselineToggle.addEventListener("change", () => {
-    baselineMode = "manual";
+function initDefaultMode(stylesheetLink) {
+  const initialSurface = detectSurface(stylesheetLink);
+  applySurface(initialSurface, stylesheetLink);
+  const chrome = injectPageChrome({
+    controls: {
+      selectedTier: initialSurface,
+      showBaseline: true,
+      showTone: true,
+      tierAriaLabel: "Surface",
+      tierOptions: SURFACE_OPTIONS
+    },
+    currentPath: window.location.pathname,
+    wrapBodyContent: true
   });
+
+  return {
+    chrome,
+    initialSurface,
+    applySurface: surface => applySurface(surface, stylesheetLink),
+    baselineShouldDefaultToOn
+  };
 }
 
-if (chrome.tierSelect instanceof HTMLSelectElement) {
-  chrome.tierSelect.addEventListener("change", event => {
-    if (!(event.currentTarget instanceof HTMLSelectElement)) {
-      return;
-    }
+async function main() {
+  const stylesheetLink = resolveStylesheetLink();
 
-    const nextSurface = event.currentTarget.value;
-    applySurface(nextSurface, stylesheetLink);
+  if (!(stylesheetLink instanceof HTMLLinkElement)) {
+    throw new Error("Unable to find the component page stylesheet link.");
+  }
 
-    if (chrome.baselineToggle instanceof HTMLInputElement && baselineMode === "auto") {
-      chrome.baselineToggle.checked = baselineShouldDefaultToOn(nextSurface);
-      chrome.baselineToggle.dispatchEvent(new Event("change"));
-    }
+  const runtime = isLockedManifestMode()
+    ? await initLockedManifestMode(stylesheetLink)
+    : initDefaultMode(stylesheetLink);
+
+  const { chrome, initialSurface } = runtime;
+
+  let captureTarget = document.querySelector("[data-component-capture]") ?? document.body;
+  if (captureTarget === document.body && chrome.contentWrapper instanceof HTMLElement) {
+    document.body.removeAttribute("data-component-capture");
+    chrome.contentWrapper.setAttribute("data-component-capture", "");
+    captureTarget = chrome.contentWrapper;
+  }
+
+  const captureTargetId = ensureTargetId(captureTarget, "component-grid-target");
+
+  let baselineMode = "auto";
+
+  if (chrome.baselineToggle instanceof HTMLInputElement && captureTargetId) {
+    chrome.baselineToggle.setAttribute("aria-controls", captureTargetId);
+    chrome.baselineToggle.dataset.baselineDefault = runtime.baselineShouldDefaultToOn(initialSurface) ? "on" : "off";
+  }
+
+  initBaselineGridToggles({
+    defaultEnabled: true,
+    toggleSelector: "[data-page-chrome-baseline-toggle][aria-controls]"
   });
+
+  if (chrome.toneToggle instanceof HTMLInputElement) {
+    chrome.toneToggle.checked = currentTone() === "dark";
+    chrome.toneToggle.addEventListener("change", event => {
+      const nextTone = event.currentTarget instanceof HTMLInputElement && event.currentTarget.checked ? "dark" : "light";
+      applyTone(nextTone, chrome.baselineToggle);
+    });
+  }
+
+  if (chrome.baselineToggle instanceof HTMLInputElement) {
+    chrome.baselineToggle.addEventListener("change", () => {
+      baselineMode = "manual";
+    });
+  }
+
+  if (chrome.tierSelect instanceof HTMLSelectElement) {
+    chrome.tierSelect.addEventListener("change", event => {
+      if (!(event.currentTarget instanceof HTMLSelectElement)) {
+        return;
+      }
+
+      const nextSurface = event.currentTarget.value;
+      runtime.applySurface(nextSurface);
+
+      if (chrome.baselineToggle instanceof HTMLInputElement && baselineMode === "auto") {
+        chrome.baselineToggle.checked = runtime.baselineShouldDefaultToOn(nextSurface);
+        chrome.baselineToggle.dispatchEvent(new Event("change"));
+      }
+    });
+  }
+
+  initApplicationLayouts();
+  initCodeSnippets();
+  initContextualMenus();
+  initListTree();
+  initPanelDrawers();
+  initRangeControls();
+  initResizableAsides();
+  initSideNavigations();
+  initTopNavigations();
+  initTabs();
+  initTooltips();
+  initAccordions();
 }
 
-initApplicationLayouts();
-initCodeSnippets();
-initContextualMenus();
-initListTree();
-initPanelDrawers();
-initRangeControls();
-initResizableAsides();
-initSideNavigations();
-initTopNavigations();
-initTabs();
-initTooltips();
-initAccordions();
+void main();
 
 
 

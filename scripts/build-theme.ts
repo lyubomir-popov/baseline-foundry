@@ -3,6 +3,21 @@ import { isPresetName, isTierName, presetDescriptions, presetNames, tierDescript
 import type { PresetName } from "../src/presets.ts";
 import type { TierName } from "../src/presets.ts";
 
+const experimentBuilds = {
+  "ibm-plex-engine-smoke": {
+    description: "IBM Plex Sans large-type engine specimen with generated 8rem/4rem heading nudges.",
+    configPath: "config/experiments/ibm-plex-engine-smoke.json",
+    distDir: "dist/experiments/ibm-plex-engine-smoke",
+    baselineDir: "generated/baseline/experiments/ibm-plex-engine-smoke"
+  }
+} as const;
+
+type ExperimentName = keyof typeof experimentBuilds;
+
+function isExperimentName(value: string): value is ExperimentName {
+  return value in experimentBuilds;
+}
+
 async function main(): Promise<void> {
   const arg = process.argv[2];
 
@@ -37,6 +52,14 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (arg === "--list-experiments") {
+    console.log("Available experiments:");
+    for (const [name, build] of Object.entries(experimentBuilds)) {
+      console.log(`  ${name} - ${build.description}`);
+    }
+    return;
+  }
+
   if (arg && arg.startsWith("--preset=")) {
     const preset = arg.replace("--preset=", "");
     if (!isPresetName(preset)) {
@@ -46,6 +69,25 @@ async function main(): Promise<void> {
 
     const result = await buildThemeFromPreset(preset as PresetName);
     console.log(`Generated theme preset "${preset}"`);
+    console.log(`  tokens: ${result.tokensPath}`);
+    console.log(`  css:    ${result.cssPath}`);
+    console.log(`  surfaces: ${result.surfaceManifestPath}`);
+    return;
+  }
+
+  if (arg && arg.startsWith("--experiment=")) {
+    const experiment = arg.replace("--experiment=", "");
+    if (!isExperimentName(experiment)) {
+      console.error(`Unknown experiment "${experiment}". Use --list-experiments to see available experiments.`);
+      process.exit(1);
+    }
+
+    const build = experimentBuilds[experiment];
+    const result = await buildThemeFromConfig(build.configPath, {
+      distDir: build.distDir,
+      baselineDir: build.baselineDir
+    });
+    console.log(`Generated experiment "${experiment}"`);
     console.log(`  tokens: ${result.tokensPath}`);
     console.log(`  css:    ${result.cssPath}`);
     console.log(`  surfaces: ${result.surfaceManifestPath}`);
@@ -75,6 +117,17 @@ async function main(): Promise<void> {
     console.log(`  tokens: ${presetResult.tokensPath}`);
     console.log(`  css:    ${presetResult.cssPath}`);
     console.log(`  surfaces: ${presetResult.surfaceManifestPath}`);
+  }
+
+  for (const [name, build] of Object.entries(experimentBuilds)) {
+    const experimentResult = await buildThemeFromConfig(build.configPath, {
+      distDir: build.distDir,
+      baselineDir: build.baselineDir
+    });
+    console.log(`Generated experiment "${name}"`);
+    console.log(`  tokens: ${experimentResult.tokensPath}`);
+    console.log(`  css:    ${experimentResult.cssPath}`);
+    console.log(`  surfaces: ${experimentResult.surfaceManifestPath}`);
   }
 }
 
