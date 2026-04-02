@@ -2,10 +2,27 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "../src/baseline-grid-theme.js";
 
+let checkCount = 0;
+
 function assert(condition: unknown, message: string): asserts condition {
+  checkCount++;
   if (!condition) {
     throw new Error(message);
   }
+}
+
+function runInvariant(name: string, fn: () => void): void {
+  const before = checkCount;
+  fn();
+  const ran = checkCount - before;
+  console.log(`  \u2713 ${name}: ${ran} checks`);
+}
+
+async function runInvariantAsync(name: string, fn: () => Promise<void>): Promise<void> {
+  const before = checkCount;
+  await fn();
+  const ran = checkCount - before;
+  console.log(`  \u2713 ${name}: ${ran} checks`);
 }
 
 async function assertExists(filePath: string): Promise<void> {
@@ -349,6 +366,9 @@ function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefa
   assert(surfaces.editorial.className === "bf-tier-editorial", 'Expected the editorial surface to expose the bf-tier-editorial class hook.');
   assert(surfaces.documentation.className === "bf-tier-documentation", 'Expected the documentation surface to expose the bf-tier-documentation class hook.');
   assert(surfaces.app.className === "bf-tier-app", 'Expected the app surface to expose the bf-tier-app class hook.');
+  assert(surfaces.editorial.engine === "metrics-compensated", 'Expected the editorial surface engine to be "metrics-compensated".');
+  assert(surfaces.documentation.engine === "metrics-compensated", 'Expected the documentation surface engine to be "metrics-compensated".');
+  assert(surfaces.app.engine === "metrics-compensated", 'Expected the app surface engine to be "metrics-compensated".');
   assert(appRoles.body?.nudgeTop === "0rem", "Expected the app surface runtime tokens to stay zero-nudge.");
   assert(appMetricElements.body?.nudgeTop && appMetricElements.body.nudgeTop !== "0rem", "Expected the app surface metrics to retain the computed font-derived nudge data.");
 }
@@ -369,6 +389,7 @@ function validateCustomSurfaceManifest(manifest: Record<string, unknown>, expect
   assert(Object.keys(surfaces).length === 2, `Expected the custom experiment manifest to expose exactly two surfaces, got ${Object.keys(surfaces).length}.`);
   assert(expectedSurface, `Expected surfaces.json to include the custom "${expectedDefaultSurface}" surface entry.`);
   assert(expectedSurface.label === "IBM Plex Sans", "Expected the default custom experiment surface to expose the IBM Plex Sans label.");
+  assert(expectedSurface.engine === "metrics-compensated", 'Expected the custom experiment default surface engine to be "metrics-compensated".');
   assert(expectedMetricElements.h1?.nudgeTop !== undefined, "Expected the custom experiment manifest to include the computed h1 metric entry.");
   assert(expectedMetricElements.h2?.nudgeTop !== undefined, "Expected the custom experiment manifest to include the computed h2 metric entry.");
   assert(expectedMetricElements.body?.nudgeTop && expectedMetricElements.body.nudgeTop !== "0rem", "Expected the custom experiment manifest to retain a non-zero body metric nudge.");
@@ -633,37 +654,37 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/controls.html"))
   ]);
 
-  validateCommonCss(defaultTheme.css);
-  validateCommonCss(editorialTier.css);
-  validateCommonCss(documentationTier.css);
-  validateCommonCss(prosePreset.css);
-  validateCommonCss(panelPreset.css);
-  validateAppTierCss(appTier.css);
-  validateAppTierCss(appTierPreset.css);
-  validateDefaultTheme(defaultTheme.tokens, defaultTheme.css);
-  validateDefaultTheme(editorialTier.tokens, editorialTier.css);
-  validateDocumentationTheme(documentationTier.tokens, documentationTier.css);
-  validateAppTierTheme(appTier.tokens, appTier.css);
-  validateDefaultTheme(prosePreset.tokens, prosePreset.css);
-  validatePanelTheme(panelPreset.tokens, panelPreset.css);
-  validateAppTierTheme(appTierPreset.tokens, appTierPreset.css);
-  validateIbmPlexEngineSmokeTheme(ibmPlexEngineSmoke.tokens, ibmPlexEngineSmoke.css);
-  validateSurfaceManifest(defaultTheme.surfaces, "editorial");
-  validateSurfaceManifest(editorialTier.surfaces, "editorial");
-  validateSurfaceManifest(documentationTier.surfaces, "documentation");
-  validateSurfaceManifest(appTier.surfaces, "app");
-  validateSurfaceManifest(prosePreset.surfaces, "editorial");
-  validateSurfaceManifest(panelPreset.surfaces, "panel");
-  validateSurfaceManifest(appTierPreset.surfaces, "app");
-  validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke");
-  validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss);
-  validateLivingSpecHome(demoIndexHtml);
-  validateLivingSpecControls(demoControlsHtml, controlsShellCss);
-  validateAppTierDemoPage("application-layout.html", applicationLayoutHtml);
-  validateAppTierDemoPage("side-navigation.html", sideNavigationHtml);
-  validateParitySurfaceDemos(iconHtml, listHtml, tableHtml);
-  validateTopNavigationDemo(topNavigationHtml);
-  validateBfOnlyDemoFamily({
+  runInvariant("Common CSS (default)", () => validateCommonCss(defaultTheme.css));
+  runInvariant("Common CSS (editorial)", () => validateCommonCss(editorialTier.css));
+  runInvariant("Common CSS (documentation)", () => validateCommonCss(documentationTier.css));
+  runInvariant("Common CSS (prose preset)", () => validateCommonCss(prosePreset.css));
+  runInvariant("Common CSS (panel preset)", () => validateCommonCss(panelPreset.css));
+  runInvariant("App tier CSS (app)", () => validateAppTierCss(appTier.css));
+  runInvariant("App tier CSS (app preset)", () => validateAppTierCss(appTierPreset.css));
+  runInvariant("Default theme (default)", () => validateDefaultTheme(defaultTheme.tokens, defaultTheme.css));
+  runInvariant("Default theme (editorial)", () => validateDefaultTheme(editorialTier.tokens, editorialTier.css));
+  runInvariant("Documentation theme", () => validateDocumentationTheme(documentationTier.tokens, documentationTier.css));
+  runInvariant("App tier theme (app)", () => validateAppTierTheme(appTier.tokens, appTier.css));
+  runInvariant("Default theme (prose preset)", () => validateDefaultTheme(prosePreset.tokens, prosePreset.css));
+  runInvariant("Panel theme", () => validatePanelTheme(panelPreset.tokens, panelPreset.css));
+  runInvariant("App tier theme (app preset)", () => validateAppTierTheme(appTierPreset.tokens, appTierPreset.css));
+  runInvariant("IBM Plex engine smoke theme", () => validateIbmPlexEngineSmokeTheme(ibmPlexEngineSmoke.tokens, ibmPlexEngineSmoke.css));
+  runInvariant("Surface manifest (default)", () => validateSurfaceManifest(defaultTheme.surfaces, "editorial"));
+  runInvariant("Surface manifest (editorial)", () => validateSurfaceManifest(editorialTier.surfaces, "editorial"));
+  runInvariant("Surface manifest (documentation)", () => validateSurfaceManifest(documentationTier.surfaces, "documentation"));
+  runInvariant("Surface manifest (app)", () => validateSurfaceManifest(appTier.surfaces, "app"));
+  runInvariant("Surface manifest (prose preset)", () => validateSurfaceManifest(prosePreset.surfaces, "editorial"));
+  runInvariant("Surface manifest (panel preset)", () => validateSurfaceManifest(panelPreset.surfaces, "panel"));
+  runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
+  runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
+  runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss));
+  runInvariant("Living spec home", () => validateLivingSpecHome(demoIndexHtml));
+  runInvariant("Living spec controls", () => validateLivingSpecControls(demoControlsHtml, controlsShellCss));
+  runInvariant("App tier demo (application-layout)", () => validateAppTierDemoPage("application-layout.html", applicationLayoutHtml));
+  runInvariant("App tier demo (side-navigation)", () => validateAppTierDemoPage("side-navigation.html", sideNavigationHtml));
+  runInvariant("Parity surface demos", () => validateParitySurfaceDemos(iconHtml, listHtml, tableHtml));
+  runInvariant("Top navigation demo", () => validateTopNavigationDemo(topNavigationHtml));
+  runInvariant("bf-only demo family", () => validateBfOnlyDemoFamily({
     applicationLayout: applicationLayoutHtml,
     tabs: tabsHtml,
     panelTabs: panelTabsHtml,
@@ -679,9 +700,9 @@ async function main(): Promise<void> {
     listTree: listTreeHtml,
     codeSnippet: codeSnippetHtml,
     skipLink: skipLinkHtml
-  });
+  }));
 
-  console.log("Build validation passed.");
+  console.log(`\nBuild validation passed: ${checkCount} total checks.`);
 }
 
 main().catch(error => {

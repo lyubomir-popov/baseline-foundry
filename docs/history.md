@@ -2,6 +2,19 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Pragma-informed repo health pass (2026-04-02)
+
+- [x] Replaced the review-only Pragma comparison plan with an executed repo-health plan filtered to non-opinionated improvements only.
+- [x] Added `engine` field to `ThemeSurface` and `ThemeSurfaceManifestEntry` types; threaded through `buildThemeSurface` and the manifest builder so all entries in `surfaces.json` now declare their alignment engine (`metrics-compensated`).
+- [x] Added explicit spacing ontology to `docs/TODO.md` architecture section: element-owned (editorial/documentation) vs container-owned (app) as named first-class concepts.
+- [x] Refactored `validate-build.ts` with `runInvariant` wrappers so each validation group prints a named label and check count (31 groups, 1516+ total checks).
+- [x] Extracted the baseline-grid debug overlay into `src/baseline-grid-overlay.ts` (`generateBaselineGridOverlayCss` + `generateBaselineGridThemeOverrideCss`), exported from the package index as a separable concern.
+- [x] Documented the font asset contract and debug overlay architecture in `docs/TODO.md`.
+
+## Pragma comparison follow-up plan (2026-04-02)
+
+- [x] Added a review-ready plan to `docs/TODO.md` summarizing the current Foundry vs Pragma comparison, the proposed adoptions, and the explicit questions for external review.
+
 ## Baseline alignment comparison article (2026-04-02)
 
 - [x] Added `docs/comparing-baseline-alignment-techniques.md`, a draft blog-style article comparing empirical nudges, cap-unit alignment, raw extracted metrics, and compensated metrics.

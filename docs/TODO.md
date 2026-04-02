@@ -42,7 +42,34 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 
 ## Current architecture
 
-- Editorial = baseline-aligned, element-owned spacing. App = zero-nudge, container-owned.
+### Spacing ontology
+
+The repo ships two spacing models. This is an intentional architectural split, not an implementation detail.
+
+- **Element-owned (editorial, documentation)** — each typographic element carries its own `margin-block-end` derived from the role's `spaceAfter` value, and its own `padding-block-start`/`padding-block-end` derived from real font-metric nudges. The element knows how much space it needs; the parent container does not dictate vertical rhythm.
+- **Container-owned (app)** — the parent layout primitive (`bf-stack`, `bf-cluster`, `bf-grid`) controls child spacing via `gap` or a child-reset pattern. Elements carry zero nudges and no semantic `margin-block-end`. Rhythm comes from the container, not the content.
+
+When editorial elements enter a layout container (`bf-stack`, `bf-cluster`, `bf-stage-shell`), the container resets child margins and padding so the container-owned model takes over. This is the handoff point between the two models.
+
+### Surface engine contract
+
+Each surface in `dist/surfaces.json` declares its `engine` field, identifying the alignment pipeline that produced it. Current values: `metrics-compensated` (production default, uses `@lyubomir-popov/baseline-nudge-generator`). The `cap-formula` engine (CSS `cap`-unit alignment) exists as a demo overlay (`bf-engine-cap`) only and does not appear in the manifest.
+
+### Font asset contract
+
+Font files are **not bundled** in the npm package. Each surface's `metrics.fontFiles` array in `surfaces.json` lists the font families and the build-time paths used to extract metrics, but these paths are local to the build machine. Consumers must:
+
+1. Supply matching font files at their own serving path.
+2. Override the `@font-face` `src` declarations if the default relative paths (`../../assets/fonts/...`) don't match their layout.
+
+The canonical built-ins expect Ubuntu Sans Variable (`UbuntuSans[wdth,wght].ttf`). Experiment surfaces may reference additional fonts (e.g., IBM Plex Sans). The `npm run setup:demo-font` script fetches Ubuntu Sans into `assets/fonts/` for local development only — it is not a production install step.
+
+### Debug overlay
+
+The baseline-grid debug overlay is a separable concern. CSS generation lives in `src/baseline-grid-overlay.ts` (`generateBaselineGridOverlayCss` + `generateBaselineGridThemeOverrideCss`), and the toggle runtime lives in `src/baseline-grid.ts` (`initBaselineGridToggles`). Both are exported from the package index. Downstream consumers can import just the overlay without pulling in the full theme.
+
+### Build pipeline
+
 - **Literal CSS values** — `margin-bottom`, `padding-block-start`, `padding-block-end` are literal per role.
 - **Layout container child reset** — `.bf-stack > *`, `.bf-cluster > *`, `.bf-stage-shell > *` reset `margin-bottom: 0; padding-block: 0;` (§5.3).
 - **Role-scoped typography vars** — root prose and body-sized components read tier-scoped family/size/weight/line-height vars instead of editorial literals.
