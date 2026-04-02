@@ -370,6 +370,352 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
   }
 }
 
+async function verifyTopNavigation(origin: string): Promise<void> {
+  const route = "/demo/components/top-navigation.html";
+  const browser = await openBrowser();
+
+  try {
+    const desktopPage = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 960 }
+    });
+
+    await desktopPage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+    await waitForFonts(desktopPage);
+    await disableDemoChromeHitTesting(desktopPage);
+
+    const desktopDropdownToggle = desktopPage.locator(".bf-top-navigation-dropdown-toggle").first();
+    await desktopDropdownToggle.waitFor({ state: "visible" });
+    await desktopDropdownToggle.click({ force: true });
+    await desktopPage.waitForTimeout(180);
+
+    const desktopDropdownState = await desktopPage.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#top-navigation-default");
+      const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-dropdown-toggle");
+      const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+      const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+
+      if (!(navigationElement instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      const dropdownStyles = getComputedStyle(dropdownElement);
+
+      return {
+        menuOpen: navigationElement.classList.contains("has-menu-open"),
+        searchOpen: navigationElement.classList.contains("has-search-open"),
+        dropdownActive: dropdownItem.classList.contains("is-active"),
+        expanded: dropdownToggle.getAttribute("aria-expanded"),
+        hidden: dropdownElement.getAttribute("aria-hidden"),
+        display: dropdownStyles.display,
+        position: dropdownStyles.position
+      };
+    });
+
+    assert(desktopDropdownState, "Expected desktop top-navigation dropdown state to be measurable.");
+    assert(!desktopDropdownState.menuOpen && !desktopDropdownState.searchOpen, "Expected desktop dropdown toggle to leave the menu and search states closed.");
+    assert(desktopDropdownState.dropdownActive, "Expected desktop dropdown toggle to activate its navigation item.");
+    assert(desktopDropdownState.expanded === "true", `Expected desktop dropdown toggle aria-expanded=true, got ${desktopDropdownState.expanded}.`);
+    assert(desktopDropdownState.hidden === "false", `Expected desktop dropdown aria-hidden=false, got ${desktopDropdownState.hidden}.`);
+    assert(desktopDropdownState.display === "block", `Expected desktop dropdown display to become block, got ${desktopDropdownState.display}.`);
+    assert(desktopDropdownState.position === "absolute", `Expected desktop dropdown to be absolutely positioned, got ${desktopDropdownState.position}.`);
+
+    const desktopSearchToggle = desktopPage.locator(".bf-top-navigation-nav .bf-top-navigation-search-toggle").first();
+    await desktopSearchToggle.waitFor({ state: "visible" });
+    await desktopSearchToggle.click({ force: true });
+    await desktopPage.waitForTimeout(180);
+
+    const desktopSearchState = await desktopPage.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#top-navigation-default");
+      const searchElement = document.querySelector<HTMLElement>(".bf-top-navigation-search");
+      const overlayElement = document.querySelector<HTMLElement>(".bf-top-navigation-search-overlay");
+      const searchInput = document.querySelector<HTMLInputElement>(".bf-top-navigation-search .bf-search-box-input");
+      const pressedButton = document.querySelector<HTMLElement>(".bf-top-navigation-nav .bf-top-navigation-search-toggle");
+      const dropdownToggle = document.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+      const dropdownElement = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-dropdown-toggle .bf-top-navigation-dropdown");
+
+      if (!(navigationElement instanceof HTMLElement) || !(searchElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement) || !(searchInput instanceof HTMLInputElement) || !(pressedButton instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        searchOpen: navigationElement.classList.contains("has-search-open"),
+        menuOpen: navigationElement.classList.contains("has-menu-open"),
+        searchHidden: searchElement.getAttribute("aria-hidden"),
+        overlayHidden: overlayElement.getAttribute("aria-hidden"),
+        activeElementTag: document.activeElement?.tagName ?? null,
+        activeElementType: document.activeElement instanceof HTMLInputElement ? document.activeElement.type : null,
+        pressed: pressedButton.getAttribute("aria-pressed"),
+        dropdownExpanded: dropdownToggle.getAttribute("aria-expanded"),
+        dropdownHidden: dropdownElement.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(desktopSearchState, "Expected desktop top-navigation search state to be measurable.");
+    assert(desktopSearchState.searchOpen, "Expected desktop search toggle to open the search state.");
+    assert(!desktopSearchState.menuOpen, "Expected desktop search toggle to leave the menu state closed.");
+    assert(desktopSearchState.searchHidden === "false", `Expected top-navigation search aria-hidden=false, got ${desktopSearchState.searchHidden}.`);
+    assert(desktopSearchState.overlayHidden === "false", `Expected top-navigation overlay aria-hidden=false, got ${desktopSearchState.overlayHidden}.`);
+    assert(desktopSearchState.activeElementTag === "INPUT" && desktopSearchState.activeElementType === "search", "Expected desktop search toggle to focus the search input.");
+    assert(desktopSearchState.pressed === "true", `Expected desktop search toggle aria-pressed=true, got ${desktopSearchState.pressed}.`);
+    assert(desktopSearchState.dropdownExpanded === "false", `Expected desktop search opening to collapse dropdown toggles, got aria-expanded=${desktopSearchState.dropdownExpanded}.`);
+    assert(desktopSearchState.dropdownHidden === "true", `Expected desktop search opening to hide dropdown menus, got aria-hidden=${desktopSearchState.dropdownHidden}.`);
+
+    const overlay = desktopPage.locator(".bf-top-navigation-search-overlay");
+    const overlayBox = await overlay.boundingBox();
+    assert(overlayBox, "Expected top-navigation overlay to expose a measurable bounding box.");
+    await desktopPage.mouse.click(overlayBox.x + 32, overlayBox.y + 32);
+    await desktopPage.waitForTimeout(180);
+
+    const desktopClosedState = await desktopPage.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#top-navigation-default");
+      const searchElement = document.querySelector<HTMLElement>(".bf-top-navigation-search");
+      const overlayElement = document.querySelector<HTMLElement>(".bf-top-navigation-search-overlay");
+
+      if (!(navigationElement instanceof HTMLElement) || !(searchElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        searchOpen: navigationElement.classList.contains("has-search-open"),
+        menuOpen: navigationElement.classList.contains("has-menu-open"),
+        searchHidden: searchElement.getAttribute("aria-hidden"),
+        overlayHidden: overlayElement.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(desktopClosedState, "Expected desktop top-navigation closed state to be measurable.");
+    assert(!desktopClosedState.searchOpen && !desktopClosedState.menuOpen, "Expected overlay click to close desktop top-navigation search state.");
+    assert(desktopClosedState.searchHidden === "true", `Expected top-navigation search aria-hidden=true after overlay close, got ${desktopClosedState.searchHidden}.`);
+    assert(desktopClosedState.overlayHidden === "true", `Expected top-navigation overlay aria-hidden=true after overlay close, got ${desktopClosedState.overlayHidden}.`);
+
+    const desktopAccountDropdownToggle = desktopPage.locator(".bf-top-navigation-item.is-right-shifted .bf-top-navigation-dropdown-toggle");
+    await desktopAccountDropdownToggle.waitFor({ state: "visible" });
+    await desktopAccountDropdownToggle.click({ force: true });
+    await desktopPage.waitForTimeout(180);
+
+    const desktopAccountDropdownState = await desktopPage.evaluate(() => {
+      const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-right-shifted.is-dropdown-toggle");
+      const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+      const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+
+      if (!(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        active: dropdownItem.classList.contains("is-active"),
+        expanded: dropdownToggle.getAttribute("aria-expanded"),
+        hidden: dropdownElement.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(desktopAccountDropdownState, "Expected right-aligned desktop dropdown state to be measurable.");
+    assert(desktopAccountDropdownState.active, "Expected the right-aligned desktop dropdown to open.");
+    assert(desktopAccountDropdownState.expanded === "true", `Expected right-aligned desktop dropdown aria-expanded=true, got ${desktopAccountDropdownState.expanded}.`);
+    assert(desktopAccountDropdownState.hidden === "false", `Expected right-aligned desktop dropdown aria-hidden=false, got ${desktopAccountDropdownState.hidden}.`);
+
+    await desktopPage.mouse.click(32, 320);
+    await desktopPage.waitForTimeout(180);
+
+    const desktopOutsideCloseState = await desktopPage.evaluate(() => {
+      const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-right-shifted.is-dropdown-toggle");
+      const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+      const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+
+      if (!(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        active: dropdownItem.classList.contains("is-active"),
+        expanded: dropdownToggle.getAttribute("aria-expanded"),
+        hidden: dropdownElement.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(desktopOutsideCloseState, "Expected desktop outside-click dropdown state to be measurable.");
+    assert(!desktopOutsideCloseState.active, "Expected outside clicks to close desktop dropdown menus.");
+    assert(desktopOutsideCloseState.expanded === "false", `Expected outside clicks to reset desktop dropdown aria-expanded=false, got ${desktopOutsideCloseState.expanded}.`);
+    assert(desktopOutsideCloseState.hidden === "true", `Expected outside clicks to hide desktop dropdown menus, got aria-hidden=${desktopOutsideCloseState.hidden}.`);
+
+    await desktopPage.close();
+
+    const mobilePage = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 640, height: 960 }
+    });
+
+    await mobilePage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+    await waitForFonts(mobilePage);
+    await disableDemoChromeHitTesting(mobilePage);
+
+    const mobileMenuToggle = mobilePage.locator(".bf-top-navigation-menu-toggle").first();
+    await mobileMenuToggle.waitFor({ state: "visible" });
+    await mobileMenuToggle.click({ force: true });
+    await mobilePage.waitForTimeout(180);
+
+    const mobileMenuState = await mobilePage.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#top-navigation-default");
+      const navElement = document.querySelector<HTMLElement>(".bf-top-navigation-nav");
+      const menuToggle = document.querySelector<HTMLElement>(".bf-top-navigation-menu-toggle");
+
+      if (!(navigationElement instanceof HTMLElement) || !(navElement instanceof HTMLElement) || !(menuToggle instanceof HTMLElement)) {
+        return null;
+      }
+
+      const navStyles = getComputedStyle(navElement);
+      return {
+        menuOpen: navigationElement.classList.contains("has-menu-open"),
+        searchOpen: navigationElement.classList.contains("has-search-open"),
+        navHidden: navElement.getAttribute("aria-hidden"),
+        navDisplay: navStyles.display,
+        expanded: menuToggle.getAttribute("aria-expanded")
+      };
+    });
+
+    assert(mobileMenuState, "Expected mobile top-navigation menu state to be measurable.");
+    assert(mobileMenuState.menuOpen, "Expected mobile menu toggle to open the top-navigation menu state.");
+    assert(!mobileMenuState.searchOpen, "Expected mobile menu toggle to leave search closed.");
+    assert(mobileMenuState.navHidden === "false", `Expected top-navigation nav aria-hidden=false on mobile open, got ${mobileMenuState.navHidden}.`);
+    assert(mobileMenuState.navDisplay === "flex", `Expected top-navigation nav display to become flex on mobile open, got ${mobileMenuState.navDisplay}.`);
+    assert(mobileMenuState.expanded === "true", `Expected mobile menu toggle aria-expanded=true, got ${mobileMenuState.expanded}.`);
+
+    const mobileDropdownToggle = mobilePage.locator(".bf-top-navigation-dropdown-toggle").first();
+    await mobileDropdownToggle.waitFor({ state: "visible" });
+    await mobileDropdownToggle.click({ force: true });
+    await mobilePage.waitForTimeout(180);
+
+    const mobileDropdownState = await mobilePage.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#top-navigation-default");
+      const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-dropdown-toggle");
+      const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+      const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+
+      if (!(navigationElement instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      const dropdownStyles = getComputedStyle(dropdownElement);
+
+      return {
+        menuOpen: navigationElement.classList.contains("has-menu-open"),
+        searchOpen: navigationElement.classList.contains("has-search-open"),
+        dropdownActive: dropdownItem.classList.contains("is-active"),
+        expanded: dropdownToggle.getAttribute("aria-expanded"),
+        hidden: dropdownElement.getAttribute("aria-hidden"),
+        display: dropdownStyles.display
+      };
+    });
+
+    assert(mobileDropdownState, "Expected mobile top-navigation dropdown state to be measurable.");
+    assert(mobileDropdownState.menuOpen, "Expected mobile dropdown expansion to keep the menu state open.");
+    assert(!mobileDropdownState.searchOpen, "Expected mobile dropdown expansion to leave search closed.");
+    assert(mobileDropdownState.dropdownActive, "Expected mobile dropdown toggle to activate its navigation item.");
+    assert(mobileDropdownState.expanded === "true", `Expected mobile dropdown toggle aria-expanded=true, got ${mobileDropdownState.expanded}.`);
+    assert(mobileDropdownState.hidden === "false", `Expected mobile dropdown aria-hidden=false, got ${mobileDropdownState.hidden}.`);
+    assert(mobileDropdownState.display === "block", `Expected mobile dropdown display to become block, got ${mobileDropdownState.display}.`);
+
+    await mobilePage.keyboard.press("Escape");
+    await mobilePage.waitForTimeout(180);
+
+    const mobileClosedState = await mobilePage.evaluate(() => {
+      const navigationElement = document.querySelector<HTMLElement>("#top-navigation-default");
+      const navElement = document.querySelector<HTMLElement>(".bf-top-navigation-nav");
+      const menuToggle = document.querySelector<HTMLElement>(".bf-top-navigation-menu-toggle");
+      const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-dropdown-toggle");
+      const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+      const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+
+      if (!(navigationElement instanceof HTMLElement) || !(navElement instanceof HTMLElement) || !(menuToggle instanceof HTMLElement) || !(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        menuOpen: navigationElement.classList.contains("has-menu-open"),
+        searchOpen: navigationElement.classList.contains("has-search-open"),
+        navHidden: navElement.getAttribute("aria-hidden"),
+        expanded: menuToggle.getAttribute("aria-expanded"),
+        dropdownActive: dropdownItem.classList.contains("is-active"),
+        dropdownExpanded: dropdownToggle.getAttribute("aria-expanded"),
+        dropdownHidden: dropdownElement.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(mobileClosedState, "Expected mobile top-navigation closed state to be measurable.");
+    assert(!mobileClosedState.menuOpen && !mobileClosedState.searchOpen, "Expected Escape to close the mobile top-navigation states.");
+    assert(mobileClosedState.navHidden === "true", `Expected top-navigation nav aria-hidden=true after Escape, got ${mobileClosedState.navHidden}.`);
+    assert(mobileClosedState.expanded === "false", `Expected mobile menu toggle aria-expanded=false after Escape, got ${mobileClosedState.expanded}.`);
+    assert(!mobileClosedState.dropdownActive, "Expected Escape to close active mobile dropdown items.");
+    assert(mobileClosedState.dropdownExpanded === "false", `Expected Escape to reset mobile dropdown aria-expanded=false, got ${mobileClosedState.dropdownExpanded}.`);
+    assert(mobileClosedState.dropdownHidden === "true", `Expected Escape to hide mobile dropdown menus, got aria-hidden=${mobileClosedState.dropdownHidden}.`);
+
+    await mobilePage.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifySkipLink(origin: string): Promise<void> {
+  const route = "/demo/components/skip-link.html";
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 960 }
+    });
+
+    await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+
+    const hiddenState = await page.locator(".bf-skip-link").evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      const styles = getComputedStyle(element);
+      return {
+        left: rect.left,
+        top: rect.top,
+        position: styles.position
+      };
+    });
+
+    assert(hiddenState.position === "absolute", `Expected unfocused skip-link to stay absolutely positioned off-canvas, got ${hiddenState.position}.`);
+    assert(hiddenState.left < -100 && hiddenState.top < -100, `Expected unfocused skip-link to sit off-canvas, got left=${hiddenState.left}, top=${hiddenState.top}.`);
+
+    const skipLink = page.locator(".bf-skip-link");
+    await skipLink.focus();
+    await page.waitForTimeout(80);
+
+    const focusedState = await skipLink.evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      const styles = getComputedStyle(element);
+      return {
+        left: rect.left,
+        top: rect.top,
+        position: styles.position,
+        outlineStyle: styles.outlineStyle
+      };
+    });
+
+    assert(focusedState.position === "fixed", `Expected focused skip-link to switch to fixed positioning, got ${focusedState.position}.`);
+    assert(focusedState.left >= 0 && focusedState.top >= 0, `Expected focused skip-link to become visible in the viewport, got left=${focusedState.left}, top=${focusedState.top}.`);
+    assert(focusedState.outlineStyle !== "none", "Expected focused skip-link to expose an outline.");
+
+    await skipLink.click();
+    await page.waitForTimeout(80);
+
+    const activatedState = await page.evaluate(() => ({
+      hash: window.location.hash,
+      targetId: document.activeElement instanceof HTMLElement ? document.activeElement.id : null
+    }));
+
+    assert(activatedState.hash === "#skip-link-target", `Expected skip-link activation to target #skip-link-target, got ${activatedState.hash}.`);
+  } finally {
+    await browser.close();
+  }
+}
+
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const { server, origin } = await createStaticServer(rootDir);
@@ -378,6 +724,8 @@ async function main(): Promise<void> {
     await verifyPinnedAsideResize(origin);
     await verifyDrawerOverlay(origin);
     await verifyApplicationLayout(origin);
+    await verifyTopNavigation(origin);
+    await verifySkipLink(origin);
 
     console.log("Component behavior verification passed.");
   } finally {

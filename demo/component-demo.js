@@ -1,4 +1,4 @@
-import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips } from "../dist/index.js";
+import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 
 const SURFACE_OPTIONS = [
@@ -10,7 +10,16 @@ const SURFACE_OPTIONS = [
 
 function resolveStylesheetLink() {
   return Array.from(document.querySelectorAll("link[rel='stylesheet']")).find(link => {
-    return link instanceof HTMLLinkElement && /\/dist\/.+styles\.css$/i.test(link.getAttribute("href") ?? "");
+    if (!(link instanceof HTMLLinkElement)) {
+      return false;
+    }
+
+    try {
+      const pathname = new URL(link.href, window.location.href).pathname;
+      return /\/dist\/(?:.+\/)?styles\.css$/i.test(pathname);
+    } catch {
+      return false;
+    }
   });
 }
 
@@ -143,6 +152,7 @@ initPanelDrawers();
 initRangeControls();
 initResizableAsides();
 initSideNavigations();
+initTopNavigations();
 initTabs();
 initTooltips();
 initAccordions();

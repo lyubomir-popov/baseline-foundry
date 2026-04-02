@@ -49,8 +49,8 @@ export function gridCss(): string {
 /* can each establish their own grid context (spec §5).                */
 /* ------------------------------------------------------------------ */
 
-:where(.bf-theme) :where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .bf-panel-content, .bf-accordion-panel, .l-main, .l-aside),
-:where(.bf-theme):where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .bf-panel-content, .bf-accordion-panel, .l-main, .l-aside) {
+:where(.bf-theme) :where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .bf-panel-content, .bf-accordion-panel, .bf-main, .bf-aside),
+:where(.bf-theme):where(.bf-page, .bf-grid-scope, .bf-section, .bf-strip, .bf-fixed-width, .bf-panel-content, .bf-accordion-panel, .bf-main, .bf-aside) {
   container-type: inline-size;
 }
 

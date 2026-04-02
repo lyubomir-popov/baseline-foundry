@@ -8,6 +8,7 @@ export { initPanelDrawers } from "./panel-drawer.js";
 export { initRangeControls, setupRangeControl, updateRangeFill } from "./range-controls.js";
 export { initResizableAsides } from "./resizable-aside.js";
 export { initSideNavigations } from "./side-navigation.js";
+export { initTopNavigations } from "./top-navigation.js";
 export { initTabs } from "./tabs.js";
 export { initTooltips } from "./tooltip.js";
 export type { AccordionInitOptions } from "./accordion.js";
@@ -20,6 +21,7 @@ export type { PanelDrawerInitOptions } from "./panel-drawer.js";
 export type { RangeControlsInitOptions } from "./range-controls.js";
 export type { ResizableAsideInitOptions } from "./resizable-aside.js";
 export type { SideNavigationInitOptions } from "./side-navigation.js";
+export type { TopNavigationInitOptions } from "./top-navigation.js";
 export type {
 	BaselineGeneratorTokens,
 	BuildThemeResult,

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inline List Demo</title>
+  <link rel="stylesheet" href="../../dist/presets/panel/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="inline list section">
+ <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="inline list kicker">Inline list</h5>
+ <p class="bf-body" data-baseline-check="flow" data-baseline-label="inline list summary">The base variant spaces items horizontally, and the middot modifier adds the compact metadata separators Vanilla uses.</p>
+
+ <section class="bf-stack" data-baseline-check="box" data-baseline-label="inline list block">
+ <h6 data-baseline-check="flow" data-baseline-label="inline list title">Inline list</h6>
+ <nav aria-label="Inline list example" data-baseline-check="box" data-baseline-label="inline list nav">
+ <ul class="bf-inline-list" data-baseline-check="box" data-baseline-label="inline list component">
+ <li class="bf-inline-list-item" data-baseline-check="box" data-baseline-label="inline list item 1"><a href="#">Overview</a></li>
+ <li class="bf-inline-list-item" data-baseline-check="box" data-baseline-label="inline list item 2"><a href="#">Tokens</a></li>
+ <li class="bf-inline-list-item" data-baseline-check="box" data-baseline-label="inline list item 3"><a href="#">Examples</a></li>
+ </ul>
+ </nav>
+ </section>
+
+ <section class="bf-stack" data-baseline-check="box" data-baseline-label="middot list block">
+ <h6 data-baseline-check="flow" data-baseline-label="middot list title">Middot variant</h6>
+ <nav aria-label="Inline middot list example" data-baseline-check="box" data-baseline-label="middot list nav">
+ <ul class="bf-inline-list is-middot" data-baseline-check="box" data-baseline-label="middot list component">
+ <li class="bf-inline-list-item" data-baseline-check="box" data-baseline-label="middot list item 1"><a href="#">Editorial</a></li>
+ <li class="bf-inline-list-item" data-baseline-check="box" data-baseline-label="middot list item 2"><a href="#">Documentation</a></li>
+ <li class="bf-inline-list-item" data-baseline-check="box" data-baseline-label="middot list item 3"><a href="#">App</a></li>
+ </ul>
+ </nav>
+ </section>
+ </section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>

@@ -165,6 +165,99 @@ body {
   padding: 1.5rem;
 }
 
+/* ── Form atlas ────────────────────────────────────────── */
+
+.form-atlas {
+  display: grid;
+  gap: calc(var(--bf-baseline) * 4);
+  inline-size: min(100%, 96rem);
+  margin: 0 auto;
+}
+
+.form-atlas-row {
+  align-items: start;
+  gap: 1.5rem;
+}
+
+.form-atlas-row > * {
+  flex: 0 0 auto;
+  min-inline-size: 0;
+}
+
+.form-atlas-row > :where(.bf-checkbox, .bf-radio) {
+  inline-size: max-content;
+}
+
+.form-atlas-field {
+  flex: 0 1 12rem;
+  inline-size: min(100%, 12rem);
+  min-inline-size: min(100%, 12rem);
+}
+
+.form-atlas-field.is-wide {
+  flex-basis: 18rem;
+  inline-size: min(100%, 18rem);
+  min-inline-size: min(100%, 18rem);
+}
+
+.form-atlas-panel {
+  flex: 0 1 18rem;
+  inline-size: min(100%, 18rem);
+  min-inline-size: min(100%, 18rem);
+}
+
+.form-atlas-panel.is-tabs {
+  flex-basis: 20rem;
+  inline-size: min(100%, 20rem);
+  min-inline-size: min(100%, 20rem);
+}
+
+.form-atlas-panel.is-choice {
+  flex-basis: 22rem;
+  inline-size: min(100%, 22rem);
+  min-inline-size: min(100%, 22rem);
+}
+
+.form-atlas-panel.is-inline-options {
+  flex-basis: 24rem;
+  inline-size: min(100%, 24rem);
+  min-inline-size: min(100%, 24rem);
+}
+
+.form-atlas-panel.is-range {
+  flex-basis: 20rem;
+  inline-size: min(100%, 20rem);
+  min-inline-size: min(100%, 20rem);
+}
+
+.form-atlas-panel.is-narrow {
+  flex-basis: 12rem;
+  inline-size: min(100%, 12rem);
+  min-inline-size: min(100%, 12rem);
+}
+
+.form-atlas-panel.is-validation {
+  flex-basis: 22rem;
+  inline-size: min(100%, 22rem);
+  min-inline-size: min(100%, 22rem);
+}
+
+.form-atlas-panel.is-table {
+  flex-basis: 28rem;
+  inline-size: min(100%, 28rem);
+  min-inline-size: min(100%, 28rem);
+}
+
+.form-atlas-reference {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.range-demo-rail {
+  inline-size: min(100%, 12rem);
+  min-inline-size: 0;
+}
+
 /* ── Component atlas index page ─────────────────────────── */
 
 .demo-index-section {

@@ -2,10 +2,10 @@ export interface ApplicationLayoutInitOptions {
   root?: ParentNode;
 }
 
-const APPLICATION_SELECTOR = ".l-application, .bf-application";
-const NAVIGATION_SELECTOR = ".l-navigation, .bf-navigation";
-const DRAWER_SELECTOR = ".l-navigation__drawer, .bf-navigation-drawer";
-const OVERLAY_SELECTOR = ".l-navigation__overlay, .bf-navigation-overlay";
+const APPLICATION_SELECTOR = ".bf-application";
+const NAVIGATION_SELECTOR = ".bf-navigation";
+const DRAWER_SELECTOR = ".bf-navigation-drawer";
+const OVERLAY_SELECTOR = ".bf-navigation-overlay";
 const TOGGLE_SELECTOR = "[data-application-layout-toggle]";
 const CLOSE_SELECTOR = "[data-application-layout-close]";
 const PIN_SELECTOR = "[data-application-layout-pin]";

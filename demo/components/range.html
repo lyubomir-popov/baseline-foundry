@@ -9,12 +9,24 @@
 </head>
 <body class="bf-theme is-dark" data-component-capture>
 <section class="bf-stack" data-baseline-check="box" data-baseline-label="range section">
- <div class="bf-field" data-baseline-check="box" data-baseline-label="range field">
+ <div class="bf-field is-range" data-baseline-check="box" data-baseline-label="range field">
  <label class="bf-form-label" for="range-demo" data-baseline-check="flow" data-baseline-label="range label">Grid density</label>
  <div class="bf-control" data-baseline-check="box" data-baseline-label="range control">
- <div class="bf-slider is-stacked" data-baseline-check="box" data-baseline-label="range wrapper">
- <input id="range-demo" type="range" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="range input">
+ <div class="bf-slider" data-baseline-check="box" data-baseline-label="range wrapper">
+ <input id="range-demo" type="range" min="0" max="100" value="64" data-baseline-ignore="true" data-baseline-label="range input">
  <input class="bf-slider-input" type="number" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="range number input">
+ </div>
+ </div>
+ </div>
+
+ <div class="range-demo-rail" data-overflow-container data-baseline-ignore="true">
+ <div class="bf-field is-range is-stacked" data-baseline-check="box" data-baseline-label="range stacked field">
+ <label class="bf-form-label" for="range-demo-stacked" data-baseline-check="flow" data-baseline-label="range stacked label">Grid density</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="range stacked control">
+ <div class="bf-slider" data-baseline-check="box" data-baseline-label="range stacked wrapper" data-overflow-check>
+ <input id="range-demo-stacked" type="range" min="0" max="100" value="64" data-baseline-ignore="true" data-baseline-label="range stacked input" data-overflow-check>
+ <input class="bf-slider-input" type="number" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="range stacked number input" data-overflow-check>
+ </div>
  </div>
  </div>
  </div>

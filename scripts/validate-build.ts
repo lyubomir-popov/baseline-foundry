@@ -103,7 +103,11 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-grid-columns: 16;"), "Expected the grid CSS to include the 16-column mode.");
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");
-  assert(css.includes("text-transform: uppercase;"), "Expected CSS to include the table-header uppercase treatment.");
+  assert(css.includes(":where(.bf-theme) :where(thead th) {\n  font-family: var(--bf-body-font-family"), "Expected CSS to style table headers as body-role text.");
+  assert(css.includes("--bf-table-row-padding: var(--bf-body-nudge-start"), "Expected generated CSS to derive symmetric table row padding from the body nudge in nudged tiers.");
+  assert(css.includes("--bf-table-row-line-height: calc(var(--bf-table-row-block-size) - (var(--bf-table-row-padding) * 2) - var(--bf-table-row-border-size));"), "Expected table row line-height to be solved from the row block size, symmetric padding, and in-box border.");
+  assert(css.includes(":where(.bf-theme) :where(th, td) {\n  border: 0;\n  border-block-end: var(--bf-table-row-border-size) solid transparent;"), "Expected table cells to reserve border space inside the row box instead of relying on inset shadows.");
+  assert(css.includes("padding-block: var(--bf-table-row-padding);"), "Expected table cells to use symmetric block padding from the shared table row padding variable.");
   assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine demo override selector.");
   assert(css.includes(":where(.bf-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
   assert(css.includes("--bf-body-nudge-start: 0rem;\n  --bf-body-nudge-end: 0rem;"), "Expected app-tier runtime overrides to zero body nudges.");
@@ -126,14 +130,18 @@ function validateCommonCss(css: string): void {
   assert(css.includes("input[type='file'])::file-selector-button"), "Expected generated CSS to include dense file input styling.");
   assert(css.includes(":where(.bf-control) {\n  display: grid;\n  gap: var(--bf-field-gap);\n  min-inline-size: 0;"), "Expected form controls to allow shrinking inside narrow containers.");
   assert(css.includes(":where(.bf-field.is-checkbox) :where(.bf-control) {\n  gap: 0;"), "Expected checkbox field controls to avoid downstream gap overrides.");
-  assert(css.includes("--bf-switch-track-offset: calc((var(--bf-switch-row-block-size) - var(--bf-control-visual-size)) / 2);"), "Expected generated CSS to center switch geometry from the control row variables.");
-  assert(css.includes("--bf-tick-box-offset: calc((var(--bf-tick-row-block-size) - var(--bf-control-visual-size)) / 2);"), "Expected generated CSS to derive tick-box placement from the dense control row variables.");
+  assert(css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to derive slider rail placement from the active body line geometry.");
+  assert(css.includes("--bf-switch-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place switch geometry from the active body line geometry.");
+  assert(css.includes("--bf-tick-box-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place tick geometry from the active body line geometry.");
   assert(css.includes("--bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding));"), "Expected generated CSS to derive tick label spacing from the control inline padding token.");
   assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
   assert(css.includes("--bf-control-block-padding:"), "Expected generated CSS to define the regular control block padding token.");
   assert(css.includes("--bf-control-block-padding-compact:"), "Expected generated CSS to define the compact control block padding token.");
+  assert(css.includes("--bf-input-block-padding:"), "Expected generated CSS to define the tier-selectable input block padding token.");
+  assert(css.includes("--bf-button-block-padding:"), "Expected generated CSS to define the tier-selectable button block padding token.");
   assert(css.includes("--bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));"), "Expected generated CSS to derive regular control box size from the control block padding token.");
-  assert(css.includes("padding-block: max(0rem, calc(var(--bf-control-block-padding) - var(--bf-border-width)));"), "Expected bordered controls to use the explicit control block padding token.");
+  assert(css.includes("padding-block: max(0rem, calc(var(--bf-input-block-padding) - var(--bf-border-width)));"), "Expected bordered inputs to resolve block padding from the tier-selectable input padding token.");
+  assert(css.includes("padding-block: max(0rem, calc(var(--bf-button-block-padding) - var(--bf-border-width)));"), "Expected bordered buttons to resolve block padding from the tier-selectable button padding token.");
   assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact inline surfaces to use the compact control block padding token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
@@ -141,11 +149,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column grid.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column grid.");
   assert(!css.includes(".bf-control-grid"), "Expected generated CSS to omit the deprecated bf-control-grid helper.");
-  assert(css.includes(":where(.bf-slider.is-stacked) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--bf-field-gap);"), "Expected stacked slider pairs to stay on the baseline-aligned field gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-field.is-range) {\n  align-items: start;\n  column-gap: calc(var(--bf-baseline) * 2);\n  display: grid;"), "Expected inline range fields to use the dedicated two-column field layout.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-slider.is-stacked),\n:where(.bf-theme) :where(.bf-field.is-range.is-stacked) :where(.bf-slider) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--bf-field-gap);"), "Expected stacked slider pairs and stacked range fields to share the same stacked layout.");
   assert(!css.includes(".slider-pair"), "Expected compat CSS to omit the downstream slider wrapper aliases.");
   assert(!css.includes(".slider-pair--stacked"), "Expected compat CSS to omit the downstream stacked-slider alias.");
   assert(css.includes("inline-size: min(100%, 5rem);"), "Expected slider number inputs to use the compact PVR width.");
-  assert(css.includes("flex-wrap: wrap;"), "Expected inline slider pairs to wrap instead of overflowing narrow rails.");
+  assert(css.includes("flex-wrap: nowrap;"), "Expected inline slider pairs to stay on a single row until the field switches to the stacked variant.");
   assert(css.includes("flex: 0 1 5rem;"), "Expected slider number inputs to shrink before overflowing.");
   assert(!css.includes("min-inline-size: 5rem;"), "Expected slider number inputs to avoid a hard minimum width.");
   assert(css.includes(":where(.bf-switch-slider)"), "Expected generated CSS to include switch styling.");
@@ -155,6 +164,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-breadcrumbs-items)"), "Expected generated CSS to include breadcrumb styling.");
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
   assert(css.includes(":where(table, .bf-table)"), "Expected generated CSS to include table styling.");
+    assert(css.includes(":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder) {"), "Expected generated CSS to include the table icon-placeholder cell styling.");
   assert(css.includes(":where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)"), "Expected generated CSS to include chip styling.");
   assert(css.includes("--bf-ui-chip-border: var(--bf-color-border-neutral);"), "Expected generated CSS to style neutral chips with the Vanilla neutral border token.");
   assert(css.includes("--bf-ui-chip-background: var(--bf-color-background-neutral-default);"), "Expected generated CSS to style neutral chips with the Vanilla neutral background token.");
@@ -167,6 +177,17 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-search-and-filter-box) {\n  display: inline-flex;\n  flex: 1 1 12rem;\n  max-inline-size: 100%;\n  min-inline-size: 0;"), "Expected search-and-filter boxes to shrink inside narrow rails.");
   assert(css.includes(":where(.bf-code-snippet)"), "Expected generated CSS to include code-snippet styling.");
   assert(css.includes(":where(.bf-code-snippet-block.is-icon) {\n  cursor: copy;"), "Expected generated CSS to include copyable code-snippet blocks.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the top-navigation dropdown container styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-toggle)::after {"), "Expected generated CSS to include the top-navigation dropdown chevron styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-icon) {"), "Expected generated CSS to include the base icon styling.");
+    assert(css.includes(":where(.bf-theme) :where(.bf-icon.is-success-grey) {"), "Expected generated CSS to include the success-grey icon modifier.");
+    assert(css.includes(":where(.bf-theme) :where(.bf-icon.is-error-grey) {"), "Expected generated CSS to include the error-grey icon modifier.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-icon.is-search) {"), "Expected generated CSS to include named icon modifiers.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-list)"), "Expected generated CSS to include the base list styling.");
+    assert(css.includes(":where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {"), "Expected generated CSS to include ticked and crossed list-item styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-inline-list)"), "Expected generated CSS to include the inline-list styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-skip-link)"), "Expected generated CSS to include the skip-link styling.");
   assert(css.includes(":where(.bf-list-tree)"), "Expected generated CSS to include list-tree styling.");
   assert(css.includes(":where(.bf-tabs.is-equal)"), "Expected generated CSS to include equal-width dense tab modifiers.");
   assert(css.includes(":where(.bf-choice-row)"), "Expected generated CSS to include the canonical choice-row component.");
@@ -190,8 +211,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-contextual-menu, .bf-contextual-menu.is-left, .bf-contextual-menu.is-center)"), "Expected generated CSS to include contextual-menu styling.");
   assert(css.includes(":where(.bf-tooltip, [class*='bf-tooltip--'])"), "Expected generated CSS to include tooltip styling.");
   assert(css.includes(":where(.bf-panel-toggle)"), "Expected generated CSS to include panel toggle styling.");
-  assert(css.includes(":where(.l-application__overlay, .bf-application-overlay)"), "Expected generated CSS to include application drawer overlay styling.");
-  assert(css.includes(":where(.l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer)"), "Expected generated CSS to include overlay drawer aside styling.");
+  assert(css.includes(":where(.bf-application-overlay)"), "Expected generated CSS to include application drawer overlay styling.");
+  assert(css.includes(":where(.bf-aside.is-overlay, .bf-aside.is-drawer)"), "Expected generated CSS to include overlay drawer aside styling.");
   assert(css.includes(".is-drawer-expanded"), "Expected compat CSS to include the drawer-expanded application state.");
   assert(css.includes("--bf-app-drawer-width-small: 15rem;"), "Expected generated CSS to expose the Canonical small drawer width.");
   assert(css.includes("--bf-app-drawer-width-small-max: 20rem;"), "Expected generated CSS to expose the Canonical small drawer maximum.");
@@ -202,15 +223,19 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-app-aside-width-max: var(--bf-app-drawer-width-medium-max);"), "Expected generated CSS to expose the pinned-aside maximum width.");
   assert(css.includes("--bf-application-aside-width-min: var(--bf-app-aside-width-min);"), "Expected generated CSS to expose the pinned-aside minimum width through the runtime alias.");
   assert(css.includes("--bf-application-aside-width-max: var(--bf-app-aside-width-max);"), "Expected generated CSS to expose the pinned-aside maximum width through the runtime alias.");
-  assert(css.includes(".l-aside.is-overlay.is-small"), "Expected generated CSS to expose the Canonical small overlay modifier.");
-  assert(css.includes(".l-aside.is-overlay.is-medium"), "Expected generated CSS to expose the Canonical medium overlay modifier.");
-  assert(css.includes(".l-aside.is-overlay.is-large"), "Expected generated CSS to expose the Canonical large overlay modifier.");
+  assert(css.includes(".bf-aside.is-overlay.is-small"), "Expected generated CSS to expose the Canonical small overlay modifier.");
+  assert(css.includes(".bf-aside.is-overlay.is-medium"), "Expected generated CSS to expose the Canonical medium overlay modifier.");
+  assert(css.includes(".bf-aside.is-overlay.is-large"), "Expected generated CSS to expose the Canonical large overlay modifier.");
   assert(!css.includes(".is-narrow"), "Expected generated CSS to omit the old narrow overlay modifier.");
   assert(!css.includes(".is-wide"), "Expected generated CSS to omit the old wide overlay modifier.");
-  assert(css.includes(":where(.l-application__aside-resize-handle, .bf-application-aside-resize-handle)"), "Expected generated CSS to include the pinned-aside resize handle selector.");
+  assert(css.includes(":where(.bf-application-aside-resize-handle)"), "Expected generated CSS to include the pinned-aside resize handle selector.");
   assert(css.includes("cursor: ew-resize;"), "Expected generated CSS to make the resize handle advertise horizontal resizing.");
   assert(css.includes("touch-action: none;"), "Expected generated CSS to make the resize handle safe for pointer dragging.");
-  assert(css.includes(":where(.l-application.is-resizing-aside, .bf-application.is-resizing-aside)"), "Expected generated CSS to expose the resizing application state.");
+  assert(css.includes(":where(.bf-application.is-resizing-aside)"), "Expected generated CSS to expose the resizing application state.");
+  assert(!css.includes(".l-application"), "Expected generated CSS to omit legacy l-* application selectors.");
+  assert(!css.includes(".l-navigation"), "Expected generated CSS to omit legacy l-* navigation selectors.");
+  assert(!css.includes(".l-aside"), "Expected generated CSS to omit legacy l-* aside selectors.");
+  assert(!css.includes(".l-main"), "Expected generated CSS to omit legacy l-* main-area selectors.");
   assert(!css.includes(".p-"), "Expected generated CSS to omit deprecated p-* selectors.");
   assert(!css.includes(".vr-"), "Expected generated CSS to omit deprecated vr-* selectors.");
   assert(!css.includes("[class*='p-"), "Expected generated CSS to omit deprecated p-* wildcard selectors.");
@@ -248,8 +273,8 @@ function validateAppTierCss(css: string): void {
   assert(css.includes('font-family: "Ubuntu Sans";'), "Expected the app-tier preset CSS to register the Ubuntu Sans family.");
   assert(css.includes('UbuntuSans[wdth,wght].ttf'), "Expected the app-tier preset CSS to point to the Ubuntu Sans variable font.");
   assert(css.includes('font-weight: 100 900;'), "Expected the app-tier preset CSS to expose the Ubuntu Sans variable weight range.");
+  assert(css.includes(':where(.bf-theme.bf-tier-app) {'), "Expected the app-tier preset CSS to expose the app-tier runtime selector.");
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
-  assert(css.includes('--bf-body-nudge-start: 0rem;'), "Expected the app-tier preset CSS to zero app-tier body nudges.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
   assert(css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to expose the lighter app-panel shadow token.");
   assert(css.includes('box-shadow: var(--bf-app-panel-shadow);'), "Expected the app-tier preset CSS to apply the shared app-panel shadow token.");
@@ -468,8 +493,29 @@ function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
   validateBfOnlyDemoPage("accordion.html", demoPages.accordion);
   validateBfOnlyDemoPage("contextual-menu.html", demoPages.contextualMenu);
   validateBfOnlyDemoPage("tooltip.html", demoPages.tooltip);
+  validateBfOnlyDemoPage("icon.html", demoPages.icon);
+  validateBfOnlyDemoPage("list.html", demoPages.list);
+  validateBfOnlyDemoPage("inline-list.html", demoPages.inlineList);
+  validateBfOnlyDemoPage("table.html", demoPages.table);
   validateBfOnlyDemoPage("list-tree.html", demoPages.listTree);
   validateBfOnlyDemoPage("code-snippet.html", demoPages.codeSnippet);
+  validateBfOnlyDemoPage("skip-link.html", demoPages.skipLink);
+  validateBfOnlyDemoPage("top-navigation.html", demoPages.topNavigation);
+}
+
+function validateParitySurfaceDemos(iconHtml: string, listHtml: string, tableHtml: string): void {
+  assert(iconHtml.includes("is-success-grey"), "Expected icon.html to demo the success-grey glyph.");
+  assert(iconHtml.includes("is-error-grey"), "Expected icon.html to demo the error-grey glyph.");
+  assert(listHtml.includes("is-ticked"), "Expected list.html to demo ticked list items.");
+  assert(listHtml.includes("is-crossed"), "Expected list.html to demo crossed list items.");
+  assert(tableHtml.includes("is-icon-placeholder"), "Expected table.html to demo icon-placeholder cells.");
+}
+
+function validateTopNavigationDemo(topNavigationHtml: string): void {
+  assert(topNavigationHtml.includes("bf-top-navigation-dropdown-toggle"), "Expected top-navigation.html to demo dropdown toggles.");
+  assert(topNavigationHtml.includes("bf-top-navigation-dropdown"), "Expected top-navigation.html to demo dropdown containers.");
+  assert(topNavigationHtml.includes("bf-top-navigation-dropdown-item"), "Expected top-navigation.html to demo dropdown items.");
+  assert(topNavigationHtml.includes("bf-top-navigation-dropdown is-right"), "Expected top-navigation.html to demo the right-aligned dropdown variant.");
 }
 
 async function main(): Promise<void> {
@@ -480,7 +526,7 @@ async function main(): Promise<void> {
   const prosePreset = await readThemeArtifacts(path.resolve("dist/presets/prose"));
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
-  const [engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, contextualMenuHtml, tooltipHtml, listTreeHtml, codeSnippetHtml, demoIndexHtml, demoControlsHtml] = await Promise.all([
+  const [engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
     readTextArtifact(path.resolve("demo/component-shell.css")),
@@ -491,10 +537,16 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/panel-tabs.html")),
     readTextArtifact(path.resolve("demo/components/accordion.html")),
     readTextArtifact(path.resolve("demo/components/side-navigation.html")),
+    readTextArtifact(path.resolve("demo/components/top-navigation.html")),
     readTextArtifact(path.resolve("demo/components/contextual-menu.html")),
     readTextArtifact(path.resolve("demo/components/tooltip.html")),
+    readTextArtifact(path.resolve("demo/components/icon.html")),
+    readTextArtifact(path.resolve("demo/components/list.html")),
+    readTextArtifact(path.resolve("demo/components/inline-list.html")),
+    readTextArtifact(path.resolve("demo/components/table.html")),
     readTextArtifact(path.resolve("demo/components/list-tree.html")),
     readTextArtifact(path.resolve("demo/components/code-snippet.html")),
+    readTextArtifact(path.resolve("demo/components/skip-link.html")),
     readTextArtifact(path.resolve("index.html")),
     readTextArtifact(path.resolve("demo/controls.html"))
   ]);
@@ -519,16 +571,24 @@ async function main(): Promise<void> {
   validateLivingSpecControls(demoControlsHtml, controlsShellCss);
   validateAppTierDemoPage("application-layout.html", applicationLayoutHtml);
   validateAppTierDemoPage("side-navigation.html", sideNavigationHtml);
+  validateParitySurfaceDemos(iconHtml, listHtml, tableHtml);
+  validateTopNavigationDemo(topNavigationHtml);
   validateBfOnlyDemoFamily({
     applicationLayout: applicationLayoutHtml,
     tabs: tabsHtml,
     panelTabs: panelTabsHtml,
     accordion: accordionHtml,
     sideNavigation: sideNavigationHtml,
+    topNavigation: topNavigationHtml,
     contextualMenu: contextualMenuHtml,
     tooltip: tooltipHtml,
+    icon: iconHtml,
+    list: listHtml,
+    inlineList: inlineListHtml,
+    table: tableHtml,
     listTree: listTreeHtml,
-    codeSnippet: codeSnippetHtml
+    codeSnippet: codeSnippetHtml,
+    skipLink: skipLinkHtml
   });
 
   console.log("Build validation passed.");

@@ -2,9 +2,9 @@ export interface ResizableAsideInitOptions {
   root?: ParentNode;
 }
 
-const APPLICATION_SELECTOR = ".l-application, .bf-application";
-const PINNED_ASIDE_SELECTOR = ".l-aside.is-pinned, .bf-aside.is-pinned";
-const HANDLE_SELECTOR = ".l-application__aside-resize-handle, .bf-application-aside-resize-handle";
+const APPLICATION_SELECTOR = ".bf-application";
+const PINNED_ASIDE_SELECTOR = ".bf-aside.is-pinned";
+const HANDLE_SELECTOR = ".bf-application-aside-resize-handle";
 const DEFAULT_STEP_PX = 16;
 const DEFAULT_STORAGE_PREFIX = "baseline-foundry-aside-width";
 const RESIZING_CLASS = "is-resizing-aside";
@@ -256,6 +256,10 @@ function resetWidth(application: HTMLElement, aside: HTMLElement, handle: HTMLEl
   updateHandleA11y(application, aside, handle);
 }
 
+function syncHandleToRenderedWidth(application: HTMLElement, aside: HTMLElement, handle: HTMLElement): void {
+  updateHandleA11y(application, aside, handle, getCurrentWidthPx(application, aside));
+}
+
 function setupApplication(application: HTMLElement): () => void {
   const aside = getPinnedAside(application);
   const handle = getResizeHandle(application, aside);
@@ -272,6 +276,16 @@ function setupApplication(application: HTMLElement): () => void {
   } else {
     updateHandleA11y(application, aside, handle);
   }
+
+  let initialSyncFrameId = 0;
+  const onWindowLoad = (): void => {
+    syncHandleToRenderedWidth(application, aside, handle);
+  };
+
+  initialSyncFrameId = window.requestAnimationFrame(() => {
+    syncHandleToRenderedWidth(application, aside, handle);
+  });
+  window.addEventListener("load", onWindowLoad, { once: true });
 
   const onDoubleClick = (): void => {
     resetWidth(application, aside, handle, storageKey);
@@ -371,6 +385,11 @@ function setupApplication(application: HTMLElement): () => void {
   window.addEventListener("resize", onWindowResize);
 
   return () => {
+    if (initialSyncFrameId !== 0) {
+      window.cancelAnimationFrame(initialSyncFrameId);
+    }
+
+    window.removeEventListener("load", onWindowLoad);
     handle.removeEventListener("dblclick", onDoubleClick);
     handle.removeEventListener("keydown", onKeyDown);
     handle.removeEventListener("pointerdown", onPointerDown);

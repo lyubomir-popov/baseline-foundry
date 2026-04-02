@@ -27,6 +27,7 @@ export const componentSections = [
   {
     heading: "Form elements",
     items: [
+      { title: "Form atlas", href: "/demo/components/form-atlas.html" },
       { title: "Button", href: "/demo/components/button.html" },
       { title: "Actions", href: "/demo/components/actions.html" },
       { title: "Text input", href: "/demo/components/text-input.html" },
@@ -50,6 +51,9 @@ export const componentSections = [
       { title: "Chip", href: "/demo/components/chip.html" },
       { title: "Badge", href: "/demo/components/badge.html" },
       { title: "Status label", href: "/demo/components/status-label.html" },
+      { title: "Icon", href: "/demo/components/icon.html" },
+      { title: "List", href: "/demo/components/list.html" },
+      { title: "Inline list", href: "/demo/components/inline-list.html" },
       { title: "Table", href: "/demo/components/table.html" }
     ]
   },
@@ -60,10 +64,12 @@ export const componentSections = [
       { title: "Panel tabs", href: "/demo/components/panel-tabs.html" },
       { title: "Accordion", href: "/demo/components/accordion.html" },
       { title: "Side navigation", href: "/demo/components/side-navigation.html" },
+      { title: "Top navigation", href: "/demo/components/top-navigation.html" },
       { title: "Baseline engine smoke", href: "/demo/components/engine-smoke.html" },
       { title: "Segmented control", href: "/demo/components/segmented-control.html" },
       { title: "Breadcrumbs", href: "/demo/components/breadcrumbs.html" },
       { title: "Pagination", href: "/demo/components/pagination.html" },
+      { title: "Skip link", href: "/demo/components/skip-link.html" },
       { title: "Contextual menu", href: "/demo/components/contextual-menu.html" },
       { title: "Tooltip", href: "/demo/components/tooltip.html" }
     ]

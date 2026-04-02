@@ -28,7 +28,7 @@ export function updateRangeFill(range: HTMLInputElement): void {
   const { min, max } = getBounds(range);
   const value = Number(range.value || min);
   const percent = ((clamp(value, min, max) - min) / (max - min)) * 100;
-  range.style.setProperty("--bf-range-fill-percent", `${percent}%`);
+  range.style.setProperty("--bf-slider-fill-percent", `${percent}%`);
 }
 
 function findPairedNumberInput(range: HTMLInputElement, options: RangeControlsInitOptions): HTMLInputElement | null {

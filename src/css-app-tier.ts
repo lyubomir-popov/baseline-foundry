@@ -23,7 +23,7 @@ export function appTierPresetCss(): string {
   line-height: 1.25rem;
 }
 
-:where(.bf-theme.bf-tier-app) :where(.l-application, .bf-application) {
+:where(.bf-theme.bf-tier-app) :where(.bf-application) {
   background: var(--bf-app-demo-page-bg);
 }
 
@@ -31,9 +31,9 @@ export function appTierPresetCss(): string {
   box-shadow: var(--bf-app-panel-shadow);
 }
 
-:where(.bf-theme.bf-tier-app) :where(.l-navigation__drawer, .bf-navigation-drawer),
-:where(.bf-theme.bf-tier-app) :where(.l-navigation:not(.is-collapsed), .bf-navigation:not(.is-collapsed)) > :where(.l-navigation__drawer, .bf-navigation-drawer),
-:where(.bf-theme.bf-tier-app) :where(.l-aside.is-overlay, .bf-aside.is-overlay, .l-aside.is-drawer, .bf-aside.is-drawer) {
+:where(.bf-theme.bf-tier-app) :where(.bf-navigation-drawer),
+:where(.bf-theme.bf-tier-app) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer),
+:where(.bf-theme.bf-tier-app) :where(.bf-aside.is-overlay, .bf-aside.is-drawer) {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 0 3px rgba(0, 0, 0, 0.12);
 }
 
@@ -48,12 +48,12 @@ export function appTierPresetCss(): string {
   gap: calc(var(--bf-baseline) * 1.5);
 }
 
-:where(.bf-theme.bf-tier-app) :where(.l-navigation-bar, .bf-navigation-bar, .l-navigation__drawer, .bf-navigation-drawer, .l-aside, .bf-aside) > :where(.bf-panel.is-fill) {
+:where(.bf-theme.bf-tier-app) :where(.bf-navigation-bar, .bf-navigation-drawer, .bf-aside) > :where(.bf-panel.is-fill) {
   border: 0;
   box-shadow: none;
 }
 
-:where(.bf-theme.bf-tier-app) :where(.l-navigation-bar, .bf-navigation-bar, .l-navigation__drawer, .bf-navigation-drawer, .l-aside, .bf-aside) :where(.bf-panel-title) {
+:where(.bf-theme.bf-tier-app) :where(.bf-navigation-bar, .bf-navigation-drawer, .bf-aside) :where(.bf-panel-title) {
   font-family: inherit;
   font-size: 1rem;
   font-style: normal;
@@ -66,9 +66,9 @@ export function appTierPresetCss(): string {
   box-shadow: inset 3px 0 0 var(--vf-color-link-default, #0066cc);
 }
 
-:where(.bf-theme.bf-tier-app) :where(.l-navigation-bar, .bf-navigation-bar),
-:where(.bf-theme.bf-tier-app) :where(.l-navigation__drawer, .bf-navigation-drawer),
-:where(.bf-theme.bf-tier-app) :where(.l-aside, .bf-aside),
+:where(.bf-theme.bf-tier-app) :where(.bf-navigation-bar),
+:where(.bf-theme.bf-tier-app) :where(.bf-navigation-drawer),
+:where(.bf-theme.bf-tier-app) :where(.bf-aside),
 :where(.bf-theme.bf-tier-app) :where(.bf-panel) {
   background: var(--vf-color-background-default, #ffffff);
 }
