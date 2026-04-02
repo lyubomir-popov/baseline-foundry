@@ -122,6 +122,7 @@ export interface ThemeSurface {
   name: string;
   label?: string;
   className?: string;
+  engine: string;
   configPath: string;
   baselineConfigPath: string;
   baselineTokensPath: string;
@@ -132,6 +133,7 @@ export interface ThemeSurface {
 export interface ThemeSurfaceManifestEntry {
   label?: string;
   className?: string;
+  engine: string;
   configPath: string;
   baselineConfigPath: string;
   baselineTokensPath: string;

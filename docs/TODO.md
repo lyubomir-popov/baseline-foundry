@@ -103,6 +103,29 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 - Full repo `npm test` is green again after the application-shell resize-handle follow-up: the resizable-aside runtime now re-syncs `aria-valuenow` from the rendered aside width after the shell settles, so the behavior harness no longer races the first-load layout state.
 - Next downstream-demand parity gap is navigation mega-nav; broader link and form-surface follow-ups remain demand-driven.
 
+### Pragma-informed repo health plan
+
+What we learned from looking at Pragma, filtered to non-opinionated improvements only. Cap-vs-metrics and container-vs-element preferences are settled and not revisited here.
+
+Adopted improvements:
+
+- [x] **Surface manifest `engine` field** — add a machine-readable `engine` string to each entry in `surfaces.json` so tooling and downstream consumers know what produced the surface. Start minimal: `"metrics-compensated"` for production surfaces, `"cap-formula"` for the demo overlay. Extend the enum only when new engines actually ship as buildable outputs.
+- [x] **Spacing-mode docs pass** — describe the repo's editorial/app split explicitly as an ontology in the architecture section: editorial and documentation are baseline-aligned, element-owned prose surfaces; app is zero-nudge, container-owned. The code already does this; the documentation should name the concept.
+- [x] **Structured invariant testing** — refactor `validate-build.ts` so each invariant is a named, documented check with a clear pass/fail label (inspired by Pragma's `@canonical/webarchitect` habit of treating architecture rules as testable contracts). Not borrowing their tool, borrowing the discipline.
+- [x] **Debug overlay as separable concern** — extract the baseline-grid overlay CSS and toggle logic into a self-contained module (`src/baseline-grid-overlay.css` generation + existing `src/baseline-grid.ts` runtime) so it's reusable for downstream consumers without pulling in the full theme.
+- [x] **Font asset contract** — document the font dependency contract explicitly in `surfaces.json` metadata and the architecture section, so consumers know whether fonts are bundled, expected at a path, or fetched externally.
+
+Not adopted (taste-driven, already settled):
+
+- Cap-first alignment as production default → remains demo-only (`bf-engine-cap`).
+- Container-owned spacing as default → remains app-tier only; editorial is element-owned.
+- Full cap-contract buildable surface mode → demoted to blog-only static illustration if needed for the comparison article, not a buildable surface.
+- Pragma's package-split structure → not transferable; Pragma is a multi-framework monorepo, Foundry is a single build-to-CSS repo.
+
+Decision gate:
+
+- Do not replace the compensated metrics default with any cap-based mode until a four-way specimen exists and has been reviewed across at least IBM Plex Sans and Ubuntu Sans at body, `h2`, and `h1` scales.
+
 ### Audit findings (living-spec review)
 
 - [ ] **`bf-theme--light` compatibility alias** — `css-components.ts:164` emits `.bf-theme.bf-theme--light` alongside `.bf-theme.is-light`. Inconsistent with `.is-dark` naming. Remove alias or document as deprecated.
@@ -113,10 +136,8 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 ### Pre-existing items
 
 - [ ] Surface completeness audit — when adding new role or control properties, land them in the explicit scoped surface blocks and `surfaces.json` manifest instead of letting editorial fallbacks fill the gap.
-- [ ] Comparative engine specimen — add a full cap-contract comparison mode that mirrors the Pragma-style element contract (`padding-block-start/end` plus `margin-block-end` from `spaceAfter`) so the blog can compare formula-only cap alignment, full cap contract, raw metrics, and compensated metrics on one page.
-- [ ] Spacing-mode docs pass — describe the repo's typography modes explicitly as `element-owned` versus `container-owned` spacing so the documentation matches the actual editorial/app ontology.
+- [ ] Blog engine illustration — if the comparison article needs a visual side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding, generate a static HTML page or screenshot. Not a buildable surface mode.
 - [ ] Parasite class sweep — remove remaining downstream component aliases
-- [ ] Baseline invariant validation — add missing build-time checks
 - [ ] Typographic specimen page — editorial multi-column layout demo at `demo/spec/typographic-specimen.html`
 - [ ] Page chrome polish — `pc-controls` cluster should not wrap when space is available; switches + tier dropdown side by side
 - [ ] bf-panel audit — current generated surface (borders, headers, sticky, panel-title/controls/logo) is hallucinated; Vanilla's panels are application-layout-only and simpler. Strip to what's real or remove.

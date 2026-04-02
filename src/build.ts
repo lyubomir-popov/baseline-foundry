@@ -272,6 +272,7 @@ function buildSurfaceManifest(defaultSurface: string, surfaces: ThemeSurface[]):
       surfaces.map(surface => [surface.name, {
         label: surface.label,
         className: surface.className,
+        engine: surface.engine,
         configPath: surface.configPath,
         baselineConfigPath: surface.baselineConfigPath,
         baselineTokensPath: surface.baselineTokensPath,
@@ -347,6 +348,7 @@ async function buildThemeSurface(
     className?: string;
     label?: string;
     zeroNudge?: boolean;
+    engine?: string;
   } = {}
 ): Promise<ThemeSurface> {
   const config = await readThemeConfig(resolvedConfigPath);
@@ -374,6 +376,7 @@ async function buildThemeSurface(
     name,
     label: options.label,
     className: options.className,
+    engine: options.engine ?? "metrics-compensated",
     configPath: resolvedConfigPath,
     baselineConfigPath,
     baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
