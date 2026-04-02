@@ -49,14 +49,6 @@
   padding-block-end: calc(var(--bf-control-box-size, 2rem) * 3);
 }
 
-.bf-controls-modal {
-  inline-size: min(100%, 30rem);
-}
-
-.bf-controls-modal :where(.bf-modal-dialog) {
-  inline-size: 100%;
-}
-
 .bf-controls-panel :where(.bf-pagination-items),
 .bf-controls-panel :where(.bf-breadcrumbs-items) {
   flex-wrap: wrap;

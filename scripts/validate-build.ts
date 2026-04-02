@@ -197,6 +197,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-badge, .bf-badge.is-negative)"), "Expected generated CSS to include badge styling.");
   assert(css.includes(":where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)"), "Expected generated CSS to include status label styling.");
   assert(!css.includes(".bf-label"), "Expected generated CSS to omit the deprecated bf-label alias.");
+  assert(css.includes(":where(.bf-modal.is-workflow)"), "Expected generated CSS to include the workflow modal variant.");
+  assert(css.includes(":where(.bf-modal.is-workflow.is-resizable)"), "Expected generated CSS to include the resizable workflow modal modifier.");
+  assert(css.includes("grid-template-rows: auto minmax(0, 1fr) auto;"), "Expected generated CSS to support the workflow modal fixed-header scrolling-body layout.");
   assert(css.includes(":where(.bf-search-box)"), "Expected generated CSS to include search-box styling.");
   assert(css.includes(":where(.bf-search-and-filter)"), "Expected generated CSS to include search-and-filter styling.");
   assert(css.includes(":where(.bf-search-and-filter-box) {\n  display: inline-flex;\n  flex: 1 1 12rem;\n  max-inline-size: 100%;\n  min-inline-size: 0;"), "Expected search-and-filter boxes to shrink inside narrow rails.");
@@ -462,7 +465,7 @@ function validateLivingSpecControls(html: string, css: string): void {
   assert(html.includes('class="bf-search-and-filter"'), "Expected demo/controls.html to include the search-and-filter control family.");
   assert(html.includes('class="bf-segmented-control"'), "Expected demo/controls.html to include the segmented-control family.");
   assert(html.includes('bf-contextual-menu'), "Expected demo/controls.html to include the contextual-menu family.");
-  assert(html.includes('class="bf-modal-dialog"'), "Expected demo/controls.html to include modal framing.");
+  assert(html.includes('class="bf-modal is-workflow is-resizable"'), "Expected demo/controls.html to include the workflow modal contract.");
   assert(html.includes('src="./controls-page.js"'), "Expected demo/controls.html to boot through the dedicated controls-page runtime.");
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), "Expected demo/controls.html to avoid deprecated p-* markup and stay fully bf-* dogfooded.");
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(html), "Expected demo/controls.html to avoid deprecated vr-* markup and stay fully bf-* dogfooded.");
@@ -470,7 +473,7 @@ function validateLivingSpecControls(html: string, css: string): void {
   assert(css.includes('.bf-controls-panels {'), "Expected demo/controls-shell.css to define the top-level control-panel grid.");
   assert(css.includes('.bf-controls-panel :where(.bf-panel) {'), "Expected demo/controls-shell.css to keep each bf-panel stretched inside the panel grid.");
   assert(css.includes('.bf-controls-menu-panel {'), "Expected demo/controls-shell.css to reserve extra space for contextual-menu dropdowns.");
-  assert(css.includes('.bf-controls-modal {'), "Expected demo/controls-shell.css to define the modal specimen width.");
+  assert(!css.includes('.bf-controls-modal {'), "Expected demo/controls-shell.css to stop using a local modal width wrapper once workflow modal sizing ships upstream.");
 }
 
 function validateDefaultTheme(tokens: Record<string, unknown>, css: string): void {

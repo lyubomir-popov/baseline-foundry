@@ -3327,6 +3327,25 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   padding: 0;
 }
 
+:where(.bf-theme) :where(.bf-modal.is-workflow) {
+  --bf-modal-workflow-viewport-gap: calc(var(--bf-baseline) * 4);
+  --bf-modal-workflow-max-inline-size: 42rem;
+  --bf-modal-workflow-min-inline-size: 32rem;
+  --bf-modal-workflow-max-block-size: 40rem;
+  --bf-modal-workflow-min-block-size: 24rem;
+  block-size: min(calc(100dvh - var(--bf-modal-workflow-viewport-gap)), var(--bf-modal-workflow-max-block-size));
+  inline-size: min(calc(100vw - var(--bf-modal-workflow-viewport-gap)), var(--bf-modal-workflow-max-inline-size));
+  max-block-size: calc(100dvh - var(--bf-modal-workflow-viewport-gap));
+  max-inline-size: calc(100vw - var(--bf-modal-workflow-viewport-gap));
+  min-block-size: min(calc(100dvh - var(--bf-modal-workflow-viewport-gap)), var(--bf-modal-workflow-min-block-size));
+  min-inline-size: min(calc(100vw - var(--bf-modal-workflow-viewport-gap)), var(--bf-modal-workflow-min-inline-size));
+  overflow: hidden;
+}
+
+:where(.bf-theme) :where(.bf-modal.is-workflow.is-resizable) {
+  resize: both;
+}
+
 :where(.bf-theme) :where(.bf-modal)::backdrop {
   background: var(--bf-color-background-overlay);
 }
@@ -3336,6 +3355,14 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   border: var(--bf-border-width) solid var(--bf-color-border-default);
   display: grid;
   gap: 0;
+}
+
+:where(.bf-theme) :where(.bf-modal.is-workflow > .bf-modal-dialog) {
+  block-size: 100%;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  inline-size: 100%;
+  min-block-size: 0;
+  overflow: hidden;
 }
 
 :where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer) {
@@ -3355,6 +3382,16 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 :where(.bf-theme) :where(.bf-modal-body) {
   padding-block-end: var(--bf-panel-padding-block);
   padding-block-start: var(--bf-panel-padding-block);
+}
+
+:where(.bf-theme) :where(.bf-modal.is-workflow) :where(.bf-modal-header, .bf-modal-footer) {
+  background: var(--bf-color-background-default);
+}
+
+:where(.bf-theme) :where(.bf-modal.is-workflow) :where(.bf-modal-body) {
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 :where(.bf-theme) :where(.bf-modal-title) {
