@@ -570,7 +570,7 @@ function validatePanelTheme(tokens: Record<string, unknown>, css: string): void 
   assert(css.includes("block-size: var(--bf-control-visual-size);"), "Expected checkbox/radio/thumb visuals to size from the dedicated control visual token.");
 }
 
-function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, componentShellCss: string, specShellCss: string): void {
+function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, componentShellCss: string, specShellCss: string, pageChromeCss: string): void {
   assert(engineSmokeHtml.includes('<body class="bf-theme is-dark" data-component-capture data-page-surface-mode="locked-manifest">'), "Expected engine-smoke.html to pin the generated IBM Plex manifest while still using the shared component chrome.");
   assert(engineSmokeHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to load the generated IBM Plex smoke stylesheet.");
   assert(engineSmokeHtml.includes('<title>Font Engine Smoke Demo</title>'), "Expected engine-smoke.html to describe the shared multi-font surface instead of a single IBM Plex page.");
@@ -597,6 +597,8 @@ function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, comp
   assert(!specShellCss.includes("[data-spec-home]"), "Expected the living-spec shell to avoid old data-spec-home selectors.");
   assert(!specShellCss.includes("[data-spec-switches]"), "Expected the living-spec shell to avoid old data-spec-switches selectors.");
   assert(!specShellCss.includes("[data-spec-grid-stage]"), "Expected the living-spec shell to avoid old data-spec-grid-stage selectors.");
+  assert(/\.pc-controls\s*\{\s*flex-wrap:\s*nowrap;/.test(pageChromeCss), "Expected shared page-chrome controls to stay on one row when space is available.");
+  assert(/@media\s*\(max-width:\s*56rem\)\s*\{[\s\S]*?\.pc-controls\s*\{\s*flex-wrap:\s*wrap;/.test(pageChromeCss), "Expected shared page-chrome controls to restore wrapping in the narrow-width fallback.");
 }
 
 function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
@@ -639,11 +641,12 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml] = await Promise.all([
+  const [engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
     readTextArtifact(path.resolve("demo/component-shell.css")),
     readTextArtifact(path.resolve("demo/spec-shell.css")),
+    readTextArtifact(path.resolve("demo/page-chrome.css")),
     readTextArtifact(path.resolve("demo/controls-shell.css")),
     readTextArtifact(path.resolve("demo/components/application-layout.html")),
     readTextArtifact(path.resolve("demo/components/tabs.html")),
@@ -687,7 +690,7 @@ async function main(): Promise<void> {
   runInvariant("Surface manifest (panel preset)", () => validateSurfaceManifest(panelPreset.surfaces, "panel"));
   runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
   runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
-  runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss));
+  runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss));
   runInvariant("Living spec home", () => validateLivingSpecHome(demoIndexHtml));
   runInvariant("Living spec controls", () => validateLivingSpecControls(demoControlsHtml, controlsShellCss));
   runInvariant("App tier demo (application-layout)", () => validateAppTierDemoPage("application-layout.html", applicationLayoutHtml));

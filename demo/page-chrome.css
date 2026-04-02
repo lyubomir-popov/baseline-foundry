@@ -30,6 +30,7 @@ body.is-dark .pc-bar {
 }
 
 .pc-controls {
+  flex-wrap: nowrap;
   gap: 0.5rem 1rem;
   justify-content: flex-end;
   min-inline-size: 0;
@@ -157,6 +158,7 @@ body.is-dark .pc-bar {
   }
 
   .pc-controls {
+    flex-wrap: wrap;
     justify-content: flex-start;
     inline-size: 100%;
   }

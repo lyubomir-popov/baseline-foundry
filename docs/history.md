@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Page chrome polish (2026-04-02)
+
+- [x] Tightened the shared `demo/page-chrome.css` contract so the `pc-controls` cluster no longer wraps onto two rows at roomy desktop widths.
+- [x] Kept the existing `@media (max-width: 56rem)` fallback responsible for restoring internal wrapping only once the narrow layout genuinely runs out of room.
+- [x] Extended `scripts/validate-build.ts` so the desktop `nowrap` plus narrow-width `wrap` page-chrome behavior is now part of the static demo contract.
+
 ## Surface completeness audit (2026-04-02)
 
 - [x] Restored the missing `layout.sectionSpaceShallowBaselineUnits` token in `config/foundation-theme.json` so the foundation theme once again carries the full layout spacing set expected by the shared surface pipeline.
