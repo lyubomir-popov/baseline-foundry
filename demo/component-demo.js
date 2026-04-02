@@ -1,11 +1,10 @@
 import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 
-const SURFACE_OPTIONS = [
+const TIER_OPTIONS = [
   { value: "editorial", label: "Editorial" },
   { value: "documentation", label: "Docs" },
-  { value: "app", label: "App" },
-  { value: "panel", label: "Panel" }
+  { value: "app", label: "App" }
 ];
 
 function isLockedManifestMode() {
@@ -113,7 +112,20 @@ function resolveStylesheetLink() {
   });
 }
 
-function detectSurface(stylesheetLink) {
+function supportedTierOptions() {
+  const allowed = document.body.dataset.pageTierOptions
+    ?.split(",")
+    .map(option => option.trim())
+    .filter(option => TIER_OPTIONS.some(tier => tier.value === option));
+
+  if (!allowed || allowed.length === 0) {
+    return TIER_OPTIONS;
+  }
+
+  return TIER_OPTIONS.filter(option => allowed.includes(option.value));
+}
+
+function detectTier() {
   if (document.body.classList.contains("bf-tier-documentation")) {
     return "documentation";
   }
@@ -125,24 +137,16 @@ function detectSurface(stylesheetLink) {
   return "editorial";
 }
 
-function surfaceHref(surface) {
-  if (surface === "panel") {
-    return "/dist/presets/panel/styles.css";
-  }
+function tierHref() {
   return "/dist/tiers/editorial/styles.css";
 }
 
-function applySurface(surface, stylesheetLink) {
-  stylesheetLink.href = surfaceHref(surface);
+function applyTier(tierName, stylesheetLink) {
+  stylesheetLink.href = tierHref();
   document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app");
   document.body.classList.add("bf-theme");
-
-  if (surface === "editorial" || surface === "documentation" || surface === "app") {
-    document.body.classList.add(`bf-tier-${surface}`);
-    document.body.dataset.bfTier = surface;
-  } else {
-    delete document.body.dataset.bfTier;
-  }
+  document.body.classList.add(`bf-tier-${tierName}`);
+  document.body.dataset.bfTier = tierName;
 }
 
 function currentTone() {
@@ -174,7 +178,7 @@ async function initLockedManifestMode(stylesheetLink) {
       selectedTier: initialSurface,
       showBaseline: true,
       showTone: true,
-      tierAriaLabel: "Surface",
+      tierAriaLabel: "Font surface",
       tierOptions: manifestSurfaceOptions(manifest)
     },
     currentPath: window.location.pathname,
@@ -190,15 +194,15 @@ async function initLockedManifestMode(stylesheetLink) {
 }
 
 function initDefaultMode(stylesheetLink) {
-  const initialSurface = detectSurface(stylesheetLink);
-  applySurface(initialSurface, stylesheetLink);
+  const initialSurface = detectTier();
+  applyTier(initialSurface, stylesheetLink);
   const chrome = injectPageChrome({
     controls: {
       selectedTier: initialSurface,
       showBaseline: true,
       showTone: true,
-      tierAriaLabel: "Surface",
-      tierOptions: SURFACE_OPTIONS
+      tierAriaLabel: "Tier",
+      tierOptions: supportedTierOptions()
     },
     currentPath: window.location.pathname,
     wrapBodyContent: true
@@ -207,7 +211,7 @@ function initDefaultMode(stylesheetLink) {
   return {
     chrome,
     initialSurface,
-    applySurface: surface => applySurface(surface, stylesheetLink),
+    applySurface: surface => applyTier(surface, stylesheetLink),
     baselineShouldDefaultToOn
   };
 }

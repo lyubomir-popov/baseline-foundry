@@ -62,12 +62,35 @@ function validateBfOnlyDemoPage(pageName: string, html: string): void {
 }
 
 function validateAppTierDemoPage(pageName: string, html: string): void {
-  assert(html.includes('../../dist/presets/app-tier/styles.css'), `Expected ${pageName} to load the app-tier preset instead of the dense panel preset.`);
+  assert(html.includes('../../dist/tiers/editorial/styles.css'), `Expected ${pageName} to bootstrap from the shared tier stylesheet instead of a preset-specific bundle.`);
   assert(html.includes('<body class="bf-theme bf-tier-app is-light"'), `Expected ${pageName} to dogfood the bf-theme + bf-tier-app root.`);
   assert(html.includes("data-component-capture"), `Expected ${pageName} to expose a data-component-capture root for screenshot and baseline tooling.`);
   assert(!html.includes('is-dark'), `Expected ${pageName} to avoid the dark demo tone now that it is an app-tier parity surface.`);
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated p-* markup and stay fully bf-* dogfooded.`);
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated vr-* markup and stay fully bf-* dogfooded.`);
+}
+
+async function validateComponentPageTierConsistency(componentDemoJs: string): Promise<void> {
+  assert(componentDemoJs.includes('const TIER_OPTIONS = ['), "Expected component-demo.js to expose the shared built-in tier list.");
+  assert(!componentDemoJs.includes('{ value: "panel", label: "Panel" }'), "Expected component-demo.js to avoid exposing panel as a global tier option.");
+  assert(componentDemoJs.includes('tierAriaLabel: "Tier"'), "Expected standard component pages to label the shared header select as a tier control.");
+  assert(componentDemoJs.includes('tierAriaLabel: "Font surface"'), "Expected locked-manifest experiments to label their page-specific selector explicitly as a font-surface control.");
+
+  const componentDir = path.resolve("demo/components");
+  const componentPageNames = (await fs.readdir(componentDir)).filter(fileName => fileName.endsWith(".html"));
+
+  for (const fileName of componentPageNames) {
+    const html = await readTextArtifact(path.join(componentDir, fileName));
+
+    if (fileName === "engine-smoke.html") {
+      assert(html.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to keep its experiment-specific stylesheet bundle.");
+      continue;
+    }
+
+    assert(html.includes('../../dist/tiers/editorial/styles.css'), `Expected ${fileName} to bootstrap from the shared built-in tier stylesheet.`);
+    assert(!html.includes('dist/presets/panel/styles.css'), `Expected ${fileName} to avoid the old panel preset bootstrap path.`);
+    assert(!html.includes('dist/presets/app-tier/styles.css'), `Expected ${fileName} to avoid the old app-tier preset bootstrap path.`);
+  }
 }
 
 function validateCommonCss(css: string): void {
@@ -656,9 +679,10 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml, typographicSpecimenHtml] = await Promise.all([
+  const [engineSmokeHtml, sampleHtml, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml, typographicSpecimenHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
+    readTextArtifact(path.resolve("demo/component-demo.js")),
     readTextArtifact(path.resolve("demo/component-shell.css")),
     readTextArtifact(path.resolve("demo/spec-shell.css")),
     readTextArtifact(path.resolve("demo/page-chrome.css")),
@@ -715,6 +739,7 @@ async function main(): Promise<void> {
   runInvariant("Parity surface demos", () => validateParitySurfaceDemos(iconHtml, listHtml, tableHtml));
   runInvariant("Top navigation demo", () => validateTopNavigationDemo(topNavigationHtml));
   runInvariant("Typographic specimen", () => validateTypographicSpecimen(pageCatalogJs, typographicSpecimenHtml));
+  await runInvariantAsync("Component page tier consistency", () => validateComponentPageTierConsistency(componentDemoJs));
   runInvariant("bf-only demo family", () => validateBfOnlyDemoFamily({
     applicationLayout: applicationLayoutHtml,
     tabs: tabsHtml,

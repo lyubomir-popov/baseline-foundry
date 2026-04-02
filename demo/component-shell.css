@@ -2,7 +2,7 @@
 
 /* ── Demo shell ─────────────────────────────────────────
    Minimal reset for component demo pages.
-   Framework CSS (styles.css / panel/styles.css) does the real work.
+  Framework CSS (shared tier styles / experiment bundles) does the real work.
    ─────────────────────────────────────────────────────── */
 
 :root {

@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Global tier header unification (2026-04-02)
+
+- [x] Removed the old `panel` option from the standard component-page header path and aligned `demo/component-demo.js` with the same built-in `Editorial / Docs / App` tier selector used by the living spec and example pages.
+- [x] Normalized the component templates to bootstrap from the shared tier stylesheet instead of the old panel/app-tier preset paths, so the HTML templates and the header runtime now agree about the site-wide tier model.
+- [x] Tightened `scripts/validate-build.ts` with a component-page tier-consistency audit that rejects future drift back to preset bootstrap paths or `panel` as a global header tier option.
+
 ## Parasite class sweep (2026-04-02)
 
 - [x] Removed the last surviving downstream validation aliases from `src/css-components.ts`: `.has-error`, `.has-success`, and `.has-warning` no longer mirror the canonical `is-*` validation state contract.
