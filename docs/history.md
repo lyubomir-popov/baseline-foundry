@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## OS tier addendum + panel-route closure (2026-04-02)
+
+- [x] Added `config/tiers/os.json` as a real fourth built-in tier: the dense line now follows the canonical `body` + `h1` to `h6` role contract instead of keeping separate `ui-*` roles alive.
+- [x] Repointed the legacy `panel` preset output to the OS tier values so downstream dense-surface consumers still have the old artifact path, but the repo now treats `panel` as an alias rather than as a peer tier.
+- [x] Converted `demo/panel.html` from a standalone preset page into a shared-chrome OS addendum page, registered it in the page catalog, and extended the shared runtimes/validation so `Editorial / Docs / App / OS` is now the truthful global tier model everywhere.
+
 ## Global tier header unification (2026-04-02)
 
 - [x] Removed the old `panel` option from the standard component-page header path and aligned `demo/component-demo.js` with the same built-in `Editorial / Docs / App` tier selector used by the living spec and example pages.

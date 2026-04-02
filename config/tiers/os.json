@@ -24,44 +24,6 @@
       "fontStyle": "normal"
     },
     {
-      "identifier": "ui-heading",
-      "fontSize": 1,
-      "lineHeight": 6,
-      "spaceAfter": 3,
-      "fontFamily": "ubuntu-sans",
-      "fontWeight": 600,
-      "fontStyle": "normal"
-    },
-    {
-      "identifier": "ui-small",
-      "fontSize": 0.875,
-      "lineHeight": 5,
-      "spaceAfter": 3,
-      "fontFamily": "ubuntu-sans",
-      "fontWeight": 400,
-      "fontStyle": "normal"
-    },
-    {
-      "identifier": "ui-small-caps",
-      "fontSize": 0.875,
-      "lineHeight": 5,
-      "spaceAfter": 3,
-      "fontFamily": "ubuntu-sans",
-      "fontWeight": 400,
-      "fontStyle": "normal",
-      "fontVariantCaps": "all-small-caps",
-      "letterSpacing": "0.05em"
-    },
-    {
-      "identifier": "ui-x-small",
-      "fontSize": 0.75,
-      "lineHeight": 4,
-      "spaceAfter": 3,
-      "fontFamily": "ubuntu-sans",
-      "fontWeight": 600,
-      "fontStyle": "normal"
-    },
-    {
       "identifier": "h6",
       "fontSize": 0.75,
       "lineHeight": 4,
@@ -77,7 +39,8 @@
       "spaceAfter": 3,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 550,
-      "fontStyle": "normal"
+      "fontStyle": "normal",
+      "fontVariantCaps": "all-small-caps"
     },
     {
       "identifier": "h4",
@@ -123,11 +86,7 @@
     "h3": "h3",
     "h4": "h4",
     "h5": "h5",
-    "h6": "h6",
-    "ui-heading": "ui-heading",
-    "ui-small": "ui-small",
-    "ui-small-caps": "ui-small-caps",
-    "ui-x-small": "ui-x-small"
+    "h6": "h6"
   },
   "layout": {
     "contentMaxWidthRem": 67.5,

@@ -26,8 +26,16 @@ const tierConfig = {
     className: "bf-tier-app",
     description: "Canonical-style application tier with Ubuntu Sans, container-owned spacing, and zero selected nudges.",
     detail: "This tier keeps the application gutter contract and the light app-shell chrome used for parity pages."
+  },
+  os: {
+    label: "OS",
+    className: "bf-tier-os",
+    description: "Dense OS-style addendum with editorial baseline alignment, compact measure, and reduced control geometry.",
+    detail: "This tier stays metrics-driven and element-owned like editorial, but compresses the reading and control rhythm toward dense system surfaces."
   }
 };
+
+const BUILT_IN_TIER_CLASSES = ["bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os"];
 
 function assetUrl(relativePath) {
   return new URL(`${rootPrefix}/${relativePath}`, window.location.href).toString();
@@ -136,6 +144,36 @@ function supportedTierNames() {
   return allowed && allowed.length > 0 ? allowed : Object.keys(tierConfig);
 }
 
+function isSupportedTierName(value) {
+  return typeof value === "string" && value in tierConfig;
+}
+
+function detectTier() {
+  const authoredTier = document.body.dataset.bfTier;
+
+  if (isSupportedTierName(authoredTier)) {
+    return authoredTier;
+  }
+
+  if (document.body.classList.contains("bf-tier-os")) {
+    return "os";
+  }
+
+  if (document.body.classList.contains("bf-tier-app")) {
+    return "app";
+  }
+
+  if (document.body.classList.contains("bf-tier-documentation")) {
+    return "documentation";
+  }
+
+  return "editorial";
+}
+
+function baselineDefaultMode(tierName) {
+  return document.body.dataset.pageBaselineDefault ?? (tierName === "editorial" ? "on" : "off");
+}
+
 function currentTone() {
   return document.body.classList.contains("is-dark") ? "dark" : "light";
 }
@@ -146,7 +184,7 @@ function updateStatus(message) {
     return;
   }
 
-  const tierName = document.body.dataset.bfTier ?? "editorial";
+  const tierName = detectTier();
   const tier = tierConfig[tierName] ?? tierConfig.editorial;
   setText("[data-spec-status]", `${tier.label} tier active in ${currentTone()} mode.`);
 }
@@ -190,7 +228,7 @@ async function applyTier(tierName) {
     tierSelect.value = tierName;
   }
 
-  document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app");
+  document.body.classList.remove(...BUILT_IN_TIER_CLASSES);
   document.body.classList.add("bf-theme", tier.className);
   document.body.dataset.bfTier = tierName;
 
@@ -232,12 +270,7 @@ export async function initSpecRuntime({ initComponents } = {}) {
   stylesheetLink.href = runtimeStylesheetUrl();
 
   const supportedTiers = supportedTierNames().map(name => ({ value: name, label: tierConfig[name]?.label ?? name }));
-  const currentTier = document.body.dataset.bfTier
-    ?? (document.body.classList.contains("bf-tier-app")
-      ? "app"
-      : document.body.classList.contains("bf-tier-documentation")
-        ? "documentation"
-        : "editorial");
+  const currentTier = detectTier();
   const baselineTarget = document.querySelector(".spec-shell") ?? document.body;
   const baselineTargetId = ensureTargetId(baselineTarget, "spec-grid-target");
   const chrome = injectPageChrome({
@@ -256,7 +289,7 @@ export async function initSpecRuntime({ initComponents } = {}) {
   }
 
   chrome.baselineToggle.setAttribute("aria-controls", baselineTargetId);
-  chrome.baselineToggle.dataset.baselineDefault = currentTier === "editorial" ? "on" : "off";
+  chrome.baselineToggle.dataset.baselineDefault = baselineDefaultMode(currentTier);
   initBaselineGridToggles({ toggleSelector: "[data-page-chrome-baseline-toggle][aria-controls]", defaultEnabled: true });
   initSideNavigations();
 
@@ -283,9 +316,12 @@ export async function initSpecRuntime({ initComponents } = {}) {
 
   const preferredTier = readStoredTier();
   const supportedTierNamesList = supportedTierNames();
-  const initialTier = preferredTier && supportedTierNamesList.includes(preferredTier)
+  const declaredDefaultTier = document.body.dataset.pageTierDefault;
+  const initialTier = declaredDefaultTier && supportedTierNamesList.includes(declaredDefaultTier)
+    ? declaredDefaultTier
+    : preferredTier && supportedTierNamesList.includes(preferredTier)
     ? preferredTier
-    : (supportedTierNamesList.includes("editorial") ? "editorial" : supportedTierNamesList[0]);
+    : (supportedTierNamesList.includes(currentTier) ? currentTier : (supportedTierNamesList.includes("editorial") ? "editorial" : supportedTierNamesList[0]));
   const preferredTone = readStoredTone();
 
   applyTone(preferredTone === "dark" ? "dark" : "light", { persist: false });

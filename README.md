@@ -39,6 +39,9 @@ Build output includes:
 - `dist/tiers/app/styles.css`
 - `dist/tiers/app/tokens.json`
 - `dist/tiers/app/surfaces.json`
+- `dist/tiers/os/styles.css`
+- `dist/tiers/os/tokens.json`
+- `dist/tiers/os/surfaces.json`
 - `dist/presets/prose/styles.css`
 - `dist/presets/prose/tokens.json`
 - `dist/presets/prose/surfaces.json`
@@ -67,7 +70,7 @@ List or build tiers directly with:
 
 ```bash
 npm run build:theme -- --list-tiers
-npm run build:theme -- --tier=app
+npm run build:theme -- --tier=os
 ```
 
 List or build presets directly with:
@@ -85,7 +88,7 @@ The demo runs at:
 
 - [http://127.0.0.1:4174/](http://127.0.0.1:4174/) — Living spec home
 - [http://127.0.0.1:4174/demo/spec/typography.html](http://127.0.0.1:4174/demo/spec/typography.html)
-- [http://127.0.0.1:4174/demo/panel.html](http://127.0.0.1:4174/demo/panel.html)
+- [http://127.0.0.1:4174/demo/panel.html](http://127.0.0.1:4174/demo/panel.html) — OS tier addendum
 - [http://127.0.0.1:4174/demo/components/index.html](http://127.0.0.1:4174/demo/components/index.html)
 
 Standalone Canonical example batches also live under `examples/grid/` and `examples/spacing/`. Each family has one shared stylesheet (`grid-examples.css` / `spacing-examples.css`) and stays aligned with the source prompts in `grid-examples.prompt.md` and `spacing-examples.prompt.md`.
@@ -152,21 +155,21 @@ The baseline verification report is also written to:
 
 ## Theme Model
 
-The default theme uses Ubuntu Sans Variable and generates metric-driven typography tokens, spacing tokens, layout values, component density tokens, and a published surface manifest. Three first-class tiers plus one secondary preset:
+The default theme uses Ubuntu Sans Variable and generates metric-driven typography tokens, spacing tokens, layout values, component density tokens, and a published surface manifest. Four first-class tiers plus legacy preset aliases:
 
 | Tier/Preset | Purpose |
 |---|---|
 | `editorial` | Root default, widest long-form composition |
 | `documentation` | Tighter chapter-reading tier |
 | `app` | Canonical-facing application chrome |
-| `panel` | Dense control surfaces (0.75rem body) |
+| `os` | Dense OS-style addendum with editorial alignment and compact control geometry |
 
-Legacy aliases: `prose` → editorial, `app-tier` → app.
+Legacy aliases: `prose` → editorial, `panel` → os, `app-tier` → app.
 
 Independent surface contract:
 
 - each built-in tier emits a complete scoped token surface instead of inheriting editorial defaults through diffs
-- tier choice is a top-level class on any `.bf-theme` container: `.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`
+- tier choice is a top-level class on any `.bf-theme` container: `.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`, `.bf-tier-os`
 - multiple containers can coexist side by side under the same stylesheet
 - `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface
 - `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest
@@ -185,6 +188,13 @@ Example:
 	<div class="bf-prose">
 		<h1>App surface</h1>
 		<p>Runtime nudges are zeroed, but the stored font metrics still exist in surfaces.json.</p>
+	</div>
+</section>
+
+<section class="bf-theme bf-tier-os">
+	<div class="bf-prose">
+		<h1>OS surface</h1>
+		<p>Metrics stay on, but the measure and control geometry compress toward dense system surfaces.</p>
 	</div>
 </section>
 ```
@@ -229,6 +239,9 @@ Static assets:
 - `baseline-foundry/tiers/app.css`
 - `baseline-foundry/tiers/app.tokens.json`
 - `baseline-foundry/tiers/app.surfaces.json`
+- `baseline-foundry/tiers/os.css`
+- `baseline-foundry/tiers/os.tokens.json`
+- `baseline-foundry/tiers/os.surfaces.json`
 - `baseline-foundry/presets/prose.css`
 - `baseline-foundry/presets/prose.tokens.json`
 - `baseline-foundry/presets/prose.surfaces.json`

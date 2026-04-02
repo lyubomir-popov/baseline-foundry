@@ -75,7 +75,7 @@ The baseline-grid debug overlay is a separable concern. CSS generation lives in 
 - **Role-scoped typography vars** — root prose and body-sized components read tier-scoped family/size/weight/line-height vars instead of editorial literals.
 - **Tier-selectable control padding vars** — inputs/selects/buttons can resolve block padding from real body nudges in nudged tiers and fixed fallback padding in `app`; no target-height back-calculation or legacy control block-size tokens.
 - **Compensated row boxes for marginless repeats** — tables and similar text-between-rules rows use a fixed row box with an in-box border, nudge-derived padding, and a solved line-height instead of fake inset borders or zero-top padding hacks.
-- **Independent surface contract** — each built-in tier emits a complete scoped token surface (`.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`) instead of inheriting editorial defaults through diffs. Tier switching = class toggle on any `.bf-theme` container, and multiple containers can coexist side by side.
+- **Independent surface contract** — each built-in tier emits a complete scoped token surface (`.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`, `.bf-tier-os`) instead of inheriting editorial defaults through diffs. Tier switching = class toggle on any `.bf-theme` container, and multiple containers can coexist side by side.
 - **Publishable surface manifest** — `dist/surfaces.json` stores every shipped surface's runtime tokens plus the font-metric artifact used to derive them. `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest.
 
 ### Control baseline-grid invariant
@@ -94,8 +94,8 @@ Consequences:
 - A paragraph, input, button, and select sharing the same font size all share the same baseline alignment when placed side by side.
 - The `controlPadding()` back-calculation that previously existed was wrong — it reversed the causality (target height → derive padding) instead of letting consistent padding produce a natural height.
 - `bf-grid`: `4`/`8`/`16` columns, power-of-2 spans, `620px`/`1681px` thresholds.
-- Tier-first build: `editorial`, `documentation`, `app`.
-- Metrics-derived nudges default; `.bf-engine-cap` is demo-only; `.bf-tier-app` zeroes runtime nudges but keeps stored metric data for audit and side-by-side comparison.
+- Tier-first build: `editorial`, `documentation`, `app`, `os`.
+- Metrics-derived nudges default; `.bf-engine-cap` is demo-only; `.bf-tier-app` zeroes runtime nudges but keeps stored metric data for audit and side-by-side comparison; `.bf-tier-os` stays metrics-driven as a dense addendum surface.
 - Ubuntu Sans Variable for the canonical built-ins; other fonts belong in their own metric-derived surfaces, not in override diffs.
 
 ### Marginless row-box invariant
@@ -123,7 +123,7 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Current follow-up
 
-- The built-in tier header is now consistent across the living spec, controls, examples, and component demos: standard component pages now bootstrap from the shared tier stylesheet, the component page chrome uses the same `Editorial / Docs / App` tier selector as the rest of the site, and the old `panel` option is gone from the standard header path. The remaining truthful exception is `demo/panel.html`, which is still a standalone preset page rather than a real built-in tier route.
+- The site-wide tier model now has four truthful built-in surfaces: `editorial`, `documentation`, `app`, and the non-canonical `os` addendum. The shared header exposes `Editorial / Docs / App / OS` across the living spec, controls, examples, and component demos; `demo/panel.html` now boots through the shared page chrome as the OS addendum page; and the legacy `panel` preset now aliases the OS output instead of carrying its own `ui-*` role config.
 - The parasite class sweep is now complete end-to-end: the old validation aliases (`.has-error`, `.has-success`, `.has-warning`) are gone from the shared component CSS, the last live Vanilla-style `has-*` helper classes are gone from the BF demo/runtime surface, and build validation now rejects both kinds of drift so the public contract stays on structural selectors plus canonical `is-*` modifiers only.
 - The typographic specimen page is now complete: `demo/spec/typographic-specimen.html` ships as a real spec chapter with shared page chrome, page-catalog registration, and a responsive editorial two-column prose layout that collapses back to one column cleanly.
 - Page chrome polish is now complete: the shared `pc-controls` cluster stays on one row whenever the desktop bar has room, the existing narrow-width fallback still restores wrapping when space genuinely runs out, and build validation now asserts that desktop/mobile wrap contract directly from `demo/page-chrome.css`.
@@ -131,7 +131,6 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 - Workflow modal upstreaming for `brand-layout-ops` now ships in `baseline-foundry`: `bf-modal.is-workflow` provides the canonical medium-large authoring shell with fixed header/footer bars and an internally scrolling body, while `bf-modal.is-workflow.is-resizable` adds optional resize without downstream-local modal sizing/layout CSS.
 - Top-navigation chevron spacing and motion parity now ships in `baseline-foundry`: closed dropdown toggles keep the chevron pointed downward, active toggles rotate it upward, and the shared contract now matches the downstream `brand-layout-ops` authoring shell without chevron-specific overrides.
 - The `bf-panel` audit is now complete: shared panels keep the real Vanilla application-layout pieces (`bf-panel-header`, `bf-panel-title`, `bf-panel-controls`, `bf-panel-toggle`, sticky headers, fill-height shell usage) but drop the invented border-card treatment, and `demo/controls.html` now uses plain layout wrappers instead of decorative `bf-panel` containers.
-- Highest-priority non-downstream cleanup is now global page-chrome closure: decide whether `demo/panel.html` becomes the future OS-tier landing page or is retired into a non-tier side route, so every live site page can present the same truthful global header contract.
 - Engine smoke now ships as a single generated multi-font bundle at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that manifest through the shared page chrome so the 8rem/4rem cap-drift comparison can switch between `IBM Plex Sans` and `Ubuntu Sans` without changing route.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
 - Custom builds can now emit named sibling surfaces in one stylesheet + manifest via `buildThemeFromConfig({ surfaceLabel, additionalSurfaces })`, which closes the immediate multi-font registry follow-up for downstream white-label experiments.
@@ -161,14 +160,6 @@ Not adopted (taste-driven, already settled):
 Decision gate:
 
 - Do not replace the compensated metrics default with any cap-based mode until a four-way specimen exists and has been reviewed across at least IBM Plex Sans and Ubuntu Sans at body, `h2`, and `h1` scales.
-
-### Pre-existing items
-
-- [ ] Global page-chrome closure — eliminate the last non-global header path on `demo/panel.html` by either folding it into the future OS-tier route or treating it as a clearly non-tier side surface; keep `engine-smoke` explicit as a font-surface experiment, not a tier selector.
-
-### New: OS tier (from inbox)
-
-- [ ] **Rename panel tier → OS tier** — new 4th tier representing extreme OS-style density. Not in canonical specs; mark as addendum. Should follow editorial tier conventions (baseline-aligned, element-owned spacing) but much denser. Elevate to same level as editorial/app/documentation tiers.
 
 ### Optional follow-up
 

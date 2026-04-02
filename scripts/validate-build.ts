@@ -74,6 +74,7 @@ function validateAppTierDemoPage(pageName: string, html: string): void {
 
 async function validateComponentPageTierConsistency(componentDemoJs: string): Promise<void> {
   assert(componentDemoJs.includes('const TIER_OPTIONS = ['), "Expected component-demo.js to expose the shared built-in tier list.");
+  assert(componentDemoJs.includes('{ value: "os", label: "OS" }'), "Expected component-demo.js to expose OS as a first-class built-in tier option.");
   assert(!componentDemoJs.includes('{ value: "panel", label: "Panel" }'), "Expected component-demo.js to avoid exposing panel as a global tier option.");
   assert(componentDemoJs.includes('tierAriaLabel: "Tier"'), "Expected standard component pages to label the shared header select as a tier control.");
   assert(componentDemoJs.includes('tierAriaLabel: "Font surface"'), "Expected locked-manifest experiments to label their page-specific selector explicitly as a font-surface control.");
@@ -316,6 +317,7 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   const roleNames = Object.keys(roles);
 
   assert(roleNames.length > 0, "Expected generated tokens to include typography roles.");
+  assert(roleNames.every(roleName => roleName === "body" || /^h[1-6]$/.test(roleName)), "Expected generated tokens to stay on the canonical body + h1-h6 role set.");
   assert(roles.body, 'Expected generated tokens to include a "body" role.');
   assert(roles.h1 && roles.h2 && roles.h3 && roles.h4 && roles.h5 && roles.h6, "Expected generated tokens to include the standard heading roles.");
   assert(fontFiles.length > 0, "Expected generated tokens to include at least one font file.");
@@ -394,6 +396,9 @@ function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefa
   const appRoles = (appTokens.roles ?? {}) as Record<string, Record<string, unknown>>;
   const appMetrics = (appSurface.metrics ?? {}) as Record<string, unknown>;
   const appMetricElements = (appMetrics.elements ?? {}) as Record<string, Record<string, unknown>>;
+  const osSurface = surfaces.os ?? {};
+  const osTokens = (osSurface.tokens ?? {}) as Record<string, unknown>;
+  const osRoles = (osTokens.roles ?? {}) as Record<string, Record<string, unknown>>;
 
   assert(defaultSurface === expectedDefaultSurface, `Expected surfaces.json to default to "${expectedDefaultSurface}".`);
   assert(Object.keys(surfaces).length > 0, "Expected surfaces.json to expose at least one named surface.");
@@ -401,14 +406,18 @@ function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefa
   assert(surfaces.editorial, 'Expected surfaces.json to include the "editorial" surface entry.');
   assert(surfaces.documentation, 'Expected surfaces.json to include the "documentation" surface entry.');
   assert(surfaces.app, 'Expected surfaces.json to include the "app" surface entry.');
+  assert(surfaces.os, 'Expected surfaces.json to include the "os" surface entry.');
   assert(surfaces.editorial.className === "bf-tier-editorial", 'Expected the editorial surface to expose the bf-tier-editorial class hook.');
   assert(surfaces.documentation.className === "bf-tier-documentation", 'Expected the documentation surface to expose the bf-tier-documentation class hook.');
   assert(surfaces.app.className === "bf-tier-app", 'Expected the app surface to expose the bf-tier-app class hook.');
+  assert(surfaces.os.className === "bf-tier-os", 'Expected the OS surface to expose the bf-tier-os class hook.');
   assert(surfaces.editorial.engine === "metrics-compensated", 'Expected the editorial surface engine to be "metrics-compensated".');
   assert(surfaces.documentation.engine === "metrics-compensated", 'Expected the documentation surface engine to be "metrics-compensated".');
   assert(surfaces.app.engine === "metrics-compensated", 'Expected the app surface engine to be "metrics-compensated".');
+  assert(surfaces.os.engine === "metrics-compensated", 'Expected the OS surface engine to be "metrics-compensated".');
   assert(appRoles.body?.nudgeTop === "0rem", "Expected the app surface runtime tokens to stay zero-nudge.");
   assert(appMetricElements.body?.nudgeTop && appMetricElements.body.nudgeTop !== "0rem", "Expected the app surface metrics to retain the computed font-derived nudge data.");
+  assert(typeof osRoles.body?.nudgeTop === "string" && osRoles.body.nudgeTop !== "0rem", "Expected the OS surface runtime tokens to retain metrics-derived body nudges.");
 }
 
 function validateCustomSurfaceManifest(manifest: Record<string, unknown>, expectedDefaultSurface: string): void {
@@ -471,7 +480,7 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
 }
 
 function validateLivingSpecHome(html: string): void {
-  assert(html.includes('data-page-tier-options="editorial,documentation,app"'), "Expected index.html to declare the supported shared-bar tiers.");
+  assert(html.includes('data-page-tier-options="editorial,documentation,app,os"'), "Expected index.html to declare the supported shared-bar tiers.");
   assert(html.includes('./dist/tiers/editorial/styles.css'), "Expected index.html to load the editorial tier output by default.");
   assert(html.includes('class="bf-grid pc-grid-guide"'), "Expected index.html to include grid guide specimens.");
   assert(html.includes('bf-grid-scope'), "Expected index.html to include bf-grid-scope container query scopes.");
@@ -491,7 +500,7 @@ function validateLivingSpecHome(html: string): void {
 }
 
 function validateLivingSpecControls(html: string, css: string): void {
-  assert(html.includes('data-page-tier-options="editorial,documentation,app"'), "Expected demo/controls.html to declare the supported shared-bar tiers.");
+  assert(html.includes('data-page-tier-options="editorial,documentation,app,os"'), "Expected demo/controls.html to declare the supported shared-bar tiers.");
   assert(html.includes('../dist/tiers/app/styles.css'), "Expected demo/controls.html to default to the app tier output.");
   assert(html.includes('<h2>Core fields</h2>'), "Expected demo/controls.html to expose the core fields section heading.");
   assert(!html.includes('data-controls-hero'), "Expected demo/controls.html hero section to be removed.");
@@ -553,51 +562,52 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   assert(!css.includes(".bf-meta"), "Expected CSS to avoid generating an implicit meta alias when no meta role is configured.");
 }
 
-function validatePanelTheme(tokens: Record<string, unknown>, css: string): void {
+function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   const { roles, layout, components } = validateCommonTokens(tokens);
   const fontSizes = new Set(Object.values(roles).map(role => role.fontSize).filter(Boolean));
 
-  assert(roles.body.fontSize === "0.75rem", "Expected the panel preset body role font size to be 0.75rem.");
-  assert(roles.body.lineHeight === "1rem", "Expected the panel preset body line height to be 1rem.");
-  assert(roles.h1.fontSize === "1.96875rem", "Expected the panel preset h1 role font size to be 1.96875rem.");
-  assert(roles.h2.fontSize === "1.96875rem", "Expected the panel preset h2 role font size to be 1.96875rem.");
-  assert(roles.h1.lineHeight === "2.25rem", "Expected the panel preset h1 line height to be 2.25rem.");
-  assert(roles.h2.lineHeight === "2.25rem", "Expected the panel preset h2 line height to be 2.25rem.");
-  assert(roles.h3.fontSize === "1.125rem", "Expected the panel preset h3 role font size to be 1.125rem.");
-  assert(roles.h4.fontSize === "1.125rem", "Expected the panel preset h4 role font size to be 1.125rem.");
-  assert(roles.h3.lineHeight === "1.5rem", "Expected the panel preset h3 line height to be 1.5rem.");
-  assert(roles.h4.lineHeight === "1.5rem", "Expected the panel preset h4 line height to be 1.5rem.");
-  assert(roles.h5.fontSize === "0.75rem", "Expected the panel preset h5 role font size to stay at the compact body size.");
-  assert(roles.h6.fontSize === "0.75rem", "Expected the panel preset h6 role font size to stay at the compact body size.");
-  assert(roles.h1.fontWeight === 500, "Expected the panel preset h1 to be the heavier member of the top pair.");
-  assert(roles.h2.fontWeight === 200, "Expected the panel preset h2 to sit 300 weight units below h1.");
-  assert(roles.h3.fontWeight === 500, "Expected the panel preset h3 to be the heavier member of the middle pair.");
-  assert(roles.h4.fontWeight === 300, "Expected the panel preset h4 to sit 200 weight units below h3.");
-  assert(roles.h5.fontWeight === 550, "Expected the panel preset h5 to use the canonical semi-bold weight.");
-  assert(roles.h6.fontWeight === 550, "Expected the panel preset h6 to use the canonical semi-bold weight.");
-  assert(!roles.h5.textTransform, "Expected the panel preset h5 to avoid uppercase now that canonical weights are used.");
-  assert(!roles.h5.fontVariantCaps, "Expected the panel preset h5 to avoid font-variant small-caps settings.");
-  assert(!roles.h5.letterSpacing, "Expected the panel preset h5 to avoid letterSpacing now that canonical weights are used.");
-  assert(fontSizes.size === 5, "Expected the panel preset to expose distinct heading and body font sizes.");
-  assert(layout.measure === "30rem", "Expected the panel preset reading measure to scale down to 30rem.");
-  assert(layout.sectionSpace === "3rem", "Expected the panel preset section rhythm to scale down to 3rem.");
-  assert(layout.sectionSpaceDeep === "6rem", "Expected the panel preset deep section rhythm to scale down to 6rem.");
-  assert(layout.gridGapInline === "1rem", "Expected the panel preset inline grid gap token to provide the x-small 16px gutter.");
-  assert(layout.gridGapBlock === "1rem", "Expected the panel preset block grid gap token to provide the x-small 16px gap.");
-  assert(layout.pageMargin === "1rem", "Expected the panel preset page margin token to provide the x-small 16px margin.");
-  assert(components.radius === "0rem", "Expected the panel preset controls to stay square like PVR/Vanilla.");
-  assert(components.controlInlinePadding === "0.75rem", "Expected the panel preset control padding to come from the dense components block.");
-  assert(components.controlVisualSize === "0.75rem", "Expected the panel preset checkbox/radio/thumb glyphs to use a dedicated 0.75rem visual size.");
-  assert(components.fieldGap === "0.25rem", "Expected the panel preset field gap to come from the dense components block.");
-  assert(components.panelPaddingInline === "1rem", "Expected the panel preset panel padding to come from the dense components block.");
-  assert(components.panelPaddingBlock === "1rem", "Expected the panel preset panel padding to come from the dense components block.");
-  assert(components.accordionIndent === "0.75rem", "Expected the panel preset accordion indent to come from the dense components block.");
-  assert(components.controlBlockPadding === "0.375rem", "Expected the panel preset regular control block padding to preserve the legacy 1.75rem control box height without a dedicated block-size token.");
-  assert(components.controlCompactBlockPadding === "0.25rem", "Expected the panel preset compact control block padding to preserve the legacy 1.5rem inline control box height.");
+  assert(roles.body.fontSize === "0.75rem", "Expected the OS tier body role font size to be 0.75rem.");
+  assert(roles.body.lineHeight === "1rem", "Expected the OS tier body line height to be 1rem.");
+  assert(roles.h1.fontSize === "1.96875rem", "Expected the OS tier h1 role font size to be 1.96875rem.");
+  assert(roles.h2.fontSize === "1.96875rem", "Expected the OS tier h2 role font size to be 1.96875rem.");
+  assert(roles.h1.lineHeight === "2.25rem", "Expected the OS tier h1 line height to be 2.25rem.");
+  assert(roles.h2.lineHeight === "2.25rem", "Expected the OS tier h2 line height to be 2.25rem.");
+  assert(roles.h3.fontSize === "1.125rem", "Expected the OS tier h3 role font size to be 1.125rem.");
+  assert(roles.h4.fontSize === "1.125rem", "Expected the OS tier h4 role font size to be 1.125rem.");
+  assert(roles.h3.lineHeight === "1.5rem", "Expected the OS tier h3 line height to be 1.5rem.");
+  assert(roles.h4.lineHeight === "1.5rem", "Expected the OS tier h4 line height to be 1.5rem.");
+  assert(roles.h5.fontSize === "0.75rem", "Expected the OS tier h5 role font size to stay at the compact body size.");
+  assert(roles.h6.fontSize === "0.75rem", "Expected the OS tier h6 role font size to stay at the compact body size.");
+  assert(roles.h1.fontWeight === 500, "Expected the OS tier h1 to be the heavier member of the top pair.");
+  assert(roles.h2.fontWeight === 200, "Expected the OS tier h2 to sit 300 weight units below h1.");
+  assert(roles.h3.fontWeight === 500, "Expected the OS tier h3 to be the heavier member of the middle pair.");
+  assert(roles.h4.fontWeight === 300, "Expected the OS tier h4 to sit 200 weight units below h3.");
+  assert(roles.h5.fontWeight === 550, "Expected the OS tier h5 to use the canonical semi-bold weight.");
+  assert(roles.h6.fontWeight === 550, "Expected the OS tier h6 to use the canonical semi-bold weight.");
+  assert(!roles.h5.textTransform, "Expected the OS tier h5 to avoid uppercase now that canonical weights are used.");
+  assert(roles.h5.fontVariantCaps === "all-small-caps", "Expected the OS tier h5 to keep the editorial small-caps convention.");
+  assert(!roles.h5.letterSpacing, "Expected the OS tier h5 to avoid extra letterSpacing.");
+  assert(!roles.h6.fontVariantCaps, "Expected the OS tier h6 to remain plain text rather than small-caps.");
+  assert(fontSizes.size === 3, "Expected the OS tier to stay on the canonical three-step editorial size ladder at denser values.");
+  assert(layout.measure === "30rem", "Expected the OS tier reading measure to scale down to 30rem.");
+  assert(layout.sectionSpace === "3rem", "Expected the OS tier section rhythm to scale down to 3rem.");
+  assert(layout.sectionSpaceDeep === "6rem", "Expected the OS tier deep section rhythm to scale down to 6rem.");
+  assert(layout.gridGapInline === "1rem", "Expected the OS tier inline grid gap token to provide the x-small 16px gutter.");
+  assert(layout.gridGapBlock === "1rem", "Expected the OS tier block grid gap token to provide the x-small 16px gap.");
+  assert(layout.pageMargin === "1rem", "Expected the OS tier page margin token to provide the x-small 16px margin.");
+  assert(components.radius === "0rem", "Expected the OS tier controls to stay square like PVR/Vanilla.");
+  assert(components.controlInlinePadding === "0.75rem", "Expected the OS tier control padding to come from the dense components block.");
+  assert(components.controlVisualSize === "0.75rem", "Expected the OS tier checkbox/radio/thumb glyphs to use a dedicated 0.75rem visual size.");
+  assert(components.fieldGap === "0.25rem", "Expected the OS tier field gap to come from the dense components block.");
+  assert(components.panelPaddingInline === "1rem", "Expected the OS tier panel padding to come from the dense components block.");
+  assert(components.panelPaddingBlock === "1rem", "Expected the OS tier panel padding to come from the dense components block.");
+  assert(components.accordionIndent === "0.75rem", "Expected the OS tier accordion indent to come from the dense components block.");
+  assert(components.controlBlockPadding === "0.375rem", "Expected the OS tier regular control block padding to preserve the legacy 1.75rem control box height without a dedicated block-size token.");
+  assert(components.controlCompactBlockPadding === "0.25rem", "Expected the OS tier compact control block padding to preserve the legacy 1.5rem inline control box height.");
 
-  assert(typeof roles.body.nudgeTop === "string" && css.includes(`--bf-body-nudge-start: ${roles.body.nudgeTop};`), "Expected compact list items to expose the panel preset body nudge.");
+  assert(typeof roles.body.nudgeTop === "string" && css.includes(`--bf-body-nudge-start: ${roles.body.nudgeTop};`), "Expected compact list items to expose the OS tier body nudge.");
   assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact list items to use the compact control block padding token.");
-  assert(css.includes("--bf-control-visual-size: 0.75rem;"), "Expected the panel preset CSS to expose a dedicated visual control size token.");
+  assert(css.includes("--bf-control-visual-size: 0.75rem;"), "Expected the OS tier CSS to expose a dedicated visual control size token.");
   assert(css.includes("block-size: var(--bf-control-visual-size);"), "Expected checkbox/radio/thumb visuals to size from the dedicated control visual token.");
 }
 
@@ -665,9 +675,10 @@ function validateTopNavigationDemo(topNavigationHtml: string): void {
 
 function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml: string): void {
   assert(pageCatalogJs.includes('{ title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" }'), "Expected the page catalog to register the typographic specimen chapter.");
-  assert(specimenHtml.includes('<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app">'), "Expected typographic-specimen.html to boot as a shared tier-switching spec page.");
+  assert(specimenHtml.includes('<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">'), "Expected typographic-specimen.html to boot as a shared tier-switching spec page.");
   assert(specimenHtml.includes('<main class="bf-page spec-shell" id="spec-grid-target">'), "Expected typographic-specimen.html to use the shared spec shell container.");
   assert(specimenHtml.includes('<a href="./typographic-specimen.html" aria-current="page">Specimen</a>'), "Expected typographic-specimen.html to expose the current-page spec nav link.");
+  assert(specimenHtml.includes('<a href="../panel.html">OS addendum</a>'), "Expected typographic-specimen.html to link the OS addendum from the local spec nav.");
   assert(specimenHtml.includes('class="bf-cluster specimen-meta"'), "Expected typographic-specimen.html to include the compact specimen metadata row.");
   assert(specimenHtml.includes('class="specimen-columns"'), "Expected typographic-specimen.html to include the responsive multi-column specimen layout.");
   assert(specimenHtml.includes('class="bf-prose specimen-column"'), "Expected typographic-specimen.html to use prose columns inside the specimen layout.");
@@ -675,16 +686,31 @@ function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml: string
   assert(!specimenHtml.includes('bf-card'), "Expected typographic-specimen.html to avoid decorative card wrappers.");
 }
 
+function validateOsTierPage(pageCatalogJs: string, panelHtml: string): void {
+  assert(pageCatalogJs.includes('{ title: "OS tier addendum", href: "/demo/panel.html" }'), "Expected the page catalog to register the OS addendum page.");
+  assert(panelHtml.includes('<title>Baseline Foundry OS Tier</title>'), "Expected demo/panel.html to present the OS tier addendum title.");
+  assert(panelHtml.includes('../dist/tiers/editorial/styles.css'), "Expected demo/panel.html to bootstrap from the shared built-in tier stylesheet.");
+  assert(!panelHtml.includes('dist/presets/panel/styles.css'), "Expected demo/panel.html to stop bootstrapping from the legacy panel preset bundle.");
+  assert(panelHtml.includes('<body class="bf-theme bf-tier-os" data-page-tier-options="editorial,documentation,app,os" data-page-tier-default="os" data-page-baseline-default="on">'), "Expected demo/panel.html to boot as the OS tier addendum under the shared header contract.");
+  assert(panelHtml.includes('data-spec-artifact="css"'), "Expected demo/panel.html to expose the active stylesheet artifact link.");
+  assert(panelHtml.includes('data-spec-artifact="tokens"'), "Expected demo/panel.html to expose the active tokens artifact link.");
+  assert(panelHtml.includes('data-spec-role-list'), "Expected demo/panel.html to expose the shared spec role list hook.");
+  assert(panelHtml.includes('data-spec-status'), "Expected demo/panel.html to expose the shared spec status hook.");
+  assert(panelHtml.includes('src="./spec-shell.js"'), "Expected demo/panel.html to boot through the shared spec runtime.");
+  assert(!panelHtml.includes('fetch("../dist/presets/panel/tokens.json")'), "Expected demo/panel.html to drop its old page-local panel token fetch.");
+}
+
 async function main(): Promise<void> {
   const defaultTheme = await readThemeArtifacts(path.resolve("dist"));
   const editorialTier = await readThemeArtifacts(path.resolve("dist/tiers/editorial"));
   const documentationTier = await readThemeArtifacts(path.resolve("dist/tiers/documentation"));
   const appTier = await readThemeArtifacts(path.resolve("dist/tiers/app"));
+  const osTier = await readThemeArtifacts(path.resolve("dist/tiers/os"));
   const prosePreset = await readThemeArtifacts(path.resolve("dist/presets/prose"));
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, sampleHtml, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml, typographicSpecimenHtml] = await Promise.all([
+  const [engineSmokeHtml, sampleHtml, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml, typographicSpecimenHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
     readTextArtifact(path.resolve("demo/component-demo.js")),
@@ -710,12 +736,14 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/skip-link.html")),
     readTextArtifact(path.resolve("index.html")),
     readTextArtifact(path.resolve("demo/controls.html")),
-    readTextArtifact(path.resolve("demo/spec/typographic-specimen.html"))
+    readTextArtifact(path.resolve("demo/spec/typographic-specimen.html")),
+    readTextArtifact(path.resolve("demo/panel.html"))
   ]);
 
   runInvariant("Common CSS (default)", () => validateCommonCss(defaultTheme.css));
   runInvariant("Common CSS (editorial)", () => validateCommonCss(editorialTier.css));
   runInvariant("Common CSS (documentation)", () => validateCommonCss(documentationTier.css));
+  runInvariant("Common CSS (OS)", () => validateCommonCss(osTier.css));
   runInvariant("Common CSS (prose preset)", () => validateCommonCss(prosePreset.css));
   runInvariant("Common CSS (panel preset)", () => validateCommonCss(panelPreset.css));
   runInvariant("App tier CSS (app)", () => validateAppTierCss(appTier.css));
@@ -724,16 +752,18 @@ async function main(): Promise<void> {
   runInvariant("Default theme (editorial)", () => validateDefaultTheme(editorialTier.tokens, editorialTier.css));
   runInvariant("Documentation theme", () => validateDocumentationTheme(documentationTier.tokens, documentationTier.css));
   runInvariant("App tier theme (app)", () => validateAppTierTheme(appTier.tokens, appTier.css));
+  runInvariant("OS tier theme", () => validateOsTheme(osTier.tokens, osTier.css));
   runInvariant("Default theme (prose preset)", () => validateDefaultTheme(prosePreset.tokens, prosePreset.css));
-  runInvariant("Panel theme", () => validatePanelTheme(panelPreset.tokens, panelPreset.css));
+  runInvariant("OS tier theme (panel preset alias)", () => validateOsTheme(panelPreset.tokens, panelPreset.css));
   runInvariant("App tier theme (app preset)", () => validateAppTierTheme(appTierPreset.tokens, appTierPreset.css));
   runInvariant("IBM Plex engine smoke theme", () => validateIbmPlexEngineSmokeTheme(ibmPlexEngineSmoke.tokens, ibmPlexEngineSmoke.css));
   runInvariant("Surface manifest (default)", () => validateSurfaceManifest(defaultTheme.surfaces, "editorial"));
   runInvariant("Surface manifest (editorial)", () => validateSurfaceManifest(editorialTier.surfaces, "editorial"));
   runInvariant("Surface manifest (documentation)", () => validateSurfaceManifest(documentationTier.surfaces, "documentation"));
   runInvariant("Surface manifest (app)", () => validateSurfaceManifest(appTier.surfaces, "app"));
+  runInvariant("Surface manifest (OS)", () => validateSurfaceManifest(osTier.surfaces, "os"));
   runInvariant("Surface manifest (prose preset)", () => validateSurfaceManifest(prosePreset.surfaces, "editorial"));
-  runInvariant("Surface manifest (panel preset)", () => validateSurfaceManifest(panelPreset.surfaces, "panel"));
+  runInvariant("Surface manifest (panel preset alias)", () => validateSurfaceManifest(panelPreset.surfaces, "os"));
   runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
   runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
   runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss));
@@ -744,6 +774,7 @@ async function main(): Promise<void> {
   runInvariant("Parity surface demos", () => validateParitySurfaceDemos(iconHtml, listHtml, tableHtml));
   runInvariant("Top navigation demo", () => validateTopNavigationDemo(topNavigationHtml));
   runInvariant("Typographic specimen", () => validateTypographicSpecimen(pageCatalogJs, typographicSpecimenHtml));
+  runInvariant("OS addendum page", () => validateOsTierPage(pageCatalogJs, panelHtml));
   await runInvariantAsync("Component page tier consistency", () => validateComponentPageTierConsistency(componentDemoJs));
   runInvariant("bf-only demo family", () => validateBfOnlyDemoFamily({
     applicationLayout: applicationLayoutHtml,

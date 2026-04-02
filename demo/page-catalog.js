@@ -11,6 +11,10 @@ export const specChapterPages = [
   { title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" }
 ];
 
+export const tierAddendumPages = [
+  { title: "OS tier addendum", href: "/demo/panel.html" }
+];
+
 export const componentSections = [
   {
     heading: "Foundations",
@@ -125,6 +129,7 @@ export const spacingExamplePages = [
 export const pageCatalogSections = [
   { heading: "Overview", items: overviewPages },
   { heading: "Spec chapters", items: specChapterPages },
+  { heading: "Tier addenda", items: tierAddendumPages },
   ...componentSections,
   { heading: "Grid examples", items: gridExamplePages },
   { heading: "Spacing examples", items: spacingExamplePages }

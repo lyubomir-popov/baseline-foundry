@@ -1,135 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-spec-root="..">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baseline Foundry Panel Preset</title>
-  <link rel="stylesheet" href="../dist/presets/panel/styles.css">
+  <title>Baseline Foundry OS Tier</title>
+  <link id="spec-tier-stylesheet" rel="stylesheet" href="../dist/tiers/editorial/styles.css">
   <link rel="stylesheet" href="./spec-shell.css">
 </head>
-<body class="bf-theme is-dark">
-  <main class="bf-page spec-shell" id="demo-grid-target">
-    <header data-spec-hero>
+<body class="bf-theme bf-tier-os" data-page-tier-options="editorial,documentation,app,os" data-page-tier-default="os" data-page-baseline-default="on">
+  <main class="bf-page spec-shell" id="spec-grid-target">
+
+    <div class="bf-stack bf-section">
+      <nav class="bf-cluster">
+        <a href="../index.html">Home</a>
+        <a href="./spec/typography.html">Typography</a>
+        <a href="./spec/spacing.html">Spacing</a>
+        <a href="./spec/grid.html">Grid</a>
+        <a href="./spec/typographic-specimen.html">Specimen</a>
+        <a href="./panel.html" aria-current="page">OS addendum</a>
+      </nav>
+    </div>
+
+    <div class="bf-stack bf-section">
       <div class="bf-prose">
-        <h5 class="bf-h5">Panel preset</h5>
-        <h1 class="bf-h1">A secondary compatibility line for dense control surfaces.</h1>
-        <p>The panel preset remains important for downstream pressure tests, but it now sits beside the tier-first model instead of defining the repo's default mental model.</p>
+        <h5>Addendum</h5>
+        <h1>OS tier</h1>
+        <p>The old dense panel line now ships as a real fourth built-in tier: baseline-aligned like editorial, much tighter in measure and control geometry, and explicitly positioned as an addendum rather than a canonical spec surface.</p>
+        <p data-spec-tier-description>Dense OS-style addendum with editorial baseline alignment, compact measure, and reduced control geometry.</p>
+        <p data-spec-tier-detail>This tier stays metrics-driven and element-owned like editorial, but compresses the reading and control rhythm toward dense system surfaces.</p>
       </div>
-      <div data-spec-actions>
-        <label class="bf-body" data-spec-checkbox>
-          <input data-spec-baseline-toggle type="checkbox" aria-controls="demo-grid-target">
-          Show baseline grid
-        </label>
-        <a href="../dist/presets/panel/tokens.json">Open panel tokens</a>
-        <a href="./components/panel-pressure.html">Panel pressure page</a>
-        <a href="./index.html">Back to living spec</a>
-      </div>
-    </header>
+    </div>
 
-    <section class="bf-section">
-      <div data-spec-layout="aside">
-        <aside class="bf-card">
-          <h3 class="bf-h3">Preset summary</h3>
-          <div data-spec-token-list>
-            <div data-spec-token-row>
-              <strong>Body size</strong>
-              <code id="panel-body-size">0.75rem / 1rem</code>
-            </div>
-            <div data-spec-token-row>
-              <strong>Control padding</strong>
-              <span id="panel-control-size">-</span>
-            </div>
-            <div data-spec-token-row>
-              <strong>Field gap</strong>
-              <code id="panel-field-gap">-</code>
-            </div>
-          </div>
-        </aside>
+    <div class="bf-grid bf-section">
+      <section class="bf-span-4">
+        <div class="bf-stack is-dense">
+          <h3>Token snapshot</h3>
+          <div class="bf-cluster"><strong>Baseline</strong><code data-spec-token="baseline">-</code></div>
+          <div class="bf-cluster"><strong>Measure</strong><code data-spec-token="measure">-</code></div>
+          <div class="bf-cluster"><strong>Content width</strong><code data-spec-token="content-width">-</code></div>
+          <div class="bf-cluster"><strong>Grid gap</strong><code data-spec-token="grid-gap">-</code></div>
+          <div class="bf-cluster"><strong>Page margin</strong><code data-spec-token="page-margin">-</code></div>
+          <div class="bf-cluster"><strong>Section space</strong><code data-spec-token="section-space">-</code></div>
+          <div class="bf-cluster"><strong>Control padding</strong><code data-spec-token="control-size">-</code></div>
+          <div class="bf-cluster"><strong>Role count</strong><code data-spec-token="role-count">-</code></div>
+        </div>
+      </section>
 
-        <article class="bf-card">
-          <div class="bf-prose">
-            <h3 class="bf-h3">Why it still exists</h3>
-            <p>The compact line is still the fastest way to pressure-test dense inspector work against `brand-layout-ops`. The important cleanup is architectural: panel is now clearly a preset, not a disguised stand-in for editorial or app.</p>
-          </div>
-          <div data-spec-callout>
-            <p class="bf-body">Use the living spec for tier policy. Use the panel preset for downstream dense-surface rehearsal.</p>
-          </div>
-        </article>
-      </div>
-    </section>
+      <section class="bf-span-8">
+        <div class="bf-prose">
+          <h3>What changed</h3>
+          <p>`panel` no longer needs to stand outside the site shell to represent dense control work. OS now lives beside `editorial`, `documentation`, and `app` as a truthful built-in tier, while the `panel` preset remains available as a legacy alias for downstream compatibility.</p>
+          <p>Use the header selector to compare OS against the other shipped tiers. The page links below always follow the active surface so the current stylesheet and token bundle are inspectable without a separate route.</p>
+        </div>
+        <div class="bf-cluster">
+          <a data-spec-artifact="css" href="../dist/tiers/os/styles.css">Open active stylesheet</a>
+          <a data-spec-artifact="tokens" href="../dist/tiers/os/tokens.json">Open active tokens</a>
+          <a href="./components/panel-pressure.html">Panel pressure page</a>
+          <a href="./components/narrow-panel.html">Narrow panel regression</a>
+        </div>
+      </section>
+    </div>
 
-    <section class="bf-section is-deep">
-      <div class="bf-grid">
-        <article class="bf-card bf-span-4">
-          <h3 class="bf-h3">Document</h3>
-          <div data-spec-token-list>
-            <div data-spec-token-row>
-              <strong>Format</strong>
-              <span>16:9 social</span>
-            </div>
-            <div data-spec-token-row>
-              <strong>Density</strong>
-              <span>Panel preset</span>
-            </div>
-            <div data-spec-token-row>
-              <strong>Grid</strong>
-              <span>8 columns</span>
-            </div>
-          </div>
-        </article>
+    <div class="bf-grid bf-section is-deep">
+      <section class="bf-span-6">
+        <div class="bf-prose">
+          <h3>Tier contract</h3>
+          <p>OS is deliberately not a canonical spec tier. It is a dense addendum for downstream operator and inspector surfaces that still need real metric-derived alignment instead of app-style zero nudges.</p>
+        </div>
+        <ul class="bf-list">
+          <li class="bf-list-item">Metrics-derived nudges stay active.</li>
+          <li class="bf-list-item">Spacing remains element-owned, not app-style container owned.</li>
+          <li class="bf-list-item">Body and heading roles stay on the canonical `body` plus `h1` to `h6` contract.</li>
+          <li class="bf-list-item">The legacy `panel` preset remains as a compatibility alias, not as the primary mental model.</li>
+        </ul>
+      </section>
 
-        <article class="bf-card bf-span-8">
-          <div class="bf-prose">
-            <h3 class="bf-h3">Preview</h3>
-            <p class="bf-h4">The compact scale keeps control-heavy work calm without falling back to the old compatibility package.</p>
-            <p class="bf-body" data-spec-note">This page stays as a secondary demo surface while the main `/demo/` route now belongs to the tier-first living spec.</p>
-          </div>
-          <div data-spec-stack-sample>
-            <div>Draft</div>
-            <div>With halo</div>
-            <div>Grid visible</div>
-            <div>Linked logo</div>
-          </div>
-        </article>
-      </div>
-    </section>
+      <section class="bf-span-6">
+        <div class="bf-stack is-dense">
+          <h3>Current roles</h3>
+          <div class="bf-stack is-dense" data-spec-role-list></div>
+          <p class="bf-body" data-spec-status>OS tier active in light mode.</p>
+        </div>
+      </section>
+    </div>
 
-    <footer data-spec-footer>
-      Panel preset page at http://127.0.0.1:4174/demo/panel.html.
-    </footer>
   </main>
 
-  <script type="module">
-    import { initBaselineGridToggles } from "../dist/index.js";
-
-    initBaselineGridToggles({ toggleSelector: "[data-spec-baseline-toggle][aria-controls]" });
-
-    const controlSize = document.querySelector("#panel-control-size");
-    const fieldGap = document.querySelector("#panel-field-gap");
-    const bodySize = document.querySelector("#panel-body-size");
-
-    fetch("../dist/presets/panel/tokens.json")
-      .then(response => response.json())
-      .then(tokens => {
-        const body = tokens.roles?.body;
-        if (body && bodySize instanceof HTMLElement) {
-          bodySize.textContent = `${body.fontSize} / ${body.lineHeight}`;
-        }
-
-        if (controlSize instanceof HTMLElement) {
-          controlSize.textContent = `${tokens.components.controlBlockPadding} inset / ${tokens.components.controlCompactBlockPadding} compact`;
-        }
-
-        if (fieldGap instanceof HTMLElement) {
-          fieldGap.textContent = tokens.components.fieldGap;
-        }
-      })
-      .catch(error => {
-        if (controlSize instanceof HTMLElement) {
-          controlSize.textContent = `Unable to load panel tokens: ${error}`;
-        }
-      });
-  </script>
+  <script type="module" src="./spec-shell.js"></script>
 </body>
 </html>
 

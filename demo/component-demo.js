@@ -4,8 +4,11 @@ import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 const TIER_OPTIONS = [
   { value: "editorial", label: "Editorial" },
   { value: "documentation", label: "Docs" },
-  { value: "app", label: "App" }
+  { value: "app", label: "App" },
+  { value: "os", label: "OS" }
 ];
+
+const BUILT_IN_TIER_CLASSES = ["bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os"];
 
 function isLockedManifestMode() {
   return document.body.dataset.pageSurfaceMode === "locked-manifest";
@@ -30,6 +33,10 @@ function titleCaseSurface(value) {
 
       if (lower === "app") {
         return "App";
+      }
+
+      if (lower === "os") {
+        return "OS";
       }
 
       if (lower === "documentation") {
@@ -126,6 +133,10 @@ function supportedTierOptions() {
 }
 
 function detectTier() {
+  if (document.body.classList.contains("bf-tier-os")) {
+    return "os";
+  }
+
   if (document.body.classList.contains("bf-tier-documentation")) {
     return "documentation";
   }
@@ -143,7 +154,7 @@ function tierHref() {
 
 function applyTier(tierName, stylesheetLink) {
   stylesheetLink.href = tierHref();
-  document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app");
+  document.body.classList.remove(...BUILT_IN_TIER_CLASSES);
   document.body.classList.add("bf-theme");
   document.body.classList.add(`bf-tier-${tierName}`);
   document.body.dataset.bfTier = tierName;
