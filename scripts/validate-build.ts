@@ -148,6 +148,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-grid"), "Expected CSS to include grid selectors.");
   assert(css.includes(".bf-section"), "Expected CSS to include section selectors.");
   assert(css.includes(".bf-stack"), "Expected CSS to include stack selectors.");
+  assert(!css.includes("NaN"), "Expected generated CSS to avoid NaN values from incomplete surface configuration.");
   assert(css.includes(".bf-stage-shell"), "Expected CSS to include the stage-shell helper.");
   assert(css.includes(".u-baseline-grid"), "Expected CSS to include the baseline grid utility.");
   assert(!css.includes("min-inline-size: 8em;"), "Expected text-like controls to avoid hard minimum widths that break narrow panels.");

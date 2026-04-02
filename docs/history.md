@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Surface completeness audit (2026-04-02)
+
+- [x] Restored the missing `layout.sectionSpaceShallowBaselineUnits` token in `config/foundation-theme.json` so the foundation theme once again carries the full layout spacing set expected by the shared surface pipeline.
+- [x] Hardened `src/build.ts` to reject missing or non-finite required numeric layout fields up front instead of letting incomplete surface configs drift through generation and surface manifests.
+- [x] Tightened `scripts/validate-build.ts` so build validation now fails if generated CSS contains `NaN`, closing the silent-bad-output path for incomplete scoped surfaces.
+
 ## bf-panel audit (2026-04-02)
 
 - [x] Tightened `bf-panel` back to the real Vanilla application-layout contract: kept the live header/title/controls/toggle/sticky pieces, but removed the invented border-card treatment from the shared and app-tier CSS.

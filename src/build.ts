@@ -48,6 +48,12 @@ async function ensureDirectory(dirPath: string): Promise<void> {
   await fs.mkdir(dirPath, { recursive: true });
 }
 
+function assertFiniteNumberConfigField(value: unknown, fieldPath: string): void {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new Error(`Theme config field "${fieldPath}" must be a finite number.`);
+  }
+}
+
 function validateConfig(config: ThemeConfig): void {
   if (!config.fontFiles.length) {
     throw new Error("Theme config requires at least one font file.");
@@ -68,6 +74,18 @@ function validateConfig(config: ThemeConfig): void {
   if (!config.components) {
     throw new Error("Theme config requires a components block.");
   }
+
+  assertFiniteNumberConfigField(config.baselineUnit, "baselineUnit");
+  assertFiniteNumberConfigField(config.layout.contentMaxWidthRem, "layout.contentMaxWidthRem");
+  assertFiniteNumberConfigField(config.layout.contentPaddingInlineRem, "layout.contentPaddingInlineRem");
+  assertFiniteNumberConfigField(config.layout.measureRem, "layout.measureRem");
+  assertFiniteNumberConfigField(config.layout.sectionSpaceBaselineUnits, "layout.sectionSpaceBaselineUnits");
+  assertFiniteNumberConfigField(config.layout.sectionSpaceShallowBaselineUnits, "layout.sectionSpaceShallowBaselineUnits");
+  assertFiniteNumberConfigField(config.layout.sectionSpaceDeepBaselineUnits, "layout.sectionSpaceDeepBaselineUnits");
+  assertFiniteNumberConfigField(config.layout.stripSpaceBaselineUnits, "layout.stripSpaceBaselineUnits");
+  assertFiniteNumberConfigField(config.layout.gridGapInlineBaselineUnits, "layout.gridGapInlineBaselineUnits");
+  assertFiniteNumberConfigField(config.layout.gridGapBlockBaselineUnits, "layout.gridGapBlockBaselineUnits");
+  assertFiniteNumberConfigField(config.layout.pageMarginBaselineUnits, "layout.pageMarginBaselineUnits");
 
   const identifiers = new Set(config.elements.map(element => element.identifier));
   for (const [roleName, identifier] of Object.entries(config.roles)) {
