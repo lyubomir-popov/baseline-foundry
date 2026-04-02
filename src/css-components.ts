@@ -657,51 +657,46 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   background: var(--bf-color-border-caution);
 }
 
-:where(.bf-theme) :where(.is-error, .bf-validation.is-error, .has-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
   background-color: var(--bf-color-background-negative-default);
   border-bottom-color: var(--bf-color-border-negative);
 }
 
-:where(.bf-theme) :where(.is-error, .bf-validation.is-error, .has-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
   background-color: var(--bf-color-background-negative-hover);
 }
 
-:where(.bf-theme) :where(.is-error, .bf-validation.is-error, .has-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--bf-color-background-negative-active);
 }
 
-:where(.bf-theme) :where(.is-error, .bf-validation.is-error, .has-error) :where(.bf-validation-message) {
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-validation-message) {
   color: var(--bf-color-border-negative);
 }
 
-:where(.bf-theme) :where(.is-error, .bf-validation.is-error, .has-error) :where(.bf-validation-message)::before {
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-validation-message)::before {
   background: var(--bf-color-border-negative);
 }
 
-:where(.bf-theme) :where(.is-success, .bf-validation.is-success, .has-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
   background-color: var(--bf-color-background-positive-default);
   border-bottom-color: var(--bf-color-border-positive);
 }
 
-:where(.bf-theme) :where(.is-success, .bf-validation.is-success, .has-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
   background-color: var(--bf-color-background-positive-hover);
 }
 
-:where(.bf-theme) :where(.is-success, .bf-validation.is-success, .has-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--bf-color-background-positive-active);
 }
 
-:where(.bf-theme) :where(.is-success, .bf-validation.is-success, .has-success) :where(.bf-validation-message) {
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-validation-message) {
   color: var(--bf-color-border-positive);
 }
 
-:where(.bf-theme) :where(.is-success, .bf-validation.is-success, .has-success) :where(.bf-validation-message)::before {
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-validation-message)::before {
   background: var(--bf-color-border-positive);
-}
-
-:where(.bf-theme) :where(.has-warning) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
-  background-color: var(--bf-color-background-caution-default);
-  border-bottom-color: var(--bf-color-border-caution);
 }
 
 :where(.bf-theme) :where(.bf-slider) {

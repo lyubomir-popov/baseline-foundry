@@ -184,6 +184,9 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("min-inline-size: 5rem;"), "Expected slider number inputs to avoid a hard minimum width.");
   assert(css.includes(":where(.bf-switch-slider)"), "Expected generated CSS to include switch styling.");
   assert(css.includes(":where(.bf-validation-message)"), "Expected generated CSS to include validation message styling.");
+  assert(!css.includes(".has-error"), "Expected generated CSS to omit the deprecated has-error validation alias.");
+  assert(!css.includes(".has-success"), "Expected generated CSS to omit the deprecated has-success validation alias.");
+  assert(!css.includes(".has-warning"), "Expected generated CSS to omit the deprecated has-warning validation alias.");
   assert(css.includes(":where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)"), "Expected generated CSS to include card surfaces.");
   assert(css.includes(":where(.bf-segmented-control-button, .bf-tab-buttons-button)"), "Expected generated CSS to include segmented control buttons.");
   assert(css.includes(":where(.bf-breadcrumbs-items)"), "Expected generated CSS to include breadcrumb styling.");

@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Parasite class sweep (2026-04-02)
+
+- [x] Removed the last surviving downstream validation aliases from `src/css-components.ts`: `.has-error`, `.has-success`, and `.has-warning` no longer mirror the canonical `is-*` validation state contract.
+- [x] Confirmed those aliases were not used anywhere in the demo or runtime sources before removal, so the cleanup closes dead compatibility surface rather than changing live markup expectations.
+- [x] Tightened `scripts/validate-build.ts` so generated CSS now fails if any of the removed `.has-*` validation aliases reappear.
+
 ## Typographic specimen chapter (2026-04-02)
 
 - [x] Added `demo/spec/typographic-specimen.html` as a new living-spec chapter with the shared tier-switching page chrome and a longer-form editorial specimen built from prose primitives instead of ad hoc framed surfaces.

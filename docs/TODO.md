@@ -123,13 +123,14 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Current follow-up
 
+- The parasite class sweep is now complete: the last surviving downstream validation aliases (`.has-error`, `.has-success`, `.has-warning`) are gone from the shared component CSS, and build validation now rejects them so the public state contract stays on canonical `is-*` selectors only.
 - The typographic specimen page is now complete: `demo/spec/typographic-specimen.html` ships as a real spec chapter with shared page chrome, page-catalog registration, and a responsive editorial two-column prose layout that collapses back to one column cleanly.
 - Page chrome polish is now complete: the shared `pc-controls` cluster stays on one row whenever the desktop bar has room, the existing narrow-width fallback still restores wrapping when space genuinely runs out, and build validation now asserts that desktop/mobile wrap contract directly from `demo/page-chrome.css`.
 - Surface completeness audit is now complete: the foundation theme carries the full layout spacing token set again, `src/build.ts` now rejects missing or non-finite required numeric layout fields up front, and build validation fails if generated CSS ever contains `NaN`, so incomplete scoped surfaces cannot silently leak broken values into shipped output.
 - Workflow modal upstreaming for `brand-layout-ops` now ships in `baseline-foundry`: `bf-modal.is-workflow` provides the canonical medium-large authoring shell with fixed header/footer bars and an internally scrolling body, while `bf-modal.is-workflow.is-resizable` adds optional resize without downstream-local modal sizing/layout CSS.
 - Top-navigation chevron spacing and motion parity now ships in `baseline-foundry`: closed dropdown toggles keep the chevron pointed downward, active toggles rotate it upward, and the shared contract now matches the downstream `brand-layout-ops` authoring shell without chevron-specific overrides.
 - The `bf-panel` audit is now complete: shared panels keep the real Vanilla application-layout pieces (`bf-panel-header`, `bf-panel-title`, `bf-panel-controls`, `bf-panel-toggle`, sticky headers, fill-height shell usage) but drop the invented border-card treatment, and `demo/controls.html` now uses plain layout wrappers instead of decorative `bf-panel` containers.
-- Highest-priority non-downstream cleanup is now the parasite class sweep: remove any remaining downstream-only component aliases that survived the earlier living-spec audit passes.
+- Highest-priority non-downstream cleanup is now the blog engine illustration: if the baseline-alignment comparison article still needs a visual side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding, generate the static HTML illustration rather than introducing another buildable surface mode.
 - Engine smoke now ships as a single generated multi-font bundle at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that manifest through the shared page chrome so the 8rem/4rem cap-drift comparison can switch between `IBM Plex Sans` and `Ubuntu Sans` without changing route.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
 - Custom builds can now emit named sibling surfaces in one stylesheet + manifest via `buildThemeFromConfig({ surfaceLabel, additionalSurfaces })`, which closes the immediate multi-font registry follow-up for downstream white-label experiments.
@@ -163,7 +164,6 @@ Decision gate:
 ### Pre-existing items
 
 - [ ] Blog engine illustration — if the comparison article needs a visual side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding, generate a static HTML page or screenshot. Not a buildable surface mode.
-- [ ] Parasite class sweep — remove remaining downstream component aliases
 
 ### New: OS tier (from inbox)
 
