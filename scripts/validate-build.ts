@@ -195,7 +195,8 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
   assert(css.includes(":where(.bf-badge, .bf-badge.is-negative)"), "Expected generated CSS to include badge styling.");
-  assert(css.includes(":where(.bf-status-label, .bf-label, .bf-status-label.is-positive"), "Expected generated CSS to include status label styling.");
+  assert(css.includes(":where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)"), "Expected generated CSS to include status label styling.");
+  assert(!css.includes(".bf-label"), "Expected generated CSS to omit the deprecated bf-label alias.");
   assert(css.includes(":where(.bf-search-box)"), "Expected generated CSS to include search-box styling.");
   assert(css.includes(":where(.bf-search-and-filter)"), "Expected generated CSS to include search-and-filter styling.");
   assert(css.includes(":where(.bf-search-and-filter-box) {\n  display: inline-flex;\n  flex: 1 1 12rem;\n  max-inline-size: 100%;\n  min-inline-size: 0;"), "Expected search-and-filter boxes to shrink inside narrow rails.");
@@ -221,7 +222,6 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-form-help.is-tight)"), "Expected generated CSS to include the tight helper-text modifier.");
   assert(css.includes("input[type='color'].bf-color-input"), "Expected generated CSS to include the compact color-input treatment.");
   assert(css.includes(":where(.bf-actions)"), "Expected generated CSS to include the canonical actions-row helper.");
-  assert(css.includes(":where(.bf-panel.is-fill)"), "Expected generated CSS to include the canonical fill-height panel helper.");
   assert(!css.includes(".config-tabs"), "Expected compat CSS to omit the downstream equal-tab aliases.");
   assert(!css.includes(".output-profile-tabs"), "Expected compat CSS to omit the downstream output-profile tab alias.");
   assert(!css.includes(".preset-radio-row"), "Expected compat CSS to omit the downstream choice-row alias.");
@@ -300,6 +300,7 @@ function validateAppTierCss(css: string): void {
   assert(css.includes(':where(.bf-theme.bf-tier-app) {'), "Expected the app-tier preset CSS to expose the app-tier runtime selector.");
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
+  assert(css.includes(':where(.bf-panel.is-fill)'), "Expected the app-tier CSS to include the canonical fill-height panel helper.");
   assert(css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to expose the lighter app-panel shadow token.");
   assert(css.includes('box-shadow: var(--bf-app-panel-shadow);'), "Expected the app-tier preset CSS to apply the shared app-panel shadow token.");
   assert(!css.includes('.p-'), "Expected the app-tier preset CSS to omit deprecated p-* selectors.");

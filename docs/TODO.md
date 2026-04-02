@@ -153,13 +153,6 @@ Decision gate:
 
 - Do not replace the compensated metrics default with any cap-based mode until a four-way specimen exists and has been reviewed across at least IBM Plex Sans and Ubuntu Sans at body, `h2`, and `h1` scales.
 
-### Audit findings (living-spec review)
-
-- [ ] **`bf-theme--light` compatibility alias** — `css-components.ts:164` emits `.bf-theme.bf-theme--light` alongside `.bf-theme.is-light`. Inconsistent with `.is-dark` naming. Remove alias or document as deprecated.
-- [ ] **`bf-panel-logo` dead selector** — CSS references `.bf-panel-logo` in header flex rule (line 782) but no HTML ever uses it. Remove from CSS.
-- [ ] **`bf-label` redundant alias** — `bf-status-label` is duplicated as `bf-label` throughout `css-components.ts` (5 compound rules). Pick one name.
-- [ ] **`bf-u-no-margin.is-bottom`** — utility class uses `u-` convention inside `bf-` scope (line 180). Reconcile naming or remove if unused.
-
 ### Pre-existing items
 
 - [ ] Surface completeness audit — when adding new role or control properties, land them in the explicit scoped surface blocks and `surfaces.json` manifest instead of letting editorial fallbacks fill the gap.

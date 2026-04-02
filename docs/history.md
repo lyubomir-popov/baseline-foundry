@@ -2,6 +2,11 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Audit finding cleanup (2026-04-02)
+
+- [x] Removed the redundant `bf-label` alias from the generated status-label CSS and tightened build validation so `.bf-label` no longer appears in generated styles.
+- [x] Re-checked the older `bf-theme--light`, `bf-panel-logo`, and `bf-u-no-margin.is-bottom` audit notes and confirmed they were already stale; removed them from `docs/TODO.md` so the backlog reflects only live work.
+
 ## Pragma-informed repo health pass (2026-04-02)
 
 - [x] Replaced the review-only Pragma comparison plan with an executed repo-health plan filtered to non-opinionated improvements only.
