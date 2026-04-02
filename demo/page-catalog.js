@@ -71,6 +71,7 @@ export const componentSections = [
       { title: "Side navigation", href: "/demo/components/side-navigation.html" },
       { title: "Top navigation", href: "/demo/components/top-navigation.html" },
       { title: "Baseline engine smoke", href: "/demo/components/engine-smoke.html" },
+      { title: "Baseline engine illustration", href: "/demo/components/engine-illustration.html" },
       { title: "Segmented control", href: "/demo/components/segmented-control.html" },
       { title: "Breadcrumbs", href: "/demo/components/breadcrumbs.html" },
       { title: "Pagination", href: "/demo/components/pagination.html" },

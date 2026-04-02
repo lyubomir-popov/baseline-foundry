@@ -226,12 +226,10 @@ If the goal is a clean article or talk:
 - Baseline nudge generator: [../node_modules/@lyubomir-popov/baseline-nudge-generator/src/nudge-generator.js](../node_modules/@lyubomir-popov/baseline-nudge-generator/src/nudge-generator.js)
 - Current smoke specimen: [../demo/components/engine-smoke.html](../demo/components/engine-smoke.html)
 
+## Visual Companion
+
+That three-way specimen now lives at [../demo/components/engine-illustration.html](../demo/components/engine-illustration.html). It keeps the generated IBM Plex Sans and Ubuntu Sans experiment bundle, then adds a page-local raw-metrics lane so the article can show all three padding models side by side without pretending raw metrics is a shipped surface mode.
+
 ## Suggested Next Step
 
-If this article becomes a full blog post, the most useful follow-up illustration would be a three-way specimen that shows:
-
-1. cap-unit alignment
-2. raw extracted metrics
-3. compensated extracted metrics
-
-for the same font, size, line-height, and content. That would turn the current narrative into a single visual proof.
+If this article becomes decision material rather than a blog post, the next extension should be a four-way specimen that adds empirical nudges and body-scale rows to the current H1 and H2 comparison.

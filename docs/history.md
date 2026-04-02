@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Blog engine illustration (2026-04-02)
+
+- [x] Added `demo/components/engine-illustration.html` as the static three-way companion to the baseline-alignment article, keeping the shared locked-manifest IBM Plex Sans / Ubuntu Sans experiment bundle while adding a page-local raw-metrics lane beside the shipped compensated lane and the demo-only cap lane.
+- [x] Wired the new page into the shared page catalog, component atlas, screenshot inventory, and static build validation so it is a normal repo artifact rather than a hidden one-off experiment.
+- [x] Updated `docs/comparing-baseline-alignment-techniques.md`, `README.md`, `docs/TODO.md`, and the handoff so the old "blog illustration if needed" note is now reflected as landed work.
+
 ## OS tier addendum + panel-route closure (2026-04-02)
 
 - [x] Added `config/tiers/os.json` as a real fourth built-in tier: the dense line now follows the canonical `body` + `h1` to `h6` role contract instead of keeping separate `ui-*` roles alive.

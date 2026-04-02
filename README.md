@@ -21,7 +21,7 @@ See `docs/TODO.md` for the full set. Summary:
 - Grid and layout primitives are small and composable.
 - Dogfooding: demos use only `bf-*` classes.
 
-For a longer write-up on empirical nudges, cap-unit alignment, raw metrics, and compensated metrics, see `docs/comparing-baseline-alignment-techniques.md`.
+For a longer write-up on empirical nudges, cap-unit alignment, raw metrics, and compensated metrics, see `docs/comparing-baseline-alignment-techniques.md`. Its visual companion lives at `demo/components/engine-illustration.html`.
 
 ## Output
 
@@ -90,6 +90,7 @@ The demo runs at:
 - [http://127.0.0.1:4174/demo/spec/typography.html](http://127.0.0.1:4174/demo/spec/typography.html)
 - [http://127.0.0.1:4174/demo/panel.html](http://127.0.0.1:4174/demo/panel.html) — OS tier addendum
 - [http://127.0.0.1:4174/demo/components/index.html](http://127.0.0.1:4174/demo/components/index.html)
+- [http://127.0.0.1:4174/demo/components/engine-illustration.html](http://127.0.0.1:4174/demo/components/engine-illustration.html) — Three-way raw / compensated / cap comparison
 
 Standalone Canonical example batches also live under `examples/grid/` and `examples/spacing/`. Each family has one shared stylesheet (`grid-examples.css` / `spacing-examples.css`) and stays aligned with the source prompts in `grid-examples.prompt.md` and `spacing-examples.prompt.md`.
 

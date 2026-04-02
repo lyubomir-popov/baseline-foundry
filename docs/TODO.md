@@ -132,6 +132,7 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 - Top-navigation chevron spacing and motion parity now ships in `baseline-foundry`: closed dropdown toggles keep the chevron pointed downward, active toggles rotate it upward, and the shared contract now matches the downstream `brand-layout-ops` authoring shell without chevron-specific overrides.
 - The `bf-panel` audit is now complete: shared panels keep the real Vanilla application-layout pieces (`bf-panel-header`, `bf-panel-title`, `bf-panel-controls`, `bf-panel-toggle`, sticky headers, fill-height shell usage) but drop the invented border-card treatment, and `demo/controls.html` now uses plain layout wrappers instead of decorative `bf-panel` containers.
 - Engine smoke now ships as a single generated multi-font bundle at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that manifest through the shared page chrome so the 8rem/4rem cap-drift comparison can switch between `IBM Plex Sans` and `Ubuntu Sans` without changing route.
+- The comparison article now has its static visual companion: `demo/components/engine-illustration.html` keeps the same locked-manifest IBM Plex / Ubuntu experiment bundle, adds a page-local raw-metrics lane beside the shipped compensated lane and the demo-only cap lane, and closes the blog-only illustration follow-up without inventing a new buildable surface mode.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
 - Custom builds can now emit named sibling surfaces in one stylesheet + manifest via `buildThemeFromConfig({ surfaceLabel, additionalSurfaces })`, which closes the immediate multi-font registry follow-up for downstream white-label experiments.
 - The latest parity burst now also closes Vanilla-style top-navigation dropdowns: `bf-top-navigation` ships desktop layered dropdown menus plus mobile inline expansion, static validation covers the new selectors and demo markup, `npm run qa:components` is green, and the new dropdown paths pass targeted Playwright verification.
@@ -163,7 +164,7 @@ Decision gate:
 
 ### Optional follow-up
 
-- [ ] Blog engine illustration — if the comparison article needs a visual side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding, generate a static HTML page or screenshot. Not a buildable surface mode.
+- [x] Blog engine illustration — `demo/components/engine-illustration.html` now provides the static side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding for the IBM Plex Sans / Ubuntu Sans H1 and H2 experiment. It remains a blog/demo artifact, not a buildable surface mode.
 
 ### Parity gaps (pursue on downstream demand)
 

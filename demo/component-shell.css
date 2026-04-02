@@ -320,6 +320,162 @@ body {
   object-position: center;
 }
 
+/* ── Engine illustration ─────────────────────────────── */
+
+.engine-illustration {
+  display: grid;
+  gap: var(--bf-section-space-shallow, 1.5rem);
+}
+
+.engine-illustration-meta {
+  align-items: baseline;
+  gap: 0.75rem 1.5rem;
+}
+
+.engine-illustration-meta-item,
+.engine-illustration-role-delta,
+.engine-illustration-note {
+  margin: 0;
+}
+
+.engine-illustration-role {
+  gap: var(--bf-space-3, 1.5rem);
+  min-inline-size: 0;
+}
+
+.engine-illustration-role-head {
+  align-items: end;
+  gap: 1rem 1.5rem;
+  justify-content: space-between;
+}
+
+.engine-illustration-role-head :where(h2, p) {
+  margin: 0;
+}
+
+.engine-illustration-role-delta,
+.engine-illustration-note,
+.engine-illustration-table-wrap p {
+  color: var(--demo-muted);
+}
+
+.engine-illustration-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.engine-illustration-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(20, 20, 20, 0.92);
+  border: 1px solid var(--demo-rule);
+  display: grid;
+  gap: 0.75rem;
+  min-inline-size: 0;
+  overflow: hidden;
+  padding: 1rem;
+  position: relative;
+}
+
+.engine-illustration-card::before {
+  block-size: 0.2rem;
+  content: "";
+  inset-block-start: 0;
+  inset-inline: 0;
+  position: absolute;
+}
+
+.engine-illustration-card[data-engine-mode="raw"]::before {
+  background: #f3a54b;
+}
+
+.engine-illustration-card[data-engine-mode="metrics"]::before {
+  background: #58c0b8;
+}
+
+.engine-illustration-card[data-engine-mode="cap"]::before {
+  background: #ff6f9f;
+}
+
+.engine-illustration-card-head {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.engine-illustration-chip {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.engine-illustration-value {
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.engine-illustration-stage {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+    linear-gradient(to bottom, transparent calc(var(--bf-baseline, 0.5rem) - 1px), rgba(255, 255, 255, 0.12) 0);
+  background-size: 100% 100%, 100% var(--bf-baseline, 0.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  min-inline-size: 0;
+  overflow: hidden;
+  padding: var(--bf-space-3, 1.5rem) var(--bf-space-2, 1rem);
+}
+
+.engine-illustration-role[data-engine-role="h1"] .engine-illustration-stage {
+  min-block-size: 21rem;
+}
+
+.engine-illustration-role[data-engine-role="h2"] .engine-illustration-stage {
+  min-block-size: 12rem;
+}
+
+.engine-illustration-card :where(h1, h2) {
+  margin: 0;
+  max-inline-size: none;
+}
+
+.engine-illustration-specimen {
+  align-self: start;
+}
+
+.engine-illustration-table-wrap {
+  gap: 1rem;
+}
+
+.engine-illustration-table-stage {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
+    rgba(20, 20, 20, 0.92);
+  border: 1px solid var(--demo-rule);
+  overflow: auto;
+  padding: 1rem;
+}
+
+.engine-illustration-table-stage .bf-table {
+  inline-size: max(32rem, 100%);
+}
+
+.engine-illustration-table-stage :where(th, td) {
+  white-space: nowrap;
+}
+
+@media (width >= 56rem) {
+  .engine-illustration-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .engine-illustration-role-head {
+    flex-wrap: nowrap;
+  }
+}
+
 .demo-index-name {
   color: inherit;
   margin: 0;

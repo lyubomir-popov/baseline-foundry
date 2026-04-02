@@ -46,6 +46,7 @@ export const componentPages: ComponentPage[] = [
   { name: "side-navigation", route: "/demo/components/side-navigation.html", captureProfile: "wide" },
   { name: "top-navigation", route: "/demo/components/top-navigation.html", captureProfile: "wide" },
   { name: "engine-smoke", route: "/demo/components/engine-smoke.html", captureProfile: "wide" },
+  { name: "engine-illustration", route: "/demo/components/engine-illustration.html", captureProfile: "wide" },
   { name: "modal", route: "/demo/components/modal.html" },
   { name: "choice-row", route: "/demo/components/choice-row.html" },
   { name: "inline-options", route: "/demo/components/inline-options.html" },

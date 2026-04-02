@@ -87,8 +87,8 @@ async function validateComponentPageTierConsistency(componentDemoJs: string): Pr
 
     assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${fileName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
 
-    if (fileName === "engine-smoke.html") {
-      assert(html.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to keep its experiment-specific stylesheet bundle.");
+    if (fileName === "engine-smoke.html" || fileName === "engine-illustration.html") {
+      assert(html.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), `Expected ${fileName} to keep its experiment-specific stylesheet bundle.`);
       continue;
     }
 
@@ -642,6 +642,26 @@ function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, comp
   assert(/@media\s*\(max-width:\s*56rem\)\s*\{[\s\S]*?\.pc-controls\s*\{\s*flex-wrap:\s*wrap;/.test(pageChromeCss), "Expected shared page-chrome controls to restore wrapping in the narrow-width fallback.");
 }
 
+function validateEngineIllustrationPage(pageCatalogJs: string, componentAtlasHtml: string, engineIllustrationHtml: string, componentShellCss: string): void {
+  assert(pageCatalogJs.includes('{ title: "Baseline engine illustration", href: "/demo/components/engine-illustration.html" }'), "Expected the page catalog to register the baseline engine illustration page.");
+  assert(componentAtlasHtml.includes('<a href="./engine-illustration.html"'), "Expected demo/components/index.html to link the baseline engine illustration page.");
+  assert(engineIllustrationHtml.includes('<body class="bf-theme is-dark" data-page-surface-mode="locked-manifest">'), "Expected engine-illustration.html to pin the generated multi-font manifest while still using the shared component chrome.");
+  assert(engineIllustrationHtml.includes('data-component-capture'), "Expected engine-illustration.html to expose a capture root for screenshot tooling.");
+  assert(engineIllustrationHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-illustration.html to load the generated IBM Plex smoke stylesheet.");
+  assert(engineIllustrationHtml.includes('<title>Baseline Engine Illustration</title>'), "Expected engine-illustration.html to expose the blog-companion page title.");
+  assert(engineIllustrationHtml.includes('data-engine-mode="raw"') && engineIllustrationHtml.includes('data-engine-mode="metrics"') && engineIllustrationHtml.includes('data-engine-mode="cap"'), "Expected engine-illustration.html to expose raw, compensated, and cap comparison lanes.");
+  assert(engineIllustrationHtml.includes('data-engine-role-card="h1"') && engineIllustrationHtml.includes('data-engine-role-card="h2"'), "Expected engine-illustration.html to cover both H1 and H2 display roles.");
+  assert(engineIllustrationHtml.includes('src="../engine-illustration.js"'), "Expected engine-illustration.html to boot the page-local comparison runtime.");
+  assert(engineIllustrationHtml.includes('Largest cap delta'), "Expected engine-illustration.html to expose the numeric summary row.");
+  assert(engineIllustrationHtml.includes('Not a buildable surface'), "Expected engine-illustration.html to describe itself as a static illustration rather than a shipped engine.");
+  assert(componentShellCss.includes('.engine-illustration-card {'), "Expected component-shell.css to include the engine-illustration card styles.");
+  assert(componentShellCss.includes('.engine-illustration-stage {'), "Expected component-shell.css to include the engine-illustration specimen stage styles.");
+  assert(componentShellCss.includes('.engine-illustration-table-stage {'), "Expected component-shell.css to include the engine-illustration table wrapper styles.");
+  assert(!engineIllustrationHtml.includes('bf-tier-app'), "Expected engine-illustration.html to stay off the app tier because it is a locked-manifest experiment page.");
+  assert(!/\bp-[a-z][a-z0-9_-]*/.test(engineIllustrationHtml), "Expected engine-illustration.html to avoid deprecated p-* markup and stay fully bf-* dogfooded.");
+  assert(!/\bvr-[a-z][a-z0-9_-]*/.test(engineIllustrationHtml), "Expected engine-illustration.html to avoid deprecated vr-* markup and stay fully bf-* dogfooded.");
+}
+
 function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
   validateBfOnlyDemoPage("tabs.html", demoPages.tabs);
   validateBfOnlyDemoPage("panel-tabs.html", demoPages.panelTabs);
@@ -710,8 +730,9 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, sampleHtml, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, demoControlsHtml, typographicSpecimenHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, sampleHtml, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
+    readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
     readTextArtifact(path.resolve("demo/component-demo.js")),
     readTextArtifact(path.resolve("demo/component-shell.css")),
@@ -735,6 +756,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/code-snippet.html")),
     readTextArtifact(path.resolve("demo/components/skip-link.html")),
     readTextArtifact(path.resolve("index.html")),
+    readTextArtifact(path.resolve("demo/components/index.html")),
     readTextArtifact(path.resolve("demo/controls.html")),
     readTextArtifact(path.resolve("demo/spec/typographic-specimen.html")),
     readTextArtifact(path.resolve("demo/panel.html"))
@@ -767,6 +789,7 @@ async function main(): Promise<void> {
   runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
   runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
   runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss));
+  runInvariant("Engine illustration page", () => validateEngineIllustrationPage(pageCatalogJs, componentAtlasHtml, engineIllustrationHtml, componentShellCss));
   runInvariant("Living spec home", () => validateLivingSpecHome(demoIndexHtml));
   runInvariant("Living spec controls", () => validateLivingSpecControls(demoControlsHtml, controlsShellCss));
   runInvariant("App tier demo (application-layout)", () => validateAppTierDemoPage("application-layout.html", applicationLayoutHtml));

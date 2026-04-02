@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baseline Engine Illustration</title>
+  <link rel="stylesheet" href="../../dist/experiments/ibm-plex-engine-smoke/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-page-surface-mode="locked-manifest">
+  <main class="bf-page">
+    <section class="bf-section">
+      <div class="bf-prose bf-measure">
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="engine illustration kicker">Baseline engine illustration</h5>
+        <h2 data-baseline-check="flow" data-baseline-label="engine illustration title">Compensated metrics, raw metrics, and cap padding</h2>
+        <p data-baseline-check="flow" data-baseline-label="engine illustration intro">This is the static visual companion to the comparison article. Use the font-surface selector to switch between <strong>IBM Plex Sans</strong> and <strong>Ubuntu Sans</strong>; the display roles stay fixed at <strong>H1 = 8rem / 9rem</strong> and <strong>H2 = 4rem / 5rem</strong>.</p>
+        <p data-baseline-check="flow" data-baseline-label="engine illustration note"><strong>Not a buildable surface:</strong> this page keeps the shipped compensated surface and the demo-only cap overlay, then adds a page-local raw-metrics lane so the three padding models can be compared without inventing a new exported engine.</p>
+      </div>
+    </section>
+
+    <section class="bf-section engine-illustration" data-component-capture data-baseline-check="box" data-baseline-ignore="true" data-baseline-label="engine illustration comparison">
+      <div class="bf-cluster engine-illustration-meta">
+        <p class="bf-body engine-illustration-meta-item">Current font: <strong data-engine-font-label>IBM Plex Sans</strong></p>
+        <p class="bf-body engine-illustration-meta-item">Largest cap delta: <strong data-engine-largest-delta>0.208rem</strong></p>
+        <p class="bf-body engine-illustration-meta-item">Baseline unit: <strong>0.5rem</strong></p>
+      </div>
+
+      <section class="bf-stack engine-illustration-role" data-engine-role="h1">
+        <div class="bf-cluster engine-illustration-role-head">
+          <div class="bf-prose">
+            <h2 class="bf-h3">H1 display role</h2>
+            <p>Two identical lines of specimen text. Only the top/bottom padding model changes.</p>
+          </div>
+          <p class="bf-body engine-illustration-role-delta">Cap vs compensated: <strong data-engine-role-delta="h1">0.208rem</strong></p>
+        </div>
+
+        <div class="engine-illustration-grid">
+          <article class="engine-illustration-card" data-engine-card data-engine-mode="raw" data-engine-role-card="h1">
+            <header class="engine-illustration-card-head">
+              <span class="engine-illustration-chip">Raw metrics</span>
+              <strong class="engine-illustration-value" data-engine-card-value>0rem</strong>
+            </header>
+            <div class="engine-illustration-stage">
+              <h1 class="engine-illustration-specimen">xnmo<br>xnmo</h1>
+            </div>
+            <p class="bf-body engine-illustration-note">Pure ascender and descender math with no browser-compensation patch.</p>
+          </article>
+
+          <article class="engine-illustration-card" data-engine-card data-engine-mode="metrics" data-engine-role-card="h1">
+            <header class="engine-illustration-card-head">
+              <span class="engine-illustration-chip">Compensated metrics</span>
+              <strong class="engine-illustration-value" data-engine-card-value>0rem</strong>
+            </header>
+            <div class="engine-illustration-stage">
+              <h1 class="engine-illustration-specimen">xnmo<br>xnmo</h1>
+            </div>
+            <p class="bf-body engine-illustration-note">The shipped experiment surface: metrics-derived nudges plus the browser-output correction.</p>
+          </article>
+
+          <article class="engine-illustration-card" data-engine-card data-engine-mode="cap" data-engine-role-card="h1">
+            <header class="engine-illustration-card-head">
+              <span class="engine-illustration-chip">Cap formula</span>
+              <strong class="engine-illustration-value" data-engine-card-value>0.208rem</strong>
+            </header>
+            <div class="engine-illustration-stage">
+              <h1 class="engine-illustration-specimen">xnmo<br>xnmo</h1>
+            </div>
+            <p class="bf-body engine-illustration-note">The demo-only <code>(line-height + 1cap) / 2</code> shortcut, shown as the lightweight approximation.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="bf-stack engine-illustration-role" data-engine-role="h2">
+        <div class="bf-cluster engine-illustration-role-head">
+          <div class="bf-prose">
+            <h2 class="bf-h3">H2 display role</h2>
+            <p>The smaller display step narrows the gap for some fonts and widens it for others.</p>
+          </div>
+          <p class="bf-body engine-illustration-role-delta">Cap vs compensated: <strong data-engine-role-delta="h2">0.104rem</strong></p>
+        </div>
+
+        <div class="engine-illustration-grid">
+          <article class="engine-illustration-card" data-engine-card data-engine-mode="raw" data-engine-role-card="h2">
+            <header class="engine-illustration-card-head">
+              <span class="engine-illustration-chip">Raw metrics</span>
+              <strong class="engine-illustration-value" data-engine-card-value>0rem</strong>
+            </header>
+            <div class="engine-illustration-stage">
+              <h2 class="engine-illustration-specimen">Ascender wins</h2>
+            </div>
+            <p class="bf-body engine-illustration-note">The laboratory reference: accurate font geometry, but still exposed to browser drift.</p>
+          </article>
+
+          <article class="engine-illustration-card" data-engine-card data-engine-mode="metrics" data-engine-role-card="h2">
+            <header class="engine-illustration-card-head">
+              <span class="engine-illustration-chip">Compensated metrics</span>
+              <strong class="engine-illustration-value" data-engine-card-value>0rem</strong>
+            </header>
+            <div class="engine-illustration-stage">
+              <h2 class="engine-illustration-specimen">Ascender wins</h2>
+            </div>
+            <p class="bf-body engine-illustration-note">The production answer in this repo: metrics-derived, then tuned against browser output.</p>
+          </article>
+
+          <article class="engine-illustration-card" data-engine-card data-engine-mode="cap" data-engine-role-card="h2">
+            <header class="engine-illustration-card-head">
+              <span class="engine-illustration-chip">Cap formula</span>
+              <strong class="engine-illustration-value" data-engine-card-value>0.104rem</strong>
+            </header>
+            <div class="engine-illustration-stage">
+              <h2 class="engine-illustration-specimen">Ascender wins</h2>
+            </div>
+            <p class="bf-body engine-illustration-note">The browser-native shortcut. Sometimes close, sometimes visibly wrong.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="bf-stack engine-illustration-table-wrap">
+        <div class="bf-prose bf-measure">
+          <h2 class="bf-h4">Current numeric snapshot</h2>
+          <p data-engine-summary>IBM Plex Sans exposes the cap drift immediately because the raw and compensated lanes both stay at zero while the cap shortcut moves the line box.</p>
+        </div>
+        <div class="engine-illustration-table-stage">
+          <table class="bf-table">
+            <thead>
+              <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Raw metrics</th>
+                <th scope="col">Compensated metrics</th>
+                <th scope="col">Cap formula</th>
+                <th scope="col">Cap vs compensated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">H1</th>
+                <td data-engine-table="h1:raw">0rem</td>
+                <td data-engine-table="h1:compensated">0rem</td>
+                <td data-engine-table="h1:cap">0.208rem</td>
+                <td data-engine-table="h1:delta">0.208rem</td>
+              </tr>
+              <tr>
+                <th scope="row">H2</th>
+                <td data-engine-table="h2:raw">0rem</td>
+                <td data-engine-table="h2:compensated">0rem</td>
+                <td data-engine-table="h2:cap">0.104rem</td>
+                <td data-engine-table="h2:delta">0.104rem</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="../component-demo.js"></script>
+  <script type="module" src="../engine-illustration.js"></script>
+</body>
+</html>
