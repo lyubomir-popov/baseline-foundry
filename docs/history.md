@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Workflow modal upstream contract (2026-04-02)
+
+- [x] Upstreamed the `brand-layout-ops` shell-modal behavior as an official `baseline-foundry` contract: `bf-modal.is-workflow` now provides the medium-large authoring shell with fixed header/footer bars and a scrolling body, and `bf-modal.is-workflow.is-resizable` adds optional resize.
+- [x] Replaced the local `demo/controls.html` modal width wrapper with the shared workflow modal contract and expanded `demo/components/modal.html` to show the workflow shell with long-content body coverage.
+- [x] Extended build validation so generated CSS and living-spec markup now assert the workflow modal and resizable modal selectors directly.
+
 ## Audit finding cleanup (2026-04-02)
 
 - [x] Removed the redundant `bf-label` alias from the generated status-label CSS and tightened build validation so `.bf-label` no longer appears in generated styles.
