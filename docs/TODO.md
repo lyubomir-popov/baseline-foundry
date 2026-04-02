@@ -123,6 +123,8 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Current follow-up
 
+- Highest-priority downstream follow-up is now workflow modal upstreaming for `brand-layout-ops`: `baseline-foundry` needs a canonical medium-large authoring dialog shell with optional resize, fixed header/footer bars, and an internally scrolling body so downstream repos can drop local `dialog.bf-modal[data-shell-modal]` overrides.
+- Next queued downstream fix after workflow modals is top-navigation chevron spacing/animation: compare the current `brand-layout-ops` implementation against `baseline-foundry`, upstream any local arrow-spacing or motion fixes that still live downstream, and remove the text/crashing chevron behavior from the panel/app surfaces.
 - Engine smoke now ships as a single generated multi-font bundle at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that manifest through the shared page chrome so the 8rem/4rem cap-drift comparison can switch between `IBM Plex Sans` and `Ubuntu Sans` without changing route.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
 - Custom builds can now emit named sibling surfaces in one stylesheet + manifest via `buildThemeFromConfig({ surfaceLabel, additionalSurfaces })`, which closes the immediate multi-font registry follow-up for downstream white-label experiments.
@@ -152,6 +154,19 @@ Not adopted (taste-driven, already settled):
 Decision gate:
 
 - Do not replace the compensated metrics default with any cap-based mode until a four-way specimen exists and has been reviewed across at least IBM Plex Sans and Ubuntu Sans at body, `h2`, and `h1` scales.
+
+### New: workflow modal upstream contract (from inbox)
+
+- [ ] **Workflow modal primitive for `brand-layout-ops`** — upstream a canonical authoring/workflow dialog contract so downstream repos can stop restyling `dialog.bf-modal[data-shell-modal]` locally.
+- Acceptance: medium-large default size token or variant for a workflow dialog.
+- Acceptance: optional resizable dialog surface.
+- Acceptance: three-row layout with header auto, body `minmax(0, 1fr)` plus `overflow: auto`, footer auto.
+- Acceptance: demo coverage for long-content modal bodies and resize interaction.
+- Acceptance: exported preset/build coverage so downstream repos can rely on BF classes only.
+
+### New: top-navigation chevron cleanup (from inbox)
+
+- [ ] **Top-navigation chevron spacing and motion parity** — compare `brand-layout-ops` against `baseline-foundry`, upstream any local fixes for dropdown-chevron spacing and arrow animation, and remove the current text collision in the panel/app surfaces.
 
 ### Pre-existing items
 
