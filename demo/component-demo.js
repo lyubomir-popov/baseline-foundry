@@ -14,7 +14,11 @@ function isLockedManifestMode() {
 
 function titleCaseSurface(value) {
   if (value === "ibm-plex-engine-smoke") {
-    return "IBM Plex";
+    return "IBM Plex Sans";
+  }
+
+  if (value === "ubuntu-engine-smoke") {
+    return "Ubuntu Sans";
   }
 
   return value
@@ -53,9 +57,9 @@ async function loadSurfaceManifest(stylesheetLink) {
 
 function manifestSurfaceOptions(manifest) {
   const surfaces = manifest?.surfaces ?? {};
-  return Object.keys(surfaces).map(name => ({
+  return Object.entries(surfaces).map(([name, surface]) => ({
     value: name,
-    label: titleCaseSurface(name)
+    label: typeof surface?.label === "string" ? surface.label : titleCaseSurface(name)
   }));
 }
 

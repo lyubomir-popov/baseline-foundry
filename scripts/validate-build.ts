@@ -326,6 +326,9 @@ function validateIbmPlexEngineSmokeTheme(tokens: Record<string, unknown>, css: s
   assert(layout.contentMaxWidth === "120rem", "Expected the IBM Plex smoke surface to widen the page for the large comparison headings.");
   assert(css.includes('font-family: "IBM Plex Sans";'), "Expected the IBM Plex smoke CSS to register the IBM Plex Sans family.");
   assert(css.includes('IBMPlexSansVar-Roman.woff'), "Expected the IBM Plex smoke CSS to point to the IBM Plex Sans variable font asset.");
+  assert(css.includes('font-family: "Ubuntu Sans";'), "Expected the IBM Plex smoke CSS bundle to also register the Ubuntu Sans family for the alternate surface.");
+  assert(css.includes('UbuntuSans[wdth,wght].ttf'), "Expected the IBM Plex smoke CSS bundle to point to the Ubuntu Sans variable font asset for the alternate surface.");
+  assert(css.includes(':where(.bf-theme.bf-surface-ubuntu-engine-smoke) {'), "Expected the IBM Plex smoke CSS bundle to include the alternate Ubuntu scoped surface selector.");
 }
 
 function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefaultSurface: string): void {
@@ -354,16 +357,30 @@ function validateCustomSurfaceManifest(manifest: Record<string, unknown>, expect
   const defaultSurface = manifest.defaultSurface;
   const surfaces = (manifest.surfaces ?? {}) as Record<string, Record<string, unknown>>;
   const expectedSurface = surfaces[expectedDefaultSurface] ?? {};
-  const metrics = (expectedSurface.metrics ?? {}) as Record<string, unknown>;
-  const metricElements = (metrics.elements ?? {}) as Record<string, Record<string, unknown>>;
+  const expectedMetrics = (expectedSurface.metrics ?? {}) as Record<string, unknown>;
+  const expectedMetricElements = (expectedMetrics.elements ?? {}) as Record<string, Record<string, unknown>>;
+  const ubuntuSurface = surfaces["ubuntu-engine-smoke"] ?? {};
+  const ubuntuMetrics = (ubuntuSurface.metrics ?? {}) as Record<string, unknown>;
+  const ubuntuMetricElements = (ubuntuMetrics.elements ?? {}) as Record<string, Record<string, unknown>>;
+  const ubuntuTokens = (ubuntuSurface.tokens ?? {}) as Record<string, unknown>;
+  const ubuntuRoles = (ubuntuTokens.roles ?? {}) as Record<string, Record<string, unknown>>;
 
   assert(defaultSurface === expectedDefaultSurface, `Expected surfaces.json to default to "${expectedDefaultSurface}".`);
-  assert(Object.keys(surfaces).length === 1, `Expected the custom experiment manifest to expose exactly one surface, got ${Object.keys(surfaces).length}.`);
+  assert(Object.keys(surfaces).length === 2, `Expected the custom experiment manifest to expose exactly two surfaces, got ${Object.keys(surfaces).length}.`);
   assert(expectedSurface, `Expected surfaces.json to include the custom "${expectedDefaultSurface}" surface entry.`);
-  assert(metricElements.h1?.nudgeTop !== undefined, "Expected the custom experiment manifest to include the computed h1 metric entry.");
-  assert(metricElements.h2?.nudgeTop !== undefined, "Expected the custom experiment manifest to include the computed h2 metric entry.");
-  assert(metricElements.body?.nudgeTop && metricElements.body.nudgeTop !== "0rem", "Expected the custom experiment manifest to retain a non-zero body metric nudge.");
-  assert(metricElements.h3?.nudgeTop && metricElements.h3.nudgeTop !== "0rem", "Expected the custom experiment manifest to retain a non-zero intermediate heading nudge.");
+  assert(expectedSurface.label === "IBM Plex Sans", "Expected the default custom experiment surface to expose the IBM Plex Sans label.");
+  assert(expectedMetricElements.h1?.nudgeTop !== undefined, "Expected the custom experiment manifest to include the computed h1 metric entry.");
+  assert(expectedMetricElements.h2?.nudgeTop !== undefined, "Expected the custom experiment manifest to include the computed h2 metric entry.");
+  assert(expectedMetricElements.body?.nudgeTop && expectedMetricElements.body.nudgeTop !== "0rem", "Expected the custom experiment manifest to retain a non-zero body metric nudge.");
+  assert(expectedMetricElements.h3?.nudgeTop && expectedMetricElements.h3.nudgeTop !== "0rem", "Expected the custom experiment manifest to retain a non-zero intermediate heading nudge.");
+  assert(ubuntuSurface.label === "Ubuntu Sans", "Expected the alternate custom experiment surface to expose the Ubuntu Sans label.");
+  assert(ubuntuSurface.className === "bf-surface-ubuntu-engine-smoke", "Expected the alternate custom experiment surface to expose the Ubuntu scoped class hook.");
+  assert(ubuntuRoles.body?.fontFamily === "ubuntu-sans", "Expected the alternate custom experiment surface to use Ubuntu Sans body tokens.");
+  assert(ubuntuRoles.h1?.fontSize === "8rem", "Expected the alternate custom experiment surface to keep the shared 8rem h1 scale.");
+  assert(ubuntuRoles.h2?.lineHeight === "5rem", "Expected the alternate custom experiment surface to keep the shared 5rem h2 line-height.");
+  assert(ubuntuMetricElements.h1?.nudgeTop !== undefined, "Expected the alternate custom experiment surface to include the computed h1 metric entry.");
+  assert(ubuntuMetricElements.h2?.nudgeTop !== undefined, "Expected the alternate custom experiment surface to include the computed h2 metric entry.");
+  assert(ubuntuMetricElements.body?.nudgeTop && ubuntuMetricElements.body.nudgeTop !== "0rem", "Expected the alternate custom experiment surface to retain a non-zero body metric nudge.");
 }
 
 function validateDocumentationTheme(tokens: Record<string, unknown>, css: string): void {
@@ -525,6 +542,8 @@ function validatePanelTheme(tokens: Record<string, unknown>, css: string): void 
 function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, componentShellCss: string, specShellCss: string): void {
   assert(engineSmokeHtml.includes('<body class="bf-theme is-dark" data-component-capture data-page-surface-mode="locked-manifest">'), "Expected engine-smoke.html to pin the generated IBM Plex manifest while still using the shared component chrome.");
   assert(engineSmokeHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to load the generated IBM Plex smoke stylesheet.");
+  assert(engineSmokeHtml.includes('<title>Font Engine Smoke Demo</title>'), "Expected engine-smoke.html to describe the shared multi-font surface instead of a single IBM Plex page.");
+  assert(engineSmokeHtml.includes('<strong>IBM Plex Sans</strong>') && engineSmokeHtml.includes('<strong>Ubuntu Sans</strong>'), "Expected engine-smoke.html to describe the IBM Plex and Ubuntu surface switch.");
   assert(engineSmokeHtml.includes('H1 = 8rem / 9rem') && engineSmokeHtml.includes('H2 = 4rem / 5rem'), "Expected engine-smoke.html to describe the oversized IBM Plex comparison scale.");
   assert(engineSmokeHtml.includes('class="bf-engine-metrics bf-span-4"'), "Expected engine-smoke.html to include the metrics runtime contract on the first specimen section.");
   assert(engineSmokeHtml.includes('class="bf-engine-cap bf-span-4"'), "Expected engine-smoke.html to include the cap runtime contract on the second specimen section.");

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IBM Plex Engine Smoke Demo</title>
+  <title>Font Engine Smoke Demo</title>
   <link rel="stylesheet" href="../../dist/experiments/ibm-plex-engine-smoke/styles.css">
   <link rel="stylesheet" href="../component-shell.css">
 </head>
@@ -11,9 +11,9 @@
   <main class="bf-page">
     <section class="bf-section">
       <div class="bf-prose bf-measure">
-        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="engine smoke page kicker">IBM Plex engine smoke</h5>
-        <p data-baseline-check="flow" data-baseline-label="engine smoke page intro">This specimen uses IBM Plex Sans with generated nudges at a deliberately aggressive display scale: <strong>H1 = 8rem / 9rem</strong>, <strong>H2 = 4rem / 5rem</strong>. The point is to make the cap-height shortcut visibly fail against the real ascender-driven metrics path.</p>
-        <p data-baseline-check="flow" data-baseline-label="engine smoke page note">Both columns share the same type settings and content. Only the vertical compensation engine changes.</p>
+        <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="engine smoke page kicker">Font engine smoke</h5>
+        <p data-baseline-check="flow" data-baseline-label="engine smoke page intro">Use the shared surface selector to switch between <strong>IBM Plex Sans</strong> and <strong>Ubuntu Sans</strong> at the same deliberately aggressive display scale: <strong>H1 = 8rem / 9rem</strong>, <strong>H2 = 4rem / 5rem</strong>. The point is to make the cap-height shortcut visibly fail against the real ascender-driven metrics path.</p>
+        <p data-baseline-check="flow" data-baseline-label="engine smoke page note">Within the selected font, both columns share the same type settings and content. Only the vertical compensation engine changes.</p>
       </div>
     </section>
 
@@ -22,9 +22,9 @@
         <section class="bf-engine-metrics bf-span-4" data-baseline-check="box" data-baseline-label="engine smoke metrics section">
           <div class="bf-prose" data-baseline-check="box" data-baseline-label="engine smoke metrics rail">
             <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="engine smoke metrics kicker">Metrics engine</h5>
-            <p data-baseline-check="flow" data-baseline-label="engine smoke metrics note">This side follows the calculated IBM Plex nudges from the font file, so the ascender still lands correctly even at the oversized display steps.</p>
-            <h1 data-baseline-check="flow" data-baseline-label="engine smoke metrics h1">Cap drift</h1>
-            <p data-baseline-check="flow" data-baseline-label="engine smoke metrics body">Generated from IBM Plex metrics.</p>
+            <p data-baseline-check="flow" data-baseline-label="engine smoke metrics note">This side follows the calculated nudges from the selected font file, so the ascender still lands correctly even at the oversized display steps.</p>
+            <h1 data-baseline-check="flow" data-baseline-label="engine smoke metrics h1">xnmo<br>xnmo</h1>
+            <p data-baseline-check="flow" data-baseline-label="engine smoke metrics body">Generated from the active font metrics.</p>
             <h2 data-baseline-check="flow" data-baseline-label="engine smoke metrics h2">Ascender wins</h2>
             <p data-baseline-check="flow" data-baseline-label="engine smoke metrics h2 note">4rem heading on a 5rem line-height.</p>
             <h3 data-baseline-check="flow" data-baseline-label="engine smoke metrics h3">2.5rem / 3rem</h3>
@@ -37,8 +37,8 @@
         <section class="bf-engine-cap bf-span-4" data-baseline-check="box" data-baseline-label="engine smoke cap section">
           <div class="bf-prose" data-baseline-check="box" data-baseline-label="engine smoke cap rail">
             <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="engine smoke cap kicker">Cap engine</h5>
-            <p data-baseline-check="flow" data-baseline-label="engine smoke cap note">This side uses the demo-only `(line-height + 1cap) / 2` shortcut. At IBM Plex display sizes the cap-height and ascender difference becomes obvious quickly.</p>
-            <h1 data-baseline-check="flow" data-baseline-label="engine smoke cap h1">Cap drift</h1>
+            <p data-baseline-check="flow" data-baseline-label="engine smoke cap note">This side uses the demo-only `(line-height + 1cap) / 2` shortcut. At these display sizes the cap-height and ascender difference becomes obvious quickly.</p>
+            <h1 data-baseline-check="flow" data-baseline-label="engine smoke cap h1">xnmo<br>xnmo</h1>
             <p data-baseline-check="flow" data-baseline-label="engine smoke cap body">Same text, same scale, wrong vertical anchor.</p>
             <h2 data-baseline-check="flow" data-baseline-label="engine smoke cap h2">Ascender wins</h2>
             <p data-baseline-check="flow" data-baseline-label="engine smoke cap h2 note">The mismatch starts showing before smaller roles do.</p>

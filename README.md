@@ -21,6 +21,8 @@ See `docs/TODO.md` for the full set. Summary:
 - Grid and layout primitives are small and composable.
 - Dogfooding: demos use only `bf-*` classes.
 
+For a longer write-up on empirical nudges, cap-unit alignment, raw metrics, and compensated metrics, see `docs/comparing-baseline-alignment-techniques.md`.
+
 ## Output
 
 Build output includes:
@@ -334,11 +336,31 @@ await buildThemeFromConfig("config/ubuntu-foundry-theme.json", {
 });
 ```
 
+If a downstream surface bundle should ship multiple named fonts or brand variants in one stylesheet, pass a label for the default surface plus sibling named surfaces:
+
+```ts
+await buildThemeFromConfig("config/ibm-plex-foundry-theme.json", {
+	distDir: "generated/foundry/smoke",
+	baselineDir: ".generated/baseline/smoke",
+	surfaceLabel: "IBM Plex Sans",
+	additionalSurfaces: [
+		{
+			name: "ubuntu-smoke",
+			label: "Ubuntu Sans",
+			className: "bf-surface-ubuntu-smoke",
+			configPath: "config/ubuntu-foundry-theme.json"
+		}
+	]
+});
+```
+
 That does three things:
 
 1. writes the reduced baseline-generator input JSON
 2. runs `@lyubomir-popov/baseline-nudge-generator`
 3. emits `tokens.json`, `styles.css`, and `surfaces.json` for the downstream font or surface set
+
+`surfaces.json` will then expose each named surface's runtime tokens, stored metrics, and optional UI label under one manifest-backed bundle.
 
 ### Derive nudges only
 

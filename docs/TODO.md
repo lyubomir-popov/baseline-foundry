@@ -96,9 +96,9 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 ### Current follow-up
 
-- IBM Plex large-type engine smoke now ships as a dedicated generated experiment at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that stylesheet through the shared page chrome so the 8rem/4rem cap-drift comparison is always using calculated nudges from the IBM Plex font file.
+- Engine smoke now ships as a single generated multi-font bundle at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that manifest through the shared page chrome so the 8rem/4rem cap-drift comparison can switch between `IBM Plex Sans` and `Ubuntu Sans` without changing route.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
-- Next architecture follow-up: accept multi-font named surface registries in one build so IBM Plex or downstream white-label experiments can ship beside the canonical Ubuntu surfaces without reintroducing override coupling.
+- Custom builds can now emit named sibling surfaces in one stylesheet + manifest via `buildThemeFromConfig({ surfaceLabel, additionalSurfaces })`, which closes the immediate multi-font registry follow-up for downstream white-label experiments.
 - The latest parity burst now also closes Vanilla-style top-navigation dropdowns: `bf-top-navigation` ships desktop layered dropdown menus plus mobile inline expansion, static validation covers the new selectors and demo markup, `npm run qa:components` is green, and the new dropdown paths pass targeted Playwright verification.
 - Full repo `npm test` is green again after the application-shell resize-handle follow-up: the resizable-aside runtime now re-syncs `aria-valuenow` from the rendered aside width after the shell settles, so the behavior harness no longer races the first-load layout state.
 - Next downstream-demand parity gap is navigation mega-nav; broader link and form-surface follow-ups remain demand-driven.
@@ -113,7 +113,8 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 ### Pre-existing items
 
 - [ ] Surface completeness audit — when adding new role or control properties, land them in the explicit scoped surface blocks and `surfaces.json` manifest instead of letting editorial fallbacks fill the gap.
-- [ ] Multi-font surface registry — let one build ingest multiple named configs so alternate fonts can ship beside canonical tiers as first-class surfaces rather than preset aliases.
+- [ ] Comparative engine specimen — add a full cap-contract comparison mode that mirrors the Pragma-style element contract (`padding-block-start/end` plus `margin-block-end` from `spaceAfter`) so the blog can compare formula-only cap alignment, full cap contract, raw metrics, and compensated metrics on one page.
+- [ ] Spacing-mode docs pass — describe the repo's typography modes explicitly as `element-owned` versus `container-owned` spacing so the documentation matches the actual editorial/app ontology.
 - [ ] Parasite class sweep — remove remaining downstream component aliases
 - [ ] Baseline invariant validation — add missing build-time checks
 - [ ] Typographic specimen page — editorial multi-column layout demo at `demo/spec/typographic-specimen.html`

@@ -1,0 +1,115 @@
+{
+  "baselineUnit": 0.5,
+  "fontFiles": [
+    {
+      "family": "ubuntu-sans",
+      "path": "../../assets/fonts/UbuntuSans[wdth,wght].ttf",
+      "cssFamily": "Ubuntu Sans",
+      "fontStyle": "normal",
+      "fontWeight": "100 900",
+      "fontDisplay": "swap"
+    }
+  ],
+  "fontStacks": {
+    "ubuntu-sans": "\"Ubuntu Sans\", \"Segoe UI\", system-ui, sans-serif"
+  },
+  "elements": [
+    {
+      "identifier": "body",
+      "fontSize": 1,
+      "lineHeight": 3,
+      "spaceAfter": 2,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 400,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h6",
+      "fontSize": 1,
+      "lineHeight": 3,
+      "spaceAfter": 2,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 400,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h5",
+      "fontSize": 1,
+      "lineHeight": 3,
+      "spaceAfter": 2,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 600,
+      "fontStyle": "normal",
+      "fontVariantCaps": "all-small-caps"
+    },
+    {
+      "identifier": "h4",
+      "fontSize": 1.5,
+      "lineHeight": 4,
+      "spaceAfter": 2,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 400,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h3",
+      "fontSize": 2.5,
+      "lineHeight": 6,
+      "spaceAfter": 2,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 500,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h2",
+      "fontSize": 4,
+      "lineHeight": 10,
+      "spaceAfter": 2,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 300,
+      "fontStyle": "normal"
+    },
+    {
+      "identifier": "h1",
+      "fontSize": 8,
+      "lineHeight": 18,
+      "spaceAfter": 2,
+      "fontFamily": "ubuntu-sans",
+      "fontWeight": 400,
+      "fontStyle": "normal"
+    }
+  ],
+  "roles": {
+    "body": "body",
+    "h1": "h1",
+    "h2": "h2",
+    "h3": "h3",
+    "h4": "h4",
+    "h5": "h5",
+    "h6": "h6"
+  },
+  "layout": {
+    "contentMaxWidthRem": 120,
+    "contentPaddingInlineRem": 1.5,
+    "measureRem": 40,
+    "sectionSpaceBaselineUnits": 8,
+    "sectionSpaceShallowBaselineUnits": 3,
+    "sectionSpaceDeepBaselineUnits": 16,
+    "stripSpaceBaselineUnits": 8,
+    "gridGapInlineBaselineUnits": 3,
+    "gridGapBlockBaselineUnits": 3,
+    "pageMarginBaselineUnits": 3
+  },
+  "components": {
+    "borderWidthPx": 1,
+    "radiusRem": 0,
+    "controlBlockPaddingRem": 0.5,
+    "controlCompactBlockPaddingRem": 0.25,
+    "controlInlinePaddingRem": 1,
+    "controlVisualSizeRem": 1,
+    "fieldGapBaselineUnits": 1,
+    "panelPaddingInlineBaselineUnits": 2,
+    "panelPaddingBlockBaselineUnits": 2,
+    "accordionIndentBaselineUnits": 3
+  }
+}

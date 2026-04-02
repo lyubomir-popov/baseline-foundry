@@ -17,6 +17,21 @@ import type {
   TypographyToken
 } from "./types.js";
 
+export interface AdditionalThemeSurfaceBuildConfig {
+  name: string;
+  configPath: string;
+  className?: string;
+  label?: string;
+  zeroNudge?: boolean;
+}
+
+export interface BuildThemeFromConfigOptions {
+  distDir?: string;
+  baselineDir?: string;
+  surfaceLabel?: string;
+  additionalSurfaces?: AdditionalThemeSurfaceBuildConfig[];
+}
+
 function parseRem(remValue: string): number {
   return Number.parseFloat(remValue.replace("rem", ""));
 }
@@ -255,6 +270,7 @@ function buildSurfaceManifest(defaultSurface: string, surfaces: ThemeSurface[]):
     defaultSurface,
     surfaces: Object.fromEntries(
       surfaces.map(surface => [surface.name, {
+        label: surface.label,
         className: surface.className,
         configPath: surface.configPath,
         baselineConfigPath: surface.baselineConfigPath,
@@ -329,6 +345,7 @@ async function buildThemeSurface(
   outputDir: string,
   options: {
     className?: string;
+    label?: string;
     zeroNudge?: boolean;
   } = {}
 ): Promise<ThemeSurface> {
@@ -355,6 +372,7 @@ async function buildThemeSurface(
 
   return {
     name,
+    label: options.label,
     className: options.className,
     configPath: resolvedConfigPath,
     baselineConfigPath,
@@ -396,10 +414,50 @@ async function buildRelatedTierSurfaces(
   return surfaces;
 }
 
+async function buildAdditionalThemeSurfaces(
+  surfaceConfigs: AdditionalThemeSurfaceBuildConfig[],
+  baselineDir: string,
+  outputDir: string
+): Promise<ThemeSurface[]> {
+  const surfaces: ThemeSurface[] = [];
+
+  for (const surfaceConfig of surfaceConfigs) {
+    surfaces.push(await buildThemeSurface(
+      surfaceConfig.name,
+      path.resolve(surfaceConfig.configPath),
+      path.join(baselineDir, "surfaces", surfaceConfig.name),
+      outputDir,
+      {
+        className: surfaceConfig.className,
+        label: surfaceConfig.label,
+        zeroNudge: surfaceConfig.zeroNudge
+      }
+    ));
+  }
+
+  return surfaces;
+}
+
+function assertUniqueSurfaceNames(surfaces: ThemeSurface[]): void {
+  const names = new Set<string>();
+
+  for (const surface of surfaces) {
+    if (names.has(surface.name)) {
+      throw new Error(`Duplicate surface name "${surface.name}" in build output.`);
+    }
+
+    names.add(surface.name);
+  }
+}
+
 async function buildTheme(
   resolvedConfigPath: string,
   distDir: string,
-  baselineDir: string
+  baselineDir: string,
+  options: {
+    surfaceLabel?: string;
+    additionalSurfaces?: AdditionalThemeSurfaceBuildConfig[];
+  } = {}
 ): Promise<BuildThemeResult> {
   const resolvedDistDir = path.resolve(distDir);
   const resolvedBaselineDir = path.resolve(baselineDir);
@@ -415,6 +473,7 @@ async function buildTheme(
     resolvedBaselineDir,
     resolvedDistDir,
     {
+      label: options.surfaceLabel,
       className: surfaceClassName(defaultSurfaceName),
       zeroNudge: normalizeBuiltInThemeName(builtInName ?? defaultSurfaceName as BuiltInThemeName) === "app" && builtInName !== undefined
     }
@@ -425,7 +484,13 @@ async function buildTheme(
     resolvedBaselineDir,
     resolvedDistDir
   );
-  const surfaces = [defaultSurface, ...relatedSurfaces];
+  const additionalSurfaces = await buildAdditionalThemeSurfaces(
+    options.additionalSurfaces ?? [],
+    resolvedBaselineDir,
+    resolvedDistDir
+  );
+  const surfaces = [defaultSurface, ...relatedSurfaces, ...additionalSurfaces];
+  assertUniqueSurfaceNames(surfaces);
   const surfaceManifest = buildSurfaceManifest(defaultSurfaceName, surfaces);
   const css = generateFoundryCss(defaultSurface.tokens, {
     presetName: builtInName,
@@ -454,12 +519,15 @@ async function buildTheme(
 
 export async function buildThemeFromConfig(
   configPath = path.resolve("config/tiers/editorial.json"),
-  options: { distDir?: string; baselineDir?: string; } = {}
+  options: BuildThemeFromConfigOptions = {}
 ): Promise<BuildThemeResult> {
   const resolvedConfigPath = path.resolve(configPath);
   const distDir = options.distDir ?? "dist";
   const baselineDir = options.baselineDir ?? "generated/baseline";
-  return buildTheme(resolvedConfigPath, distDir, baselineDir);
+  return buildTheme(resolvedConfigPath, distDir, baselineDir, {
+    surfaceLabel: options.surfaceLabel,
+    additionalSurfaces: options.additionalSurfaces
+  });
 }
 
 export async function buildThemeFromTier(tier: TierName): Promise<BuildThemeResult> {

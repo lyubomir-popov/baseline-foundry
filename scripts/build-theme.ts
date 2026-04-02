@@ -5,10 +5,19 @@ import type { TierName } from "../src/presets.ts";
 
 const experimentBuilds = {
   "ibm-plex-engine-smoke": {
-    description: "IBM Plex Sans large-type engine specimen with generated 8rem/4rem heading nudges.",
+    description: "Large-type engine specimen with IBM Plex Sans and Ubuntu Sans surfaces sharing generated 8rem/4rem heading nudges.",
     configPath: "config/experiments/ibm-plex-engine-smoke.json",
     distDir: "dist/experiments/ibm-plex-engine-smoke",
-    baselineDir: "generated/baseline/experiments/ibm-plex-engine-smoke"
+    baselineDir: "generated/baseline/experiments/ibm-plex-engine-smoke",
+    surfaceLabel: "IBM Plex Sans",
+    additionalSurfaces: [
+      {
+        name: "ubuntu-engine-smoke",
+        label: "Ubuntu Sans",
+        className: "bf-surface-ubuntu-engine-smoke",
+        configPath: "config/experiments/ubuntu-engine-smoke.json"
+      }
+    ]
   }
 } as const;
 
@@ -85,7 +94,9 @@ async function main(): Promise<void> {
     const build = experimentBuilds[experiment];
     const result = await buildThemeFromConfig(build.configPath, {
       distDir: build.distDir,
-      baselineDir: build.baselineDir
+      baselineDir: build.baselineDir,
+      surfaceLabel: build.surfaceLabel,
+      additionalSurfaces: build.additionalSurfaces
     });
     console.log(`Generated experiment "${experiment}"`);
     console.log(`  tokens: ${result.tokensPath}`);
@@ -122,7 +133,9 @@ async function main(): Promise<void> {
   for (const [name, build] of Object.entries(experimentBuilds)) {
     const experimentResult = await buildThemeFromConfig(build.configPath, {
       distDir: build.distDir,
-      baselineDir: build.baselineDir
+      baselineDir: build.baselineDir,
+      surfaceLabel: build.surfaceLabel,
+      additionalSurfaces: build.additionalSurfaces
     });
     console.log(`Generated experiment "${name}"`);
     console.log(`  tokens: ${experimentResult.tokensPath}`);

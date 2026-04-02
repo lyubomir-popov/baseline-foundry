@@ -2,6 +2,18 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Baseline alignment comparison article (2026-04-02)
+
+- [x] Added `docs/comparing-baseline-alignment-techniques.md`, a draft blog-style article comparing empirical nudges, cap-unit alignment, raw extracted metrics, and compensated metrics.
+- [x] Linked the article from `README.md` so the baseline-alignment write-up is part of the normal repo reading path.
+
+## Multi-font engine smoke bundle (2026-04-02)
+
+- [x] Extended `buildThemeFromConfig` so one custom build can emit multiple named surfaces into a single `styles.css` + `surfaces.json` bundle.
+- [x] Added a matched Ubuntu Sans large-type smoke surface beside the IBM Plex Sans default, both at H1 `8rem / 9rem` and H2 `4rem / 5rem`.
+- [x] Taught the locked-manifest component runtime to expose manifest-supplied surface labels so the shared page chrome can switch between the two font surfaces cleanly.
+- [x] Updated the engine-smoke page copy, validation, and README/API notes around the new multi-surface manifest contract.
+
 ## IBM Plex large-type engine smoke (2026-04-02)
 
 - [x] Added a dedicated IBM Plex Sans experiment config with generated nudges for a deliberately aggressive scale: H1 `8rem / 9rem`, H2 `4rem / 5rem`, plus supporting smaller roles.
