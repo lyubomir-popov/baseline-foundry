@@ -306,8 +306,8 @@ function validateAppTierCss(css: string): void {
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
   assert(css.includes(':where(.bf-panel.is-fill)'), "Expected the app-tier CSS to include the canonical fill-height panel helper.");
-  assert(css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to expose the lighter app-panel shadow token.");
-  assert(css.includes('box-shadow: var(--bf-app-panel-shadow);'), "Expected the app-tier preset CSS to apply the shared app-panel shadow token.");
+  assert(!css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to avoid a shared panel shadow token now that bf-panel no longer carries card chrome.");
+  assert(!css.includes('box-shadow: var(--bf-app-panel-shadow);'), "Expected the app-tier preset CSS to avoid applying panel box shadows through bf-panel.");
   assert(!css.includes('.p-'), "Expected the app-tier preset CSS to omit deprecated p-* selectors.");
   assert(!css.includes('.vr-'), "Expected the app-tier preset CSS to omit deprecated vr-* selectors.");
 }
@@ -468,12 +468,15 @@ function validateLivingSpecControls(html: string, css: string): void {
   assert(html.includes('class="bf-segmented-control"'), "Expected demo/controls.html to include the segmented-control family.");
   assert(html.includes('bf-contextual-menu'), "Expected demo/controls.html to include the contextual-menu family.");
   assert(html.includes('class="bf-modal is-workflow is-resizable"'), "Expected demo/controls.html to include the workflow modal contract.");
+  assert(html.includes('class="bf-controls-group bf-stack"'), "Expected demo/controls.html to group controls with plain layout primitives instead of bf-panel wrappers.");
+  assert(!html.includes('class="bf-panel"'), "Expected demo/controls.html to stop using decorative bf-panel wrappers.");
   assert(html.includes('src="./controls-page.js"'), "Expected demo/controls.html to boot through the dedicated controls-page runtime.");
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), "Expected demo/controls.html to avoid deprecated p-* markup and stay fully bf-* dogfooded.");
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(html), "Expected demo/controls.html to avoid deprecated vr-* markup and stay fully bf-* dogfooded.");
 
   assert(css.includes('.bf-controls-panels {'), "Expected demo/controls-shell.css to define the top-level control-panel grid.");
-  assert(css.includes('.bf-controls-panel :where(.bf-panel) {'), "Expected demo/controls-shell.css to keep each bf-panel stretched inside the panel grid.");
+  assert(css.includes('.bf-controls-group {'), "Expected demo/controls-shell.css to provide a plain layout wrapper for each controls group.");
+  assert(!css.includes('.bf-controls-panel :where(.bf-panel) {'), "Expected demo/controls-shell.css to stop styling controls pages through bf-panel wrappers.");
   assert(css.includes('.bf-controls-menu-panel {'), "Expected demo/controls-shell.css to reserve extra space for contextual-menu dropdowns.");
   assert(!css.includes('.bf-controls-modal {'), "Expected demo/controls-shell.css to stop using a local modal width wrapper once workflow modal sizing ships upstream.");
 }

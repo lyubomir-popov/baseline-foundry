@@ -8,23 +8,9 @@
   min-block-size: 100%;
 }
 
-.bf-controls-panel :where(.bf-panel) {
-  background: var(--bf-color-background-default);
-  border: 1px solid var(--bf-color-border-default);
-  box-shadow: var(--bf-app-panel-shadow, 0 1px 1px rgba(0, 0, 0, 0.14), 0 2px 2px -1px rgba(0, 0, 0, 0.12), 0 0 3px rgba(0, 0, 0, 0.12));
+.bf-controls-group {
+  --bf-stack-space: var(--bf-field-gap);
   min-block-size: 100%;
-}
-
-.bf-controls-panel :where(.bf-panel-header) {
-  align-items: center;
-}
-
-.bf-controls-panel :where(.bf-panel-title) {
-  font-family: inherit;
-  font-size: 1rem;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1.5rem;
 }
 
 .bf-controls-stack {

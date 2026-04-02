@@ -125,7 +125,8 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 
 - Workflow modal upstreaming for `brand-layout-ops` now ships in `baseline-foundry`: `bf-modal.is-workflow` provides the canonical medium-large authoring shell with fixed header/footer bars and an internally scrolling body, while `bf-modal.is-workflow.is-resizable` adds optional resize without downstream-local modal sizing/layout CSS.
 - Top-navigation chevron spacing and motion parity now ships in `baseline-foundry`: closed dropdown toggles keep the chevron pointed downward, active toggles rotate it upward, and the shared contract now matches the downstream `brand-layout-ops` authoring shell without chevron-specific overrides.
-- Highest-priority non-downstream cleanup is now the `bf-panel` audit: the current generated surface is still more opinionated than Vanilla's real application-layout panels, so strip the hallucinated border/header/logo surface back to the canonical subset or remove it.
+- The `bf-panel` audit is now complete: shared panels keep the real Vanilla application-layout pieces (`bf-panel-header`, `bf-panel-title`, `bf-panel-controls`, `bf-panel-toggle`, sticky headers, fill-height shell usage) but drop the invented border-card treatment, and `demo/controls.html` now uses plain layout wrappers instead of decorative `bf-panel` containers.
+- Highest-priority non-downstream cleanup is now the surface completeness audit: when new role or control properties land, make sure every scoped surface block and `surfaces.json` entry carries them explicitly instead of inheriting editorial fallbacks accidentally.
 - Engine smoke now ships as a single generated multi-font bundle at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that manifest through the shared page chrome so the 8rem/4rem cap-drift comparison can switch between `IBM Plex Sans` and `Ubuntu Sans` without changing route.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
 - Custom builds can now emit named sibling surfaces in one stylesheet + manifest via `buildThemeFromConfig({ surfaceLabel, additionalSurfaces })`, which closes the immediate multi-font registry follow-up for downstream white-label experiments.
@@ -163,8 +164,6 @@ Decision gate:
 - [ ] Parasite class sweep — remove remaining downstream component aliases
 - [ ] Typographic specimen page — editorial multi-column layout demo at `demo/spec/typographic-specimen.html`
 - [ ] Page chrome polish — `pc-controls` cluster should not wrap when space is available; switches + tier dropdown side by side
-- [ ] bf-panel audit — current generated surface (borders, headers, sticky, panel-title/controls/logo) is hallucinated; Vanilla's panels are application-layout-only and simpler. Strip to what's real or remove.
-- [ ] controls.html cleanup — replace `bf-panel` bordered containers with plain grid classes; no need for decorative containers here
 
 ### New: OS tier (from inbox)
 

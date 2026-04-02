@@ -863,7 +863,6 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 
 :where(.bf-theme) :where(.bf-panel) {
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
   color: var(--bf-color-text-default);
   display: flex;
   flex-direction: column;
@@ -880,13 +879,12 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 
 :where(.bf-theme) :where(.bf-panel-header) {
   align-items: start;
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
   justify-content: space-between;
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-block-end: var(--bf-panel-padding-block);
+  padding-block-start: var(--bf-panel-padding-block);
   padding-inline: var(--bf-panel-padding-inline);
 }
 
@@ -947,7 +945,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 :where(.bf-theme) :where(.bf-panel-content) {
   flex: 1 1 auto;
   min-block-size: 0;
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-block-end: var(--bf-panel-padding-block);
   padding-block-start: var(--bf-panel-padding-block);
   padding-inline: var(--bf-panel-padding-inline);
 }

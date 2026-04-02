@@ -2,6 +2,12 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## bf-panel audit (2026-04-02)
+
+- [x] Tightened `bf-panel` back to the real Vanilla application-layout contract: kept the live header/title/controls/toggle/sticky pieces, but removed the invented border-card treatment from the shared and app-tier CSS.
+- [x] Removed the app-tier `bf-panel` shadow layer so panel chrome now comes from the surrounding application layout and overlay areas, not from a reusable card surface.
+- [x] Replaced the decorative `bf-panel` wrappers in `demo/controls.html` with plain layout primitives and updated build validation so the controls page no longer dogfoods `bf-panel` outside real application-shell contexts.
+
 ## Top-navigation chevron cleanup (2026-04-02)
 
 - [x] Matched the shared top-navigation dropdown chevron motion to the downstream `brand-layout-ops` contract: closed toggles now point downward and active toggles rotate upward.

@@ -2,7 +2,6 @@ export function appTierPresetCss(): string {
   return `/* Canonical app-tier preset: light application chrome, Ubuntu Sans, and app-surface control overrides. */
 :where(.bf-theme.bf-tier-app) {
   --bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);
-  --bf-app-panel-shadow: 0 1px 1px rgba(0, 0, 0, 0.14), 0 2px 2px -1px rgba(0, 0, 0, 0.12), 0 0 3px rgba(0, 0, 0, 0.12);
   --bf-radius: 0;
   color-scheme: light;
 }
@@ -27,10 +26,6 @@ export function appTierPresetCss(): string {
   background: var(--bf-app-demo-page-bg);
 }
 
-:where(.bf-theme.bf-tier-app) :where(.bf-panel) {
-  box-shadow: var(--bf-app-panel-shadow);
-}
-
 :where(.bf-theme.bf-tier-app) :where(.bf-navigation-drawer),
 :where(.bf-theme.bf-tier-app) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer),
 :where(.bf-theme.bf-tier-app) :where(.bf-aside.is-overlay, .bf-aside.is-drawer) {
@@ -40,17 +35,12 @@ export function appTierPresetCss(): string {
 :where(.bf-theme.bf-tier-app) :where(.bf-panel-header) {
   align-items: center;
   gap: calc(var(--bf-baseline) * 1.5);
-  padding-block-end: calc((var(--bf-panel-padding-block) * 0.75) - var(--bf-border-width));
-  padding-block-start: calc((var(--bf-panel-padding-block) * 0.75) - var(--bf-border-width));
+  padding-block-end: calc(var(--bf-panel-padding-block) * 0.75);
+  padding-block-start: calc(var(--bf-panel-padding-block) * 0.75);
 }
 
 :where(.bf-theme.bf-tier-app) :where(.bf-panel-controls) {
   gap: calc(var(--bf-baseline) * 1.5);
-}
-
-:where(.bf-theme.bf-tier-app) :where(.bf-navigation-bar, .bf-navigation-drawer, .bf-aside) > :where(.bf-panel.is-fill) {
-  border: 0;
-  box-shadow: none;
 }
 
 :where(.bf-theme.bf-tier-app) :where(.bf-navigation-bar, .bf-navigation-drawer, .bf-aside) :where(.bf-panel-title) {
