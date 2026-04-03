@@ -54,6 +54,72 @@ async function readTextArtifact(filePath: string): Promise<string> {
   return fs.readFile(filePath, "utf8");
 }
 
+function assertRelativeFontFilePaths(fontFiles: Array<Record<string, unknown>>, label: string): void {
+  for (const fontFile of fontFiles) {
+    const fontPath = fontFile.path;
+
+    assert(typeof fontPath === "string" && fontPath.length > 0, `Expected ${label} to include a non-empty font file path.`);
+    assert(!path.isAbsolute(fontPath), `Expected ${label} font file path "${fontPath}" to stay relative so published manifests remain portable.`);
+  }
+}
+
+function validatePackageExports(packageJson: Record<string, unknown>): void {
+  const exportsField = (packageJson.exports ?? {}) as Record<string, unknown>;
+  const expectedOsTierExports = {
+    "./tiers/os.css": "./dist/tiers/os/styles.css",
+    "./tiers/os.tokens.json": "./dist/tiers/os/tokens.json",
+    "./tiers/os.surfaces.json": "./dist/tiers/os/surfaces.json"
+  } as const;
+
+  for (const [exportKey, exportPath] of Object.entries(expectedOsTierExports)) {
+    assert(exportsField[exportKey] === exportPath, `Expected package.json to export ${exportKey} from ${exportPath}.`);
+  }
+}
+
+function escapeForRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function assertSelectorUsesBodyTypography(css: string, selector: string, label: string): void {
+  const fontSizePattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?font-size: var\\(--bf-body-font-size,`);
+  const lineHeightPattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?line-height: var\\(--bf-body-line-height,`);
+
+  assert(fontSizePattern.test(css), `Expected ${label} to resolve font-size from the active body role.`);
+  assert(lineHeightPattern.test(css), `Expected ${label} to resolve line-height from the active body role.`);
+}
+
+function assertPortableSurfaceEntries(surfaces: Record<string, Record<string, unknown>>): void {
+  for (const [surfaceName, surface] of Object.entries(surfaces)) {
+    assert(!("configPath" in surface), `Expected the "${surfaceName}" surface manifest entry to omit build-machine configPath data.`);
+    assert(!("baselineConfigPath" in surface), `Expected the "${surfaceName}" surface manifest entry to omit build-machine baselineConfigPath data.`);
+    assert(!("baselineTokensPath" in surface), `Expected the "${surfaceName}" surface manifest entry to omit build-machine baselineTokensPath data.`);
+
+    const runtimeTokens = (surface.tokens ?? {}) as Record<string, unknown>;
+    const metrics = (surface.metrics ?? {}) as Record<string, unknown>;
+    assertRelativeFontFilePaths((runtimeTokens.fontFiles ?? []) as Array<Record<string, unknown>>, `the "${surfaceName}" runtime surface`);
+    assertRelativeFontFilePaths((metrics.fontFiles ?? []) as Array<Record<string, unknown>>, `the "${surfaceName}" metric surface`);
+  }
+}
+
+function validateThemeConfigWatcher(viteConfigTs: string): void {
+  assert(viteConfigTs.includes('name: "baseline-foundry-theme-config-watcher"'), "Expected vite.config.ts to register the JSON-config theme rebuild watcher.");
+  assert(viteConfigTs.includes("build:theme"), "Expected vite.config.ts to rerun npm run build:theme when config JSON changes.");
+  assert(viteConfigTs.includes('type: "full-reload"'), "Expected vite.config.ts to trigger a full reload after rebuilding theme artifacts.");
+}
+
+async function validatePanelBaselineArtifacts(): Promise<void> {
+  const panelBaselineDir = path.resolve("generated/baseline/panel");
+  await assertExists(panelBaselineDir);
+
+  const panelBaselineEntries = await fs.readdir(panelBaselineDir);
+  assert(panelBaselineEntries.includes("os.baseline.json"), "Expected generated/baseline/panel to emit the OS baseline config.");
+  assert(!panelBaselineEntries.includes("panel.baseline.json"), "Expected generated/baseline/panel to drop the stale legacy panel baseline config.");
+  assert(!panelBaselineEntries.includes("foundation-theme.baseline.json"), "Expected generated/baseline/panel to drop the stale legacy foundation baseline config.");
+
+  const osBaseline = await readTextArtifact(path.join(panelBaselineDir, "os.baseline.json"));
+  assert(!osBaseline.includes('"ui-'), "Expected the regenerated panel baseline alias output to avoid legacy ui-* identifiers.");
+}
+
 function validateBfOnlyDemoPage(pageName: string, html: string): void {
   assert(html.includes('<body class="bf-theme is-dark"'), `Expected ${pageName} to dogfood the bf-theme root.`);
   assert(html.includes("data-component-capture"), `Expected ${pageName} to expose a data-component-capture root for screenshot and baseline tooling.`);
@@ -76,6 +142,8 @@ async function validateComponentPageTierConsistency(componentDemoJs: string): Pr
   assert(componentDemoJs.includes('const TIER_OPTIONS = ['), "Expected component-demo.js to expose the shared built-in tier list.");
   assert(componentDemoJs.includes('{ value: "os", label: "OS" }'), "Expected component-demo.js to expose OS as a first-class built-in tier option.");
   assert(!componentDemoJs.includes('{ value: "panel", label: "Panel" }'), "Expected component-demo.js to avoid exposing panel as a global tier option.");
+  assert(componentDemoJs.includes('function cacheBust(url) {'), "Expected component-demo.js to define a cache-busting helper for tier stylesheet reloads.");
+  assert(componentDemoJs.includes('return cacheBust("/dist/tiers/editorial/styles.css");'), "Expected component-demo.js to cache-bust the shared tier stylesheet so rebuilt tier tokens refresh in long-lived demo sessions.");
   assert(componentDemoJs.includes('tierAriaLabel: "Tier"'), "Expected standard component pages to label the shared header select as a tier control.");
   assert(componentDemoJs.includes('tierAriaLabel: "Font surface"'), "Expected locked-manifest experiments to label their page-specific selector explicitly as a font-surface control.");
 
@@ -102,7 +170,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("@font-face"), "Expected generated CSS to include runtime font-face rules.");
   assert(css.includes("font-family: \"Ubuntu Sans\";"), "Expected generated CSS to register the Ubuntu Sans family.");
   assert(css.includes("UbuntuSans[wdth,wght].ttf"), "Expected generated CSS to point to the Ubuntu Sans variable font.");
-  assert(css.includes("font-weight: 100 900;"), "Expected generated CSS to expose the Ubuntu Sans variable weight range.");
+  assert(/font-weight:\s*100\s+\d+;/.test(css), "Expected generated CSS to expose a variable-weight Ubuntu Sans range.");
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px threshold for the 16-column grid.");
   assert(css.includes("@media (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px viewport breakpoint for gutters and outer margins.");
@@ -229,10 +297,17 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
   assert(css.includes(":where(.bf-badge, .bf-badge.is-negative)"), "Expected generated CSS to include badge styling.");
   assert(css.includes(":where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)"), "Expected generated CSS to include status label styling.");
+  assert(css.includes("--bf-ui-badge-padding-inline: calc(var(--bf-body-line-height"), "Expected badge geometry to scale from the active body line-height rather than an h5 fallback.");
+  assert(css.includes("min-width: calc(var(--bf-body-line-height"), "Expected badge minimum width to scale from the active body line-height.");
+  assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before", "chip value separators");
+  assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "badges");
+  assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", "status labels");
   assert(!css.includes(".bf-label"), "Expected generated CSS to omit the deprecated bf-label alias.");
   assert(css.includes(":where(.bf-modal.is-workflow)"), "Expected generated CSS to include the workflow modal variant.");
   assert(css.includes(":where(.bf-modal.is-workflow.is-resizable)"), "Expected generated CSS to include the resizable workflow modal modifier.");
   assert(css.includes("grid-template-rows: auto minmax(0, 1fr) auto;"), "Expected generated CSS to support the workflow modal fixed-header scrolling-body layout.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-panel.is-fill) {\n  block-size: 100%;"), "Expected generated CSS to make fill-height panels resolve against the shell height instead of an unbounded minimum block size.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-panel.is-fill) > :where(.bf-panel-content) {\n  min-block-size: 0;\n  overflow: auto;\n  overscroll-behavior: contain;"), "Expected generated CSS to make fill-height panel bodies scroll internally.");
   assert(css.includes(":where(.bf-search-box)"), "Expected generated CSS to include search-box styling.");
   assert(css.includes(":where(.bf-search-and-filter)"), "Expected generated CSS to include search-and-filter styling.");
   assert(css.includes(":where(.bf-search-and-filter-box) {\n  display: inline-flex;\n  flex: 1 1 12rem;\n  max-inline-size: 100%;\n  min-inline-size: 0;"), "Expected search-and-filter boxes to shrink inside narrow rails.");
@@ -240,6 +315,10 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-code-snippet-block.is-icon) {\n  cursor: copy;"), "Expected generated CSS to include copyable code-snippet blocks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the top-navigation dropdown container styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-toggle)::after {"), "Expected generated CSS to include the top-navigation dropdown chevron styling.");
+  assert(css.includes(":where(.bf-theme) :where(button.bf-top-navigation-dropdown-item) {"), "Expected generated CSS to include the top-navigation action-button dropdown item styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-item-label) {"), "Expected generated CSS to include the top-navigation dropdown item label slot styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-item-shortcut) {"), "Expected generated CSS to include the top-navigation dropdown item shortcut slot styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider) {"), "Expected generated CSS to include the top-navigation dropdown divider styling.");
   assert(css.includes("transform: rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to point downward before expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: rotate(180deg);\n}"), "Expected active top-navigation chevrons to rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
@@ -309,6 +388,7 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   roles: Record<string, Record<string, unknown>>;
   layout: Record<string, unknown>;
   components: Record<string, unknown>;
+  fontFiles: Array<Record<string, unknown>>;
 } {
   const roles = (tokens.roles ?? {}) as Record<string, Record<string, unknown>>;
   const layout = (tokens.layout ?? {}) as Record<string, unknown>;
@@ -329,7 +409,7 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(!("controlMinBlockSize" in components), "Expected generated tokens to stop exposing legacy control height tokens.");
   assert(!("controlMinBlockSizeDense" in components), "Expected generated tokens to stop exposing legacy dense control height tokens.");
 
-  return { roles, layout, components };
+  return { roles, layout, components, fontFiles };
 }
 
 function validateAppTierCss(css: string): void {
@@ -400,6 +480,7 @@ function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefa
   const osTokens = (osSurface.tokens ?? {}) as Record<string, unknown>;
   const osRoles = (osTokens.roles ?? {}) as Record<string, Record<string, unknown>>;
 
+  assertPortableSurfaceEntries(surfaces);
   assert(defaultSurface === expectedDefaultSurface, `Expected surfaces.json to default to "${expectedDefaultSurface}".`);
   assert(Object.keys(surfaces).length > 0, "Expected surfaces.json to expose at least one named surface.");
   assert(surfaces[expectedDefaultSurface], `Expected surfaces.json to include the default "${expectedDefaultSurface}" surface entry.`);
@@ -432,6 +513,7 @@ function validateCustomSurfaceManifest(manifest: Record<string, unknown>, expect
   const ubuntuTokens = (ubuntuSurface.tokens ?? {}) as Record<string, unknown>;
   const ubuntuRoles = (ubuntuTokens.roles ?? {}) as Record<string, Record<string, unknown>>;
 
+  assertPortableSurfaceEntries(surfaces);
   assert(defaultSurface === expectedDefaultSurface, `Expected surfaces.json to default to "${expectedDefaultSurface}".`);
   assert(Object.keys(surfaces).length === 2, `Expected the custom experiment manifest to expose exactly two surfaces, got ${Object.keys(surfaces).length}.`);
   assert(expectedSurface, `Expected surfaces.json to include the custom "${expectedDefaultSurface}" surface entry.`);
@@ -563,21 +645,24 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
 }
 
 function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
-  const { roles, layout, components } = validateCommonTokens(tokens);
+  const { roles, layout, components, fontFiles } = validateCommonTokens(tokens);
   const fontSizes = new Set(Object.values(roles).map(role => role.fontSize).filter(Boolean));
+  const ubuntuFontFile = fontFiles.find(fontFile => fontFile.family === "ubuntu-sans") ?? {};
 
   assert(roles.body.fontSize === "0.75rem", "Expected the OS tier body role font size to be 0.75rem.");
   assert(roles.body.lineHeight === "1rem", "Expected the OS tier body line height to be 1rem.");
-  assert(roles.h1.fontSize === "1.96875rem", "Expected the OS tier h1 role font size to be 1.96875rem.");
-  assert(roles.h2.fontSize === "1.96875rem", "Expected the OS tier h2 role font size to be 1.96875rem.");
-  assert(roles.h1.lineHeight === "2.25rem", "Expected the OS tier h1 line height to be 2.25rem.");
-  assert(roles.h2.lineHeight === "2.25rem", "Expected the OS tier h2 line height to be 2.25rem.");
-  assert(roles.h3.fontSize === "1.125rem", "Expected the OS tier h3 role font size to be 1.125rem.");
-  assert(roles.h4.fontSize === "1.125rem", "Expected the OS tier h4 role font size to be 1.125rem.");
-  assert(roles.h3.lineHeight === "1.5rem", "Expected the OS tier h3 line height to be 1.5rem.");
-  assert(roles.h4.lineHeight === "1.5rem", "Expected the OS tier h4 line height to be 1.5rem.");
+  assert(roles.h1.fontSize === "1.5rem", "Expected the OS tier h1 role font size to be 1.5rem.");
+  assert(roles.h2.fontSize === "1.5rem", "Expected the OS tier h2 role font size to be 1.5rem.");
+  assert(roles.h1.lineHeight === "1.5rem", "Expected the OS tier h1 line height to be 1.5rem.");
+  assert(roles.h2.lineHeight === "1.5rem", "Expected the OS tier h2 line height to be 1.5rem.");
+  assert(roles.h3.fontSize === "1rem", "Expected the OS tier h3 role font size to be 1rem.");
+  assert(roles.h4.fontSize === "1rem", "Expected the OS tier h4 role font size to be 1rem.");
+  assert(roles.h3.lineHeight === "1rem", "Expected the OS tier h3 line height to be 1rem.");
+  assert(roles.h4.lineHeight === "1rem", "Expected the OS tier h4 line height to be 1rem.");
   assert(roles.h5.fontSize === "0.75rem", "Expected the OS tier h5 role font size to stay at the compact body size.");
   assert(roles.h6.fontSize === "0.75rem", "Expected the OS tier h6 role font size to stay at the compact body size.");
+  assert(roles.body.fontStack === '"Ubuntu Sans", "IBM Plex Sans", system-ui, sans-serif', "Expected the OS tier body font stack to keep the IBM Plex Sans fallback.");
+  assert(ubuntuFontFile.fontWeight === "100 600", "Expected the OS tier to expose the reduced Ubuntu Sans variable weight range.");
   assert(roles.h1.fontWeight === 500, "Expected the OS tier h1 to be the heavier member of the top pair.");
   assert(roles.h2.fontWeight === 200, "Expected the OS tier h2 to sit 300 weight units below h1.");
   assert(roles.h3.fontWeight === 500, "Expected the OS tier h3 to be the heavier member of the middle pair.");
@@ -625,7 +710,7 @@ function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, comp
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(engineSmokeHtml), "Expected engine-smoke.html to avoid deprecated vr-* markup and stay fully bf-* dogfooded.");
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(sampleHtml), "Expected brand-layout-ops-sample.html to avoid deprecated p-* markup in the live sample shell.");
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(sampleHtml), "Expected brand-layout-ops-sample.html to avoid deprecated vr-* markup in the live sample shell.");
-  assert(componentShellCss.includes('.brand-layout-ops-sample :where(.bf-panel.is-fill) {'), "Expected the sample-shell CSS to style bf-panel through the bf-only selector.");
+  assert(!componentShellCss.includes('.brand-layout-ops-sample :where(.bf-panel.is-fill) {'), "Expected the sample-shell CSS to drop the local bf-panel fill-height workaround now that the shared contract owns it.");
   assert(componentShellCss.includes('.brand-layout-ops-sample :where(.bf-slider) {'), "Expected the sample-shell CSS to style bf-slider through the bf-only selector.");
   assert(componentShellCss.includes('.brand-layout-ops-sample :where(.bf-form-help.is-tight),'), "Expected the sample-shell CSS to style bf-form-help through the bf-only selector.");
   assert(!componentShellCss.includes('.p-'), "Expected the sample-shell CSS to omit deprecated p-* selectors.");
@@ -690,7 +775,17 @@ function validateTopNavigationDemo(topNavigationHtml: string): void {
   assert(topNavigationHtml.includes("bf-top-navigation-dropdown-toggle"), "Expected top-navigation.html to demo dropdown toggles.");
   assert(topNavigationHtml.includes("bf-top-navigation-dropdown"), "Expected top-navigation.html to demo dropdown containers.");
   assert(topNavigationHtml.includes("bf-top-navigation-dropdown-item"), "Expected top-navigation.html to demo dropdown items.");
+  assert(topNavigationHtml.includes("bf-top-navigation-dropdown-item-label"), "Expected top-navigation.html to demo dropdown action labels.");
+  assert(topNavigationHtml.includes("bf-top-navigation-dropdown-item-shortcut"), "Expected top-navigation.html to demo dropdown action shortcuts.");
+  assert(topNavigationHtml.includes('class="is-divider" role="separator"'), "Expected top-navigation.html to demo dropdown separators.");
+  assert(topNavigationHtml.includes("<button class=\"bf-top-navigation-dropdown-item\" type=\"button\">"), "Expected top-navigation.html to demo button-based dropdown action rows.");
   assert(topNavigationHtml.includes("bf-top-navigation-dropdown is-right"), "Expected top-navigation.html to demo the right-aligned dropdown variant.");
+}
+
+function validateApplicationShellDemo(applicationShellHtml: string): void {
+  assert(applicationShellHtml.includes('class="bf-panel is-fill"'), "Expected application-shell.html to demo the canonical fill-height panel modifier in a pinned-aside shell.");
+  assert(applicationShellHtml.includes('block-size:calc(var(--bf-baseline)*72);min-block-size:calc(var(--bf-baseline)*72)'), "Expected application-shell.html to keep a fixed shell height so the fill-height panel contract is observable.");
+  assert(applicationShellHtml.includes('Recent exports'), "Expected application-shell.html to include enough inspector content to exercise the internal panel scroll path.");
 }
 
 function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml: string): void {
@@ -721,6 +816,8 @@ function validateOsTierPage(pageCatalogJs: string, panelHtml: string): void {
 }
 
 async function main(): Promise<void> {
+  const packageJson = JSON.parse(await readTextArtifact(path.resolve("package.json"))) as Record<string, unknown>;
+  const viteConfigTs = await readTextArtifact(path.resolve("vite.config.ts"));
   const defaultTheme = await readThemeArtifacts(path.resolve("dist"));
   const editorialTier = await readThemeArtifacts(path.resolve("dist/tiers/editorial"));
   const documentationTier = await readThemeArtifacts(path.resolve("dist/tiers/documentation"));
@@ -730,7 +827,7 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, engineIllustrationHtml, sampleHtml, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, sampleHtml, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
@@ -740,6 +837,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/page-chrome.css")),
     readTextArtifact(path.resolve("demo/page-catalog.js")),
     readTextArtifact(path.resolve("demo/controls-shell.css")),
+    readTextArtifact(path.resolve("demo/components/application-shell.html")),
     readTextArtifact(path.resolve("demo/components/application-layout.html")),
     readTextArtifact(path.resolve("demo/components/tabs.html")),
     readTextArtifact(path.resolve("demo/components/panel-tabs.html")),
@@ -788,10 +886,14 @@ async function main(): Promise<void> {
   runInvariant("Surface manifest (panel preset alias)", () => validateSurfaceManifest(panelPreset.surfaces, "os"));
   runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
   runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
+  runInvariant("Published package exports", () => validatePackageExports(packageJson));
+  runInvariant("Theme config watcher", () => validateThemeConfigWatcher(viteConfigTs));
+  await runInvariantAsync("Panel baseline cleanup", () => validatePanelBaselineArtifacts());
   runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss));
   runInvariant("Engine illustration page", () => validateEngineIllustrationPage(pageCatalogJs, componentAtlasHtml, engineIllustrationHtml, componentShellCss));
   runInvariant("Living spec home", () => validateLivingSpecHome(demoIndexHtml));
   runInvariant("Living spec controls", () => validateLivingSpecControls(demoControlsHtml, controlsShellCss));
+  runInvariant("Application shell demo", () => validateApplicationShellDemo(applicationShellHtml));
   runInvariant("App tier demo (application-layout)", () => validateAppTierDemoPage("application-layout.html", applicationLayoutHtml));
   runInvariant("App tier demo (side-navigation)", () => validateAppTierDemoPage("side-navigation.html", sideNavigationHtml));
   runInvariant("Parity surface demos", () => validateParitySurfaceDemos(iconHtml, listHtml, tableHtml));

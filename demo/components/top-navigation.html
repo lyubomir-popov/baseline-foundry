@@ -10,7 +10,7 @@
 <body class="bf-theme is-dark" data-component-capture>
 <section class="bf-stack" data-baseline-check="box" data-baseline-label="top navigation section">
  <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="top navigation kicker">Top navigation</h5>
- <p class="bf-body" data-baseline-check="flow" data-baseline-label="top navigation summary">Vanilla-style banner, dropdown menus, responsive menu reveal, and expanding search now live as a dedicated bf-top-navigation surface.</p>
+ <p class="bf-body" data-baseline-check="flow" data-baseline-label="top navigation summary">Vanilla-style banner, dropdown menus, action-menu rows with shortcuts, responsive menu reveal, and expanding search now live as a dedicated bf-top-navigation surface.</p>
 
  <header id="top-navigation-default" class="bf-top-navigation is-sticky" data-baseline-ignore="true">
  <div class="bf-fixed-width" data-baseline-ignore="true">
@@ -55,11 +55,12 @@
  <ul class="bf-top-navigation-list" data-baseline-ignore="true">
  <li class="bf-top-navigation-item" data-baseline-ignore="true"><button class="bf-top-navigation-search-toggle" type="button" aria-label="Toggle search"><span class="bf-top-navigation-search-label">Search</span></button></li>
  <li class="bf-top-navigation-item is-dropdown-toggle is-right-shifted" data-baseline-ignore="true">
- <button class="bf-top-navigation-link bf-top-navigation-dropdown-toggle" type="button">Account</button>
+ <button class="bf-top-navigation-link bf-top-navigation-dropdown-toggle" type="button">Workspace</button>
  <ul class="bf-top-navigation-dropdown is-right" aria-hidden="true">
- <li><a class="bf-top-navigation-dropdown-item" href="#">Profile</a></li>
- <li><a class="bf-top-navigation-dropdown-item" href="#">Teams</a></li>
- <li><a class="bf-top-navigation-dropdown-item" href="#">Sign out</a></li>
+ <li><button class="bf-top-navigation-dropdown-item" type="button"><span class="bf-top-navigation-dropdown-item-label">Open recent</span><span class="bf-top-navigation-dropdown-item-shortcut" aria-hidden="true">Ctrl+O</span></button></li>
+ <li><button class="bf-top-navigation-dropdown-item" type="button"><span class="bf-top-navigation-dropdown-item-label">Export bundle</span><span class="bf-top-navigation-dropdown-item-shortcut" aria-hidden="true">Ctrl+E</span></button></li>
+ <li class="is-divider" role="separator"></li>
+ <li><button class="bf-top-navigation-dropdown-item" type="button"><span class="bf-top-navigation-dropdown-item-label">Sign out</span><span class="bf-top-navigation-dropdown-item-shortcut" aria-hidden="true">Shift+Q</span></button></li>
  </ul>
  </li>
  </ul>

@@ -48,6 +48,11 @@ function titleCaseSurface(value) {
     .join(" ");
 }
 
+function cacheBust(url) {
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}t=${Date.now()}`;
+}
+
 function surfaceManifestHref(stylesheetLink) {
   return stylesheetLink.href.replace(/styles\.css(?:\?.*)?$/i, "surfaces.json");
 }
@@ -149,7 +154,7 @@ function detectTier() {
 }
 
 function tierHref() {
-  return "/dist/tiers/editorial/styles.css";
+  return cacheBust("/dist/tiers/editorial/styles.css");
 }
 
 function applyTier(tierName, stylesheetLink) {

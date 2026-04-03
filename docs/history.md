@@ -2,6 +2,27 @@
 
 Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
 
+## Drift hardening + config watcher (2026-04-03)
+
+- [x] Closed the public package drift by publishing the OS tier static asset subpaths in `package.json`, matching the README and the built `dist/tiers/os/*` outputs.
+- [x] Hardened shipped surface manifests so they no longer expose build-machine `configPath` / `baselineConfigPath` / `baselineTokensPath` fields, while keeping runtime tokens and stored font metrics intact for downstream consumers.
+- [x] Emptied generated baseline directories before rebuilds so stale legacy `panel` baseline JSON files cannot linger after alias/config changes, and tightened build validation to assert that cleanup directly.
+- [x] Added a Vite dev-server watcher that reruns `npm run build:theme` when `config/**/*.json` changes and forces a full reload so local tier/config edits show up without restarting the demo.
+- [x] Updated validation for the current OS surface contract, including the denser `h1`/`h2` `1.5rem / 1.5rem` pair, the reduced Ubuntu Sans variable weight range, the IBM Plex Sans fallback stack, the package export parity check, the portable manifest check, and the watcher contract.
+- [x] Triaged the latest inbox notes into `docs/TODO.md` and reset `docs/AGENT-INBOX.md` to the empty header template.
+
+## Root UI typography invariant (2026-04-03)
+
+- [x] Fixed the last faux-heading UI bindings: chip value separators, badges, and status labels now resolve typography from the active body role instead of `h5`, so non-heading chrome stays at the tier root size instead of drifting upward in denser surfaces.
+- [x] Wrote the invariant down in the canonical docs and handoff: non-heading UI stays body-sized by default, and only components with explicit heading slots above `h5` may opt into larger heading roles.
+- [x] Extended validation around the rule: `scripts/validate-build.ts` now rejects body-sized UI regressions in generated CSS, `scripts/verify-component-behavior.ts` compares chip/status-label/badge font-size and line-height against the active body role across tier switching, and `demo/component-demo.js` cache-busts the shared tier stylesheet so rebuilt typescale changes appear in long-lived demo sessions.
+
+## Shared-shell upstream tranche 1 (2026-04-03)
+
+- [x] Upstreamed the first `brand-layout-ops` shared-shell slice into `baseline-foundry`: `bf-panel.is-fill` now resolves against the shell height and gives `bf-panel-content` an internally scrolling body, so pinned-aside inspector panels no longer need a downstream-local fill workaround.
+- [x] Extended `bf-top-navigation` with the action-menu row contract BLO had been assembling locally: dropdown items now support button entries, `.bf-top-navigation-dropdown-item-label`, `.bf-top-navigation-dropdown-item-shortcut`, divider rows, and close-on-activation behavior.
+- [x] Updated the canonical demos and validation around the new contracts: `demo/components/application-shell.html` now dogfoods the fill-height panel path, `demo/components/top-navigation.html` now demonstrates action-menu rows with shortcuts and separators, `demo/component-shell.css` dropped the sample-only panel override, and both `npm test` and `npm run qa:components` passed after the slice landed.
+
 ## Blog engine illustration (2026-04-02)
 
 - [x] Added `demo/components/engine-illustration.html` as the static three-way companion to the baseline-alignment article, keeping the shared locked-manifest IBM Plex Sans / Ubuntu Sans experiment bundle while adding a page-local raw-metrics lane beside the shipped compensated lane and the demo-only cap lane.

@@ -516,6 +516,35 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     assert(desktopAccountDropdownState.expanded === "true", `Expected right-aligned desktop dropdown aria-expanded=true, got ${desktopAccountDropdownState.expanded}.`);
     assert(desktopAccountDropdownState.hidden === "false", `Expected right-aligned desktop dropdown aria-hidden=false, got ${desktopAccountDropdownState.hidden}.`);
 
+    const desktopActionItem = desktopPage.locator(".bf-top-navigation-item.is-right-shifted .bf-top-navigation-dropdown button.bf-top-navigation-dropdown-item").first();
+    await desktopActionItem.waitFor({ state: "visible" });
+    await desktopActionItem.click({ force: true });
+    await desktopPage.waitForTimeout(180);
+
+    const desktopActionCloseState = await desktopPage.evaluate(() => {
+      const dropdownItem = document.querySelector<HTMLElement>(".bf-top-navigation-item.is-right-shifted.is-dropdown-toggle");
+      const dropdownToggle = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+      const dropdownElement = dropdownItem?.querySelector<HTMLElement>(".bf-top-navigation-dropdown");
+
+      if (!(dropdownItem instanceof HTMLElement) || !(dropdownToggle instanceof HTMLElement) || !(dropdownElement instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        active: dropdownItem.classList.contains("is-active"),
+        expanded: dropdownToggle.getAttribute("aria-expanded"),
+        hidden: dropdownElement.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(desktopActionCloseState, "Expected action-item close state to be measurable.");
+    assert(!desktopActionCloseState.active, "Expected activating a dropdown action item to close the desktop dropdown menu.");
+    assert(desktopActionCloseState.expanded === "false", `Expected action-item activation to reset desktop dropdown aria-expanded=false, got ${desktopActionCloseState.expanded}.`);
+    assert(desktopActionCloseState.hidden === "true", `Expected action-item activation to hide desktop dropdown menus, got aria-hidden=${desktopActionCloseState.hidden}.`);
+
+    await desktopAccountDropdownToggle.click({ force: true });
+    await desktopPage.waitForTimeout(180);
+
     await desktopPage.mouse.click(32, 320);
     await desktopPage.waitForTimeout(180);
 
@@ -660,6 +689,81 @@ async function verifyTopNavigation(origin: string): Promise<void> {
   }
 }
 
+async function verifyBodySizedUiTypography(origin: string): Promise<void> {
+  const demos = [
+    { route: "/demo/components/chip.html", selector: ".bf-chip", label: "chip" },
+    { route: "/demo/components/status-label.html", selector: ".bf-status-label", label: "status label" },
+    { route: "/demo/components/badge.html", selector: ".bf-badge", label: "badge" }
+  ] as const;
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 960 }
+    });
+
+    for (const demo of demos) {
+      await page.goto(`${origin}${demo.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      await disableDemoChromeHitTesting(page);
+
+      const tierSelect = page.locator("[data-page-chrome-tier-select]");
+      await tierSelect.waitFor({ state: "visible" });
+
+      for (const tier of tiers) {
+        await tierSelect.selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        await page.waitForTimeout(180);
+
+        const state = await page.evaluate(({ selector }) => {
+          const target = document.querySelector(selector);
+          const body = document.body;
+
+          if (!(target instanceof HTMLElement) || !(body instanceof HTMLElement)) {
+            return null;
+          }
+
+          const targetStyles = getComputedStyle(target);
+          const bodyStyles = getComputedStyle(body);
+          const probe = document.createElement("span");
+          probe.style.fontSize = "var(--bf-body-font-size)";
+          probe.style.lineHeight = "var(--bf-body-line-height)";
+          probe.style.position = "absolute";
+          probe.style.visibility = "hidden";
+          body.appendChild(probe);
+          const probeStyles = getComputedStyle(probe);
+          const resolvedBodyFontSize = probeStyles.fontSize;
+          const resolvedBodyLineHeight = probeStyles.lineHeight;
+          probe.remove();
+
+          return {
+            bodyTier: body.dataset.bfTier ?? null,
+            bodyFontSize: bodyStyles.fontSize,
+            bodyLineHeight: bodyStyles.lineHeight,
+            bodyRoleFontSize: bodyStyles.getPropertyValue("--bf-body-font-size").trim(),
+            bodyRoleLineHeight: bodyStyles.getPropertyValue("--bf-body-line-height").trim(),
+            resolvedBodyFontSize,
+            resolvedBodyLineHeight,
+            targetFontSize: targetStyles.fontSize,
+            targetLineHeight: targetStyles.lineHeight
+          };
+        }, { selector: demo.selector });
+
+        assert(state, `Expected ${demo.label} typography state to be measurable in ${tier}.`);
+        assert(state.bodyTier === tier, `Expected ${demo.label} page to switch to ${tier}, got ${state.bodyTier}.`);
+        assert(state.targetFontSize === state.resolvedBodyFontSize, `Expected ${demo.label} font-size to match the active body role in ${tier}. Body role ${state.bodyRoleFontSize} (${state.resolvedBodyFontSize}), target ${state.targetFontSize}.`);
+        assert(state.targetLineHeight === state.resolvedBodyLineHeight, `Expected ${demo.label} line-height to match the active body role in ${tier}. Body role ${state.bodyRoleLineHeight} (${state.resolvedBodyLineHeight}), target ${state.targetLineHeight}.`);
+      }
+    }
+
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifySkipLink(origin: string): Promise<void> {
   const route = "/demo/components/skip-link.html";
   const browser = await openBrowser();
@@ -729,6 +833,7 @@ async function main(): Promise<void> {
     await verifyDrawerOverlay(origin);
     await verifyApplicationLayout(origin);
     await verifyTopNavigation(origin);
+    await verifyBodySizedUiTypography(origin);
     await verifySkipLink(origin);
 
     console.log("Component behavior verification passed.");

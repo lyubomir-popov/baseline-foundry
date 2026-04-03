@@ -12,6 +12,7 @@ const DROPDOWN_SELECTOR = ".bf-top-navigation-dropdown";
 const MENU_TOGGLE_SELECTOR = ".bf-top-navigation-menu-toggle";
 const SEARCH_TOGGLE_SELECTOR = ".bf-top-navigation-search-toggle";
 const OVERLAY_SELECTOR = ".bf-top-navigation-search-overlay";
+const DROPDOWN_ACTION_SELECTOR = ".bf-top-navigation-dropdown-item";
 const DROPDOWN_ACTIVE_CLASS = "is-active";
 const LARGE_BREAKPOINT = "(min-width: 64.75rem)";
 
@@ -393,6 +394,15 @@ export function initTopNavigations(options: TopNavigationInitOptions = {}): () =
 
       event.preventDefault();
       closeAll(topNavigation, true);
+      return;
+    }
+
+    const dropdownAction = target.closest<HTMLElement>(DROPDOWN_ACTION_SELECTOR);
+    if (dropdownAction) {
+      const topNavigation = dropdownAction.closest<HTMLElement>(ROOT_SELECTOR);
+      if (topNavigation && hasOpenDropdown(topNavigation)) {
+        closeAll(topNavigation, false);
+      }
       return;
     }
 

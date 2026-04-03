@@ -48,6 +48,30 @@ async function ensureDirectory(dirPath: string): Promise<void> {
   await fs.mkdir(dirPath, { recursive: true });
 }
 
+async function emptyDirectory(dirPath: string): Promise<void> {
+  await ensureDirectory(dirPath);
+
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const entryPath = path.join(dirPath, entry.name);
+
+    if (entry.isDirectory()) {
+      await emptyDirectory(entryPath);
+      continue;
+    }
+
+    await fs.rm(entryPath, { recursive: true, force: true });
+  }
+}
+
+async function writeJsonFileAtomic(filePath: string, value: unknown): Promise<void> {
+  const tempFilePath = `${filePath}.tmp`;
+  await fs.writeFile(tempFilePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  await fs.rm(filePath, { force: true });
+  await fs.rename(tempFilePath, filePath);
+}
+
 function assertFiniteNumberConfigField(value: unknown, fieldPath: string): void {
   if (typeof value !== "number" || !Number.isFinite(value)) {
     throw new Error(`Theme config field "${fieldPath}" must be a finite number.`);
@@ -291,9 +315,6 @@ function buildSurfaceManifest(defaultSurface: string, surfaces: ThemeSurface[]):
         label: surface.label,
         className: surface.className,
         engine: surface.engine,
-        configPath: surface.configPath,
-        baselineConfigPath: surface.baselineConfigPath,
-        baselineTokensPath: surface.baselineTokensPath,
         tokens: surface.tokens,
         metrics: surface.metrics
       }])
@@ -378,11 +399,7 @@ async function buildThemeSurface(
   const baselineConfigFileName = `${path.parse(resolvedConfigPath).name}.baseline.json`;
   const baselineConfigPath = path.join(resolvedBaselineDir, baselineConfigFileName);
 
-  await fs.writeFile(
-    baselineConfigPath,
-    `${JSON.stringify(createBaselineConfig(config, resolvedConfigPath, baselineConfigPath), null, 2)}\n`,
-    "utf8"
-  );
+  await writeJsonFileAtomic(baselineConfigPath, createBaselineConfig(config, resolvedConfigPath, baselineConfigPath));
 
   const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
   const runtimeConfig: ThemeConfig = {
@@ -484,7 +501,7 @@ async function buildTheme(
   const resolvedBaselineDir = path.resolve(baselineDir);
 
   await ensureDirectory(resolvedDistDir);
-  await ensureDirectory(resolvedBaselineDir);
+  await emptyDirectory(resolvedBaselineDir);
 
   const builtInName = inferBuiltInPresetName(resolvedConfigPath);
   const defaultSurfaceName = inferSurfaceName(resolvedConfigPath);
@@ -573,17 +590,13 @@ export async function deriveBaselineTokensFromConfig(
   const baselineDir = options.baselineDir ?? "generated/baseline";
   const resolvedBaselineDir = path.resolve(baselineDir);
 
-  await ensureDirectory(resolvedBaselineDir);
+  await emptyDirectory(resolvedBaselineDir);
 
   const config = await readThemeConfig(resolvedConfigPath);
   const baselineConfigFileName = `${path.parse(resolvedConfigPath).name}.baseline.json`;
   const baselineConfigPath = path.join(resolvedBaselineDir, baselineConfigFileName);
 
-  await fs.writeFile(
-    baselineConfigPath,
-    `${JSON.stringify(createBaselineConfig(config, resolvedConfigPath, baselineConfigPath), null, 2)}\n`,
-    "utf8"
-  );
+  await writeJsonFileAtomic(baselineConfigPath, createBaselineConfig(config, resolvedConfigPath, baselineConfigPath));
 
   const tokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
 

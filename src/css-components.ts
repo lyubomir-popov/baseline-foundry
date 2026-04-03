@@ -47,12 +47,6 @@ function typeStyles(token: TypographyToken, options: {
   return `  font-family: ${roleFontFamilyVar(roleName, token.fontStack)};\n  font-size: ${roleFontSizeVar(roleName, token.fontSize)};\n  font-style: ${roleFontStyleVar(roleName, token.fontStyle ?? "normal")};\n  font-weight: ${options.fontWeight ?? roleFontWeightVar(roleName, token.fontWeight ?? 400)};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${roleLineHeightVar(roleName, token.lineHeight)};\n`;
 }
 
-function roleAlignmentVars(roleName: string, token: TypographyToken, baselineUnit: string): string {
-  const nt = parseRemValue(token.nudgeTop);
-  const endNudge = nt === 0 ? "0rem" : toRemLiteral(parseRemValue(baselineUnit) - nt);
-  return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};\n`;
-}
-
 function roleLineHeightVar(roleName: string, fallback?: string): string {
   return fallback ? `var(--bf-${roleName}-line-height, ${fallback})` : `var(--bf-${roleName}-line-height)`;
 }
@@ -167,10 +161,10 @@ ${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components
   --bf-ui-chip-padding-inline: calc(${bodyLineHeight} * 0.4);
   --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-control-inline-padding) * 0.25) - var(--bf-border-width)));
   --bf-ui-chip-block-size: calc(${bodyLineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
-  --bf-ui-badge-padding-inline: calc(${h5LineHeight} * 0.25);
+  --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
   --bf-ui-status-padding-block: ${h5SelectedStartNudge};
-${roleAlignmentVars("body", body, baselineUnit)}${roleAlignmentVars("h4", h4, baselineUnit)}${roleAlignmentVars("h5", h5, baselineUnit)}${roleAlignmentVars("h6", h6, baselineUnit)}  --bf-grid-max-inline-size: var(--bf-content-max-width);
+  --bf-grid-max-inline-size: var(--bf-content-max-width);
   --bf-application-drawer-width-icon: var(--bf-app-drawer-width-icon);
   --bf-application-drawer-width-small: var(--bf-app-drawer-width-small);
   --bf-application-drawer-width-small-max: var(--bf-app-drawer-width-small-max);
@@ -212,7 +206,6 @@ ${(themeSurfaces ?? []).map(surface => {
     return "";
   }
 
-  const tierRoles = ["body", "h4", "h5", "h6"] as const;
   const surfaceTokens = surface.tokens;
   const bodySurface = surfaceTokens.roles.body;
   const surfaceComponents = surfaceTokens.components;
@@ -222,15 +215,7 @@ ${(themeSurfaces ?? []).map(surface => {
   const tableRowPadding = bodySurface && parseRemValue(bodySurface.nudgeTop) > 0
     ? bodySurface.nudgeTop
     : surfaceComponents.controlCompactBlockPadding;
-  const props = tierRoles.map(roleName => {
-    const surfaceRole = surfaceTokens.roles[roleName];
-    if (!surfaceRole) return "";
-    const bu = surfaceTokens.baselineUnit ?? baselineUnit;
-    const nt = parseRemValue(surfaceRole.nudgeTop);
-    const endNudge = nt === 0 ? "0rem" : toRemLiteral(parseRemValue(bu) - nt);
-    return `  --bf-${roleName}-line-height: ${surfaceRole.lineHeight};\n  --bf-${roleName}-nudge-start: ${surfaceRole.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};`;
-  }).filter(Boolean).join("\n");
-  return `:where(.bf-theme.${surface.className}) {\n  --bf-control-baseline-reserve: 0rem;\n  --bf-input-block-padding: ${inputBlockPadding};\n  --bf-button-block-padding: ${inputBlockPadding};\n  --bf-table-row-padding: ${tableRowPadding};\n${props}\n${componentAlignmentVars(surfaceComponents)}\n}\n`;
+  return `:where(.bf-theme.${surface.className}) {\n  --bf-control-baseline-reserve: 0rem;\n  --bf-input-block-padding: ${inputBlockPadding};\n  --bf-button-block-padding: ${inputBlockPadding};\n  --bf-table-row-padding: ${tableRowPadding};\n${componentAlignmentVars(surfaceComponents)}\n}\n`;
 }).join("\n")}
 
 :where(.bf-theme.is-dark),
@@ -867,9 +852,16 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 }
 
 :where(.bf-theme) :where(.bf-panel.is-fill) {
+  block-size: 100%;
   max-inline-size: none;
-  min-block-size: 100%;
+  min-block-size: 0;
   resize: none;
+}
+
+:where(.bf-theme) :where(.bf-panel.is-fill) > :where(.bf-panel-content) {
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 :where(.bf-theme) :where(.bf-panel-header) {
@@ -1740,13 +1732,13 @@ ${typeStyles(body)}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before {
-${typeStyles(h5, { includeCase: false })}  color: var(--bf-color-text-muted);
+${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   color: var(--bf-color-text-muted);
   content: ": ";
 }
 
 :where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative) {
-${typeStyles(h5, { includeCase: false })}  align-items: center;
+${typeStyles(body, { includeCase: false })}  align-items: center;
   background-color: var(--bf-color-text-default);
   border-radius: 1rem;
   box-sizing: content-box;
@@ -1754,7 +1746,7 @@ ${typeStyles(h5, { includeCase: false })}  align-items: center;
   display: inline-block;
   margin: 0;
   max-inline-size: 4ch;
-  min-width: calc(${h5LineHeight} - (var(--bf-ui-badge-padding-inline) * 2));
+  min-width: calc(${bodyLineHeight} - (var(--bf-ui-badge-padding-inline) * 2));
   overflow: hidden;
   padding-block: 0;
   padding-inline: var(--bf-ui-badge-padding-inline);
@@ -1779,7 +1771,7 @@ ${typeStyles(h5, { includeCase: false })}  align-items: center;
   background-color: var(--bf-ui-status-background);
   color: var(--bf-ui-status-color);
   display: inline-block;
-${typeStyles(h5, { includeCase: false })}  margin: 0;
+${typeStyles(body, { includeCase: false })}  margin: 0;
   padding-block: var(--bf-ui-status-padding-block);
   padding-inline: var(--bf-ui-chip-padding-inline);
   text-align: center;
@@ -2621,12 +2613,48 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown-item) {
-${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
-  display: block;
+${typeStyles(body, { includeCase: false })}  align-items: center;
+  color: var(--bf-color-text-default);
+  display: flex;
+  gap: calc(var(--bf-baseline) * 2);
+  inline-size: 100%;
+  justify-content: space-between;
+  min-inline-size: 0;
   padding-block: var(--bf-top-navigation-link-padding-block);
   padding-inline: calc(var(--bf-top-navigation-link-padding-inline) + (var(--bf-baseline) * 2)) var(--bf-top-navigation-link-padding-inline);
+  text-align: left;
   text-decoration: none;
   white-space: nowrap;
+}
+
+:where(.bf-theme) :where(button.bf-top-navigation-dropdown-item) {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-dropdown-item-label) {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-dropdown-item-shortcut) {
+  color: var(--bf-color-text-muted);
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+:where(.bf-theme) :where(button.bf-top-navigation-dropdown-item:disabled) {
+  color: var(--bf-color-text-muted);
+  cursor: default;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider) {
+  border-top: var(--bf-border-width) solid var(--bf-color-border-default);
+  margin-block: calc(var(--bf-baseline) * 0.5);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown > li + li) > :where(.bf-top-navigation-dropdown-item) {

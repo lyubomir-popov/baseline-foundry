@@ -6,12 +6,12 @@
       "path": "../../assets/fonts/UbuntuSans[wdth,wght].ttf",
       "cssFamily": "Ubuntu Sans",
       "fontStyle": "normal",
-      "fontWeight": "100 900",
+      "fontWeight": "100 600",
       "fontDisplay": "swap"
     }
   ],
   "fontStacks": {
-    "ubuntu-sans": "\"Ubuntu Sans\", \"Segoe UI\", system-ui, sans-serif"
+    "ubuntu-sans": "\"Ubuntu Sans\", \"IBM Plex Sans\", system-ui, sans-serif"
   },
   "elements": [
     {
@@ -44,8 +44,8 @@
     },
     {
       "identifier": "h4",
-      "fontSize": 1.125,
-      "lineHeight": 6,
+      "fontSize": 1,
+      "lineHeight": 4,
       "spaceAfter": 3,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 300,
@@ -53,8 +53,8 @@
     },
     {
       "identifier": "h3",
-      "fontSize": 1.125,
-      "lineHeight": 6,
+      "fontSize": 1,
+      "lineHeight": 4,
       "spaceAfter": 3,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 500,
@@ -62,8 +62,8 @@
     },
     {
       "identifier": "h2",
-      "fontSize": 1.96875,
-      "lineHeight": 9,
+      "fontSize": 1.5,
+      "lineHeight": 6,
       "spaceAfter": 3,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 200,
@@ -71,8 +71,8 @@
     },
     {
       "identifier": "h1",
-      "fontSize": 1.96875,
-      "lineHeight": 9,
+      "fontSize": 1.5,
+      "lineHeight": 6,
       "spaceAfter": 3,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 500,

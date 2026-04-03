@@ -25,7 +25,7 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 11. No styled `data-*` attributes — JS-only hooks with zero CSS. All styling via `bf-*` / `is-*`.
 12. No decorative containers: non-components carry no backgrounds, borders, or padding.
 13. Three layout primitives: `bf-grid`, `bf-stack`, `bf-cluster`. Section spacing via `bf-section` modifiers.
-14. No `ui-*` roles: component typography derives from body/heading tier tokens.
+14. No `ui-*` roles: component typography derives from body/heading tier tokens, and non-heading UI stays body-sized by default. Only components with explicit heading slots above `h5` may opt into larger heading roles.
 15. Minimal demo content: Latin lorem ipsum only.
 16. **Control padding follows the Vanilla model** — see "Control baseline-grid invariant" below.
 
@@ -98,6 +98,20 @@ Consequences:
 - Metrics-derived nudges default; `.bf-engine-cap` is demo-only; `.bf-tier-app` zeroes runtime nudges but keeps stored metric data for audit and side-by-side comparison; `.bf-tier-os` stays metrics-driven as a dense addendum surface.
 - Ubuntu Sans Variable for the canonical built-ins; other fonts belong in their own metric-derived surfaces, not in override diffs.
 
+### Body-sized UI invariant
+
+Use this for chips, badges, status labels, tabs, buttons, labels, and any other component chrome that is **not** itself an explicit heading surface.
+
+1. Non-heading UI resolves `font-size` and `line-height` from the active `body` role.
+2. Do not borrow `h5` or `h6` as a fake UI role just because a component is compact or dense.
+3. The exception is a component that exposes a real heading slot above `h5` such as a panel title or modal title.
+4. Validate the rule at runtime by comparing component typography against the active body typography across tier switching, not by checking OS alone.
+
+Consequences:
+- The OS addendum keeps non-heading UI at the tier root size (`0.75rem` with the current config).
+- Chips, badges, and status labels track the same size and line-height as body text across all built-in tiers.
+- If a component needs more emphasis without becoming a heading surface, change weight, color, case, or spacing instead of borrowing a larger heading role.
+
 ### Marginless row-box invariant
 
 Use this for **tables and any other repeated rows where text is sandwiched between rules and `margin-bottom` is unavailable**. This is the row analogue of the control invariant above.
@@ -131,13 +145,30 @@ Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 
 - Workflow modal upstreaming for `brand-layout-ops` now ships in `baseline-foundry`: `bf-modal.is-workflow` provides the canonical medium-large authoring shell with fixed header/footer bars and an internally scrolling body, while `bf-modal.is-workflow.is-resizable` adds optional resize without downstream-local modal sizing/layout CSS.
 - Top-navigation chevron spacing and motion parity now ships in `baseline-foundry`: closed dropdown toggles keep the chevron pointed downward, active toggles rotate it upward, and the shared contract now matches the downstream `brand-layout-ops` authoring shell without chevron-specific overrides.
 - The `bf-panel` audit is now complete: shared panels keep the real Vanilla application-layout pieces (`bf-panel-header`, `bf-panel-title`, `bf-panel-controls`, `bf-panel-toggle`, sticky headers, fill-height shell usage) but drop the invented border-card treatment, and `demo/controls.html` now uses plain layout wrappers instead of decorative `bf-panel` containers.
+- The first `brand-layout-ops` shared-shell upstream tranche is now landed: `bf-panel.is-fill` now owns full-height internal scrolling, `bf-top-navigation-dropdown-item` now supports button action rows plus `.bf-top-navigation-dropdown-item-label` / `.bf-top-navigation-dropdown-item-shortcut` and `li.is-divider`, `demo/components/application-shell.html` now dogfoods the fill-height panel path directly, and `demo/component-shell.css` no longer needs the local `bf-panel.is-fill` workaround for the downstream sample shell.
+- The root UI typography invariant is now explicit and enforced: non-heading component chrome stays body-sized across tiers, the last chip/badge/status-label `h5` bindings are gone, `scripts/validate-build.ts` rejects regressions, `scripts/verify-component-behavior.ts` checks chip/status-label/badge size parity against the active body role, and `demo/component-demo.js` cache-busts built-in tier stylesheet reloads so rebuilt typescale edits show up without restarting the page.
 - Engine smoke now ships as a single generated multi-font bundle at `dist/experiments/ibm-plex-engine-smoke/`, and `demo/components/engine-smoke.html` pins that manifest through the shared page chrome so the 8rem/4rem cap-drift comparison can switch between `IBM Plex Sans` and `Ubuntu Sans` without changing route.
 - The comparison article now has its static visual companion: `demo/components/engine-illustration.html` keeps the same locked-manifest IBM Plex / Ubuntu experiment bundle, adds a page-local raw-metrics lane beside the shipped compensated lane and the demo-only cap lane, and closes the blog-only illustration follow-up without inventing a new buildable surface mode.
 - Independent theme surfaces now ship as full scoped variable sets rather than editorial-base diffs, and `dist/surfaces.json` publishes the per-surface runtime tokens plus stored font metrics needed for side-by-side container switching.
 - Custom builds can now emit named sibling surfaces in one stylesheet + manifest via `buildThemeFromConfig({ surfaceLabel, additionalSurfaces })`, which closes the immediate multi-font registry follow-up for downstream white-label experiments.
 - The latest parity burst now also closes Vanilla-style top-navigation dropdowns: `bf-top-navigation` ships desktop layered dropdown menus plus mobile inline expansion, static validation covers the new selectors and demo markup, `npm run qa:components` is green, and the new dropdown paths pass targeted Playwright verification.
 - Full repo `npm test` is green again after the application-shell resize-handle follow-up: the resizable-aside runtime now re-syncs `aria-valuenow` from the rendered aside width after the shell settles, so the behavior harness no longer races the first-load layout state.
-- Next downstream-demand parity gap is navigation mega-nav; broader link and form-surface follow-ups remain demand-driven.
+- Active downstream-demand work is now the `brand-layout-ops` shared-shell backlog below; mega-nav is explicitly deprioritized unless a concrete consumer asks for it again.
+
+### Inbox triage
+
+- [ ] Persist the shared page-chrome baseline-grid, tier, and tone choices across page-to-page navigation instead of resetting them per page family.
+- [ ] Remove the remaining `panel` legacy preset support once `brand-layout-ops` migrates, leaving `os` as an independent sibling built-in tier with no preset coupling.
+- [ ] Standardize dense icon and keyline spacing across search fields, search-and-filter, accordion toggles, top navigation, side navigation, and icon-bearing buttons so one- and two-icon controls share a consistent edge-spacing contract and stack onto as few vertical keylines as possible.
+- [ ] Review the switch-versus-slider visual contract and decide whether the switch should align to the same track language as the slider instead of preserving two divergent control-track treatments.
+
+### Downstream shared-shell upstreaming backlog
+
+- [x] Tranche 1 — fill-height panel + action-menu rows. Shared contract: `bf-panel.is-fill`, `bf-top-navigation-dropdown-item`, `bf-top-navigation-dropdown-item-label`, `bf-top-navigation-dropdown-item-shortcut`, `li.is-divider`. BF demos: `demo/components/application-shell.html`, `demo/components/top-navigation.html`.
+- [ ] Tranche 2 — authoring-shell layout variant. Proposed contract: `bf-application.is-top-navigation-shell` with canonical top-navigation, main-stage, and pinned-aside areas. BF demo target: extend `demo/components/application-shell.html` or add a focused authoring-shell demo.
+- [ ] Tranche 3 — worksurface + document-frame contract. Proposed contract: `bf-stage-shell.is-worksurface`, `bf-stage-frame`, `bf-stage-document`. BF demo target: extend `demo/components/stage-shell.html` and `demo/components/brand-layout-ops-sample.html`.
+- [ ] Tranche 4 — downstream-generated authoring surface bundle. Keep chroma as a generated `brand-layout-ops` surface bundle layered on BF structure instead of promoting a new built-in BF tier. Demo target: downstream consumption, not a new BF built-in surface.
+- [ ] Tranche 5 — breakpoint and density tuning only if reuse appears. Candidate seam: a top-navigation breakpoint token or variant rather than a BLO-local `48rem` media fork.
 
 ### Pragma-informed repo health plan
 
@@ -172,4 +203,4 @@ Decision gate:
 |---|---|---|
 | ~P2~ | ~Soft link (`.bf-link.is-soft`)~ | ~links~ | **Deprecated — not accessible, do not port** |
 | ~P2~ | ~Form layout modes (`.bf-form.is-inline`)~ | ~forms~ | **Superseded by `bf-cluster`** |
-| P3 | Navigation mega-nav | navigation |
+| ~P3~ | ~Navigation mega-nav~ (deferred) | navigation |

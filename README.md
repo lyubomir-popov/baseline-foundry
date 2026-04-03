@@ -80,6 +80,8 @@ npm run build:theme -- --list-presets
 npm run build:theme -- --preset=panel
 ```
 
+While `npm run demo` is running, edits under `config/**/*.json` now rerun `npm run build:theme` automatically and force a full page reload.
+
 `npm run setup:demo-font` downloads the font files needed for metric-driven nudge generation.
 
 The generated `dist/styles.css` emits matching `@font-face` rules so the demo and downstream consumers can render the font without a separate loader step.
@@ -173,6 +175,7 @@ Independent surface contract:
 - tier choice is a top-level class on any `.bf-theme` container: `.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`, `.bf-tier-os`
 - multiple containers can coexist side by side under the same stylesheet
 - `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface
+- the published manifest omits local build-machine config/baseline file paths, so the shipped JSON stays portable
 - `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest
 
 Example:

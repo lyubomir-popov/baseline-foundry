@@ -107,13 +107,6 @@ body {
   position: absolute;
 }
 
-.brand-layout-ops-sample :where(.bf-panel.is-fill) {
-  display: flex;
-  flex-direction: column;
-  inline-size: 100%;
-  min-block-size: 100%;
-}
-
 .brand-layout-ops-sample .config-sections,
 .brand-layout-ops-sample .config-group,
 .brand-layout-ops-sample .preset-panel-content {

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../component-shell.css">
 </head>
 <body class="bf-theme is-dark">
-  <div class="bf-application" data-aside-resize-storage-key="demo:application-shell-aside" data-baseline-ignore="true" style="min-block-size:calc(var(--bf-baseline)*72)">
+  <div class="bf-application" data-aside-resize-storage-key="demo:application-shell-aside" data-baseline-ignore="true" style="block-size:calc(var(--bf-baseline)*72);min-block-size:calc(var(--bf-baseline)*72)">
     <main class="bf-main" data-baseline-ignore="true">
       <div class="bf-stage-shell" data-baseline-ignore="true">
         <div class="bf-fixed-width" data-baseline-ignore="true">
@@ -21,7 +21,7 @@
     </main>
     <aside id="application-shell-aside" class="bf-aside is-pinned" data-baseline-ignore="true">
       <div class="bf-application-aside-resize-handle" role="separator" tabindex="0" aria-controls="application-shell-aside" aria-label="Resize panel" aria-orientation="vertical" data-baseline-ignore="true"></div>
-      <section class="bf-panel" data-component-capture data-baseline-check="box" data-baseline-label="application panel">
+      <section class="bf-panel is-fill" data-component-capture data-baseline-check="box" data-baseline-label="application panel">
         <div class="bf-panel-header is-sticky" data-baseline-ignore="true">
           <h2 class="bf-panel-title" data-baseline-check="flow" data-baseline-label="application panel title">Brand Layout Ops</h2>
           <div class="bf-panel-controls" data-baseline-check="box" data-baseline-label="application panel controls">
@@ -40,6 +40,15 @@
               <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="application inspector stat kicker 2">Grid</h5>
               <p class="bf-body" data-baseline-check="flow" data-baseline-label="application inspector stat body 2">8 cols</p>
             </div>
+          </div>
+          <div data-baseline-ignore="true" style="display:grid;gap:var(--bf-field-gap)">
+            <h5 class="bf-h5">Recent exports</h5>
+            <p class="bf-body">Landscape 1280x720 PNG sequence</p>
+            <p class="bf-body">Instagram 1080x1350 poster set</p>
+            <p class="bf-body">Story 1080x1920 motion draft</p>
+            <p class="bf-body">Brand intro lower-third bundle</p>
+            <p class="bf-body">Speaker slate revision 04</p>
+            <p class="bf-body">Caption-safe variant audit</p>
           </div>
         </div>
       </section>

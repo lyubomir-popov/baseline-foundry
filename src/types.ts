@@ -134,9 +134,6 @@ export interface ThemeSurfaceManifestEntry {
   label?: string;
   className?: string;
   engine: string;
-  configPath: string;
-  baselineConfigPath: string;
-  baselineTokensPath: string;
   tokens: ThemeTokens;
   metrics: BaselineGeneratorTokens;
 }
