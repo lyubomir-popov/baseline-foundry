@@ -1,5 +1,6 @@
 import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
+import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
 const TIER_OPTIONS = [
   { value: "editorial", label: "Editorial" },
@@ -210,7 +211,16 @@ async function initLockedManifestMode(stylesheetLink) {
 }
 
 function initDefaultMode(stylesheetLink) {
-  const initialSurface = detectTier();
+  const supportedTiers = supportedTierOptions();
+  const supportedTierValues = supportedTiers.map(o => o.value);
+  const pageTierDefault = document.body.dataset.pageTierDefault;
+  const storedTier = readStoredTier();
+  const initialSurface =
+    (pageTierDefault && supportedTierValues.includes(pageTierDefault))
+      ? pageTierDefault
+      : (storedTier && supportedTierValues.includes(storedTier))
+      ? storedTier
+      : detectTier();
   applyTier(initialSurface, stylesheetLink);
   const chrome = injectPageChrome({
     controls: {
@@ -218,7 +228,7 @@ function initDefaultMode(stylesheetLink) {
       showBaseline: true,
       showTone: true,
       tierAriaLabel: "Tier",
-      tierOptions: supportedTierOptions()
+      tierOptions: supportedTiers
     },
     currentPath: window.location.pathname,
     wrapBodyContent: true
@@ -237,6 +247,14 @@ async function main() {
 
   if (!(stylesheetLink instanceof HTMLLinkElement)) {
     throw new Error("Unable to find the component page stylesheet link.");
+  }
+
+  // Apply stored tone to body before chrome injection so currentTone() is accurate.
+  const storedTone = readStoredTone();
+  if (storedTone === "dark" || storedTone === "light") {
+    document.body.classList.toggle("is-dark", storedTone === "dark");
+    document.body.classList.toggle("is-light", storedTone !== "dark");
+    document.documentElement.style.colorScheme = storedTone;
   }
 
   const runtime = isLockedManifestMode()
@@ -258,7 +276,9 @@ async function main() {
 
   if (chrome.baselineToggle instanceof HTMLInputElement && captureTargetId) {
     chrome.baselineToggle.setAttribute("aria-controls", captureTargetId);
-    chrome.baselineToggle.dataset.baselineDefault = runtime.baselineShouldDefaultToOn(initialSurface) ? "on" : "off";
+    const storedBaseline = readStoredBaseline();
+    const tierBasedDefault = runtime.baselineShouldDefaultToOn(initialSurface) ? "on" : "off";
+    chrome.baselineToggle.dataset.baselineDefault = storedBaseline ?? tierBasedDefault;
   }
 
   initBaselineGridToggles({
@@ -271,12 +291,16 @@ async function main() {
     chrome.toneToggle.addEventListener("change", event => {
       const nextTone = event.currentTarget instanceof HTMLInputElement && event.currentTarget.checked ? "dark" : "light";
       applyTone(nextTone, chrome.baselineToggle);
+      storeTone(nextTone);
     });
   }
 
   if (chrome.baselineToggle instanceof HTMLInputElement) {
     chrome.baselineToggle.addEventListener("change", () => {
       baselineMode = "manual";
+      if (chrome.baselineToggle instanceof HTMLInputElement) {
+        storeBaseline(chrome.baselineToggle.checked);
+      }
     });
   }
 
@@ -288,6 +312,7 @@ async function main() {
 
       const nextSurface = event.currentTarget.value;
       runtime.applySurface(nextSurface);
+      storeTier(nextSurface);
 
       if (chrome.baselineToggle instanceof HTMLInputElement && baselineMode === "auto") {
         chrome.baselineToggle.checked = runtime.baselineShouldDefaultToOn(nextSurface);
@@ -311,6 +336,4 @@ async function main() {
 }
 
 void main();
-
-
 

@@ -1,9 +1,8 @@
 import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initRangeControls, initSideNavigations, initTabs, initTooltips } from "../dist/index.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
+import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
-const TIER_STORAGE_KEY = "baseline-foundry:living-spec-tier";
-const TONE_STORAGE_KEY = "baseline-foundry:living-spec-tone";
-const rootPrefix = document.documentElement.dataset.specRoot ?? "..";
+const rootPrefix= document.documentElement.dataset.specRoot ?? "..";
 let activeTierLoad = 0;
 let tierSelect = null;
 let toneToggle = null;
@@ -100,38 +99,6 @@ function renderTokens(tokens) {
         `;
       })
       .join("");
-  }
-}
-
-function readStoredTier() {
-  try {
-    return window.localStorage.getItem(TIER_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function storeTier(tierName) {
-  try {
-    window.localStorage.setItem(TIER_STORAGE_KEY, tierName);
-  } catch {
-    // Ignore storage failures; the selector still works for the current page load.
-  }
-}
-
-function readStoredTone() {
-  try {
-    return window.localStorage.getItem(TONE_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function storeTone(tone) {
-  try {
-    window.localStorage.setItem(TONE_STORAGE_KEY, tone);
-  } catch {
-    // Ignore storage failures; the selector still works for the current page load.
   }
 }
 
@@ -289,8 +256,16 @@ export async function initSpecRuntime({ initComponents } = {}) {
   }
 
   chrome.baselineToggle.setAttribute("aria-controls", baselineTargetId);
-  chrome.baselineToggle.dataset.baselineDefault = baselineDefaultMode(currentTier);
+  const pageBaselineDefault = document.body.dataset.pageBaselineDefault;
+  const storedBaseline = readStoredBaseline();
+  chrome.baselineToggle.dataset.baselineDefault =
+    pageBaselineDefault ?? storedBaseline ?? baselineDefaultMode(currentTier);
   initBaselineGridToggles({ toggleSelector: "[data-page-chrome-baseline-toggle][aria-controls]", defaultEnabled: true });
+  chrome.baselineToggle.addEventListener("change", () => {
+    if (chrome.baselineToggle instanceof HTMLInputElement) {
+      storeBaseline(chrome.baselineToggle.checked);
+    }
+  });
   initSideNavigations();
 
   tierSelect = chrome.tierSelect;

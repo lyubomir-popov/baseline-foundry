@@ -1,5 +1,6 @@
 import { initBaselineGridToggles, initSideNavigations } from "../dist/index.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
+import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
 const TIER_OPTIONS = [
   { value: "editorial", label: "Editorial" },
@@ -51,7 +52,28 @@ function detectTier() {
 }
 
 export function initExamplePage() {
-  const currentTier = document.body.dataset.bfTier ?? detectTier();
+  // Resolve initial tier: page-author default > stored preference > detected from body classes.
+  const supportedTierValues = TIER_OPTIONS.map(o => o.value);
+  const pageTierDefault = document.body.dataset.pageTierDefault;
+  const storedTier = readStoredTier();
+  const detectedTier = document.body.dataset.bfTier ?? detectTier();
+  const currentTier =
+    (pageTierDefault && supportedTierValues.includes(pageTierDefault))
+      ? pageTierDefault
+      : (storedTier && supportedTierValues.includes(storedTier))
+      ? storedTier
+      : detectedTier;
+
+  applyTier(currentTier);
+
+  // Apply stored tone before chrome injection.
+  const storedTone = readStoredTone();
+  if (storedTone === "dark" || storedTone === "light") {
+    document.body.classList.toggle("is-dark", storedTone === "dark");
+    document.body.classList.toggle("is-light", storedTone !== "dark");
+    document.documentElement.style.colorScheme = storedTone;
+  }
+
   const captureTarget = document.querySelector("[data-example-grid-target]") ?? document.body;
   const targetId = ensureTargetId(captureTarget, "example-grid-target");
   const controls = injectPageChrome({
@@ -69,7 +91,9 @@ export function initExamplePage() {
   }
 
   controls.baselineToggle.setAttribute("aria-controls", targetId);
-  controls.baselineToggle.dataset.baselineDefault = currentTier === "editorial" ? "on" : "off";
+  const storedBaseline = readStoredBaseline();
+  controls.baselineToggle.dataset.baselineDefault =
+    storedBaseline ?? (currentTier === "editorial" ? "on" : "off");
   initBaselineGridToggles({
     defaultEnabled: true,
     toggleSelector: "[data-page-chrome-baseline-toggle][aria-controls]"
@@ -79,6 +103,13 @@ export function initExamplePage() {
   controls.toneToggle.addEventListener("change", event => {
     const nextTone = event.currentTarget instanceof HTMLInputElement && event.currentTarget.checked ? "dark" : "light";
     applyTone(nextTone, controls.baselineToggle);
+    storeTone(nextTone);
+  });
+
+  controls.baselineToggle.addEventListener("change", () => {
+    if (controls.baselineToggle instanceof HTMLInputElement) {
+      storeBaseline(controls.baselineToggle.checked);
+    }
   });
 
   controls.tierSelect.addEventListener("change", event => {
@@ -86,8 +117,10 @@ export function initExamplePage() {
       return;
     }
 
-    applyTier(event.currentTarget.value);
-    if (event.currentTarget.value === "editorial") {
+    const nextTier = event.currentTarget.value;
+    applyTier(nextTier);
+    storeTier(nextTier);
+    if (nextTier === "editorial") {
       controls.baselineToggle.checked = true;
       controls.baselineToggle.dispatchEvent(new Event("change"));
     }
