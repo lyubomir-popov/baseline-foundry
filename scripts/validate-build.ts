@@ -218,6 +218,14 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("#0f62fe"), "Expected generated CSS to avoid the old non-Vanilla light link fallback.");
   assert(css.includes(`--bf-baseline-grid-color: ${BASELINE_GRID_DEFAULT_COLOR};`), "Expected baseline-grid overlays to declare a default line color.");
   assert(css.includes(`:where(.bf-theme).u-baseline-grid,\n:where(.bf-theme) .u-baseline-grid {\n  --bf-baseline-grid-color: ${BASELINE_GRID_LIGHT_THEME_COLOR};`), "Expected light themes to provide a subtle baseline-grid line color, even when the grid class is on the theme root.");
+
+  if (css.includes(":where(.bf-theme.bf-tier-app) {")) {
+    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-section),\n:where(.bf-theme.bf-tier-app) :where(.bf-section.is-shallow),\n:where(.bf-theme.bf-tier-app) :where(.bf-section.is-deep) {\n  margin-block-end: 0;"), "Expected shared built-in stylesheets to include the app-tier section margin reset.");
+    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stage-shell > *) {\n  margin-bottom: 0;\n  min-inline-size: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier stage-shell child reset.");
+    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack) > * {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier stack child reset.");
+    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-cluster) > * {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier cluster child reset.");
+    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-prose > *) {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier prose child reset.");
+  }
   assert(css.includes(`:where(.bf-theme.is-dark).u-baseline-grid,\n:where(.bf-theme.is-dark) .u-baseline-grid {\n  --bf-baseline-grid-color: ${BASELINE_GRID_DARK_THEME_COLOR};`), "Expected dark themes to provide a subtle baseline-grid line color, even when the grid class is on the theme root.");
   assert(css.includes(":where(.bf-theme) :where(img, picture, svg, video) {\n  block-size: auto;\n  display: block;\n  inline-size: auto;\n  max-inline-size: 100%;"), "Expected shared media to stay fluid inside narrow containers.");
   assert(css.includes("--bf-grid-columns: 16;"), "Expected the grid CSS to include the 16-column mode.");
@@ -462,7 +470,7 @@ function validateIbmPlexEngineSmokeTheme(tokens: Record<string, unknown>, css: s
   assert(roles.h2.lineHeight === "5rem", "Expected the IBM Plex smoke h2 line height to be 5rem.");
   assert(layout.contentMaxWidth === "120rem", "Expected the IBM Plex smoke surface to widen the page for the large comparison headings.");
   assert(css.includes('font-family: "IBM Plex Sans";'), "Expected the IBM Plex smoke CSS to register the IBM Plex Sans family.");
-  assert(css.includes('IBMPlexSansVar-Roman.woff'), "Expected the IBM Plex smoke CSS to point to the IBM Plex Sans variable font asset.");
+  assert(css.includes('IBMPlexSansVar-Roman.woff2'), "Expected the IBM Plex smoke CSS to point to the IBM Plex Sans variable font asset.");
   assert(css.includes('font-family: "Ubuntu Sans";'), "Expected the IBM Plex smoke CSS bundle to also register the Ubuntu Sans family for the alternate surface.");
   assert(css.includes('UbuntuSans[wdth,wght].ttf'), "Expected the IBM Plex smoke CSS bundle to point to the Ubuntu Sans variable font asset for the alternate surface.");
   assert(css.includes(':where(.bf-theme.bf-surface-ubuntu-engine-smoke) {'), "Expected the IBM Plex smoke CSS bundle to include the alternate Ubuntu scoped surface selector.");

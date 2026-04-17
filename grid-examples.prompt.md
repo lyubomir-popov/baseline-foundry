@@ -5,10 +5,12 @@ Build the minimum set of HTML examples that demonstrate every distinct grid beha
 ## Source material
 
 The authoritative spec lives at:
-`../canonical-specs/specs/grid/v0.3/draft.md`
+`../canonical-spacing-spec/specs/grid/draft.md`
 
-Reference images (breakpoint diagrams, nested grid, centered layout, Workplace app, Launchpad app) are in:
-`../canonical-specs/specs/grid/v0.3/images/`
+If you need the latest versioned review batch while auditing comment history, see:
+`../canonical-spacing-spec/specs/grid/v0.3/draft.md`
+
+There is no checked-in local image bundle for the current grid draft in `canonical-spacing-spec`; use the live draft prose and examples rather than following a broken sibling image path.
 
 ## Conventions (baseline-foundry)
 

@@ -1,6 +1,40 @@
 # History — Completed Work
 
-Items moved here from `llm-handoff-context.md`, `docs/TODO.md`, `README.md`, and `docs/AGENT-INBOX.md` to keep the active backlogs lean.
+Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to keep the active backlogs lean.
+
+## Short-term
+
+## Long-term
+
+## Workflow normalization + spec linkage (2026-04-17)
+
+- [x] Recorded explicit source-of-truth precedence in `.github/copilot-instructions.md`, `README.md`, `llm-handoff-context.md`, and `docs/TODO.md` so future agents can resolve workflow/spec disagreements without rediscovering the policy.
+- [x] Normalized the repo's linked spec paths around the live `canonical-spacing-spec` workspace, while demoting `canonical-specs` to legacy snapshot/reference status.
+- [x] Corrected the stale example-prompt source links so grid and spacing prompt files point at the current spec workspace rather than the older `canonical-specs` paths.
+
+## Workflow filename standardization (2026-04-17)
+
+- [x] Renamed the canonical workflow files to `AGENTS.md`, `ROADMAP.md`, `TODO.md`, `INBOX.md`, `STATUS.md`, and `HISTORY.md` at the repo root.
+- [x] Added `docs/specs.md` as the concrete linked-spec registry.
+- [x] Kept `.github/copilot-instructions.md` only as a compatibility mirror while making `AGENTS.md` the canonical workflow file.
+
+## Strict tier-mode policy (2026-04-14)
+
+- [x] Removed cross-tier layout-child resets from shared CSS and moved them to `bf-tier-app` only, so container-owned spacing no longer leaks into editorial/documentation surfaces.
+- [x] Tightened app-tier behavior to neutralize direct children in `bf-stage-shell`, `bf-stack`, `bf-cluster`, and `bf-prose`, enforcing a strict container-owned mode without prose islands.
+- [x] Updated architecture docs to reflect strict per-tier mode boundaries and updated spec references to Spacing v0.5 draft and the latest Grid specification rewrite draft.
+
+## Layout-container spacing handoff fix (2026-04-14)
+
+- [x] Fixed the layout-container handoff in generated CSS: `bf-stage-shell`, `bf-stack`, `bf-cluster`, and `bf-prose > :last-child` resets now emit after semantic typography rules, so direct text children stop leaking semantic margins and nudges inside container-owned contexts.
+- [x] Added app-tier behavior coverage in `scripts/verify-component-behavior.ts`, asserting that the flush header stack on `demo/components/application-layout.html` keeps `gap: 0` and zero computed `margin-bottom` / `padding-block` on its direct heading and helper-text children.
+- [x] Corrected the spacing ontology note in `docs/TODO.md` to match the canonical spacing spec: app keeps zero nudges, layout containers neutralize direct children when they take over, and semantic spacing still exists outside explicit layout containers.
+
+## IBM Plex build contract + repo-health refresh (2026-04-13)
+
+- [x] Restored the default engine-smoke build contract: `npm run setup:demo-font` now provisions Ubuntu Sans plus a real IBM Plex Sans variable asset, the experiment config points at the shipped `.woff2`, and build validation expects that path.
+- [x] Refreshed the docs that had drifted during the breakage: README setup/output/API sections, the TODO font-asset contract note, the handoff quick-start note, and the roadmap parity inventory now includes the shipped `tables` row with corrected counts.
+- [x] Ran `npm audit fix`, clearing the previously reported Vite and `basic-ftp` advisories from the lockfile.
 
 ## Drift hardening + config watcher (2026-04-03)
 

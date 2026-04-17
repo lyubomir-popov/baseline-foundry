@@ -5,9 +5,9 @@ Build the minimum set of HTML examples that demonstrate every distinct spacing b
 ## Source material
 
 The authoritative spec lives at:
-`../canonical-specs/specs/spacing/v0.4/draft.md`
+`../canonical-spacing-spec/specs/spacing/draft.md`
 
-The spec also references images `image-1.png` and `image.png` in the §2.1 comparison table — these are Coda-hosted diagrams that may not be locally available. The examples should replace that need with live HTML demonstrations.
+The spec still references image placeholders `image-1.png` and `image.png` in the §2.1 comparison table. The local workspace only carries partial supporting assets under `../canonical-spacing-spec/specs/spacing/images/`, so the examples should replace that need with live HTML demonstrations rather than relying on the legacy Coda-export image names.
 
 ## Conventions (baseline-foundry)
 

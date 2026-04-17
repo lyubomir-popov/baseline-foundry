@@ -4,12 +4,6 @@
 			"path": "."
 		},
 		{
-			"path": "../canonical-specs"
-		},
-		{
-			"path": "../portable-vertical-rhythm"
-		},
-		{
 			"path": "../brand-layout-ops"
 		},
 		{
@@ -17,6 +11,12 @@
 		},
 		{
 			"path": "../vanilla-framework"
+		},
+		{
+			"path": "../canonical-spacing-spec"
+		},
+		{
+			"path": "../repo-workflow-boilerplate"
 		}
 	],
 	"settings": {}

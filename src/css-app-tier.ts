@@ -69,6 +69,27 @@ export function appTierPresetCss(): string {
   margin-block-end: 0;
 }
 
+:where(.bf-theme.bf-tier-app) :where(.bf-stage-shell > *) {
+  margin-bottom: 0;
+  min-inline-size: 0;
+  padding-block: 0;
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-stack) > * {
+  margin-bottom: 0;
+  padding-block: 0;
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-cluster) > * {
+  margin-bottom: 0;
+  padding-block: 0;
+}
+
+:where(.bf-theme.bf-tier-app) :where(.bf-prose > *) {
+  margin-bottom: 0;
+  padding-block: 0;
+}
+
 :where(.bf-theme.bf-tier-app) :where(.bf-stack) {
   --bf-stack-space: var(--bf-space-2);
 }

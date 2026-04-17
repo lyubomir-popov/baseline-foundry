@@ -189,6 +189,9 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
   const body = tokens.roles.body;
   const baselineUnit = tokens.baselineUnit;
   const themeSurfaces = options.themeSurfaces ?? [];
+  const includesAppSurface = options.presetName === "app"
+    || options.presetName === "app-tier"
+    || themeSurfaces.some(surface => surface.className === "bf-tier-app");
   const fontFaces = collectFontFiles(tokens, themeSurfaces).map(fontFaceRule).filter(Boolean).join("\n");
   const roleRules = Object.entries(tokens.roles)
     .map(([roleName, token]) => textRule(roleName, selectorsForRole(roleName), token, baselineUnit, EXTRA_STYLES_BY_ROLE[roleName] ?? ""))
@@ -203,7 +206,7 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
     .map(surface => themeSurfaceRule(`:where(.bf-theme.${surface.className})`, surface.tokens))
     .join("\n");
 
-  const presetCss = options.presetName === "app" || options.presetName === "app-tier" ? `\n${appTierPresetCss()}` : "";
+  const presetCss = includesAppSurface ? `\n${appTierPresetCss()}` : "";
 
   if (!body) {
     throw new Error("Theme tokens require a body role.");
@@ -318,21 +321,10 @@ ${generateBaselineGridThemeOverrideCss()}
   --bf-stage-shell-gap: var(--bf-space-4);
 }
 
-:where(.bf-theme) :where(.bf-stage-shell > *) {
-  margin-bottom: 0;
-  min-inline-size: 0;
-  padding-block: 0;
-}
-
 :where(.bf-theme) :where(.bf-stack) {
   --bf-stack-space: 0px;
   display: grid;
   gap: var(--bf-stack-space);
-}
-
-:where(.bf-theme) :where(.bf-stack) > * {
-  margin-bottom: 0;
-  padding-block: 0;
 }
 
 :where(.bf-theme) :where(.bf-stack.is-flush) {
@@ -370,17 +362,8 @@ ${generateBaselineGridThemeOverrideCss()}
   gap: var(--bf-space-2);
 }
 
-:where(.bf-theme) :where(.bf-cluster) > * {
-  margin-bottom: 0;
-  padding-block: 0;
-}
-
 :where(.bf-theme) :where(.bf-prose) {
   inline-size: min(100%, var(--bf-measure));
-}
-
-:where(.bf-theme) :where(.bf-prose > :last-child) {
-  margin-bottom: 0;
 }
 
 ${roleRules}
@@ -431,6 +414,10 @@ ${capEngineDemo}
 :where(.bf-theme) :where(.bf-token-row:first-child) {
   border-top: 0;
   padding-top: 0;
+}
+
+:where(.bf-theme) :where(.bf-prose > :last-child) {
+  margin-bottom: 0;
 }
 
 ${componentsCss(tokens, themeSurfaces)}

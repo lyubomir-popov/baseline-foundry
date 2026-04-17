@@ -4,6 +4,16 @@
 
 Minimal testing surface for evaluating canonical typography, spacing, and grid specs. Output: spec examples, screenshots, edge-case isolation — not a finished design-system site.
 
+## Source inputs
+
+Primary spec inputs for roadmap work:
+
+- `../canonical-spacing-spec/specs/typeface/draft.md`
+- `../canonical-spacing-spec/specs/spacing/draft.md`
+- `../canonical-spacing-spec/specs/grid/draft.md`
+
+Additional ideas may extend beyond the specs, but they must stay clearly marked as non-spec work rather than being folded back into the source-of-truth docs.
+
 ## Stages
 
 ### Stage 1 — Foundation tokens and prose flow ✅
@@ -16,9 +26,9 @@ Metric-driven typography from Ubuntu Sans Variable, editorial typescale, prose s
 
 ### Stage 3 — Spec-driven component surface (in progress)
 
-All non-deprecated Vanilla components as minimal `bf-*` demos. Currently: 27 shipped, 4 partial, 9 superseded, 25 missing. Independent theme surfaces now ship as complete scoped token sets with stored font metrics, so alternate fonts can sit beside the canonical Ubuntu tiers without relying on editorial-base diffs. Purpose: edge-case isolation for spec evaluation and screenshot capture.
+All non-deprecated Vanilla components as minimal `bf-*` demos. Currently: 27 shipped, 4 partial, 9 superseded, 19 missing, plus 6 permanently excluded deprecated patterns. Independent theme surfaces now ship as complete scoped token sets with stored font metrics, so alternate fonts can sit beside the canonical Ubuntu tiers without relying on editorial-base diffs. Purpose: edge-case isolation for spec evaluation and screenshot capture.
 
-**Key invariant for this stage:** Control sizing (buttons, inputs, selects) follows the Vanilla model — symmetric `padding-block = nudge − border`, no explicit `block-size` target, and `margin-bottom = compensation + spaceAfter`, where `compensation = ceil(borderBoxHeight / baselineUnit) × baselineUnit − borderBoxHeight`. The occupied block (`border box + margin-bottom`) snaps to the baseline grid; the raw border box usually does not. See `docs/TODO.md` → "Control baseline-grid invariant" for the full explanation. All controls sharing a font size align to the same baseline as a `<p>`.
+**Key invariant for this stage:** Control sizing (buttons, inputs, selects) follows the Vanilla model — symmetric `padding-block = nudge − border`, no explicit `block-size` target, and `margin-bottom = compensation + spaceAfter`, where `compensation = ceil(borderBoxHeight / baselineUnit) × baselineUnit − borderBoxHeight`. The occupied block (`border box + margin-bottom`) snaps to the baseline grid; the raw border box usually does not. See `TODO.md` → "Control baseline-grid invariant" for the full explanation. All controls sharing a font size align to the same baseline as a `<p>`.
 
 ### Stage 4 — Consumer hardening
 
@@ -39,7 +49,7 @@ Source of truth: `vanilla-framework/scss/_patterns_*.scss` (65 pattern entries).
 | Superseded | Covered by smaller Foundry primitives or the tier model |
 | Missing | No current equivalent |
 
-Counts: **Shipped 27 · Partial 4 · Superseded 9 · Missing 25**
+Counts: **Shipped 27 · Partial 4 · Superseded 9 · Missing 19** plus 6 permanently excluded deprecated patterns.
 
 | Pattern | Status | Foundry surface | Gap |
 |---|---|---|---|
@@ -94,6 +104,7 @@ Counts: **Shipped 27 · Partial 4 · Superseded 9 · Missing 25**
 | `status-label` | Shipped | `bf-status-label` | — |
 | `strip` | Superseded | `bf-strip` | — |
 | `switch` | Shipped | `bf-switch` | — |
+| `tables` | Shipped | `bf-table` | — |
 | `table-expanding` | Missing | `bf-table` base only | — |
 | `table-icons` | Shipped | `bf-table` + `.is-icon-placeholder` cells | — |
 | `table-mobile-card` | Missing | `bf-table` base only | — |

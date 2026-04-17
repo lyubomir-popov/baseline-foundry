@@ -251,7 +251,47 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(page);
-  await disableDemoChromeHitTesting(page);
+    await disableDemoChromeHitTesting(page);
+
+    const spacingResetState = await page.evaluate(() => {
+      const stack = document.querySelector<HTMLElement>(".bf-panel-header .bf-stack.is-flush");
+      if (!(stack instanceof HTMLElement)) {
+        return null;
+      }
+
+      return {
+        gap: getComputedStyle(stack).gap,
+        children: Array.from(stack.children).slice(0, 2).map(child => {
+          if (!(child instanceof HTMLElement)) {
+            return null;
+          }
+
+          const style = getComputedStyle(child);
+          return {
+            tag: child.tagName,
+            marginBottom: style.marginBottom,
+            paddingBlockStart: style.paddingBlockStart,
+            paddingBlockEnd: style.paddingBlockEnd
+          };
+        })
+      };
+    });
+
+    if (!spacingResetState) {
+      throw new Error("Expected application layout header stack to be measurable.");
+    }
+
+    assert(spacingResetState.gap === "0px", `Expected application layout header stack to stay flush. Got gap=${spacingResetState.gap}.`);
+
+    spacingResetState.children.forEach((child, index) => {
+      if (!child) {
+        throw new Error(`Expected application layout header stack child ${index + 1} to be an HTMLElement.`);
+      }
+
+      assert(child.marginBottom === "0px", `Expected application layout header stack child ${child.tag} to drop semantic margin-bottom inside the flush stack. Got ${child.marginBottom}.`);
+      assert(child.paddingBlockStart === "0px", `Expected application layout header stack child ${child.tag} to drop semantic padding-block-start inside the flush stack. Got ${child.paddingBlockStart}.`);
+      assert(child.paddingBlockEnd === "0px", `Expected application layout header stack child ${child.tag} to drop semantic padding-block-end inside the flush stack. Got ${child.paddingBlockEnd}.`);
+    });
 
     const navigation = page.locator("#application-layout-navigation");
     const menuToggle = page.locator("[data-application-layout-toggle]").first();
@@ -316,7 +356,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     await mobilePage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(mobilePage);
-  await disableDemoChromeHitTesting(mobilePage);
+    await disableDemoChromeHitTesting(mobilePage);
 
     const mobileToggle = mobilePage.locator("[data-application-layout-toggle]").first();
     await mobileToggle.click({ force: true });

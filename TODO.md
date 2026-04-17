@@ -4,6 +4,29 @@
 
 Provide the **minimal testing surface** for evaluating the canonical typography, spacing, and grid specs. Output: spec examples, screenshots, edge-case isolation for all non-deprecated Vanilla components — not a finished design-system site.
 
+## Source inputs and precedence
+
+Primary linked specs for this repo:
+
+- `../canonical-spacing-spec/specs/typeface/draft.md`
+- `../canonical-spacing-spec/specs/spacing/draft.md`
+- `../canonical-spacing-spec/specs/grid/draft.md`
+- Supporting reference: `../canonical-spacing-spec/specs/typography-article/draft.md`
+
+Notes:
+
+- `../canonical-specs/` is legacy snapshot/reference material only.
+
+When sources disagree, use this order:
+
+1. Linked specs in workspace repos or explicitly referenced source docs
+2. `ROADMAP.md`
+3. `.github/copilot-instructions.md`
+4. `STATUS.md` and `HISTORY.md`
+5. `README.md` and `docs/specs.md`
+6. `INBOX.md`
+7. Undocumented local implementation details
+
 ## Scope
 
 **In:** typography tokens, baseline-aligned typescale (all tiers), prose flow, element-owned editorial spacing, baseline utilities, section/strip rhythm, `bf-grid`/`bf-stack`/`bf-cluster`/`bf-section` layout primitives, spec-focused demo pages, all non-deprecated Vanilla components as `bf-*` ports, Ubuntu Sans canonical built-ins, and adjacent metric-derived surfaces for additional fonts when needed.
@@ -47,9 +70,9 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 The repo ships two spacing models. This is an intentional architectural split, not an implementation detail.
 
 - **Element-owned (editorial, documentation)** — each typographic element carries its own `margin-block-end` derived from the role's `spaceAfter` value, and its own `padding-block-start`/`padding-block-end` derived from real font-metric nudges. The element knows how much space it needs; the parent container does not dictate vertical rhythm.
-- **Container-owned (app)** — the parent layout primitive (`bf-stack`, `bf-cluster`, `bf-grid`) controls child spacing via `gap` or a child-reset pattern. Elements carry zero nudges and no semantic `margin-block-end`. Rhythm comes from the container, not the content.
+- **Container-owned (app)** — app is a strict container-owned project surface. Runtime nudges stay zero, layout primitives own inter-child spacing, and semantic text spacing is neutralized so the app tier does not host element-owned islands.
 
-When editorial elements enter a layout container (`bf-stack`, `bf-cluster`, `bf-stage-shell`), the container resets child margins and padding so the container-owned model takes over. This is the handoff point between the two models.
+Tier policy is strict: `bf-tier-app` stays container-owned end to end; `bf-tier-editorial` and `bf-tier-documentation` stay element-owned. Do not mix modes inside a tier.
 
 ### Surface engine contract
 
@@ -62,7 +85,7 @@ Font files are **not bundled** in the npm package. Each surface's `metrics.fontF
 1. Supply matching font files at their own serving path.
 2. Override the `@font-face` `src` declarations if the default relative paths (`../../assets/fonts/...`) don't match their layout.
 
-The canonical built-ins expect Ubuntu Sans Variable (`UbuntuSans[wdth,wght].ttf`). Experiment surfaces may reference additional fonts (e.g., IBM Plex Sans). The `npm run setup:demo-font` script fetches Ubuntu Sans into `assets/fonts/` for local development only — it is not a production install step.
+The canonical built-ins expect Ubuntu Sans Variable (`UbuntuSans[wdth,wght].ttf`). Experiment surfaces may reference additional fonts (e.g., IBM Plex Sans). The `npm run setup:demo-font` script fetches both Ubuntu Sans and the IBM Plex Sans variable experiment asset into `assets/fonts/` for local development only — it is not a production install step.
 
 ### Debug overlay
 
@@ -131,7 +154,7 @@ Consequences:
 
 ## Spec conformance
 
-Reference: Typeface v0.3, Spacing v0.4, Grid v0.3. **All PASS** (resolved Phase 6).
+Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-spacing-spec/specs/spacing/draft.md`, `../canonical-spacing-spec/specs/grid/draft.md`. **All PASS** (resolved Phase 6).
 
 ## Active TODO
 

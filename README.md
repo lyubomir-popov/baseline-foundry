@@ -12,9 +12,38 @@ This repo is the clean sibling to `portable-vertical-rhythm`.
 That older package remains the compatibility line for `brand-layout-ops`.
 This repo is the forward-looking line: smaller, more versatile, and centered on baseline, prose flow, and grid rather than broad component parity.
 
+## Workflow Map
+
+- Workflow rules: `.github/copilot-instructions.md`
+- Resume agent: `.github/agents/agent.md`
+- Linked specs: `docs/specs.md`
+- Handoff / current status: `STATUS.md`
+- Active plan and architecture notes: `TODO.md`
+- Product roadmap: `ROADMAP.md`
+- Completed work log: `HISTORY.md`
+- Inbox for interrupting notes: `INBOX.md`
+
+## Source Of Truth
+
+When sources disagree, this repo follows:
+
+1. Linked specs in workspace repos or explicitly referenced source docs
+2. `ROADMAP.md`
+3. `.github/copilot-instructions.md`
+4. `STATUS.md` and `HISTORY.md`
+5. `README.md` and `docs/specs.md`
+6. `INBOX.md`
+7. Undocumented local implementation details
+
+Do not flatten disagreements by rewriting the specs or roadmap to match lower-priority implementation drift.
+
+## Linked Specs
+
+See `docs/specs.md` for the concrete linked spec paths and the legacy/reference boundaries.
+
 ## Principles
 
-See `docs/TODO.md` for the full set. Summary:
+See `TODO.md` for the full set. Summary:
 
 - Baseline alignment is non-negotiable.
 - Editorial spacing is element-owned; app-tier is zero-nudge, container-owned.
@@ -30,6 +59,9 @@ Build output includes:
 - `dist/styles.css`
 - `dist/tokens.json`
 - `dist/surfaces.json`
+- `dist/experiments/ibm-plex-engine-smoke/styles.css`
+- `dist/experiments/ibm-plex-engine-smoke/tokens.json`
+- `dist/experiments/ibm-plex-engine-smoke/surfaces.json`
 - `dist/tiers/editorial/styles.css`
 - `dist/tiers/editorial/tokens.json`
 - `dist/tiers/editorial/surfaces.json`
@@ -82,7 +114,7 @@ npm run build:theme -- --preset=panel
 
 While `npm run demo` is running, edits under `config/**/*.json` now rerun `npm run build:theme` automatically and force a full page reload.
 
-`npm run setup:demo-font` downloads the font files needed for metric-driven nudge generation.
+`npm run setup:demo-font` downloads the Ubuntu Sans built-in font plus the IBM Plex Sans variable asset required by the default engine-smoke experiment.
 
 The generated `dist/styles.css` emits matching `@font-face` rules so the demo and downstream consumers can render the font without a separate loader step.
 
@@ -209,17 +241,27 @@ See `config/tiers/` and `config/presets/` for the source configs.
 
 ## Public API
 
-Browser-safe exports:
+Package root exports:
 
+- `initAccordions`
+- `toggleAccordionButton`
+- `initApplicationLayouts`
 - `initBaselineGridToggles`
+- `setupBaselineGridToggle`
+- `generateBaselineGridOverlayCss`
+- `generateBaselineGridThemeOverrideCss`
 - `initCodeSnippets`
 - `initContextualMenus`
 - `initListTree`
-- `initApplicationLayouts`
 - `initPanelDrawers`
+- `initRangeControls`
+- `setupRangeControl`
+- `updateRangeFill`
 - `initResizableAsides`
+- `initSideNavigations`
+- `initTopNavigations`
+- `initTabs`
 - `initTooltips`
-- `setupBaselineGridToggle`
 
 Node/build exports:
 
@@ -430,6 +472,6 @@ The demo surface at `/` shows editorial prose rhythm, tier switching, dark theme
 
 If you resume this repo in a new chat, read:
 
-1. `llm-handoff-context.md`
-2. `docs/TODO.md`
+1. `STATUS.md`
+2. `TODO.md`
 3. `.github/agents/agent.md`
