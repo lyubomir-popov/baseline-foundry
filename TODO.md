@@ -180,7 +180,7 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 
 ### Inbox triage
 
-- [ ] Persist the shared page-chrome baseline-grid, tier, and tone choices across page-to-page navigation instead of resetting them per page family.
+- [x] Persist the shared page-chrome baseline-grid, tier, and tone choices across page-to-page navigation instead of resetting them per page family.
 - [ ] Remove the remaining `panel` legacy preset support once `brand-layout-ops` migrates, leaving `os` as an independent sibling built-in tier with no preset coupling.
 - [ ] Standardize dense icon and keyline spacing across search fields, search-and-filter, accordion toggles, top navigation, side navigation, and icon-bearing buttons so one- and two-icon controls share a consistent edge-spacing contract and stack onto as few vertical keylines as possible.
 - [ ] Review the switch-versus-slider visual contract and decide whether the switch should align to the same track language as the slider instead of preserving two divergent control-track treatments.
