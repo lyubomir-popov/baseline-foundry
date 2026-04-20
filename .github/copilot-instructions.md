@@ -44,6 +44,7 @@ Do not rewrite higher-priority docs to match lower-priority implementation drift
 - Record completed long-term items under a long-term section.
 - Move items to history only when actually complete.
 - Do not use history as a backlog or scratchpad.
+- When `HISTORY.md` exceeds ~200 lines, move older entries to `docs/archive/YYYY.md` and keep only recent entries in the root file.
 
 ### The inbox pattern
 
@@ -120,6 +121,17 @@ In that mode:
 3. Re-read `TODO.md` after major chunks and periodically re-audit alignment.
 4. Update the canonical docs as work lands so the next chat can continue cold.
 5. Do not stop just to ask whether to continue unless the next best move is genuinely unclear or risky.
+
+### Maximising autonomous run length
+
+Current LLM agents lose coherence after extended autonomous runs because context fills up. To get the longest useful runs:
+
+- **Narrow the scope per burst.** "Complete all items in TODO.md section X" works better than open-ended "work through the roadmap."
+- **Checkpoint and resume.** After each substantive chunk, commit + update STATUS + update TODO so a fresh session can continue cold. A shell loop or CI job can restart the agent automatically.
+- **Keep TODO items small.** Each item should be completable in one focused burst. If an item needs decomposition, break it down before starting the autonomous run.
+- **Prefer sequential single-repo sessions** over multi-repo autonomous runs. Cross-repo context bloats fast and causes mistakes.
+
+User-level VS Code prompt files provide shortcuts for common workflows: `/whats-next` (session start + triage), `/overnight` (preferred shortcut for launching the autonomous `agent-loop.ps1` scheduler), and `/audit-workflow` (check all workflow files for drift). `/proceed-autonomously` may remain installed as a legacy alias. Canonical prompt definitions should live in this repo under `prompts/` and be installed into the VS Code user prompt directory via `install-vscode-prompts.ps1`.
 
 ## Cross-repo coordination
 
