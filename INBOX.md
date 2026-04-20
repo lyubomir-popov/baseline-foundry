@@ -1,3 +1,3 @@
-# Agent Inbox
+# Inbox
 
-Drop notes here. The agent will triage them into `TODO.md` (near-term tasks) or `ROADMAP.md` (longer-term) and empty this file.
+Drop notes here. The agent will triage items into `TODO.md` (near-term) or `ROADMAP.md` (longer-term), then empty this file back to its template header.
