@@ -20,6 +20,10 @@ Demo: `http://127.0.0.1:4174/`
 
 `npm run setup:demo-font` now provisions both Ubuntu Sans and the IBM Plex Sans variable asset required by the default engine-smoke build.
 
+## Current execution note
+
+- 2026-04-20: completed a grid-example alignment pass against the root `../canonical-spacing-spec/specs/grid/draft.md`. `grid-examples.prompt.md` now maps the checklist to the root-draft placeholders, and `examples/grid/nested-grid.html` now shows explicit small, large, and x-large keyline specimens rather than relying on the versioned snapshot wording.
+
 ## Source of truth
 
 ### Operational files

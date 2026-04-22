@@ -22,6 +22,20 @@ This repo is the forward-looking line: smaller, more versatile, and centered on 
 - Product roadmap: `ROADMAP.md`
 - Completed work log: `HISTORY.md`
 - Inbox for interrupting notes: `INBOX.md`
+- Agent handoffs and diagnostics: `AGENT-INBOX.md`
+
+`INBOX.md` is for user-authored notes. `AGENT-INBOX.md` is for machine-generated handoffs, diagnostics, and cross-repo follow-ups.
+
+## LLM Efficiency Notes
+
+These habits matter more than prompt cleverness when you are using a coding agent in this repo.
+
+- Pick one model per task. Model switches often invalidate caches and force the tool to reprocess the same context again.
+- Keep permanent instructions short. Durable rules belong in `.github/copilot-instructions.md`; one-off task detail belongs in the current prompt, `TODO.md`, or `STATUS.md`.
+- Keep project memory in the repo, not only in chat. `STATUS.md`, `TODO.md`, `HISTORY.md`, and `docs/specs.md` exist so a fresh session can recover state cheaply.
+- Prefer markdown, plain text, and lists over complex pages or dense tables when accuracy matters.
+- Search in smaller passes instead of one giant query, then verify against the owning file or spec.
+- Checkpoint and restart freely. Short resumable sessions are usually cheaper and more reliable than preserving one huge thread.
 
 ## Source Of Truth
 
@@ -33,7 +47,8 @@ When sources disagree, this repo follows:
 4. `STATUS.md` and `HISTORY.md`
 5. `README.md` and `docs/specs.md`
 6. `INBOX.md`
-7. Undocumented local implementation details
+7. `AGENT-INBOX.md`
+8. Undocumented local implementation details
 
 Do not flatten disagreements by rewriting the specs or roadmap to match lower-priority implementation drift.
 

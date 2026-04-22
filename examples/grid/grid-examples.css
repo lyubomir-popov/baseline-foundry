@@ -95,6 +95,50 @@ a {
   gap: 1rem;
 }
 
+.example-nested-specimens {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.example-stage-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.example-stage-header {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.example-stage-header > * {
+  margin: 0;
+}
+
+.example-stage-kicker {
+  color: var(--bf-color-muted, rgba(0, 0, 0, 0.6));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.example-stage-canvas {
+  overflow-x: auto;
+  padding-block-end: 0.25rem;
+}
+
+.example-stage-width-small {
+  inline-size: min(100%, 31rem);
+}
+
+.example-stage-width-large {
+  inline-size: min(100%, 72rem);
+}
+
+.example-stage-width-xlarge {
+  inline-size: 108rem;
+  max-inline-size: none;
+}
+
 .example-grid-shell {
   position: relative;
 }
@@ -120,6 +164,18 @@ a {
 
 .example-grid-frame:has(.example-grid-overlay-toggle:not(:checked)) .example-column-guide {
   opacity: 0;
+}
+
+.example-nested-specimens .example-column-guide {
+  opacity: 1;
+}
+
+.example-nested-module {
+  min-inline-size: 0;
+}
+
+.example-nested-inner .example-card {
+  min-block-size: calc(var(--bf-baseline, 0.5rem) * 10);
 }
 
 .example-hero-grid,

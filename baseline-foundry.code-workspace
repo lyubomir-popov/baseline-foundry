@@ -17,6 +17,9 @@
 		},
 		{
 			"path": "../repo-workflow-boilerplate"
+		},
+		{
+			"path": "../ontologies/gg"
 		}
 	],
 	"settings": {}

@@ -13,35 +13,136 @@
     <section class="example-fixed-width example-hero">
       <div class="bf-prose">
         <h1>Nested grid</h1>
-        <p>The child grid reuses the same power-of-two logic inside a parent span, so the inner columns line up with the outer keylines instead of inventing a second spacing system.</p>
+        <p>The root grid draft describes nested grids as one rule applied across changing container widths. This page turns that into three explicit specimens: small, large, and x-large, each proving that the nested module starts and ends on parent keylines rather than inventing new offsets between them.</p>
       </div>
     </section>
 
-    <section class="example-fixed-width example-stack">
-      <div class="example-frame bf-grid-scope">
-        <div class="bf-grid">
-          <article class="bf-span-4 example-card is-strong"><h2 class="bf-h4">Parent span 4</h2><p>The child grid below subdivides this half-width cell into `2 + 2`.</p>
-            <div class="bf-grid bf-grid-scope">
-              <div class="bf-span-2 example-card"><h3 class="bf-h5">Child span 2</h3><p>Left child aligns to the parent start edge.</p></div>
-              <div class="bf-span-2 example-card"><h3 class="bf-h5">Child span 2</h3><p>Right child aligns to the parent end edge.</p></div>
-            </div>
-          </article>
-          <article class="bf-span-4 example-card"><h2 class="bf-h4">Parent span 4</h2><p>Sibling content proves the outer 8-column rhythm survives the nesting.</p></article>
+    <section class="example-fixed-width example-stack example-nested-specimens">
+      <article class="example-frame example-stage-shell">
+        <div class="bf-prose example-stage-header">
+          <p class="example-stage-kicker">Small container</p>
+          <h2>4-column parent, 2-column module, nested content stacked</h2>
+          <p>The same nested module narrows to a 2-column parent span. Its inner content stacks, but the module still begins and ends on the parent grid's keylines.</p>
         </div>
-      </div>
 
-      <div class="example-frame bf-grid-scope">
-        <div class="bf-grid">
-          <article class="bf-span-4 example-card is-soft"><h2 class="bf-h4">16-col parent · span 4</h2><p>Second-level proof of the octree pattern.</p>
-            <div class="bf-grid bf-grid-scope">
-              <div class="bf-span-2 example-card"><h3 class="bf-h5">Child span 2</h3><p>Aligned to the same keylines.</p></div>
-              <div class="bf-span-2 example-card"><h3 class="bf-h5">Child span 2</h3><p>No thirds, no drift.</p></div>
+        <div class="example-stage-canvas">
+          <div class="example-frame example-grid-shell bf-grid-scope example-stage-width-small">
+            <div class="bf-grid example-column-guide" aria-hidden="true">
+              <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
             </div>
-          </article>
-          <article class="bf-span-8 example-card"><h2 class="bf-h4">Span 8 companion</h2><p>The larger neighboring block makes the nested cell boundaries easier to read at wide sizes.</p></article>
-          <article class="bf-span-4 example-card"><h2 class="bf-h4">Span 4 companion</h2><p>Everything still resolves to 4 / 8 / 16 from the container width alone.</p></article>
+
+            <div class="bf-grid">
+              <article class="bf-span-2 example-card is-strong example-nested-module">
+                <h3 class="bf-h5">Parent span 2</h3>
+                <p>The child grid stays inside the half-row module instead of breaking away from it.</p>
+
+                <div class="bf-grid bf-grid-scope example-nested-inner">
+                  <div class="example-card">
+                    <h4 class="bf-h6">Child row</h4>
+                    <p>Stacks at the narrow state.</p>
+                  </div>
+                  <div class="example-card">
+                    <h4 class="bf-h6">Child row</h4>
+                    <p>No off-grid start line appears.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="bf-span-2 example-card">
+                <h3 class="bf-h5">Sibling span 2</h3>
+                <p>The neighbouring half-row block makes the parent split visible in the 4-column state.</p>
+              </article>
+            </div>
+          </div>
         </div>
-      </div>
+      </article>
+
+      <article class="example-frame example-stage-shell">
+        <div class="bf-prose example-stage-header">
+          <p class="example-stage-kicker">Large container</p>
+          <h2>8-column parent, 4-column module, nested `2 + 2` split</h2>
+          <p>At the large bracket the same module expands to four parent columns and reintroduces a horizontal split. The child columns still land only on parent offsets.</p>
+        </div>
+
+        <div class="example-stage-canvas">
+          <div class="example-frame example-grid-shell bf-grid-scope example-stage-width-large">
+            <div class="bf-grid example-column-guide" aria-hidden="true">
+              <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
+              <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
+            </div>
+
+            <div class="bf-grid">
+              <article class="bf-span-4 example-card is-strong example-nested-module">
+                <h3 class="bf-h5">Parent span 4</h3>
+                <p>The nested module now occupies half the row and subdivides into `2 + 2`.</p>
+
+                <div class="bf-grid bf-grid-scope example-nested-inner">
+                  <div class="bf-span-2 example-card">
+                    <h4 class="bf-h6">Child span 2</h4>
+                    <p>Left child keeps the shared start edge.</p>
+                  </div>
+                  <div class="bf-span-2 example-card">
+                    <h4 class="bf-h6">Child span 2</h4>
+                    <p>Right child ends on the same parent keyline family.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="bf-span-4 example-card">
+                <h3 class="bf-h5">Sibling span 4</h3>
+                <p>The companion block confirms that the outer 8-column rhythm survives the nesting unchanged.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="example-frame example-stage-shell">
+        <div class="bf-prose example-stage-header">
+          <p class="example-stage-kicker">X-large container</p>
+          <h2>16-column parent, quarter-row module, second octree proof</h2>
+          <p>The x-large specimen fixes the container wide enough to reach 16 columns. If your viewport is narrower, scroll the specimen horizontally; the key point is that the nested quarter-row module still resolves to parent offsets only.</p>
+        </div>
+
+        <div class="example-stage-canvas">
+          <div class="example-frame example-grid-shell bf-grid-scope example-stage-width-xlarge">
+            <div class="bf-grid example-column-guide" aria-hidden="true">
+              <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
+              <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
+              <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
+              <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
+            </div>
+
+            <div class="bf-grid">
+              <article class="bf-span-4 example-card is-soft example-nested-module">
+                <h3 class="bf-h5">Parent span 4</h3>
+                <p>Quarter-width module on a 16-column parent, still following the same bisection rule.</p>
+
+                <div class="bf-grid bf-grid-scope example-nested-inner">
+                  <div class="bf-span-2 example-card">
+                    <h4 class="bf-h6">Child span 2</h4>
+                    <p>Left child stays on the parent start line.</p>
+                  </div>
+                  <div class="bf-span-2 example-card">
+                    <h4 class="bf-h6">Child span 2</h4>
+                    <p>Right child ends exactly on the module boundary.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="bf-span-8 example-card">
+                <h3 class="bf-h5">Companion span 8</h3>
+                <p>The neighbouring half-row block makes the quarter-row nested module easy to read at the 16-column state.</p>
+              </article>
+
+              <article class="bf-span-4 example-card">
+                <h3 class="bf-h5">Companion span 4</h3>
+                <p>Everything still resolves only to `4 / 8 / 16` columns and their power-of-two spans.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </article>
     </section>
   </main>
   <script type="module" src="../../demo/example-page.js"></script>
