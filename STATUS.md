@@ -33,7 +33,7 @@ Demo: `http://127.0.0.1:4174/`
 - `demo/example-page.js` now initializes the shared application-layout and panel-drawer runtimes for example pages, and `scripts/validate-build.ts` now asserts the example shell pages keep using those shared primitives.
 - Focused validation stayed green throughout (`npm run test:build`), and the broader repo suite (`npm test`) also passed after the shell/runtime changes.
 - Latest live-spec drift audit against `canonical-spacing-spec` matches the codebase expectations on both fronts (grid `row-gap: 0` requirement handed off to spec repo, while app-surface `marginBottom` and `spaceAfter` logic was zeroed in the app configuration data).
-- Remaining example debt is now narrower: grid overlay/stage-width fixtures, spacing-band and density-zone visuals, baseline-overlay helpers, and the broader demo-shell pages.
+- Remaining example debt is down to: demo-shell page cleanups (spec-shell, component-shell). All arbitrary grid, spacing, and density visualization classes have been ported to native elements or stripped.
 
 ## Source of truth
 
