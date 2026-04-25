@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Spacing ownership note + app-only stack gaps (2026-04-25)
+
+- [x] Wrote `docs/spacing-ownership-peer-review.md` as a shareable neutral architecture note explaining why baseline compensation should stay element-owned and why semantic spacing should have one owner per surface.
+- [x] Removed the non-app `bf-stack` density and section-gap overrides from the shared CSS so editorial, documentation, and OS surfaces now keep stack gaps at `0` by default and by modifier.
+- [x] Tightened `scripts/validate-build.ts` so generated CSS now fails if non-app stack modifiers regain vertical gaps, while still asserting the app-tier stack gap contract.
+
 ## Long-term
 
 ## Workflow normalization + spec linkage (2026-04-17)

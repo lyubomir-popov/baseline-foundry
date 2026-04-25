@@ -308,6 +308,8 @@ function validateCommonCss(css: string): void {
     assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack) > * {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier stack child reset.");
     assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-cluster) > * {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier cluster child reset.");
     assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-prose > *) {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier prose child reset.");
+    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-space-2);"), "Expected app-tier stylesheets to keep stack-owned vertical gap as the application default.");
+    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected app-tier stylesheets to keep the application section stack gap override.");
   }
   assert(css.includes(`:where(.bf-theme.is-dark).u-baseline-grid,\n:where(.bf-theme.is-dark) .u-baseline-grid {\n  --bf-baseline-grid-color: ${BASELINE_GRID_DARK_THEME_COLOR};`), "Expected dark themes to provide a subtle baseline-grid line color, even when the grid class is on the theme root.");
   assert(css.includes(":where(.bf-theme) :where(img, picture, svg, video) {\n  block-size: auto;\n  display: block;\n  inline-size: auto;\n  max-inline-size: 100%;"), "Expected shared media to stay fluid inside narrow containers.");
@@ -329,6 +331,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0;\n  padding-block-end:"), "Expected list items to use literal baseline compensation.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  margin-bottom:"), "Expected list containers to use literal semantic spacing.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-extra-dense) {\n  --bf-stack-space: var(--bf-space-half);"), "Expected non-app stack density modifiers to stay gapless so semantic spacing remains element-owned outside app tier.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-dense) {\n  --bf-stack-space: var(--bf-space-1);"), "Expected non-app dense stacks to stay gapless so editorial and documentation surfaces remain element-owned.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-loose) {\n  --bf-stack-space: var(--bf-space-2);"), "Expected non-app loose stacks to stay gapless so stack density remains app-owned.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected non-app section-shallow stacks to stay gapless so section rhythm remains element-owned outside app tier.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected non-app section stacks to stay gapless so section rhythm remains element-owned outside app tier.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected non-app deep section stacks to stay gapless so stack gap ownership does not leak out of app tier.");
   assert(css.includes("margin: 0 0 calc(var(--bf-space-3) - 1px);"), "Expected rules to compensate their 1px thickness against the baseline rhythm.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
   assert(!css.includes("padding-block: var(--bf-strip-space);"), "Expected strip rhythm to avoid symmetric top-and-bottom padding.");

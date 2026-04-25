@@ -162,10 +162,10 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 
 #### Highest-priority next steps
 
-- Implement the editorial/docs explicit-takeover spacing contract: when `bf-stack`, `bf-cluster`, or another deliberate gap container takes ownership of vertical spacing in editorial or documentation surfaces, it must reset child `margin-bottom` at that boundary instead of letting semantic element spacing stack with container gap.
 - Make the default `bf-grid` contract spec-compliant for two-dimensional layouts by giving it row gaps equal to the grid gutter. If zero-row-gap behavior still has a legitimate use, keep it only as an explicit non-default variant rather than the shipped default.
 - Zero app-tier `spaceAfter` and `marginBottom` values in the source and published token artifacts so the public app spacing surface matches the live spec. Keep any raw metric or audit data only in non-contract metadata, not in the public spacing-token contract.
 
+- Spacing ownership is now written up for external review in `docs/spacing-ownership-peer-review.md`, and non-app `bf-stack` modifiers now stay gapless so only `bf-tier-app` owns stack gap density.
 - The site-wide tier model now has four truthful built-in surfaces: `editorial`, `documentation`, `app`, and the non-canonical `os` addendum. The shared header exposes `Editorial / Docs / App / OS` across the living spec, controls, examples, and component demos; `demo/panel.html` now boots through the shared page chrome as the OS addendum page; and the legacy `panel` preset now aliases the OS output instead of carrying its own `ui-*` role config.
 - The parasite class sweep is now complete end-to-end: the old validation aliases (`.has-error`, `.has-success`, `.has-warning`) are gone from the shared component CSS, the last live Vanilla-style `has-*` helper classes are gone from the BF demo/runtime surface, and build validation now rejects both kinds of drift so the public contract stays on structural selectors plus canonical `is-*` modifiers only.
 - The typographic specimen page is now complete: `demo/spec/typographic-specimen.html` ships as a real spec chapter with shared page chrome, page-catalog registration, and a responsive editorial two-column prose layout that collapses back to one column cleanly.

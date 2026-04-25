@@ -331,30 +331,6 @@ ${generateBaselineGridThemeOverrideCss()}
   --bf-stack-space: 0px;
 }
 
-:where(.bf-theme) :where(.bf-stack.is-extra-dense) {
-  --bf-stack-space: var(--bf-space-half);
-}
-
-:where(.bf-theme) :where(.bf-stack.is-dense) {
-  --bf-stack-space: var(--bf-space-1);
-}
-
-:where(.bf-theme) :where(.bf-stack.is-loose) {
-  --bf-stack-space: var(--bf-space-2);
-}
-
-:where(.bf-theme) :where(.bf-stack.is-section-shallow) {
-  --bf-stack-space: var(--bf-section-space-shallow);
-}
-
-:where(.bf-theme) :where(.bf-stack.is-section) {
-  --bf-stack-space: var(--bf-section-space);
-}
-
-:where(.bf-theme) :where(.bf-stack.is-section-deep) {
-  --bf-stack-space: var(--bf-section-space-deep);
-}
-
 :where(.bf-theme) :where(.bf-cluster) {
   align-items: flex-start;
   display: flex;
