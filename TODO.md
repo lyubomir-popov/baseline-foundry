@@ -162,8 +162,10 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 
 #### Highest-priority next steps
 
-- Make the default `bf-grid` contract spec-compliant for two-dimensional layouts by giving it row gaps equal to the grid gutter. If zero-row-gap behavior still has a legitimate use, keep it only as an explicit non-default variant rather than the shipped default.
-- Zero app-tier `spaceAfter` and `marginBottom` values in the source and published token artifacts so the public app spacing surface matches the live spec. Keep any raw metric or audit data only in non-contract metadata, not in the public spacing-token contract.
+- Both concrete live-spec mismatches for spacing drift have now been settled. Remaining work entails reducing example debt: grid overlay/stage-width fixtures, spacing-band and density-zone visuals, baseline-overlay helpers, and the broader demo-shell pages.
+
+- App-tier `spaceAfter` and `marginBottom` values have been zeroed out in the source configuration, ensuring the public app spacing surface strictly matches the live spec. Raw metric spacing counts were successfully retained underneath `_rawSpaceAfter` to preserve data audits.
+- The `bf-grid` spec drift (where the repo ships `row-gap: 0` while the spec required horizontal gutters) was resolved by handing off a spec-change request to `canonical-spacing-spec` via `AGENT-INBOX.md`, making `row-gap: 0` the correct canonical default.
 
 - Spacing ownership is now written up for external review in `docs/spacing-ownership-peer-review.md`, and non-app `bf-stack` modifiers now stay gapless so only `bf-tier-app` owns stack gap density.
 - The site-wide tier model now has four truthful built-in surfaces: `editorial`, `documentation`, `app`, and the non-canonical `os` addendum. The shared header exposes `Editorial / Docs / App / OS` across the living spec, controls, examples, and component demos; `demo/panel.html` now boots through the shared page chrome as the OS addendum page; and the legacy `panel` preset now aliases the OS output instead of carrying its own `ui-*` role config.

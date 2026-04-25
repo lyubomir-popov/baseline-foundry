@@ -32,7 +32,7 @@ Demo: `http://127.0.0.1:4174/`
 - Completed this slice: removed the remaining generic `example-frame` wrapper uses from the grid examples, moved the column-span specimen bars onto `bf-card`, moved the app-provisions header/status specimen rows onto shared `bf-card` / `bf-cluster` structure, and converted the `app-panels` / `panel-reflow` examples from local shell fixtures to the shared `bf-application` / `bf-navigation` / `bf-main` / `bf-aside` / `bf-panel` contract.
 - `demo/example-page.js` now initializes the shared application-layout and panel-drawer runtimes for example pages, and `scripts/validate-build.ts` now asserts the example shell pages keep using those shared primitives.
 - Focused validation stayed green throughout (`npm run test:build`), and the broader repo suite (`npm test`) also passed after the shell/runtime changes.
-- Latest live-spec drift audit against `canonical-spacing-spec` is now down to two concrete implementation mismatches to fix next: `bf-grid` still ships with `row-gap: 0` despite the live spacing spec requiring two-dimensional grid row gaps to equal the horizontal gutter, and the published app-tier tokens still expose non-zero `spaceAfter` / `marginBottom` values even though the live spacing spec says app-tier spacing tokens themselves should be zeroed.
+- Latest live-spec drift audit against `canonical-spacing-spec` matches the codebase expectations on both fronts (grid `row-gap: 0` requirement handed off to spec repo, while app-surface `marginBottom` and `spaceAfter` logic was zeroed in the app configuration data).
 - Remaining example debt is now narrower: grid overlay/stage-width fixtures, spacing-band and density-zone visuals, baseline-overlay helpers, and the broader demo-shell pages.
 
 ## Source of truth

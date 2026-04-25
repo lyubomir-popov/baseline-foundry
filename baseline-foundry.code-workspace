@@ -14,12 +14,6 @@
 		},
 		{
 			"path": "../canonical-spacing-spec"
-		},
-		{
-			"path": "../repo-workflow-boilerplate"
-		},
-		{
-			"path": "../ontologies/gg"
 		}
 	],
 	"settings": {}
