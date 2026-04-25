@@ -9,19 +9,19 @@
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target">
-    <section class="spacing-fixed-width spacing-hero bf-prose">
+  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack is-section-shallow bf-prose">
       <h1>Semantic spacing stack</h1>
       <p>Each element carries a tinted band sized to its semantic after-space so the hierarchy is visible instead of implied.</p>
     </section>
 
-    <section class="spacing-fixed-width spacing-band-stack bf-prose">
+    <section class="bf-fixed-width bf-card bf-prose">
       <div class="spacing-band" style="--gap-size: 2rem"><h1>Editorial hierarchy</h1><span class="spacing-gap-label">Heading after-space</span></div>
       <div class="spacing-band" style="--gap-size: 1rem"><p>Paragraph after-space</p><span class="spacing-gap-label">Paragraph after-space</span></div>
       <div class="spacing-band" style="--gap-size: 1rem"><p>Second paragraph after-space</p><span class="spacing-gap-label">Paragraph after-space</span></div>
       <div class="spacing-band" style="--gap-size: 1.5rem"><h2>Section change</h2><span class="spacing-gap-label">Heading after-space</span></div>
       <div class="spacing-band" style="--gap-size: 1rem"><p>Supporting text</p><span class="spacing-gap-label">Paragraph after-space</span></div>
-      <div class="spacing-band" style="--gap-size: 1.5rem"><figure class="spacing-demo-box"><figcaption>Figure band</figcaption></figure><span class="spacing-gap-label">Figure after-space</span></div>
+      <div class="spacing-band" style="--gap-size: 1.5rem"><figure class="bf-card spacing-demo-box"><figcaption>Figure band</figcaption></figure><span class="spacing-gap-label">Figure after-space</span></div>
       <div class="spacing-band" style="--gap-size: 1.5rem"><blockquote>A larger semantic gap helps figures and blockquotes keep their own rhythm.</blockquote><span class="spacing-gap-label">Blockquote after-space</span></div>
       <div class="spacing-band" style="--gap-size: 1rem"><h2>Second section</h2><span class="spacing-gap-label">Heading after-space</span></div>
       <div class="spacing-band" style="--gap-size: 0"><p>Final paragraph</p><span class="spacing-gap-label">Last element before reset</span></div>

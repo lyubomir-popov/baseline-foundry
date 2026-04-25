@@ -9,22 +9,22 @@
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-app" data-bf-tone="light">
-  <main class="example-grid-target">
-    <section class="spacing-fixed-width spacing-hero bf-prose">
+  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack is-section-shallow bf-prose">
       <h1>Horizontal sibling spacing</h1>
       <p>Buttons and chips use an explicit horizontal gap when the row owns spacing. The raw browser-default rows underneath show how little structure you get without the container.</p>
     </section>
 
-    <section class="spacing-fixed-width spacing-grid-two">
-      <article class="spacing-surface spacing-stack">
-        <div class="spacing-inline-row">
+    <section class="bf-fixed-width spacing-grid-two">
+      <article class="bf-card bf-stack is-section-shallow">
+        <div class="bf-cluster">
           <button class="bf-button is-base">Cancel</button>
           <button class="bf-button is-base">Save draft</button>
           <button class="bf-button">Deploy</button>
         </div>
         <p class="spacing-gap-label">Button row gap = 12px</p>
 
-        <div class="spacing-inline-row">
+        <div class="bf-cluster">
           <span class="bf-chip">Stable</span>
           <span class="bf-chip is-information">Beta</span>
           <span class="bf-chip is-positive">Ready</span>
@@ -34,7 +34,7 @@
         <p class="spacing-gap-label">Chip row gap = 12px</p>
       </article>
 
-      <article class="spacing-demo-box spacing-stack">
+      <article class="bf-card spacing-demo-box bf-stack is-section-shallow">
         <div class="spacing-inline-raw">
           <button class="bf-button is-base">Cancel</button>
           <button class="bf-button is-base">Save draft</button>

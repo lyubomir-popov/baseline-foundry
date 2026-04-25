@@ -9,22 +9,22 @@
   <link rel="stylesheet" href="./grid-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target">
-    <section class="example-fixed-width example-hero">
+  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack is-section-shallow">
       <div class="bf-prose">
         <h1>Breakpoints</h1>
         <p>A single responsive specimen row shows the grid stepping from 4 columns to 8 and then 16, while the card spans keep halving and doubling on the same `bf-span-*` rules.</p>
       </div>
     </section>
 
-    <section class="example-fixed-width example-grid-frame">
+    <section class="bf-fixed-width example-grid-frame">
       <label class="bf-switch">
         <input class="bf-switch-input example-grid-overlay-toggle" type="checkbox" checked>
         <span class="bf-switch-slider" aria-hidden="true"></span>
         <span class="bf-switch-label">Column overlay</span>
       </label>
 
-      <div class="example-frame example-grid-shell bf-grid-scope">
+      <div class="bf-card example-grid-shell bf-grid-scope">
         <div class="bf-grid example-column-guide" aria-hidden="true">
           <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
           <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
@@ -32,13 +32,13 @@
           <div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div><div class="bf-span-1"></div>
         </div>
         <div class="bf-grid">
-          <article class="bf-span-1 example-card is-strong"><h2 class="bf-h4">Span 1</h2><p>Utility cell that stays one column wide at every stop.</p></article>
-          <article class="bf-span-1 example-card is-soft"><h2 class="bf-h4">Span 1</h2><p>Pairs with the other metadata card on the smallest grid.</p></article>
-          <article class="bf-span-2 example-card"><h2 class="bf-h4">Span 2</h2><p>The first card that visibly doubles from 4-column to 8-column contexts.</p></article>
-          <article class="bf-span-2 example-card"><h2 class="bf-h4">Span 2</h2><p>Half-row content for medium containers and quarter-row content at 16 columns.</p></article>
-          <article class="bf-span-4 example-card is-strong"><h2 class="bf-h4">Span 4</h2><p>Primary module that becomes half-width on 8-column containers and one quarter of the 16-column proof.</p></article>
-          <article class="bf-span-4 example-card"><h2 class="bf-h4">Span 4</h2><p>Companion block showing the same power-of-two rule on the next breakpoint step.</p></article>
-          <article class="bf-span-8 example-card is-soft"><h2 class="bf-h4">Span 8</h2><p>Large narrative block that fills the full row at 8 columns and cleanly halves at 16 columns.</p></article>
+          <article class="bf-span-1 bf-card is-highlighted"><h2 class="bf-h4">Span 1</h2><p>Utility cell that stays one column wide at every stop.</p></article>
+          <article class="bf-span-1 bf-card is-overlay"><h2 class="bf-h4">Span 1</h2><p>Pairs with the other metadata card on the smallest grid.</p></article>
+          <article class="bf-span-2 bf-card"><h2 class="bf-h4">Span 2</h2><p>The first card that visibly doubles from 4-column to 8-column contexts.</p></article>
+          <article class="bf-span-2 bf-card"><h2 class="bf-h4">Span 2</h2><p>Half-row content for medium containers and quarter-row content at 16 columns.</p></article>
+          <article class="bf-span-4 bf-card is-highlighted"><h2 class="bf-h4">Span 4</h2><p>Primary module that becomes half-width on 8-column containers and one quarter of the 16-column proof.</p></article>
+          <article class="bf-span-4 bf-card"><h2 class="bf-h4">Span 4</h2><p>Companion block showing the same power-of-two rule on the next breakpoint step.</p></article>
+          <article class="bf-span-8 bf-card is-overlay"><h2 class="bf-h4">Span 8</h2><p>Large narrative block that fills the full row at 8 columns and cleanly halves at 16 columns.</p></article>
         </div>
       </div>
     </section>

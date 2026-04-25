@@ -88,6 +88,28 @@ function assertSelectorUsesBodyTypography(css: string, selector: string, label: 
   assert(lineHeightPattern.test(css), `Expected ${label} to resolve line-height from the active body role.`);
 }
 
+function assertNoDuplicateClassAttributes(filePath: string, html: string): void {
+  const duplicateClassAttribute = html.match(/<[^>]*\bclass\s*=\s*["'][^"']*["'][^>]*\bclass\s*=/);
+
+  assert(!duplicateClassAttribute, `Expected ${filePath} to avoid duplicate class attributes. Found: ${duplicateClassAttribute?.[0]}`);
+}
+
+function assertNoStyledDataSelectors(filePath: string, css: string): void {
+  const styledDataSelector = css.match(/\[[^\]\n{};]*\bdata-[a-z0-9_-]+[^\]\n{};]*\]/i);
+
+  assert(!styledDataSelector, `Expected ${filePath} to avoid styled data-* CSS selectors. Found: ${styledDataSelector?.[0]}`);
+}
+
+function assertExampleClassUsesRequiredPrimitive(filePath: string, html: string, exampleClass: string, requiredClass: string): void {
+  const classAttributePattern = new RegExp(`class="([^"]*\\b${exampleClass}\\b[^"]*)"`, "g");
+  const requiredClassPattern = new RegExp(`\\b${requiredClass}\\b`);
+
+  for (const match of html.matchAll(classAttributePattern)) {
+    const classValue = match[1] ?? "";
+    assert(requiredClassPattern.test(classValue), `Expected ${filePath} to use ${requiredClass} alongside ${exampleClass}. Found: class="${classValue}"`);
+  }
+}
+
 function assertPortableSurfaceEntries(surfaces: Record<string, Record<string, unknown>>): void {
   for (const [surfaceName, surface] of Object.entries(surfaces)) {
     assert(!("configPath" in surface), `Expected the "${surfaceName}" surface manifest entry to omit build-machine configPath data.`);
@@ -121,6 +143,7 @@ async function validatePanelBaselineArtifacts(): Promise<void> {
 }
 
 function validateBfOnlyDemoPage(pageName: string, html: string): void {
+  assertNoDuplicateClassAttributes(`demo/components/${pageName}`, html);
   assert(html.includes('<body class="bf-theme is-dark"'), `Expected ${pageName} to dogfood the bf-theme root.`);
   assert(html.includes("data-component-capture"), `Expected ${pageName} to expose a data-component-capture root for screenshot and baseline tooling.`);
   assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${pageName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
@@ -129,6 +152,7 @@ function validateBfOnlyDemoPage(pageName: string, html: string): void {
 }
 
 function validateAppTierDemoPage(pageName: string, html: string): void {
+  assertNoDuplicateClassAttributes(`demo/components/${pageName}`, html);
   assert(html.includes('../../dist/tiers/editorial/styles.css'), `Expected ${pageName} to bootstrap from the shared tier stylesheet instead of a preset-specific bundle.`);
   assert(html.includes('<body class="bf-theme bf-tier-app is-light"'), `Expected ${pageName} to dogfood the bf-theme + bf-tier-app root.`);
   assert(html.includes("data-component-capture"), `Expected ${pageName} to expose a data-component-capture root for screenshot and baseline tooling.`);
@@ -153,6 +177,7 @@ async function validateComponentPageTierConsistency(componentDemoJs: string): Pr
   for (const fileName of componentPageNames) {
     const html = await readTextArtifact(path.join(componentDir, fileName));
 
+    assertNoDuplicateClassAttributes(`demo/components/${fileName}`, html);
     assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${fileName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
 
     if (fileName === "engine-smoke.html" || fileName === "engine-illustration.html") {
@@ -164,6 +189,64 @@ async function validateComponentPageTierConsistency(componentDemoJs: string): Pr
     assert(!html.includes('dist/presets/panel/styles.css'), `Expected ${fileName} to avoid the old panel preset bootstrap path.`);
     assert(!html.includes('dist/presets/app-tier/styles.css'), `Expected ${fileName} to avoid the old app-tier preset bootstrap path.`);
   }
+}
+
+function validateDemoCssSelectorHygiene(demoCssFiles: Record<string, string>): void {
+  for (const [filePath, css] of Object.entries(demoCssFiles)) {
+    assertNoStyledDataSelectors(filePath, css);
+  }
+}
+
+async function validateExampleDogfooding(): Promise<void> {
+  const exampleDirs = [path.resolve("examples/grid"), path.resolve("examples/spacing")];
+
+  for (const exampleDir of exampleDirs) {
+    const fileNames = (await fs.readdir(exampleDir)).filter(fileName => fileName.endsWith(".html"));
+
+    for (const fileName of fileNames) {
+      const filePath = path.join(exampleDir, fileName);
+      const html = await readTextArtifact(filePath);
+
+      assertNoDuplicateClassAttributes(path.relative(process.cwd(), filePath), html);
+      assert(html.includes('data-example-grid-target'), `Expected ${path.relative(process.cwd(), filePath)} to expose the page capture target explicitly.`);
+      assert(!/class="[^"]*\b(?:example|spacing)-(?:frame|fixed-width|hero|stack|actions|card|surface|callout|span-demo|span-row|tier-group|nested-specimens|stage-shell|stage-header|density-card|baseline-box|defaults|inline-row)(?![a-z0-9_-])/.test(html), `Expected ${path.relative(process.cwd(), filePath)} to use bf-* primitives instead of the removed generic example wrappers.`);
+
+      if (path.basename(filePath) === "column-span-rule.html") {
+        assertExampleClassUsesRequiredPrimitive(path.relative(process.cwd(), filePath), html, "example-span-bar", "bf-card");
+      }
+
+      if (path.basename(filePath) === "app-provisions.html") {
+        assertExampleClassUsesRequiredPrimitive(path.relative(process.cwd(), filePath), html, "spacing-header-bar", "bf-card");
+        assertExampleClassUsesRequiredPrimitive(path.relative(process.cwd(), filePath), html, "spacing-header-bar", "bf-cluster");
+        assertExampleClassUsesRequiredPrimitive(path.relative(process.cwd(), filePath), html, "spacing-status-bar", "bf-cluster");
+      }
+
+      if (path.basename(filePath) === "app-panels.html") {
+        assert(html.includes('class="bf-application example-application-frame"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared bf-application shell.`);
+        assert(html.includes('class="bf-navigation is-pinned"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared pinned navigation shell.`);
+        assert(html.includes('class="bf-main bf-grid-scope"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared bf-main surface.`);
+        assert(html.includes('class="bf-aside is-overlay is-medium"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared overlay aside shell.`);
+        assert(html.includes('data-application-layout-toggle') && html.includes('data-panel-drawer-toggle'), `Expected ${path.relative(process.cwd(), filePath)} to use the shared navigation and drawer triggers.`);
+      }
+
+      if (path.basename(filePath) === "panel-reflow.html") {
+        assert(html.includes('class="bf-application example-panel-reflow-application"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared bf-application shell.`);
+        assert(html.includes('class="bf-aside is-pinned is-small example-panel-sidebar"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared pinned aside shell.`);
+        assert(html.includes('class="bf-main bf-grid-scope"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared bf-main surface.`);
+      }
+    }
+  }
+
+  const examplePageJs = await readTextArtifact(path.resolve("demo/example-page.js"));
+
+  const gridExamplesCss = await readTextArtifact(path.resolve("examples/grid/grid-examples.css"));
+  const spacingExamplesCss = await readTextArtifact(path.resolve("examples/spacing/spacing-examples.css"));
+
+  assert(examplePageJs.includes('initApplicationLayouts') && examplePageJs.includes('initPanelDrawers'), 'Expected demo/example-page.js to initialize the shared application-layout and panel-drawer runtimes for example pages.');
+  assertNoStyledDataSelectors("examples/grid/grid-examples.css", gridExamplesCss);
+  assertNoStyledDataSelectors("examples/spacing/spacing-examples.css", spacingExamplesCss);
+  assert(!/\.(?:example)-(?:frame|fixed-width|hero|stack|actions|card|surface|callout|span-demo|span-row|tier-group|nested-specimens|stage-shell|stage-header)(?![a-z0-9_-])/.test(gridExamplesCss), "Expected grid examples CSS to avoid generic non-dogfooded wrapper/card classes.");
+  assert(!/\.(?:spacing)-(?:fixed-width|hero|stack|actions|card|surface|density-card|baseline-box|defaults|inline-row)(?![a-z0-9_-])/.test(spacingExamplesCss), "Expected spacing examples CSS to avoid generic non-dogfooded wrapper/card classes.");
 }
 
 function validateCommonCss(css: string): void {
@@ -705,6 +788,8 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
 }
 
 function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, componentShellCss: string, specShellCss: string, pageChromeCss: string): void {
+  assertNoDuplicateClassAttributes("demo/components/engine-smoke.html", engineSmokeHtml);
+  assertNoDuplicateClassAttributes("demo/components/brand-layout-ops-sample.html", sampleHtml);
   assert(engineSmokeHtml.includes('<body class="bf-theme is-dark" data-component-capture data-page-surface-mode="locked-manifest">'), "Expected engine-smoke.html to pin the generated IBM Plex manifest while still using the shared component chrome.");
   assert(engineSmokeHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to load the generated IBM Plex smoke stylesheet.");
   assert(engineSmokeHtml.includes('<title>Font Engine Smoke Demo</title>'), "Expected engine-smoke.html to describe the shared multi-font surface instead of a single IBM Plex page.");
@@ -736,6 +821,8 @@ function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, comp
 }
 
 function validateEngineIllustrationPage(pageCatalogJs: string, componentAtlasHtml: string, engineIllustrationHtml: string, componentShellCss: string): void {
+  assertNoDuplicateClassAttributes("demo/components/index.html", componentAtlasHtml);
+  assertNoDuplicateClassAttributes("demo/components/engine-illustration.html", engineIllustrationHtml);
   assert(pageCatalogJs.includes('{ title: "Baseline engine illustration", href: "/demo/components/engine-illustration.html" }'), "Expected the page catalog to register the baseline engine illustration page.");
   assert(componentAtlasHtml.includes('<a href="./engine-illustration.html"'), "Expected demo/components/index.html to link the baseline engine illustration page.");
   assert(engineIllustrationHtml.includes('<body class="bf-theme is-dark" data-page-surface-mode="locked-manifest">'), "Expected engine-illustration.html to pin the generated multi-font manifest while still using the shared component chrome.");
@@ -743,11 +830,14 @@ function validateEngineIllustrationPage(pageCatalogJs: string, componentAtlasHtm
   assert(engineIllustrationHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-illustration.html to load the generated IBM Plex smoke stylesheet.");
   assert(engineIllustrationHtml.includes('<title>Baseline Engine Illustration</title>'), "Expected engine-illustration.html to expose the blog-companion page title.");
   assert(engineIllustrationHtml.includes('data-engine-mode="raw"') && engineIllustrationHtml.includes('data-engine-mode="metrics"') && engineIllustrationHtml.includes('data-engine-mode="cap"'), "Expected engine-illustration.html to expose raw, compensated, and cap comparison lanes.");
+  assert(engineIllustrationHtml.includes('class="engine-illustration-card is-raw"') && engineIllustrationHtml.includes('class="engine-illustration-card is-metrics"') && engineIllustrationHtml.includes('class="engine-illustration-card is-cap"'), "Expected engine-illustration.html to style comparison lanes through is-* classes.");
   assert(engineIllustrationHtml.includes('data-engine-role-card="h1"') && engineIllustrationHtml.includes('data-engine-role-card="h2"'), "Expected engine-illustration.html to cover both H1 and H2 display roles.");
+  assert(engineIllustrationHtml.includes('class="bf-stack engine-illustration-role is-h1"') && engineIllustrationHtml.includes('class="bf-stack engine-illustration-role is-h2"'), "Expected engine-illustration.html to style display-role lanes through is-* classes.");
   assert(engineIllustrationHtml.includes('src="../engine-illustration.js"'), "Expected engine-illustration.html to boot the page-local comparison runtime.");
   assert(engineIllustrationHtml.includes('Largest cap delta'), "Expected engine-illustration.html to expose the numeric summary row.");
   assert(engineIllustrationHtml.includes('Not a buildable surface'), "Expected engine-illustration.html to describe itself as a static illustration rather than a shipped engine.");
   assert(componentShellCss.includes('.engine-illustration-card {'), "Expected component-shell.css to include the engine-illustration card styles.");
+  assert(componentShellCss.includes('.engine-illustration-card.is-raw::before'), "Expected component-shell.css to style engine modes through classes, not data attributes.");
   assert(componentShellCss.includes('.engine-illustration-stage {'), "Expected component-shell.css to include the engine-illustration specimen stage styles.");
   assert(componentShellCss.includes('.engine-illustration-table-stage {'), "Expected component-shell.css to include the engine-illustration table wrapper styles.");
   assert(!engineIllustrationHtml.includes('bf-tier-app'), "Expected engine-illustration.html to stay off the app tier because it is a locked-manifest experiment page.");
@@ -897,6 +987,13 @@ async function main(): Promise<void> {
   runInvariant("Published package exports", () => validatePackageExports(packageJson));
   runInvariant("Theme config watcher", () => validateThemeConfigWatcher(viteConfigTs));
   await runInvariantAsync("Panel baseline cleanup", () => validatePanelBaselineArtifacts());
+  runInvariant("Demo CSS selector hygiene", () => validateDemoCssSelectorHygiene({
+    "demo/component-shell.css": componentShellCss,
+    "demo/spec-shell.css": specShellCss,
+    "demo/page-chrome.css": pageChromeCss,
+    "demo/controls-shell.css": controlsShellCss
+  }));
+  await runInvariantAsync("Example dogfooding", () => validateExampleDogfooding());
   runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss));
   runInvariant("Engine illustration page", () => validateEngineIllustrationPage(pageCatalogJs, componentAtlasHtml, engineIllustrationHtml, componentShellCss));
   runInvariant("Living spec home", () => validateLivingSpecHome(demoIndexHtml));

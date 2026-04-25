@@ -1,4 +1,4 @@
-import { initBaselineGridToggles, initSideNavigations } from "../dist/index.js";
+import { initApplicationLayouts, initBaselineGridToggles, initPanelDrawers, initSideNavigations } from "../dist/index.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
@@ -126,6 +126,8 @@ export function initExamplePage() {
     }
   });
 
+  initApplicationLayouts();
+  initPanelDrawers();
   initSideNavigations();
 }
 

@@ -9,17 +9,17 @@
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target">
-    <section class="spacing-fixed-width spacing-hero bf-prose">
+  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack is-section-shallow bf-prose">
       <h1>Nudge baseline</h1>
       <p>The editorial stack uses nudges to land baselines on the 4px grid. Toggling to the app state removes those nudges and the lines drift.</p>
-      <div class="spacing-actions">
+      <div class="bf-cluster">
         <button class="bf-button is-base" data-nudge-toggle type="button" aria-pressed="false">Show app-tier zero-nudge state</button>
       </div>
     </section>
 
-    <section class="spacing-fixed-width spacing-grid-two">
-      <article class="spacing-baseline-box spacing-baseline-overlay bf-prose" data-nudge-editorial>
+    <section class="bf-fixed-width spacing-grid-two">
+      <article class="bf-card spacing-baseline-overlay bf-prose" data-nudge-editorial>
         <h1>Editorial</h1>
         <p class="spacing-gap-label">h1 nudge aligns to the baseline</p>
         <h2>Heading</h2>
@@ -28,7 +28,7 @@
         <p class="spacing-gap-label">Paragraph nudge = metrics-derived</p>
       </article>
 
-      <article class="spacing-baseline-box spacing-baseline-overlay bf-prose spacing-hidden" data-nudge-app>
+      <article class="bf-card spacing-baseline-overlay bf-prose spacing-hidden" data-nudge-app>
         <h1 class="bf-h1">App state</h1>
         <p class="spacing-gap-label">Selected nudges = 0</p>
         <h2 class="bf-h2">Heading</h2>

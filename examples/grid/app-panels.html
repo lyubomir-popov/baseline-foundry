@@ -9,46 +9,82 @@
   <link rel="stylesheet" href="./grid-examples.css">
 </head>
 <body class="bf-theme bf-tier-app" data-bf-tone="light">
-  <main class="example-grid-target">
-    <section class="example-fixed-width example-hero">
+  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack is-section-shallow">
       <div class="bf-prose">
         <h1>App panels</h1>
         <p>An icon rail, a small navigation panel, an independently reflowing main area, and a medium overlay drawer show the Canonical application shell behavior without relying on extra layout systems.</p>
       </div>
     </section>
 
-    <section class="example-fixed-width example-stack">
-      <div class="example-actions">
-        <label class="bf-button is-base" for="app-panels-nav-toggle">Toggle left panel</label>
-        <label class="bf-button" for="app-panels-overlay-toggle">Toggle right drawer</label>
+    <section class="bf-fixed-width bf-stack is-section-shallow">
+      <div class="bf-cluster">
+        <button class="bf-button is-base" type="button" data-application-layout-toggle aria-controls="app-panels-navigation" aria-expanded="true">Toggle left panel</button>
+        <button class="bf-button" type="button" data-panel-drawer-toggle aria-controls="app-panels-overlay" aria-expanded="false">Toggle right drawer</button>
       </div>
 
-      <div class="example-app-shell">
-        <input id="app-panels-nav-toggle" class="example-nav-toggle" type="checkbox" checked hidden>
-        <input id="app-panels-overlay-toggle" class="example-overlay-toggle" type="checkbox" hidden>
-        <div class="example-app-rail" aria-hidden="true"></div>
-        <aside class="example-app-nav">
-          <h2 class="bf-h5">Navigation</h2>
-          <p class="bf-body example-muted">240px small drawer width.</p>
-          <div class="example-callout"><p class="bf-body">Closing the left panel gives the main region more container width without changing the page viewport.</p></div>
-        </aside>
-        <section class="example-app-main bf-grid-scope">
-          <div class="example-app-main-header">
-            <div>
-              <h2 class="bf-h4">Machine inventory</h2>
-              <p class="bf-body example-muted">The cards below reflow from the main container width, not from the overall page width.</p>
+      <div class="bf-application example-application-frame" data-baseline-ignore="true">
+        <header id="app-panels-navigation" class="bf-navigation is-pinned" data-baseline-ignore="true">
+          <div class="bf-navigation-overlay" aria-hidden="true"></div>
+          <div class="bf-navigation-drawer">
+            <section class="bf-panel is-fill" data-baseline-ignore="true">
+              <div class="bf-panel-header is-sticky" data-baseline-ignore="true">
+                <div class="bf-stack is-flush" data-baseline-ignore="true">
+                  <h2 class="bf-panel-title">Navigation</h2>
+                  <p class="bf-form-help is-tight is-fading-when-collapsed">240px small drawer width.</p>
+                </div>
+                <div class="bf-panel-controls" data-baseline-ignore="true">
+                  <button class="bf-button is-base" type="button" data-application-layout-close aria-controls="app-panels-navigation">Close</button>
+                </div>
+              </div>
+              <div class="bf-panel-content example-app-nav-content" data-baseline-ignore="true">
+                <nav class="bf-side-navigation is-icons" aria-label="Example application navigation" data-baseline-ignore="true">
+                  <ul class="bf-side-navigation-list">
+                    <li class="bf-side-navigation-item is-title"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="12" height="12" rx="2" fill="currentColor" opacity="0.8"/></svg></span><span class="bf-side-navigation-label">Dashboard</span></a></li>
+                    <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 4h10M3 8h10M3 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="bf-side-navigation-label">Machines</span></a></li>
+                    <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="5" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="bf-side-navigation-label">Storage</span></a></li>
+                    <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4.5h8v7H4z" stroke="currentColor" stroke-width="1.5"/><path d="M6 6.5h4M6 8.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="bf-side-navigation-label">Images</span></a></li>
+                  </ul>
+                </nav>
+                <div class="bf-card is-highlighted"><p class="bf-body">Closing the left panel gives the main region more container width without changing the page viewport.</p></div>
+              </div>
+            </section>
+          </div>
+        </header>
+
+        <main class="bf-main bf-grid-scope" data-baseline-ignore="true">
+          <section class="bf-panel is-fill" data-baseline-ignore="true">
+            <div class="bf-panel-header" data-baseline-ignore="true">
+              <div class="bf-stack is-flush" data-baseline-ignore="true">
+                <h2 class="bf-panel-title">Machine inventory</h2>
+                <p class="bf-form-help is-tight">The cards below reflow from the main container width, not from the overall page width.</p>
+              </div>
             </div>
-          </div>
-          <div class="bf-grid example-app-main-grid">
-            <article class="bf-span-4 example-card"><h3 class="bf-h5">Ready</h3><p>24 machines are ready for allocation.</p></article>
-            <article class="bf-span-4 example-card is-soft"><h3 class="bf-h5">Queued</h3><p>11 machines are in commissioning.</p></article>
-            <article class="bf-span-4 example-card"><h3 class="bf-h5">Storage</h3><p>4 disks need remediation.</p></article>
-            <article class="bf-span-4 example-card is-strong"><h3 class="bf-h5">Images</h3><p>12 images are ready to deploy.</p></article>
-          </div>
-        </section>
-        <aside class="example-app-overlay">
-          <h2 class="bf-h5">Overlay drawer</h2>
-          <p class="bf-body">The medium drawer overlays the main region instead of resizing it, which matches the spec’s right-side temporary panel behavior.</p>
+            <div class="bf-panel-content example-app-main-content" data-baseline-ignore="true">
+              <div class="bf-grid example-app-main-grid">
+                <article class="bf-span-4 bf-card"><h3 class="bf-h5">Ready</h3><p>24 machines are ready for allocation.</p></article>
+                <article class="bf-span-4 bf-card is-overlay"><h3 class="bf-h5">Queued</h3><p>11 machines are in commissioning.</p></article>
+                <article class="bf-span-4 bf-card"><h3 class="bf-h5">Storage</h3><p>4 disks need remediation.</p></article>
+                <article class="bf-span-4 bf-card is-highlighted"><h3 class="bf-h5">Images</h3><p>12 images are ready to deploy.</p></article>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <div class="bf-application-overlay" data-panel-drawer-close aria-controls="app-panels-overlay" aria-hidden="true"></div>
+
+        <aside id="app-panels-overlay" class="bf-aside is-overlay is-medium" aria-hidden="true" aria-label="Overlay drawer" data-baseline-ignore="true">
+          <section class="bf-panel is-fill" data-baseline-ignore="true">
+            <div class="bf-panel-header is-sticky" data-baseline-ignore="true">
+              <h2 class="bf-panel-title">Overlay drawer</h2>
+              <div class="bf-panel-controls" data-baseline-ignore="true">
+                <button class="bf-button is-base" type="button" data-panel-drawer-close data-panel-drawer-autofocus aria-controls="app-panels-overlay">Close</button>
+              </div>
+            </div>
+            <div class="bf-panel-content example-app-overlay-content" data-baseline-ignore="true">
+              <p class="bf-body">The medium drawer overlays the main region instead of resizing it, which matches the spec’s right-side temporary panel behavior.</p>
+            </div>
+          </section>
         </aside>
       </div>
     </section>

@@ -160,6 +160,12 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 
 ### Current follow-up
 
+#### Highest-priority next steps
+
+- Implement the editorial/docs explicit-takeover spacing contract: when `bf-stack`, `bf-cluster`, or another deliberate gap container takes ownership of vertical spacing in editorial or documentation surfaces, it must reset child `margin-bottom` at that boundary instead of letting semantic element spacing stack with container gap.
+- Make the default `bf-grid` contract spec-compliant for two-dimensional layouts by giving it row gaps equal to the grid gutter. If zero-row-gap behavior still has a legitimate use, keep it only as an explicit non-default variant rather than the shipped default.
+- Zero app-tier `spaceAfter` and `marginBottom` values in the source and published token artifacts so the public app spacing surface matches the live spec. Keep any raw metric or audit data only in non-contract metadata, not in the public spacing-token contract.
+
 - The site-wide tier model now has four truthful built-in surfaces: `editorial`, `documentation`, `app`, and the non-canonical `os` addendum. The shared header exposes `Editorial / Docs / App / OS` across the living spec, controls, examples, and component demos; `demo/panel.html` now boots through the shared page chrome as the OS addendum page; and the legacy `panel` preset now aliases the OS output instead of carrying its own `ui-*` role config.
 - The parasite class sweep is now complete end-to-end: the old validation aliases (`.has-error`, `.has-success`, `.has-warning`) are gone from the shared component CSS, the last live Vanilla-style `has-*` helper classes are gone from the BF demo/runtime surface, and build validation now rejects both kinds of drift so the public contract stays on structural selectors plus canonical `is-*` modifiers only.
 - The typographic specimen page is now complete: `demo/spec/typographic-specimen.html` ships as a real spec chapter with shared page chrome, page-catalog registration, and a responsive editorial two-column prose layout that collapses back to one column cleanly.
@@ -177,6 +183,7 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 - The latest parity burst now also closes Vanilla-style top-navigation dropdowns: `bf-top-navigation` ships desktop layered dropdown menus plus mobile inline expansion, static validation covers the new selectors and demo markup, `npm run qa:components` is green, and the new dropdown paths pass targeted Playwright verification.
 - Full repo `npm test` is green again after the application-shell resize-handle follow-up: the resizable-aside runtime now re-syncs `aria-valuenow` from the rendered aside width after the shell settles, so the behavior harness no longer races the first-load layout state.
 - Active downstream-demand work is now the `brand-layout-ops` shared-shell backlog below; mega-nav is explicitly deprioritized unless a concrete consumer asks for it again.
+- The grid/spacing example dogfooding pass has now moved the remaining app shell specimens onto shared primitives: `app-panels.html` now uses the real `bf-application` + pinned `bf-navigation` + overlay `bf-aside` contract, `panel-reflow.html` now uses the real `bf-application` + pinned `bf-aside` contract, and `demo/example-page.js` now initializes the shared application-layout and panel-drawer runtimes on example pages instead of relying on local fixture shell behavior.
 
 ### Inbox triage
 

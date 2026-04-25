@@ -9,15 +9,15 @@
   <link rel="stylesheet" href="./grid-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target">
-    <section class="example-fixed-width example-hero">
+  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack is-section-shallow">
       <div class="bf-prose">
         <h1>Docs layout</h1>
         <p>A three-region documentation layout keeps the left navigation, central content, and right table of contents explicit at wide widths. On smaller widths the navigation becomes a drawer and the TOC stacks above the article.</p>
       </div>
     </section>
 
-    <section class="example-fixed-width example-docs-layout">
+    <section class="bf-fixed-width example-docs-layout">
       <aside class="example-docs-nav">
         <div class="bf-side-navigation is-drawer-collapsed is-drawer-hidden">
           <button class="bf-side-navigation-toggle" type="button" aria-controls="docs-layout-side-navigation" aria-expanded="false">Section navigation</button>
@@ -43,7 +43,7 @@
       </aside>
 
       <article class="example-docs-content">
-        <div class="bf-card example-surface bf-prose">
+        <div class="bf-card bf-prose">
           <h2>Commissioning and hardware testing</h2>
           <p>The center column stays on a readable editorial measure while the surrounding navigation remains narrow and utilitarian.</p>
           <p>Resize down and the table of contents moves above the article body while the left nav becomes a drawer overlay instead of consuming permanent width.</p>

@@ -18,88 +18,18 @@ body.bf-tier-app {
 }
 
 .example-grid-target {
-  display: grid;
-  gap: var(--bf-section-space, 4rem);
-  padding: max(var(--bf-page-margin, 1rem), 1rem);
+  padding-block-start: max(var(--bf-page-margin, 1rem), 1rem);
   padding-block-end: var(--bf-section-space, 4rem);
 }
 
-.spacing-fixed-width {
-  inline-size: min(100%, 112rem);
-  margin-inline: auto;
-}
-
-.spacing-hero,
-.spacing-stack,
-.spacing-grid-two,
-.spacing-grid-three,
-.spacing-pair,
-.spacing-defaults {
+.spacing-grid-two {
   display: grid;
   gap: var(--bf-space-3, 1.5rem);
-}
-
-.spacing-grid-two {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.spacing-grid-three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.spacing-card,
-.spacing-surface,
-.spacing-hero-box,
-.spacing-demo-box,
-.spacing-band-stack,
-.spacing-status-bar,
-.spacing-density-card,
-.spacing-baseline-box {
-  background: var(--bf-color-background-default, #ffffff);
-  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
-}
-
-.spacing-card,
-.spacing-surface,
-.spacing-demo-box,
-.spacing-band-stack,
-.spacing-density-card,
-.spacing-baseline-box {
-  padding: 1rem;
-}
-
-.spacing-card > *,
-.spacing-surface > *,
-.spacing-demo-box > *,
-.spacing-band-stack > *,
-.spacing-density-card > *,
-.spacing-status-bar > *,
-.spacing-baseline-box > * {
-  margin: 0;
 }
 
 .spacing-note {
   color: var(--bf-color-muted, rgba(0, 0, 0, 0.6));
-}
-
-.spacing-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.spacing-showcase {
-  display: grid;
-  gap: var(--bf-space-4, 2rem);
-}
-
-.spacing-specimen {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.spacing-specimen.is-container-owned {
-  gap: 1rem;
 }
 
 .spacing-gap-label {
@@ -162,11 +92,6 @@ body.bf-tier-app {
   content: "64px total bottom spacing – correct";
 }
 
-.spacing-density-card {
-  display: grid;
-  gap: 1rem;
-}
-
 .spacing-density-zone {
   border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
   display: grid;
@@ -200,9 +125,6 @@ body.bf-tier-app {
 
 .spacing-header-bar {
   align-items: center;
-  background: var(--bf-color-background-default, #ffffff);
-  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
-  display: flex;
   gap: 1rem;
   justify-content: space-between;
   min-block-size: calc(var(--bf-baseline, 0.5rem) * 8);
@@ -211,8 +133,6 @@ body.bf-tier-app {
 
 .spacing-status-bar {
   align-items: center;
-  display: flex;
-  gap: 1rem;
   justify-content: space-between;
   min-block-size: calc(var(--bf-baseline, 0.5rem) * 7);
   padding: 0 1rem;
@@ -232,15 +152,10 @@ body.bf-tier-app {
   padding: 1rem;
 }
 
-.spacing-inline-row,
 .spacing-inline-raw {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-}
-
-.spacing-inline-row {
-  gap: 0.75rem;
 }
 
 .spacing-inline-raw > * + * {
@@ -253,7 +168,6 @@ body.bf-tier-app {
 
 @media (max-width: 72rem) {
   .spacing-grid-two,
-  .spacing-grid-three,
   .spacing-comp-row {
     grid-template-columns: 1fr;
   }

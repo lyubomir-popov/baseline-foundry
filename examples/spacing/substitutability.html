@@ -9,14 +9,14 @@
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target">
-    <section class="spacing-fixed-width spacing-hero bf-prose">
+  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack is-section-shallow bf-prose">
       <h1>Substitutability</h1>
       <p>Container-owned spacing keeps identical gaps when the control changes. Element-owned editorial flow changes spacing semantically when the content type changes.</p>
     </section>
 
-    <section class="spacing-fixed-width spacing-grid-two">
-      <article class="spacing-surface spacing-stack is-container-owned">
+    <section class="bf-fixed-width spacing-grid-two">
+      <article class="bf-card bf-stack is-section-shallow is-container-owned">
         <h2 class="bf-h4">Container-owned</h2>
         <button class="bf-button">Button</button>
         <input class="bf-input" type="text" value="Text input">
@@ -24,7 +24,7 @@
         <p class="spacing-gap-label">Gap stays identical because the container owns it.</p>
       </article>
 
-      <article class="spacing-surface bf-prose">
+      <article class="bf-card bf-prose">
         <h2>Element-owned</h2>
         <p>The heading below changes the resolved spacing because the content semantics changed.</p>
         <h3>Swapped heading</h3>
