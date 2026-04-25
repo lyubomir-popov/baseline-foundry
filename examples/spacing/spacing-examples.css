@@ -38,23 +38,11 @@ body.bf-tier-app {
   line-height: 1rem;
 }
 
-.spacing-band {
-  display: grid;
-  gap: 0;
-  position: relative;
-}
 
-.spacing-band::after {
-  background: color-mix(in srgb, #ff4f90 16%, transparent);
-  content: "";
-  display: block;
-  inline-size: 100%;
-  min-block-size: var(--gap-size, 1rem);
-}
 
-.spacing-band > .spacing-gap-label {
-  margin-top: 0.25rem;
-}
+
+
+
 
 .spacing-unknown {
   border: 1px dashed #d43f3f;
@@ -92,20 +80,9 @@ body.bf-tier-app {
   content: "64px total bottom spacing – correct";
 }
 
-.spacing-density-zone {
-  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
-  display: grid;
-  gap: var(--zone-gap, 0.5rem);
-  padding: 0.75rem;
-}
 
-.spacing-density-zone.is-gap-zero {
-  --zone-gap: 0;
-}
 
-.spacing-density-zone.is-gap-base {
-  --zone-gap: 0.5rem;
-}
+
 
 .spacing-density-row {
   align-items: center;
@@ -113,15 +90,6 @@ body.bf-tier-app {
   justify-content: space-between;
 }
 
-.spacing-baseline-overlay {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(20, 22, 28, 0.1),
-    rgba(20, 22, 28, 0.1) 1px,
-    transparent 1px,
-    transparent calc(var(--bf-baseline, 0.5rem))
-  );
-}
 
 .spacing-header-bar {
   align-items: center;
@@ -172,3 +140,4 @@ body.bf-tier-app {
     grid-template-columns: 1fr;
   }
 }
+
