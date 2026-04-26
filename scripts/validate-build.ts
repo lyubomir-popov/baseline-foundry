@@ -259,11 +259,21 @@ function validateCommonCss(css: string): void {
   assert(css.includes("@media (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px viewport breakpoint for gutters and outer margins.");
   assert(css.includes("@media (width >= 64.75rem)"), "Expected CSS to use the Canonical 1036px viewport breakpoint for large outer margins.");
   assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected app-tier page to be fluid (no max-width cap).");
-  assert(css.includes("--bf-grid-gap-inline: 1rem;"), "Expected CSS to define the x-small 16px grid gutter.");
-  assert(css.includes("--bf-grid-gap-block: 1rem;"), "Expected CSS to define the x-small 16px grid gap.");
-  assert(css.includes("--bf-page-margin: 1rem;"), "Expected CSS to define the x-small 16px outer margin.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-page.is-fill) {\n  min-block-size: 100vh;\n  padding-block-end: var(--bf-section-space);"), "Expected shared CSS to expose the fill-height bf-page modifier used by the spec and controls shells.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-inline-size) {\n  --bf-inline-size: 18rem;\n  flex: 0 1 var(--bf-inline-size);\n  inline-size: min(100%, var(--bf-inline-size));\n  min-inline-size: min(100%, var(--bf-inline-size));"), "Expected shared CSS to expose the BF-owned bounded inline-size utility used by clustered inspection rows.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-compact) {\n  --bf-inline-size: 12rem;"), "Expected shared CSS to expose the compact bounded inline-size modifier.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-regular) {\n  --bf-inline-size: 18rem;"), "Expected shared CSS to expose the regular bounded inline-size modifier.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-medium) {\n  --bf-inline-size: 20rem;"), "Expected shared CSS to expose the medium bounded inline-size modifier.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-wide) {\n  --bf-inline-size: 24rem;"), "Expected shared CSS to expose the wide bounded inline-size modifier.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-x-wide) {\n  --bf-inline-size: 28rem;"), "Expected shared CSS to expose the x-wide bounded inline-size modifier.");
+  assert(css.includes(":where(.bf-theme) :where(ul.bf-grid, ol.bf-grid) {\n  list-style: none;\n  margin: 0;\n  padding: 0;"), "Expected shared CSS to let bf-grid act as an unstyled list container without page-local resets.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-grid.is-guide) > * {\n  background: color-mix(in srgb, var(--bf-color-accent) 18%, var(--bf-color-background-default));"), "Expected shared CSS to expose the BF-owned grid guide modifier for breakpoint specimens.");
+  assert(css.includes("--bf-grid-gap-inline: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px inline gutter without a separate 460px switch.");
+  assert(css.includes("--bf-grid-gap-block: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px block-gap token for non-bf-grid layouts.");
+  assert(css.includes("--bf-page-margin: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px outer margin without a separate 460px switch.");
   assert(css.includes("--bf-grid-gap-inline: 1.5rem;"), "Expected CSS to define the small-and-up 24px grid gutter.");
   assert(css.includes("--bf-page-margin: 1.5rem;"), "Expected CSS to define the small 24px outer margin.");
+  assert(css.includes("gap: 0 var(--bf-grid-gap-inline);"), "Expected bf-grid to keep row-gap at 0 and use only the inline gutter token.");
   assert(css.includes("@media (width >= 64.75rem) {\n  :where(.bf-theme) {\n    --bf-grid-gap-inline: 2rem;\n    --bf-grid-gap-block: 2rem;\n    --bf-page-margin: 2rem;"), "Expected CSS to widen the default editorial gutter to 32px at large breakpoints.");
   assert(css.includes(":where(.bf-theme.bf-tier-app) {\n    --bf-grid-gap-inline: 1.5rem;\n    --bf-grid-gap-block: 1.5rem;"), "Expected CSS to keep app-tier gutters at 24px inside the large-breakpoint override.");
   assert(css.includes("--bf-page-margin: 2rem;"), "Expected CSS to define the large-and-up 32px outer margin.");
@@ -384,6 +394,9 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".has-warning"), "Expected generated CSS to omit the deprecated has-warning validation alias.");
   assert(!/\.has-[a-z][a-z0-9-]*/.test(css), "Expected generated CSS to omit deprecated has-* helper selectors.");
   assert(css.includes(":where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)"), "Expected generated CSS to include card surfaces.");
+  assert(css.includes(":where(.bf-theme) :where(a.bf-card, a.bf-card.is-highlighted, a.bf-card.is-overlay, a.bf-card.is-muted) {"), "Expected generated CSS to let cards act as linked surfaces.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-card-preview) {"), "Expected generated CSS to include the card preview slot used by the component atlas.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-card-preview-image) {"), "Expected generated CSS to include the card preview image slot used by the component atlas.");
   assert(css.includes(":where(.bf-segmented-control-button, .bf-tab-buttons-button)"), "Expected generated CSS to include segmented control buttons.");
   assert(css.includes(":where(.bf-breadcrumbs-items)"), "Expected generated CSS to include breadcrumb styling.");
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
@@ -466,8 +479,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-aside.is-overlay.is-small"), "Expected generated CSS to expose the Canonical small overlay modifier.");
   assert(css.includes(".bf-aside.is-overlay.is-medium"), "Expected generated CSS to expose the Canonical medium overlay modifier.");
   assert(css.includes(".bf-aside.is-overlay.is-large"), "Expected generated CSS to expose the Canonical large overlay modifier.");
-  assert(!css.includes(".is-narrow"), "Expected generated CSS to omit the old narrow overlay modifier.");
-  assert(!css.includes(".is-wide"), "Expected generated CSS to omit the old wide overlay modifier.");
+  assert(!css.includes(".bf-aside.is-overlay.is-narrow"), "Expected generated CSS to omit the old narrow overlay modifier.");
+  assert(!css.includes(".bf-aside.is-overlay.is-wide"), "Expected generated CSS to omit the old wide overlay modifier.");
   assert(css.includes(":where(.bf-application-aside-resize-handle)"), "Expected generated CSS to include the pinned-aside resize handle selector.");
   assert(css.includes("cursor: ew-resize;"), "Expected generated CSS to make the resize handle advertise horizontal resizing.");
   assert(css.includes("touch-action: none;"), "Expected generated CSS to make the resize handle safe for pointer dragging.");
@@ -663,10 +676,14 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
 function validateLivingSpecHome(html: string): void {
   assert(html.includes('data-page-tier-options="editorial,documentation,app,os"'), "Expected index.html to declare the supported shared-bar tiers.");
   assert(html.includes('./dist/tiers/editorial/styles.css'), "Expected index.html to load the editorial tier output by default.");
-  assert(html.includes('class="bf-grid pc-grid-guide"'), "Expected index.html to include grid guide specimens.");
+  assert(html.includes('class="bf-grid is-guide"'), "Expected index.html to include BF-owned grid guide specimens.");
   assert(html.includes('bf-grid-scope'), "Expected index.html to include bf-grid-scope container query scopes.");
+  assert(html.includes('class="bf-stack bf-grid-scope specimen-grid-scope is-grid-4"'), "Expected index.html to expose the 4-column breakpoint specimen through the shared resizable specimen classes.");
+  assert(html.includes('class="bf-stack bf-grid-scope specimen-grid-scope is-grid-8"'), "Expected index.html to expose the 8-column breakpoint specimen through the shared resizable specimen classes.");
+  assert(html.includes('class="bf-stack bf-grid-scope specimen-grid-scope is-grid-16"'), "Expected index.html to expose the 16-column breakpoint specimen through the shared resizable specimen classes.");
   assert(html.includes('bf-span-1'), "Expected index.html to include bf-span column spans.");
-  assert(html.includes('<main class="bf-page spec-shell"'), "Expected index.html to use bf-page as the editorial container (centered, max-width capped).");
+  assert(html.includes('<main class="bf-page is-fill"'), "Expected index.html to use the shared fill-height bf-page container.");
+  assert(!html.includes('pc-grid-guide'), "Expected index.html to stop using the page-local pc-grid-guide helper.");
   assert(!html.includes('data-spec-chapter-nav'), "Expected index.html to stop behaving like a chapter overview page.");
   assert(!html.includes('bf-card'), "Expected index.html to avoid card framing on the screenshot-first home surface.");
   assert(!html.includes('Simple tier-switched specimens for the specs.'), "Expected index.html to avoid the old explanatory intro copy.");
@@ -683,6 +700,7 @@ function validateLivingSpecHome(html: string): void {
 function validateLivingSpecControls(html: string, css: string): void {
   assert(html.includes('data-page-tier-options="editorial,documentation,app,os"'), "Expected demo/controls.html to declare the supported shared-bar tiers.");
   assert(html.includes('../dist/tiers/app/styles.css'), "Expected demo/controls.html to default to the app tier output.");
+  assert(html.includes('<main class="bf-page is-fill" id="controls-grid-target">'), "Expected demo/controls.html to use the shared fill-height bf-page container.");
   assert(html.includes('<h2>Core fields</h2>'), "Expected demo/controls.html to expose the core fields section heading.");
   assert(!html.includes('data-controls-hero'), "Expected demo/controls.html hero section to be removed.");
   assert(!html.includes('data-controls-summary'), "Expected demo/controls.html summary aside to be removed.");
@@ -795,9 +813,8 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(css.includes("block-size: var(--bf-control-visual-size);"), "Expected checkbox/radio/thumb visuals to size from the dedicated control visual token.");
 }
 
-function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, componentShellCss: string, specShellCss: string, pageChromeCss: string): void {
+function validateDemoContracts(engineSmokeHtml: string, componentShellCss: string, specShellCss: string, pageChromeCss: string): void {
   assertNoDuplicateClassAttributes("demo/components/engine-smoke.html", engineSmokeHtml);
-  assertNoDuplicateClassAttributes("demo/components/brand-layout-ops-sample.html", sampleHtml);
   assert(engineSmokeHtml.includes('<body class="bf-theme is-dark" data-component-capture data-page-surface-mode="locked-manifest">'), "Expected engine-smoke.html to pin the generated IBM Plex manifest while still using the shared component chrome.");
   assert(engineSmokeHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to load the generated IBM Plex smoke stylesheet.");
   assert(engineSmokeHtml.includes('<title>Font Engine Smoke Demo</title>'), "Expected engine-smoke.html to describe the shared multi-font surface instead of a single IBM Plex page.");
@@ -809,15 +826,11 @@ function validateDemoContracts(engineSmokeHtml: string, sampleHtml: string, comp
   assert(!/\bcomponent-demo-/.test(engineSmokeHtml), "Expected engine-smoke.html to avoid component-demo parasite classes.");
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(engineSmokeHtml), "Expected engine-smoke.html to avoid deprecated p-* markup and stay fully bf-* dogfooded.");
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(engineSmokeHtml), "Expected engine-smoke.html to avoid deprecated vr-* markup and stay fully bf-* dogfooded.");
-  assert(!/\bp-[a-z][a-z0-9_-]*/.test(sampleHtml), "Expected brand-layout-ops-sample.html to avoid deprecated p-* markup in the live sample shell.");
-  assert(!/\bvr-[a-z][a-z0-9_-]*/.test(sampleHtml), "Expected brand-layout-ops-sample.html to avoid deprecated vr-* markup in the live sample shell.");
-  assert(!componentShellCss.includes('.brand-layout-ops-sample :where(.bf-panel.is-fill) {'), "Expected the sample-shell CSS to drop the local bf-panel fill-height workaround now that the shared contract owns it.");
-  assert(componentShellCss.includes('.brand-layout-ops-sample :where(.bf-slider) {'), "Expected the sample-shell CSS to style bf-slider through the bf-only selector.");
-  assert(componentShellCss.includes('.brand-layout-ops-sample :where(.bf-form-help.is-tight),'), "Expected the sample-shell CSS to style bf-form-help through the bf-only selector.");
   assert(!componentShellCss.includes('.p-'), "Expected the sample-shell CSS to omit deprecated p-* selectors.");
   assert(!componentShellCss.includes('--vr-'), "Expected the sample-shell CSS to omit deprecated vr-* variables.");
-  assert(specShellCss.includes('.spec-shell {'), "Expected the living-spec shell to expose the .spec-shell class selector for page framing.");
-  assert(specShellCss.includes('.pc-grid-guide > * {'), "Expected the living-spec shell to include the grid-guide specimen styling.");
+  assert(!componentShellCss.includes('.demo-index-'), "Expected component-shell.css to stop carrying the component-atlas demo-index helper family.");
+  assert(!specShellCss.includes('.spec-shell {'), "Expected the living-spec shell to stop carrying page framing through the local .spec-shell selector.");
+  assert(!specShellCss.includes('.pc-grid-guide'), "Expected spec-shell.css to stop carrying the page-local pc-grid-guide helper.");
   assert(!specShellCss.includes("[data-spec-card]"), "Expected the living-spec shell to avoid ad hoc data-spec-card selectors.");
   assert(!specShellCss.includes("[data-spec-grid-card]"), "Expected the living-spec shell to avoid ad hoc grid-card selectors.");
   assert(!specShellCss.includes("[data-spec-surface]"), "Expected the living-spec shell to avoid boxed surface wrappers.");
@@ -838,19 +851,48 @@ function validateEngineIllustrationPage(pageCatalogJs: string, componentAtlasHtm
   assert(engineIllustrationHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-illustration.html to load the generated IBM Plex smoke stylesheet.");
   assert(engineIllustrationHtml.includes('<title>Baseline Engine Illustration</title>'), "Expected engine-illustration.html to expose the blog-companion page title.");
   assert(engineIllustrationHtml.includes('data-engine-mode="raw"') && engineIllustrationHtml.includes('data-engine-mode="metrics"') && engineIllustrationHtml.includes('data-engine-mode="cap"'), "Expected engine-illustration.html to expose raw, compensated, and cap comparison lanes.");
-  assert(engineIllustrationHtml.includes('class="engine-illustration-card is-raw"') && engineIllustrationHtml.includes('class="engine-illustration-card is-metrics"') && engineIllustrationHtml.includes('class="engine-illustration-card is-cap"'), "Expected engine-illustration.html to style comparison lanes through is-* classes.");
+  assert(engineIllustrationHtml.includes('class="bf-card is-overlay bf-inline-size is-wide"'), "Expected engine-illustration.html to build the comparison lanes from BF-owned card primitives.");
   assert(engineIllustrationHtml.includes('data-engine-role-card="h1"') && engineIllustrationHtml.includes('data-engine-role-card="h2"'), "Expected engine-illustration.html to cover both H1 and H2 display roles.");
-  assert(engineIllustrationHtml.includes('class="bf-stack engine-illustration-role is-h1"') && engineIllustrationHtml.includes('class="bf-stack engine-illustration-role is-h2"'), "Expected engine-illustration.html to style display-role lanes through is-* classes.");
+  assert(engineIllustrationHtml.includes('class="bf-card is-muted u-baseline-grid"'), "Expected engine-illustration.html to use the shared baseline-grid utility for specimen stages.");
+  assert(engineIllustrationHtml.includes('class="bf-status-label is-caution"') && engineIllustrationHtml.includes('class="bf-status-label is-information"') && engineIllustrationHtml.includes('class="bf-status-label is-negative"'), "Expected engine-illustration.html to express lane states through BF-owned status-label variants.");
   assert(engineIllustrationHtml.includes('src="../engine-illustration.js"'), "Expected engine-illustration.html to boot the page-local comparison runtime.");
   assert(engineIllustrationHtml.includes('Largest cap delta'), "Expected engine-illustration.html to expose the numeric summary row.");
   assert(engineIllustrationHtml.includes('Not a buildable surface'), "Expected engine-illustration.html to describe itself as a static illustration rather than a shipped engine.");
-  assert(componentShellCss.includes('.engine-illustration-card {'), "Expected component-shell.css to include the engine-illustration card styles.");
-  assert(componentShellCss.includes('.engine-illustration-card.is-raw::before'), "Expected component-shell.css to style engine modes through classes, not data attributes.");
-  assert(componentShellCss.includes('.engine-illustration-stage {'), "Expected component-shell.css to include the engine-illustration specimen stage styles.");
-  assert(componentShellCss.includes('.engine-illustration-table-stage {'), "Expected component-shell.css to include the engine-illustration table wrapper styles.");
+  assert(!/class="[^"]*\bengine-illustration(?:-[a-z0-9_-]+)?\b/.test(engineIllustrationHtml), "Expected engine-illustration.html to stop using page-local engine-illustration helper classes.");
+  assert(!componentShellCss.includes('.engine-illustration'), "Expected component-shell.css to stop carrying the page-local engine-illustration helper family.");
   assert(!engineIllustrationHtml.includes('bf-tier-app'), "Expected engine-illustration.html to stay off the app tier because it is a locked-manifest experiment page.");
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(engineIllustrationHtml), "Expected engine-illustration.html to avoid deprecated p-* markup and stay fully bf-* dogfooded.");
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(engineIllustrationHtml), "Expected engine-illustration.html to avoid deprecated vr-* markup and stay fully bf-* dogfooded.");
+}
+
+function validateRangePage(rangeHtml: string, componentShellCss: string): void {
+  validateBfOnlyDemoPage("range.html", rangeHtml);
+  assert(rangeHtml.includes('class="bf-inline-size is-compact" data-overflow-container data-baseline-ignore="true"'), "Expected range.html to use the shared compact inline-size utility for the stacked rail wrapper.");
+  assert(!/class="[^"]*\brange-demo-rail\b/.test(rangeHtml), "Expected range.html to stop using the page-local range-demo-rail helper class.");
+  assert(!componentShellCss.includes('.range-demo-rail'), "Expected component-shell.css to stop carrying the page-local range-demo-rail helper.");
+}
+
+function validateComponentAtlasPage(componentAtlasHtml: string, componentAtlasJs: string): void {
+  assert(componentAtlasHtml.includes('data-component-atlas-item'), "Expected demo/components/index.html to expose JS-only data hooks for atlas item enhancement.");
+  assert(componentAtlasHtml.includes('<ul class="bf-grid">'), "Expected demo/components/index.html to use plain bf-grid lists instead of page-local atlas list wrappers.");
+  assert(!componentAtlasHtml.includes('demo-index-'), "Expected demo/components/index.html to stop using the page-local demo-index helper classes.");
+  assert(componentAtlasJs.includes('querySelectorAll("[data-component-atlas-item]")'), "Expected component-atlas.js to target atlas items through JS-only data hooks.");
+  assert(componentAtlasJs.includes('link.classList.add("bf-card", "is-overlay", "is-preview")'), "Expected component-atlas.js to build atlas items from BF-owned card primitives.");
+  assert(componentAtlasJs.includes('preview.classList.add("bf-card-preview")'), "Expected component-atlas.js to use the BF card preview slot.");
+  assert(componentAtlasJs.includes('image.classList.add("bf-card-preview-image")'), "Expected component-atlas.js to use the BF card preview image slot.");
+  assert(!componentAtlasJs.includes('demo-index-'), "Expected component-atlas.js to stop emitting the page-local demo-index helper classes.");
+}
+
+function validateFormAtlasPage(formAtlasHtml: string, componentAtlasHtml: string, componentShellCss: string): void {
+  validateBfOnlyDemoPage("form-atlas.html", formAtlasHtml);
+  assert(formAtlasHtml.includes('<main class="bf-page" data-component-capture data-overflow-container>'), "Expected form-atlas.html to use the shared bf-page capture root instead of a page-local shell wrapper.");
+  assert(formAtlasHtml.includes('class="bf-section is-shallow bf-cluster"'), "Expected form-atlas.html to use BF section/cluster rows instead of page-local layout wrappers.");
+  assert(formAtlasHtml.includes('class="bf-inline-size is-compact bf-stack is-flush"'), "Expected form-atlas.html to use the shared bf-inline-size utility for bounded reference columns.");
+  assert(formAtlasHtml.includes('class="bf-control bf-inline-size is-compact"'), "Expected form-atlas.html to use the shared bf-inline-size utility for compact control columns.");
+  assert(formAtlasHtml.includes('class="bf-search-box bf-inline-size is-regular"'), "Expected form-atlas.html to use the shared bf-inline-size utility for paired search controls.");
+  assert(!/class="[^"]*\bform-atlas(?:-[a-z0-9_-]+)?\b/.test(formAtlasHtml), "Expected form-atlas.html to stop using the page-local form-atlas helper classes.");
+  assert(!componentShellCss.includes('.form-atlas'), "Expected component-shell.css to stop carrying the page-local form-atlas helper family.");
+  assert(componentAtlasHtml.includes('data-demo-meta="Reference paragraph plus BF cluster rows for quick control baseline inspection."'), "Expected the component atlas to describe form-atlas through the BF cluster-row contract.");
 }
 
 function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
@@ -897,14 +939,34 @@ function validateApplicationShellDemo(applicationShellHtml: string): void {
 function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml: string): void {
   assert(pageCatalogJs.includes('{ title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" }'), "Expected the page catalog to register the typographic specimen chapter.");
   assert(specimenHtml.includes('<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">'), "Expected typographic-specimen.html to boot as a shared tier-switching spec page.");
-  assert(specimenHtml.includes('<main class="bf-page spec-shell" id="spec-grid-target">'), "Expected typographic-specimen.html to use the shared spec shell container.");
+  assert(specimenHtml.includes('<main class="bf-page is-fill" id="spec-grid-target">'), "Expected typographic-specimen.html to use the shared fill-height bf-page container.");
   assert(specimenHtml.includes('<a href="./typographic-specimen.html" aria-current="page">Specimen</a>'), "Expected typographic-specimen.html to expose the current-page spec nav link.");
   assert(specimenHtml.includes('<a href="../panel.html">OS addendum</a>'), "Expected typographic-specimen.html to link the OS addendum from the local spec nav.");
-  assert(specimenHtml.includes('class="bf-cluster specimen-meta"'), "Expected typographic-specimen.html to include the compact specimen metadata row.");
-  assert(specimenHtml.includes('class="specimen-columns"'), "Expected typographic-specimen.html to include the responsive multi-column specimen layout.");
-  assert(specimenHtml.includes('class="bf-prose specimen-column"'), "Expected typographic-specimen.html to use prose columns inside the specimen layout.");
+  assert(specimenHtml.includes('class="bf-fixed-width"'), "Expected typographic-specimen.html to use the shared fixed-width wrapper for the hero prose block.");
+  assert(specimenHtml.includes('class="bf-fixed-width bf-grid-scope"'), "Expected typographic-specimen.html to use the shared fixed-width grid-scope wrapper for multi-column specimen sections.");
+  assert(specimenHtml.includes('class="bf-span-4 bf-prose"'), "Expected typographic-specimen.html to use shared grid spans for the specimen columns.");
+  assert(!specimenHtml.includes('specimen-hero'), "Expected typographic-specimen.html to stop using the page-local specimen-hero helper.");
+  assert(!specimenHtml.includes('specimen-meta'), "Expected typographic-specimen.html to stop using the page-local specimen-meta helper.");
+  assert(!specimenHtml.includes('specimen-columns'), "Expected typographic-specimen.html to stop using the page-local specimen-columns helper.");
+  assert(!specimenHtml.includes('specimen-column'), "Expected typographic-specimen.html to stop using the page-local specimen-column helper.");
   assert(!specimenHtml.includes('bf-panel'), "Expected typographic-specimen.html to avoid decorative panel wrappers.");
   assert(!specimenHtml.includes('bf-card'), "Expected typographic-specimen.html to avoid decorative card wrappers.");
+}
+
+function validateGridSpecPage(gridSpecHtml: string, specShellCss: string): void {
+  assert(gridSpecHtml.includes('<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">'), "Expected grid.html to boot as a shared tier-switching spec page.");
+  assert(gridSpecHtml.includes('class="bf-stack bf-grid-scope specimen-grid-scope is-grid-4"'), "Expected grid.html to expose the 4-column breakpoint specimen through an explicit specimen class.");
+  assert(gridSpecHtml.includes('class="bf-stack bf-grid-scope specimen-grid-scope is-grid-8"'), "Expected grid.html to expose the 8-column breakpoint specimen through an explicit specimen class.");
+  assert(gridSpecHtml.includes('class="bf-stack bf-grid-scope specimen-grid-scope is-grid-16"'), "Expected grid.html to expose the 16-column breakpoint specimen through an explicit specimen class.");
+  assert(gridSpecHtml.includes('class="bf-grid is-guide"'), "Expected grid.html to use the BF-owned grid guide modifier on breakpoint specimens.");
+  assert(specShellCss.includes('.specimen-grid-scope {'), "Expected spec-shell.css to define the shared resizable breakpoint specimen shell.");
+  assert(specShellCss.includes('resize: horizontal;'), "Expected spec-shell.css to keep the breakpoint specimen resizable.");
+  assert(specShellCss.includes('overflow: hidden;'), "Expected spec-shell.css to keep the breakpoint specimen resizable by clipping overflow.");
+  assert(specShellCss.includes('min-inline-size: 15rem;'), "Expected spec-shell.css to keep the breakpoint specimen minimum width.");
+  assert(/\.specimen-grid-scope\.is-grid-4\s*\{\s*inline-size:\s*38\.6875rem;/.test(specShellCss), "Expected spec-shell.css to seed the 4-column specimen at the 619px breakpoint edge.");
+  assert(/\.specimen-grid-scope\.is-grid-8\s*\{\s*inline-size:\s*64\.6875rem;/.test(specShellCss), "Expected spec-shell.css to seed the 8-column specimen at the 1035px breakpoint edge.");
+  assert(/\.specimen-grid-scope\.is-grid-16\s*\{\s*inline-size:\s*105\.0625rem;/.test(specShellCss), "Expected spec-shell.css to seed the 16-column specimen at the 1681px breakpoint edge.");
+  assert(!gridSpecHtml.includes('pc-grid-guide'), "Expected grid.html to stop using the page-local pc-grid-guide helper.");
 }
 
 function validateOsTierPage(pageCatalogJs: string, panelHtml: string): void {
@@ -933,10 +995,12 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, engineIllustrationHtml, sampleHtml, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
-    readTextArtifact(path.resolve("demo/components/brand-layout-ops-sample.html")),
+    readTextArtifact(path.resolve("demo/components/form-atlas.html")),
+    readTextArtifact(path.resolve("demo/components/range.html")),
+    readTextArtifact(path.resolve("demo/component-atlas.js")),
     readTextArtifact(path.resolve("demo/component-demo.js")),
     readTextArtifact(path.resolve("demo/component-shell.css")),
     readTextArtifact(path.resolve("demo/spec-shell.css")),
@@ -963,6 +1027,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/index.html")),
     readTextArtifact(path.resolve("demo/controls.html")),
     readTextArtifact(path.resolve("demo/spec/typographic-specimen.html")),
+    readTextArtifact(path.resolve("demo/spec/grid.html")),
     readTextArtifact(path.resolve("demo/panel.html"))
   ]);
 
@@ -1002,8 +1067,11 @@ async function main(): Promise<void> {
     "demo/controls-shell.css": controlsShellCss
   }));
   await runInvariantAsync("Example dogfooding", () => validateExampleDogfooding());
-  runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, sampleHtml, componentShellCss, specShellCss, pageChromeCss));
+  runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, componentShellCss, specShellCss, pageChromeCss));
   runInvariant("Engine illustration page", () => validateEngineIllustrationPage(pageCatalogJs, componentAtlasHtml, engineIllustrationHtml, componentShellCss));
+  runInvariant("Range page", () => validateRangePage(rangeHtml, componentShellCss));
+  runInvariant("Component atlas page", () => validateComponentAtlasPage(componentAtlasHtml, componentAtlasJs));
+  runInvariant("Form atlas page", () => validateFormAtlasPage(formAtlasHtml, componentAtlasHtml, componentShellCss));
   runInvariant("Living spec home", () => validateLivingSpecHome(demoIndexHtml));
   runInvariant("Living spec controls", () => validateLivingSpecControls(demoControlsHtml, controlsShellCss));
   runInvariant("Application shell demo", () => validateApplicationShellDemo(applicationShellHtml));
@@ -1012,6 +1080,7 @@ async function main(): Promise<void> {
   runInvariant("Parity surface demos", () => validateParitySurfaceDemos(iconHtml, listHtml, tableHtml));
   runInvariant("Top navigation demo", () => validateTopNavigationDemo(topNavigationHtml));
   runInvariant("Typographic specimen", () => validateTypographicSpecimen(pageCatalogJs, typographicSpecimenHtml));
+  runInvariant("Grid spec page", () => validateGridSpecPage(gridSpecHtml, specShellCss));
   runInvariant("OS addendum page", () => validateOsTierPage(pageCatalogJs, panelHtml));
   await runInvariantAsync("Component page tier consistency", () => validateComponentPageTierConsistency(componentDemoJs));
   runInvariant("bf-only demo family", () => validateBfOnlyDemoFamily({

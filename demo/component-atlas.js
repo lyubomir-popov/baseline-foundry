@@ -10,7 +10,7 @@ function screenshotUrl(href) {
 }
 
 function enhanceAtlas() {
-  const items = document.querySelectorAll(".demo-index-item");
+  const items = document.querySelectorAll("[data-component-atlas-item]");
   if (items.length === 0) {
     return;
   }
@@ -28,38 +28,35 @@ function enhanceAtlas() {
       continue;
     }
 
-    const card = document.createElement("span");
-    card.classList.add("demo-index-card");
-
-    const frame = document.createElement("span");
-    frame.classList.add("demo-index-frame");
+    const preview = document.createElement("span");
+    preview.classList.add("bf-card-preview");
 
     const image = document.createElement("img");
-    image.classList.add("demo-index-image");
+    image.classList.add("bf-card-preview-image");
     image.src = imageUrl;
-    image.alt = `${name} preview`;
+    image.alt = "";
     image.loading = "lazy";
     image.width = 360;
     image.height = 240;
     image.addEventListener("error", () => {
-      frame.classList.add("is-missing");
+      preview.classList.add("is-missing");
+      image.remove();
     });
 
-    const label = document.createElement("p");
-    label.classList.add("demo-index-name");
+    const label = document.createElement("span");
+    label.classList.add("bf-body");
     label.textContent = name;
 
-    frame.appendChild(image);
-    card.appendChild(frame);
-    card.appendChild(label);
+    preview.appendChild(image);
 
     if (meta) {
       link.title = meta;
     }
 
     link.textContent = "";
-    link.classList.add("demo-index-card-link");
-    link.appendChild(card);
+    link.classList.add("bf-card", "is-overlay", "is-preview");
+    link.appendChild(preview);
+    link.appendChild(label);
   }
 }
 

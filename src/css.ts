@@ -281,6 +281,11 @@ ${generateBaselineGridThemeOverrideCss()}
   padding-inline: max(var(--bf-page-margin), var(--bf-content-padding-inline));
 }
 
+:where(.bf-theme) :where(.bf-page.is-fill) {
+  min-block-size: 100vh;
+  padding-block-end: var(--bf-section-space);
+}
+
 :where(.bf-theme) :where(.bf-section) {
   margin-block-end: var(--bf-section-space);
 }
@@ -299,6 +304,33 @@ ${generateBaselineGridThemeOverrideCss()}
 
 :where(.bf-theme) :where(.bf-fixed-width, .bf-measure) {
   inline-size: min(100%, var(--bf-measure));
+}
+
+:where(.bf-theme) :where(.bf-inline-size) {
+  --bf-inline-size: 18rem;
+  flex: 0 1 var(--bf-inline-size);
+  inline-size: min(100%, var(--bf-inline-size));
+  min-inline-size: min(100%, var(--bf-inline-size));
+}
+
+:where(.bf-theme) :where(.bf-inline-size.is-compact) {
+  --bf-inline-size: 12rem;
+}
+
+:where(.bf-theme) :where(.bf-inline-size.is-regular) {
+  --bf-inline-size: 18rem;
+}
+
+:where(.bf-theme) :where(.bf-inline-size.is-medium) {
+  --bf-inline-size: 20rem;
+}
+
+:where(.bf-theme) :where(.bf-inline-size.is-wide) {
+  --bf-inline-size: 24rem;
+}
+
+:where(.bf-theme) :where(.bf-inline-size.is-x-wide) {
+  --bf-inline-size: 28rem;
 }
 
 :where(.bf-theme) :where(.bf-stage-shell) {

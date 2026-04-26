@@ -238,7 +238,7 @@ export async function initSpecRuntime({ initComponents } = {}) {
 
   const supportedTiers = supportedTierNames().map(name => ({ value: name, label: tierConfig[name]?.label ?? name }));
   const currentTier = detectTier();
-  const baselineTarget = document.querySelector(".spec-shell") ?? document.body;
+  const baselineTarget = document.querySelector("main.bf-page") ?? document.body;
   const baselineTargetId = ensureTargetId(baselineTarget, "spec-grid-target");
   const chrome = injectPageChrome({
     controls: {

@@ -17,37 +17,21 @@ body {
   min-height: 100vh;
 }
 
-.spec-shell {
-  min-block-size: 100vh;
-  padding-block-end: var(--bf-section-space, 4rem);
+.specimen-grid-scope {
+  max-inline-size: none;
+  min-inline-size: 15rem;
+  overflow: hidden;
+  resize: horizontal;
 }
 
-.pc-grid-guide > * {
-  background: color-mix(in srgb, #ff4f90 18%, var(--bf-color-background-default));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #ff4f90 50%, var(--bf-color-rule));
-  min-block-size: calc(var(--bf-baseline, 0.5rem) * 4);
+.specimen-grid-scope.is-grid-4 {
+  inline-size: 38.6875rem;
 }
 
-.specimen-hero {
-  inline-size: min(100%, calc(var(--bf-measure, 40rem) * 1.2));
+.specimen-grid-scope.is-grid-8 {
+  inline-size: 64.6875rem;
 }
 
-.specimen-meta {
-  gap: var(--bf-space-1, 0.5rem) var(--bf-space-2, 1rem);
-}
-
-.specimen-columns {
-  align-items: start;
-  display: grid;
-  gap: var(--bf-grid-gap-block, 1.5rem) var(--bf-grid-gap-inline, 1.5rem);
-}
-
-.specimen-column {
-  min-inline-size: 0;
-}
-
-@media (width >= 38.75rem) {
-  .specimen-columns {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
-  }
+.specimen-grid-scope.is-grid-16 {
+  inline-size: 105.0625rem;
 }

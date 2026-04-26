@@ -8,7 +8,9 @@ export function gridCss(): string {
 
   return `/* ------------------------------------------------------------------ */
 /* Gutter and margin escalation — viewport-based, all tiers            */
-/* Grid spec v0.3 §2.3: gutters set by global viewport breakpoint      */
+/* Grid spec v0.3 §2.3: gutters set by global viewport breakpoint.     */
+/* Baseline Foundry models the spec's 460px x-small row as part of the */
+/* default <620px bracket because the values do not change at 460px.   */
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) {
@@ -82,8 +84,22 @@ export function gridCss(): string {
 :where(.bf-theme) :where(.bf-grid) {
   --bf-grid-columns: 4;
   display: grid;
+  /* bf-grid keeps row-gap at 0; the block token stays available for */
+  /* two-dimensional layouts and other container-owned spacing cases. */
   gap: 0 var(--bf-grid-gap-inline);
   grid-template-columns: repeat(var(--bf-grid-columns), minmax(0, 1fr));
+}
+
+:where(.bf-theme) :where(ul.bf-grid, ol.bf-grid) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:where(.bf-theme) :where(.bf-grid.is-guide) > * {
+  background: color-mix(in srgb, var(--bf-color-accent) 18%, var(--bf-color-background-default));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bf-color-accent) 50%, var(--bf-color-rule));
+  min-block-size: calc(var(--bf-baseline) * 4);
 }
 
 :where(.bf-theme) :where(.bf-grid) > * {

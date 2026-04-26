@@ -96,7 +96,6 @@ export const componentSections = [
       { title: "Panel pressure", href: "/demo/components/panel-pressure.html" },
       { title: "Narrow panel", href: "/demo/components/narrow-panel.html" },
       { title: "Editorial pressure", href: "/demo/components/editorial-pressure.html" },
-      { title: "Brand Layout Ops sample", href: "/demo/components/brand-layout-ops-sample.html" },
       { title: "Surfaces overview", href: "/demo/components/surfaces-navigation.html" }
     ]
   }

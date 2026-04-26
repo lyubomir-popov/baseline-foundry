@@ -18,109 +18,121 @@
       </div>
     </section>
 
-    <section class="bf-section engine-illustration" data-component-capture data-baseline-check="box" data-baseline-ignore="true" data-baseline-label="engine illustration comparison">
-      <div class="bf-cluster engine-illustration-meta">
-        <p class="bf-body engine-illustration-meta-item">Current font: <strong data-engine-font-label>IBM Plex Sans</strong></p>
-        <p class="bf-body engine-illustration-meta-item">Largest cap delta: <strong data-engine-largest-delta>0.208rem</strong></p>
-        <p class="bf-body engine-illustration-meta-item">Baseline unit: <strong>0.5rem</strong></p>
+    <section class="bf-section bf-stack" data-component-capture data-baseline-check="box" data-baseline-ignore="true" data-baseline-label="engine illustration comparison">
+      <div class="bf-cluster">
+        <p class="bf-body">Current font: <strong data-engine-font-label>IBM Plex Sans</strong></p>
+        <p class="bf-body">Largest cap delta: <strong data-engine-largest-delta>0.208rem</strong></p>
+        <p class="bf-body">Baseline unit: <strong>0.5rem</strong></p>
       </div>
 
-      <section class="bf-stack engine-illustration-role is-h1" data-engine-role="h1">
-        <div class="bf-cluster engine-illustration-role-head">
-          <div class="bf-prose">
+      <section class="bf-stack" data-engine-role="h1">
+        <div class="bf-cluster">
+          <div class="bf-prose bf-inline-size is-x-wide">
             <h2 class="bf-h3">H1 display role</h2>
             <p>Two identical lines of specimen text. Only the top/bottom padding model changes.</p>
           </div>
-          <p class="bf-body engine-illustration-role-delta">Cap vs compensated: <strong data-engine-role-delta="h1">0.208rem</strong></p>
+          <p class="bf-body bf-inline-size is-compact">Cap vs compensated: <strong data-engine-role-delta="h1">0.208rem</strong></p>
         </div>
 
-        <div class="engine-illustration-grid">
-          <article class="engine-illustration-card is-raw" data-engine-card data-engine-mode="raw" data-engine-role-card="h1">
-            <header class="engine-illustration-card-head">
-              <span class="engine-illustration-chip">Raw metrics</span>
-              <strong class="engine-illustration-value" data-engine-card-value>0rem</strong>
+        <div class="bf-cluster">
+          <article class="bf-card is-overlay bf-inline-size is-wide" data-engine-card data-engine-mode="raw" data-engine-role-card="h1">
+            <header class="bf-card-header">
+              <div class="bf-cluster">
+                <span class="bf-status-label is-caution">Raw metrics</span>
+                <strong class="bf-body" data-engine-card-value>0rem</strong>
+              </div>
             </header>
-            <div class="engine-illustration-stage">
-              <h1 class="engine-illustration-specimen">xnmo<br>xnmo</h1>
+            <div class="bf-card is-muted u-baseline-grid">
+              <h1>xnmo<br>xnmo</h1>
             </div>
-            <p class="bf-body engine-illustration-note">Pure ascender and descender math with no browser-compensation patch.</p>
+            <p class="bf-body">Pure ascender and descender math with no browser-compensation patch.</p>
           </article>
 
-          <article class="engine-illustration-card is-metrics" data-engine-card data-engine-mode="metrics" data-engine-role-card="h1">
-            <header class="engine-illustration-card-head">
-              <span class="engine-illustration-chip">Compensated metrics</span>
-              <strong class="engine-illustration-value" data-engine-card-value>0rem</strong>
+          <article class="bf-card is-overlay bf-inline-size is-wide" data-engine-card data-engine-mode="metrics" data-engine-role-card="h1">
+            <header class="bf-card-header">
+              <div class="bf-cluster">
+                <span class="bf-status-label is-information">Compensated metrics</span>
+                <strong class="bf-body" data-engine-card-value>0rem</strong>
+              </div>
             </header>
-            <div class="engine-illustration-stage">
-              <h1 class="engine-illustration-specimen">xnmo<br>xnmo</h1>
+            <div class="bf-card is-muted u-baseline-grid">
+              <h1>xnmo<br>xnmo</h1>
             </div>
-            <p class="bf-body engine-illustration-note">The shipped experiment surface: metrics-derived nudges plus the browser-output correction.</p>
+            <p class="bf-body">The shipped experiment surface: metrics-derived nudges plus the browser-output correction.</p>
           </article>
 
-          <article class="engine-illustration-card is-cap" data-engine-card data-engine-mode="cap" data-engine-role-card="h1">
-            <header class="engine-illustration-card-head">
-              <span class="engine-illustration-chip">Cap formula</span>
-              <strong class="engine-illustration-value" data-engine-card-value>0.208rem</strong>
+          <article class="bf-card is-overlay bf-inline-size is-wide" data-engine-card data-engine-mode="cap" data-engine-role-card="h1">
+            <header class="bf-card-header">
+              <div class="bf-cluster">
+                <span class="bf-status-label is-negative">Cap formula</span>
+                <strong class="bf-body" data-engine-card-value>0.208rem</strong>
+              </div>
             </header>
-            <div class="engine-illustration-stage">
-              <h1 class="engine-illustration-specimen">xnmo<br>xnmo</h1>
+            <div class="bf-card is-muted u-baseline-grid">
+              <h1>xnmo<br>xnmo</h1>
             </div>
-            <p class="bf-body engine-illustration-note">The demo-only <code>(line-height + 1cap) / 2</code> shortcut, shown as the lightweight approximation.</p>
+            <p class="bf-body">The demo-only <code>(line-height + 1cap) / 2</code> shortcut, shown as the lightweight approximation.</p>
           </article>
         </div>
       </section>
 
-      <section class="bf-stack engine-illustration-role is-h2" data-engine-role="h2">
-        <div class="bf-cluster engine-illustration-role-head">
-          <div class="bf-prose">
+      <section class="bf-stack" data-engine-role="h2">
+        <div class="bf-cluster">
+          <div class="bf-prose bf-inline-size is-x-wide">
             <h2 class="bf-h3">H2 display role</h2>
             <p>The smaller display step narrows the gap for some fonts and widens it for others.</p>
           </div>
-          <p class="bf-body engine-illustration-role-delta">Cap vs compensated: <strong data-engine-role-delta="h2">0.104rem</strong></p>
+          <p class="bf-body bf-inline-size is-compact">Cap vs compensated: <strong data-engine-role-delta="h2">0.104rem</strong></p>
         </div>
 
-        <div class="engine-illustration-grid">
-          <article class="engine-illustration-card is-raw" data-engine-card data-engine-mode="raw" data-engine-role-card="h2">
-            <header class="engine-illustration-card-head">
-              <span class="engine-illustration-chip">Raw metrics</span>
-              <strong class="engine-illustration-value" data-engine-card-value>0rem</strong>
+        <div class="bf-cluster">
+          <article class="bf-card is-overlay bf-inline-size is-wide" data-engine-card data-engine-mode="raw" data-engine-role-card="h2">
+            <header class="bf-card-header">
+              <div class="bf-cluster">
+                <span class="bf-status-label is-caution">Raw metrics</span>
+                <strong class="bf-body" data-engine-card-value>0rem</strong>
+              </div>
             </header>
-            <div class="engine-illustration-stage">
-              <h2 class="engine-illustration-specimen">Ascender wins</h2>
+            <div class="bf-card is-muted u-baseline-grid">
+              <h2>Ascender wins</h2>
             </div>
-            <p class="bf-body engine-illustration-note">The laboratory reference: accurate font geometry, but still exposed to browser drift.</p>
+            <p class="bf-body">The laboratory reference: accurate font geometry, but still exposed to browser drift.</p>
           </article>
 
-          <article class="engine-illustration-card is-metrics" data-engine-card data-engine-mode="metrics" data-engine-role-card="h2">
-            <header class="engine-illustration-card-head">
-              <span class="engine-illustration-chip">Compensated metrics</span>
-              <strong class="engine-illustration-value" data-engine-card-value>0rem</strong>
+          <article class="bf-card is-overlay bf-inline-size is-wide" data-engine-card data-engine-mode="metrics" data-engine-role-card="h2">
+            <header class="bf-card-header">
+              <div class="bf-cluster">
+                <span class="bf-status-label is-information">Compensated metrics</span>
+                <strong class="bf-body" data-engine-card-value>0rem</strong>
+              </div>
             </header>
-            <div class="engine-illustration-stage">
-              <h2 class="engine-illustration-specimen">Ascender wins</h2>
+            <div class="bf-card is-muted u-baseline-grid">
+              <h2>Ascender wins</h2>
             </div>
-            <p class="bf-body engine-illustration-note">The production answer in this repo: metrics-derived, then tuned against browser output.</p>
+            <p class="bf-body">The production answer in this repo: metrics-derived, then tuned against browser output.</p>
           </article>
 
-          <article class="engine-illustration-card is-cap" data-engine-card data-engine-mode="cap" data-engine-role-card="h2">
-            <header class="engine-illustration-card-head">
-              <span class="engine-illustration-chip">Cap formula</span>
-              <strong class="engine-illustration-value" data-engine-card-value>0.104rem</strong>
+          <article class="bf-card is-overlay bf-inline-size is-wide" data-engine-card data-engine-mode="cap" data-engine-role-card="h2">
+            <header class="bf-card-header">
+              <div class="bf-cluster">
+                <span class="bf-status-label is-negative">Cap formula</span>
+                <strong class="bf-body" data-engine-card-value>0.104rem</strong>
+              </div>
             </header>
-            <div class="engine-illustration-stage">
-              <h2 class="engine-illustration-specimen">Ascender wins</h2>
+            <div class="bf-card is-muted u-baseline-grid">
+              <h2>Ascender wins</h2>
             </div>
-            <p class="bf-body engine-illustration-note">The browser-native shortcut. Sometimes close, sometimes visibly wrong.</p>
+            <p class="bf-body">The browser-native shortcut. Sometimes close, sometimes visibly wrong.</p>
           </article>
         </div>
       </section>
 
-      <section class="bf-stack engine-illustration-table-wrap">
+      <section class="bf-stack">
         <div class="bf-prose bf-measure">
           <h2 class="bf-h4">Current numeric snapshot</h2>
           <p data-engine-summary>IBM Plex Sans exposes the cap drift immediately because the raw and compensated lanes both stay at zero while the cap shortcut moves the line box.</p>
         </div>
-        <div class="engine-illustration-table-stage">
+        <div class="bf-card is-overlay">
           <table class="bf-table">
             <thead>
               <tr>

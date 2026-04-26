@@ -972,6 +972,61 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   --bf-card-background: color-mix(in srgb, var(--bf-color-background-default) 88%, black 12%);
 }
 
+:where(.bf-theme) :where(a.bf-card, a.bf-card.is-highlighted, a.bf-card.is-overlay, a.bf-card.is-muted) {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+
+:where(.bf-theme) :where(a.bf-card:hover, a.bf-card.is-highlighted:hover, a.bf-card.is-overlay:hover, a.bf-card.is-muted:hover) {
+  border-color: var(--bf-color-focus);
+  transform: translateY(-1px);
+}
+
+:where(.bf-theme) :where(a.bf-card:focus:not(:focus-visible), a.bf-card.is-highlighted:focus:not(:focus-visible), a.bf-card.is-overlay:focus:not(:focus-visible), a.bf-card.is-muted:focus:not(:focus-visible)) {
+  outline: none;
+}
+
+:where(.bf-theme) :where(a.bf-card:focus-visible, a.bf-card.is-highlighted:focus-visible, a.bf-card.is-overlay:focus-visible, a.bf-card.is-muted:focus-visible) {
+  outline: 2px solid var(--bf-color-focus);
+  outline-offset: -2px;
+}
+
+:where(.bf-theme) :where(.bf-card.is-preview) {
+  align-content: start;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme) :where(.bf-card-preview) {
+  aspect-ratio: 3 / 2;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bf-color-background-default) 78%, var(--bf-color-background-alt) 22%), var(--bf-color-background-alt)),
+    var(--bf-color-background-alt);
+  border: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  display: grid;
+  min-inline-size: 0;
+  overflow: hidden;
+  place-items: center;
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-card-preview.is-missing)::after {
+  color: var(--bf-color-text-inactive);
+  content: "Capture missing";
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+:where(.bf-theme) :where(.bf-card-preview-image) {
+  block-size: 100%;
+  display: block;
+  inline-size: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
 :where(.bf-theme) :where(.bf-card-image) {
   display: block;
   inline-size: 100%;

@@ -8,17 +8,19 @@
   <link rel="stylesheet" href="../component-shell.css">
 </head>
 <body class="bf-theme is-dark">
-  <main class="form-atlas" data-component-capture data-overflow-container>
-    <section class="bf-cluster form-atlas-row" data-baseline-check="box" data-baseline-label="form atlas row 1">
-      <p class="form-atlas-reference" data-baseline-check="flow" data-baseline-label="form atlas row 1 reference">test</p>
+  <main class="bf-page" data-component-capture data-overflow-container>
+    <section class="bf-section is-shallow bf-cluster" data-baseline-check="box" data-baseline-label="form atlas row 1">
+      <div class="bf-inline-size is-compact bf-stack is-flush">
+        <p class="bf-body" data-baseline-check="flow" data-baseline-label="form atlas row 1 reference">test</p>
+      </div>
 
       <button class="bf-button" type="button" data-baseline-check="box" data-baseline-label="form atlas button">test</button>
 
-      <div class="bf-control form-atlas-field">
+      <div class="bf-control bf-inline-size is-compact">
         <input class="bf-input" type="text" value="test" aria-label="Form atlas text input" data-baseline-check="box" data-baseline-label="form atlas text input">
       </div>
 
-      <div class="bf-control form-atlas-field">
+      <div class="bf-control bf-inline-size is-compact">
         <select aria-label="Form atlas select" data-baseline-check="box" data-baseline-label="form atlas select">
           <option selected>test</option>
           <option>alpha</option>
@@ -26,17 +28,19 @@
         </select>
       </div>
 
-      <div class="bf-search-box form-atlas-field is-wide" data-baseline-check="box" data-baseline-label="form atlas search box">
+      <div class="bf-search-box bf-inline-size is-regular" data-baseline-check="box" data-baseline-label="form atlas search box">
         <input class="bf-search-box-input bf-input" type="search" value="test" aria-label="Form atlas search input" data-baseline-ignore="true">
         <button class="bf-search-box-reset" type="button" data-baseline-ignore="true">Reset</button>
         <button class="bf-search-box-button" type="button" data-baseline-ignore="true">Search</button>
       </div>
     </section>
 
-    <section class="bf-cluster form-atlas-row" data-baseline-check="box" data-baseline-label="form atlas row 2">
-      <p class="form-atlas-reference" data-baseline-check="flow" data-baseline-label="form atlas row 2 reference">test</p>
+    <section class="bf-section is-shallow bf-cluster" data-baseline-check="box" data-baseline-label="form atlas row 2">
+      <div class="bf-inline-size is-compact bf-stack is-flush">
+        <p class="bf-body" data-baseline-check="flow" data-baseline-label="form atlas row 2 reference">test</p>
+      </div>
 
-      <div class="bf-segmented-control form-atlas-field is-wide" data-baseline-check="box" data-baseline-label="form atlas segmented control">
+      <div class="bf-segmented-control bf-inline-size is-regular" data-baseline-check="box" data-baseline-label="form atlas segmented control">
         <ul class="bf-segmented-control-list" data-baseline-ignore="true">
           <li class="bf-segmented-control-item" data-baseline-ignore="true"><button class="bf-segmented-control-button is-active" type="button" aria-pressed="true" data-baseline-check="box" data-baseline-label="form atlas segmented button 1">test</button></li>
           <li class="bf-segmented-control-item" data-baseline-ignore="true"><button class="bf-segmented-control-button" type="button" aria-pressed="false" data-baseline-check="box" data-baseline-label="form atlas segmented button 2">alpha</button></li>
@@ -61,8 +65,10 @@
       </label>
     </section>
 
-    <section class="bf-cluster form-atlas-row" data-baseline-check="box" data-baseline-label="form atlas compare row">
-      <p class="form-atlas-reference" data-baseline-check="flow" data-baseline-label="form atlas compare reference">test</p>
+    <section class="bf-section is-shallow bf-cluster" data-baseline-check="box" data-baseline-label="form atlas compare row">
+      <div class="bf-inline-size is-compact bf-stack is-flush">
+        <p class="bf-body" data-baseline-check="flow" data-baseline-label="form atlas compare reference">test</p>
+      </div>
 
       <div class="bf-checkbox" data-baseline-check="box" data-baseline-label="form atlas compare checkbox">
         <input id="form-atlas-compare-checkbox" class="bf-checkbox-input" type="checkbox" checked data-baseline-ignore="true">
@@ -81,10 +87,12 @@
       </div>
     </section>
 
-    <section class="bf-cluster form-atlas-row" data-baseline-check="box" data-baseline-label="form atlas tabs row">
-      <p class="form-atlas-reference" data-baseline-check="flow" data-baseline-label="form atlas tabs reference">test</p>
+    <section class="bf-section is-shallow bf-cluster" data-baseline-check="box" data-baseline-label="form atlas tabs row">
+      <div class="bf-inline-size is-compact bf-stack is-flush">
+        <p class="bf-body" data-baseline-check="flow" data-baseline-label="form atlas tabs reference">test</p>
+      </div>
 
-      <div class="bf-tabs form-atlas-panel is-tabs" data-baseline-check="box" data-baseline-label="form atlas tabs">
+      <div class="bf-tabs bf-inline-size is-medium" data-baseline-check="box" data-baseline-label="form atlas tabs">
         <ul class="bf-tabs-list" role="tablist" data-baseline-ignore="true">
           <li class="bf-tabs-item" data-baseline-ignore="true">
             <button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="form-atlas-tabs-panel-1" tabindex="0" data-baseline-check="box" data-baseline-label="form atlas tabs button 1">test</button>
@@ -101,7 +109,7 @@
         </div>
       </div>
 
-      <div class="bf-tabs is-equal form-atlas-panel is-tabs" data-baseline-check="box" data-baseline-label="form atlas equal tabs">
+      <div class="bf-tabs is-equal bf-inline-size is-medium" data-baseline-check="box" data-baseline-label="form atlas equal tabs">
         <ul class="bf-tabs-list" role="tablist" data-baseline-ignore="true">
           <li class="bf-tabs-item" data-baseline-ignore="true">
             <button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="form-atlas-equal-tabs-panel-1" tabindex="0" data-baseline-check="box" data-baseline-label="form atlas equal tabs button 1">test</button>
@@ -125,10 +133,12 @@
       </div>
     </section>
 
-    <section class="bf-cluster form-atlas-row" data-baseline-check="box" data-baseline-label="form atlas options row">
-      <p class="form-atlas-reference" data-baseline-check="flow" data-baseline-label="form atlas options reference">test</p>
+    <section class="bf-section is-shallow bf-cluster" data-baseline-check="box" data-baseline-label="form atlas options row">
+      <div class="bf-inline-size is-compact bf-stack is-flush">
+        <p class="bf-body" data-baseline-check="flow" data-baseline-label="form atlas options reference">test</p>
+      </div>
 
-      <div class="bf-choice-list form-atlas-panel is-choice" data-baseline-check="box" data-baseline-label="form atlas choice list">
+      <div class="bf-choice-list bf-inline-size is-wide" data-baseline-check="box" data-baseline-label="form atlas choice list">
         <label class="bf-choice-row" data-baseline-check="box" data-baseline-label="form atlas choice row 1">
           <input type="radio" name="form-atlas-choice-row" checked data-baseline-ignore="true">
           <span class="bf-choice-row-name">test</span>
@@ -141,7 +151,7 @@
         </label>
       </div>
 
-      <div class="bf-inline-options form-atlas-panel is-inline-options" data-baseline-check="box" data-baseline-label="form atlas inline options">
+      <div class="bf-inline-options bf-inline-size is-wide" data-baseline-check="box" data-baseline-label="form atlas inline options">
         <div class="bf-inline-options-heading" data-baseline-check="flow" data-baseline-label="form atlas inline options heading">test</div>
         <div class="bf-inline-options-options" data-baseline-check="box" data-baseline-label="form atlas inline options list">
           <label class="bf-inline-options-option" data-baseline-check="box" data-baseline-label="form atlas inline option 1">
@@ -160,10 +170,12 @@
       </div>
     </section>
 
-    <section class="bf-cluster form-atlas-row" data-baseline-check="box" data-baseline-label="form atlas field row">
-      <p class="form-atlas-reference" data-baseline-check="flow" data-baseline-label="form atlas field reference">test</p>
+    <section class="bf-section is-shallow bf-cluster" data-baseline-check="box" data-baseline-label="form atlas field row">
+      <div class="bf-inline-size is-compact bf-stack is-flush">
+        <p class="bf-body" data-baseline-check="flow" data-baseline-label="form atlas field reference">test</p>
+      </div>
 
-      <div class="bf-field is-range form-atlas-panel" data-baseline-check="box" data-baseline-label="form atlas range field">
+      <div class="bf-field is-range bf-inline-size is-medium" data-baseline-check="box" data-baseline-label="form atlas range field">
         <label class="bf-form-label" for="form-atlas-range" data-baseline-check="flow" data-baseline-label="form atlas range label">test</label>
         <div class="bf-control" data-baseline-check="box" data-baseline-label="form atlas range control">
           <div class="bf-slider" data-baseline-check="box" data-baseline-label="form atlas range wrapper">
@@ -173,7 +185,7 @@
         </div>
       </div>
 
-      <div class="bf-field is-range is-stacked form-atlas-panel is-narrow" data-baseline-check="box" data-baseline-label="form atlas stacked range field">
+      <div class="bf-field is-range is-stacked bf-inline-size is-medium" data-baseline-check="box" data-baseline-label="form atlas stacked range field">
         <label class="bf-form-label" for="form-atlas-range-stacked" data-baseline-check="flow" data-baseline-label="form atlas stacked range label">test</label>
         <div class="bf-control" data-baseline-check="box" data-baseline-label="form atlas stacked range control">
           <div class="bf-slider" data-baseline-check="box" data-baseline-label="form atlas stacked range wrapper">
@@ -183,7 +195,7 @@
         </div>
       </div>
 
-      <div class="bf-field form-atlas-panel" data-baseline-check="box" data-baseline-label="form atlas file input field">
+      <div class="bf-field bf-inline-size is-regular" data-baseline-check="box" data-baseline-label="form atlas file input field">
         <label class="bf-form-label" for="form-atlas-file-input" data-baseline-check="flow" data-baseline-label="form atlas file input label">test</label>
         <div class="bf-control" data-baseline-check="box" data-baseline-label="form atlas file input control">
           <input id="form-atlas-file-input" type="file" data-baseline-check="box" data-baseline-label="form atlas file input">
@@ -191,7 +203,7 @@
         <p class="bf-form-help" data-baseline-check="flow" data-baseline-label="form atlas file input help">test</p>
       </div>
 
-      <div class="bf-field is-success form-atlas-panel is-validation" data-baseline-check="box" data-baseline-label="form atlas validation field">
+      <div class="bf-field is-success bf-inline-size is-wide" data-baseline-check="box" data-baseline-label="form atlas validation field">
         <label class="bf-form-label" for="form-atlas-validation" data-baseline-check="flow" data-baseline-label="form atlas validation label">test</label>
         <div class="bf-control" data-baseline-check="box" data-baseline-label="form atlas validation control">
           <input id="form-atlas-validation" class="bf-input" type="text" value="test" data-baseline-check="box" data-baseline-label="form atlas validation input">
@@ -200,10 +212,12 @@
       </div>
     </section>
 
-    <section class="bf-cluster form-atlas-row" data-baseline-ignore="true">
-      <p class="form-atlas-reference">test</p>
+    <section class="bf-section is-shallow bf-cluster" data-baseline-ignore="true">
+      <div class="bf-inline-size is-compact bf-stack is-flush">
+        <p class="bf-body">test</p>
+      </div>
 
-      <div class="form-atlas-panel is-table">
+      <div class="bf-inline-size is-x-wide">
         <table class="bf-table">
           <caption class="bf-table-caption">Current export jobs</caption>
           <thead>

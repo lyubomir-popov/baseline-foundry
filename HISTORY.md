@@ -4,6 +4,49 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Form-atlas helper removal (2026-04-25)
+
+- [x] Added a shared `bf-inline-size` utility to the core CSS so bounded cluster rows no longer need page-local width helpers.
+- [x] Rebuilt `demo/components/form-atlas.html` on `bf-section.is-shallow`, `bf-cluster`, and `bf-inline-size`, then removed the remaining `.form-atlas*` helper family from `demo/component-shell.css`.
+- [x] Tightened `scripts/validate-build.ts` around the new form-atlas and inline-size contracts, then revalidated with `npm run qa:components`, `npm run build`, and `npm run test:build`.
+
+## BF-owned atlas and grid-guide cleanup (2026-04-25)
+
+- [x] Added `bf-grid.is-guide` plus `ul/ol.bf-grid` plain-list resets to the shared grid contract, then moved the living-spec home and grid chapter off the page-local `pc-grid-guide` helper.
+- [x] Rebuilt the component atlas around BF-owned linked card-preview primitives driven by `data-component-atlas-item`, removing the `demo-index*` helper family from the source HTML, runtime, and component shell CSS.
+- [x] Tightened `scripts/validate-build.ts` around the new contracts and revalidated the slice with `npm run build`, `npm run test:build`, and `npm run qa:components`.
+
+## Spec-shell cleanup tranche 2 (2026-04-25)
+
+- [x] Upstreamed the old `.spec-shell` page framing into the shared BF contract by adding `bf-page.is-fill` to generated CSS.
+- [x] Moved the living spec, spec chapters, OS addendum, and controls page onto `bf-page is-fill`, and updated the shared spec runtime to anchor the baseline overlay on `main.bf-page` instead of a local shell class.
+- [x] Removed the `.spec-shell` selector from `demo/spec-shell.css`, tightened static validation around the new BF-owned page-shell contract, and revalidated with `npm run build`, `npm run test:build`, plus live browser checks on the updated pages.
+
+## Spec-shell cleanup tranche 1 (2026-04-25)
+
+- [x] Corrected the middle breakpoint specimen label on the living-spec home and grid chapter to the full `620 – 1680 px` 8-column range.
+- [x] Removed the `specimen-hero`, `specimen-meta`, `specimen-columns`, and `specimen-column` helpers from `demo/spec-shell.css`.
+- [x] Rebuilt `demo/spec/typographic-specimen.html` on shared BF primitives (`bf-fixed-width`, `bf-grid-scope`, `bf-grid`, `bf-span-4`) and updated static validation to match the new contract.
+
+## Container-query specimen restore (2026-04-25)
+
+- [x] Restored the three breakpoint specimens on the living-spec home and the grid chapter as real resizable `bf-grid-scope` container-query demos instead of the temporary forced-column fallback.
+- [x] Moved the width seeds (`619px`, `1035px`, `1681px`) and resize behavior into `demo/spec-shell.css` so the demos keep the correct initial widths without inline style attributes.
+- [x] Tightened static validation around the restored contract and rechecked the live page after `npm run test:build` to confirm the headings, widths, and resize handles are back in sync.
+
+## Downstream sample removal (2026-04-25)
+
+- [x] Removed the read-only `demo/components/brand-layout-ops-sample.html` page and its downstream-specific CSS from `demo/component-shell.css` so `baseline-foundry` no longer ships non-`bf-*` sample styling as part of the core demo shell.
+- [x] Dropped the sample from the component atlas, page catalog, screenshot-route list, and build validation so the repo no longer advertises or tests a downstream reference page that belongs in `brand-layout-ops` instead.
+- [x] Updated the shared-shell backlog note in `TODO.md` so future worksurface/document-frame work targets BF-owned demos only.
+
+## Grid audit follow-up cleanup (2026-04-25)
+
+- [x] Replaced the remaining `demo/spec/grid.html` resize fixtures with explicit breakpoint specimen classes so the living-spec chapter no longer relies on hidden-overflow width hacks to show 4/8/16 column states.
+- [x] Deleted the stray `examples/spacing/container-density.html.bak` backup left behind by the spacing cleanup pass.
+- [x] Clarified the intentional grid contract in source and validation: the 460px x-small spec entry is treated as part of the default `<620px` bracket, and `bf-grid` keeps `row-gap: 0` while `--bf-grid-gap-block` remains available for non-grid container spacing.
+- [x] Extended the `canonical-spacing-spec` handoff so the spacing spec's two-dimensional-grid wording now tracks the same `row-gap: 0` decision already requested for the grid spec.
+
 ## Spacing ownership note + app-only stack gaps (2026-04-25)
 
 - [x] Wrote `docs/spacing-ownership-peer-review.md` as a shareable neutral architecture note explaining why baseline compensation should stay element-owned and why semantic spacing should have one owner per surface.
