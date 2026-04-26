@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Range + engine-illustration helper removal (2026-04-25)
+
+- [x] Removed the last `range-demo-rail` helper from `demo/component-shell.css` and rebuilt `demo/components/range.html` onto the shared `bf-inline-size.is-compact` utility.
+- [x] Rebuilt `demo/components/engine-illustration.html` onto BF-owned cards, status labels, inline-size utilities, and the shared `u-baseline-grid` overlay, then deleted the remaining `engine-illustration` helper family from `demo/component-shell.css`.
+- [x] Tightened `scripts/validate-build.ts` around both BF-only contracts and revalidated with `npm run test:build` plus `npm run qa:components`, including a screenshot spot-check of the engine illustration capture.
+
 ## Form-atlas helper removal (2026-04-25)
 
 - [x] Added a shared `bf-inline-size` utility to the core CSS so bounded cluster rows no longer need page-local width helpers.

@@ -162,7 +162,7 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 
 #### Highest-priority next steps
 
-- The follow-up audit slice is now landed: the remaining spec-grid resize fixtures are gone, the stray spacing backup file is deleted, the grid source/validator now make the default x-small bracket and `row-gap: 0` contract explicit, and the canonical-spacing-spec handoff now covers the spacing spec as well as the grid spec. The old page-shell framing, spec grid-guide helper, atlas `demo-index*` helper family, and form-atlas helper family are now upstreamed to BF-owned contracts (`bf-page.is-fill`, `bf-grid.is-guide`, BF card-preview atlas tiles, and the shared `bf-inline-size` utility for bounded cluster rows); what remains is the narrower local visual layer in `demo/spec-shell.css` plus `range-demo-rail` and the `engine-illustration` family in `demo/component-shell.css`.
+- The latest helper-layer cleanup is now also complete: `range-demo-rail` is gone from `demo/component-shell.css`, `demo/components/range.html` now uses the shared `bf-inline-size.is-compact` wrapper instead of a page-local width helper, and `demo/components/engine-illustration.html` now renders the raw / compensated / cap comparison lanes on BF-owned cards, status labels, inline-size utilities, and the shared `u-baseline-grid` overlay. The remaining active work is downstream shared-shell upstreaming and legacy preset removal, not page-local demo helper cleanup.
 
 - App-tier `spaceAfter` and `marginBottom` values have been zeroed out in the source configuration, ensuring the public app spacing surface strictly matches the live spec. Raw metric spacing counts were successfully retained underneath `_rawSpaceAfter` to preserve data audits.
 - The `bf-grid` spec drift (where the repo ships `row-gap: 0` while the spec still described visible row gaps) is now fully handed off to `canonical-spacing-spec` via `AGENT-INBOX.md`: both the grid spec and the spacing spec's two-dimensional-grid wording now request `row-gap: 0` as the canonical default, with visible vertical separation owned by the surrounding layout/pattern instead of the grid itself.
@@ -228,7 +228,7 @@ Decision gate:
 
 ### Optional follow-up
 
-- [x] Blog engine illustration — `demo/components/engine-illustration.html` now provides the static side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding for the IBM Plex Sans / Ubuntu Sans H1 and H2 experiment. It remains a blog/demo artifact, not a buildable surface mode.
+- [x] Blog engine illustration — `demo/components/engine-illustration.html` now provides the static BF-owned side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding for the IBM Plex Sans / Ubuntu Sans H1 and H2 experiment. It remains a blog/demo artifact, not a buildable surface mode.
 
 ### Parity gaps (pursue on downstream demand)
 

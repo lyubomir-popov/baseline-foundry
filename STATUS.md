@@ -40,7 +40,7 @@ Demo: `http://127.0.0.1:4174/`
 - `demo/example-page.js` now initializes the shared application-layout and panel-drawer runtimes for example pages, and `scripts/validate-build.ts` now asserts the example shell pages keep using those shared primitives.
 - Focused validation stayed green throughout (`npm run test:build`), and the broader repo suite (`npm test`) also passed after the shell/runtime changes.
 - Latest live-spec drift audit against `canonical-spacing-spec` matches the codebase expectations on both fronts (grid `row-gap: 0` requirement handed off to spec repo, while app-surface `marginBottom` and `spaceAfter` logic was zeroed in the app configuration data).
-- Remaining example debt is down to: the last truly page-local visual helpers, not shell framing. `demo/spec-shell.css` now only carries the validated `specimen-grid-scope` resize helpers, and `demo/component-shell.css` is down to `range-demo-rail` plus the `engine-illustration` family. All arbitrary page-shell framing plus the old atlas/grid-guide/form-atlas helper layer has now been ported to BF-owned primitives.
+- Remaining example debt is now downstream shared-shell work rather than local helper cleanup. `demo/spec-shell.css` now only carries the validated `specimen-grid-scope` resize helpers, `demo/component-shell.css` no longer carries the old `range-demo-rail` or `engine-illustration` helper family, and the engine illustration page now renders through BF-owned cards, status labels, inline-size utilities, and the shared baseline-grid overlay. All arbitrary page-shell framing plus the old atlas/grid-guide/form-atlas/range/engine-illustration helper layer has now been ported to BF-owned primitives.
 
 ## Source of truth
 
