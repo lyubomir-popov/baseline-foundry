@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equal-height row Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="equal-height row page">
+  <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="equal-height kicker">Equal-height row</h5>
+  <p class="bf-body" data-baseline-check="flow" data-baseline-label="equal-height summary">Cross-column row alignment via CSS subgrid: items at the same vertical position across columns share the same baseline. Container queries on the row govern the responsive layout.</p>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="default variant block">
+    <h6 data-baseline-check="flow" data-baseline-label="default variant title">Default — four columns at desktop, single column at small</h6>
+    <div class="bf-equal-height-row" aria-label="Default equal-height row" data-baseline-check="box" data-baseline-label="default variant component">
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Discover</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Identify partner candidates from existing channels and ecosystems.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Engage</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Run an enablement workshop and joint planning session.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Activate</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Onboard the partner with sales collateral, deal registration, and named accounts.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Grow</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Track joint pipeline and incrementally expand the relationship.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="wrap variant block">
+    <h6 data-baseline-check="flow" data-baseline-label="wrap variant title">Wrap variant — two-up at medium width</h6>
+    <div class="bf-equal-height-row is-wrap" aria-label="Wrap equal-height row" data-baseline-check="box" data-baseline-label="wrap variant component">
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Training</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Hands-on enablement covering product, deployment, and reseller workflow.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Certification</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Certifications recognised across the partner network.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Support</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Direct escalation paths for partner-managed deployments.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Marketing</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Co-branded campaigns and joint content production.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="dividers variant block">
+    <h6 data-baseline-check="flow" data-baseline-label="dividers variant title">With cross-column dividers (<code>.is-divider-1</code> + <code>.is-divider-2</code>)</h6>
+    <div class="bf-equal-height-row is-divider-1 is-divider-2" aria-label="Equal-height row with dividers" data-baseline-check="box" data-baseline-label="dividers variant component">
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Plan</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Define partner tier and incentives.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Build</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Stand up enablement assets.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Run</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Operate the joint pipeline.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Review</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Quarterly performance review.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="borderless variant block">
+    <h6 data-baseline-check="flow" data-baseline-label="borderless variant title">Borderless column modifier</h6>
+    <div class="bf-equal-height-row" aria-label="Equal-height row with borderless first column" data-baseline-check="box" data-baseline-label="borderless variant component">
+      <div class="bf-equal-height-row-col is-borderless">
+        <div class="bf-equal-height-row-item"><p><strong>Lead</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Lead column has no top border at small sizes.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Follow A</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Standard column.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Follow B</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Standard column.</p></div>
+      </div>
+      <div class="bf-equal-height-row-col">
+        <div class="bf-equal-height-row-item"><p><strong>Follow C</strong></p></div>
+        <div class="bf-equal-height-row-item"><p>Standard column.</p></div>
+      </div>
+    </div>
+  </section>
+</section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>

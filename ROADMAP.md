@@ -65,7 +65,7 @@ Counts: **Shipped 27 · Partial 4 · Superseded 8 · Missing 20** plus 6 permane
 | `contextual-menu` | Shipped | `bf-contextual-menu` + runtime | — |
 | `cta` | Missing | — | — |
 | `data-spotlight` | Missing | — | Out of scope |
-| `divided-section` | Missing | — | — |
+| `divided-section` | Missing | — | Out of scope |
 | `divider` | Missing | — | Removed in scope trim |
 | `equal-height-row` | Missing | — | Vanilla pattern uses CSS `subgrid` for cross-column row alignment plus optional `has-divider-N`/`is-borderless`/`--wrap` modifiers. `bf-grid`/`bf-cluster` do not cover the subgrid behavior. Portfolio currently keeps a local `EqualHeights` component. **Portfolio-blocking — see plan below.** |
 | `form-help-text` | Shipped | `bf-form-help` | — |
@@ -86,11 +86,11 @@ Counts: **Shipped 27 · Partial 4 · Superseded 8 · Missing 20** plus 6 permane
 | `logo-section` | Missing | — | Out of scope |
 | `matrix` | Missing | — | Removed in scope trim |
 | `media-container` | Missing | — | — |
-| `media-object` | Missing | — | — |
+| `media-object` | Missing | — | Out of scope |
 | `modal` | Shipped | `bf-modal` + runtime | — |
 | `muted-heading` | Missing | — | — |
 | `navigation` | Partial | `bf-side-navigation`, `bf-top-navigation` + runtime | Missing: mega-nav |
-| `navigation-reduced` | Missing | — | — |
+| `navigation-reduced` | Missing | — | Out of scope |
 | `notifications` | Missing | — | — |
 | `pagination` | Shipped | `bf-pagination` | — |
 | `pull-quotes` | Superseded | prose `blockquote` | — |
@@ -106,9 +106,9 @@ Counts: **Shipped 27 · Partial 4 · Superseded 8 · Missing 20** plus 6 permane
 | `strip` | Superseded | `bf-strip` | — |
 | `switch` | Shipped | `bf-switch` | — |
 | `tables` | Shipped | `bf-table` | — |
-| `table-expanding` | Missing | `bf-table` base only | — |
+| `table-expanding` | Missing | `bf-table` base only | Out of scope |
 | `table-icons` | Shipped | `bf-table` + `.is-icon-placeholder` cells | — |
-| `table-mobile-card` | Missing | `bf-table` base only | — |
+| `table-mobile-card` | Missing | `bf-table` base only | Out of scope |
 | `table-of-contents` | Missing | — | — |
 | `table-sortable` | Missing | `bf-table` base only | — |
 | `tabs` | Shipped | `bf-tabs` + runtime | — |
