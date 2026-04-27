@@ -50,7 +50,7 @@ Source of truth: `vanilla-framework/scss/_patterns_*.scss` (65 pattern entries).
 | Missing | No current equivalent |
 | BF-original | No Vanilla source; surface designed inside BF |
 
-Counts: **Shipped 27 · Partial 4 · Superseded 8 · Missing 20** plus 6 permanently excluded deprecated patterns. BF-originals (no Vanilla source): `bf-tiered-list`, `bf-before-after` (planned).
+Counts: **Shipped 30 · Partial 4 · Superseded 8 · Missing 17** plus 6 permanently excluded deprecated patterns. BF-originals (no Vanilla source): `bf-tiered-list`, `bf-before-after` (planned).
 
 | Pattern | Status | Foundry surface | Gap |
 |---|---|---|---|
@@ -58,16 +58,16 @@ Counts: **Shipped 27 · Partial 4 · Superseded 8 · Missing 20** plus 6 permane
 | `article-pagination` | Partial | `bf-pagination` | No article-specific wrapper |
 | `badge` | Shipped | `bf-badge` | — |
 | `breadcrumbs` | Shipped | `bf-breadcrumbs` | — |
-| `buttons` | Shipped | `bf-button`, `bf-actions` | Missing: positive/negative/brand/link/processing/icon modifiers |
+| `buttons` | Shipped | `bf-button`, `bf-actions` | `is-positive` shipped 2026-04-27. Still missing: negative/brand/link/processing/icon modifiers |
 | `card` | Shipped | `bf-card` | — |
 | `chip` | Shipped | `bf-chip` | — |
 | `code-snippet` | Shipped | `bf-code-snippet` + runtime | — |
 | `contextual-menu` | Shipped | `bf-contextual-menu` + runtime | — |
-| `cta` | Missing | — | — |
+| `cta` | Shipped | `bf-cta-block` (+ `is-bordered`) | Vanilla `has-border` renamed to `is-bordered` for the BF is-* convention |
 | `data-spotlight` | Missing | — | Out of scope |
 | `divided-section` | Missing | — | Out of scope |
 | `divider` | Missing | — | Removed in scope trim |
-| `equal-height-row` | Missing | — | Vanilla pattern uses CSS `subgrid` for cross-column row alignment plus optional `has-divider-N`/`is-borderless`/`--wrap` modifiers. `bf-grid`/`bf-cluster` do not cover the subgrid behavior. Portfolio currently keeps a local `EqualHeights` component. **Portfolio-blocking — see plan below.** |
+| `equal-height-row` | Shipped | `bf-equal-height-row` (+ `-col`, `-item`, `is-wrap`, `is-divider-1/2/3`, `is-borderless`) | Subgrid layout; container queries replace Vanilla media queries; `has-divider-N` → `is-divider-N` for BF convention |
 | `form-help-text` | Shipped | `bf-form-help` | — |
 | `form-password-toggle` | Missing | — | — |
 | `forms` | Partial | `bf-field`, `bf-control`, `bf-input`, `bf-select` | Missing: group wrapper, validation icons |
@@ -78,14 +78,14 @@ Counts: **Shipped 27 · Partial 4 · Superseded 8 · Missing 20** plus 6 permane
 | `heading-icon` | Missing | — | — |
 | `headings` | Superseded | tier role tokens | — |
 | `icons` | Shipped | `bf-icon` | Search / close / chevron plus success/error-grey state glyphs shipped; broader catalog can follow on demand |
-| `image` | Missing | — | — |
+| `image` | Partial | `bf-figure` + `bf-figure-caption` | Aspect-ratio container modifiers (`16-9`, `3-2`, `2-3`, `cinematic`, `square`, on-(small\|medium\|large)) not yet ported |
 | `in-page-navigation` | Missing | — | — |
 | `links` | Partial | semantic link styles, `bf-skip-link` | Missing: back-to-top, anchor, inverted |
 | `lists` | Shipped | prose lists, `bf-list`, `bf-inline-list`, `bf-list-tree` | — |
 | `list-tree` | Shipped | `bf-list-tree` + runtime | — |
 | `logo-section` | Missing | — | Out of scope |
 | `matrix` | Missing | — | Removed in scope trim |
-| `media-container` | Missing | — | — |
+| `media-container` | Shipped | `bf-figure` (covers the media + caption pattern) | — |
 | `media-object` | Missing | — | Out of scope |
 | `modal` | Shipped | `bf-modal` + runtime | — |
 | `muted-heading` | Missing | — | — |
@@ -149,12 +149,14 @@ No BF work needed; portfolio side just needs to drop the `p-*` markup and the br
 
 Four primitives. Comparable in scope to the `bf-tiered-list` slice. Execute in dependency order so each commit stays small and independently testable.
 
-| # | New BF surface | Vanilla source | Portfolio call sites unblocked | Effort |
-|---|---|---|---|---|
-| 1 | `bf-button.is-positive` | `_patterns_buttons.scss` (`p-button--positive`) | `HeroCarousel` | TRIVIAL |
-| 2 | `bf-cta-block` (+ `has-border` modifier) | `_patterns_cta.scss` (`p-cta-block`) | currently inlined inside `bf-tiered-list-cta`; standalone use will appear as portfolio adopts the BF primitive | TRIVIAL |
-| 3 | `bf-equal-height-row` (+ `__col`, `__item`, `--wrap`, `has-divider-1/2/3`, `is-borderless`) | `_patterns_equal-height-row.scss` | `EqualHeights/` | STANDARD |
-| 4 | `bf-figure` + `bf-figure-caption` (or `bf-media-container` + `bf-media-caption`) | `_patterns_image.scss` + `_patterns_media-container.scss` (`p-media__caption`) | `GallerySection/` | STANDARD |
+**Status: ALL FOUR LANDED 2026-04-27 on branch `salvage/local-work-recovery`.** Portfolio-side consumption swaps remain (see `portfolio/AGENT-INBOX.md`).
+
+| # | New BF surface | Vanilla source | Portfolio call sites unblocked | Effort | Status |
+|---|---|---|---|---|---|
+| 1 | `bf-button.is-positive` | `_patterns_buttons.scss` (`p-button--positive`) | `HeroCarousel` | TRIVIAL | Shipped (commit `ca16bb5`) |
+| 2 | `bf-cta-block` (+ `is-bordered`) | `_patterns_cta.scss` (`p-cta-block`) | currently inlined inside `bf-tiered-list-cta`; standalone use will appear as portfolio adopts the BF primitive | TRIVIAL | Shipped (commit `3b4f9ac`); `has-border` renamed to `is-bordered` for BF convention |
+| 3 | `bf-equal-height-row` (+ `-col`, `-item`, `is-wrap`, `is-divider-1/2/3`, `is-borderless`) | `_patterns_equal-height-row.scss` | `EqualHeights/` | STANDARD | Shipped (commit `0ad2e53`); subgrid + `@container`; `has-divider-N` renamed to `is-divider-N` |
+| 4 | `bf-figure` + `bf-figure-caption` | `_base_media.scss` + `_patterns_media-container.scss` (`p-media__caption`) | `GallerySection/` | STANDARD | Shipped (commit `aa5335d`); aspect-ratio modifiers from `_patterns_image.scss` deferred — track under `image` row above |
 
 For each new surface, the slice contract mirrors the bf-tiered-list slice landed on 2026-04-27:
 
@@ -163,7 +165,7 @@ For each new surface, the slice contract mirrors the bf-tiered-list slice landed
 3. Register the page in `scripts/component-demo-shared.ts` (`captureProfile: "wide"` for any pattern whose container query exceeds ~38rem).
 4. Link from `demo/components/index.html` under the appropriate atlas section.
 5. Add the page to the bf-only invariant family in `scripts/validate-build.ts` plus any pattern-specific invariants for the unique selectors.
-6. After step 2 lands, refactor `bf-tiered-list-cta` to *compose* `bf-cta-block` instead of duplicating its rules.
+6. After step 2 lands, refactor `bf-tiered-list-cta` to *compose* `bf-cta-block` instead of duplicating its rules. **Decision 2026-04-27: skipped** — bf-cta-block is an inline flex row (heading + buttons on one wrapped row); bf-tiered-list-cta-block is a vertical stack inside the tiered-list grid cell. The two patterns share intent but not visual shape, so composition would force extra modifiers. Left as-is.
 7. Update this section as each item lands. Move to `HISTORY.md` only when the corresponding parity row in the table above also moves to Shipped.
 
 ### Explicitly excluded from this plan

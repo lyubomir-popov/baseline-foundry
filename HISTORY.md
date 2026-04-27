@@ -4,6 +4,16 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Portfolio-blocking parity ports (2026-04-27)
+
+- [x] Shipped `bf-button.is-positive` (`p-button--positive` parity) sourced from the themed positive tokens (commit `ca16bb5`).
+- [x] Shipped `bf-cta-block` plus the `is-bordered` modifier (Vanilla `p-cta-block` / `has-border` parity, renamed to satisfy the BF is-* convention) and the standalone `demo/components/cta-block.html` page (commit `3b4f9ac`).
+- [x] Shipped `bf-equal-height-row` family (`-col`, `-item`, `is-wrap`, `is-divider-1/2/3`, `is-borderless`) using CSS subgrid for cross-column row alignment plus container queries instead of media queries; `has-divider-N` renamed to `is-divider-N` for BF convention (commit `0ad2e53`).
+- [x] Shipped `bf-figure` + `bf-figure-caption` (Vanilla `_base_media.scss` + `_patterns_media-container.scss` parity); aspect-ratio modifiers from `_patterns_image.scss` deferred and tracked under the `image` row in the parity inventory (commit `aa5335d`).
+- [x] Decided not to compose `bf-tiered-list-cta` from `bf-cta-block` — the two patterns share intent but not visual shape (inline flex row vs. vertical block in a tiered grid cell). Documented in ROADMAP.
+- [x] Updated ROADMAP parity table: counts moved from Shipped 27 / Missing 20 to Shipped 30 / Missing 17. `cta`, `equal-height-row`, `media-container` rows flipped to Shipped; `image` upgraded to Partial.
+- [x] Build green at 2992 invariants (was 2881 pre-slice).
+
 ## Range + engine-illustration helper removal (2026-04-25)
 
 - [x] Removed the last `range-demo-rail` helper from `demo/component-shell.css` and rebuilt `demo/components/range.html` onto the shared `bf-inline-size.is-compact` utility.
