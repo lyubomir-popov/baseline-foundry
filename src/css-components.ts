@@ -820,6 +820,30 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
   outline-offset: 2px;
 }
 
+/* ------------------------------------------------------------------ */
+/* Button — semantic positive modifier (Vanilla parity).               */
+/* Vanilla uses themed positive tokens for default/hover/active        */
+/* backgrounds plus a white text colour on a coloured surface.         */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-button.is-positive) {
+  background-color: var(--bf-color-button-positive-default);
+  border-color: var(--bf-color-button-positive-default);
+  color: var(--bf-color-button-positive-text);
+}
+
+:where(.bf-theme) :where(.bf-button.is-positive:hover) {
+  background-color: var(--bf-color-button-positive-hover);
+  border-color: var(--bf-color-button-positive-hover);
+  color: var(--bf-color-button-positive-text);
+}
+
+:where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true'])) {
+  background-color: var(--bf-color-button-positive-active);
+  border-color: var(--bf-color-button-positive-active);
+  color: var(--bf-color-button-positive-text);
+}
+
 :where(.bf-theme) :where(.bf-actions) {
   align-items: center;
   display: flex;
