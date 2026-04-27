@@ -382,6 +382,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col.is-borderless) {\n  border-block-start: 0;\n}"), "Expected bf-equal-height-row-col.is-borderless modifier to drop the top border.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-1)::before {\n  grid-row: 2;\n}"), "Expected bf-equal-height-row.is-divider-1 to draw a cross-column rule on subgrid row 2.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-2)::after {\n  grid-row: 3;\n}"), "Expected bf-equal-height-row.is-divider-2 to draw a cross-column rule on subgrid row 3.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: block;\n  inline-size: 100%;\n  margin: 0 0 var(--bf-section-space-shallow);\n}"), "Expected bf-figure to own its bottom spacing via section-space-shallow.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-figure-caption) {\n  color: var(--bf-color-text-default);\n  display: block;\n  font-style: italic;"), "Expected bf-figure-caption to render as an italic block beneath the media.");
   assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact inline surfaces to use the compact control block padding token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
@@ -917,6 +920,7 @@ function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
   validateBfOnlyDemoPage("tiered-list.html", demoPages.tieredList);
   validateBfOnlyDemoPage("cta-block.html", demoPages.ctaBlock);
   validateBfOnlyDemoPage("equal-height-row.html", demoPages.equalHeightRow);
+  validateBfOnlyDemoPage("figure.html", demoPages.figure);
   validateBfOnlyDemoPage("table.html", demoPages.table);
   validateBfOnlyDemoPage("list-tree.html", demoPages.listTree);
   validateBfOnlyDemoPage("code-snippet.html", demoPages.codeSnippet);
@@ -1008,7 +1012,7 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/form-atlas.html")),
@@ -1035,6 +1039,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/tiered-list.html")),
     readTextArtifact(path.resolve("demo/components/cta-block.html")),
     readTextArtifact(path.resolve("demo/components/equal-height-row.html")),
+    readTextArtifact(path.resolve("demo/components/figure.html")),
     readTextArtifact(path.resolve("demo/components/table.html")),
     readTextArtifact(path.resolve("demo/components/list-tree.html")),
     readTextArtifact(path.resolve("demo/components/code-snippet.html")),
@@ -1114,6 +1119,7 @@ async function main(): Promise<void> {
     tieredList: tieredListHtml,
     ctaBlock: ctaBlockHtml,
     equalHeightRow: equalHeightRowHtml,
+    figure: figureHtml,
     table: tableHtml,
     listTree: listTreeHtml,
     codeSnippet: codeSnippetHtml,

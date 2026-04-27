@@ -874,6 +874,7 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 /* (Vanilla ships the same modifier as has-border; renamed for the BF  */
 /* is-* convention.)                                                    */
 /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-cta-block) {
   align-items: baseline;
@@ -887,6 +888,35 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 :where(.bf-theme) :where(.bf-cta-block.is-bordered) {
   border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   padding-block-start: var(--bf-space-1);
+}
+
+/* ------------------------------------------------------------------ */
+/* Figure (Vanilla parity).                                            */
+/* Native <figure> wrapper for an image, video, or other media plus    */
+/* an italic caption. Element-owned bottom spacing matches Vanilla’s   */
+/* base figure margin; the caption owns its own top space so the       */
+/* image sits flush against the next baseline above its caption.       */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-figure) {
+  display: block;
+  inline-size: 100%;
+  margin: 0 0 var(--bf-section-space-shallow);
+}
+
+:where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas) {
+  block-size: auto;
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 100%;
+}
+
+:where(.bf-theme) :where(.bf-figure-caption) {
+  color: var(--bf-color-text-default);
+  display: block;
+  font-style: italic;
+  inline-size: 100%;
+  margin-block: var(--bf-space-1) 0;
 }
 
 :where(.bf-theme) :where(.bf-panel) {

@@ -38,6 +38,7 @@ export const componentPages: ComponentPage[] = [
   { name: "tiered-list", route: "/demo/components/tiered-list.html", captureProfile: "wide" },
   { name: "cta-block", route: "/demo/components/cta-block.html" },
   { name: "equal-height-row", route: "/demo/components/equal-height-row.html", captureProfile: "wide" },
+  { name: "figure", route: "/demo/components/figure.html" },
   { name: "table", route: "/demo/components/table.html", captureProfile: "wide" },
   { name: "search-box", route: "/demo/components/search-box.html" },
   { name: "search-and-filter", route: "/demo/components/search-and-filter.html" },

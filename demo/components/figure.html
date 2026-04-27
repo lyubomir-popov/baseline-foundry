@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figure Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="figure page">
+  <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="figure kicker">Figure</h5>
+  <p class="bf-body" data-baseline-check="flow" data-baseline-label="figure summary">Native <code>&lt;figure&gt;</code> wrapper for an image or other media with an optional italic caption. The figure owns its bottom space; the caption owns its top space.</p>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="figure with caption block">
+    <h6 data-baseline-check="flow" data-baseline-label="figure with caption title">Figure with caption</h6>
+    <figure class="bf-figure" data-baseline-check="box" data-baseline-label="figure with caption component">
+      <svg viewBox="0 0 800 320" role="img" aria-label="Placeholder media" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:auto">
+        <rect x="0" y="0" width="800" height="320" fill="#2c2c2c" />
+        <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Media placeholder</text>
+      </svg>
+      <figcaption class="bf-figure-caption">Editorial caption sits below the media and owns its own top space so the image lines up with the prose above.</figcaption>
+    </figure>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="figure no caption block">
+    <h6 data-baseline-check="flow" data-baseline-label="figure no caption title">Figure without caption</h6>
+    <figure class="bf-figure" data-baseline-check="box" data-baseline-label="figure no caption component">
+      <svg viewBox="0 0 800 200" role="img" aria-label="Placeholder media" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:auto">
+        <rect x="0" y="0" width="800" height="200" fill="#2c2c2c" />
+        <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Media placeholder</text>
+      </svg>
+    </figure>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="figure prose block">
+    <h6 data-baseline-check="flow" data-baseline-label="figure prose title">Figure within a prose flow</h6>
+    <p>Lead paragraph before the figure to confirm spacing rhythm above and below the embedded media.</p>
+    <figure class="bf-figure" data-baseline-check="box" data-baseline-label="figure prose component">
+      <svg viewBox="0 0 800 240" role="img" aria-label="Placeholder media" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:auto">
+        <rect x="0" y="0" width="800" height="240" fill="#2c2c2c" />
+        <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Inline figure</text>
+      </svg>
+      <figcaption class="bf-figure-caption">Caption text describing the media embedded in a longer-form article surface.</figcaption>
+    </figure>
+    <p>Trailing paragraph to confirm the figure’s bottom spacing snaps the next prose row to the baseline grid.</p>
+  </section>
+</section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>
