@@ -36,6 +36,8 @@ interface ComponentVerificationResult {
 interface ComponentVerificationReport {
   name: string;
   route: string;
+  surface: string;
+  surfaceLabel: string;
   baselinePx: number;
   captureHeightPx: number;
   captureHeightErrorPx: number;
@@ -47,17 +49,34 @@ interface ComponentVerificationReport {
 }
 
 const tolerancePx = 0.5;
+const pageChromeStorageKeys = [
+  "baseline-foundry:living-spec-tier",
+  "baseline-foundry:living-spec-baseline",
+  "baseline-foundry:living-spec-tone"
+];
+
+interface SurfaceOption {
+  value: string;
+  label: string;
+}
+
+interface SurfaceSelectorState {
+  ariaLabel: string | null;
+  hasExplicitTierOptions: boolean;
+  options: SurfaceOption[];
+  selectedValue: string;
+}
 
 function describeFailure(component: ComponentVerificationReport, failure: BaselineCheckResult): string {
-  return `${component.name} -> ${failure.label} (${failure.mode}) offset error ${failure.offsetErrorPx.toFixed(2)}px, measure error ${failure.measureErrorPx.toFixed(2)}px`;
+  return `${component.name} [${component.surfaceLabel}] -> ${failure.label} (${failure.mode}) offset error ${failure.offsetErrorPx.toFixed(2)}px, measure error ${failure.measureErrorPx.toFixed(2)}px`;
 }
 
 function describeMissingCoverage(component: ComponentVerificationReport, label: string): string {
-  return `${component.name} -> missing data-baseline-check for ${label}`;
+  return `${component.name} [${component.surfaceLabel}] -> missing data-baseline-check for ${label}`;
 }
 
 function describeOverflowFailure(component: ComponentVerificationReport, failure: OverflowCheckResult): string {
-  return `${component.name} -> ${failure.label} overflows container by left ${failure.overflowLeftPx.toFixed(2)}px, right ${failure.overflowRightPx.toFixed(2)}px`;
+  return `${component.name} [${component.surfaceLabel}] -> ${failure.label} overflows container by left ${failure.overflowLeftPx.toFixed(2)}px, right ${failure.overflowRightPx.toFixed(2)}px`;
 }
 
 async function openBrowser(): Promise<import("playwright").Browser> {
@@ -72,14 +91,95 @@ async function openBrowser(): Promise<import("playwright").Browser> {
   }
 }
 
+async function clearPageChromeStorage(page: import("playwright").Page, origin: string): Promise<void> {
+  if (!page.url().startsWith(origin)) {
+    return;
+  }
+
+  await page.evaluate(keys => {
+    for (const key of keys) {
+      window.localStorage.removeItem(key);
+    }
+  }, pageChromeStorageKeys);
+}
+
+async function waitForSurfaceSelect(page: import("playwright").Page): Promise<void> {
+  try {
+    await page.waitForFunction(
+      () => document.querySelector("[data-page-chrome-tier-select]") instanceof HTMLSelectElement,
+      undefined,
+      { timeout: 5000 }
+    );
+  } catch {
+    // Pages without the shared chrome fall back to their authored surface only.
+  }
+}
+
+async function readSurfaceSelectorState(page: import("playwright").Page): Promise<SurfaceSelectorState> {
+  return page.evaluate(() => {
+    const select = document.querySelector("[data-page-chrome-tier-select]");
+    const currentSurface = document.body.dataset.bfTier ?? "editorial";
+
+    if (!(select instanceof HTMLSelectElement)) {
+      return {
+        ariaLabel: null,
+        hasExplicitTierOptions: false,
+        options: [{ value: currentSurface, label: currentSurface }],
+        selectedValue: currentSurface
+      } satisfies SurfaceSelectorState;
+    }
+
+    return {
+      ariaLabel: select.getAttribute("aria-label"),
+      hasExplicitTierOptions: typeof document.body.dataset.pageTierOptions === "string" && document.body.dataset.pageTierOptions.length > 0,
+      options: Array.from(select.options).map(option => ({
+        value: option.value,
+        label: option.textContent?.trim() || option.value
+      })),
+      selectedValue: select.value || currentSurface
+    } satisfies SurfaceSelectorState;
+  });
+}
+
+function plannedSurfaceOptions(state: SurfaceSelectorState): SurfaceOption[] {
+  if ((state.ariaLabel ?? "").toLowerCase() === "tier" && state.selectedValue === "app" && !state.hasExplicitTierOptions) {
+    return state.options.filter(option => option.value === "app");
+  }
+
+  const nonAppOptions = state.options.filter(option => option.value !== "app");
+  if (nonAppOptions.length === 0) {
+    return state.options;
+  }
+
+  if ((state.ariaLabel ?? "").toLowerCase() === "tier") {
+    const orderedTiers = ["editorial", "documentation", "os"];
+    const orderedOptions = orderedTiers
+      .map(value => nonAppOptions.find(option => option.value === value))
+      .filter((option): option is SurfaceOption => Boolean(option));
+
+    return orderedOptions.length > 0 ? orderedOptions : nonAppOptions;
+  }
+
+  return nonAppOptions;
+}
+
+async function selectSurface(page: import("playwright").Page, surface: SurfaceOption): Promise<void> {
+  const selector = "[data-page-chrome-tier-select]";
+  const tierSelect = page.locator(selector);
+  if (await tierSelect.count() === 0) {
+    return;
+  }
+
+  await tierSelect.selectOption(surface.value);
+  await page.waitForFunction(expectedSurface => document.body.dataset.bfTier === expectedSurface, surface.value);
+  await waitForFonts(page);
+}
+
 async function verifyComponentPage(
   page: import("playwright").Page,
-  origin: string,
-  componentPage: { name: string; route: string; }
+  componentPage: { name: string; route: string; },
+  surface: SurfaceOption
 ): Promise<ComponentVerificationReport> {
-  await page.goto(`${origin}${componentPage.route}`, { waitUntil: "networkidle" });
-  await waitForFonts(page);
-
   const result = await page.evaluate(({ pageName, tolerance }) => {
     type CheckMode = "box" | "flow";
 
@@ -278,6 +378,8 @@ async function verifyComponentPage(
   return {
     name: componentPage.name,
     route: componentPage.route,
+    surface: surface.value,
+    surfaceLabel: surface.label,
     baselinePx: result.baselinePx,
     captureHeightPx: result.captureHeightPx,
     captureHeightErrorPx: result.captureHeightErrorPx,
@@ -308,9 +410,23 @@ async function main(): Promise<void> {
     const report = [] as ComponentVerificationReport[];
 
     for (const componentPage of componentPages) {
-      const componentReport = await verifyComponentPage(page, origin, componentPage);
-      report.push(componentReport);
-      console.log(`Verified ${componentPage.name}: ${componentReport.checks.length} checks, ${componentReport.failures.length} failures`);
+      await clearPageChromeStorage(page, origin);
+      await page.goto(`${origin}${componentPage.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      await waitForSurfaceSelect(page);
+
+      const surfaceState = await readSurfaceSelectorState(page);
+      const surfaces = plannedSurfaceOptions(surfaceState);
+
+      for (const surface of surfaces) {
+        if (surface.value !== surfaceState.selectedValue) {
+          await selectSurface(page, surface);
+        }
+
+        const componentReport = await verifyComponentPage(page, componentPage, surface);
+        report.push(componentReport);
+        console.log(`Verified ${componentPage.name} [${surface.value}]: ${componentReport.checks.length} checks, ${componentReport.failures.length} failures`);
+      }
     }
 
     await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");

@@ -120,9 +120,10 @@ ${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
   --bf-slider-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-slider-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-slider-track-size)", bodySelectedStartNudge)};
-  --bf-table-row-block-size: calc(var(--bf-baseline) * 4);
   --bf-table-row-border-size: var(--bf-border-width);
   --bf-table-row-padding: ${bodySelectedStartNudge};
+  --bf-table-row-content-size: calc(${bodyLineHeight} + (var(--bf-table-row-padding) * 2) + var(--bf-table-row-border-size));
+  --bf-table-row-block-size: calc(var(--bf-table-row-content-size) + mod(calc(var(--bf-baseline) - mod(var(--bf-table-row-content-size), var(--bf-baseline))), var(--bf-baseline)));
   --bf-table-row-line-height: calc(var(--bf-table-row-block-size) - (var(--bf-table-row-padding) * 2) - var(--bf-table-row-border-size));
   --bf-switch-row-block-size: calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge});
   --bf-switch-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
@@ -150,7 +151,7 @@ ${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components
   --bf-top-navigation-logo-tag-inline-size: 1.375rem;
   --bf-top-navigation-logo-tag-block-size: 2.375rem;
   --bf-top-navigation-logo-icon-size: 1rem;
-  --bf-icon-size-default: calc(var(--bf-baseline) * 4);
+  --bf-icon-size-default: var(--bf-leading-icon-size);
   --bf-icon-size-medium: calc(var(--bf-baseline) * 5);
   --bf-icon-size-large: calc(var(--bf-baseline) * 8);
   --bf-icon-size-x-large: calc(var(--bf-baseline) * 9);

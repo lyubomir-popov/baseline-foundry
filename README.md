@@ -152,7 +152,7 @@ All component/spec/control pages now share the same thin page chrome: hamburger 
 Component QA currently covers:
 
 - Playwright screenshot capture for the saved demo inventory
-- baseline verification for baseline-aligned surfaces
+- baseline verification for baseline-aligned component surfaces across editorial, documentation, OS, and non-app locked-manifest variants
 - behavior verification for pinned-aside resize, drawer overlay, and application-layout interactions
 - the narrow-panel regression page so dense controls and media must still fit a tight rail
 
@@ -200,6 +200,8 @@ Those screenshots also power the visual atlas at `demo/components/index.html`, s
 The baseline verification report is also written to:
 
 - `tmp/screenshots/components/baseline-report.json`
+
+That report now records one entry per verified component surface, not just one entry per route. Shared-tier component pages are walked through the non-app surfaces (`editorial`, `documentation`, `os`), while app-authored pages stay app-only unless they explicitly opt into a broader tier set.
 
 `npm test` now includes this Playwright baseline check, so once Chromium is installed the grid-alignment gate is part of the normal regression suite.
 

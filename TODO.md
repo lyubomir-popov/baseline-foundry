@@ -163,6 +163,7 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 #### Highest-priority next steps
 
 - The latest helper-layer cleanup is now also complete: `range-demo-rail` is gone from `demo/component-shell.css`, `demo/components/range.html` now uses the shared `bf-inline-size.is-compact` wrapper instead of a page-local width helper, and `demo/components/engine-illustration.html` now renders the raw / compensated / cap comparison lanes on BF-owned cards, status labels, inline-size utilities, and the shared `u-baseline-grid` overlay. The remaining active work is downstream shared-shell upstreaming and legacy preset removal, not page-local demo helper cleanup.
+- Component QA now walks the intended non-app surfaces directly instead of only checking the authored default page state: `scripts/verify-component-baselines.ts` drives shared-tier component pages through `editorial`, `documentation`, and `os`, keeps app-authored pages app-only unless they opt into broader coverage, and records one baseline-report entry per verified surface.
 
 - App-tier `spaceAfter` and `marginBottom` values have been zeroed out in the source configuration, ensuring the public app spacing surface strictly matches the live spec. Raw metric spacing counts were successfully retained underneath `_rawSpaceAfter` to preserve data audits.
 - The `bf-grid` spec drift (where the repo ships `row-gap: 0` while the spec still described visible row gaps) is now fully handed off to `canonical-spacing-spec` via `AGENT-INBOX.md`: both the grid spec and the spacing spec's two-dimensional-grid wording now request `row-gap: 0` as the canonical default, with visible vertical separation owned by the surrounding layout/pattern instead of the grid itself.
@@ -191,6 +192,7 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 ### Inbox triage
 
 - [x] Persist the shared page-chrome baseline-grid, tier, and tone choices across page-to-page navigation instead of resetting them per page family.
+- [ ] Decide whether to ship an explicit IBM Plex preset or a documented supported font-option path for downstream adopters such as `portfolio`, which already consumes the base, editorial-tier, and prose bundles during its migration.
 - [ ] Remove the remaining `panel` legacy preset support once `brand-layout-ops` migrates, leaving `os` as an independent sibling built-in tier with no preset coupling.
 - [ ] Standardize dense icon and keyline spacing across search fields, search-and-filter, accordion toggles, top navigation, side navigation, and icon-bearing buttons so one- and two-icon controls share a consistent edge-spacing contract and stack onto as few vertical keylines as possible.
 - [ ] Review the switch-versus-slider visual contract and decide whether the switch should align to the same track language as the slider instead of preserving two divergent control-track treatments.
