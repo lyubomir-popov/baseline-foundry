@@ -347,7 +347,7 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected non-app section-shallow stacks to stay gapless so section rhythm remains element-owned outside app tier.");
   assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected non-app section stacks to stay gapless so section rhythm remains element-owned outside app tier.");
   assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected non-app deep section stacks to stay gapless so stack gap ownership does not leak out of app tier.");
-  assert(css.includes("margin: 0 0 calc(var(--bf-space-3) - 1px);"), "Expected rules to compensate their 1px thickness against the baseline rhythm.");
+  assert(css.includes("margin: 0 0 -1px;"), "Expected rules to cancel their 1px thickness so the next element keeps its own role-owned padding-block-start without an extra gap.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
   assert(!css.includes("padding-block: var(--bf-strip-space);"), "Expected strip rhythm to avoid symmetric top-and-bottom padding.");
   assert(css.includes(".bf-grid"), "Expected CSS to include grid selectors.");

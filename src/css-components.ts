@@ -3951,5 +3951,75 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     top: 0;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Tiered list                                                         */
+/* Editorial pattern (Vanilla parity): paired list of titles +         */
+/* descriptions under a top-level title + description, with optional   */
+/* CTA. Vanilla uses media queries at tablet/desktop; Baseline Foundry */
+/* uses container queries on the pattern itself so the layout reacts   */
+/* to its own width (panels, drawers, narrow main areas) instead of    */
+/* the viewport. Element-owned spacing keeps baseline alignment.       */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-tiered-list) {
+  container-type: inline-size;
+  display: block;
+}
+
+:where(.bf-theme) :where(.bf-tiered-list-header),
+:where(.bf-theme) :where(.bf-tiered-list-item),
+:where(.bf-theme) :where(.bf-tiered-list-cta) {
+  column-gap: var(--bf-grid-gap-inline);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:where(.bf-theme) :where(ol.bf-tiered-list-items, ul.bf-tiered-list-items) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:where(.bf-theme) :where(.bf-tiered-list-header) > :where(.bf-rule),
+:where(.bf-theme) :where(.bf-tiered-list-item) > :where(.bf-rule),
+:where(.bf-theme) :where(.bf-tiered-list-cta) > :where(.bf-rule) {
+  grid-column: 1 / -1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Medium container (≥ 38.75rem): items use BF’s 8-column grid with a  */
+/* hanging indent. Vanilla: title col 3 / span 2, description col 5 / */
+/* span 4. The rule above each item starts at col 3 to match.         */
+/* ------------------------------------------------------------------ */
+@container (width >= 38.75rem) {
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width)) :where(.bf-tiered-list-item),
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width)) :where(.bf-tiered-list-cta) {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width)) :where(.bf-tiered-list-item) > :where(.bf-rule),
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width)) :where(.bf-tiered-list-cta) > :where(.bf-rule) {
+    grid-column: 3 / span 6;
+  }
+
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width)) :where(.bf-tiered-list-item-title) {
+    grid-column: 3 / span 2;
+  }
+
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width)) :where(.bf-tiered-list-item-description),
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width)) :where(.bf-tiered-list-cta-block) {
+    grid-column: 5 / span 4;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Header split (≥ 64.75rem): unchanged 50/50 title/description.       */
+/* ------------------------------------------------------------------ */
+@container (width >= 64.75rem) {
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-description-full-width)) :where(.bf-tiered-list-header) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
 `;
 }

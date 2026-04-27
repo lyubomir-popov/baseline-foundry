@@ -409,7 +409,10 @@ ${capEngineDemo}
   block-size: 1px;
   border: 0;
   inline-size: 100%;
-  margin: 0 0 calc(var(--bf-space-3) - 1px);
+  /* Rules are visual dividers, not spacers. The negative margin */
+  /* cancels the 1px block-size so the next element keeps its own */
+  /* role-owned padding-block-start without an extra gap. */
+  margin: 0 0 -1px;
 }
 
 :where(.bf-theme) :where(.bf-token-row) {
