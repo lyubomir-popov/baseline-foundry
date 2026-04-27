@@ -35,6 +35,7 @@ export const componentPages: ComponentPage[] = [
   { name: "icon", route: "/demo/components/icon.html" },
   { name: "list", route: "/demo/components/list.html" },
   { name: "inline-list", route: "/demo/components/inline-list.html" },
+  { name: "tiered-list", route: "/demo/components/tiered-list.html", captureProfile: "wide" },
   { name: "table", route: "/demo/components/table.html", captureProfile: "wide" },
   { name: "search-box", route: "/demo/components/search-box.html" },
   { name: "search-and-filter", route: "/demo/components/search-and-filter.html" },

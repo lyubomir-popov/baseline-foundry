@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiered List Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="tiered list page">
+  <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="tiered list kicker">Tiered list</h5>
+  <p class="bf-body" data-baseline-check="flow" data-baseline-label="tiered list summary">Editorial pattern that pairs a hanging-indent header with a list of titled descriptions and an optional call-to-action block. The pattern owns its own container queries so each variant lays out against its own width.</p>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="default variant block">
+    <h6 data-baseline-check="flow" data-baseline-label="default variant title">Default — 50/50 on desktop with description</h6>
+    <section class="bf-tiered-list" aria-label="Default tiered list" data-baseline-check="box" data-baseline-label="default variant component">
+      <header class="bf-tiered-list-header">
+        <hr class="bf-rule">
+        <div class="bf-tiered-list-header-title">
+          <h2>Rich portfolio of products</h2>
+        </div>
+        <div class="bf-tiered-list-header-description">
+          <p>A private cloud provides organisations with on-demand compute, storage and other resources that can be accessed over the network and that are reserved exclusively for them.</p>
+        </div>
+      </header>
+      <ol class="bf-tiered-list-items">
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Rich portfolio of products</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Resell the full range of private and public cloud products: OpenStack, Kubernetes, IoT, support, security, and compliance.</p></div>
+        </li>
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Sales enablement</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Train your field sales and presales teams and gain sales collateral plus permission to use the trademarks in your own materials.</p></div>
+        </li>
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Access to partner portal</h5></div>
+          <div class="bf-tiered-list-item-description"><p>A partner portal with product collateral, agreed pricing, incentives, and a deal registration system.</p></div>
+        </li>
+      </ol>
+    </section>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="tablet variant block">
+    <h6 data-baseline-check="flow" data-baseline-label="tablet variant title">50/50 on tablet (header stays full-width)</h6>
+    <section class="bf-tiered-list is-description-full-width" aria-label="Tablet tiered list" data-baseline-check="box" data-baseline-label="tablet variant component">
+      <header class="bf-tiered-list-header">
+        <hr class="bf-rule">
+        <div class="bf-tiered-list-header-title">
+          <h2>Sales enablement</h2>
+        </div>
+        <div class="bf-tiered-list-header-description">
+          <p>Header description spans the full width while the list still splits at the medium container breakpoint.</p>
+        </div>
+      </header>
+      <ol class="bf-tiered-list-items">
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Training</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Hands-on enablement covering product, deployment, and reseller workflow.</p></div>
+        </li>
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Certification</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Certifications recognised across the partner network and ecosystem.</p></div>
+        </li>
+      </ol>
+    </section>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="full-width with description block">
+    <h6 data-baseline-check="flow" data-baseline-label="full-width with description title">Full-width list, with description</h6>
+    <section class="bf-tiered-list is-description-full-width is-list-full-width" aria-label="Full-width tiered list with description" data-baseline-check="box" data-baseline-label="full-width with description component">
+      <header class="bf-tiered-list-header">
+        <hr class="bf-rule">
+        <div class="bf-tiered-list-header-title">
+          <h2>Training and certification</h2>
+        </div>
+        <div class="bf-tiered-list-header-description">
+          <p>Both header description and the list span the full width — useful when the list itself carries long-form rows.</p>
+        </div>
+      </header>
+      <ol class="bf-tiered-list-items">
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Marketing alignment</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Marketing support and alignment with a trusted brand for partner-led campaigns and launches.</p></div>
+        </li>
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Co-selling</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Joint pursuit of strategic accounts with shared opportunity tracking and incentives.</p></div>
+        </li>
+      </ol>
+    </section>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="full-width without description block">
+    <h6 data-baseline-check="flow" data-baseline-label="full-width without description title">Full-width list, no description</h6>
+    <section class="bf-tiered-list is-description-full-width is-list-full-width" aria-label="Full-width tiered list without description" data-baseline-check="box" data-baseline-label="full-width without description component">
+      <header class="bf-tiered-list-header">
+        <hr class="bf-rule">
+        <div class="bf-tiered-list-header-title">
+          <h2>Partner benefits</h2>
+        </div>
+      </header>
+      <ol class="bf-tiered-list-items">
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Discounts</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Tiered discount structure that grows with partner level and reseller commitment.</p></div>
+        </li>
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Support</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Direct escalation paths for partner-managed deployments and customer issues.</p></div>
+        </li>
+      </ol>
+    </section>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="cta variant block">
+    <h6 data-baseline-check="flow" data-baseline-label="cta variant title">With trailing call-to-action block</h6>
+    <section class="bf-tiered-list" aria-label="Tiered list with CTA" data-baseline-check="box" data-baseline-label="cta variant component">
+      <header class="bf-tiered-list-header">
+        <hr class="bf-rule">
+        <div class="bf-tiered-list-header-title">
+          <h2>Become a partner</h2>
+        </div>
+        <div class="bf-tiered-list-header-description">
+          <p>The trailing CTA block follows the same hanging-indent grid as the list items and aligns to the same baseline.</p>
+        </div>
+      </header>
+      <ol class="bf-tiered-list-items">
+        <li class="bf-tiered-list-item">
+          <hr class="bf-rule is-muted">
+          <div class="bf-tiered-list-item-title"><h5>Apply</h5></div>
+          <div class="bf-tiered-list-item-description"><p>Submit the partner application and a regional manager will follow up within two business days.</p></div>
+        </li>
+      </ol>
+      <aside class="bf-tiered-list-cta" aria-label="Call to action">
+        <hr class="bf-rule is-muted">
+        <div class="bf-tiered-list-cta-block">
+          <h3>Ready to start?</h3>
+          <p>Get in touch to discuss the right partnership tier for your organisation.</p>
+          <a href="#" class="bf-button">Contact partnerships</a>
+        </div>
+      </aside>
+    </section>
+  </section>
+</section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>
