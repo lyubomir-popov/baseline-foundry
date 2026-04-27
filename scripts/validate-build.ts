@@ -375,6 +375,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive) {\n  background-color: var(--bf-color-button-positive-default);"), "Expected generated CSS to define the bf-button.is-positive surface from the themed positive tokens.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:hover) {\n  background-color: var(--bf-color-button-positive-hover);"), "Expected bf-button.is-positive to surface the themed positive hover token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true'])) {\n  background-color: var(--bf-color-button-positive-active);"), "Expected bf-button.is-positive to surface the themed positive active token.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-space-2);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: var(--bf-section-space-shallow);"), "Expected generated CSS to define the bf-cta-block element-owned layout.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: var(--bf-space-1);"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
   assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact inline surfaces to use the compact control block padding token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
@@ -908,6 +910,7 @@ function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
   validateBfOnlyDemoPage("list.html", demoPages.list);
   validateBfOnlyDemoPage("inline-list.html", demoPages.inlineList);
   validateBfOnlyDemoPage("tiered-list.html", demoPages.tieredList);
+  validateBfOnlyDemoPage("cta-block.html", demoPages.ctaBlock);
   validateBfOnlyDemoPage("table.html", demoPages.table);
   validateBfOnlyDemoPage("list-tree.html", demoPages.listTree);
   validateBfOnlyDemoPage("code-snippet.html", demoPages.codeSnippet);
@@ -999,7 +1002,7 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/form-atlas.html")),
@@ -1024,6 +1027,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/list.html")),
     readTextArtifact(path.resolve("demo/components/inline-list.html")),
     readTextArtifact(path.resolve("demo/components/tiered-list.html")),
+    readTextArtifact(path.resolve("demo/components/cta-block.html")),
     readTextArtifact(path.resolve("demo/components/table.html")),
     readTextArtifact(path.resolve("demo/components/list-tree.html")),
     readTextArtifact(path.resolve("demo/components/code-snippet.html")),
@@ -1101,6 +1105,7 @@ async function main(): Promise<void> {
     list: listHtml,
     inlineList: inlineListHtml,
     tieredList: tieredListHtml,
+    ctaBlock: ctaBlockHtml,
     table: tableHtml,
     listTree: listTreeHtml,
     codeSnippet: codeSnippetHtml,

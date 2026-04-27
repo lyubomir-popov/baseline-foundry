@@ -866,6 +866,29 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
   flex: 0 0 auto;
 }
 
+/* ------------------------------------------------------------------ */
+/* CTA block (Vanilla parity).                                         */
+/* Inline-row of call-to-action items (typically a heading and one or  */
+/* more buttons or links). Element-owned spacing: borderless by        */
+/* default, .is-bordered adds a top divider rule and small padding.    */
+/* (Vanilla ships the same modifier as has-border; renamed for the BF  */
+/* is-* convention.)                                                    */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-cta-block) {
+  align-items: baseline;
+  column-gap: var(--bf-space-2);
+  display: flex;
+  flex-wrap: wrap;
+  margin-block-end: var(--bf-section-space-shallow);
+  row-gap: var(--bf-space-1);
+}
+
+:where(.bf-theme) :where(.bf-cta-block.is-bordered) {
+  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  padding-block-start: var(--bf-space-1);
+}
+
 :where(.bf-theme) :where(.bf-panel) {
   background: var(--bf-color-background-default);
   color: var(--bf-color-text-default);
