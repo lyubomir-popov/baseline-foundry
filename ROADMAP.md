@@ -48,8 +48,9 @@ Source of truth: `vanilla-framework/scss/_patterns_*.scss` (65 pattern entries).
 | Partial | Some primitive exists but full VF pattern not yet represented |
 | Superseded | Covered by smaller Foundry primitives or the tier model |
 | Missing | No current equivalent |
+| BF-original | No Vanilla source; surface designed inside BF |
 
-Counts: **Shipped 27 · Partial 4 · Superseded 9 · Missing 19** plus 6 permanently excluded deprecated patterns.
+Counts: **Shipped 27 · Partial 4 · Superseded 8 · Missing 20** plus 6 permanently excluded deprecated patterns. BF-originals (no Vanilla source): `bf-tiered-list`, `bf-before-after` (planned).
 
 | Pattern | Status | Foundry surface | Gap |
 |---|---|---|---|
@@ -66,7 +67,7 @@ Counts: **Shipped 27 · Partial 4 · Superseded 9 · Missing 19** plus 6 permane
 | `data-spotlight` | Missing | — | Out of scope |
 | `divided-section` | Missing | — | — |
 | `divider` | Missing | — | Removed in scope trim |
-| `equal-height-row` | Superseded | `bf-grid`, `bf-cluster` | — |
+| `equal-height-row` | Missing | — | Vanilla pattern uses CSS `subgrid` for cross-column row alignment plus optional `has-divider-N`/`is-borderless`/`--wrap` modifiers. `bf-grid`/`bf-cluster` do not cover the subgrid behavior. Portfolio currently keeps a local `EqualHeights` component. **Portfolio-blocking — see plan below.** |
 | `form-help-text` | Shipped | `bf-form-help` | — |
 | `form-password-toggle` | Missing | — | — |
 | `forms` | Partial | `bf-field`, `bf-control`, `bf-input`, `bf-select` | Missing: group wrapper, validation icons |
@@ -114,3 +115,59 @@ Counts: **Shipped 27 · Partial 4 · Superseded 9 · Missing 19** plus 6 permane
 | `tooltips` | Shipped | `bf-tooltip` + runtime | — |
 
 Permanently excluded (deprecated in Vanilla): `article-block`, `blog`, `newsletter-signup`, `pricing-block`, `resources-block`, `suru`.
+
+## Portfolio-blocking parity ports
+
+This section is the executable plan distilled from the 3-way comparison of Vanilla Framework × baseline-foundry × the actual `p-*` usage inside `portfolio/src/`. It is *not* the full Vanilla parity backlog (the table above tracks that). It is the minimum set of patterns BF must ship so portfolio can drop `src/styles/_legacy-vanilla-bridge.scss` and consume BF for every component it uses today.
+
+Sources cross-referenced:
+
+- Vanilla SCSS: `../vanilla-framework/scss/_patterns_*.scss` (canonical reference)
+- BF coverage: `src/css.ts`, `src/css-components.ts`, `scripts/component-demo-shared.ts`
+- Portfolio usage: every `p-*` className in `../portfolio/src/**/*.{jsx,scss}` (excluding the `_legacy-vanilla-bridge.scss` compatibility shim)
+
+### Patterns portfolio uses that BF already covers (consumption swap only)
+
+No BF work needed; portfolio side just needs to drop the `p-*` markup and the bridge file row. Tracked here so the next portfolio-side session has a checklist:
+
+| Vanilla | BF surface | Portfolio call sites |
+|---|---|---|
+| `p-section` (+ `is-shallow`, `is-deep`, `--shallow`) | `bf-section.is-shallow` / `.is-deep` | `pages/{Home,About,TypeSpecimen}`, `RelatedProjects`, `ProjectNotFound`, `BaselineImageExample` |
+| `p-strip` | `bf-strip` | `TypeSpecimen` |
+| `p-rule` / `p-rule--muted` | `bf-rule` / `is-muted` | `RelatedProjects`, `GallerySection`, `EqualHeights`, `UFixedWidth` |
+| `p-list` / `p-list__item` | `bf-list` / `bf-list-item` | `About` |
+| `p-segmented-control` (+ `__list`, `__button`, `is-selected/is-active/is-dense`) | `bf-segmented-control` family | `TypeSpecimen`, `BaselineGridToggle`, `SegmentedControl` |
+| `p-switch` (+ `__input/__slider/__label`) | `bf-switch` family | `TypeSpecimen`, `BaselineGridToggle` |
+| `p-chip-group`, `p-chip` (+ `--positive`, `__value`, `__dismiss`) | `bf-chip` (+ `is-positive/is-caution/is-negative/is-information`), `bf-chip-lead`, `bf-chip-value`, `bf-chip-dismiss` | `Home` filter chips |
+| `p-icon--close` | `bf-icon.is-close` | chip dismiss in `Home` |
+| `p-checkbox` (+ `__input/__label`) | `bf-checkbox` | `BaselineImageExample` |
+| `p-form` | `bf-form-*` / form atlas | `TypeSpecimen`, `BaselineGridToggle` |
+| `p-button --base` | `bf-button.is-base` | `BackToProjects`, `Navigation`, `ProjectNotFound`, `BaselineGridToggle` |
+| Vanilla "tiered list" (Canonical-website pattern, no Vanilla SCSS) | `bf-tiered-list` (BF-original; landed 2026-04-27) | `TieredList/`, `BfTieredListDemo` |
+
+### Real BF gaps that block portfolio (this is the port plan)
+
+Four primitives. Comparable in scope to the `bf-tiered-list` slice. Execute in dependency order so each commit stays small and independently testable.
+
+| # | New BF surface | Vanilla source | Portfolio call sites unblocked | Effort |
+|---|---|---|---|---|
+| 1 | `bf-button.is-positive` | `_patterns_buttons.scss` (`p-button--positive`) | `HeroCarousel` | TRIVIAL |
+| 2 | `bf-cta-block` (+ `has-border` modifier) | `_patterns_cta.scss` (`p-cta-block`) | currently inlined inside `bf-tiered-list-cta`; standalone use will appear as portfolio adopts the BF primitive | TRIVIAL |
+| 3 | `bf-equal-height-row` (+ `__col`, `__item`, `--wrap`, `has-divider-1/2/3`, `is-borderless`) | `_patterns_equal-height-row.scss` | `EqualHeights/` | STANDARD |
+| 4 | `bf-figure` + `bf-figure-caption` (or `bf-media-container` + `bf-media-caption`) | `_patterns_image.scss` + `_patterns_media-container.scss` (`p-media__caption`) | `GallerySection/` | STANDARD |
+
+For each new surface, the slice contract mirrors the bf-tiered-list slice landed on 2026-04-27:
+
+1. Add CSS to `src/css-components.ts`. Replace Vanilla's media queries with `@container` queries where the layout is responsive.
+2. Add a standalone `demo/components/<name>.html` page. Use `bf-theme is-dark`, `data-component-capture`, `data-baseline-check` probes per the existing demo conventions.
+3. Register the page in `scripts/component-demo-shared.ts` (`captureProfile: "wide"` for any pattern whose container query exceeds ~38rem).
+4. Link from `demo/components/index.html` under the appropriate atlas section.
+5. Add the page to the bf-only invariant family in `scripts/validate-build.ts` plus any pattern-specific invariants for the unique selectors.
+6. After step 2 lands, refactor `bf-tiered-list-cta` to *compose* `bf-cta-block` instead of duplicating its rules.
+7. Update this section as each item lands. Move to `HISTORY.md` only when the corresponding parity row in the table above also moves to Shipped.
+
+### Explicitly excluded from this plan
+
+- **`bf-before-after`** — slider behavior used by portfolio's `BeforeAfter` component. No Vanilla source; this is a BF-original. Tracked separately; out of scope for the parity-port plan.
+- **`bf-hero` / carousel** — depends on tier-reform task 2.13 in `portfolio/MIGRATION-PLAN.md`. May stay portfolio-local. Decide after Phase 2 lands.
+- The 24 "Missing" Vanilla patterns above (`article-pagination`, `data-spotlight`, `divided-section`, `heading-icon`, `image`, `in-page-navigation`, `logo-section`, `matrix`, `media-object`, `muted-heading`, `navigation-reduced`, `notifications`, `pull-quotes` (already Superseded), `table-of-contents`, `form-password-toggle`, `table-expanding`, `table-mobile-card`, `table-sortable`, `cta` (covered above), etc.) are not referenced by portfolio. They stay in the parity table as future work, not on this critical path.
