@@ -257,9 +257,13 @@ Decision gate:
 The four ports landed 2026-04-27 (commits `ca16bb5`, `3b4f9ac`, `0ad2e53`, `aa5335d`). Next-batch follow-ups, tier-tagged for routing:
 
 - [ ] `[X]` Run `npm run qa:components` to capture visual baselines for the three new wide-capture pages (`cta-block`, `equal-height-row`, `figure`).
-- [ ] `[L]` Push branch `salvage/local-work-recovery` to origin once the user confirms.
-- [ ] `[S]` Port remaining `bf-button` modifiers — `is-negative`, `is-brand`, `is-link`, `is-processing`, `is-icon` — each follows the `is-positive` template and existing themed token slots.
-- [ ] `[S]` Port `bf-figure` aspect-ratio modifiers from Vanilla `_patterns_image.scss` — `is-16-9`, `is-3-2`, `is-2-3`, `is-cinematic`, `is-square`, plus `on-(small|medium|large)` container-query variants. Naming converts Vanilla `--ratio` and breakpoint suffixes to BF `is-*` per convention.
+- [x] `[L]` Push branch `salvage/local-work-recovery` to origin once the user confirms.
+- [ ] `[S]` Port `bf-button.is-negative` — themed `--bf-color-button-negative-*` tokens already exist; follows the `is-positive` template line-for-line.
+- [ ] `[H]` Decide brand button modifier strategy — Vanilla's `p-button--brand` needs `--bf-color-button-brand-*` tokens that BF does not yet ship; either add the token tier or document the deviation. After the decision, the actual port becomes `[S]`.
+- [ ] `[S]` Port `bf-button.is-link` once a link-styled button color contract is confirmed (likely reuses `--bf-color-link-*`).
+- [ ] `[S]` Port `bf-button.is-icon` (icon-only sizing modifier) — no color tokens needed.
+- [ ] `[H]` Decide processing-button strategy — `is-processing` is a behavioral state with a spinner; whether to ship as CSS-only or a Lit element is a Heavy call.
+- [ ] `[H]` Decide aspect-ratio container architecture — Vanilla's `p-image-container--(16-9|3-2|2-3|cinematic|square)` lives on a separate primitive, not on `figure`. Pick one of: (a) add `bf-image-container` as a new primitive, (b) extend `bf-figure` with aspect modifiers, (c) ship a generic `bf-aspect` utility. After the decision, the port becomes `[S]`.
 - [ ] `[H]` Decide which Vanilla `_patterns_*` deserve the next BF-parity batch from the ROADMAP gap inventory (separator, accordion variants, side-navigation extras, etc.). Requires reading multiple Vanilla files and judging composition vs. new primitive.
 
 ### Parity gaps (pursue on downstream demand)

@@ -844,6 +844,30 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
   color: var(--bf-color-button-positive-text);
 }
 
+/* ------------------------------------------------------------------ */
+/* Button — semantic negative modifier (Vanilla parity).               */
+/* Vanilla uses themed negative tokens for default/hover/active        */
+/* backgrounds plus a white text colour on a coloured surface.         */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-button.is-negative) {
+  background-color: var(--bf-color-button-negative-default);
+  border-color: var(--bf-color-button-negative-default);
+  color: var(--bf-color-button-negative-text);
+}
+
+:where(.bf-theme) :where(.bf-button.is-negative:hover) {
+  background-color: var(--bf-color-button-negative-hover);
+  border-color: var(--bf-color-button-negative-hover);
+  color: var(--bf-color-button-negative-text);
+}
+
+:where(.bf-theme) :where(.bf-button.is-negative:is(:active, [aria-pressed='true'])) {
+  background-color: var(--bf-color-button-negative-active);
+  border-color: var(--bf-color-button-negative-active);
+  color: var(--bf-color-button-negative-text);
+}
+
 :where(.bf-theme) :where(.bf-actions) {
   align-items: center;
   display: flex;
