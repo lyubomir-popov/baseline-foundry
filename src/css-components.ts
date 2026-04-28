@@ -943,6 +943,48 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
   margin-block: var(--bf-space-1) 0;
 }
 
+/* ------------------------------------------------------------------ */
+/* Aspect — generic aspect-ratio slot.                                 */
+/* Reserves a fixed-ratio box so embedded media (img/picture/video/    */
+/* canvas/iframe) load without layout shift. Composes inside bf-figure */
+/* when a constrained captioned image is needed.                       */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-aspect) {
+  aspect-ratio: 16 / 9;
+  display: block;
+  inline-size: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-aspect.is-16-9) {
+  aspect-ratio: 16 / 9;
+}
+
+:where(.bf-theme) :where(.bf-aspect.is-3-2) {
+  aspect-ratio: 3 / 2;
+}
+
+:where(.bf-theme) :where(.bf-aspect.is-2-3) {
+  aspect-ratio: 2 / 3;
+}
+
+:where(.bf-theme) :where(.bf-aspect.is-cinematic) {
+  aspect-ratio: 12 / 5;
+}
+
+:where(.bf-theme) :where(.bf-aspect.is-square) {
+  aspect-ratio: 1 / 1;
+}
+
+:where(.bf-theme) :where(.bf-aspect) > :where(img, picture, video, canvas, iframe) {
+  block-size: 100%;
+  display: block;
+  inline-size: 100%;
+  object-fit: cover;
+}
+
 :where(.bf-theme) :where(.bf-panel) {
   background: var(--bf-color-background-default);
   color: var(--bf-color-text-default);

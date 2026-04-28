@@ -388,6 +388,13 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: block;\n  inline-size: 100%;\n  margin: 0 0 var(--bf-section-space-shallow);\n}"), "Expected bf-figure to own its bottom spacing via section-space-shallow.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure-caption) {\n  color: var(--bf-color-text-default);\n  display: block;\n  font-style: italic;"), "Expected bf-figure-caption to render as an italic block beneath the media.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-aspect) {\n  aspect-ratio: 16 / 9;"), "Expected generated CSS to define the bf-aspect default 16:9 slot.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-16-9) {\n  aspect-ratio: 16 / 9;"), "Expected bf-aspect.is-16-9 modifier to apply the 16:9 ratio.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-3-2) {\n  aspect-ratio: 3 / 2;"), "Expected bf-aspect.is-3-2 modifier to apply the 3:2 ratio.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-2-3) {\n  aspect-ratio: 2 / 3;"), "Expected bf-aspect.is-2-3 modifier to apply the 2:3 ratio.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-cinematic) {\n  aspect-ratio: 12 / 5;"), "Expected bf-aspect.is-cinematic modifier to apply the 12:5 (2.4:1) ratio.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-square) {\n  aspect-ratio: 1 / 1;"), "Expected bf-aspect.is-square modifier to apply the 1:1 ratio.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-aspect) > :where(img, picture, video, canvas, iframe) {"), "Expected bf-aspect to make embedded media fill the slot.");
   assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact inline surfaces to use the compact control block padding token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
@@ -924,6 +931,7 @@ function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
   validateBfOnlyDemoPage("cta-block.html", demoPages.ctaBlock);
   validateBfOnlyDemoPage("equal-height-row.html", demoPages.equalHeightRow);
   validateBfOnlyDemoPage("figure.html", demoPages.figure);
+  validateBfOnlyDemoPage("aspect.html", demoPages.aspect);
   validateBfOnlyDemoPage("table.html", demoPages.table);
   validateBfOnlyDemoPage("list-tree.html", demoPages.listTree);
   validateBfOnlyDemoPage("code-snippet.html", demoPages.codeSnippet);
@@ -1015,7 +1023,7 @@ async function main(): Promise<void> {
   const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/form-atlas.html")),
@@ -1043,6 +1051,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/cta-block.html")),
     readTextArtifact(path.resolve("demo/components/equal-height-row.html")),
     readTextArtifact(path.resolve("demo/components/figure.html")),
+    readTextArtifact(path.resolve("demo/components/aspect.html")),
     readTextArtifact(path.resolve("demo/components/table.html")),
     readTextArtifact(path.resolve("demo/components/list-tree.html")),
     readTextArtifact(path.resolve("demo/components/code-snippet.html")),
@@ -1123,6 +1132,7 @@ async function main(): Promise<void> {
     ctaBlock: ctaBlockHtml,
     equalHeightRow: equalHeightRowHtml,
     figure: figureHtml,
+    aspect: aspectHtml,
     table: tableHtml,
     listTree: listTreeHtml,
     codeSnippet: codeSnippetHtml,

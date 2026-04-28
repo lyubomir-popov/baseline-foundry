@@ -264,7 +264,7 @@ The four ports landed 2026-04-27 (commits `ca16bb5`, `3b4f9ac`, `0ad2e53`, `aa53
 - [ ] `[S]` Port `bf-button.is-icon` (icon-only sizing modifier) — no color tokens needed.
 - [ ] `[H]` Decide processing-button strategy — `is-processing` is a behavioral state with a spinner; whether to ship as CSS-only or a Lit element is a Heavy call.
 - [x] `[H]` Decided aspect-ratio container architecture (2026-04-28): ship `bf-aspect` as a generic utility primitive using modern `aspect-ratio: W / H`. Not on `bf-figure` (orthogonal concern), not as `bf-image-container` (image-specific name + legacy padding-bottom hack). `bf-aspect` composes inside `bf-figure` when a constrained captioned image is needed. Defer `on-(small|medium|large)` responsive variants to actual downstream demand.
-- [ ] `[S]` Implement `bf-aspect` per the decision above. Variants: `is-16-9`, `is-3-2`, `is-2-3`, `is-cinematic` (2.4:1), `is-square`. Children (`img`, `picture`, `video`, `canvas`, `iframe`) fill the slot with `object-fit: cover`. Adds `demo/components/aspect.html`, atlas registration, and validate-build assertions.
+- [x] `[S]` Implemented `bf-aspect` (2026-04-28). Variants `is-16-9`, `is-3-2`, `is-2-3`, `is-cinematic` (12:5), `is-square`; children fill via `object-fit: cover`. Demo at `demo/components/aspect.html`, registered in atlas + componentPages + validate-build family. Build green at 3063 checks (was 3010, +53 from new assertions and demo data-baseline-check coverage).
 - [ ] `[H]` Decide which Vanilla `_patterns_*` deserve the next BF-parity batch from the ROADMAP gap inventory (separator, accordion variants, side-navigation extras, etc.). Requires reading multiple Vanilla files and judging composition vs. new primitive.
 
 ### Parity gaps (pursue on downstream demand)
