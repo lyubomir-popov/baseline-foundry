@@ -156,6 +156,26 @@ Consequences:
 
 Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-spacing-spec/specs/spacing/draft.md`, `../canonical-spacing-spec/specs/grid/draft.md`. **All PASS** (resolved Phase 6).
 
+## Model tier routing
+
+Tag tasks with `[H]` / `[S]` / `[L]` / `[X]` so any agent picking up the queue routes work to the right model class instead of burning premium thinking on text shuffling.
+
+| Tag | Tier | Models | Use for |
+|---|---|---|---|
+| `[H]` | Heavy | Claude Opus 4.7, GPT-5 | Cross-file refactors, invariant-bearing CSS additions, naming translations from external sources, architectural decisions, picking the next batch of parity ports. |
+| `[S]` | Standard | Claude Sonnet 4.5, GPT-5 mini | Single-component additions following an established pattern, demo-page authoring, contained JSX/CSS swaps. |
+| `[L]` | Light | Haiku, Gemini Flash, GPT-5 nano | ROADMAP/STATUS/HISTORY housekeeping, INBOX triage, commit-message edits, dependency bumps. |
+| `[X]` | Subagent / no model | `Explore` subagent, `npm run build`, `npm run test:build`, `npm run qa:components`, Playwright | Read-only research, validation, visual regression. |
+
+Routing rule of thumb:
+
+- "Matches an existing pattern + passes build invariants" → `[S]`.
+- "Reads N files and decides what shape the new thing should be" → `[H]`.
+- "Moves text from file A to file B" → `[L]`.
+- "Just runs and reports pass/fail" → `[X]`.
+
+Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent` subagents for `[L]` and small `[S]` work in parallel, then sequence the Heavy review on the returns. Don't have a Heavy session do `[L]` work directly.
+
 ## Active TODO
 
 ### Current follow-up
@@ -192,18 +212,18 @@ Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-sp
 ### Inbox triage
 
 - [x] Persist the shared page-chrome baseline-grid, tier, and tone choices across page-to-page navigation instead of resetting them per page family.
-- [ ] Decide whether to ship an explicit IBM Plex preset or a documented supported font-option path for downstream adopters such as `portfolio`, which already consumes the base, editorial-tier, and prose bundles during its migration.
-- [ ] Remove the remaining `panel` legacy preset support once `brand-layout-ops` migrates, leaving `os` as an independent sibling built-in tier with no preset coupling.
-- [ ] Standardize dense icon and keyline spacing across search fields, search-and-filter, accordion toggles, top navigation, side navigation, and icon-bearing buttons so one- and two-icon controls share a consistent edge-spacing contract and stack onto as few vertical keylines as possible.
-- [ ] Review the switch-versus-slider visual contract and decide whether the switch should align to the same track language as the slider instead of preserving two divergent control-track treatments.
+- [ ] `[H]` Decide whether to ship an explicit IBM Plex preset or a documented supported font-option path for downstream adopters such as `portfolio`, which already consumes the base, editorial-tier, and prose bundles during its migration.
+- [ ] `[S]` Remove the remaining `panel` legacy preset support once `brand-layout-ops` migrates, leaving `os` as an independent sibling built-in tier with no preset coupling.
+- [ ] `[H]` Standardize dense icon and keyline spacing across search fields, search-and-filter, accordion toggles, top navigation, side navigation, and icon-bearing buttons so one- and two-icon controls share a consistent edge-spacing contract and stack onto as few vertical keylines as possible.
+- [ ] `[H]` Review the switch-versus-slider visual contract and decide whether the switch should align to the same track language as the slider instead of preserving two divergent control-track treatments.
 
 ### Downstream shared-shell upstreaming backlog
 
 - [x] Tranche 1 — fill-height panel + action-menu rows. Shared contract: `bf-panel.is-fill`, `bf-top-navigation-dropdown-item`, `bf-top-navigation-dropdown-item-label`, `bf-top-navigation-dropdown-item-shortcut`, `li.is-divider`. BF demos: `demo/components/application-shell.html`, `demo/components/top-navigation.html`.
-- [ ] Tranche 2 — authoring-shell layout variant. Proposed contract: `bf-application.is-top-navigation-shell` with canonical top-navigation, main-stage, and pinned-aside areas. BF demo target: extend `demo/components/application-shell.html` or add a focused authoring-shell demo.
-- [ ] Tranche 3 — worksurface + document-frame contract. Proposed contract: `bf-stage-shell.is-worksurface`, `bf-stage-frame`, `bf-stage-document`. BF demo target: extend `demo/components/stage-shell.html` or add a focused worksurface demo that stays fully on BF-owned primitives.
-- [ ] Tranche 4 — downstream-generated authoring surface bundle. Keep chroma as a generated `brand-layout-ops` surface bundle layered on BF structure instead of promoting a new built-in BF tier. Demo target: downstream consumption, not a new BF built-in surface.
-- [ ] Tranche 5 — breakpoint and density tuning only if reuse appears. Candidate seam: a top-navigation breakpoint token or variant rather than a BLO-local `48rem` media fork.
+- [ ] `[H]` Tranche 2 — authoring-shell layout variant. Proposed contract: `bf-application.is-top-navigation-shell` with canonical top-navigation, main-stage, and pinned-aside areas. BF demo target: extend `demo/components/application-shell.html` or add a focused authoring-shell demo.
+- [ ] `[H]` Tranche 3 — worksurface + document-frame contract. Proposed contract: `bf-stage-shell.is-worksurface`, `bf-stage-frame`, `bf-stage-document`. BF demo target: extend `demo/components/stage-shell.html` or add a focused worksurface demo that stays fully on BF-owned primitives.
+- [ ] `[S]` Tranche 4 — downstream-generated authoring surface bundle. Keep chroma as a generated `brand-layout-ops` surface bundle layered on BF structure instead of promoting a new built-in BF tier. Demo target: downstream consumption, not a new BF built-in surface.
+- [ ] `[S]` Tranche 5 — breakpoint and density tuning only if reuse appears. Candidate seam: a top-navigation breakpoint token or variant rather than a BLO-local `48rem` media fork.
 
 ### Pragma-informed repo health plan
 
@@ -231,6 +251,16 @@ Decision gate:
 ### Optional follow-up
 
 - [x] Blog engine illustration — `demo/components/engine-illustration.html` now provides the static BF-owned side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding for the IBM Plex Sans / Ubuntu Sans H1 and H2 experiment. It remains a blog/demo artifact, not a buildable surface mode.
+
+### Portfolio-blocking parity follow-ups
+
+The four ports landed 2026-04-27 (commits `ca16bb5`, `3b4f9ac`, `0ad2e53`, `aa5335d`). Next-batch follow-ups, tier-tagged for routing:
+
+- [ ] `[X]` Run `npm run qa:components` to capture visual baselines for the three new wide-capture pages (`cta-block`, `equal-height-row`, `figure`).
+- [ ] `[L]` Push branch `salvage/local-work-recovery` to origin once the user confirms.
+- [ ] `[S]` Port remaining `bf-button` modifiers — `is-negative`, `is-brand`, `is-link`, `is-processing`, `is-icon` — each follows the `is-positive` template and existing themed token slots.
+- [ ] `[S]` Port `bf-figure` aspect-ratio modifiers from Vanilla `_patterns_image.scss` — `is-16-9`, `is-3-2`, `is-2-3`, `is-cinematic`, `is-square`, plus `on-(small|medium|large)` container-query variants. Naming converts Vanilla `--ratio` and breakpoint suffixes to BF `is-*` per convention.
+- [ ] `[H]` Decide which Vanilla `_patterns_*` deserve the next BF-parity batch from the ROADMAP gap inventory (separator, accordion variants, side-navigation extras, etc.). Requires reading multiple Vanilla files and judging composition vs. new primitive.
 
 ### Parity gaps (pursue on downstream demand)
 
