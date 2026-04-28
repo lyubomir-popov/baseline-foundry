@@ -75,11 +75,11 @@ Counts: **Shipped 30 · Partial 4 · Superseded 8 · Missing 17** plus 6 permane
 | `form-validation` | Shipped | `bf-validation-message` | — |
 | `grid` | Superseded | `bf-grid` (Canonical 4/8/16) | — |
 | `grid-8` | Superseded | `bf-grid` @container | — |
-| `heading-icon` | Missing | — | — |
+| `heading-icon` | Missing | — | Out of scope |
 | `headings` | Superseded | tier role tokens | — |
 | `icons` | Shipped | `bf-icon` | Search / close / chevron plus success/error-grey state glyphs shipped; broader catalog can follow on demand |
 | `image` | Partial | `bf-figure` + `bf-figure-caption` | Aspect-ratio container modifiers (`16-9`, `3-2`, `2-3`, `cinematic`, `square`, on-(small\|medium\|large)) not yet ported |
-| `in-page-navigation` | Missing | — | — |
+| `in-page-navigation` | Missing | — | Out of scope |
 | `links` | Partial | semantic link styles, `bf-skip-link` | Missing: back-to-top, anchor, inverted |
 | `lists` | Shipped | prose lists, `bf-list`, `bf-inline-list`, `bf-list-tree` | — |
 | `list-tree` | Shipped | `bf-list-tree` + runtime | — |
@@ -88,14 +88,14 @@ Counts: **Shipped 30 · Partial 4 · Superseded 8 · Missing 17** plus 6 permane
 | `media-container` | Shipped | `bf-figure` (covers the media + caption pattern) | — |
 | `media-object` | Missing | — | Out of scope |
 | `modal` | Shipped | `bf-modal` + runtime | — |
-| `muted-heading` | Missing | — | — |
+| `muted-heading` | Missing | — | Out of scope |
 | `navigation` | Partial | `bf-side-navigation`, `bf-top-navigation` + runtime | Missing: mega-nav |
 | `navigation-reduced` | Missing | — | Out of scope |
-| `notifications` | Missing | — | — |
+| `notifications` | Missing | — | Out of scope |
 | `pagination` | Shipped | `bf-pagination` | — |
-| `pull-quotes` | Superseded | prose `blockquote` | — |
+| `pull-quotes` | Superseded | prose `blockquote` | Out of scope |
 | `rule` | Superseded | `bf-rule`, prose `hr` | — |
-| `search-and-filter` | Shipped | `bf-search-and-filter` + runtime | — |
+| `search-and-filter` | Partial, Broken around icons | `bf-search-and-filter` + runtime | — |
 | `search-box` | Shipped | `bf-search-box` | — |
 | `section` | Superseded | `bf-section`, `bf-page` | — |
 | `segmented-control` | Shipped | `bf-segmented-control` | — |
