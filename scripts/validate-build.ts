@@ -482,15 +482,20 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-item-shortcut) {"), "Expected generated CSS to include the top-navigation dropdown item shortcut slot styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider) {"), "Expected generated CSS to include the top-navigation dropdown divider styling.");
   // Migrated to AST: this used to be a multi-line substring check that broke
-  // on any whitespace shift. The AST form survives reformatting and still
-  // catches accidental reintroduction of extra block padding.
+  // on any whitespace shift. The AST form survives reformatting. The
+  // padding-block value matches the border width so the row's occupied block
+  // (content + symmetric border-aligned padding) lands on the visible grid;
+  // an earlier session zeroed this padding believing 50px was off-grid, but
+  // doing so dropped 2px out of the layout and broke baseline verification
+  // for every page that mounts the top navigation. See HISTORY.md
+  // "Top-navigation baseline regression revert (2026-04-29)".
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-top-navigation-row)", {
     "display": "flex",
     "flex-direction": "column",
     "min-block-size": "var(--bf-navigation-bar-min-block-size)",
     "min-inline-size": "0",
-    "padding-block": "0"
-  }, "top-navigation row stays on the baseline grid");
+    "padding-block": "var(--bf-border-width)"
+  }, "top-navigation row preserves the border-width padding the baseline gate depends on");
   assert(css.includes("transform: rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to point downward before expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: rotate(180deg);\n}"), "Expected active top-navigation chevrons to rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");

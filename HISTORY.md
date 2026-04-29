@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Top-navigation baseline regression revert (2026-04-29)
+
+- [x] Reverted `bf-top-navigation-row` `padding-block` from `0` back to `var(--bf-border-width)` after `npm run qa:components` showed the prior session's "fix" knocked every top-navigation page ~2px off the 8px baseline grid in editorial, documentation, and OS tiers (section measure error 2.06px, content offset error 2.03px). The 50px-is-off-grid premise was wrong: the row uses border-box sizing so the `min-block-size: var(--bf-baseline) * 6 = 48px` already constrains the box, and the symmetric `padding-block: var(--bf-border-width)` is what keeps the link content aligned within the row without dropping 2px of layout that downstream sections depend on.
+- [x] Updated the matching AST assertion in `scripts/validate-build.ts` so it now codifies the restored `padding-block: var(--bf-border-width)` value instead of the broken `padding-block: 0`. Added an inline note pointing back to this history entry so a future agent does not chase the same false positive.
+- [x] Re-ran `npm run test:build` (3172 checks green) and `npm run qa:components` (all component baseline checks green, exit 0) to confirm the regression is closed.
+
 ## CSS AST assertion infrastructure (2026-04-29)
 
 - [x] Added `postcss` as a dev dependency and shipped `scripts/css-ast-helpers.ts` with `parseCss`, `findRule`, `assertRuleHasDecl`, `assertRuleMissingDecl`, and `assertRuleExists` helpers so future CSS invariants can match on selector + declaration semantics instead of brittle multi-line substring literals.
