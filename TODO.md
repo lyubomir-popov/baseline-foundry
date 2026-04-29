@@ -212,7 +212,7 @@ Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent
 ### Inbox triage
 
 - [x] Persist the shared page-chrome baseline-grid, tier, and tone choices across page-to-page navigation instead of resetting them per page family.
-- [ ] `[H]` Investigate the remaining `TieredList-*.js` 119 kB bundle bloat in the `Project.jsx` slice; identify which scripts are animation-critical versus disposable and do not remove anything blindly.
+- [ ] `[H]` Downstream follow-up: investigate the remaining `TieredList-*.js` 119 kB bundle bloat in the consumer `Project.jsx` slice; baseline-foundry owns the `bf-tiered-list` surface, but the current bundle hotspot is not in this repo. Identify which scripts are animation-critical versus disposable and do not remove anything blindly.
 - [ ] `[H]` Decide whether to ship an explicit IBM Plex preset or a documented supported font-option path for downstream adopters such as `portfolio`, which already consumes the base, editorial-tier, and prose bundles during its migration.
 - [ ] `[S]` Remove the remaining `panel` legacy preset support once `brand-layout-ops` migrates, leaving `os` as an independent sibling built-in tier with no preset coupling.
 - [ ] `[H]` Standardize dense icon and keyline spacing across search fields, search-and-filter, accordion toggles, top navigation, side navigation, and icon-bearing buttons so one- and two-icon controls share a consistent edge-spacing contract and stack onto as few vertical keylines as possible.
@@ -257,7 +257,7 @@ Decision gate:
 
 The four ports landed 2026-04-27 (commits `ca16bb5`, `3b4f9ac`, `0ad2e53`, `aa5335d`). Next-batch follow-ups, tier-tagged for routing:
 
-- [ ] `[X]` Run `npm run qa:components` to capture visual baselines for the three new wide-capture pages (`cta-block`, `equal-height-row`, `figure`).
+- [x] `[X]` Run `npm run qa:components` to capture visual baselines for the three new wide-capture pages (`cta-block`, `equal-height-row`, `figure`). Completed 2026-04-29 after fixing the remaining component baseline verifier drift in `stage-shell`, `tiered-list`, `cta-block`, `equal-height-row`, `figure`, and `aspect`.
 - [x] `[L]` Push branch `salvage/local-work-recovery` to origin once the user confirms.
 - [ ] `[S]` Port `bf-button.is-negative` — themed `--bf-color-button-negative-*` tokens already exist; follows the `is-positive` template line-for-line.
 - [ ] `[H]` Decide brand button modifier strategy — Vanilla's `p-button--brand` needs `--bf-color-button-brand-*` tokens that BF does not yet ship; either add the token tier or document the deviation. After the decision, the actual port becomes `[S]`.

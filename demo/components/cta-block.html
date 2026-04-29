@@ -10,12 +10,12 @@
 <body class="bf-theme is-dark" data-component-capture>
 <section class="bf-stack" data-baseline-check="box" data-baseline-label="cta-block page">
   <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="cta-block kicker">CTA block</h5>
-  <p class="bf-body" data-baseline-check="flow" data-baseline-label="cta-block summary">Inline call-to-action row that wraps a heading or short prompt with one or more buttons. Borderless by default; <code>.has-border</code> adds a top divider rule.</p>
+  <p class="bf-body" data-baseline-check="flow" data-baseline-label="cta-block summary">Inline call-to-action row that pairs a short prompt with one or more buttons. The is-bordered modifier adds a top divider rule.</p>
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="default cta block">
     <h6 data-baseline-check="flow" data-baseline-label="default cta title">Default — borderless</h6>
-    <div class="bf-cta-block" data-baseline-check="box" data-baseline-label="default cta component">
-      <h3>Ready to get started?</h3>
+    <div class="bf-cta-block" data-baseline-check="box" data-baseline-label="default cta component" style="inline-size: min(100%, calc(var(--bf-baseline) * 64));">
+      <h3 data-baseline-check="flow" data-baseline-label="default cta heading">Ready to get started?</h3>
       <a href="#" class="bf-button">Contact sales</a>
       <a href="#" class="bf-button is-positive">Sign up</a>
     </div>
@@ -23,16 +23,16 @@
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="bordered cta block">
     <h6 data-baseline-check="flow" data-baseline-label="bordered cta title">With <code>.is-bordered</code></h6>
-    <div class="bf-cta-block is-bordered" data-baseline-check="box" data-baseline-label="bordered cta component">
-      <h3>Become a partner</h3>
+    <div class="bf-cta-block is-bordered" data-baseline-check="box" data-baseline-label="bordered cta component" style="inline-size: min(100%, calc(var(--bf-baseline) * 64));">
+      <h3 data-baseline-check="flow" data-baseline-label="bordered cta heading">Become a partner</h3>
       <a href="#" class="bf-button">Apply now</a>
     </div>
   </section>
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="prose-only cta block">
     <h6 data-baseline-check="flow" data-baseline-label="prose-only cta title">Prose lead with multiple actions</h6>
-    <div class="bf-cta-block is-bordered" data-baseline-check="box" data-baseline-label="prose-only cta component">
-      <p>Get in touch to discuss the right partnership tier for your organisation.</p>
+    <div class="bf-cta-block is-bordered" data-baseline-check="box" data-baseline-label="prose-only cta component" style="inline-size: min(100%, calc(var(--bf-baseline) * 64));">
+      <p data-baseline-check="flow" data-baseline-label="prose-only cta body">Discuss the right partnership tier for your organisation.</p>
       <a href="#" class="bf-button">Read the FAQ</a>
       <a href="#" class="bf-button is-positive">Talk to a partner manager</a>
     </div>

@@ -911,7 +911,7 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 
 :where(.bf-theme) :where(.bf-cta-block.is-bordered) {
   border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
-  padding-block-start: var(--bf-space-1);
+  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));
 }
 
 /* ------------------------------------------------------------------ */
@@ -4249,7 +4249,9 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   content: "";
   display: none;
   grid-column: 1 / -1;
+  inset-inline: 0;
   margin: auto;
+  position: absolute;
 }
 
 @container (width >= 64.75rem) {

@@ -10,11 +10,11 @@
 <body class="bf-theme is-dark" data-component-capture>
 <section class="bf-stack" data-baseline-check="box" data-baseline-label="aspect page">
   <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="aspect kicker">Aspect</h5>
-  <p class="bf-body" data-baseline-check="flow" data-baseline-label="aspect summary">Generic aspect-ratio slot for embedded media. Reserves a fixed-ratio box so images, video, canvases, and iframes load without layout shift; children fill via <code>object-fit: cover</code>.</p>
+  <p class="bf-body" data-baseline-check="flow" data-baseline-label="aspect summary">Generic aspect-ratio slot that reserves space before embedded media loads.</p>
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="aspect default block">
     <h6 data-baseline-check="flow" data-baseline-label="aspect default title">Default (16:9)</h6>
-    <div class="bf-aspect" data-baseline-check="box" data-baseline-label="aspect default component">
+    <div class="bf-aspect" data-baseline-check="box" data-baseline-label="aspect default component" style="inline-size:min(100%, calc(var(--bf-baseline) * 48));">
       <svg viewBox="0 0 800 320" role="img" aria-label="Aspect placeholder" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:100%">
         <rect x="0" y="0" width="800" height="320" fill="#2c2c2c" />
         <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Aspect placeholder</text>
@@ -24,7 +24,7 @@
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="aspect 16-9 block">
     <h6 data-baseline-check="flow" data-baseline-label="aspect 16-9 title">16:9</h6>
-    <div class="bf-aspect is-16-9" data-baseline-check="box" data-baseline-label="aspect 16-9 component">
+    <div class="bf-aspect is-16-9" data-baseline-check="box" data-baseline-label="aspect 16-9 component" style="inline-size:min(100%, calc(var(--bf-baseline) * 48));">
       <svg viewBox="0 0 800 320" role="img" aria-label="Aspect placeholder" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:100%">
         <rect x="0" y="0" width="800" height="320" fill="#2c2c2c" />
         <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Aspect placeholder</text>
@@ -34,7 +34,7 @@
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="aspect 3-2 block">
     <h6 data-baseline-check="flow" data-baseline-label="aspect 3-2 title">3:2</h6>
-    <div class="bf-aspect is-3-2" data-baseline-check="box" data-baseline-label="aspect 3-2 component">
+    <div class="bf-aspect is-3-2" data-baseline-check="box" data-baseline-label="aspect 3-2 component" style="inline-size:min(100%, calc(var(--bf-baseline) * 48));">
       <svg viewBox="0 0 800 320" role="img" aria-label="Aspect placeholder" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:100%">
         <rect x="0" y="0" width="800" height="320" fill="#2c2c2c" />
         <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Aspect placeholder</text>
@@ -44,7 +44,7 @@
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="aspect 2-3 block">
     <h6 data-baseline-check="flow" data-baseline-label="aspect 2-3 title">2:3</h6>
-    <div class="bf-aspect is-2-3" data-baseline-check="box" data-baseline-label="aspect 2-3 component">
+    <div class="bf-aspect is-2-3" data-baseline-check="box" data-baseline-label="aspect 2-3 component" style="inline-size:min(100%, calc(var(--bf-baseline) * 32));">
       <svg viewBox="0 0 800 320" role="img" aria-label="Aspect placeholder" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:100%">
         <rect x="0" y="0" width="800" height="320" fill="#2c2c2c" />
         <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Aspect placeholder</text>
@@ -54,7 +54,7 @@
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="aspect cinematic block">
     <h6 data-baseline-check="flow" data-baseline-label="aspect cinematic title">Cinematic (2.4:1)</h6>
-    <div class="bf-aspect is-cinematic" data-baseline-check="box" data-baseline-label="aspect cinematic component">
+    <div class="bf-aspect is-cinematic" data-baseline-check="box" data-baseline-label="aspect cinematic component" style="inline-size:min(100%, calc(var(--bf-baseline) * 48));">
       <svg viewBox="0 0 800 320" role="img" aria-label="Aspect placeholder" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:100%">
         <rect x="0" y="0" width="800" height="320" fill="#2c2c2c" />
         <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Aspect placeholder</text>
@@ -64,7 +64,7 @@
 
   <section class="bf-stack" data-baseline-check="box" data-baseline-label="aspect square block">
     <h6 data-baseline-check="flow" data-baseline-label="aspect square title">Square (1:1)</h6>
-    <div class="bf-aspect is-square" data-baseline-check="box" data-baseline-label="aspect square component">
+    <div class="bf-aspect is-square" data-baseline-check="box" data-baseline-label="aspect square component" style="inline-size:min(100%, calc(var(--bf-baseline) * 40));">
       <svg viewBox="0 0 800 320" role="img" aria-label="Aspect placeholder" xmlns="http://www.w3.org/2000/svg" style="background:#222;display:block;inline-size:100%;block-size:100%">
         <rect x="0" y="0" width="800" height="320" fill="#2c2c2c" />
         <text x="50%" y="50%" fill="#888" font-size="32" text-anchor="middle" dominant-baseline="middle">Aspect placeholder</text>

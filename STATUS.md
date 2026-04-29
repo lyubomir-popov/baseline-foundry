@@ -26,6 +26,7 @@ Demo: `http://127.0.0.1:4174/`
 
 ## Current session plan
 
+- Completed this follow-up slice: ran `npm run qa:components` for the new wide-capture component pages, fixed the `tiered-list` baseline-coverage omissions the verifier exposed, restored absolute-positioned cross-column divider pseudos for `bf-equal-height-row`, compensated `bf-cta-block.is-bordered` top padding against its border width, and snapped the `stage-shell` / `figure` / `aspect` demos to baseline-based sizes. `npm run verify:components` and `npm run qa:components` are green again.
 - 2026-04-25: continue the example dogfooding cleanup from the current uncommitted grid/spacing pass.
 - Completed this follow-up slice: upstreamed the old `.spec-shell` page framing into the shared `bf-page.is-fill` contract, moved the living spec, spec chapters, OS addendum, and controls page onto that BF-owned modifier, updated the shared spec runtime to anchor on `main.bf-page`, and revalidated with `npm run build`, `npm run test:build`, and live browser checks on the home/spec/controls pages.
 - Completed this follow-up slice: replaced the last page-local atlas and grid-guide helpers with BF-owned contracts by adding `bf-grid.is-guide` plus `ul/ol.bf-grid` list resets to core grid CSS, rebuilding the component atlas onto BF card-preview primitives driven by `data-component-atlas-item`, removing `pc-grid-guide` from the living spec shell and `demo-index*` from the component shell, and revalidating with `npm run build`, `npm run test:build`, and `npm run qa:components`.

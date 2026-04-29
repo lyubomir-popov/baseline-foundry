@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Component QA cleanup (2026-04-29)
+
+- [x] Ran `npm run qa:components` for the new wide-capture component pages and fixed the baseline verifier coverage drift in `demo/components/tiered-list.html`.
+- [x] Restored the missing BF contract details that the verifier exposed: `bf-equal-height-row` divider pseudos are absolutely positioned again, and `bf-cta-block.is-bordered` now compensates top padding against its border width.
+- [x] Snapped the `stage-shell`, `figure`, and `aspect` demos to baseline-based demo dimensions so `npm run verify:components` and `npm run qa:components` both pass again.
+
 ## Portfolio-blocking parity ports (2026-04-27)
 
 - [x] Shipped `bf-button.is-positive` (`p-button--positive` parity) sourced from the themed positive tokens (commit `ca16bb5`).
