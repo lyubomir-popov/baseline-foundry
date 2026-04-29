@@ -26,6 +26,7 @@ Demo: `http://127.0.0.1:4174/`
 
 ## Current session plan
 
+- Completed this follow-up slice: closed the stale `bf-button.is-negative` TODO item after confirming the modifier had already shipped, recorded the brand-button strategy as an intentional non-port because Vanilla deprecates `p-button--brand`, and added `bf-button.is-link` plus button-demo/build-validation coverage.
 - Completed this follow-up slice: ran `npm run qa:components` for the new wide-capture component pages, fixed the `tiered-list` baseline-coverage omissions the verifier exposed, restored absolute-positioned cross-column divider pseudos for `bf-equal-height-row`, compensated `bf-cta-block.is-bordered` top padding against its border width, and snapped the `stage-shell` / `figure` / `aspect` demos to baseline-based sizes. `npm run verify:components` and `npm run qa:components` are green again.
 - 2026-04-25: continue the example dogfooding cleanup from the current uncommitted grid/spacing pass.
 - Completed this follow-up slice: upstreamed the old `.spec-shell` page framing into the shared `bf-page.is-fill` contract, moved the living spec, spec chapters, OS addendum, and controls page onto that BF-owned modifier, updated the shared spec runtime to anchor on `main.bf-page`, and revalidated with `npm run build`, `npm run test:build`, and live browser checks on the home/spec/controls pages.

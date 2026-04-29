@@ -868,6 +868,35 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
   color: var(--bf-color-button-negative-text);
 }
 
+/* ------------------------------------------------------------------ */
+/* Button — link-style modifier (Vanilla parity).                      */
+/* BF starts from the shared button control contract, so the modifier  */
+/* has to strip control chrome and padding back down to inline-link    */
+/* behavior while reusing the shared link tokens.                      */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-button.is-link) {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--bf-color-link-default);
+  margin-bottom: 0;
+  padding-block: 0;
+  padding-inline: 0;
+}
+
+:where(.bf-theme) :where(.bf-button.is-link:hover) {
+  background-color: transparent;
+  color: var(--bf-color-link-default);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.075em;
+}
+
+:where(.bf-theme) :where(.bf-button.is-link:focus-visible) {
+  outline-offset: 0;
+}
+
 :where(.bf-theme) :where(.bf-actions) {
   align-items: center;
   display: flex;

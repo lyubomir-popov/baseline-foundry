@@ -259,9 +259,9 @@ The four ports landed 2026-04-27 (commits `ca16bb5`, `3b4f9ac`, `0ad2e53`, `aa53
 
 - [x] `[X]` Run `npm run qa:components` to capture visual baselines for the three new wide-capture pages (`cta-block`, `equal-height-row`, `figure`). Completed 2026-04-29 after fixing the remaining component baseline verifier drift in `stage-shell`, `tiered-list`, `cta-block`, `equal-height-row`, `figure`, and `aspect`.
 - [x] `[L]` Push branch `salvage/local-work-recovery` to origin once the user confirms.
-- [ ] `[S]` Port `bf-button.is-negative` — themed `--bf-color-button-negative-*` tokens already exist; follows the `is-positive` template line-for-line.
-- [ ] `[H]` Decide brand button modifier strategy — Vanilla's `p-button--brand` needs `--bf-color-button-brand-*` tokens that BF does not yet ship; either add the token tier or document the deviation. After the decision, the actual port becomes `[S]`.
-- [ ] `[S]` Port `bf-button.is-link` once a link-styled button color contract is confirmed (likely reuses `--bf-color-link-*`).
+- [x] `[S]` Port `bf-button.is-negative` — shipped earlier in commit `c4431c4` with demo + static validation; this item was stale planning drift.
+- [x] `[H]` Decide brand button modifier strategy — do not port. Vanilla marks `p-button--brand` as deprecated in `_patterns_buttons.scss`, and BF excludes deprecated Vanilla patterns from parity work.
+- [x] `[S]` Port `bf-button.is-link` — shipped 2026-04-29 using the shared `--bf-color-link-*` contract, transparent chrome, and underline-on-hover behavior.
 - [ ] `[S]` Port `bf-button.is-icon` (icon-only sizing modifier) — no color tokens needed.
 - [ ] `[H]` Decide processing-button strategy — `is-processing` is a behavioral state with a spinner; whether to ship as CSS-only or a Lit element is a Heavy call.
 - [x] `[H]` Decided aspect-ratio container architecture (2026-04-28): ship `bf-aspect` as a generic utility primitive using modern `aspect-ratio: W / H`. Not on `bf-figure` (orthogonal concern), not as `bf-image-container` (image-specific name + legacy padding-bottom hack). `bf-aspect` composes inside `bf-figure` when a constrained captioned image is needed. Defer `on-(small|medium|large)` responsive variants to actual downstream demand.

@@ -58,7 +58,7 @@ Counts: **Shipped 30 · Partial 4 · Superseded 8 · Missing 17** plus 6 permane
 | `article-pagination` | Partial | `bf-pagination` | No article-specific wrapper |
 | `badge` | Shipped | `bf-badge` | — |
 | `breadcrumbs` | Shipped | `bf-breadcrumbs` | — |
-| `buttons` | Shipped | `bf-button`, `bf-actions` | `is-positive` shipped 2026-04-27. Still missing: negative/brand/link/processing/icon modifiers |
+| `buttons` | Shipped | `bf-button`, `bf-actions` | `is-positive`, `is-negative`, and `is-link` shipped. `p-button--brand` is deprecated upstream and intentionally not ported. Still missing: processing/icon modifiers |
 | `card` | Shipped | `bf-card` | — |
 | `chip` | Shipped | `bf-chip` | — |
 | `code-snippet` | Shipped | `bf-code-snippet` + runtime | — |
