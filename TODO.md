@@ -182,6 +182,11 @@ Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent
 
 #### Highest-priority next steps
 
+- **Audit recommendation #1 — split `src/css-components.ts` (4332 lines, one giant template literal).** Now de-risked by the AST helper infrastructure (`scripts/css-ast-helpers.ts`). Strategy: family-by-family extraction into `src/css-components/` with an `index.ts` that concatenates fragments in the same order; commit + validate after each family; migrate the substring assertions touched by each family to AST first so reformatting doesn't break the static contract. Family seams identified in `STATUS.md`. External API in `src/index.ts` must remain unchanged.
+- **Audit recommendation #2 (continue migration) — incrementally migrate `validateCommonCss` substring checks to `assertRuleHasDecl` / `assertRuleMissingDecl`.** Start with whatever family the css-components.ts split touches next so the two efforts compose. Pattern documented inline in `validateCommonCss` next to the migrated `.bf-top-navigation-row` example.
+- **Audit recommendation #4 — add `axe-playwright` a11y checks** on the `demo/components/*.html` pages. Additive, low risk. Pick after #1 ships.
+- **Audit recommendation #5 — split package surface (`./build` vs runtime).** Already partially done via `./build` export; revisit once #1 stabilises the CSS module graph.
+
 - The latest helper-layer cleanup is now also complete: `range-demo-rail` is gone from `demo/component-shell.css`, `demo/components/range.html` now uses the shared `bf-inline-size.is-compact` wrapper instead of a page-local width helper, and `demo/components/engine-illustration.html` now renders the raw / compensated / cap comparison lanes on BF-owned cards, status labels, inline-size utilities, and the shared `u-baseline-grid` overlay. The remaining active work is downstream shared-shell upstreaming and legacy preset removal, not page-local demo helper cleanup.
 - Component QA now walks the intended non-app surfaces directly instead of only checking the authored default page state: `scripts/verify-component-baselines.ts` drives shared-tier component pages through `editorial`, `documentation`, and `os`, keeps app-authored pages app-only unless they opt into broader coverage, and records one baseline-report entry per verified surface.
 
