@@ -4,6 +4,18 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## css-components split burst 3 (2026-04-29)
+
+- [x] Extracted the contiguous card/option surface block out of `src/css-components.ts` into `src/css-components/cards-options.ts` without changing generated CSS output order.
+- [x] Confirmed the same helper-driven split pattern works for typography-bearing card families too: the new module accepts precomputed `typeStyles(...)` fragments from `componentsCss(...)` instead of moving shared helpers first.
+- [x] Migrated the touched card/option invariants in `scripts/validate-build.ts` from substring checks to `assertRuleHasDecl(...)` checks (`bf-card`, linked cards, `bf-card-preview`, `bf-card-preview-image`, `bf-option-grid`, `bf-option-card`) and revalidated with `npm run build:theme` plus `npm run test:build` (3550 checks green).
+
+## css-components split burst 2 (2026-04-29)
+
+- [x] Extracted the contiguous `bf-panel` family out of `src/css-components.ts` into `src/css-components/panel.ts` without changing generated CSS output order.
+- [x] Confirmed the helper-driven extraction pattern scales past static CSS blocks: the new panel module accepts precomputed `typeStyles(...)` fragments from `componentsCss(...)` instead of moving the shared helpers first.
+- [x] Migrated the touched panel invariants in `scripts/validate-build.ts` from brittle substring assertions to `assertRuleHasDecl(...)` checks (`bf-panel.is-fill` and `bf-panel-toggle`) and revalidated with `npm run build:theme` plus `npm run test:build` (3334 checks green).
+
 ## css-components split burst 1 (2026-04-29)
 
 - [x] Created the first real `src/css-components/` module directory and extracted three families out of `src/css-components.ts` without changing output order: `button-actions`, `cta-figure-aspect`, and `tiered-list-equal-height-row`.

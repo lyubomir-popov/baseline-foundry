@@ -446,10 +446,27 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".has-success"), "Expected generated CSS to omit the deprecated has-success validation alias.");
   assert(!css.includes(".has-warning"), "Expected generated CSS to omit the deprecated has-warning validation alias.");
   assert(!/\.has-[a-z][a-z0-9-]*/.test(css), "Expected generated CSS to omit deprecated has-* helper selectors.");
-  assert(css.includes(":where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)"), "Expected generated CSS to include card surfaces.");
-  assert(css.includes(":where(.bf-theme) :where(a.bf-card, a.bf-card.is-highlighted, a.bf-card.is-overlay, a.bf-card.is-muted) {"), "Expected generated CSS to let cards act as linked surfaces.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-card-preview) {"), "Expected generated CSS to include the card preview slot used by the component atlas.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-card-preview-image) {"), "Expected generated CSS to include the card preview image slot used by the component atlas.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", {
+    "display": "flex",
+    "flex-direction": "column",
+    "gap": "var(--bf-field-gap)",
+    "overflow": "auto"
+  }, "card surfaces keep the shared stacked surface contract");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-card, a.bf-card.is-highlighted, a.bf-card.is-overlay, a.bf-card.is-muted)", {
+    "color": "inherit",
+    "cursor": "pointer",
+    "text-decoration": "none"
+  }, "cards can act as linked surfaces without losing inherited text color");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-preview)", {
+    "display": "grid",
+    "overflow": "hidden",
+    "position": "relative"
+  }, "card preview slot stays available for the component atlas");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-preview-image)", {
+    "display": "block",
+    "object-fit": "contain",
+    "object-position": "center"
+  }, "card preview images stay centered inside the atlas preview slot");
   assert(css.includes(":where(.bf-segmented-control-button, .bf-tab-buttons-button)"), "Expected generated CSS to include segmented control buttons.");
   assert(css.includes(":where(.bf-breadcrumbs-items)"), "Expected generated CSS to include breadcrumb styling.");
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
@@ -471,8 +488,17 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-modal.is-workflow)"), "Expected generated CSS to include the workflow modal variant.");
   assert(css.includes(":where(.bf-modal.is-workflow.is-resizable)"), "Expected generated CSS to include the resizable workflow modal modifier.");
   assert(css.includes("grid-template-rows: auto minmax(0, 1fr) auto;"), "Expected generated CSS to support the workflow modal fixed-header scrolling-body layout.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-panel.is-fill) {\n  block-size: 100%;"), "Expected generated CSS to make fill-height panels resolve against the shell height instead of an unbounded minimum block size.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-panel.is-fill) > :where(.bf-panel-content) {\n  min-block-size: 0;\n  overflow: auto;\n  overscroll-behavior: contain;"), "Expected generated CSS to make fill-height panel bodies scroll internally.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel.is-fill)", {
+    "block-size": "100%",
+    "max-inline-size": "none",
+    "min-block-size": "0",
+    "resize": "none"
+  }, "fill-height panels resolve against the shell height instead of an unbounded minimum block size");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel.is-fill) > :where(.bf-panel-content)", {
+    "min-block-size": "0",
+    "overflow": "auto",
+    "overscroll-behavior": "contain"
+  }, "fill-height panel bodies scroll internally");
   assert(css.includes(":where(.bf-search-box)"), "Expected generated CSS to include search-box styling.");
   assert(css.includes(":where(.bf-search-and-filter)"), "Expected generated CSS to include search-and-filter styling.");
   assert(css.includes(":where(.bf-search-and-filter-box) {\n  display: inline-flex;\n  flex: 1 1 12rem;\n  max-inline-size: 100%;\n  min-inline-size: 0;"), "Expected search-and-filter boxes to shrink inside narrow rails.");
@@ -514,8 +540,15 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-tabs.is-equal)"), "Expected generated CSS to include equal-width dense tab modifiers.");
   assert(css.includes(":where(.bf-choice-row)"), "Expected generated CSS to include the canonical choice-row component.");
   assert(css.includes(":where(.bf-inline-options)"), "Expected generated CSS to include the canonical inline-options component.");
-  assert(css.includes(":where(.bf-option-grid)"), "Expected generated CSS to include the canonical option-grid component.");
-  assert(css.includes(":where(.bf-option-card)"), "Expected generated CSS to include the canonical option-card component.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-option-grid)", {
+    "display": "grid",
+    "grid-template-columns": "repeat(auto-fit, minmax(min(100%, 10rem), 1fr))"
+  }, "option-grid keeps the canonical auto-fit card layout");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-option-card)", {
+    "display": "grid",
+    "min-block-size": "calc((var(--bf-control-box-size) * 2) + var(--bf-baseline))",
+    "text-align": "left"
+  }, "option-card keeps the canonical stacked selection-card treatment");
   assert(css.includes(":where(.bf-form-help.is-tight)"), "Expected generated CSS to include the tight helper-text modifier.");
   assert(css.includes("input[type='color'].bf-color-input"), "Expected generated CSS to include the compact color-input treatment.");
   assert(css.includes(":where(.bf-actions)"), "Expected generated CSS to include the canonical actions-row helper.");
@@ -531,7 +564,13 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".drawer-panel"), "Expected compat CSS to omit the downstream fill-height panel alias.");
   assert(css.includes(":where(.bf-contextual-menu, .bf-contextual-menu.is-left, .bf-contextual-menu.is-center)"), "Expected generated CSS to include contextual-menu styling.");
   assert(css.includes(":where(.bf-tooltip, [class*='bf-tooltip--'])"), "Expected generated CSS to include tooltip styling.");
-  assert(css.includes(":where(.bf-panel-toggle)"), "Expected generated CSS to include panel toggle styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel-toggle)", {
+    "appearance": "none",
+    "background": "transparent",
+    "border": "0",
+    "display": "inline-flex",
+    "padding-block": "var(--bf-control-block-padding-compact)"
+  }, "panel toggle styling stays on the shared compact control contract");
   assert(css.includes(":where(.bf-application-overlay)"), "Expected generated CSS to include application drawer overlay styling.");
   assert(css.includes(":where(.bf-aside.is-overlay, .bf-aside.is-drawer)"), "Expected generated CSS to include overlay drawer aside styling.");
   assert(css.includes(".is-drawer-expanded"), "Expected compat CSS to include the drawer-expanded application state.");
