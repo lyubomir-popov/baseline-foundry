@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## css-components split burst 1 (2026-04-29)
+
+- [x] Created the first real `src/css-components/` module directory and extracted three families out of `src/css-components.ts` without changing output order: `button-actions`, `cta-figure-aspect`, and `tiered-list-equal-height-row`.
+- [x] Established two safe extraction patterns for the remaining split: fully static CSS blocks can move as plain string modules, while helper-driven families can move by accepting precomputed style fragments from `componentsCss(...)` instead of moving the shared helper functions first.
+- [x] Revalidated the burst with repeated `npm run test:build` runs and a final `npm run qa:components`; both are green, so the module-import seam now has both static and runtime proof before the next tranche tackles controls/panels/navigation.
+
 ## Nested fixed-width gutter cleanup (2026-04-29)
 
 - [x] Added `:where(.bf-theme) :where(.bf-grid) :where(.bf-fixed-width) { padding-inline: 0; }` so `bf-fixed-width` behaves as an alternative width owner inside grid content instead of adding a second page gutter on full-span prose blocks.

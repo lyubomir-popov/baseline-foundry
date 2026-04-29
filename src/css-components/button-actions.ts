@@ -1,0 +1,168 @@
+type ButtonActionCssOptions = {
+  bodyTypeStyles: string;
+  buttonMarginBottom: string;
+  buttonPadding: string;
+};
+
+export function buttonActionsCss(options: ButtonActionCssOptions): string {
+  const { bodyTypeStyles, buttonMarginBottom, buttonPadding } = options;
+
+  return `:where(.bf-theme) :where(.bf-button, .bf-button.is-base) {
+${bodyTypeStyles}  appearance: none;
+  background-color: var(--bf-color-background-default);
+  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border-radius: var(--bf-radius);
+  color: var(--bf-color-text-default);
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: ${buttonMarginBottom};
+${buttonPadding}  padding-inline: var(--bf-control-inline-padding);
+  text-align: center;
+  text-decoration: none;
+}
+
+:where(.bf-theme) :where(.bf-button) {
+  background-color: var(--bf-color-background-default);
+}
+
+:where(.bf-theme) :where(.bf-button.is-base) {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+:where(.bf-theme) :where(.bf-button:hover, .bf-button.is-base:hover) {
+  background-color: var(--bf-color-background-hover);
+}
+
+:where(.bf-theme) :where(.bf-button:not(.is-base):is(:active, [aria-pressed='true'])) {
+  background-color: var(--bf-color-background-active);
+}
+
+:where(.bf-theme) :where(.bf-button, .bf-button.is-base):focus:not(:focus-visible) {
+  outline: none;
+}
+
+:where(.bf-theme) :where(.bf-button, .bf-button.is-base):focus-visible {
+  outline: 2px solid var(--bf-color-focus);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Button — semantic positive modifier (Vanilla parity).               */
+/* Vanilla uses themed positive tokens for default/hover/active        */
+/* backgrounds plus a white text colour on a coloured surface.         */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-button.is-positive) {
+  background-color: var(--bf-color-button-positive-default);
+  border-color: var(--bf-color-button-positive-default);
+  color: var(--bf-color-button-positive-text);
+}
+
+:where(.bf-theme) :where(.bf-button.is-positive:hover) {
+  background-color: var(--bf-color-button-positive-hover);
+  border-color: var(--bf-color-button-positive-hover);
+  color: var(--bf-color-button-positive-text);
+}
+
+:where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true'])) {
+  background-color: var(--bf-color-button-positive-active);
+  border-color: var(--bf-color-button-positive-active);
+  color: var(--bf-color-button-positive-text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Button — semantic negative modifier (Vanilla parity).               */
+/* Vanilla uses themed negative tokens for default/hover/active        */
+/* backgrounds plus a white text colour on a coloured surface.         */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-button.is-negative) {
+  background-color: var(--bf-color-button-negative-default);
+  border-color: var(--bf-color-button-negative-default);
+  color: var(--bf-color-button-negative-text);
+}
+
+:where(.bf-theme) :where(.bf-button.is-negative:hover) {
+  background-color: var(--bf-color-button-negative-hover);
+  border-color: var(--bf-color-button-negative-hover);
+  color: var(--bf-color-button-negative-text);
+}
+
+:where(.bf-theme) :where(.bf-button.is-negative:is(:active, [aria-pressed='true'])) {
+  background-color: var(--bf-color-button-negative-active);
+  border-color: var(--bf-color-button-negative-active);
+  color: var(--bf-color-button-negative-text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Button — link-style modifier (Vanilla parity).                      */
+/* BF starts from the shared button control contract, so the modifier  */
+/* has to strip control chrome and padding back down to inline-link    */
+/* behavior while reusing the shared link tokens.                      */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-button.is-link) {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--bf-color-link-default);
+  margin-bottom: 0;
+  padding-block: 0;
+  padding-inline: 0;
+}
+
+:where(.bf-theme) :where(.bf-button.is-link:hover) {
+  background-color: transparent;
+  color: var(--bf-color-link-default);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.075em;
+}
+
+:where(.bf-theme) :where(.bf-button.is-link:focus-visible) {
+  outline-offset: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Button — icon-spacing modifier (Vanilla parity).                    */
+/* Vanilla treats icon buttons as the base control plus child-icon     */
+/* spacing tweaks. BF already has a themed bf-icon primitive, so the   */
+/* modifier only needs to adjust child margins around that primitive.  */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {
+  margin-inline: var(--bf-space-1);
+}
+
+:where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon:first-child) {
+  margin-inline-start: calc(var(--bf-space-1) * -1);
+}
+
+:where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon:last-child) {
+  margin-inline-end: calc(var(--bf-space-1) * -1);
+}
+
+:where(.bf-theme) :where(.bf-actions) {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bf-field-gap);
+  min-inline-size: 0;
+}
+
+:where(.bf-theme) :where(.bf-actions.is-end) {
+  justify-content: flex-end;
+}
+
+:where(.bf-theme) :where(.bf-actions.is-nowrap) {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+:where(.bf-theme) :where(.bf-actions.is-nowrap) > * {
+  flex: 0 0 auto;
+}
+`;
+}
