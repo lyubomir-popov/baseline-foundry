@@ -122,44 +122,43 @@ export function injectPageChrome(options = {}) {
         </div>`
     : "";
 
-  const root = document.createElement("div");
-  root.classList.add("pc-root");
-  root.dataset.pageChrome = "true";
-  root.dataset.captureIgnore = "true";
-  root.dataset.baselineIgnore = "true";
-  root.innerHTML = `
-    <div class="bf-side-navigation is-force-drawer is-drawer-collapsed is-drawer-hidden pc-nav" id="${navId}">
-      <div class="pc-bar">
-        <div class="pc-leading">
-          <button class="bf-side-navigation-toggle pc-toggle" type="button" aria-controls="${navId}" aria-expanded="false" aria-label="Show page list">
-            <span class="pc-toggle-label">Pages</span>
-          </button>
-          <div class="pc-current">
-            <span class="pc-section">${escapeHtml(currentPage.section)}</span>
-            <strong class="pc-title">${escapeHtml(currentPage.title)}</strong>
-          </div>
-        </div>
-        ${controlsMarkup}
+  const nav = document.createElement("aside");
+  nav.classList.add("pc-root", "pc-nav");
+  nav.id = navId;
+  nav.setAttribute("aria-label", "Page navigation");
+  nav.dataset.pageChrome = "true";
+  nav.dataset.captureIgnore = "true";
+  nav.dataset.baselineIgnore = "true";
+  nav.innerHTML = `
+    <nav class="bf-side-navigation-drawer" aria-label="Page list">
+      ${renderDrawerSections(currentPath)}
+    </nav>`;
+
+  const header = document.createElement("header");
+  header.classList.add("pc-root", "pc-header");
+  header.dataset.pageChrome = "true";
+  header.dataset.captureIgnore = "true";
+  header.dataset.baselineIgnore = "true";
+  header.innerHTML = `
+    <div class="pc-bar">
+      <div class="pc-current">
+        <span class="pc-section">${escapeHtml(currentPage.section)}</span>
+        <strong class="pc-title">${escapeHtml(currentPage.title)}</strong>
       </div>
-      <div class="bf-side-navigation-overlay" aria-controls="${navId}" aria-hidden="true"></div>
-      <nav class="bf-side-navigation-drawer" aria-label="Page list">
-        <div class="bf-side-navigation-drawer-header">
-          <button class="bf-side-navigation-toggle is-in-drawer" type="button" aria-controls="${navId}" aria-expanded="false">Close</button>
-        </div>
-        ${renderDrawerSections(currentPath)}
-      </nav>
+      ${controlsMarkup}
     </div>`;
 
-  document.body.insertBefore(root, document.body.firstChild);
+  document.body.insertBefore(header, document.body.firstChild);
+  document.body.insertBefore(nav, header);
 
   if (contentWrapper) {
     const firstScript = document.body.querySelector(":scope > script");
     document.body.insertBefore(contentWrapper, firstScript ?? null);
   }
 
-  const toneToggle = root.querySelector("[data-page-chrome-tone-toggle]");
-  const baselineToggle = root.querySelector("[data-page-chrome-baseline-toggle]");
-  const tierSelect = root.querySelector("[data-page-chrome-tier-select]");
+  const toneToggle = header.querySelector("[data-page-chrome-tone-toggle]");
+  const baselineToggle = header.querySelector("[data-page-chrome-baseline-toggle]");
+  const tierSelect = header.querySelector("[data-page-chrome-tier-select]");
 
   if (controls?.tierAriaLabel && tierSelect instanceof HTMLSelectElement) {
     tierSelect.setAttribute("aria-label", controls.tierAriaLabel);
@@ -168,7 +167,9 @@ export function injectPageChrome(options = {}) {
   return {
     baselineToggle,
     contentWrapper,
-    root,
+    header,
+    nav,
+    root: nav,
     tierSelect,
     toneToggle
   };
