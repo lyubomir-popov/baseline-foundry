@@ -289,6 +289,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-wide) {\n  --bf-inline-size: 24rem;"), "Expected shared CSS to expose the wide bounded inline-size modifier.");
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-x-wide) {\n  --bf-inline-size: 28rem;"), "Expected shared CSS to expose the x-wide bounded inline-size modifier.");
   assert(css.includes(":where(.bf-theme) :where(ul.bf-grid, ol.bf-grid) {\n  list-style: none;\n  margin: 0;\n  padding: 0;"), "Expected shared CSS to let bf-grid act as an unstyled list container without page-local resets.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-grid) :where(.bf-fixed-width)", {
+    "padding-inline": "0",
+  }, "nested fixed-width wrappers inside bf-grid avoid adding a second page gutter");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.is-guide) > * {\n  background: color-mix(in srgb, var(--bf-color-accent) 18%, var(--bf-color-background-default));"), "Expected shared CSS to expose the BF-owned grid guide modifier for breakpoint specimens.");
   assert(css.includes("--bf-grid-gap-inline: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px inline gutter without a separate 460px switch.");
   assert(css.includes("--bf-grid-gap-block: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px block-gap token for non-bf-grid layouts.");

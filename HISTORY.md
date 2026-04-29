@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Nested fixed-width gutter cleanup (2026-04-29)
+
+- [x] Added `:where(.bf-theme) :where(.bf-grid) :where(.bf-fixed-width) { padding-inline: 0; }` so `bf-fixed-width` behaves as an alternative width owner inside grid content instead of adding a second page gutter on full-span prose blocks.
+- [x] Added the matching `assertRuleHasDecl(...)` invariant in `scripts/validate-build.ts` so the shared CSS cannot silently reintroduce the duplicate grid gutter.
+- [x] Rebuilt the shared theme artifacts and re-ran `npm run test:build` (`3190` checks green). A local runtime probe now reports nested grid `bf-fixed-width` wrappers at `padding-inline: 0px` and confirms `.bf-top-navigation-row` still renders as a `48px` border-box row, so the consumer portfolio's `50px` header report does not reproduce inside baseline-foundry.
+
 ## Top-navigation baseline regression revert (2026-04-29)
 
 - [x] Reverted `bf-top-navigation-row` `padding-block` from `0` back to `var(--bf-border-width)` after `npm run qa:components` showed the prior session's "fix" knocked every top-navigation page ~2px off the 8px baseline grid in editorial, documentation, and OS tiers (section measure error 2.06px, content offset error 2.03px). The 50px-is-off-grid premise was wrong: the row uses border-box sizing so the `min-block-size: var(--bf-baseline) * 6 = 48px` already constrains the box, and the symmetric `padding-block: var(--bf-border-width)` is what keeps the link content aligned within the row without dropping 2px of layout that downstream sections depend on.

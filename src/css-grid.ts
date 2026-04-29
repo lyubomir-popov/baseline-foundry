@@ -77,6 +77,10 @@ export function gridCss(): string {
   padding-inline: 0;
 }
 
+:where(.bf-theme) :where(.bf-grid) :where(.bf-fixed-width) {
+  padding-inline: 0;
+}
+
 /* ------------------------------------------------------------------ */
 /* Grid base — 4 columns, all tiers                                    */
 /* ------------------------------------------------------------------ */
