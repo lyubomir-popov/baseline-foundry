@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Surfaces manifest schema documentation (2026-04-29)
+
+- [x] Added [`docs/surfaces-manifest.md`](docs/surfaces-manifest.md) documenting the full `surfaces.json` schema (top-level shape, surface entry, `engine` enum, `tokens`, `metrics`, font asset contract), stability guarantees, and consumer recipes — closes the audit's #3 v1.0 documentation blocker.
+- [x] Linked the new doc from `README.md` so downstream consumers can find the schema from the published static-asset list.
+- [x] Added a `Surfaces manifest docs` invariant in `scripts/validate-build.ts` (13 fragment checks) so the doc cannot silently drift away from the manifest contract or lose its README backlink.
+
 ## Top-navigation baseline cleanup (2026-04-29)
 
 - [x] Removed the extra `padding-block: var(--bf-border-width)` from `bf-top-navigation-row` in the shared generator so the default BF top-navigation bar now resolves to the intended `48px` block size instead of `50px`.

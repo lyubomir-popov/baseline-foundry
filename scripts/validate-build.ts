@@ -76,6 +76,31 @@ function validatePackageExports(packageJson: Record<string, unknown>): void {
   }
 }
 
+function validateSurfacesManifestDocs(docsMd: string, readmeMd: string): void {
+  // Top-level shape and keys consumers depend on must remain documented.
+  const requiredFragments = [
+    "# Surfaces manifest (`surfaces.json`)",
+    "## Top-level shape",
+    "`defaultSurface`",
+    "## Surface entry (`ThemeSurfaceManifestEntry`)",
+    "### Engine values",
+    "`metrics-compensated`",
+    "`cap-formula`",
+    "## `tokens` \u2014 `ThemeTokens`",
+    "## `metrics` \u2014 `BaselineGeneratorTokens`",
+    "## Font asset contract",
+    "## Stability guarantees",
+    "## Consumer recipes"
+  ];
+  for (const fragment of requiredFragments) {
+    assert(docsMd.includes(fragment), `Expected docs/surfaces-manifest.md to document "${fragment}".`);
+  }
+  assert(
+    readmeMd.includes("docs/surfaces-manifest.md"),
+    "Expected README.md to link to docs/surfaces-manifest.md so consumers can find the manifest schema."
+  );
+}
+
 function escapeForRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -1020,6 +1045,8 @@ function validateOsTierPage(pageCatalogJs: string, panelHtml: string): void {
 async function main(): Promise<void> {
   const packageJson = JSON.parse(await readTextArtifact(path.resolve("package.json"))) as Record<string, unknown>;
   const viteConfigTs = await readTextArtifact(path.resolve("vite.config.ts"));
+  const surfacesManifestDoc = await readTextArtifact(path.resolve("docs/surfaces-manifest.md"));
+  const readmeMd = await readTextArtifact(path.resolve("README.md"));
   const defaultTheme = await readThemeArtifacts(path.resolve("dist"));
   const editorialTier = await readThemeArtifacts(path.resolve("dist/tiers/editorial"));
   const documentationTier = await readThemeArtifacts(path.resolve("dist/tiers/documentation"));
@@ -1097,6 +1124,7 @@ async function main(): Promise<void> {
   runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
   runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
   runInvariant("Published package exports", () => validatePackageExports(packageJson));
+  runInvariant("Surfaces manifest docs", () => validateSurfacesManifestDocs(surfacesManifestDoc, readmeMd));
   runInvariant("Theme config watcher", () => validateThemeConfigWatcher(viteConfigTs));
   await runInvariantAsync("Panel baseline cleanup", () => validatePanelBaselineArtifacts());
   runInvariant("Demo CSS selector hygiene", () => validateDemoCssSelectorHygiene({

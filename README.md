@@ -223,7 +223,7 @@ Independent surface contract:
 - each built-in tier emits a complete scoped token surface instead of inheriting editorial defaults through diffs
 - tier choice is a top-level class on any `.bf-theme` container: `.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`, `.bf-tier-os`
 - multiple containers can coexist side by side under the same stylesheet
-- `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface
+- `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface — see [docs/surfaces-manifest.md](docs/surfaces-manifest.md) for the full schema, stability guarantees, and consumer recipes
 - the published manifest omits local build-machine config/baseline file paths, so the shipped JSON stays portable
 - `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest
 
