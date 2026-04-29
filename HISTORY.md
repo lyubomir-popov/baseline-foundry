@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Top-navigation baseline cleanup (2026-04-29)
+
+- [x] Removed the extra `padding-block: var(--bf-border-width)` from `bf-top-navigation-row` in the shared generator so the default BF top-navigation bar now resolves to the intended `48px` block size instead of `50px`.
+- [x] Rebuilt the published tier artifacts and confirmed the compiled editorial CSS now emits `padding-block: 0` on `.bf-top-navigation-row` while preserving the existing link padding contract.
+- [x] Added a static `scripts/validate-build.ts` assertion so future top-navigation changes cannot silently reintroduce extra row block padding and knock the bar off the baseline grid again.
+
 ## Button follow-up cleanup (2026-04-29)
 
 - [x] Closed the stale `bf-button.is-negative` TODO item after confirming the modifier had already shipped in commit `c4431c4` with demo coverage and static validation.

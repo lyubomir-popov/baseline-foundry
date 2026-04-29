@@ -2662,7 +2662,7 @@ ${controlPadding(controlCompactBlockPaddingVar, "0rem")}  padding-inline: var(--
   flex-direction: column;
   min-block-size: var(--bf-navigation-bar-min-block-size);
   min-inline-size: 0;
-  padding-block: var(--bf-border-width);
+  padding-block: 0;
   padding-inline: var(--bf-panel-padding-inline);
   position: relative;
   z-index: 1;
