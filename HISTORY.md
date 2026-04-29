@@ -4,6 +4,13 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## CSS AST assertion infrastructure (2026-04-29)
+
+- [x] Added `postcss` as a dev dependency and shipped `scripts/css-ast-helpers.ts` with `parseCss`, `findRule`, `assertRuleHasDecl`, `assertRuleMissingDecl`, and `assertRuleExists` helpers so future CSS invariants can match on selector + declaration semantics instead of brittle multi-line substring literals.
+- [x] Extracted the shared `assert` / `getCheckCount` primitive into `scripts/validation-assert.ts` so helper modules and `validate-build.ts` increment the same per-invariant check counter.
+- [x] Migrated the `.bf-top-navigation-row` baseline-grid invariant from a multi-line `css.includes(...)` literal to `assertRuleHasDecl(...)` as the proof-of-concept; expanded coverage from 1 substring check to 6 semantic checks per surface bundle.
+- [x] Documented the migration pattern inline in `validateCommonCss` so subsequent migrations follow the same shape.
+
 ## Surfaces manifest schema documentation (2026-04-29)
 
 - [x] Added [`docs/surfaces-manifest.md`](docs/surfaces-manifest.md) documenting the full `surfaces.json` schema (top-level shape, surface entry, `engine` enum, `tokens`, `metrics`, font asset contract), stability guarantees, and consumer recipes — closes the audit's #3 v1.0 documentation blocker.

@@ -1,27 +1,20 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "../src/baseline-grid-theme.js";
-
-let checkCount = 0;
-
-function assert(condition: unknown, message: string): asserts condition {
-  checkCount++;
-  if (!condition) {
-    throw new Error(message);
-  }
-}
+import { assert, getCheckCount } from "./validation-assert.ts";
+import { parseCss, assertRuleHasDecl } from "./css-ast-helpers.ts";
 
 function runInvariant(name: string, fn: () => void): void {
-  const before = checkCount;
+  const before = getCheckCount();
   fn();
-  const ran = checkCount - before;
+  const ran = getCheckCount() - before;
   console.log(`  \u2713 ${name}: ${ran} checks`);
 }
 
 async function runInvariantAsync(name: string, fn: () => Promise<void>): Promise<void> {
-  const before = checkCount;
+  const before = getCheckCount();
   await fn();
-  const ran = checkCount - before;
+  const ran = getCheckCount() - before;
   console.log(`  \u2713 ${name}: ${ran} checks`);
 }
 
@@ -275,6 +268,10 @@ async function validateExampleDogfooding(): Promise<void> {
 }
 
 function validateCommonCss(css: string): void {
+  // PostCSS-parsed view of the same bundle. New assertions and migrated
+  // legacy ones should prefer the AST helpers (assertRuleHasDecl, etc.) over
+  // brittle multi-line substring checks. See scripts/css-ast-helpers.ts.
+  const ast = parseCss(css);
   assert(css.includes("@font-face"), "Expected generated CSS to include runtime font-face rules.");
   assert(css.includes("font-family: \"Ubuntu Sans\";"), "Expected generated CSS to register the Ubuntu Sans family.");
   assert(css.includes("UbuntuSans[wdth,wght].ttf"), "Expected generated CSS to point to the Ubuntu Sans variable font.");
@@ -484,7 +481,16 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-item-label) {"), "Expected generated CSS to include the top-navigation dropdown item label slot styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-item-shortcut) {"), "Expected generated CSS to include the top-navigation dropdown item shortcut slot styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider) {"), "Expected generated CSS to include the top-navigation dropdown divider styling.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-row) {\n  display: flex;\n  flex-direction: column;\n  min-block-size: var(--bf-navigation-bar-min-block-size);\n  min-inline-size: 0;\n  padding-block: 0;"), "Expected top-navigation rows to avoid extra block padding so the navigation bar height stays on the baseline grid.");
+  // Migrated to AST: this used to be a multi-line substring check that broke
+  // on any whitespace shift. The AST form survives reformatting and still
+  // catches accidental reintroduction of extra block padding.
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-top-navigation-row)", {
+    "display": "flex",
+    "flex-direction": "column",
+    "min-block-size": "var(--bf-navigation-bar-min-block-size)",
+    "min-inline-size": "0",
+    "padding-block": "0"
+  }, "top-navigation row stays on the baseline grid");
   assert(css.includes("transform: rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to point downward before expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: rotate(180deg);\n}"), "Expected active top-navigation chevrons to rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
@@ -1173,7 +1179,7 @@ async function main(): Promise<void> {
     skipLink: skipLinkHtml
   }));
 
-  console.log(`\nBuild validation passed: ${checkCount} total checks.`);
+  console.log(`\nBuild validation passed: ${getCheckCount()} total checks.`);
 }
 
 main().catch(error => {
