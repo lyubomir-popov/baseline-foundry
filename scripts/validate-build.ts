@@ -470,8 +470,15 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-segmented-control-button, .bf-tab-buttons-button)"), "Expected generated CSS to include segmented control buttons.");
   assert(css.includes(":where(.bf-breadcrumbs-items)"), "Expected generated CSS to include breadcrumb styling.");
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
-  assert(css.includes(":where(table, .bf-table)"), "Expected generated CSS to include table styling.");
-    assert(css.includes(":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder) {"), "Expected generated CSS to include the table icon-placeholder cell styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(table, .bf-table)", {
+    "border-collapse": "separate",
+    "caption-side": "bottom",
+    "table-layout": "auto",
+    "width": "100%"
+  }, "tables keep the canonical BF table layout contract");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
+    "padding-inline-start": "calc((var(--bf-baseline) * 0.75) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
+  }, "table icon-placeholder cells keep the leading-icon gutter");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
     "--bf-ui-chip-border": "var(--bf-color-border-neutral)",
     "--bf-ui-chip-background": "var(--bf-color-background-neutral-default)",

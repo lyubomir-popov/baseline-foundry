@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## css-components split burst 5 (2026-04-30)
+
+- [x] Extracted the contiguous table block out of `src/css-components.ts` into `src/css-components/table.ts` without changing generated CSS output order.
+- [x] Confirmed the helper-driven split pattern also covers table families that need both body typography fragments and computed metric vars like `bodyLineHeight`.
+- [x] Migrated the touched table invariants in `scripts/validate-build.ts` from substring checks to `assertRuleHasDecl(...)` checks (`bf-table` and `bf-table-cell.is-icon-placeholder`) and revalidated with `npm run build:theme` plus `npm run test:build` (3718 checks green).
+
 ## css-components split burst 4 (2026-04-30)
 
 - [x] Extracted the contiguous chip/badge/status-label block out of `src/css-components.ts` into `src/css-components/chip-badge-status.ts` without changing generated CSS output order.
