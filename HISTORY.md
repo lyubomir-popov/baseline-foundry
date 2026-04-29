@@ -9,6 +9,7 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 - [x] Closed the stale `bf-button.is-negative` TODO item after confirming the modifier had already shipped in commit `c4431c4` with demo coverage and static validation.
 - [x] Resolved the brand-button strategy as a non-port: Vanilla marks `p-button--brand` deprecated, and BF's parity scope excludes deprecated upstream patterns.
 - [x] Shipped `bf-button.is-link` using the shared link-color contract, transparent chrome, and underline-on-hover behavior, and added it to the button demo plus build validation.
+- [x] Shipped `bf-button.is-icon` as the Vanilla-style child-icon spacing contract on top of the existing `bf-icon` primitive, and added both leading/trailing icon examples to the button demo plus static build validation.
 
 ## Component QA cleanup (2026-04-29)
 

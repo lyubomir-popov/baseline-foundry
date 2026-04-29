@@ -897,6 +897,25 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
   outline-offset: 0;
 }
 
+/* ------------------------------------------------------------------ */
+/* Button — icon-spacing modifier (Vanilla parity).                    */
+/* Vanilla treats icon buttons as the base control plus child-icon     */
+/* spacing tweaks. BF already has a themed bf-icon primitive, so the   */
+/* modifier only needs to adjust child margins around that primitive.  */
+/* ------------------------------------------------------------------ */
+
+:where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {
+  margin-inline: var(--bf-space-1);
+}
+
+:where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon:first-child) {
+  margin-inline-start: calc(var(--bf-space-1) * -1);
+}
+
+:where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon:last-child) {
+  margin-inline-end: calc(var(--bf-space-1) * -1);
+}
+
 :where(.bf-theme) :where(.bf-actions) {
   align-items: center;
   display: flex;
