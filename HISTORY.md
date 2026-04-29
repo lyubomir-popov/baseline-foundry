@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## css-components split burst 4 (2026-04-30)
+
+- [x] Extracted the contiguous chip/badge/status-label block out of `src/css-components.ts` into `src/css-components/chip-badge-status.ts` without changing generated CSS output order.
+- [x] Confirmed the helper-driven split pattern also covers family modules that need nearby computed metric vars (`bodyLineHeight`, `bodySelectedStartNudge`) in addition to precomputed `typeStyles(...)` fragments from `componentsCss(...)`.
+- [x] Migrated the touched chip/status invariants in `scripts/validate-build.ts` from substring checks to `assertRuleHasDecl(...)` checks (`bf-chip`, `bf-badge`, `bf-status-label`) and revalidated with `npm run build:theme` plus `npm run test:build` (3658 checks green).
+
 ## css-components split burst 3 (2026-04-29)
 
 - [x] Extracted the contiguous card/option surface block out of `src/css-components.ts` into `src/css-components/cards-options.ts` without changing generated CSS output order.

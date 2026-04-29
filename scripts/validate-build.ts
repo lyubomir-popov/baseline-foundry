@@ -472,13 +472,24 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
   assert(css.includes(":where(table, .bf-table)"), "Expected generated CSS to include table styling.");
     assert(css.includes(":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder) {"), "Expected generated CSS to include the table icon-placeholder cell styling.");
-  assert(css.includes(":where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)"), "Expected generated CSS to include chip styling.");
-  assert(css.includes("--bf-ui-chip-border: var(--bf-color-border-neutral);"), "Expected generated CSS to style neutral chips with the Vanilla neutral border token.");
-  assert(css.includes("--bf-ui-chip-background: var(--bf-color-background-neutral-default);"), "Expected generated CSS to style neutral chips with the Vanilla neutral background token.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
+    "--bf-ui-chip-border": "var(--bf-color-border-neutral)",
+    "--bf-ui-chip-background": "var(--bf-color-background-neutral-default)",
+    "display": "inline-flex",
+    "white-space": "nowrap"
+  }, "chips keep the canonical neutral token defaults and inline chip layout");
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
-  assert(css.includes(":where(.bf-badge, .bf-badge.is-negative)"), "Expected generated CSS to include badge styling.");
-  assert(css.includes(":where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)"), "Expected generated CSS to include status label styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", {
+    "display": "inline-block",
+    "text-align": "center",
+    "text-indent": "0"
+  }, "badges keep the canonical body-sized pill geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", {
+    "display": "inline-block",
+    "text-decoration": "none",
+    "white-space": "nowrap"
+  }, "status labels keep the canonical inline label treatment");
   assert(css.includes("--bf-ui-badge-padding-inline: calc(var(--bf-body-line-height"), "Expected badge geometry to scale from the active body line-height rather than an h5 fallback.");
   assert(css.includes("min-width: calc(var(--bf-body-line-height"), "Expected badge minimum width to scale from the active body line-height.");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before", "chip value separators");
