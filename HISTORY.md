@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## css-components split burst 6 (2026-04-30)
+
+- [x] Extracted the contiguous tabs/choice/breadcrumbs block out of `src/css-components.ts` into `src/css-components/tabs-choice-breadcrumbs.ts` without changing CSS output order.
+- [x] Confirmed the helper-driven split pattern now also covers mixed navigation/selection families driven by precomputed body typography and button spacing fragments.
+- [x] Migrated the touched invariants in `scripts/validate-build.ts` from substring checks to AST assertions for `bf-breadcrumbs-items`, `bf-tabs.is-equal`, `bf-choice-row`, and `bf-inline-options`, then revalidated with `npm run build:theme` plus `npm run test:build` (3952 checks green).
+
 ## OS-tier neutral entrypoint contract (2026-04-30)
 
 - [x] Closed the open OS-tier consumer TODO without adding a new preset alias, build artifact, or package export.
