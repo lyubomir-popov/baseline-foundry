@@ -315,6 +315,34 @@ Static assets:
 - `baseline-foundry/presets/app-tier.tokens.json`
 - `baseline-foundry/presets/app-tier.surfaces.json`
 
+### Entry point guidance
+
+Downstream consumers have two supported ways to load the built-in OS surface, depending on whether they need a neutral shared bundle or an OS-only default surface.
+
+- Use `baseline-foundry/styles.css` as the neutral entrypoint when the consumer wants the shared root bundle and will opt into OS with class switching such as `.bf-theme.bf-tier-os`.
+- Use `baseline-foundry/tiers/os.css` only when the consumer wants OS to be the unscoped default surface for that stylesheet import.
+- Do not import `baseline-foundry/presets/app-tier.css` just to preload the shared bundle before switching to `bf-tier-os`; that preset remains the legacy app alias, not the neutral OS entrypoint.
+- The legacy `baseline-foundry/presets/panel.css` artifact remains available for existing consumers, but it is still only the legacy dense alias for OS rather than the recommended neutral entrypoint.
+
+Example neutral entrypoint for a downstream such as `a4-generator`:
+
+```html
+<link rel="stylesheet" href="baseline-foundry/styles.css" />
+
+<section class="bf-theme bf-tier-os">
+	<div class="bf-prose">
+		<h1>OS surface</h1>
+		<p>The shared root bundle is loaded once, and the container opts into the OS tier explicitly.</p>
+	</div>
+</section>
+```
+
+Example OS-default entrypoint when class switching is not needed:
+
+```html
+<link rel="stylesheet" href="baseline-foundry/tiers/os.css" />
+```
+
 ## Downstream Fonts
 
 The built-in default is Ubuntu Sans Variable, but downstream repos are not locked to it.

@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## OS-tier neutral entrypoint contract (2026-04-30)
+
+- [x] Closed the open OS-tier consumer TODO without adding a new preset alias, build artifact, or package export.
+- [x] Documented the supported downstream contract in `README.md`: use `baseline-foundry/styles.css` as the neutral shared bundle when consumers class-switch into `.bf-tier-os`, and use `baseline-foundry/tiers/os.css` only when OS should be the unscoped default surface.
+- [x] Left the legacy `panel` preset untouched in this slice and recorded the decision in `TODO.md` and `STATUS.md` so cold starts do not reopen the same entrypoint question.
+
 ## IBM Plex packaging decision (2026-04-30)
 
 - [x] Closed the open IBM Plex packaging decision in favor of the existing repo contract: Ubuntu Sans remains the only built-in tier font, and BF will not ship a first-class IBM Plex preset.
