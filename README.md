@@ -414,8 +414,10 @@ await buildThemeFromConfig("config/ubuntu-foundry-theme.json", {
 
 If a downstream surface bundle should ship multiple named fonts or brand variants in one stylesheet, pass a label for the default surface plus sibling named surfaces:
 
+Baseline Foundry does not ship IBM Plex as a built-in tier or preset. Ubuntu Sans remains the only built-in tier font. For non-Ubuntu downstream bundles, provide your own config file and treat `config/experiments/ibm-plex-engine-smoke.json` as a reference/example rather than as a published preset.
+
 ```ts
-await buildThemeFromConfig("config/ibm-plex-foundry-theme.json", {
+await buildThemeFromConfig("config/brand-ibm-plex-theme.json", {
 	distDir: "generated/foundry/smoke",
 	baselineDir: ".generated/baseline/smoke",
 	surfaceLabel: "IBM Plex Sans",

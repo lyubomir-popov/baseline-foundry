@@ -217,9 +217,7 @@ Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent
 ### Inbox triage
 
 - [x] Persist the shared page-chrome baseline-grid, tier, and tone choices across page-to-page navigation instead of resetting them per page family.
-- [ ] `[H]` Downstream portfolio follow-up: investigate why the consumer `/about` route only changes a subset of surfaces in dark mode and still reports a `50px` top header. Local BF checks remain correct (shared demos toggle `is-dark`; a runtime probe measures `.bf-top-navigation-row` at `48px` border-box), so the next step is to inspect the portfolio repo's theme-root wiring, stylesheet import order, and header markup.
-- [ ] `[H]` Downstream follow-up: investigate the remaining `TieredList-*.js` 119 kB bundle bloat in the consumer `Project.jsx` slice; baseline-foundry owns the `bf-tiered-list` surface, but the current bundle hotspot is not in this repo. Identify which scripts are animation-critical versus disposable and do not remove anything blindly.
-- [ ] `[H]` Decide whether to ship an explicit IBM Plex preset or a documented supported font-option path for downstream adopters such as `portfolio`, which already consumes the base, editorial-tier, and prose bundles during its migration.
+- [x] `[H]` Decided IBM Plex packaging strategy (2026-04-30) — do not ship an explicit BF IBM Plex preset. Ubuntu Sans remains the only built-in tier font; downstream non-Ubuntu adopters should use a consumer-owned config path, with `config/experiments/ibm-plex-engine-smoke.json` as a reference/example only.
 - [ ] `[S]` Expose an explicit OS-tier preset artifact or a clearly documented neutral preset entrypoint for downstream `bf-tier-os` consumers such as `a4-generator`, so they do not need to import `presets/app-tier.css` just to load the shared BF bundle before switching to the OS tier class.
 - [ ] `[S]` Remove the remaining `panel` legacy preset support once `brand-layout-ops` migrates, leaving `os` as an independent sibling built-in tier with no preset coupling.
 - [ ] `[H]` Standardize dense icon and keyline spacing across search fields, search-and-filter, accordion toggles, top navigation, side navigation, and icon-bearing buttons so one- and two-icon controls share a consistent edge-spacing contract and stack onto as few vertical keylines as possible.
@@ -260,7 +258,7 @@ Decision gate:
 
 - [x] Blog engine illustration — `demo/components/engine-illustration.html` now provides the static BF-owned side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding for the IBM Plex Sans / Ubuntu Sans H1 and H2 experiment. It remains a blog/demo artifact, not a buildable surface mode.
 
-### Portfolio-blocking parity follow-ups
+### BF parity follow-ups
 
 The four ports landed 2026-04-27 (commits `ca16bb5`, `3b4f9ac`, `0ad2e53`, `aa5335d`). Next-batch follow-ups, tier-tagged for routing:
 

@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## IBM Plex packaging decision (2026-04-30)
+
+- [x] Closed the open IBM Plex packaging decision in favor of the existing repo contract: Ubuntu Sans remains the only built-in tier font, and BF will not ship a first-class IBM Plex preset.
+- [x] Fixed the README custom-build example so it no longer points at a nonexistent `config/ibm-plex-foundry-theme.json` file.
+- [x] Documented the supported path for non-Ubuntu downstream adopters: use a consumer-owned config file, with `config/experiments/ibm-plex-engine-smoke.json` as the in-repo reference/example only.
+
 ## css-components split burst 5 (2026-04-30)
 
 - [x] Extracted the contiguous table block out of `src/css-components.ts` into `src/css-components/table.ts` without changing generated CSS output order.
