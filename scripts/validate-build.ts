@@ -567,7 +567,15 @@ function validateCommonCss(css: string): void {
     assert(css.includes(":where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {"), "Expected generated CSS to include ticked and crossed list-item styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-list)"), "Expected generated CSS to include the inline-list styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-skip-link)"), "Expected generated CSS to include the skip-link styling.");
-  assert(css.includes(":where(.bf-list-tree)"), "Expected generated CSS to include list-tree styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree)", {
+    "list-style": "none"
+  }, "list-tree root keeps list semantics reset");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree) :where(.bf-list-tree[aria-hidden='false'])", {
+    "display": "block"
+  }, "expanded list-tree branches reveal nested lists");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree-toggle[aria-expanded='true'])::before", {
+    "transform": "rotate(0deg)"
+  }, "expanded list-tree toggles rotate the chevron into the open state");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal)", {
     "--bf-ui-tabs-equal-min": "8rem"
   }, "equal-width tabs expose the canonical minimum track variable");
