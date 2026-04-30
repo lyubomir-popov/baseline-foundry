@@ -468,7 +468,13 @@ function validateCommonCss(css: string): void {
     "object-position": "center"
   }, "card preview images stay centered inside the atlas preview slot");
   assert(css.includes(":where(.bf-segmented-control-button, .bf-tab-buttons-button)"), "Expected generated CSS to include segmented control buttons.");
-  assert(css.includes(":where(.bf-breadcrumbs-items)"), "Expected generated CSS to include breadcrumb styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-breadcrumbs-items)", {
+    "display": "flex",
+    "flex-wrap": "wrap",
+    "gap": "calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 1.25)",
+    "list-style": "none",
+    "padding": "0"
+  }, "breadcrumbs keep the canonical wrapped trail layout");
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(table, .bf-table)", {
     "border-collapse": "separate",
@@ -555,9 +561,28 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-list)"), "Expected generated CSS to include the inline-list styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-skip-link)"), "Expected generated CSS to include the skip-link styling.");
   assert(css.includes(":where(.bf-list-tree)"), "Expected generated CSS to include list-tree styling.");
-  assert(css.includes(":where(.bf-tabs.is-equal)"), "Expected generated CSS to include equal-width dense tab modifiers.");
-  assert(css.includes(":where(.bf-choice-row)"), "Expected generated CSS to include the canonical choice-row component.");
-  assert(css.includes(":where(.bf-inline-options)"), "Expected generated CSS to include the canonical inline-options component.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal)", {
+    "--bf-ui-tabs-equal-min": "8rem"
+  }, "equal-width tabs expose the canonical minimum track variable");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)", {
+    "display": "grid",
+    "gap": "calc(var(--bf-baseline) * 2)",
+    "grid-template-columns": "repeat(auto-fit, minmax(min(100%, var(--bf-ui-tabs-equal-min)), 1fr))",
+    "overflow": "visible",
+    "white-space": "normal"
+  }, "equal-width tabs keep the canonical auto-fit grid contract");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-choice-row)", {
+    "display": "grid",
+    "grid-template-columns": "auto minmax(0, 1fr) auto",
+    "gap": "calc(var(--bf-baseline) * 0.75)",
+    "padding-inline": "var(--bf-control-inline-padding)"
+  }, "choice rows keep the canonical selection-row layout");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-options)", {
+    "border-bottom": "var(--bf-border-width) solid var(--bf-color-border-default)",
+    "display": "grid",
+    "gap": "var(--bf-field-gap)",
+    "padding-inline": "var(--bf-panel-padding-inline)"
+  }, "inline options keep the canonical stacked options panel layout");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-option-grid)", {
     "display": "grid",
     "grid-template-columns": "repeat(auto-fit, minmax(min(100%, 10rem), 1fr))"
