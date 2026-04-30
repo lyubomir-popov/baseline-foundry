@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## css-components split burst 7 (2026-04-30)
+
+- [x] Extracted the contiguous `bf-list-tree` block out of `src/css-components.ts` into `src/css-components/list-tree.ts` without changing CSS output order.
+- [x] Confirmed the helper/module split pattern also covers a smaller body-typography-driven navigation family.
+- [x] Migrated the touched list-tree invariants in `scripts/validate-build.ts` to AST checks and revalidated with `npm run build:theme` plus `npm run test:build` (`3480` checks green).
+
 ## tick-switch geometry follow-up (2026-04-30)
 
 - [x] Corrected the shared radio/switch geometry slice in `src/css-components.ts` by applying border-box to the relevant pseudo-elements and deriving the radio inner dot from the control visual size.
