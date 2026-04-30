@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## css-components split burst 8 (2026-04-30)
+
+- [x] Extracted the contiguous search/search-and-filter block into `src/css-components/search-box-and-filter.ts` without changing CSS output order.
+- [x] Confirmed the helper/module pattern still works for a family that depends on nearby shared dismiss-button selectors remaining outside the module.
+- [x] Migrated the touched search invariants to AST checks and revalidated with `npm run build:theme` plus `npm run test:build` (3550 checks green).
+
 ## css-components split burst 7 (2026-04-30)
 
 - [x] Extracted the contiguous `bf-list-tree` block out of `src/css-components.ts` into `src/css-components/list-tree.ts` without changing CSS output order.
