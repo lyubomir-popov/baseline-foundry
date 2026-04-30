@@ -8,7 +8,7 @@ Minimal testing surface for evaluating canonical typography, spacing, and grid s
 
 Primary spec inputs for roadmap work:
 
-- `../canonical-spacing-spec/specs/typeface/draft.md`
+- `../canonical-spacing-spec/specs/type scale/draft.md`
 - `../canonical-spacing-spec/specs/spacing/draft.md`
 - `../canonical-spacing-spec/specs/grid/draft.md`
 

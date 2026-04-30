@@ -8,7 +8,7 @@ Provide the **minimal testing surface** for evaluating the canonical typography,
 
 Primary linked specs for this repo:
 
-- `../canonical-spacing-spec/specs/typeface/draft.md`
+- `../canonical-spacing-spec/specs/type scale/draft.md`
 - `../canonical-spacing-spec/specs/spacing/draft.md`
 - `../canonical-spacing-spec/specs/grid/draft.md`
 - Supporting reference: `../canonical-spacing-spec/specs/typography-article/draft.md`
@@ -154,7 +154,7 @@ Consequences:
 
 ## Spec conformance
 
-Reference: `../canonical-spacing-spec/specs/typeface/draft.md`, `../canonical-spacing-spec/specs/spacing/draft.md`, `../canonical-spacing-spec/specs/grid/draft.md`. **All PASS** (resolved Phase 6).
+Reference: `../canonical-spacing-spec/specs/type scale/draft.md`, `../canonical-spacing-spec/specs/spacing/draft.md`, `../canonical-spacing-spec/specs/grid/draft.md`. **All PASS** (resolved Phase 6).
 
 ## Model tier routing
 

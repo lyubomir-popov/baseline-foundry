@@ -8,7 +8,7 @@
 | Primary linked specs | `canonical-spacing-spec` |
 | Legacy spec snapshot | `canonical-specs` |
 | Compatibility package | `portable-vertical-rhythm` |
-| Type-scale reference | `docs-typescale` |
+| Type-scale spec | `../canonical-spacing-spec/specs/type scale/draft.md` |
 
 ## Quick start
 
@@ -65,7 +65,7 @@ Demo: `http://127.0.0.1:4174/`
 
 | Role | Path |
 |------|------|
-| Typeface spec | `../canonical-spacing-spec/specs/typeface/draft.md` |
+| Type-scale spec | `../canonical-spacing-spec/specs/type scale/draft.md` |
 | Spacing spec | `../canonical-spacing-spec/specs/spacing/draft.md` |
 | Grid spec | `../canonical-spacing-spec/specs/grid/draft.md` |
 | Supporting article/reference | `../canonical-spacing-spec/specs/typography-article/draft.md` |
