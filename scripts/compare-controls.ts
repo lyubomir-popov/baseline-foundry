@@ -11,8 +11,10 @@ type Measurement = {
   labelTop: number;
   labelHeight: number;
   labelCenter: number;
+  labelLineCenter: number;
   labelLineHeight: number;
   labelFontSize: number;
+  labelPaddingBlockStart: number;
   labelPaddingInlineStart: number;
   beforeTop: number;
   beforeHeight: number;
@@ -331,12 +333,15 @@ async function captureFramework(framework: FrameworkKind, htmlPath: string): Pro
         const labelStyles = getComputedStyle(label);
         const beforeStyles = getComputedStyle(label, "::before");
         const afterStyles = getComputedStyle(label, "::after");
+        const labelPaddingBlockStart = Number.parseFloat(labelStyles.paddingBlockStart || "0");
         const result = {
           labelTop: labelBox.top - containerBox.top,
           labelHeight: labelBox.height,
           labelCenter: labelBox.top - containerBox.top + labelBox.height / 2,
+          labelLineCenter: labelBox.top - containerBox.top + labelPaddingBlockStart + (Number.parseFloat(labelStyles.lineHeight || "0") / 2),
           labelLineHeight: Number.parseFloat(labelStyles.lineHeight || "0"),
           labelFontSize: Number.parseFloat(labelStyles.fontSize || "0"),
+          labelPaddingBlockStart,
           labelPaddingInlineStart: Number.parseFloat(labelStyles.paddingInlineStart || "0"),
           beforeTop: Number.parseFloat(beforeStyles.top || "0"),
           beforeHeight: Number.parseFloat(beforeStyles.height || "0"),
@@ -359,7 +364,7 @@ async function captureFramework(framework: FrameworkKind, htmlPath: string): Pro
           result.visualCenter = visualBox.top - containerBox.top + visualBox.height / 2;
         }
 
-        result.centerDelta = (result.visualCenter ?? result.beforeCenter) - result.labelCenter;
+        result.centerDelta = (result.visualCenter ?? result.beforeCenter) - result.labelLineCenter;
         return result;
       }, { control, target });
     }

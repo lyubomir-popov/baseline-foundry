@@ -5,13 +5,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export type TierName = "editorial" | "documentation" | "app" | "os";
 
-export type PresetName = "prose" | "panel" | "app-tier";
+export type PresetName = "prose" | "app-tier";
 
 export type BuiltInThemeName = TierName | PresetName;
 
 export const tierNames: readonly TierName[] = ["editorial", "documentation", "app", "os"] as const;
 
-export const presetNames: readonly PresetName[] = ["prose", "panel", "app-tier"] as const;
+export const presetNames: readonly PresetName[] = ["prose", "app-tier"] as const;
 
 export const tierDescriptions: Record<TierName, string> = {
   editorial: "Editorial first: Ubuntu Sans, element-owned prose rhythm, and the widest baseline-aligned measure.",
@@ -22,7 +22,6 @@ export const tierDescriptions: Record<TierName, string> = {
 
 export const presetDescriptions: Record<PresetName, string> = {
   prose: "Legacy editorial alias for the editorial tier output.",
-  panel: "Legacy dense alias for the OS tier output.",
   "app-tier": "Legacy app alias for the app tier output."
 };
 
@@ -35,7 +34,6 @@ const tierConfigPaths: Record<TierName, string> = {
 
 const presetConfigPaths: Record<PresetName, string> = {
   prose: tierConfigPaths.editorial,
-  panel: tierConfigPaths.os,
   "app-tier": tierConfigPaths.app
 };
 
@@ -54,10 +52,6 @@ export function normalizeBuiltInThemeName(name: BuiltInThemeName): TierName {
 
   if (name === "app-tier") {
     return "app";
-  }
-
-  if (name === "panel") {
-    return "os";
   }
 
   return name;

@@ -25,7 +25,6 @@ published package root:
 | `tiers/app.surfaces.json` | App tier (zero-nudge runtime, metrics retained) |
 | `tiers/os.surfaces.json` | OS addendum tier |
 | `presets/prose.surfaces.json` | Legacy alias → editorial |
-| `presets/panel.surfaces.json` | Legacy alias → os |
 | `presets/app-tier.surfaces.json` | Legacy alias → app |
 | `experiments/<name>/surfaces.json` | Engine-smoke and exploratory bundles |
 

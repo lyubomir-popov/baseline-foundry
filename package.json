@@ -33,13 +33,10 @@
     "./tiers/app.surfaces.json": "./dist/tiers/app/surfaces.json",
     "./tiers/os.surfaces.json": "./dist/tiers/os/surfaces.json",
     "./presets/prose.css": "./dist/presets/prose/styles.css",
-    "./presets/panel.css": "./dist/presets/panel/styles.css",
     "./presets/app-tier.css": "./dist/presets/app-tier/styles.css",
     "./presets/prose.tokens.json": "./dist/presets/prose/tokens.json",
-    "./presets/panel.tokens.json": "./dist/presets/panel/tokens.json",
     "./presets/app-tier.tokens.json": "./dist/presets/app-tier/tokens.json",
     "./presets/prose.surfaces.json": "./dist/presets/prose/surfaces.json",
-    "./presets/panel.surfaces.json": "./dist/presets/panel/surfaces.json",
     "./presets/app-tier.surfaces.json": "./dist/presets/app-tier/surfaces.json"
   },
   "scripts": {

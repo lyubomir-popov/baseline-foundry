@@ -92,9 +92,6 @@ Build output includes:
 - `dist/presets/prose/styles.css`
 - `dist/presets/prose/tokens.json`
 - `dist/presets/prose/surfaces.json`
-- `dist/presets/panel/styles.css`
-- `dist/presets/panel/tokens.json`
-- `dist/presets/panel/surfaces.json`
 - `dist/presets/app-tier/styles.css`
 - `dist/presets/app-tier/tokens.json`
 - `dist/presets/app-tier/surfaces.json`
@@ -124,7 +121,7 @@ List or build presets directly with:
 
 ```bash
 npm run build:theme -- --list-presets
-npm run build:theme -- --preset=panel
+npm run build:theme -- --preset=prose
 ```
 
 While `npm run demo` is running, edits under `config/**/*.json` now rerun `npm run build:theme` automatically and force a full page reload.
@@ -207,7 +204,7 @@ That report now records one entry per verified component surface, not just one e
 
 ## Theme Model
 
-The default theme uses Ubuntu Sans Variable and generates metric-driven typography tokens, spacing tokens, layout values, component density tokens, and a published surface manifest. Four first-class tiers plus legacy preset aliases:
+The default theme uses Ubuntu Sans Variable and generates metric-driven typography tokens, spacing tokens, layout values, component density tokens, and a published surface manifest. Four first-class tiers plus two legacy preset aliases:
 
 | Tier/Preset | Purpose |
 |---|---|
@@ -216,7 +213,7 @@ The default theme uses Ubuntu Sans Variable and generates metric-driven typograp
 | `app` | Canonical-facing application chrome |
 | `os` | Dense OS-style addendum with editorial alignment and compact control geometry |
 
-Legacy aliases: `prose` → editorial, `panel` → os, `app-tier` → app.
+Legacy aliases: `prose` → editorial, `app-tier` → app.
 
 Independent surface contract:
 
@@ -308,9 +305,6 @@ Static assets:
 - `baseline-foundry/presets/prose.css`
 - `baseline-foundry/presets/prose.tokens.json`
 - `baseline-foundry/presets/prose.surfaces.json`
-- `baseline-foundry/presets/panel.css`
-- `baseline-foundry/presets/panel.tokens.json`
-- `baseline-foundry/presets/panel.surfaces.json`
 - `baseline-foundry/presets/app-tier.css`
 - `baseline-foundry/presets/app-tier.tokens.json`
 - `baseline-foundry/presets/app-tier.surfaces.json`
@@ -322,7 +316,7 @@ Downstream consumers have two supported ways to load the built-in OS surface, de
 - Use `baseline-foundry/styles.css` as the neutral entrypoint when the consumer wants the shared root bundle and will opt into OS with class switching such as `.bf-theme.bf-tier-os`.
 - Use `baseline-foundry/tiers/os.css` only when the consumer wants OS to be the unscoped default surface for that stylesheet import.
 - Do not import `baseline-foundry/presets/app-tier.css` just to preload the shared bundle before switching to `bf-tier-os`; that preset remains the legacy app alias, not the neutral OS entrypoint.
-- The legacy `baseline-foundry/presets/panel.css` artifact remains available for existing consumers, but it is still only the legacy dense alias for OS rather than the recommended neutral entrypoint.
+- The legacy panel preset export has been removed; downstream OS consumers should use the neutral root bundle plus `.bf-tier-os`, or import `baseline-foundry/tiers/os.css` when OS should be the default surface.
 
 Example neutral entrypoint for a downstream such as `a4-generator`:
 

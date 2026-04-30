@@ -4,6 +4,18 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## tick-switch geometry follow-up (2026-04-30)
+
+- [x] Corrected the shared radio/switch geometry slice in `src/css-components.ts` by applying border-box to the relevant pseudo-elements and deriving the radio inner dot from the control visual size.
+- [x] Fixed `scripts/compare-controls.ts` so it measures visuals against the active label line center rather than the padded label box center, removing the false positive switch delta in editorial.
+- [x] Revalidated with `npm run compare:controls` and confirmed the current editorial compare report now shows switch, checkbox, and radio at effectively `0px` center delta.
+
+## panel preset removal (2026-04-30)
+
+- [x] Removed the legacy `panel` preset from `src/presets.ts` and `package.json`, leaving `os` as the only built-in dense surface path.
+- [x] Updated the build and validation flow to remove stale `dist/presets/panel` and `generated/baseline/panel` artifacts during theme builds and to assert that the deleted alias does not reappear.
+- [x] Retargeted the remaining internal OS references and current-state docs from the deleted preset path to the real OS tier artifacts, then revalidated with `npm run build:theme` plus `npm run test:build`.
+
 ## css-components split burst 6 (2026-04-30)
 
 - [x] Extracted the contiguous tabs/choice/breadcrumbs block out of `src/css-components.ts` into `src/css-components/tabs-choice-breadcrumbs.ts` without changing CSS output order.

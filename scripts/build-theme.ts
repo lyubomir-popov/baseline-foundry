@@ -1,3 +1,5 @@
+import fs from "node:fs/promises";
+import path from "node:path";
 import { buildThemeFromConfig, buildThemeFromPreset, buildThemeFromTier } from "../src/build.ts";
 import { isPresetName, isTierName, presetDescriptions, presetNames, tierDescriptions, tierNames } from "../src/presets.ts";
 import type { PresetName } from "../src/presets.ts";
@@ -27,8 +29,19 @@ function isExperimentName(value: string): value is ExperimentName {
   return value in experimentBuilds;
 }
 
+async function removeLegacyPanelArtifacts(): Promise<void> {
+  await Promise.all([
+    path.resolve("dist", "presets", "panel"),
+    path.resolve("generated", "baseline", "panel")
+  ].map(targetPath => fs.rm(targetPath, { recursive: true, force: true })));
+}
+
 async function main(): Promise<void> {
   const arg = process.argv[2];
+
+  if (arg !== "--list-tiers" && arg !== "--list-presets" && arg !== "--list-experiments") {
+    await removeLegacyPanelArtifacts();
+  }
 
   if (arg === "--list-tiers") {
     console.log("Available tiers:");

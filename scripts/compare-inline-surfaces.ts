@@ -60,7 +60,7 @@ const workspaceDir = process.cwd();
 const outputDir = path.resolve("tmp/vanilla-compare");
 const vanillaDir = path.resolve(process.env.VANILLA_FRAMEWORK_PATH ?? "../vanilla-framework");
 const vanillaSassCli = path.join(vanillaDir, "node_modules", "sass", "sass.js");
-const foundryCssPath = path.resolve("dist/presets/panel/styles.css");
+const foundryCssPath = path.resolve("dist/tiers/os/styles.css");
 
 function toPosix(filePath: string): string {
   return filePath.split(path.sep).join("/");
@@ -229,7 +229,7 @@ function buildFoundryHtml(): string {
 </head>
 <body class="bf-theme" data-bf-tone="dark">
   <section class="compare-stack">
-    <p class="compare-note">Foundry panel-preset chip, badge, and status-label examples rendered from the current package output.</p>
+    <p class="compare-note">Foundry OS-tier chip, badge, and status-label examples rendered from the current package output.</p>
 
     <div class="compare-group">
       <button class="bf-chip" type="button" data-surface="chip-basic">
@@ -449,7 +449,7 @@ function buildFindings(report: Omit<Report, "summary" | "findings">): string[] {
 
   return [
     chipInsetsMatch && chipValueMatch
-      ? `Chip padding now matches the Vanilla compact contract: Foundry uses ${formatNumber(foundryChip.contentStartInset)}px/${formatNumber(foundryChip.contentEndInset)}px side insets around ${formatNumber(foundryChip.parts.value?.fontSize ?? 0)}/${formatNumber(foundryChip.parts.value?.lineHeight ?? 0)}px value text, which is in line with the panel-preset target.`
+      ? `Chip padding now matches the Vanilla compact contract: Foundry uses ${formatNumber(foundryChip.contentStartInset)}px/${formatNumber(foundryChip.contentEndInset)}px side insets around ${formatNumber(foundryChip.parts.value?.fontSize ?? 0)}/${formatNumber(foundryChip.parts.value?.lineHeight ?? 0)}px value text, which is in line with the OS-tier target.`
       : `Chip padding still differs from Vanilla: Foundry is at ${formatNumber(foundryChip.contentStartInset)}px/${formatNumber(foundryChip.contentEndInset)}px side insets versus ${formatNumber(vanillaChip.contentStartInset)}/${formatNumber(vanillaChip.contentEndInset)}px in Vanilla.`,
     leadCapsMatch && leadTrackingMatch && leadValueMatch
       ? `Chip lead/value typography now routes through the dedicated compact UI roles: the lead uses real small-caps with ${foundryLead.parts.lead?.letterSpacing ?? "0"} tracking and the value sits on the ${formatNumber(foundryLead.parts.value?.fontSize ?? 0)}/${formatNumber(foundryLead.parts.value?.lineHeight ?? 0)}px small-text line, matching the Vanilla split contract.`
@@ -469,7 +469,7 @@ function buildFindings(report: Omit<Report, "summary" | "findings">): string[] {
 }
 
 async function main(): Promise<void> {
-  await assertExists(foundryCssPath, "Missing dist/presets/panel/styles.css. Run npm run build first or use npm run compare:inline-surfaces.");
+  await assertExists(foundryCssPath, "Missing dist/tiers/os/styles.css. Run npm run build first or use npm run compare:inline-surfaces.");
   await assertExists(vanillaDir, `Missing Vanilla repo at ${vanillaDir}. Set VANILLA_FRAMEWORK_PATH if it lives elsewhere.`);
 
   const { vanillaHtmlPath, foundryHtmlPath } = await writeHarnessFiles();

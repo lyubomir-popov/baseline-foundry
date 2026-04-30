@@ -22,6 +22,15 @@ async function assertExists(filePath: string): Promise<void> {
   await fs.access(filePath);
 }
 
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function readThemeArtifacts(baseDir: string): Promise<{
   tokens: Record<string, unknown>;
   css: string;
@@ -67,6 +76,10 @@ function validatePackageExports(packageJson: Record<string, unknown>): void {
   for (const [exportKey, exportPath] of Object.entries(expectedOsTierExports)) {
     assert(exportsField[exportKey] === exportPath, `Expected package.json to export ${exportKey} from ${exportPath}.`);
   }
+
+  assert(!("./presets/panel.css" in exportsField), "Expected package.json to stop exporting the removed panel preset CSS path.");
+  assert(!("./presets/panel.tokens.json" in exportsField), "Expected package.json to stop exporting the removed panel preset tokens path.");
+  assert(!("./presets/panel.surfaces.json" in exportsField), "Expected package.json to stop exporting the removed panel preset surfaces path.");
 }
 
 function validateSurfacesManifestDocs(docsMd: string, readmeMd: string): void {
@@ -92,6 +105,8 @@ function validateSurfacesManifestDocs(docsMd: string, readmeMd: string): void {
     readmeMd.includes("docs/surfaces-manifest.md"),
     "Expected README.md to link to docs/surfaces-manifest.md so consumers can find the manifest schema."
   );
+  assert(!docsMd.includes("presets/panel.surfaces.json"), "Expected docs/surfaces-manifest.md to drop the removed panel preset manifest path.");
+  assert(!readmeMd.includes("baseline-foundry/presets/panel.css"), "Expected README.md to drop the removed panel preset CSS export.");
 }
 
 function escapeForRegex(value: string): string {
@@ -147,17 +162,9 @@ function validateThemeConfigWatcher(viteConfigTs: string): void {
   assert(viteConfigTs.includes('type: "full-reload"'), "Expected vite.config.ts to trigger a full reload after rebuilding theme artifacts.");
 }
 
-async function validatePanelBaselineArtifacts(): Promise<void> {
-  const panelBaselineDir = path.resolve("generated/baseline/panel");
-  await assertExists(panelBaselineDir);
-
-  const panelBaselineEntries = await fs.readdir(panelBaselineDir);
-  assert(panelBaselineEntries.includes("os.baseline.json"), "Expected generated/baseline/panel to emit the OS baseline config.");
-  assert(!panelBaselineEntries.includes("panel.baseline.json"), "Expected generated/baseline/panel to drop the stale legacy panel baseline config.");
-  assert(!panelBaselineEntries.includes("foundation-theme.baseline.json"), "Expected generated/baseline/panel to drop the stale legacy foundation baseline config.");
-
-  const osBaseline = await readTextArtifact(path.join(panelBaselineDir, "os.baseline.json"));
-  assert(!osBaseline.includes('"ui-'), "Expected the regenerated panel baseline alias output to avoid legacy ui-* identifiers.");
+async function validateLegacyPanelPresetRemoval(): Promise<void> {
+  assert(!(await pathExists(path.resolve("dist", "presets", "panel"))), "Expected build output to remove the deleted panel preset directory.");
+  assert(!(await pathExists(path.resolve("generated", "baseline", "panel"))), "Expected build output to remove the deleted panel baseline directory.");
 }
 
 function validateBfOnlyDemoPage(pageName: string, html: string): void {
@@ -1149,7 +1156,6 @@ async function main(): Promise<void> {
   const appTier = await readThemeArtifacts(path.resolve("dist/tiers/app"));
   const osTier = await readThemeArtifacts(path.resolve("dist/tiers/os"));
   const prosePreset = await readThemeArtifacts(path.resolve("dist/presets/prose"));
-  const panelPreset = await readThemeArtifacts(path.resolve("dist/presets/panel"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
   const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
@@ -1198,7 +1204,6 @@ async function main(): Promise<void> {
   runInvariant("Common CSS (documentation)", () => validateCommonCss(documentationTier.css));
   runInvariant("Common CSS (OS)", () => validateCommonCss(osTier.css));
   runInvariant("Common CSS (prose preset)", () => validateCommonCss(prosePreset.css));
-  runInvariant("Common CSS (panel preset)", () => validateCommonCss(panelPreset.css));
   runInvariant("App tier CSS (app)", () => validateAppTierCss(appTier.css));
   runInvariant("App tier CSS (app preset)", () => validateAppTierCss(appTierPreset.css));
   runInvariant("Default theme (default)", () => validateDefaultTheme(defaultTheme.tokens, defaultTheme.css));
@@ -1207,7 +1212,6 @@ async function main(): Promise<void> {
   runInvariant("App tier theme (app)", () => validateAppTierTheme(appTier.tokens, appTier.css));
   runInvariant("OS tier theme", () => validateOsTheme(osTier.tokens, osTier.css));
   runInvariant("Default theme (prose preset)", () => validateDefaultTheme(prosePreset.tokens, prosePreset.css));
-  runInvariant("OS tier theme (panel preset alias)", () => validateOsTheme(panelPreset.tokens, panelPreset.css));
   runInvariant("App tier theme (app preset)", () => validateAppTierTheme(appTierPreset.tokens, appTierPreset.css));
   runInvariant("IBM Plex engine smoke theme", () => validateIbmPlexEngineSmokeTheme(ibmPlexEngineSmoke.tokens, ibmPlexEngineSmoke.css));
   runInvariant("Surface manifest (default)", () => validateSurfaceManifest(defaultTheme.surfaces, "editorial"));
@@ -1216,13 +1220,12 @@ async function main(): Promise<void> {
   runInvariant("Surface manifest (app)", () => validateSurfaceManifest(appTier.surfaces, "app"));
   runInvariant("Surface manifest (OS)", () => validateSurfaceManifest(osTier.surfaces, "os"));
   runInvariant("Surface manifest (prose preset)", () => validateSurfaceManifest(prosePreset.surfaces, "editorial"));
-  runInvariant("Surface manifest (panel preset alias)", () => validateSurfaceManifest(panelPreset.surfaces, "os"));
   runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
   runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
   runInvariant("Published package exports", () => validatePackageExports(packageJson));
   runInvariant("Surfaces manifest docs", () => validateSurfacesManifestDocs(surfacesManifestDoc, readmeMd));
   runInvariant("Theme config watcher", () => validateThemeConfigWatcher(viteConfigTs));
-  await runInvariantAsync("Panel baseline cleanup", () => validatePanelBaselineArtifacts());
+  await runInvariantAsync("Legacy panel preset removed", () => validateLegacyPanelPresetRemoval());
   runInvariant("Demo CSS selector hygiene", () => validateDemoCssSelectorHygiene({
     "demo/component-shell.css": componentShellCss,
     "demo/spec-shell.css": specShellCss,

@@ -140,6 +140,7 @@ ${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components
   --bf-tick-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-tick-box-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding));
+  --bf-radio-dot-size: calc(var(--bf-control-visual-size) * 0.375);
   --bf-panel-padding-inline: ${components.panelPaddingInline};
   --bf-panel-padding-block: ${components.panelPaddingBlock};
   --bf-accordion-indent: ${components.accordionIndent};
@@ -475,6 +476,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label)::before,
 :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label)::after {
+  box-sizing: border-box;
   content: "";
   position: absolute;
 }
@@ -509,11 +511,11 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-radio-label)::after {
   background: var(--bf-color-background-default);
-  block-size: calc(var(--bf-control-visual-size) * 0.45);
+  block-size: var(--bf-radio-dot-size);
   border-radius: 50%;
-  inline-size: calc(var(--bf-control-visual-size) * 0.45);
-  inset-inline-start: calc(var(--bf-control-visual-size) * 0.275);
-  inset-block-start: calc(var(--bf-tick-box-offset) + (var(--bf-control-visual-size) * 0.275));
+  inline-size: var(--bf-radio-dot-size);
+  inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);
+  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));
   opacity: 0;
 }
 
@@ -577,6 +579,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 :where(.bf-theme) :where(.bf-switch-slider)::before {
   background: var(--bf-color-background-default);
   block-size: var(--bf-control-visual-size);
+  box-sizing: border-box;
   border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
   border-radius: 50%;
   content: "";
