@@ -530,9 +530,19 @@ function validateCommonCss(css: string): void {
     "overflow": "auto",
     "overscroll-behavior": "contain"
   }, "fill-height panel bodies scroll internally");
-  assert(css.includes(":where(.bf-search-box)"), "Expected generated CSS to include search-box styling.");
-  assert(css.includes(":where(.bf-search-and-filter)"), "Expected generated CSS to include search-and-filter styling.");
-  assert(css.includes(":where(.bf-search-and-filter-box) {\n  display: inline-flex;\n  flex: 1 1 12rem;\n  max-inline-size: 100%;\n  min-inline-size: 0;"), "Expected search-and-filter boxes to shrink inside narrow rails.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-box)", {
+    "display": "flex",
+    "position": "relative"
+  }, "search boxes keep the canonical inline search layout");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter)", {
+    "display": "grid"
+  }, "search-and-filter keeps the canonical outer grid shell");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-box)", {
+    "display": "inline-flex",
+    "flex": "1 1 12rem",
+    "max-inline-size": "100%",
+    "min-inline-size": "0"
+  }, "search-and-filter boxes shrink inside narrow rails");
   assert(css.includes(":where(.bf-code-snippet)"), "Expected generated CSS to include code-snippet styling.");
   assert(css.includes(":where(.bf-code-snippet-block.is-icon) {\n  cursor: copy;"), "Expected generated CSS to include copyable code-snippet blocks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the top-navigation dropdown container styling.");
