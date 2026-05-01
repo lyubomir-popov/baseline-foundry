@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## dense icon spacing decomposition (2026-05-01)
+
+- [x] Replaced the former repo-wide dense icon/keyline spacing TODO with three bounded slices covering leading disclosure controls, trailing action slots, and button child-icon spacing.
+- [x] Recorded the actual implementation constraint: those families use different spacing mechanics today, so they should not be standardized in one overnight refactor.
+- [x] Left the leading disclosure controls (`bf-accordion-tab`, `bf-side-navigation-accordion-button`, `bf-side-navigation-expand`) as the next bounded implementation target.
+
 ## css-components split burst 8 (2026-04-30)
 
 - [x] Extracted the contiguous search/search-and-filter block into `src/css-components/search-box-and-filter.ts` without changing CSS output order.
