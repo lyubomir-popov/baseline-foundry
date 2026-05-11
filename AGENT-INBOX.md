@@ -12,11 +12,11 @@ Continue from `baseline-foundry` `main` only.
 
 ### Goal
 
-Move the useful May Baseline Foundry integration work onto `main` cleanly, without reviving `panel`, and realign all downstream repos to the intended `os` and `app` model.
+Move the useful May Baseline Foundry integration work onto `main` cleanly, without reviving `panel`, and realign all downstream repos to the intended `os` and `app` model while matching the old `panel` behavior and density that were validated on `master`.
 
 ### Critical architectural rule
 
-`panel` was intentionally phased out. `os` replaces `panel`. The preferred public surfaces are `os` and `app`. Do not bring `panel` back as a first-class design contract just to preserve a temporary sync state.
+`panel` was intentionally phased out. `os` replaces `panel`. The preferred public surfaces are `os` and `app`. Do not bring `panel` back as a first-class design contract just to preserve a temporary sync state. Instead, use `os` and `app` on `main` to reproduce the old `panel` look and behavior that existed on `master`.
 
 ### Branch mess to account for
 
@@ -62,13 +62,16 @@ Move the useful May Baseline Foundry integration work onto `main` cleanly, witho
 
 1. Brand Layout Ops must stop depending on `panel` as a design concept.
    - Move it onto the correct `main`-based BF contract using `os` where the old `panel` usage lived.
+   - Match the old `panel` density, spacing, and shell behavior from `master` without restoring `panel` itself.
    - Use `app` only where `app` is truly the intended surface.
 2. A4 Generator must do the same.
    - Move from the temporary `panel`-based sync state to the correct `os` or `app` usage on top of BF `main`.
+   - Match the old `panel` density and interaction feel from `master` without restoring `panel` itself.
 3. Diagram Generator must continue to work for people who do not have access to private BF.
    - Keep the sibling-preferred plus vendored fallback model.
    - Update the vendored fallback to match the new `main`-based BF contract.
    - Do not leave it coupled to the old `panel` export shape.
+   - Its `os`-based fallback should visually match the old `panel` surface that was validated on `master`.
 4. Refresh all vendored BF snapshots or exported assets after the BF `main` changes land.
 5. Rebuild and validate all downstream repos after the sync.
 
@@ -83,6 +86,7 @@ Move the useful May Baseline Foundry integration work onto `main` cleanly, witho
   - search-field spacing
   - selection and resize gold chrome
   - shell consistency
+   - parity with the old `panel` look and density from `master`, now expressed through `os` and `app`
   - no regressions caused by replacing the temporary `panel` path with `os` or `app`
 
 ### Branch cleanup guidance
