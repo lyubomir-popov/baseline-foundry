@@ -49,7 +49,7 @@ ${bodyTypeStyles}  align-items: center;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding);
+${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
   text-decoration: none;
 }
 
@@ -121,7 +121,7 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding);
   grid-template-columns: auto minmax(0, 1fr) auto;
   margin: 0 0 ${buttonMarginBottom};
   min-inline-size: 0;
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding);
+${buttonPadding}  padding-inline: var(--bf-control-inline-padding-field);
 }
 
 :where(.bf-theme) :where(.bf-choice-row:hover) {
@@ -234,7 +234,7 @@ ${bodyTypeStyles}  align-items: center;
   margin-bottom: ${buttonMarginBottom};
   max-inline-size: 100%;
   overflow: hidden;
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding);
+${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;

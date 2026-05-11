@@ -395,7 +395,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to derive slider rail placement from the active body line geometry.");
   assert(css.includes("--bf-switch-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place switch geometry from the active body line geometry.");
   assert(css.includes("--bf-tick-box-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place tick geometry from the active body line geometry.");
-  assert(css.includes("--bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding));"), "Expected generated CSS to derive tick label spacing from the control inline padding token.");
+  assert(css.includes("--bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding-field));"), "Expected generated CSS to derive tick label spacing from the field inline padding token.");
   assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
   assert(css.includes("--bf-control-block-padding:"), "Expected generated CSS to define the regular control block padding token.");
   assert(css.includes("--bf-control-block-padding-compact:"), "Expected generated CSS to define the compact control block padding token.");
@@ -531,18 +531,28 @@ function validateCommonCss(css: string): void {
     "overscroll-behavior": "contain"
   }, "fill-height panel bodies scroll internally");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-box)", {
+    "--bf-search-box-action-inline-size": "calc(1rem + (var(--bf-control-inline-padding-field) * 2))",
+    "--bf-search-box-trailing-inline-size": "calc((var(--bf-search-box-action-inline-size) * 2) + var(--bf-border-width))",
     "display": "flex",
     "position": "relative"
   }, "search boxes keep the canonical inline search layout");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-box-input)", {
+    "padding-inline-end": "var(--bf-search-box-trailing-inline-size)"
+  }, "search boxes reserve trailing space from the field padding token rather than a hard-coded baseline multiple");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter)", {
     "display": "grid"
   }, "search-and-filter keeps the canonical outer grid shell");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-box)", {
+    "--bf-search-and-filter-action-inline-size": "calc(1rem + (var(--bf-control-inline-padding-field) * 2))",
+    "--bf-search-and-filter-trailing-inline-size": "calc(var(--bf-search-and-filter-action-inline-size) * 2)",
     "display": "inline-flex",
     "flex": "1 1 12rem",
     "max-inline-size": "100%",
     "min-inline-size": "0"
   }, "search-and-filter boxes shrink inside narrow rails");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-input)", {
+    "padding-inline-end": "var(--bf-search-and-filter-trailing-inline-size)"
+  }, "search-and-filter inputs reserve their trailing affordance space from the field padding token");
   assert(css.includes(":where(.bf-code-snippet)"), "Expected generated CSS to include code-snippet styling.");
   assert(css.includes(":where(.bf-code-snippet-block.is-icon) {\n  cursor: copy;"), "Expected generated CSS to include copyable code-snippet blocks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the top-navigation dropdown container styling.");
@@ -551,6 +561,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-item-label) {"), "Expected generated CSS to include the top-navigation dropdown item label slot styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown-item-shortcut) {"), "Expected generated CSS to include the top-navigation dropdown item shortcut slot styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider) {"), "Expected generated CSS to include the top-navigation dropdown divider styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-top-navigation-search-toggle)", {
+    "min-inline-size": "var(--bf-top-navigation-search-toggle-inline-size)"
+  }, "top-navigation search toggles size the icon-only action from the field padding token rather than a baseline multiple");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-top-navigation-dropdown-toggle)", {
+    "padding-inline-end": "calc(var(--bf-top-navigation-link-padding-inline) + var(--bf-top-navigation-end-slot-inline-size))"
+  }, "top-navigation dropdown toggles reserve their chevron slot from the shared end-slot token");
   // Migrated to AST: this used to be a multi-line substring check that broke
   // on any whitespace shift. The AST form survives reformatting. The
   // padding-block value matches the border width so the row's occupied block
@@ -600,8 +616,8 @@ function validateCommonCss(css: string): void {
     "display": "grid",
     "grid-template-columns": "auto minmax(0, 1fr) auto",
     "gap": "calc(var(--bf-baseline) * 0.75)",
-    "padding-inline": "var(--bf-control-inline-padding)"
-  }, "choice rows keep the canonical selection-row layout");
+    "padding-inline": "var(--bf-control-inline-padding-field)"
+  }, "choice rows keep the canonical selection-row layout while tightening with the field padding token");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-options)", {
     "border-bottom": "var(--bf-border-width) solid var(--bf-color-border-default)",
     "display": "grid",
@@ -657,6 +673,8 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".bf-aside.is-overlay.is-narrow"), "Expected generated CSS to omit the old narrow overlay modifier.");
   assert(!css.includes(".bf-aside.is-overlay.is-wide"), "Expected generated CSS to omit the old wide overlay modifier.");
   assert(css.includes(":where(.bf-application-aside-resize-handle)"), "Expected generated CSS to include the pinned-aside resize handle selector.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible {\n  outline: 2px solid var(--bf-application-resize-handle-focus-ring);"), "Expected the pinned-aside resize handle to expose the shared authoring focus-ring token.");
+  assert(css.includes("background: var(--bf-application-resize-handle-active);"), "Expected the pinned-aside resize handle active state to use the shared authoring accent token.");
   assert(css.includes("cursor: ew-resize;"), "Expected generated CSS to make the resize handle advertise horizontal resizing.");
   assert(css.includes("touch-action: none;"), "Expected generated CSS to make the resize handle safe for pointer dragging.");
   assert(css.includes(":where(.bf-application.is-resizing-aside)"), "Expected generated CSS to expose the resizing application state.");
@@ -692,6 +710,8 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(components.controlBlockPadding, "Expected generated tokens to include regular control block padding.");
   assert(components.controlCompactBlockPadding, "Expected generated tokens to include compact control block padding.");
   assert(components.controlInlinePadding, "Expected generated tokens to include component padding.");
+  assert(components.controlInlinePaddingAction, "Expected generated tokens to include action-surface inline padding.");
+  assert(components.controlInlinePaddingField, "Expected generated tokens to include field-surface inline padding.");
   assert(components.controlVisualSize, "Expected generated tokens to include component visual size.");
   assert(!("controlMinBlockSize" in components), "Expected generated tokens to stop exposing legacy control height tokens.");
   assert(!("controlMinBlockSizeDense" in components), "Expected generated tokens to stop exposing legacy dense control height tokens.");
@@ -731,7 +751,9 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 32px application outer margin.");
   assert(components.controlBlockPadding === '0.5rem', "Expected the app-tier preset regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
   assert(components.controlCompactBlockPadding === '0.375rem', "Expected the app-tier preset compact control block padding to preserve the legacy 2rem inline control box height.");
-  assert(components.controlInlinePadding === '1rem', "Expected the app-tier preset control padding to come from the app-tier components block.");
+  assert(components.controlInlinePadding === '0.5rem', "Expected the app-tier preset compatibility control padding alias to match the action-surface spacing.");
+  assert(components.controlInlinePaddingAction === '0.5rem', "Expected the app-tier preset action padding to tighten for top-level commands.");
+  assert(components.controlInlinePaddingField === '0.25rem', "Expected the app-tier preset field padding to tighten for dense data entry.");
   assert(!("controlMinBlockSize" in components), "Expected the app-tier preset tokens to stop exposing legacy control height tokens.");
   assert(!("controlMinBlockSizeDense" in components), "Expected the app-tier preset tokens to stop exposing legacy dense control height tokens.");
   assert(css.includes('.bf-h1'), "Expected the app-tier preset CSS to emit role utility selectors like the other presets.");
@@ -749,7 +771,7 @@ function validateIbmPlexEngineSmokeTheme(tokens: Record<string, unknown>, css: s
   assert(roles.h2.lineHeight === "5rem", "Expected the IBM Plex smoke h2 line height to be 5rem.");
   assert(layout.contentMaxWidth === "120rem", "Expected the IBM Plex smoke surface to widen the page for the large comparison headings.");
   assert(css.includes('font-family: "IBM Plex Sans";'), "Expected the IBM Plex smoke CSS to register the IBM Plex Sans family.");
-  assert(css.includes('IBMPlexSansVar-Roman.woff2'), "Expected the IBM Plex smoke CSS to point to the IBM Plex Sans variable font asset.");
+  assert(css.includes('IBMPlexSansVar-Roman.woff'), "Expected the IBM Plex smoke CSS to point to the IBM Plex Sans variable font asset.");
   assert(css.includes('font-family: "Ubuntu Sans";'), "Expected the IBM Plex smoke CSS bundle to also register the Ubuntu Sans family for the alternate surface.");
   assert(css.includes('UbuntuSans[wdth,wght].ttf'), "Expected the IBM Plex smoke CSS bundle to point to the Ubuntu Sans variable font asset for the alternate surface.");
   assert(css.includes(':where(.bf-theme.bf-surface-ubuntu-engine-smoke) {'), "Expected the IBM Plex smoke CSS bundle to include the alternate Ubuntu scoped surface selector.");
@@ -843,7 +865,9 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   assert(layout.sectionSpaceDeep === "6rem", "Expected the documentation tier deep section rhythm to be 6rem.");
   assert(components.controlBlockPadding === "0.5rem", "Expected the documentation tier regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
   assert(components.controlCompactBlockPadding === "0.375rem", "Expected the documentation tier compact control block padding to preserve the legacy 2rem inline control box height.");
-  assert(components.controlInlinePadding === "0.875rem", "Expected the documentation tier control padding to tighten slightly.");
+  assert(components.controlInlinePadding === "1rem", "Expected the documentation tier compatibility control padding alias to match the action spacing.");
+  assert(components.controlInlinePaddingAction === "1rem", "Expected the documentation tier action padding to stay comfortable.");
+  assert(components.controlInlinePaddingField === "0.5rem", "Expected the documentation tier field padding to tighten relative to actions.");
   assert(components.controlVisualSize === "0.875rem", "Expected the documentation tier visual control size to tighten slightly.");
   assert(css.includes('.bf-h1'), "Expected the documentation tier CSS to emit role utility selectors.");
 }
@@ -973,7 +997,9 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(layout.gridGapBlock === "1rem", "Expected the OS tier block grid gap token to provide the x-small 16px gap.");
   assert(layout.pageMargin === "1rem", "Expected the OS tier page margin token to provide the x-small 16px margin.");
   assert(components.radius === "0rem", "Expected the OS tier controls to stay square like PVR/Vanilla.");
-  assert(components.controlInlinePadding === "0.75rem", "Expected the OS tier control padding to come from the dense components block.");
+  assert(components.controlInlinePadding === "0.5rem", "Expected the OS tier compatibility control padding alias to match the action spacing.");
+  assert(components.controlInlinePaddingAction === "0.5rem", "Expected the OS tier action padding to use the dense command target value.");
+  assert(components.controlInlinePaddingField === "0.25rem", "Expected the OS tier field padding to stay tighter than action surfaces.");
   assert(components.controlVisualSize === "0.75rem", "Expected the OS tier checkbox/radio/thumb glyphs to use a dedicated 0.75rem visual size.");
   assert(components.fieldGap === "0.25rem", "Expected the OS tier field gap to come from the dense components block.");
   assert(components.panelPaddingInline === "1rem", "Expected the OS tier panel padding to come from the dense components block.");

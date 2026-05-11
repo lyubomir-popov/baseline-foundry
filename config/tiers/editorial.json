@@ -107,6 +107,8 @@
     "controlBlockPaddingRem": 0.5,
     "controlCompactBlockPaddingRem": 0.25,
     "controlInlinePaddingRem": 1,
+    "controlInlinePaddingActionRem": 1,
+    "controlInlinePaddingFieldRem": 0.5,
     "controlVisualSizeRem": 1,
     "fieldGapBaselineUnits": 1,
     "panelPaddingInlineBaselineUnits": 2,

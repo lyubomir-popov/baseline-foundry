@@ -206,6 +206,9 @@ function toTypographyToken(identifier: string, token: BaselineGeneratorElementTo
 }
 
 function buildComponentTokens(config: ThemeConfig): ComponentTokens {
+  const controlInlinePaddingActionRem = config.components.controlInlinePaddingActionRem ?? config.components.controlInlinePaddingRem;
+  const controlInlinePaddingFieldRem = config.components.controlInlinePaddingFieldRem ?? (controlInlinePaddingActionRem / 2);
+
   return {
     borderWidth: `${config.components.borderWidthPx}px`,
     radius: toRem(config.components.radiusRem),
@@ -213,7 +216,9 @@ function buildComponentTokens(config: ThemeConfig): ComponentTokens {
     controlCompactBlockPadding: toRem(
       config.components.controlCompactBlockPaddingRem ?? config.components.controlBlockPaddingRem
     ),
-    controlInlinePadding: toRem(config.components.controlInlinePaddingRem),
+    controlInlinePadding: toRem(controlInlinePaddingActionRem),
+    controlInlinePaddingAction: toRem(controlInlinePaddingActionRem),
+    controlInlinePaddingField: toRem(controlInlinePaddingFieldRem),
     controlVisualSize: toRem(config.components.controlVisualSizeRem),
     fieldGap: toRem(config.components.fieldGapBaselineUnits * config.baselineUnit),
     panelPaddingInline: toRem(config.components.panelPaddingInlineBaselineUnits * config.baselineUnit),

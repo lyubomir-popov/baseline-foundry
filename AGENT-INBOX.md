@@ -38,6 +38,16 @@ Move the useful May Baseline Foundry integration work onto `main` cleanly, witho
   - `diagram-generator`: `679599b`
 - Use those commits only as behavioral references for what needs to survive. Do not preserve them as history.
 
+### Progress update (2026-05-11, local)
+
+- The BF-side `main` forward-port work listed below is now landed locally and validated through `npm run build:theme && npm run test:build` (`3680` checks green).
+- The completed BF-side slices cover:
+   - split action-vs-field inline padding tokens in source and built contract
+   - field-token-driven `bf-search-box` and `bf-search-and-filter` trailing-control sizing
+   - top-navigation dropdown/search-toggle slot sizing moved off hard-coded baseline multiples
+   - shared authoring-accent variables wired into the pinned-aside resize handle contract
+- The remaining migration work is downstream follow-up on top of this BF state, not more BF parity work.
+
 ### Required BF work on `main`
 
 1. Implement split inline padding tokens for action and navigation surfaces versus field and value surfaces.

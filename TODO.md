@@ -182,6 +182,8 @@ Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent
 
 #### Highest-priority next steps
 
+- `[H]` Downstream resync tranche 1 — update Diagram Generator to the corrected BF `main` contract while preserving the sibling-preferred plus vendored-fallback model, the working inspector, and the Python 3.9-compatible preview behavior.
+- `[H]` Downstream resync tranche 2 — re-port Brand Layout Ops and A4 Generator from their reverted checkpoints onto the corrected BF `main` contract using `os`/`app` only, matching the previously validated shell density without reviving `panel`.
 - `[H]` Audit recommendation #1 — choose the next bounded `src/css-components.ts` split burst from the remaining seams in `STATUS.md`. Keep the external API in `src/index.ts` unchanged.
 - `[S]` Audit recommendation #1a — extract exactly one contiguous family into `src/css-components/`, preserve CSS output order, keep the current helper/import recipe unless an index module becomes necessary, and validate immediately after the burst.
 - `[S]` Audit recommendation #2 (continue migration) — migrate only the `validateCommonCss` checks touched by the chosen split burst to `assertRuleHasDecl` / `assertRuleMissingDecl` so the two efforts compose. Pattern documented inline next to the migrated `.bf-top-navigation-row` example.

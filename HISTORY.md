@@ -4,6 +4,24 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## BF main forward-port slices 3-4 (2026-05-11)
+
+- [x] Moved the remaining top-navigation dropdown/search-toggle slot sizing off hard-coded baseline multiples and onto shared field-token-derived slot math.
+- [x] Wired the pinned-aside resize handle to the shared authoring-accent active and focus-ring tokens instead of the generic focus color.
+- [x] Revalidated with `npm run build:theme && npm run test:build` (`3680` checks green), leaving downstream resync as the remaining migration work.
+
+## BF main forward-port slice 2 (2026-05-11)
+
+- [x] Moved `bf-search-and-filter` trailing affordance sizing off hard-coded baseline multiples and onto field-token-derived action/trailing slot variables.
+- [x] Added direct AST validation for the new `bf-search-and-filter-box` and `bf-search-and-filter-input` sizing contract.
+- [x] Revalidated with `npm run build:theme && npm run test:build` (`3640` checks green).
+
+## BF main forward-port slice 1 (2026-05-11)
+
+- [x] Added split `controlInlinePaddingAction` and `controlInlinePaddingField` tokens to the source contract with compatibility fallback from the legacy `controlInlinePadding` alias.
+- [x] Updated the shared control/search CSS to consume action versus field padding intentionally, including field-driven `bf-search-box` trailing sizing and shared authoring-accent variables for the gold resize/selection chrome.
+- [x] Corrected the IBM Plex engine-smoke build contract to the shipped `.woff` asset and revalidated with `npm run build:theme && npm run test:build` (`3605` checks green).
+
 ## dense icon spacing decomposition (2026-05-01)
 
 - [x] Replaced the former repo-wide dense icon/keyline spacing TODO with three bounded slices covering leading disclosure controls, trailing action slots, and button child-icon spacing.
@@ -219,7 +237,7 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## IBM Plex build contract + repo-health refresh (2026-04-13)
 
-- [x] Restored the default engine-smoke build contract: `npm run setup:demo-font` now provisions Ubuntu Sans plus a real IBM Plex Sans variable asset, the experiment config points at the shipped `.woff2`, and build validation expects that path.
+- [x] Restored the default engine-smoke build contract: `npm run setup:demo-font` now provisions Ubuntu Sans plus a real IBM Plex Sans variable asset, the experiment config points at the shipped `.woff`, and build validation expects that path.
 - [x] Refreshed the docs that had drifted during the breakage: README setup/output/API sections, the TODO font-asset contract note, the handoff quick-start note, and the roadmap parity inventory now includes the shipped `tables` row with corrected counts.
 - [x] Ran `npm audit fix`, clearing the previously reported Vite and `basic-ftp` advisories from the lockfile.
 

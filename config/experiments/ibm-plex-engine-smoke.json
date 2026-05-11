@@ -3,7 +3,7 @@
   "fontFiles": [
     {
       "family": "ibm-plex-sans",
-      "path": "../../assets/fonts/IBMPlexSansVar-Roman.woff2",
+      "path": "../../assets/fonts/IBMPlexSansVar-Roman.woff",
       "cssFamily": "IBM Plex Sans",
       "fontStyle": "normal",
       "fontWeight": "100 700",

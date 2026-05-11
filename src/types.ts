@@ -40,6 +40,8 @@ export interface ThemeComponentsConfig {
   controlBlockPaddingRem: number;
   controlCompactBlockPaddingRem?: number;
   controlInlinePaddingRem: number;
+  controlInlinePaddingActionRem?: number;
+  controlInlinePaddingFieldRem?: number;
   controlVisualSizeRem: number;
   fieldGapBaselineUnits: number;
   panelPaddingInlineBaselineUnits: number;
@@ -101,6 +103,8 @@ export interface ComponentTokens {
   controlBlockPadding: string;
   controlCompactBlockPadding: string;
   controlInlinePadding: string;
+  controlInlinePaddingAction: string;
+  controlInlinePaddingField: string;
   controlVisualSize: string;
   fieldGap: string;
   panelPaddingInline: string;

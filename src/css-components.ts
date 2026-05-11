@@ -125,7 +125,10 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   return `:where(.bf-theme) {
   --bf-border-width: ${components.borderWidth};
   --bf-radius: ${components.radius};
-${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components.controlInlinePadding};
+${componentAlignmentVars(components)}  /* Action surfaces keep comfortable command targets; field surfaces can tighten independently. */
+  --bf-control-inline-padding: ${components.controlInlinePadding};
+  --bf-control-inline-padding-action: ${components.controlInlinePaddingAction};
+  --bf-control-inline-padding-field: ${components.controlInlinePaddingField};
   --bf-control-visual-size: ${components.controlVisualSize};
   --bf-input-block-padding: ${bodySelectedStartNudge};
   --bf-button-block-padding: ${bodySelectedStartNudge};
@@ -142,7 +145,7 @@ ${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components
   --bf-switch-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-tick-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-tick-box-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
-  --bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding));
+  --bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding-field));
   --bf-radio-dot-size: calc(var(--bf-control-visual-size) * 0.375);
   --bf-panel-padding-inline: ${components.panelPaddingInline};
   --bf-panel-padding-block: ${components.panelPaddingBlock};
@@ -159,7 +162,19 @@ ${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components
   --bf-app-navigation-width: 15rem;
   --bf-app-navigation-width-collapsed: 3rem;
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
-  --bf-top-navigation-link-padding-inline: var(--bf-control-inline-padding);
+  --bf-authoring-accent: #f6b73c;
+  --bf-authoring-accent-hover: #e0a030;
+  --bf-authoring-accent-line: rgba(246, 183, 60, 0.9);
+  --bf-authoring-accent-strong: rgba(246, 183, 60, 0.95);
+  --bf-authoring-accent-outline: rgba(246, 183, 60, 0.4);
+  --bf-authoring-accent-outline-strong: rgba(246, 183, 60, 0.8);
+  --bf-authoring-accent-shadow: rgba(246, 183, 60, 0.22);
+  --bf-authoring-accent-focus-ring: rgba(246, 183, 60, 0.55);
+  --bf-application-resize-handle-active: var(--bf-authoring-accent-strong);
+  --bf-application-resize-handle-focus-ring: var(--bf-authoring-accent-focus-ring);
+  --bf-top-navigation-link-padding-inline: var(--bf-control-inline-padding-action);
+  --bf-top-navigation-end-slot-inline-size: calc(1rem + var(--bf-control-inline-padding-field));
+  --bf-top-navigation-search-toggle-inline-size: calc(1rem + (var(--bf-control-inline-padding-field) * 2));
   --bf-top-navigation-link-padding-block: max(var(--bf-body-nudge-start), calc(var(--bf-baseline) * 1.5));
   --bf-top-navigation-search-max-inline-size: 20rem;
   --bf-top-navigation-logo-tag-inline-size: 1.375rem;
@@ -174,7 +189,7 @@ ${componentAlignmentVars(components)}  --bf-control-inline-padding: ${components
   --bf-leading-icon-gap: calc(var(--bf-baseline) * 1);
   --bf-leading-icon-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-leading-icon-size)", bodySelectedStartNudge)};
   --bf-ui-chip-padding-inline: calc(${bodyLineHeight} * 0.4);
-  --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-control-inline-padding) * 0.25) - var(--bf-border-width)));
+  --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-control-inline-padding-action) * 0.25) - var(--bf-border-width)));
   --bf-ui-chip-block-size: calc(${bodyLineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
   --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
@@ -355,7 +370,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   max-inline-size: 100%;
   min-inline-size: 0;
   margin-bottom: ${inputMarginBottom};
-${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-field);
 }
 
 :where(.bf-theme) :where(input[type='color'].bf-color-input) {
@@ -416,7 +431,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   cursor: pointer;
   margin-inline-end: var(--bf-field-gap);
   min-block-size: var(--bf-control-box-size-compact);
-${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action);
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -425,10 +440,10 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
 
 :where(.bf-theme) :where(select) {
   background-image: var(--bf-ui-icon-chevron-down);
-  background-position: right 0.75rem center;
+  background-position: right var(--bf-control-inline-padding-field) center;
   background-repeat: no-repeat;
   background-size: 1rem 1rem;
-  padding-inline-end: calc(var(--bf-control-inline-padding) * 2.5);
+  padding-inline-end: calc(var(--bf-control-inline-padding-field) * 2.5);
 }
 
 :where(.bf-theme) :where(input[type='number'], .bf-slider-input) {
@@ -1166,7 +1181,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
   margin: 0 0 ${buttonMarginBottom};
-${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action);
   text-decoration: none;
 }
 
@@ -1472,11 +1487,11 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 
 :where(.bf-theme) :where(.bf-top-navigation-search-toggle) {
   justify-content: center;
-  min-inline-size: calc(var(--bf-baseline) * 5);
+  min-inline-size: var(--bf-top-navigation-search-toggle-inline-size);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown-toggle) {
-  padding-inline-end: calc(var(--bf-top-navigation-link-padding-inline) + (var(--bf-baseline) * 3));
+  padding-inline-end: calc(var(--bf-top-navigation-link-padding-inline) + var(--bf-top-navigation-end-slot-inline-size));
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown-toggle)::after {
@@ -2087,7 +2102,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
   min-inline-size: var(--bf-control-box-size);
-${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding);
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action);
   text-align: center;
   text-decoration: none;
 }
@@ -2206,7 +2221,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   display: inline-block;
   flex: none;
   inline-size: 1rem;
-  margin-inline-end: var(--bf-control-inline-padding);
+  margin-inline-end: var(--bf-control-inline-padding-action);
   transition: transform 120ms ease;
 }
 
@@ -2745,11 +2760,11 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-application-aside-resize-handle):hover::after,
 :where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible::after,
 :where(.bf-theme) :where(.bf-application.is-resizing-aside) :where(.bf-application-aside-resize-handle)::after {
-  background: var(--bf-color-focus);
+  background: var(--bf-application-resize-handle-active);
 }
 
 :where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible {
-  outline: 2px solid var(--bf-color-focus);
+  outline: 2px solid var(--bf-application-resize-handle-focus-ring);
   outline-offset: -2px;
 }
 
