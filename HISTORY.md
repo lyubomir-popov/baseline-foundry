@@ -4,6 +4,12 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## Dense icon spacing slice 1 (2026-05-11)
+
+- [x] Standardized the leading disclosure controls onto a shared `1rem` chevron plus `1rem` text-gap contract by giving `bf-accordion-tab` and `bf-side-navigation-accordion-button` the same disclosure gap and sizing the accordion / side-navigation / expand chevrons from a shared disclosure token.
+- [x] Added focused build validation for the new disclosure-spacing contract so future dense-icon work cannot silently drift this slice back onto mixed gap logic.
+- [x] Revalidated with `npm run build:theme && npm run test:build` (`3735` checks green), plus live browser checks on `demo/components/accordion.html` and `demo/components/side-navigation.html` confirming `16px` computed disclosure gaps and chevron boxes.
+
 ## BF main forward-port slices 3-4 (2026-05-11)
 
 - [x] Moved the remaining top-navigation dropdown/search-toggle slot sizing off hard-coded baseline multiples and onto shared field-token-derived slot math.

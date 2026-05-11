@@ -129,6 +129,8 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-control-inline-padding: ${components.controlInlinePadding};
   --bf-control-inline-padding-action: ${components.controlInlinePaddingAction};
   --bf-control-inline-padding-field: ${components.controlInlinePaddingField};
+  --bf-disclosure-gap: 1rem;
+  --bf-disclosure-icon-inline-size: 1rem;
   --bf-control-visual-size: ${components.controlVisualSize};
   --bf-input-block-padding: ${bodySelectedStartNudge};
   --bf-button-block-padding: ${bodySelectedStartNudge};
@@ -1260,6 +1262,10 @@ ${controlPadding(controlCompactBlockPaddingVar, "0rem")}  padding-inline: var(--
   text-decoration: none;
 }
 
+:where(.bf-theme) :where(.bf-side-navigation-accordion-button) {
+  gap: var(--bf-disclosure-gap);
+}
+
 :where(.bf-theme) :where(.bf-side-navigation-item.is-title) > :where(.bf-side-navigation-link, .bf-side-navigation-text) {
   color: var(--bf-color-text-default);
   font-weight: 600;
@@ -1756,11 +1762,11 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-disclosure-icon-inline-size) var(--bf-disclosure-icon-inline-size);
+  block-size: var(--bf-disclosure-icon-inline-size);
   content: "";
-  flex: 0 0 1rem;
-  inline-size: 1rem;
+  flex: 0 0 var(--bf-disclosure-icon-inline-size);
+  inline-size: var(--bf-disclosure-icon-inline-size);
   transition: transform 120ms ease;
 }
 
@@ -2194,6 +2200,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: flex;
+  gap: var(--bf-disclosure-gap);
   inline-size: 100%;
   justify-content: flex-start;
   min-block-size: var(--bf-control-box-size);
@@ -2215,13 +2222,12 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-disclosure-icon-inline-size) var(--bf-disclosure-icon-inline-size);
+  block-size: var(--bf-disclosure-icon-inline-size);
   content: "";
   display: inline-block;
   flex: none;
-  inline-size: 1rem;
-  margin-inline-end: var(--bf-control-inline-padding-action);
+  inline-size: var(--bf-disclosure-icon-inline-size);
   transition: transform 120ms ease;
 }
 

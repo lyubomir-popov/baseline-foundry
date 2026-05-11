@@ -553,6 +553,17 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-input)", {
     "padding-inline-end": "var(--bf-search-and-filter-trailing-inline-size)"
   }, "search-and-filter inputs reserve their trailing affordance space from the field padding token");
+  assert(css.includes("--bf-disclosure-gap: 1rem;"), "Expected generated CSS to define the shared disclosure text-gap token.");
+  assert(css.includes("--bf-disclosure-icon-inline-size: 1rem;"), "Expected generated CSS to define the shared disclosure icon-size token.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-accordion-button)", {
+    "gap": "var(--bf-disclosure-gap)"
+  }, "side-navigation accordion buttons use the shared disclosure gap instead of the generic compact row gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-accordion-tab)", {
+    "gap": "var(--bf-disclosure-gap)"
+  }, "accordion tabs use the shared disclosure gap instead of a pseudo-element margin");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-accordion-tab)::before", {
+    "inline-size": "var(--bf-disclosure-icon-inline-size)"
+  }, "accordion disclosure chevrons size from the shared disclosure icon token");
   assert(css.includes(":where(.bf-code-snippet)"), "Expected generated CSS to include code-snippet styling.");
   assert(css.includes(":where(.bf-code-snippet-block.is-icon) {\n  cursor: copy;"), "Expected generated CSS to include copyable code-snippet blocks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the top-navigation dropdown container styling.");
