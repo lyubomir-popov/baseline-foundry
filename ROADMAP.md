@@ -26,7 +26,7 @@ Metric-driven typography from Ubuntu Sans Variable, editorial typescale, prose s
 
 ### Stage 3 — Spec-driven component surface (in progress)
 
-All non-deprecated Vanilla components as minimal `bf-*` demos. Currently: 27 shipped, 4 partial, 9 superseded, 19 missing, plus 6 permanently excluded deprecated patterns. Independent theme surfaces now ship as complete scoped token sets with stored font metrics, so alternate fonts can sit beside the canonical Ubuntu tiers without relying on editorial-base diffs. Purpose: edge-case isolation for spec evaluation and screenshot capture.
+All non-deprecated Vanilla components as minimal `bf-*` demos. Currently: 30 shipped, 4 partial, 8 superseded, 17 missing, plus 6 permanently excluded deprecated patterns. Independent theme surfaces now ship as complete scoped token sets with stored font metrics, so alternate fonts can sit beside the canonical Ubuntu tiers without relying on editorial-base diffs. Purpose: edge-case isolation for spec evaluation and screenshot capture.
 
 **Key invariant for this stage:** Control sizing (buttons, inputs, selects) follows the Vanilla model — symmetric `padding-block = nudge − border`, no explicit `block-size` target, and `margin-bottom = compensation + spaceAfter`, where `compensation = ceil(borderBoxHeight / baselineUnit) × baselineUnit − borderBoxHeight`. The occupied block (`border box + margin-bottom`) snaps to the baseline grid; the raw border box usually does not. See `TODO.md` → "Control baseline-grid invariant" for the full explanation. All controls sharing a font size align to the same baseline as a `<p>`.
 

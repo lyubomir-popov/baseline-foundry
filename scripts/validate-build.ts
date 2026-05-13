@@ -334,6 +334,11 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--vf-color-button-negative-default: #a11223;"), "Expected generated CSS to define the Vanilla dark negative button token.");
   assert(css.includes("--vf-color-button-negative-hover: #8a0f1e;"), "Expected generated CSS to define the Vanilla dark negative button hover token.");
   assert(css.includes("--vf-color-accent: #70bbc2;"), "Expected generated CSS to define the Vanilla dark accent token.");
+  assert(css.includes("--bf-color-positive: var(--vf-color-border-positive, #0e8420);"), "Expected generated CSS to expose a public positive foreground alias from the semantic positive border token.");
+  assert(css.includes("--bf-color-positive-background: var(--vf-color-background-positive-default, hsl(129deg 90% 39% / 10%));"), "Expected generated CSS to expose a public positive background alias from the semantic positive background token.");
+  assert(css.includes("--bf-color-negative: var(--vf-color-border-negative, #c7162b);"), "Expected generated CSS to expose a public negative foreground alias from the semantic negative border token.");
+  assert(css.includes("--bf-color-negative-background: var(--vf-color-background-negative-default, hsl(354deg 100% 39% / 10%));"), "Expected generated CSS to expose a public negative background alias from the semantic negative background token.");
+  assert(css.includes("--bf-font-size-small: var(--bf-body-font-size,"), "Expected generated CSS to expose a public small-font alias from the active body role.");
   assert(css.includes("--bf-color-rule: var(--vf-color-border-low-contrast, rgba(0, 0, 0, 0.1));"), "Expected generated CSS to map Foundry separators to Vanilla's low-contrast border token.");
   assert(css.includes("--bf-color-accent: var(--vf-color-accent, #0f95a1);"), "Expected generated CSS to expose Foundry accent from Vanilla's semantic accent token.");
   assert(!css.includes("--bf-color-accent: var(--bf-color-link);"), "Expected generated CSS to avoid collapsing the accent token back onto the link token.");
@@ -596,10 +601,23 @@ function validateCommonCss(css: string): void {
   assert(css.includes("transform: rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to point downward before expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: rotate(180deg);\n}"), "Expected active top-navigation chevrons to rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-icon) {"), "Expected generated CSS to include the base icon styling.");
-    assert(css.includes(":where(.bf-theme) :where(.bf-icon.is-success-grey) {"), "Expected generated CSS to include the success-grey icon modifier.");
-    assert(css.includes(":where(.bf-theme) :where(.bf-icon.is-error-grey) {"), "Expected generated CSS to include the error-grey icon modifier.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-icon.is-search) {"), "Expected generated CSS to include named icon modifiers.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon)", {
+    "background-size": "contain",
+    "display": "inline-block",
+    "transform": "var(--bf-icon-transform)"
+  }, "icon base styling keeps the shared image-sized inline-block contract");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon.is-search)", {
+    "--bf-icon-image": "var(--bf-ui-icon-search)"
+  }, "search icons resolve from the shared search glyph token");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon.is-error-grey)", {
+    "--bf-icon-image": "var(--bf-ui-icon-error-grey)"
+  }, "error-grey icons resolve from the shared semantic glyph token");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon.is-success-grey)", {
+    "--bf-icon-image": "var(--bf-ui-icon-success-grey)"
+  }, "success-grey icons resolve from the shared semantic glyph token");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon.is-chevron-up)", {
+    "--bf-icon-transform": "rotate(180deg)"
+  }, "upward chevrons reuse the shared down glyph and rotate it in place");
   assert(css.includes(":where(.bf-theme) :where(.bf-list)"), "Expected generated CSS to include the base list styling.");
     assert(css.includes(":where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {"), "Expected generated CSS to include ticked and crossed list-item styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-list)"), "Expected generated CSS to include the inline-list styling.");
@@ -1107,6 +1125,12 @@ function validateFormAtlasPage(formAtlasHtml: string, componentAtlasHtml: string
   assert(componentAtlasHtml.includes('data-demo-meta="Reference paragraph plus BF cluster rows for quick control baseline inspection."'), "Expected the component atlas to describe form-atlas through the BF cluster-row contract.");
 }
 
+function validateButtonDemo(buttonHtml: string): void {
+  validateBfOnlyDemoPage("button.html", buttonHtml);
+  assert(buttonHtml.includes('data-baseline-label="icon-only button stacked 1"'), "Expected button.html to include an icon-only button specimen for dense-surface verification.");
+  assert(buttonHtml.includes('data-baseline-label="icon-only button stacked 2"'), "Expected button.html to include a second icon-only button specimen so both neutral and negative icon-only states stay visible in QA.");
+}
+
 function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
   validateBfOnlyDemoPage("tabs.html", demoPages.tabs);
   validateBfOnlyDemoPage("panel-tabs.html", demoPages.panelTabs);
@@ -1213,11 +1237,12 @@ async function main(): Promise<void> {
   const prosePreset = await readThemeArtifacts(path.resolve("dist/presets/prose"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, buttonHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/form-atlas.html")),
     readTextArtifact(path.resolve("demo/components/range.html")),
+    readTextArtifact(path.resolve("demo/components/button.html")),
     readTextArtifact(path.resolve("demo/component-atlas.js")),
     readTextArtifact(path.resolve("demo/component-demo.js")),
     readTextArtifact(path.resolve("demo/component-shell.css")),
@@ -1291,6 +1316,7 @@ async function main(): Promise<void> {
   runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, componentShellCss, specShellCss, pageChromeCss));
   runInvariant("Engine illustration page", () => validateEngineIllustrationPage(pageCatalogJs, componentAtlasHtml, engineIllustrationHtml, componentShellCss));
   runInvariant("Range page", () => validateRangePage(rangeHtml, componentShellCss));
+  runInvariant("Button demo", () => validateButtonDemo(buttonHtml));
   runInvariant("Component atlas page", () => validateComponentAtlasPage(componentAtlasHtml, componentAtlasJs));
   runInvariant("Form atlas page", () => validateFormAtlasPage(formAtlasHtml, componentAtlasHtml, componentShellCss));
   runInvariant("Living spec home", () => validateLivingSpecHome(demoIndexHtml));

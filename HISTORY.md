@@ -4,6 +4,18 @@ Items moved here from `STATUS.md`, `TODO.md`, `README.md`, and `INBOX.md` to kee
 
 ## Short-term
 
+## css-components split burst 9 (2026-05-12)
+
+- [x] Extracted the contiguous `bf-icon` block out of `src/css-components.ts` into `src/css-components/icon.ts` without changing generated CSS output order.
+- [x] Confirmed the plain-string module pattern also covers a compact token-driven glyph family, so the split can keep peeling off small static seams without introducing an index module yet.
+- [x] Migrated the touched icon invariants in `scripts/validate-build.ts` from substring checks to AST assertions (`bf-icon` base styling plus search / semantic / rotated modifiers) and revalidated with `npm run build:theme` plus `npm run test:build` (`3843` checks green).
+
+## diagram-generator editor alias upstreaming (2026-05-12)
+
+- [x] Triaged the lingering `diagram-generator` editor inbox request and confirmed `--bf-color-text-muted` plus `--bf-color-link` were already part of the public BF contract, so those notes were stale rather than new work.
+- [x] Added public `--bf-color-positive`, `--bf-color-positive-background`, `--bf-color-negative`, `--bf-color-negative-background`, and `--bf-font-size-small` aliases so downstream OS consumers can style subdued build-state badges and small UI headings without shipping local fallback literals.
+- [x] Added icon-only button specimens to `demo/components/button.html`, extended build validation to require them, and rechecked the current `bf-button.is-icon` edge-pull contract before reopening the broader dense icon slice 3 work.
+
 ## Dense icon spacing slice 1 (2026-05-11)
 
 - [x] Standardized the leading disclosure controls onto a shared `1rem` chevron plus `1rem` text-gap contract by giving `bf-accordion-tab` and `bf-side-navigation-accordion-button` the same disclosure gap and sizing the accordion / side-navigation / expand chevrons from a shared disclosure token.

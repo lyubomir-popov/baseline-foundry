@@ -1,8 +1,8 @@
-# Rebuild Plan
+﻿# Rebuild Plan
 
 ## Goal
 
-Provide the **minimal testing surface** for evaluating the canonical typography, spacing, and grid specs. Output: spec examples, screenshots, edge-case isolation for all non-deprecated Vanilla components — not a finished design-system site.
+Provide the **minimal testing surface** for evaluating the canonical typography, spacing, and grid specs. Output: spec examples, screenshots, edge-case isolation for all non-deprecated Vanilla components â€” not a finished design-system site.
 
 ## Source inputs and precedence
 
@@ -42,15 +42,15 @@ When sources disagree, use this order:
 5. Compatibility concerns should not drive the public API.
 6. Additions must earn their place as durable primitives.
 7. Single-direction margin declarations: `margin: 0` reset, then literal `margin-block-end` where applicable. No `margin-block-start`.
-8. Element qualifiers align by default: bare `<h1>`–`<h6>`, `<p>`, `<figcaption>` in `bf-theme` get nudges, sizing, spacing automatically.
+8. Element qualifiers align by default: bare `<h1>`â€“`<h6>`, `<p>`, `<figcaption>` in `bf-theme` get nudges, sizing, spacing automatically.
 9. Flat `bf-` naming: single-dash, `is-*` modifiers only, no BEM, no `p-*`.
-10. Dogfooding: demos use only `bf-*` / `is-*`. Missing primitive → add it after confirmation from the user.
-11. No styled `data-*` attributes — JS-only hooks with zero CSS. All styling via `bf-*` / `is-*`.
+10. Dogfooding: demos use only `bf-*` / `is-*`. Missing primitive â†’ add it after confirmation from the user.
+11. No styled `data-*` attributes â€” JS-only hooks with zero CSS. All styling via `bf-*` / `is-*`.
 12. No decorative containers: non-components carry no backgrounds, borders, or padding.
 13. Three layout primitives: `bf-grid`, `bf-stack`, `bf-cluster`. Section spacing via `bf-section` modifiers.
 14. No `ui-*` roles: component typography derives from body/heading tier tokens, and non-heading UI stays body-sized by default. Only components with explicit heading slots above `h5` may opt into larger heading roles.
 15. Minimal demo content: Latin lorem ipsum only.
-16. **Control padding follows the Vanilla model** — see "Control baseline-grid invariant" below.
+16. **Control padding follows the Vanilla model** â€” see "Control baseline-grid invariant" below.
 
 ## Demo rules
 
@@ -69,8 +69,8 @@ When sources disagree, use this order:
 
 The repo ships two spacing models. This is an intentional architectural split, not an implementation detail.
 
-- **Element-owned (editorial, documentation)** — each typographic element carries its own `margin-block-end` derived from the role's `spaceAfter` value, and its own `padding-block-start`/`padding-block-end` derived from real font-metric nudges. The element knows how much space it needs; the parent container does not dictate vertical rhythm.
-- **Container-owned (app)** — app is a strict container-owned project surface. Runtime nudges stay zero, layout primitives own inter-child spacing, and semantic text spacing is neutralized so the app tier does not host element-owned islands.
+- **Element-owned (editorial, documentation)** â€” each typographic element carries its own `margin-block-end` derived from the role's `spaceAfter` value, and its own `padding-block-start`/`padding-block-end` derived from real font-metric nudges. The element knows how much space it needs; the parent container does not dictate vertical rhythm.
+- **Container-owned (app)** â€” app is a strict container-owned project surface. Runtime nudges stay zero, layout primitives own inter-child spacing, and semantic text spacing is neutralized so the app tier does not host element-owned islands.
 
 Tier policy is strict: `bf-tier-app` stays container-owned end to end; `bf-tier-editorial` and `bf-tier-documentation` stay element-owned. Do not mix modes inside a tier.
 
@@ -85,7 +85,7 @@ Font files are **not bundled** in the npm package. Each surface's `metrics.fontF
 1. Supply matching font files at their own serving path.
 2. Override the `@font-face` `src` declarations if the default relative paths (`../../assets/fonts/...`) don't match their layout.
 
-The canonical built-ins expect Ubuntu Sans Variable (`UbuntuSans[wdth,wght].ttf`). Experiment surfaces may reference additional fonts (e.g., IBM Plex Sans). The `npm run setup:demo-font` script fetches both Ubuntu Sans and the IBM Plex Sans variable experiment asset into `assets/fonts/` for local development only — it is not a production install step.
+The canonical built-ins expect Ubuntu Sans Variable (`UbuntuSans[wdth,wght].ttf`). Experiment surfaces may reference additional fonts (e.g., IBM Plex Sans). The `npm run setup:demo-font` script fetches both Ubuntu Sans and the IBM Plex Sans variable experiment asset into `assets/fonts/` for local development only â€” it is not a production install step.
 
 ### Debug overlay
 
@@ -93,21 +93,21 @@ The baseline-grid debug overlay is a separable concern. CSS generation lives in 
 
 ### Build pipeline
 
-- **Literal CSS values** — `margin-bottom`, `padding-block-start`, `padding-block-end` are literal per role.
-- **Layout container child reset** — `.bf-stack > *`, `.bf-cluster > *`, `.bf-stage-shell > *` reset `margin-bottom: 0; padding-block: 0;` (§5.3).
-- **Role-scoped typography vars** — root prose and body-sized components read tier-scoped family/size/weight/line-height vars instead of editorial literals.
-- **Tier-selectable control padding vars** — inputs/selects/buttons can resolve block padding from real body nudges in nudged tiers and fixed fallback padding in `app`; no target-height back-calculation or legacy control block-size tokens.
-- **Compensated row boxes for marginless repeats** — tables and similar text-between-rules rows use a fixed row box with an in-box border, nudge-derived padding, and a solved line-height instead of fake inset borders or zero-top padding hacks.
-- **Independent surface contract** — each built-in tier emits a complete scoped token surface (`.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`, `.bf-tier-os`) instead of inheriting editorial defaults through diffs. Tier switching = class toggle on any `.bf-theme` container, and multiple containers can coexist side by side.
-- **Publishable surface manifest** — `dist/surfaces.json` stores every shipped surface's runtime tokens plus the font-metric artifact used to derive them. `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest.
+- **Literal CSS values** â€” `margin-bottom`, `padding-block-start`, `padding-block-end` are literal per role.
+- **Layout container child reset** â€” `.bf-stack > *`, `.bf-cluster > *`, `.bf-stage-shell > *` reset `margin-bottom: 0; padding-block: 0;` (Â§5.3).
+- **Role-scoped typography vars** â€” root prose and body-sized components read tier-scoped family/size/weight/line-height vars instead of editorial literals.
+- **Tier-selectable control padding vars** â€” inputs/selects/buttons can resolve block padding from real body nudges in nudged tiers and fixed fallback padding in `app`; no target-height back-calculation or legacy control block-size tokens.
+- **Compensated row boxes for marginless repeats** â€” tables and similar text-between-rules rows use a fixed row box with an in-box border, nudge-derived padding, and a solved line-height instead of fake inset borders or zero-top padding hacks.
+- **Independent surface contract** â€” each built-in tier emits a complete scoped token surface (`.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`, `.bf-tier-os`) instead of inheriting editorial defaults through diffs. Tier switching = class toggle on any `.bf-theme` container, and multiple containers can coexist side by side.
+- **Publishable surface manifest** â€” `dist/surfaces.json` stores every shipped surface's runtime tokens plus the font-metric artifact used to derive them. `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest.
 
 ### Control baseline-grid invariant
 
 This is the Vanilla Framework's approach to input/button/select sizing. **Do not invent an alternative.** The trick:
 
-1. **Symmetric padding** = `nudge − border-width`, applied to both `padding-block-start` and `padding-block-end`. This places the text baseline on the grid — identical to how a `<p>` with the same font aligns.
-2. **No explicit `block-size`** target. The control's natural border-box height = `2 × nudge + line-height` (borders cancel because `padding = nudge − border`). That border box is typically **not** a whole multiple of the baseline unit, and that's fine.
-3. **`margin-bottom` is two terms added together.** Formula: `margin-bottom = compensation + spaceAfter`, where `compensation = ceil(borderBoxHeight / baselineUnit) × baselineUnit − borderBoxHeight`. The compensation term gets from the control's natural border-box height to the next exact baseline multiple; `spaceAfter` preserves the semantic gap expected for body-sized text.
+1. **Symmetric padding** = `nudge âˆ’ border-width`, applied to both `padding-block-start` and `padding-block-end`. This places the text baseline on the grid â€” identical to how a `<p>` with the same font aligns.
+2. **No explicit `block-size`** target. The control's natural border-box height = `2 Ã— nudge + line-height` (borders cancel because `padding = nudge âˆ’ border`). That border box is typically **not** a whole multiple of the baseline unit, and that's fine.
+3. **`margin-bottom` is two terms added together.** Formula: `margin-bottom = compensation + spaceAfter`, where `compensation = ceil(borderBoxHeight / baselineUnit) Ã— baselineUnit âˆ’ borderBoxHeight`. The compensation term gets from the control's natural border-box height to the next exact baseline multiple; `spaceAfter` preserves the semantic gap expected for body-sized text.
 4. **The occupied block is what snaps to the grid.** `occupiedBlock = borderBoxHeight + margin-bottom`. When controls stack correctly, the top border and the text baseline repeat on grid lines, and the occupied block repeats on exact baseline steps. The border box alone is allowed to be fractional relative to the grid.
 
 Consequences:
@@ -115,7 +115,7 @@ Consequences:
 - There is no `.is-dense` modifier on individual controls. Density comes from the **tier** (different `baselineUnit` and nudge values).
 - The quantity that must be a baseline multiple is the occupied block (`border box + margin-bottom`), not the raw border box.
 - A paragraph, input, button, and select sharing the same font size all share the same baseline alignment when placed side by side.
-- The `controlPadding()` back-calculation that previously existed was wrong — it reversed the causality (target height → derive padding) instead of letting consistent padding produce a natural height.
+- The `controlPadding()` back-calculation that previously existed was wrong â€” it reversed the causality (target height â†’ derive padding) instead of letting consistent padding produce a natural height.
 - `bf-grid`: `4`/`8`/`16` columns, power-of-2 spans, `620px`/`1681px` thresholds.
 - Tier-first build: `editorial`, `documentation`, `app`, `os`.
 - Metrics-derived nudges default; `.bf-engine-cap` is demo-only; `.bf-tier-app` zeroes runtime nudges but keeps stored metric data for audit and side-by-side comparison; `.bf-tier-os` stays metrics-driven as a dense addendum surface.
@@ -142,12 +142,12 @@ Use this for **tables and any other repeated rows where text is sandwiched betwe
 1. **Snap the row box, not the text node.** The repeated quantity is the cell or row border box because table rows and similar grouped rows cannot rely on inter-row margins.
 2. **Keep the separator inside the box.** Use a real border that participates in the row-height math instead of an inset shadow that visually adds a line without consuming layout space.
 3. **Use one symmetric row padding value.** General principle: in nudged tiers use the active body nudge; in zero-nudge tiers such as `app`, fall back to a fixed compact row padding value. Do not let the bottom padding collapse to a token that was never meant to be the row inset.
-4. **Solve line-height from the target row block size.** Formula: `rowLineHeight = rowBlockSize − (2 × rowPadding) − borderWidth`. Choose the row height first as an exact multiple of the baseline unit, then let the text line-height be the remainder after symmetric padding and the in-box border are accounted for.
+4. **Solve line-height from the target row block size.** Formula: `rowLineHeight = rowBlockSize âˆ’ (2 Ã— rowPadding) âˆ’ borderWidth`. Choose the row height first as an exact multiple of the baseline unit, then let the text line-height be the remainder after symmetric padding and the in-box border are accounted for.
 5. **Use a tier-specific fallback only when the tier intentionally abandons nudged alignment.** `app` can use a fixed compact row padding value instead of a body nudge, but the model stays the same: fixed row block size, symmetric padding, real in-box border, solved line-height.
 6. **Verify rows as boxes, then visually inspect the text.** Box checks prove row rhythm; visual inspection confirms the symmetric text sandwich remains correct.
 
 Consequences:
-- The reusable recipe is: `rowBlockSize = n × baselineUnit`, `rowPadding = bodyNudge` in nudged tiers or `compactRowPadding` in zero-nudge tiers, `rowLineHeight = rowBlockSize − 2 × rowPadding − borderWidth`.
+- The reusable recipe is: `rowBlockSize = n Ã— baselineUnit`, `rowPadding = bodyNudge` in nudged tiers or `compactRowPadding` in zero-nudge tiers, `rowLineHeight = rowBlockSize âˆ’ 2 Ã— rowPadding âˆ’ borderWidth`.
 - This keeps the text visually centered between the rules and makes the border compensation explicit instead of hiding it in asymmetric padding.
 - The technique generalizes beyond tables to any stacked, ruled rows where the content lives between two lines and margin cannot carry the rhythm.
 - If the separator is only decorative and should not affect rhythm, keep it out of the box math; if it is the actual row boundary, it belongs inside the compensated row box.
@@ -169,10 +169,10 @@ Tag tasks with `[H]` / `[S]` / `[L]` / `[X]` so any agent picking up the queue r
 
 Routing rule of thumb:
 
-- "Matches an existing pattern + passes build invariants" → `[S]`.
-- "Reads N files and decides what shape the new thing should be" → `[H]`.
-- "Moves text from file A to file B" → `[L]`.
-- "Just runs and reports pass/fail" → `[X]`.
+- "Matches an existing pattern + passes build invariants" â†’ `[S]`.
+- "Reads N files and decides what shape the new thing should be" â†’ `[H]`.
+- "Moves text from file A to file B" â†’ `[L]`.
+- "Just runs and reports pass/fail" â†’ `[X]`.
 
 Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent` subagents for `[L]` and small `[S]` work in parallel, then sequence the Heavy review on the returns. Don't have a Heavy session do `[L]` work directly.
 
@@ -182,13 +182,15 @@ Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent
 
 #### Highest-priority next steps
 
-- `[H]` Downstream resync tranche 1 — update Diagram Generator to the corrected BF `main` contract while preserving the sibling-preferred plus vendored-fallback model, the working inspector, and the Python 3.9-compatible preview behavior.
-- `[H]` Downstream resync tranche 2 — re-port Brand Layout Ops and A4 Generator from their reverted checkpoints onto the corrected BF `main` contract using `os`/`app` only, matching the previously validated shell density without reviving `panel`.
-- `[H]` Audit recommendation #1 — choose the next bounded `src/css-components.ts` split burst from the remaining seams in `STATUS.md`. Keep the external API in `src/index.ts` unchanged.
-- `[S]` Audit recommendation #1a — extract exactly one contiguous family into `src/css-components/`, preserve CSS output order, keep the current helper/import recipe unless an index module becomes necessary, and validate immediately after the burst.
-- `[S]` Audit recommendation #2 (continue migration) — migrate only the `validateCommonCss` checks touched by the chosen split burst to `assertRuleHasDecl` / `assertRuleMissingDecl` so the two efforts compose. Pattern documented inline next to the migrated `.bf-top-navigation-row` example.
-- `[S]` Audit recommendation #4 — add `axe-playwright` a11y checks on the `demo/components/*.html` pages. Additive, low risk. Pick after the current split burst pattern stabilises.
-- `[H]` Audit recommendation #5 — split package surface (`./build` vs runtime). Already partially done via `./build` export; revisit once the `css-components.ts` split work stabilises the module graph.
+- `[H]` Downstream resync tranche 1 â€” update Diagram Generator to the corrected BF `main` contract while preserving the sibling-preferred plus vendored-fallback model, the working inspector, and the Python 3.9-compatible preview behavior.
+- `[H]` Downstream resync tranche 2 â€” re-port Brand Layout Ops and A4 Generator from their reverted checkpoints onto the corrected BF `main` contract using `os`/`app` only, matching the previously validated shell density without reviving `panel`.
+- `[H]` Audit recommendation #1 â€” choose the next bounded `src/css-components.ts` split burst from the remaining seams in `STATUS.md`. Keep the external API in `src/index.ts` unchanged.
+- [x] `[S]` Audit recommendation #1a (2026-05-12) â€” extracted the contiguous `bf-icon` family into `src/css-components/icon.ts`, preserved CSS output order, and revalidated with `npm run build:theme` plus `npm run test:build` (`3843` checks green).
+- `[S]` Audit recommendation #2 (continue migration) â€” migrate only the `validateCommonCss` checks touched by the chosen split burst to `assertRuleHasDecl` / `assertRuleMissingDecl` so the two efforts compose. Pattern documented inline next to the migrated `.bf-top-navigation-row` example.
+- `[S]` Audit recommendation #4 â€” add `axe-playwright` a11y checks on the `demo/components/*.html` pages. Additive, low risk. Pick after the current split burst pattern stabilises.
+- `[H]` Audit recommendation #5 â€” split package surface (`./build` vs runtime). Already partially done via `./build` export; revisit once the `css-components.ts` split work stabilises the module graph.
+
+- Branch cleanup stays blocked until `main` is proven to supersede the temporary May sync and the downstream repos have been resynced from it. If cleanup is requested later, summarize what moved versus what was intentionally dropped before deleting `master`.
 
 - The latest helper-layer cleanup is now also complete: `range-demo-rail` is gone from `demo/component-shell.css`, `demo/components/range.html` now uses the shared `bf-inline-size.is-compact` wrapper instead of a page-local width helper, and `demo/components/engine-illustration.html` now renders the raw / compensated / cap comparison lanes on BF-owned cards, status labels, inline-size utilities, and the shared `u-baseline-grid` overlay. The remaining active work is downstream shared-shell upstreaming and dense control/component parity, not page-local demo helper cleanup.
 - Component QA now walks the intended non-app surfaces directly instead of only checking the authored default page state: `scripts/verify-component-baselines.ts` drives shared-tier component pages through `editorial`, `documentation`, and `os`, keeps app-authored pages app-only unless they opt into broader coverage, and records one baseline-report entry per verified surface.
@@ -220,21 +222,23 @@ Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent
 ### Inbox triage
 
 - [x] Persist the shared page-chrome baseline-grid, tier, and tone choices across page-to-page navigation instead of resetting them per page family.
-- [x] `[H]` Decided IBM Plex packaging strategy (2026-04-30) — do not ship an explicit BF IBM Plex preset. Ubuntu Sans remains the only built-in tier font; downstream non-Ubuntu adopters should use a consumer-owned config path, with `config/experiments/ibm-plex-engine-smoke.json` as a reference/example only.
-- [x] `[S]` Closed the OS-tier entrypoint decision (2026-04-30) — do not add a new OS preset alias, build artifact, or package export. Downstreams that class-switch into `bf-tier-os` should use the shared root bundle `styles.css` as the neutral entrypoint, while `tiers/os.css` remains the path for consumers that want OS as the unscoped default surface.
+- [x] `[H]` Decided IBM Plex packaging strategy (2026-04-30) â€” do not ship an explicit BF IBM Plex preset. Ubuntu Sans remains the only built-in tier font; downstream non-Ubuntu adopters should use a consumer-owned config path, with `config/experiments/ibm-plex-engine-smoke.json` as a reference/example only.
+- [x] `[S]` Closed the OS-tier entrypoint decision (2026-04-30) â€” do not add a new OS preset alias, build artifact, or package export. Downstreams that class-switch into `bf-tier-os` should use the shared root bundle `styles.css` as the neutral entrypoint, while `tiers/os.css` remains the path for consumers that want OS as the unscoped default surface.
 - [x] `[S]` Removed the remaining `panel` legacy preset support (2026-04-30) after confirming the live `brand-layout-ops` source no longer imports `baseline-foundry/presets/panel.css`, leaving `os` as an independent sibling built-in tier with no preset coupling.
+- [x] `[S]` Triaged the latest `diagram-generator` editor-alias request (2026-05-12): `--bf-color-text-muted` and `--bf-color-link` were already present, while BF now exposes `--bf-color-positive`, `--bf-color-positive-background`, `--bf-color-negative`, `--bf-color-negative-background`, and `--bf-font-size-small` so downstream OS consumers can drop those local fallbacks.
+- [x] `[S]` Verified the current `bf-button.is-icon` edge-pull contract on icon-only OS-tier demo specimens and locked those specimens into build validation before reopening dense icon slice 3.
 - [ ] `[H]` Standardize dense icon and keyline spacing via bounded sub-slices rather than one repo-wide pass. Preserve the current split between leading disclosure controls, trailing action slots, and button child-icon spacing until each family has its own proven contract.
-- [ ] `[S]` Dense icon spacing slice 2 — trailing action slots. Target `bf-search-box*`, `bf-search-and-filter*`, `bf-top-navigation-dropdown-toggle`, and `bf-top-navigation-search-toggle`; standardize reserved end-slot spacing without widening into a button child-icon refactor.
-- [ ] `[S]` Dense icon spacing slice 3 — icon-bearing buttons. Revisit `bf-button.is-icon` only after slices 1 and 2 settle; keep the current edge-pull contract only if it still aligns with the denser control families.
+- [x] `[S]` Dense icon spacing slice 2 â€” trailing action slots. Closed 2026-05-12 as planning drift: the May 11 `bf-search-box`, `bf-search-and-filter`, `bf-top-navigation-dropdown-toggle`, and `bf-top-navigation-search-toggle` work already standardized those reserved end-slot widths from the shared field-padding contract.
+- [ ] `[S]` Dense icon spacing slice 3 â€” icon-bearing buttons. Revisit `bf-button.is-icon` only after slices 1 and 2 settle; keep the current edge-pull contract only if it still aligns with the denser control families.
 - [ ] `[H]` Review the switch-versus-slider visual contract and decide whether the switch should align to the same track language as the slider instead of preserving two divergent control-track treatments. Baseline/centering drift is no longer the blocker: the latest editorial compare harness now measures against the active label line center, and checkbox/radio/switch visuals all land at effectively `0px` delta there.
 
 ### Downstream shared-shell upstreaming backlog
 
-- [x] Tranche 1 — fill-height panel + action-menu rows. Shared contract: `bf-panel.is-fill`, `bf-top-navigation-dropdown-item`, `bf-top-navigation-dropdown-item-label`, `bf-top-navigation-dropdown-item-shortcut`, `li.is-divider`. BF demos: `demo/components/application-shell.html`, `demo/components/top-navigation.html`.
-- [ ] `[H]` Tranche 2 — authoring-shell layout variant. Proposed contract: `bf-application.is-top-navigation-shell` with canonical top-navigation, main-stage, pinned-aside areas, full-height application sizing, and the dark top-navigation/dropdown affordances now requested by both `brand-layout-ops` and `a4-generator`. BF demo target: extend `demo/components/application-shell.html` or add a focused authoring-shell demo.
-- [ ] `[H]` Tranche 3 — worksurface + document-frame contract. Proposed contract: `bf-stage-shell.is-worksurface`, `bf-stage-frame`, `bf-stage-document`. BF demo target: extend `demo/components/stage-shell.html` or add a focused worksurface demo that stays fully on BF-owned primitives.
-- [ ] `[S]` Tranche 4 — downstream-generated authoring surface bundle. Keep chroma as a generated `brand-layout-ops` surface bundle layered on BF structure instead of promoting a new built-in BF tier. Demo target: downstream consumption, not a new BF built-in surface.
-- [ ] `[S]` Tranche 5 — breakpoint and density tuning only if reuse appears. Candidate seam: a top-navigation breakpoint token or variant rather than a BLO-local `48rem` media fork.
+- [x] Tranche 1 â€” fill-height panel + action-menu rows. Shared contract: `bf-panel.is-fill`, `bf-top-navigation-dropdown-item`, `bf-top-navigation-dropdown-item-label`, `bf-top-navigation-dropdown-item-shortcut`, `li.is-divider`. BF demos: `demo/components/application-shell.html`, `demo/components/top-navigation.html`.
+- [ ] `[H]` Tranche 2 â€” authoring-shell layout variant. Proposed contract: `bf-application.is-top-navigation-shell` with canonical top-navigation, main-stage, pinned-aside areas, full-height application sizing, and the dark top-navigation/dropdown affordances now requested by both `brand-layout-ops` and `a4-generator`. BF demo target: extend `demo/components/application-shell.html` or add a focused authoring-shell demo.
+- [ ] `[H]` Tranche 3 â€” worksurface + document-frame contract. Proposed contract: `bf-stage-shell.is-worksurface`, `bf-stage-frame`, `bf-stage-document`. BF demo target: extend `demo/components/stage-shell.html` or add a focused worksurface demo that stays fully on BF-owned primitives.
+- [ ] `[S]` Tranche 4 â€” downstream-generated authoring surface bundle. Keep chroma as a generated `brand-layout-ops` surface bundle layered on BF structure instead of promoting a new built-in BF tier. Demo target: downstream consumption, not a new BF built-in surface.
+- [ ] `[S]` Tranche 5 â€” breakpoint and density tuning only if reuse appears. Candidate seam: a top-navigation breakpoint token or variant rather than a BLO-local `48rem` media fork.
 
 ### Pragma-informed repo health plan
 
@@ -242,18 +246,18 @@ What we learned from looking at Pragma, filtered to non-opinionated improvements
 
 Adopted improvements:
 
-- [x] **Surface manifest `engine` field** — add a machine-readable `engine` string to each entry in `surfaces.json` so tooling and downstream consumers know what produced the surface. Start minimal: `"metrics-compensated"` for production surfaces, `"cap-formula"` for the demo overlay. Extend the enum only when new engines actually ship as buildable outputs.
-- [x] **Spacing-mode docs pass** — describe the repo's editorial/app split explicitly as an ontology in the architecture section: editorial and documentation are baseline-aligned, element-owned prose surfaces; app is zero-nudge, container-owned. The code already does this; the documentation should name the concept.
-- [x] **Structured invariant testing** — refactor `validate-build.ts` so each invariant is a named, documented check with a clear pass/fail label (inspired by Pragma's `@canonical/webarchitect` habit of treating architecture rules as testable contracts). Not borrowing their tool, borrowing the discipline.
-- [x] **Debug overlay as separable concern** — extract the baseline-grid overlay CSS and toggle logic into a self-contained module (`src/baseline-grid-overlay.css` generation + existing `src/baseline-grid.ts` runtime) so it's reusable for downstream consumers without pulling in the full theme.
-- [x] **Font asset contract** — document the font dependency contract explicitly in `surfaces.json` metadata and the architecture section, so consumers know whether fonts are bundled, expected at a path, or fetched externally.
+- [x] **Surface manifest `engine` field** â€” add a machine-readable `engine` string to each entry in `surfaces.json` so tooling and downstream consumers know what produced the surface. Start minimal: `"metrics-compensated"` for production surfaces, `"cap-formula"` for the demo overlay. Extend the enum only when new engines actually ship as buildable outputs.
+- [x] **Spacing-mode docs pass** â€” describe the repo's editorial/app split explicitly as an ontology in the architecture section: editorial and documentation are baseline-aligned, element-owned prose surfaces; app is zero-nudge, container-owned. The code already does this; the documentation should name the concept.
+- [x] **Structured invariant testing** â€” refactor `validate-build.ts` so each invariant is a named, documented check with a clear pass/fail label (inspired by Pragma's `@canonical/webarchitect` habit of treating architecture rules as testable contracts). Not borrowing their tool, borrowing the discipline.
+- [x] **Debug overlay as separable concern** â€” extract the baseline-grid overlay CSS and toggle logic into a self-contained module (`src/baseline-grid-overlay.css` generation + existing `src/baseline-grid.ts` runtime) so it's reusable for downstream consumers without pulling in the full theme.
+- [x] **Font asset contract** â€” document the font dependency contract explicitly in `surfaces.json` metadata and the architecture section, so consumers know whether fonts are bundled, expected at a path, or fetched externally.
 
 Not adopted (taste-driven, already settled):
 
-- Cap-first alignment as production default → remains demo-only (`bf-engine-cap`).
-- Container-owned spacing as default → remains app-tier only; editorial is element-owned.
-- Full cap-contract buildable surface mode → demoted to blog-only static illustration if needed for the comparison article, not a buildable surface.
-- Pragma's package-split structure → not transferable; Pragma is a multi-framework monorepo, Foundry is a single build-to-CSS repo.
+- Cap-first alignment as production default â†’ remains demo-only (`bf-engine-cap`).
+- Container-owned spacing as default â†’ remains app-tier only; editorial is element-owned.
+- Full cap-contract buildable surface mode â†’ demoted to blog-only static illustration if needed for the comparison article, not a buildable surface.
+- Pragma's package-split structure â†’ not transferable; Pragma is a multi-framework monorepo, Foundry is a single build-to-CSS repo.
 
 Decision gate:
 
@@ -261,7 +265,7 @@ Decision gate:
 
 ### Optional follow-up
 
-- [x] Blog engine illustration — `demo/components/engine-illustration.html` now provides the static BF-owned side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding for the IBM Plex Sans / Ubuntu Sans H1 and H2 experiment. It remains a blog/demo artifact, not a buildable surface mode.
+- [x] Blog engine illustration â€” `demo/components/engine-illustration.html` now provides the static BF-owned side-by-side of cap-formula vs raw-metrics vs compensated-metrics padding for the IBM Plex Sans / Ubuntu Sans H1 and H2 experiment. It remains a blog/demo artifact, not a buildable surface mode.
 
 ### BF parity follow-ups
 
@@ -269,11 +273,11 @@ The four ports landed 2026-04-27 (commits `ca16bb5`, `3b4f9ac`, `0ad2e53`, `aa53
 
 - [x] `[X]` Run `npm run qa:components` to capture visual baselines for the three new wide-capture pages (`cta-block`, `equal-height-row`, `figure`). Completed 2026-04-29 after fixing the remaining component baseline verifier drift in `stage-shell`, `tiered-list`, `cta-block`, `equal-height-row`, `figure`, and `aspect`.
 - [x] `[L]` Push branch `salvage/local-work-recovery` to origin once the user confirms.
-- [x] `[S]` Port `bf-button.is-negative` — shipped earlier in commit `c4431c4` with demo + static validation; this item was stale planning drift.
-- [x] `[H]` Decide brand button modifier strategy — do not port. Vanilla marks `p-button--brand` as deprecated in `_patterns_buttons.scss`, and BF excludes deprecated Vanilla patterns from parity work.
-- [x] `[S]` Port `bf-button.is-link` — shipped 2026-04-29 using the shared `--bf-color-link-*` contract, transparent chrome, and underline-on-hover behavior.
-- [x] `[S]` Port `bf-button.is-icon` — shipped 2026-04-29 as the Vanilla-style child-icon spacing contract on top of the existing `bf-icon` primitive; no new color tokens or runtime needed.
-- [ ] `[H]` Decide processing-button strategy — `is-processing` is a behavioral state with a spinner; whether to ship as CSS-only or a Lit element is a Heavy call.
+- [x] `[S]` Port `bf-button.is-negative` â€” shipped earlier in commit `c4431c4` with demo + static validation; this item was stale planning drift.
+- [x] `[H]` Decide brand button modifier strategy â€” do not port. Vanilla marks `p-button--brand` as deprecated in `_patterns_buttons.scss`, and BF excludes deprecated Vanilla patterns from parity work.
+- [x] `[S]` Port `bf-button.is-link` â€” shipped 2026-04-29 using the shared `--bf-color-link-*` contract, transparent chrome, and underline-on-hover behavior.
+- [x] `[S]` Port `bf-button.is-icon` â€” shipped 2026-04-29 as the Vanilla-style child-icon spacing contract on top of the existing `bf-icon` primitive; no new color tokens or runtime needed.
+- [ ] `[H]` Decide processing-button strategy â€” `is-processing` is a behavioral state with a spinner; whether to ship as CSS-only or a Lit element is a Heavy call.
 - [x] `[H]` Decided aspect-ratio container architecture (2026-04-28): ship `bf-aspect` as a generic utility primitive using modern `aspect-ratio: W / H`. Not on `bf-figure` (orthogonal concern), not as `bf-image-container` (image-specific name + legacy padding-bottom hack). `bf-aspect` composes inside `bf-figure` when a constrained captioned image is needed. Defer `on-(small|medium|large)` responsive variants to actual downstream demand.
 - [x] `[S]` Implemented `bf-aspect` (2026-04-28). Variants `is-16-9`, `is-3-2`, `is-2-3`, `is-cinematic` (12:5), `is-square`; children fill via `object-fit: cover`. Demo at `demo/components/aspect.html`, registered in atlas + componentPages + validate-build family. Build green at 3063 checks (was 3010, +53 from new assertions and demo data-baseline-check coverage).
 - [ ] `[H]` Decide which Vanilla `_patterns_*` deserve the next BF-parity batch from the ROADMAP gap inventory (separator, accordion variants, side-navigation extras, etc.). Requires reading multiple Vanilla files and judging composition vs. new primitive.
@@ -282,6 +286,7 @@ The four ports landed 2026-04-27 (commits `ca16bb5`, `3b4f9ac`, `0ad2e53`, `aa53
 
 | Priority | Gap | Pattern area |
 |---|---|---|
-| ~P2~ | ~Soft link (`.bf-link.is-soft`)~ | ~links~ | **Deprecated — not accessible, do not port** |
+| ~P2~ | ~Soft link (`.bf-link.is-soft`)~ | ~links~ | **Deprecated â€” not accessible, do not port** |
 | ~P2~ | ~Form layout modes (`.bf-form.is-inline`)~ | ~forms~ | **Superseded by `bf-cluster`** |
 | ~P3~ | ~Navigation mega-nav~ (deferred) | navigation |
+
