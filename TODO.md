@@ -180,6 +180,16 @@ Orchestration pattern: a Heavy session can dispatch `Explore` or per-repo `agent
 
 ### Current follow-up
 
+#### Pick-up guide (2026-05-23)
+
+The repo is clean and pushed. Three tracks are active — pick the one that matches the session scope:
+
+1. **Downstream resync** `[H]` — Diagram Generator first, then BLO + A4 from reverted checkpoints. This is the highest-value next move if downstream consumers are the priority.
+2. **css-components split** `[H]`/`[S]` — pick the next seam from `src/css-components.ts`, extract, migrate validation to AST, revalidate. Nine bursts complete; the module pattern is stable.
+3. **Dense icon slice 3 / parity decisions** `[H]` — icon-bearing buttons, processing-button strategy, next parity batch selection. Requires reading multiple Vanilla files.
+
+If the session is lightweight, `[S]` tranche work (a11y checks, validation migration) or `[L]` housekeeping is also available below.
+
 #### Highest-priority next steps
 
 - `[H]` Downstream resync tranche 1 â€” update Diagram Generator to the corrected BF `main` contract while preserving the sibling-preferred plus vendored-fallback model, the working inspector, and the Python 3.9-compatible preview behavior.
