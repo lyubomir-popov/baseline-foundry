@@ -183,11 +183,11 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-top-navigation-logo-tag-inline-size: 1.375rem;
   --bf-top-navigation-logo-tag-block-size: 2.375rem;
   --bf-top-navigation-logo-icon-size: 1rem;
-  --bf-icon-size-default: var(--bf-leading-icon-size);
-  --bf-icon-size-medium: calc(var(--bf-baseline) * 5);
-  --bf-icon-size-large: calc(var(--bf-baseline) * 8);
-  --bf-icon-size-x-large: calc(var(--bf-baseline) * 9);
-  --bf-icon-size-xx-large: calc(var(--bf-baseline) * 12);
+  --bf-icon-size-default: 1rem;
+  --bf-icon-size-medium: 2.5rem;
+  --bf-icon-size-large: 4rem;
+  --bf-icon-size-x-large: 4.5rem;
+  --bf-icon-size-xx-large: 6rem;
   --bf-leading-icon-size: calc(var(--bf-baseline) * 2);
   --bf-leading-icon-gap: calc(var(--bf-baseline) * 1);
   --bf-leading-icon-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-leading-icon-size)", bodySelectedStartNudge)};
