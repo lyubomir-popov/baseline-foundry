@@ -1,7 +1,8 @@
 export const overviewPages = [
   { title: "Living spec", href: "/index.html" },
   { title: "Controls gallery", href: "/demo/controls.html" },
-  { title: "Component atlas", href: "/demo/components/index.html" }
+  { title: "Component atlas", href: "/demo/components/index.html" },
+  { title: "Pattern atlas", href: "/demo/patterns/index.html" }
 ];
 
 export const specChapterPages = [
@@ -11,8 +12,8 @@ export const specChapterPages = [
   { title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" }
 ];
 
-export const tierAddendumPages = [
-  { title: "OS tier addendum", href: "/demo/panel.html" }
+export const tierPages = [
+  { title: "OS tier", href: "/demo/panel.html" }
 ];
 
 export const componentSections = [
@@ -23,6 +24,8 @@ export const componentSections = [
       { title: "Prose flow", href: "/demo/components/prose.html" },
       { title: "Layout primitives", href: "/demo/components/layout.html" },
       { title: "Grid primitives", href: "/demo/components/grid.html" },
+      { title: "Documentation layout", href: "/demo/components/docs-layout.html" },
+      { title: "Page shell", href: "/demo/components/page-shell.html" },
       { title: "Application shell", href: "/demo/components/application-shell.html" },
       { title: "Application layout", href: "/demo/components/application-layout.html" },
       { title: "Stage shell", href: "/demo/components/stage-shell.html" },
@@ -59,6 +62,11 @@ export const componentSections = [
       { title: "Icon", href: "/demo/components/icon.html" },
       { title: "List", href: "/demo/components/list.html" },
       { title: "Inline list", href: "/demo/components/inline-list.html" },
+      { title: "Tiered list", href: "/demo/components/tiered-list.html" },
+      { title: "CTA block", href: "/demo/components/cta-block.html" },
+      { title: "Equal-height row", href: "/demo/components/equal-height-row.html" },
+      { title: "Figure", href: "/demo/components/figure.html" },
+      { title: "Aspect", href: "/demo/components/aspect.html" },
       { title: "Table", href: "/demo/components/table.html" }
     ]
   },
@@ -87,7 +95,8 @@ export const componentSections = [
       { title: "Inline options", href: "/demo/components/inline-options.html" },
       { title: "Modal", href: "/demo/components/modal.html" },
       { title: "Cards", href: "/demo/components/cards.html" },
-      { title: "Option card", href: "/demo/components/option-card.html" }
+      { title: "Option card", href: "/demo/components/option-card.html" },
+      { title: "Notice", href: "/demo/components/notice.html" }
     ]
   },
   {
@@ -96,7 +105,53 @@ export const componentSections = [
       { title: "Panel pressure", href: "/demo/components/panel-pressure.html" },
       { title: "Narrow panel", href: "/demo/components/narrow-panel.html" },
       { title: "Editorial pressure", href: "/demo/components/editorial-pressure.html" },
+      { title: "Controls overview", href: "/demo/components/controls.html" },
       { title: "Surfaces overview", href: "/demo/components/surfaces-navigation.html" }
+    ]
+  }
+];
+
+export const patternSections = [
+  {
+    heading: "Vanilla pattern ports",
+    items: [
+      { title: "Article pagination", href: "/demo/components/article-pagination.html" },
+      { title: "Content card", href: "/demo/components/content-card.html" },
+      { title: "Data spotlight", href: "/demo/components/data-spotlight.html" },
+      { title: "Divided section", href: "/demo/components/divided-section.html" },
+      { title: "Password reveal and validation", href: "/demo/components/credential-validation.html" },
+      { title: "In-page navigation", href: "/demo/components/in-page-navigation.html" },
+      { title: "Logo section", href: "/demo/components/logo-section.html" },
+      { title: "Media object", href: "/demo/components/media-object.html" },
+      { title: "Reduced navigation", href: "/demo/components/navigation-reduced.html" },
+      { title: "Notification", href: "/demo/components/notification.html" },
+      { title: "Expanding table", href: "/demo/components/table-expanding.html" },
+      { title: "Mobile card table", href: "/demo/components/table-mobile-card.html" },
+      { title: "Table of contents", href: "/demo/components/table-of-contents.html" },
+      { title: "Sortable table", href: "/demo/components/table-sortable.html" }
+    ]
+  },
+  {
+    heading: "Vanilla Sites compositions",
+    items: [
+      { title: "Basic section", href: "/demo/components/basic-section.html" },
+      { title: "CTA section", href: "/demo/components/cta-section.html" },
+      { title: "Hero", href: "/demo/components/hero.html" },
+      { title: "Linked logo section", href: "/demo/components/linked-logo-section.html" },
+      { title: "Quote wrapper", href: "/demo/components/quote-wrapper.html" },
+      { title: "Rich horizontal list", href: "/demo/components/rich-list-horizontal.html" },
+      { title: "Rich vertical list", href: "/demo/components/rich-list-vertical.html" },
+      { title: "Tab section", href: "/demo/components/tab-section.html" },
+      { title: "Text spotlight", href: "/demo/components/text-spotlight.html" }
+    ]
+  },
+  {
+    heading: "Recipes and layouts",
+    items: [
+      { title: "Empty state recipes", href: "/demo/components/empty-state.html" },
+      { title: "Equal-heights composition", href: "/demo/components/equal-heights.html" },
+      { title: "Sticky footer layout", href: "/demo/components/sticky-footer.html" },
+      { title: "Fluid breakout layout", href: "/demo/components/fluid-breakout.html" }
     ]
   }
 ];
@@ -114,14 +169,14 @@ export const gridExamplePages = [
 ];
 
 export const spacingExamplePages = [
-  { title: "Element vs container", href: "/examples/spacing/element-vs-container.html" },
+  { title: "Element-owned composition", href: "/examples/spacing/element-vs-container.html" },
   { title: "Bottom-only resilience", href: "/examples/spacing/bottom-only-resilience.html" },
   { title: "Semantic spacing stack", href: "/examples/spacing/semantic-spacing-stack.html" },
-  { title: "Last-child reset", href: "/examples/spacing/last-child-reset.html" },
-  { title: "Container density", href: "/examples/spacing/container-density.html" },
+  { title: "Scoped boundary compensation", href: "/examples/spacing/last-child-reset.html" },
+  { title: "Component density", href: "/examples/spacing/container-density.html" },
   { title: "App provisions", href: "/examples/spacing/app-provisions.html" },
   { title: "Border compensation", href: "/examples/spacing/border-compensation.html" },
-  { title: "Nudge baseline", href: "/examples/spacing/nudge-baseline.html" },
+  { title: "Metrics-derived nudges", href: "/examples/spacing/nudge-baseline.html" },
   { title: "Substitutability", href: "/examples/spacing/substitutability.html" },
   { title: "Horizontal sibling", href: "/examples/spacing/horizontal-sibling.html" }
 ];
@@ -129,8 +184,9 @@ export const spacingExamplePages = [
 export const pageCatalogSections = [
   { heading: "Overview", items: overviewPages },
   { heading: "Spec chapters", items: specChapterPages },
-  { heading: "Tier addenda", items: tierAddendumPages },
+  { heading: "Tier references", items: tierPages },
   ...componentSections,
+  ...patternSections,
   { heading: "Grid examples", items: gridExamplePages },
   { heading: "Spacing examples", items: spacingExamplePages }
 ];

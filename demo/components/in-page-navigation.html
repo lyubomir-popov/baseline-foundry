@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In-page Navigation Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+  <style>
+    .in-page-navigation-demo-narrow { inline-size: min(100%, 30rem); }
+  </style>
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<main class="bf-fixed-width" data-baseline-ignore="true">
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="in-page navigation demo" data-overflow-container>
+    <h1 class="bf-h4" data-baseline-check="flow" data-baseline-label="in-page navigation title">In-page navigation</h1>
+    <aside class="bf-in-page-navigation" data-baseline-check="box" data-baseline-label="in-page navigation desktop" data-overflow-check>
+      <nav class="bf-in-page-navigation-nav" aria-label="On this page">
+        <h2 class="bf-in-page-navigation-heading" data-baseline-ignore="true">On this page</h2>
+        <ul id="in-page-navigation-list" class="bf-in-page-navigation-list" data-baseline-ignore="true">
+          <li class="bf-in-page-navigation-item" data-baseline-ignore="true"><a class="bf-in-page-navigation-link" href="#overview">Overview</a></li>
+          <li class="bf-in-page-navigation-item" data-baseline-ignore="true"><a class="bf-in-page-navigation-link" href="#configure" aria-current="location">Configure an environment with long documentation copy</a>
+            <ul class="bf-in-page-navigation-list" data-baseline-ignore="true">
+              <li class="bf-in-page-navigation-item" data-baseline-ignore="true"><a class="bf-in-page-navigation-link" href="#access">Access controls</a></li>
+              <li class="bf-in-page-navigation-item" data-baseline-ignore="true"><a class="bf-in-page-navigation-link" href="#networking">Networking</a></li>
+            </ul>
+          </li>
+          <li class="bf-in-page-navigation-item"><a class="bf-in-page-navigation-link" href="#reference">Reference</a></li>
+        </ul>
+        <button class="bf-in-page-navigation-toggle" type="button" aria-controls="in-page-navigation-list" aria-expanded="false" aria-label="Expand in-page navigation" data-baseline-ignore="true"><span class="bf-icon is-chevron-down" aria-hidden="true"></span></button>
+      </nav>
+    </aside>
+  </section>
+
+  <section class="bf-stack in-page-navigation-demo-narrow" data-baseline-check="box" data-baseline-label="expanded in-page navigation demo" data-overflow-container>
+    <h2 class="bf-h5" data-baseline-check="flow" data-baseline-label="expanded in-page navigation title">Expanded narrow state</h2>
+    <aside class="bf-in-page-navigation is-expanded" data-baseline-check="box" data-baseline-label="expanded in-page navigation" data-overflow-check>
+      <nav class="bf-in-page-navigation-nav" aria-label="Guide sections">
+        <h3 class="bf-in-page-navigation-heading" data-baseline-ignore="true">Guide sections</h3>
+        <ul id="expanded-in-page-navigation-list" class="bf-in-page-navigation-list" data-baseline-ignore="true">
+          <li class="bf-in-page-navigation-item" data-baseline-ignore="true"><a class="bf-in-page-navigation-link" href="#prepare">Prepare</a></li>
+          <li class="bf-in-page-navigation-item" data-baseline-ignore="true"><a class="bf-in-page-navigation-link" href="#install" aria-current="location">Install and verify</a>
+            <ul class="bf-in-page-navigation-list" data-baseline-ignore="true">
+              <li class="bf-in-page-navigation-item" data-baseline-ignore="true"><a class="bf-in-page-navigation-link" href="#install-cli">Install the CLI</a></li>
+              <li class="bf-in-page-navigation-item" data-baseline-ignore="true"><a class="bf-in-page-navigation-link" href="#verify">Verify the workspace</a></li>
+            </ul>
+          </li>
+        </ul>
+        <button class="bf-in-page-navigation-toggle" type="button" aria-controls="expanded-in-page-navigation-list" aria-expanded="true" aria-label="Collapse guide sections" data-baseline-ignore="true"><span class="bf-icon is-chevron-up" aria-hidden="true"></span></button>
+      </nav>
+    </aside>
+  </section>
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

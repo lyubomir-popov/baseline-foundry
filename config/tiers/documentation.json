@@ -6,8 +6,10 @@
       "path": "../../assets/fonts/UbuntuSans[wdth,wght].ttf",
       "cssFamily": "Ubuntu Sans",
       "fontStyle": "normal",
-      "fontWeight": "100 900",
-      "fontDisplay": "swap"
+      "fontWeight": "100 800",
+      "fontStretch": "75% 100%",
+      "fontDisplay": "swap",
+      "emitFontFace": false
     }
   ],
   "fontStacks": {
@@ -86,7 +88,6 @@
     "h3": "h3",
     "h4": "h4",
     "h5": "h5",
-    "h6": "h6",
     "h6": "h6"
   },
   "layout": {
@@ -104,6 +105,7 @@
   "components": {
     "borderWidthPx": 1,
     "radiusRem": 0,
+    "topNavigationBrandRegionRem": 13,
     "controlBlockPaddingRem": 0.5,
     "controlCompactBlockPaddingRem": 0.375,
     "controlInlinePaddingRem": 0.875,

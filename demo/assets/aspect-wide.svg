@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-labelledby="title description">
+  <title id="title">Wide media specimen</title>
+  <desc id="description">A wide teal frame with a centred inner panel used to compare cover and contain behaviour.</desc>
+  <rect width="800" height="320" fill="#173f4a" />
+  <rect x="36" y="36" width="728" height="248" rx="12" fill="#2f7f91" />
+  <path d="M72 248 224 104l112 96 128-120 264 168Z" fill="#b9e3df" opacity=".82" />
+  <circle cx="650" cy="104" r="42" fill="#f5b642" />
+  <text x="400" y="286" fill="#fff" font-family="sans-serif" font-size="24" text-anchor="middle">Wide 5:2 media specimen</text>
+</svg>

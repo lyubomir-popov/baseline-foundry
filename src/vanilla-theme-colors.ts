@@ -48,7 +48,8 @@ const VANILLA_THEME_COLOR_VARS = {
     "--vf-color-button-negative-hover": "#b01326",
     "--vf-color-button-negative-active": "#a21223",
     "--vf-color-button-negative-text": "#ffffff",
-    "--vf-color-accent": "#0f95a1"
+    "--vf-color-accent": "#0f95a1",
+    "--vf-color-brand": "#e95420"
   },
   dark: {
     "--vf-color-text-default": "#ffffff",
@@ -95,7 +96,8 @@ const VANILLA_THEME_COLOR_VARS = {
     "--vf-color-button-negative-hover": "#8a0f1e",
     "--vf-color-button-negative-active": "#7c0e1b",
     "--vf-color-button-negative-text": "#ffffff",
-    "--vf-color-accent": "#70bbc2"
+    "--vf-color-accent": "#70bbc2",
+    "--vf-color-brand": "#e95420"
   }
 } as const satisfies Record<ThemeTone, CssVarMap>;
 
@@ -112,7 +114,8 @@ const FOUNDRY_THEME_ROOT_COLOR_SOURCES = {
   "--bf-color-link": "--vf-color-link-default",
   "--bf-color-link-visited": "--vf-color-link-visited",
   "--bf-color-focus": "--vf-color-focus",
-  "--bf-color-accent": "--vf-color-accent"
+  "--bf-color-accent": "--vf-color-accent",
+  "--bf-color-brand": "--vf-color-brand"
 } as const satisfies Record<CssVarName, CssVarName>;
 
 const FOUNDRY_COMPONENT_COLOR_SOURCES = {
@@ -160,6 +163,7 @@ const FOUNDRY_COMPONENT_COLOR_SOURCES = {
   "--bf-color-button-negative-active": "--vf-color-button-negative-active",
   "--bf-color-button-negative-text": "--vf-color-button-negative-text",
   "--bf-color-accent": "--vf-color-accent",
+  "--bf-color-brand": "--vf-color-brand",
   "--bf-color-focus": "--vf-color-focus"
 } as const satisfies Record<CssVarName, CssVarName>;
 

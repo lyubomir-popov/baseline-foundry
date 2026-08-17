@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spacing Example: Last-child Reset</title>
+  <title>Spacing Example: Scoped Boundary Compensation</title>
   <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
   <link rel="stylesheet" href="../../demo/page-chrome.css">
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
-    <section class="bf-fixed-width bf-stack is-section-shallow bf-prose">
-      <h1>Last-child reset</h1>
-      <p>The same hero pattern is shown twice: once with the trailing button margin compounding with the container padding, and once with the last-child reset trimming the extra space.</p>
+  <main class="example-grid-target bf-stack bf-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack bf-section is-shallow bf-prose">
+      <h1>Scoped boundary compensation</h1>
+      <p>Elements keep their document-flow after-space by default. A purpose-built control row may trim only its direct control margins where the row's own alignment and padding define the visual boundary.</p>
     </section>
 
-    <section class="bf-fixed-width bf-stack is-section-shallow">
+    <section class="bf-fixed-width bf-stack bf-section is-shallow">
       <article class="bf-card spacing-hero-box is-buggy bf-prose">
-        <h2>Without the reset</h2>
-        <p>The final button keeps its own after-space and pushes the padded container beyond the intended bottom rhythm.</p>
+        <h2>Normal document flow</h2>
+        <p>The final button keeps its element-owned after-space because it may be followed by more document content.</p>
         <button class="bf-button">Read the guide</button>
       </article>
 
       <article class="bf-card spacing-hero-box is-correct bf-prose">
-        <h2>With the reset</h2>
-        <p>The content still keeps semantic spacing internally, but the container edge is clean because the last element no longer double-counts space.</p>
-        <button class="bf-button">Read the guide</button>
+        <h2>Purpose-built control boundary</h2>
+        <p>Only the button inside this explicit control row has its block compensation trimmed; unrelated descendants remain element-owned.</p>
+        <div class="bf-control-row"><button class="bf-button">Read the guide</button></div>
       </article>
     </section>
   </main>

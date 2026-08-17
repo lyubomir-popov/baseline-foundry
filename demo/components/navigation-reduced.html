@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reduced Navigation Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<header id="reduced-navigation" class="bf-top-navigation is-reduced" data-baseline-check="box" data-baseline-label="reduced top navigation" data-overflow-container>
+  <div class="bf-fixed-width" data-baseline-check="box" data-baseline-label="reduced navigation frame">
+    <div class="bf-top-navigation-row">
+      <div class="bf-top-navigation-banner">
+        <div class="bf-top-navigation-logo is-canonical-tagged">
+          <a class="bf-top-navigation-link" href="#main-content">
+            <span class="bf-top-navigation-logo-tag" aria-hidden="true">
+              <svg class="bf-top-navigation-logo-icon" viewBox="0 0 60.45 57.87" xmlns="http://www.w3.org/2000/svg"><circle cx="9.66" cy="27.41" r="8.12" fill="currentColor"/><circle cx="43.48" cy="9.61" r="8.12" fill="currentColor"/><path d="M7.34 38.71A26.67 26.67 0 0 0 32.58 55.55a11.47 11.47 0 0 1-2.49-7q-1.09-.15-2.09-.36a19.62 19.62 0 0 1-13.45-10.36 11.49 11.49 0 0 1-7.21.88Z" fill="currentColor"/><circle cx="41.65" cy="48.35" r="8.12" fill="currentColor"/><path d="M48.9 39.31a11.58 11.58 0 0 1 4 6.25 26.64 26.64 0 0 0 1.36-31.63 11.47 11.47 0 0 1-4.7 5.54 19.73 19.73 0 0 1-.66 19.84ZM9.68 15.85a11.44 11.44 0 0 1 2.4.25 11.72 11.72 0 0 1 3.77 1.54 19.73 19.73 0 0 1 16-8.56 12.15 12.15 0 0 1 .22-1.9 11.75 11.75 0 0 1 2.34-4.89A26.9 26.9 0 0 0 8.82 15.88c.29-.02.57-.03.86-.03Z" fill="currentColor"/></svg>
+            </span>
+            <span class="bf-top-navigation-logo-title">Baseline Foundry</span>
+          </a>
+        </div>
+        <ul class="bf-top-navigation-list is-banner-actions" data-baseline-check="box" data-baseline-label="reduced navigation banner actions">
+          <li class="bf-top-navigation-item" data-baseline-ignore="true"><button class="bf-top-navigation-search-toggle" type="button" aria-controls="reduced-navigation-search" aria-expanded="false" aria-pressed="false" aria-label="Toggle search" data-baseline-check="box" data-baseline-label="reduced navigation search toggle"><span class="bf-top-navigation-search-label">Search</span></button></li>
+          <li class="bf-top-navigation-item"><button class="bf-top-navigation-menu-toggle" type="button" aria-controls="reduced-navigation-menu" aria-expanded="false">Menu</button></li>
+        </ul>
+      </div>
+      <nav id="reduced-navigation-menu" class="bf-top-navigation-nav" aria-label="Primary site navigation" aria-hidden="false">
+        <ul class="bf-top-navigation-list" data-baseline-check="box" data-baseline-label="reduced navigation primary links">
+          <li class="bf-top-navigation-item is-selected" data-baseline-check="box" data-baseline-label="reduced navigation selected item"><a class="bf-top-navigation-link" href="#overview" aria-current="page">Overview</a></li>
+          <li class="bf-top-navigation-item is-dropdown-toggle" data-baseline-check="box" data-baseline-label="reduced navigation dropdown item">
+            <button class="bf-top-navigation-link bf-top-navigation-dropdown-toggle" type="button" aria-controls="reduced-navigation-components" aria-expanded="false" data-baseline-check="box" data-baseline-label="reduced navigation dropdown toggle">Components</button>
+            <ul id="reduced-navigation-components" class="bf-top-navigation-dropdown" aria-hidden="true">
+              <li><a class="bf-top-navigation-dropdown-item" href="#buttons">Buttons</a></li>
+              <li><a class="bf-top-navigation-dropdown-item" href="#navigation">Navigation</a></li>
+            </ul>
+          </li>
+          <li class="bf-top-navigation-item" data-baseline-ignore="true"><a class="bf-top-navigation-link" href="#guides">Guides</a></li>
+        </ul>
+        <ul class="bf-top-navigation-list" data-baseline-check="box" data-baseline-label="reduced navigation search actions">
+          <li class="bf-top-navigation-item" data-baseline-ignore="true"><button class="bf-top-navigation-search-toggle" type="button" aria-controls="reduced-navigation-search" aria-expanded="false" aria-pressed="false" aria-label="Toggle search" data-baseline-check="box" data-baseline-label="reduced navigation secondary search toggle"><span class="bf-top-navigation-search-label">Search</span></button></li>
+        </ul>
+        <div id="reduced-navigation-search" class="bf-top-navigation-search" aria-hidden="true">
+          <form class="bf-search-box" role="search">
+            <input class="bf-search-box-input bf-input" type="search" name="q" aria-label="Search Baseline Foundry">
+            <button class="bf-search-box-reset" type="reset">Reset</button>
+            <button class="bf-search-box-button" type="submit">Search</button>
+          </form>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <div class="bf-top-navigation-search-overlay" aria-hidden="true"></div>
+</header>
+<main id="main-content" class="bf-fixed-width" data-baseline-check="box" data-baseline-label="reduced navigation content frame">
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="reduced navigation content" data-overflow-container>
+    <h1 class="bf-h4" data-baseline-check="flow" data-baseline-label="reduced navigation heading">Reduced navigation</h1>
+    <p class="bf-body" data-baseline-check="flow" data-baseline-label="reduced navigation description">The reduced modifier keeps the full top-navigation menu, dropdown, responsive menu, and search contracts while removing the tagged logo treatment and tightening the bar.</p>
+  </section>
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

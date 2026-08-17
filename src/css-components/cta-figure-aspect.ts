@@ -75,6 +75,10 @@ export function ctaFigureAspectCss(): string {
   aspect-ratio: 3 / 2;
 }
 
+:where(.bf-theme) :where(.bf-aspect.is-4-3) {
+  aspect-ratio: 4 / 3;
+}
+
 :where(.bf-theme) :where(.bf-aspect.is-2-3) {
   aspect-ratio: 2 / 3;
 }
@@ -92,6 +96,21 @@ export function ctaFigureAspectCss(): string {
   display: block;
   inline-size: 100%;
   object-fit: cover;
+}
+
+:where(.bf-theme) :where(.bf-aspect) > :where(picture) > :where(img) {
+  block-size: 100%;
+  display: block;
+  inline-size: 100%;
+  object-fit: cover;
+}
+
+:where(.bf-theme) :where(.bf-aspect.is-contain) > :where(img, video, canvas, iframe) {
+  object-fit: contain;
+}
+
+:where(.bf-theme) :where(.bf-aspect.is-contain) > :where(picture) > :where(img) {
+  object-fit: contain;
 }
 `;
 }

@@ -9,18 +9,18 @@
   <link rel="stylesheet" href="./grid-examples.css">
 </head>
 <body class="bf-theme bf-tier-app" data-bf-tone="light">
-  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
-    <section class="bf-fixed-width bf-stack is-section-shallow">
+  <main class="example-grid-target bf-stack bf-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack bf-section is-shallow">
       <div class="bf-prose">
         <h1>Nested grid</h1>
         <p>The root grid draft describes nested grids as one rule applied across changing container widths. This page turns that into three explicit specimens: small, large, and x-large, each proving that the nested module starts and ends on parent keylines rather than inventing new offsets between them.</p>
       </div>
     </section>
 
-    <section class="bf-fixed-width bf-stack is-section-shallow">
+    <section class="bf-fixed-width bf-stack bf-section is-shallow">
       <article class="bf-card">
-        <div class="bf-stack is-section-shallow">
-          <div class="bf-prose bf-stack is-dense">
+        <div class="bf-stack bf-section is-shallow">
+          <div class="bf-prose bf-stack">
           <p class="example-stage-kicker">Small container</p>
           <h2>4-column parent, 2-column module, nested content stacked</h2>
           <p>The same nested module narrows to a 2-column parent span. Its inner content stacks, but the module still begins and ends on the parent grid's keylines.</p>
@@ -60,8 +60,8 @@
       </article>
 
       <article class="bf-card">
-        <div class="bf-stack is-section-shallow">
-          <div class="bf-prose bf-stack is-dense">
+        <div class="bf-stack bf-section is-shallow">
+          <div class="bf-prose bf-stack">
           <p class="example-stage-kicker">Large container</p>
           <h2>8-column parent, 4-column module, nested `2 + 2` split</h2>
           <p>At the large bracket the same module expands to four parent columns and reintroduces a horizontal split. The child columns still land only on parent offsets.</p>
@@ -102,8 +102,8 @@
       </article>
 
       <article class="bf-card">
-        <div class="bf-stack is-section-shallow">
-          <div class="bf-prose bf-stack is-dense">
+        <div class="bf-stack bf-section is-shallow">
+          <div class="bf-prose bf-stack">
           <p class="example-stage-kicker">X-large container</p>
           <h2>16-column parent, quarter-row module, second octree proof</h2>
           <p>The x-large specimen fixes the container wide enough to reach 16 columns. If your viewport is narrower, scroll the specimen horizontally; the key point is that the nested quarter-row module still resolves to parent offsets only.</p>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empty State Recipes Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture data-overflow-container>
+<main class="bf-page bf-stack" data-baseline-check="box" data-baseline-label="empty state recipes page">
+  <h1 class="bf-h4" data-baseline-check="flow">Empty state recipes</h1>
+  <p data-baseline-check="flow">Vanilla’s empty states are recipes rather than a dedicated selector. BF composes the same three outcomes from headings, copy, lists, search, notices, and actions without inventing another component API.</p>
+
+  <section class="bf-section" aria-labelledby="empty-new-title" data-baseline-check="box" data-baseline-label="no content empty state">
+    <h2 id="empty-new-title" data-baseline-check="flow">No environments yet</h2>
+    <p data-baseline-check="flow">Create an environment to group services, access policies, and deployment history.</p>
+    <div class="bf-cta-block" data-baseline-check="box"><a class="bf-button" href="#create-environment">Create an environment</a><a href="#environment-guide">Read the setup guide</a></div>
+  </section>
+
+  <section class="bf-section" aria-labelledby="empty-search-title" data-baseline-check="box" data-baseline-label="user triggered empty state">
+    <label class="bf-form-label" for="empty-state-search" data-baseline-check="flow">Search environments</label>
+    <div class="bf-search-box" data-baseline-check="box" data-baseline-label="empty result search"><input class="bf-search-box-input bf-input" id="empty-state-search" type="search" value="edge cluster" data-baseline-ignore="true"><button class="bf-search-box-reset" type="button" data-baseline-ignore="true">Reset</button><button class="bf-search-box-button" type="button" data-baseline-ignore="true">Search</button></div>
+    <h2 id="empty-search-title" data-baseline-check="flow">No results for “edge cluster”</h2>
+    <p data-baseline-check="flow">Try removing a filter, using fewer words, or checking the spelling.</p>
+    <ul data-baseline-check="box"><li data-baseline-check="flow">Search by environment or service name.</li><li data-baseline-check="flow">Clear archived-only and region filters.</li></ul>
+  </section>
+
+  <section class="bf-section" aria-labelledby="empty-error-title" data-baseline-check="box" data-baseline-label="error empty state">
+    <aside class="bf-notice is-negative" role="alert" data-baseline-check="box" data-baseline-label="empty state error notice"><h2 class="bf-notice-title" id="empty-error-title" data-baseline-check="flow">Environments could not be loaded</h2><div class="bf-notice-content"><p data-baseline-check="flow">The service did not respond. Your existing environments have not been changed.</p><div class="bf-cta-block"><button class="bf-button" type="button" data-baseline-check="box">Try again</button><a href="#status">Check service status</a></div></div></aside>
+  </section>
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

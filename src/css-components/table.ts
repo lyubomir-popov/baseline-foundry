@@ -64,6 +64,10 @@ ${bodyMediumTypeStyles}  color: var(--bf-color-text-default);
   border-block-end-color: var(--bf-color-border-low-contrast);
 }
 
+:where(.bf-theme) :where(tbody tr:has(.bf-status-label) > td) {
+  padding-block: calc((var(--bf-baseline) - var(--bf-table-row-border-size)) / 2);
+}
+
 :where(.bf-theme) :where(tbody tr:hover td) {
   background: color-mix(in srgb, var(--bf-color-background-hover) 68%, transparent);
 }

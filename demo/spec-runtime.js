@@ -23,14 +23,14 @@ const tierConfig = {
   app: {
     label: "App",
     className: "bf-tier-app",
-    description: "Canonical-style application tier with Ubuntu Sans, container-owned spacing, and zero selected nudges.",
-    detail: "This tier keeps the application gutter contract and the light app-shell chrome used for parity pages."
+    description: "Application-density Ubuntu Sans with metric-derived alignment and element-owned semantic spacing.",
+    detail: "This tier keeps the application gutter contract and light app-shell chrome while sharing BF's element-owned rhythm."
   },
   os: {
     label: "OS",
     className: "bf-tier-os",
-    description: "Dense OS-style addendum with editorial baseline alignment, compact measure, and reduced control geometry.",
-    detail: "This tier stays metrics-driven and element-owned like editorial, but compresses the reading and control rhythm toward dense system surfaces."
+    description: "Dense first-class OS tier with metric-derived alignment, compact measure, and reduced control geometry.",
+    detail: "This tier is support-equivalent to the other built-in tiers while intentionally compressing reading and control geometry."
   }
 };
 

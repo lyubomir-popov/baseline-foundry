@@ -6,12 +6,14 @@
       "path": "../../assets/fonts/UbuntuSans[wdth,wght].ttf",
       "cssFamily": "Ubuntu Sans",
       "fontStyle": "normal",
-      "fontWeight": "100 600",
-      "fontDisplay": "swap"
+      "fontWeight": "100 800",
+      "fontStretch": "75% 100%",
+      "fontDisplay": "swap",
+      "emitFontFace": false
     }
   ],
   "fontStacks": {
-    "ubuntu-sans": "\"Ubuntu Sans\", \"IBM Plex Sans\", system-ui, sans-serif"
+    "ubuntu-sans": "\"Ubuntu Sans\", \"Segoe UI\", system-ui, sans-serif"
   },
   "elements": [
     {
@@ -103,6 +105,7 @@
   "components": {
     "borderWidthPx": 1,
     "radiusRem": 0,
+    "topNavigationBrandRegionRem": 13,
     "controlBlockPaddingRem": 0.375,
     "controlCompactBlockPaddingRem": 0.25,
     "controlInlinePaddingRem": 0.75,

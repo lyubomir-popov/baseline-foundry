@@ -1,13 +1,15 @@
 {
-  "baselineUnit": 0.5,
+  "baselineUnit": 0.25,
   "fontFiles": [
     {
       "family": "ubuntu-sans",
       "path": "../../assets/fonts/UbuntuSans[wdth,wght].ttf",
       "cssFamily": "Ubuntu Sans",
       "fontStyle": "normal",
-      "fontWeight": "100 900",
-      "fontDisplay": "swap"
+      "fontWeight": "100 800",
+      "fontStretch": "75% 100%",
+      "fontDisplay": "swap",
+      "emitFontFace": false
     }
   ],
   "fontStacks": {
@@ -17,8 +19,8 @@
     {
       "identifier": "h1",
       "fontSize": 1.5,
-      "lineHeight": 4,
-      "spaceAfter": 0, "_rawSpaceAfter": 2,
+      "lineHeight": 8,
+      "spaceAfter": 4,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 500,
       "fontStyle": "normal"
@@ -26,8 +28,8 @@
     {
       "identifier": "h2",
       "fontSize": 1.5,
-      "lineHeight": 4,
-      "spaceAfter": 0, "_rawSpaceAfter": 2,
+      "lineHeight": 8,
+      "spaceAfter": 4,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 300,
       "fontStyle": "normal"
@@ -35,8 +37,8 @@
     {
       "identifier": "h3",
       "fontSize": 1.125,
-      "lineHeight": 3,
-      "spaceAfter": 0, "_rawSpaceAfter": 2,
+      "lineHeight": 6,
+      "spaceAfter": 4,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 600,
       "fontStyle": "normal"
@@ -44,8 +46,8 @@
     {
       "identifier": "h4",
       "fontSize": 1.125,
-      "lineHeight": 3,
-      "spaceAfter": 0, "_rawSpaceAfter": 2,
+      "lineHeight": 6,
+      "spaceAfter": 4,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 400,
       "fontStyle": "normal"
@@ -53,8 +55,8 @@
     {
       "identifier": "h5",
       "fontSize": 0.875,
-      "lineHeight": 2.5,
-      "spaceAfter": 0, "_rawSpaceAfter": 2,
+      "lineHeight": 5,
+      "spaceAfter": 4,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 600,
       "fontStyle": "normal",
@@ -63,8 +65,8 @@
     {
       "identifier": "h6",
       "fontSize": 0.875,
-      "lineHeight": 2.5,
-      "spaceAfter": 0, "_rawSpaceAfter": 2,
+      "lineHeight": 5,
+      "spaceAfter": 4,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 400,
       "fontStyle": "italic"
@@ -72,8 +74,8 @@
     {
       "identifier": "body",
       "fontSize": 0.875,
-      "lineHeight": 2.5,
-      "spaceAfter": 0, "_rawSpaceAfter": 2,
+      "lineHeight": 5,
+      "spaceAfter": 4,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 400,
       "fontStyle": "normal"
@@ -92,26 +94,27 @@
     "contentMaxWidthRem": 90,
     "contentPaddingInlineRem": 1,
     "measureRem": 40,
-    "sectionSpaceBaselineUnits": 2,
-    "sectionSpaceShallowBaselineUnits": 1,
-    "sectionSpaceDeepBaselineUnits": 4,
-    "stripSpaceBaselineUnits": 8,
-    "gridGapInlineBaselineUnits": 3,
-    "gridGapBlockBaselineUnits": 3,
-    "pageMarginBaselineUnits": 4
+    "sectionSpaceBaselineUnits": 4,
+    "sectionSpaceShallowBaselineUnits": 2,
+    "sectionSpaceDeepBaselineUnits": 8,
+    "stripSpaceBaselineUnits": 16,
+    "gridGapInlineBaselineUnits": 6,
+    "gridGapBlockBaselineUnits": 6,
+    "pageMarginBaselineUnits": 8
   },
   "components": {
     "borderWidthPx": 1,
     "radiusRem": 0.125,
+    "topNavigationBrandRegionRem": 13,
     "controlBlockPaddingRem": 0.5,
     "controlCompactBlockPaddingRem": 0.375,
     "controlInlinePaddingRem": 1,
     "controlInlinePaddingActionRem": 0.5,
     "controlInlinePaddingFieldRem": 0.25,
     "controlVisualSizeRem": 1,
-    "fieldGapBaselineUnits": 1,
-    "panelPaddingInlineBaselineUnits": 3,
-    "panelPaddingBlockBaselineUnits": 3,
-    "accordionIndentBaselineUnits": 3
+    "fieldGapBaselineUnits": 2,
+    "panelPaddingInlineBaselineUnits": 6,
+    "panelPaddingBlockBaselineUnits": 6,
+    "accordionIndentBaselineUnits": 6
   }
 }

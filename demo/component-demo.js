@@ -1,4 +1,4 @@
-import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
+import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initInPageNavigations, initInteractiveFeedback, initInteractiveTables, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
@@ -47,11 +47,6 @@ function titleCaseSurface(value) {
       return lower.charAt(0).toUpperCase() + lower.slice(1);
     })
     .join(" ");
-}
-
-function cacheBust(url) {
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}t=${Date.now()}`;
 }
 
 function surfaceManifestHref(stylesheetLink) {
@@ -154,12 +149,7 @@ function detectTier() {
   return "editorial";
 }
 
-function tierHref() {
-  return cacheBust("/dist/tiers/editorial/styles.css");
-}
-
-function applyTier(tierName, stylesheetLink) {
-  stylesheetLink.href = tierHref();
+function applyTier(tierName) {
   document.body.classList.remove(...BUILT_IN_TIER_CLASSES);
   document.body.classList.add("bf-theme");
   document.body.classList.add(`bf-tier-${tierName}`);
@@ -210,7 +200,7 @@ async function initLockedManifestMode(stylesheetLink) {
   };
 }
 
-function initDefaultMode(stylesheetLink) {
+function initDefaultMode() {
   const supportedTiers = supportedTierOptions();
   const supportedTierValues = supportedTiers.map(o => o.value);
   const pageTierDefault = document.body.dataset.pageTierDefault;
@@ -221,7 +211,7 @@ function initDefaultMode(stylesheetLink) {
       : (storedTier && supportedTierValues.includes(storedTier))
       ? storedTier
       : detectTier();
-  applyTier(initialSurface, stylesheetLink);
+  applyTier(initialSurface);
   const chrome = injectPageChrome({
     controls: {
       selectedTier: initialSurface,
@@ -237,7 +227,7 @@ function initDefaultMode(stylesheetLink) {
   return {
     chrome,
     initialSurface,
-    applySurface: surface => applyTier(surface, stylesheetLink),
+    applySurface: surface => applyTier(surface),
     baselineShouldDefaultToOn
   };
 }
@@ -259,7 +249,7 @@ async function main() {
 
   const runtime = isLockedManifestMode()
     ? await initLockedManifestMode(stylesheetLink)
-    : initDefaultMode(stylesheetLink);
+    : initDefaultMode();
 
   const { chrome, initialSurface } = runtime;
 
@@ -324,6 +314,9 @@ async function main() {
   initApplicationLayouts();
   initCodeSnippets();
   initContextualMenus();
+  initInPageNavigations();
+  initInteractiveFeedback();
+  initInteractiveTables();
   initListTree();
   initPanelDrawers();
   initRangeControls();

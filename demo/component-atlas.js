@@ -10,7 +10,9 @@ function screenshotUrl(href) {
 }
 
 function enhanceAtlas() {
-  const items = document.querySelectorAll("[data-component-atlas-item]");
+  const componentItems = document.querySelectorAll("[data-component-atlas-item]");
+  const patternItems = document.querySelectorAll("[data-pattern-atlas-item]");
+  const items = [...componentItems, ...patternItems];
   if (items.length === 0) {
     return;
   }

@@ -25,6 +25,9 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
   display: flex;
   gap: 0;
   list-style: none;
+  /* Tabs keep their occupied block on the grid at the list boundary rather
+     than leaving each link's control compensation between its active rule and
+     the list rule. */
   margin: 0 0 calc((var(--bf-baseline) * 2) - var(--bf-border-width));
   min-inline-size: 0;
   overflow-x: auto;
@@ -48,8 +51,10 @@ ${bodyTypeStyles}  align-items: center;
   display: inline-flex;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
-  margin-bottom: ${buttonMarginBottom};
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
+  margin-bottom: 0;
+  padding-block-end: calc(var(--bf-body-nudge-end) + var(--bf-baseline) - (var(--bf-border-width) * 2));
+  padding-block-start: var(--bf-body-nudge-start);
+  padding-inline: var(--bf-control-inline-padding-action);
   text-decoration: none;
 }
 

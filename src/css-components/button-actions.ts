@@ -126,21 +126,25 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
 
 /* ------------------------------------------------------------------ */
 /* Button — icon-spacing modifier (Vanilla parity).                    */
-/* Vanilla treats icon buttons as the base control plus child-icon     */
-/* spacing tweaks. BF already has a themed bf-icon primitive, so the   */
-/* modifier only needs to adjust child margins around that primitive.  */
+/* Icon buttons make the icon/label relationship explicit. Bare text   */
+/* nodes cannot be distinguished from icon-only buttons in CSS because */
+/* :first-child/:last-child ignore text nodes. A real label slot lets   */
+/* the component use one truthful, token-driven gap in either order.   */
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {
-  margin-inline: var(--bf-space-1);
+  margin: 0;
 }
 
-:where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon:first-child) {
-  margin-inline-start: calc(var(--bf-space-1) * -1);
+:where(.bf-theme) :where(.bf-button.is-icon) {
+  align-items: center;
+  column-gap: var(--bf-space-1);
+  display: inline-flex;
+  justify-content: center;
 }
 
-:where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon:last-child) {
-  margin-inline-end: calc(var(--bf-space-1) * -1);
+:where(.bf-theme) :where(.bf-button-label) {
+  min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-actions) {

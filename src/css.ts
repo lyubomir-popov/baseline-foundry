@@ -44,11 +44,11 @@ function fontFormat(path: string): string {
 }
 
 function fontFaceRule(fontFile: ThemeFontFile): string {
-  if (!fontFile.cssFamily) {
+  if (!fontFile.cssFamily || fontFile.emitFontFace === false) {
     return "";
   }
 
-  return `@font-face {\n  font-family: "${fontFile.cssFamily}";\n  src: url("${fontFile.path}") format("${fontFormat(fontFile.path)}");\n  font-style: ${fontFile.fontStyle ?? "normal"};\n  font-weight: ${fontFile.fontWeight ?? "400"};\n  font-display: ${fontFile.fontDisplay ?? "swap"};\n}\n`;
+  return `@font-face {\n  font-family: "${fontFile.cssFamily}";\n  src: url("${fontFile.path}") format("${fontFormat(fontFile.path)}");\n  font-style: ${fontFile.fontStyle ?? "normal"};\n  font-weight: ${fontFile.fontWeight ?? "400"};\n  font-stretch: ${fontFile.fontStretch ?? "normal"};\n  font-display: ${fontFile.fontDisplay ?? "swap"};\n}\n`;
 }
 
 function semanticMarginBottom(spaceAfter: string, baselineUnit: string): string {
@@ -142,6 +142,7 @@ function collectFontFiles(tokens: ThemeTokens, themeSurfaces: ThemeSurface[]): T
       fontFile.path,
       fontFile.fontStyle ?? "normal",
       fontFile.fontWeight ?? "400",
+      fontFile.fontStretch ?? "normal",
       fontFile.fontDisplay ?? "swap"
     ].join("|");
 
@@ -191,10 +192,12 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
   const body = tokens.roles.body;
   const baselineUnit = tokens.baselineUnit;
   const themeSurfaces = options.themeSurfaces ?? [];
-  const includesAppSurface = options.presetName === "app"
-    || options.presetName === "app-tier"
-    || themeSurfaces.some(surface => surface.className === "bf-tier-app");
-  const fontFaces = collectFontFiles(tokens, themeSurfaces).map(fontFaceRule).filter(Boolean).join("\n");
+  const hasAppDefault = options.presetName === "app" || options.presetName === "app-tier";
+  const hasAppClassSurface = themeSurfaces.some(surface => surface.className === "bf-tier-app");
+  const includesAppSurface = hasAppDefault || hasAppClassSurface;
+  const fontFaces = options.presetName
+    ? ""
+    : collectFontFiles(tokens, themeSurfaces).map(fontFaceRule).filter(Boolean).join("\n");
   const roleRules = Object.entries(tokens.roles)
     .map(([roleName, token]) => textRule(roleName, selectorsForRole(roleName), token, baselineUnit, EXTRA_STYLES_BY_ROLE[roleName] ?? ""))
     .join("\n");
@@ -208,7 +211,11 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
     .map(surface => themeSurfaceRule(`:where(.bf-theme.${surface.className})`, surface.tokens))
     .join("\n");
 
-  const presetCss = includesAppSurface ? `\n${appTierPresetCss()}` : "";
+  const appScopes = [
+    ...(hasAppDefault ? [":where(.bf-theme)"] : []),
+    ...(hasAppClassSurface ? [":where(.bf-theme.bf-tier-app)"] : [])
+  ];
+  const presetCss = includesAppSurface ? `\n${appTierPresetCss(appScopes)}` : "";
 
   if (!body) {
     throw new Error("Theme tokens require a body role.");

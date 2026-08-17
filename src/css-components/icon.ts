@@ -17,7 +17,7 @@ export function iconCss(): string {
   text-indent: 110vw;
   transform: var(--bf-icon-transform);
   transform-origin: center;
-  vertical-align: middle;
+  vertical-align: bottom;
   white-space: nowrap;
 }
 

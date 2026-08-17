@@ -3,62 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spacing Example: Element vs Container</title>
+  <title>Spacing Example: Element-Owned Composition</title>
   <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
   <link rel="stylesheet" href="../../demo/page-chrome.css">
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
-    <section class="bf-fixed-width bf-stack is-section-shallow">
+  <main class="example-grid-target bf-stack bf-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack bf-section is-shallow">
       <div class="bf-prose">
-        <h1>Element vs container spacing</h1>
-        <p>The left column keeps element-owned editorial flow. The right column uses a uniform container gap so the spacing belongs to the wrapper instead of the content elements.</p>
-      </div>
-      <div class="bf-cluster">
-        <button class="bf-button is-base" data-spacing-tier-toggle type="button" aria-pressed="false">Switch specimen to app tier</button>
-      </div>
+      <h1>Element-owned composition</h1>
+      <p>Every Baseline Foundry tier keeps semantic block spacing on the element that creates the boundary. Layout primitives may still own structural inline gaps, but they do not replace the content rhythm.</p>
     </section>
 
     <section class="bf-fixed-width spacing-grid-two" data-tier-specimen>
-      <article class="bf-card bf-stack is-section-shallow bf-prose">
-        <h2>Element-owned flow</h2>
-        <p class="spacing-gap-label">Gap after this h2 comes from the element rule.</p>
-        <p>Paragraph spacing stays semantic, so swapping content types changes the resolved gap.</p>
-        <p class="spacing-gap-label">Paragraph gap follows the prose contract.</p>
-        <p>A second paragraph keeps the same semantic after-space.</p>
-        <figure class="bf-card spacing-demo-box">
-          <figcaption>Figure with its own larger after-space.</figcaption>
+      <article class="bf-card bf-stack bf-section is-shallow bf-prose">
+        <h2>Editorial flow</h2>
+        <p class="spacing-gap-label">The h2 creates the boundary that follows it.</p>
+        <p>Paragraph spacing remains semantic, so changing the content type changes the resolved rhythm deliberately.</p>
+        <h3>A nested heading</h3>
+        <p>The heading and paragraph each carry their own metrics-derived after-space.</p>
+        <figure class="bf-figure">
+          <div class="bf-card spacing-demo-box">Media</div>
+          <figcaption class="bf-figure-caption">The figure owns its boundary after the caption.</figcaption>
         </figure>
-        <h2>Second heading</h2>
-        <p>The margin values belong to the elements themselves.</p>
       </article>
 
-      <article class="bf-card bf-stack is-section-shallow is-container-owned">
-        <h2 class="bf-h4">Container-owned stack</h2>
-        <p class="spacing-gap-label">Every row is separated by the same `gap` value.</p>
-        <p>Paragraph spacing no longer changes when the content type changes.</p>
-        <p>A second paragraph uses the same container gap.</p>
-        <figure class="bf-card spacing-demo-box">
-          <figcaption>Figure is just another row in the stack.</figcaption>
-        </figure>
-        <h2 class="bf-h4">Second heading</h2>
-        <p>The wrapper owns the spacing, not the elements.</p>
+      <article class="bf-card bf-stack bf-section is-shallow bf-prose">
+        <h2>Component flow</h2>
+        <p>Controls keep element-owned block spacing when they appear in normal document flow.</p>
+        <label for="element-owned-name">Name</label>
+        <input class="bf-input" id="element-owned-name" type="text" value="Ada Lovelace">
+        <label for="element-owned-role">Role</label>
+        <select id="element-owned-role"><option>Designer</option></select>
+        <button class="bf-button is-base" type="button">Save changes</button>
+        <p class="spacing-gap-label">A dedicated <code>bf-control-row</code> may trim only its direct controls when horizontal composition is required.</p>
       </article>
     </section>
   </main>
   <script type="module" src="../../demo/example-page.js"></script>
-  <script type="module">
-    const toggle = document.querySelector("[data-spacing-tier-toggle]");
-    const specimen = document.querySelector("[data-tier-specimen]");
-
-    toggle?.addEventListener("click", () => {
-      const nextPressed = toggle.getAttribute("aria-pressed") !== "true";
-      toggle.setAttribute("aria-pressed", String(nextPressed));
-      toggle.textContent = nextPressed ? "Switch specimen to editorial tier" : "Switch specimen to app tier";
-      specimen?.classList.toggle("bf-tier-app", nextPressed);
-      specimen?.classList.toggle("bf-tier-editorial", !nextPressed);
-    });
-  </script>
 </body>
 </html>

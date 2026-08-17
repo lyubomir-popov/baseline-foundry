@@ -1,12 +1,28 @@
 import { buttonActionsCss } from "./css-components/button-actions.js";
+import { articlePaginationCss } from "./css-components/article-pagination.js";
 import { cardsOptionsCss } from "./css-components/cards-options.js";
 import { chipBadgeStatusCss } from "./css-components/chip-badge-status.js";
 import { ctaFigureAspectCss } from "./css-components/cta-figure-aspect.js";
+import { controlRowCss } from "./css-components/control-row.js";
+import { contentCardCss } from "./css-components/content-card.js";
+import { documentNavigationCss } from "./css-components/document-navigation.js";
+import { editorialContentCss } from "./css-components/editorial-content.js";
+import { fluidBreakoutCss } from "./css-components/fluid-breakout.js";
 import { iconCss } from "./css-components/icon.js";
+import { interactiveFeedbackCss } from "./css-components/interactive-feedback.js";
+import { interactiveTablesCss } from "./css-components/interactive-tables.js";
 import { listTreeCss } from "./css-components/list-tree.js";
+import { linkedLogoSiteLayoutCss } from "./css-components/linked-logo-site-layout.js";
+import { logoMediaCss } from "./css-components/logo-media.js";
+import { navigationLayoutCss } from "./css-components/navigation-layout.js";
 import { panelCss } from "./css-components/panel.js";
 import { searchBoxAndFilterCss } from "./css-components/search-box-and-filter.js";
+import { sitesFoundationCss } from "./css-components/sites-foundation.js";
+import { sitesEditorialPortsCss } from "./css-components/sites-editorial-ports.js";
+import { sitesRichListsCss } from "./css-components/sites-rich-lists.js";
+import { staticContentPortsCss } from "./css-components/static-content-ports.js";
 import { tableCss } from "./css-components/table.js";
+import { tabSectionCss } from "./css-components/tab-section.js";
 import { tabsChoiceBreadcrumbsCss } from "./css-components/tabs-choice-breadcrumbs.js";
 import { tieredListEqualHeightRowCss } from "./css-components/tiered-list-equal-height-row.js";
 import { foundryComponentColorVars } from "./vanilla-theme-colors.js";
@@ -88,7 +104,7 @@ function controlMarginBottomExpression(lineHeightVar: string, blockPaddingVar: s
 }
 
 function componentAlignmentVars(components: ComponentTokens): string {
-  return `  --bf-control-block-padding: ${components.controlBlockPadding};\n  --bf-control-block-padding-compact: ${components.controlCompactBlockPadding};\n  --bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));\n  --bf-control-box-size-compact: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding-compact) * 2));\n`;
+  return `  --bf-border-width: ${components.borderWidth};\n  --bf-radius: ${components.radius};\n  --bf-top-navigation-brand-region: ${components.topNavigationBrandRegion};\n  --bf-control-block-padding: ${components.controlBlockPadding};\n  --bf-control-block-padding-compact: ${components.controlCompactBlockPadding};\n  --bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));\n  --bf-control-box-size-compact: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding-compact) * 2));\n  --bf-control-inline-padding: ${components.controlInlinePadding};\n  --bf-control-inline-padding-action: ${components.controlInlinePaddingAction};\n  --bf-control-inline-padding-field: ${components.controlInlinePaddingField};\n  --bf-control-visual-size: ${components.controlVisualSize};\n  --bf-field-gap: ${components.fieldGap};\n  --bf-panel-padding-inline: ${components.panelPaddingInline};\n  --bf-panel-padding-block: ${components.panelPaddingBlock};\n  --bf-accordion-indent: ${components.accordionIndent};\n`;
 }
 
 function alignedVisualStart(lineHeightVar: string, visualSize: string, startVar: string, offset = "0rem"): string {
@@ -111,31 +127,26 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const inputBlockPaddingVar = "var(--bf-input-block-padding)";
   const buttonBlockPaddingVar = "var(--bf-button-block-padding)";
   const bodyLineHeight = roleLineHeightVar("body", body.lineHeight);
-  const inputMarginBottom = controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, body.spaceAfter);
-  const buttonMarginBottom = controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, body.spaceAfter);
+  const bodySpaceAfter = `var(--bf-body-space-after, ${body.spaceAfter})`;
+  const inputMarginBottom = controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, bodySpaceAfter);
+  const buttonMarginBottom = controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, bodySpaceAfter);
   const bodySelectedStartNudge = roleSelectedStartNudgeVar("body", body.nudgeTop);
   const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
   const h4LineHeight = roleLineHeightVar("h4", h4.lineHeight);
   const h5LineHeight = roleLineHeightVar("h5", h5.lineHeight);
   const h5SelectedStartNudge = roleSelectedStartNudgeVar("h5", h5.nudgeTop);
+  const h5SelectedEndNudge = roleSelectedEndNudgeVar("h5");
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
   const buttonPadding = controlPadding(buttonBlockPaddingVar);
 
   return `:where(.bf-theme) {
-  --bf-border-width: ${components.borderWidth};
-  --bf-radius: ${components.radius};
 ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable command targets; field surfaces can tighten independently. */
-  --bf-control-inline-padding: ${components.controlInlinePadding};
-  --bf-control-inline-padding-action: ${components.controlInlinePaddingAction};
-  --bf-control-inline-padding-field: ${components.controlInlinePaddingField};
   --bf-disclosure-gap: 1rem;
   --bf-disclosure-icon-inline-size: 1rem;
-  --bf-control-visual-size: ${components.controlVisualSize};
   --bf-input-block-padding: ${bodySelectedStartNudge};
   --bf-button-block-padding: ${bodySelectedStartNudge};
-  --bf-field-gap: ${components.fieldGap};
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
   --bf-slider-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-slider-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-slider-track-size)", bodySelectedStartNudge)};
@@ -150,9 +161,6 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-tick-box-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding-field));
   --bf-radio-dot-size: calc(var(--bf-control-visual-size) * 0.375);
-  --bf-panel-padding-inline: ${components.panelPaddingInline};
-  --bf-panel-padding-block: ${components.panelPaddingBlock};
-  --bf-accordion-indent: ${components.accordionIndent};
   --bf-app-drawer-width-icon: 2rem;
   --bf-app-drawer-width-small: 15rem;
   --bf-app-drawer-width-small-max: 20rem;
@@ -183,6 +191,9 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-top-navigation-logo-tag-inline-size: 1.375rem;
   --bf-top-navigation-logo-tag-block-size: 2.375rem;
   --bf-top-navigation-logo-icon-size: 1rem;
+  --bf-top-navigation-logo-tag-gap: 0.25rem;
+  --bf-top-navigation-logo-icon-bottom-offset: 0.375rem;
+  --bf-top-navigation-logo-icon-optical-offset-inline: -0.0125rem;
   --bf-icon-size-default: 1rem;
   --bf-icon-size-medium: 2.5rem;
   --bf-icon-size-large: 4rem;
@@ -196,7 +207,6 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-ui-chip-block-size: calc(${bodyLineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
   --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
-  --bf-ui-status-padding-block: ${h5SelectedStartNudge};
   --bf-grid-max-inline-size: var(--bf-content-max-width);
   --bf-application-drawer-width-icon: var(--bf-app-drawer-width-icon);
   --bf-application-drawer-width-small: var(--bf-app-drawer-width-small);
@@ -814,9 +824,37 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   outline: calc(var(--bf-baseline) * 0.25) solid var(--bf-color-focus);
 }
 
+${iconCss()}
+
 ${buttonActionsCss({ bodyTypeStyles, buttonMarginBottom, buttonPadding })}
 
 ${ctaFigureAspectCss()}
+
+${editorialContentCss({ noticeTitleTypeStyles: typeStyles(h4, { includeCase: false }) })}
+
+${staticContentPortsCss()}
+
+${interactiveFeedbackCss()}
+
+${interactiveTablesCss()}
+
+${logoMediaCss()}
+
+${linkedLogoSiteLayoutCss()}
+
+${sitesFoundationCss()}
+
+${sitesEditorialPortsCss()}
+
+${sitesRichListsCss()}
+
+${fluidBreakoutCss({
+  contentMaxWidth: tokens.layout.contentMaxWidth,
+  surfaces: (themeSurfaces ?? []).map(surface => ({
+    className: surface.className,
+    contentMaxWidth: surface.tokens.layout.contentMaxWidth
+  }))
+})}
 
 ${panelCss({
   bodyTypeStyles,
@@ -828,6 +866,8 @@ ${cardsOptionsCss({
   bodyTypeStyles
 })}
 
+${contentCardCss()}
+
 ${tabsChoiceBreadcrumbsCss({
   bodyCaseTypeStyles: typeStyles(body),
   bodyStrongTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
@@ -836,7 +876,12 @@ ${tabsChoiceBreadcrumbsCss({
   buttonPadding,
 })}
 
-${iconCss()}
+${tabSectionCss()}
+
+${articlePaginationCss({
+  bodyCaseTypeStyles: typeStyles(body),
+  titleTypeStyles: typeStyles(h5, { includeCase: false })
+})}
 
 :where(.bf-theme) :where(.bf-list) {
   list-style: none;
@@ -990,6 +1035,8 @@ ${chipBadgeStatusCss({
   bodyCaseTypeStyles: typeStyles(body),
   bodyLineHeight,
   bodySelectedStartNudge,
+  h5SelectedEndNudge,
+  h5SelectedStartNudge,
   bodyTypeStyles,
 })}
 
@@ -1039,6 +1086,8 @@ ${searchBoxAndFilterCss({
   h6TypeStyles,
   inputMarginBottom,
 })}
+
+${controlRowCss()}
 
 ${listTreeCss({ bodyTypeStyles })}
 
@@ -1269,7 +1318,7 @@ ${controlPadding(controlCompactBlockPaddingVar, "0rem")}  padding-inline: var(--
   flex-direction: column;
   min-block-size: var(--bf-navigation-bar-min-block-size);
   min-inline-size: 0;
-  padding-block: var(--bf-border-width);
+  padding-block: calc(var(--bf-baseline) / 2);
   padding-inline: var(--bf-panel-padding-inline);
   position: relative;
   z-index: 1;
@@ -1879,13 +1928,13 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   pointer-events: none;
 }
 
-:where(.bf-theme) :where(.bf-tooltip, [class*='bf-tooltip--']) {
+:where(.bf-theme) :where(.bf-tooltip) {
   display: inline-flex;
   position: relative;
   text-decoration: inherit;
 }
 
-:where(.bf-theme) :where(.bf-tooltip.is-detached, [class*='bf-tooltip--'].is-detached) {
+:where(.bf-theme) :where(.bf-tooltip.is-detached) {
   display: inline-grid;
   gap: var(--bf-field-gap);
   position: relative;
@@ -1912,8 +1961,8 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
   z-index: 12;
 }
 
-:where(.bf-theme) :where(.bf-tooltip, [class*='bf-tooltip--']):is(:hover, :focus-within) > :where(.bf-tooltip-message),
-:where(.bf-theme) :where(.bf-tooltip.is-detached, [class*='bf-tooltip--'].is-detached) > :where(.bf-tooltip-message) {
+:where(.bf-theme) :where(.bf-tooltip):is(:hover, :focus-within) > :where(.bf-tooltip-message),
+:where(.bf-theme) :where(.bf-tooltip.is-detached) > :where(.bf-tooltip-message) {
   opacity: 1;
   visibility: visible;
 }
@@ -1929,7 +1978,7 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
   position: absolute;
 }
 
-:where(.bf-theme) :where(.bf-tooltip.is-detached, [class*='bf-tooltip--'].is-detached) > :where(.bf-tooltip-message) {
+:where(.bf-theme) :where(.bf-tooltip.is-detached) > :where(.bf-tooltip-message) {
   left: auto;
   pointer-events: auto;
   position: static;
@@ -1937,7 +1986,7 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
   transform: none;
 }
 
-:where(.bf-theme) :where(.bf-tooltip.is-detached, [class*='bf-tooltip--'].is-detached) > :where(.bf-tooltip-message)::before {
+:where(.bf-theme) :where(.bf-tooltip.is-detached) > :where(.bf-tooltip-message)::before {
   content: none;
 }
 
@@ -2724,6 +2773,10 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     --bf-application-navigation-width: var(--bf-application-navigation-width-collapsed);
   }
 
+  :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-navigation-drawer > .bf-panel > .bf-panel-header) {
+    display: none;
+  }
+
   :where(.bf-theme) :where(.bf-navigation) {
     grid-area: navigation;
     pointer-events: auto;
@@ -2749,6 +2802,14 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     top: 0;
   }
 }
+
+${navigationLayoutCss()}
+
+${documentNavigationCss({
+  bodyCaseTypeStyles: typeStyles(body),
+  bodyTypeStyles,
+  headingTypeStyles: typeStyles(h6, { includeCase: false })
+})}
 
 ${tieredListEqualHeightRowCss()}
 `;

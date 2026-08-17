@@ -22,7 +22,6 @@ export interface AdditionalThemeSurfaceBuildConfig {
   configPath: string;
   className?: string;
   label?: string;
-  zeroNudge?: boolean;
 }
 
 export interface BuildThemeFromConfigOptions {
@@ -78,6 +77,54 @@ function assertFiniteNumberConfigField(value: unknown, fieldPath: string): void 
   }
 }
 
+const REQUIRED_LAYOUT_FIELDS = [
+  "contentMaxWidthRem",
+  "contentPaddingInlineRem",
+  "measureRem",
+  "sectionSpaceBaselineUnits",
+  "sectionSpaceShallowBaselineUnits",
+  "sectionSpaceDeepBaselineUnits",
+  "stripSpaceBaselineUnits",
+  "gridGapInlineBaselineUnits",
+  "gridGapBlockBaselineUnits",
+  "pageMarginBaselineUnits"
+] as const satisfies readonly (keyof ThemeConfig["layout"])[];
+
+const REQUIRED_COMPONENT_FIELDS = [
+  "borderWidthPx",
+  "radiusRem",
+  "topNavigationBrandRegionRem",
+  "controlBlockPaddingRem",
+  "controlInlinePaddingRem",
+  "controlVisualSizeRem",
+  "fieldGapBaselineUnits",
+  "panelPaddingInlineBaselineUnits",
+  "panelPaddingBlockBaselineUnits",
+  "accordionIndentBaselineUnits"
+] as const satisfies readonly (keyof ThemeConfig["components"])[];
+
+const OPTIONAL_COMPONENT_FIELDS = [
+  "controlCompactBlockPaddingRem",
+  "controlInlinePaddingActionRem",
+  "controlInlinePaddingFieldRem"
+] as const satisfies readonly (keyof ThemeConfig["components"])[];
+
+function assertNoDuplicateRoleKeys(raw: string, configPath: string): void {
+  const rolesMatch = raw.match(/"roles"\s*:\s*\{([\s\S]*?)\}/);
+  if (!rolesMatch) {
+    throw new Error(`Theme config "${configPath}" requires a roles object.`);
+  }
+
+  const seen = new Set<string>();
+  for (const match of rolesMatch[1].matchAll(/^\s*"([^"]+)"\s*:/gm)) {
+    const roleName = match[1];
+    if (seen.has(roleName)) {
+      throw new Error(`Theme config "${configPath}" contains duplicate role key "${roleName}".`);
+    }
+    seen.add(roleName);
+  }
+}
+
 function validateConfig(config: ThemeConfig): void {
   if (!config.fontFiles.length) {
     throw new Error("Theme config requires at least one font file.");
@@ -100,20 +147,47 @@ function validateConfig(config: ThemeConfig): void {
   }
 
   assertFiniteNumberConfigField(config.baselineUnit, "baselineUnit");
-  assertFiniteNumberConfigField(config.layout.contentMaxWidthRem, "layout.contentMaxWidthRem");
-  assertFiniteNumberConfigField(config.layout.contentPaddingInlineRem, "layout.contentPaddingInlineRem");
-  assertFiniteNumberConfigField(config.layout.measureRem, "layout.measureRem");
-  assertFiniteNumberConfigField(config.layout.sectionSpaceBaselineUnits, "layout.sectionSpaceBaselineUnits");
-  assertFiniteNumberConfigField(config.layout.sectionSpaceShallowBaselineUnits, "layout.sectionSpaceShallowBaselineUnits");
-  assertFiniteNumberConfigField(config.layout.sectionSpaceDeepBaselineUnits, "layout.sectionSpaceDeepBaselineUnits");
-  assertFiniteNumberConfigField(config.layout.stripSpaceBaselineUnits, "layout.stripSpaceBaselineUnits");
-  assertFiniteNumberConfigField(config.layout.gridGapInlineBaselineUnits, "layout.gridGapInlineBaselineUnits");
-  assertFiniteNumberConfigField(config.layout.gridGapBlockBaselineUnits, "layout.gridGapBlockBaselineUnits");
-  assertFiniteNumberConfigField(config.layout.pageMarginBaselineUnits, "layout.pageMarginBaselineUnits");
+  if (config.baselineUnit <= 0) {
+    throw new Error('Theme config field "baselineUnit" must be greater than zero.');
+  }
 
-  const identifiers = new Set(config.elements.map(element => element.identifier));
+  for (const field of REQUIRED_LAYOUT_FIELDS) {
+    assertFiniteNumberConfigField(config.layout[field], `layout.${field}`);
+  }
+
+  for (const field of REQUIRED_COMPONENT_FIELDS) {
+    assertFiniteNumberConfigField(config.components[field], `components.${field}`);
+  }
+
+  for (const field of OPTIONAL_COMPONENT_FIELDS) {
+    const value = config.components[field];
+    if (value !== undefined) {
+      assertFiniteNumberConfigField(value, `components.${field}`);
+    }
+  }
+
+  const elementIdentifiers = new Set<string>();
+  for (const [index, element] of config.elements.entries()) {
+    if (elementIdentifiers.has(element.identifier)) {
+      throw new Error(`Theme config contains duplicate element identifier "${element.identifier}".`);
+    }
+    elementIdentifiers.add(element.identifier);
+    assertFiniteNumberConfigField(element.fontSize, `elements[${index}].fontSize`);
+    assertFiniteNumberConfigField(element.lineHeight, `elements[${index}].lineHeight`);
+    assertFiniteNumberConfigField(element.spaceAfter, `elements[${index}].spaceAfter`);
+    if (element.fontWeight !== undefined) {
+      assertFiniteNumberConfigField(element.fontWeight, `elements[${index}].fontWeight`);
+    }
+    if (element.fontSize <= 0 || element.lineHeight <= 0) {
+      throw new Error(`Theme element "${element.identifier}" requires positive fontSize and lineHeight values.`);
+    }
+    if (element.spaceAfter < 1) {
+      throw new Error(`Theme element "${element.identifier}" requires spaceAfter >= 1 baseline unit so semantic margin is non-negative.`);
+    }
+  }
+
   for (const [roleName, identifier] of Object.entries(config.roles)) {
-    if (!identifiers.has(identifier)) {
+    if (!elementIdentifiers.has(identifier)) {
       throw new Error(`Role "${roleName}" points to missing element "${identifier}".`);
     }
   }
@@ -121,6 +195,7 @@ function validateConfig(config: ThemeConfig): void {
 
 export async function readThemeConfig(configPath: string): Promise<ThemeConfig> {
   const raw = await fs.readFile(configPath, "utf8");
+  assertNoDuplicateRoleKeys(raw, configPath);
   const config = JSON.parse(raw) as ThemeConfig;
   validateConfig(config);
   return config;
@@ -191,7 +266,7 @@ function toTypographyToken(identifier: string, token: BaselineGeneratorElementTo
   const elementConfig = config.elements.find(element => element.identifier === identifier);
   const fontFamily = token.fontFamily ?? config.fontFiles[0]?.family ?? "sans";
   const fontStack = config.fontStacks[fontFamily] ?? fontFamily;
-  const marginBottom = toRem(parseRem(token.spaceAfter) - parseRem(token.nudgeTop));
+  const marginBottom = toRem(parseRem(token.spaceAfter) - config.baselineUnit);
 
   return {
     ...token,
@@ -212,6 +287,7 @@ function buildComponentTokens(config: ThemeConfig): ComponentTokens {
   return {
     borderWidth: `${config.components.borderWidthPx}px`,
     radius: toRem(config.components.radiusRem),
+    topNavigationBrandRegion: toRem(config.components.topNavigationBrandRegionRem),
     controlBlockPadding: toRem(config.components.controlBlockPaddingRem),
     controlCompactBlockPadding: toRem(
       config.components.controlCompactBlockPaddingRem ?? config.components.controlBlockPaddingRem
@@ -327,62 +403,6 @@ function buildSurfaceManifest(defaultSurface: string, surfaces: ThemeSurface[]):
   };
 }
 
-function buildZeroNudgeTierTokens(config: ThemeConfig): ThemeTokens {
-  const roles: Record<string, TypographyToken> = {};
-  const elements: Record<string, TypographyToken> = {};
-
-  for (const element of config.elements) {
-    const fontFamily = element.fontFamily ?? config.fontFiles[0]?.family ?? "sans";
-    const fontStack = config.fontStacks[fontFamily] ?? fontFamily;
-    const lineHeight = toRem(element.lineHeight * config.baselineUnit);
-    const spaceAfter = toRem(element.spaceAfter * config.baselineUnit);
-
-    const token: TypographyToken = {
-      identifier: element.identifier,
-      fontSize: `${element.fontSize}rem`,
-      lineHeight,
-      fontFamily,
-      fontStack,
-      fontWeight: element.fontWeight,
-      fontStyle: element.fontStyle,
-      spaceAfter,
-      nudgeTop: "0rem",
-      marginBottom: spaceAfter,
-      fontVariantCaps: element.fontVariantCaps,
-      letterSpacing: element.letterSpacing,
-      textTransform: element.textTransform
-    };
-
-    elements[element.identifier] = token;
-  }
-
-  for (const [roleName, identifier] of Object.entries(config.roles)) {
-    const token = elements[identifier];
-    if (token) roles[roleName] = token;
-  }
-
-  return {
-    baselineUnit: toRem(config.baselineUnit),
-    fontFiles: config.fontFiles,
-    fontStacks: config.fontStacks,
-    roles,
-    elements,
-    layout: {
-      contentMaxWidth: toRem(config.layout.contentMaxWidthRem),
-      contentPaddingInline: toRem(config.layout.contentPaddingInlineRem),
-      measure: toRem(config.layout.measureRem),
-      sectionSpace: toRem(config.layout.sectionSpaceBaselineUnits * config.baselineUnit),
-      sectionSpaceShallow: toRem(config.layout.sectionSpaceShallowBaselineUnits * config.baselineUnit),
-      sectionSpaceDeep: toRem(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
-      stripSpace: toRem(config.layout.stripSpaceBaselineUnits * config.baselineUnit),
-      gridGapInline: toRem(config.layout.gridGapInlineBaselineUnits * config.baselineUnit),
-      gridGapBlock: toRem(config.layout.gridGapBlockBaselineUnits * config.baselineUnit),
-      pageMargin: toRem(config.layout.pageMarginBaselineUnits * config.baselineUnit)
-    },
-    components: buildComponentTokens(config)
-  };
-}
-
 async function buildThemeSurface(
   name: string,
   resolvedConfigPath: string,
@@ -391,7 +411,6 @@ async function buildThemeSurface(
   options: {
     className?: string;
     label?: string;
-    zeroNudge?: boolean;
     engine?: string;
   } = {}
 ): Promise<ThemeSurface> {
@@ -420,7 +439,7 @@ async function buildThemeSurface(
     configPath: resolvedConfigPath,
     baselineConfigPath,
     baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
-    tokens: options.zeroNudge ? buildZeroNudgeTierTokens(runtimeConfig) : buildThemeTokens(runtimeConfig, baselineTokens),
+    tokens: buildThemeTokens(runtimeConfig, baselineTokens),
     metrics: runtimeMetricsTokens(baselineTokens, runtimeConfig.fontFiles)
   };
 }
@@ -448,8 +467,7 @@ async function buildRelatedTierSurfaces(
       path.join(baselineDir, "surfaces", tierName),
       outputDir,
       {
-        className: `bf-tier-${tierName}`,
-        zeroNudge: tierName === "app"
+        className: `bf-tier-${tierName}`
       }
     ));
   }
@@ -472,8 +490,7 @@ async function buildAdditionalThemeSurfaces(
       outputDir,
       {
         className: surfaceConfig.className,
-        label: surfaceConfig.label,
-        zeroNudge: surfaceConfig.zeroNudge
+        label: surfaceConfig.label
       }
     ));
   }
@@ -517,8 +534,7 @@ async function buildTheme(
     resolvedDistDir,
     {
       label: options.surfaceLabel,
-      className: surfaceClassName(defaultSurfaceName),
-      zeroNudge: normalizeBuiltInThemeName(builtInName ?? defaultSurfaceName as BuiltInThemeName) === "app" && builtInName !== undefined
+      className: surfaceClassName(defaultSurfaceName)
     }
   );
   const relatedSurfaces = await buildRelatedTierSurfaces(

@@ -1,29 +1,49 @@
-# Linked Specs
+# Spec catalog
 
-## Purpose
+This file owns package status and governing-source relationships. Execution
+order lives in `TODO.md`; per-feature detail lives in the package.
 
-This file records the concrete external spec inputs that govern baseline-foundry. When source documents disagree with local implementation, these paths win according to `.github/copilot-instructions.md`.
+## Current package
 
-## Primary live spec workspace
+| Spec | Package | Status | Outcome |
+|---|---|---|---|
+| 001 Baseline Foundry renewal | [`specs/001-baseline-foundry-renewal/`](../specs/001-baseline-foundry-renewal/) | Implementation and automated QA complete; in-app-browser sign-off pending | Correct strict article-pagination parity; deliver the owner-selected Vanilla root, Sites-composition, standalone and layout gaps; and expose them through a dedicated Pattern Atlas without weakening BF's four-tier type and rhythm contracts. |
 
-The primary live spec workspace for this repo is `../canonical-spacing-spec/`.
+## Archive
 
-| Spec | Path | Role in this repo |
-|------|------|-------------------|
-| Type scale | `../canonical-spacing-spec/specs/type scale/draft.md` | Canonical type roles, weights, scale structure, and typography semantics |
-| Spacing | `../canonical-spacing-spec/specs/spacing/draft.md` | Vertical spacing model, nudge model, and spacing invariants |
-| Grid | `../canonical-spacing-spec/specs/grid/draft.md` | Canonical 4/8/16 grid behavior and tier-specific layout rules |
-| Typography article | `../canonical-spacing-spec/specs/typography-article/draft.md` | Supporting editorial rationale and reference material |
+Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
+There are no archived BF packages yet; Git retains the pre-Spec-Kit history.
 
-## Secondary references
+## Candidate specifications
 
-| Reference | Path | Use |
-|-----------|------|-----|
-| Legacy spec snapshot | `../canonical-specs/` | Historical comparison only, not the primary live source |
-| Compatibility line | `../portable-vertical-rhythm/` | Implementation comparison only, not a normative spec |
+Candidates have no number, package, or active branch. Promote exactly one when
+its evidence trigger is satisfied; until then they are boundaries, not promised
+features.
 
-## Notes
+| Candidate | Evidence trigger | Intended outcome | Explicit boundary |
+|---|---|---|---|
+| Shared authoring shell and document frame | Two consumers repeat the same top-navigation, stage, pinned-aside, or document-frame composition | A small intrinsic composition shared by authoring tools | Do not make consumer workflow state or chroma a built-in tier |
+| Product-specific credential orchestration | A consumer repeats workflow state beyond the shipped BF password reveal and validation/help composition | Promote only the repeated orchestration over the existing accessible field contracts | Do not relabel existing form support as absent or port an application workflow wholesale |
+| Framework-specific interactive-table orchestration | A consumer needs data-source or framework state beyond the shipped sortable, expandable and mobile-card contracts | Keep reusable BF presentation/ARIA seams separate from application data behavior | Basic and interactive `bf-table` contracts remain complete; framework state stays downstream |
+| Media-object breakpoint retuning | A second consumer proves that the shipped media-object composition's intrinsic threshold fails | Adjust only the measured shared threshold | No speculative tier-specific breakpoint fork |
 
-- `canonical-spacing-spec` is the source of truth for new spec alignment work.
-- `canonical-specs` is a legacy snapshot/reference workspace only.
-- If a behavior is only present in local code but not in the linked specs or roadmap, treat it as implementation drift until proven intentional.
+## Design references
+
+| Source | Role |
+|---|---|
+| `../canonical-spacing-spec/specs/type scale/draft.md` | Type-scale and metric reference |
+| `../canonical-spacing-spec/specs/spacing/draft.md` | Spacing research/reference; its Pragma/official container-owned decision does not override BF's local element-owned constitution |
+| `../canonical-spacing-spec/specs/grid/draft.md` | Grid reference |
+| `../canonical-spacing-spec/specs/typography-article/draft.md` | Supporting editorial reference |
+| `../vanilla-framework/` | Ancestor pattern evidence, not a compatibility mandate |
+| `../diagram-registry/` | Active consumer evidence for Spec 001 |
+| `../diagram-generator/` | Lean Spec Kit operating-model reference |
+| `../diagram-generator-planning/` | Broader planning reference; not the target global-state model |
+| `../canonical-specs/` | Legacy snapshot only |
+
+## Precedence
+
+Current user direction and the active local spec come first, followed by the BF
+constitution, `AGENTS.md`, durable local architecture, accepted archived specs,
+and then external references. Implementation drift never silently rewrites a
+higher-level decision.

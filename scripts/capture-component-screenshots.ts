@@ -103,6 +103,7 @@ async function main(): Promise<void> {
       const url = `${origin}${componentPage.route}`;
       await page.goto(url, { waitUntil: "networkidle" });
       await waitForFonts(page);
+      await page.evaluate(() => window.scrollTo(0, 0));
 
       const screenshotPath = path.join(outputDir, `${componentPage.name}.png`);
       const clip = await computeCaptureClip(page, componentPage.captureProfile);

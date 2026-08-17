@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sortable Table Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+  <style>
+    .table-demo-narrow { inline-size: min(100%, 30rem); overflow-x: auto; }
+  </style>
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="sortable table fixture">
+    <h1 data-baseline-check="flow" data-baseline-label="sortable table heading">Sortable table</h1>
+    <p data-baseline-check="flow" data-baseline-label="sortable table guidance">Activate a heading to cycle through ascending, descending, and original order.</p>
+    <div data-baseline-check="box" data-baseline-label="sortable table wide frame" data-overflow-container>
+      <table class="bf-table is-sortable" aria-label="Build agents" data-baseline-check="box" data-baseline-label="sortable table" data-overflow-check>
+        <thead><tr>
+          <th aria-sort="none"><button class="bf-table-sort-button" type="button" data-baseline-ignore="true">Status</button></th>
+          <th aria-sort="none"><button class="bf-table-sort-button" type="button" data-baseline-ignore="true">Agent name</button></th>
+          <th aria-sort="none"><button class="bf-table-sort-button" type="button" data-baseline-ignore="true">Cores</button></th>
+          <th aria-sort="none"><button class="bf-table-sort-button" type="button" data-baseline-ignore="true">Memory</button></th>
+        </tr></thead>
+        <tbody>
+          <tr><td role="rowheader">Ready</td><td>delta-builder-with-a-deliberately-long-name</td><td>8</td><td>32 GiB</td></tr>
+          <tr><td role="rowheader">Busy</td><td>alpha-builder</td><td>2</td><td>8 GiB</td></tr>
+          <tr><td role="rowheader">Ready</td><td>charlie-builder</td><td>16</td><td>64 GiB</td></tr>
+          <tr><td role="rowheader">Busy</td><td>bravo-builder</td><td>4</td><td>16 GiB</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <section class="table-demo-narrow" dir="rtl" aria-label="Narrow right-to-left sortable fixture" data-baseline-check="box" data-baseline-label="sortable narrow rtl frame" data-overflow-container>
+      <table class="bf-table is-sortable" aria-label="RTL package jobs" data-baseline-check="box" data-baseline-label="sortable narrow rtl table" data-overflow-check>
+        <thead><tr>
+          <th aria-sort="ascending"><button class="bf-table-sort-button" type="button" data-baseline-ignore="true">Package</button></th>
+          <th aria-sort="none"><button class="bf-table-sort-button" type="button" data-baseline-ignore="true">Queue</button></th>
+        </tr></thead>
+        <tbody>
+          <tr><td role="rowheader">alpha-runtime</td><td>12</td></tr>
+          <tr><td role="rowheader">baseline-foundry-documentation-export</td><td>2</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>

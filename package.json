@@ -17,6 +17,14 @@
       "types": "./dist/build.d.ts",
       "import": "./dist/build.js"
     },
+    "./presets": {
+      "types": "./dist/presets.d.ts",
+      "import": "./dist/presets.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./tokens.json": "./dist/tokens.json",
     "./surfaces.json": "./dist/surfaces.json",

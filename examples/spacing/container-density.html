@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spacing Example: Container Density</title>
+  <title>Spacing Example: Component Density</title>
   <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/app/styles.css">
   <link rel="stylesheet" href="../../demo/page-chrome.css">
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-app" data-bf-tone="light">
-  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
-    <section class="bf-fixed-width bf-stack is-section-shallow bf-prose">
-      <h1>Container density</h1>
-      <p>The card itself uses a 16px gap, while the inner zones intentionally run at `0px`, chart-spacing, and `8px` to show nested density inside a single app-surface card.</p>
+  <main class="example-grid-target bf-stack bf-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack bf-section is-shallow bf-prose">
+      <h1>Component density</h1>
+      <p>Dense application composition still uses element-owned block boundaries. Purpose-built rows and lists may define their internal alignment, while headings, controls, and the enclosing card keep their public after-space.</p>
     </section>
 
     <section class="bf-fixed-width spacing-grid-two">
-      <article class="bf-card bf-stack is-section-shallow">
-        <h2 class="bf-h4">Structured density</h2>
-        <section class="bf-card bf-stack is-flush">
+      <article class="bf-card bf-stack bf-section is-shallow">
+        <h2 class="bf-h4">Structured application content</h2>
+        <section class="bf-card bf-stack">
           <div class="spacing-density-row"><strong>Disk</strong><span>480GB SSD</span></div>
           <div class="spacing-density-row"><strong>Allocated</strong><span>320GB</span></div>
           <div class="spacing-density-row"><strong>Free</strong><span>160GB</span></div>
@@ -26,14 +26,14 @@
         <section class="bf-card bf-stack">
           <div class="bf-card spacing-demo-box" style="min-block-size:calc(var(--bf-baseline, 0.5rem) * 14)"></div>
         </section>
-        <section class="bf-card bf-stack is-dense">
+        <section class="bf-card bf-control-row">
           <button class="bf-button is-base">Detach</button>
           <button class="bf-button">Allocate</button>
         </section>
       </article>
 
-      <article class="bf-card spacing-demo-box bf-stack is-section-shallow">
-        <h2 class="bf-h4">Raw defaults</h2>
+      <article class="bf-card spacing-demo-box bf-stack bf-section is-shallow">
+        <h2 class="bf-h4">Semantic flow</h2>
         <div>Disk</div>
         <div>Allocated</div>
         <div>Free</div>

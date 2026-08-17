@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Shell Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../page-chrome.css">
+</head>
+<body class="bf-theme bf-page-shell is-dark" data-component-capture data-overflow-container>
+  <header class="bf-top-navigation is-grid-aligned" data-baseline-ignore="true" data-overflow-check data-baseline-label="grid-aligned page navigation">
+    <div class="bf-fixed-width" data-baseline-check="box" data-baseline-label="page shell content region">
+      <div class="bf-top-navigation-row">
+        <div class="bf-top-navigation-banner">
+          <div class="bf-top-navigation-logo is-canonical-tagged">
+            <a class="bf-top-navigation-link" href="#content">
+              <span class="bf-top-navigation-logo-tag" aria-hidden="true">
+                <svg class="bf-top-navigation-logo-icon" viewBox="0 0 60.45 57.87" xmlns="http://www.w3.org/2000/svg"><circle cx="9.66" cy="27.41" r="8.12" fill="currentColor"/><circle cx="43.48" cy="9.61" r="8.12" fill="currentColor"/><path d="M7.34 38.71A26.67 26.67 0 0 0 32.58 55.55a11.47 11.47 0 0 1-2.49-7q-1.09-.15-2.09-.36a19.62 19.62 0 0 1-13.45-10.36 11.49 11.49 0 0 1-7.21.88Z" fill="currentColor"/><circle cx="41.65" cy="48.35" r="8.12" fill="currentColor"/><path d="M48.9 39.31a11.58 11.58 0 0 1 4 6.25 26.64 26.64 0 0 0 1.36-31.63 11.47 11.47 0 0 1-4.7 5.54 19.73 19.73 0 0 1-.66 19.84ZM9.68 15.85a11.44 11.44 0 0 1 2.4.25 11.72 11.72 0 0 1 3.77 1.54 19.73 19.73 0 0 1 16-8.56 12.15 12.15 0 0 1 .22-1.9 11.75 11.75 0 0 1 2.34-4.89A26.9 26.9 0 0 0 8.82 15.88c.29-.02.57-.03.86-.03Z" fill="currentColor"/></svg>
+              </span>
+              <span class="bf-top-navigation-logo-title">Baseline Foundry</span>
+            </a>
+          </div>
+        </div>
+        <nav class="bf-top-navigation-nav" aria-label="Page navigation" aria-hidden="false">
+          <ul class="bf-top-navigation-list">
+            <li class="bf-top-navigation-item is-selected"><a class="bf-top-navigation-link" href="#content" aria-current="page">Documentation</a></li>
+            <li class="bf-top-navigation-item"><a class="bf-top-navigation-link" href="#evidence">Evidence</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <main id="content" class="bf-section">
+    <div class="bf-fixed-width" data-baseline-check="box" data-baseline-label="page shell content region">
+      <h1 class="bf-h1" data-baseline-check="flow">Scoped page shell</h1>
+      <p class="bf-body" data-baseline-check="flow">The page shell removes the user-agent body margin only when its explicit class is present. A tier import remains safe to use inside another product document.</p>
+      <h2 class="bf-h2" id="evidence" data-baseline-check="flow">Full-bleed chrome, contained content</h2>
+      <p class="bf-body" data-baseline-check="flow">The navigation can reach the viewport edge while its row aligns to the same fixed-width content grid as the article.</p>
+    </div>
+  </main>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Card Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<main class="bf-page bf-fixed-width bf-stack" data-baseline-check="box" data-baseline-label="content card page" data-overflow-check>
+  <h1 class="bf-h4" data-baseline-check="flow">Content card</h1>
+  <p data-baseline-check="flow">A rich card family for articles and resources. Its main title link expands over the quiet surface while author and footer links keep independent keyboard and pointer targets.</p>
+
+  <section aria-labelledby="content-card-standard-title">
+    <h2 id="content-card-standard-title" class="bf-h5" data-baseline-check="flow">Two-column and text-only</h2>
+    <div class="bf-grid" data-overflow-check>
+      <div class="bf-content-card-wrapper is-cols-2" data-baseline-check="box" data-baseline-label="two column content card wrapper">
+        <article id="content-card-two" class="bf-content-card is-cols-2 is-image is-description-reveal" aria-labelledby="content-card-two-title" data-baseline-check="box" data-baseline-label="two column content card">
+          <div class="bf-content-card-frame">
+            <div class="bf-content-card-media">
+              <img class="bf-content-card-image" src="../assets/aspect-wide.svg" alt="Layered landscape shapes used as a resource preview">
+            </div>
+            <div class="bf-content-card-content">
+              <div class="bf-content-card-body">
+                <div class="bf-content-card-primary">
+                  <h3 id="content-card-two-title" class="bf-content-card-title" data-baseline-ignore="true"><a class="bf-content-card-main-link" href="#two-column-destination">Canonical announces a production-grade feature store for open source MLOps</a></h3>
+                  <p class="bf-content-card-author-date" data-baseline-ignore="true"><a href="#author-canonical">Canonical</a><span aria-hidden="true">·</span><time datetime="2025-07-10">10 July 2025</time></p>
+                </div>
+                <div class="bf-content-card-description-panel">
+                  <p class="bf-content-card-description" data-baseline-ignore="true">A deliberately long description proves the desktop reveal and constrained-width clamp without widening the card or erasing the body role’s own baseline compensation.</p>
+                </div>
+              </div>
+              <footer class="bf-content-card-footer">
+                <div class="bf-content-card-footer-inner" tabindex="0" role="group" aria-label="Resource metadata">
+                  <a class="bf-content-card-resource" href="#whitepaper"><span class="bf-icon is-search" aria-hidden="true"></span><span>Whitepaper</span></a>
+                  <span class="bf-chip is-information">Developers</span>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="bf-content-card-wrapper is-cols-2" data-baseline-check="box" data-baseline-label="text only content card wrapper">
+        <article class="bf-content-card is-cols-2" aria-labelledby="content-card-text-title" data-baseline-check="box" data-baseline-label="text only content card">
+          <div class="bf-content-card-frame">
+            <div class="bf-content-card-content">
+              <div class="bf-content-card-body">
+                <div class="bf-content-card-primary">
+                  <h3 id="content-card-text-title" class="bf-content-card-title" data-baseline-ignore="true"><a class="bf-content-card-main-link" href="#text-only-destination">A compact text-only card without image, metadata, or footer</a></h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="content-card-horizontal-title">
+    <h2 id="content-card-horizontal-title" class="bf-h5" data-baseline-check="flow">Four- and six-column relationships</h2>
+    <div class="bf-grid" data-overflow-check>
+      <div class="bf-content-card-wrapper is-cols-4" data-baseline-check="box" data-baseline-label="four column content card wrapper">
+        <article class="bf-content-card is-cols-4 is-image is-description-reveal" aria-labelledby="content-card-four-title" data-baseline-check="box" data-baseline-label="four column content card">
+          <div class="bf-content-card-frame">
+            <div class="bf-content-card-media">
+              <img class="bf-content-card-image" src="../assets/aspect-wide.svg" alt="Teal landscape resource preview">
+            </div>
+            <div class="bf-content-card-content">
+              <div class="bf-content-card-body">
+                <div class="bf-content-card-primary">
+                  <h3 id="content-card-four-title" class="bf-content-card-title" data-baseline-ignore="true"><a class="bf-content-card-main-link" href="#four-column-destination">Multi-cloud operations across public and private infrastructure</a></h3>
+                  <p class="bf-content-card-author-date" data-baseline-ignore="true"><a href="#author-platform-team">Platform team</a><span aria-hidden="true">·</span><time datetime="2026-08-16">16 August 2026</time></p>
+                </div>
+                <div class="bf-content-card-description-panel">
+                  <p class="bf-content-card-description" data-baseline-ignore="true">The image and content form Vanilla’s horizontal relationship when the card itself has enough allocated room.</p>
+                </div>
+              </div>
+              <footer class="bf-content-card-footer">
+                <div class="bf-content-card-footer-inner" tabindex="0" role="group" aria-label="Resource metadata with several content types">
+                  <span class="bf-content-card-resource"><span class="bf-icon is-search" aria-hidden="true"></span><span>Webinar</span></span>
+                  <span class="bf-chip is-information">Cloud</span>
+                  <span class="bf-chip is-information">Operations</span>
+                  <span class="bf-chip is-information">Community</span>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="bf-content-card-wrapper is-cols-4" data-baseline-check="box" data-baseline-label="image top content card wrapper">
+        <article class="bf-content-card is-cols-4 is-image is-image-top" aria-labelledby="content-card-image-top-title" data-baseline-check="box" data-baseline-label="four column image top content card">
+          <div class="bf-content-card-frame">
+            <div class="bf-content-card-media">
+              <img class="bf-content-card-image" src="../assets/aspect-wide.svg" alt="Wide resource preview kept above the card copy">
+            </div>
+            <div class="bf-content-card-content">
+              <div class="bf-content-card-body">
+                <div class="bf-content-card-primary">
+                  <h3 id="content-card-image-top-title" class="bf-content-card-title" data-baseline-ignore="true"><a class="bf-content-card-main-link" href="#image-top-destination">Image-top remains vertical at every available width</a></h3>
+                </div>
+              </div>
+              <footer class="bf-content-card-footer"><div class="bf-content-card-footer-inner"><span class="bf-content-card-resource"><span class="bf-icon is-search" aria-hidden="true"></span><span>Case study</span></span></div></footer>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="bf-content-card-wrapper is-cols-6" data-baseline-check="box" data-baseline-label="six column content card wrapper">
+        <article class="bf-content-card is-cols-6 is-image is-description-reveal" aria-labelledby="content-card-six-title" data-baseline-check="box" data-baseline-label="six column content card">
+          <div class="bf-content-card-frame">
+            <div class="bf-content-card-media">
+              <img class="bf-content-card-image" src="../assets/aspect-wide.svg" alt="Abstract wide-format preview for a featured report">
+            </div>
+            <div class="bf-content-card-content">
+              <div class="bf-content-card-body">
+                <div class="bf-content-card-primary">
+                  <h3 id="content-card-six-title" class="bf-content-card-title" data-baseline-ignore="true"><a class="bf-content-card-main-link" href="#six-column-destination">A long featured report title clamps to two lines without crowding its metadata rail</a></h3>
+                  <p class="bf-content-card-author-date" data-baseline-ignore="true"><a href="#author-research">Research group</a><span aria-hidden="true">·</span><time datetime="2026-06-03">3 June 2026</time></p>
+                </div>
+                  <div class="bf-content-card-description-panel"><p class="bf-content-card-description" data-baseline-ignore="true">Six-column descriptions retain the concise two-line reveal used by the source pattern.</p></div>
+              </div>
+              <footer class="bf-content-card-footer"><div class="bf-content-card-footer-inner"><span class="bf-content-card-resource"><span class="bf-icon is-search" aria-hidden="true"></span><span>Report</span></span><span class="bf-chip is-information">Security</span></div></footer>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="content-card-feature-title">
+    <h2 id="content-card-feature-title" class="bf-h5" data-baseline-check="flow">Eight-column feature and RTL</h2>
+    <div class="bf-grid" data-overflow-check>
+      <div class="bf-content-card-wrapper is-cols-8" data-baseline-check="box" data-baseline-label="eight column content card wrapper">
+        <article class="bf-content-card is-cols-8 is-image is-description-reveal" aria-labelledby="content-card-eight-title" data-baseline-check="box" data-baseline-label="eight column content card">
+          <div class="bf-content-card-frame">
+            <div class="bf-content-card-media">
+              <img class="bf-content-card-image" src="../assets/aspect-wide.svg" alt="Large preview for a feature article">
+            </div>
+            <div class="bf-content-card-content">
+              <div class="bf-content-card-body">
+                <div class="bf-content-card-primary">
+                  <h3 id="content-card-eight-title" class="bf-content-card-title" data-baseline-ignore="true"><a class="bf-content-card-main-link" href="#eight-column-destination">Build dependable platforms with a full-width feature card and a measured 50/50 desktop split</a></h3>
+                  <p class="bf-content-card-author-date" data-baseline-ignore="true"><a href="#author-foundry">Baseline Foundry</a><span aria-hidden="true">·</span><time datetime="2026-08-16">16 August 2026</time></p>
+                </div>
+                  <div class="bf-content-card-description-panel"><p class="bf-content-card-description" data-baseline-ignore="true">Unlike the smaller variants, the feature description remains visible beneath its heading. Long copy clamps without changing the intended image, body, and footer relationship.</p></div>
+              </div>
+              <footer class="bf-content-card-footer"><div class="bf-content-card-footer-inner" tabindex="0" role="group" aria-label="Feature metadata"><a class="bf-content-card-resource" href="#guide"><span class="bf-icon is-search" aria-hidden="true"></span><span>Guide</span></a><span class="bf-chip is-information">Architecture</span></div></footer>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="bf-content-card-wrapper is-cols-4" dir="rtl" data-baseline-check="box" data-baseline-label="RTL content card wrapper">
+        <article class="bf-content-card is-cols-4 is-image" aria-labelledby="content-card-rtl-title" data-baseline-check="box" data-baseline-label="RTL content card">
+          <div class="bf-content-card-frame">
+            <div class="bf-content-card-media"><img class="bf-content-card-image" src="../assets/aspect-wide.svg" alt="معاينة مرئية للمورد"></div>
+            <div class="bf-content-card-content">
+              <div class="bf-content-card-body"><div class="bf-content-card-primary"><h3 id="content-card-rtl-title" class="bf-content-card-title" data-baseline-ignore="true"><a class="bf-content-card-main-link" href="#rtl-destination">بطاقة محتوى طويلة تختبر الاتجاه من اليمين إلى اليسار</a></h3><p class="bf-content-card-author-date" data-baseline-ignore="true"><a href="#author-arabic">فريق المنصة</a><span aria-hidden="true">·</span><time datetime="2026-08-16">١٦ أغسطس ٢٠٢٦</time></p></div></div>
+              <footer class="bf-content-card-footer"><div class="bf-content-card-footer-inner" tabindex="0" role="group" aria-label="بيانات المورد"><span class="bf-content-card-resource"><span class="bf-icon is-search" aria-hidden="true"></span><span>دليل</span></span><span class="bf-chip is-information">البنية</span><span class="bf-chip is-information">المجتمع</span></div></footer>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

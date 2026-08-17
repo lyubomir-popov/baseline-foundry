@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notice Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<main class="bf-stack" data-baseline-check="box" data-baseline-label="notice page" data-overflow-container>
+  <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="notice kicker">Notice</h5>
+  <p class="bf-body" data-baseline-check="flow" data-baseline-label="notice summary">A content-level callout. Choose the landmark role for the message semantics: a static note needs no live region.</p>
+
+  <aside class="bf-notice" role="note" data-baseline-check="box" data-baseline-label="neutral notice" data-overflow-check>
+    <h2 class="bf-notice-title" data-baseline-check="flow">Reference note</h2>
+    <div class="bf-notice-content"><p data-baseline-check="flow">This neutral note carries supporting context without implying an action or status change.</p></div>
+  </aside>
+
+  <aside class="bf-notice is-information" role="note" data-baseline-check="box" data-baseline-label="information notice" data-overflow-check>
+    <h2 class="bf-notice-title" data-baseline-check="flow">Information</h2>
+    <div class="bf-notice-content"><p data-baseline-check="flow">Documentation readers can continue; this notice makes a useful detail easier to find.</p></div>
+  </aside>
+
+  <aside class="bf-notice is-positive" role="note" data-baseline-check="box" data-baseline-label="positive notice" data-overflow-check>
+    <h2 class="bf-notice-title" data-baseline-check="flow">Published</h2>
+    <div class="bf-notice-content"><p data-baseline-check="flow">The generated surface passed the current validation set.</p></div>
+  </aside>
+
+  <aside class="bf-notice is-caution" role="note" data-baseline-check="box" data-baseline-label="caution notice" data-overflow-check>
+    <h2 class="bf-notice-title" data-baseline-check="flow">Review before use</h2>
+    <div class="bf-notice-content"><p data-baseline-check="flow">Long consumer-facing guidance wraps inside this notice rather than escaping a narrow documentation column or needing a product override.</p></div>
+  </aside>
+
+  <aside class="bf-notice is-negative" role="note" data-baseline-check="box" data-baseline-label="negative notice" data-overflow-check>
+    <h2 class="bf-notice-title" data-baseline-check="flow">Build unavailable</h2>
+    <div class="bf-notice-content"><p data-baseline-check="flow">Use a live alert role only when a message appears dynamically and needs immediate attention.</p></div>
+  </aside>
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

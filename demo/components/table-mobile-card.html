@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Card Table Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+  <style>
+    .table-demo-wide { inline-size: min(100%, 72rem); }
+    .table-demo-narrow { inline-size: min(100%, 22rem); }
+  </style>
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="mobile card table fixture">
+    <h1 data-baseline-check="flow" data-baseline-label="mobile card table heading">Mobile card table</h1>
+    <p data-baseline-check="flow" data-baseline-label="mobile card table guidance">Column labels come from the real table headings and are generated as presentation only.</p>
+    <div class="bf-table-mobile-card-frame table-demo-wide" data-baseline-check="box" data-baseline-label="mobile card wide frame" data-overflow-container>
+      <table class="bf-table is-mobile-card" aria-label="Build fleet" data-baseline-check="box" data-baseline-label="mobile card table" data-overflow-check>
+        <thead><tr><th>Agent</th><th>Status</th><th>Owner</th><th>Region</th><th>Cores</th></tr></thead>
+        <tbody>
+          <tr><td role="rowheader">delta-builder-with-a-deliberately-long-name</td><td>Failed integration verification</td><td>Platform foundations</td><td>London availability zone three</td><td>16</td></tr>
+          <tr><td role="rowheader">alpha-builder</td><td>Ready</td><td>Release engineering</td><td>Frankfurt</td><td>8</td></tr>
+          <tr><td role="rowheader">bravo-builder</td><td>Busy</td><td>Documentation</td><td>Boston</td><td>4</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <section class="bf-stack table-demo-narrow" dir="rtl" aria-label="Narrow right-to-left mobile card fixture" data-baseline-check="box" data-baseline-label="mobile card narrow rtl fixture">
+      <div class="bf-table-mobile-card-frame" data-baseline-check="box" data-baseline-label="mobile card narrow rtl frame" data-overflow-container>
+        <table class="bf-table is-mobile-card" aria-label="RTL delivery fleet" data-baseline-check="box" data-baseline-label="mobile card narrow rtl table" data-overflow-check>
+          <thead><tr><th>Host</th><th>Deployment state</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr><td role="rowheader">edge-node-with-unbroken-identifier-0001</td><td>Waiting for approval from the platform operations group</td><td>Two minutes ago</td></tr>
+            <tr><td role="rowheader">edge-node-0002</td><td>Published</td><td>Yesterday</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>

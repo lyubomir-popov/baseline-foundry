@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article Pagination Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+  <style>
+    .article-pagination-demo-narrow { inline-size: min(100%, 28rem); }
+  </style>
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="article pagination page">
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="paired destinations" data-overflow-container>
+    <h1 class="bf-h4" data-baseline-check="flow" data-baseline-label="paired destinations title">Paired destinations</h1>
+    <nav class="bf-article-pagination" aria-label="Documentation pages" data-baseline-check="box" data-overflow-check data-baseline-label="paired article pagination">
+      <a class="bf-article-pagination-link is-previous" href="../intro/" rel="prev" data-baseline-check="box" data-baseline-label="paired previous destination">
+        <span class="bf-article-pagination-direction"><span class="bf-icon is-chevron-left" aria-hidden="true"></span><span class="bf-article-pagination-label">Previous</span></span>
+        <span class="bf-article-pagination-title">Introduction</span>
+      </a>
+      <a class="bf-article-pagination-link is-next" href="../install/" rel="next" data-baseline-check="box" data-baseline-label="paired next destination">
+        <span class="bf-article-pagination-direction"><span class="bf-article-pagination-label">Next</span><span class="bf-icon is-chevron-right" aria-hidden="true"></span></span>
+        <span class="bf-article-pagination-title">Install the CLI</span>
+      </a>
+    </nav>
+  </section>
+
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="boundary destinations" data-overflow-container>
+    <h2 class="bf-h5" data-baseline-check="flow" data-baseline-label="boundary destinations title">Boundary destinations</h2>
+    <nav class="bf-article-pagination" aria-label="First documentation page" data-baseline-check="box" data-overflow-check data-baseline-label="next-only article pagination">
+      <a class="bf-article-pagination-link is-next" href="../install/" rel="next" data-baseline-check="box" data-baseline-label="next-only destination">
+        <span class="bf-article-pagination-direction"><span class="bf-article-pagination-label">Next</span><span class="bf-icon is-chevron-right" aria-hidden="true"></span></span>
+        <span class="bf-article-pagination-title">Install the CLI</span>
+      </a>
+    </nav>
+    <nav class="bf-article-pagination" aria-label="Last documentation page" data-baseline-check="box" data-overflow-check data-baseline-label="previous-only article pagination">
+      <a class="bf-article-pagination-link is-previous" href="../configuration/" rel="prev" data-baseline-check="box" data-baseline-label="previous-only destination">
+        <span class="bf-article-pagination-direction"><span class="bf-icon is-chevron-left" aria-hidden="true"></span><span class="bf-article-pagination-label">Previous</span></span>
+        <span class="bf-article-pagination-title">Configure the workspace</span>
+      </a>
+    </nav>
+  </section>
+
+  <section class="bf-stack article-pagination-demo-narrow" data-baseline-check="box" data-baseline-label="narrow destinations" data-overflow-container>
+    <h2 class="bf-h5" data-baseline-check="flow" data-baseline-label="narrow destinations title">Long destinations in a narrow container</h2>
+    <nav class="bf-article-pagination" aria-label="Narrow documentation pages" data-baseline-check="box" data-overflow-check data-baseline-label="narrow article pagination">
+      <a class="bf-article-pagination-link is-previous" href="../configuration/" rel="prev" data-baseline-check="box" data-baseline-label="narrow previous destination">
+        <span class="bf-article-pagination-direction"><span class="bf-icon is-chevron-left" aria-hidden="true"></span><span class="bf-article-pagination-label">Previous</span></span>
+        <span class="bf-article-pagination-title">Configure the workspace for a distributed documentation publishing workflow</span>
+      </a>
+      <a class="bf-article-pagination-link is-next" href="../release/" rel="next" data-baseline-check="box" data-baseline-label="narrow next destination">
+        <span class="bf-article-pagination-direction"><span class="bf-article-pagination-label">Next</span><span class="bf-icon is-chevron-right" aria-hidden="true"></span></span>
+        <span class="bf-article-pagination-title">Prepare a release with complete public API validation evidence</span>
+      </a>
+    </nav>
+  </section>
+
+  <section class="bf-stack" dir="rtl" lang="ar" data-baseline-check="box" data-baseline-label="rtl destinations" data-overflow-container>
+    <h2 class="bf-h5" data-baseline-check="flow" data-baseline-label="rtl destinations title">اتجاه من اليمين إلى اليسار</h2>
+    <nav class="bf-article-pagination" aria-label="صفحات التوثيق" data-baseline-check="box" data-overflow-check data-baseline-label="rtl article pagination">
+      <a class="bf-article-pagination-link is-previous" href="../intro/" rel="prev" data-baseline-check="box" data-baseline-label="rtl previous destination">
+        <span class="bf-article-pagination-direction"><span class="bf-icon is-chevron-left" aria-hidden="true"></span><span class="bf-article-pagination-label">السابق</span></span>
+        <span class="bf-article-pagination-title">مقدمة</span>
+      </a>
+      <a class="bf-article-pagination-link is-next" href="../install/" rel="next" data-baseline-check="box" data-baseline-label="rtl next destination">
+        <span class="bf-article-pagination-direction"><span class="bf-article-pagination-label">التالي</span><span class="bf-icon is-chevron-right" aria-hidden="true"></span></span>
+        <span class="bf-article-pagination-title">تثبيت أداة سطر الأوامر</span>
+      </a>
+    </nav>
+  </section>
+</section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>

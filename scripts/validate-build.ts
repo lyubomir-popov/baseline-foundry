@@ -1,6 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "../src/baseline-grid-theme.js";
+import { tierNames } from "../src/presets.ts";
+import { componentPages } from "./component-demo-shared.ts";
 import { assert, getCheckCount } from "./validation-assert.ts";
 import { parseCss, assertRuleHasDecl } from "./css-ast-helpers.ts";
 
@@ -67,15 +69,20 @@ function assertRelativeFontFilePaths(fontFiles: Array<Record<string, unknown>>, 
 
 function validatePackageExports(packageJson: Record<string, unknown>): void {
   const exportsField = (packageJson.exports ?? {}) as Record<string, unknown>;
-  const expectedOsTierExports = {
-    "./tiers/os.css": "./dist/tiers/os/styles.css",
-    "./tiers/os.tokens.json": "./dist/tiers/os/tokens.json",
-    "./tiers/os.surfaces.json": "./dist/tiers/os/surfaces.json"
-  } as const;
+  for (const tierName of tierNames) {
+    const expectedTierExports = {
+      [`./tiers/${tierName}.css`]: `./dist/tiers/${tierName}/styles.css`,
+      [`./tiers/${tierName}.tokens.json`]: `./dist/tiers/${tierName}/tokens.json`,
+      [`./tiers/${tierName}.surfaces.json`]: `./dist/tiers/${tierName}/surfaces.json`
+    };
 
-  for (const [exportKey, exportPath] of Object.entries(expectedOsTierExports)) {
-    assert(exportsField[exportKey] === exportPath, `Expected package.json to export ${exportKey} from ${exportPath}.`);
+    for (const [exportKey, exportPath] of Object.entries(expectedTierExports)) {
+      assert(exportsField[exportKey] === exportPath, `Expected package.json to export ${exportKey} from ${exportPath}.`);
+    }
   }
+
+  assert(typeof exportsField["./presets"] === "object", "Expected package.json to expose the public tier registry subpath.");
+  assert(typeof exportsField["./types"] === "object", "Expected package.json to expose the public manifest/type subpath.");
 
   assert(!("./presets/panel.css" in exportsField), "Expected package.json to stop exporting the removed panel preset CSS path.");
   assert(!("./presets/panel.tokens.json" in exportsField), "Expected package.json to stop exporting the removed panel preset tokens path.");
@@ -111,6 +118,532 @@ function validateSurfacesManifestDocs(docsMd: string, readmeMd: string): void {
 
 function escapeForRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function parseRemValue(value: unknown): number {
+  return typeof value === "string" ? Number.parseFloat(value.replace("rem", "")) : Number.NaN;
+}
+
+function customPropertiesForSelector(css: string, selector: string): Map<string, string> {
+  const properties = new Map<string, string>();
+  parseCss(css).each(node => {
+    if (node.type !== "rule" || node.selector !== selector) return;
+    node.walkDecls(/^--bf-/, declaration => {
+      if (!properties.has(declaration.prop)) {
+        properties.set(declaration.prop, declaration.value);
+      }
+    });
+  });
+  return properties;
+}
+
+const LAYOUT_TOKEN_PROPERTIES: Record<string, string> = {
+  contentMaxWidth: "--bf-content-max-width",
+  contentPaddingInline: "--bf-content-padding-inline",
+  measure: "--bf-measure",
+  sectionSpace: "--bf-section-space",
+  sectionSpaceShallow: "--bf-section-space-shallow",
+  sectionSpaceDeep: "--bf-section-space-deep",
+  stripSpace: "--bf-strip-space",
+  gridGapInline: "--bf-grid-gap-inline",
+  gridGapBlock: "--bf-grid-gap-block",
+  pageMargin: "--bf-page-margin"
+};
+
+const COMPONENT_TOKEN_PROPERTIES: Record<string, string> = {
+  borderWidth: "--bf-border-width",
+  radius: "--bf-radius",
+  topNavigationBrandRegion: "--bf-top-navigation-brand-region",
+  controlBlockPadding: "--bf-control-block-padding",
+  controlCompactBlockPadding: "--bf-control-block-padding-compact",
+  controlInlinePadding: "--bf-control-inline-padding",
+  controlInlinePaddingAction: "--bf-control-inline-padding-action",
+  controlInlinePaddingField: "--bf-control-inline-padding-field",
+  controlVisualSize: "--bf-control-visual-size",
+  fieldGap: "--bf-field-gap",
+  panelPaddingInline: "--bf-panel-padding-inline",
+  panelPaddingBlock: "--bf-panel-padding-block",
+  accordionIndent: "--bf-accordion-indent"
+};
+
+function expectedTierProperties(tokens: Record<string, unknown>): Map<string, string> {
+  const expected = new Map<string, string>();
+  const layout = (tokens.layout ?? {}) as Record<string, unknown>;
+  const components = (tokens.components ?? {}) as Record<string, unknown>;
+  const roles = (tokens.roles ?? {}) as Record<string, Record<string, unknown>>;
+
+  expected.set("--bf-baseline", String(tokens.baselineUnit));
+  for (const [tokenName, propertyName] of Object.entries(LAYOUT_TOKEN_PROPERTIES)) {
+    expected.set(propertyName, String(layout[tokenName]));
+  }
+  for (const [tokenName, propertyName] of Object.entries(COMPONENT_TOKEN_PROPERTIES)) {
+    expected.set(propertyName, String(components[tokenName]));
+  }
+  for (const [roleName, token] of Object.entries(roles)) {
+    expected.set(`--bf-${roleName}-font-size`, String(token.fontSize));
+    expected.set(`--bf-${roleName}-line-height`, String(token.lineHeight));
+    expected.set(`--bf-${roleName}-space-after`, String(token.spaceAfter));
+    expected.set(`--bf-${roleName}-margin-bottom`, String(token.marginBottom));
+    expected.set(`--bf-${roleName}-nudge-start`, String(token.nudgeTop));
+  }
+  return expected;
+}
+
+function validateTierSurfaceParity(
+  sharedCss: string,
+  tierArtifacts: Record<string, { tokens: Record<string, unknown>; css: string; }>
+): void {
+  for (const tierName of tierNames) {
+    const artifact = tierArtifacts[tierName];
+    assert(artifact, `Expected generated artifacts for tier "${tierName}".`);
+    const expected = expectedTierProperties(artifact.tokens);
+    const directProperties = customPropertiesForSelector(artifact.css, ":where(.bf-theme)");
+    const scopedProperties = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`);
+
+    for (const [propertyName, value] of expected) {
+      assert(directProperties.get(propertyName) === value, `Expected ${tierName} direct CSS ${propertyName} to equal token value ${value}, got ${directProperties.get(propertyName)}.`);
+      assert(scopedProperties.get(propertyName) === value, `Expected ${tierName} class-switched CSS ${propertyName} to equal direct/token value ${value}, got ${scopedProperties.get(propertyName)}.`);
+    }
+
+    const baselineUnit = parseRemValue(artifact.tokens.baselineUnit);
+    const roles = (artifact.tokens.roles ?? {}) as Record<string, Record<string, unknown>>;
+    for (const [roleName, token] of Object.entries(roles)) {
+      const marginBottom = parseRemValue(token.marginBottom);
+      const semanticMargin = parseRemValue(token.spaceAfter) - baselineUnit;
+      assert(Number.isFinite(marginBottom) && marginBottom >= 0, `Expected ${tierName}/${roleName} manifest marginBottom to be finite and non-negative.`);
+      assert(Math.abs(marginBottom - semanticMargin) <= 0.00001, `Expected ${tierName}/${roleName} manifest marginBottom to equal spaceAfter - baselineUnit.`);
+    }
+  }
+}
+
+async function validatePublicRuntimeAndTypes(indexDts: string): Promise<void> {
+  const publicApi = await import("../dist/index.js");
+  assert(Array.isArray(publicApi.tierNames), "Expected the package root runtime to export tierNames.");
+  assert(JSON.stringify(publicApi.tierNames) === JSON.stringify(tierNames), "Expected public tierNames to expose the complete built-in registry.");
+  assert(typeof publicApi.isTierName === "function" && publicApi.isTierName("os"), "Expected the package root runtime to export isTierName.");
+  for (const typeName of ["TierName", "BuiltInThemeName", "ThemeSurface", "ThemeSurfaceManifest", "ThemeSurfaceManifestEntry"]) {
+    assert(indexDts.includes(typeName), `Expected dist/index.d.ts to export public type ${typeName}.`);
+  }
+}
+
+function validateRenewalComponentContracts(
+  css: string,
+  pageCatalogJs: string,
+  componentAtlasHtml: string,
+  patternAtlasHtml: string,
+  componentDemoJs: string,
+  pages: Record<string, string>,
+  indexDts: string
+): void {
+  const ast = parseCss(css);
+  const selectorFragments = [
+    ".bf-top-navigation.is-grid-aligned",
+    ".bf-top-navigation-logo.is-canonical-tagged",
+    ".bf-docs-layout",
+    "body.bf-theme.bf-page-shell",
+    ".bf-tiered-list.is-triple",
+    ".bf-tiered-list.is-flush",
+    ".bf-tiered-list-item-role",
+    ".bf-aspect.is-4-3",
+    ".bf-aspect.is-contain",
+    ".bf-notice.is-information",
+    ".bf-notice.is-positive",
+    ".bf-notice.is-caution",
+    ".bf-notice.is-negative",
+    ".bf-eyebrow",
+    ".bf-article-pagination",
+    ".bf-article-pagination-link.is-previous",
+    ".bf-article-pagination-link.is-next",
+    ".bf-control-row",
+    ".bf-data-spotlight",
+    ".bf-data-spotlight-items",
+    ".bf-data-spotlight-item",
+    ".bf-data-spotlight-stat",
+    ".bf-data-spotlight-headline",
+    ".bf-data-spotlight-action",
+    ".bf-divided-section",
+    ".bf-divided-section-layout",
+    ".bf-divided-section-rule",
+    ".bf-divided-section-header",
+    ".bf-divided-section-content",
+    ".bf-divided-section-list",
+    ".bf-divided-section-item",
+    ".bf-basic-section",
+    ".bf-basic-section-layout",
+    ".bf-basic-section-rule",
+    ".bf-basic-section-header",
+    ".bf-basic-section-content",
+    ".bf-cta-section",
+    ".bf-cta-section-layout",
+    ".bf-cta-section-content",
+    ".bf-text-spotlight",
+    ".bf-text-spotlight-layout",
+    ".bf-text-spotlight-rule",
+    ".bf-text-spotlight-header",
+    ".bf-text-spotlight-content",
+    ".bf-text-spotlight-items",
+    ".bf-text-spotlight-item",
+    ".bf-hero",
+    ".bf-hero-layout",
+    ".bf-hero-copy",
+    ".bf-hero-chip",
+    ".bf-hero-media",
+    ".bf-hero-signpost",
+    ".bf-hero-intro",
+    ".bf-quote-wrapper",
+    ".bf-quote-wrapper-header",
+    ".bf-quote-wrapper-layout",
+    ".bf-quote-wrapper-prose",
+    ".bf-quote-wrapper-citation",
+    ".bf-quote-wrapper-signpost",
+    ".bf-quote-wrapper-media",
+    ".bf-quote-wrapper-quote-row",
+    ".bf-in-page-navigation",
+    ".bf-in-page-navigation-nav",
+    ".bf-in-page-navigation-toggle",
+    ".bf-table-of-contents",
+    ".bf-table-of-contents-link",
+    ".bf-top-navigation.is-reduced",
+    ".bf-credential",
+    ".bf-password-reveal",
+    ".bf-credential-validation",
+    ".bf-notification",
+    ".bf-notification-content",
+    ".bf-notification-meta",
+    ".bf-notification-close",
+    ".bf-logo-section",
+    ".bf-logo-section-items",
+    ".bf-logo-section-item",
+    ".bf-logo-section-link",
+    ".bf-logo-section-logo",
+    ".bf-media-object",
+    ".bf-media-object-layout",
+    ".bf-media-object-media",
+    ".bf-media-object-content",
+    ".bf-media-object-meta-list",
+    ".bf-media-object-meta",
+    ".bf-content-card-wrapper",
+    ".bf-content-card",
+    ".bf-content-card-frame",
+    ".bf-content-card-media",
+    ".bf-content-card-image",
+    ".bf-content-card-content",
+    ".bf-content-card-body",
+    ".bf-content-card-title",
+    ".bf-content-card-main-link",
+    ".bf-content-card-description",
+    ".bf-content-card-footer",
+    ".bf-content-card-footer-inner",
+    ".bf-content-card-resource",
+    ".bf-fluid-breakout",
+    ".bf-fluid-breakout-main",
+    ".bf-fluid-breakout-item",
+    ".bf-fluid-breakout-aside",
+    ".bf-fluid-breakout-toolbar",
+    ".bf-fluid-breakout-toolbar-items",
+    ".bf-table.is-sortable",
+    ".bf-table-sort-button",
+    ".bf-table.is-expanding",
+    ".bf-table-expand-toggle",
+    ".bf-table-expanding-row",
+    ".bf-table-expanding-cell",
+    ".bf-table-mobile-card-frame",
+    ".bf-table.is-mobile-card",
+    ".bf-table-card-label"
+  ];
+  const emittedSelectors: string[] = [];
+  ast.walkRules(rule => emittedSelectors.push(rule.selector));
+  for (const fragment of selectorFragments) {
+    assert(emittedSelectors.some(selector => selector.includes(fragment)), `Expected generated CSS to include the renewal contract selector ${fragment}.`);
+  }
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-row) {\n  padding-block: 0;"), "Expected the navigation layout contract to remove row-owned vertical padding.");
+  assert(css.includes("background: var(--bf-color-brand);"), "Expected the tagged navigation brand block to use the Ubuntu-orange semantic token.");
+  assert(css.includes("block-size: var(--bf-top-navigation-logo-tag-block-size);"), "Expected the tagged navigation block to preserve its fixed 38px tag height.");
+  assert(css.includes("padding-block: 0 var(--bf-top-navigation-logo-icon-bottom-offset);"), "Expected the tagged navigation mark to preserve its fixed tag-bottom inset.");
+  assert(css.includes("transform: translateX(var(--bf-top-navigation-logo-icon-optical-offset-inline));"), "Expected the Circle of Friends to compensate for its asymmetric source bounds.");
+  assert(!css.includes("block-size: calc(var(--bf-body-line-height) + (var(--bf-top-navigation-link-padding-block) * 2));"), "Expected tagged navigation not to stretch its tag to the full occupied row.");
+  assert(css.includes("--bf-top-navigation-brand-region: 13rem;"), "Expected generated tier CSS to expose the configurable top-navigation brand-region token.");
+  assert(css.includes("grid-template-columns: minmax(0, var(--bf-top-navigation-brand-region)) minmax(0, 1fr);"), "Expected grid-aligned navigation to consume the generated brand-region token.");
+  assert(css.includes("container-name: bf-article-pagination;") && css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes("inline-size: calc((100cqi - var(--bf-space-2)) / 2);"), "Expected article pagination to retain its named container and persistent equal-half structure.");
+  assert(css.includes("column-gap: var(--bf-space-2);") && css.includes("row-gap: var(--bf-space-half);"), "Expected article pagination to map Vanilla's medium and x-small spacing to BF rhythm tokens.");
+  assert(css.includes("padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination to use semantic medium padding with metric baseline compensation.");
+  assert(!css.includes("padding-block: calc(var(--bf-panel-padding-block) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination not to inherit panel-density padding.");
+  assert(css.includes("@container bf-article-pagination (width < 28.75rem)") && css.includes("inline-size: calc(var(--bf-space-6) + var(--bf-space-1));"), "Expected article pagination to retain Vanilla's compact previous-link threshold and mapped width.");
+  assert(css.includes("@container (width >= 38.75rem)") && css.includes(".bf-data-spotlight.is-three-blocks") && css.includes(".bf-divided-section.is-split-medium"), "Expected static content ports to expose their medium container-query compositions.");
+  assert(css.includes("@container (width >= 64.75rem)") && css.includes(".bf-data-spotlight.is-two-blocks") && css.includes(".bf-divided-section) :where(.bf-divided-section-layout)"), "Expected static content ports to expose their large container-query compositions.");
+  assert(!css.includes("bf-muted-heading"), "Expected the deprecated muted-heading port to remain absent from generated CSS.");
+  assert(css.includes("container-name: bf-basic-section;") && css.includes("@container bf-basic-section (width >= 38.75rem)") && css.includes("@container bf-basic-section (width >= 64.75rem)"), "Expected basic section to establish medium and large container-query breakpoints.");
+  assert(css.includes(".bf-basic-section.is-split-medium) :where(.bf-basic-section-layout)") && css.includes(".bf-basic-section:not(.is-split-medium)) :where(.bf-basic-section-layout)"), "Expected basic section 50/50 layout rules to target the layout descendant at both breakpoints.");
+  assert(css.includes("container-name: bf-cta-section;") && css.includes("padding-block: calc(var(--bf-section-space-deep) / 2);") && css.includes("padding-block: var(--bf-section-space-deep);"), "Expected CTA section to preserve half-deep narrow padding and full-deep wide descendant padding.");
+  assert(css.includes(".bf-cta-section.is-offset) :where(.bf-cta-section-layout)") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);") && css.includes(".bf-cta-section.is-offset) :where(.bf-cta-section-content)"), "Expected CTA section to expose the wide 25/75 offset content rail on descendants.");
+  assert(css.includes("container-name: bf-text-spotlight;") && css.includes(".bf-text-spotlight-layout) {") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected text spotlight to expose its 25/75 descendant layout.");
+  assert(css.includes("container-name: bf-hero;") && css.includes("padding-block-end: calc(var(--bf-section-space) / 2);") && css.includes("padding-block-start: var(--bf-space-2);"), "Expected hero to preserve Vanilla's half/full regular section exit and compact space-2 top boundary.");
+  assert(css.includes("padding-block-end: var(--bf-section-space);") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to use the wide full section exit and space-3 top boundary.");
+  assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
+  assert(css.includes("@container bf-hero (width >= 38.75rem)") && css.includes("@container bf-hero (width >= 64.75rem)") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero to expose medium/large descendant queries and the fallback introduction rail.");
+  assert(css.includes(".bf-hero-chip.bf-chip") && css.includes("column-gap: var(--bf-space-1);"), "Expected hero chip composition to map the Vanilla icon/value gap to the BF chip and space-1 tokens.");
+  assert(css.includes("container-name: bf-quote-wrapper;") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected quote wrapper to preserve the 25/75 signpost/content rail.");
+  assert(css.includes(".bf-quote-wrapper-quote-row)"), "Expected quote wrapper to expose a dedicated quote/citation rail.");
+  assert(css.includes("@container bf-quote-wrapper (width >= 38.75rem)") && css.includes("@container bf-quote-wrapper (width >= 64.75rem)") && css.includes("grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);"), "Expected quote wrapper to retune quote/citation proportions at the large container threshold.");
+  assert(!css.includes(".bf-basic-section.is-asymmetric") && !/\b(?:p|ui)-(?:basic-section|cta-section|text-spotlight)[-_]/.test(css) && !/\b(?:basic-section|cta-section|text-spotlight)(?:__|--)[a-z]/.test(css), "Expected Sites foundation CSS to reject asymmetric, legacy span, and Jinja compatibility APIs.");
+  assert(!css.includes("bf-muted-heading") && !/\b(?:p|ui)-(?:hero|quote-wrapper)[-_]/.test(css) && !/\b(?:hero|quote-wrapper)(?:__|--)[a-z]/.test(css), "Expected hero and quote wrapper CSS to reject muted-heading, Jinja, and legacy span compatibility APIs.");
+  assert(!css.includes(".bf-navigation-reduced"), "Expected reduced navigation to remain a modifier of bf-top-navigation rather than a standalone API.");
+  assert(css.includes(".bf-password-reveal[aria-pressed='true']") && css.includes(".bf-notification[hidden]"), "Expected interactive feedback CSS to expose stateful reveal and dismissal contracts.");
+  assert(css.includes("margin-block: calc(var(--bf-space-1) * -1);") && css.includes("padding-block: var(--bf-space-1);"), "Expected logo section to retain Vanilla's small negative row pull and matching wrapper compensation.");
+  assert(css.includes("margin-block: calc(var(--bf-space-2) * -1);") && css.includes("padding-block: var(--bf-space-2);"), "Expected logo section to retain Vanilla's large negative row pull and matching wrapper compensation.");
+  assert(css.includes("block-size: calc(var(--bf-space-8) + var(--bf-space-1));") && css.includes("block-size: calc(var(--bf-space-12) + var(--bf-space-1));"), "Expected logo section marks to use intrinsic small and large BF slot sizes.");
+  assert(css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes(".bf-media-object-layout"), "Expected media object to keep a persistent side-by-side intrinsic media/content grid.");
+  assert(!css.includes("@container bf-media-object") && !css.includes("container-name: bf-media-object;"), "Expected media object not to introduce a collapsing container-query API.");
+  assert(css.includes("container-name: bf-content-card;") && css.includes(".bf-content-card-wrapper") && css.includes(".bf-content-card-footer-inner"), "Expected content-card to expose its named allocation container, wrapper, and footer rail contracts.");
+  assert(css.includes("@container bf-content-card (width >= 28.75rem)") && css.includes("@container bf-content-card (width >= 60rem)"), "Expected content-card to preserve intrinsic horizontal and feature reflow thresholds.");
+  assert(css.includes("-webkit-line-clamp: 3;") && css.includes("-webkit-line-clamp: 2;"), "Expected content-card to retain the Vanilla title/description clamp contracts.");
+  assert(!css.includes(".bf-content-card.has-image") && !css.includes(".bf-content-card.has-description"), "Expected content-card styling to use only is-* modifiers.");
+  assert(!/\b(?:p|ui)-(?:content-card)[-_]/.test(css) && !/\bcontent-card(?:__|--)[a-z]/.test(css), "Expected content-card CSS to reject legacy Jinja/BEM compatibility APIs.");
+  assert(!/\.(?:bf-logo-block|is-dense|has-misaligned)(?:\b|[-_])/.test(css), "Expected generated CSS to reject deprecated logo-block, dense, and misaligned compatibility APIs.");
+  assert(!/\[data-[^\]]+\]|\.(?:p|ui)-[a-z][a-z0-9_-]*/.test(css), "Expected generated CSS to avoid styled data-* selectors and deprecated p-/ui-* APIs.");
+  assert(css.includes(".bf-table.is-sortable th[aria-sort]") && css.includes(".bf-table-sort-button:focus-visible"), "Expected sortable tables to expose semantic sort-header and keyboard-focus states.");
+  assert(css.includes(".bf-table.is-expanding .bf-table-expand-toggle") && css.includes(".bf-table-expanding-row[hidden]"), "Expected expanding tables to expose controlled toggle and hidden-row states.");
+  assert(css.includes(".bf-table-mobile-card-frame") && css.includes(".bf-table.is-mobile-card") && css.includes(".bf-table-card-label"), "Expected mobile-card tables to expose the responsive frame, table modifier, and generated heading-label contracts.");
+  assert(!/\.bf-table[^{}]*\[data-[^\]]+\]/.test(css), "Expected interactive table CSS to keep data-* attributes as runtime/test hooks rather than styling selectors.");
+  assert(css.includes(".bf-fluid-breakout") && css.includes(".bf-fluid-breakout-main") && css.includes(".bf-fluid-breakout-aside") && css.includes(".bf-fluid-breakout-toolbar"), "Expected fluid breakout to expose bounded centre, logical aside, toolbar, and main layout contracts.");
+  assert(css.includes("--bf-fluid-breakout-aside-width: 14rem;") && css.includes("--bf-fluid-breakout-item-min-width: 13rem;"), "Expected fluid breakout to retain Vanilla's 14rem aside and 13rem auto-fit minimum tokens.");
+  assert(css.includes("@media (width >= 38.75rem)") && css.includes("@media (width >= 64.75rem)"), "Expected fluid breakout to retain the 620px toolbar and 1036px three-track transitions.");
+  assert(css.includes("grid-template-columns:\n      minmax(var(--bf-fluid-breakout-aside-width), 1fr)"), "Expected fluid breakout to expose three logical tracks at the wide transition.");
+  assert(!/\.(?:p|ui)-[a-z][a-z0-9_-]*/.test(css) && !/\b(?:fluid-breakout)(?:__|--)[a-z]/.test(css), "Expected fluid breakout CSS to reject legacy span and BEM compatibility APIs.");
+  assert(indexDts.includes("export { initInteractiveFeedback, initNotificationDismissals, initPasswordReveals }"), "Expected public runtime exports to include the interactive feedback initializers.");
+  assert(indexDts.includes("export { initExpandingTables, initInteractiveTables, initMobileCardTables, initSortableTables }"), "Expected public runtime exports to include the interactive table initializers.");
+  assert(indexDts.includes("export { initInPageNavigations }"), "Expected public runtime exports to include the in-page navigation initializer.");
+  for (const typeName of ["PasswordRevealInitOptions", "NotificationDismissInitOptions", "InteractiveFeedbackInitOptions"]) {
+    assert(indexDts.includes(typeName), `Expected public type exports to include ${typeName}.`);
+  }
+  for (const typeName of ["ExpandingTableInitOptions", "InteractiveTablesInitOptions", "MobileCardTableInitOptions", "SortableTableInitOptions", "TableSortCompare", "TableSortContext", "TableSortDirection"]) {
+    assert(indexDts.includes(typeName), `Expected public type exports to include ${typeName}.`);
+  }
+  assert(indexDts.includes("InPageNavigationInitOptions"), "Expected public type exports to include InPageNavigationInitOptions.");
+  assert(componentDemoJs.includes("initInteractiveTables();"), "Expected component-demo.js to initialize interactive table behavior on fixture pages.");
+
+  const registeredRoutes = new Set(componentPages.map(page => page.route));
+  for (const [pageName, title, atlas] of [
+    ["docs-layout", "Documentation layout", "component"],
+    ["page-shell", "Page shell", "component"],
+    ["article-pagination", "Article pagination", "pattern"],
+    ["notice", "Notice", "component"],
+    ["data-spotlight", "Data spotlight", "pattern"],
+    ["divided-section", "Divided section", "pattern"],
+    ["in-page-navigation", "In-page navigation", "pattern"],
+    ["navigation-reduced", "Reduced navigation", "pattern"],
+    ["table-of-contents", "Table of contents", "pattern"],
+    ["credential-validation", "Password reveal and validation", "pattern"],
+    ["notification", "Notification", "pattern"],
+    ["logo-section", "Logo section", "pattern"],
+    ["linked-logo-section", "Linked logo section", "pattern"],
+    ["media-object", "Media object", "pattern"],
+    ["content-card", "Content card", "pattern"],
+    ["table-sortable", "Sortable table", "pattern"],
+    ["table-expanding", "Expanding table", "pattern"],
+    ["table-mobile-card", "Mobile card table", "pattern"],
+    ["basic-section", "Basic section", "pattern"],
+    ["cta-section", "CTA section", "pattern"],
+    ["text-spotlight", "Text spotlight", "pattern"],
+    ["hero", "Hero", "pattern"],
+    ["quote-wrapper", "Quote wrapper", "pattern"],
+    ["rich-list-horizontal", "Rich horizontal list", "pattern"],
+    ["rich-list-vertical", "Rich vertical list", "pattern"],
+    ["fluid-breakout", "Fluid breakout layout", "pattern"],
+    ["tab-section", "Tab section", "pattern"],
+    ["sticky-footer", "Sticky footer layout", "pattern"],
+    ["equal-heights", "Equal-heights composition", "pattern"],
+    ["empty-state", "Empty state recipes", "pattern"]
+  ] as const) {
+    const route = `/demo/components/${pageName}.html`;
+    assert(registeredRoutes.has(route), `Expected the component QA catalog to register ${route}.`);
+    assert(pageCatalogJs.includes(`{ title: "${title}", href: "${route}" }`), `Expected the page catalog to register ${title}.`);
+    if (atlas === "pattern") {
+      assert(patternAtlasHtml.includes(`href="../components/${pageName}.html"`), `Expected the pattern atlas to link ${pageName}.html.`);
+      assert(!componentAtlasHtml.includes(`href="./${pageName}.html"`), `Expected the component atlas not to duplicate pattern ${pageName}.html.`);
+    } else {
+      assert(componentAtlasHtml.includes(`href="./${pageName}.html"`), `Expected the component atlas to link ${pageName}.html.`);
+    }
+  }
+
+  const articlePaginationHtml = pages["article-pagination"] ?? "";
+  assert(articlePaginationHtml.includes('rel="prev"') && articlePaginationHtml.includes('rel="next"'), "Expected article pagination to expose prev/next relationship semantics.");
+  assert(articlePaginationHtml.includes('dir="rtl"') && articlePaginationHtml.includes("article-pagination-demo-narrow"), "Expected article pagination to cover RTL and narrow-container specimens.");
+  assert(articlePaginationHtml.includes("bf-article-pagination-direction") && articlePaginationHtml.includes("bf-icon is-chevron-left") && articlePaginationHtml.includes("bf-icon is-chevron-right"), "Expected article pagination to use accessible-markup decorative BF icons instead of generated text glyphs.");
+  assert(articlePaginationHtml.includes("data-overflow-check"), "Expected article pagination to participate in overflow QA.");
+
+  const docsLayoutHtml = pages["docs-layout"] ?? "";
+  assert(docsLayoutHtml.includes("bf-docs-layout-navigation") && docsLayoutHtml.includes("bf-docs-layout-content"), "Expected docs layout to expose navigation and content slots.");
+  assert(docsLayoutHtml.includes("data-overflow-check"), "Expected docs layout to participate in overflow QA.");
+
+  const pageShellHtml = pages["page-shell"] ?? "";
+  assert(pageShellHtml.includes('<body class="bf-theme bf-page-shell'), "Expected page shell demo to opt into the scoped body reset.");
+  assert(pageShellHtml.includes('class="bf-top-navigation is-grid-aligned"'), "Expected page shell to compose the grid-aligned top navigation.");
+  assert(!pageShellHtml.includes("component-shell.css"), "Expected page shell to prove BF's scoped reset without the component-shell reset.");
+
+  const noticeHtml = pages.notice ?? "";
+  assert(noticeHtml.includes("bf-notice is-information") && noticeHtml.includes("bf-notice is-negative"), "Expected notice demo to cover semantic variants.");
+  assert(!noticeHtml.includes('role="alert"'), "Expected static notice specimens not to announce themselves as live alerts.");
+
+  const aspectHtml = pages.aspect ?? "";
+  assert(aspectHtml.includes('class="bf-aspect is-4-3"') && aspectHtml.includes('class="bf-aspect is-4-3 is-contain"'), "Expected aspect demo to prove orthogonal 4:3 and contain modifiers.");
+  assert(aspectHtml.match(/src="\.\.\/assets\/aspect-wide\.svg"/g)?.length === 2, "Expected cover and contain specimens to use the same media asset.");
+
+  const tieredListHtml = pages["tiered-list"] ?? "";
+  assert(tieredListHtml.includes("bf-tiered-list is-flush") && tieredListHtml.includes("bf-tiered-list is-triple"), "Expected tiered-list demo to cover flush and triple layouts.");
+  assert(tieredListHtml.includes("bf-tiered-list-item-role"), "Expected tiered-list demo to cover the role slot.");
+  assert((tieredListHtml.match(/<hr class="bf-rule is-muted" data-baseline-check="flow">/g) ?? []).length >= 4, "Expected compact tiered-list demo rows to render and baseline-check their direct-child divider contract.");
+  assert(css.includes(".bf-tiered-list:not(.is-list-full-width):not(.is-flush):not(.is-triple)"), "Expected hanging-indent tiered-list geometry to exclude the independent flush and triple variants.");
+
+  const searchAndFilterHtml = pages["search-and-filter"] ?? "";
+  assert(searchAndFilterHtml.includes('class="bf-control-row"') && searchAndFilterHtml.includes("data-overflow-check"), "Expected the search/filter demo to cover the overflow-safe control row.");
+
+  const dataSpotlightHtml = pages["data-spotlight"] ?? "";
+  assert(dataSpotlightHtml.includes("data-component-capture") && dataSpotlightHtml.includes("data-baseline-check") && dataSpotlightHtml.includes("data-overflow-check"), "Expected data spotlight to expose capture, baseline, and overflow fixture markers.");
+  assert(dataSpotlightHtml.includes("bf-data-spotlight is-two-blocks") && dataSpotlightHtml.includes("bf-data-spotlight is-three-blocks") && dataSpotlightHtml.includes("bf-data-spotlight is-four-blocks"), "Expected data spotlight to cover all three block-count modifiers.");
+  assert(!dataSpotlightHtml.includes("muted-heading"), "Expected data spotlight not to introduce the deprecated muted-heading port.");
+
+  const dividedSectionHtml = pages["divided-section"] ?? "";
+  assert(dividedSectionHtml.includes("data-component-capture") && dividedSectionHtml.includes("data-baseline-check") && dividedSectionHtml.includes("data-overflow-check"), "Expected divided section to expose capture, baseline, and overflow fixture markers.");
+  assert(dividedSectionHtml.includes("bf-divided-section-layout") && dividedSectionHtml.includes("bf-divided-section-rule") && dividedSectionHtml.includes("bf-divided-section-list"), "Expected divided section to cover its layout, rule, and list slots.");
+  assert(!dividedSectionHtml.includes("muted-heading"), "Expected divided section not to introduce the deprecated muted-heading port.");
+
+  for (const [pageName, requiredClass] of [
+    ["basic-section", "bf-basic-section"],
+    ["cta-section", "bf-cta-section"],
+    ["text-spotlight", "bf-text-spotlight"]
+  ] as const) {
+    const pageHtml = pages[pageName] ?? "";
+    assert(pageHtml.includes("data-component-capture") && pageHtml.includes("data-baseline-check") && pageHtml.includes("data-overflow-check"), `Expected ${pageName} to expose capture, baseline, and overflow fixture markers.`);
+    assert(pageHtml.includes(`class="${requiredClass}`), `Expected ${pageName} to exercise ${requiredClass}.`);
+    assert(!pageHtml.includes("is-asymmetric") && !/\b(?:p|ui)-(?:basic-section|cta-section|text-spotlight)[-_]/.test(pageHtml) && !/\b(?:basic-section|cta-section|text-spotlight)(?:__|--)[a-z]/.test(pageHtml), `Expected ${pageName} markup to avoid legacy span and Jinja compatibility APIs.`);
+  }
+  const basicSectionHtml = pages["basic-section"] ?? "";
+  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes("bf-eyebrow"), "Expected basic section to cover its layout, medium split, and BF eyebrow title slots.");
+  const ctaSectionHtml = pages["cta-section"] ?? "";
+  assert(ctaSectionHtml.includes("bf-cta-section-layout") && ctaSectionHtml.includes("bf-cta-section-content") && ctaSectionHtml.includes("is-offset"), "Expected CTA section to cover full and offset descendant content slots.");
+  const textSpotlightHtml = pages["text-spotlight"] ?? "";
+  assert(textSpotlightHtml.includes("bf-text-spotlight-layout") && textSpotlightHtml.includes("bf-text-spotlight-items") && textSpotlightHtml.includes("class=\"bf-eyebrow\""), "Expected text spotlight to cover its 25/75 title rail, item list, and BF eyebrow title.");
+
+  const heroHtml = pages.hero ?? "";
+  assert(heroHtml.includes("data-component-capture") && heroHtml.includes("data-baseline-check") && heroHtml.includes("data-overflow-check"), "Expected hero to expose capture, baseline, and overflow fixture markers.");
+  assert(heroHtml.includes("bf-hero-layout") && heroHtml.includes("bf-hero-copy") && heroHtml.includes("bf-hero-media") && heroHtml.includes("bf-hero-chip"), "Expected hero to cover copy, media, chip, and layout slots.");
+  assert(heroHtml.includes("is-25-75") && heroHtml.includes("is-75-25") && heroHtml.includes("is-fallback") && heroHtml.includes("is-split-medium"), "Expected hero to cover 50/50, 25/75, 75/25, and fallback compositions.");
+  assert(heroHtml.includes('dir="rtl"') && heroHtml.includes("long copy") && heroHtml.includes("<figure") && heroHtml.includes("bf-eyebrow") === false, "Expected hero to cover RTL, long-copy, and image fixtures without introducing the deprecated muted-heading API.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(heroHtml) && !/\b(?:hero)(?:__|--)[a-z]/.test(heroHtml), "Expected hero markup to avoid Jinja and legacy span APIs.");
+
+  const quoteWrapperHtml = pages["quote-wrapper"] ?? "";
+  assert(quoteWrapperHtml.includes("data-component-capture") && quoteWrapperHtml.includes("data-baseline-check") && quoteWrapperHtml.includes("data-overflow-check"), "Expected quote wrapper to expose capture, baseline, and overflow fixture markers.");
+  assert(quoteWrapperHtml.includes("bf-quote-wrapper-layout") && quoteWrapperHtml.includes("bf-quote-wrapper-quote-row") && quoteWrapperHtml.includes("bf-quote-wrapper-citation") && quoteWrapperHtml.includes("bf-quote-wrapper-signpost") && quoteWrapperHtml.includes("bf-quote-wrapper-media"), "Expected quote wrapper to cover its 25/75, quote, citation, signpost, and image slots.");
+  assert(quoteWrapperHtml.includes("bf-prose") && quoteWrapperHtml.includes("<blockquote") && quoteWrapperHtml.includes("class=\"bf-eyebrow\""), "Expected quote wrapper to use a real BF prose blockquote and BF eyebrow heading slots.");
+  assert(quoteWrapperHtml.includes('dir="rtl"') && quoteWrapperHtml.includes("long") && quoteWrapperHtml.includes("citation"), "Expected quote wrapper to cover RTL, long-copy, and citation fixtures.");
+  assert(!quoteWrapperHtml.includes("muted-heading") && !/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(quoteWrapperHtml) && !/\b(?:quote-wrapper)(?:__|--)[a-z]/.test(quoteWrapperHtml), "Expected quote wrapper markup to reject muted-heading, Jinja, and legacy span APIs.");
+
+  const richHorizontalHtml = pages["rich-list-horizontal"] ?? "";
+  assert(richHorizontalHtml.includes("data-component-capture") && richHorizontalHtml.includes("data-baseline-check") && richHorizontalHtml.includes("data-overflow-check"), "Expected rich horizontal list to expose capture, baseline, and overflow fixture markers.");
+  assert(richHorizontalHtml.includes("bf-rich-list is-horizontal") && richHorizontalHtml.includes("bf-rich-list is-horizontal is-50-50") && richHorizontalHtml.includes("bf-rich-list-visual") && richHorizontalHtml.includes("bf-rich-list-support"), "Expected rich horizontal list to cover full and 50/50 media/support compositions.");
+  assert(richHorizontalHtml.includes("bf-rich-list-list") && richHorizontalHtml.includes("is-ticked") && richHorizontalHtml.includes("is-bulleted") && richHorizontalHtml.includes("<ol") && richHorizontalHtml.includes("bf-rich-list-cta"), "Expected rich horizontal list to cover tick, bullet, ordered, ruled and CTA slots.");
+  assert(css.includes("@container bf-rich-horizontal-items (width >= 66ch)") && css.includes("@container bf-rich-horizontal-items (width >= 100ch)"), "Expected rich horizontal list CSS to retain the 66ch and 100ch item-grid thresholds.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(richHorizontalHtml) && !richHorizontalHtml.includes("muted-heading") && !/\brich-list(?:__|--)[a-z]/.test(richHorizontalHtml), "Expected rich horizontal list markup to reject legacy span, deprecated, and Jinja/BEM APIs.");
+
+  const richVerticalHtml = pages["rich-list-vertical"] ?? "";
+  assert(richVerticalHtml.includes("data-component-capture") && richVerticalHtml.includes("data-baseline-check") && richVerticalHtml.includes("data-overflow-check"), "Expected rich vertical list to expose capture, baseline, and overflow fixture markers.");
+  assert(richVerticalHtml.includes("bf-rich-list is-vertical") && richVerticalHtml.includes("is-flipped") && richVerticalHtml.includes("is-narrow-3-2") && richVerticalHtml.includes("is-wide-2-3") && richVerticalHtml.includes("is-narrow-square") && richVerticalHtml.includes("is-wide-square"), "Expected rich vertical list to cover vertical, flipped, landscape, portrait, and square media ratios.");
+  assert(richVerticalHtml.includes("is-contain") && richVerticalHtml.includes("is-video") && richVerticalHtml.includes("is-auto-height") && richVerticalHtml.includes("long copy"), "Expected rich vertical list to cover contain, video, auto-height, and long-copy pressure states.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(richVerticalHtml) && !richVerticalHtml.includes("muted-heading") && !/\brich-list(?:__|--)[a-z]/.test(richVerticalHtml), "Expected rich vertical list markup to reject legacy span, deprecated, and Jinja/BEM APIs.");
+
+  const fluidBreakoutHtml = pages["fluid-breakout"] ?? "";
+  assert(fluidBreakoutHtml.includes("data-component-capture") && fluidBreakoutHtml.includes("data-baseline-check") && fluidBreakoutHtml.includes("data-overflow-check"), "Expected fluid breakout to expose capture, baseline, and overflow fixture markers.");
+  assert(fluidBreakoutHtml.includes("bf-fluid-breakout-main is-full-width") && fluidBreakoutHtml.includes("bf-fluid-breakout-main is-no-aside") && fluidBreakoutHtml.includes("bf-fluid-breakout-toolbar") && fluidBreakoutHtml.includes("is-scrollable"), "Expected fluid breakout to cover full-width, no-aside, toolbar, and locally scrollable content states.");
+  assert((fluidBreakoutHtml.match(/bf-fluid-breakout-aside/g) ?? []).length >= 3 && fluidBreakoutHtml.includes('dir="rtl"'), "Expected fluid breakout to cover start/end logical asides and RTL source-order mirroring.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(fluidBreakoutHtml) && !/\bfluid-breakout(?:__|--)[a-z]/.test(fluidBreakoutHtml), "Expected fluid breakout markup to reject legacy span and BEM compatibility APIs.");
+
+  const tabSectionHtml = pages["tab-section"] ?? "";
+  assert(tabSectionHtml.includes("data-component-capture") && tabSectionHtml.includes("data-baseline-check") && tabSectionHtml.includes("data-overflow-check"), "Expected tab section to expose capture, baseline, and overflow fixture markers.");
+  assert(tabSectionHtml.includes("bf-tab-section") && tabSectionHtml.includes("is-50-50") && tabSectionHtml.includes("is-25-75") && tabSectionHtml.includes("is-shallow") && tabSectionHtml.includes("is-deep"), "Expected tab section to cover full, 50/50, 25/75, shallow, and deep compositions.");
+  assert((tabSectionHtml.match(/bf-tab-section-rule/g) ?? []).length === 2, "Expected tab section to cover the optional rule omission state.");
+  assert(tabSectionHtml.includes('role="tablist"') && tabSectionHtml.includes('role="tab"') && tabSectionHtml.includes('aria-selected="true"') && tabSectionHtml.includes('aria-hidden="false"') && tabSectionHtml.includes("bf-quote-wrapper") && tabSectionHtml.includes("bf-divided-section") && tabSectionHtml.includes("bf-basic-section") && tabSectionHtml.includes("bf-logo-section"), "Expected tab section to compose accessible tabs with BF-owned nested quote, divided, basic and logo content.");
+  assert(tabSectionHtml.includes('dir="rtl"') && !/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(tabSectionHtml) && !tabSectionHtml.includes("muted-heading") && !/\btab-section(?:__|--)[a-z]/.test(tabSectionHtml), "Expected tab section markup to cover RTL and reject deprecated, Jinja, and BEM APIs.");
+
+  for (const [pageName, requiredClass] of [
+    ["in-page-navigation", "bf-in-page-navigation"],
+    ["navigation-reduced", "bf-top-navigation is-reduced"],
+    ["table-of-contents", "bf-table-of-contents"]
+  ] as const) {
+    const pageHtml = pages[pageName] ?? "";
+    assert(pageHtml.includes("data-component-capture"), `Expected ${pageName} to expose a component capture marker.`);
+    assert(pageHtml.includes("data-baseline-check"), `Expected ${pageName} to expose baseline-check fixture markers.`);
+    assert(pageHtml.includes("data-overflow-check") || pageHtml.includes("data-overflow-container"), `Expected ${pageName} to expose an overflow fixture marker.`);
+    assert(pageHtml.includes(`class="${requiredClass}"`), `Expected ${pageName} to exercise ${requiredClass}.`);
+  }
+  assert(!((pages["navigation-reduced"] ?? "").includes("bf-navigation-reduced")), "Expected navigation-reduced.html not to invent a standalone reduced-navigation class.");
+  assert(!pageCatalogJs.includes("muted-heading") && !componentAtlasHtml.includes("muted-heading"), "Expected route and atlas catalogs to omit the deprecated muted-heading port.");
+
+  const credentialValidationHtml = pages["credential-validation"] ?? "";
+  assert(credentialValidationHtml.includes("data-component-capture") && credentialValidationHtml.includes("data-baseline-check") && credentialValidationHtml.includes("data-overflow-container"), "Expected credential validation to expose capture, baseline, and overflow fixture markers.");
+  assert(credentialValidationHtml.includes("bf-password-reveal") && credentialValidationHtml.includes("bf-credential-validation") && credentialValidationHtml.includes("aria-controls"), "Expected credential validation to cover reveal and repeated-validation contracts.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(credentialValidationHtml), "Expected credential validation markup to avoid deprecated p-/ui-* APIs.");
+
+  const notificationHtml = pages.notification ?? "";
+  assert(notificationHtml.includes("data-component-capture") && notificationHtml.includes("data-baseline-check") && notificationHtml.includes("data-overflow-container"), "Expected notification to expose capture, baseline, and overflow fixture markers.");
+  assert(notificationHtml.includes("bf-notification is-information") && notificationHtml.includes("bf-notification is-positive") && notificationHtml.includes("bf-notification is-caution") && notificationHtml.includes("bf-notification is-negative"), "Expected notification to cover all severity variants.");
+  assert(notificationHtml.includes("bf-notification-meta") && notificationHtml.includes("bf-notification-actions") && notificationHtml.includes("bf-notification-close"), "Expected notification to cover metadata, actions, and dismissal contracts.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(notificationHtml), "Expected notification markup to avoid deprecated p-/ui-* APIs.");
+
+  const logoSectionHtml = pages["logo-section"] ?? "";
+  assert(logoSectionHtml.includes("data-component-capture") && logoSectionHtml.includes("data-baseline-check") && logoSectionHtml.includes("data-overflow-check"), "Expected logo section to expose capture, baseline, and overflow fixture markers.");
+  assert(logoSectionHtml.includes("bf-logo-section-items") && logoSectionHtml.includes("bf-logo-section-item bf-logo-section-link") && logoSectionHtml.includes("bf-logo-section-logo") && logoSectionHtml.includes("bf-logo-section is-contained"), "Expected logo section to cover intrinsic links, marks, and contained-ratio fixtures.");
+  assert(!/<[^>]+class="[^"]*(?:logo-block|\bis-dense\b|\bhas-misaligned\b)/.test(logoSectionHtml), "Expected logo section markup to reject deprecated logo-block, dense, and misaligned compatibility APIs.");
+
+  const mediaObjectHtml = pages["media-object"] ?? "";
+  assert(mediaObjectHtml.includes("data-component-capture") && mediaObjectHtml.includes("data-baseline-check") && mediaObjectHtml.includes("data-overflow-check"), "Expected media object to expose capture, baseline, and overflow fixture markers.");
+  assert(mediaObjectHtml.includes("bf-media-object-layout") && mediaObjectHtml.includes("bf-media-object-media") && mediaObjectHtml.includes("bf-media-object-content") && mediaObjectHtml.includes("bf-media-object-meta-list"), "Expected media object to cover persistent grid, media, content, and metadata slots.");
+  assert(mediaObjectHtml.includes("bf-media-object is-media-end") && mediaObjectHtml.includes("bf-media-object is-large"), "Expected media object to cover directional and large intrinsic-size fixtures.");
+
+  const contentCardHtml = pages["content-card"] ?? "";
+  assert(contentCardHtml.includes("data-component-capture") && contentCardHtml.includes("data-baseline-check") && contentCardHtml.includes("data-overflow-check"), "Expected content-card to expose capture, baseline, and overflow fixture markers.");
+  assert(contentCardHtml.includes("bf-content-card-wrapper is-cols-2") && contentCardHtml.includes("bf-content-card-wrapper is-cols-4") && contentCardHtml.includes("bf-content-card-wrapper is-cols-6") && contentCardHtml.includes("bf-content-card-wrapper is-cols-8"), "Expected content-card to cover 2/4/6/8 allocated wrapper spans.");
+  assert(contentCardHtml.includes("bf-content-card is-cols-2 is-image is-description-reveal") && contentCardHtml.includes("bf-content-card is-cols-4 is-image is-description-reveal") && contentCardHtml.includes("bf-content-card is-cols-4 is-image is-image-top") && contentCardHtml.includes("bf-content-card is-cols-8 is-image is-description-reveal"), "Expected content-card to cover image, description-reveal, image-top, and feature variants.");
+  assert(contentCardHtml.includes("bf-content-card-main-link") && contentCardHtml.includes("bf-content-card-author-date") && contentCardHtml.includes("bf-content-card-footer-inner") && contentCardHtml.includes("dir=\"rtl\""), "Expected content-card to cover primary actions, author metadata, footer rails, and RTL pressure.");
+  assert(!/class="[^"]*\bhas-(?:image|description)[^"]*/.test(contentCardHtml) && !/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(contentCardHtml) && !/\bcontent-card(?:__|--)[a-z]/.test(contentCardHtml), "Expected content-card markup to reject has-* modifiers and legacy Jinja/BEM APIs.");
+
+  const linkedLogoSectionHtml = pages["linked-logo-section"] ?? "";
+  assert(linkedLogoSectionHtml.includes("data-component-capture") && linkedLogoSectionHtml.includes("data-baseline-check") && linkedLogoSectionHtml.includes("data-overflow-container"), "Expected linked-logo section to expose capture, baseline, and overflow fixture markers.");
+  assert(linkedLogoSectionHtml.includes("bf-linked-logo-section is-full") && linkedLogoSectionHtml.includes("bf-linked-logo-section is-50-50") && linkedLogoSectionHtml.includes("bf-linked-logo-section is-25-75"), "Expected linked-logo section to cover full, 50/50, and 25/75 Sites rails.");
+  assert((linkedLogoSectionHtml.match(/bf-linked-logo-section-card/g) ?? []).length >= 12 && linkedLogoSectionHtml.includes("bf-linked-logo-section-mark") && linkedLogoSectionHtml.includes("viewBox=\"0 0 160 90\""), "Expected linked-logo section to cover linked cards, 16:9 mark fixtures, and accessible destination copy.");
+  assert(!/class="[^\"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(linkedLogoSectionHtml) && !linkedLogoSectionHtml.includes("logo-block"), "Expected linked-logo section markup to avoid legacy Jinja span and logo-block APIs.");
+
+  const stickyFooterHtml = pages["sticky-footer"] ?? "";
+  assert(stickyFooterHtml.includes("data-component-capture") && stickyFooterHtml.includes("data-baseline-check") && stickyFooterHtml.includes("data-overflow-container"), "Expected sticky-footer to expose capture, baseline, and overflow fixture markers.");
+  assert((stickyFooterHtml.match(/bf-page-shell is-site-layout/g) ?? []).length === 2 && (stickyFooterHtml.match(/bf-site-footer is-sticky/g) ?? []).length === 2, "Expected sticky-footer to cover both short and long opt-in site shells.");
+  assert(stickyFooterHtml.includes("short sticky site shell") && stickyFooterHtml.includes("long sticky site shell"), "Expected sticky-footer to distinguish short-content and long-content placement fixtures.");
+  assert(!/class="[^\"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(stickyFooterHtml), "Expected sticky-footer markup to avoid legacy span APIs.");
+
+  const equalHeightsHtml = pages["equal-heights"] ?? "";
+  assert(equalHeightsHtml.includes("data-component-capture") && equalHeightsHtml.includes("data-baseline-check") && equalHeightsHtml.includes("data-overflow-container"), "Expected equal-heights to expose capture, baseline, and overflow fixture markers.");
+  assert((equalHeightsHtml.match(/bf-equal-height-row/g) ?? []).length >= 3 && equalHeightsHtml.includes("bf-equal-height-row is-wrap") && equalHeightsHtml.includes("is-columns-3") && equalHeightsHtml.includes("is-columns-2"), "Expected equal-heights to compose the existing equal-height row with wrap, three-column, and two-column recipes.");
+  assert(!equalHeightsHtml.includes("bf-equal-heights") && !equalHeightsHtml.includes("equal-heights__") && !equalHeightsHtml.includes("equal-heights--"), "Expected equal-heights to avoid inventing a duplicate component selector family.");
+
+  const emptyStateHtml = pages["empty-state"] ?? "";
+  assert(emptyStateHtml.includes("data-component-capture") && emptyStateHtml.includes("data-baseline-check") && emptyStateHtml.includes("data-overflow-container"), "Expected empty-state recipes to expose capture, baseline, and overflow fixture markers.");
+  assert((emptyStateHtml.match(/data-baseline-label="(?:no content empty state|user triggered empty state|error empty state)"/g) ?? []).length === 3, "Expected empty-state to cover no-content, user-triggered, and error recipes.");
+  assert(!emptyStateHtml.includes("bf-empty-state"), "Expected empty-state recipes to remain pure composition without a dedicated bf-empty-state selector.");
+  assert(emptyStateHtml.includes("bf-search-box") && emptyStateHtml.includes('type="search"') && emptyStateHtml.includes("bf-button") && emptyStateHtml.includes('role="alert"') && emptyStateHtml.includes("bf-notice is-negative"), "Expected empty-state recipes to use real search, action, and negative-notice primitives.");
+
+  const sortableTableHtml = pages["table-sortable"] ?? "";
+  assert(sortableTableHtml.includes("data-component-capture") && sortableTableHtml.includes("data-baseline-check") && sortableTableHtml.includes("data-overflow-check"), "Expected sortable table to expose capture, baseline, and overflow fixture markers.");
+  assert(sortableTableHtml.includes("bf-table is-sortable") && sortableTableHtml.includes("bf-table-sort-button") && sortableTableHtml.includes("aria-sort") && sortableTableHtml.includes('dir="rtl"'), "Expected sortable table to cover semantic sort controls and RTL pressure fixtures.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(sortableTableHtml), "Expected sortable table markup to avoid deprecated p-/ui-* APIs.");
+
+  const expandingTableHtml = pages["table-expanding"] ?? "";
+  assert(expandingTableHtml.includes("data-component-capture") && expandingTableHtml.includes("data-baseline-check") && expandingTableHtml.includes("data-overflow-check"), "Expected expanding table to expose capture, baseline, and overflow fixture markers.");
+  assert(expandingTableHtml.includes("bf-table is-expanding") && expandingTableHtml.includes("bf-table-expand-toggle") && expandingTableHtml.includes("aria-controls") && expandingTableHtml.includes("bf-table-expanding-row"), "Expected expanding table to cover controlled toggles and detail rows.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(expandingTableHtml), "Expected expanding table markup to avoid deprecated p-/ui-* APIs.");
+
+  const mobileCardTableHtml = pages["table-mobile-card"] ?? "";
+  assert(mobileCardTableHtml.includes("data-component-capture") && mobileCardTableHtml.includes("data-baseline-check") && mobileCardTableHtml.includes("data-overflow-container") && mobileCardTableHtml.includes("data-overflow-check"), "Expected mobile-card table to expose capture, baseline, and overflow fixture markers.");
+  assert(mobileCardTableHtml.includes("bf-table-mobile-card-frame") && mobileCardTableHtml.includes("bf-table is-mobile-card") && mobileCardTableHtml.includes('dir="rtl"'), "Expected mobile-card table to cover responsive frames, the table modifier, and RTL pressure fixtures.");
+  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(mobileCardTableHtml), "Expected mobile-card table markup to avoid deprecated p-/ui-* APIs.");
 }
 
 function assertSelectorUsesBodyTypography(css: string, selector: string, label: string): void {
@@ -191,8 +724,8 @@ async function validateComponentPageTierConsistency(componentDemoJs: string): Pr
   assert(componentDemoJs.includes('const TIER_OPTIONS = ['), "Expected component-demo.js to expose the shared built-in tier list.");
   assert(componentDemoJs.includes('{ value: "os", label: "OS" }'), "Expected component-demo.js to expose OS as a first-class built-in tier option.");
   assert(!componentDemoJs.includes('{ value: "panel", label: "Panel" }'), "Expected component-demo.js to avoid exposing panel as a global tier option.");
-  assert(componentDemoJs.includes('function cacheBust(url) {'), "Expected component-demo.js to define a cache-busting helper for tier stylesheet reloads.");
-  assert(componentDemoJs.includes('return cacheBust("/dist/tiers/editorial/styles.css");'), "Expected component-demo.js to cache-bust the shared tier stylesheet so rebuilt tier tokens refresh in long-lived demo sessions.");
+  assert(!componentDemoJs.includes("cacheBust"), "Expected class-switched tier changes not to trigger an unnecessary stylesheet reload.");
+  assert(componentDemoJs.includes('document.body.classList.add(`bf-tier-${tierName}`)'), "Expected standard component pages to switch tiers through the shared bundle's body classes.");
   assert(componentDemoJs.includes('tierAriaLabel: "Tier"'), "Expected standard component pages to label the shared header select as a tier control.");
   assert(componentDemoJs.includes('tierAriaLabel: "Font surface"'), "Expected locked-manifest experiments to label their page-specific selector explicitly as a font-surface control.");
 
@@ -279,10 +812,8 @@ function validateCommonCss(css: string): void {
   // legacy ones should prefer the AST helpers (assertRuleHasDecl, etc.) over
   // brittle multi-line substring checks. See scripts/css-ast-helpers.ts.
   const ast = parseCss(css);
-  assert(css.includes("@font-face"), "Expected generated CSS to include runtime font-face rules.");
-  assert(css.includes("font-family: \"Ubuntu Sans\";"), "Expected generated CSS to register the Ubuntu Sans family.");
-  assert(css.includes("UbuntuSans[wdth,wght].ttf"), "Expected generated CSS to point to the Ubuntu Sans variable font.");
-  assert(/font-weight:\s*100\s+\d+;/.test(css), "Expected generated CSS to expose a variable-weight Ubuntu Sans range.");
+  assert(!css.includes("@font-face"), "Expected built-in CSS to leave runtime font URLs to the consumer-owned font declaration.");
+  assert(!css.includes("UbuntuSans[wdth,wght].ttf"), "Expected built-in CSS to avoid a runtime URL to the unbundled development font.");
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px threshold for the 16-column grid.");
   assert(css.includes("@media (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px viewport breakpoint for gutters and outer margins.");
@@ -323,6 +854,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--vf-color-button-negative-default: #c7162b;"), "Expected generated CSS to define the Vanilla light negative button token.");
   assert(css.includes("--vf-color-button-negative-hover: #b01326;"), "Expected generated CSS to define the Vanilla light negative button hover token.");
   assert(css.includes("--vf-color-accent: #0f95a1;"), "Expected generated CSS to define the Vanilla light accent token.");
+  assert(css.includes("--vf-color-brand: #e95420;"), "Expected generated CSS to define the Ubuntu brand-orange token.");
   assert(css.includes(":where(.bf-theme.is-dark)"), "Expected generated CSS to include a core dark-tone override.");
   assert(css.includes("--vf-color-background-default: #262626;"), "Expected generated CSS to define the Vanilla dark background token.");
   assert(css.includes("--vf-color-background-alt: #202020;"), "Expected generated CSS to define the Vanilla dark alt background token.");
@@ -341,6 +873,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-font-size-small: var(--bf-body-font-size,"), "Expected generated CSS to expose a public small-font alias from the active body role.");
   assert(css.includes("--bf-color-rule: var(--vf-color-border-low-contrast, rgba(0, 0, 0, 0.1));"), "Expected generated CSS to map Foundry separators to Vanilla's low-contrast border token.");
   assert(css.includes("--bf-color-accent: var(--vf-color-accent, #0f95a1);"), "Expected generated CSS to expose Foundry accent from Vanilla's semantic accent token.");
+  assert(css.includes("--bf-color-brand: var(--vf-color-brand, #e95420);"), "Expected generated CSS to expose the Foundry brand token from Ubuntu orange.");
   assert(!css.includes("--bf-color-accent: var(--bf-color-link);"), "Expected generated CSS to avoid collapsing the accent token back onto the link token.");
   assert(css.includes(":where(.bf-theme) :where(a:visited) {\n  color: var(--bf-color-link-visited);"), "Expected generated CSS to style visited links through the semantic theme token.");
   assert(css.includes(":where(.bf-theme) :where(a:focus-visible) {\n  outline: 2px solid var(--bf-color-focus);"), "Expected generated CSS to style raw link focus with the semantic focus token.");
@@ -350,13 +883,11 @@ function validateCommonCss(css: string): void {
   assert(css.includes(`:where(.bf-theme).u-baseline-grid,\n:where(.bf-theme) .u-baseline-grid {\n  --bf-baseline-grid-color: ${BASELINE_GRID_LIGHT_THEME_COLOR};`), "Expected light themes to provide a subtle baseline-grid line color, even when the grid class is on the theme root.");
 
   if (css.includes(":where(.bf-theme.bf-tier-app) {")) {
-    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-section),\n:where(.bf-theme.bf-tier-app) :where(.bf-section.is-shallow),\n:where(.bf-theme.bf-tier-app) :where(.bf-section.is-deep) {\n  margin-block-end: 0;"), "Expected shared built-in stylesheets to include the app-tier section margin reset.");
-    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stage-shell > *) {\n  margin-bottom: 0;\n  min-inline-size: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier stage-shell child reset.");
-    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack) > * {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier stack child reset.");
-    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-cluster) > * {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier cluster child reset.");
-    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-prose > *) {\n  margin-bottom: 0;\n  padding-block: 0;"), "Expected shared built-in stylesheets to include the app-tier prose child reset.");
-    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-space-2);"), "Expected app-tier stylesheets to keep stack-owned vertical gap as the application default.");
-    assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected app-tier stylesheets to keep the application section stack gap override.");
+    assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-section),"), "Expected app tier to retain explicit bf-section boundaries.");
+    assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack) > *"), "Expected app stacks not to erase child rhythm.");
+    assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-cluster) > *"), "Expected app clusters not to erase child rhythm.");
+    assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-prose > *)"), "Expected app prose not to erase child rhythm.");
+    assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack.is-section)"), "Expected app stacks not to impersonate bf-section boundaries.");
   }
   assert(css.includes(`:where(.bf-theme.is-dark).u-baseline-grid,\n:where(.bf-theme.is-dark) .u-baseline-grid {\n  --bf-baseline-grid-color: ${BASELINE_GRID_DARK_THEME_COLOR};`), "Expected dark themes to provide a subtle baseline-grid line color, even when the grid class is on the theme root.");
   assert(css.includes(":where(.bf-theme) :where(img, picture, svg, video) {\n  block-size: auto;\n  display: block;\n  inline-size: auto;\n  max-inline-size: 100%;"), "Expected shared media to stay fluid inside narrow containers.");
@@ -370,7 +901,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("padding-block: var(--bf-table-row-padding);"), "Expected table cells to use symmetric block padding from the shared table row padding variable.");
   assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine demo override selector.");
   assert(css.includes(":where(.bf-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
-  assert(css.includes("--bf-body-nudge-start: 0rem;\n  --bf-body-nudge-end: 0rem;"), "Expected app-tier runtime overrides to zero body nudges.");
+  assert(!css.includes("--bf-body-nudge-start: 0rem;\n  --bf-body-nudge-end: 0rem;"), "Expected built-in tiers to retain metric-derived body nudges.");
   assert(css.includes("--bf-body-nudge-start:") && css.includes("--bf-body-nudge-end:"), "Expected generated CSS to define body alignment nudge variables.");
   assert(css.includes("--bf-h6-nudge-start:") && css.includes("--bf-h6-nudge-end:"), "Expected generated CSS to define h6 alignment nudge variables.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose > :last-child) {\n  margin-bottom: 0;"), "Expected prose flow boundaries to trim semantic trailing space now that baseline compensation lives inside the element box.");
@@ -378,12 +909,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0;\n  padding-block-end:"), "Expected list items to use literal baseline compensation.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  margin-bottom:"), "Expected list containers to use literal semantic spacing.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
-  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-extra-dense) {\n  --bf-stack-space: var(--bf-space-half);"), "Expected non-app stack density modifiers to stay gapless so semantic spacing remains element-owned outside app tier.");
-  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-dense) {\n  --bf-stack-space: var(--bf-space-1);"), "Expected non-app dense stacks to stay gapless so editorial and documentation surfaces remain element-owned.");
-  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-loose) {\n  --bf-stack-space: var(--bf-space-2);"), "Expected non-app loose stacks to stay gapless so stack density remains app-owned.");
-  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected non-app section-shallow stacks to stay gapless so section rhythm remains element-owned outside app tier.");
-  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected non-app section stacks to stay gapless so section rhythm remains element-owned outside app tier.");
-  assert(!css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected non-app deep section stacks to stay gapless so stack gap ownership does not leak out of app tier.");
+  for (const retiredModifier of ["is-extra-dense", "is-dense", "is-loose", "is-section-shallow", "is-section", "is-section-deep"]) {
+    assert(!css.includes(`.bf-stack.${retiredModifier}`), `Expected retired stack modifier ${retiredModifier} to stay absent from every tier.`);
+  }
   assert(css.includes("margin: 0 0 -1px;"), "Expected rules to cancel their 1px thickness so the next element keeps its own role-owned padding-block-start without an extra gap.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
   assert(!css.includes("padding-block: var(--bf-strip-space);"), "Expected strip rhythm to avoid symmetric top-and-bottom padding.");
@@ -417,16 +945,18 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-negative:is(:active, [aria-pressed='true'])) {\n  background-color: var(--bf-color-button-negative-active);"), "Expected bf-button.is-negative to surface the themed negative active token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link) {\n  background-color: transparent;\n  border: 0;\n  border-radius: 0;\n  color: var(--bf-color-link-default);"), "Expected generated CSS to define the bf-button.is-link surface from the shared link tokens.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link:hover) {\n  background-color: transparent;\n  color: var(--bf-color-link-default);\n  text-decoration: underline;"), "Expected bf-button.is-link hover state to keep transparent chrome and restore underline treatment.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin-inline: var(--bf-space-1);"), "Expected generated CSS to define the bf-button.is-icon child-icon spacing contract.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon:first-child) {\n  margin-inline-start: calc(var(--bf-space-1) * -1);"), "Expected bf-button.is-icon to pull the leading icon back toward the button edge.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon:last-child) {\n  margin-inline-end: calc(var(--bf-space-1) * -1);"), "Expected bf-button.is-icon to pull the trailing icon back toward the button edge.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-space-1);"), "Expected bf-button.is-icon to use the shared spacing token for its explicit icon/label relationship.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-space-2);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: var(--bf-section-space-shallow);"), "Expected generated CSS to define the bf-cta-block element-owned layout.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row) {\n  container-type: inline-size;\n  display: grid;"), "Expected generated CSS to define the bf-equal-height-row container with subgrid-driven layout.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  display: grid;\n  grid-row: span 4;\n  grid-template-rows: subgrid;"), "Expected bf-equal-height-row-col to opt into the row subgrid for cross-column alignment.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row) {\n  container-type: inline-size;\n  display: grid;\n  gap: var(--bf-grid-gap-block) var(--bf-grid-gap-inline);\n  /* Keep the logical track system on the query container itself."), "Expected generated CSS to define the bf-equal-height-row query container without an invalid self-query.");
+  assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));"), "Expected bf-equal-height-row to expose its eight logical tracks at every width.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  display: grid;\n  grid-column: 1 / -1;\n  grid-row: span 4;\n  grid-template-rows: subgrid;"), "Expected bf-equal-height-row-col to span the narrow row and opt into subgrid alignment.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col.is-borderless) {\n  border-block-start: 0;\n}"), "Expected bf-equal-height-row-col.is-borderless modifier to drop the top border.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-1)::before {\n  grid-row: 2;\n}"), "Expected bf-equal-height-row.is-divider-1 to draw a cross-column rule on subgrid row 2.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-2)::after {\n  grid-row: 3;\n}"), "Expected bf-equal-height-row.is-divider-2 to draw a cross-column rule on subgrid row 3.");
+  assert(!css.includes("bf-equal-heights") && !css.includes(".equal-heights"), "Expected equal-heights Sites recipe to reuse bf-equal-height-row without a duplicate CSS family.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: block;\n  inline-size: 100%;\n  margin: 0 0 var(--bf-section-space-shallow);\n}"), "Expected bf-figure to own its bottom spacing via section-space-shallow.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure-caption) {\n  color: var(--bf-color-text-default);\n  display: block;\n  font-style: italic;"), "Expected bf-figure-caption to render as an italic block beneath the media.");
@@ -583,21 +1113,15 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-top-navigation-dropdown-toggle)", {
     "padding-inline-end": "calc(var(--bf-top-navigation-link-padding-inline) + var(--bf-top-navigation-end-slot-inline-size))"
   }, "top-navigation dropdown toggles reserve their chevron slot from the shared end-slot token");
-  // Migrated to AST: this used to be a multi-line substring check that broke
-  // on any whitespace shift. The AST form survives reformatting. The
-  // padding-block value matches the border width so the row's occupied block
-  // (content + symmetric border-aligned padding) lands on the visible grid;
-  // an earlier session zeroed this padding believing 50px was off-grid, but
-  // doing so dropped 2px out of the layout and broke baseline verification
-  // for every page that mounts the top navigation. See HISTORY.md
-  // "Top-navigation baseline regression revert (2026-04-29)".
+  // One baseline split across the row edges keeps the complete navigation bar
+  // on each tier's own baseline, including the 4px app and OS tiers.
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-top-navigation-row)", {
     "display": "flex",
     "flex-direction": "column",
     "min-block-size": "var(--bf-navigation-bar-min-block-size)",
     "min-inline-size": "0",
-    "padding-block": "var(--bf-border-width)"
-  }, "top-navigation row preserves the border-width padding the baseline gate depends on");
+    "padding-block": "calc(var(--bf-baseline) / 2)"
+  }, "top-navigation row reserves one complete baseline across its block edges");
   assert(css.includes("transform: rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to point downward before expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: rotate(180deg);\n}"), "Expected active top-navigation chevrons to rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
@@ -676,7 +1200,8 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".playback-export-actions"), "Expected compat CSS to omit the downstream nowrap-actions alias.");
   assert(!css.includes(".drawer-panel"), "Expected compat CSS to omit the downstream fill-height panel alias.");
   assert(css.includes(":where(.bf-contextual-menu, .bf-contextual-menu.is-left, .bf-contextual-menu.is-center)"), "Expected generated CSS to include contextual-menu styling.");
-  assert(css.includes(":where(.bf-tooltip, [class*='bf-tooltip--'])"), "Expected generated CSS to include tooltip styling.");
+  assert(css.includes(":where(.bf-tooltip)"), "Expected generated CSS to include flat tooltip styling.");
+  assert(!css.includes("[class*='bf-tooltip--']"), "Expected generated CSS to omit the retired BEM tooltip compatibility selector.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel-toggle)", {
     "appearance": "none",
     "background": "transparent",
@@ -736,6 +1261,7 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(roles.h1 && roles.h2 && roles.h3 && roles.h4 && roles.h5 && roles.h6, "Expected generated tokens to include the standard heading roles.");
   assert(fontFiles.length > 0, "Expected generated tokens to include at least one font file.");
   assert(components.borderWidth, "Expected generated tokens to include component border width.");
+  assert(components.topNavigationBrandRegion, "Expected generated tokens to include the top-navigation brand-region default.");
   assert(components.controlBlockPadding, "Expected generated tokens to include regular control block padding.");
   assert(components.controlCompactBlockPadding, "Expected generated tokens to include compact control block padding.");
   assert(components.controlInlinePadding, "Expected generated tokens to include component padding.");
@@ -749,9 +1275,8 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
 }
 
 function validateAppTierCss(css: string): void {
-  assert(css.includes('font-family: "Ubuntu Sans";'), "Expected the app-tier preset CSS to register the Ubuntu Sans family.");
-  assert(css.includes('UbuntuSans[wdth,wght].ttf'), "Expected the app-tier preset CSS to point to the Ubuntu Sans variable font.");
-  assert(css.includes('font-weight: 100 900;'), "Expected the app-tier preset CSS to expose the Ubuntu Sans variable weight range.");
+  assert(!css.includes("@font-face"), "Expected built-in app CSS to leave runtime font loading to consumers.");
+  assert(!css.includes('UbuntuSans[wdth,wght].ttf'), "Expected built-in app CSS to avoid a URL to the unbundled development font.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) {'), "Expected the app-tier preset CSS to expose the app-tier runtime selector.");
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
@@ -770,6 +1295,10 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
 
   assert(roles.body, 'Expected the app-tier preset tokens to include a "body" role.');
   assert(fontFiles.some(fontFile => fontFile.family === 'ubuntu-sans'), "Expected the app-tier preset tokens to include Ubuntu Sans font metadata.");
+  const ubuntuFontFile = fontFiles.find(fontFile => fontFile.family === "ubuntu-sans") ?? {};
+  assert(ubuntuFontFile.fontWeight === "100 800", "Expected app Ubuntu metadata to match the supported variable font weight axis.");
+  assert(ubuntuFontFile.fontStretch === "75% 100%", "Expected app Ubuntu metadata to match the supported variable font width axis.");
+  assert(ubuntuFontFile.emitFontFace === false, "Expected app built-in metadata to keep runtime font loading consumer-owned.");
   assert(roles.body.fontFamily === 'ubuntu-sans', "Expected the app-tier preset body role to use Ubuntu Sans.");
   assert(roles.body.fontSize === '0.875rem', "Expected the app-tier preset body role font size to be 0.875rem.");
   assert(roles.body.lineHeight === '1.25rem', "Expected the app-tier preset body role line height to be 1.25rem.");
@@ -834,8 +1363,8 @@ function validateSurfaceManifest(manifest: Record<string, unknown>, expectedDefa
   assert(surfaces.documentation.engine === "metrics-compensated", 'Expected the documentation surface engine to be "metrics-compensated".');
   assert(surfaces.app.engine === "metrics-compensated", 'Expected the app surface engine to be "metrics-compensated".');
   assert(surfaces.os.engine === "metrics-compensated", 'Expected the OS surface engine to be "metrics-compensated".');
-  assert(appRoles.body?.nudgeTop === "0rem", "Expected the app surface runtime tokens to stay zero-nudge.");
-  assert(appMetricElements.body?.nudgeTop && appMetricElements.body.nudgeTop !== "0rem", "Expected the app surface metrics to retain the computed font-derived nudge data.");
+  assert(appRoles.body?.nudgeTop && appRoles.body.nudgeTop !== "0rem", "Expected the app surface runtime to retain its metric-derived body nudge.");
+  assert(appRoles.body?.nudgeTop === appMetricElements.body?.nudgeTop, "Expected the app runtime body nudge to match its computed metric artifact.");
   assert(typeof osRoles.body?.nudgeTop === "string" && osRoles.body.nudgeTop !== "0rem", "Expected the OS surface runtime tokens to retain metrics-derived body nudges.");
 }
 
@@ -936,7 +1465,7 @@ function validateLivingSpecControls(html: string, css: string): void {
   assert(html.includes('class="bf-segmented-control"'), "Expected demo/controls.html to include the segmented-control family.");
   assert(html.includes('bf-contextual-menu'), "Expected demo/controls.html to include the contextual-menu family.");
   assert(html.includes('class="bf-modal is-workflow is-resizable"'), "Expected demo/controls.html to include the workflow modal contract.");
-  assert(html.includes('class="bf-controls-group bf-stack"'), "Expected demo/controls.html to group controls with plain layout primitives instead of bf-panel wrappers.");
+  assert(html.includes('class="bf-controls-group"'), "Expected demo/controls.html to group controls with a demo-owned layout primitive instead of bf-panel wrappers.");
   assert(!html.includes('class="bf-panel"'), "Expected demo/controls.html to stop using decorative bf-panel wrappers.");
   assert(html.includes('src="./controls-page.js"'), "Expected demo/controls.html to boot through the dedicated controls-page runtime.");
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), "Expected demo/controls.html to avoid deprecated p-* markup and stay fully bf-* dogfooded.");
@@ -985,7 +1514,7 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   }
 
   assert(!css.includes(".bf-lead"), "Expected CSS to avoid generating an implicit lead alias when no lead role is configured.");
-  assert(!css.includes(".bf-eyebrow"), "Expected CSS to avoid generating an implicit eyebrow alias when no eyebrow role is configured.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-eyebrow) {"), "Expected CSS to include the explicit editorial eyebrow component contract.");
   assert(!css.includes(".bf-meta"), "Expected CSS to avoid generating an implicit meta alias when no meta role is configured.");
 }
 
@@ -1006,8 +1535,10 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(roles.h4.lineHeight === "1rem", "Expected the OS tier h4 line height to be 1rem.");
   assert(roles.h5.fontSize === "0.75rem", "Expected the OS tier h5 role font size to stay at the compact body size.");
   assert(roles.h6.fontSize === "0.75rem", "Expected the OS tier h6 role font size to stay at the compact body size.");
-  assert(roles.body.fontStack === '"Ubuntu Sans", "IBM Plex Sans", system-ui, sans-serif', "Expected the OS tier body font stack to keep the IBM Plex Sans fallback.");
-  assert(ubuntuFontFile.fontWeight === "100 600", "Expected the OS tier to expose the reduced Ubuntu Sans variable weight range.");
+  assert(roles.body.fontStack === '"Ubuntu Sans", "Segoe UI", system-ui, sans-serif', "Expected the OS tier body stack to match the other built-in tiers.");
+  assert(ubuntuFontFile.fontWeight === "100 800", "Expected OS Ubuntu metadata to match the supported variable font weight axis.");
+  assert(ubuntuFontFile.fontStretch === "75% 100%", "Expected OS Ubuntu metadata to match the supported variable font width axis.");
+  assert(ubuntuFontFile.emitFontFace === false, "Expected OS built-in metadata to keep runtime font loading consumer-owned.");
   assert(roles.h1.fontWeight === 500, "Expected the OS tier h1 to be the heavier member of the top pair.");
   assert(roles.h2.fontWeight === 200, "Expected the OS tier h2 to sit 300 weight units below h1.");
   assert(roles.h3.fontWeight === 500, "Expected the OS tier h3 to be the heavier member of the middle pair.");
@@ -1052,7 +1583,7 @@ function validateDemoContracts(engineSmokeHtml: string, componentShellCss: strin
   assert(engineSmokeHtml.includes('H1 = 8rem / 9rem') && engineSmokeHtml.includes('H2 = 4rem / 5rem'), "Expected engine-smoke.html to describe the oversized IBM Plex comparison scale.");
   assert(engineSmokeHtml.includes('class="bf-engine-metrics bf-span-4"'), "Expected engine-smoke.html to include the metrics runtime contract on the first specimen section.");
   assert(engineSmokeHtml.includes('class="bf-engine-cap bf-span-4"'), "Expected engine-smoke.html to include the cap runtime contract on the second specimen section.");
-  assert(!engineSmokeHtml.includes("bf-tier-app"), "Expected engine-smoke.html to stay off the app tier now that app UI follows the zero-nudge spacing contract.");
+  assert(!engineSmokeHtml.includes("bf-tier-app"), "Expected engine-smoke.html to stay on its locked experiment manifest rather than a built-in tier.");
   assert(!/\bcomponent-demo-/.test(engineSmokeHtml), "Expected engine-smoke.html to avoid component-demo parasite classes.");
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(engineSmokeHtml), "Expected engine-smoke.html to avoid deprecated p-* markup and stay fully bf-* dogfooded.");
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(engineSmokeHtml), "Expected engine-smoke.html to avoid deprecated vr-* markup and stay fully bf-* dogfooded.");
@@ -1113,6 +1644,70 @@ function validateComponentAtlasPage(componentAtlasHtml: string, componentAtlasJs
   assert(!componentAtlasJs.includes('demo-index-'), "Expected component-atlas.js to stop emitting the page-local demo-index helper classes.");
 }
 
+function validatePatternAtlasPage(
+  patternAtlasHtml: string,
+  componentAtlasHtml: string,
+  componentAtlasJs: string,
+  pageCatalogJs: string
+): void {
+  assertNoDuplicateClassAttributes("demo/patterns/index.html", patternAtlasHtml);
+  assert(patternAtlasHtml.includes('<body class="bf-theme is-dark"'), "Expected the pattern atlas to dogfood the BF theme root.");
+  assert(patternAtlasHtml.includes('data-component-capture'), "Expected the pattern atlas to expose a capture root.");
+  assert(patternAtlasHtml.includes('data-demo-baseline-toggle'), "Expected the pattern atlas to expose the shared baseline-grid control.");
+  assert(pageCatalogJs.includes('export const patternSections = ['), "Expected the page catalog to own a distinct patternSections registry.");
+  assert(pageCatalogJs.includes('{ title: "Pattern atlas", href: "/demo/patterns/index.html" }'), "Expected the Pattern Atlas to be globally discoverable from the overview catalog.");
+  assert(pageCatalogJs.includes('...patternSections,'), "Expected shared page chrome to include the pattern registry.");
+  assert(componentAtlasHtml.includes('<a href="../patterns/index.html">Pattern atlas</a>'), "Expected the Component Atlas to link directly to the Pattern Atlas.");
+  assert(componentAtlasJs.includes('querySelectorAll("[data-pattern-atlas-item]")'), "Expected the atlas enhancer to support semantic pattern items.");
+
+  const expectedPatterns = [
+    "article-pagination",
+    "content-card",
+    "data-spotlight",
+    "divided-section",
+    "credential-validation",
+    "in-page-navigation",
+    "logo-section",
+    "media-object",
+    "navigation-reduced",
+    "notification",
+    "table-expanding",
+    "table-mobile-card",
+    "table-of-contents",
+    "table-sortable",
+    "basic-section",
+    "cta-section",
+    "hero",
+    "linked-logo-section",
+    "quote-wrapper",
+    "rich-list-horizontal",
+    "rich-list-vertical",
+    "tab-section",
+    "text-spotlight",
+    "empty-state",
+    "equal-heights",
+    "sticky-footer",
+    "fluid-breakout"
+  ];
+  const patternLinks = [...patternAtlasHtml.matchAll(/data-pattern-atlas-item><a href="\.\.\/components\/([^"/]+)\.html"/g)].map(match => match[1]);
+  assert(patternLinks.length === expectedPatterns.length, `Expected ${expectedPatterns.length} Pattern Atlas links; found ${patternLinks.length}.`);
+  assert(new Set(patternLinks).size === patternLinks.length, "Expected Pattern Atlas routes to be unique.");
+  for (const pattern of expectedPatterns) {
+    assert(patternLinks.includes(pattern), `Expected the Pattern Atlas to expose ${pattern}.`);
+    assert(!componentAtlasHtml.includes(`href="./${pattern}.html"`), `Expected ${pattern} to live only in the Pattern Atlas taxonomy.`);
+  }
+
+  for (const heading of ["Vanilla pattern ports", "Vanilla Sites compositions", "Recipes and layouts", "Documented exclusions"]) {
+    assert(patternAtlasHtml.includes(`>${heading}<`), `Expected the Pattern Atlas to include the ${heading} group.`);
+  }
+  const exclusions = patternAtlasHtml.slice(patternAtlasHtml.indexOf('aria-labelledby="pattern-exclusions-title"'));
+  assert(exclusions.length > 0 && !exclusions.includes('<a href='), "Expected exclusion dispositions to remain visible but unlinked.");
+  for (const exclusion of ["Divider", "heading-icon", "matrix", "pull-quotes", "p-button--brand", "logo-block", "full-width layout"]) {
+    assert(exclusions.includes(exclusion), `Expected the Pattern Atlas to document the ${exclusion} disposition.`);
+  }
+  assert(!/class="[^"]*\b(?:p|vr)-[a-z][a-z0-9_-]*/.test(patternAtlasHtml), "Expected the Pattern Atlas to avoid deprecated compatibility markup.");
+}
+
 function validateFormAtlasPage(formAtlasHtml: string, componentAtlasHtml: string, componentShellCss: string): void {
   validateBfOnlyDemoPage("form-atlas.html", formAtlasHtml);
   assert(formAtlasHtml.includes('<main class="bf-page" data-component-capture data-overflow-container>'), "Expected form-atlas.html to use the shared bf-page capture root instead of a page-local shell wrapper.");
@@ -1161,6 +1756,9 @@ function validateParitySurfaceDemos(iconHtml: string, listHtml: string, tableHtm
 }
 
 function validateTopNavigationDemo(topNavigationHtml: string): void {
+  assert(topNavigationHtml.includes('class="bf-top-navigation is-grid-aligned is-sticky"'), "Expected top-navigation.html to exercise the grid-aligned navigation contract.");
+  assert(topNavigationHtml.includes('class="bf-top-navigation-logo is-canonical-tagged"'), "Expected top-navigation.html to exercise the canonical tagged-logo contract.");
+  assert(topNavigationHtml.includes('viewBox="0 0 60.45 57.87"'), "Expected the tagged-logo demo to use a proportionate Circle of Friends source shape.");
   assert(topNavigationHtml.includes("bf-top-navigation-dropdown-toggle"), "Expected top-navigation.html to demo dropdown toggles.");
   assert(topNavigationHtml.includes("bf-top-navigation-dropdown"), "Expected top-navigation.html to demo dropdown containers.");
   assert(topNavigationHtml.includes("bf-top-navigation-dropdown-item"), "Expected top-navigation.html to demo dropdown items.");
@@ -1182,7 +1780,7 @@ function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml: string
   assert(specimenHtml.includes('<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">'), "Expected typographic-specimen.html to boot as a shared tier-switching spec page.");
   assert(specimenHtml.includes('<main class="bf-page is-fill" id="spec-grid-target">'), "Expected typographic-specimen.html to use the shared fill-height bf-page container.");
   assert(specimenHtml.includes('<a href="./typographic-specimen.html" aria-current="page">Specimen</a>'), "Expected typographic-specimen.html to expose the current-page spec nav link.");
-  assert(specimenHtml.includes('<a href="../panel.html">OS addendum</a>'), "Expected typographic-specimen.html to link the OS addendum from the local spec nav.");
+  assert(specimenHtml.includes('<a href="../panel.html">OS tier</a>'), "Expected typographic-specimen.html to link the first-class OS tier from the local spec nav.");
   assert(specimenHtml.includes('class="bf-fixed-width"'), "Expected typographic-specimen.html to use the shared fixed-width wrapper for the hero prose block.");
   assert(specimenHtml.includes('class="bf-fixed-width bf-grid-scope"'), "Expected typographic-specimen.html to use the shared fixed-width grid-scope wrapper for multi-column specimen sections.");
   assert(specimenHtml.includes('class="bf-span-4 bf-prose"'), "Expected typographic-specimen.html to use shared grid spans for the specimen columns.");
@@ -1211,11 +1809,11 @@ function validateGridSpecPage(gridSpecHtml: string, specShellCss: string): void 
 }
 
 function validateOsTierPage(pageCatalogJs: string, panelHtml: string): void {
-  assert(pageCatalogJs.includes('{ title: "OS tier addendum", href: "/demo/panel.html" }'), "Expected the page catalog to register the OS addendum page.");
-  assert(panelHtml.includes('<title>Baseline Foundry OS Tier</title>'), "Expected demo/panel.html to present the OS tier addendum title.");
+  assert(pageCatalogJs.includes('{ title: "OS tier", href: "/demo/panel.html" }'), "Expected the page catalog to register the OS tier page.");
+  assert(panelHtml.includes('<title>Baseline Foundry OS Tier</title>'), "Expected demo/panel.html to present the OS tier title.");
   assert(panelHtml.includes('../dist/tiers/editorial/styles.css'), "Expected demo/panel.html to bootstrap from the shared built-in tier stylesheet.");
   assert(!panelHtml.includes('dist/presets/panel/styles.css'), "Expected demo/panel.html to stop bootstrapping from the legacy panel preset bundle.");
-  assert(panelHtml.includes('<body class="bf-theme bf-tier-os" data-page-tier-options="editorial,documentation,app,os" data-page-tier-default="os" data-page-baseline-default="on">'), "Expected demo/panel.html to boot as the OS tier addendum under the shared header contract.");
+  assert(panelHtml.includes('<body class="bf-theme bf-tier-os" data-page-tier-options="editorial,documentation,app,os" data-page-tier-default="os" data-page-baseline-default="on">'), "Expected demo/panel.html to boot as the OS tier under the shared header contract.");
   assert(panelHtml.includes('data-spec-artifact="css"'), "Expected demo/panel.html to expose the active stylesheet artifact link.");
   assert(panelHtml.includes('data-spec-artifact="tokens"'), "Expected demo/panel.html to expose the active tokens artifact link.");
   assert(panelHtml.includes('data-spec-role-list'), "Expected demo/panel.html to expose the shared spec role list hook.");
@@ -1237,7 +1835,43 @@ async function main(): Promise<void> {
   const prosePreset = await readThemeArtifacts(path.resolve("dist/presets/prose"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
-  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, buttonHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
+  const indexDts = await readTextArtifact(path.resolve("dist/index.d.ts"));
+  const renewalComponentPages = Object.fromEntries(await Promise.all([
+    "article-pagination",
+    "aspect",
+    "basic-section",
+    "cta-section",
+    "data-spotlight",
+    "divided-section",
+    "docs-layout",
+    "in-page-navigation",
+    "navigation-reduced",
+    "notice",
+    "credential-validation",
+    "notification",
+    "logo-section",
+    "linked-logo-section",
+    "media-object",
+    "content-card",
+    "table-sortable",
+    "table-expanding",
+    "table-mobile-card",
+    "page-shell",
+    "search-and-filter",
+    "table-of-contents",
+    "text-spotlight",
+    "tiered-list",
+    "hero",
+    "quote-wrapper",
+    "rich-list-horizontal",
+    "rich-list-vertical",
+    "fluid-breakout",
+    "tab-section",
+    "sticky-footer",
+    "equal-heights",
+    "empty-state"
+  ].map(async pageName => [pageName, await readTextArtifact(path.resolve("demo/components", `${pageName}.html`))])));
+  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, buttonHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, patternAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/form-atlas.html")),
@@ -1273,6 +1907,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/components/skip-link.html")),
     readTextArtifact(path.resolve("index.html")),
     readTextArtifact(path.resolve("demo/components/index.html")),
+    readTextArtifact(path.resolve("demo/patterns/index.html")),
     readTextArtifact(path.resolve("demo/controls.html")),
     readTextArtifact(path.resolve("demo/spec/typographic-specimen.html")),
     readTextArtifact(path.resolve("demo/spec/grid.html")),
@@ -1302,7 +1937,14 @@ async function main(): Promise<void> {
   runInvariant("Surface manifest (prose preset)", () => validateSurfaceManifest(prosePreset.surfaces, "editorial"));
   runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
   runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
+  runInvariant("Four-tier CSS/token parity", () => validateTierSurfaceParity(defaultTheme.css, {
+    editorial: editorialTier,
+    documentation: documentationTier,
+    app: appTier,
+    os: osTier
+  }));
   runInvariant("Published package exports", () => validatePackageExports(packageJson));
+  await runInvariantAsync("Public runtime and types", () => validatePublicRuntimeAndTypes(indexDts));
   runInvariant("Surfaces manifest docs", () => validateSurfacesManifestDocs(surfacesManifestDoc, readmeMd));
   runInvariant("Theme config watcher", () => validateThemeConfigWatcher(viteConfigTs));
   await runInvariantAsync("Legacy panel preset removed", () => validateLegacyPanelPresetRemoval());
@@ -1318,6 +1960,7 @@ async function main(): Promise<void> {
   runInvariant("Range page", () => validateRangePage(rangeHtml, componentShellCss));
   runInvariant("Button demo", () => validateButtonDemo(buttonHtml));
   runInvariant("Component atlas page", () => validateComponentAtlasPage(componentAtlasHtml, componentAtlasJs));
+  runInvariant("Pattern atlas page", () => validatePatternAtlasPage(patternAtlasHtml, componentAtlasHtml, componentAtlasJs, pageCatalogJs));
   runInvariant("Form atlas page", () => validateFormAtlasPage(formAtlasHtml, componentAtlasHtml, componentShellCss));
   runInvariant("Living spec home", () => validateLivingSpecHome(demoIndexHtml));
   runInvariant("Living spec controls", () => validateLivingSpecControls(demoControlsHtml, controlsShellCss));
@@ -1326,9 +1969,10 @@ async function main(): Promise<void> {
   runInvariant("App tier demo (side-navigation)", () => validateAppTierDemoPage("side-navigation.html", sideNavigationHtml));
   runInvariant("Parity surface demos", () => validateParitySurfaceDemos(iconHtml, listHtml, tableHtml));
   runInvariant("Top navigation demo", () => validateTopNavigationDemo(topNavigationHtml));
+  runInvariant("Renewal component contracts", () => validateRenewalComponentContracts(defaultTheme.css, pageCatalogJs, componentAtlasHtml, patternAtlasHtml, componentDemoJs, renewalComponentPages, indexDts));
   runInvariant("Typographic specimen", () => validateTypographicSpecimen(pageCatalogJs, typographicSpecimenHtml));
   runInvariant("Grid spec page", () => validateGridSpecPage(gridSpecHtml, specShellCss));
-  runInvariant("OS addendum page", () => validateOsTierPage(pageCatalogJs, panelHtml));
+  runInvariant("OS tier page", () => validateOsTierPage(pageCatalogJs, panelHtml));
   await runInvariantAsync("Component page tier consistency", () => validateComponentPageTierConsistency(componentDemoJs));
   runInvariant("bf-only demo family", () => validateBfOnlyDemoFamily({
     applicationLayout: applicationLayoutHtml,

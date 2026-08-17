@@ -9,47 +9,31 @@
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
-    <section class="bf-fixed-width bf-stack is-section-shallow bf-prose">
-      <h1>Nudge baseline</h1>
-      <p>The editorial stack uses nudges to land baselines on the 4px grid. Toggling to the app state removes those nudges and the lines drift.</p>
-      <div class="bf-cluster">
-        <button class="bf-button is-base" data-nudge-toggle type="button" aria-pressed="false">Show app-tier zero-nudge state</button>
-      </div>
+  <main class="example-grid-target bf-stack bf-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack bf-section is-shallow bf-prose">
+      <h1>Metrics-derived nudges</h1>
+      <p>Every tier, including app and OS, retains font-metric compensation so text lands on the 4px baseline. Use the tier control above to verify the active face and scale without changing the ownership model.</p>
     </section>
 
     <section class="bf-fixed-width spacing-grid-two">
-      <article class="bf-card u-baseline-grid bf-prose" data-nudge-editorial>
-        <h1>Editorial</h1>
-        <p class="spacing-gap-label">h1 nudge aligns to the baseline</p>
+      <article class="bf-card u-baseline-grid bf-prose">
+        <h1>Semantic roles</h1>
+        <p class="spacing-gap-label">h1 nudge is derived from the active tier metrics</p>
         <h2>Heading</h2>
-        <p class="spacing-gap-label">h2 nudge aligns to the baseline</p>
+        <p class="spacing-gap-label">h2 nudge aligns to the same baseline grid</p>
         <p>Paragraph baseline sits on the same repeating 4px line.</p>
         <p class="spacing-gap-label">Paragraph nudge = metrics-derived</p>
       </article>
 
-      <article class="bf-card u-baseline-grid bf-prose spacing-hidden" data-nudge-app>
-        <h1 class="bf-h1">App state</h1>
-        <p class="spacing-gap-label">Selected nudges = 0</p>
+      <article class="bf-card u-baseline-grid bf-prose">
+        <p class="bf-h1">Explicit roles</p>
+        <p class="spacing-gap-label">bf-h1 uses the same metric contract</p>
         <h2 class="bf-h2">Heading</h2>
-        <p class="spacing-gap-label">Selected nudges = 0</p>
-        <p>Without the editorial nudges, the baselines no longer line up to the overlay with the same precision.</p>
+        <p class="spacing-gap-label">bf-h2 stays aligned when the underlying element changes</p>
+        <p>Role classes and native semantics share the active tier's computed compensation.</p>
       </article>
     </section>
   </main>
   <script type="module" src="../../demo/example-page.js"></script>
-  <script type="module">
-    const toggle = document.querySelector("[data-nudge-toggle]");
-    const editorial = document.querySelector("[data-nudge-editorial]");
-    const app = document.querySelector("[data-nudge-app]");
-
-    toggle?.addEventListener("click", () => {
-      const nextPressed = toggle.getAttribute("aria-pressed") !== "true";
-      toggle.setAttribute("aria-pressed", String(nextPressed));
-      toggle.textContent = nextPressed ? "Show editorial nudge state" : "Show app-tier zero-nudge state";
-      editorial?.classList.toggle("spacing-hidden", nextPressed);
-      app?.classList.toggle("spacing-hidden", !nextPressed);
-    });
-  </script>
 </body>
 </html>

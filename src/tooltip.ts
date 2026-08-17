@@ -2,7 +2,7 @@ export interface TooltipInitOptions {
   root?: ParentNode;
 }
 
-const TOOLTIP_SELECTOR = ".bf-tooltip, [class*='bf-tooltip--']";
+const TOOLTIP_SELECTOR = ".bf-tooltip";
 const MESSAGE_SELECTOR = ".bf-tooltip-message";
 
 export function initTooltips(options: TooltipInitOptions = {}): () => void {

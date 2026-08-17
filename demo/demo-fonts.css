@@ -1,0 +1,10 @@
+/* Demo-only font loading. Published tier CSS exposes family metadata but does
+   not assume consumers host Baseline Foundry's repository-local font assets. */
+@font-face {
+  font-display: swap;
+  font-family: "Ubuntu Sans";
+  font-stretch: 75% 100%;
+  font-style: normal;
+  font-weight: 100 800;
+  src: url("../assets/fonts/UbuntuSans[wdth,wght].ttf") format("truetype");
+}

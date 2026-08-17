@@ -116,13 +116,8 @@ a {
   grid-template-columns: minmax(15rem, 2fr) minmax(0, 4fr) minmax(12rem, 2fr);
 }
 
-.example-docs-nav .bf-side-navigation-drawer {
+.example-docs-nav {
   border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
-  box-shadow: none;
-}
-
-.example-docs-nav .bf-side-navigation-toggle {
-  margin-block-end: 1rem;
 }
 
 .example-docs-content,
@@ -168,10 +163,6 @@ a {
 .example-app-main-content,
 .example-panel-main-content {
   min-block-size: 100%;
-}
-
-.example-app-nav-content .bf-side-navigation {
-  padding-block: 0;
 }
 
 .example-app-main-grid,

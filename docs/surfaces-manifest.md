@@ -22,8 +22,8 @@ published package root:
 | `surfaces.json` | Default editorial surface (root bundle) |
 | `tiers/editorial.surfaces.json` | Editorial tier |
 | `tiers/documentation.surfaces.json` | Documentation tier |
-| `tiers/app.surfaces.json` | App tier (zero-nudge runtime, metrics retained) |
-| `tiers/os.surfaces.json` | OS addendum tier |
+| `tiers/app.surfaces.json` | App tier |
+| `tiers/os.surfaces.json` | OS tier |
 | `presets/prose.surfaces.json` | Legacy alias → editorial |
 | `presets/app-tier.surfaces.json` | Legacy alias → app |
 | `experiments/<name>/surfaces.json` | Engine-smoke and exploratory bundles |
@@ -118,10 +118,11 @@ The full runtime token set that produced the bundle's CSS.
 }
 ```
 
-`nudgeTop` + `marginBottom` are the per-role baseline-alignment numbers. Their
-sum equals `spaceAfter`, so consumers reading the manifest can verify that the
-shipped CSS still satisfies the baseline contract without re-running the
-generator.
+`nudgeTop` is the measured start compensation. `marginBottom` is the semantic
+margin emitted by CSS: `spaceAfter - baselineUnit`. The complementary
+`padding-block-end` is `baselineUnit - nudgeTop`, so the complete occupied
+block remains baseline-aligned while semantic spacing has one meaning in JSON
+and CSS.
 
 ### `LayoutTokens`
 
@@ -146,6 +147,7 @@ generator.
 {
   "borderWidth": "1px",
   "radius": "0.125rem",
+  "topNavigationBrandRegion": "13rem",
   "controlBlockPadding": "0.41rem",
   "controlCompactBlockPadding": "0rem",
   "controlInlinePadding": "0.5rem",
@@ -188,9 +190,8 @@ Notable differences from `tokens.elements`:
 - `metrics.fontFiles` is the same shape as `tokens.fontFiles` and stays the
   authoritative font dependency list.
 
-`app` retains its `metrics` block even though its runtime nudges are zeroed:
-the metrics let downstream tools opt back into metric-driven alignment for an
-app surface without rebuilding from source configs.
+All four tiers, including `app`, use the metrics block as their runtime source
+of alignment data.
 
 ## Font asset contract
 
@@ -203,23 +204,29 @@ shape:
   "path": "../assets/fonts/UbuntuSans[wdth,wght].ttf",
   "cssFamily": "Ubuntu Sans",
   "fontStyle": "normal",
-  "fontWeight": "100 900",
+  "fontWeight": "100 800",
+  "fontStretch": "75% 100%",
   "fontDisplay": "swap",
+  "emitFontFace": false,
   "runtimeOnly": false
 }
 ```
 
 Important consumer expectations:
 
-- **Font files are not bundled** in the npm package. The `path` value is the
-  build-machine path the metric generator measured from. Treat it as an
-  audit trail, not a runtime URL.
+- **Font files are not bundled** in the npm package. The portable relative
+  `path` records the source asset the metric generator measured. Treat it as
+  an audit trail, not a package runtime URL.
 - **The published manifest never contains absolute build-machine paths.** The
   validator strips local config/baseline paths from `ThemeSurface` before it
   is serialised into the manifest entry, so shipped JSON stays portable.
 - Consumers must serve the matching font themselves (self-hosted, system
   font, or third-party CDN) and declare a matching `@font-face` so
   `cssFamily` resolves.
+- Built-in tiers set `emitFontFace: false`; their CSS does not emit a broken
+  URL to an asset absent from the package. Consumer-owned custom configs may
+  omit that flag or set it to `true` when the generated CSS can reach the
+  declared asset.
 - `fontDisplay`, `fontWeight`, `fontStyle` mirror what the build expects to
   see at runtime. If the consumer ships a different variant, baseline
   alignment will drift.
@@ -268,8 +275,8 @@ container.classList.add("bf-theme", target.className!);
 ```ts
 for (const [name, surface] of Object.entries(surfaces.surfaces)) {
   for (const [role, token] of Object.entries(surface.tokens.roles)) {
-    const sum = parseFloat(token.nudgeTop) + parseFloat(token.marginBottom);
-    if (Math.abs(sum - parseFloat(token.spaceAfter)) > 0.001) {
+    const expected = parseFloat(token.spaceAfter) - parseFloat(surface.tokens.baselineUnit);
+    if (Math.abs(parseFloat(token.marginBottom) - expected) > 0.001) {
       throw new Error(`${name}/${role} drifted off the baseline contract`);
     }
   }

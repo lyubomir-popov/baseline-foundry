@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rich Vertical List Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<main class="bf-stack" data-baseline-check="box" data-baseline-label="rich vertical list page" data-overflow-check>
+  <h1 class="bf-h4" data-baseline-check="flow">Rich vertical list</h1>
+  <p data-baseline-check="flow">A structured BF content rail paired with a single responsive media slot. This is the selected media-object composition, not a template API.</p>
+
+  <section class="bf-rich-list is-vertical" aria-labelledby="rich-vertical-title" data-baseline-check="box" data-baseline-label="rich vertical image logo cta">
+    <div class="bf-rich-list-layout">
+      <hr class="bf-rule bf-rich-list-rule" data-baseline-check="flow">
+      <div class="bf-rich-list-content">
+        <h2 id="rich-vertical-title" data-baseline-check="flow"><a href="#fleet">Operate a secure fleet from cloud to edge</a></h2>
+        <p data-baseline-check="flow">Long copy gives this rail a meaningful height and demonstrates that its paragraph, list, logo and action keep their established type and spacing behavior.</p>
+        <ul class="bf-list is-divided" data-baseline-check="box">
+          <li class="bf-list-item is-ticked" data-baseline-check="flow">Public cloud, private data centre, edge cluster and appliance support</li>
+          <li class="bf-list-item is-ticked" data-baseline-check="flow">A transparent maintenance commitment</li>
+          <li class="bf-list-item is-ticked" data-baseline-check="flow">Consistent operations across every environment</li>
+        </ul>
+        <div class="bf-logo-section is-contained" aria-label="Available environments" data-baseline-check="box"><div class="bf-logo-section-items">
+          <span class="bf-logo-section-item"><svg class="bf-logo-section-logo" role="img" aria-label="Cloud" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><rect width="96" height="96" rx="16" fill="#326ce5"/><path d="M22 59c-12-17 9-30 21-20 8-18 34-7 30 9 16 2 13 25-3 25H28c-11 0-16-8-6-14Z" fill="#fff"/></svg></span>
+          <span class="bf-logo-section-item"><svg class="bf-logo-section-logo" role="img" aria-label="Edge" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><circle cx="48" cy="48" r="42" fill="#e95420"/><path d="M26 48h44M48 26v44" stroke="#fff" stroke-width="8"/></svg></span>
+        </div></div>
+        <div class="bf-cta-block is-bordered" data-baseline-check="box"><a class="bf-button" href="#guide">Read the operations guide</a><a href="#contact">Contact us</a></div>
+      </div>
+      <div class="bf-rich-list-media is-narrow-3-2 is-wide-2-3" data-baseline-check="box">
+        <div class="bf-rich-list-media-frame"><svg role="img" aria-label="Tall factory floor illustration" viewBox="0 0 640 960" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="960" fill="#1c2942"/><path d="M70 790V350l170-120v560M240 790V430l180-110v470M420 790V250l150-90v630" fill="none" stroke="#e95420" stroke-width="42"/><circle cx="145" cy="310" r="35" fill="#fff"/><circle cx="510" cy="220" r="35" fill="#f6b73c"/></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bf-rich-list is-vertical is-flipped is-deep" dir="rtl" aria-labelledby="rich-vertical-flipped-title" data-baseline-check="box" data-baseline-label="rich vertical flipped square rtl">
+    <div class="bf-rich-list-layout">
+      <hr class="bf-rule is-muted bf-rich-list-rule" data-baseline-check="flow">
+      <div class="bf-rich-list-content">
+        <h2 id="rich-vertical-flipped-title" data-baseline-check="flow">صورة في البداية ومحتوى في النهاية</h2>
+        <p data-baseline-check="flow">تظل الأعمدة منطقية في اتجاه الكتابة من اليمين إلى اليسار، وتستخدم الصورة وضع الاحتواء دون تشويه العلامة.</p>
+        <div class="bf-cta-block" data-baseline-check="box"><a href="#rtl">اقرأ المزيد</a></div>
+      </div>
+      <div class="bf-rich-list-media is-narrow-square is-wide-square is-contain" data-baseline-check="box" data-baseline-label="rich vertical square media">
+        <div class="bf-rich-list-media-frame"><svg role="img" aria-label="علامة هندسية" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg"><rect width="600" height="600" fill="#eee"/><path d="m300 70 230 230-230 230L70 300Z" fill="#772fbe"/><circle cx="300" cy="300" r="90" fill="#fff"/></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bf-rich-list is-vertical is-shallow" aria-labelledby="rich-vertical-auto-title" data-baseline-check="box" data-baseline-label="rich vertical auto height long copy">
+    <div class="bf-rich-list-layout">
+      <hr class="bf-rule bf-rich-list-rule" data-baseline-check="flow">
+      <div class="bf-rich-list-content">
+        <h2 id="rich-vertical-auto-title" data-baseline-check="flow">Auto-height media follows a substantial content rail</h2>
+        <p data-baseline-check="flow">The wide media frame stretches with this column while remaining between the current Vanilla-equivalent landscape and portrait clamps.</p>
+        <p data-baseline-check="flow">A second paragraph makes the comparison useful without inserting composition-owned gaps or suppressing the paragraph's own trailing rhythm.</p>
+        <ul class="bf-list is-divided" data-baseline-check="box"><li class="bf-list-item" data-baseline-check="flow">Minimum wide height: 16:9</li><li class="bf-list-item" data-baseline-check="flow">Maximum wide height: 2:3</li><li class="bf-list-item" data-baseline-check="flow">Narrow fallback: 3:2</li></ul>
+      </div>
+      <div class="bf-rich-list-media is-auto-height" data-baseline-check="box"><div class="bf-rich-list-media-frame"><svg role="img" aria-label="Layered systems illustration" viewBox="0 0 720 1080" xmlns="http://www.w3.org/2000/svg"><rect width="720" height="1080" fill="#24445c"/><rect x="90" y="120" width="540" height="190" rx="28" fill="#e95420"/><rect x="90" y="385" width="540" height="190" rx="28" fill="#f6b73c"/><rect x="90" y="650" width="540" height="310" rx="28" fill="#772fbe"/></svg></div></div>
+    </div>
+  </section>
+
+  <section class="bf-rich-list is-vertical is-flipped is-shallow" aria-labelledby="rich-vertical-video-title" style="inline-size: min(100%, 34rem);" data-baseline-check="box" data-baseline-label="rich vertical narrow video">
+    <div class="bf-rich-list-layout">
+      <hr class="bf-rule is-muted bf-rich-list-rule" data-baseline-check="flow">
+      <div class="bf-rich-list-content"><h2 id="rich-vertical-video-title" data-baseline-check="flow">A minimal video composition</h2><p data-baseline-check="flow">The media remains a labelled 16:9 frame and precedes the content in the flipped narrow state.</p></div>
+      <div class="bf-rich-list-media is-video" data-baseline-check="box" data-baseline-label="rich vertical video media"><div class="bf-rich-list-media-frame"><iframe title="Delivery model overview video" srcdoc="<!doctype html><body style='margin:0;background:#2c001e;color:white;display:grid;place-items:center;font:24px sans-serif;height:100vh'>Video</body>"></iframe></div></div>
+    </div>
+  </section>
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

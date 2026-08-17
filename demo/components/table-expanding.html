@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expanding Table Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+  <style>
+    .table-demo-narrow { inline-size: min(100%, 34rem); overflow-x: auto; }
+  </style>
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+  <section class="bf-stack" data-baseline-check="box" data-baseline-label="expanding table fixture">
+    <h1 data-baseline-check="flow" data-baseline-label="expanding table heading">Expanding table</h1>
+    <div data-baseline-check="box" data-baseline-label="expanding table wide frame" data-overflow-container>
+      <table class="bf-table is-expanding" aria-label="Managed machines" data-baseline-check="box" data-baseline-label="expanding table" data-overflow-check>
+        <thead><tr><th>Name</th><th>Address</th><th>Last seen</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr>
+            <td role="rowheader">karura</td><td>10.249.0.1</td><td>Today, 13:55</td>
+            <td><button class="bf-button is-link bf-table-expand-toggle" type="button" aria-controls="machine-karura-details" aria-expanded="false" data-bf-expanded-label="Hide configuration" data-bf-collapsed-label="Show configuration" data-baseline-ignore="true"><span class="bf-table-expand-toggle-label">Show configuration</span></button></td>
+          </tr>
+          <tr id="machine-karura-details" class="bf-table-expanding-row" hidden aria-hidden="true">
+            <td class="bf-table-expanding-cell" colspan="4"><h2 class="bf-h4" data-baseline-ignore="true">Machine configuration</h2><p data-baseline-ignore="true">This full-width panel keeps its real heading and paragraph rhythm while exposing a deliberately long configuration note for resilient wrapping.</p></td>
+          </tr>
+          <tr>
+            <td role="rowheader">manticore</td><td>172.16.99.191</td><td>Yesterday, 23:08</td>
+            <td><button class="bf-button is-link bf-table-expand-toggle" type="button" aria-controls="machine-manticore-details" aria-expanded="true" data-baseline-ignore="true"><span class="bf-table-expand-toggle-label">Hide details</span></button></td>
+          </tr>
+          <tr id="machine-manticore-details" class="bf-table-expanding-row" aria-hidden="false">
+            <td class="bf-table-expanding-cell" colspan="4"><h2 class="bf-h4" data-baseline-ignore="true">Commissioning result</h2><p data-baseline-ignore="true">All storage, network, and firmware checks completed successfully.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <section class="table-demo-narrow" dir="rtl" aria-label="Narrow right-to-left expanding fixture" data-baseline-check="box" data-baseline-label="expanding narrow rtl frame" data-overflow-container>
+      <table class="bf-table is-expanding" aria-label="RTL managed machines" data-baseline-check="box" data-baseline-label="expanding narrow rtl table" data-overflow-check>
+        <thead><tr><th>Name</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td role="rowheader">edge-appliance-with-a-long-name</td><td>Ready</td><td><button class="bf-button is-link bf-table-expand-toggle" type="button" aria-controls="machine-edge-details" aria-expanded="false" data-baseline-ignore="true"><span class="bf-table-expand-toggle-label">Show details</span></button></td></tr>
+          <tr id="machine-edge-details" class="bf-table-expanding-row" hidden aria-hidden="true"><td class="bf-table-expanding-cell" colspan="3"><p data-baseline-ignore="true">Directional layout follows logical properties without changing table semantics.</p></td></tr>
+        </tbody>
+      </table>
+    </section>
+  </section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>

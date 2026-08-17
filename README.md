@@ -9,30 +9,32 @@ Lean baseline-aligned design system focused on:
 - a small amount of demo/runtime support
 
 This repo is the clean sibling to `portable-vertical-rhythm`.
-That older package remains the compatibility line for `brand-layout-ops`.
+That older package remains the compatibility line for `design-foundry`.
 This repo is the forward-looking line: smaller, more versatile, and centered on baseline, prose flow, and grid rather than broad component parity.
 
 ## Workflow Map
 
-- Workflow rules: `.github/copilot-instructions.md`
-- Resume agent: `.github/agents/agent.md`
-- Linked specs: `docs/specs.md`
-- Handoff / current status: `STATUS.md`
-- Active plan and architecture notes: `TODO.md`
-- Product roadmap: `ROADMAP.md`
-- Completed work log: `HISTORY.md`
-- Inbox for interrupting notes: `INBOX.md`
-- Agent handoffs and diagnostics: `AGENT-INBOX.md`
+- Always-on invariants and cold start: `AGENTS.md`
+- Live state and handover: `AGENT-INBOX.md`
+- Operational commands and source routing: `docs/agent-index.md`
+- Cross-spec order and short backlog: `TODO.md`
+- Spec catalog and status: `docs/specs.md`
+- Durable architecture: `docs/architecture.md`
+- Active feature intent, tasks, and evidence: `specs/<id>-<slug>/`
+- Human async notes: `INBOX.md`
 
-`INBOX.md` is for user-authored notes. `AGENT-INBOX.md` is for machine-generated handoffs, diagnostics, and cross-repo follow-ups.
+Spec Kit packages are the source of truth for feature work. Closed packages move
+to `docs/spec-archive/`; Git is the chronological history.
 
 ## LLM Efficiency Notes
 
 These habits matter more than prompt cleverness when you are using a coding agent in this repo.
 
 - Pick one model per task. Model switches often invalidate caches and force the tool to reprocess the same context again.
-- Keep permanent instructions short. Durable rules belong in `.github/copilot-instructions.md`; one-off task detail belongs in the current prompt, `TODO.md`, or `STATUS.md`.
-- Keep project memory in the repo, not only in chat. `STATUS.md`, `TODO.md`, `HISTORY.md`, and `docs/specs.md` exist so a fresh session can recover state cheaply.
+- Keep permanent instructions short. Durable invariants belong in `AGENTS.md`;
+  task detail and evidence belong in one active Spec Kit package.
+- Keep project memory in the repo, not only in chat, but give each fact one
+  owner. Avoid global status, roadmap, and history narratives.
 - Prefer markdown, plain text, and lists over complex pages or dense tables when accuracy matters.
 - Search in smaller passes instead of one giant query, then verify against the owning file or spec.
 - Checkpoint and restart freely. Short resumable sessions are usually cheaper and more reliable than preserving one huge thread.
@@ -41,16 +43,17 @@ These habits matter more than prompt cleverness when you are using a coding agen
 
 When sources disagree, this repo follows:
 
-1. Linked specs in workspace repos or explicitly referenced source docs
-2. `ROADMAP.md`
-3. `.github/copilot-instructions.md`
-4. `STATUS.md` and `HISTORY.md`
-5. `README.md` and `docs/specs.md`
-6. `INBOX.md`
-7. `AGENT-INBOX.md`
-8. Undocumented local implementation details
+1. Current user direction and the active local spec
+2. `.specify/memory/constitution.md`
+3. `AGENTS.md` and `docs/architecture.md`
+4. Accepted archived local specs
+5. External design references catalogued in `docs/specs.md`
+6. Public README/API documentation
+7. Undocumented local implementation details
 
-Do not flatten disagreements by rewriting the specs or roadmap to match lower-priority implementation drift.
+Pragma and the Canonical official design system are related products, not BF
+authorities. Their container-owned spacing decision does not override BF's
+element-owned constitution.
 
 ## Linked Specs
 
@@ -58,10 +61,11 @@ See `docs/specs.md` for the concrete linked spec paths and the legacy/reference 
 
 ## Principles
 
-See `TODO.md` for the full set. Summary:
+See `AGENTS.md` and `docs/architecture.md` for the full set. Summary:
 
 - Baseline alignment is non-negotiable.
-- Editorial spacing is element-owned; app-tier is zero-nudge, container-owned.
+- Semantic spacing is element-owned in editorial, documentation, app, and OS.
+- OS is the fourth first-class built-in tier.
 - Grid and layout primitives are small and composable.
 - Dogfooding: demos use only `bf-*` classes.
 
@@ -126,30 +130,40 @@ npm run build:theme -- --preset=prose
 
 While `npm run demo` is running, edits under `config/**/*.json` now rerun `npm run build:theme` automatically and force a full page reload.
 
-`npm run setup:demo-font` downloads the Ubuntu Sans built-in font plus the IBM Plex Sans variable asset required by the default engine-smoke experiment.
+`npm run setup:demo-font` downloads the Ubuntu Sans development font plus the IBM Plex Sans variable asset required by the engine-smoke experiment.
 
-The generated `dist/styles.css` emits matching `@font-face` rules so the demo and downstream consumers can render the font without a separate loader step.
+Built-in CSS does not emit `@font-face`: consumers own the runtime font URL and
+must declare the same Ubuntu Sans variable face measured by BF. The repository
+demo declares its downloaded development asset separately. Custom
+`buildThemeFromConfig` outputs may still emit the face declared by a
+consumer-owned config.
 
 The demo runs at:
 
 - [http://127.0.0.1:4174/](http://127.0.0.1:4174/) — Living spec home
 - [http://127.0.0.1:4174/demo/spec/typography.html](http://127.0.0.1:4174/demo/spec/typography.html)
-- [http://127.0.0.1:4174/demo/panel.html](http://127.0.0.1:4174/demo/panel.html) — OS tier addendum
-- [http://127.0.0.1:4174/demo/components/index.html](http://127.0.0.1:4174/demo/components/index.html)
+- [http://127.0.0.1:4174/demo/panel.html](http://127.0.0.1:4174/demo/panel.html) — OS tier
+- [http://127.0.0.1:4174/demo/components/index.html](http://127.0.0.1:4174/demo/components/index.html) — BF foundations and component primitives
+- [http://127.0.0.1:4174/demo/patterns/index.html](http://127.0.0.1:4174/demo/patterns/index.html) — Vanilla root ports, Sites compositions, recipes, layouts, and documented exclusions
 - [http://127.0.0.1:4174/demo/components/engine-illustration.html](http://127.0.0.1:4174/demo/components/engine-illustration.html) — Three-way raw / compensated / cap comparison
 
-Standalone Canonical example batches also live under `examples/grid/` and `examples/spacing/`. Each family has one shared stylesheet (`grid-examples.css` / `spacing-examples.css`) and stays aligned with the source prompts in `grid-examples.prompt.md` and `spacing-examples.prompt.md`.
+Standalone historical Canonical example batches also live under `examples/grid/` and `examples/spacing/`. Each family has one shared stylesheet (`grid-examples.css` / `spacing-examples.css`); current decisions live in the active Spec Kit package rather than one-off root prompts.
 
-## Component QA
+## Component and pattern QA
 
-The repo includes isolated component demo pages for visual rhythm and interaction checks. `demo/components/index.html` is the visual atlas, and the authoritative saved-page inventory lives in `scripts/component-demo-shared.ts` so the README does not need to mirror that list.
+The repo includes isolated demo pages for visual rhythm and interaction checks.
+`demo/components/index.html` catalogs BF foundations and component primitives;
+`demo/patterns/index.html` catalogs Vanilla/Sites patterns and layouts while
+linking to the same isolated QA routes. The authoritative saved-page inventory
+lives in `scripts/component-demo-shared.ts`, so the README does not mirror that
+detail list.
 
 All component/spec/control pages now share the same thin page chrome: hamburger page list plus tone, baseline-grid, and tier controls. That chrome is excluded from screenshot comparisons and disabled during Playwright hit-testing so behavior checks interact with the component under test rather than the surrounding shell.
 
 Component QA currently covers:
 
 - Playwright screenshot capture for the saved demo inventory
-- baseline verification for baseline-aligned component surfaces across editorial, documentation, OS, and non-app locked-manifest variants
+- baseline verification for baseline-aligned component surfaces across all four built-in tiers and non-tier locked-manifest variants
 - behavior verification for pinned-aside resize, drawer overlay, and application-layout interactions
 - the narrow-panel regression page so dense controls and media must still fit a tight rail
 
@@ -192,13 +206,20 @@ The screenshots and manifest are written to:
 
 - `tmp/screenshots/components/`
 
-Those screenshots also power the visual atlas at `demo/components/index.html`, so run `npm run screenshots:components` when new demos are added or the saved preview set changes. The atlas frames now use `object-fit: contain`, so the saved previews can stay legible even when different components naturally want different capture widths.
+Those screenshots power both visual atlases at `demo/components/index.html` and
+`demo/patterns/index.html`, so run `npm run screenshots:components` when new
+demos are added or the saved preview set changes. Atlas frames use
+`object-fit: contain`, so saved previews remain legible when different surfaces
+naturally want different capture widths.
 
 The baseline verification report is also written to:
 
 - `tmp/screenshots/components/baseline-report.json`
 
-That report now records one entry per verified component surface, not just one entry per route. Shared-tier component pages are walked through the non-app surfaces (`editorial`, `documentation`, `os`), while app-authored pages stay app-only unless they explicitly opt into a broader tier set.
+That report records one entry per verified component surface, not just one per
+route. Shared-tier pages are walked through `editorial`, `documentation`,
+`app`, and `os`; app-authored pages stay app-only unless they explicitly opt
+into a broader tier set.
 
 `npm test` now includes this Playwright baseline check, so once Chromium is installed the grid-alignment gate is part of the normal regression suite.
 
@@ -211,7 +232,7 @@ The default theme uses Ubuntu Sans Variable and generates metric-driven typograp
 | `editorial` | Root default, widest long-form composition |
 | `documentation` | Tighter chapter-reading tier |
 | `app` | Canonical-facing application chrome |
-| `os` | Dense OS-style addendum with editorial alignment and compact control geometry |
+| `os` | Dense OS-style tier with metric alignment and compact control geometry |
 
 Legacy aliases: `prose` → editorial, `app-tier` → app.
 
@@ -222,7 +243,7 @@ Independent surface contract:
 - multiple containers can coexist side by side under the same stylesheet
 - `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface — see [docs/surfaces-manifest.md](docs/surfaces-manifest.md) for the full schema, stability guarantees, and consumer recipes
 - the published manifest omits local build-machine config/baseline file paths, so the shipped JSON stays portable
-- `app` keeps zero-nudge runtime tokens while still retaining its computed font metrics in the manifest
+- every tier keeps metric-derived runtime alignment and element-owned semantic spacing
 
 Example:
 
@@ -237,7 +258,7 @@ Example:
 <section class="bf-theme bf-tier-app">
 	<div class="bf-prose">
 		<h1>App surface</h1>
-		<p>Runtime nudges are zeroed, but the stored font metrics still exist in surfaces.json.</p>
+		<p>Metric-derived nudges and element-owned spacing remain active at application density.</p>
 	</div>
 </section>
 
@@ -251,7 +272,7 @@ Example:
 
 Engine choice remains separate: `.bf-engine-metrics` is the default production path, `.bf-engine-cap` is demo-only.
 
-See `config/tiers/` and `config/presets/` for the source configs.
+See `config/tiers/` for the four canonical source configs. Compatibility preset names resolve to those same owners rather than duplicate JSON files.
 
 ## Public API
 
@@ -276,6 +297,8 @@ Package root exports:
 - `initTopNavigations`
 - `initTabs`
 - `initTooltips`
+- `tierNames`, `tierDescriptions`, and `isTierName`
+- `TierName`, `BuiltInThemeName`, `ThemeSurfaceManifest`, and related public types
 
 Node/build exports:
 
@@ -308,6 +331,8 @@ Static assets:
 - `baseline-foundry/presets/app-tier.css`
 - `baseline-foundry/presets/app-tier.tokens.json`
 - `baseline-foundry/presets/app-tier.surfaces.json`
+- `baseline-foundry/presets`
+- `baseline-foundry/types`
 
 ### Entry point guidance
 
@@ -316,7 +341,6 @@ Downstream consumers have two supported ways to load the built-in OS surface, de
 - Use `baseline-foundry/styles.css` as the neutral entrypoint when the consumer wants the shared root bundle and will opt into OS with class switching such as `.bf-theme.bf-tier-os`.
 - Use `baseline-foundry/tiers/os.css` only when the consumer wants OS to be the unscoped default surface for that stylesheet import.
 - Do not import `baseline-foundry/presets/app-tier.css` just to preload the shared bundle before switching to `bf-tier-os`; that preset remains the legacy app alias, not the neutral OS entrypoint.
-- The legacy panel preset export has been removed; downstream OS consumers should use the neutral root bundle plus `.bf-tier-os`, or import `baseline-foundry/tiers/os.css` when OS should be the default surface.
 
 Example neutral entrypoint for a downstream such as `a4-generator`:
 
@@ -341,6 +365,13 @@ Example OS-default entrypoint when class switching is not needed:
 
 The built-in default is Ubuntu Sans Variable, but downstream repos are not locked to it.
 Point the build at a downstream theme config and derive fresh nudges from that font's real metrics.
+
+The npm package does not ship BF's development font file and built-in CSS does
+not guess a URL for it. A consumer using a built-in tier must serve Ubuntu Sans
+Variable and declare one normal variable face covering weights 100 through
+800 and stretches 75% through 100%. The manifest's relative
+`fontFiles[*].path` records the source asset used for metric generation; it is
+not a package runtime URL.
 
 The key rule is simple:
 
@@ -409,6 +440,7 @@ Example sketch for a downstream Ubuntu Sans theme:
 	"components": {
 		"borderWidthPx": 1,
 		"radiusRem": 0,
+		"topNavigationBrandRegionRem": 13,
 		"controlBlockPaddingRem": 0.5,
 		"controlCompactBlockPaddingRem": 0.25,
 		"controlInlinePaddingRem": 1,
@@ -507,12 +539,18 @@ The generated `tokens.json` then contains the derived metric nudges per element,
 
 ## Demo
 
-The demo surface at `/` shows editorial prose rhythm, tier switching, dark theme, grid, spacing, and component specimens. Component demos live under `demo/components/` with a visual atlas at `demo/components/index.html`. The authoritative saved-page inventory is in `scripts/component-demo-shared.ts`.
+The demo surface at `/` shows editorial prose rhythm, tier switching, dark
+theme, grid, spacing, and component specimens. BF primitives are indexed at
+`demo/components/index.html`; Vanilla/Sites compositions and layouts are
+indexed separately at `demo/patterns/index.html`. Their isolated test routes
+remain under `demo/components/`, and the authoritative saved-page inventory is
+in `scripts/component-demo-shared.ts`.
 
 ## Start Here
 
 If you resume this repo in a new chat, read:
 
-1. `STATUS.md`
-2. `TODO.md`
-3. `.github/agents/agent.md`
+1. `AGENTS.md`
+2. `AGENT-INBOX.md`
+3. `docs/agent-index.md`
+4. `docs/specs.md`

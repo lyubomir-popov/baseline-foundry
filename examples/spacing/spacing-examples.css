@@ -73,11 +73,11 @@ body.bf-tier-app {
 }
 
 .spacing-hero-box.is-buggy::after {
-  content: "80px total bottom spacing – double-spacing bug";
+  content: "document-flow boundary retained";
 }
 
 .spacing-hero-box.is-correct::after {
-  content: "64px total bottom spacing – correct";
+  content: "direct control-row compensation only";
 }
 
 

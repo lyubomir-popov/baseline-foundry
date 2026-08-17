@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notification Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<main class="bf-stack" data-baseline-check="box" data-baseline-label="notification page" data-overflow-container>
+  <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="notification kicker">Notifications</h5>
+  <p class="bf-body" data-baseline-check="flow" data-baseline-label="notification summary">Transient feedback with severity, metadata, actions and explicit dismissal. Static messages need no live-region role; dynamic urgency belongs to the author.</p>
+
+  <section class="bf-notification is-information" aria-labelledby="notification-information-title" data-baseline-check="box" data-baseline-label="notification information" data-overflow-check>
+    <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
+    <div class="bf-notification-content">
+      <h2 class="bf-notification-title" id="notification-information-title" data-baseline-ignore="true">Permissions changed</h2>
+      <p class="bf-notification-message" data-baseline-ignore="true">Anyone with project access can now view invited collaborators.</p>
+    </div>
+  </section>
+
+  <section class="bf-notification is-positive" aria-labelledby="notification-positive-title" data-baseline-check="box" data-baseline-label="notification positive" data-overflow-check>
+    <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
+    <div class="bf-notification-content">
+      <h2 class="bf-notification-title" id="notification-positive-title" data-baseline-ignore="true">Surface published</h2>
+      <p class="bf-notification-message" data-baseline-ignore="true">The documentation bundle passed validation and is ready to share.</p>
+    </div>
+    <div class="bf-notification-meta" data-baseline-check="box" data-baseline-label="notification positive meta">
+      <time class="bf-notification-timestamp" datetime="2026-08-16T17:42:00+01:00">4 minutes ago</time>
+      <div class="bf-notification-actions">
+        <a class="bf-button is-link" href="#published-surface" data-baseline-ignore="true">View surface</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bf-notification is-caution is-inline" aria-labelledby="notification-caution-title" data-baseline-check="box" data-baseline-label="notification caution inline" data-overflow-check>
+    <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
+    <div class="bf-notification-content">
+      <h2 class="bf-notification-title" id="notification-caution-title" data-baseline-ignore="true">Review required:</h2>
+      <p class="bf-notification-message" data-baseline-ignore="true">Two type roles still use fallback metrics.</p>
+    </div>
+  </section>
+
+  <section class="bf-notification is-negative" id="notification-dismissible" aria-labelledby="notification-negative-title" data-baseline-check="box" data-baseline-label="notification negative dismissible" data-overflow-check>
+    <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
+    <div class="bf-notification-content">
+      <h2 class="bf-notification-title" id="notification-negative-title" data-baseline-ignore="true">Build unavailable</h2>
+      <p class="bf-notification-message" data-baseline-ignore="true">The remote font response was incomplete. Retry the build or inspect the request before publishing this long, narrow-safe status message.</p>
+      <button class="bf-button is-base is-icon bf-notification-close" type="button" aria-controls="notification-dismissible" aria-label="Dismiss build unavailable notification" data-baseline-ignore="true">
+        <span class="bf-icon is-close" aria-hidden="true"></span>
+      </button>
+    </div>
+    <div class="bf-notification-meta" data-baseline-check="box" data-baseline-label="notification negative meta">
+      <time class="bf-notification-timestamp" datetime="2026-08-16T17:35:00+01:00">11 minutes ago</time>
+      <div class="bf-notification-actions">
+        <button class="bf-button is-link" type="button" data-baseline-ignore="true">Cancel</button>
+        <button class="bf-button is-link" type="button" data-baseline-ignore="true">Retry build</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="bf-notification is-caution is-borderless" aria-labelledby="notification-borderless-title" data-baseline-check="box" data-baseline-label="notification caution borderless" data-overflow-check>
+    <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
+    <div class="bf-notification-content">
+      <h2 class="bf-notification-title" id="notification-borderless-title" data-baseline-ignore="true">Embedded warning</h2>
+      <p class="bf-notification-message" data-baseline-ignore="true">Use the borderless state only when another component already provides the enclosing surface.</p>
+    </div>
+  </section>
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

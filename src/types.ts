@@ -4,7 +4,9 @@ export interface ThemeFontFile {
   cssFamily?: string;
   fontStyle?: string;
   fontWeight?: string;
+  fontStretch?: string;
   fontDisplay?: string;
+  emitFontFace?: boolean;
   runtimeOnly?: boolean;
 }
 
@@ -37,6 +39,7 @@ export interface ThemeLayoutConfig {
 export interface ThemeComponentsConfig {
   borderWidthPx: number;
   radiusRem: number;
+  topNavigationBrandRegionRem: number;
   controlBlockPaddingRem: number;
   controlCompactBlockPaddingRem?: number;
   controlInlinePaddingRem: number;
@@ -100,6 +103,7 @@ export interface LayoutTokens {
 export interface ComponentTokens {
   borderWidth: string;
   radius: string;
+  topNavigationBrandRegion: string;
   controlBlockPadding: string;
   controlCompactBlockPadding: string;
   controlInlinePadding: string;

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Spotlight Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<main class="bf-stack" data-baseline-check="box" data-baseline-label="text spotlight page" data-overflow-check>
+  <h1 class="bf-h4" data-baseline-check="flow">Text spotlight</h1>
+  <p data-baseline-check="flow">A ruled title rail beside two to seven prominent action or benefit statements. Every statement is a real heading, not body copy styled to resemble one.</p>
+
+  <section class="bf-text-spotlight" aria-labelledby="spotlight-title" data-baseline-check="box" data-baseline-label="text spotlight component">
+    <div class="bf-text-spotlight-layout">
+      <hr class="bf-text-spotlight-rule bf-rule" data-baseline-check="flow">
+      <header class="bf-text-spotlight-header"><h2 id="spotlight-title" class="bf-eyebrow" data-baseline-check="flow">Why choose a durable delivery model?</h2></header>
+      <div class="bf-text-spotlight-content">
+        <ol class="bf-text-spotlight-items" data-baseline-check="box">
+          <li class="bf-text-spotlight-item" data-baseline-ignore="true"><h2 data-baseline-check="flow">Give every team a shared, observable path</h2><hr class="bf-rule is-muted" data-baseline-check="flow"></li>
+          <li class="bf-text-spotlight-item" data-baseline-ignore="true"><h4 data-baseline-check="flow"><a href="#flow">Keep the everyday workflow clear and calm</a></h4><hr class="bf-rule is-muted" data-baseline-check="flow"></li>
+          <li class="bf-text-spotlight-item" data-baseline-ignore="true"><h2 data-baseline-check="flow">Make change understandable long after it ships</h2></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

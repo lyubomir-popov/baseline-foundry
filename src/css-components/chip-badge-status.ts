@@ -2,6 +2,8 @@ type ChipBadgeStatusCssOptions = {
   bodyCaseTypeStyles: string;
   bodyLineHeight: string;
   bodySelectedStartNudge: string;
+  h5SelectedEndNudge: string;
+  h5SelectedStartNudge: string;
   bodyTypeStyles: string;
 };
 
@@ -10,6 +12,8 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
     bodyCaseTypeStyles,
     bodyLineHeight,
     bodySelectedStartNudge,
+    h5SelectedEndNudge,
+    h5SelectedStartNudge,
     bodyTypeStyles,
   } = options;
 
@@ -142,7 +146,8 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-ui-status-color);
   display: inline-block;
 ${bodyTypeStyles}  margin: 0;
-  padding-block: var(--bf-ui-status-padding-block);
+  padding-block-end: ${h5SelectedEndNudge};
+  padding-block-start: ${h5SelectedStartNudge};
   padding-inline: var(--bf-ui-chip-padding-inline);
   text-align: center;
   text-decoration: none;

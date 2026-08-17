@@ -1,3 +1,5 @@
+@import "./demo-fonts.css";
+
 body:has(> .pc-root) {
   display: grid;
   grid-template-columns: 18rem minmax(0, 1fr);
@@ -112,19 +114,6 @@ body.is-dark .pc-header {
 .pc-select-wrap {
   inline-size: min(100%, 10.5rem);
   min-inline-size: 8.5rem;
-}
-
-.pc-nav .bf-side-navigation-drawer {
-  padding-block: var(--bf-panel-padding-block, 1rem);
-}
-
-.pc-nav .bf-side-navigation-heading {
-  padding-inline: var(--bf-panel-padding-inline, 1rem);
-}
-
-.pc-nav .bf-side-navigation-list {
-  margin-bottom: calc(var(--bf-baseline, 0.5rem) * 1.5);
-  padding-bottom: calc((var(--bf-baseline, 0.5rem) * 1.5) - var(--bf-border-width, 1px));
 }
 
 @media (max-width: 56rem) {

@@ -2,12 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
 import { closeServer, componentPages, createStaticServer, waitForFonts } from "./component-demo-shared.ts";
-
-type CheckMode = "box" | "flow";
+import { tierNames } from "../src/presets.ts";
 
 interface BaselineCheckResult {
   label: string;
-  mode: CheckMode;
   offsetPx: number;
   measurePx: number;
   offsetErrorPx: number;
@@ -48,7 +46,9 @@ interface ComponentVerificationReport {
   missingCoverage: string[];
 }
 
-const tolerancePx = 0.5;
+// Chromium can accumulate just over half a physical pixel across long variable-font
+// specimens. Keep the allowance well below the smallest 4px tier baseline.
+const tolerancePx = 0.75;
 const pageChromeStorageKeys = [
   "baseline-foundry:living-spec-tier",
   "baseline-foundry:living-spec-baseline",
@@ -68,7 +68,7 @@ interface SurfaceSelectorState {
 }
 
 function describeFailure(component: ComponentVerificationReport, failure: BaselineCheckResult): string {
-  return `${component.name} [${component.surfaceLabel}] -> ${failure.label} (${failure.mode}) offset error ${failure.offsetErrorPx.toFixed(2)}px, measure error ${failure.measureErrorPx.toFixed(2)}px`;
+  return `${component.name} [${component.surfaceLabel}] -> ${failure.label} offset error ${failure.offsetErrorPx.toFixed(2)}px, measure error ${failure.measureErrorPx.toFixed(2)}px`;
 }
 
 function describeMissingCoverage(component: ComponentVerificationReport, label: string): string {
@@ -146,21 +146,15 @@ function plannedSurfaceOptions(state: SurfaceSelectorState): SurfaceOption[] {
     return state.options.filter(option => option.value === "app");
   }
 
-  const nonAppOptions = state.options.filter(option => option.value !== "app");
-  if (nonAppOptions.length === 0) {
-    return state.options;
-  }
-
   if ((state.ariaLabel ?? "").toLowerCase() === "tier") {
-    const orderedTiers = ["editorial", "documentation", "os"];
-    const orderedOptions = orderedTiers
-      .map(value => nonAppOptions.find(option => option.value === value))
+    const orderedOptions = tierNames
+      .map(value => state.options.find(option => option.value === value))
       .filter((option): option is SurfaceOption => Boolean(option));
 
-    return orderedOptions.length > 0 ? orderedOptions : nonAppOptions;
+    return orderedOptions.length > 0 ? orderedOptions : state.options;
   }
 
-  return nonAppOptions;
+  return state.options;
 }
 
 async function selectSurface(page: import("playwright").Page, surface: SurfaceOption): Promise<void> {
@@ -181,11 +175,8 @@ async function verifyComponentPage(
   surface: SurfaceOption
 ): Promise<ComponentVerificationReport> {
   const result = await page.evaluate(({ pageName, tolerance }) => {
-    type CheckMode = "box" | "flow";
-
     interface BaselineCheckResult {
       label: string;
-      mode: CheckMode;
       offsetPx: number;
       measurePx: number;
       offsetErrorPx: number;
@@ -215,8 +206,6 @@ async function verifyComponentPage(
     if (!captureRoot) {
       throw new Error(`No [data-component-capture] root found for ${pageName}.`);
     }
-
-    const shouldEnforceBaseline = !document.body.classList.contains("bf-tier-app");
 
     const rootRect = captureRoot.getBoundingClientRect();
     const probe = document.createElement("div");
@@ -285,11 +274,9 @@ async function verifyComponentPage(
     const rootNearest = baselinePx === 0 ? rootMeasure : Math.round(rootMeasure / baselinePx) * baselinePx;
     const rootMeasureErrorPx = Math.abs(rootMeasure - rootNearest);
 
-    const elements = shouldEnforceBaseline
-      ? Array.from(captureRoot.querySelectorAll<HTMLElement>("[data-baseline-check]"))
-      : [];
+    const elements = Array.from(captureRoot.querySelectorAll<HTMLElement>("[data-baseline-check]"));
     for (const element of elements) {
-      if (element.dataset.baselineIgnore === "true") {
+      if (element.dataset.baselineIgnore === "true" || element.closest("[hidden], [aria-hidden='true']")) {
         continue;
       }
 
@@ -299,7 +286,6 @@ async function verifyComponentPage(
 
       const rect = element.getBoundingClientRect();
       const styles = getComputedStyle(element);
-      const mode = (element.dataset.baselineCheck === "box" ? "box" : "flow") satisfies CheckMode;
       const marginBottom = Number.parseFloat(styles.marginBottom) || 0;
       const offsetPx = rect.top - rootRect.top;
       const measurePx = rect.height + marginBottom;
@@ -313,7 +299,6 @@ async function verifyComponentPage(
 
       checks.push({
         label,
-        mode,
         offsetPx,
         measurePx,
         offsetErrorPx,
@@ -325,7 +310,7 @@ async function verifyComponentPage(
     const failures = checks.filter(check => !check.passed);
     const overflowTargets = Array.from(captureRoot.querySelectorAll<HTMLElement>("[data-overflow-check]"));
     for (const element of overflowTargets) {
-      if (element.getClientRects().length === 0) {
+      if (element.getClientRects().length === 0 || element.closest("[hidden], [aria-hidden='true']")) {
         continue;
       }
 
@@ -347,8 +332,7 @@ async function verifyComponentPage(
     }
 
     const overflowFailures = overflowChecks.filter(check => !check.passed);
-    const missingCoverage = shouldEnforceBaseline
-      ? Array.from(captureRoot.querySelectorAll<HTMLElement>(coverageSelector))
+    const missingCoverage = Array.from(captureRoot.querySelectorAll<HTMLElement>(coverageSelector))
         .filter(element => element.getClientRects().length > 0)
         .filter(element => element.dataset.baselineIgnore !== "true")
         .filter(element => !element.closest("[data-baseline-ignore='true']"))
@@ -358,8 +342,7 @@ async function verifyComponentPage(
             || element.className?.toString().replace(/\s+/g, ".")
             || element.tagName.toLowerCase();
           return label;
-        })
-      : [];
+        });
 
     const report: ComponentVerificationResult = {
       baselinePx,

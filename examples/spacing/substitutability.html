@@ -9,26 +9,27 @@
   <link rel="stylesheet" href="./spacing-examples.css">
 </head>
 <body class="bf-theme bf-tier-editorial" data-bf-tone="light">
-  <main class="example-grid-target bf-stack is-section" data-example-grid-target>
-    <section class="bf-fixed-width bf-stack is-section-shallow bf-prose">
+  <main class="example-grid-target bf-stack bf-section" data-example-grid-target>
+    <section class="bf-fixed-width bf-stack bf-section is-shallow bf-prose">
       <h1>Substitutability</h1>
-      <p>Container-owned spacing keeps identical gaps when the control changes. Element-owned editorial flow changes spacing semantically when the content type changes.</p>
+      <p>Element ownership makes substitutions predictable: a replacement adopts the spacing of its semantic or explicit BF role instead of inheriting an anonymous wrapper gap.</p>
     </section>
 
     <section class="bf-fixed-width spacing-grid-two">
-      <article class="bf-card bf-stack is-section-shallow is-container-owned">
-        <h2 class="bf-h4">Container-owned</h2>
-        <button class="bf-button">Button</button>
-        <input class="bf-input" type="text" value="Text input">
-        <select><option>Select</option></select>
-        <p class="spacing-gap-label">Gap stays identical because the container owns it.</p>
+      <article class="bf-card bf-stack bf-section is-shallow bf-prose">
+        <h2>Semantic substitution</h2>
+        <p>A native heading receives its heading rhythm from the element.</p>
+        <p class="bf-h3">A paragraph promoted to the h3 role receives the same explicit role rhythm.</p>
+        <p class="spacing-gap-label">The replacement contract is visible in the class, not hidden in its parent.</p>
       </article>
 
       <article class="bf-card bf-prose">
-        <h2>Element-owned</h2>
-        <p>The heading below changes the resolved spacing because the content semantics changed.</p>
-        <h3>Swapped heading</h3>
-        <p>The prose system intentionally treats this differently from an `h2`.</p>
+        <h2>Control substitution</h2>
+        <p>A button, input, and select each preserve their own document-flow boundary.</p>
+        <button class="bf-button">Button</button>
+        <input class="bf-input" aria-label="Text input specimen" type="text" value="Text input">
+        <select aria-label="Select specimen"><option>Select</option></select>
+        <p class="spacing-gap-label">Swapping the control does not require a container-owned spacing mode.</p>
       </article>
     </section>
   </main>

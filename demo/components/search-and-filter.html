@@ -8,7 +8,22 @@
   <link rel="stylesheet" href="../component-shell.css">
 </head>
 <body class="bf-theme is-dark" data-component-capture>
-<section class="bf-stack" data-baseline-ignore="true">
+<section class="bf-stack">
+ <section class="bf-stack" data-baseline-check="box" data-baseline-label="compact control row section" data-overflow-container>
+ <h1 class="bf-h4" data-baseline-check="flow" data-baseline-label="compact control row title">Compact control row</h1>
+ <form class="bf-control-row" role="search" aria-label="Registry filters" data-baseline-check="box" data-overflow-check data-baseline-label="compact control row">
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="control row search field">
+ <label class="bf-form-label" for="control-row-query" data-baseline-check="flow" data-baseline-label="control row search label">Search diagrams</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="control row search control"><input id="control-row-query" class="bf-input" type="search" value="Ubuntu" data-baseline-check="box" data-baseline-label="control row search input"></div>
+ </div>
+ <div class="bf-field" data-baseline-check="box" data-baseline-label="control row tier field">
+ <label class="bf-form-label" for="control-row-tier" data-baseline-check="flow" data-baseline-label="control row tier label">Tier</label>
+ <div class="bf-control" data-baseline-check="box" data-baseline-label="control row tier control"><select id="control-row-tier" data-baseline-check="box" data-baseline-label="control row tier select"><option>Editorial</option><option>Documentation</option><option>App</option><option>OS</option></select></div>
+ </div>
+ <button class="bf-button" type="submit" data-baseline-check="box" data-baseline-label="control row submit">Apply filters</button>
+ </form>
+ </section>
+
  <div >
  <div class="bf-search-and-filter" data-baseline-ignore="true">
  <div class="bf-search-and-filter-search-container" aria-expanded="false" data-baseline-ignore="true" data-baseline-label="search and filter collapsed container">

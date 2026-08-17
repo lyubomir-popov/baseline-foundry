@@ -1,3 +1,4 @@
 # Inbox
 
-Drop notes here. The agent will triage items into `TODO.md` (near-term) or `ROADMAP.md` (longer-term), then empty this file back to its template header.
+Drop notes here. The agent will triage durable work into a numbered Spec Kit
+package or the short `TODO.md` backlog, then empty this file back to this header.

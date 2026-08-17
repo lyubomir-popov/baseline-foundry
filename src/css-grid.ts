@@ -43,7 +43,7 @@ export function gridCss(): string {
 /* ------------------------------------------------------------------ */
 /* Container query contexts                                            */
 /*                                                                     */
-/* Both tiers use container queries for column switching. In editorial  */
+/* All tiers use container queries for column switching. In editorial   */
 /* and docs, .bf-page is the single grid container — centered and      */
 /* capped at --bf-content-max-width — so the container width mirrors   */
 /* the viewport (spec §3: "viewport-based grid"). In app tier,         */
@@ -89,7 +89,7 @@ export function gridCss(): string {
   --bf-grid-columns: 4;
   display: grid;
   /* bf-grid keeps row-gap at 0; the block token stays available for */
-  /* two-dimensional layouts and other container-owned spacing cases. */
+  /* two-dimensional layouts and other structural layout-gap cases. */
   gap: 0 var(--bf-grid-gap-inline);
   grid-template-columns: repeat(var(--bf-grid-columns), minmax(0, 1fr));
 }
@@ -118,10 +118,6 @@ export function gridCss(): string {
 
 :where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control, .bf-grid-item.is-control-pair) {
   grid-column: auto / span 4;
-}
-
-:where(.bf-theme) :where(.bf-span-full) {
-  grid-column: 1 / -1 !important;
 }
 
 ${baseSpans}
@@ -163,6 +159,12 @@ ${mediumSpans}
   }
 
 ${largeSpans}
+}
+
+/* Full span follows every generated numbered-span rule so normal cascade
+ * order is sufficient; consumers never need cascade escalation. */
+:where(.bf-theme) :where(.bf-grid) > :where(.bf-span-full) {
+  grid-column: 1 / -1;
 }
 `;
 }

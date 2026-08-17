@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Section Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<main class="bf-stack" data-baseline-check="box" data-baseline-label="basic section page" data-overflow-check>
+  <h1 class="bf-h4" data-baseline-check="flow">Basic section</h1>
+  <p data-baseline-check="flow">A rhythm-safe heading-and-content recipe. Existing BF rules, headings, prose, figures, lists and CTA blocks keep ownership of their vertical spacing.</p>
+
+  <section class="bf-basic-section" aria-labelledby="basic-default-title" data-baseline-check="box" data-baseline-label="basic section large split">
+    <div class="bf-basic-section-layout">
+      <hr class="bf-basic-section-rule bf-rule" data-baseline-check="flow">
+      <header class="bf-basic-section-header">
+        <p class="bf-eyebrow" data-baseline-check="flow">Platform guide</p>
+        <h2 id="basic-default-title" data-baseline-check="flow">Build a repeatable operating model</h2>
+      </header>
+      <div class="bf-basic-section-content">
+        <h4 data-baseline-check="flow">A pragmatic starting point</h4>
+        <p data-baseline-check="flow">Use an explicit ownership model, then make each deployment and decision visible to the people who depend on it.</p>
+        <ul class="bf-list is-divided" data-baseline-check="box">
+          <li class="bf-list-item" data-baseline-check="flow">Agree the service boundary and escalation path.</li>
+          <li class="bf-list-item" data-baseline-check="flow">Record meaningful outcomes alongside the work.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="bf-basic-section is-split-medium is-shallow" aria-labelledby="basic-medium-title" data-baseline-check="box" data-baseline-label="basic section medium split">
+    <div class="bf-basic-section-layout">
+      <hr class="bf-basic-section-rule bf-rule" data-baseline-check="flow">
+      <header class="bf-basic-section-header"><h2 id="basic-medium-title" data-baseline-check="flow">Split sooner in a side panel</h2></header>
+      <div class="bf-basic-section-content">
+        <p data-baseline-check="flow">The modifier changes only the structural switch point; the paragraph and CTA preserve their normal four-tier metric rhythm.</p>
+        <div class="bf-cta-block is-bordered" data-baseline-check="box"><a class="bf-button" href="#medium">Read the rollout guide</a></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

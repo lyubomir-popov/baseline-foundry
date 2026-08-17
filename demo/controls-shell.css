@@ -9,7 +9,7 @@
 }
 
 .bf-controls-group {
-  --bf-stack-space: var(--bf-field-gap);
+  display: grid;
   min-block-size: 100%;
 }
 

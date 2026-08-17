@@ -9,8 +9,10 @@ Launch the `agent-loop.ps1` scheduler to work through TODO items unattended. Eac
 
 ## Pre-flight
 
-1. Read `STATUS.md` and `TODO.md` to orient.
+1. Read `AGENT-INBOX.md`, `docs/specs.md`, the active package, and `TODO.md`.
 2. Run `agent-loop.ps1 -DryRun` to preview which tasks will be picked up.
+   The legacy scheduler reads bounded checkbox tasks from `TODO.md`; do not use
+   it when work exists only in a Spec Kit `tasks.md` package.
 3. If the working tree is dirty, commit a checkpoint first (the script requires a clean tree for real runs).
 4. Report the dry-run output and ask for final go/no-go only if something looks wrong. Otherwise proceed.
 

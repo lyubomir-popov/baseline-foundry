@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation Layout Demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture data-overflow-container>
+  <section class="bf-section">
+    <div class="bf-fixed-width" data-baseline-check="box" data-baseline-label="documentation fixed-width region">
+      <div class="bf-docs-layout" data-baseline-check="box" data-baseline-label="documentation layout" data-overflow-check>
+        <aside class="bf-docs-layout-navigation" aria-label="Documentation navigation" data-baseline-ignore="true">
+          <div class="bf-side-navigation is-sticky is-drawer-hidden" id="docs-layout-navigation">
+            <button class="bf-side-navigation-toggle" type="button" aria-controls="docs-layout-navigation" aria-expanded="false">Documentation</button>
+            <div class="bf-side-navigation-overlay" aria-controls="docs-layout-navigation" aria-hidden="true"></div>
+            <nav class="bf-side-navigation-drawer" aria-label="Documentation sections">
+              <div class="bf-side-navigation-drawer-header">
+                <button class="bf-side-navigation-toggle is-in-drawer" type="button" aria-controls="docs-layout-navigation" aria-expanded="false">Close</button>
+              </div>
+              <h2 class="bf-side-navigation-heading">Foundations</h2>
+              <ul class="bf-side-navigation-list">
+                <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#spacing" aria-current="page">Spacing</a></li>
+                <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#typography">Typography</a></li>
+                <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#layout">Layout</a></li>
+              </ul>
+            </nav>
+          </div>
+        </aside>
+        <main class="bf-docs-layout-content">
+          <h1 class="bf-h1" id="spacing" data-baseline-check="flow">Element-owned spacing</h1>
+          <p class="bf-body" data-baseline-check="flow">The layout becomes an intentional two-column documentation composition when its own available width supports it. On narrow surfaces, the side navigation retains its drawer ownership while the article returns to the full available measure.</p>
+          <h2 class="bf-h2" id="typography" data-baseline-check="flow">Readable at every width</h2>
+          <p class="bf-body" data-baseline-check="flow">The article column has no forced span helper and does not need a runtime layout wrapper. The composition uses the same public side-navigation primitive as a standalone documentation drawer.</p>
+          <h2 class="bf-h2" id="layout" data-baseline-check="flow">No empty mobile rail</h2>
+          <p class="bf-body" data-baseline-check="flow">Below the composition threshold, navigation and content occupy the same single column. If an author omits the navigation slot entirely, the content remains full width.</p>
+        </main>
+      </div>
+    </div>
+  </section>
+  <script type="module" src="../component-demo.js"></script>
+</body>
+</html>
