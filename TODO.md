@@ -5,16 +5,15 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Complete the remaining in-app-browser sign-off for the Spec 001 parity
-   routes and dedicated Pattern Atlas when that browser backend is available;
-   automated Playwright, static catalog, and screenshot-atlas evidence is
-   already green.
-2. Commit the verified Spec 001 branch while excluding unrelated temporary and
-   user-owned work.
-3. Run `prompts/opus-adversarial-review.prompt.md` against that commit and have
-   Opus record its read-only verdict in `AGENT-INBOX.md`.
-4. Resolve any blocking findings, obtain owner acceptance for the selected
-   parity surface and exclusions, then perform final Git closeout.
+1. Align desktop `bf-top-navigation.is-grid-aligned` to columns one through two
+   of the shared eight-column grid and add multi-width, four-tier geometry
+   regressions.
+2. Introduce one rem-based 3px border-thickness token and sweep top-navigation
+   rules, tabs, notifications, spotlight patterns, and other matching emphasis
+   borders onto that shared contract.
+3. Rebuild generated artifacts, run the smallest focused checks while
+   iterating, then finish with `npm test` and `npm run qa:components` plus
+   affected demo review.
 
 ## Candidate order after Spec 001
 

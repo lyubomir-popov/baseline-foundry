@@ -5,14 +5,17 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-| Spec | Package | Status | Outcome |
-|---|---|---|---|
-| 001 Baseline Foundry renewal | [`specs/001-baseline-foundry-renewal/`](../specs/001-baseline-foundry-renewal/) | Implementation and automated QA complete; in-app-browser sign-off pending | Correct strict article-pagination parity; deliver the owner-selected Vanilla root, Sites-composition, standalone and layout gaps; and expose them through a dedicated Pattern Atlas without weakening BF's four-tier type and rhythm contracts. |
+No numbered package is active. The navigation-grid and shared-border-thickness
+defects are focused framework repairs tracked in `AGENT-INBOX.md` and do not
+expand Spec 001.
 
 ## Archive
 
 Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
-There are no archived BF packages yet; Git retains the pre-Spec-Kit history.
+
+| Spec | Package | Disposition |
+|---|---|---|
+| 001 Baseline Foundry renewal | [`001-baseline-foundry-renewal/`](spec-archive/001-baseline-foundry-renewal/) | Accepted and merged 2026-08-21; automated closeout green, with the unavailable in-app-browser pass recorded in `review.md`. |
 
 ## Candidate specifications
 
