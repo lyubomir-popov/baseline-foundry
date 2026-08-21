@@ -27,11 +27,14 @@ Implemented contracts:
 - The fixed demo catalog sidebar preserves its session scroll position across
   page navigation and reload. Direct deep routes fall back to centring the
   active entry when it would otherwise be outside the sidebar viewport.
-- The pattern catalog uses project-native `Patterns` and `Site compositions`
-  labels, without redundant Vanilla port naming.
+- The catalog and live specimen copy use project-native `Patterns` and
+  `Site compositions` labels without redundant ancestor branding.
 - Spacing and grid examples synchronously restore their shared tone and tier
   before specimen content is parsed, preventing the former light/unstyled
   first frame before the saved surface appeared.
+- Direct example-page `main` elements occupy the content column beside the
+  fixed catalog navigation. App Provisions no longer renders underneath the
+  navigation rail.
 
 The rebuilt editorial CSS and tokens were copied to the sibling
 `diagram-registry` checkout without adding a consumer override. Its documented
@@ -71,6 +74,11 @@ build assertions plus the full baseline and behavior suites. The new behavior
 regression verifies the saved App/dark surface while the deferred example
 runtime is blocked. `npm run qa:components` also recaptured 87 screenshots and
 passed all baseline records.
+
+After the App Provisions shell fix and public naming audit on 2026-08-21,
+`npm run test:build` passed all 5,090 assertions and `npm run test:behavior`
+passed. Live Playwright review captured App Provisions with visible content in
+the 2,272px-wide main column beside the 288px navigation rail.
 
 The downstream `diagram-registry` validation also passed:
 `validate_registry.py`, `audit_site_copy.py`, three Python unit tests, and seven

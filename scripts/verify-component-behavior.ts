@@ -128,6 +128,42 @@ async function verifyExamplePreferencesBeforePaint(origin: string): Promise<void
   }
 }
 
+async function verifyExampleMainClearsPageNavigation(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 900 }
+    });
+
+    await page.goto(`${origin}/examples/spacing/app-provisions.html`, { waitUntil: "networkidle" });
+    const geometry = await page.evaluate(() => {
+      const nav = document.querySelector<HTMLElement>(".pc-nav");
+      const main = document.querySelector<HTMLElement>("main[data-example-grid-target]");
+      const heading = main?.querySelector<HTMLElement>("h1");
+      if (!nav || !main || !heading) {
+        return null;
+      }
+
+      const navRect = nav.getBoundingClientRect();
+      const mainRect = main.getBoundingClientRect();
+      const headingRect = heading.getBoundingClientRect();
+      return {
+        headingVisible: headingRect.width > 0 && headingRect.height > 0,
+        mainStartsAfterNavigation: mainRect.left >= navRect.right - 1,
+        mainWidth: mainRect.width,
+        navRight: navRect.right
+      };
+    });
+
+    assert(geometry?.headingVisible, "Expected App Provisions to render visible main-area content.");
+    assert(geometry.mainStartsAfterNavigation && geometry.mainWidth > 600, `Expected App Provisions main content to clear the fixed navigation; nav right=${geometry.navRight}, main width=${geometry.mainWidth}.`);
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyPinnedAsideResize(origin: string): Promise<void> {
   const storageKey = "demo:application-shell-aside";
   const route = "/demo/components/application-shell.html";
@@ -3033,6 +3069,7 @@ async function main(): Promise<void> {
   try {
     await verifyPageChromeNavigationScroll(origin);
     await verifyExamplePreferencesBeforePaint(origin);
+    await verifyExampleMainClearsPageNavigation(origin);
     await verifyPinnedAsideResize(origin);
     await verifyDrawerOverlay(origin);
     await verifyApplicationLayout(origin);

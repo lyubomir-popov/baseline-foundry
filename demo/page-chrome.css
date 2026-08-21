@@ -19,7 +19,7 @@ body:has(> .pc-root) > .pc-header {
   grid-row: 1;
 }
 
-body:has(> .pc-root) > main.bf-page,
+body:has(> .pc-root) > main,
 body:has(> .pc-root) > .pc-content {
   grid-column: 2;
   grid-row: 2;
@@ -134,7 +134,7 @@ body.is-dark .pc-header {
     grid-column: 1;
   }
 
-  body:has(> .pc-root) > main.bf-page,
+  body:has(> .pc-root) > main,
   body:has(> .pc-root) > .pc-content {
     grid-column: 1;
   }

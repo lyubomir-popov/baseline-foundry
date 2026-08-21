@@ -153,7 +153,7 @@ Standalone historical Canonical example batches also live under `examples/grid/`
 
 The repo includes isolated demo pages for visual rhythm and interaction checks.
 `demo/components/index.html` catalogs BF foundations and component primitives;
-`demo/patterns/index.html` catalogs Vanilla/Sites patterns and layouts while
+`demo/patterns/index.html` catalogs patterns, site compositions, and layouts while
 linking to the same isolated QA routes. The authoritative saved-page inventory
 lives in `scripts/component-demo-shared.ts`, so the README does not mirror that
 detail list.
