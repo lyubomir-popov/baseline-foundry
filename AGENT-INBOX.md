@@ -6,10 +6,9 @@ live in [`docs/spec-archive/001-baseline-foundry-renewal/`](docs/spec-archive/00
 
 ## Current task
 
-The notice-bar consistency fix and Fluid Breakout removal are complete on
-`fix/notice-bar-thickness`, based on the pushed `main` after the navigation-grid
-and shared emphasis-bar branch was merged. The follow-up branch is ready for
-review.
+The navigation-grid, shared emphasis-bar, notice-bar consistency, and Fluid
+Breakout removal work is complete on local `main`. The verified follow-up was
+fast-forwarded after the navigation-grid branch and is ready to push.
 
 Implemented contracts:
 
