@@ -1,6 +1,57 @@
 import { findPageByPath, normalizePagePath, pageCatalogSections } from "./page-catalog.js";
 
 let chromeId = 0;
+const navigationScrollStorageKey = "bf-demo-page-navigation-scroll-top";
+
+function readNavigationScrollTop() {
+  try {
+    const value = Number.parseFloat(sessionStorage.getItem(navigationScrollStorageKey) ?? "");
+    return Number.isFinite(value) ? Math.max(0, value) : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeNavigationScrollTop(nav) {
+  try {
+    sessionStorage.setItem(navigationScrollStorageKey, String(nav.scrollTop));
+  } catch {
+    // The catalog remains usable when storage is unavailable.
+  }
+}
+
+function restoreNavigationScroll(nav) {
+  const activeLink = nav.querySelector(".bf-side-navigation-link[aria-current='page']");
+  const savedScrollTop = readNavigationScrollTop();
+
+  const restore = () => {
+    if (nav.scrollHeight <= nav.clientHeight) {
+      return;
+    }
+
+    if (savedScrollTop !== null) {
+      nav.scrollTop = savedScrollTop;
+    }
+
+    if (!(activeLink instanceof HTMLElement)) {
+      return;
+    }
+
+    const navRect = nav.getBoundingClientRect();
+    const activeRect = activeLink.getBoundingClientRect();
+    const activeIsVisible = activeRect.top >= navRect.top && activeRect.bottom <= navRect.bottom;
+
+    if (!activeIsVisible) {
+      const centeredOffset = (nav.clientHeight - activeRect.height) / 2;
+      nav.scrollTop = Math.max(0, nav.scrollTop + activeRect.top - navRect.top - centeredOffset);
+    }
+  };
+
+  nav.addEventListener("scroll", () => storeNavigationScrollTop(nav), { passive: true });
+  window.addEventListener("pagehide", () => storeNavigationScrollTop(nav), { once: true });
+  requestAnimationFrame(() => requestAnimationFrame(restore));
+  document.fonts?.ready.then(restore).catch(() => {});
+}
 
 function escapeHtml(value) {
   return value
@@ -150,6 +201,7 @@ export function injectPageChrome(options = {}) {
 
   document.body.insertBefore(header, document.body.firstChild);
   document.body.insertBefore(nav, header);
+  restoreNavigationScroll(nav);
 
   if (contentWrapper) {
     const firstScript = document.body.querySelector(":scope > script");

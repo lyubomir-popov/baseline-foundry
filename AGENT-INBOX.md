@@ -24,6 +24,9 @@ Implemented contracts:
 - Data spotlight fixtures now include their required highlighted rule. Their
   five-row subgrid prevents action links from overlapping descriptions, with a
   browser regression covering the spacing.
+- The fixed demo catalog sidebar preserves its session scroll position across
+  page navigation and reload. Direct deep routes fall back to centring the
+  active entry when it would otherwise be outside the sidebar viewport.
 
 The rebuilt editorial CSS and tokens were copied to the sibling
 `diagram-registry` checkout without adding a consumer override. Its documented
@@ -49,6 +52,11 @@ baseline records, and the complete behavior suite. Final
 zero baseline, overflow, or coverage failures. Affected screenshots were
 reviewed for top navigation, tabs, notifications, data spotlight, side
 navigation, and in-page navigation.
+
+After the demo-navigation restoration on 2026-08-21, `npm run test:build` and
+`npm run test:behavior` passed. Live Chrome review confirmed the Notification
+entry remained visible at the same 1,620px sidebar scroll position after
+navigation and reload.
 
 The downstream `diagram-registry` validation also passed:
 `validate_registry.py`, `audit_site_copy.py`, three Python unit tests, and seven

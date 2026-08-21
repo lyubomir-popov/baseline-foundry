@@ -37,6 +37,61 @@ async function readAsideWidth(page: import("playwright").Page): Promise<number> 
   return page.locator(".bf-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
 }
 
+async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 720 }
+    });
+    const storageKey = "bf-demo-page-navigation-scroll-top";
+    const targetRoute = "/demo/components/notification.html";
+
+    await page.goto(`${origin}/index.html`, { waitUntil: "networkidle" });
+    await page.evaluate(key => sessionStorage.removeItem(key), storageKey);
+    const targetLink = page.locator(`.pc-nav a[href='${targetRoute}']`);
+    await targetLink.scrollIntoViewIfNeeded();
+    const scrollBeforeNavigation = await page.locator(".pc-nav").evaluate(nav => nav.scrollTop);
+    assert(scrollBeforeNavigation > 0, "Expected the notification catalog link to require a scrolled navigation position.");
+
+    await Promise.all([
+      page.waitForURL(`**${targetRoute}`),
+      targetLink.click()
+    ]);
+    await page.locator(`.pc-nav a[href='${targetRoute}'][aria-current='page']`).waitFor({ state: "visible" });
+    await page.waitForTimeout(80);
+
+    const readNavigationState = () => page.evaluate(() => {
+      const nav = document.querySelector<HTMLElement>(".pc-nav");
+      const active = nav?.querySelector<HTMLElement>(".bf-side-navigation-link[aria-current='page']");
+      if (!nav || !active) return null;
+      const navRect = nav.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      return {
+        activeVisible: activeRect.top >= navRect.top && activeRect.bottom <= navRect.bottom,
+        scrollTop: nav.scrollTop
+      };
+    });
+
+    const navigatedState = await readNavigationState();
+    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0, "Expected page navigation to preserve its scrolled position and keep the clicked entry visible.");
+
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForTimeout(80);
+    const reloadedState = await readNavigationState();
+    assert(reloadedState?.activeVisible && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll to survive reload; before=${navigatedState.scrollTop}, after=${reloadedState?.scrollTop}.`);
+
+    await page.evaluate(key => sessionStorage.removeItem(key), storageKey);
+    await page.goto(`${origin}/demo/components/data-spotlight.html`, { waitUntil: "networkidle" });
+    await page.waitForTimeout(80);
+    const directState = await readNavigationState();
+    assert(directState?.activeVisible && directState.scrollTop > 0, "Expected a direct deep demo route to scroll its active catalog entry into view without stored state.");
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyPinnedAsideResize(origin: string): Promise<void> {
   const storageKey = "demo:application-shell-aside";
   const route = "/demo/components/application-shell.html";
@@ -2940,6 +2995,7 @@ async function main(): Promise<void> {
   const { server, origin } = await createStaticServer(rootDir);
 
   try {
+    await verifyPageChromeNavigationScroll(origin);
     await verifyPinnedAsideResize(origin);
     await verifyDrawerOverlay(origin);
     await verifyApplicationLayout(origin);
