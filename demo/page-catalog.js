@@ -150,8 +150,7 @@ export const patternSections = [
     items: [
       { title: "Empty state recipes", href: "/demo/components/empty-state.html" },
       { title: "Equal-heights composition", href: "/demo/components/equal-heights.html" },
-      { title: "Sticky footer layout", href: "/demo/components/sticky-footer.html" },
-      { title: "Fluid breakout layout", href: "/demo/components/fluid-breakout.html" }
+      { title: "Sticky footer layout", href: "/demo/components/sticky-footer.html" }
     ]
   }
 ];

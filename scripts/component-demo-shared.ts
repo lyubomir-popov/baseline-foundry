@@ -47,7 +47,6 @@ export const componentPages: ComponentPage[] = [
   { name: "quote-wrapper", route: "/demo/components/quote-wrapper.html", captureProfile: "wide" },
   { name: "rich-list-horizontal", route: "/demo/components/rich-list-horizontal.html", captureProfile: "wide" },
   { name: "rich-list-vertical", route: "/demo/components/rich-list-vertical.html", captureProfile: "wide" },
-  { name: "fluid-breakout", route: "/demo/components/fluid-breakout.html", captureProfile: "wide" },
   { name: "tab-section", route: "/demo/components/tab-section.html", captureProfile: "wide" },
   { name: "sticky-footer", route: "/demo/components/sticky-footer.html", captureProfile: "wide" },
   { name: "equal-height-row", route: "/demo/components/equal-height-row.html", captureProfile: "wide" },

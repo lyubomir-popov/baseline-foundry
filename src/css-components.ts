@@ -7,7 +7,6 @@ import { controlRowCss } from "./css-components/control-row.js";
 import { contentCardCss } from "./css-components/content-card.js";
 import { documentNavigationCss } from "./css-components/document-navigation.js";
 import { editorialContentCss } from "./css-components/editorial-content.js";
-import { fluidBreakoutCss } from "./css-components/fluid-breakout.js";
 import { iconCss } from "./css-components/icon.js";
 import { interactiveFeedbackCss } from "./css-components/interactive-feedback.js";
 import { interactiveTablesCss } from "./css-components/interactive-tables.js";
@@ -847,14 +846,6 @@ ${sitesFoundationCss()}
 ${sitesEditorialPortsCss()}
 
 ${sitesRichListsCss()}
-
-${fluidBreakoutCss({
-  contentMaxWidth: tokens.layout.contentMaxWidth,
-  surfaces: (themeSurfaces ?? []).map(surface => ({
-    className: surface.className,
-    contentMaxWidth: surface.tokens.layout.contentMaxWidth
-  }))
-})}
 
 ${panelCss({
   bodyTypeStyles,

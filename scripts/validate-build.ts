@@ -335,12 +335,6 @@ function validateRenewalComponentContracts(
     ".bf-content-card-footer",
     ".bf-content-card-footer-inner",
     ".bf-content-card-resource",
-    ".bf-fluid-breakout",
-    ".bf-fluid-breakout-main",
-    ".bf-fluid-breakout-item",
-    ".bf-fluid-breakout-aside",
-    ".bf-fluid-breakout-toolbar",
-    ".bf-fluid-breakout-toolbar-items",
     ".bf-table.is-sortable",
     ".bf-table-sort-button",
     ".bf-table.is-expanding",
@@ -365,7 +359,7 @@ function validateRenewalComponentContracts(
   assert(!css.includes("--bf-top-navigation-brand-region"), "Expected generated tier CSS to remove the fixed top-navigation brand-region token.");
   assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));") && css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;"), "Expected grid-aligned navigation to share the eight-column page grid and begin primary navigation at column three.");
   assert(css.includes("--bf-bar-thickness: 0.1875rem;"), "Expected generated tier CSS to expose the shared rem-based 3px emphasis-bar token.");
-  assert(css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);") && css.includes("border-bottom: var(--bf-bar-thickness) solid transparent;") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notifications, tabs, and highlight rules to consume the shared emphasis-bar token.");
+  assert(css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notice-border);") && css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);") && css.includes("border-bottom: var(--bf-bar-thickness) solid transparent;") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notices, notifications, tabs, and highlight rules to consume the shared emphasis-bar token.");
   assert(css.includes("container-name: bf-article-pagination;") && css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes("inline-size: calc((100cqi - var(--bf-space-2)) / 2);"), "Expected article pagination to retain its named container and persistent equal-half structure.");
   assert(css.includes("column-gap: var(--bf-space-2);") && css.includes("row-gap: var(--bf-space-half);"), "Expected article pagination to map Vanilla's medium and x-small spacing to BF rhythm tokens.");
   assert(css.includes("padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination to use semantic medium padding with metric baseline compensation.");
@@ -408,11 +402,6 @@ function validateRenewalComponentContracts(
   assert(css.includes(".bf-table.is-expanding .bf-table-expand-toggle") && css.includes(".bf-table-expanding-row[hidden]"), "Expected expanding tables to expose controlled toggle and hidden-row states.");
   assert(css.includes(".bf-table-mobile-card-frame") && css.includes(".bf-table.is-mobile-card") && css.includes(".bf-table-card-label"), "Expected mobile-card tables to expose the responsive frame, table modifier, and generated heading-label contracts.");
   assert(!/\.bf-table[^{}]*\[data-[^\]]+\]/.test(css), "Expected interactive table CSS to keep data-* attributes as runtime/test hooks rather than styling selectors.");
-  assert(css.includes(".bf-fluid-breakout") && css.includes(".bf-fluid-breakout-main") && css.includes(".bf-fluid-breakout-aside") && css.includes(".bf-fluid-breakout-toolbar"), "Expected fluid breakout to expose bounded centre, logical aside, toolbar, and main layout contracts.");
-  assert(css.includes("--bf-fluid-breakout-aside-width: 14rem;") && css.includes("--bf-fluid-breakout-item-min-width: 13rem;"), "Expected fluid breakout to retain Vanilla's 14rem aside and 13rem auto-fit minimum tokens.");
-  assert(css.includes("@media (width >= 38.75rem)") && css.includes("@media (width >= 64.75rem)"), "Expected fluid breakout to retain the 620px toolbar and 1036px three-track transitions.");
-  assert(css.includes("grid-template-columns:\n      minmax(var(--bf-fluid-breakout-aside-width), 1fr)"), "Expected fluid breakout to expose three logical tracks at the wide transition.");
-  assert(!/\.(?:p|ui)-[a-z][a-z0-9_-]*/.test(css) && !/\b(?:fluid-breakout)(?:__|--)[a-z]/.test(css), "Expected fluid breakout CSS to reject legacy span and BEM compatibility APIs.");
   assert(indexDts.includes("export { initInteractiveFeedback, initNotificationDismissals, initPasswordReveals }"), "Expected public runtime exports to include the interactive feedback initializers.");
   assert(indexDts.includes("export { initExpandingTables, initInteractiveTables, initMobileCardTables, initSortableTables }"), "Expected public runtime exports to include the interactive table initializers.");
   assert(indexDts.includes("export { initInPageNavigations }"), "Expected public runtime exports to include the in-page navigation initializer.");
@@ -452,7 +441,6 @@ function validateRenewalComponentContracts(
     ["quote-wrapper", "Quote wrapper", "pattern"],
     ["rich-list-horizontal", "Rich horizontal list", "pattern"],
     ["rich-list-vertical", "Rich vertical list", "pattern"],
-    ["fluid-breakout", "Fluid breakout layout", "pattern"],
     ["tab-section", "Tab section", "pattern"],
     ["sticky-footer", "Sticky footer layout", "pattern"],
     ["equal-heights", "Equal-heights composition", "pattern"],
@@ -555,12 +543,6 @@ function validateRenewalComponentContracts(
   assert(richVerticalHtml.includes("bf-rich-list is-vertical") && richVerticalHtml.includes("is-flipped") && richVerticalHtml.includes("is-narrow-3-2") && richVerticalHtml.includes("is-wide-2-3") && richVerticalHtml.includes("is-narrow-square") && richVerticalHtml.includes("is-wide-square"), "Expected rich vertical list to cover vertical, flipped, landscape, portrait, and square media ratios.");
   assert(richVerticalHtml.includes("is-contain") && richVerticalHtml.includes("is-video") && richVerticalHtml.includes("is-auto-height") && richVerticalHtml.includes("long copy"), "Expected rich vertical list to cover contain, video, auto-height, and long-copy pressure states.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(richVerticalHtml) && !richVerticalHtml.includes("muted-heading") && !/\brich-list(?:__|--)[a-z]/.test(richVerticalHtml), "Expected rich vertical list markup to reject legacy span, deprecated, and Jinja/BEM APIs.");
-
-  const fluidBreakoutHtml = pages["fluid-breakout"] ?? "";
-  assert(fluidBreakoutHtml.includes("data-component-capture") && fluidBreakoutHtml.includes("data-baseline-check") && fluidBreakoutHtml.includes("data-overflow-check"), "Expected fluid breakout to expose capture, baseline, and overflow fixture markers.");
-  assert(fluidBreakoutHtml.includes("bf-fluid-breakout-main is-full-width") && fluidBreakoutHtml.includes("bf-fluid-breakout-main is-no-aside") && fluidBreakoutHtml.includes("bf-fluid-breakout-toolbar") && fluidBreakoutHtml.includes("is-scrollable"), "Expected fluid breakout to cover full-width, no-aside, toolbar, and locally scrollable content states.");
-  assert((fluidBreakoutHtml.match(/bf-fluid-breakout-aside/g) ?? []).length >= 3 && fluidBreakoutHtml.includes('dir="rtl"'), "Expected fluid breakout to cover start/end logical asides and RTL source-order mirroring.");
-  assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(fluidBreakoutHtml) && !/\bfluid-breakout(?:__|--)[a-z]/.test(fluidBreakoutHtml), "Expected fluid breakout markup to reject legacy span and BEM compatibility APIs.");
 
   const tabSectionHtml = pages["tab-section"] ?? "";
   assert(tabSectionHtml.includes("data-component-capture") && tabSectionHtml.includes("data-baseline-check") && tabSectionHtml.includes("data-overflow-check"), "Expected tab section to expose capture, baseline, and overflow fixture markers.");
@@ -1692,8 +1674,7 @@ function validatePatternAtlasPage(
     "text-spotlight",
     "empty-state",
     "equal-heights",
-    "sticky-footer",
-    "fluid-breakout"
+    "sticky-footer"
   ];
   const patternLinks = [...patternAtlasHtml.matchAll(/data-pattern-atlas-item><a href="\.\.\/components\/([^"/]+)\.html"/g)].map(match => match[1]);
   assert(patternLinks.length === expectedPatterns.length, `Expected ${expectedPatterns.length} Pattern Atlas links; found ${patternLinks.length}.`);
@@ -1871,7 +1852,6 @@ async function main(): Promise<void> {
     "quote-wrapper",
     "rich-list-horizontal",
     "rich-list-vertical",
-    "fluid-breakout",
     "tab-section",
     "sticky-footer",
     "equal-heights",

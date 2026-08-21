@@ -14,7 +14,7 @@ export function editorialContentCss(options: EditorialContentCssOptions): string
   --bf-notice-background: var(--bf-color-background-neutral-default);
   --bf-notice-border: var(--bf-color-border-neutral);
   background: var(--bf-notice-background);
-  border-inline-start: var(--bf-border-width) solid var(--bf-notice-border);
+  border-inline-start: var(--bf-bar-thickness) solid var(--bf-notice-border);
   color: var(--bf-color-text-default);
   display: flow-root;
   margin-block: 0 var(--bf-section-space-shallow);

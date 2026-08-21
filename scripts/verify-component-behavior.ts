@@ -1305,12 +1305,18 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
     }
 
     await page.goto(`${origin}/demo/components/notice.html`, { waitUntil: "networkidle" });
-    const noticeSemantics = await page.locator(".bf-notice").evaluateAll(elements => elements.map(element => ({
-      role: element.getAttribute("role"),
-      titleTag: element.querySelector(".bf-notice-title")?.tagName ?? null
-    })));
+    const noticeSemantics = await page.locator(".bf-notice").evaluateAll(elements => elements.map(element => {
+      const styles = getComputedStyle(element);
+      return {
+        barThickness: Number.parseFloat(styles.borderInlineStartWidth),
+        barThicknessToken: styles.getPropertyValue("--bf-bar-thickness").trim(),
+        role: element.getAttribute("role"),
+        titleTag: element.querySelector(".bf-notice-title")?.tagName ?? null
+      };
+    }));
     assert(noticeSemantics.length === 5, "Expected all five notice variants in the semantic fixture.");
     assert(noticeSemantics.every(notice => notice.role === "note" && notice.titleTag === "H2"), "Expected static notices to retain note landmarks and semantic h2 titles.");
+    assert(noticeSemantics.every(notice => notice.barThickness === 3 && notice.barThicknessToken === "0.1875rem"), "Expected every notice variant to use the shared 3px/0.1875rem emphasis bar.");
 
     await page.setContent(`<!doctype html><link rel="stylesheet" href="${origin}/dist/tiers/editorial/styles.css"><body class="bf-theme">Scoped reset</body>`);
     await page.waitForFunction(() => Array.from(document.styleSheets).some(sheet => sheet.href?.includes("/dist/tiers/editorial/styles.css")));
@@ -2286,170 +2292,6 @@ async function verifyPortedCompositionGeometry(origin: string): Promise<void> {
   }
 }
 
-async function verifyFluidBreakoutGeometry(origin: string): Promise<void> {
-  const browser = await openBrowser();
-  const tiers = ["editorial", "documentation", "app", "os"] as const;
-  const transferThresholds: Record<(typeof tiers)[number], number> = {
-    editorial: 104,
-    documentation: 110,
-    app: 104,
-    os: 81.5
-  };
-
-  try {
-    const page = await browser.newPage({
-      deviceScaleFactor: 1,
-      viewport: { width: 1600, height: 1200 }
-    });
-
-    await page.goto(`${origin}/demo/components/fluid-breakout.html`, { waitUntil: "networkidle" });
-    await waitForFonts(page);
-    await disableDemoChromeHitTesting(page);
-
-    for (const tier of tiers) {
-      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
-      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
-
-      const threshold = transferThresholds[tier] * 16;
-      await page.setViewportSize({ width: 619, height: 1200 });
-      await page.waitForTimeout(40);
-      const belowToolbar = await page.locator(".bf-fluid-breakout-toolbar").first().evaluate(toolbar => ({
-        itemsColumns: getComputedStyle(toolbar.querySelector(".bf-fluid-breakout-toolbar-items") as Element).gridTemplateColumns,
-        display: getComputedStyle(toolbar).display
-      }));
-      assert(belowToolbar.itemsColumns.split(" ").length === 1, `Expected ${tier} fluid-breakout toolbar to stay one column at 619px.`);
-
-      await page.setViewportSize({ width: 620, height: 1200 });
-      await page.waitForTimeout(40);
-      const atToolbar = await page.locator(".bf-fluid-breakout-toolbar").first().evaluate(toolbar => {
-        const items = toolbar.querySelector<HTMLElement>(".bf-fluid-breakout-toolbar-items");
-        const buttons = Array.from(toolbar.querySelectorAll<HTMLElement>("button")).map(button => button.getBoundingClientRect());
-        return {
-          itemsColumns: items ? getComputedStyle(items).gridTemplateColumns : "",
-          buttonRowDelta: buttons.length > 1 ? Math.abs(buttons[0].top - buttons[1].top) : 0,
-          display: getComputedStyle(toolbar).display
-        };
-      });
-      assert(atToolbar.itemsColumns.split(" ").length === 2 && atToolbar.buttonRowDelta <= 1, `Expected ${tier} fluid-breakout toolbar to switch to two same-row items at 620px.`);
-
-      await page.setViewportSize({ width: 1035, height: 1200 });
-      await page.waitForTimeout(40);
-      const belowTracks = await page.locator(".bf-fluid-breakout").first().evaluate(root => ({
-        display: getComputedStyle(root).display,
-        columns: getComputedStyle(root).gridTemplateColumns
-      }));
-      assert(belowTracks.display !== "grid" && belowTracks.columns === "none", `Expected ${tier} fluid-breakout to remain pre-three-track at 1035px.`);
-
-      await page.setViewportSize({ width: 1036, height: 1200 });
-      await page.waitForTimeout(40);
-      const wideState = await page.evaluate(() => {
-        const root = document.querySelector<HTMLElement>(".bf-fluid-breakout");
-        const main = root?.querySelector<HTMLElement>(".bf-fluid-breakout-main");
-        const aside = root?.querySelector<HTMLElement>(".bf-fluid-breakout-aside");
-        const toolbar = root?.querySelector<HTMLElement>(".bf-fluid-breakout-toolbar");
-        if (!root || !main || !aside || !toolbar) return null;
-        const columns = getComputedStyle(root).gridTemplateColumns.split(" ").filter(Boolean);
-        const mainColumns = Array.from(main.querySelectorAll<HTMLElement>(".bf-fluid-breakout-item")).map(item => item.getBoundingClientRect().left);
-        const rootRect = root.getBoundingClientRect();
-        const rootStyle = getComputedStyle(root);
-        const contentLeft = rootRect.left + Number.parseFloat(rootStyle.paddingInlineStart);
-        const contentRight = rootRect.right - Number.parseFloat(rootStyle.paddingInlineEnd);
-        const mainRect = main.getBoundingClientRect();
-        const asideRect = aside.getBoundingClientRect();
-        const fullMain = document.querySelector<HTMLElement>(".bf-fluid-breakout-main.is-full-width");
-        const noAsideMain = document.querySelector<HTMLElement>(".bf-fluid-breakout-main.is-no-aside");
-        const endRoot = Array.from(document.querySelectorAll<HTMLElement>(".bf-fluid-breakout")).find(candidate => candidate.querySelector(".bf-fluid-breakout-main")?.nextElementSibling?.matches(".bf-fluid-breakout-aside"));
-        const endMain = endRoot?.querySelector<HTMLElement>(".bf-fluid-breakout-main");
-        const endAside = endRoot?.querySelector<HTMLElement>(".bf-fluid-breakout-aside");
-        const rtlRoot = document.querySelector<HTMLElement>("[dir='rtl'] .bf-fluid-breakout");
-        const rtlAside = rtlRoot?.querySelector<HTMLElement>(".bf-fluid-breakout-aside");
-        const rtlMain = rtlRoot?.querySelector<HTMLElement>(".bf-fluid-breakout-main");
-        const fullRect = fullMain?.getBoundingClientRect();
-        const noAsideRect = noAsideMain?.getBoundingClientRect();
-        const toolbarItems = toolbar.querySelector<HTMLElement>(".bf-fluid-breakout-toolbar-items");
-        const tableFrame = document.querySelector<HTMLElement>(".bf-fluid-breakout-item.is-scrollable");
-        const table = tableFrame?.querySelector<HTMLElement>("table");
-        if (table) {
-          // Turn the deliberately long identifier fixture into a stable
-          // max-content pressure case so every tier proves local containment
-          // rather than accidentally passing because its smaller font wraps.
-          table.style.minInlineSize = "50rem";
-        }
-        const pageOverflow = Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, document.body.scrollWidth - document.body.clientWidth);
-        return {
-          columns,
-          rootRect,
-          contentLeft,
-          contentRight,
-          mainRect,
-          asideRect,
-          mainColumns: Array.from(new Set(mainColumns.map(left => Math.round(left)))).length,
-          mainGridColumn: getComputedStyle(main).gridColumn,
-          fullGridColumn: fullMain ? getComputedStyle(fullMain).gridColumn : "",
-          fullRect: fullRect ? { left: fullRect.left, right: fullRect.right } : null,
-          noAsideGridColumn: noAsideMain ? getComputedStyle(noAsideMain).gridColumn : "",
-          noAsideRect: noAsideRect ? { left: noAsideRect.left, right: noAsideRect.right } : null,
-          endOrder: !!endMain && !!endAside && endMain.compareDocumentPosition(endAside) & Node.DOCUMENT_POSITION_FOLLOWING,
-          endMainLeft: endMain?.getBoundingClientRect().left ?? 0,
-          endAsideLeft: endAside?.getBoundingClientRect().left ?? 0,
-          rtlOrder: !!rtlAside && !!rtlMain && rtlAside.compareDocumentPosition(rtlMain) & Node.DOCUMENT_POSITION_FOLLOWING,
-          rtlAsideRight: rtlAside?.getBoundingClientRect().right ?? 0,
-          rtlMainRight: rtlMain?.getBoundingClientRect().right ?? 0,
-          toolbarItemsWidth: toolbarItems?.getBoundingClientRect().width ?? 0,
-          toolbarFocusVisible: false,
-          tableLocalOverflow: tableFrame ? tableFrame.scrollWidth > tableFrame.clientWidth && getComputedStyle(tableFrame).overflowX === "auto" : false,
-          rootOverflow: root.scrollWidth - root.clientWidth,
-          pageOverflow
-        };
-      });
-      assert(wideState, `Expected ${tier} fluid-breakout wide geometry to be measurable.`);
-      assert(wideState.columns.length === 3 && wideState.columns.every((column, index) => index === 1 || Number.parseFloat(column) >= 224), `Expected ${tier} fluid-breakout to expose 14rem aside tracks at 1036px.`);
-      assert(wideState.mainGridColumn.includes("span 2") && wideState.mainColumns >= 2, `Expected ${tier} fluid-breakout default main to span two tracks and auto-fit cards at 1036px.`);
-      assert(wideState.fullGridColumn === "1 / -1" && wideState.fullRect && Math.abs(wideState.fullRect.left - wideState.contentLeft) <= 1 && Math.abs(wideState.fullRect.right - wideState.contentRight) <= 1, `Expected ${tier} full-width fluid-breakout content to occupy all tracks (grid=${wideState.fullGridColumn}, full=${wideState.fullRect ? `${wideState.fullRect.left}-${wideState.fullRect.right}` : "none"}, content=${wideState.contentLeft}-${wideState.contentRight}).`);
-      assert(wideState.noAsideGridColumn === "2 / span 2" && wideState.noAsideRect && Math.abs(wideState.noAsideRect.left - wideState.mainRect.left) <= 1, `Expected ${tier} no-aside fluid-breakout content to start at the bounded centre track.`);
-      assert(wideState.endOrder && wideState.endAsideLeft > wideState.endMainLeft, `Expected ${tier} end-aside fluid-breakout to preserve source order and logical end placement.`);
-      assert(wideState.rtlOrder && wideState.rtlAsideRight > wideState.rtlMainRight, `Expected ${tier} RTL fluid-breakout to mirror the logical start aside without physical modifiers.`);
-      assert(wideState.toolbarItemsWidth > 0 && wideState.tableLocalOverflow && wideState.rootOverflow <= 1 && wideState.pageOverflow <= 1, `Expected ${tier} fluid-breakout toolbar/table surfaces and page to remain overflow-safe.`);
-
-      const focusButton = page.locator(".bf-fluid-breakout-toolbar button").first();
-      await focusButton.focus();
-      const focusState = await focusButton.evaluate(button => ({
-        focused: document.activeElement === button,
-        outline: getComputedStyle(button).outlineStyle,
-        outlineWidth: getComputedStyle(button).outlineWidth
-      }));
-      assert(focusState.focused && focusState.outline !== "none" && focusState.outlineWidth !== "0px", `Expected ${tier} fluid-breakout toolbar controls to retain visible keyboard focus.`);
-
-      await page.setViewportSize({ width: threshold - 1, height: 1200 });
-      await page.waitForTimeout(40);
-      const beforeTransfer = await page.locator(".bf-fluid-breakout").first().evaluate(root => ({
-        paddingInlineStart: getComputedStyle(root).paddingInlineStart,
-        paddingInlineEnd: getComputedStyle(root).paddingInlineEnd
-      }));
-      assert(Number.parseFloat(beforeTransfer.paddingInlineStart) > 0 && Number.parseFloat(beforeTransfer.paddingInlineEnd) > 0, `Expected ${tier} fluid-breakout to retain outer padding below its tier-specific transfer threshold.`);
-
-      await page.setViewportSize({ width: threshold, height: 1200 });
-      await page.waitForTimeout(40);
-      const atTransfer = await page.locator(".bf-fluid-breakout").first().evaluate(root => ({
-        paddingInlineStart: getComputedStyle(root).paddingInlineStart,
-        paddingInlineEnd: getComputedStyle(root).paddingInlineEnd,
-        mainPaddingInlineStart: getComputedStyle(root.querySelector(".bf-fluid-breakout-main") as Element).paddingInlineStart
-      }));
-      assert(Math.abs(Number.parseFloat(atTransfer.paddingInlineStart)) <= 0.1 && Math.abs(Number.parseFloat(atTransfer.paddingInlineEnd)) <= 0.1 && Number.parseFloat(atTransfer.mainPaddingInlineStart) > 0, `Expected ${tier} fluid-breakout to transfer padding at ${transferThresholds[tier]}rem.`);
-
-      const baselineState = await page.locator("[data-baseline-check]").evaluateAll(elements => elements.every(element => {
-        const rect = element.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0;
-      }));
-      assert(baselineState, `Expected ${tier} fluid-breakout baseline-marked specimens to remain measurable.`);
-    }
-
-    await page.close();
-  } finally {
-    await browser.close();
-  }
-}
-
 async function verifyRichListsAndTabSectionGeometry(origin: string): Promise<void> {
   const browser = await openBrowser();
   const tiers = ["editorial", "documentation", "app", "os"] as const;
@@ -3083,7 +2925,6 @@ async function main(): Promise<void> {
     await verifyReducedNavigationAndTableOfContents(origin);
     await verifyInteractiveTables(origin);
     await verifyPortedCompositionGeometry(origin);
-    await verifyFluidBreakoutGeometry(origin);
     await verifyRichListsAndTabSectionGeometry(origin);
     await verifySitesRecipeCompositions(origin);
     await verifyContentCardGeometry(origin);

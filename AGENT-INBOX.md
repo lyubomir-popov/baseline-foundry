@@ -6,9 +6,10 @@ live in [`docs/spec-archive/001-baseline-foundry-renewal/`](docs/spec-archive/00
 
 ## Current task
 
-The navigation-grid and shared emphasis-bar fixes are complete on
-`fix/navigation-grid-border-thickness`, based on local `main` after Spec 001 was
-closed, fast-forwarded, and archived. The branch is ready for review and merge.
+The notice-bar consistency fix and Fluid Breakout removal are complete on
+`fix/notice-bar-thickness`, based on the pushed `main` after the navigation-grid
+and shared emphasis-bar branch was merged. The follow-up branch is ready for
+review.
 
 Implemented contracts:
 
@@ -18,9 +19,11 @@ Implemented contracts:
 - The obsolete fixed brand-region token was removed from config, types,
   generated-token construction, docs, demos, and tests.
 - `--bf-bar-thickness: 0.1875rem` is the single generated 3px emphasis-bar
-  contract used by navigation markers, tabs, notifications, data spotlights,
-  document/in-page navigation, and highlighted rules. Thin structural borders
-  remain on `--bf-border-width`.
+  contract used by navigation markers, tabs, notices, notifications, data
+  spotlights, document/in-page navigation, and highlighted rules. Thin
+  structural borders remain on `--bf-border-width`.
+- Fluid Breakout has been removed from the public CSS build, generated output,
+  demo catalog and Pattern Atlas, fixture inventory, and behavior/build QA.
 - Data spotlight fixtures now include their required highlighted rule. Their
   five-row subgrid prevents action links from overlapping descriptions, with a
   browser regression covering the spacing.
@@ -79,6 +82,12 @@ After the App Provisions shell fix and public naming audit on 2026-08-21,
 `npm run test:build` passed all 5,090 assertions and `npm run test:behavior`
 passed. Live Playwright review captured App Provisions with visible content in
 the 2,272px-wide main column beside the 288px navigation rail.
+
+After the notice-bar fix and Fluid Breakout removal on 2026-08-21, `npm test`
+passed with 5,064 build assertions plus the full baseline and behavior suites.
+`npm run qa:components` generated 86 screenshots and passed every record with
+zero baseline, overflow, or coverage failures. Live Chrome review confirmed
+the Empty State notice uses the shared `0.1875rem` emphasis-bar token.
 
 The downstream `diagram-registry` validation also passed:
 `validate_registry.py`, `audit_site_copy.py`, three Python unit tests, and seven
