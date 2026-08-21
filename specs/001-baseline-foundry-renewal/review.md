@@ -1,10 +1,23 @@
 # Review: Baseline Foundry renewal
 
-**Reviewed**: 2026-08-13; reopened 2026-08-16; final automation 2026-08-17
+**Reviewed**: 2026-08-13; reopened 2026-08-16; final automation 2026-08-21
 
-**Disposition**: Implementation and automated closeout complete. The explicitly
-requested integrated-browser catalog sign-off remains pending because that
-backend is unavailable in the current session.
+**Disposition**: Accepted for merge on 2026-08-21 with implementation and
+automated closeout complete. The explicitly requested in-app-browser catalog
+sign-off was not performed because that backend remained unavailable; only
+Chrome was exposed and it was not substituted.
+
+## 2026-08-21 owner closeout
+
+The owner directed the feature branch to be wrapped up and merged before the
+incoming framework defects were implemented. Fresh `npm test` and
+`npm run qa:components` runs passed on commit `e500ae1`: 5,061 static
+assertions, the complete baseline and behavior suites, 87 screenshots, and all
+338 four-tier records were green with zero reported baseline, overflow, or
+coverage failures. In-app browser selection was retried; the backend remained
+unavailable and browser discovery exposed Chrome only. T102/T105 remain
+unchecked as an honest record of the unperformed browser portion rather than a
+claim that another browser surface was equivalent.
 
 ## 2026-08-17 final automation and adversarial-review resolution
 
