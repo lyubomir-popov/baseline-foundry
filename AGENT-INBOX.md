@@ -29,6 +29,9 @@ Implemented contracts:
   active entry when it would otherwise be outside the sidebar viewport.
 - The pattern catalog uses project-native `Patterns` and `Site compositions`
   labels, without redundant Vanilla port naming.
+- Spacing and grid examples synchronously restore their shared tone and tier
+  before specimen content is parsed, preventing the former light/unstyled
+  first frame before the saved surface appeared.
 
 The rebuilt editorial CSS and tokens were copied to the sibling
 `diagram-registry` checkout without adding a consumer override. Its documented
@@ -62,6 +65,12 @@ navigation and reload.
 
 After the catalog naming cleanup on 2026-08-21, `npm run test:build` passed all
 5,071 assertions.
+
+After the example pre-paint fix on 2026-08-21, `npm test` passed with 5,090
+build assertions plus the full baseline and behavior suites. The new behavior
+regression verifies the saved App/dark surface while the deferred example
+runtime is blocked. `npm run qa:components` also recaptured 87 screenshots and
+passed all baseline records.
 
 The downstream `diagram-registry` validation also passed:
 `validate_registry.py`, `audit_site_copy.py`, three Python unit tests, and seven

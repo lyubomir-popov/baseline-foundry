@@ -92,6 +92,42 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
   }
 }
 
+async function verifyExamplePreferencesBeforePaint(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 900 }
+    });
+
+    await page.goto(`${origin}/index.html`, { waitUntil: "networkidle" });
+    await page.evaluate(() => {
+      localStorage.setItem("baseline-foundry:living-spec-tier", "app");
+      localStorage.setItem("baseline-foundry:living-spec-tone", "dark");
+    });
+
+    await page.route("**/demo/example-page.js", route => route.abort());
+    await page.goto(`${origin}/examples/spacing/element-vs-container.html`, { waitUntil: "load" });
+
+    const preRuntimeState = await page.evaluate(() => ({
+      background: getComputedStyle(document.body).backgroundColor,
+      colorScheme: document.documentElement.style.colorScheme,
+      firstElementIsInitializer: document.body.firstElementChild?.getAttribute("src") === "../../demo/example-page-init.js",
+      ready: document.body.dataset.examplePreferencesReady,
+      tier: document.body.dataset.bfTier,
+      tone: document.body.classList.contains("is-dark") ? "dark" : "light"
+    }));
+
+    assert(preRuntimeState.firstElementIsInitializer, "Expected the synchronous example preference initializer to be the first body element.");
+    assert(preRuntimeState.ready === "true", "Expected example preferences to be resolved before the deferred page runtime.");
+    assert(preRuntimeState.tier === "app" && preRuntimeState.tone === "dark", `Expected saved app/dark preferences before runtime; got ${preRuntimeState.tier}/${preRuntimeState.tone}.`);
+    assert(preRuntimeState.colorScheme === "dark" && preRuntimeState.background === "rgb(32, 32, 32)", `Expected the first styled example state to use the saved dark App surface; got ${preRuntimeState.colorScheme}/${preRuntimeState.background}.`);
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyPinnedAsideResize(origin: string): Promise<void> {
   const storageKey = "demo:application-shell-aside";
   const route = "/demo/components/application-shell.html";
@@ -2996,6 +3032,7 @@ async function main(): Promise<void> {
 
   try {
     await verifyPageChromeNavigationScroll(origin);
+    await verifyExamplePreferencesBeforePaint(origin);
     await verifyPinnedAsideResize(origin);
     await verifyDrawerOverlay(origin);
     await verifyApplicationLayout(origin);

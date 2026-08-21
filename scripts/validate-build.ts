@@ -771,6 +771,7 @@ async function validateExampleDogfooding(): Promise<void> {
 
       assertNoDuplicateClassAttributes(path.relative(process.cwd(), filePath), html);
       assert(html.includes('data-example-grid-target'), `Expected ${path.relative(process.cwd(), filePath)} to expose the page capture target explicitly.`);
+      assert(/<body[^>]*>\s*<script src="\.\.\/\.\.\/demo\/example-page-init\.js"><\/script>\s*<main/.test(html), `Expected ${path.relative(process.cwd(), filePath)} to apply saved example preferences synchronously before rendering page content.`);
       assert(!/class="[^"]*\b(?:example|spacing)-(?:frame|fixed-width|hero|stack|actions|card|surface|callout|span-demo|span-row|tier-group|nested-specimens|stage-shell|stage-header|density-card|baseline-box|defaults|inline-row)(?![a-z0-9_-])/.test(html), `Expected ${path.relative(process.cwd(), filePath)} to use bf-* primitives instead of the removed generic example wrappers.`);
 
       if (path.basename(filePath) === "column-span-rule.html") {
