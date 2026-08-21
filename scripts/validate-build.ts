@@ -1702,7 +1702,7 @@ function validatePatternAtlasPage(
     assert(!componentAtlasHtml.includes(`href="./${pattern}.html"`), `Expected ${pattern} to live only in the Pattern Atlas taxonomy.`);
   }
 
-  for (const heading of ["Vanilla pattern ports", "Vanilla Sites compositions", "Recipes and layouts", "Documented exclusions"]) {
+  for (const heading of ["Patterns", "Site compositions", "Recipes and layouts", "Documented exclusions"]) {
     assert(patternAtlasHtml.includes(`>${heading}<`), `Expected the Pattern Atlas to include the ${heading} group.`);
   }
   const exclusions = patternAtlasHtml.slice(patternAtlasHtml.indexOf('aria-labelledby="pattern-exclusions-title"'));

@@ -27,6 +27,8 @@ Implemented contracts:
 - The fixed demo catalog sidebar preserves its session scroll position across
   page navigation and reload. Direct deep routes fall back to centring the
   active entry when it would otherwise be outside the sidebar viewport.
+- The pattern catalog uses project-native `Patterns` and `Site compositions`
+  labels, without redundant Vanilla port naming.
 
 The rebuilt editorial CSS and tokens were copied to the sibling
 `diagram-registry` checkout without adding a consumer override. Its documented
@@ -57,6 +59,9 @@ After the demo-navigation restoration on 2026-08-21, `npm run test:build` and
 `npm run test:behavior` passed. Live Chrome review confirmed the Notification
 entry remained visible at the same 1,620px sidebar scroll position after
 navigation and reload.
+
+After the catalog naming cleanup on 2026-08-21, `npm run test:build` passed all
+5,071 assertions.
 
 The downstream `diagram-registry` validation also passed:
 `validate_registry.py`, `audit_site_copy.py`, three Python unit tests, and seven

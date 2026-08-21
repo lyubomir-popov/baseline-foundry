@@ -113,7 +113,7 @@ export const componentSections = [
 
 export const patternSections = [
   {
-    heading: "Vanilla pattern ports",
+    heading: "Patterns",
     items: [
       { title: "Article pagination", href: "/demo/components/article-pagination.html" },
       { title: "Content card", href: "/demo/components/content-card.html" },
@@ -132,7 +132,7 @@ export const patternSections = [
     ]
   },
   {
-    heading: "Vanilla Sites compositions",
+    heading: "Site compositions",
     items: [
       { title: "Basic section", href: "/demo/components/basic-section.html" },
       { title: "CTA section", href: "/demo/components/cta-section.html" },

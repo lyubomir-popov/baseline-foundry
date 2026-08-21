@@ -144,7 +144,7 @@ The demo runs at:
 - [http://127.0.0.1:4174/demo/spec/typography.html](http://127.0.0.1:4174/demo/spec/typography.html)
 - [http://127.0.0.1:4174/demo/panel.html](http://127.0.0.1:4174/demo/panel.html) — OS tier
 - [http://127.0.0.1:4174/demo/components/index.html](http://127.0.0.1:4174/demo/components/index.html) — BF foundations and component primitives
-- [http://127.0.0.1:4174/demo/patterns/index.html](http://127.0.0.1:4174/demo/patterns/index.html) — Vanilla root ports, Sites compositions, recipes, layouts, and documented exclusions
+- [http://127.0.0.1:4174/demo/patterns/index.html](http://127.0.0.1:4174/demo/patterns/index.html) — Patterns, site compositions, recipes, layouts, and documented exclusions
 - [http://127.0.0.1:4174/demo/components/engine-illustration.html](http://127.0.0.1:4174/demo/components/engine-illustration.html) — Three-way raw / compensated / cap comparison
 
 Standalone historical Canonical example batches also live under `examples/grid/` and `examples/spacing/`. Each family has one shared stylesheet (`grid-examples.css` / `spacing-examples.css`); current decisions live in the active Spec Kit package rather than one-off root prompts.
@@ -540,7 +540,7 @@ The generated `tokens.json` then contains the derived metric nudges per element,
 
 The demo surface at `/` shows editorial prose rhythm, tier switching, dark
 theme, grid, spacing, and component specimens. BF primitives are indexed at
-`demo/components/index.html`; Vanilla/Sites compositions and layouts are
+`demo/components/index.html`; patterns, site compositions, and layouts are
 indexed separately at `demo/patterns/index.html`. Their isolated test routes
 remain under `demo/components/`, and the authoritative saved-page inventory is
 in `scripts/component-demo-shared.ts`.
