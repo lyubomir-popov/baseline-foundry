@@ -440,7 +440,6 @@ Example sketch for a downstream Ubuntu Sans theme:
 	"components": {
 		"borderWidthPx": 1,
 		"radiusRem": 0,
-		"topNavigationBrandRegionRem": 13,
 		"controlBlockPaddingRem": 0.5,
 		"controlCompactBlockPaddingRem": 0.25,
 		"controlInlinePaddingRem": 1,

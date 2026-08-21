@@ -424,6 +424,13 @@ ${capEngineDemo}
   margin: 0 0 -1px;
 }
 
+/* Highlight rules share the same scalable emphasis-bar geometry as active
+ * navigation, tabs, notifications, and document-navigation markers. */
+:where(.bf-theme) :where(.bf-rule.is-highlighted, .bf-prose hr.is-highlighted) {
+  block-size: var(--bf-bar-thickness);
+  margin-block-end: calc(var(--bf-bar-thickness) * -1);
+}
+
 :where(.bf-theme) :where(.bf-token-row) {
   border-top: 1px solid var(--bf-color-rule);
   display: grid;

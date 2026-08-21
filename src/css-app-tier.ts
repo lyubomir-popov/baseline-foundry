@@ -59,7 +59,7 @@ ${scoped(" :where(.bf-navigation-bar, .bf-navigation-drawer, .bf-aside) :where(.
 
 ${scoped(" :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true'])")} {
   background: transparent;
-  box-shadow: inset 3px 0 0 var(--vf-color-link-default, #0066cc);
+  box-shadow: inset var(--bf-bar-thickness) 0 0 var(--vf-color-link-default, #0066cc);
 }
 
 ${scoped(" :where(.bf-navigation-bar)")},

@@ -146,8 +146,8 @@ and CSS.
 ```jsonc
 {
   "borderWidth": "1px",
+  "barThickness": "0.1875rem",
   "radius": "0.125rem",
-  "topNavigationBrandRegion": "13rem",
   "controlBlockPadding": "0.41rem",
   "controlCompactBlockPadding": "0rem",
   "controlInlinePadding": "0.5rem",

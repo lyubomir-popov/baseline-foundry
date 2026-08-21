@@ -70,7 +70,7 @@ export function interactiveFeedbackCss(): string {
   --bf-notification-accent: var(--bf-color-border-information);
   background: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-default);
-  border-inline-start: calc(var(--bf-border-width) * 3) solid var(--bf-notification-accent);
+  border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);
   color: var(--bf-color-text-default);
   margin-block: 0 var(--bf-space-3);
   max-inline-size: 100%;

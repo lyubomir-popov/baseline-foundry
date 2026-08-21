@@ -1,41 +1,63 @@
 # Agent inbox: live state
 
 This file owns only the current handoff, blockers, and last-known-green state.
-Durable intent and evidence live in the active spec package; execution order
-lives in `TODO.md`.
+Durable execution order lives in `TODO.md`; completed Spec 001 intent and evidence
+live in [`docs/spec-archive/001-baseline-foundry-renewal/`](docs/spec-archive/001-baseline-foundry-renewal/).
 
 ## Current task
 
-Spec 001's Vanilla and Sites parity renewal is implemented on
-`feat/001-baseline-foundry-renewal`. The implementation commit containing this
-handoff is the immutable source for downstream refreshes. Owner acceptance and
-the explicitly requested in-app-browser catalog pass remain before merge and
-archive.
+The navigation-grid and shared emphasis-bar fixes are complete on
+`fix/navigation-grid-border-thickness`, based on local `main` after Spec 001 was
+closed, fast-forwarded, and archived. The branch is ready for review and merge.
 
-The durable contract and review evidence live in
-[`specs/001-baseline-foundry-renewal/`](specs/001-baseline-foundry-renewal/),
-especially [`review.md`](specs/001-baseline-foundry-renewal/review.md) and
-[`contracts/vanilla-sites-parity.md`](specs/001-baseline-foundry-renewal/contracts/vanilla-sites-parity.md).
+Implemented contracts:
+
+- Desktop `bf-top-navigation.is-grid-aligned` now uses the shared eight-column
+  tracks and gutter: the banner spans columns one and two, and primary
+  navigation starts at column three and spans the remaining six columns.
+- The obsolete fixed brand-region token was removed from config, types,
+  generated-token construction, docs, demos, and tests.
+- `--bf-bar-thickness: 0.1875rem` is the single generated 3px emphasis-bar
+  contract used by navigation markers, tabs, notifications, data spotlights,
+  document/in-page navigation, and highlighted rules. Thin structural borders
+  remain on `--bf-border-width`.
+- Data spotlight fixtures now include their required highlighted rule. Their
+  five-row subgrid prevents action links from overlapping descriptions, with a
+  browser regression covering the spacing.
+
+The rebuilt editorial CSS and tokens were copied to the sibling
+`diagram-registry` checkout without adding a consumer override. Its documented
+validation suite passed. Live Chrome review at 1,280px and 2,560px confirmed
+that the primary navigation starts at the computed third content column; the
+2,560px positions were exactly 944px in both cases, with no browser warnings or
+errors.
 
 ## Preservation boundary
 
-Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, and the clean Vanilla
-comparison snapshot under `tmp/vanilla-main/`. The sibling Vanilla checkout has
-user changes in `yarn.lock`; do not pull over or clean that checkout.
+Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, and the Vanilla comparison
+snapshot under `tmp/vanilla-main/`. The sibling Vanilla checkout has user
+changes in `yarn.lock`; do not pull over or clean that checkout. The sibling
+`diagram-registry` checkout is outside this repository; treat any consumer work
+there as unrelated. Only its two vendored Baseline Foundry assets belong to this
+handoff.
 
 ## Last known green
 
-On 2026-08-17, `npm test` passed with 5,061 static assertions, all 338
-four-tier records, and the complete behavior suite. `npm run qa:components`
-generated 87 screenshots and passed all 338 records with zero baseline,
-overflow, or coverage failures. Opus's notification-dismissal Low is fixed with
-a keyboard-focus regression. The canonical-tag regression screenshot is now
-durable Spec 001 evidence; the unrelated GPU debug log was removed.
+On 2026-08-21, final `npm test` passed with 5,071 build assertions, all component
+baseline records, and the complete behavior suite. Final
+`npm run qa:components` generated 87 screenshots and passed every record with
+zero baseline, overflow, or coverage failures. Affected screenshots were
+reviewed for top navigation, tabs, notifications, data spotlight, side
+navigation, and in-page navigation.
+
+The downstream `diagram-registry` validation also passed:
+`validate_registry.py`, `audit_site_copy.py`, three Python unit tests, and seven
+Node security tests. Its one unresolved immutable-revision warning is the
+documented internal example warning and is unrelated to this refresh.
 
 ## Blockers
 
-The in-app browser backend is unavailable; browser discovery exposed Chrome
-only, and Chrome was not substituted. T102/T105 therefore remain open. An
-earlier in-app pass covered corrected pagination at 900px and 304px, while the
-complete catalog and responsive matrix remain covered by repository Playwright
-and screenshot QA.
+None for the fix branch. The in-app browser backend remains unavailable, so the
+historical Spec 001 in-app catalog pass remains recorded as unperformed in the
+archived review; repository Playwright, screenshot QA, and the downstream live
+Chrome check were completed without rewriting that evidence.

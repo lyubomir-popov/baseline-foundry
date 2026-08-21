@@ -40,7 +40,7 @@ ${headingTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-in-page-navigation-list) {
-  border-inline-start: calc(var(--bf-border-width) * 3) solid var(--bf-color-border-low-contrast);
+  border-inline-start: var(--bf-bar-thickness) solid var(--bf-color-border-low-contrast);
   list-style: none;
   margin: 0;
   min-inline-size: 0;
@@ -93,9 +93,9 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   background: currentColor;
   block-size: 100%;
   content: "";
-  inline-size: calc(var(--bf-border-width) * 3);
+  inline-size: var(--bf-bar-thickness);
   inset-block: 0;
-  inset-inline-start: calc(var(--bf-border-width) * -3);
+  inset-inline-start: calc(var(--bf-bar-thickness) * -1);
   position: absolute;
 }
 
@@ -222,7 +222,7 @@ ${bodyCaseTypeStyles}  align-items: center;
 
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded > .bf-in-page-navigation-nav > .bf-in-page-navigation-list, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) > .bf-in-page-navigation-nav > .bf-in-page-navigation-list) {
     background: var(--bf-color-background-alt);
-    border-inline-start: calc(var(--bf-border-width) * 3) solid var(--bf-color-border-low-contrast);
+    border-inline-start: var(--bf-bar-thickness) solid var(--bf-color-border-low-contrast);
     display: block;
     grid-column: 1 / -1;
     grid-row: 2;

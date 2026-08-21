@@ -93,7 +93,6 @@ const REQUIRED_LAYOUT_FIELDS = [
 const REQUIRED_COMPONENT_FIELDS = [
   "borderWidthPx",
   "radiusRem",
-  "topNavigationBrandRegionRem",
   "controlBlockPaddingRem",
   "controlInlinePaddingRem",
   "controlVisualSizeRem",
@@ -286,8 +285,10 @@ function buildComponentTokens(config: ThemeConfig): ComponentTokens {
 
   return {
     borderWidth: `${config.components.borderWidthPx}px`,
+    // Vanilla's shared $bar-thickness: 3px at a 16px root, expressed in rem
+    // so emphasis bars scale with root text sizing while thin borders do not.
+    barThickness: toRem(3 / 16),
     radius: toRem(config.components.radiusRem),
-    topNavigationBrandRegion: toRem(config.components.topNavigationBrandRegionRem),
     controlBlockPadding: toRem(config.components.controlBlockPaddingRem),
     controlCompactBlockPadding: toRem(
       config.components.controlCompactBlockPaddingRem ?? config.components.controlBlockPaddingRem

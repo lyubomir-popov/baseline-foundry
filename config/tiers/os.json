@@ -105,7 +105,6 @@
   "components": {
     "borderWidthPx": 1,
     "radiusRem": 0,
-    "topNavigationBrandRegionRem": 13,
     "controlBlockPaddingRem": 0.375,
     "controlCompactBlockPaddingRem": 0.25,
     "controlInlinePaddingRem": 0.75,

@@ -82,9 +82,9 @@ export function navigationLayoutCss(): string {
   white-space: normal;
 }
 
-/* A grid-aligned header consumes the generated tier default. Consumers can
- * override --bf-top-navigation-brand-region on the component without styling
- * header internals. */
+/* A grid-aligned header uses the same eight tracks and gutter as page content.
+ * The brand/banner owns columns one and two; primary navigation starts at
+ * column three. No independent brand-width token can drift from that grid. */
 :where(.bf-theme) :where(.bf-top-navigation.is-grid-aligned) {
   container-type: inline-size;
 }
@@ -93,16 +93,16 @@ export function navigationLayoutCss(): string {
   :where(.bf-theme) :where(.bf-top-navigation.is-grid-aligned) :where(.bf-top-navigation-row) {
     column-gap: var(--bf-grid-gap-inline);
     display: grid;
-    grid-template-columns: minmax(0, var(--bf-top-navigation-brand-region)) minmax(0, 1fr);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 
   :where(.bf-theme) :where(.bf-top-navigation.is-grid-aligned) :where(.bf-top-navigation-banner) {
-    grid-column: 1;
+    grid-column: 1 / span 2;
     min-inline-size: 0;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation.is-grid-aligned) :where(.bf-top-navigation-nav) {
-    grid-column: 2;
+    grid-column: 3 / -1;
     min-inline-size: 0;
   }
 

@@ -424,25 +424,35 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     await waitForFonts(desktopPage);
     await disableDemoChromeHitTesting(desktopPage);
 
-    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
-      await desktopPage.locator("[data-page-chrome-tier-select]").selectOption(tier);
-      const taggedGeometry = await desktopPage.evaluate(() => {
+    for (const width of [1280, 2560]) {
+      await desktopPage.setViewportSize({ width, height: 960 });
+
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await desktopPage.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        const taggedGeometry = await desktopPage.evaluate(() => {
         const navigation = document.querySelector<HTMLElement>("#top-navigation-default");
         const row = navigation?.querySelector<HTMLElement>(".bf-top-navigation-row");
+        const banner = navigation?.querySelector<HTMLElement>(".bf-top-navigation-banner");
+        const primaryNavigation = navigation?.querySelector<HTMLElement>(".bf-top-navigation-nav");
+        const contentGrid = document.querySelector<HTMLElement>("[data-baseline-label='top navigation content grid']");
         const active = navigation?.querySelector<HTMLElement>(".bf-top-navigation-item.is-selected > .bf-top-navigation-link");
         const logoLink = navigation?.querySelector<HTMLElement>(".bf-top-navigation-logo.is-canonical-tagged > .bf-top-navigation-link");
         const tag = navigation?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
         const icon = navigation?.querySelector<SVGSVGElement>(".bf-top-navigation-logo-icon");
         const title = navigation?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
-        if (!navigation || !row || !active || !logoLink || !tag || !icon || !title) return null;
+        if (!navigation || !row || !banner || !primaryNavigation || !contentGrid || !active || !logoLink || !tag || !icon || !title) return null;
 
         const navigationRect = navigation.getBoundingClientRect();
         const rowRect = row.getBoundingClientRect();
+        const bannerRect = banner.getBoundingClientRect();
+        const primaryNavigationRect = primaryNavigation.getBoundingClientRect();
+        const contentGridRect = contentGrid.getBoundingClientRect();
         const activeRect = active.getBoundingClientRect();
         const tagRect = tag.getBoundingClientRect();
         const iconRect = icon.getBoundingClientRect();
         const titleRect = title.getBoundingClientRect();
         const rowStyles = getComputedStyle(row);
+        const contentGridStyles = getComputedStyle(contentGrid);
         const tagStyles = getComputedStyle(tag);
         const iconStyles = getComputedStyle(icon);
         const titleStyles = getComputedStyle(title);
@@ -456,9 +466,20 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         const tagCentre = tagRect.top + (tagRect.height / 2);
         const graphicInlineCentre = iconRect.left
           + ((graphicBox.x + (graphicBox.width / 2) - viewBox.x) * graphicScale);
+        const contentGutter = Number.parseFloat(contentGridStyles.columnGap);
+        const contentTrack = (contentGridRect.width - (contentGutter * 7)) / 8;
         return {
           tier: document.body.dataset.bfTier,
-          brandRegionToken: getComputedStyle(navigation).getPropertyValue("--bf-top-navigation-brand-region").trim(),
+          barThicknessToken: getComputedStyle(navigation).getPropertyValue("--bf-bar-thickness").trim(),
+          activeShadow: getComputedStyle(active).boxShadow,
+          rowLeft: rowRect.left,
+          rowWidth: rowRect.width,
+          contentGridLeft: contentGridRect.left,
+          contentGridWidth: contentGridRect.width,
+          bannerLeft: bannerRect.left,
+          bannerWidth: bannerRect.width,
+          primaryNavigationLeft: primaryNavigationRect.left,
+          thirdContentColumnStart: contentGridRect.left + (2 * (contentTrack + contentGutter)),
           navigationBottom: navigationRect.bottom,
           rowBottom: rowRect.bottom,
           activeBottom: activeRect.bottom,
@@ -481,36 +502,35 @@ async function verifyTopNavigation(origin: string): Promise<void> {
           graphicInlineCentreDelta: Math.abs(graphicInlineCentre - (tagRect.left + (tagRect.width / 2))),
           iconOpticalOffsetInline: new DOMMatrixReadOnly(iconStyles.transform).m41
         };
-      });
-      assert(taggedGeometry, `Expected tagged top-navigation geometry for ${tier}.`);
-      assert(taggedGeometry.tier === tier, `Expected tagged top-navigation fixture to use ${tier}, got ${taggedGeometry.tier}.`);
-      assert(taggedGeometry.brandRegionToken === "13rem", `Expected ${tier} top-navigation to expose the generated 13rem brand-region default, got ${taggedGeometry.brandRegionToken}.`);
-      assert(taggedGeometry.rowPaddingStart === 0 && taggedGeometry.rowPaddingEnd === 0, `Expected ${tier} top-navigation row to have zero block padding.`);
-      assert(Math.abs(taggedGeometry.navigationBottom - taggedGeometry.rowBottom) <= 0.1, `Expected ${tier} navigation and row bottom edges to coincide.`);
-      assert(Math.abs(taggedGeometry.rowBottom - taggedGeometry.activeBottom) <= 0.1, `Expected ${tier} active navigation highlight to meet the row boundary.`);
-      assert(Math.abs(taggedGeometry.tagTopOffset) <= 0.1, `Expected ${tier} tagged brand block to attach to the navigation top edge.`);
-      assert(taggedGeometry.tagBackground === "rgb(233, 84, 32)", `Expected ${tier} tagged brand block to use Ubuntu orange, got ${taggedGeometry.tagBackground}.`);
-      assert(taggedGeometry.logoDisplay === "flex", `Expected ${tier} tagged logo to preserve the text-relative flex composition.`);
-      assert(Math.abs(taggedGeometry.tagWidth - 22) <= 0.1 && Math.abs(taggedGeometry.tagHeight - 38) <= 0.1, `Expected ${tier} tagged brand block to remain 22px by 38px, got ${taggedGeometry.tagWidth}px by ${taggedGeometry.tagHeight}px.`);
-      assert(Math.abs(taggedGeometry.tagAspect - (38 / 22)) <= 0.01, `Expected ${tier} tagged brand block to preserve the 38:22 aspect, got ${taggedGeometry.tagAspect}.`);
-      assert(Math.abs(taggedGeometry.tagRowEndResidual - 10) <= 0.1, `Expected ${tier} tag to stop 10px before the occupied row boundary, got ${taggedGeometry.tagRowEndResidual}px.`);
-      assert(Math.abs(taggedGeometry.iconWidth - 16) <= 0.1 && Math.abs(taggedGeometry.iconHeight - 16) <= 0.1 && Math.abs(taggedGeometry.iconAspect - 1) <= 0.01, `Expected ${tier} Circle of Friends to use a 16px square icon box, got ${taggedGeometry.iconWidth}px by ${taggedGeometry.iconHeight}px.`);
-      assert(taggedGeometry.sourceAspect > 1, `Expected ${tier} fixture to retain the original asymmetric Circle of Friends viewBox.`);
-      assert(Math.abs(taggedGeometry.iconBottomInset - 6) <= 0.1, `Expected ${tier} Circle of Friends to keep its fixed 6px tag-bottom inset, got ${taggedGeometry.iconBottomInset}px.`);
-      assert(Math.abs(taggedGeometry.iconTagCentreDelta - 5) <= 0.1, `Expected ${tier} Circle of Friends to sit 5px below the tag centre while aligning to the title, got ${taggedGeometry.iconTagCentreDelta}px.`);
-      assert(taggedGeometry.iconTitleFirstLineCentreDelta <= 0.1, `Expected ${tier} Circle of Friends to align with the first brand-title line, got ${taggedGeometry.iconTitleFirstLineCentreDelta}px.`);
-      assert(taggedGeometry.graphicInlineCentreDelta <= 0.25, `Expected ${tier} Circle of Friends drawing to remain optically centred after compensating for its asymmetric source bounds; got ${taggedGeometry.graphicInlineCentreDelta}px.`);
-      assert(Math.abs(taggedGeometry.iconOpticalOffsetInline + 0.2) <= 0.01, `Expected ${tier} Circle of Friends to retain the -0.2px source-viewBox correction, got ${taggedGeometry.iconOpticalOffsetInline}px.`);
+        });
+        assert(taggedGeometry, `Expected tagged top-navigation geometry for ${tier} at ${width}px.`);
+        assert(taggedGeometry.tier === tier, `Expected tagged top-navigation fixture to use ${tier}, got ${taggedGeometry.tier}.`);
+        assert(taggedGeometry.barThicknessToken === "0.1875rem", `Expected ${tier} to expose the shared 0.1875rem emphasis bar, got ${taggedGeometry.barThicknessToken}.`);
+        assert(taggedGeometry.activeShadow.includes("-3px"), `Expected ${tier} desktop top-navigation highlight to resolve to 3px, got ${taggedGeometry.activeShadow}.`);
+        assert(Math.abs(taggedGeometry.rowLeft - taggedGeometry.contentGridLeft) <= 0.1 && Math.abs(taggedGeometry.rowWidth - taggedGeometry.contentGridWidth) <= 0.1, `Expected ${tier} navigation and content grids to share bounds at ${width}px.`);
+        assert(Math.abs(taggedGeometry.bannerLeft - taggedGeometry.contentGridLeft) <= 0.1, `Expected ${tier} banner to begin at content column one at ${width}px.`);
+        assert(Math.abs(taggedGeometry.primaryNavigationLeft - taggedGeometry.thirdContentColumnStart) <= 0.1, `Expected ${tier} primary navigation to begin at content column three at ${width}px; nav=${taggedGeometry.primaryNavigationLeft}, column=${taggedGeometry.thirdContentColumnStart}.`);
+        assert(taggedGeometry.bannerWidth > 0 && taggedGeometry.primaryNavigationLeft > taggedGeometry.bannerLeft + taggedGeometry.bannerWidth, `Expected ${tier} banner to occupy the first two tracks before the navigation gutter at ${width}px.`);
+        assert(taggedGeometry.rowPaddingStart === 0 && taggedGeometry.rowPaddingEnd === 0, `Expected ${tier} top-navigation row to have zero block padding.`);
+        assert(Math.abs(taggedGeometry.navigationBottom - taggedGeometry.rowBottom) <= 0.1, `Expected ${tier} navigation and row bottom edges to coincide.`);
+        assert(Math.abs(taggedGeometry.rowBottom - taggedGeometry.activeBottom) <= 0.1, `Expected ${tier} active navigation highlight to meet the row boundary.`);
+        assert(Math.abs(taggedGeometry.tagTopOffset) <= 0.1, `Expected ${tier} tagged brand block to attach to the navigation top edge.`);
+        assert(taggedGeometry.tagBackground === "rgb(233, 84, 32)", `Expected ${tier} tagged brand block to use Ubuntu orange, got ${taggedGeometry.tagBackground}.`);
+        assert(taggedGeometry.logoDisplay === "flex", `Expected ${tier} tagged logo to preserve the text-relative flex composition.`);
+        assert(Math.abs(taggedGeometry.tagWidth - 22) <= 0.1 && Math.abs(taggedGeometry.tagHeight - 38) <= 0.1, `Expected ${tier} tagged brand block to remain 22px by 38px, got ${taggedGeometry.tagWidth}px by ${taggedGeometry.tagHeight}px.`);
+        assert(Math.abs(taggedGeometry.tagAspect - (38 / 22)) <= 0.01, `Expected ${tier} tagged brand block to preserve the 38:22 aspect, got ${taggedGeometry.tagAspect}.`);
+        assert(Math.abs(taggedGeometry.tagRowEndResidual - 10) <= 0.1, `Expected ${tier} tag to stop 10px before the occupied row boundary, got ${taggedGeometry.tagRowEndResidual}px.`);
+        assert(Math.abs(taggedGeometry.iconWidth - 16) <= 0.1 && Math.abs(taggedGeometry.iconHeight - 16) <= 0.1 && Math.abs(taggedGeometry.iconAspect - 1) <= 0.01, `Expected ${tier} Circle of Friends to use a 16px square icon box, got ${taggedGeometry.iconWidth}px by ${taggedGeometry.iconHeight}px.`);
+        assert(taggedGeometry.sourceAspect > 1, `Expected ${tier} fixture to retain the original asymmetric Circle of Friends viewBox.`);
+        assert(Math.abs(taggedGeometry.iconBottomInset - 6) <= 0.1, `Expected ${tier} Circle of Friends to keep its fixed 6px tag-bottom inset, got ${taggedGeometry.iconBottomInset}px.`);
+        assert(Math.abs(taggedGeometry.iconTagCentreDelta - 5) <= 0.1, `Expected ${tier} Circle of Friends to sit 5px below the tag centre while aligning to the title, got ${taggedGeometry.iconTagCentreDelta}px.`);
+        assert(taggedGeometry.iconTitleFirstLineCentreDelta <= 0.1, `Expected ${tier} Circle of Friends to align with the first brand-title line, got ${taggedGeometry.iconTitleFirstLineCentreDelta}px.`);
+        assert(taggedGeometry.graphicInlineCentreDelta <= 0.25, `Expected ${tier} Circle of Friends drawing to remain optically centred after compensating for its asymmetric source bounds; got ${taggedGeometry.graphicInlineCentreDelta}px.`);
+        assert(Math.abs(taggedGeometry.iconOpticalOffsetInline + 0.2) <= 0.01, `Expected ${tier} Circle of Friends to retain the -0.2px source-viewBox correction, got ${taggedGeometry.iconOpticalOffsetInline}px.`);
+      }
     }
 
-    const overriddenBrandRegionWidth = await desktopPage.evaluate(() => {
-      const navigation = document.querySelector<HTMLElement>("#top-navigation-default");
-      const banner = navigation?.querySelector<HTMLElement>(".bf-top-navigation-banner");
-      if (!navigation || !banner) return null;
-      navigation.style.setProperty("--bf-top-navigation-brand-region", "15rem");
-      return banner.getBoundingClientRect().width;
-    });
-    assert(overriddenBrandRegionWidth !== null && Math.abs(overriddenBrandRegionWidth - 240) <= 0.1, `Expected a component-local brand-region override to produce a 15rem rail, got ${overriddenBrandRegionWidth}px.`);
+    await desktopPage.setViewportSize({ width: 1440, height: 960 });
 
     const desktopDropdownToggle = desktopPage.locator(".bf-top-navigation-dropdown-toggle").first();
     await desktopDropdownToggle.waitFor({ state: "visible" });
@@ -1140,13 +1160,22 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
     await page.setViewportSize({ width: 820, height: 800 });
     await page.goto(`${origin}/demo/components/tabs.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
-    const tabRuleGap = await page.evaluate(() => {
-      const list = document.querySelector<HTMLElement>(".bf-tabs-list");
-      const active = document.querySelector<HTMLElement>(".bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']");
-      if (!list || !active) return null;
-      return Math.abs(list.getBoundingClientRect().bottom - active.getBoundingClientRect().bottom);
-    });
-    assert(tabRuleGap !== null && tabRuleGap <= 1.1, `Expected active tab rule to meet the list boundary, got ${tabRuleGap}px.`);
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      const tabRule = await page.evaluate(() => {
+        const list = document.querySelector<HTMLElement>(".bf-tabs-list");
+        const active = document.querySelector<HTMLElement>(".bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']");
+        if (!list || !active) return null;
+        const styles = getComputedStyle(active);
+        return {
+          gap: Math.abs(list.getBoundingClientRect().bottom - active.getBoundingClientRect().bottom),
+          thickness: Number.parseFloat(styles.borderBottomWidth),
+          token: styles.getPropertyValue("--bf-bar-thickness").trim()
+        };
+      });
+      assert(tabRule !== null && tabRule.gap <= 1.1, `Expected ${tier} active tab rule to meet the list boundary, got ${tabRule?.gap}px.`);
+      assert(tabRule.thickness === 3 && tabRule.token === "0.1875rem", `Expected ${tier} active tab rule to use the shared 3px/0.1875rem emphasis bar; got ${tabRule.thickness}px/${tabRule.token}.`);
+    }
 
     await page.goto(`${origin}/demo/components/notice.html`, { waitUntil: "networkidle" });
     const noticeSemantics = await page.locator(".bf-notice").evaluateAll(elements => elements.map(element => ({
@@ -1600,13 +1629,16 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         const notifications = Array.from(document.querySelectorAll<HTMLElement>(".bf-notification:not([hidden])"));
         return {
           baseline,
+          barThicknessToken: getComputedStyle(document.body).getPropertyValue("--bf-bar-thickness").trim(),
           bodyFontSize: getComputedStyle(document.body).getPropertyValue("--bf-body-font-size").trim(),
           notificationFontSizes: notifications.map(notification => getComputedStyle(notification.querySelector(".bf-notification-title") as Element).fontSize),
+          accentWidths: notifications.filter(notification => !notification.classList.contains("is-borderless")).map(notification => Number.parseFloat(getComputedStyle(notification).borderInlineStartWidth)),
           heights: notifications.map(notification => notification.getBoundingClientRect().height),
           overflow: notifications.map(notification => notification.scrollWidth - notification.clientWidth)
         };
       });
       assert(geometry.baseline > 0, `Expected ${tier} notification fixture to resolve a positive baseline.`);
+      assert(geometry.barThicknessToken === "0.1875rem" && geometry.accentWidths.every(width => width === 3), `Expected ${tier} notification accents to use the shared 3px/0.1875rem emphasis bar; got ${geometry.accentWidths.join(", ")}px/${geometry.barThicknessToken}.`);
       assert(geometry.heights.every(height => Math.abs((height / geometry.baseline) - Math.round(height / geometry.baseline)) <= 0.05), `Expected ${tier} notification border boxes to stay baseline multiples; heights=${geometry.heights.join(", ")}, baseline=${geometry.baseline}.`);
       assert(geometry.overflow.every(delta => delta <= 1), `Expected ${tier} notifications to avoid inline overflow; deltas=${geometry.overflow.join(", ")}.`);
       assert(geometry.notificationFontSizes.length > 0, `Expected ${tier} notification fixture typography to be measurable.`);
@@ -1987,6 +2019,24 @@ async function verifyPortedCompositionGeometry(origin: string): Promise<void> {
 
     await page.goto(`${origin}/demo/components/data-spotlight.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      const highlightRules = await page.locator(".bf-data-spotlight-rule").evaluateAll(rules => rules.map(rule => {
+        const styles = getComputedStyle(rule);
+        return {
+          blockSize: Number.parseFloat(styles.blockSize),
+          token: styles.getPropertyValue("--bf-bar-thickness").trim()
+        };
+      }));
+      assert(highlightRules.length === 9, `Expected ${tier} data spotlight fixture to expose all nine highlighted rules.`);
+      assert(highlightRules.every(rule => rule.blockSize === 3 && rule.token === "0.1875rem"), `Expected ${tier} data spotlight rules to use the shared 3px/0.1875rem emphasis bar.`);
+      const actionSpacing = await page.locator(".bf-data-spotlight-item:has(.bf-data-spotlight-action)").evaluateAll(items => items.map(item => {
+        const description = item.querySelector<HTMLElement>("p:not(.bf-data-spotlight-stat)")?.getBoundingClientRect();
+        const action = item.querySelector<HTMLElement>(".bf-data-spotlight-action")?.getBoundingClientRect();
+        return description && action ? action.top - description.bottom : -1;
+      }));
+      assert(actionSpacing.length === 4 && actionSpacing.every(gap => gap >= 0), `Expected ${tier} data spotlight actions not to overlap their descriptions.`);
+    }
     let layoutState = await page.locator(".bf-data-spotlight.is-four-blocks").evaluate(root => {
       const items = Array.from(root.querySelectorAll<HTMLElement>(".bf-data-spotlight-item"));
       const positions = items.map(item => item.getBoundingClientRect());

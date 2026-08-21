@@ -104,7 +104,7 @@ function controlMarginBottomExpression(lineHeightVar: string, blockPaddingVar: s
 }
 
 function componentAlignmentVars(components: ComponentTokens): string {
-  return `  --bf-border-width: ${components.borderWidth};\n  --bf-radius: ${components.radius};\n  --bf-top-navigation-brand-region: ${components.topNavigationBrandRegion};\n  --bf-control-block-padding: ${components.controlBlockPadding};\n  --bf-control-block-padding-compact: ${components.controlCompactBlockPadding};\n  --bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));\n  --bf-control-box-size-compact: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding-compact) * 2));\n  --bf-control-inline-padding: ${components.controlInlinePadding};\n  --bf-control-inline-padding-action: ${components.controlInlinePaddingAction};\n  --bf-control-inline-padding-field: ${components.controlInlinePaddingField};\n  --bf-control-visual-size: ${components.controlVisualSize};\n  --bf-field-gap: ${components.fieldGap};\n  --bf-panel-padding-inline: ${components.panelPaddingInline};\n  --bf-panel-padding-block: ${components.panelPaddingBlock};\n  --bf-accordion-indent: ${components.accordionIndent};\n`;
+  return `  --bf-border-width: ${components.borderWidth};\n  --bf-bar-thickness: ${components.barThickness};\n  --bf-radius: ${components.radius};\n  --bf-control-block-padding: ${components.controlBlockPadding};\n  --bf-control-block-padding-compact: ${components.controlCompactBlockPadding};\n  --bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));\n  --bf-control-box-size-compact: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding-compact) * 2));\n  --bf-control-inline-padding: ${components.controlInlinePadding};\n  --bf-control-inline-padding-action: ${components.controlInlinePaddingAction};\n  --bf-control-inline-padding-field: ${components.controlInlinePaddingField};\n  --bf-control-visual-size: ${components.controlVisualSize};\n  --bf-field-gap: ${components.fieldGap};\n  --bf-panel-padding-inline: ${components.panelPaddingInline};\n  --bf-panel-padding-block: ${components.panelPaddingBlock};\n  --bf-accordion-indent: ${components.accordionIndent};\n`;
 }
 
 function alignedVisualStart(lineHeightVar: string, visualSize: string, startVar: string, offset = "0rem"): string {
@@ -1293,7 +1293,7 @@ ${controlPadding(controlCompactBlockPaddingVar, "0rem")}  padding-inline: var(--
 
 :where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true']) {
   background: var(--bf-color-background-active);
-  box-shadow: inset 2px 0 0 var(--bf-color-text-default);
+  box-shadow: inset var(--bf-bar-thickness) 0 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
   cursor: default;
 }
@@ -1462,7 +1462,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link),
 :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page']) {
   background: var(--bf-color-background-hover);
-  box-shadow: inset 2px 0 0 var(--bf-color-text-default);
+  box-shadow: inset var(--bf-bar-thickness) 0 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
 }
 
@@ -1678,7 +1678,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   :where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link),
   :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link),
   :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page']) {
-    box-shadow: inset 0 calc(var(--bf-border-width) * -2) 0 var(--bf-color-text-default);
+    box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-dropdown) {

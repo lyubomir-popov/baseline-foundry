@@ -5,15 +5,9 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Align desktop `bf-top-navigation.is-grid-aligned` to columns one through two
-   of the shared eight-column grid and add multi-width, four-tier geometry
-   regressions.
-2. Introduce one rem-based 3px border-thickness token and sweep top-navigation
-   rules, tabs, notifications, spotlight patterns, and other matching emphasis
-   borders onto that shared contract.
-3. Rebuild generated artifacts, run the smallest focused checks while
-   iterating, then finish with `npm test` and `npm run qa:components` plus
-   affected demo review.
+1. Review and merge `fix/navigation-grid-border-thickness`. Implementation,
+   generated-artifact rebuilds, Baseline Foundry closeout gates, affected-state
+   visual review, and the `diagram-registry` downstream refresh are complete.
 
 ## Candidate order after Spec 001
 

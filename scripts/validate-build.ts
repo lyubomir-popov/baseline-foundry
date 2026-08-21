@@ -152,8 +152,8 @@ const LAYOUT_TOKEN_PROPERTIES: Record<string, string> = {
 
 const COMPONENT_TOKEN_PROPERTIES: Record<string, string> = {
   borderWidth: "--bf-border-width",
+  barThickness: "--bf-bar-thickness",
   radius: "--bf-radius",
-  topNavigationBrandRegion: "--bf-top-navigation-brand-region",
   controlBlockPadding: "--bf-control-block-padding",
   controlCompactBlockPadding: "--bf-control-block-padding-compact",
   controlInlinePadding: "--bf-control-inline-padding",
@@ -362,14 +362,17 @@ function validateRenewalComponentContracts(
   assert(css.includes("padding-block: 0 var(--bf-top-navigation-logo-icon-bottom-offset);"), "Expected the tagged navigation mark to preserve its fixed tag-bottom inset.");
   assert(css.includes("transform: translateX(var(--bf-top-navigation-logo-icon-optical-offset-inline));"), "Expected the Circle of Friends to compensate for its asymmetric source bounds.");
   assert(!css.includes("block-size: calc(var(--bf-body-line-height) + (var(--bf-top-navigation-link-padding-block) * 2));"), "Expected tagged navigation not to stretch its tag to the full occupied row.");
-  assert(css.includes("--bf-top-navigation-brand-region: 13rem;"), "Expected generated tier CSS to expose the configurable top-navigation brand-region token.");
-  assert(css.includes("grid-template-columns: minmax(0, var(--bf-top-navigation-brand-region)) minmax(0, 1fr);"), "Expected grid-aligned navigation to consume the generated brand-region token.");
+  assert(!css.includes("--bf-top-navigation-brand-region"), "Expected generated tier CSS to remove the fixed top-navigation brand-region token.");
+  assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));") && css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;"), "Expected grid-aligned navigation to share the eight-column page grid and begin primary navigation at column three.");
+  assert(css.includes("--bf-bar-thickness: 0.1875rem;"), "Expected generated tier CSS to expose the shared rem-based 3px emphasis-bar token.");
+  assert(css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);") && css.includes("border-bottom: var(--bf-bar-thickness) solid transparent;") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notifications, tabs, and highlight rules to consume the shared emphasis-bar token.");
   assert(css.includes("container-name: bf-article-pagination;") && css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes("inline-size: calc((100cqi - var(--bf-space-2)) / 2);"), "Expected article pagination to retain its named container and persistent equal-half structure.");
   assert(css.includes("column-gap: var(--bf-space-2);") && css.includes("row-gap: var(--bf-space-half);"), "Expected article pagination to map Vanilla's medium and x-small spacing to BF rhythm tokens.");
   assert(css.includes("padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination to use semantic medium padding with metric baseline compensation.");
   assert(!css.includes("padding-block: calc(var(--bf-panel-padding-block) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination not to inherit panel-density padding.");
   assert(css.includes("@container bf-article-pagination (width < 28.75rem)") && css.includes("inline-size: calc(var(--bf-space-6) + var(--bf-space-1));"), "Expected article pagination to retain Vanilla's compact previous-link threshold and mapped width.");
   assert(css.includes("@container (width >= 38.75rem)") && css.includes(".bf-data-spotlight.is-three-blocks") && css.includes(".bf-divided-section.is-split-medium"), "Expected static content ports to expose their medium container-query compositions.");
+  assert(css.includes("grid-row: span 5;") && css.includes("grid-template-rows: subgrid;"), "Expected data spotlight subgrids to reserve distinct rows for the highlight rule, statistic, headline, description, and action.");
   assert(css.includes("@container (width >= 64.75rem)") && css.includes(".bf-data-spotlight.is-two-blocks") && css.includes(".bf-divided-section) :where(.bf-divided-section-layout)"), "Expected static content ports to expose their large container-query compositions.");
   assert(!css.includes("bf-muted-heading"), "Expected the deprecated muted-heading port to remain absent from generated CSS.");
   assert(css.includes("container-name: bf-basic-section;") && css.includes("@container bf-basic-section (width >= 38.75rem)") && css.includes("@container bf-basic-section (width >= 64.75rem)"), "Expected basic section to establish medium and large container-query breakpoints.");
@@ -501,6 +504,7 @@ function validateRenewalComponentContracts(
   const dataSpotlightHtml = pages["data-spotlight"] ?? "";
   assert(dataSpotlightHtml.includes("data-component-capture") && dataSpotlightHtml.includes("data-baseline-check") && dataSpotlightHtml.includes("data-overflow-check"), "Expected data spotlight to expose capture, baseline, and overflow fixture markers.");
   assert(dataSpotlightHtml.includes("bf-data-spotlight is-two-blocks") && dataSpotlightHtml.includes("bf-data-spotlight is-three-blocks") && dataSpotlightHtml.includes("bf-data-spotlight is-four-blocks"), "Expected data spotlight to cover all three block-count modifiers.");
+  assert((dataSpotlightHtml.match(/bf-data-spotlight-rule bf-rule is-highlighted/g) ?? []).length === 9, "Expected every data spotlight item to expose its required shared-thickness highlight rule.");
   assert(!dataSpotlightHtml.includes("muted-heading"), "Expected data spotlight not to introduce the deprecated muted-heading port.");
 
   const dividedSectionHtml = pages["divided-section"] ?? "";
@@ -1261,7 +1265,8 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(roles.h1 && roles.h2 && roles.h3 && roles.h4 && roles.h5 && roles.h6, "Expected generated tokens to include the standard heading roles.");
   assert(fontFiles.length > 0, "Expected generated tokens to include at least one font file.");
   assert(components.borderWidth, "Expected generated tokens to include component border width.");
-  assert(components.topNavigationBrandRegion, "Expected generated tokens to include the top-navigation brand-region default.");
+  assert(components.barThickness === "0.1875rem", "Expected generated tokens to include the shared rem-based 3px emphasis-bar thickness.");
+  assert(!("topNavigationBrandRegion" in components), "Expected generated tokens to remove the obsolete fixed navigation brand region.");
   assert(components.controlBlockPadding, "Expected generated tokens to include regular control block padding.");
   assert(components.controlCompactBlockPadding, "Expected generated tokens to include compact control block padding.");
   assert(components.controlInlinePadding, "Expected generated tokens to include component padding.");

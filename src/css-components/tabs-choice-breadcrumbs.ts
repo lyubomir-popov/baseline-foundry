@@ -45,14 +45,14 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
 ${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
-  border-bottom: calc(var(--bf-border-width) * 2) solid transparent;
+  border-bottom: var(--bf-bar-thickness) solid transparent;
   color: var(--bf-color-text-muted);
   cursor: pointer;
   display: inline-flex;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
   margin-bottom: 0;
-  padding-block-end: calc(var(--bf-body-nudge-end) + var(--bf-baseline) - (var(--bf-border-width) * 2));
+  padding-block-end: calc(var(--bf-body-nudge-end) + var(--bf-baseline) - var(--bf-bar-thickness));
   padding-block-start: var(--bf-body-nudge-start);
   padding-inline: var(--bf-control-inline-padding-action);
   text-decoration: none;

@@ -19,7 +19,8 @@ export function staticContentPortsCss(): string {
 /* ------------------------------------------------------------------ */
 
 /* Data spotlight: Vanilla's equal-height wrap becomes an intrinsic grid.
-   Item padding is intentionally item-owned, so compositions never erase the
+   Each item begins with a public highlighted rule using the shared emphasis
+   thickness. Item padding remains item-owned, so compositions never erase the
    shallow inter-row rhythm when the pattern narrows. */
 :where(.bf-theme) :where(.bf-data-spotlight) {
   container-type: inline-size;
@@ -39,7 +40,6 @@ export function staticContentPortsCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-data-spotlight-item) {
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   min-inline-size: 0;
   overflow-wrap: anywhere;
 }
@@ -102,12 +102,11 @@ export function staticContentPortsCss(): string {
 
   :where(.bf-theme) :where(.bf-data-spotlight-header, .bf-data-spotlight-item) {
     display: grid;
-    grid-row: span 4;
+    grid-row: span 5;
     grid-template-rows: subgrid;
   }
 
   :where(.bf-theme) :where(.bf-data-spotlight-item) {
-    border-block-start: 0;
     padding-block-end: 0;
   }
 
