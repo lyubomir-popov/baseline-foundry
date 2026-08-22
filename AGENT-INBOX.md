@@ -99,3 +99,22 @@ None for the fix branch. The in-app browser backend remains unavailable, so the
 historical Spec 001 in-app catalog pass remains recorded as unperformed in the
 archived review; repository Playwright, screenshot QA, and the downstream live
 Chrome check were completed without rewriting that evidence.
+
+## Next framework repair: remove prose-prefixed typography duplication
+
+`src/css.ts` currently emits both the element selector and a redundant
+`.bf-prose`-prefixed selector for `p`, `h1`–`h6`, and `figcaption`. Typography
+must remain element-owned under `.bf-theme`; `.bf-prose` may own prose-flow
+composition, but it must not restate element typography.
+
+Remove the `.bf-prose p`, `.bf-prose h1`–`.bf-prose h6`, and
+`.bf-prose figcaption` entries from `SEMANTIC_SELECTORS_BY_ROLE`. Preserve the
+plain element selectors and the explicit `.bf-body` / `.bf-h1`–`.bf-h6` visual
+role classes. Add reciprocal browser coverage proving that
+`<h3 class="bf-h6">` receives H6 tokens and `<h6 class="bf-h3">` receives H3
+tokens inside `.bf-prose`.
+
+Consumer evidence: Diagram Registry's Education split list uses semantic H3
+headings with `bf-h6`. On 2026-08-22 those headings computed as editorial H3
+(`24px/32px`, weight `500`) instead of H6 (`16px/24px`, weight `550`) because
+`.bf-prose h3` outranked `.bf-h6`.
