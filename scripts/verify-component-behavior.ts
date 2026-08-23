@@ -1102,6 +1102,137 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
   }
 }
 
+async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const expectedByTier = {
+    editorial: {
+      h3: { fontSize: "24px", lineHeight: "32px", fontWeight: "500", fontStyle: "normal" },
+      h6: { fontSize: "16px", lineHeight: "24px", fontWeight: "550", fontStyle: "normal" },
+      bodyMarginBottom: "8px"
+    },
+    documentation: {
+      h3: { fontSize: "24px", lineHeight: "32px", fontWeight: "500", fontStyle: "normal" },
+      h6: { fontSize: "18px", lineHeight: "24px", fontWeight: "300", fontStyle: "normal" },
+      bodyMarginBottom: "8px"
+    },
+    app: {
+      h3: { fontSize: "18px", lineHeight: "24px", fontWeight: "600", fontStyle: "normal" },
+      h6: { fontSize: "14px", lineHeight: "20px", fontWeight: "400", fontStyle: "italic" },
+      bodyMarginBottom: "12px"
+    },
+    os: {
+      h3: { fontSize: "16px", lineHeight: "16px", fontWeight: "500", fontStyle: "normal" },
+      h6: { fontSize: "12px", lineHeight: "16px", fontWeight: "550", fontStyle: "normal" },
+      bodyMarginBottom: "8px"
+    }
+  } as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 960 }
+    });
+
+    await page.goto(`${origin}/demo/components/typography.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+    await page.evaluate(() => {
+      const h6Reference = document.createElement("span");
+      h6Reference.className = "bf-h6";
+      h6Reference.dataset.roleReference = "h6";
+      h6Reference.style.cssText = "position:absolute;visibility:hidden";
+      const h3Reference = document.createElement("span");
+      h3Reference.className = "bf-h3";
+      h3Reference.dataset.roleReference = "h3";
+      h3Reference.style.cssText = "position:absolute;visibility:hidden";
+      const plainBoundary = document.createElement("div");
+      plainBoundary.className = "bf-prose";
+      plainBoundary.style.cssText = "position:absolute;visibility:hidden";
+      plainBoundary.innerHTML = '<p data-prose-boundary="plain">Plain last paragraph</p>';
+      const classedBoundary = document.createElement("div");
+      classedBoundary.className = "bf-prose";
+      classedBoundary.style.cssText = "position:absolute;visibility:hidden";
+      classedBoundary.innerHTML = '<p class="bf-body" data-prose-boundary="classed">Classed last paragraph</p>';
+      document.body.append(h6Reference, h3Reference, plainBoundary, classedBoundary);
+    });
+
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+    await tierSelect.waitFor({ state: "visible" });
+    const measuredTierSignatures = new Set<string>();
+
+    for (const tier of tiers) {
+      const expected = expectedByTier[tier];
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(({ expectedTier, expectedH3Size, expectedH6Size }) => {
+        const h3AsH6 = document.querySelector<HTMLElement>('[data-role-probe="h3-as-h6"]');
+        const h6AsH3 = document.querySelector<HTMLElement>('[data-role-probe="h6-as-h3"]');
+        return document.body.dataset.bfTier === expectedTier &&
+          h3AsH6 !== null && getComputedStyle(h3AsH6).fontSize === expectedH6Size &&
+          h6AsH3 !== null && getComputedStyle(h6AsH3).fontSize === expectedH3Size;
+      }, { expectedTier: tier, expectedH3Size: expected.h3.fontSize, expectedH6Size: expected.h6.fontSize });
+
+      const state = await page.evaluate(() => {
+        const h3AsH6 = document.querySelector<HTMLElement>('[data-role-probe="h3-as-h6"]');
+        const h6AsH3 = document.querySelector<HTMLElement>('[data-role-probe="h6-as-h3"]');
+        const h6Reference = document.querySelector<HTMLElement>('[data-role-reference="h6"]');
+        const h3Reference = document.querySelector<HTMLElement>('[data-role-reference="h3"]');
+        const plainBoundary = document.querySelector<HTMLElement>('[data-prose-boundary="plain"]');
+        const classedBoundary = document.querySelector<HTMLElement>('[data-prose-boundary="classed"]');
+        if (!h3AsH6 || !h6AsH3 || !h6Reference || !h3Reference || !plainBoundary || !classedBoundary) return null;
+
+        const [h3AsH6Typography, h6AsH3Typography, h6ReferenceTypography, h3ReferenceTypography] = [h3AsH6, h6AsH3, h6Reference, h3Reference]
+          .map(element => {
+            const styles = getComputedStyle(element);
+            return {
+              fontFamily: styles.fontFamily,
+              fontSize: styles.fontSize,
+              fontStyle: styles.fontStyle,
+              fontVariantCaps: styles.fontVariantCaps,
+              fontWeight: styles.fontWeight,
+              letterSpacing: styles.letterSpacing,
+              lineHeight: styles.lineHeight,
+              marginBottom: styles.marginBottom,
+              paddingBottom: styles.paddingBottom,
+              paddingTop: styles.paddingTop,
+              textTransform: styles.textTransform
+            };
+          });
+
+        return {
+          tier: document.body.dataset.bfTier,
+          h3AsH6: h3AsH6Typography,
+          h6AsH3: h6AsH3Typography,
+          h6Reference: h6ReferenceTypography,
+          h3Reference: h3ReferenceTypography,
+          plainBoundaryMarginBottom: getComputedStyle(plainBoundary).marginBottom,
+          classedBoundaryMarginBottom: getComputedStyle(classedBoundary).marginBottom
+        };
+      });
+
+      assert(state, `Expected reciprocal semantic/visual typography probes in ${tier}.`);
+      assert(state.tier === tier, `Expected reciprocal typography probes to switch to ${tier}, got ${state.tier}.`);
+      assert(JSON.stringify(state.h3AsH6) === JSON.stringify(state.h6Reference), `Expected ${tier} h3.bf-h6 inside .bf-prose to resolve every measured H6 role property. Probe=${JSON.stringify(state.h3AsH6)}, reference=${JSON.stringify(state.h6Reference)}.`);
+      assert(JSON.stringify(state.h6AsH3) === JSON.stringify(state.h3Reference), `Expected ${tier} h6.bf-h3 inside .bf-prose to resolve every measured H3 role property. Probe=${JSON.stringify(state.h6AsH3)}, reference=${JSON.stringify(state.h3Reference)}.`);
+      for (const [property, expectedValue] of Object.entries(expected.h6)) {
+        assert(state.h3AsH6[property as keyof typeof state.h3AsH6] === expectedValue, `Expected ${tier} h3.bf-h6 ${property} to resolve to concrete H6 value ${expectedValue}, got ${state.h3AsH6[property as keyof typeof state.h3AsH6]}.`);
+      }
+      for (const [property, expectedValue] of Object.entries(expected.h3)) {
+        assert(state.h6AsH3[property as keyof typeof state.h6AsH3] === expectedValue, `Expected ${tier} h6.bf-h3 ${property} to resolve to concrete H3 value ${expectedValue}, got ${state.h6AsH3[property as keyof typeof state.h6AsH3]}.`);
+      }
+      assert(state.plainBoundaryMarginBottom === expected.bodyMarginBottom, `Expected ${tier} plain last prose paragraph to retain body margin ${expected.bodyMarginBottom}, got ${state.plainBoundaryMarginBottom}.`);
+      assert(state.classedBoundaryMarginBottom === expected.bodyMarginBottom, `Expected ${tier} .bf-body last prose paragraph to retain body margin ${expected.bodyMarginBottom}, got ${state.classedBoundaryMarginBottom}.`);
+      measuredTierSignatures.add(`${state.h6AsH3.fontSize}/${state.h6AsH3.fontWeight}/${state.h3AsH6.fontSize}/${state.h3AsH6.fontWeight}/${state.plainBoundaryMarginBottom}`);
+    }
+
+    assert(measuredTierSignatures.size === tiers.length, `Expected four distinct computed typography signatures, got ${measuredTierSignatures.size}: ${Array.from(measuredTierSignatures).join(", ")}.`);
+
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
 const contentCardBaselineTolerancePx = 0.75;
 
 async function verifyRenewalCompositionContracts(origin: string): Promise<void> {
@@ -2917,6 +3048,7 @@ async function main(): Promise<void> {
     await verifyApplicationLayout(origin);
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
+    await verifySemanticRoleClassPrecedence(origin);
     await verifyRenewalCompositionContracts(origin);
     await verifyAdversarialResponsiveGeometry(origin);
     await verifyDirectAndClassSurfaceGeometry(origin);

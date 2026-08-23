@@ -741,6 +741,31 @@ function validateDemoCssSelectorHygiene(demoCssFiles: Record<string, string>): v
   }
 }
 
+function extractGeneratedSelectors(css: string): string[] {
+  return css
+    .split("{")
+    .map(chunk => chunk.slice(chunk.lastIndexOf("}") + 1).trim())
+    .filter(prelude => prelude.length > 0 && !prelude.startsWith("@"))
+    .flatMap(prelude => prelude.split(",").map(selector => selector.trim()));
+}
+
+function validateTypographySelectorOwnership(css: string): void {
+  const selectors = extractGeneratedSelectors(css);
+
+  for (const element of ["p", "h1", "h2", "h3", "h4", "h5", "h6", "figcaption"]) {
+    const proseElementPattern = new RegExp(`\\.bf-prose(?:\\s+|>\\s*)(?::(?:where|is)\\(\\s*)?${element}(?=$|[.#:[\\s)>+~])`);
+    assert(!selectors.some(selector => proseElementPattern.test(selector)), `Expected ${element} typography to remain element-owned instead of being duplicated under .bf-prose.`);
+  }
+
+  for (const element of ["p", "h1", "h2", "h3", "h4", "h5", "h6"]) {
+    assert(selectors.includes(`:where(.bf-theme) :where(${element})`), `Expected generated CSS to retain the semantic ${element} typography selector.`);
+  }
+
+  for (const role of ["body", "h1", "h2", "h3", "h4", "h5", "h6"]) {
+    assert(selectors.includes(`:where(.bf-theme) .bf-${role}`), `Expected generated CSS to retain the explicit .bf-${role} visual-role selector.`);
+  }
+}
+
 async function validateExampleDogfooding(): Promise<void> {
   const exampleDirs = [path.resolve("examples/grid"), path.resolve("examples/spacing")];
 
@@ -891,7 +916,7 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("--bf-body-nudge-start: 0rem;\n  --bf-body-nudge-end: 0rem;"), "Expected built-in tiers to retain metric-derived body nudges.");
   assert(css.includes("--bf-body-nudge-start:") && css.includes("--bf-body-nudge-end:"), "Expected generated CSS to define body alignment nudge variables.");
   assert(css.includes("--bf-h6-nudge-start:") && css.includes("--bf-h6-nudge-end:"), "Expected generated CSS to define h6 alignment nudge variables.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-prose > :last-child) {\n  margin-bottom: 0;"), "Expected prose flow boundaries to trim semantic trailing space now that baseline compensation lives inside the element box.");
+  assert(!css.includes(".bf-prose > :last-child"), "Expected prose containers not to erase the element-owned trailing margin of their last child.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0;\n  padding-block-end:"), "Expected list items to use literal baseline compensation.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  margin-bottom:"), "Expected list containers to use literal semantic spacing.");
@@ -1905,6 +1930,17 @@ async function main(): Promise<void> {
   runInvariant("Common CSS (documentation)", () => validateCommonCss(documentationTier.css));
   runInvariant("Common CSS (OS)", () => validateCommonCss(osTier.css));
   runInvariant("Common CSS (prose preset)", () => validateCommonCss(prosePreset.css));
+  for (const [surfaceName, css] of Object.entries({
+    default: defaultTheme.css,
+    editorial: editorialTier.css,
+    documentation: documentationTier.css,
+    app: appTier.css,
+    os: osTier.css,
+    prose: prosePreset.css,
+    "app-tier": appTierPreset.css
+  })) {
+    runInvariant(`Typography selector ownership (${surfaceName})`, () => validateTypographySelectorOwnership(css));
+  }
   runInvariant("App tier CSS (app)", () => validateAppTierCss(appTier.css));
   runInvariant("App tier CSS (app preset)", () => validateAppTierCss(appTierPreset.css));
   runInvariant("Default theme (default)", () => validateDefaultTheme(defaultTheme.tokens, defaultTheme.css));

@@ -45,6 +45,12 @@ This is a local design decision. A container-owned direction in Pragma or the
 Canonical official design system is a separate product constraint and does not
 override BF.
 
+Semantic typography follows the same ownership boundary. Plain elements are
+styled once through zero-specificity selectors under `.bf-theme`; explicit
+`.bf-body` and `.bf-h1`–`.bf-h6` visual-role classes may override the semantic
+tag in either direction. `.bf-prose` owns prose-flow composition only and must
+not restate paragraph, heading, or figcaption typography.
+
 ## Controls and ruled rows
 
 Controls use the Vanilla occupied-block model. Symmetric block padding is the

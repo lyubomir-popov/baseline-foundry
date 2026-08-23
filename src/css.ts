@@ -164,14 +164,14 @@ function capEngineDemoRule(selectors: string[], token: TypographyToken): string 
 }
 
 const SEMANTIC_SELECTORS_BY_ROLE: Record<string, string[]> = {
-  body: [":where(.bf-theme) :where(p)", ":where(.bf-theme) .bf-prose p"],
-  h1: [":where(.bf-theme) :where(h1)", ":where(.bf-theme) .bf-prose h1"],
-  h2: [":where(.bf-theme) :where(h2)", ":where(.bf-theme) .bf-prose h2"],
-  h3: [":where(.bf-theme) :where(h3)", ":where(.bf-theme) .bf-prose h3"],
-  h4: [":where(.bf-theme) :where(h4)", ":where(.bf-theme) .bf-prose h4"],
-  h5: [":where(.bf-theme) :where(h5)", ":where(.bf-theme) .bf-prose h5"],
-  h6: [":where(.bf-theme) :where(h6)", ":where(.bf-theme) .bf-prose h6"],
-  meta: [":where(.bf-theme) :where(figcaption)", ":where(.bf-theme) .bf-prose figcaption"]
+  body: [":where(.bf-theme) :where(p)"],
+  h1: [":where(.bf-theme) :where(h1)"],
+  h2: [":where(.bf-theme) :where(h2)"],
+  h3: [":where(.bf-theme) :where(h3)"],
+  h4: [":where(.bf-theme) :where(h4)"],
+  h5: [":where(.bf-theme) :where(h5)"],
+  h6: [":where(.bf-theme) :where(h6)"],
+  meta: [":where(.bf-theme) :where(figcaption)"]
 };
 
 const EXTRA_STYLES_BY_ROLE: Record<string, string> = {
@@ -441,10 +441,6 @@ ${capEngineDemo}
 :where(.bf-theme) :where(.bf-token-row:first-child) {
   border-top: 0;
   padding-top: 0;
-}
-
-:where(.bf-theme) :where(.bf-prose > :last-child) {
-  margin-bottom: 0;
 }
 
 ${componentsCss(tokens, themeSurfaces)}

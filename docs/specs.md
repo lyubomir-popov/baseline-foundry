@@ -5,9 +5,9 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-No numbered package is active. The navigation-grid and shared-border-thickness
-defects are focused framework repairs tracked in `AGENT-INBOX.md` and do not
-expand Spec 001.
+| Spec | Package | Status |
+|---|---|---|
+| 002 Element-owned typography selectors | [`002-element-owned-typography/`](../specs/002-element-owned-typography/) | Implemented and green on `feat/002-element-owned-typography`; awaiting owner review and merge. |
 
 ## Archive
 
@@ -29,6 +29,7 @@ features.
 | Product-specific credential orchestration | A consumer repeats workflow state beyond the shipped BF password reveal and validation/help composition | Promote only the repeated orchestration over the existing accessible field contracts | Do not relabel existing form support as absent or port an application workflow wholesale |
 | Framework-specific interactive-table orchestration | A consumer needs data-source or framework state beyond the shipped sortable, expandable and mobile-card contracts | Keep reusable BF presentation/ARIA seams separate from application data behavior | Basic and interactive `bf-table` contracts remain complete; framework state stays downstream |
 | Media-object breakpoint retuning | A second consumer proves that the shipped media-object composition's intrinsic threshold fails | Adjust only the measured shared threshold | No speculative tier-specific breakpoint fork |
+| Workflow state-model reconciliation | An explicit owner decision after Spec 002 chooses whether to preserve Spec 001 SC-006 or adopt the external workflow kit | One coherent cold-start/status model with every router and audit updated together | No partial migration or duplicate status owners |
 
 ## Design references
 
