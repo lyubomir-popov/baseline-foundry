@@ -32,12 +32,27 @@
 
 ## Phase 4 — Adversarial-review remediation
 
-- [x] T010 Remove the prose last-child margin reset and add computed-style
-  coverage proving plain and `.bf-body` last children retain equal role-owned
-  margins in every tier.
+- [x] T010 Investigate the inconsistent prose last-child cascade and add
+  computed-style coverage (the initial removal was superseded by owner
+  correction T014-T019).
 - [x] T011 Replace fixed-delay tier verification with computed-value waits,
   concrete per-tier H3/H6 assertions, and distinct-signature coverage.
 - [x] T012 Reconcile workflow-file changes with accepted Spec 001 SC-006 and
   preserve unresolved workflow-kit alignment as a separately scoped candidate.
 - [x] T013 Rerun focused and full validation, perform four-tier rendered review,
   and record a fresh adversarial review.
+
+## Phase 5 — Owner prose-boundary correction
+
+- [x] T014 Restore the prose last-child margin reset with `:last-child` outside
+  `:where()` and after role/prose rules.
+- [x] T015 Cover plain/classed paragraphs and H3 roles plus final UL, OL, and
+  blockquote boxes across all four tiers.
+- [x] T016 Assert preserved metric padding, equal plain/classed occupied boxes,
+  prose-bottom grid alignment, and following-first-baseline alignment.
+- [x] T017 Derive tier role expectations from `config/tiers/*.json` and audit
+  other override-intended `:where()` resets.
+- [x] T018 Update always-on and durable architecture invariants, rebuild, and
+  run focused/full/component/browser validation.
+- [x] T019 Put a fresh adversarial-review request with exact scope and evidence
+  in `AGENT-INBOX.md`.

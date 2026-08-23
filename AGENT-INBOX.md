@@ -1,34 +1,48 @@
-# Agent inbox: live state
+# Agent inbox: adversarial review request
 
-This file owns only the current handoff, blockers, preservation boundary, and
-last-known-green state. Durable execution order lives in `TODO.md`; feature
-intent and evidence live in the active Spec Kit package.
+Spec 002's owner prose-boundary correction is implemented on
+`feat/002-element-owned-typography`. Review the branch and working tree
+independently; do not rely on this summary or edit files.
 
-## Current task
+## Review scope
 
-Spec 002 is active on `feat/002-element-owned-typography`. The core selector
-repair is correct: paragraph and H1-H6 typography emit through plain element
-selectors, and explicit visual-role classes override semantic tags inside
-`.bf-prose`.
+1. Confirm semantic typography remains element-owned: no `.bf-prose p`,
+   heading, or figcaption typography duplicates may return, and reciprocal
+   `.bf-h3`/`.bf-h6` overrides must still work.
+2. Verify the restored boundary is exactly
+   `:where(.bf-theme) :where(.bf-prose) > :last-child`, follows role/prose
+   rules, and resets `margin-bottom` only. Check specificity against
+   `.bf-body` and `.bf-h1`–`.bf-h6` in both directions.
+3. Adversarially inspect the seven four-tier boundary probes: plain and
+   `.bf-body` paragraphs, plain H3 and `h2.bf-h3`, UL, OL, and blockquote. Look
+   for vacuous references, stale tier state, false grid assertions, or missing
+   occupied-box properties.
+4. Validate the grid consequence: the prose bottom is a baseline multiple and
+   the following first-line baseline retains the standalone tier phase. Check
+   whether the 0.75px rendering tolerance is justified and sufficiently
+   strict.
+5. Confirm H3/H6 expectations genuinely derive from `config/tiers/*.json` and
+   cannot silently pass stale CSS.
+6. Recheck the broader `:where()` audit. Flow/boxed boundary selectors for
+   prose, cards, and panel content must score at one class; identify any other
+   zero-specificity reset that is supposed to beat a visual-role class.
+7. Review `AGENTS.md`, `docs/architecture.md`, and the entire Spec 002 package
+   for contradictions, stale claims, overstatement, or scope drift.
 
-Adversarial review found two blocking omissions, now resolved:
+## Fresh evidence to verify
 
-- removing the higher-specificity prose duplicates exposed a later
-  `.bf-prose > :last-child` margin reset for plain elements but not classed
-  roles; the repair removes that reset and proves both retain element-owned
-  trailing rhythm;
-- the tier browser loop compared two elements driven by the same possibly stale
-  CSS. It now waits for concrete computed values, asserts exact H3/H6 values in
-  every built-in tier, and requires four distinct measured signatures.
+- `npm test`: pass after the owner correction; generated validation reports
+  5,261 checks, and all component/behavior suites pass.
+- `npm run qa:components`: pass; 88 current screenshots captured and all
+  baseline/overflow records report zero failures. This is not a pixel diff.
+- In-app browser: Editorial, Documentation, App, and OS inspected on Typography
+  Roles; reciprocal hierarchy remains correct, final role margin is `0px`,
+  metric padding remains, horizontal overflow is zero, and console warnings/
+  errors are empty.
+- `git diff --check`: expected clean before handoff.
 
-The attempted workflow-kit migration was outside Spec 002 and contradicted
-accepted Spec 001 SC-006. Root `STATUS.md`, `HISTORY.md`, and `ROADMAP.md` are
-removed again, and the original lean routers remain authoritative. A complete
-workflow-state-model change requires its own future package and router sweep.
-
-Local `main` is one commit ahead of `origin/main` at `af30626`; that existing
-handoff commit remains part of the branch base. Spec 002 passed fresh closeout
-and is ready for owner review.
+Report findings by severity with file/line evidence. A clean review should say
+explicitly that no merge-blocking defect was found; do not mark Spec 002 merged.
 
 ## Preservation boundary
 
@@ -39,16 +53,12 @@ explicitly redirects there.
 
 ## Last known green
 
-After adversarial remediation on 2026-08-23, `npm test` passed with 5,218
-static assertions, all component baseline records, and the complete behavior
-suite. `npm run qa:components` captured 88 current screenshots and the baseline
-geometry/overflow verifier reported zero failures. A manual in-app-browser pass
-covered Editorial, Documentation, App, and OS with a clean console. Fresh
-independent adversarial review found no blocking implementation defect.
+After the owner correction on 2026-08-23, `npm test` and
+`npm run qa:components` are green with the evidence above.
 
 ## Blockers
 
 The duplicate `fix/typography-role-class-precedence` branch/worktree has zero
 unique commits and empty content diffs, but its three line-ending status
 artifacts make removal require an explicitly approved forced cleanup. Keep it
-untouched until that approval is available.
+untouched until that approval is available. This is cleanup, not a merge gate.

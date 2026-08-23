@@ -27,17 +27,31 @@ began overriding plain element margins while visual-role classes continued to
 win. That made trailing rhythm depend on whether an otherwise equivalent child
 carried `.bf-body` or `.bf-h*`.
 
-**Decision**: remove the last-child reset. BF's element-owned rhythm invariant
-requires both plain and classed children to retain their role margin. A prose
-container may constrain measure and compose lists, quotations, and rules, but
-it does not erase child rhythm.
+The first remediation removed the reset. The owner rejected that interpretation
+on 2026-08-23: the prose flow boundary is an explicit composition contract, and
+its job is to trim final semantic margin while retaining metric compensation.
+
+**Corrected decision**: emit
+`:where(.bf-theme) :where(.bf-prose) > :last-child` after role and prose rules.
+Keeping `:last-child` outside `:where()` gives the reset one class of
+specificity, matching `.bf-body` and `.bf-h*`; later source order then trims
+plain and classed children equally. Only `margin-bottom` resets. Element-owned
+padding stays intact so the prose bottom and next first baseline remain on the
+grid.
+
+The equivalent `.bf-card-inner`, `.bf-card`, and `.bf-panel-content` boundaries
+already use this scored shape. An audit of other first/last-child rules found
+no other boundary intended to override visual-role margins: the remaining
+zero-specificity rules target their own component slots rather than `.bf-*`
+typography roles.
 
 ## Tier-verification finding
 
 Comparing a probe with a reference driven by the same role class can pass while
 both still reflect a stale tier. The browser regression therefore waits for a
 concrete computed role value after each tier switch, asserts concrete H3/H6
-values for that tier, and proves the four measured signatures are distinct.
+values derived from `config/tiers/*.json`, and proves the four measured
+signatures are distinct.
 
 ## Alternatives rejected
 

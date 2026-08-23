@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-22
 
-**Status**: Implemented; awaiting owner review and merge
+**Status**: Implemented; fresh adversarial review requested
 
 **Input**: Remove redundant `.bf-prose`-prefixed typography selectors so plain
 elements own semantic type and explicit BF visual-role classes reliably
@@ -33,9 +33,6 @@ typography with the corresponding H6 and H3 tokens.
    **then** its computed font size, line height, and weight match H3.
 3. **Given** an unclassed heading or paragraph under `.bf-theme`, **when** BF
    CSS is applied, **then** its semantic element typography remains present.
-4. **Given** a plain or visual-role-classed paragraph as the last child of
-   `.bf-prose`, **when** BF CSS is applied, **then** both retain the active
-   body role's element-owned trailing margin.
 
 ### User story 2 — keep prose as composition only (Priority: P2)
 
@@ -55,8 +52,14 @@ absent while prose list, blockquote, rule, and boundary composition remains.
    are inspected, **then** `.bf-prose p`, `.bf-prose h1`–`.bf-prose h6`, and
    `.bf-prose figcaption` typography rules are absent.
 2. **Given** the same output, **when** prose composition selectors are
-   inspected, **then** the established list, blockquote, and rule contracts
-   remain present without a container-owned last-child margin reset.
+   inspected, **then** the established list, blockquote, rule, and explicit
+   trailing-boundary contracts remain present.
+3. **Given** a paragraph, heading, list, or blockquote as the last child of
+   `.bf-prose`, **when** BF CSS is applied, **then** only its semantic bottom
+   margin is trimmed while metric padding and baseline-grid alignment remain.
+4. **Given** a plain role element and an equivalent visual-role-classed
+   element at that boundary, **when** their occupied boxes are measured,
+   **then** they are identical in every built-in tier.
 
 ### Edge cases
 
@@ -82,9 +85,9 @@ absent while prose list, blockquote, rule, and boundary composition remains.
   duplicates for those elements.
 - **FR-003**: Explicit `.bf-body` and `.bf-h1`–`.bf-h6` visual-role classes MUST
   remain available and override a different semantic element role.
-- **FR-004**: `.bf-prose` MUST retain only its prose-flow composition contracts.
-- **FR-004a**: `.bf-prose` MUST NOT erase a last child's element-owned trailing
-  margin; plain and visual-role-classed children MUST behave consistently.
+- **FR-004**: `.bf-prose` MUST retain its prose-flow composition contracts,
+  including an explicit last-child boundary that resets `margin-bottom` only,
+  matches one-class role specificity, and preserves metric padding.
 - **FR-005**: Static generated-CSS validation MUST cover every generated
   built-in tier and preset.
 - **FR-006**: Browser validation MUST prove reciprocal H3/H6 role overrides in
@@ -101,6 +104,9 @@ absent while prose list, blockquote, rule, and boundary composition remains.
 - **SC-003**: `npm test` and `npm run qa:components` pass with no regression.
 - **SC-004**: The Typography Roles demo is visually reviewed after rebuild with
   no unexpected layout, overflow, or console defect.
+- **SC-005**: Paragraph, heading, unordered-list, ordered-list, and blockquote
+  boundary probes retain occupied boxes, trim to `0px` margin, and leave both
+  the prose bottom edge and following first baseline on the active tier grid.
 
 ## Assumptions and boundaries
 

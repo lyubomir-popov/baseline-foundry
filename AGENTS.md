@@ -32,7 +32,10 @@ Read in this order:
   compromise is not automatically a BF requirement.
 - Semantic vertical spacing is element-owned in every built-in tier:
   editorial, documentation, app, and OS. Containers may compose layout but do
-  not erase child rhythm or become the default semantic-spacing owner.
+  not become the default semantic-spacing owner. Explicit flow and boxed
+  boundaries may trim only their final child's semantic margin when the reset
+  matches role-class specificity and preserves metric padding; plain and
+  visual-role-classed equivalents must occupy the same baseline-aligned box.
 - Baseline compensation comes from real font metrics. The cap engine is a demo
   comparison, not a production surface.
 - OS is the fourth first-class built-in tier. Density differences are

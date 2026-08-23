@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 002 Element-owned typography selectors | [`002-element-owned-typography/`](../specs/002-element-owned-typography/) | Implemented and green on `feat/002-element-owned-typography`; awaiting owner review and merge. |
+| 002 Element-owned typography selectors | [`002-element-owned-typography/`](../specs/002-element-owned-typography/) | Owner prose-boundary correction implemented and green on `feat/002-element-owned-typography`; fresh adversarial review requested. |
 
 ## Archive
 

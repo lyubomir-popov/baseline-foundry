@@ -35,8 +35,8 @@ All four tiers use one ownership model:
 - each typographic/content element owns its metric-derived
   `padding-block-start` and `padding-block-end`;
 - each element owns its semantic `margin-block-end`;
-- layout containers arrange children but do not erase semantic spacing or
-  replace it with generic gaps;
+- layout containers arrange children and do not replace semantic spacing with
+  generic gaps;
 - `bf-section` is the explicit boundary for page-section rhythm;
 - boundary trimming is an explicit composition concern, not a universal
   `:last-child` reset.
@@ -50,6 +50,14 @@ styled once through zero-specificity selectors under `.bf-theme`; explicit
 `.bf-body` and `.bf-h1`–`.bf-h6` visual-role classes may override the semantic
 tag in either direction. `.bf-prose` owns prose-flow composition only and must
 not restate paragraph, heading, or figcaption typography.
+
+Flow and boxed containers share one explicit trailing-boundary rule:
+`.bf-prose`, `.bf-card-inner`, `.bf-card`, and `.bf-panel-content` may remove
+only the final child's semantic bottom margin. Their child pseudo-class stays
+outside `:where()` so the boundary selector matches a one-class visual-role
+rule and wins by later source order. Metric `padding-block-start` and
+`padding-block-end` remain element-owned; trimming must leave both the
+container edge and the following first baseline on the active baseline grid.
 
 ## Controls and ruled rows
 

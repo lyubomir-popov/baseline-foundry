@@ -31,9 +31,10 @@ Open `/demo/components/typography.html` and verify:
 - `<h3 class="bf-h6">` visibly follows the H6 role and `<h6 class="bf-h3">`
   visibly follows the H3 role inside `.bf-prose`.
 
-The automated behavior route separately injects hidden final plain and
-`.bf-body` paragraphs and proves both retain the tier's element-owned body
-margin; those boundary fixtures are not part of the manual visual inspection.
+The automated behavior route separately injects hidden paragraph, heading,
+list, and blockquote boundary fixtures. It proves the scored boundary trims
+only final semantic margin, preserves metric padding and occupied boxes, and
+keeps the prose bottom and following first baseline on each tier's grid.
 
 ## Generated selector audit
 
@@ -43,6 +44,12 @@ Search generated CSS for prohibited duplicate typography selectors:
 rg -n "\.bf-prose (p|h[1-6]|figcaption)" dist
 ```
 
-The command should return no matches. Prose list, blockquote, rule, and measure
-selectors remain, while `.bf-prose > :last-child` must also be absent so the
-container does not erase element-owned trailing rhythm.
+The command should return no typography-duplicate matches. Prose list,
+blockquote, rule, and measure selectors remain. The boundary must be emitted
+in this exact scored shape:
+
+```css
+:where(.bf-theme) :where(.bf-prose) > :last-child {
+  margin-bottom: 0;
+}
+```

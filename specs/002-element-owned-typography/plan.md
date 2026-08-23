@@ -6,8 +6,9 @@
 
 Collapse semantic typography emission to one zero-specificity element selector
 per role, leaving visual-role classes as the explicit override path and
-`.bf-prose` as composition only. Add generated-CSS and four-tier computed-style
-regressions, rebuild all output, then complete the standard BF gates.
+`.bf-prose` as composition only. Preserve the explicit prose flow boundary with
+class-level specificity so it trims final semantic margin equally for plain
+and classed roles without removing metric padding.
 
 ## Technical context
 
@@ -57,11 +58,14 @@ specs/002-element-owned-typography/              # intent and evidence
 1. Record the consumer failure and selector-ownership decision.
 2. Add static and browser regressions that fail on the current output.
 3. Remove prose-prefixed entries from `SEMANTIC_SELECTORS_BY_ROLE`.
-4. Remove the inconsistent prose last-child reset so the selector change does
-   not silently alter element-owned trailing rhythm.
-5. Rebuild and run focused build/behavior validation with concrete tier waits.
-6. Run `npm test`, `npm run qa:components`, and four-tier rendered review.
-7. Record evidence and update canonical workflow state.
+4. Score the prose last-child boundary at one class and emit it after role and
+   prose-flow rules so plain and classed children trim equally.
+5. Prove paragraphs, headings, lists, and blockquotes keep their metric box and
+   both downstream grid edges in all four tiers.
+6. Rebuild and run focused build/behavior validation with config-derived tier
+   expectations and concrete tier waits.
+7. Run `npm test`, `npm run qa:components`, and four-tier rendered review.
+8. Record evidence and request fresh adversarial review in `AGENT-INBOX.md`.
 
 ## Complexity tracking
 

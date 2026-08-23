@@ -751,6 +751,7 @@ function extractGeneratedSelectors(css: string): string[] {
 
 function validateTypographySelectorOwnership(css: string): void {
   const selectors = extractGeneratedSelectors(css);
+  const proseBoundarySelector = ":where(.bf-theme) :where(.bf-prose) > :last-child";
 
   for (const element of ["p", "h1", "h2", "h3", "h4", "h5", "h6", "figcaption"]) {
     const proseElementPattern = new RegExp(`\\.bf-prose(?:\\s+|>\\s*)(?::(?:where|is)\\(\\s*)?${element}(?=$|[.#:[\\s)>+~])`);
@@ -764,6 +765,11 @@ function validateTypographySelectorOwnership(css: string): void {
   for (const role of ["body", "h1", "h2", "h3", "h4", "h5", "h6"]) {
     assert(selectors.includes(`:where(.bf-theme) .bf-${role}`), `Expected generated CSS to retain the explicit .bf-${role} visual-role selector.`);
   }
+
+  assert(selectors.includes(proseBoundarySelector), "Expected prose flow to trim its last child's semantic margin with class-level specificity.");
+  assert(css.includes(`${proseBoundarySelector} {\n  margin-bottom: 0;\n}`), "Expected the prose boundary to reset margin-bottom only.");
+  assert(!selectors.includes(":where(.bf-theme) :where(.bf-prose > :last-child)"), "Expected :last-child to stay outside :where() so the prose boundary can override role-class margins.");
+  assert(css.indexOf(proseBoundarySelector) > css.indexOf(":where(.bf-theme) .bf-h6"), "Expected the prose boundary reset to follow visual-role rules and win equal-specificity ties by source order.");
 }
 
 async function validateExampleDogfooding(): Promise<void> {
@@ -916,7 +922,10 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("--bf-body-nudge-start: 0rem;\n  --bf-body-nudge-end: 0rem;"), "Expected built-in tiers to retain metric-derived body nudges.");
   assert(css.includes("--bf-body-nudge-start:") && css.includes("--bf-body-nudge-end:"), "Expected generated CSS to define body alignment nudge variables.");
   assert(css.includes("--bf-h6-nudge-start:") && css.includes("--bf-h6-nudge-end:"), "Expected generated CSS to define h6 alignment nudge variables.");
-  assert(!css.includes(".bf-prose > :last-child"), "Expected prose containers not to erase the element-owned trailing margin of their last child.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose) > :last-child {\n  margin-bottom: 0;\n}"), "Expected prose containers to trim only the final semantic margin at the flow boundary.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-card-inner) > :last-child:not("), "Expected card-inner boundaries to keep :last-child outside :where() at class-level specificity.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted) > :last-child:not("), "Expected card boundaries to keep :last-child outside :where() at class-level specificity.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-panel-content) > :last-child:not("), "Expected panel-content boundaries to keep :last-child outside :where() at class-level specificity.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0;\n  padding-block-end:"), "Expected list items to use literal baseline compensation.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  margin-bottom:"), "Expected list containers to use literal semantic spacing.");

@@ -413,6 +413,10 @@ ${capEngineDemo}
   padding-inline-start: var(--bf-space-3);
 }
 
+:where(.bf-theme) :where(.bf-prose) > :last-child {
+  margin-bottom: 0;
+}
+
 :where(.bf-theme) :where(.bf-rule, .bf-prose hr) {
   background: var(--bf-color-rule);
   block-size: 1px;
