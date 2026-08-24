@@ -41,6 +41,11 @@ ${scoped(" :where(.bf-panel-header)")} {
   padding-block-start: var(--bf-panel-padding-block);
 }
 
+${scoped(" :where(.bf-panel-header.is-navigation-brand)")} {
+  gap: 0;
+  padding-block: 0;
+}
+
 ${scoped(" :where(.bf-navigation-bar) :where(.bf-panel-header)")} {
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
 }
