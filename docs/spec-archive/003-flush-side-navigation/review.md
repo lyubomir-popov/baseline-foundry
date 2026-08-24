@@ -30,3 +30,12 @@ The previously isolated application viewport-fill/gutter commits were merged
 on top of released Spec 002 before this implementation. The resulting BF
 release line therefore contains the heading precedence repair that was absent
 from Diagram Registry's prior vendored branch.
+
+## Downstream verification
+
+Diagram Registry pins released BF main commit
+`8dd60de1085d9c0513cf4e62556e44a15c424a71` on
+`feat/008-application-left-navigation` at `45f9ee9`. Its local CSS is unchanged;
+the navigation adopts `bf-panel-content is-flush` in markup. Registry
+validation, reader-link audit, Mermaid dependency integrity, 33 Python tests,
+20 Node tests, JavaScript syntax, and local HTTP checks all passed.
