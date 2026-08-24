@@ -504,6 +504,34 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(expandedState.panelBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation panel to reach the navigation bottom. Got panel=${expandedState.panelBottom}px, navigation=${expandedState.navigationBottom}px.`);
     assert(Math.abs(expandedState.navigationBottom - expandedState.applicationBottom) <= 1, `Expected desktop navigation to reach the application bottom. Got navigation=${expandedState.navigationBottom}px, application=${expandedState.applicationBottom}px.`);
 
+    const wrappedAlignmentState = await page.evaluate(() => {
+      const link = document.querySelector<HTMLElement>("[data-wrapped-navigation-link]");
+      const icon = link?.querySelector<HTMLElement>(".bf-side-navigation-icon");
+      const label = link?.querySelector<HTMLElement>(".bf-side-navigation-label");
+      if (!link || !icon || !label) return null;
+
+      const labelRange = document.createRange();
+      labelRange.selectNodeContents(label);
+      const lineRects = Array.from(labelRange.getClientRects()).filter(rect => rect.width > 0 && rect.height > 0);
+      const iconRect = icon.getBoundingClientRect();
+
+      return {
+        alignItems: getComputedStyle(link).alignItems,
+        iconBottom: iconRect.bottom,
+        iconCenter: (iconRect.top + iconRect.bottom) / 2,
+        iconTop: iconRect.top,
+        lines: lineRects.map(rect => ({ bottom: rect.bottom, top: rect.top }))
+      };
+    });
+
+    assert(wrappedAlignmentState, "Expected the wrapped icon-navigation fixture to be measurable.");
+    assert(wrappedAlignmentState.lines.length >= 2, `Expected the icon-navigation pressure label to wrap. Got ${wrappedAlignmentState.lines.length} line(s).`);
+    assert(wrappedAlignmentState.alignItems === "baseline", `Expected expanded icon-navigation rows to use baseline alignment. Got ${wrappedAlignmentState.alignItems}.`);
+    const firstLine = wrappedAlignmentState.lines[0];
+    const secondLine = wrappedAlignmentState.lines[1];
+    assert(wrappedAlignmentState.iconCenter >= firstLine.top - 1 && wrappedAlignmentState.iconCenter <= firstLine.bottom + 1, `Expected the navigation icon center to occupy the first label line. Got iconCenter=${wrappedAlignmentState.iconCenter}px, firstLine=${firstLine.top}-${firstLine.bottom}px.`);
+    assert(wrappedAlignmentState.iconBottom <= secondLine.top + 1, `Expected the navigation icon to stay above the second label line. Got iconBottom=${wrappedAlignmentState.iconBottom}px, secondLineTop=${secondLine.top}px.`);
+
     const navigationCompositionState = await page.evaluate(() => {
       const content = document.querySelector<HTMLElement>("[data-flush-navigation-content]");
       const activeLink = content?.querySelector<HTMLElement>(".bf-side-navigation-link[aria-current='page']");
