@@ -1199,6 +1199,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-application-overlay)"), "Expected generated CSS to include application drawer overlay styling.");
   assert(css.includes(":where(.bf-application.is-fill)"), "Expected generated CSS to expose the full-viewport application modifier.");
   assert(css.includes("block-size: 100dvb;\n  max-block-size: 100dvb;\n  min-block-size: 100dvb;"), "Expected the full-viewport application modifier to own a definite dynamic viewport block size.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-application),\n  :where(.bf-theme):where(.bf-application) {\n    --bf-grid-gap-inline: 1.5rem;"), "Expected application layouts to own the application gutter independently of their typography tier.");
   assert(css.includes(":where(.bf-aside.is-overlay, .bf-aside.is-drawer)"), "Expected generated CSS to include overlay drawer aside styling.");
   assert(css.includes(".is-drawer-expanded"), "Expected compat CSS to include the drawer-expanded application state.");
   assert(css.includes("--bf-app-drawer-width-small: 15rem;"), "Expected generated CSS to expose the Canonical small drawer width.");
