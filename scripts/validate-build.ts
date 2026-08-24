@@ -239,6 +239,7 @@ function validateRenewalComponentContracts(
   const selectorFragments = [
     ".bf-top-navigation.is-grid-aligned",
     ".bf-top-navigation-logo.is-canonical-tagged",
+    ".bf-panel-header.is-navigation-brand",
     ".bf-docs-layout",
     "body.bf-theme.bf-page-shell",
     ".bf-tiered-list.is-triple",
@@ -355,6 +356,9 @@ function validateRenewalComponentContracts(
   assert(css.includes("block-size: var(--bf-top-navigation-logo-tag-block-size);"), "Expected the tagged navigation block to preserve its fixed 38px tag height.");
   assert(css.includes("padding-block: 0 var(--bf-top-navigation-logo-icon-bottom-offset);"), "Expected the tagged navigation mark to preserve its fixed tag-bottom inset.");
   assert(css.includes("transform: translateX(var(--bf-top-navigation-logo-icon-optical-offset-inline));"), "Expected the Circle of Friends to compensate for its asymmetric source bounds.");
+  assert(css.includes("--bf-side-navigation-icon-optical-offset-block: 0.1875rem;"), "Expected side-navigation to expose the shared 3px icon optical offset.");
+  assert(css.includes("transform: translateY(var(--bf-side-navigation-icon-optical-offset-block));"), "Expected expanded icon navigation to consume the block-axis optical offset.");
+  assert(css.includes(":where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-icon) {\n  transform: none;"), "Expected collapsed application navigation to reset the expanded icon optical offset.");
   assert(!css.includes("block-size: calc(var(--bf-body-line-height) + (var(--bf-top-navigation-link-padding-block) * 2));"), "Expected tagged navigation not to stretch its tag to the full occupied row.");
   assert(!css.includes("--bf-top-navigation-brand-region"), "Expected generated tier CSS to remove the fixed top-navigation brand-region token.");
   assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));") && css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;"), "Expected grid-aligned navigation to share the eight-column page grid and begin primary navigation at column three.");
@@ -704,6 +708,11 @@ function validateAppTierDemoPage(pageName: string, html: string): void {
   assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${pageName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated p-* markup and stay fully bf-* dogfooded.`);
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated vr-* markup and stay fully bf-* dogfooded.`);
+  if (pageName === "application-layout.html") {
+    assert(html.includes('class="bf-panel-header is-sticky is-navigation-brand"'), "Expected application-layout.html to dogfood the flush navigation-brand panel header.");
+    assert(html.includes('class="bf-top-navigation-logo is-canonical-tagged"'), "Expected application-layout.html to dogfood the Canonical tagged-logo contract in its drawer.");
+    assert(html.includes('viewBox="0 0 60.45 57.87"'), "Expected the application drawer brand to use the proportionate Circle of Friends source shape.");
+  }
 }
 
 async function validateComponentPageTierConsistency(componentDemoJs: string): Promise<void> {

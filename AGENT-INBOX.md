@@ -1,8 +1,9 @@
 # Agent inbox
 
-No outstanding request. Spec 005 is released on BF main at `8728d68`; Diagram
-Registry vendors the immutable generated editorial bundle and its feature
-branch passes expanded/collapsed browser geometry without consumer CSS.
+Spec 006 is active on `feat/006-navigation-brand-and-icon-optics`. It promotes
+the shared Canonical drawer-brand composition and a measured 3 px expanded
+side-navigation icon offset while preserving centred collapsed icons. Release
+BF before refreshing Diagram Registry; do not add consumer `.bf-*` overrides.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
 the duplicate `fix/typography-role-class-precedence` worktree. The sibling

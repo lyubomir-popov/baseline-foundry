@@ -5,8 +5,8 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. No active feature package. Diagram Registry's verified consumer refresh is
-   pushed on its feature branch and awaits its publication decision.
+1. Complete Spec 006 browser geometry and behavior review, release BF, then
+   refresh Diagram Registry from the immutable release commit.
 2. Retire the duplicate typography fix branch/worktree only with explicit
    approval to discard its empty line-ending status artifacts.
 

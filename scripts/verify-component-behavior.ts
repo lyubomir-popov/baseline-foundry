@@ -459,14 +459,25 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     const collapsedGeometry = await navigation.evaluate(element => {
       const links = Array.from(element.querySelectorAll<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item > .bf-side-navigation-link"));
-      return links.map(link => ({
-        blockSize: link.getBoundingClientRect().height,
-        compactBlockSize: Number.parseFloat(getComputedStyle(link).minBlockSize)
-      }));
+      return links.map(link => {
+        const linkRect = link.getBoundingClientRect();
+        const icon = link.querySelector<HTMLElement>(".bf-side-navigation-icon");
+        const iconRect = icon?.getBoundingClientRect();
+        return {
+          blockSize: linkRect.height,
+          compactBlockSize: Number.parseFloat(getComputedStyle(link).minBlockSize),
+          iconCenterDelta: iconRect ? Math.abs(((iconRect.top + iconRect.bottom) / 2) - ((linkRect.top + linkRect.bottom) / 2)) : null,
+          iconTransform: icon ? getComputedStyle(icon).transform : null
+        };
+      });
     });
     assert(collapsedGeometry.length > 0, "Expected collapsed application navigation rows to be measurable.");
     collapsedGeometry.forEach((row, index) => {
       assert(row.blockSize <= row.compactBlockSize + 1, `Expected collapsed navigation row ${index + 1} to retain compact control height. Got row=${row.blockSize}px, compact=${row.compactBlockSize}px.`);
+      if (row.iconCenterDelta !== null) {
+        assert(row.iconCenterDelta <= 1, `Expected collapsed navigation icon ${index + 1} to remain centred in its compact row. Got delta=${row.iconCenterDelta}px.`);
+        assert(row.iconTransform === "none", `Expected collapsed navigation icon ${index + 1} to reset the expanded optical offset. Got transform=${row.iconTransform}.`);
+      }
     });
     assert(await page.getByRole("link", { name: "Dashboard", exact: true }).count() === 1, "Expected the visually collapsed Dashboard label to remain the link accessible name.");
 
@@ -504,6 +515,41 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(expandedState.panelBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation panel to reach the navigation bottom. Got panel=${expandedState.panelBottom}px, navigation=${expandedState.navigationBottom}px.`);
     assert(Math.abs(expandedState.navigationBottom - expandedState.applicationBottom) <= 1, `Expected desktop navigation to reach the application bottom. Got navigation=${expandedState.navigationBottom}px, application=${expandedState.applicationBottom}px.`);
 
+    const navigationBrandState = await page.evaluate(() => {
+      const header = document.querySelector<HTMLElement>("[data-navigation-brand-header]");
+      const panel = header?.closest<HTMLElement>(".bf-panel");
+      const logo = header?.querySelector<HTMLElement>(".bf-top-navigation-logo.is-canonical-tagged");
+      const tag = header?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
+      const title = header?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
+      if (!header || !panel || !logo || !tag || !title) return null;
+      const headerRect = header.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      const logoRect = logo.getBoundingClientRect();
+      const tagRect = tag.getBoundingClientRect();
+      const headerStyles = getComputedStyle(header);
+      return {
+        headerLeft: headerRect.left,
+        headerTop: headerRect.top,
+        logoWidth: logoRect.width,
+        panelLeft: panelRect.left,
+        panelTop: panelRect.top,
+        paddingBlockStart: headerStyles.paddingBlockStart,
+        paddingInlineStart: headerStyles.paddingInlineStart,
+        tagHeight: tagRect.height,
+        tagLeft: tagRect.left,
+        tagTop: tagRect.top,
+        tagWidth: tagRect.width,
+        titleVisible: title.getBoundingClientRect().width > 0
+      };
+    });
+
+    assert(navigationBrandState, "Expected the application navigation brand to be measurable.");
+    assert(navigationBrandState.paddingBlockStart === "0px" && navigationBrandState.paddingInlineStart === "0px", `Expected the navigation-brand header to remove panel padding. Got block=${navigationBrandState.paddingBlockStart}, inline=${navigationBrandState.paddingInlineStart}.`);
+    assert(Math.abs(navigationBrandState.headerTop - navigationBrandState.panelTop) <= 1 && Math.abs(navigationBrandState.tagTop - navigationBrandState.panelTop) <= 1, `Expected the Canonical tag to meet the panel's top edge. Got panel=${navigationBrandState.panelTop}px, header=${navigationBrandState.headerTop}px, tag=${navigationBrandState.tagTop}px.`);
+    assert(Math.abs(navigationBrandState.headerLeft - navigationBrandState.panelLeft) <= 1 && Math.abs(navigationBrandState.tagLeft - navigationBrandState.panelLeft) <= 1, `Expected the Canonical tag to meet the panel's leading edge. Got panel=${navigationBrandState.panelLeft}px, header=${navigationBrandState.headerLeft}px, tag=${navigationBrandState.tagLeft}px.`);
+    assert(Math.abs(navigationBrandState.tagWidth - 22) <= 1 && Math.abs(navigationBrandState.tagHeight - 38) <= 1, `Expected the Canonical tag to retain 22x38px geometry. Got ${navigationBrandState.tagWidth}x${navigationBrandState.tagHeight}px.`);
+    assert(navigationBrandState.logoWidth >= 220 && navigationBrandState.titleVisible, `Expected the drawer brand and title to occupy the expanded navigation width. Got logo=${navigationBrandState.logoWidth}px, titleVisible=${navigationBrandState.titleVisible}.`);
+
     const wrappedAlignmentState = await page.evaluate(() => {
       const link = document.querySelector<HTMLElement>("[data-wrapped-navigation-link]");
       const icon = link?.querySelector<HTMLElement>(".bf-side-navigation-icon");
@@ -520,6 +566,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         iconBottom: iconRect.bottom,
         iconCenter: (iconRect.top + iconRect.bottom) / 2,
         iconTop: iconRect.top,
+        transform: getComputedStyle(icon).transform,
         lines: lineRects.map(rect => ({ bottom: rect.bottom, top: rect.top }))
       };
     });
@@ -529,6 +576,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(wrappedAlignmentState.alignItems === "baseline", `Expected expanded icon-navigation rows to use baseline alignment. Got ${wrappedAlignmentState.alignItems}.`);
     const firstLine = wrappedAlignmentState.lines[0];
     const secondLine = wrappedAlignmentState.lines[1];
+    assert(wrappedAlignmentState.transform === "matrix(1, 0, 0, 1, 0, 3)", `Expected expanded icon-navigation to consume the 3px optical transform. Got ${wrappedAlignmentState.transform}.`);
     assert(wrappedAlignmentState.iconCenter >= firstLine.top - 1 && wrappedAlignmentState.iconCenter <= firstLine.bottom + 1, `Expected the navigation icon center to occupy the first label line. Got iconCenter=${wrappedAlignmentState.iconCenter}px, firstLine=${firstLine.top}-${firstLine.bottom}px.`);
     assert(wrappedAlignmentState.iconBottom <= secondLine.top + 1, `Expected the navigation icon to stay above the second label line. Got iconBottom=${wrappedAlignmentState.iconBottom}px, secondLineTop=${secondLine.top}px.`);
 

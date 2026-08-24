@@ -171,6 +171,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-app-aside-width-max: var(--bf-app-drawer-width-medium-max);
   --bf-app-navigation-width: 15rem;
   --bf-app-navigation-width-collapsed: 3rem;
+  --bf-side-navigation-icon-optical-offset-block: 0.1875rem;
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
   --bf-authoring-accent: #f6b73c;
   --bf-authoring-accent-hover: #e0a030;
@@ -1793,6 +1794,11 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   flex: 0 0 1rem;
   inline-size: 1rem;
   justify-content: center;
+  transform: translateY(var(--bf-side-navigation-icon-optical-offset-block));
+}
+
+:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-icon) {
+  transform: none;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
