@@ -2571,11 +2571,20 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   visibility: visible;
 }
 
-:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.is-fading-when-collapsed, .bf-side-navigation-heading, .bf-side-navigation-label, .bf-side-navigation-status) {
-  max-inline-size: 0;
+:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.is-fading-when-collapsed, .bf-side-navigation-heading, .bf-side-navigation-status) {
+  display: none;
+}
+
+:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-label) {
+  block-size: 1px;
+  clip-path: inset(50%);
+  inline-size: 1px;
+  max-inline-size: 1px;
   opacity: 0;
   overflow: hidden;
   pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
 }
 
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-list .bf-side-navigation-list) {
@@ -2785,7 +2794,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 
   :where(.bf-theme) :where(.bf-navigation-drawer),
   :where(.bf-theme) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {
-    block-size: auto;
+    block-size: 100%;
     box-shadow: none;
     inline-size: 100%;
     min-block-size: 0;
