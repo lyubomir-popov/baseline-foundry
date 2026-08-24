@@ -15,5 +15,5 @@
 - [x] T006 Build and run generated validation.
 - [x] T007 Run focused browser behavior and visual capture gates at desktop and
   narrow widths.
-- [ ] T008 Record the review, merge and push Baseline Foundry, then refresh the
+- [x] T008 Record the review, merge and push Baseline Foundry, then refresh the
   Diagram Registry dependency.
