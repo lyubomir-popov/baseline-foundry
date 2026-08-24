@@ -1,6 +1,6 @@
 # Review: application navigation geometry
 
-**Status**: Verified; ready for release
+**Status**: Released and verified downstream
 
 ## Required evidence
 
@@ -13,7 +13,7 @@
 | Build | Passed |
 | Focused responsive browser behavior | Passed at 1280 × 960 and 390 × 844 |
 | Relevant visual captures | Passed expanded and collapsed application-layout review |
-| Diagram Registry consumer verification | Pending |
+| Diagram Registry consumer verification | Passed on `feat/008-application-left-navigation` at `f90bc1b` |
 
 ## Implementation evidence
 
@@ -32,3 +32,10 @@ session subsequently became available, so the focused checks were run through
 the supported Playwright surface. At 390 × 844 the 240 px overlay opened with
 `aria-hidden="false"`, and Escape restored the collapsed state and
 `aria-expanded="false"`.
+
+Released from `feat/004-application-navigation-geometry` to BF `main` at
+`f249a8a12cfa13ddeece4a83861fbd5b859d698e`. Diagram Registry vendors that
+immutable generated editorial bundle without local `.bf-*` CSS. Consumer
+Playwright review confirmed 240 px expanded width, 48 px collapsed width,
+32 px collapsed rows, exact viewport-bottom alignment at 1280 × 960 and
+390 × 844, synchronized light/dark surfaces, and no console errors.

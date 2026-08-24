@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 004 Application navigation geometry | [`004-application-navigation-geometry/`](../specs/004-application-navigation-geometry/) | In progress on `feat/004-application-navigation-geometry`; fixes full-height desktop navigation and compact accessible collapse behavior. |
+| 004 Application navigation geometry | [`004-application-navigation-geometry/`](../specs/004-application-navigation-geometry/) | Released on `main` at `f249a8a`; downstream Registry refresh verified and pushed. |
 
 ## Archive
 
