@@ -1,6 +1,6 @@
 # Review: side-navigation icon alignment
 
-**Status:** Verified; ready for release
+**Status:** Released and verified downstream
 
 ## Required evidence
 
@@ -11,7 +11,7 @@
 | Collapsed row regression | Passed; row and icon centers both 303.64 px, row height 32 px |
 | Generated validation | Passed; 5,396 checks |
 | Responsive browser review | Passed for expanded and collapsed application-layout states |
-| Registry consumer verification | Pending |
+| Registry consumer verification | Passed on `feat/008-application-left-navigation` at `33674ba` |
 
 ## Outcome
 
@@ -25,3 +25,10 @@ Focused Playwright review found the icon top at 621.59 px against a wrapped
 label top at 622.93 px. The icon bottom at 637.59 px remains above the second
 line top at 644.26 px. The application-layout capture showed no status-slot,
 active-row, indentation, or overflow regression.
+
+Released from `feat/005-side-navigation-icon-alignment` to BF `main` at
+`8728d685a3a0aa227d760f82b36ae08acd998a5c`. Diagram Registry vendors that
+immutable editorial CSS under `bf-8728d68`. Its wrapped Mermaid route measures
+the icon center at 260.61 px inside the first text line 253.28–272.61 px, with
+the icon ending before the second line begins. Collapsed Registry rows remain
+32 px with matching icon/row centers, and the browser console is clean.
