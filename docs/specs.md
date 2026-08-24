@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 004 Application navigation geometry | [`004-application-navigation-geometry/`](../specs/004-application-navigation-geometry/) | Released on `main` at `f249a8a`; downstream Registry refresh verified and pushed. |
+| 005 Side-navigation icon alignment | [`005-side-navigation-icon-alignment/`](../specs/005-side-navigation-icon-alignment/) | In progress on `feat/005-side-navigation-icon-alignment`; aligns icons to the first line of wrapped labels. |
 
 ## Archive
 

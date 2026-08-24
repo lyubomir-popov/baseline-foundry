@@ -1,8 +1,10 @@
 # Agent inbox
 
-No outstanding request. Spec 004 is released on BF main at `f249a8a` and its
-generated editorial CSS is verified on Diagram Registry's feature branch.
-Specs 002 and 003 are merged, archived, and green.
+Spec 005 is active on `feat/005-side-navigation-icon-alignment`. Icon-bearing
+side-navigation rows currently center an icon against the complete label block,
+placing it between lines when text wraps. Align it to the label's first-line
+baseline in BF, prove expanded/collapsed geometry, then refresh Registry from
+the released generated bundle without consumer CSS.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
 the duplicate `fix/typography-role-class-precedence` worktree. The sibling

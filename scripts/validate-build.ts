@@ -1246,6 +1246,12 @@ function validateCommonCss(css: string): void {
   }, "collapsed application navigation keeps labels accessible without layout size");
   assert(css.includes(":where(.bf-navigation.is-collapsed) :where(.is-fading-when-collapsed, .bf-side-navigation-heading, .bf-side-navigation-status) {\n  display: none;"), "Expected collapsed application navigation headings and status regions to leave layout.");
   assert(css.includes(":where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {\n    block-size: 100%;"), "Expected the desktop navigation drawer to fill its navigation grid area.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button)", {
+    "align-items": "baseline"
+  }, "icon side-navigation rows align against the label first-line baseline");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-link, .bf-side-navigation-text)", {
+    "align-items": "center"
+  }, "collapsed icon side-navigation rows retain compact vertical centering");
   assert(css.includes(":where(.bf-theme) :where(.bf-application),\n  :where(.bf-theme):where(.bf-application) {\n    --bf-grid-gap-inline: 1.5rem;"), "Expected application layouts to own the application gutter independently of their typography tier.");
   assert(css.includes(":where(.bf-aside.is-overlay, .bf-aside.is-drawer)"), "Expected generated CSS to include overlay drawer aside styling.");
   assert(css.includes(".is-drawer-expanded"), "Expected compat CSS to include the drawer-expanded application state.");

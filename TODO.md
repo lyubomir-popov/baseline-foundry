@@ -5,9 +5,10 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. No active feature package. Diagram Registry's verified consumer refresh is
-   pushed on its feature branch and awaits its publication decision.
-2. Retire the duplicate typography fix branch/worktree only with explicit
+1. Complete and release Spec 005 side-navigation first-line icon alignment,
+   then refresh Diagram Registry without consumer CSS.
+2. Diagram Registry's feature branch then returns to its publication decision.
+3. Retire the duplicate typography fix branch/worktree only with explicit
    approval to discard its empty line-ending status artifacts.
 
 ## Candidate order after Spec 001

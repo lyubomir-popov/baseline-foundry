@@ -1795,6 +1795,10 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   justify-content: center;
 }
 
+:where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
+  align-items: baseline;
+}
+
 :where(.bf-theme) :where(.bf-side-navigation-icon) > svg {
   block-size: 1rem;
   display: block;
@@ -2592,6 +2596,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-link, .bf-side-navigation-text) {
+  align-items: center;
   justify-content: center;
   padding-inline: calc(var(--bf-baseline) * 1.25);
 }
