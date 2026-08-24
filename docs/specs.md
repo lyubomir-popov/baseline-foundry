@@ -5,9 +5,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-| Spec | Package | Status |
-|---|---|---|
-| 003 Flush side-navigation composition | [`003-flush-side-navigation/`](../specs/003-flush-side-navigation/) | Accepted for BF release on `feat/003-flush-side-navigation`; downstream Registry refresh remains. |
+No active package.
 
 ## Archive
 
@@ -17,6 +15,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 |---|---|---|
 | 001 Baseline Foundry renewal | [`001-baseline-foundry-renewal/`](spec-archive/001-baseline-foundry-renewal/) | Accepted and merged 2026-08-21; automated closeout green, with the unavailable in-app-browser pass recorded in `review.md`. |
 | 002 Element-owned typography selectors | [`002-element-owned-typography/`](spec-archive/002-element-owned-typography/) | Accepted and merged 2026-08-24; full build, browser behavior, and component-capture gates green. |
+| 003 Flush side-navigation composition | [`003-flush-side-navigation/`](spec-archive/003-flush-side-navigation/) | Accepted and merged 2026-08-24; downstream Registry feature branch verified without local BF overrides. |
 
 ## Candidate specifications
 

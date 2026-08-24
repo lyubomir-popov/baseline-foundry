@@ -5,8 +5,8 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Complete and release Spec 003 from `feat/003-flush-side-navigation`, then
-   refresh Diagram Registry from the merged BF build without local CSS.
+1. No active feature package. Diagram Registry's verified consumer refresh is
+   pushed on its feature branch and awaits its own publication decision.
 2. Retire the duplicate typography fix branch/worktree only with explicit
    approval to discard its empty line-ending status artifacts.
 

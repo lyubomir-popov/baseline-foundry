@@ -18,5 +18,5 @@
 - [x] T008 Run `npm test` and `npm run qa:components`.
 - [x] T009 Review the regenerated application-layout capture and edge-specific
   browser geometry; record the unavailable in-app Browser session.
-- [ ] T010 Record closeout, merge and push BF main, then refresh the Registry
+- [x] T010 Record closeout, merge and push BF main, then refresh the Registry
   feature branch without local CSS.

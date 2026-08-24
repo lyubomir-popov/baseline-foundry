@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-24
 
-**Status**: Accepted for BF release; downstream refresh pending
+**Status**: Accepted, merged, and downstream-verified
 
 **Input**: Restore the edge-to-edge active-row contract of the Vanilla-derived
 side navigation when it is composed inside a BF panel, and release the
