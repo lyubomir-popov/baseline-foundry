@@ -381,6 +381,32 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     await waitForFonts(page);
     await disableDemoChromeHitTesting(page);
 
+    const viewportFillState = await page.evaluate(() => {
+      const application = document.querySelector<HTMLElement>(".bf-application");
+      if (!(application instanceof HTMLElement)) {
+        return null;
+      }
+
+      document.body.classList.remove("bf-tier-app");
+      document.body.classList.add("bf-tier-editorial");
+      application.removeAttribute("style");
+      application.classList.add("is-fill");
+      document.body.replaceChildren(application);
+      const rect = application.getBoundingClientRect();
+      return {
+        blockSize: getComputedStyle(application).blockSize,
+        gridGapInline: getComputedStyle(application).getPropertyValue("--bf-grid-gap-inline").trim(),
+        height: rect.height,
+        bottom: rect.bottom
+      };
+    });
+
+    assert(viewportFillState, "Expected full-viewport application state to be measurable.");
+    assert(viewportFillState.blockSize === "960px", `Expected the full-viewport application modifier to resolve against the dynamic viewport. Got block-size=${viewportFillState.blockSize}.`);
+    assert(viewportFillState.gridGapInline === "1.5rem", `Expected application gutters to remain 1.5rem under editorial typography. Got --bf-grid-gap-inline=${viewportFillState.gridGapInline}.`);
+    assert(Math.abs(viewportFillState.height - 960) <= 1, `Expected the full-viewport application modifier to occupy the viewport height. Got height=${viewportFillState.height}px.`);
+    assert(Math.abs(viewportFillState.bottom - 960) <= 1, `Expected the full-viewport application modifier to reach the viewport bottom edge. Got bottom=${viewportFillState.bottom}px.`);
+
     const spacingResetState = await page.evaluate(() => {
       const stack = document.querySelector<HTMLElement>(".bf-panel-header .bf-stack.is-flush");
       if (!(stack instanceof HTMLElement)) {
@@ -452,6 +478,60 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(!expandedState.collapsed, "Expected application navigation toggle to expand the navigation.");
     assert(expandedState.width >= 220, `Expected expanded application navigation to be visibly wide. Got ${expandedState.width}px.`);
     assert(expandedState.expanded === "true", `Expected application navigation toggle to expose aria-expanded=true, got ${expandedState.expanded}.`);
+
+    const navigationCompositionState = await page.evaluate(() => {
+      const content = document.querySelector<HTMLElement>("[data-flush-navigation-content]");
+      const activeLink = content?.querySelector<HTMLElement>(".bf-side-navigation-link[aria-current='page']");
+      const topLevelLink = content?.querySelector<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item > .bf-side-navigation-link");
+      const activeLabel = activeLink?.querySelector<HTMLElement>(".bf-side-navigation-label");
+      const defaultContent = document.querySelector<HTMLElement>(".bf-main .bf-panel-content");
+      if (!content || !activeLink || !topLevelLink || !activeLabel || !defaultContent) {
+        return null;
+      }
+
+      const baselineProbe = document.createElement("span");
+      baselineProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-baseline);block-size:0;visibility:hidden";
+      content.append(baselineProbe);
+
+      const contentRect = content.getBoundingClientRect();
+      const activeRect = activeLink.getBoundingClientRect();
+      const activeLabelRect = activeLabel.getBoundingClientRect();
+      const contentStyles = getComputedStyle(content);
+      const activeStyles = getComputedStyle(activeLink);
+      const topLevelStyles = getComputedStyle(topLevelLink);
+      const defaultContentStyles = getComputedStyle(defaultContent);
+      const baselinePx = baselineProbe.getBoundingClientRect().width;
+      baselineProbe.remove();
+
+      return {
+        activeBackground: activeStyles.backgroundColor,
+        activeBoxShadow: activeStyles.boxShadow,
+        activeLeft: activeRect.left,
+        activeRight: activeRect.right,
+        contentLeft: contentRect.left,
+        contentRight: contentRect.right,
+        contentPaddingBlockEnd: contentStyles.paddingBlockEnd,
+        contentPaddingBlockStart: contentStyles.paddingBlockStart,
+        contentPaddingInlineEnd: contentStyles.paddingInlineEnd,
+        contentPaddingInlineStart: contentStyles.paddingInlineStart,
+        defaultPaddingInlineStart: defaultContentStyles.paddingInlineStart,
+        labelInset: activeLabelRect.left - contentRect.left,
+        nestedPaddingInlineStart: Number.parseFloat(activeStyles.paddingInlineStart),
+        topLevelPaddingInlineStart: Number.parseFloat(topLevelStyles.paddingInlineStart),
+        baselinePx
+      };
+    });
+
+    assert(navigationCompositionState, "Expected flush side-navigation composition to be measurable.");
+    assert(navigationCompositionState.contentPaddingBlockStart === "0px" && navigationCompositionState.contentPaddingBlockEnd === "0px", `Expected flush navigation content to remove block padding. Got ${navigationCompositionState.contentPaddingBlockStart}/${navigationCompositionState.contentPaddingBlockEnd}.`);
+    assert(navigationCompositionState.contentPaddingInlineStart === "0px" && navigationCompositionState.contentPaddingInlineEnd === "0px", `Expected flush navigation content to remove inline padding. Got ${navigationCompositionState.contentPaddingInlineStart}/${navigationCompositionState.contentPaddingInlineEnd}.`);
+    assert(Math.abs(navigationCompositionState.activeLeft - navigationCompositionState.contentLeft) <= 1, `Expected active navigation background to reach the content start edge. Got active=${navigationCompositionState.activeLeft}, content=${navigationCompositionState.contentLeft}.`);
+    assert(Math.abs(navigationCompositionState.activeRight - navigationCompositionState.contentRight) <= 1, `Expected active navigation background to reach the content end edge. Got active=${navigationCompositionState.activeRight}, content=${navigationCompositionState.contentRight}.`);
+    assert(navigationCompositionState.activeBackground !== "rgba(0, 0, 0, 0)", `Expected active navigation row to retain a visible background. Got ${navigationCompositionState.activeBackground}.`);
+    assert(navigationCompositionState.activeBoxShadow !== "none", "Expected active navigation row to retain its inset edge highlight.");
+    assert(navigationCompositionState.labelInset > 0, `Expected active navigation label to retain component-owned indentation. Got ${navigationCompositionState.labelInset}px.`);
+    assert(Math.abs((navigationCompositionState.nestedPaddingInlineStart - navigationCompositionState.topLevelPaddingInlineStart) - (navigationCompositionState.baselinePx * 2)) <= 1, `Expected nested navigation padding to add two baseline units. Got nested=${navigationCompositionState.nestedPaddingInlineStart}px, top-level=${navigationCompositionState.topLevelPaddingInlineStart}px, baseline=${navigationCompositionState.baselinePx}px.`);
+    assert(Number.parseFloat(navigationCompositionState.defaultPaddingInlineStart) > 0, `Expected ordinary panel content to remain padded. Got ${navigationCompositionState.defaultPaddingInlineStart}.`);
 
     await pinToggle.evaluate(element => {
       if (element instanceof HTMLElement) {

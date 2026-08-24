@@ -38,6 +38,12 @@ export function gridCss(): string {
     --bf-grid-gap-inline: 1.5rem;
     --bf-grid-gap-block: 1.5rem;
   }
+
+  :where(.bf-theme) :where(.bf-application),
+  :where(.bf-theme):where(.bf-application) {
+    --bf-grid-gap-inline: 1.5rem;
+    --bf-grid-gap-block: 1.5rem;
+  }
 }
 
 /* ------------------------------------------------------------------ */

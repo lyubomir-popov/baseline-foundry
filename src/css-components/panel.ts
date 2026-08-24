@@ -102,6 +102,11 @@ ${bodyTypeStyles}  align-items: center;
   padding-inline: var(--bf-panel-padding-inline);
 }
 
+:where(.bf-theme) :where(.bf-panel-content.is-flush) {
+  padding-block: 0;
+  padding-inline: 0;
+}
+
 :where(.bf-theme) :where(.bf-panel-content) > :last-child:not(:where(.bf-button, .bf-button.is-base, .bf-input, input, textarea, select, input[type='file'], .bf-search-box, .bf-search-and-filter-search-container, .bf-choice-row, .bf-segmented-control-button, .bf-tab-buttons-button, .bf-pagination-link, .bf-side-navigation-toggle)) {
   margin-bottom: 0;
 }

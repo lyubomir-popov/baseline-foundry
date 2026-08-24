@@ -5,10 +5,10 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Review and merge the green Spec 002 package from
-   `feat/002-element-owned-typography`. Retire the duplicate fix
-   branch/worktree only with explicit approval to discard its empty line-ending
-   status artifacts.
+1. Complete and release Spec 003 from `feat/003-flush-side-navigation`, then
+   refresh Diagram Registry from the merged BF build without local CSS.
+2. Retire the duplicate typography fix branch/worktree only with explicit
+   approval to discard its empty line-ending status artifacts.
 
 ## Candidate order after Spec 001
 
