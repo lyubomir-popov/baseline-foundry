@@ -1,3 +1,4 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
 import { closeServer, createStaticServer, waitForFonts } from "./component-demo-shared.ts";
@@ -1095,6 +1096,275 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
         assert(state.targetLineHeight === state.resolvedBodyLineHeight, `Expected ${demo.label} line-height to match the active body role in ${tier}. Body role ${state.bodyRoleLineHeight} (${state.resolvedBodyLineHeight}), target ${state.targetLineHeight}.`);
       }
     }
+
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  type TierName = typeof tiers[number];
+  type TierSource = {
+    baselineUnit: number;
+    elements: Array<{
+      identifier: string;
+      fontSize: number;
+      lineHeight: number;
+      fontWeight: number;
+      fontStyle?: string;
+    }>;
+  };
+  const cssPixels = (rem: number) => `${Number((rem * 16).toFixed(5))}px`;
+  const expectedByTier = Object.fromEntries(await Promise.all(tiers.map(async tier => {
+    const source = JSON.parse(await fs.readFile(path.resolve(`config/tiers/${tier}.json`), "utf8")) as TierSource;
+    const role = (name: "h3" | "h6") => {
+      const element = source.elements.find(candidate => candidate.identifier === name);
+      assert(element, `Expected ${tier} source config to define ${name}.`);
+      return {
+        fontSize: cssPixels(element.fontSize),
+        lineHeight: cssPixels(element.lineHeight * source.baselineUnit),
+        fontWeight: String(element.fontWeight),
+        fontStyle: element.fontStyle ?? "normal"
+      };
+    };
+    return [tier, { h3: role("h3"), h6: role("h6"), baselinePx: source.baselineUnit * 16 }] as const;
+  }))) as Record<TierName, {
+    h3: { fontSize: string; lineHeight: string; fontWeight: string; fontStyle: string };
+    h6: { fontSize: string; lineHeight: string; fontWeight: string; fontStyle: string };
+    baselinePx: number;
+  }>;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 960 }
+    });
+
+    await page.goto(`${origin}/demo/components/typography.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+    await page.evaluate(() => {
+      const h6Reference = document.createElement("span");
+      h6Reference.className = "bf-h6";
+      h6Reference.dataset.roleReference = "h6";
+      h6Reference.style.cssText = "position:absolute;visibility:hidden";
+      const h3Reference = document.createElement("span");
+      h3Reference.className = "bf-h3";
+      h3Reference.dataset.roleReference = "h3";
+      const h6ReferenceProse = document.createElement("div");
+      h6ReferenceProse.className = "bf-prose";
+      h6ReferenceProse.style.cssText = "position:absolute;visibility:hidden";
+      const h6ReferenceTail = document.createElement("span");
+      h6ReferenceTail.hidden = true;
+      h6ReferenceProse.append(h6Reference, h6ReferenceTail);
+      const h3ReferenceProse = document.createElement("div");
+      h3ReferenceProse.className = "bf-prose";
+      h3ReferenceProse.style.cssText = "position:absolute;visibility:hidden";
+      h3ReferenceProse.append(h3Reference);
+      document.body.append(h6ReferenceProse, h3ReferenceProse);
+
+      const boundaryCases = ["plain-body", "classed-body", "plain-h3", "classed-h3", "ul", "ol", "blockquote"] as const;
+      for (const caseName of boundaryCases) {
+        const targets: HTMLElement[] = [];
+        for (const attributeName of ["proseBoundary", "proseReference"] as const) {
+          let target: HTMLElement;
+          if (caseName === "plain-body" || caseName === "classed-body") {
+            target = document.createElement("p");
+            if (caseName === "classed-body") target.className = "bf-body";
+            target.textContent = `${caseName} paragraph`;
+          } else if (caseName === "plain-h3" || caseName === "classed-h3") {
+            target = document.createElement(caseName === "plain-h3" ? "h3" : "h2");
+            if (caseName === "classed-h3") target.className = "bf-h3";
+            target.textContent = `${caseName} heading`;
+          } else if (caseName === "ul" || caseName === "ol") {
+            target = document.createElement(caseName);
+            const item = document.createElement("li");
+            item.textContent = `${caseName} item`;
+            target.append(item);
+          } else {
+            target = document.createElement("blockquote");
+            target.textContent = "Boundary quotation";
+          }
+          target.dataset[attributeName] = caseName;
+          targets.push(target);
+        }
+
+        const fixture = document.createElement("div");
+        fixture.dataset.proseBoundaryFixture = caseName;
+        fixture.style.cssText = "position:absolute;visibility:hidden;inset-block-start:0;inset-inline-start:0;inline-size:var(--bf-measure);pointer-events:none";
+        const prose = document.createElement("div");
+        prose.className = "bf-prose";
+        prose.dataset.proseBoundaryBox = caseName;
+        prose.append(targets[0]);
+        const following = document.createElement("p");
+        following.dataset.proseBoundaryFollowing = caseName;
+        const baselineMarker = document.createElement("span");
+        baselineMarker.dataset.firstBaselineMarker = caseName;
+        baselineMarker.style.cssText = "display:inline-block;block-size:0;inline-size:0;margin:0;padding:0";
+        following.append(baselineMarker, document.createTextNode("Following paragraph"));
+        fixture.append(prose, following);
+
+        const reference = document.createElement("div");
+        reference.className = "bf-prose";
+        reference.style.cssText = "position:absolute;visibility:hidden;inset-block-start:0;inset-inline-start:0;inline-size:var(--bf-measure);pointer-events:none";
+        reference.append(targets[1]);
+        const referenceTail = document.createElement("span");
+        referenceTail.hidden = true;
+        reference.append(referenceTail);
+        document.body.append(fixture, reference);
+      }
+
+      const firstBaselineReference = document.createElement("p");
+      firstBaselineReference.dataset.firstBaselineReference = "true";
+      firstBaselineReference.style.cssText = "position:absolute;visibility:hidden;inset-block-start:0;inset-inline-start:0;margin:0;pointer-events:none";
+      const firstBaselineReferenceMarker = document.createElement("span");
+      firstBaselineReferenceMarker.dataset.firstBaselineReferenceMarker = "true";
+      firstBaselineReferenceMarker.style.cssText = "display:inline-block;block-size:0;inline-size:0;margin:0;padding:0";
+      firstBaselineReference.append(firstBaselineReferenceMarker, document.createTextNode("Baseline reference"));
+      document.body.append(firstBaselineReference);
+    });
+
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+    await tierSelect.waitFor({ state: "visible" });
+    const measuredTierSignatures = new Set<string>();
+
+    for (const tier of tiers) {
+      const expected = expectedByTier[tier];
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(({ expectedTier, expectedH3Size, expectedH6Size }) => {
+        const h3AsH6 = document.querySelector<HTMLElement>('[data-role-probe="h3-as-h6"]');
+        const h6AsH3 = document.querySelector<HTMLElement>('[data-role-probe="h6-as-h3"]');
+        return document.body.dataset.bfTier === expectedTier &&
+          h3AsH6 !== null && getComputedStyle(h3AsH6).fontSize === expectedH6Size &&
+          h6AsH3 !== null && getComputedStyle(h6AsH3).fontSize === expectedH3Size;
+      }, { expectedTier: tier, expectedH3Size: expected.h3.fontSize, expectedH6Size: expected.h6.fontSize });
+
+      const state = await page.evaluate(() => {
+        const h3AsH6 = document.querySelector<HTMLElement>('[data-role-probe="h3-as-h6"]');
+        const h6AsH3 = document.querySelector<HTMLElement>('[data-role-probe="h6-as-h3"]');
+        const h6Reference = document.querySelector<HTMLElement>('[data-role-reference="h6"]');
+        const h3Reference = document.querySelector<HTMLElement>('[data-role-reference="h3"]');
+        const firstBaselineReference = document.querySelector<HTMLElement>('[data-first-baseline-reference="true"]');
+        const firstBaselineReferenceMarker = document.querySelector<HTMLElement>('[data-first-baseline-reference-marker="true"]');
+        if (!h3AsH6 || !h6AsH3 || !h6Reference || !h3Reference || !firstBaselineReference || !firstBaselineReferenceMarker) return null;
+
+        const [h3AsH6Typography, h6AsH3Typography, h6ReferenceTypography, h3ReferenceTypography] = [h3AsH6, h6AsH3, h6Reference, h3Reference]
+          .map(element => {
+            const styles = getComputedStyle(element);
+            return {
+              fontFamily: styles.fontFamily,
+              fontSize: styles.fontSize,
+              fontStyle: styles.fontStyle,
+              fontVariantCaps: styles.fontVariantCaps,
+              fontWeight: styles.fontWeight,
+              letterSpacing: styles.letterSpacing,
+              lineHeight: styles.lineHeight,
+              marginBottom: styles.marginBottom,
+              paddingBottom: styles.paddingBottom,
+              paddingTop: styles.paddingTop,
+              textTransform: styles.textTransform
+            };
+          });
+
+        const boundaryCases = ["plain-body", "classed-body", "plain-h3", "classed-h3", "ul", "ol", "blockquote"];
+        const proseBoundaries = Object.fromEntries(boundaryCases.map(caseName => {
+          const fixture = document.querySelector<HTMLElement>(`[data-prose-boundary-fixture="${caseName}"]`);
+          const prose = document.querySelector<HTMLElement>(`[data-prose-boundary-box="${caseName}"]`);
+          const target = document.querySelector<HTMLElement>(`[data-prose-boundary="${caseName}"]`);
+          const reference = document.querySelector<HTMLElement>(`[data-prose-reference="${caseName}"]`);
+          const baselineMarker = document.querySelector<HTMLElement>(`[data-first-baseline-marker="${caseName}"]`);
+          if (!fixture || !prose || !target || !reference || !baselineMarker) return [caseName, null];
+          const styles = getComputedStyle(target);
+          const referenceStyles = getComputedStyle(reference);
+          const targetRect = target.getBoundingClientRect();
+          const referenceRect = reference.getBoundingClientRect();
+          const fixtureRect = fixture.getBoundingClientRect();
+          const proseRect = prose.getBoundingClientRect();
+          const baselineMarkerRect = baselineMarker.getBoundingClientRect();
+          return [caseName, {
+            marginBottom: styles.marginBottom,
+            paddingBottom: styles.paddingBottom,
+            paddingTop: styles.paddingTop,
+            fontSize: styles.fontSize,
+            fontStyle: styles.fontStyle,
+            fontWeight: styles.fontWeight,
+            lineHeight: styles.lineHeight,
+            height: targetRect.height,
+            width: targetRect.width,
+            referenceMarginBottom: referenceStyles.marginBottom,
+            referencePaddingBottom: referenceStyles.paddingBottom,
+            referencePaddingTop: referenceStyles.paddingTop,
+            referenceHeight: referenceRect.height,
+            proseBottomOffset: proseRect.bottom - fixtureRect.top,
+            followingBaselineOffset: baselineMarkerRect.bottom - fixtureRect.top
+          }];
+        }));
+
+        return {
+          tier: document.body.dataset.bfTier,
+          h3AsH6: h3AsH6Typography,
+          h6AsH3: h6AsH3Typography,
+          h6Reference: h6ReferenceTypography,
+          h3Reference: h3ReferenceTypography,
+          firstBaselinePhase: firstBaselineReferenceMarker.getBoundingClientRect().bottom - firstBaselineReference.getBoundingClientRect().top,
+          proseBoundaries
+        };
+      });
+
+      assert(state, `Expected reciprocal semantic/visual typography probes in ${tier}.`);
+      assert(state.tier === tier, `Expected reciprocal typography probes to switch to ${tier}, got ${state.tier}.`);
+      assert(JSON.stringify(state.h3AsH6) === JSON.stringify(state.h6Reference), `Expected ${tier} h3.bf-h6 inside .bf-prose to resolve every measured H6 role property. Probe=${JSON.stringify(state.h3AsH6)}, reference=${JSON.stringify(state.h6Reference)}.`);
+      assert(JSON.stringify(state.h6AsH3) === JSON.stringify(state.h3Reference), `Expected ${tier} h6.bf-h3 inside .bf-prose to resolve every measured H3 role property. Probe=${JSON.stringify(state.h6AsH3)}, reference=${JSON.stringify(state.h3Reference)}.`);
+      for (const [property, expectedValue] of Object.entries(expected.h6)) {
+        assert(state.h3AsH6[property as keyof typeof state.h3AsH6] === expectedValue, `Expected ${tier} h3.bf-h6 ${property} to resolve to concrete H6 value ${expectedValue}, got ${state.h3AsH6[property as keyof typeof state.h3AsH6]}.`);
+      }
+      for (const [property, expectedValue] of Object.entries(expected.h3)) {
+        assert(state.h6AsH3[property as keyof typeof state.h6AsH3] === expectedValue, `Expected ${tier} h6.bf-h3 ${property} to resolve to concrete H3 value ${expectedValue}, got ${state.h6AsH3[property as keyof typeof state.h6AsH3]}.`);
+      }
+      const boundaryCaseNames = ["plain-body", "classed-body", "plain-h3", "classed-h3", "ul", "ol", "blockquote"] as const;
+      const renderedGridTolerancePx = 0.75;
+      const gridDelta = (value: number) => {
+        const remainder = ((value % expected.baselinePx) + expected.baselinePx) % expected.baselinePx;
+        return Math.min(remainder, expected.baselinePx - remainder);
+      };
+      for (const caseName of boundaryCaseNames) {
+        const boundary = state.proseBoundaries[caseName];
+        assert(boundary, `Expected ${tier} ${caseName} prose-boundary fixture.`);
+        assert(boundary.marginBottom === "0px", `Expected ${tier} ${caseName} last child margin-bottom to be trimmed, got ${boundary.marginBottom}.`);
+        if (["plain-body", "classed-body", "ul", "ol", "blockquote"].includes(caseName)) {
+          assert(boundary.referenceMarginBottom !== "0px", `Expected ${tier} ${caseName} non-boundary reference to retain a semantic margin for a meaningful reset check.`);
+        }
+        assert(boundary.paddingBottom === boundary.referencePaddingBottom, `Expected ${tier} ${caseName} boundary trimming to preserve padding-bottom ${boundary.referencePaddingBottom}, got ${boundary.paddingBottom}.`);
+        assert(boundary.paddingTop === boundary.referencePaddingTop, `Expected ${tier} ${caseName} boundary trimming to preserve padding-top ${boundary.referencePaddingTop}, got ${boundary.paddingTop}.`);
+        assert(Math.abs(boundary.height - boundary.referenceHeight) <= 0.01, `Expected ${tier} ${caseName} boundary trimming to preserve the occupied element box. Boundary=${boundary.height}, reference=${boundary.referenceHeight}.`);
+        assert(gridDelta(boundary.proseBottomOffset) <= renderedGridTolerancePx, `Expected ${tier} ${caseName} prose bottom edge on the ${expected.baselinePx}px grid, offset=${boundary.proseBottomOffset}.`);
+        assert(gridDelta(boundary.followingBaselineOffset - state.firstBaselinePhase) <= renderedGridTolerancePx, `Expected ${tier} ${caseName} following first baseline to retain the tier's ${expected.baselinePx}px grid phase. Offset=${boundary.followingBaselineOffset}, phase=${state.firstBaselinePhase}.`);
+      }
+
+      for (const [plainName, classedName] of [["plain-body", "classed-body"], ["plain-h3", "classed-h3"]] as const) {
+        const plain = state.proseBoundaries[plainName];
+        const classed = state.proseBoundaries[classedName];
+        assert(plain && classed, `Expected ${tier} ${plainName}/${classedName} boundary pair.`);
+        const measuredBox = (boundary: typeof plain) => ({
+          marginBottom: boundary.marginBottom,
+          paddingBottom: boundary.paddingBottom,
+          paddingTop: boundary.paddingTop,
+          fontSize: boundary.fontSize,
+          fontStyle: boundary.fontStyle,
+          fontWeight: boundary.fontWeight,
+          lineHeight: boundary.lineHeight,
+          height: boundary.height,
+          width: boundary.width
+        });
+        assert(JSON.stringify(measuredBox(plain)) === JSON.stringify(measuredBox(classed)), `Expected ${tier} ${plainName}/${classedName} to occupy identical measured boxes. Plain=${JSON.stringify(measuredBox(plain))}, classed=${JSON.stringify(measuredBox(classed))}.`);
+      }
+      measuredTierSignatures.add(`${state.h6AsH3.fontSize}/${state.h6AsH3.fontWeight}/${state.h3AsH6.fontSize}/${state.h3AsH6.fontWeight}/${expected.baselinePx}`);
+    }
+
+    assert(measuredTierSignatures.size === tiers.length, `Expected four distinct computed typography signatures, got ${measuredTierSignatures.size}: ${Array.from(measuredTierSignatures).join(", ")}.`);
 
     await page.close();
   } finally {
@@ -2917,6 +3187,7 @@ async function main(): Promise<void> {
     await verifyApplicationLayout(origin);
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
+    await verifySemanticRoleClassPrecedence(origin);
     await verifyRenewalCompositionContracts(origin);
     await verifyAdversarialResponsiveGeometry(origin);
     await verifyDirectAndClassSurfaceGeometry(origin);

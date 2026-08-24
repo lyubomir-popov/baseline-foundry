@@ -5,9 +5,10 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Review and merge `fix/navigation-grid-border-thickness`. Implementation,
-   generated-artifact rebuilds, Baseline Foundry closeout gates, affected-state
-   visual review, and the `diagram-registry` downstream refresh are complete.
+1. Review and merge the green Spec 002 package from
+   `feat/002-element-owned-typography`. Retire the duplicate fix
+   branch/worktree only with explicit approval to discard its empty line-ending
+   status artifacts.
 
 ## Candidate order after Spec 001
 
