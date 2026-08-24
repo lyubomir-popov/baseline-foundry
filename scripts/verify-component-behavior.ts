@@ -457,18 +457,40 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     const collapsedWidth = await navigation.evaluate(element => element.getBoundingClientRect().width);
     assert(collapsedWidth <= 96, `Expected collapsed application navigation to stay narrow. Got ${collapsedWidth}px.`);
 
+    const collapsedGeometry = await navigation.evaluate(element => {
+      const links = Array.from(element.querySelectorAll<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item > .bf-side-navigation-link"));
+      return links.map(link => ({
+        blockSize: link.getBoundingClientRect().height,
+        compactBlockSize: Number.parseFloat(getComputedStyle(link).minBlockSize)
+      }));
+    });
+    assert(collapsedGeometry.length > 0, "Expected collapsed application navigation rows to be measurable.");
+    collapsedGeometry.forEach((row, index) => {
+      assert(row.blockSize <= row.compactBlockSize + 1, `Expected collapsed navigation row ${index + 1} to retain compact control height. Got row=${row.blockSize}px, compact=${row.compactBlockSize}px.`);
+    });
+    assert(await page.getByRole("link", { name: "Dashboard", exact: true }).count() === 1, "Expected the visually collapsed Dashboard label to remain the link accessible name.");
+
     await menuToggle.click({ force: true });
     await page.waitForTimeout(180);
 
     const expandedState = await page.evaluate(() => {
+      const applicationElement = document.querySelector<HTMLElement>(".bf-application");
       const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const drawerElement = navigationElement?.querySelector<HTMLElement>(".bf-navigation-drawer");
+      const panelElement = drawerElement?.querySelector<HTMLElement>(".bf-panel");
       const toggleElement = document.querySelector<HTMLElement>("[data-application-layout-toggle]");
-      if (!(navigationElement instanceof HTMLElement) || !(toggleElement instanceof HTMLElement)) {
+      if (!(applicationElement instanceof HTMLElement) || !(navigationElement instanceof HTMLElement) ||
+          !(drawerElement instanceof HTMLElement) || !(panelElement instanceof HTMLElement) ||
+          !(toggleElement instanceof HTMLElement)) {
         return null;
       }
 
       return {
+        applicationBottom: applicationElement.getBoundingClientRect().bottom,
         collapsed: navigationElement.classList.contains("is-collapsed"),
+        drawerBottom: drawerElement.getBoundingClientRect().bottom,
+        navigationBottom: navigationElement.getBoundingClientRect().bottom,
+        panelBottom: panelElement.getBoundingClientRect().bottom,
         width: navigationElement.getBoundingClientRect().width,
         expanded: toggleElement.getAttribute("aria-expanded")
       };
@@ -478,6 +500,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(!expandedState.collapsed, "Expected application navigation toggle to expand the navigation.");
     assert(expandedState.width >= 220, `Expected expanded application navigation to be visibly wide. Got ${expandedState.width}px.`);
     assert(expandedState.expanded === "true", `Expected application navigation toggle to expose aria-expanded=true, got ${expandedState.expanded}.`);
+    assert(Math.abs(expandedState.drawerBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation drawer to reach the navigation bottom. Got drawer=${expandedState.drawerBottom}px, navigation=${expandedState.navigationBottom}px.`);
+    assert(Math.abs(expandedState.panelBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation panel to reach the navigation bottom. Got panel=${expandedState.panelBottom}px, navigation=${expandedState.navigationBottom}px.`);
+    assert(Math.abs(expandedState.navigationBottom - expandedState.applicationBottom) <= 1, `Expected desktop navigation to reach the application bottom. Got navigation=${expandedState.navigationBottom}px, application=${expandedState.applicationBottom}px.`);
 
     const navigationCompositionState = await page.evaluate(() => {
       const content = document.querySelector<HTMLElement>("[data-flush-navigation-content]");
