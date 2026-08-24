@@ -28,3 +28,8 @@ the supported in-app browser client.
 
 Accept for BF release. Both changes are opt-in or component-scoped, are covered
 by generated and rendered assertions, and require no downstream `.bf-*` CSS.
+
+Released on BF main at `800a68e4c68f294be9dd15b02a396c88dc0200eb`.
+Diagram Registry vendors that immutable editorial bundle and uses both public
+contracts without local BF selectors; its complete site gate and focused
+desktop/mobile Playwright review passed on feature commit `120b80c`.

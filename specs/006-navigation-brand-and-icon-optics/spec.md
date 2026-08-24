@@ -4,7 +4,7 @@
 
 **Created:** 2026-08-24
 
-**Status:** In progress
+**Status:** Released
 
 ## Problem
 

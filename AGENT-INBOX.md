@@ -1,9 +1,8 @@
 # Agent inbox
 
-Spec 006 is active on `feat/006-navigation-brand-and-icon-optics`. It promotes
-the shared Canonical drawer-brand composition and a measured 3 px expanded
-side-navigation icon offset while preserving centred collapsed icons. Release
-BF before refreshing Diagram Registry; do not add consumer `.bf-*` overrides.
+No outstanding request. Spec 006 is released on BF main at `800a68e`; Diagram
+Registry vendors the immutable editorial bundle on feature commit `120b80c`
+and passes desktop/mobile Playwright geometry without consumer `.bf-*` CSS.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
 the duplicate `fix/typography-role-class-precedence` worktree. The sibling

@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 006 Navigation brand and icon optics | [`006-navigation-brand-and-icon-optics/`](../specs/006-navigation-brand-and-icon-optics/) | In progress on `feat/006-navigation-brand-and-icon-optics`; BF source and application-layout fixture under review. |
+| 006 Navigation brand and icon optics | [`006-navigation-brand-and-icon-optics/`](../specs/006-navigation-brand-and-icon-optics/) | Released on `main` at `800a68e`; downstream Registry geometry verified and pushed. |
 | 005 Side-navigation icon alignment | [`005-side-navigation-icon-alignment/`](../specs/005-side-navigation-icon-alignment/) | Released on `main` at `8728d68`; downstream Registry geometry verified and pushed. |
 
 ## Archive
