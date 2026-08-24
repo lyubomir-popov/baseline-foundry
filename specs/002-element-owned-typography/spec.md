@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-22
 
-**Status**: Implemented; fresh adversarial review requested
+**Status**: Accepted for merge after release review
 
 **Input**: Remove redundant `.bf-prose`-prefixed typography selectors so plain
 elements own semantic type and explicit BF visual-role classes reliably

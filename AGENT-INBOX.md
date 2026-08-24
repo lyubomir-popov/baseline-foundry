@@ -1,8 +1,8 @@
-# Agent inbox: adversarial review request
+# Agent inbox: release review complete
 
-Spec 002's owner prose-boundary correction is implemented on
-`feat/002-element-owned-typography`. Review the branch and working tree
-independently; do not rely on this summary or edit files.
+Spec 002's release review completed on 2026-08-24 with no merge-blocking
+defect. The scope below is retained as the review record; there is no
+outstanding request.
 
 ## Review scope
 
@@ -41,8 +41,8 @@ independently; do not rely on this summary or edit files.
   errors are empty.
 - `git diff --check`: expected clean before handoff.
 
-Report findings by severity with file/line evidence. A clean review should say
-explicitly that no merge-blocking defect was found; do not mark Spec 002 merged.
+Release disposition: no merge-blocking defect found. Spec 002 is accepted for
+merge under the current owner direction.
 
 ## Preservation boundary
 
