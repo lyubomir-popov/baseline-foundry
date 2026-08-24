@@ -1,10 +1,8 @@
 # Agent inbox
 
-Spec 005 is active on `feat/005-side-navigation-icon-alignment`. Icon-bearing
-side-navigation rows currently center an icon against the complete label block,
-placing it between lines when text wraps. Align it to the label's first-line
-baseline in BF, prove expanded/collapsed geometry, then refresh Registry from
-the released generated bundle without consumer CSS.
+No outstanding request. Spec 005 is released on BF main at `8728d68`; Diagram
+Registry vendors the immutable generated editorial bundle and its feature
+branch passes expanded/collapsed browser geometry without consumer CSS.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
 the duplicate `fix/typography-role-class-precedence` worktree. The sibling
