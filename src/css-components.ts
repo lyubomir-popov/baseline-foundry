@@ -2496,6 +2496,12 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   width: 100%;
 }
 
+:where(.bf-theme) :where(.bf-application.is-fill) {
+  block-size: 100dvb;
+  max-block-size: 100dvb;
+  min-block-size: 100dvb;
+}
+
 :where(.bf-theme) :where(.bf-application:has(> .bf-navigation)) {
   grid-template-areas:
     "navigation-bar"
