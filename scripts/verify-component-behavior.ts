@@ -381,6 +381,32 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     await waitForFonts(page);
     await disableDemoChromeHitTesting(page);
 
+    const viewportFillState = await page.evaluate(() => {
+      const application = document.querySelector<HTMLElement>(".bf-application");
+      if (!(application instanceof HTMLElement)) {
+        return null;
+      }
+
+      document.body.classList.remove("bf-tier-app");
+      document.body.classList.add("bf-tier-editorial");
+      application.removeAttribute("style");
+      application.classList.add("is-fill");
+      document.body.replaceChildren(application);
+      const rect = application.getBoundingClientRect();
+      return {
+        blockSize: getComputedStyle(application).blockSize,
+        gridGapInline: getComputedStyle(application).getPropertyValue("--bf-grid-gap-inline").trim(),
+        height: rect.height,
+        bottom: rect.bottom
+      };
+    });
+
+    assert(viewportFillState, "Expected full-viewport application state to be measurable.");
+    assert(viewportFillState.blockSize === "960px", `Expected the full-viewport application modifier to resolve against the dynamic viewport. Got block-size=${viewportFillState.blockSize}.`);
+    assert(viewportFillState.gridGapInline === "1.5rem", `Expected application gutters to remain 1.5rem under editorial typography. Got --bf-grid-gap-inline=${viewportFillState.gridGapInline}.`);
+    assert(Math.abs(viewportFillState.height - 960) <= 1, `Expected the full-viewport application modifier to occupy the viewport height. Got height=${viewportFillState.height}px.`);
+    assert(Math.abs(viewportFillState.bottom - 960) <= 1, `Expected the full-viewport application modifier to reach the viewport bottom edge. Got bottom=${viewportFillState.bottom}px.`);
+
     const spacingResetState = await page.evaluate(() => {
       const stack = document.querySelector<HTMLElement>(".bf-panel-header .bf-stack.is-flush");
       if (!(stack instanceof HTMLElement)) {
