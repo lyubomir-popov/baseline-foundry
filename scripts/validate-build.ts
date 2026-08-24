@@ -1230,6 +1230,10 @@ function validateCommonCss(css: string): void {
     "display": "inline-flex",
     "padding-block": "var(--bf-control-block-padding-compact)"
   }, "panel toggle styling stays on the shared compact control contract");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel-content.is-flush)", {
+    "padding-block": "0",
+    "padding-inline": "0"
+  }, "panel content exposes an explicit flush composition without changing the padded default");
   assert(css.includes(":where(.bf-application-overlay)"), "Expected generated CSS to include application drawer overlay styling.");
   assert(css.includes(":where(.bf-application.is-fill)"), "Expected generated CSS to expose the full-viewport application modifier.");
   assert(css.includes("block-size: 100dvb;\n  max-block-size: 100dvb;\n  min-block-size: 100dvb;"), "Expected the full-viewport application modifier to own a definite dynamic viewport block size.");
