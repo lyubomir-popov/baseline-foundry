@@ -1516,7 +1516,11 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
       for (const caseName of boundaryCaseNames) {
         const boundary = state.proseBoundaries[caseName];
         assert(boundary, `Expected ${tier} ${caseName} prose-boundary fixture.`);
-        assert(boundary.marginBottom === "0px", `Expected ${tier} ${caseName} last child margin-bottom to be trimmed, got ${boundary.marginBottom}.`);
+        if (caseName === "ul" || caseName === "ol") {
+          assert(boundary.marginBottom === boundary.referenceMarginBottom && boundary.marginBottom !== "0px", `Expected ${tier} final ${caseName} margin-bottom to match its body-role reference ${boundary.referenceMarginBottom}, got ${boundary.marginBottom}.`);
+        } else {
+          assert(boundary.marginBottom === "0px", `Expected ${tier} ${caseName} final non-list margin-bottom to be trimmed, got ${boundary.marginBottom}.`);
+        }
         if (["plain-body", "classed-body", "ul", "ol", "blockquote"].includes(caseName)) {
           assert(boundary.referenceMarginBottom !== "0px", `Expected ${tier} ${caseName} non-boundary reference to retain a semantic margin for a meaningful reset check.`);
         }

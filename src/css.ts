@@ -413,7 +413,7 @@ ${capEngineDemo}
   padding-inline-start: var(--bf-space-3);
 }
 
-:where(.bf-theme) :where(.bf-prose) > :last-child {
+:where(.bf-theme) :where(.bf-prose) > :last-child:not(:where(ul)):not(:where(ol)) {
   margin-bottom: 0;
 }
 
