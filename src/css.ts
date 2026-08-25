@@ -387,8 +387,11 @@ ${roleRules}
 
 ${capEngineDemo}
 
-:where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {
+:where(.bf-theme) :where(ul, ol) {
   margin-bottom: ${roleMarginBottomVar("body", semanticMarginBottom(body.spaceAfter, baselineUnit))};
+}
+
+:where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {
   padding-inline-start: var(--bf-space-4);
 }
 
