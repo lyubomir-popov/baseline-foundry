@@ -7,6 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
+| 008 Prose list spacing | [`008-prose-list-spacing/`](../specs/008-prose-list-spacing/) | In progress on `feat/008-prose-list-spacing`. |
 | 007 Navigation-brand panel alignment | [`007-navigation-brand-panel-alignment/`](../specs/007-navigation-brand-panel-alignment/) | Released at `454c7ae`; downstream editorial alignment verified. |
 | 006 Navigation brand and icon optics | [`006-navigation-brand-and-icon-optics/`](../specs/006-navigation-brand-and-icon-optics/) | Released on `main` at `800a68e`; downstream Registry geometry verified and pushed. |
 | 005 Side-navigation icon alignment | [`005-side-navigation-icon-alignment/`](../specs/005-side-navigation-icon-alignment/) | Released on `main` at `8728d68`; downstream Registry geometry verified and pushed. |

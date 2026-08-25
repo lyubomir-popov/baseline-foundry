@@ -1,8 +1,8 @@
 # Agent inbox
 
-Spec 007 is released on `main` at `454c7ae0d303c4cf364b786f356f00eacdf249f5`
-and verified in Diagram Registry. Its closeout evidence is recorded on
-`docs/007-closeout`; no consumer `.bf-*` CSS was added.
+Spec 008 is active on `feat/008-prose-list-spacing`. Final prose lists must
+retain the same semantic space after as paragraphs without a consumer
+override or a new hard-coded spacing value.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
 the duplicate `fix/typography-role-class-precedence` worktree. The sibling
