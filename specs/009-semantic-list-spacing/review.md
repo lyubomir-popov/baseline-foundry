@@ -1,6 +1,6 @@
 # Review: semantic list spacing
 
-**Status:** Ready for release
+**Status:** Released
 
 ## Contract evidence
 
@@ -20,5 +20,16 @@
   margin after `8px`, structural list margin `0px`, measured list-to-rule gap
   `8px`, no horizontal overflow, and no console errors.
 
-The immutable release commit and downstream Registry evidence will be added in
-the closeout commit.
+## Release and downstream evidence
+
+- BF release merge: `be85d46a27d07794ec8f8057b35b557537e60a48`.
+- Diagram Registry implementation: `6f7f65a`; evidence closeout: `aec3d47` on
+  `feat/009-mentor-voice-and-fewer-pages`.
+- Registry vendors the generated editorial CSS byte-for-byte at cache key
+  `bf-be85d46` and enforces its LF-normalized SHA-256.
+- Registry browser measurements at 1280 × 900 and 390 × 844: semantic list
+  margin after `8px`, paragraph margin after `8px`, visible list-to-rule gap
+  `8px`, and no horizontal overflow. Tiered-list headers independently measure
+  their public shallow section boundary at `24px`.
+- Registry validation, 3,450-word copy audit, pinned gallery check, 33 Python
+  tests, 20 Node tests and the 28-check responsive browser matrix passed.

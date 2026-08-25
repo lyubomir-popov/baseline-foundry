@@ -1,10 +1,7 @@
 # Agent inbox
 
-Spec 009 is active on `feat/009-semantic-list-spacing`. Diagram Registry proved
-that semantic lists in component copy slots still inherited the global reset's
-zero margin because Spec 008 scoped space-after to `.bf-prose`. The fix must
-give ordinary `ul`/`ol` the body role's space after across all four tiers while
-preserving explicit zero-margin structural list resets.
+Spec 009 is released at `be85d46a27d07794ec8f8057b35b557537e60a48` and
+verified in Diagram Registry at `aec3d47`. No numbered package is active.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
 the duplicate `fix/typography-role-class-precedence` worktree. The sibling

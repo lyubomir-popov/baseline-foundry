@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 009 Semantic list spacing | [`009-semantic-list-spacing/`](../specs/009-semantic-list-spacing/) | In progress on `feat/009-semantic-list-spacing`; Diagram Registry tiered-list evidence identified the prose-only gap. |
+| 009 Semantic list spacing | [`009-semantic-list-spacing/`](../specs/009-semantic-list-spacing/) | Released at `be85d46`; downstream Registry spacing, integrity and responsive gates verified. |
 | 008 Prose list spacing | [`008-prose-list-spacing/`](../specs/008-prose-list-spacing/) | Released at `6d203e5`; downstream Registry spacing and responsive gates verified. |
 | 007 Navigation-brand panel alignment | [`007-navigation-brand-panel-alignment/`](../specs/007-navigation-brand-panel-alignment/) | Released at `454c7ae`; downstream editorial alignment verified. |
 | 006 Navigation brand and icon optics | [`006-navigation-brand-and-icon-optics/`](../specs/006-navigation-brand-and-icon-optics/) | Released on `main` at `800a68e`; downstream Registry geometry verified and pushed. |
