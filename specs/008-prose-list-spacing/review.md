@@ -1,6 +1,6 @@
 # Review: prose list spacing
 
-**Status:** Ready for release
+**Status:** Released and verified downstream
 
 ## Evidence
 
@@ -14,4 +14,7 @@
 - The selector keeps `:last-child` at class-level specificity and excludes
   `ul` and `ol` through zero-specificity `:where()` arguments.
 
-Ready to release. Downstream Registry verification remains T005.
+Released on `main` at `6d203e5884548aabf615ba484403380fb21320e5`.
+Diagram Registry vendors that immutable release and passed its copy, link,
+schema, Python, Node, and responsive browser gates. Its final prose list
+resolves the same 8 px bottom margin as an ordinary paragraph.

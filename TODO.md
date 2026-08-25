@@ -5,9 +5,7 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Complete and release Spec 008 prose-list spacing, then refresh Diagram
-   Registry from the immutable generated bundle.
-2. Retire the duplicate typography fix branch/worktree only with explicit
+1. Retire the duplicate typography fix branch/worktree only with explicit
    approval to discard its empty line-ending status artifacts.
 
 ## Candidate order after Spec 001
