@@ -40,17 +40,22 @@ export function panelCss(options: PanelCssOptions): string {
   padding-inline: var(--bf-panel-padding-inline);
 }
 
-/* A navigation brand owns the panel's leading edge. The opt-in modifier lets
- * the fixed Canonical tag meet both panel edges without weakening the default
- * padded header contract used by ordinary content panels. */
+/* A navigation brand keeps the Canonical tag attached to the panel's top edge
+ * while sharing the panel-content inline inset used by the opposing main
+ * region. Ordinary content-panel headers retain their complete padding. */
 :where(.bf-theme) :where(.bf-panel-header.is-navigation-brand) {
   gap: 0;
   padding-block: 0;
-  padding-inline: 0;
+  padding-inline-end: 0;
+  padding-inline-start: var(--bf-panel-padding-inline);
 }
 
 :where(.bf-theme) :where(.bf-panel-header.is-navigation-brand) > :where(.bf-top-navigation-logo.is-canonical-tagged) {
   inline-size: 100%;
+}
+
+:where(.bf-theme) :where(.bf-panel-header.is-navigation-brand) :where(.bf-top-navigation-logo-title) {
+  transform: translateY(var(--bf-navigation-brand-title-optical-offset-block));
 }
 
 :where(.bf-theme) :where(.bf-panel-header) > :where(.bf-panel-title) {
