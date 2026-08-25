@@ -194,6 +194,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-top-navigation-logo-tag-gap: 0.25rem;
   --bf-top-navigation-logo-icon-bottom-offset: 0.375rem;
   --bf-top-navigation-logo-icon-optical-offset-inline: -0.0125rem;
+  --bf-navigation-brand-title-optical-offset-block: 0.25rem;
   --bf-icon-size-default: 1rem;
   --bf-icon-size-medium: 2.5rem;
   --bf-icon-size-large: 4rem;

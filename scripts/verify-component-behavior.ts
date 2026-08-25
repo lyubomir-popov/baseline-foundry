@@ -539,15 +539,17 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         tagLeft: tagRect.left,
         tagTop: tagRect.top,
         tagWidth: tagRect.width,
+        titleTransform: getComputedStyle(title).transform,
         titleVisible: title.getBoundingClientRect().width > 0
       };
     });
 
     assert(navigationBrandState, "Expected the application navigation brand to be measurable.");
-    assert(navigationBrandState.paddingBlockStart === "0px" && navigationBrandState.paddingInlineStart === "0px", `Expected the navigation-brand header to remove panel padding. Got block=${navigationBrandState.paddingBlockStart}, inline=${navigationBrandState.paddingInlineStart}.`);
+    assert(navigationBrandState.paddingBlockStart === "0px" && Number.parseFloat(navigationBrandState.paddingInlineStart) > 0, `Expected the navigation-brand header to remove block padding and retain the panel inline inset. Got block=${navigationBrandState.paddingBlockStart}, inline=${navigationBrandState.paddingInlineStart}.`);
     assert(Math.abs(navigationBrandState.headerTop - navigationBrandState.panelTop) <= 1 && Math.abs(navigationBrandState.tagTop - navigationBrandState.panelTop) <= 1, `Expected the Canonical tag to meet the panel's top edge. Got panel=${navigationBrandState.panelTop}px, header=${navigationBrandState.headerTop}px, tag=${navigationBrandState.tagTop}px.`);
-    assert(Math.abs(navigationBrandState.headerLeft - navigationBrandState.panelLeft) <= 1 && Math.abs(navigationBrandState.tagLeft - navigationBrandState.panelLeft) <= 1, `Expected the Canonical tag to meet the panel's leading edge. Got panel=${navigationBrandState.panelLeft}px, header=${navigationBrandState.headerLeft}px, tag=${navigationBrandState.tagLeft}px.`);
+    assert(Math.abs(navigationBrandState.headerLeft - navigationBrandState.panelLeft) <= 1 && Math.abs((navigationBrandState.tagLeft - navigationBrandState.panelLeft) - Number.parseFloat(navigationBrandState.paddingInlineStart)) <= 1, `Expected the Canonical tag to share the panel content inset. Got panel=${navigationBrandState.panelLeft}px, tag=${navigationBrandState.tagLeft}px, inset=${navigationBrandState.paddingInlineStart}.`);
     assert(Math.abs(navigationBrandState.tagWidth - 22) <= 1 && Math.abs(navigationBrandState.tagHeight - 38) <= 1, `Expected the Canonical tag to retain 22x38px geometry. Got ${navigationBrandState.tagWidth}x${navigationBrandState.tagHeight}px.`);
+    assert(navigationBrandState.titleTransform === "matrix(1, 0, 0, 1, 0, 4)", `Expected the navigation-brand title to consume the 4px optical offset. Got ${navigationBrandState.titleTransform}.`);
     assert(navigationBrandState.logoWidth >= 220 && navigationBrandState.titleVisible, `Expected the drawer brand and title to occupy the expanded navigation width. Got logo=${navigationBrandState.logoWidth}px, titleVisible=${navigationBrandState.titleVisible}.`);
 
     const wrappedAlignmentState = await page.evaluate(() => {
