@@ -941,7 +941,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-panel-content) > :last-child:not("), "Expected panel-content boundaries to keep :last-child outside :where() at class-level specificity.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0;\n  padding-block-end:"), "Expected list items to use literal baseline compensation.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  margin-bottom:"), "Expected list containers to use literal semantic spacing.");
+  assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom:"), "Expected semantic list containers to use the body role's literal space after.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  padding-inline-start:"), "Expected prose lists to retain their prose indentation independently of semantic space after.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
   for (const retiredModifier of ["is-extra-dense", "is-dense", "is-loose", "is-section-shallow", "is-section", "is-section-deep"]) {
     assert(!css.includes(`.bf-stack.${retiredModifier}`), `Expected retired stack modifier ${retiredModifier} to stay absent from every tier.`);

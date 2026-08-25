@@ -30,6 +30,19 @@
   </ul>
  </section>
  <h3 data-baseline-check="flow" data-baseline-label="following section title">The following section keeps a readable boundary.</h3>
+ <section class="bf-tiered-list" data-semantic-list-component-probe>
+  <ol class="bf-tiered-list-items" data-baseline-check="box" data-baseline-label="semantic list structural container">
+   <li class="bf-tiered-list-item" data-baseline-check="box" data-baseline-label="semantic list tiered row">
+    <div class="bf-tiered-list-item-title"><h3 data-baseline-check="flow" data-baseline-label="component copy slot title">Component copy slot</h3></div>
+    <div class="bf-tiered-list-item-description">
+     <ul data-baseline-check="flow" data-baseline-label="semantic list in component copy slot">
+      <li data-baseline-check="box">An ordinary list retains paragraph-equivalent space after.</li>
+     </ul>
+     <hr class="bf-rule" data-baseline-check="flow" data-baseline-label="rule following semantic list">
+    </div>
+   </li>
+  </ol>
+ </section>
   <script type="module" src="../component-demo.js"></script>
 </body>
 </html>

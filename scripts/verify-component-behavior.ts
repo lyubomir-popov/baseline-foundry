@@ -1400,6 +1400,30 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
         document.body.append(fixture, reference);
       }
 
+      const semanticListFixture = document.createElement("div");
+      semanticListFixture.dataset.semanticListFixture = "true";
+      semanticListFixture.style.cssText = "position:absolute;visibility:hidden;inset-block-start:0;inset-inline-start:0;inline-size:var(--bf-measure);pointer-events:none";
+      const paragraphReference = document.createElement("p");
+      paragraphReference.dataset.semanticListParagraphReference = "true";
+      paragraphReference.textContent = "Paragraph space-after reference";
+      const structuralList = document.createElement("ol");
+      structuralList.className = "bf-tiered-list-items";
+      structuralList.dataset.semanticListStructuralContainer = "true";
+      const structuralItem = document.createElement("li");
+      structuralItem.className = "bf-tiered-list-item";
+      const description = document.createElement("div");
+      description.className = "bf-tiered-list-item-description";
+      const semanticList = document.createElement("ul");
+      semanticList.dataset.semanticListProbe = "true";
+      const semanticItem = document.createElement("li");
+      semanticItem.textContent = "Semantic list inside a component copy slot";
+      semanticList.append(semanticItem);
+      description.append(semanticList);
+      structuralItem.append(description);
+      structuralList.append(structuralItem);
+      semanticListFixture.append(paragraphReference, structuralList);
+      document.body.append(semanticListFixture);
+
       const firstBaselineReference = document.createElement("p");
       firstBaselineReference.dataset.firstBaselineReference = "true";
       firstBaselineReference.style.cssText = "position:absolute;visibility:hidden;inset-block-start:0;inset-inline-start:0;margin:0;pointer-events:none";
@@ -1432,7 +1456,10 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
         const h3Reference = document.querySelector<HTMLElement>('[data-role-reference="h3"]');
         const firstBaselineReference = document.querySelector<HTMLElement>('[data-first-baseline-reference="true"]');
         const firstBaselineReferenceMarker = document.querySelector<HTMLElement>('[data-first-baseline-reference-marker="true"]');
-        if (!h3AsH6 || !h6AsH3 || !h6Reference || !h3Reference || !firstBaselineReference || !firstBaselineReferenceMarker) return null;
+        const semanticListProbe = document.querySelector<HTMLElement>('[data-semantic-list-probe="true"]');
+        const semanticListParagraphReference = document.querySelector<HTMLElement>('[data-semantic-list-paragraph-reference="true"]');
+        const semanticListStructuralContainer = document.querySelector<HTMLElement>('[data-semantic-list-structural-container="true"]');
+        if (!h3AsH6 || !h6AsH3 || !h6Reference || !h3Reference || !firstBaselineReference || !firstBaselineReferenceMarker || !semanticListProbe || !semanticListParagraphReference || !semanticListStructuralContainer) return null;
 
         const [h3AsH6Typography, h6AsH3Typography, h6ReferenceTypography, h3ReferenceTypography] = [h3AsH6, h6AsH3, h6Reference, h3Reference]
           .map(element => {
@@ -1493,6 +1520,11 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
           h6Reference: h6ReferenceTypography,
           h3Reference: h3ReferenceTypography,
           firstBaselinePhase: firstBaselineReferenceMarker.getBoundingClientRect().bottom - firstBaselineReference.getBoundingClientRect().top,
+          semanticListSpacing: {
+            listMarginBottom: getComputedStyle(semanticListProbe).marginBottom,
+            paragraphMarginBottom: getComputedStyle(semanticListParagraphReference).marginBottom,
+            structuralListMarginBottom: getComputedStyle(semanticListStructuralContainer).marginBottom
+          },
           proseBoundaries
         };
       });
@@ -1501,6 +1533,8 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
       assert(state.tier === tier, `Expected reciprocal typography probes to switch to ${tier}, got ${state.tier}.`);
       assert(JSON.stringify(state.h3AsH6) === JSON.stringify(state.h6Reference), `Expected ${tier} h3.bf-h6 inside .bf-prose to resolve every measured H6 role property. Probe=${JSON.stringify(state.h3AsH6)}, reference=${JSON.stringify(state.h6Reference)}.`);
       assert(JSON.stringify(state.h6AsH3) === JSON.stringify(state.h3Reference), `Expected ${tier} h6.bf-h3 inside .bf-prose to resolve every measured H3 role property. Probe=${JSON.stringify(state.h6AsH3)}, reference=${JSON.stringify(state.h3Reference)}.`);
+      assert(state.semanticListSpacing.listMarginBottom === state.semanticListSpacing.paragraphMarginBottom && state.semanticListSpacing.listMarginBottom !== "0px", `Expected ${tier} semantic lists in component copy slots to use paragraph space after ${state.semanticListSpacing.paragraphMarginBottom}, got ${state.semanticListSpacing.listMarginBottom}.`);
+      assert(state.semanticListSpacing.structuralListMarginBottom === "0px", `Expected ${tier} structural component lists to retain their explicit zero-margin reset, got ${state.semanticListSpacing.structuralListMarginBottom}.`);
       for (const [property, expectedValue] of Object.entries(expected.h6)) {
         assert(state.h3AsH6[property as keyof typeof state.h3AsH6] === expectedValue, `Expected ${tier} h3.bf-h6 ${property} to resolve to concrete H6 value ${expectedValue}, got ${state.h3AsH6[property as keyof typeof state.h3AsH6]}.`);
       }

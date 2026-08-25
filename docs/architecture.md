@@ -51,6 +51,11 @@ styled once through zero-specificity selectors under `.bf-theme`; explicit
 tag in either direction. `.bf-prose` owns prose-flow composition only and must
 not restate paragraph, heading, or figcaption typography.
 
+Semantic `ul` and `ol` elements own the body role's space after wherever they
+appear, including component copy slots. Structural list components explicitly
+reset their own list containers to zero margin; prose indentation remains a
+separate `.bf-prose` composition concern.
+
 Flow and boxed containers share one explicit trailing-boundary rule:
 `.bf-prose`, `.bf-card-inner`, `.bf-card`, and `.bf-panel-content` may remove
 only the final child's semantic bottom margin. Their child pseudo-class stays
