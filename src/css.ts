@@ -425,17 +425,16 @@ ${capEngineDemo}
   block-size: 1px;
   border: 0;
   inline-size: 100%;
-  /* Rules are visual dividers, not spacers. The negative margin */
-  /* cancels the 1px block-size so the next element keeps its own */
-  /* role-owned padding-block-start without an extra gap. */
-  margin: 0 0 -1px;
+  /* Reserve one half-rem rhythm step after the rule, including its */
+  /* thickness, so borderless content does not touch the divider. */
+  margin: 0 0 calc(0.5rem - 1px);
 }
 
 /* Highlight rules share the same scalable emphasis-bar geometry as active
  * navigation, tabs, notifications, and document-navigation markers. */
 :where(.bf-theme) :where(.bf-rule.is-highlighted, .bf-prose hr.is-highlighted) {
   block-size: var(--bf-bar-thickness);
-  margin-block-end: calc(var(--bf-bar-thickness) * -1);
+  margin-block-end: calc(0.5rem - var(--bf-bar-thickness));
 }
 
 :where(.bf-theme) :where(.bf-token-row) {

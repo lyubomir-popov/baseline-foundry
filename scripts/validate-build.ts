@@ -947,7 +947,8 @@ function validateCommonCss(css: string): void {
   for (const retiredModifier of ["is-extra-dense", "is-dense", "is-loose", "is-section-shallow", "is-section", "is-section-deep"]) {
     assert(!css.includes(`.bf-stack.${retiredModifier}`), `Expected retired stack modifier ${retiredModifier} to stay absent from every tier.`);
   }
-  assert(css.includes("margin: 0 0 -1px;"), "Expected rules to cancel their 1px thickness so the next element keeps its own role-owned padding-block-start without an extra gap.");
+  assert(css.includes("margin: 0 0 calc(0.5rem - 1px);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 1px thickness.");
+  assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
   assert(!css.includes("padding-block: var(--bf-strip-space);"), "Expected strip rhythm to avoid symmetric top-and-bottom padding.");
   assert(css.includes(".bf-grid"), "Expected CSS to include grid selectors.");
