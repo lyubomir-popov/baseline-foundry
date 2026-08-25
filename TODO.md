@@ -5,9 +5,7 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Complete Spec 007 generated/rendered review, release BF, then refresh
-   Diagram Registry from the immutable generated editorial bundle.
-2. Retire the duplicate typography fix branch/worktree only with explicit
+1. Retire the duplicate typography fix branch/worktree only with explicit
    approval to discard its empty line-ending status artifacts.
 
 ## Candidate order after Spec 001
