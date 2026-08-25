@@ -5,4 +5,4 @@
 - [x] T003 Preserve prose indentation and structural component resets.
 - [x] T004 Extend generated and rendered four-tier assertions.
 - [x] T005 Run the complete BF automated and browser gates.
-- [ ] T006 Release BF and refresh Diagram Registry from the immutable commit.
+- [x] T006 Release BF and refresh Diagram Registry from the immutable commit.
