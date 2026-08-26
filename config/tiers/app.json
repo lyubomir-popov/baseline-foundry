@@ -60,7 +60,8 @@
       "fontFamily": "ubuntu-sans",
       "fontWeight": 600,
       "fontStyle": "normal",
-      "fontVariantCaps": "all-small-caps"
+      "fontVariantCaps": "all-small-caps",
+      "letterSpacing": "0.05em"
     },
     {
       "identifier": "h6",

@@ -41,7 +41,8 @@
       "spaceAfter": 2,
       "fontFamily": "ubuntu-sans",
       "fontWeight": 550,
-      "fontStyle": "normal"
+      "fontStyle": "normal",
+      "letterSpacing": "0.05em"
     },
     {
       "identifier": "h4",

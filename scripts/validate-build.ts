@@ -857,6 +857,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-medium) {\n  --bf-inline-size: 20rem;"), "Expected shared CSS to expose the medium bounded inline-size modifier.");
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-wide) {\n  --bf-inline-size: 24rem;"), "Expected shared CSS to expose the wide bounded inline-size modifier.");
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-size.is-x-wide) {\n  --bf-inline-size: 28rem;"), "Expected shared CSS to expose the x-wide bounded inline-size modifier.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-cluster.is-split)", {
+    "justify-content": "space-between",
+  }, "split clusters distribute their first and final groups while preserving wrapping");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(h5),\n:where(.bf-theme) .bf-h5", {
+    "letter-spacing": "var(--bf-h5-letter-spacing, 0.05em)",
+  }, "h5 roles expose the intended five-percent tracking");
   assert(css.includes(":where(.bf-theme) :where(ul.bf-grid, ol.bf-grid) {\n  list-style: none;\n  margin: 0;\n  padding: 0;"), "Expected shared CSS to let bf-grid act as an unstyled list container without page-local resets.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-grid) :where(.bf-fixed-width)", {
     "padding-inline": "0",
@@ -1352,6 +1358,8 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   const components = (tokens.components ?? {}) as Record<string, unknown>;
   const fontFiles = (tokens.fontFiles ?? []) as Array<Record<string, unknown>>;
 
+  assert(roles.h5?.letterSpacing === "0.05em", "Expected the app h5 role to expose five-percent letter spacing.");
+
   assert(roles.body, 'Expected the app-tier preset tokens to include a "body" role.');
   assert(fontFiles.some(fontFile => fontFile.family === 'ubuntu-sans'), "Expected the app-tier preset tokens to include Ubuntu Sans font metadata.");
   const ubuntuFontFile = fontFiles.find(fontFile => fontFile.family === "ubuntu-sans") ?? {};
@@ -1471,6 +1479,7 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   assert(roles.h3.fontSize === "1.5rem", "Expected the documentation tier h3 role font size to be 1.5rem.");
   assert(roles.h4.fontSize === "1.5rem", "Expected the documentation tier h4 role font size to be 1.5rem.");
   assert(roles.h5.fontSize === "1.125rem", "Expected the documentation tier h5 role font size to be 1.125rem.");
+  assert(roles.h5.letterSpacing === "0.05em", "Expected the documentation h5 role to expose five-percent letter spacing.");
   assert(roles.h6.fontSize === "1.125rem", "Expected the documentation tier h6 role font size to be 1.125rem.");
   assert(fontSizes.size === 4, "Expected the documentation tier to expose distinct heading and body font sizes.");
   assert(layout.contentMaxWidth === "96rem", "Expected the documentation tier content width to widen to 96rem.");
@@ -1557,7 +1566,7 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   assert(roles.h6.fontWeight === 550, "Expected the prose default h6 to use the canonical semi-bold weight.");
   assert(!roles.h5.textTransform, "Expected the prose default h5 to avoid uppercase now that canonical weights are used.");
   assert(roles.h5.fontVariantCaps === "all-small-caps", "Expected the prose default h5 to use true small-caps.");
-  assert(!roles.h5.letterSpacing, "Expected the prose default h5 to avoid letterSpacing now that canonical weights are used.");
+  assert(roles.h5.letterSpacing === "0.05em", "Expected the prose default h5 to use five-percent letter spacing with small caps.");
   assert(fontSizes.size === 3, "Expected the prose default theme to expose distinct heading and body font sizes.");
   assert(layout.gridGapInline === "1rem", "Expected the prose default inline grid gap token to provide the x-small 16px gutter.");
   assert(layout.gridGapBlock === "1rem", "Expected the prose default block grid gap token to provide the x-small 16px gap.");
@@ -1606,7 +1615,7 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(roles.h6.fontWeight === 550, "Expected the OS tier h6 to use the canonical semi-bold weight.");
   assert(!roles.h5.textTransform, "Expected the OS tier h5 to avoid uppercase now that canonical weights are used.");
   assert(roles.h5.fontVariantCaps === "all-small-caps", "Expected the OS tier h5 to keep the editorial small-caps convention.");
-  assert(!roles.h5.letterSpacing, "Expected the OS tier h5 to avoid extra letterSpacing.");
+  assert(roles.h5.letterSpacing === "0.05em", "Expected the OS tier h5 to use five-percent letter spacing with small caps.");
   assert(!roles.h6.fontVariantCaps, "Expected the OS tier h6 to remain plain text rather than small-caps.");
   assert(fontSizes.size === 3, "Expected the OS tier to stay on the canonical three-step editorial size ladder at denser values.");
   assert(layout.measure === "30rem", "Expected the OS tier reading measure to scale down to 30rem.");

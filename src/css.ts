@@ -379,6 +379,10 @@ ${generateBaselineGridThemeOverrideCss()}
   gap: var(--bf-space-2);
 }
 
+:where(.bf-theme) :where(.bf-cluster.is-split) {
+  justify-content: space-between;
+}
+
 :where(.bf-theme) :where(.bf-prose) {
   inline-size: min(100%, var(--bf-measure));
 }
