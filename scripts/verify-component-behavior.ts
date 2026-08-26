@@ -3037,8 +3037,8 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
       await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
 
       for (const viewport of [
-        { width: 600, height: 500, enabled: false, label: "below 620px" },
-        { width: 620, height: 1200, enabled: true, label: "at 620px" }
+        { width: 360, height: 1200, label: "at a narrow width" },
+        { width: 620, height: 1200, label: "at 620px" }
       ] as const) {
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
         await page.waitForTimeout(50);
@@ -3052,29 +3052,21 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
           const longFooter = longShell?.querySelector<HTMLElement>(":scope > .bf-site-footer.is-sticky");
           if (!shortShell || !longShell || !shortMain || !shortFooter || !longMain || !longFooter) return null;
           const shortShellStyle = getComputedStyle(shortShell);
-          const shortFooterStyle = getComputedStyle(shortFooter);
           const longShellStyle = getComputedStyle(longShell);
           return {
             shortDisplay: shortShellStyle.display,
             shortMinBlockSize: shortShellStyle.minBlockSize,
-            shortFooterMarginStart: shortFooterStyle.marginBlockStart,
             shortFooterBottomDelta: shortShell.getBoundingClientRect().bottom - shortFooter.getBoundingClientRect().bottom,
             longDisplay: longShellStyle.display,
             longMinBlockSize: longShellStyle.minBlockSize,
-            longFooterMarginStart: getComputedStyle(longFooter).marginBlockStart,
             longFooterAfterMain: longFooter.getBoundingClientRect().top >= longMain.getBoundingClientRect().bottom - 1,
             longShellHeight: longShell.getBoundingClientRect().height
           };
         });
         assert(state, `Expected ${tier} sticky-footer shell geometry at ${viewport.label}.`);
-        if (viewport.enabled) {
-          assert(state.shortDisplay === "flex", `Expected ${tier} sticky-footer short shell to enable flex pinning ${viewport.label}.`);
-          assert(state.shortMinBlockSize !== "0px" && Math.abs(state.shortFooterBottomDelta) <= 1, `Expected ${tier} short sticky footer to meet the shell block-end ${viewport.label}.`);
-          assert(state.longDisplay === "flex" && state.longFooterAfterMain, `Expected ${tier} long sticky footer to follow content without overlay ${viewport.label}.`);
-        } else {
-          assert(state.shortDisplay !== "flex" && state.shortFooterMarginStart !== "auto", `Expected ${tier} sticky-footer pinning to remain disabled ${viewport.label}.`);
-          assert(state.longDisplay !== "flex" && state.longFooterMarginStart !== "auto", `Expected ${tier} long shell to remain ordinary document flow ${viewport.label}.`);
-        }
+        assert(state.shortDisplay === "flex", `Expected ${tier} sticky-footer short shell to enable flex pinning ${viewport.label}.`);
+        assert(state.shortMinBlockSize !== "0px" && Math.abs(state.shortFooterBottomDelta) <= 1, `Expected ${tier} short sticky footer to meet the shell block-end ${viewport.label}.`);
+        assert(state.longDisplay === "flex" && state.longFooterAfterMain, `Expected ${tier} long sticky footer to follow content without overlay ${viewport.label}.`);
       }
     }
 

@@ -173,26 +173,25 @@ export function linkedLogoSiteLayoutCss(): string {
 /* Site / sticky-footer layout.                                        */
 /* ------------------------------------------------------------------ */
 
-/* Vanilla deliberately enables the sticky-footer contract only from its
-   620px site-layout breakpoint.  Preserve that boundary rather than changing
-   narrow document flow merely because the opt-in shell is present. */
-@media (width >= 38.75rem) {
-  :where(.bf-theme.bf-page-shell.is-site-layout),
-  :where(.bf-theme) :where(.bf-page-shell.is-site-layout) {
-    display: flex;
-    flex-direction: column;
-    min-block-size: 100dvb;
-  }
+/* The sticky-footer contract is explicitly opt-in, so it remains useful at
+   every viewport width.  The descendant selector intentionally retains the
+   shell classes' specificity: a shell may also be a bf-panel-content region,
+   whose later min-block-size reset must not disable the site layout. */
+:where(.bf-theme.bf-page-shell.is-site-layout),
+:where(.bf-theme) .bf-page-shell.is-site-layout {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvb;
+}
 
-  :where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-main),
-  :where(.bf-theme) :where(.bf-page-shell.is-site-layout) > :where(.bf-site-main) {
-    min-inline-size: 0;
-  }
+:where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-main),
+:where(.bf-theme) .bf-page-shell.is-site-layout > :where(.bf-site-main) {
+  min-inline-size: 0;
+}
 
-  :where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-footer.is-sticky),
-  :where(.bf-theme) :where(.bf-page-shell.is-site-layout) > :where(.bf-site-footer.is-sticky) {
-    margin-block-start: auto;
-  }
+:where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-footer.is-sticky),
+:where(.bf-theme) .bf-page-shell.is-site-layout > :where(.bf-site-footer.is-sticky) {
+  margin-block-start: auto;
 }
 `;
 }
