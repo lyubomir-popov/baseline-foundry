@@ -11,6 +11,12 @@ bottom padding, and carries only the complementary baseline compensation in
 - `bf-stack is-section`: `--bf-section-space` (64 px in Editorial);
 - `bf-stack is-flush`: zero, for explicit no-gap composition.
 
+Owner review restored the complete token-driven density family for smaller and
+larger relationships: `is-extra-dense` (4 px), `is-dense` (8 px), `is-loose`
+(16 px), `is-section-shallow` (24 px), and `is-section-deep` (128 px) in
+Editorial. The default remains the 24 px shallow pattern gap and `is-section`
+remains the 64 px complete-pattern boundary.
+
 Legacy `--bf-*-space-after` values remain serialized compatibility data but do
 not participate in generated production geometry. The deferred 8 rem CTA
 exception is not part of this package.

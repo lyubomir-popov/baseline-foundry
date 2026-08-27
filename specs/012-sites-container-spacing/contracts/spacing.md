@@ -38,6 +38,21 @@
 - `is-flush` sets the semantic gap to zero.
 - It does not reset child `padding-block-start` or compensation `margin-block-end`.
 
+## Density options
+
+All stack modifiers select existing public tokens; none hard-code a consumer
+spacing value:
+
+| Stack | Token | Editorial value |
+|---|---|---:|
+| `bf-stack is-flush` | `0px` | 0px |
+| `bf-stack is-extra-dense` | `--bf-space-half` | 4px |
+| `bf-stack is-dense` | `--bf-space-1` | 8px |
+| `bf-stack is-loose` | `--bf-space-2` | 16px |
+| `bf-stack` or `bf-stack is-section-shallow` | `--bf-section-space-shallow` | 24px |
+| `bf-stack is-section` | `--bf-section-space` | 64px |
+| `bf-stack is-section-deep` | `--bf-section-space-deep` | 128px |
+
 ## Metric text contract
 
 For every generated role in the production metrics engine:

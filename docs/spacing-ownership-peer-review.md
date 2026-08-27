@@ -30,11 +30,14 @@ paragraph, list, figure, or component.
 
 For the built-in Editorial tier, which supplies BF's Sites surface:
 
+- compact relationships may select `is-extra-dense` (0.25rem), `is-dense`
+  (0.5rem), or `is-loose` (1rem);
 - pattern internals use `--bf-section-space-shallow` (1.5rem);
 - complete pattern or section siblings use `--bf-section-space` (4rem);
 - `bf-stack is-flush` uses zero;
-- the exceptional deep CTA composition may use the 8rem deep token in a future
-  package.
+- `is-section-shallow`, `is-section`, and `is-section-deep` expose the explicit
+  1.5rem, 4rem, and 8rem section boundaries. The deep option is available as a
+  primitive; deciding where a large CTA uses it remains component-specific.
 
 The executable migration and evidence live in
 [`specs/012-sites-container-spacing/`](../specs/012-sites-container-spacing/).

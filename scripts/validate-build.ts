@@ -415,7 +415,7 @@ function validateRenewalComponentContracts(
   assert(css.includes("-webkit-line-clamp: 3;") && css.includes("-webkit-line-clamp: 2;"), "Expected content-card to retain the Vanilla title/description clamp contracts.");
   assert(!css.includes(".bf-content-card.has-image") && !css.includes(".bf-content-card.has-description"), "Expected content-card styling to use only is-* modifiers.");
   assert(!/\b(?:p|ui)-(?:content-card)[-_]/.test(css) && !/\bcontent-card(?:__|--)[a-z]/.test(css), "Expected content-card CSS to reject legacy Jinja/BEM compatibility APIs.");
-  assert(!/\.(?:bf-logo-block|is-dense|has-misaligned)(?:\b|[-_])/.test(css), "Expected generated CSS to reject deprecated logo-block, dense, and misaligned compatibility APIs.");
+  assert(!css.includes(".bf-logo-block") && !css.includes(".bf-logo-section.is-dense") && !css.includes(".has-misaligned"), "Expected generated CSS to reject deprecated logo-block, logo-density, and misaligned compatibility APIs without blocking the public stack density modifier.");
   assert(!/\[data-[^\]]+\]|\.(?:p|ui)-[a-z][a-z0-9_-]*/.test(css), "Expected generated CSS to avoid styled data-* selectors and deprecated p-/ui-* APIs.");
   assert(css.includes(".bf-table.is-sortable th[aria-sort]") && css.includes(".bf-table-sort-button:focus-visible"), "Expected sortable tables to expose semantic sort-header and keyboard-focus states.");
   assert(css.includes(".bf-table.is-expanding .bf-table-expand-toggle") && css.includes(".bf-table-expanding-row[hidden]"), "Expected expanding tables to expose controlled toggle and hidden-row states.");
@@ -964,10 +964,13 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  padding-inline-start:"), "Expected prose lists to retain indentation independently of container-owned spacing.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected default stacks to own the tier's shallow pattern gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0px;"), "Expected flush stacks to remove only their container gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-extra-dense) {\n  --bf-stack-space: var(--bf-space-half);"), "Expected extra-dense stacks to use the half-baseline gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-dense) {\n  --bf-stack-space: var(--bf-space-1);"), "Expected dense stacks to use the one-baseline gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-loose) {\n  --bf-stack-space: var(--bf-space-2);"), "Expected loose stacks to use the two-baseline gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected explicitly shallow section stacks to use the shallow section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected section stacks to own the tier's regular section gap.");
-  for (const retiredModifier of ["is-extra-dense", "is-dense", "is-loose", "is-section-shallow", "is-section-deep"]) {
-    assert(!css.includes(`.bf-stack.${retiredModifier}`), `Expected retired stack modifier ${retiredModifier} to stay absent from every tier.`);
-  }
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 1px);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 1px thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");

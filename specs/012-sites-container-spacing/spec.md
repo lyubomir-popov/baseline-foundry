@@ -75,6 +75,9 @@ Readers see text baselines and occupied boxes remain on the active grid even tho
 - **FR-004**: The default Sites/Editorial `bf-stack` gap MUST equal `--bf-section-space-shallow`, resolving to 1.5rem in the built-in Editorial tier.
 - **FR-005**: A section-spacing stack modifier MUST set the gap to `--bf-section-space`, resolving to 4rem in the built-in Editorial tier.
 - **FR-006**: `bf-stack is-flush` MUST continue to resolve to a zero gap.
+- **FR-006a**: `bf-stack` MUST expose the complete token-driven density family:
+  `is-extra-dense`, `is-dense`, `is-loose`, `is-section-shallow`, `is-section`,
+  and `is-section-deep`, with no child-margin resets.
 - **FR-007**: Nested stacks MUST own only the separation between their direct children and MUST NOT erase baseline compensation from those children.
 - **FR-008**: Semantic lists and flow-boundary compositions MUST preserve baseline compensation without restoring semantic element-owned space-after.
 - **FR-009**: Tiered-list, basic-section, and hero demos MUST use the nested-stack contract for the representative 1.5rem internal and 4rem external relationships.

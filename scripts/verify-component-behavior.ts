@@ -1659,6 +1659,19 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
         internalStack.className = "bf-stack";
         const sectionStack = document.createElement("div");
         sectionStack.className = "bf-stack is-section";
+        const densityStacks = [
+          "is-flush",
+          "is-extra-dense",
+          "is-dense",
+          "is-loose",
+          "is-section-shallow",
+          "is-section-deep"
+        ].map(modifier => {
+          const stack = document.createElement("div");
+          stack.className = `bf-stack ${modifier}`;
+          stack.append(document.createElement("span"), document.createElement("span"));
+          return { modifier, stack };
+        });
 
         const internalFirst = document.createElement("p");
         internalFirst.textContent = "First baseline-aligned item";
@@ -1689,7 +1702,7 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
         chip.textContent = "Content-sized chip";
         chipStack.append(chip);
 
-        fixture.append(internalStack, sectionStack, basicLayout, chipStack);
+        fixture.append(internalStack, sectionStack, ...densityStacks.map(({ stack }) => stack), basicLayout, chipStack);
         document.body.append(fixture);
 
         const firstStylesBefore = getComputedStyle(internalFirst);
@@ -1725,8 +1738,11 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
           chipStackWidth: chipStackRect.width,
           chipJustifySelf: getComputedStyle(chip).justifySelf
         };
+        const densityGaps = Object.fromEntries(
+          densityStacks.map(({ modifier, stack }) => [modifier, Number.parseFloat(getComputedStyle(stack).rowGap)])
+        );
         fixture.remove();
-        return { before, after, regressions };
+        return { before, after, regressions, densityGaps };
       });
 
       const tolerance = 0.1;
@@ -1740,10 +1756,17 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
       assert(Math.abs(state.regressions.ruleToHeader - state.regressions.ruleMarginBottom) <= tolerance, `Expected ${tier} basic-section text to follow only the rule's own trailing compensation. Distance=${state.regressions.ruleToHeader}px, margin=${state.regressions.ruleMarginBottom}px.`);
       assert(state.regressions.chipWidth < state.regressions.chipStackWidth, `Expected ${tier} chip grid items to hug content. Chip=${state.regressions.chipWidth}px, stack=${state.regressions.chipStackWidth}px.`);
       assert(state.regressions.chipJustifySelf === "start", `Expected ${tier} chips to opt out of grid-item stretch, got justify-self=${state.regressions.chipJustifySelf}.`);
+      assert(state.densityGaps["is-flush"] === 0, `Expected ${tier} flush stacks to use a zero gap.`);
+      assert(Math.abs(state.densityGaps["is-extra-dense"] - state.before.baseline / 2) <= tolerance, `Expected ${tier} extra-dense stacks to use half a baseline.`);
+      assert(Math.abs(state.densityGaps["is-dense"] - state.before.baseline) <= tolerance, `Expected ${tier} dense stacks to use one baseline.`);
+      assert(Math.abs(state.densityGaps["is-loose"] - state.before.baseline * 2) <= tolerance, `Expected ${tier} loose stacks to use two baselines.`);
+      assert(Math.abs(state.densityGaps["is-section-shallow"] - state.before.internalGap) <= tolerance, `Expected ${tier} explicit shallow stacks to match the default pattern gap.`);
+      assert(state.densityGaps["is-section-deep"] > state.before.sectionGap, `Expected ${tier} deep section stacks to exceed the regular section gap.`);
 
       if (tier === "editorial") {
         assert(Math.abs(state.before.internalGap - 24) <= tolerance, `Expected Sites/editorial internal stacks to resolve to 1.5rem (24px), got ${state.before.internalGap}px.`);
         assert(Math.abs(state.before.sectionGap - 64) <= tolerance, `Expected Sites/editorial section stacks to resolve to 4rem (64px), got ${state.before.sectionGap}px.`);
+        assert(Math.abs(state.densityGaps["is-section-deep"] - 128) <= tolerance, `Expected Sites/editorial deep section stacks to resolve to 8rem (128px), got ${state.densityGaps["is-section-deep"]}px.`);
       }
     }
 
