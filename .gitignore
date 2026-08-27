@@ -4,6 +4,7 @@ generated/baseline/
 tmp/screenshots/
 tmp/package-smoke/
 tmp/spec-*.log
+tmp/bf-demo-*.log
 assets/fonts/*.ttf
 assets/fonts/*.otf
 assets/fonts/*.woff

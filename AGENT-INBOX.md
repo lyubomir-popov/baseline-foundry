@@ -1,5 +1,21 @@
 # Agent inbox
 
+The latest product release is on `main` at `5842d99`. `bf-paragraph-stack`
+adds no semantic container gap while preserving every paragraph's metric
+compensation. Static validation passes 5,505 checks, component behavior passes,
+and desktop/constrained browser review found no overflow or console errors. The
+new basic-section checks are green in Editorial, Documentation and OS; App
+retains the same two accepted legacy baseline assertions documented in
+`docs/spec-archive/012-sites-container-spacing/review.md`.
+
+`npm test` and `npm run qa:components` were run for closeout on 2026-08-27.
+Both still stop at the accepted legacy catalogue baseline verifier described in
+that review; the paragraph-stack change adds no failures to that known set.
+
+Tiered lists own their internal shallow rhythm as of released commit `155c2dc`.
+Their focused baseline checks pass across all four built-in tiers, and their
+static and responsive behavior contracts are covered.
+
 Spec 012 is released on `main` at `4d1b914`. Linked section titles remain semantic blue with no
 resting underline and underline on hover. Heroes own their entry divider by
 default with a rhythm-preserving `is-borderless` opt-out.
