@@ -145,12 +145,16 @@ export function sitesFoundationCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-text-spotlight-items) {
+  align-content: start;
+  display: grid;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-text-spotlight-item) {
+  align-content: start;
+  display: grid;
   min-inline-size: 0;
   overflow-wrap: anywhere;
 }

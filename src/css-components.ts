@@ -869,6 +869,8 @@ ${articlePaginationCss({
 })}
 
 :where(.bf-theme) :where(.bf-list) {
+  align-content: start;
+  display: grid;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -1188,7 +1190,8 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 
 :where(.bf-theme) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked) {
 ${typeStyles(body, { fontWeight: 600, includeCase: false })}  display: block;
-  margin: 0;
+  margin: 0 0 var(--bf-body-margin-bottom);
+  padding-block: var(--bf-body-nudge-start) 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {

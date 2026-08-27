@@ -535,10 +535,12 @@ function validateRenewalComponentContracts(
     assert(!pageHtml.includes("is-asymmetric") && !/\b(?:p|ui)-(?:basic-section|cta-section|text-spotlight)[-_]/.test(pageHtml) && !/\b(?:basic-section|cta-section|text-spotlight)(?:__|--)[a-z]/.test(pageHtml), `Expected ${pageName} markup to avoid legacy span and Jinja compatibility APIs.`);
   }
   const basicSectionHtml = pages["basic-section"] ?? "";
-  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes("bf-eyebrow") && basicSectionHtml.includes("bf-basic-section-title-link") && basicSectionHtml.includes("bf-paragraph-stack"), "Expected basic section to cover its layout, medium split, eyebrow, linked title, and paragraph-stack contracts.");
+  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes("bf-eyebrow") && basicSectionHtml.includes("bf-basic-section-title-link") && basicSectionHtml.includes('class="bf-stack is-flush"'), "Expected basic section to cover its layout, medium split, eyebrow, linked title, and flush-stack contracts.");
+  assert(!basicSectionHtml.includes("bf-paragraph-stack"), "Expected the basic section to compose grouped content with the generic flush stack instead of a content-specific wrapper.");
   const ctaSectionHtml = pages["cta-section"] ?? "";
   assert(ctaSectionHtml.includes("bf-cta-section-layout") && ctaSectionHtml.includes("bf-cta-section-content") && ctaSectionHtml.includes("is-offset"), "Expected CTA section to cover full and offset descendant content slots.");
   const textSpotlightHtml = pages["text-spotlight"] ?? "";
+  assert((textSpotlightHtml.match(/bf-text-spotlight-item\" data-baseline-check=\"box\"/g) ?? []).length === 3, "Expected every visible text-spotlight item to participate in baseline verification.");
   assert(textSpotlightHtml.includes("bf-text-spotlight-layout") && textSpotlightHtml.includes("bf-text-spotlight-items") && textSpotlightHtml.includes("class=\"bf-eyebrow\""), "Expected text spotlight to cover its 25/75 title rail, item list, and BF eyebrow title.");
 
   const heroHtml = pages.hero ?? "";
@@ -591,6 +593,7 @@ function validateRenewalComponentContracts(
   assert(!pageCatalogJs.includes("muted-heading") && !componentAtlasHtml.includes("muted-heading"), "Expected route and atlas catalogs to omit the deprecated muted-heading port.");
 
   const credentialValidationHtml = pages["credential-validation"] ?? "";
+  assert(credentialValidationHtml.includes('data-baseline-label="credential requirements"') && !credentialValidationHtml.includes('class="bf-credential-validation" id="credential-new-rules" aria-label="Password requirements" data-baseline-ignore'), "Expected repeated credential requirements to expose strict list and item baseline coverage.");
   assert(credentialValidationHtml.includes("data-component-capture") && credentialValidationHtml.includes("data-baseline-check") && credentialValidationHtml.includes("data-overflow-container"), "Expected credential validation to expose capture, baseline, and overflow fixture markers.");
   assert(credentialValidationHtml.includes("bf-password-reveal") && credentialValidationHtml.includes("bf-credential-validation") && credentialValidationHtml.includes("aria-controls"), "Expected credential validation to cover reveal and repeated-validation contracts.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(credentialValidationHtml), "Expected credential validation markup to avoid deprecated p-/ui-* APIs.");
@@ -607,6 +610,7 @@ function validateRenewalComponentContracts(
   assert(!/<[^>]+class="[^"]*(?:logo-block|\bis-dense\b|\bhas-misaligned\b)/.test(logoSectionHtml), "Expected logo section markup to reject deprecated logo-block, dense, and misaligned compatibility APIs.");
 
   const mediaObjectHtml = pages["media-object"] ?? "";
+  assert((mediaObjectHtml.match(/bf-media-object-content bf-stack is-flush/g) ?? []).length === 3, "Expected every media-object content slot to contain metric compensation with the generic flush stack.");
   assert(mediaObjectHtml.includes("data-component-capture") && mediaObjectHtml.includes("data-baseline-check") && mediaObjectHtml.includes("data-overflow-check"), "Expected media object to expose capture, baseline, and overflow fixture markers.");
   assert(mediaObjectHtml.includes("bf-media-object-layout") && mediaObjectHtml.includes("bf-media-object-media") && mediaObjectHtml.includes("bf-media-object-content") && mediaObjectHtml.includes("bf-media-object-meta-list"), "Expected media object to cover persistent grid, media, content, and metadata slots.");
   assert(mediaObjectHtml.includes("bf-media-object is-media-end") && mediaObjectHtml.includes("bf-media-object is-large"), "Expected media object to cover directional and large intrinsic-size fixtures.");
@@ -735,6 +739,7 @@ function validateAppTierDemoPage(pageName: string, html: string): void {
     assert(html.includes('class="bf-top-navigation-logo is-canonical-tagged"'), "Expected application-layout.html to dogfood the Canonical tagged-logo contract in its drawer.");
     assert(html.includes('viewBox="0 0 60.45 57.87"'), "Expected the application drawer brand to use the proportionate Circle of Friends source shape.");
     assert(html.includes("bf-panel-footer is-sticky") && html.includes("data-application-layout-main-footer") && html.includes("data-application-layout-navigation-footer"), "Expected application-layout.html to exercise aligned persistent panel footers in navigation and main panels.");
+    assert((html.match(/is-control-pair bf-stack is-flush/g) ?? []).length === 5, "Expected application-layout.html control pairs to contain metric compensation with the generic flush stack.");
   }
 }
 
@@ -954,6 +959,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(th, td) {\n  border: 0;\n  border-block-end: var(--bf-table-row-border-size) solid transparent;"), "Expected table cells to reserve border space inside the row box instead of relying on inset shadows.");
   assert(css.includes("padding-block: var(--bf-table-row-padding);"), "Expected table cells to use symmetric block padding from the shared table row padding variable.");
   assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine demo override selector.");
+  assert(css.includes(":where(.bf-engine-cap) :where(p),\n:where(.bf-engine-cap) .bf-body {\n  margin-block-end: 0;"), "Expected the cap-engine demo to replace production margin compensation when its two-sided padding occupies the complete baseline step.");
   assert(css.includes(":where(.bf-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
   assert(!css.includes("--bf-body-nudge-start: 0rem;"), "Expected built-in tiers to retain metric-derived body start nudges.");
   assert(css.includes("--bf-body-baseline-compensation:") && css.includes("--bf-body-nudge-end:"), "Expected generated CSS to expose body compensation for metric-aligned component internals.");
@@ -968,7 +974,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom: 0;"), "Expected semantic list containers not to add a second semantic space after.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  padding-inline-start:"), "Expected prose lists to retain indentation independently of container-owned spacing.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected default stacks to own the tier's shallow pattern gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0px;"), "Expected flush stacks to remove only their container gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-extra-dense) {\n  --bf-stack-space: var(--bf-space-half);"), "Expected extra-dense stacks to use the half-baseline gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-dense) {\n  --bf-stack-space: var(--bf-space-1);"), "Expected dense stacks to use the one-baseline gap.");
@@ -976,8 +982,6 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected explicitly shallow section stacks to use the shallow section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected section stacks to own the tier's regular section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-paragraph-stack) {\n  display: grid;\n  gap: 0;"), "Expected paragraph stacks to use a zero internal gap.");
-  assert(!css.includes(".bf-paragraph-stack > :where(p:not(:last-child))"), "Expected paragraph stacks to retain every paragraph's metric compensation.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 1px);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 1px thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
@@ -1211,7 +1215,7 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon.is-chevron-up)", {
     "--bf-icon-transform": "rotate(180deg)"
   }, "upward chevrons reuse the shared down glyph and rotate it in place");
-  assert(css.includes(":where(.bf-theme) :where(.bf-list)"), "Expected generated CSS to include the base list styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-list) {\n  align-content: start;\n  display: grid;"), "Expected base lists to contain item compensation without stretching occupied tracks.");
     assert(css.includes(":where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {"), "Expected generated CSS to include ticked and crossed list-item styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-list)"), "Expected generated CSS to include the inline-list styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-skip-link)"), "Expected generated CSS to include the skip-link styling.");
@@ -1297,6 +1301,10 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button)", {
     "align-items": "baseline"
   }, "icon side-navigation rows align against the label first-line baseline");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked)", {
+    "margin": "0 0 var(--bf-body-margin-bottom)",
+    "padding-block": "var(--bf-body-nudge-start) 0"
+  }, "side-navigation headings use matching body-role nudge and compensation");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-link, .bf-side-navigation-text)", {
     "align-items": "center"
   }, "collapsed icon side-navigation rows retain compact vertical centering");

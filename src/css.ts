@@ -150,7 +150,7 @@ function capEngineDemoRule(selectors: string[], token: TypographyToken): string 
   const capStartNudge = `calc(var(--bf-baseline) - mod(${capPosition}, var(--bf-baseline)))`;
   const capEndNudge = `calc(var(--bf-baseline) - ${capStartNudge})`;
   const scopedSelectors = selectors.map(s => s.replace(":where(.bf-theme)", ":where(.bf-engine-cap)"));
-  return `${scopedSelectors.join(",\n")} {\n  padding-block-start: ${capStartNudge};\n  padding-block-end: ${capEndNudge};\n}\n`;
+  return `${scopedSelectors.join(",\n")} {\n  margin-block-end: 0;\n  padding-block-start: ${capStartNudge};\n  padding-block-end: ${capEndNudge};\n}\n`;
 }
 
 const SEMANTIC_SELECTORS_BY_ROLE: Record<string, string[]> = {
@@ -354,6 +354,7 @@ ${generateBaselineGridThemeOverrideCss()}
 
 :where(.bf-theme) :where(.bf-stack) {
   --bf-stack-space: var(--bf-section-space-shallow);
+  align-content: start;
   display: grid;
   gap: var(--bf-stack-space);
 }
@@ -384,13 +385,6 @@ ${generateBaselineGridThemeOverrideCss()}
 
 :where(.bf-theme) :where(.bf-stack.is-section-deep) {
   --bf-stack-space: var(--bf-section-space-deep);
-}
-
-/* Group consecutive paragraphs without adding semantic container space.
-   Each paragraph keeps its metric compensation. */
-:where(.bf-theme) :where(.bf-paragraph-stack) {
-  display: grid;
-  gap: 0;
 }
 
 :where(.bf-theme) :where(.bf-cluster) {

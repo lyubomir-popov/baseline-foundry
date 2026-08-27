@@ -166,12 +166,16 @@ export function staticContentPortsCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-divided-section-list) {
+  align-content: start;
+  display: grid;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-divided-section-item) {
+  align-content: start;
+  display: grid;
   min-inline-size: 0;
   overflow-wrap: anywhere;
 }

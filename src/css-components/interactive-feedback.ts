@@ -52,13 +52,18 @@ export function interactiveFeedbackCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-credential-validation) {
+  align-content: start;
+  display: grid;
+  gap: var(--bf-space-1);
   list-style: none;
   margin-block: 0;
   padding-inline-start: 0;
 }
 
 :where(.bf-theme) :where(.bf-credential-validation > .bf-validation) {
-  margin-block: 0 var(--bf-space-1);
+  align-content: start;
+  display: grid;
+  margin-block: 0;
   min-inline-size: 0;
 }
 
