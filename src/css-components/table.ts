@@ -7,7 +7,18 @@ type TableCssOptions = {
 export function tableCss(options: TableCssOptions): string {
   const { bodyLineHeight, bodyMediumTypeStyles, bodyTypeStyles } = options;
 
-  return `:where(.bf-theme) :where(table, .bf-table) {
+  return `:where(.bf-theme) :where(.bf-table-scroll) {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+:where(.bf-theme) :where(.bf-table-scroll) > :where(table, .bf-table) {
+  min-inline-size: var(--bf-table-scroll-min-inline-size, 48rem);
+}
+
+:where(.bf-theme) :where(table, .bf-table) {
   border: 0;
   border-collapse: separate;
   border-spacing: 0;

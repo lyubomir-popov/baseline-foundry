@@ -69,6 +69,28 @@ export function panelCss(options: PanelCssOptions): string {
   z-index: 5;
 }
 
+/* Panel chrome that remains outside the panel's scrolling content. */
+:where(.bf-theme) :where(.bf-panel-footer) {
+  align-items: center;
+  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: var(--bf-field-gap);
+  justify-content: space-between;
+  min-block-size: calc(var(--bf-control-box-size-compact) + (var(--bf-panel-padding-block) * 2));
+  padding-block-end: var(--bf-panel-padding-block);
+  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-inline: var(--bf-panel-padding-inline);
+}
+
+:where(.bf-theme) :where(.bf-panel-footer.is-sticky) {
+  background: var(--bf-color-background-default);
+  bottom: 0;
+  position: sticky;
+  z-index: 5;
+}
+
 :where(.bf-theme) :where(.bf-panel-title) {
 ${h4TypeStyles}  min-inline-size: 0;
 }

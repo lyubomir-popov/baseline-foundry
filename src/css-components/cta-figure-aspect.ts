@@ -37,11 +37,18 @@ export function ctaFigureAspectCss(): string {
   margin: 0 0 var(--bf-section-space-shallow);
 }
 
-:where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas) {
+:where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas, svg) {
   block-size: auto;
   display: block;
   inline-size: 100%;
   max-inline-size: 100%;
+}
+
+/* Keep light artwork legible when the surrounding theme is dark. */
+:where(.bf-theme) :where(.bf-figure.is-light-inset) > :where(img, picture, video, canvas, svg, .bf-aspect) {
+  background: #fff;
+  box-sizing: border-box;
+  padding: var(--bf-space-2);
 }
 
 :where(.bf-theme) :where(.bf-figure-caption) {

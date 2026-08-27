@@ -75,6 +75,12 @@ export function gridCss(): string {
   width: 100%;
 }
 
+/* Keep a capped content row at the logical start of a wider panel. */
+:where(.bf-theme) :where(.bf-fixed-width.is-start-aligned) {
+  margin-inline-end: auto;
+  margin-inline-start: 0;
+}
+
 :where(.bf-theme.bf-tier-app) :where(.bf-page) {
   max-inline-size: none;
 }

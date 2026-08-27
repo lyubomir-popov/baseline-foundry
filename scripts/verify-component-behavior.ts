@@ -407,6 +407,34 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(viewportFillState.height - 960) <= 1, `Expected the full-viewport application modifier to occupy the viewport height. Got height=${viewportFillState.height}px.`);
     assert(Math.abs(viewportFillState.bottom - 960) <= 1, `Expected the full-viewport application modifier to reach the viewport bottom edge. Got bottom=${viewportFillState.bottom}px.`);
 
+    const panelFooterState = await page.evaluate(async () => {
+      const content = document.querySelector<HTMLElement>(".bf-main .bf-panel-content");
+      const mainFooter = document.querySelector<HTMLElement>("[data-application-layout-main-footer]");
+      if (!content || !mainFooter) return null;
+
+      const pressure = document.createElement("div");
+      pressure.style.blockSize = "1200px";
+      pressure.style.flex = "0 0 auto";
+      pressure.setAttribute("aria-hidden", "true");
+      content.append(pressure);
+
+      const beforeTop = mainFooter.getBoundingClientRect().top;
+      content.scrollTop = 200;
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+      return {
+        beforeTop,
+        afterTop: mainFooter.getBoundingClientRect().top,
+        mainMinBlockSize: getComputedStyle(mainFooter).minBlockSize,
+        scrollTop: content.scrollTop
+      };
+    });
+
+    assert(panelFooterState, "Expected both application panel footers to be measurable.");
+    assert(panelFooterState.scrollTop > 0, "Expected the main panel content to scroll under pressure.");
+    assert(Math.abs(panelFooterState.afterTop - panelFooterState.beforeTop) <= 1, `Expected the main panel footer to stay fixed while panel content scrolls. Got before=${panelFooterState.beforeTop}px, after=${panelFooterState.afterTop}px.`);
+    assert(Number.parseFloat(panelFooterState.mainMinBlockSize) > 0, `Expected the main panel footer to expose a minimum block size. Got ${panelFooterState.mainMinBlockSize}.`);
+
     const spacingResetState = await page.evaluate(() => {
       const stack = document.querySelector<HTMLElement>(".bf-panel-header .bf-stack.is-flush");
       if (!(stack instanceof HTMLElement)) {
@@ -514,6 +542,21 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(expandedState.drawerBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation drawer to reach the navigation bottom. Got drawer=${expandedState.drawerBottom}px, navigation=${expandedState.navigationBottom}px.`);
     assert(Math.abs(expandedState.panelBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation panel to reach the navigation bottom. Got panel=${expandedState.panelBottom}px, navigation=${expandedState.navigationBottom}px.`);
     assert(Math.abs(expandedState.navigationBottom - expandedState.applicationBottom) <= 1, `Expected desktop navigation to reach the application bottom. Got navigation=${expandedState.navigationBottom}px, application=${expandedState.applicationBottom}px.`);
+
+    const alignedFooterState = await page.evaluate(() => {
+      const mainFooter = document.querySelector<HTMLElement>("[data-application-layout-main-footer]");
+      const navigationFooter = document.querySelector<HTMLElement>("[data-application-layout-navigation-footer]");
+      if (!mainFooter || !navigationFooter) return null;
+      return {
+        mainBottom: mainFooter.getBoundingClientRect().bottom,
+        navigationBottom: navigationFooter.getBoundingClientRect().bottom,
+        mainMinBlockSize: getComputedStyle(mainFooter).minBlockSize,
+        navigationMinBlockSize: getComputedStyle(navigationFooter).minBlockSize
+      };
+    });
+    assert(alignedFooterState, "Expected expanded navigation and main panel footers to be measurable.");
+    assert(Math.abs(alignedFooterState.mainBottom - alignedFooterState.navigationBottom) <= 1, `Expected navigation and main panel footers to share the bottom edge. Got main=${alignedFooterState.mainBottom}px, navigation=${alignedFooterState.navigationBottom}px.`);
+    assert(alignedFooterState.mainMinBlockSize === alignedFooterState.navigationMinBlockSize, `Expected both panel footers to share the same minimum block size. Got main=${alignedFooterState.mainMinBlockSize}, navigation=${alignedFooterState.navigationMinBlockSize}.`);
 
     const navigationBrandState = await page.evaluate(() => {
       const header = document.querySelector<HTMLElement>("[data-navigation-brand-header]");
@@ -3454,6 +3497,71 @@ async function verifyContentCardGeometry(origin: string): Promise<void> {
   }
 }
 
+async function verifySiteShellPrimitiveGeometry(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 1280, height: 900 } });
+
+    await page.goto(`${origin}/demo/components/basic-section.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const titleLink = page.locator(".bf-basic-section-title-link");
+    const titleDefault = await titleLink.evaluate(link => ({
+      color: getComputedStyle(link).color,
+      decoration: getComputedStyle(link).textDecorationLine,
+      fontSize: getComputedStyle(link).fontSize,
+      headingFontSize: getComputedStyle(link.parentElement as HTMLElement).fontSize
+    }));
+    assert(titleDefault.decoration === "none", `Expected a linked basic-section title to omit its default underline. Got ${titleDefault.decoration}.`);
+    assert(titleDefault.fontSize === titleDefault.headingFontSize, `Expected a linked basic-section title to inherit heading type. Got link=${titleDefault.fontSize}, heading=${titleDefault.headingFontSize}.`);
+    await titleLink.hover();
+    assert((await titleLink.evaluate(link => getComputedStyle(link).textDecorationLine)).includes("underline"), "Expected a linked basic-section title to underline on hover.");
+
+    await page.goto(`${origin}/demo/components/application-shell.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const startAlignment = await page.locator(".bf-fixed-width.is-start-aligned").evaluate(element => {
+      const row = element as HTMLElement;
+      const parent = row.parentElement as HTMLElement;
+      parent.style.inlineSize = "800px";
+      row.style.maxInlineSize = "400px";
+      const ltrRow = row.getBoundingClientRect();
+      const ltrParent = parent.getBoundingClientRect();
+      parent.dir = "rtl";
+      const rtlRow = row.getBoundingClientRect();
+      const rtlParent = parent.getBoundingClientRect();
+      return {
+        ltrStartDelta: Math.abs(ltrRow.left - ltrParent.left),
+        rtlStartDelta: Math.abs(rtlRow.right - rtlParent.right),
+        width: rtlRow.width
+      };
+    });
+    assert(startAlignment.ltrStartDelta <= 1 && startAlignment.rtlStartDelta <= 1, `Expected fixed-width start alignment to follow LTR and RTL logical starts. Got LTR=${startAlignment.ltrStartDelta}px, RTL=${startAlignment.rtlStartDelta}px.`);
+    assert(Math.abs(startAlignment.width - 400) <= 1, `Expected start alignment to preserve the fixed-width cap. Got ${startAlignment.width}px.`);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${origin}/demo/components/table.html`, { waitUntil: "networkidle" });
+    const tableScroll = await page.locator(".bf-table-scroll").evaluate(wrapper => ({
+      clientWidth: wrapper.clientWidth,
+      overflowX: getComputedStyle(wrapper).overflowX,
+      scrollWidth: wrapper.scrollWidth,
+      tabIndex: (wrapper as HTMLElement).tabIndex
+    }));
+    assert(tableScroll.overflowX === "auto" && tableScroll.scrollWidth > tableScroll.clientWidth, `Expected a narrow table wrapper to scroll horizontally. Got overflow=${tableScroll.overflowX}, client=${tableScroll.clientWidth}, scroll=${tableScroll.scrollWidth}.`);
+    assert(tableScroll.tabIndex === 0, `Expected the table scroll region to remain keyboard focusable. Got tabindex=${tableScroll.tabIndex}.`);
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${origin}/demo/components/hero.html`, { waitUntil: "networkidle" });
+    const inset = await page.locator(".bf-figure.is-light-inset > .bf-aspect").evaluate(media => ({
+      background: getComputedStyle(media).backgroundColor,
+      padding: getComputedStyle(media).padding
+    }));
+    assert(inset.background === "rgb(255, 255, 255)", `Expected light-inset media to retain a white backing in dark mode. Got ${inset.background}.`);
+    assert(Number.parseFloat(inset.padding) > 0, `Expected light-inset media to expose token padding. Got ${inset.padding}.`);
+  } finally {
+    await browser.close();
+  }
+}
+
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const { server, origin } = await createStaticServer(rootDir);
@@ -3480,6 +3588,7 @@ async function main(): Promise<void> {
     await verifySitesRecipeCompositions(origin);
     await verifyContentCardGeometry(origin);
     await verifyLinkedLogoAndStickyFooterGeometry(origin);
+    await verifySiteShellPrimitiveGeometry(origin);
 
     console.log("Component behavior verification passed.");
   } finally {

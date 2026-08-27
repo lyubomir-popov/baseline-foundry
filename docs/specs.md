@@ -7,6 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
+| 011 Site shell primitives | [`011-site-shell-primitives/`](../specs/011-site-shell-primitives/) | Accepted for release on `feat/011-site-shell-primitives`; full BF test, capture and browser gates green. |
 | 009 Semantic list spacing | [`009-semantic-list-spacing/`](../specs/009-semantic-list-spacing/) | Released at `be85d46`; downstream Registry spacing, integrity and responsive gates verified. |
 | 008 Prose list spacing | [`008-prose-list-spacing/`](../specs/008-prose-list-spacing/) | Released at `6d203e5`; downstream Registry spacing and responsive gates verified. |
 | 007 Navigation-brand panel alignment | [`007-navigation-brand-panel-alignment/`](../specs/007-navigation-brand-panel-alignment/) | Released at `454c7ae`; downstream editorial alignment verified. |

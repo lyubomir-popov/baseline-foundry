@@ -50,6 +50,19 @@ export function sitesFoundationCss(): string {
   overflow-wrap: anywhere;
 }
 
+/* A section title may be the route action without looking like body copy. */
+:where(.bf-theme) :where(.bf-basic-section-title-link, .bf-basic-section-title-link:visited) {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(.bf-theme) :where(.bf-basic-section-title-link:hover) {
+  color: var(--bf-color-link-default);
+  text-decoration: underline;
+  text-decoration-thickness: var(--bf-border-width);
+  text-underline-offset: 0.12em;
+}
+
 /* Vanilla splits at medium only on request, otherwise at its large breakpoint.
    The layout descendant reacts to the root container; the query never tries to
    restyle the container that established it. */

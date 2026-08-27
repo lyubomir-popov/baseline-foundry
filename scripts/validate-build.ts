@@ -240,6 +240,9 @@ function validateRenewalComponentContracts(
     ".bf-top-navigation.is-grid-aligned",
     ".bf-top-navigation-logo.is-canonical-tagged",
     ".bf-panel-header.is-navigation-brand",
+    ".bf-panel-footer",
+    ".bf-panel-footer.is-sticky",
+    ".bf-fixed-width.is-start-aligned",
     ".bf-docs-layout",
     "body.bf-theme.bf-page-shell",
     ".bf-tiered-list.is-triple",
@@ -274,6 +277,7 @@ function validateRenewalComponentContracts(
     ".bf-basic-section-rule",
     ".bf-basic-section-header",
     ".bf-basic-section-content",
+    ".bf-basic-section-title-link",
     ".bf-cta-section",
     ".bf-cta-section-layout",
     ".bf-cta-section-content",
@@ -336,6 +340,8 @@ function validateRenewalComponentContracts(
     ".bf-content-card-footer",
     ".bf-content-card-footer-inner",
     ".bf-content-card-resource",
+    ".bf-table-scroll",
+    ".bf-figure.is-light-inset",
     ".bf-table.is-sortable",
     ".bf-table-sort-button",
     ".bf-table.is-expanding",
@@ -519,7 +525,7 @@ function validateRenewalComponentContracts(
     assert(!pageHtml.includes("is-asymmetric") && !/\b(?:p|ui)-(?:basic-section|cta-section|text-spotlight)[-_]/.test(pageHtml) && !/\b(?:basic-section|cta-section|text-spotlight)(?:__|--)[a-z]/.test(pageHtml), `Expected ${pageName} markup to avoid legacy span and Jinja compatibility APIs.`);
   }
   const basicSectionHtml = pages["basic-section"] ?? "";
-  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes("bf-eyebrow"), "Expected basic section to cover its layout, medium split, and BF eyebrow title slots.");
+  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes("bf-eyebrow") && basicSectionHtml.includes("bf-basic-section-title-link"), "Expected basic section to cover its layout, medium split, eyebrow, and linked title contracts.");
   const ctaSectionHtml = pages["cta-section"] ?? "";
   assert(ctaSectionHtml.includes("bf-cta-section-layout") && ctaSectionHtml.includes("bf-cta-section-content") && ctaSectionHtml.includes("is-offset"), "Expected CTA section to cover full and offset descendant content slots.");
   const textSpotlightHtml = pages["text-spotlight"] ?? "";
@@ -528,7 +534,7 @@ function validateRenewalComponentContracts(
   const heroHtml = pages.hero ?? "";
   assert(heroHtml.includes("data-component-capture") && heroHtml.includes("data-baseline-check") && heroHtml.includes("data-overflow-check"), "Expected hero to expose capture, baseline, and overflow fixture markers.");
   assert(heroHtml.includes("bf-hero-layout") && heroHtml.includes("bf-hero-copy") && heroHtml.includes("bf-hero-media") && heroHtml.includes("bf-hero-chip"), "Expected hero to cover copy, media, chip, and layout slots.");
-  assert(heroHtml.includes("bf-hero-lead bf-section is-shallow") && heroHtml.includes("bf-figure bf-hero-media is-full") && heroHtml.indexOf("bf-hero-lead bf-section is-shallow") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a shallow lead followed by closing full-width media inside the pattern.");
+  assert(heroHtml.includes("bf-hero-lead bf-section is-shallow") && heroHtml.includes("bf-figure bf-hero-media is-full is-light-inset") && heroHtml.indexOf("bf-hero-lead bf-section is-shallow") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a shallow lead followed by light-inset closing media inside the pattern.");
   assert(heroHtml.includes("is-25-75") && heroHtml.includes("is-75-25") && heroHtml.includes("is-fallback") && heroHtml.includes("is-split-medium"), "Expected hero to cover 50/50, 25/75, 75/25, and fallback compositions.");
   assert(heroHtml.includes('dir="rtl"') && heroHtml.includes("long copy") && heroHtml.includes("<figure") && heroHtml.includes("bf-eyebrow") === false, "Expected hero to cover RTL, long-copy, and image fixtures without introducing the deprecated muted-heading API.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(heroHtml) && !/\b(?:hero)(?:__|--)[a-z]/.test(heroHtml), "Expected hero markup to avoid Jinja and legacy span APIs.");
@@ -718,6 +724,7 @@ function validateAppTierDemoPage(pageName: string, html: string): void {
     assert(html.includes('class="bf-panel-header is-sticky is-navigation-brand"'), "Expected application-layout.html to dogfood the flush navigation-brand panel header.");
     assert(html.includes('class="bf-top-navigation-logo is-canonical-tagged"'), "Expected application-layout.html to dogfood the Canonical tagged-logo contract in its drawer.");
     assert(html.includes('viewBox="0 0 60.45 57.87"'), "Expected the application drawer brand to use the proportionate Circle of Friends source shape.");
+    assert(html.includes("bf-panel-footer is-sticky") && html.includes("data-application-layout-main-footer") && html.includes("data-application-layout-navigation-footer"), "Expected application-layout.html to exercise aligned persistent panel footers in navigation and main panels.");
   }
 }
 
@@ -1003,7 +1010,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-2)::after {\n  grid-row: 3;\n}"), "Expected bf-equal-height-row.is-divider-2 to draw a cross-column rule on subgrid row 3.");
   assert(!css.includes("bf-equal-heights") && !css.includes(".equal-heights"), "Expected equal-heights Sites recipe to reuse bf-equal-height-row without a duplicate CSS family.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: block;\n  inline-size: 100%;\n  margin: 0 0 var(--bf-section-space-shallow);\n}"), "Expected bf-figure to own its bottom spacing via section-space-shallow.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas, svg) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure-caption) {\n  color: var(--bf-color-text-default);\n  display: block;\n  font-style: italic;"), "Expected bf-figure-caption to render as an italic block beneath the media.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect) {\n  aspect-ratio: 16 / 9;"), "Expected generated CSS to define the bf-aspect default 16:9 slot.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-16-9) {\n  aspect-ratio: 16 / 9;"), "Expected bf-aspect.is-16-9 modifier to apply the 16:9 ratio.");
@@ -1823,6 +1830,7 @@ function validateParitySurfaceDemos(iconHtml: string, listHtml: string, tableHtm
   assert(listHtml.includes("is-ticked"), "Expected list.html to demo ticked list items.");
   assert(listHtml.includes("is-crossed"), "Expected list.html to demo crossed list items.");
   assert(tableHtml.includes("is-icon-placeholder"), "Expected table.html to demo icon-placeholder cells.");
+  assert(tableHtml.includes("bf-table-scroll") && tableHtml.includes('tabindex="0"'), "Expected table.html to exercise the keyboard-focusable horizontal-scroll wrapper.");
 }
 
 function validateTopNavigationDemo(topNavigationHtml: string): void {
@@ -1843,6 +1851,7 @@ function validateApplicationShellDemo(applicationShellHtml: string): void {
   assert(applicationShellHtml.includes('class="bf-panel is-fill"'), "Expected application-shell.html to demo the canonical fill-height panel modifier in a pinned-aside shell.");
   assert(applicationShellHtml.includes('block-size:calc(var(--bf-baseline)*72);min-block-size:calc(var(--bf-baseline)*72)'), "Expected application-shell.html to keep a fixed shell height so the fill-height panel contract is observable.");
   assert(applicationShellHtml.includes('Recent exports'), "Expected application-shell.html to include enough inspector content to exercise the internal panel scroll path.");
+  assert(applicationShellHtml.includes("bf-fixed-width is-start-aligned"), "Expected application-shell.html to exercise logical-start fixed-width alignment.");
 }
 
 function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml: string): void {
