@@ -2,7 +2,7 @@ export function ctaFigureAspectCss(): string {
   return `/* ------------------------------------------------------------------ */
 /* CTA block (Vanilla parity).                                         */
 /* Inline-row of call-to-action items (typically a heading and one or  */
-/* more buttons or links). Element-owned spacing: borderless by        */
+/* more buttons or links). Container-owned spacing: borderless by      */
 /* default, .is-bordered adds a top divider rule and small padding.    */
 /* (Vanilla ships the same modifier as has-border; renamed for the BF  */
 /* is-* convention.)                                                    */
@@ -14,7 +14,7 @@ export function ctaFigureAspectCss(): string {
   column-gap: var(--bf-space-2);
   display: flex;
   flex-wrap: wrap;
-  margin-block-end: var(--bf-section-space-shallow);
+  margin-block-end: 0;
   row-gap: var(--bf-space-1);
 }
 
@@ -26,22 +26,29 @@ export function ctaFigureAspectCss(): string {
 /* ------------------------------------------------------------------ */
 /* Figure (Vanilla parity).                                            */
 /* Native <figure> wrapper for an image, video, or other media plus    */
-/* an italic caption. Element-owned bottom spacing matches Vanilla’s   */
-/* base figure margin; the caption owns its own top space so the       */
+/* an italic caption. The owning stack sets external spacing; the      */
+/* caption owns its own top space so the                               */
 /* image sits flush against the next baseline above its caption.       */
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-figure) {
   display: block;
   inline-size: 100%;
-  margin: 0 0 var(--bf-section-space-shallow);
+  margin: 0;
 }
 
-:where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas) {
+:where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas, svg) {
   block-size: auto;
   display: block;
   inline-size: 100%;
   max-inline-size: 100%;
+}
+
+/* Keep light artwork legible when the surrounding theme is dark. */
+:where(.bf-theme) :where(.bf-figure.is-light-inset) > :where(img, picture, video, canvas, svg, .bf-aspect) {
+  background: #fff;
+  box-sizing: border-box;
+  padding: var(--bf-space-2);
 }
 
 :where(.bf-theme) :where(.bf-figure-caption) {

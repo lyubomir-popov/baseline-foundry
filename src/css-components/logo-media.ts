@@ -161,7 +161,7 @@ export function logoMediaCss(): string {
   line-height: var(--bf-h4-line-height);
   margin-block: 0 var(--bf-h4-margin-bottom);
   overflow-wrap: anywhere;
-  padding-block: var(--bf-h4-nudge-start) var(--bf-h4-nudge-end);
+  padding-block: var(--bf-h4-nudge-start) 0;
   text-transform: var(--bf-h4-text-transform);
 }
 
@@ -179,7 +179,7 @@ export function logoMediaCss(): string {
   letter-spacing: var(--bf-h1-letter-spacing);
   line-height: var(--bf-h1-line-height);
   margin-block: 0 var(--bf-h1-margin-bottom);
-  padding-block: var(--bf-h1-nudge-start) var(--bf-h1-nudge-end);
+  padding-block: var(--bf-h1-nudge-start) 0;
   text-transform: var(--bf-h1-text-transform);
 }
 

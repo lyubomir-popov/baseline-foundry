@@ -265,7 +265,7 @@ function toTypographyToken(identifier: string, token: BaselineGeneratorElementTo
   const elementConfig = config.elements.find(element => element.identifier === identifier);
   const fontFamily = token.fontFamily ?? config.fontFiles[0]?.family ?? "sans";
   const fontStack = config.fontStacks[fontFamily] ?? fontFamily;
-  const marginBottom = toRem(parseRem(token.spaceAfter) - config.baselineUnit);
+  const marginBottom = toRem(config.baselineUnit - parseRem(token.nudgeTop));
 
   return {
     ...token,

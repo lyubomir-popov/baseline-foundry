@@ -407,6 +407,34 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(viewportFillState.height - 960) <= 1, `Expected the full-viewport application modifier to occupy the viewport height. Got height=${viewportFillState.height}px.`);
     assert(Math.abs(viewportFillState.bottom - 960) <= 1, `Expected the full-viewport application modifier to reach the viewport bottom edge. Got bottom=${viewportFillState.bottom}px.`);
 
+    const panelFooterState = await page.evaluate(async () => {
+      const content = document.querySelector<HTMLElement>(".bf-main .bf-panel-content");
+      const mainFooter = document.querySelector<HTMLElement>("[data-application-layout-main-footer]");
+      if (!content || !mainFooter) return null;
+
+      const pressure = document.createElement("div");
+      pressure.style.blockSize = "1200px";
+      pressure.style.flex = "0 0 auto";
+      pressure.setAttribute("aria-hidden", "true");
+      content.append(pressure);
+
+      const beforeTop = mainFooter.getBoundingClientRect().top;
+      content.scrollTop = 200;
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+      return {
+        beforeTop,
+        afterTop: mainFooter.getBoundingClientRect().top,
+        mainMinBlockSize: getComputedStyle(mainFooter).minBlockSize,
+        scrollTop: content.scrollTop
+      };
+    });
+
+    assert(panelFooterState, "Expected both application panel footers to be measurable.");
+    assert(panelFooterState.scrollTop > 0, "Expected the main panel content to scroll under pressure.");
+    assert(Math.abs(panelFooterState.afterTop - panelFooterState.beforeTop) <= 1, `Expected the main panel footer to stay fixed while panel content scrolls. Got before=${panelFooterState.beforeTop}px, after=${panelFooterState.afterTop}px.`);
+    assert(Number.parseFloat(panelFooterState.mainMinBlockSize) > 0, `Expected the main panel footer to expose a minimum block size. Got ${panelFooterState.mainMinBlockSize}.`);
+
     const spacingResetState = await page.evaluate(() => {
       const stack = document.querySelector<HTMLElement>(".bf-panel-header .bf-stack.is-flush");
       if (!(stack instanceof HTMLElement)) {
@@ -442,9 +470,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         throw new Error(`Expected application layout header stack child ${index + 1} to be an HTMLElement.`);
       }
 
-      assert(Number.parseFloat(child.marginBottom) >= 0, `Expected application layout header stack child ${child.tag} to keep non-negative element-owned semantic margin. Got ${child.marginBottom}.`);
+      assert(Number.parseFloat(child.marginBottom) >= 0, `Expected application layout header stack child ${child.tag} to keep non-negative baseline compensation. Got ${child.marginBottom}.`);
       assert(Number.parseFloat(child.paddingBlockStart) > 0, `Expected application layout header stack child ${child.tag} to retain metric-derived start compensation. Got ${child.paddingBlockStart}.`);
-      assert(Number.parseFloat(child.paddingBlockEnd) > 0, `Expected application layout header stack child ${child.tag} to retain metric-derived end compensation. Got ${child.paddingBlockEnd}.`);
+      assert(child.paddingBlockEnd === "0px", `Expected application layout header stack child ${child.tag} to move end compensation out of padding. Got ${child.paddingBlockEnd}.`);
     });
 
     const navigation = page.locator("#application-layout-navigation");
@@ -514,6 +542,21 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(expandedState.drawerBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation drawer to reach the navigation bottom. Got drawer=${expandedState.drawerBottom}px, navigation=${expandedState.navigationBottom}px.`);
     assert(Math.abs(expandedState.panelBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation panel to reach the navigation bottom. Got panel=${expandedState.panelBottom}px, navigation=${expandedState.navigationBottom}px.`);
     assert(Math.abs(expandedState.navigationBottom - expandedState.applicationBottom) <= 1, `Expected desktop navigation to reach the application bottom. Got navigation=${expandedState.navigationBottom}px, application=${expandedState.applicationBottom}px.`);
+
+    const alignedFooterState = await page.evaluate(() => {
+      const mainFooter = document.querySelector<HTMLElement>("[data-application-layout-main-footer]");
+      const navigationFooter = document.querySelector<HTMLElement>("[data-application-layout-navigation-footer]");
+      if (!mainFooter || !navigationFooter) return null;
+      return {
+        mainBottom: mainFooter.getBoundingClientRect().bottom,
+        navigationBottom: navigationFooter.getBoundingClientRect().bottom,
+        mainMinBlockSize: getComputedStyle(mainFooter).minBlockSize,
+        navigationMinBlockSize: getComputedStyle(navigationFooter).minBlockSize
+      };
+    });
+    assert(alignedFooterState, "Expected expanded navigation and main panel footers to be measurable.");
+    assert(Math.abs(alignedFooterState.mainBottom - alignedFooterState.navigationBottom) <= 1, `Expected navigation and main panel footers to share the bottom edge. Got main=${alignedFooterState.mainBottom}px, navigation=${alignedFooterState.navigationBottom}px.`);
+    assert(alignedFooterState.mainMinBlockSize === alignedFooterState.navigationMinBlockSize, `Expected both panel footers to share the same minimum block size. Got main=${alignedFooterState.mainMinBlockSize}, navigation=${alignedFooterState.navigationMinBlockSize}.`);
 
     const navigationBrandState = await page.evaluate(() => {
       const header = document.querySelector<HTMLElement>("[data-navigation-brand-header]");
@@ -1414,7 +1457,7 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
       semanticListFixture.style.cssText = "position:absolute;visibility:hidden;inset-block-start:0;inset-inline-start:0;inline-size:var(--bf-measure);pointer-events:none";
       const paragraphReference = document.createElement("p");
       paragraphReference.dataset.semanticListParagraphReference = "true";
-      paragraphReference.textContent = "Paragraph space-after reference";
+      paragraphReference.textContent = "Paragraph compensation reference";
       const structuralList = document.createElement("ol");
       structuralList.className = "bf-tiered-list-items";
       structuralList.dataset.semanticListStructuralContainer = "true";
@@ -1542,7 +1585,8 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
       assert(state.tier === tier, `Expected reciprocal typography probes to switch to ${tier}, got ${state.tier}.`);
       assert(JSON.stringify(state.h3AsH6) === JSON.stringify(state.h6Reference), `Expected ${tier} h3.bf-h6 inside .bf-prose to resolve every measured H6 role property. Probe=${JSON.stringify(state.h3AsH6)}, reference=${JSON.stringify(state.h6Reference)}.`);
       assert(JSON.stringify(state.h6AsH3) === JSON.stringify(state.h3Reference), `Expected ${tier} h6.bf-h3 inside .bf-prose to resolve every measured H3 role property. Probe=${JSON.stringify(state.h6AsH3)}, reference=${JSON.stringify(state.h3Reference)}.`);
-      assert(state.semanticListSpacing.listMarginBottom === state.semanticListSpacing.paragraphMarginBottom && state.semanticListSpacing.listMarginBottom !== "0px", `Expected ${tier} semantic lists in component copy slots to use paragraph space after ${state.semanticListSpacing.paragraphMarginBottom}, got ${state.semanticListSpacing.listMarginBottom}.`);
+      assert(state.semanticListSpacing.listMarginBottom === "0px", `Expected ${tier} semantic list containers not to add external semantic space, got ${state.semanticListSpacing.listMarginBottom}.`);
+      assert(state.semanticListSpacing.paragraphMarginBottom !== "0px", `Expected ${tier} paragraph roles to retain non-semantic bottom-margin compensation.`);
       assert(state.semanticListSpacing.structuralListMarginBottom === "0px", `Expected ${tier} structural component lists to retain their explicit zero-margin reset, got ${state.semanticListSpacing.structuralListMarginBottom}.`);
       for (const [property, expectedValue] of Object.entries(expected.h6)) {
         assert(state.h3AsH6[property as keyof typeof state.h3AsH6] === expectedValue, `Expected ${tier} h3.bf-h6 ${property} to resolve to concrete H6 value ${expectedValue}, got ${state.h3AsH6[property as keyof typeof state.h3AsH6]}.`);
@@ -1559,17 +1603,15 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
       for (const caseName of boundaryCaseNames) {
         const boundary = state.proseBoundaries[caseName];
         assert(boundary, `Expected ${tier} ${caseName} prose-boundary fixture.`);
+        assert(boundary.marginBottom === boundary.referenceMarginBottom, `Expected ${tier} ${caseName} flow boundaries to preserve baseline compensation. Boundary=${boundary.marginBottom}, reference=${boundary.referenceMarginBottom}.`);
         if (caseName === "ul" || caseName === "ol") {
-          assert(boundary.marginBottom === boundary.referenceMarginBottom && boundary.marginBottom !== "0px", `Expected ${tier} final ${caseName} margin-bottom to match its body-role reference ${boundary.referenceMarginBottom}, got ${boundary.marginBottom}.`);
-        } else {
-          assert(boundary.marginBottom === "0px", `Expected ${tier} ${caseName} final non-list margin-bottom to be trimmed, got ${boundary.marginBottom}.`);
+          assert(boundary.marginBottom === "0px", `Expected ${tier} semantic list containers to remain externally neutral, got ${boundary.marginBottom}.`);
+        } else if (["plain-body", "classed-body", "plain-h3", "classed-h3", "blockquote"].includes(caseName)) {
+          assert(boundary.referenceMarginBottom !== "0px", `Expected ${tier} ${caseName} to retain measurable bottom-margin compensation.`);
         }
-        if (["plain-body", "classed-body", "ul", "ol", "blockquote"].includes(caseName)) {
-          assert(boundary.referenceMarginBottom !== "0px", `Expected ${tier} ${caseName} non-boundary reference to retain a semantic margin for a meaningful reset check.`);
-        }
-        assert(boundary.paddingBottom === boundary.referencePaddingBottom, `Expected ${tier} ${caseName} boundary trimming to preserve padding-bottom ${boundary.referencePaddingBottom}, got ${boundary.paddingBottom}.`);
-        assert(boundary.paddingTop === boundary.referencePaddingTop, `Expected ${tier} ${caseName} boundary trimming to preserve padding-top ${boundary.referencePaddingTop}, got ${boundary.paddingTop}.`);
-        assert(Math.abs(boundary.height - boundary.referenceHeight) <= 0.01, `Expected ${tier} ${caseName} boundary trimming to preserve the occupied element box. Boundary=${boundary.height}, reference=${boundary.referenceHeight}.`);
+        assert(boundary.paddingBottom === "0px" && boundary.referencePaddingBottom === "0px", `Expected ${tier} ${caseName} to move end compensation out of padding. Boundary=${boundary.paddingBottom}, reference=${boundary.referencePaddingBottom}.`);
+        assert(boundary.paddingTop === boundary.referencePaddingTop, `Expected ${tier} ${caseName} flow boundaries to preserve padding-top ${boundary.referencePaddingTop}, got ${boundary.paddingTop}.`);
+        assert(Math.abs(boundary.height - boundary.referenceHeight) <= 0.01, `Expected ${tier} ${caseName} flow boundaries to preserve the occupied element box. Boundary=${boundary.height}, reference=${boundary.referenceHeight}.`);
         assert(gridDelta(boundary.proseBottomOffset) <= renderedGridTolerancePx, `Expected ${tier} ${caseName} prose bottom edge on the ${expected.baselinePx}px grid, offset=${boundary.proseBottomOffset}.`);
         assert(gridDelta(boundary.followingBaselineOffset - state.firstBaselinePhase) <= renderedGridTolerancePx, `Expected ${tier} ${caseName} following first baseline to retain the tier's ${expected.baselinePx}px grid phase. Offset=${boundary.followingBaselineOffset}, phase=${state.firstBaselinePhase}.`);
       }
@@ -1595,6 +1637,147 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
     }
 
     assert(measuredTierSignatures.size === tiers.length, `Expected four distinct computed typography signatures, got ${measuredTierSignatures.size}: ${Array.from(measuredTierSignatures).join(", ")}.`);
+
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
+    await page.goto(`${origin}/demo/components/typography.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+    await tierSelect.waitFor({ state: "visible" });
+
+    for (const tier of tiers) {
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+
+      const state = await page.evaluate(() => {
+        const fixture = document.createElement("div");
+        fixture.style.cssText = "position:absolute;visibility:hidden;inset:0;inline-size:20rem;pointer-events:none";
+
+        const internalStack = document.createElement("div");
+        internalStack.className = "bf-stack";
+        const sectionStack = document.createElement("div");
+        sectionStack.className = "bf-stack is-section";
+        const densityStacks = [
+          "is-flush",
+          "is-extra-dense",
+          "is-dense",
+          "is-loose",
+          "is-section-shallow",
+          "is-section-deep"
+        ].map(modifier => {
+          const stack = document.createElement("div");
+          stack.className = `bf-stack ${modifier}`;
+          stack.append(document.createElement("span"), document.createElement("span"));
+          return { modifier, stack };
+        });
+
+        const internalFirst = document.createElement("p");
+        internalFirst.textContent = "First baseline-aligned item";
+        const internalSecond = document.createElement("p");
+        internalSecond.textContent = "Second baseline-aligned item";
+        internalStack.append(internalFirst, internalSecond);
+        const sectionFirst = document.createElement("p");
+        sectionFirst.textContent = "First section";
+        const sectionSecond = document.createElement("p");
+        sectionSecond.textContent = "Second section";
+        sectionStack.append(sectionFirst, sectionSecond);
+
+        const basicLayout = document.createElement("div");
+        basicLayout.className = "bf-basic-section-layout bf-stack";
+        const rule = document.createElement("hr");
+        rule.className = "bf-basic-section-rule bf-rule";
+        const basicHeader = document.createElement("header");
+        basicHeader.className = "bf-basic-section-header";
+        const basicTitle = document.createElement("h2");
+        basicTitle.textContent = "Rule-adjacent heading";
+        basicHeader.append(basicTitle);
+        basicLayout.append(rule, basicHeader);
+
+        const chipStack = document.createElement("div");
+        chipStack.className = "bf-stack";
+        const chip = document.createElement("span");
+        chip.className = "bf-chip";
+        chip.textContent = "Content-sized chip";
+        chipStack.append(chip);
+
+        fixture.append(internalStack, sectionStack, ...densityStacks.map(({ stack }) => stack), basicLayout, chipStack);
+        document.body.append(fixture);
+
+        const firstStylesBefore = getComputedStyle(internalFirst);
+        const before = {
+          internalGap: Number.parseFloat(getComputedStyle(internalStack).rowGap),
+          sectionGap: Number.parseFloat(getComputedStyle(sectionStack).rowGap),
+          firstToSecond: internalSecond.getBoundingClientRect().top - internalFirst.getBoundingClientRect().bottom,
+          paddingTop: Number.parseFloat(firstStylesBefore.paddingTop),
+          paddingBottom: Number.parseFloat(firstStylesBefore.paddingBottom),
+          marginBottom: Number.parseFloat(firstStylesBefore.marginBottom),
+          baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
+        };
+        internalFirst.style.setProperty("--bf-body-space-after", "99rem");
+        const firstStylesAfter = getComputedStyle(internalFirst);
+        const after = {
+          internalGap: Number.parseFloat(getComputedStyle(internalStack).rowGap),
+          sectionGap: Number.parseFloat(getComputedStyle(sectionStack).rowGap),
+          firstToSecond: internalSecond.getBoundingClientRect().top - internalFirst.getBoundingClientRect().bottom,
+          paddingTop: Number.parseFloat(firstStylesAfter.paddingTop),
+          paddingBottom: Number.parseFloat(firstStylesAfter.paddingBottom),
+          marginBottom: Number.parseFloat(firstStylesAfter.marginBottom),
+          baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
+        };
+        const ruleRect = rule.getBoundingClientRect();
+        const headerRect = basicHeader.getBoundingClientRect();
+        const chipRect = chip.getBoundingClientRect();
+        const chipStackRect = chipStack.getBoundingClientRect();
+        const regressions = {
+          basicRowGap: Number.parseFloat(getComputedStyle(basicLayout).rowGap),
+          ruleMarginBottom: Number.parseFloat(getComputedStyle(rule).marginBottom),
+          ruleToHeader: headerRect.top - ruleRect.bottom,
+          chipWidth: chipRect.width,
+          chipStackWidth: chipStackRect.width,
+          chipJustifySelf: getComputedStyle(chip).justifySelf
+        };
+        const densityGaps = Object.fromEntries(
+          densityStacks.map(({ modifier, stack }) => [modifier, Number.parseFloat(getComputedStyle(stack).rowGap)])
+        );
+        fixture.remove();
+        return { before, after, regressions, densityGaps };
+      });
+
+      const tolerance = 0.1;
+      assert(state.before.internalGap > 0, `Expected ${tier} default bf-stack to own a positive internal gap.`);
+      assert(state.before.sectionGap > state.before.internalGap, `Expected ${tier} bf-stack.is-section gap (${state.before.sectionGap}px) to exceed the internal gap (${state.before.internalGap}px).`);
+      assert(Math.abs(state.before.firstToSecond - (state.before.internalGap + state.before.marginBottom)) <= tolerance, `Expected ${tier} adjacent stack geometry to comprise the container gap plus baseline-compensation margin.`);
+      assert(state.before.paddingBottom === 0, `Expected ${tier} text roles to retain zero padding-block-end, got ${state.before.paddingBottom}px.`);
+      assert(Math.abs(state.before.paddingTop + state.before.marginBottom - state.before.baseline) <= tolerance, `Expected ${tier} top nudge plus bottom-margin compensation to equal one ${state.before.baseline}px baseline unit.`);
+      assert(JSON.stringify(state.after) === JSON.stringify(state.before), `Expected ${tier} legacy --bf-body-space-after overrides not to affect production geometry. Before=${JSON.stringify(state.before)}, after=${JSON.stringify(state.after)}.`);
+      assert(state.regressions.basicRowGap === 0, `Expected ${tier} bf-basic-section-layout to suppress the generic stack row gap, got ${state.regressions.basicRowGap}px.`);
+      assert(Math.abs(state.regressions.ruleToHeader - state.regressions.ruleMarginBottom) <= tolerance, `Expected ${tier} basic-section text to follow only the rule's own trailing compensation. Distance=${state.regressions.ruleToHeader}px, margin=${state.regressions.ruleMarginBottom}px.`);
+      assert(state.regressions.chipWidth < state.regressions.chipStackWidth, `Expected ${tier} chip grid items to hug content. Chip=${state.regressions.chipWidth}px, stack=${state.regressions.chipStackWidth}px.`);
+      assert(state.regressions.chipJustifySelf === "start", `Expected ${tier} chips to opt out of grid-item stretch, got justify-self=${state.regressions.chipJustifySelf}.`);
+      assert(state.densityGaps["is-flush"] === 0, `Expected ${tier} flush stacks to use a zero gap.`);
+      assert(Math.abs(state.densityGaps["is-extra-dense"] - state.before.baseline / 2) <= tolerance, `Expected ${tier} extra-dense stacks to use half a baseline.`);
+      assert(Math.abs(state.densityGaps["is-dense"] - state.before.baseline) <= tolerance, `Expected ${tier} dense stacks to use one baseline.`);
+      assert(Math.abs(state.densityGaps["is-loose"] - state.before.baseline * 2) <= tolerance, `Expected ${tier} loose stacks to use two baselines.`);
+      assert(Math.abs(state.densityGaps["is-section-shallow"] - state.before.internalGap) <= tolerance, `Expected ${tier} explicit shallow stacks to match the default pattern gap.`);
+      assert(state.densityGaps["is-section-deep"] > state.before.sectionGap, `Expected ${tier} deep section stacks to exceed the regular section gap.`);
+
+      if (tier === "editorial") {
+        assert(Math.abs(state.before.internalGap - 24) <= tolerance, `Expected Sites/editorial internal stacks to resolve to 1.5rem (24px), got ${state.before.internalGap}px.`);
+        assert(Math.abs(state.before.sectionGap - 64) <= tolerance, `Expected Sites/editorial section stacks to resolve to 4rem (64px), got ${state.before.sectionGap}px.`);
+        assert(Math.abs(state.densityGaps["is-section-deep"] - 128) <= tolerance, `Expected Sites/editorial deep section stacks to resolve to 8rem (128px), got ${state.densityGaps["is-section-deep"]}px.`);
+      }
+    }
 
     await page.close();
   } finally {
@@ -2764,7 +2947,7 @@ async function verifyPortedCompositionGeometry(origin: string): Promise<void> {
 
     await page.goto(`${origin}/demo/components/hero.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
-    const heroState = await page.locator(".bf-hero").first().evaluate(root => {
+    const heroState = await page.locator(".bf-hero:has(> .bf-hero-layout)").first().evaluate(root => {
       const children = Array.from(root.querySelectorAll<HTMLElement>(":scope > .bf-hero-layout > *")).map(child => child.getBoundingClientRect());
       const styles = getComputedStyle(root);
       const probe = document.createElement("span");
@@ -3046,38 +3229,117 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
       await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
 
       for (const viewport of [
-        { width: 360, height: 1200, label: "at a narrow width" },
-        { width: 620, height: 1200, label: "at 620px" }
+        { width: 360, height: 844, label: "at a narrow width" },
+        { width: 1280, height: 900, label: "at a wide width" }
       ] as const) {
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
         await page.waitForTimeout(50);
-        const state = await page.evaluate(() => {
+        const state = await page.evaluate(viewportHeight => {
           const shells = Array.from(document.querySelectorAll<HTMLElement>(".bf-page-shell.is-site-layout"));
           const shortShell = shells[0];
           const longShell = shells[1];
+          const shortScrollOwner = shortShell?.parentElement;
+          const longScrollOwner = longShell?.parentElement;
           const shortMain = shortShell?.querySelector<HTMLElement>(":scope > .bf-site-main");
           const shortFooter = shortShell?.querySelector<HTMLElement>(":scope > .bf-site-footer.is-sticky");
           const longMain = longShell?.querySelector<HTMLElement>(":scope > .bf-site-main");
           const longFooter = longShell?.querySelector<HTMLElement>(":scope > .bf-site-footer.is-sticky");
-          if (!shortShell || !longShell || !shortMain || !shortFooter || !longMain || !longFooter) return null;
+          if (!shortShell || !longShell || !shortScrollOwner || !longScrollOwner || !shortMain || !shortFooter || !longMain || !longFooter) return null;
+          let probe = longMain.querySelector<HTMLElement>(":scope > [data-sticky-footer-long-probe]");
+          if (!probe) {
+            probe = document.createElement("div");
+            probe.dataset.stickyFooterLongProbe = "";
+            probe.setAttribute("aria-hidden", "true");
+            longMain.append(probe);
+          }
+          probe.style.blockSize = `${viewportHeight}px`;
           const shortShellStyle = getComputedStyle(shortShell);
           const longShellStyle = getComputedStyle(longShell);
+          const longMainStyle = getComputedStyle(longMain);
+          const shortScrollRect = shortScrollOwner.getBoundingClientRect();
+          const longScrollRect = longScrollOwner.getBoundingClientRect();
           return {
             shortDisplay: shortShellStyle.display,
             shortMinBlockSize: shortShellStyle.minBlockSize,
-            shortFooterBottomDelta: shortShell.getBoundingClientRect().bottom - shortFooter.getBoundingClientRect().bottom,
+            shortShellFillDelta: shortScrollRect.height - shortShell.getBoundingClientRect().height,
+            shortFooterBottomDelta: shortScrollRect.bottom - shortFooter.getBoundingClientRect().bottom,
             longDisplay: longShellStyle.display,
             longMinBlockSize: longShellStyle.minBlockSize,
+            longMainFlexShrink: longMainStyle.flexShrink,
             longFooterAfterMain: longFooter.getBoundingClientRect().top >= longMain.getBoundingClientRect().bottom - 1,
             longMainOverflow: longMain.scrollHeight - longMain.clientHeight,
-            longShellHeight: longShell.getBoundingClientRect().height
+            longShellTallerThanOwner: longShell.getBoundingClientRect().height > longScrollRect.height + 1,
+            longFooterReachable: longScrollOwner.scrollHeight >= longFooter.offsetTop + longFooter.offsetHeight - 1,
+            shortOverflow: shortShell.scrollWidth - shortShell.clientWidth,
+            longOverflow: longShell.scrollWidth - longShell.clientWidth
           };
-        });
+        }, viewport.height);
         assert(state, `Expected ${tier} sticky-footer shell geometry at ${viewport.label}.`);
         assert(state.shortDisplay === "flex", `Expected ${tier} sticky-footer short shell to enable flex pinning ${viewport.label}.`);
-        assert(state.shortMinBlockSize !== "0px" && Math.abs(state.shortFooterBottomDelta) <= 1, `Expected ${tier} short sticky footer to meet the shell block-end ${viewport.label}.`);
-        assert(state.longDisplay === "flex" && state.longFooterAfterMain, `Expected ${tier} long sticky footer to follow content without overlay ${viewport.label}.`);
+        assert(state.shortMinBlockSize !== "0px" && Math.abs(state.shortShellFillDelta) <= 1 && Math.abs(state.shortFooterBottomDelta) <= 1, `Expected ${tier} short sticky footer to meet the application-main block-end ${viewport.label}.`);
+        assert(state.longDisplay === "flex" && state.longMainFlexShrink === "0" && state.longFooterAfterMain, `Expected ${tier} long sticky footer to follow the non-shrinking site main ${viewport.label}.`);
         assert(state.longMainOverflow <= 1, `Expected ${tier} long sticky-footer main not to shrink below its content ${viewport.label}; overflow=${state.longMainOverflow}px.`);
+        assert(state.longShellTallerThanOwner && state.longFooterReachable, `Expected ${tier} application main to scroll to the complete long shell and footer ${viewport.label}.`);
+        assert(state.shortOverflow <= 1 && state.longOverflow <= 1, `Expected ${tier} nested sticky-footer shells to avoid inline overflow ${viewport.label}.`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/components/hero.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tier of tiers) {
+      const tierSelect = page.locator("[data-page-chrome-tier-select]");
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+
+      for (const viewport of [
+        { width: 360, height: 844, wide: false, label: "at a narrow width" },
+        { width: 1280, height: 900, wide: true, label: "at a wide width" }
+      ] as const) {
+        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await page.waitForTimeout(50);
+        const state = await page.locator(".bf-hero").first().evaluate(root => {
+          const lead = root.querySelector<HTMLElement>(":scope > .bf-hero-lead");
+          const media = root.querySelector<HTMLElement>(":scope > .bf-hero-media.is-full:last-child");
+          if (!lead || !media) return null;
+          const rootRect = root.getBoundingClientRect();
+          const leadRect = lead.getBoundingClientRect();
+          const mediaRect = media.getBoundingClientRect();
+          const probe = document.createElement("span");
+          probe.style.cssText = "position:absolute;visibility:hidden;display:block;block-size:var(--bf-section-space-shallow);inline-size:var(--bf-section-space)";
+          root.append(probe);
+          const shallowSpace = probe.getBoundingClientRect().height;
+          const sectionSpace = probe.getBoundingClientRect().width;
+          probe.remove();
+          return {
+            borderColor: getComputedStyle(root).borderBlockStartColor,
+            borderStyle: getComputedStyle(root).borderBlockStartStyle,
+            borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+            finalSlot: root.lastElementChild === media,
+            leadToMedia: mediaRect.top - leadRect.bottom,
+            shallowSpace,
+            mediaToHeroEnd: rootRect.bottom - mediaRect.bottom,
+            paddingEnd: Number.parseFloat(getComputedStyle(root).paddingBlockEnd),
+            sectionSpace,
+            mediaMarginEnd: Number.parseFloat(getComputedStyle(media).marginBlockEnd),
+            fullWidthDelta: rootRect.width - mediaRect.width,
+            overflow: root.scrollWidth - root.clientWidth
+          };
+        });
+        assert(state, `Expected ${tier} closing-media hero geometry ${viewport.label}.`);
+        assert(state.borderStyle === "solid" && state.borderWidth > 0, `Expected ${tier} default hero to own one visible entry rule ${viewport.label}.`);
+        assert(state.finalSlot && Math.abs(state.leadToMedia - state.shallowSpace) <= 0.1, `Expected ${tier} hero stack to own the shallow gap before final media ${viewport.label}.`);
+        assert(state.mediaMarginEnd === 0 && Math.abs(state.mediaToHeroEnd - state.paddingEnd) <= 0.1, `Expected ${tier} hero exit boundary to begin immediately after closing media ${viewport.label}.`);
+        const expectedExit = viewport.wide ? state.sectionSpace : state.sectionSpace / 2;
+        assert(Math.abs(state.paddingEnd - expectedExit) <= 0.1, `Expected ${tier} hero to preserve its ${viewport.wide ? "regular" : "compact"} exit boundary ${viewport.label}.`);
+        assert(Math.abs(state.fullWidthDelta) <= 1 && state.overflow <= 1, `Expected ${tier} closing hero media to remain full-width without overflow ${viewport.label}.`);
+
+        const borderlessState = await page.locator(".bf-hero.is-borderless").evaluate(root => ({
+          borderStyle: getComputedStyle(root).borderBlockStartStyle,
+          borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+          overflow: root.scrollWidth - root.clientWidth
+        }));
+        assert(borderlessState.borderStyle === "none" && borderlessState.borderWidth === 0, `Expected ${tier} borderless hero to remove only its entry rule ${viewport.label}.`);
+        assert(borderlessState.overflow <= 1, `Expected ${tier} borderless hero to avoid inline overflow ${viewport.label}.`);
       }
     }
 
@@ -3398,6 +3660,83 @@ async function verifyContentCardGeometry(origin: string): Promise<void> {
   }
 }
 
+async function verifySiteShellPrimitiveGeometry(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 1280, height: 900 } });
+
+    await page.goto(`${origin}/demo/components/basic-section.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const titleLink = page.locator(".bf-basic-section-title-link");
+    const titleDefault = await titleLink.evaluate(link => ({
+      color: getComputedStyle(link).color,
+      decoration: getComputedStyle(link).textDecorationLine,
+      fontSize: getComputedStyle(link).fontSize,
+      headingFontSize: getComputedStyle(link.parentElement as HTMLElement).fontSize,
+      expectedColor: (() => {
+        const probe = document.createElement("span");
+        probe.style.color = "var(--bf-color-link-default)";
+        link.parentElement?.append(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      })()
+    }));
+    assert(titleDefault.decoration === "none", `Expected a linked basic-section title to omit its default underline. Got ${titleDefault.decoration}.`);
+    assert(titleDefault.color === titleDefault.expectedColor, `Expected a linked basic-section title to retain the semantic link colour. Got ${titleDefault.color}, expected ${titleDefault.expectedColor}.`);
+    assert(titleDefault.fontSize === titleDefault.headingFontSize, `Expected a linked basic-section title to inherit heading type. Got link=${titleDefault.fontSize}, heading=${titleDefault.headingFontSize}.`);
+    await titleLink.hover();
+    assert((await titleLink.evaluate(link => getComputedStyle(link).textDecorationLine)).includes("underline"), "Expected a linked basic-section title to underline on hover.");
+    assert((await titleLink.evaluate(link => getComputedStyle(link).color)) === titleDefault.expectedColor, "Expected a linked basic-section title to remain blue on hover.");
+    await titleLink.focus();
+    assert((await titleLink.evaluate(link => getComputedStyle(link).outlineStyle)) !== "none", "Expected a linked basic-section title to retain a visible keyboard focus outline.");
+
+    await page.goto(`${origin}/demo/components/application-shell.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const startAlignment = await page.locator(".bf-fixed-width.is-start-aligned").evaluate(element => {
+      const row = element as HTMLElement;
+      const parent = row.parentElement as HTMLElement;
+      parent.style.inlineSize = "800px";
+      row.style.maxInlineSize = "400px";
+      const ltrRow = row.getBoundingClientRect();
+      const ltrParent = parent.getBoundingClientRect();
+      parent.dir = "rtl";
+      const rtlRow = row.getBoundingClientRect();
+      const rtlParent = parent.getBoundingClientRect();
+      return {
+        ltrStartDelta: Math.abs(ltrRow.left - ltrParent.left),
+        rtlStartDelta: Math.abs(rtlRow.right - rtlParent.right),
+        width: rtlRow.width
+      };
+    });
+    assert(startAlignment.ltrStartDelta <= 1 && startAlignment.rtlStartDelta <= 1, `Expected fixed-width start alignment to follow LTR and RTL logical starts. Got LTR=${startAlignment.ltrStartDelta}px, RTL=${startAlignment.rtlStartDelta}px.`);
+    assert(Math.abs(startAlignment.width - 400) <= 1, `Expected start alignment to preserve the fixed-width cap. Got ${startAlignment.width}px.`);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${origin}/demo/components/table.html`, { waitUntil: "networkidle" });
+    const tableScroll = await page.locator(".bf-table-scroll").evaluate(wrapper => ({
+      clientWidth: wrapper.clientWidth,
+      overflowX: getComputedStyle(wrapper).overflowX,
+      scrollWidth: wrapper.scrollWidth,
+      tabIndex: (wrapper as HTMLElement).tabIndex
+    }));
+    assert(tableScroll.overflowX === "auto" && tableScroll.scrollWidth > tableScroll.clientWidth, `Expected a narrow table wrapper to scroll horizontally. Got overflow=${tableScroll.overflowX}, client=${tableScroll.clientWidth}, scroll=${tableScroll.scrollWidth}.`);
+    assert(tableScroll.tabIndex === 0, `Expected the table scroll region to remain keyboard focusable. Got tabindex=${tableScroll.tabIndex}.`);
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${origin}/demo/components/hero.html`, { waitUntil: "networkidle" });
+    const inset = await page.locator(".bf-figure.is-light-inset > .bf-aspect").evaluate(media => ({
+      background: getComputedStyle(media).backgroundColor,
+      padding: getComputedStyle(media).padding
+    }));
+    assert(inset.background === "rgb(255, 255, 255)", `Expected light-inset media to retain a white backing in dark mode. Got ${inset.background}.`);
+    assert(Number.parseFloat(inset.padding) > 0, `Expected light-inset media to expose token padding. Got ${inset.padding}.`);
+  } finally {
+    await browser.close();
+  }
+}
+
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const { server, origin } = await createStaticServer(rootDir);
@@ -3412,6 +3751,7 @@ async function main(): Promise<void> {
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
     await verifySemanticRoleClassPrecedence(origin);
+    await verifyContainerOwnedSpacing(origin);
     await verifyRenewalCompositionContracts(origin);
     await verifyAdversarialResponsiveGeometry(origin);
     await verifyDirectAndClassSurfaceGeometry(origin);
@@ -3424,6 +3764,7 @@ async function main(): Promise<void> {
     await verifySitesRecipeCompositions(origin);
     await verifyContentCardGeometry(origin);
     await verifyLinkedLogoAndStickyFooterGeometry(origin);
+    await verifySiteShellPrimitiveGeometry(origin);
 
     console.log("Component behavior verification passed.");
   } finally {

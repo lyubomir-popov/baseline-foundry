@@ -19,13 +19,13 @@
     <section class="bf-fixed-width bf-stack bf-section is-shallow">
       <article class="bf-card spacing-hero-box is-buggy bf-prose">
         <h2>Normal document flow</h2>
-        <p>The final button keeps its element-owned after-space because it may be followed by more document content.</p>
+        <p>The final button keeps its metric compensation because it may be followed by more document content; its parent stack owns the semantic gap.</p>
         <button class="bf-button">Read the guide</button>
       </article>
 
       <article class="bf-card spacing-hero-box is-correct bf-prose">
         <h2>Purpose-built control boundary</h2>
-        <p>Only the button inside this explicit control row has its block compensation trimmed; unrelated descendants remain element-owned.</p>
+        <p>Only the button inside this explicit control row has its block compensation trimmed; unrelated descendants retain their metric compensation.</p>
         <div class="bf-control-row"><button class="bf-button">Read the guide</button></div>
       </article>
     </section>

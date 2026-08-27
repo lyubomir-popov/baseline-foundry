@@ -9,12 +9,13 @@ decisions and local accepted specs govern product behavior. External Canonical,
 Pragma, Vanilla, and consumer repositories are evidence and ancestry, not an
 automatic override of BF intent.
 
-### II. Element-owned semantic spacing (NON-NEGOTIABLE)
+### II. Container-owned semantic spacing (NON-NEGOTIABLE)
 
-Editorial, documentation, app, and OS elements own their metric compensation
-and semantic trailing spacing. Containers compose layout but do not erase child
-rhythm or become the default semantic-spacing owner. `bf-section` owns explicit
-page-section boundaries.
+Editorial, documentation, app, and OS containers own semantic spacing between
+their direct children. Metric-aligned text elements own only their measured
+top nudge and complementary bottom-margin compensation; role space-after does
+not participate in production layout. Nested `bf-stack` containers express
+changes in density, and explicit section stacks own page-pattern boundaries.
 
 ### III. Metric truth
 
@@ -82,4 +83,4 @@ This constitution supersedes older root planning narratives and conflicting
 repository prose. Amendments require an explicit owner decision, an updated
 active spec when behavior changes, migration notes, and a version change.
 
-**Version**: 2.0.0 | **Ratified**: 2026-08-13 | **Last amended**: 2026-08-13
+**Version**: 3.0.0 | **Ratified**: 2026-08-13 | **Last amended**: 2026-08-27

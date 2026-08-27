@@ -3,7 +3,7 @@
 Lean baseline-aligned design system focused on:
 
 - editorial typescale
-- element-owned spacing
+- container-owned semantic spacing
 - grid primitives
 - page and section rhythm
 - a small amount of demo/runtime support
@@ -52,8 +52,8 @@ When sources disagree, this repo follows:
 7. Undocumented local implementation details
 
 Pragma and the Canonical official design system are related products, not BF
-authorities. Their container-owned spacing decision does not override BF's
-element-owned constitution.
+authorities. BF's container-owned spacing contract is an explicit local owner
+decision recorded in the active spec and constitution.
 
 ## Linked Specs
 
@@ -64,7 +64,8 @@ See `docs/specs.md` for the concrete linked spec paths and the legacy/reference 
 See `AGENTS.md` and `docs/architecture.md` for the full set. Summary:
 
 - Baseline alignment is non-negotiable.
-- Semantic spacing is element-owned in editorial, documentation, app, and OS.
+- Semantic spacing is owned by nested stacks in editorial, documentation, app, and OS.
+- Text keeps metric top-nudge and bottom-margin compensation for baseline alignment.
 - OS is the fourth first-class built-in tier.
 - Grid and layout primitives are small and composable.
 - Dogfooding: demos use only `bf-*` classes.
@@ -243,27 +244,27 @@ Independent surface contract:
 - multiple containers can coexist side by side under the same stylesheet
 - `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface — see [docs/surfaces-manifest.md](docs/surfaces-manifest.md) for the full schema, stability guarantees, and consumer recipes
 - the published manifest omits local build-machine config/baseline file paths, so the shipped JSON stays portable
-- every tier keeps metric-derived runtime alignment and element-owned semantic spacing
+- every tier keeps metric-derived runtime alignment while nested stacks own semantic spacing
 
 Example:
 
 ```html
-<section class="bf-theme bf-tier-editorial">
-	<div class="bf-prose">
+<section class="bf-theme bf-tier-editorial bf-stack is-section">
+	<div class="bf-prose bf-stack">
 		<h1>Editorial surface</h1>
 		<p>Metric-derived nudges stay on.</p>
 	</div>
 </section>
 
-<section class="bf-theme bf-tier-app">
-	<div class="bf-prose">
+<section class="bf-theme bf-tier-app bf-stack is-section">
+	<div class="bf-prose bf-stack">
 		<h1>App surface</h1>
-		<p>Metric-derived nudges and element-owned spacing remain active at application density.</p>
+		<p>Metric-derived compensation and container-owned gaps remain active at application density.</p>
 	</div>
 </section>
 
-<section class="bf-theme bf-tier-os">
-	<div class="bf-prose">
+<section class="bf-theme bf-tier-os bf-stack is-section">
+	<div class="bf-prose bf-stack">
 		<h1>OS surface</h1>
 		<p>Metrics stay on, but the measure and control geometry compress toward dense system surfaces.</p>
 	</div>

@@ -69,8 +69,33 @@ export function panelCss(options: PanelCssOptions): string {
   z-index: 5;
 }
 
+/* Panel chrome that remains outside the panel's scrolling content. */
+:where(.bf-theme) :where(.bf-panel-footer) {
+  align-items: center;
+  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: var(--bf-field-gap);
+  justify-content: space-between;
+  min-block-size: calc(var(--bf-control-box-size-compact) + (var(--bf-panel-padding-block) * 2));
+  padding-block-end: var(--bf-panel-padding-block);
+  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-inline: var(--bf-panel-padding-inline);
+}
+
+:where(.bf-theme) :where(.bf-panel-footer.is-sticky) {
+  background: var(--bf-color-background-default);
+  bottom: 0;
+  position: sticky;
+  z-index: 5;
+}
+
 :where(.bf-theme) :where(.bf-panel-title) {
-${h4TypeStyles}  min-inline-size: 0;
+${h4TypeStyles}  margin: 0 0 var(--bf-h4-margin-bottom);
+  min-inline-size: 0;
+  padding-block-end: 0;
+  padding-block-start: var(--bf-h4-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-panel-controls) {
@@ -125,8 +150,5 @@ ${bodyTypeStyles}  align-items: center;
   padding-inline: 0;
 }
 
-:where(.bf-theme) :where(.bf-panel-content) > :last-child:not(:where(.bf-button, .bf-button.is-base, .bf-input, input, textarea, select, input[type='file'], .bf-search-box, .bf-search-and-filter-search-container, .bf-choice-row, .bf-segmented-control-button, .bf-tab-buttons-button, .bf-pagination-link, .bf-side-navigation-toggle)) {
-  margin-bottom: 0;
-}
 `;
 }

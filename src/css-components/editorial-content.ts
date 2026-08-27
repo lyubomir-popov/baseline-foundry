@@ -50,7 +50,7 @@ export function editorialContentCss(options: EditorialContentCssOptions): string
 
 :where(.bf-theme) :where(.bf-notice-title) {
 ${noticeTitleTypeStyles}  margin-block: 0 var(--bf-h4-margin-bottom);
-  padding-block-end: var(--bf-h4-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-h4-nudge-start);
 }
 
@@ -68,7 +68,7 @@ ${noticeTitleTypeStyles}  margin-block: 0 var(--bf-h4-margin-bottom);
   letter-spacing: var(--bf-eyebrow-letter-spacing, 0.08em);
   line-height: var(--bf-eyebrow-line-height, var(--bf-h5-line-height));
   margin-block: 0 var(--bf-eyebrow-margin-bottom, var(--bf-h5-margin-bottom));
-  padding-block-end: var(--bf-eyebrow-nudge-end, var(--bf-h5-nudge-end));
+  padding-block-end: 0;
   padding-block-start: var(--bf-eyebrow-nudge-start, var(--bf-h5-nudge-start));
   text-transform: var(--bf-eyebrow-text-transform, uppercase);
 }

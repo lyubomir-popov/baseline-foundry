@@ -6,12 +6,12 @@ export function tieredListEqualHeightRowCss(): string {
 /* CTA. Vanilla uses media queries at tablet/desktop; Baseline Foundry */
 /* uses container queries on the pattern itself so the layout reacts   */
 /* to its own width (panels, drawers, narrow main areas) instead of    */
-/* the viewport. Element-owned spacing keeps baseline alignment.       */
+/* the viewport. Stack gaps own semantics; text keeps compensation.    */
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-tiered-list) {
   container-type: inline-size;
-  display: block;
+  display: grid;
 }
 
 :where(.bf-theme) :where(.bf-tiered-list-header),
@@ -40,7 +40,7 @@ export function tieredListEqualHeightRowCss(): string {
   margin-block: 0 var(--bf-body-margin-bottom);
   min-inline-size: 0;
   overflow-wrap: anywhere;
-  padding-block-end: var(--bf-body-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-body-nudge-start);
 }
 

@@ -15,12 +15,6 @@ function toRemLiteral(value: number): string {
   return `${Math.round(value * 100000) / 100000}rem`;
 }
 
-function nudgeEnd(baselineUnit: string, nudgeTop: string): string {
-  const nt = parseRemValue(nudgeTop);
-  if (nt === 0) return "0rem";
-  return toRemLiteral(parseRemValue(baselineUnit) - nt);
-}
-
 function fontFormat(path: string): string {
   const extension = path.split(".").pop()?.toLowerCase();
 
@@ -51,8 +45,8 @@ function fontFaceRule(fontFile: ThemeFontFile): string {
   return `@font-face {\n  font-family: "${fontFile.cssFamily}";\n  src: url("${fontFile.path}") format("${fontFormat(fontFile.path)}");\n  font-style: ${fontFile.fontStyle ?? "normal"};\n  font-weight: ${fontFile.fontWeight ?? "400"};\n  font-stretch: ${fontFile.fontStretch ?? "normal"};\n  font-display: ${fontFile.fontDisplay ?? "swap"};\n}\n`;
 }
 
-function semanticMarginBottom(spaceAfter: string, baselineUnit: string): string {
-  return toRemLiteral(parseRemValue(spaceAfter) - parseRemValue(baselineUnit));
+function baselineCompensation(nudgeTop: string, baselineUnit: string): string {
+  return toRemLiteral(parseRemValue(baselineUnit) - parseRemValue(nudgeTop));
 }
 
 function roleFontFamilyVar(roleName: string, fallback?: string): string {
@@ -95,10 +89,6 @@ function roleNudgeStartVar(roleName: string, fallback: string): string {
   return `var(--bf-${roleName}-nudge-start, ${fallback})`;
 }
 
-function roleNudgeEndVar(roleName: string, fallback: string): string {
-  return `var(--bf-${roleName}-nudge-end, ${fallback})`;
-}
-
 const ROLE_STYLE_DEFAULTS: Record<string, {
   fontVariantCaps?: string;
   letterSpacing?: string;
@@ -113,15 +103,15 @@ const ROLE_STYLE_DEFAULTS: Record<string, {
 
 function textRule(roleName: string, selectors: string[], token: TypographyToken, baselineUnit: string, extra = ""): string {
   const styleDefaults = ROLE_STYLE_DEFAULTS[roleName] ?? {};
-  const marginBottom = semanticMarginBottom(token.spaceAfter, baselineUnit);
+  const marginBottom = token.marginBottom ?? baselineCompensation(token.nudgeTop, baselineUnit);
   const nudgeStart = token.nudgeTop;
-  const nudgeFinish = nudgeEnd(baselineUnit, token.nudgeTop);
-  return `${selectors.join(",\n")} {\n  font-family: ${roleFontFamilyVar(roleName, token.fontStack)};\n  font-size: ${roleFontSizeVar(roleName, token.fontSize)};\n  font-style: ${roleFontStyleVar(roleName, token.fontStyle ?? "normal")};\n  font-weight: ${roleFontWeightVar(roleName, token.fontWeight ?? 400)};\n  font-variant-caps: ${roleFontVariantCapsVar(roleName, token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal")};\n  letter-spacing: ${roleLetterSpacingVar(roleName, token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal")};\n  text-transform: ${roleTextTransformVar(roleName, token.textTransform ?? styleDefaults.textTransform ?? "none")};\n  line-height: ${roleLineHeightVar(roleName, token.lineHeight)};\n  margin-bottom: ${roleMarginBottomVar(roleName, marginBottom)};\n  padding-block-end: ${roleNudgeEndVar(roleName, nudgeFinish)};\n  padding-block-start: ${roleNudgeStartVar(roleName, nudgeStart)};\n${extra}}\n`;
+  return `${selectors.join(",\n")} {\n  font-family: ${roleFontFamilyVar(roleName, token.fontStack)};\n  font-size: ${roleFontSizeVar(roleName, token.fontSize)};\n  font-style: ${roleFontStyleVar(roleName, token.fontStyle ?? "normal")};\n  font-weight: ${roleFontWeightVar(roleName, token.fontWeight ?? 400)};\n  font-variant-caps: ${roleFontVariantCapsVar(roleName, token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal")};\n  letter-spacing: ${roleLetterSpacingVar(roleName, token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal")};\n  text-transform: ${roleTextTransformVar(roleName, token.textTransform ?? styleDefaults.textTransform ?? "none")};\n  line-height: ${roleLineHeightVar(roleName, token.lineHeight)};\n  margin-bottom: ${roleMarginBottomVar(roleName, marginBottom)};\n  padding-block-end: 0rem;\n  padding-block-start: ${roleNudgeStartVar(roleName, nudgeStart)};\n${extra}}\n`;
 }
 
 function roleVarDeclarations(roleName: string, token: TypographyToken, baselineUnit: string): string {
   const styleDefaults = ROLE_STYLE_DEFAULTS[roleName] ?? {};
-  return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-margin-bottom: ${semanticMarginBottom(token.spaceAfter, baselineUnit)};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${nudgeEnd(baselineUnit, token.nudgeTop)};\n`;
+  const compensation = token.marginBottom ?? baselineCompensation(token.nudgeTop, baselineUnit);
+  return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-baseline-compensation: ${compensation};\n  --bf-${roleName}-margin-bottom: ${compensation};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${compensation};\n`;
 }
 
 function themeSurfaceRule(selector: string, tokens: ThemeTokens): string {
@@ -296,15 +286,15 @@ ${generateBaselineGridThemeOverrideCss()}
 }
 
 :where(.bf-theme) :where(.bf-section) {
-  margin-block-end: var(--bf-section-space);
+  margin-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-section.is-shallow) {
-  margin-block-end: var(--bf-section-space-shallow);
+  margin-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-section.is-deep) {
-  margin-block-end: var(--bf-section-space-deep);
+  margin-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-strip) {
@@ -363,13 +353,37 @@ ${generateBaselineGridThemeOverrideCss()}
 }
 
 :where(.bf-theme) :where(.bf-stack) {
-  --bf-stack-space: 0px;
+  --bf-stack-space: var(--bf-section-space-shallow);
   display: grid;
   gap: var(--bf-stack-space);
 }
 
 :where(.bf-theme) :where(.bf-stack.is-flush) {
   --bf-stack-space: 0px;
+}
+
+:where(.bf-theme) :where(.bf-stack.is-extra-dense) {
+  --bf-stack-space: var(--bf-space-half);
+}
+
+:where(.bf-theme) :where(.bf-stack.is-dense) {
+  --bf-stack-space: var(--bf-space-1);
+}
+
+:where(.bf-theme) :where(.bf-stack.is-loose) {
+  --bf-stack-space: var(--bf-space-2);
+}
+
+:where(.bf-theme) :where(.bf-stack.is-section-shallow) {
+  --bf-stack-space: var(--bf-section-space-shallow);
+}
+
+:where(.bf-theme) :where(.bf-stack.is-section) {
+  --bf-stack-space: var(--bf-section-space);
+}
+
+:where(.bf-theme) :where(.bf-stack.is-section-deep) {
+  --bf-stack-space: var(--bf-section-space-deep);
 }
 
 :where(.bf-theme) :where(.bf-cluster) {
@@ -384,6 +398,8 @@ ${generateBaselineGridThemeOverrideCss()}
 }
 
 :where(.bf-theme) :where(.bf-prose) {
+  display: grid;
+  gap: var(--bf-section-space-shallow);
   inline-size: min(100%, var(--bf-measure));
 }
 
@@ -392,7 +408,7 @@ ${roleRules}
 ${capEngineDemo}
 
 :where(.bf-theme) :where(ul, ol) {
-  margin-bottom: ${roleMarginBottomVar("body", semanticMarginBottom(body.spaceAfter, baselineUnit))};
+  margin-bottom: 0;
 }
 
 :where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {
@@ -400,8 +416,8 @@ ${capEngineDemo}
 }
 
 :where(.bf-theme) :where(.bf-prose li) {
-  margin: 0;
-  padding-block-end: ${roleNudgeEndVar("body", nudgeEnd(baselineUnit, body.nudgeTop))};
+  margin: 0 0 ${roleMarginBottomVar("body", baselineCompensation(body.nudgeTop, baselineUnit))};
+  padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
 }
 
@@ -413,15 +429,11 @@ ${capEngineDemo}
   font-style: ${roleFontStyleVar("body", body.fontStyle ?? "normal")};
   font-weight: ${roleFontWeightVar("body", body.fontWeight ?? 400)};
   line-height: ${roleLineHeightVar("body", body.lineHeight)};
-  margin-bottom: ${roleMarginBottomVar("body", semanticMarginBottom(body.spaceAfter, baselineUnit))};
+  margin-bottom: ${roleMarginBottomVar("body", baselineCompensation(body.nudgeTop, baselineUnit))};
   max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));
-  padding-block-end: ${roleNudgeEndVar("body", nudgeEnd(baselineUnit, body.nudgeTop))};
+  padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
   padding-inline-start: var(--bf-space-3);
-}
-
-:where(.bf-theme) :where(.bf-prose) > :last-child:not(:where(ul)):not(:where(ol)) {
-  margin-bottom: 0;
 }
 
 :where(.bf-theme) :where(.bf-rule, .bf-prose hr) {

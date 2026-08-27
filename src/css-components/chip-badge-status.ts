@@ -31,6 +31,8 @@ ${bodyTypeStyles}  align-items: baseline;
   color: var(--bf-color-text-default);
   display: inline-flex;
   gap: 0;
+  inline-size: fit-content;
+  justify-self: start;
   margin: 0 var(--bf-ui-chip-padding-inline) var(--bf-field-gap) 0;
   max-inline-size: 100%;
   min-block-size: var(--bf-ui-chip-block-size);

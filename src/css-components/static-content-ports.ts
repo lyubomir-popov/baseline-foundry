@@ -60,7 +60,7 @@ export function staticContentPortsCss(): string {
   line-height: var(--bf-h1-line-height);
   margin-block: 0 var(--bf-h1-margin-bottom);
   overflow-wrap: anywhere;
-  padding-block-end: var(--bf-h1-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-h1-nudge-start);
   text-transform: var(--bf-h1-text-transform);
 }
@@ -75,7 +75,7 @@ export function staticContentPortsCss(): string {
   line-height: var(--bf-h3-line-height);
   margin-block: 0 var(--bf-h3-margin-bottom);
   min-inline-size: 0;
-  padding-block-end: var(--bf-h3-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-h3-nudge-start);
   text-transform: var(--bf-h3-text-transform);
 }
@@ -88,7 +88,7 @@ export function staticContentPortsCss(): string {
 :where(.bf-theme) :where(.bf-data-spotlight-action) {
   display: block;
   margin-block: 0 var(--bf-body-margin-bottom);
-  padding-block-end: var(--bf-body-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-body-nudge-start);
 }
 

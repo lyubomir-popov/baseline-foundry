@@ -19,17 +19,26 @@
 export function sitesEditorialPortsCss(): string {
   return `/* ------------------------------------------------------------------ */
 /* Sites editorial compositions — hero and quote wrapper.              */
-/* Section boundaries and grid tracks are structural; every text child  */
-/* keeps its own type-role rhythm.                                      */
+/* Section boundaries and grid tracks are structural; nested stacks own */
+/* semantic gaps and every text child keeps metric compensation.        */
 /* ------------------------------------------------------------------ */
 
 /* Hero: its deliberately asymmetric boundary mirrors the current Vanilla
-   section--hero: a compact arrival space, then the normal section exit. */
+   section--hero: a compact arrival space, then the normal section exit. The
+   entry rule replaces one pixel of padding so it never changes the rhythm. */
 :where(.bf-theme) :where(.bf-hero) {
+  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   container-name: bf-hero;
   container-type: inline-size;
   min-inline-size: 0;
   padding-block-end: calc(var(--bf-section-space) / 2);
+  padding-block-start: calc(var(--bf-space-2) - var(--bf-border-width));
+}
+
+/* The hero owns its entry rule so consumers do not need a loose sibling.
+   The established borderless modifier removes only that visual boundary. */
+:where(.bf-theme) :where(.bf-hero.is-borderless) {
+  border-block-start: 0;
   padding-block-start: var(--bf-space-2);
 }
 
@@ -39,14 +48,14 @@ export function sitesEditorialPortsCss(): string {
   min-inline-size: 0;
 }
 
-:where(.bf-theme) :where(.bf-hero-copy, .bf-hero-title, .bf-hero-content, .bf-hero-media, .bf-hero-signpost, .bf-hero-intro) {
+:where(.bf-theme) :where(.bf-hero-copy, .bf-hero-title, .bf-hero-content, .bf-hero-media, .bf-hero-signpost, .bf-hero-intro, .bf-hero-lead) {
   min-inline-size: 0;
   overflow-wrap: anywhere;
 }
 
 /* The normal hero keeps title, supporting heading, chip, prose and CTA in a
-   semantic copy slot. Their zero-gap flow deliberately leaves role margins
-   intact. Hero titles are h1 slots and supporting titles are h2 slots. */
+   semantic copy stack. Hero titles are h1 slots and supporting titles are h2
+   slots. */
 :where(.bf-theme) :where(.bf-hero-copy) {
   align-content: start;
   display: grid;
@@ -90,6 +99,12 @@ export function sitesEditorialPortsCss(): string {
   grid-column: 1 / -1;
 }
 
+/* A closing visual remains inside the hero after its lead. The hero's stack
+   owns their shallow internal separation. */
+:where(.bf-theme) :where(.bf-hero) > :where(.bf-hero-media.is-full:last-child) {
+  inline-size: 100%;
+}
+
 /* Vanilla's desktop hero boundary is 1036px. The layout descendant responds
    to the root container so embedding it in a narrower rail still collapses
    correctly. */
@@ -98,6 +113,10 @@ export function sitesEditorialPortsCss(): string {
 @media (width >= 64.75rem) {
   :where(.bf-theme) :where(.bf-hero) {
     padding-block-end: var(--bf-section-space);
+    padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));
+  }
+
+  :where(.bf-theme) :where(.bf-hero.is-borderless) {
     padding-block-start: var(--bf-space-3);
   }
 }
@@ -197,7 +216,7 @@ export function sitesEditorialPortsCss(): string {
 
 /* The quote rail can also be a fractional grid track. Keep its media from
    introducing a sub-baseline row while leaving quotation and citation rhythm
-   entirely element-owned. */
+   entirely baseline-compensated while its stack owns semantic gaps. */
 @supports (block-size: calc-size(auto, round(up, size, 1px))) {
   :where(.bf-theme) :where(.bf-quote-wrapper-signpost > :where(img, picture, svg), .bf-quote-wrapper-media > .bf-aspect) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));

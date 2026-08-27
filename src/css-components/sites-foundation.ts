@@ -9,9 +9,10 @@
  * Vanilla → BF mapping:
  * - 25/75 and 50/50 layouts use intrinsic one-/two-column grids and BF's
  *   existing gutter token instead of legacy span utility classes.
- * - Vanilla's deep strip and section spacing map to the existing
- *   `--bf-section-space-deep` and `--bf-section-space` boundaries.
- * - Heading, paragraph, list, figure and CTA rhythm stays element-owned.
+ * - Pattern internals use nested stack gaps; complete patterns use an outer
+ *   section stack.
+ * - Heading, paragraph, list, figure and CTA children retain only metric
+ *   compensation.
  */
 export function sitesFoundationCss(): string {
   return `/* ------------------------------------------------------------------ */
@@ -23,22 +24,25 @@ export function sitesFoundationCss(): string {
 :where(.bf-theme) :where(.bf-basic-section) {
   container-name: bf-basic-section;
   container-type: inline-size;
-  margin-block-end: var(--bf-section-space);
+  margin-block-end: 0;
   min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-basic-section.is-shallow) {
-  margin-block-end: var(--bf-section-space-shallow);
+  margin-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-basic-section.is-deep) {
-  margin-block-end: var(--bf-section-space-deep);
+  margin-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-basic-section-layout) {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
+  /* The rule already owns its half-rem trailing compensation. This structural
+     grid must not add the generic pattern-stack gap on top of it. */
+  row-gap: 0;
 }
 
 :where(.bf-theme) :where(.bf-basic-section-rule) {
@@ -48,6 +52,18 @@ export function sitesFoundationCss(): string {
 :where(.bf-theme) :where(.bf-basic-section-header, .bf-basic-section-content) {
   min-inline-size: 0;
   overflow-wrap: anywhere;
+}
+
+/* A section title may be the route action without looking like body copy. */
+:where(.bf-theme) :where(.bf-basic-section-title-link, .bf-basic-section-title-link:visited) {
+  color: var(--bf-color-link-default);
+  text-decoration: none;
+}
+
+:where(.bf-theme) :where(.bf-basic-section-title-link:hover) {
+  text-decoration: underline;
+  text-decoration-thickness: var(--bf-border-width);
+  text-underline-offset: 0.12em;
 }
 
 /* Vanilla splits at medium only on request, otherwise at its large breakpoint.
@@ -110,7 +126,7 @@ export function sitesFoundationCss(): string {
 :where(.bf-theme) :where(.bf-text-spotlight) {
   container-name: bf-text-spotlight;
   container-type: inline-size;
-  margin-block-end: var(--bf-section-space);
+  margin-block-end: 0;
   min-inline-size: 0;
 }
 

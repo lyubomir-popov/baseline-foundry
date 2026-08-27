@@ -198,7 +198,7 @@ export function contentCardCss(): string {
   max-inline-size: none;
   min-inline-size: 0;
   overflow-wrap: anywhere;
-  padding-block-end: var(--bf-h4-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-h4-nudge-start);
   text-transform: var(--bf-h4-text-transform);
 }
@@ -212,7 +212,7 @@ export function contentCardCss(): string {
   letter-spacing: var(--bf-h1-letter-spacing);
   line-height: var(--bf-h1-line-height);
   margin-block-end: var(--bf-h1-margin-bottom);
-  padding-block-end: var(--bf-h1-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-h1-nudge-start);
   text-transform: var(--bf-h1-text-transform);
 }
