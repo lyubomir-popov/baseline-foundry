@@ -504,7 +504,10 @@ function validateRenewalComponentContracts(
   const tieredListHtml = pages["tiered-list"] ?? "";
   assert(tieredListHtml.includes("bf-tiered-list is-flush") && tieredListHtml.includes("bf-tiered-list is-triple"), "Expected tiered-list demo to cover flush and triple layouts.");
   assert(tieredListHtml.includes("bf-tiered-list-item-role"), "Expected tiered-list demo to cover the role slot.");
+  assert(!tieredListHtml.includes("bf-tiered-list bf-stack"), "Expected tiered-list patterns to own their internal rhythm without a stack utility.");
+  assert(!tieredListHtml.includes("bf-tiered-list-items bf-stack"), "Expected tiered-list items to own their internal rhythm without a stack utility.");
   assert((tieredListHtml.match(/<hr class="bf-rule is-muted" data-baseline-check="flow">/g) ?? []).length >= 4, "Expected compact tiered-list demo rows to render and baseline-check their direct-child divider contract.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-tiered-list-items) {\n  display: grid;\n  gap: var(--bf-section-space-shallow);"), "Expected tiered-list items to own the shallow pattern gap.");
   assert(css.includes(".bf-tiered-list:not(.is-list-full-width):not(.is-flush):not(.is-triple)"), "Expected hanging-indent tiered-list geometry to exclude the independent flush and triple variants.");
 
   const searchAndFilterHtml = pages["search-and-filter"] ?? "";

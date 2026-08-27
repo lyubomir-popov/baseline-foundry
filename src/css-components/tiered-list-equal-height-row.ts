@@ -12,6 +12,12 @@ export function tieredListEqualHeightRowCss(): string {
 :where(.bf-theme) :where(.bf-tiered-list) {
   container-type: inline-size;
   display: grid;
+  gap: var(--bf-section-space-shallow);
+}
+
+:where(.bf-theme) :where(.bf-tiered-list-items) {
+  display: grid;
+  gap: var(--bf-section-space-shallow);
 }
 
 :where(.bf-theme) :where(.bf-tiered-list-header),

@@ -2129,13 +2129,23 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
         return widths.map(width => {
           const variants = Object.fromEntries(Object.entries(selectors).map(([name, selector]) => {
             const component = document.querySelector<HTMLElement>(selector);
+            const items = component?.matches("ol.bf-tiered-list, ul.bf-tiered-list")
+              ? component
+              : component?.querySelector<HTMLElement>(".bf-tiered-list-items");
             const item = component?.querySelector<HTMLElement>(".bf-tiered-list-item");
             const rule = item?.querySelector<HTMLElement>(".bf-rule");
             const title = item?.querySelector<HTMLElement>(".bf-tiered-list-item-title, .bf-tiered-list-item-label");
             const description = item?.querySelector<HTMLElement>(".bf-tiered-list-item-description, .bf-tiered-list-item-role, .bf-tiered-list-item-value");
-            if (!component || !item || !rule || !title || !description) return [name, null];
+            if (!component || !items || !item || !rule || !title || !description) return [name, null];
 
             component.style.inlineSize = `${width}rem`;
+            const stackProbe = document.createElement("div");
+            stackProbe.className = "bf-stack";
+            stackProbe.style.cssText = "position:absolute;visibility:hidden";
+            component.append(stackProbe);
+            const expectedItemsGap = Number.parseFloat(getComputedStyle(stackProbe).rowGap);
+            stackProbe.remove();
+            const itemsStyle = getComputedStyle(items);
             const itemRect = item.getBoundingClientRect();
             const ruleRect = rule.getBoundingClientRect();
             const titleRect = title.getBoundingClientRect();
@@ -2143,6 +2153,9 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
             const gridColumns = getComputedStyle(item).gridTemplateColumns.trim().split(/\s+/).filter(Boolean).length;
             return [name, {
               gridColumns,
+              itemsDisplay: itemsStyle.display,
+              itemsGap: Number.parseFloat(itemsStyle.rowGap),
+              expectedItemsGap,
               overflow: Math.max(0, component.scrollWidth - component.clientWidth),
               ruleStartOffset: ruleRect.left - itemRect.left,
               ruleEndDelta: itemRect.right - ruleRect.right,
@@ -2167,6 +2180,11 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
         assert(fullWidth.gridColumns === 1, `Expected ${tier} full-width tiered list at ${measurement.width}rem to stay one-column, got ${fullWidth.gridColumns}.`);
         assert(flush.gridColumns === 2, `Expected ${tier} flush tiered list at ${measurement.width}rem to retain two explicit columns, got ${flush.gridColumns}.`);
         assert(triple.gridColumns === 3, `Expected ${tier} triple tiered list at ${measurement.width}rem to retain three explicit columns, got ${triple.gridColumns}.`);
+
+        for (const [name, variant] of Object.entries(measurement.variants)) {
+          assert(variant.itemsDisplay === "grid", `Expected ${tier} ${name} tiered-list items to own a grid stack.`);
+          assert(Math.abs(variant.itemsGap - variant.expectedItemsGap) <= 0.1, `Expected ${tier} ${name} tiered-list items to own the default shallow stack gap, got ${variant.itemsGap}px instead of ${variant.expectedItemsGap}px.`);
+        }
 
         for (const [name, variant] of Object.entries({ fullWidth, flush, triple })) {
           assert(variant.overflow <= 1, `Expected ${tier} ${name} tiered list at ${measurement.width}rem to avoid inline overflow.`);
