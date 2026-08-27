@@ -19,8 +19,8 @@
 export function sitesEditorialPortsCss(): string {
   return `/* ------------------------------------------------------------------ */
 /* Sites editorial compositions — hero and quote wrapper.              */
-/* Section boundaries and grid tracks are structural; every text child  */
-/* keeps its own type-role rhythm.                                      */
+/* Section boundaries and grid tracks are structural; nested stacks own */
+/* semantic gaps and every text child keeps metric compensation.        */
 /* ------------------------------------------------------------------ */
 
 /* Hero: its deliberately asymmetric boundary mirrors the current Vanilla
@@ -54,8 +54,8 @@ export function sitesEditorialPortsCss(): string {
 }
 
 /* The normal hero keeps title, supporting heading, chip, prose and CTA in a
-   semantic copy slot. Their zero-gap flow deliberately leaves role margins
-   intact. Hero titles are h1 slots and supporting titles are h2 slots. */
+   semantic copy stack. Hero titles are h1 slots and supporting titles are h2
+   slots. */
 :where(.bf-theme) :where(.bf-hero-copy) {
   align-content: start;
   display: grid;
@@ -99,13 +99,10 @@ export function sitesEditorialPortsCss(): string {
   grid-column: 1 / -1;
 }
 
-/* A closing visual remains inside the hero, after a lead that composes the
-   public bf-section is-shallow boundary. The hero is an explicit pattern
-   boundary, so it trims only its final figure's semantic margin; the root's
-   existing padding remains the sole exit boundary after the media. */
+/* A closing visual remains inside the hero after its lead. The hero's stack
+   owns their shallow internal separation. */
 :where(.bf-theme) :where(.bf-hero) > :where(.bf-hero-media.is-full:last-child) {
   inline-size: 100%;
-  margin-block-end: 0;
 }
 
 /* Vanilla's desktop hero boundary is 1036px. The layout descendant responds
@@ -219,7 +216,7 @@ export function sitesEditorialPortsCss(): string {
 
 /* The quote rail can also be a fractional grid track. Keep its media from
    introducing a sub-baseline row while leaving quotation and citation rhythm
-   entirely element-owned. */
+   entirely baseline-compensated while its stack owns semantic gaps. */
 @supports (block-size: calc-size(auto, round(up, size, 1px))) {
   :where(.bf-theme) :where(.bf-quote-wrapper-signpost > :where(img, picture, svg), .bf-quote-wrapper-media > .bf-aspect) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));

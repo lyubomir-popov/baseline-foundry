@@ -1,40 +1,40 @@
 # Spacing ownership decision
 
-This note records Baseline Foundry's independent design decision after reviewing
-element-owned and container-owned models.
+This note records the owner decision that supersedes the earlier BF-local
+element-owned review.
 
 ## Decision
 
-Baseline Foundry uses element-owned semantic vertical spacing in all built-in
-tiers: editorial, documentation, app, and OS.
+Baseline Foundry uses container-owned semantic vertical spacing in every
+built-in tier: editorial, documentation, app, and OS.
 
-- `padding-block-start` and `padding-block-end` carry metric-derived baseline
-  compensation on the element.
-- `margin-block-end` carries the element's semantic relationship to following
-  content.
-- Containers compose layout but do not erase child spacing or become the
-  default semantic-spacing owner.
-- `bf-section` is the explicit page-section boundary. Stack density modifiers
-  do not impersonate page-section semantics.
+- Metric-aligned text owns `padding-block-start` for its measured nudge.
+- The same text owns a non-semantic `margin-block-end` that complements the
+  nudge to one baseline unit.
+- Production text does not use bottom-padding compensation.
+- Role space-after values do not participate in production layout.
+- Containers and patterns own semantic relationships through gaps or explicit
+  structured rules.
+- Nested `bf-stack` containers express different densities without querying or
+  resetting their children.
 
 ## Rationale
 
-Elements know their semantic role and remain substitutable across prose, docs,
-tool panels, generated content, and OS-style inspectors. Keeping compensation
-and semantic space together avoids a split ownership model, reduces wrapper
-requirements, and preserves rhythm when content types change.
+One semantic owner makes substitution, removal, and nesting deterministic.
+Baseline compensation stays local to the text whose font metrics require it,
+while layout meaning stays at the container boundary. The split avoids double
+spacing and keeps authored gaps independent of whether a child is a heading,
+paragraph, list, figure, or component.
 
-Container-owned spacing can be appropriate in another design system whose team
-constraints require it. Pragma and the Canonical official design system made
-that separate product decision; it is not an upstream authority for BF.
+## Sites mapping
 
-## Rejected alternatives
+For the built-in Editorial tier, which supplies BF's Sites surface:
 
-- Container-owned spacing as a universal BF default.
-- An app-only exception that zeroes nudges and erases semantic child spacing.
-- A hybrid where elements own compensation but containers recreate semantic
-  rhythm through generic gaps.
-- Broad last-child resets that guess where a semantic flow ends.
+- pattern internals use `--bf-section-space-shallow` (1.5rem);
+- complete pattern or section siblings use `--bf-section-space` (4rem);
+- `bf-stack is-flush` uses zero;
+- the exceptional deep CTA composition may use the 8rem deep token in a future
+  package.
 
-The executable requirements and migration evidence live in
-[`specs/001-baseline-foundry-renewal/`](../specs/001-baseline-foundry-renewal/).
+The executable migration and evidence live in
+[`specs/012-sites-container-spacing/`](../specs/012-sites-container-spacing/).

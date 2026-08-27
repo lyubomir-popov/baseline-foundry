@@ -209,9 +209,9 @@ function validateTierSurfaceParity(
     const roles = (artifact.tokens.roles ?? {}) as Record<string, Record<string, unknown>>;
     for (const [roleName, token] of Object.entries(roles)) {
       const marginBottom = parseRemValue(token.marginBottom);
-      const semanticMargin = parseRemValue(token.spaceAfter) - baselineUnit;
+      const baselineCompensation = baselineUnit - parseRemValue(token.nudgeTop);
       assert(Number.isFinite(marginBottom) && marginBottom >= 0, `Expected ${tierName}/${roleName} manifest marginBottom to be finite and non-negative.`);
-      assert(Math.abs(marginBottom - semanticMargin) <= 0.00001, `Expected ${tierName}/${roleName} manifest marginBottom to equal spaceAfter - baselineUnit.`);
+      assert(Math.abs(marginBottom - baselineCompensation) <= 0.00001, `Expected ${tierName}/${roleName} manifest marginBottom to complement nudgeTop to one baseline unit.`);
     }
   }
 }
@@ -391,7 +391,7 @@ function validateRenewalComponentContracts(
   assert(css.includes(".bf-hero.is-borderless") && css.includes("border-block-start: 0;") && css.includes("padding-block-start: var(--bf-space-2);"), "Expected hero to expose a borderless opt-out without consumer CSS or a rhythm shift.");
   assert(css.includes("padding-block-end: var(--bf-section-space);") && css.includes("padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to use the wide full section exit and space-3 top boundary without border drift.");
   assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
-  assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && css.includes("margin-block-end: 0;"), "Expected hero to expose a structural lead and trim only a final full-width media slot before the hero exit boundary.");
+  assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && !css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child) {\n  inline-size: 100%;\n  margin-block-end: 0;"), "Expected hero to expose a structural lead without a final-child semantic-margin reset.");
   assert(css.includes("@container bf-hero (width >= 38.75rem)") && css.includes("@container bf-hero (width >= 64.75rem)") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero to expose medium/large descendant queries and the fallback introduction rail.");
   assert(css.includes(".bf-hero-chip.bf-chip") && css.includes("column-gap: var(--bf-space-1);"), "Expected hero chip composition to map the Vanilla icon/value gap to the BF chip and space-1 tokens.");
   assert(css.includes("container-name: bf-quote-wrapper;") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected quote wrapper to preserve the 25/75 signpost/content rail.");
@@ -535,7 +535,7 @@ function validateRenewalComponentContracts(
   const heroHtml = pages.hero ?? "";
   assert(heroHtml.includes("data-component-capture") && heroHtml.includes("data-baseline-check") && heroHtml.includes("data-overflow-check"), "Expected hero to expose capture, baseline, and overflow fixture markers.");
   assert(heroHtml.includes("bf-hero-layout") && heroHtml.includes("bf-hero-copy") && heroHtml.includes("bf-hero-media") && heroHtml.includes("bf-hero-chip"), "Expected hero to cover copy, media, chip, and layout slots.");
-  assert(heroHtml.includes("bf-hero-lead bf-section is-shallow") && heroHtml.includes("bf-figure bf-hero-media is-full is-light-inset") && heroHtml.indexOf("bf-hero-lead bf-section is-shallow") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a shallow lead followed by light-inset closing media inside the pattern.");
+  assert(heroHtml.includes("bf-hero bf-stack") && heroHtml.includes("class=\"bf-hero-lead\"") && heroHtml.includes("bf-figure bf-hero-media is-full is-light-inset") && heroHtml.indexOf("class=\"bf-hero-lead\"") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a stacked lead followed by light-inset closing media inside the pattern.");
   assert(heroHtml.includes("is-25-75") && heroHtml.includes("is-75-25") && heroHtml.includes("is-fallback") && heroHtml.includes("is-split-medium") && heroHtml.includes("is-borderless"), "Expected hero to cover 50/50, 25/75, 75/25, fallback, and borderless compositions.");
   assert(heroHtml.includes('dir="rtl"') && heroHtml.includes("long copy") && heroHtml.includes("<figure") && heroHtml.includes("bf-eyebrow") === false, "Expected hero to cover RTL, long-copy, and image fixtures without introducing the deprecated muted-heading API.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(heroHtml) && !/\b(?:hero)(?:__|--)[a-z]/.test(heroHtml), "Expected hero markup to avoid Jinja and legacy span APIs.");
@@ -778,7 +778,7 @@ function validateTypographySelectorOwnership(css: string): void {
 
   for (const element of ["p", "h1", "h2", "h3", "h4", "h5", "h6", "figcaption"]) {
     const proseElementPattern = new RegExp(`\\.bf-prose(?:\\s+|>\\s*)(?::(?:where|is)\\(\\s*)?${element}(?=$|[.#:[\\s)>+~])`);
-    assert(!selectors.some(selector => proseElementPattern.test(selector)), `Expected ${element} typography to remain element-owned instead of being duplicated under .bf-prose.`);
+    assert(!selectors.some(selector => proseElementPattern.test(selector)), `Expected ${element} typography to remain role-owned instead of being duplicated under .bf-prose.`);
   }
 
   for (const element of ["p", "h1", "h2", "h3", "h4", "h5", "h6"]) {
@@ -789,11 +789,9 @@ function validateTypographySelectorOwnership(css: string): void {
     assert(selectors.includes(`:where(.bf-theme) .bf-${role}`), `Expected generated CSS to retain the explicit .bf-${role} visual-role selector.`);
   }
 
-  assert(selectors.includes(proseBoundarySelector), "Expected prose flow to trim its final non-list child's semantic margin with class-level specificity.");
-  assert(css.includes(`${proseBoundarySelector} {\n  margin-bottom: 0;\n}`), "Expected the prose boundary to reset margin-bottom only.");
-  assert(!selectors.includes(":where(.bf-theme) :where(.bf-prose > :last-child)"), "Expected :last-child to stay outside :where() so the prose boundary can override role-class margins.");
-  assert(!selectors.includes(":where(.bf-theme) :where(.bf-prose) > :last-child"), "Expected final prose lists to retain their body-role semantic margin.");
-  assert(css.indexOf(proseBoundarySelector) > css.indexOf(":where(.bf-theme) .bf-h6"), "Expected the prose boundary reset to follow visual-role rules and win equal-specificity ties by source order.");
+  assert(!selectors.includes(proseBoundarySelector), "Expected prose flow to preserve final-child baseline compensation instead of trimming a semantic margin.");
+  assert(!selectors.includes(":where(.bf-theme) :where(.bf-prose > :last-child)"), "Expected prose flow not to reintroduce a broad last-child reset.");
+  assert(!selectors.includes(":where(.bf-theme) :where(.bf-prose) > :last-child"), "Expected final prose children to keep their metric bottom-margin compensation.");
 }
 
 async function validateExampleDogfooding(): Promise<void> {
@@ -935,7 +933,6 @@ function validateCommonCss(css: string): void {
     assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack) > *"), "Expected app stacks not to erase child rhythm.");
     assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-cluster) > *"), "Expected app clusters not to erase child rhythm.");
     assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-prose > *)"), "Expected app prose not to erase child rhythm.");
-    assert(!css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-stack.is-section)"), "Expected app stacks not to impersonate bf-section boundaries.");
   }
   assert(css.includes(`:where(.bf-theme.is-dark).u-baseline-grid,\n:where(.bf-theme.is-dark) .u-baseline-grid {\n  --bf-baseline-grid-color: ${BASELINE_GRID_DARK_THEME_COLOR};`), "Expected dark themes to provide a subtle baseline-grid line color, even when the grid class is on the theme root.");
   assert(css.includes(":where(.bf-theme) :where(img, picture, svg, video) {\n  block-size: auto;\n  display: block;\n  inline-size: auto;\n  max-inline-size: 100%;"), "Expected shared media to stay fluid inside narrow containers.");
@@ -949,19 +946,22 @@ function validateCommonCss(css: string): void {
   assert(css.includes("padding-block: var(--bf-table-row-padding);"), "Expected table cells to use symmetric block padding from the shared table row padding variable.");
   assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine demo override selector.");
   assert(css.includes(":where(.bf-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
-  assert(!css.includes("--bf-body-nudge-start: 0rem;\n  --bf-body-nudge-end: 0rem;"), "Expected built-in tiers to retain metric-derived body nudges.");
-  assert(css.includes("--bf-body-nudge-start:") && css.includes("--bf-body-nudge-end:"), "Expected generated CSS to define body alignment nudge variables.");
-  assert(css.includes("--bf-h6-nudge-start:") && css.includes("--bf-h6-nudge-end:"), "Expected generated CSS to define h6 alignment nudge variables.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-prose) > :last-child:not(:where(ul)):not(:where(ol)) {\n  margin-bottom: 0;\n}"), "Expected prose containers to trim only a final non-list semantic margin at the flow boundary.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-card-inner) > :last-child:not("), "Expected card-inner boundaries to keep :last-child outside :where() at class-level specificity.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted) > :last-child:not("), "Expected card boundaries to keep :last-child outside :where() at class-level specificity.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-panel-content) > :last-child:not("), "Expected panel-content boundaries to keep :last-child outside :where() at class-level specificity.");
+  assert(!css.includes("--bf-body-nudge-start: 0rem;"), "Expected built-in tiers to retain metric-derived body start nudges.");
+  assert(css.includes("--bf-body-baseline-compensation:") && css.includes("--bf-body-nudge-end:"), "Expected generated CSS to expose body compensation for metric-aligned component internals.");
+  assert(css.includes("--bf-h6-baseline-compensation:") && css.includes("--bf-h6-nudge-end:"), "Expected generated CSS to expose H6 compensation for metric-aligned component internals.");
+  assert(css.includes("padding-block-end: 0rem;"), "Expected generated text roles to keep end compensation in margin rather than padding.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-prose) > :last-child"), "Expected prose containers to preserve final-child compensation.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-card-inner) > :last-child:not("), "Expected card-inner boundaries to preserve final-child compensation.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted) > :last-child:not("), "Expected card boundaries to preserve final-child compensation.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-panel-content) > :last-child:not("), "Expected panel-content boundaries to preserve final-child compensation.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0;\n  padding-block-end:"), "Expected list items to use literal baseline compensation.");
-  assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom:"), "Expected semantic list containers to use the body role's literal space after.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  padding-inline-start:"), "Expected prose lists to retain their prose indentation independently of semantic space after.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0 0 var(--bf-body-margin-bottom"), "Expected list items to carry body baseline compensation in margin-bottom.");
+  assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom: 0;"), "Expected semantic list containers not to add a second semantic space after.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  padding-inline-start:"), "Expected prose lists to retain indentation independently of container-owned spacing.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
-  for (const retiredModifier of ["is-extra-dense", "is-dense", "is-loose", "is-section-shallow", "is-section", "is-section-deep"]) {
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected default stacks to own the tier's shallow pattern gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected section stacks to own the tier's regular section gap.");
+  for (const retiredModifier of ["is-extra-dense", "is-dense", "is-loose", "is-section-shallow", "is-section-deep"]) {
     assert(!css.includes(`.bf-stack.${retiredModifier}`), `Expected retired stack modifier ${retiredModifier} to stay absent from every tier.`);
   }
   assert(css.includes("margin: 0 0 calc(0.5rem - 1px);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 1px thickness.");
@@ -1001,7 +1001,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-space-1);"), "Expected bf-button.is-icon to use the shared spacing token for its explicit icon/label relationship.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-space-2);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: var(--bf-section-space-shallow);"), "Expected generated CSS to define the bf-cta-block element-owned layout.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-space-2);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: 0;"), "Expected generated CSS to keep bf-cta-block externally neutral for stack ownership.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row) {\n  container-type: inline-size;\n  display: grid;\n  gap: var(--bf-grid-gap-block) var(--bf-grid-gap-inline);\n  /* Keep the logical track system on the query container itself."), "Expected generated CSS to define the bf-equal-height-row query container without an invalid self-query.");
   assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));"), "Expected bf-equal-height-row to expose its eight logical tracks at every width.");
@@ -1010,7 +1010,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-1)::before {\n  grid-row: 2;\n}"), "Expected bf-equal-height-row.is-divider-1 to draw a cross-column rule on subgrid row 2.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-2)::after {\n  grid-row: 3;\n}"), "Expected bf-equal-height-row.is-divider-2 to draw a cross-column rule on subgrid row 3.");
   assert(!css.includes("bf-equal-heights") && !css.includes(".equal-heights"), "Expected equal-heights Sites recipe to reuse bf-equal-height-row without a duplicate CSS family.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: block;\n  inline-size: 100%;\n  margin: 0 0 var(--bf-section-space-shallow);\n}"), "Expected bf-figure to own its bottom spacing via section-space-shallow.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: block;\n  inline-size: 100%;\n  margin: 0;\n}"), "Expected bf-figure to stay externally neutral for its owning stack.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas, svg) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure-caption) {\n  color: var(--bf-color-text-default);\n  display: block;\n  font-style: italic;"), "Expected bf-figure-caption to render as an italic block beneath the media.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect) {\n  aspect-ratio: 16 / 9;"), "Expected generated CSS to define the bf-aspect default 16:9 slot.");

@@ -53,8 +53,9 @@ surfaces.
   present in direct `os.css` is not proof that `.bf-tier-os` is correct in
   `styles.css`.
 - Test occupied control blocks, not raw border-box heights.
-- Do not restore app zero-nudge or direct-child spacing resets; BF's current
-  policy is element-owned for all four tiers.
+- Do not restore broad direct-child resets that erase baseline compensation.
+  BF containers own semantic gaps, while metric-aligned text keeps its top
+  nudge and bottom-margin compensation.
 - Do not add arbitrary grid spans to solve a composed documentation layout.
 - Article pagination is not numbered pagination and must not inherit disabled
   page-control behavior.

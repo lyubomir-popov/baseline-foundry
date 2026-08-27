@@ -11,7 +11,7 @@ const tierConfig = {
   editorial: {
     label: "Editorial",
     className: "bf-tier-editorial",
-    description: "Element-owned prose rhythm for long-form composition and the widest Ubuntu Sans reading measure.",
+    description: "Container-owned prose rhythm for long-form composition and the widest Ubuntu Sans reading measure.",
     detail: "This tier keeps the loosest section rhythm and the editorial-first grid contract."
   },
   documentation: {
@@ -23,8 +23,8 @@ const tierConfig = {
   app: {
     label: "App",
     className: "bf-tier-app",
-    description: "Application-density Ubuntu Sans with metric-derived alignment and element-owned semantic spacing.",
-    detail: "This tier keeps the application gutter contract and light app-shell chrome while sharing BF's element-owned rhythm."
+    description: "Application-density Ubuntu Sans with metric-derived alignment and container-owned semantic spacing.",
+    detail: "This tier keeps the application gutter contract and light app-shell chrome while sharing BF's nested-stack rhythm."
   },
   os: {
     label: "OS",

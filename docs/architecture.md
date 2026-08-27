@@ -28,22 +28,24 @@ Every tier is available as:
 Direct and class-scoped paths must resolve equal public tokens and representative
 component geometry.
 
-## Element-owned rhythm
+## Container-owned rhythm
 
 All four tiers use one ownership model:
 
-- each typographic/content element owns its metric-derived
-  `padding-block-start` and `padding-block-end`;
-- each element owns its semantic `margin-block-end`;
-- layout containers arrange children and do not replace semantic spacing with
-  generic gaps;
-- `bf-section` is the explicit boundary for page-section rhythm;
-- boundary trimming is an explicit composition concern, not a universal
-  `:last-child` reset.
+- each metric-aligned text element owns its measured `padding-block-start`;
+- each element owns only the complementary, non-semantic
+  `margin-block-end` required to complete a baseline unit;
+- production text uses no bottom-padding compensation and role space-after
+  does not contribute to layout;
+- layout containers and patterns own semantic spacing between direct children;
+- nested `bf-stack` containers express different densities, including the
+  larger boundary between complete patterns or sections;
+- flow boundaries preserve compensation and therefore do not need semantic
+  last-child margin trimming.
 
-This is a local design decision. A container-owned direction in Pragma or the
-Canonical official design system is a separate product constraint and does not
-override BF.
+This owner decision aligns BF with the current container-owned direction in the
+Canonical spacing reference while preserving BF's independent tier values and
+public API.
 
 Semantic typography follows the same ownership boundary. Plain elements are
 styled once through zero-specificity selectors under `.bf-theme`; explicit
@@ -51,18 +53,15 @@ styled once through zero-specificity selectors under `.bf-theme`; explicit
 tag in either direction. `.bf-prose` owns prose-flow composition only and must
 not restate paragraph, heading, or figcaption typography.
 
-Semantic `ul` and `ol` elements own the body role's space after wherever they
-appear, including component copy slots. Structural list components explicitly
-reset their own list containers to zero margin; prose indentation remains a
-separate `.bf-prose` composition concern.
+Semantic `ul` and `ol` containers do not carry a body-role space-after. Their
+text items retain baseline compensation, while the owning prose or pattern
+stack controls separation before and after the list. Structural list resets
+and prose indentation remain separate composition concerns.
 
-Flow and boxed containers share one explicit trailing-boundary rule:
-`.bf-prose`, `.bf-card-inner`, `.bf-card`, and `.bf-panel-content` may remove
-only the final child's semantic bottom margin. Their child pseudo-class stays
-outside `:where()` so the boundary selector matches a one-class visual-role
-rule and wins by later source order. Metric `padding-block-start` and
-`padding-block-end` remain element-owned; trimming must leave both the
-container edge and the following first baseline on the active baseline grid.
+Flow and boxed containers do not zero a final child's entire bottom margin:
+that margin is metric compensation, not semantic spacing. Their owning stack
+sets the boundary to the next sibling, and the following first baseline stays
+on the active grid.
 
 ## Controls and ruled rows
 

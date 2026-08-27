@@ -31,10 +31,6 @@ function parseRemValue(rem: string): number {
   return Number.parseFloat(rem.replace("rem", ""));
 }
 
-function toRemLiteral(value: number): string {
-  return `${Math.round(value * 100000) / 100000}rem`;
-}
-
 function roleFontFamilyVar(roleName: string, fallback?: string): string {
   return fallback ? `var(--bf-${roleName}-font-family, ${fallback})` : `var(--bf-${roleName}-font-family)`;
 }
@@ -89,15 +85,6 @@ function controlPadding(blockPaddingVar: string, borderWidthVar = "var(--bf-bord
   return `  padding-block: max(0rem, calc(${blockPaddingVar} - ${borderWidthVar}));\n`;
 }
 
-// Vanilla-model margin: snap (2×control inset + lineHeight) to the next
-// baseline-grid multiple, then add spaceAfter. box = 2×inset + lineHeight.
-function controlMarginBottom(blockPadding: string, lineHeight: string, baselineUnit: string, spaceAfter: string): string {
-  const bU = parseRemValue(baselineUnit);
-  const boxHeight = 2 * parseRemValue(blockPadding) + parseRemValue(lineHeight);
-  const compensation = Math.ceil(boxHeight / bU) * bU - boxHeight;
-  return toRemLiteral(compensation + parseRemValue(spaceAfter));
-}
-
 function controlMarginBottomExpression(lineHeightVar: string, blockPaddingVar: string, spaceAfter: string): string {
   return `calc(${spaceAfter} + mod(calc(var(--bf-baseline) - mod(calc(${lineHeightVar} + (${blockPaddingVar} * 2)), var(--bf-baseline))), var(--bf-baseline)))`;
 }
@@ -126,9 +113,8 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const inputBlockPaddingVar = "var(--bf-input-block-padding)";
   const buttonBlockPaddingVar = "var(--bf-button-block-padding)";
   const bodyLineHeight = roleLineHeightVar("body", body.lineHeight);
-  const bodySpaceAfter = `var(--bf-body-space-after, ${body.spaceAfter})`;
-  const inputMarginBottom = controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, bodySpaceAfter);
-  const buttonMarginBottom = controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, bodySpaceAfter);
+  const inputMarginBottom = controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, "0rem");
+  const buttonMarginBottom = controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, "0rem");
   const bodySelectedStartNudge = roleSelectedStartNudgeVar("body", body.nudgeTop);
   const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
   const h4LineHeight = roleLineHeightVar("h4", h4.lineHeight);
@@ -277,7 +263,7 @@ ${foundryComponentColorVars("dark")}
   color-scheme: light;
 }
 
-:where(.bf-theme) :where(.bf-form-label, .bf-form-help, .bf-panel-title, .bf-tabs-link, .bf-button, .bf-button.is-base, .bf-accordion-tab, .bf-modal-title) {
+:where(.bf-theme) :where(.bf-tabs-link, .bf-button, .bf-button.is-base, .bf-accordion-tab) {
   margin: 0;
 }
 
@@ -290,8 +276,9 @@ ${foundryComponentColorVars("dark")}
 :where(.bf-theme) :where(.bf-form-label) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
   display: block;
+  margin: 0 0 var(--bf-body-margin-bottom);
   overflow-wrap: anywhere;
-  padding-block-end: ${bodySelectedEndNudge};
+  padding-block-end: 0;
   padding-block-start: ${bodySelectedStartNudge};
   text-align: start;
 }
@@ -299,9 +286,11 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 :where(.bf-theme) :where(.bf-form-help) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   display: block;
-  margin-bottom: 0;
+  margin: 0 0 var(--bf-body-margin-bottom);
   max-inline-size: 42ch;
   overflow-wrap: anywhere;
+  padding-block-end: 0;
+  padding-block-start: ${bodySelectedStartNudge};
 }
 
 :where(.bf-theme) :where(.bf-form-help.is-tight) {
@@ -644,14 +633,16 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-block;
-  margin: 0;
-  padding-block-end: ${bodySelectedEndNudge};
+  margin: 0 0 var(--bf-body-margin-bottom);
+  padding-block-end: 0;
   padding-block-start: ${bodySelectedStartNudge};
 }
 
 :where(.bf-theme) :where(.bf-validation-message) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
-  margin: 0;
+  margin: 0 0 var(--bf-body-margin-bottom);
+  padding-block-end: 0;
+  padding-block-start: ${bodySelectedStartNudge};
   padding-inline-start: calc(var(--bf-control-visual-size) + var(--bf-field-gap));
   position: relative;
 }
@@ -884,16 +875,16 @@ ${articlePaginationCss({
 
 :where(.bf-theme) :where(.bf-list-item) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
-  margin: 0;
+  margin: 0 0 var(--bf-body-margin-bottom);
   min-inline-size: 0;
   overflow-wrap: anywhere;
-  padding-block-end: var(--bf-body-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-body-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item) {
   box-shadow: inset 0 1px 0 var(--bf-color-border-low-contrast);
-  padding-block-end: calc(var(--bf-body-nudge-end) + var(--bf-baseline));
+  padding-block-end: var(--bf-baseline);
 }
 
 :where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:first-child) {
@@ -2313,7 +2304,10 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-modal-title) {
-${typeStyles(h4, { includeCase: false })}}
+${typeStyles(h4, { includeCase: false })}  margin: 0 0 var(--bf-h4-margin-bottom);
+  padding-block-end: 0;
+  padding-block-start: var(--bf-h4-nudge-start);
+}
 
 :where(.bf-theme) :where(.bf-modal-footer) {
   align-items: start;

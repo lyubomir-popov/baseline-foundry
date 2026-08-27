@@ -30,12 +30,12 @@ Read in this order:
 - Baseline Foundry is design-led internal tooling. Explicit owner decisions and
   local active specs govern it; a Pragma or Canonical official-design-system
   compromise is not automatically a BF requirement.
-- Semantic vertical spacing is element-owned in every built-in tier:
-  editorial, documentation, app, and OS. Containers may compose layout but do
-  not become the default semantic-spacing owner. Explicit flow and boxed
-  boundaries may trim only their final child's semantic margin when the reset
-  matches role-class specificity and preserves metric padding; plain and
-  visual-role-classed equivalents must occupy the same baseline-aligned box.
+- Semantic vertical spacing is container-owned in every built-in tier:
+  editorial, documentation, app, and OS. Metric-aligned text retains only its
+  measured top nudge and complementary bottom-margin compensation; role
+  space-after does not drive layout. Nested `bf-stack` containers own direct
+  child gaps, and plain and visual-role-classed equivalents must occupy the
+  same baseline-aligned box.
 - Baseline compensation comes from real font metrics. The cap engine is a demo
   comparison, not a production surface.
 - OS is the fourth first-class built-in tier. Density differences are
@@ -49,7 +49,8 @@ Read in this order:
   line rather than the tag centre; the tag attaches to the navigation top and
   must not stretch to the full occupied row.
 - `bf-grid`, `bf-stack`, `bf-cluster`, and `bf-section` stay small and
-  composable. `bf-section` is the explicit page-section boundary.
+  composable. Default stacks own pattern-internal gaps; explicit section stacks
+  own the larger boundary between complete patterns or sections.
 - Public styling uses flat `bf-*` classes and `is-*` modifiers. No styled
   `data-*` selectors, `ui-*` roles, `p-*` compatibility layer, BEM API, or
   consumer overrides masquerading as components.

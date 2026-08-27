@@ -470,9 +470,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         throw new Error(`Expected application layout header stack child ${index + 1} to be an HTMLElement.`);
       }
 
-      assert(Number.parseFloat(child.marginBottom) >= 0, `Expected application layout header stack child ${child.tag} to keep non-negative element-owned semantic margin. Got ${child.marginBottom}.`);
+      assert(Number.parseFloat(child.marginBottom) >= 0, `Expected application layout header stack child ${child.tag} to keep non-negative baseline compensation. Got ${child.marginBottom}.`);
       assert(Number.parseFloat(child.paddingBlockStart) > 0, `Expected application layout header stack child ${child.tag} to retain metric-derived start compensation. Got ${child.paddingBlockStart}.`);
-      assert(Number.parseFloat(child.paddingBlockEnd) > 0, `Expected application layout header stack child ${child.tag} to retain metric-derived end compensation. Got ${child.paddingBlockEnd}.`);
+      assert(child.paddingBlockEnd === "0px", `Expected application layout header stack child ${child.tag} to move end compensation out of padding. Got ${child.paddingBlockEnd}.`);
     });
 
     const navigation = page.locator("#application-layout-navigation");
@@ -1448,7 +1448,7 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
       semanticListFixture.style.cssText = "position:absolute;visibility:hidden;inset-block-start:0;inset-inline-start:0;inline-size:var(--bf-measure);pointer-events:none";
       const paragraphReference = document.createElement("p");
       paragraphReference.dataset.semanticListParagraphReference = "true";
-      paragraphReference.textContent = "Paragraph space-after reference";
+      paragraphReference.textContent = "Paragraph compensation reference";
       const structuralList = document.createElement("ol");
       structuralList.className = "bf-tiered-list-items";
       structuralList.dataset.semanticListStructuralContainer = "true";
@@ -1576,7 +1576,8 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
       assert(state.tier === tier, `Expected reciprocal typography probes to switch to ${tier}, got ${state.tier}.`);
       assert(JSON.stringify(state.h3AsH6) === JSON.stringify(state.h6Reference), `Expected ${tier} h3.bf-h6 inside .bf-prose to resolve every measured H6 role property. Probe=${JSON.stringify(state.h3AsH6)}, reference=${JSON.stringify(state.h6Reference)}.`);
       assert(JSON.stringify(state.h6AsH3) === JSON.stringify(state.h3Reference), `Expected ${tier} h6.bf-h3 inside .bf-prose to resolve every measured H3 role property. Probe=${JSON.stringify(state.h6AsH3)}, reference=${JSON.stringify(state.h3Reference)}.`);
-      assert(state.semanticListSpacing.listMarginBottom === state.semanticListSpacing.paragraphMarginBottom && state.semanticListSpacing.listMarginBottom !== "0px", `Expected ${tier} semantic lists in component copy slots to use paragraph space after ${state.semanticListSpacing.paragraphMarginBottom}, got ${state.semanticListSpacing.listMarginBottom}.`);
+      assert(state.semanticListSpacing.listMarginBottom === "0px", `Expected ${tier} semantic list containers not to add external semantic space, got ${state.semanticListSpacing.listMarginBottom}.`);
+      assert(state.semanticListSpacing.paragraphMarginBottom !== "0px", `Expected ${tier} paragraph roles to retain non-semantic bottom-margin compensation.`);
       assert(state.semanticListSpacing.structuralListMarginBottom === "0px", `Expected ${tier} structural component lists to retain their explicit zero-margin reset, got ${state.semanticListSpacing.structuralListMarginBottom}.`);
       for (const [property, expectedValue] of Object.entries(expected.h6)) {
         assert(state.h3AsH6[property as keyof typeof state.h3AsH6] === expectedValue, `Expected ${tier} h3.bf-h6 ${property} to resolve to concrete H6 value ${expectedValue}, got ${state.h3AsH6[property as keyof typeof state.h3AsH6]}.`);
@@ -1593,17 +1594,15 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
       for (const caseName of boundaryCaseNames) {
         const boundary = state.proseBoundaries[caseName];
         assert(boundary, `Expected ${tier} ${caseName} prose-boundary fixture.`);
+        assert(boundary.marginBottom === boundary.referenceMarginBottom, `Expected ${tier} ${caseName} flow boundaries to preserve baseline compensation. Boundary=${boundary.marginBottom}, reference=${boundary.referenceMarginBottom}.`);
         if (caseName === "ul" || caseName === "ol") {
-          assert(boundary.marginBottom === boundary.referenceMarginBottom && boundary.marginBottom !== "0px", `Expected ${tier} final ${caseName} margin-bottom to match its body-role reference ${boundary.referenceMarginBottom}, got ${boundary.marginBottom}.`);
-        } else {
-          assert(boundary.marginBottom === "0px", `Expected ${tier} ${caseName} final non-list margin-bottom to be trimmed, got ${boundary.marginBottom}.`);
+          assert(boundary.marginBottom === "0px", `Expected ${tier} semantic list containers to remain externally neutral, got ${boundary.marginBottom}.`);
+        } else if (["plain-body", "classed-body", "plain-h3", "classed-h3", "blockquote"].includes(caseName)) {
+          assert(boundary.referenceMarginBottom !== "0px", `Expected ${tier} ${caseName} to retain measurable bottom-margin compensation.`);
         }
-        if (["plain-body", "classed-body", "ul", "ol", "blockquote"].includes(caseName)) {
-          assert(boundary.referenceMarginBottom !== "0px", `Expected ${tier} ${caseName} non-boundary reference to retain a semantic margin for a meaningful reset check.`);
-        }
-        assert(boundary.paddingBottom === boundary.referencePaddingBottom, `Expected ${tier} ${caseName} boundary trimming to preserve padding-bottom ${boundary.referencePaddingBottom}, got ${boundary.paddingBottom}.`);
-        assert(boundary.paddingTop === boundary.referencePaddingTop, `Expected ${tier} ${caseName} boundary trimming to preserve padding-top ${boundary.referencePaddingTop}, got ${boundary.paddingTop}.`);
-        assert(Math.abs(boundary.height - boundary.referenceHeight) <= 0.01, `Expected ${tier} ${caseName} boundary trimming to preserve the occupied element box. Boundary=${boundary.height}, reference=${boundary.referenceHeight}.`);
+        assert(boundary.paddingBottom === "0px" && boundary.referencePaddingBottom === "0px", `Expected ${tier} ${caseName} to move end compensation out of padding. Boundary=${boundary.paddingBottom}, reference=${boundary.referencePaddingBottom}.`);
+        assert(boundary.paddingTop === boundary.referencePaddingTop, `Expected ${tier} ${caseName} flow boundaries to preserve padding-top ${boundary.referencePaddingTop}, got ${boundary.paddingTop}.`);
+        assert(Math.abs(boundary.height - boundary.referenceHeight) <= 0.01, `Expected ${tier} ${caseName} flow boundaries to preserve the occupied element box. Boundary=${boundary.height}, reference=${boundary.referenceHeight}.`);
         assert(gridDelta(boundary.proseBottomOffset) <= renderedGridTolerancePx, `Expected ${tier} ${caseName} prose bottom edge on the ${expected.baselinePx}px grid, offset=${boundary.proseBottomOffset}.`);
         assert(gridDelta(boundary.followingBaselineOffset - state.firstBaselinePhase) <= renderedGridTolerancePx, `Expected ${tier} ${caseName} following first baseline to retain the tier's ${expected.baselinePx}px grid phase. Offset=${boundary.followingBaselineOffset}, phase=${state.firstBaselinePhase}.`);
       }
@@ -1629,6 +1628,89 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
     }
 
     assert(measuredTierSignatures.size === tiers.length, `Expected four distinct computed typography signatures, got ${measuredTierSignatures.size}: ${Array.from(measuredTierSignatures).join(", ")}.`);
+
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
+    await page.goto(`${origin}/demo/components/typography.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+    await tierSelect.waitFor({ state: "visible" });
+
+    for (const tier of tiers) {
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+
+      const state = await page.evaluate(() => {
+        const fixture = document.createElement("div");
+        fixture.style.cssText = "position:absolute;visibility:hidden;inset:0;inline-size:20rem;pointer-events:none";
+
+        const internalStack = document.createElement("div");
+        internalStack.className = "bf-stack";
+        const sectionStack = document.createElement("div");
+        sectionStack.className = "bf-stack is-section";
+
+        const internalFirst = document.createElement("p");
+        internalFirst.textContent = "First baseline-aligned item";
+        const internalSecond = document.createElement("p");
+        internalSecond.textContent = "Second baseline-aligned item";
+        internalStack.append(internalFirst, internalSecond);
+        const sectionFirst = document.createElement("p");
+        sectionFirst.textContent = "First section";
+        const sectionSecond = document.createElement("p");
+        sectionSecond.textContent = "Second section";
+        sectionStack.append(sectionFirst, sectionSecond);
+        fixture.append(internalStack, sectionStack);
+        document.body.append(fixture);
+
+        const firstStylesBefore = getComputedStyle(internalFirst);
+        const before = {
+          internalGap: Number.parseFloat(getComputedStyle(internalStack).rowGap),
+          sectionGap: Number.parseFloat(getComputedStyle(sectionStack).rowGap),
+          firstToSecond: internalSecond.getBoundingClientRect().top - internalFirst.getBoundingClientRect().bottom,
+          paddingTop: Number.parseFloat(firstStylesBefore.paddingTop),
+          paddingBottom: Number.parseFloat(firstStylesBefore.paddingBottom),
+          marginBottom: Number.parseFloat(firstStylesBefore.marginBottom),
+          baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
+        };
+        internalFirst.style.setProperty("--bf-body-space-after", "99rem");
+        const firstStylesAfter = getComputedStyle(internalFirst);
+        const after = {
+          internalGap: Number.parseFloat(getComputedStyle(internalStack).rowGap),
+          sectionGap: Number.parseFloat(getComputedStyle(sectionStack).rowGap),
+          firstToSecond: internalSecond.getBoundingClientRect().top - internalFirst.getBoundingClientRect().bottom,
+          paddingTop: Number.parseFloat(firstStylesAfter.paddingTop),
+          paddingBottom: Number.parseFloat(firstStylesAfter.paddingBottom),
+          marginBottom: Number.parseFloat(firstStylesAfter.marginBottom),
+          baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
+        };
+        fixture.remove();
+        return { before, after };
+      });
+
+      const tolerance = 0.1;
+      assert(state.before.internalGap > 0, `Expected ${tier} default bf-stack to own a positive internal gap.`);
+      assert(state.before.sectionGap > state.before.internalGap, `Expected ${tier} bf-stack.is-section gap (${state.before.sectionGap}px) to exceed the internal gap (${state.before.internalGap}px).`);
+      assert(Math.abs(state.before.firstToSecond - (state.before.internalGap + state.before.marginBottom)) <= tolerance, `Expected ${tier} adjacent stack geometry to comprise the container gap plus baseline-compensation margin.`);
+      assert(state.before.paddingBottom === 0, `Expected ${tier} text roles to retain zero padding-block-end, got ${state.before.paddingBottom}px.`);
+      assert(Math.abs(state.before.paddingTop + state.before.marginBottom - state.before.baseline) <= tolerance, `Expected ${tier} top nudge plus bottom-margin compensation to equal one ${state.before.baseline}px baseline unit.`);
+      assert(JSON.stringify(state.after) === JSON.stringify(state.before), `Expected ${tier} legacy --bf-body-space-after overrides not to affect production geometry. Before=${JSON.stringify(state.before)}, after=${JSON.stringify(state.after)}.`);
+
+      if (tier === "editorial") {
+        assert(Math.abs(state.before.internalGap - 24) <= tolerance, `Expected Sites/editorial internal stacks to resolve to 1.5rem (24px), got ${state.before.internalGap}px.`);
+        assert(Math.abs(state.before.sectionGap - 64) <= tolerance, `Expected Sites/editorial section stacks to resolve to 4rem (64px), got ${state.before.sectionGap}px.`);
+      }
+    }
 
     await page.close();
   } finally {
@@ -3147,7 +3229,7 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
         await page.waitForTimeout(50);
         const state = await page.locator(".bf-hero").first().evaluate(root => {
-          const lead = root.querySelector<HTMLElement>(":scope > .bf-hero-lead.bf-section.is-shallow");
+          const lead = root.querySelector<HTMLElement>(":scope > .bf-hero-lead");
           const media = root.querySelector<HTMLElement>(":scope > .bf-hero-media.is-full:last-child");
           if (!lead || !media) return null;
           const rootRect = root.getBoundingClientRect();
@@ -3176,7 +3258,7 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
         });
         assert(state, `Expected ${tier} closing-media hero geometry ${viewport.label}.`);
         assert(state.borderStyle === "solid" && state.borderWidth > 0, `Expected ${tier} default hero to own one visible entry rule ${viewport.label}.`);
-        assert(state.finalSlot && Math.abs(state.leadToMedia - state.shallowSpace) <= 0.1, `Expected ${tier} hero lead to use the shallow section boundary before final media ${viewport.label}.`);
+        assert(state.finalSlot && Math.abs(state.leadToMedia - state.shallowSpace) <= 0.1, `Expected ${tier} hero stack to own the shallow gap before final media ${viewport.label}.`);
         assert(state.mediaMarginEnd === 0 && Math.abs(state.mediaToHeroEnd - state.paddingEnd) <= 0.1, `Expected ${tier} hero exit boundary to begin immediately after closing media ${viewport.label}.`);
         const expectedExit = viewport.wide ? state.sectionSpace : state.sectionSpace / 2;
         assert(Math.abs(state.paddingEnd - expectedExit) <= 0.1, `Expected ${tier} hero to preserve its ${viewport.wide ? "regular" : "compact"} exit boundary ${viewport.label}.`);
@@ -3600,6 +3682,7 @@ async function main(): Promise<void> {
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
     await verifySemanticRoleClassPrecedence(origin);
+    await verifyContainerOwnedSpacing(origin);
     await verifyRenewalCompositionContracts(origin);
     await verifyAdversarialResponsiveGeometry(origin);
     await verifyDirectAndClassSurfaceGeometry(origin);

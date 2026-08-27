@@ -7,6 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
+| 012 Sites container-owned spacing | [`012-sites-container-spacing/`](../specs/012-sites-container-spacing/) | Active; moves semantic rhythm to nested stacks and proves Editorial/Sites in Diagram Registry. |
 | 009 Semantic list spacing | [`009-semantic-list-spacing/`](../specs/009-semantic-list-spacing/) | Released at `be85d46`; downstream Registry spacing, integrity and responsive gates verified. |
 | 008 Prose list spacing | [`008-prose-list-spacing/`](../specs/008-prose-list-spacing/) | Released at `6d203e5`; downstream Registry spacing and responsive gates verified. |
 | 007 Navigation-brand panel alignment | [`007-navigation-brand-panel-alignment/`](../specs/007-navigation-brand-panel-alignment/) | Released at `454c7ae`; downstream editorial alignment verified. |
@@ -45,7 +46,7 @@ features.
 | Source | Role |
 |---|---|
 | `../canonical-spacing-spec/specs/type scale/draft.md` | Type-scale and metric reference |
-| `../canonical-spacing-spec/specs/spacing/draft.md` | Spacing research/reference; its Pragma/official container-owned decision does not override BF's local element-owned constitution |
+| `../canonical-spacing-spec/specs/spacing/draft.md` | Governing spacing reference for container-owned semantic gaps and element-owned baseline compensation, adopted locally by Spec 012 |
 | `../canonical-spacing-spec/specs/grid/draft.md` | Grid reference |
 | `../canonical-spacing-spec/specs/typography-article/draft.md` | Supporting editorial reference |
 | `../vanilla-framework/` | Ancestor pattern evidence, not a compatibility mandate |

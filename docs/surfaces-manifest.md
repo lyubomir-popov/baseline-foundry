@@ -118,11 +118,11 @@ The full runtime token set that produced the bundle's CSS.
 }
 ```
 
-`nudgeTop` is the measured start compensation. `marginBottom` is the semantic
-margin emitted by CSS: `spaceAfter - baselineUnit`. The complementary
-`padding-block-end` is `baselineUnit - nudgeTop`, so the complete occupied
-block remains baseline-aligned while semantic spacing has one meaning in JSON
-and CSS.
+`nudgeTop` is the measured start compensation. `marginBottom` is the remaining
+metric compensation: `baselineUnit - nudgeTop`. Production roles use zero
+`padding-block-end`, so top padding plus bottom margin complete one baseline
+unit. Semantic spacing is separate and belongs to the owning `bf-stack` gap;
+serialized legacy `spaceAfter` data does not drive layout.
 
 ### `LayoutTokens`
 

@@ -92,7 +92,10 @@ export function panelCss(options: PanelCssOptions): string {
 }
 
 :where(.bf-theme) :where(.bf-panel-title) {
-${h4TypeStyles}  min-inline-size: 0;
+${h4TypeStyles}  margin: 0 0 var(--bf-h4-margin-bottom);
+  min-inline-size: 0;
+  padding-block-end: 0;
+  padding-block-start: var(--bf-h4-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-panel-controls) {
@@ -147,8 +150,5 @@ ${bodyTypeStyles}  align-items: center;
   padding-inline: 0;
 }
 
-:where(.bf-theme) :where(.bf-panel-content) > :last-child:not(:where(.bf-button, .bf-button.is-base, .bf-input, input, textarea, select, input[type='file'], .bf-search-box, .bf-search-and-filter-search-container, .bf-choice-row, .bf-segmented-control-button, .bf-tab-buttons-button, .bf-pagination-link, .bf-side-navigation-toggle)) {
-  margin-bottom: 0;
-}
 `;
 }

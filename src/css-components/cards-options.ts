@@ -119,11 +119,6 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
   max-block-size: calc(var(--bf-control-visual-size) * 2);
 }
 
-:where(.bf-theme) :where(.bf-card-inner) > :last-child:not(:where(.bf-button, .bf-button.is-base, .bf-input, input, textarea, select, input[type='file'], .bf-search-box, .bf-search-and-filter-search-container, .bf-choice-row, .bf-segmented-control-button, .bf-tab-buttons-button, .bf-pagination-link, .bf-side-navigation-toggle)),
-:where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted) > :last-child:not(:where(.bf-button, .bf-button.is-base, .bf-input, input, textarea, select, input[type='file'], .bf-search-box, .bf-search-and-filter-search-container, .bf-choice-row, .bf-segmented-control-button, .bf-tab-buttons-button, .bf-pagination-link, .bf-side-navigation-toggle)) {
-  margin-bottom: 0;
-}
-
 :where(.bf-theme) :where(.bf-option-grid) {
   display: grid;
   gap: calc(var(--bf-baseline) * 2.5);
