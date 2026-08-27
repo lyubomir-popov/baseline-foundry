@@ -1,16 +1,18 @@
 # Agent inbox
 
-The latest product release is on `main` at `5842d99`. `bf-paragraph-stack`
-adds no semantic container gap while preserving every paragraph's metric
-compensation. Static validation passes 5,505 checks, component behavior passes,
-and desktop/constrained browser review found no overflow or console errors. The
-new basic-section checks are green in Editorial, Documentation and OS; App
-retains the same two accepted legacy baseline assertions documented in
-`docs/spec-archive/012-sites-container-spacing/review.md`.
+The latest product release is on `main` at `5b5356e`. Grouped content now uses
+the existing `bf-stack is-flush` composition; the narrow
+`bf-paragraph-stack` API has been removed. Stacks resist track stretching,
+list-like components contain metric compensation, side-navigation headings use
+matching body-role nudges and margins, and the demo cap engine replaces rather
+than duplicates production compensation.
 
-`npm test` and `npm run qa:components` were run for closeout on 2026-08-27.
-Both still stop at the accepted legacy catalogue baseline verifier described in
-that review; the paragraph-stack change adds no failures to that known set.
+`npm test` and `npm run qa:components` were run for closeout on 2026-08-27 and
+both pass. The strict catalogue verifier is green across all four built-in
+tiers and both font-engine surfaces with no accepted baseline failures. Static
+validation passes 5,530 checks, behavior passes, regenerated captures pass, and
+adversarial desktop/constrained browser review found no overflow or visual
+regression in the affected compositions.
 
 Tiered lists own their internal shallow rhythm as of released commit `155c2dc`.
 Their focused baseline checks pass across all four built-in tiers, and their
