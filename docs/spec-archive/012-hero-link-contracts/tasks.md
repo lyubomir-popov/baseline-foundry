@@ -22,4 +22,4 @@
 
 - [x] T008 Run focused component checks, `npm test`, and `npm run qa:components`
 - [x] T009 Record browser and automated evidence in `specs/012-hero-link-contracts/review.md`
-- [ ] T010 Update `docs/specs.md` and `AGENT-INBOX.md`, then archive the released package
+- [x] T010 Update `docs/specs.md` and `AGENT-INBOX.md`, then archive the released package
