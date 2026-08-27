@@ -386,6 +386,13 @@ ${generateBaselineGridThemeOverrideCss()}
   --bf-stack-space: var(--bf-section-space-deep);
 }
 
+/* Group consecutive paragraphs without adding semantic container space.
+   Each paragraph keeps its metric compensation. */
+:where(.bf-theme) :where(.bf-paragraph-stack) {
+  display: grid;
+  gap: 0;
+}
+
 :where(.bf-theme) :where(.bf-cluster) {
   align-items: flex-start;
   display: flex;

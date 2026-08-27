@@ -2937,6 +2937,19 @@ async function verifyPortedCompositionGeometry(origin: string): Promise<void> {
     });
     assert(basicState?.wide?.sameRow && basicState.wide.separated && basicState.narrow && !basicState.narrow.sameRow && !basicState.narrow.separated && basicState.overflow <= 1, "Expected basic section to preserve its large 50/50 split and constrained stack.");
 
+    const paragraphStackState = await page.locator(".bf-paragraph-stack").evaluate(root => {
+      const paragraphs = Array.from(root.querySelectorAll<HTMLElement>(":scope > p"));
+      const first = paragraphs[0]?.getBoundingClientRect();
+      const second = paragraphs[1]?.getBoundingClientRect();
+      return first && second ? {
+        gap: getComputedStyle(root).gap,
+        internalMarginEnd: Number.parseFloat(getComputedStyle(paragraphs[0]).marginBlockEnd),
+        finalMarginEnd: Number.parseFloat(getComputedStyle(paragraphs[1]).marginBlockEnd),
+        visibleGap: second.top - first.bottom,
+      } : null;
+    });
+    assert(paragraphStackState?.gap === "0px" && paragraphStackState.internalMarginEnd > 0 && Math.abs(paragraphStackState.internalMarginEnd - paragraphStackState.finalMarginEnd) <= 0.1 && Math.abs(paragraphStackState.visibleGap - paragraphStackState.internalMarginEnd) <= 0.1, `Expected paragraph stacks to add no semantic gap while retaining every paragraph's metric compensation; received ${JSON.stringify(paragraphStackState)}.`);
+
     await page.goto(`${origin}/demo/components/cta-section.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
     const ctaState = await page.locator(".bf-cta-section.is-offset").evaluate(root => {

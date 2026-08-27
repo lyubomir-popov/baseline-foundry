@@ -535,7 +535,7 @@ function validateRenewalComponentContracts(
     assert(!pageHtml.includes("is-asymmetric") && !/\b(?:p|ui)-(?:basic-section|cta-section|text-spotlight)[-_]/.test(pageHtml) && !/\b(?:basic-section|cta-section|text-spotlight)(?:__|--)[a-z]/.test(pageHtml), `Expected ${pageName} markup to avoid legacy span and Jinja compatibility APIs.`);
   }
   const basicSectionHtml = pages["basic-section"] ?? "";
-  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes("bf-eyebrow") && basicSectionHtml.includes("bf-basic-section-title-link"), "Expected basic section to cover its layout, medium split, eyebrow, and linked title contracts.");
+  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes("bf-eyebrow") && basicSectionHtml.includes("bf-basic-section-title-link") && basicSectionHtml.includes("bf-paragraph-stack"), "Expected basic section to cover its layout, medium split, eyebrow, linked title, and paragraph-stack contracts.");
   const ctaSectionHtml = pages["cta-section"] ?? "";
   assert(ctaSectionHtml.includes("bf-cta-section-layout") && ctaSectionHtml.includes("bf-cta-section-content") && ctaSectionHtml.includes("is-offset"), "Expected CTA section to cover full and offset descendant content slots.");
   const textSpotlightHtml = pages["text-spotlight"] ?? "";
@@ -976,6 +976,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected explicitly shallow section stacks to use the shallow section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected section stacks to own the tier's regular section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-paragraph-stack) {\n  display: grid;\n  gap: 0;"), "Expected paragraph stacks to use a zero internal gap.");
+  assert(!css.includes(".bf-paragraph-stack > :where(p:not(:last-child))"), "Expected paragraph stacks to retain every paragraph's metric compensation.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 1px);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 1px thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
