@@ -384,6 +384,10 @@ function validateRenewalComponentContracts(
   assert(!css.includes("bf-muted-heading"), "Expected the deprecated muted-heading port to remain absent from generated CSS.");
   assert(css.includes("container-name: bf-basic-section;") && css.includes("@container bf-basic-section (width >= 38.75rem)") && css.includes("@container bf-basic-section (width >= 64.75rem)"), "Expected basic section to establish medium and large container-query breakpoints.");
   assert(css.includes(".bf-basic-section.is-split-medium) :where(.bf-basic-section-layout)") && css.includes(".bf-basic-section:not(.is-split-medium)) :where(.bf-basic-section-layout)"), "Expected basic section 50/50 layout rules to target the layout descendant at both breakpoints.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-basic-section-layout)", {
+    "display": "grid",
+    "row-gap": "0"
+  }, "basic-section structural grids suppress the generic stack gap after their compensated rule");
   assert(css.includes("container-name: bf-cta-section;") && css.includes("padding-block: calc(var(--bf-section-space-deep) / 2);") && css.includes("padding-block: var(--bf-section-space-deep);"), "Expected CTA section to preserve half-deep narrow padding and full-deep wide descendant padding.");
   assert(css.includes(".bf-cta-section.is-offset) :where(.bf-cta-section-layout)") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);") && css.includes(".bf-cta-section.is-offset) :where(.bf-cta-section-content)"), "Expected CTA section to expose the wide 25/75 offset content rail on descendants.");
   assert(css.includes("container-name: bf-text-spotlight;") && css.includes(".bf-text-spotlight-layout) {") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected text spotlight to expose its 25/75 descendant layout.");
@@ -1084,6 +1088,8 @@ function validateCommonCss(css: string): void {
     "--bf-ui-chip-border": "var(--bf-color-border-neutral)",
     "--bf-ui-chip-background": "var(--bf-color-background-neutral-default)",
     "display": "inline-flex",
+    "inline-size": "fit-content",
+    "justify-self": "start",
     "white-space": "nowrap"
   }, "chips keep the canonical neutral token defaults and inline chip layout");
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");

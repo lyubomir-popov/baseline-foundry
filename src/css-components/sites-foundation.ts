@@ -40,6 +40,9 @@ export function sitesFoundationCss(): string {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
+  /* The rule already owns its half-rem trailing compensation. This structural
+     grid must not add the generic pattern-stack gap on top of it. */
+  row-gap: 0;
 }
 
 :where(.bf-theme) :where(.bf-basic-section-rule) {

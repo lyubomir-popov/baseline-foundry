@@ -1670,7 +1670,26 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
         const sectionSecond = document.createElement("p");
         sectionSecond.textContent = "Second section";
         sectionStack.append(sectionFirst, sectionSecond);
-        fixture.append(internalStack, sectionStack);
+
+        const basicLayout = document.createElement("div");
+        basicLayout.className = "bf-basic-section-layout bf-stack";
+        const rule = document.createElement("hr");
+        rule.className = "bf-basic-section-rule bf-rule";
+        const basicHeader = document.createElement("header");
+        basicHeader.className = "bf-basic-section-header";
+        const basicTitle = document.createElement("h2");
+        basicTitle.textContent = "Rule-adjacent heading";
+        basicHeader.append(basicTitle);
+        basicLayout.append(rule, basicHeader);
+
+        const chipStack = document.createElement("div");
+        chipStack.className = "bf-stack";
+        const chip = document.createElement("span");
+        chip.className = "bf-chip";
+        chip.textContent = "Content-sized chip";
+        chipStack.append(chip);
+
+        fixture.append(internalStack, sectionStack, basicLayout, chipStack);
         document.body.append(fixture);
 
         const firstStylesBefore = getComputedStyle(internalFirst);
@@ -1694,8 +1713,20 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
           marginBottom: Number.parseFloat(firstStylesAfter.marginBottom),
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
         };
+        const ruleRect = rule.getBoundingClientRect();
+        const headerRect = basicHeader.getBoundingClientRect();
+        const chipRect = chip.getBoundingClientRect();
+        const chipStackRect = chipStack.getBoundingClientRect();
+        const regressions = {
+          basicRowGap: Number.parseFloat(getComputedStyle(basicLayout).rowGap),
+          ruleMarginBottom: Number.parseFloat(getComputedStyle(rule).marginBottom),
+          ruleToHeader: headerRect.top - ruleRect.bottom,
+          chipWidth: chipRect.width,
+          chipStackWidth: chipStackRect.width,
+          chipJustifySelf: getComputedStyle(chip).justifySelf
+        };
         fixture.remove();
-        return { before, after };
+        return { before, after, regressions };
       });
 
       const tolerance = 0.1;
@@ -1705,6 +1736,10 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
       assert(state.before.paddingBottom === 0, `Expected ${tier} text roles to retain zero padding-block-end, got ${state.before.paddingBottom}px.`);
       assert(Math.abs(state.before.paddingTop + state.before.marginBottom - state.before.baseline) <= tolerance, `Expected ${tier} top nudge plus bottom-margin compensation to equal one ${state.before.baseline}px baseline unit.`);
       assert(JSON.stringify(state.after) === JSON.stringify(state.before), `Expected ${tier} legacy --bf-body-space-after overrides not to affect production geometry. Before=${JSON.stringify(state.before)}, after=${JSON.stringify(state.after)}.`);
+      assert(state.regressions.basicRowGap === 0, `Expected ${tier} bf-basic-section-layout to suppress the generic stack row gap, got ${state.regressions.basicRowGap}px.`);
+      assert(Math.abs(state.regressions.ruleToHeader - state.regressions.ruleMarginBottom) <= tolerance, `Expected ${tier} basic-section text to follow only the rule's own trailing compensation. Distance=${state.regressions.ruleToHeader}px, margin=${state.regressions.ruleMarginBottom}px.`);
+      assert(state.regressions.chipWidth < state.regressions.chipStackWidth, `Expected ${tier} chip grid items to hug content. Chip=${state.regressions.chipWidth}px, stack=${state.regressions.chipStackWidth}px.`);
+      assert(state.regressions.chipJustifySelf === "start", `Expected ${tier} chips to opt out of grid-item stretch, got justify-self=${state.regressions.chipJustifySelf}.`);
 
       if (tier === "editorial") {
         assert(Math.abs(state.before.internalGap - 24) <= tolerance, `Expected Sites/editorial internal stacks to resolve to 1.5rem (24px), got ${state.before.internalGap}px.`);
