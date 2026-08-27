@@ -1,6 +1,6 @@
 # Review: Resilient Sticky Footer and Hero Media
 
-**Status**: Ready for review
+**Status**: Released
 
 ## Contract evidence
 
@@ -21,4 +21,7 @@
 
 ## Release readiness
 
-The feature branch is ready to push and review. It must be merged to `main` before its immutable merge commit can be treated as the BF release and vendored downstream.
+Released on `main` at `636eff66ff8b79099d44fe3321283c7cbea6b8b8`.
+Diagram Registry pinned that immutable revision and passed its 390, 620, 1035,
+1036 and 1280px light/dark matrix with the intended 24px lead boundary,
+responsive 32/64px exit boundary, and no footer overlap.

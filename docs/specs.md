@@ -7,7 +7,6 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 010 Sticky footer and hero media | [`010-sticky-footer-hero-media/`](../specs/010-sticky-footer-hero-media/) | Ready for review on `feat/010-sticky-footer-hero-media`; full static, browser, baseline, screenshot, and manual visual gates pass. |
 | 009 Semantic list spacing | [`009-semantic-list-spacing/`](../specs/009-semantic-list-spacing/) | Released at `be85d46`; downstream Registry spacing, integrity and responsive gates verified. |
 | 008 Prose list spacing | [`008-prose-list-spacing/`](../specs/008-prose-list-spacing/) | Released at `6d203e5`; downstream Registry spacing and responsive gates verified. |
 | 007 Navigation-brand panel alignment | [`007-navigation-brand-panel-alignment/`](../specs/007-navigation-brand-panel-alignment/) | Released at `454c7ae`; downstream editorial alignment verified. |
@@ -23,6 +22,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 | 001 Baseline Foundry renewal | [`001-baseline-foundry-renewal/`](spec-archive/001-baseline-foundry-renewal/) | Accepted and merged 2026-08-21; automated closeout green, with the unavailable in-app-browser pass recorded in `review.md`. |
 | 002 Element-owned typography selectors | [`002-element-owned-typography/`](spec-archive/002-element-owned-typography/) | Accepted and merged 2026-08-24; full build, browser behavior, and component-capture gates green. |
 | 003 Flush side-navigation composition | [`003-flush-side-navigation/`](spec-archive/003-flush-side-navigation/) | Accepted and merged 2026-08-24; downstream Registry feature branch verified without local BF overrides. |
+| 010 Sticky footer and hero media | [`010-sticky-footer-hero-media/`](spec-archive/010-sticky-footer-hero-media/) | Released at `636eff6` on 2026-08-27; full BF gates and downstream Registry responsive geometry passed. |
 
 ## Candidate specifications
 

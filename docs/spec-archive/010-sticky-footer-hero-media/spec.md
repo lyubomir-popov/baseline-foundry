@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-27
 
-**Status**: In progress
+**Status**: Released
 
 **Input**: User description: "Fix the sticky footer in Baseline Foundry so it never overlaps content, including when a site page shell is nested directly inside an application main region, and support a hero whose full-width media closes the pattern after a shallow textual lead-in."
 
