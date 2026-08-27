@@ -7,7 +7,6 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 012 Sites container-owned spacing | [`012-sites-container-spacing/`](../specs/012-sites-container-spacing/) | Active; moves semantic rhythm to nested stacks and proves Editorial/Sites in Diagram Registry. |
 | 009 Semantic list spacing | [`009-semantic-list-spacing/`](../specs/009-semantic-list-spacing/) | Released at `be85d46`; downstream Registry spacing, integrity and responsive gates verified. |
 | 008 Prose list spacing | [`008-prose-list-spacing/`](../specs/008-prose-list-spacing/) | Released at `6d203e5`; downstream Registry spacing and responsive gates verified. |
 | 007 Navigation-brand panel alignment | [`007-navigation-brand-panel-alignment/`](../specs/007-navigation-brand-panel-alignment/) | Released at `454c7ae`; downstream editorial alignment verified. |
@@ -26,6 +25,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 | 010 Sticky footer and hero media | [`010-sticky-footer-hero-media/`](spec-archive/010-sticky-footer-hero-media/) | Released at `636eff6` on 2026-08-27; full BF gates and downstream Registry responsive geometry passed. |
 | 011 Site shell primitives | [`011-site-shell-primitives/`](spec-archive/011-site-shell-primitives/) | Released at `1293bcc` on 2026-08-27; full BF tests, capture QA, browser behavior and visual review passed. |
 | 012 Hero divider and quiet linked titles | [`012-hero-link-contracts/`](spec-archive/012-hero-link-contracts/) | Released at `4d1b914` on 2026-08-27; linked titles remain blue and heroes own a rhythm-preserving default divider. |
+| 012 Sites container-owned spacing | [`012-sites-container-spacing/`](spec-archive/012-sites-container-spacing/) | Released at `2c5587d` on 2026-08-27; all Sites rhythm is composed with nested stacks, with downstream Registry proof at `b388f85`. |
 
 ## Candidate specifications
 

@@ -5,9 +5,7 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Complete Spec 012 Sites container-owned spacing and downstream Diagram
-   Registry proof.
-2. Retire the duplicate typography fix branch/worktree only with explicit
+1. Retire the duplicate typography fix branch/worktree only with explicit
    approval to discard its empty line-ending status artifacts.
 
 ## Candidate order after Spec 001

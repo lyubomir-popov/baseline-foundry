@@ -4,17 +4,13 @@ Spec 012 is released on `main` at `4d1b914`. Linked section titles remain semant
 resting underline and underline on hover. Heroes own their entry divider by
 default with a rhythm-preserving `is-borderless` opt-out.
 
-Spec 012 is implemented and ready for owner review at
-`specs/012-sites-container-spacing/` on
-`feat/012-sites-container-spacing` in
-`H:\WSL_dev_projects\baseline-foundry-sites-container-spacing`. The owner
+Sites container-owned spacing is released on `main` at `2c5587d`. The owner
 decision replaces semantic role space-after with nested stack gaps while
-retaining top-nudge/bottom-margin baseline compensation. Generated code is at
-`aaee1f2`; the Diagram Registry proof is at `df84ba4` on
-`feat/013-sites-container-spacing-proof`. Focused, generated, downstream, and
-browser gates are green. The full legacy component catalogue still reports
-old occupied-border-box assumptions; exact evidence is in `review.md`. Preserve
-both dirty main checkouts and do not merge or publish before owner approval.
+retaining top-nudge/bottom-margin baseline compensation. The complete stack
+density API is restored in producer commit `454dc4d`; Diagram Registry vendors
+that build and merges its downstream proof at `b388f85`. Static, browser,
+downstream, and responsive gates are green. Durable evidence is archived at
+`docs/spec-archive/012-sites-container-spacing/`.
 
 Spec 011 is released on `main` at `1293bcc`. Start-aligned fixed rows, aligned
 pinned panel footers, quiet linked section titles, scrollable tables and
