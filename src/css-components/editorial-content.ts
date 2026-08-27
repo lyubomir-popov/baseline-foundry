@@ -53,24 +53,5 @@ ${noticeTitleTypeStyles}  margin-block: 0 var(--bf-h4-margin-bottom);
   padding-block-end: 0;
   padding-block-start: var(--bf-h4-nudge-start);
 }
-
-/* Eyebrow has a dedicated semantic hook while falling back to the h5 role
-   until every tier publishes an explicit eyebrow token. Its rhythm belongs to
-   the element, so it remains intact when composed outside a stack. */
-:where(.bf-theme) :where(.bf-eyebrow) {
-  color: var(--bf-color-text-muted);
-  display: block;
-  font-family: var(--bf-eyebrow-font-family, var(--bf-h5-font-family));
-  font-size: var(--bf-eyebrow-font-size, var(--bf-h5-font-size));
-  font-style: var(--bf-eyebrow-font-style, var(--bf-h5-font-style));
-  font-weight: var(--bf-eyebrow-font-weight, var(--bf-h5-font-weight));
-  font-variant-caps: var(--bf-eyebrow-font-variant-caps, var(--bf-h5-font-variant-caps));
-  letter-spacing: var(--bf-eyebrow-letter-spacing, 0.08em);
-  line-height: var(--bf-eyebrow-line-height, var(--bf-h5-line-height));
-  margin-block: 0 var(--bf-eyebrow-margin-bottom, var(--bf-h5-margin-bottom));
-  padding-block-end: 0;
-  padding-block-start: var(--bf-eyebrow-nudge-start, var(--bf-h5-nudge-start));
-  text-transform: var(--bf-eyebrow-text-transform, uppercase);
-}
 `;
 }

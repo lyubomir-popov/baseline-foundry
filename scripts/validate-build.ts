@@ -254,7 +254,6 @@ function validateRenewalComponentContracts(
     ".bf-notice.is-positive",
     ".bf-notice.is-caution",
     ".bf-notice.is-negative",
-    ".bf-eyebrow",
     ".bf-article-pagination",
     ".bf-article-pagination-link.is-previous",
     ".bf-article-pagination-link.is-next",
@@ -535,26 +534,26 @@ function validateRenewalComponentContracts(
     assert(!pageHtml.includes("is-asymmetric") && !/\b(?:p|ui)-(?:basic-section|cta-section|text-spotlight)[-_]/.test(pageHtml) && !/\b(?:basic-section|cta-section|text-spotlight)(?:__|--)[a-z]/.test(pageHtml), `Expected ${pageName} markup to avoid legacy span and Jinja compatibility APIs.`);
   }
   const basicSectionHtml = pages["basic-section"] ?? "";
-  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes("bf-eyebrow") && basicSectionHtml.includes("bf-basic-section-title-link") && basicSectionHtml.includes('class="bf-stack is-flush"'), "Expected basic section to cover its layout, medium split, eyebrow, linked title, and flush-stack contracts.");
+  assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes('class="bf-h5"') && basicSectionHtml.includes("bf-basic-section-title-link") && basicSectionHtml.includes('class="bf-stack is-flush"'), "Expected basic section to cover its layout, medium split, H5 role, linked title, and flush-stack contracts.");
   assert(!basicSectionHtml.includes("bf-paragraph-stack"), "Expected the basic section to compose grouped content with the generic flush stack instead of a content-specific wrapper.");
   const ctaSectionHtml = pages["cta-section"] ?? "";
   assert(ctaSectionHtml.includes("bf-cta-section-layout") && ctaSectionHtml.includes("bf-cta-section-content") && ctaSectionHtml.includes("is-offset"), "Expected CTA section to cover full and offset descendant content slots.");
   const textSpotlightHtml = pages["text-spotlight"] ?? "";
   assert((textSpotlightHtml.match(/bf-text-spotlight-item\" data-baseline-check=\"box\"/g) ?? []).length === 3, "Expected every visible text-spotlight item to participate in baseline verification.");
-  assert(textSpotlightHtml.includes("bf-text-spotlight-layout") && textSpotlightHtml.includes("bf-text-spotlight-items") && textSpotlightHtml.includes("class=\"bf-eyebrow\""), "Expected text spotlight to cover its 25/75 title rail, item list, and BF eyebrow title.");
+  assert(textSpotlightHtml.includes("bf-text-spotlight-layout") && textSpotlightHtml.includes("bf-text-spotlight-items") && textSpotlightHtml.includes("class=\"bf-h5\""), "Expected text spotlight to cover its 25/75 title rail, item list, and BF H5 title role.");
 
   const heroHtml = pages.hero ?? "";
   assert(heroHtml.includes("data-component-capture") && heroHtml.includes("data-baseline-check") && heroHtml.includes("data-overflow-check"), "Expected hero to expose capture, baseline, and overflow fixture markers.");
   assert(heroHtml.includes("bf-hero-layout") && heroHtml.includes("bf-hero-copy") && heroHtml.includes("bf-hero-media") && heroHtml.includes("bf-hero-chip"), "Expected hero to cover copy, media, chip, and layout slots.");
   assert(heroHtml.includes("bf-hero bf-stack") && heroHtml.includes("class=\"bf-hero-lead\"") && heroHtml.includes("bf-figure bf-hero-media is-full is-light-inset") && heroHtml.indexOf("class=\"bf-hero-lead\"") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a stacked lead followed by light-inset closing media inside the pattern.");
   assert(heroHtml.includes("is-25-75") && heroHtml.includes("is-75-25") && heroHtml.includes("is-fallback") && heroHtml.includes("is-split-medium") && heroHtml.includes("is-borderless"), "Expected hero to cover 50/50, 25/75, 75/25, fallback, and borderless compositions.");
-  assert(heroHtml.includes('dir="rtl"') && heroHtml.includes("long copy") && heroHtml.includes("<figure") && heroHtml.includes("bf-eyebrow") === false, "Expected hero to cover RTL, long-copy, and image fixtures without introducing the deprecated muted-heading API.");
+  assert(heroHtml.includes('dir="rtl"') && heroHtml.includes("long copy") && heroHtml.includes("<figure"), "Expected hero to cover RTL, long-copy, and image fixtures.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(heroHtml) && !/\b(?:hero)(?:__|--)[a-z]/.test(heroHtml), "Expected hero markup to avoid Jinja and legacy span APIs.");
 
   const quoteWrapperHtml = pages["quote-wrapper"] ?? "";
   assert(quoteWrapperHtml.includes("data-component-capture") && quoteWrapperHtml.includes("data-baseline-check") && quoteWrapperHtml.includes("data-overflow-check"), "Expected quote wrapper to expose capture, baseline, and overflow fixture markers.");
   assert(quoteWrapperHtml.includes("bf-quote-wrapper-layout") && quoteWrapperHtml.includes("bf-quote-wrapper-quote-row") && quoteWrapperHtml.includes("bf-quote-wrapper-citation") && quoteWrapperHtml.includes("bf-quote-wrapper-signpost") && quoteWrapperHtml.includes("bf-quote-wrapper-media"), "Expected quote wrapper to cover its 25/75, quote, citation, signpost, and image slots.");
-  assert(quoteWrapperHtml.includes("bf-prose") && quoteWrapperHtml.includes("<blockquote") && quoteWrapperHtml.includes("class=\"bf-eyebrow\""), "Expected quote wrapper to use a real BF prose blockquote and BF eyebrow heading slots.");
+  assert(quoteWrapperHtml.includes("bf-prose") && quoteWrapperHtml.includes("<blockquote") && quoteWrapperHtml.includes("class=\"bf-h5\""), "Expected quote wrapper to use a real BF prose blockquote and BF H5 heading slots.");
   assert(quoteWrapperHtml.includes('dir="rtl"') && quoteWrapperHtml.includes("long") && quoteWrapperHtml.includes("citation"), "Expected quote wrapper to cover RTL, long-copy, and citation fixtures.");
   assert(!quoteWrapperHtml.includes("muted-heading") && !/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(quoteWrapperHtml) && !/\b(?:quote-wrapper)(?:__|--)[a-z]/.test(quoteWrapperHtml), "Expected quote wrapper markup to reject muted-heading, Jinja, and legacy span APIs.");
 
@@ -760,6 +759,7 @@ async function validateComponentPageTierConsistency(componentDemoJs: string): Pr
 
     assertNoDuplicateClassAttributes(`demo/components/${fileName}`, html);
     assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${fileName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
+    assert(!html.includes("bf-eyebrow"), `Expected ${fileName} to use the canonical BF H5 role instead of a duplicate eyebrow alias.`);
 
     if (fileName === "engine-smoke.html" || fileName === "engine-illustration.html") {
       assert(html.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), `Expected ${fileName} to keep its experiment-specific stylesheet bundle.`);
@@ -1617,7 +1617,7 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   }
 
   assert(!css.includes(".bf-lead"), "Expected CSS to avoid generating an implicit lead alias when no lead role is configured.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-eyebrow) {"), "Expected CSS to include the explicit editorial eyebrow component contract.");
+  assert(!css.includes(".bf-eyebrow"), "Expected CSS to avoid publishing a duplicate eyebrow role beside H5.");
   assert(!css.includes(".bf-meta"), "Expected CSS to avoid generating an implicit meta alias when no meta role is configured.");
 }
 

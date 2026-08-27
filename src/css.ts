@@ -97,8 +97,7 @@ const ROLE_STYLE_DEFAULTS: Record<string, {
   h1: { letterSpacing: "-0.03em" },
   h2: { letterSpacing: "-0.025em" },
   h3: { letterSpacing: "-0.02em" },
-  h4: { letterSpacing: "-0.015em" },
-  eyebrow: { letterSpacing: "0.08em", textTransform: "uppercase" }
+  h4: { letterSpacing: "-0.015em" }
 };
 
 function textRule(roleName: string, selectors: string[], token: TypographyToken, baselineUnit: string, extra = ""): string {
@@ -169,7 +168,6 @@ const EXTRA_STYLES_BY_ROLE: Record<string, string> = {
   lead: "  color: var(--bf-color-muted);\n  max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));\n",
   h1: "  max-inline-size: calc(var(--bf-measure) + var(--bf-space-6));\n",
   h2: "  max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));\n",
-  eyebrow: "  color: var(--bf-color-muted);\n",
   meta: "  color: var(--bf-color-muted);\n"
 };
 
