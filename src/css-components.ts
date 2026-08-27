@@ -172,6 +172,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-app-navigation-width: 15rem;
   --bf-app-navigation-width-collapsed: 3rem;
   --bf-side-navigation-icon-optical-offset-block: 0.1875rem;
+  --bf-side-navigation-icon-gap: 0.625rem;
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
   --bf-authoring-accent: #f6b73c;
   --bf-authoring-accent-hover: #e0a030;
@@ -194,7 +195,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-top-navigation-logo-tag-gap: 0.25rem;
   --bf-top-navigation-logo-icon-bottom-offset: 0.375rem;
   --bf-top-navigation-logo-icon-optical-offset-inline: -0.0125rem;
-  --bf-navigation-brand-title-optical-offset-block: 0.25rem;
+  --bf-navigation-brand-title-optical-offset-block: 0rem;
   --bf-icon-size-default: 1rem;
   --bf-icon-size-medium: 2.5rem;
   --bf-icon-size-large: 4rem;
@@ -1804,6 +1805,13 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
   align-items: baseline;
+  column-gap: var(--bf-side-navigation-icon-gap);
+}
+
+/* Icon-navigation headings share the label edge, not the icon edge. This
+   keeps section names aligned with both the menu copy and a tagged wordmark. */
+:where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked) {
+  padding-inline-start: calc(var(--bf-panel-padding-inline) + 1rem + var(--bf-side-navigation-icon-gap));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-icon) > svg {

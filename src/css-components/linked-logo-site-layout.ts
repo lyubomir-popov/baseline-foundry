@@ -186,7 +186,15 @@ export function linkedLogoSiteLayoutCss(): string {
 
 :where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-main),
 :where(.bf-theme) .bf-page-shell.is-site-layout > :where(.bf-site-main) {
+  flex: 0 0 auto;
   min-inline-size: 0;
+}
+
+/* When a site main also consumes panel padding, pull its first text line up
+   one baseline so it shares the tagged navigation brand's optical top. */
+:where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-main.bf-panel-content),
+:where(.bf-theme) .bf-page-shell.is-site-layout > :where(.bf-site-main.bf-panel-content) {
+  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-baseline));
 }
 
 :where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-footer.is-sticky),

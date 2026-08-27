@@ -549,7 +549,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(navigationBrandState.headerTop - navigationBrandState.panelTop) <= 1 && Math.abs(navigationBrandState.tagTop - navigationBrandState.panelTop) <= 1, `Expected the Canonical tag to meet the panel's top edge. Got panel=${navigationBrandState.panelTop}px, header=${navigationBrandState.headerTop}px, tag=${navigationBrandState.tagTop}px.`);
     assert(Math.abs(navigationBrandState.headerLeft - navigationBrandState.panelLeft) <= 1 && Math.abs((navigationBrandState.tagLeft - navigationBrandState.panelLeft) - Number.parseFloat(navigationBrandState.paddingInlineStart)) <= 1, `Expected the Canonical tag to share the panel content inset. Got panel=${navigationBrandState.panelLeft}px, tag=${navigationBrandState.tagLeft}px, inset=${navigationBrandState.paddingInlineStart}.`);
     assert(Math.abs(navigationBrandState.tagWidth - 22) <= 1 && Math.abs(navigationBrandState.tagHeight - 38) <= 1, `Expected the Canonical tag to retain 22x38px geometry. Got ${navigationBrandState.tagWidth}x${navigationBrandState.tagHeight}px.`);
-    assert(navigationBrandState.titleTransform === "matrix(1, 0, 0, 1, 0, 4)", `Expected the navigation-brand title to consume the 4px optical offset. Got ${navigationBrandState.titleTransform}.`);
+    assert(navigationBrandState.titleTransform === "matrix(1, 0, 0, 1, 0, 0)", `Expected the navigation-brand title to share the tagged mark's optical top without a downward offset. Got ${navigationBrandState.titleTransform}.`);
     assert(navigationBrandState.logoWidth >= 220 && navigationBrandState.titleVisible, `Expected the drawer brand and title to occupy the expanded navigation width. Got logo=${navigationBrandState.logoWidth}px, titleVisible=${navigationBrandState.titleVisible}.`);
 
     const wrappedAlignmentState = await page.evaluate(() => {
@@ -587,8 +587,12 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const activeLink = content?.querySelector<HTMLElement>(".bf-side-navigation-link[aria-current='page']");
       const topLevelLink = content?.querySelector<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item > .bf-side-navigation-link");
       const activeLabel = activeLink?.querySelector<HTMLElement>(".bf-side-navigation-label");
+      const iconLink = content?.querySelector<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item > .bf-side-navigation-link");
+      const iconLabel = iconLink?.querySelector<HTMLElement>(".bf-side-navigation-label");
+      const icon = iconLink?.querySelector<HTMLElement>(".bf-side-navigation-icon");
+      const heading = content?.querySelector<HTMLElement>("[data-icon-navigation-heading]");
       const defaultContent = document.querySelector<HTMLElement>(".bf-main .bf-panel-content");
-      if (!content || !activeLink || !topLevelLink || !activeLabel || !defaultContent) {
+      if (!content || !activeLink || !topLevelLink || !activeLabel || !iconLink || !iconLabel || !icon || !heading || !defaultContent) {
         return null;
       }
 
@@ -618,6 +622,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         contentPaddingInlineEnd: contentStyles.paddingInlineEnd,
         contentPaddingInlineStart: contentStyles.paddingInlineStart,
         defaultPaddingInlineStart: defaultContentStyles.paddingInlineStart,
+        headingTextInset: heading.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(heading).paddingInlineStart) - contentRect.left,
+        iconGap: iconLabel.getBoundingClientRect().left - icon.getBoundingClientRect().right,
+        iconLabelInset: iconLabel.getBoundingClientRect().left - contentRect.left,
         labelInset: activeLabelRect.left - contentRect.left,
         nestedPaddingInlineStart: Number.parseFloat(activeStyles.paddingInlineStart),
         topLevelPaddingInlineStart: Number.parseFloat(topLevelStyles.paddingInlineStart),
@@ -633,6 +640,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(navigationCompositionState.activeBackground !== "rgba(0, 0, 0, 0)", `Expected active navigation row to retain a visible background. Got ${navigationCompositionState.activeBackground}.`);
     assert(navigationCompositionState.activeBoxShadow !== "none", "Expected active navigation row to retain its inset edge highlight.");
     assert(navigationCompositionState.labelInset > 0, `Expected active navigation label to retain component-owned indentation. Got ${navigationCompositionState.labelInset}px.`);
+    assert(Math.abs(navigationCompositionState.iconGap - 10) <= 1, `Expected icon-navigation labels to use the shared 10px gap. Got ${navigationCompositionState.iconGap}px.`);
+    assert(Math.abs(navigationCompositionState.headingTextInset - navigationCompositionState.iconLabelInset) <= 1, `Expected icon-navigation headings and labels to share an inline start. Got heading=${navigationCompositionState.headingTextInset}px, label=${navigationCompositionState.iconLabelInset}px.`);
     assert(Math.abs((navigationCompositionState.nestedPaddingInlineStart - navigationCompositionState.topLevelPaddingInlineStart) - (navigationCompositionState.baselinePx * 2)) <= 1, `Expected nested navigation padding to add two baseline units. Got nested=${navigationCompositionState.nestedPaddingInlineStart}px, top-level=${navigationCompositionState.topLevelPaddingInlineStart}px, baseline=${navigationCompositionState.baselinePx}px.`);
     assert(Number.parseFloat(navigationCompositionState.defaultPaddingInlineStart) > 0, `Expected ordinary panel content to remain padded. Got ${navigationCompositionState.defaultPaddingInlineStart}.`);
 
@@ -3060,6 +3069,7 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
             longDisplay: longShellStyle.display,
             longMinBlockSize: longShellStyle.minBlockSize,
             longFooterAfterMain: longFooter.getBoundingClientRect().top >= longMain.getBoundingClientRect().bottom - 1,
+            longMainOverflow: longMain.scrollHeight - longMain.clientHeight,
             longShellHeight: longShell.getBoundingClientRect().height
           };
         });
@@ -3067,6 +3077,7 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
         assert(state.shortDisplay === "flex", `Expected ${tier} sticky-footer short shell to enable flex pinning ${viewport.label}.`);
         assert(state.shortMinBlockSize !== "0px" && Math.abs(state.shortFooterBottomDelta) <= 1, `Expected ${tier} short sticky footer to meet the shell block-end ${viewport.label}.`);
         assert(state.longDisplay === "flex" && state.longFooterAfterMain, `Expected ${tier} long sticky footer to follow content without overlay ${viewport.label}.`);
+        assert(state.longMainOverflow <= 1, `Expected ${tier} long sticky-footer main not to shrink below its content ${viewport.label}; overflow=${state.longMainOverflow}px.`);
       }
     }
 
