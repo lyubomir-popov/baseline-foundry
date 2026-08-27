@@ -935,6 +935,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-color-accent: var(--vf-color-accent, #0f95a1);"), "Expected generated CSS to expose Foundry accent from Vanilla's semantic accent token.");
   assert(css.includes("--bf-color-brand: var(--vf-color-brand, #e95420);"), "Expected generated CSS to expose the Foundry brand token from Ubuntu orange.");
   assert(!css.includes("--bf-color-accent: var(--bf-color-link);"), "Expected generated CSS to avoid collapsing the accent token back onto the link token.");
+  assert(css.includes(":where(.bf-theme) :where(a) {\n  color: var(--bf-color-link);\n  text-decoration: none;"), "Expected raw links to omit their underline in the resting state.");
+  assert(css.includes(":where(.bf-theme) :where(a:is(:hover, :active)) {\n  text-decoration: underline;"), "Expected raw links to expose an underline only while hovered or pressed.");
   assert(css.includes(":where(.bf-theme) :where(a:visited) {\n  color: var(--bf-color-link-visited);"), "Expected generated CSS to style visited links through the semantic theme token.");
   assert(css.includes(":where(.bf-theme) :where(a:focus-visible) {\n  outline: 2px solid var(--bf-color-focus);"), "Expected generated CSS to style raw link focus with the semantic focus token.");
   assert(!css.includes("#f5f1e8"), "Expected generated CSS to avoid the old paper-like default background fallback.");

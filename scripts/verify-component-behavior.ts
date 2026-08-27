@@ -3723,6 +3723,24 @@ async function verifySiteShellPrimitiveGeometry(origin: string): Promise<void> {
     await titleLink.focus();
     assert((await titleLink.evaluate(link => getComputedStyle(link).outlineStyle)) !== "none", "Expected a linked basic-section title to retain a visible keyboard focus outline.");
 
+    await page.goto(`${origin}/demo/components/quote-wrapper.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const contentLink = page.locator(".bf-quote-wrapper-header-link a");
+    assert((await contentLink.evaluate(link => getComputedStyle(link).textDecorationLine)) === "none", "Expected a raw content link to omit its resting underline.");
+    await contentLink.hover();
+    assert((await contentLink.evaluate(link => getComputedStyle(link).textDecorationLine)).includes("underline"), "Expected a raw content link to underline on hover.");
+    await page.mouse.down();
+    const activeDecoration = await contentLink.evaluate(link => getComputedStyle(link).textDecorationLine);
+    await page.mouse.up();
+    assert(activeDecoration.includes("underline"), "Expected a raw content link to remain underlined while active.");
+    await page.mouse.move(0, 0);
+    await contentLink.focus();
+    assert((await contentLink.evaluate(link => getComputedStyle(link).textDecorationLine)) === "none", "Expected keyboard focus to use its focus ring without restoring the resting underline.");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Shift+Tab");
+    assert(await contentLink.evaluate(link => document.activeElement === link), "Expected keyboard navigation to return focus to the raw content link.");
+    assert((await contentLink.evaluate(link => getComputedStyle(link).outlineStyle)) !== "none", "Expected a raw content link to retain a visible keyboard focus outline.");
+
     await page.goto(`${origin}/demo/components/application-shell.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
     const startAlignment = await page.locator(".bf-fixed-width.is-start-aligned").evaluate(element => {

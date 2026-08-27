@@ -254,8 +254,13 @@ ${generateBaselineGridThemeOverrideCss()}
 
 :where(.bf-theme) :where(a) {
   color: var(--bf-color-link);
+  text-decoration: none;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.12em;
+}
+
+:where(.bf-theme) :where(a:is(:hover, :active)) {
+  text-decoration: underline;
 }
 
 :where(.bf-theme) :where(a:visited) {
