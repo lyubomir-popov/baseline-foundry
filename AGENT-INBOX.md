@@ -1,5 +1,9 @@
 # Agent inbox
 
+Spec 012 is release-ready. Linked section titles remain semantic blue with no
+resting underline and underline on hover. Heroes own their entry divider by
+default with a rhythm-preserving `is-borderless` opt-out.
+
 Spec 011 is released on `main` at `1293bcc`. Start-aligned fixed rows, aligned
 pinned panel footers, quiet linked section titles, scrollable tables and
 light-inset figures passed the full BF test, capture and browser gates.

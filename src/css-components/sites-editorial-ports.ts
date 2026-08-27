@@ -24,12 +24,21 @@ export function sitesEditorialPortsCss(): string {
 /* ------------------------------------------------------------------ */
 
 /* Hero: its deliberately asymmetric boundary mirrors the current Vanilla
-   section--hero: a compact arrival space, then the normal section exit. */
+   section--hero: a compact arrival space, then the normal section exit. The
+   entry rule replaces one pixel of padding so it never changes the rhythm. */
 :where(.bf-theme) :where(.bf-hero) {
+  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   container-name: bf-hero;
   container-type: inline-size;
   min-inline-size: 0;
   padding-block-end: calc(var(--bf-section-space) / 2);
+  padding-block-start: calc(var(--bf-space-2) - var(--bf-border-width));
+}
+
+/* The hero owns its entry rule so consumers do not need a loose sibling.
+   The established borderless modifier removes only that visual boundary. */
+:where(.bf-theme) :where(.bf-hero.is-borderless) {
+  border-block-start: 0;
   padding-block-start: var(--bf-space-2);
 }
 
@@ -107,6 +116,10 @@ export function sitesEditorialPortsCss(): string {
 @media (width >= 64.75rem) {
   :where(.bf-theme) :where(.bf-hero) {
     padding-block-end: var(--bf-section-space);
+    padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));
+  }
+
+  :where(.bf-theme) :where(.bf-hero.is-borderless) {
     padding-block-start: var(--bf-space-3);
   }
 }

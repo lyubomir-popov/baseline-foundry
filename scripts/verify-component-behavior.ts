@@ -3160,6 +3160,9 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
           const sectionSpace = probe.getBoundingClientRect().width;
           probe.remove();
           return {
+            borderColor: getComputedStyle(root).borderBlockStartColor,
+            borderStyle: getComputedStyle(root).borderBlockStartStyle,
+            borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
             finalSlot: root.lastElementChild === media,
             leadToMedia: mediaRect.top - leadRect.bottom,
             shallowSpace,
@@ -3172,11 +3175,20 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
           };
         });
         assert(state, `Expected ${tier} closing-media hero geometry ${viewport.label}.`);
+        assert(state.borderStyle === "solid" && state.borderWidth > 0, `Expected ${tier} default hero to own one visible entry rule ${viewport.label}.`);
         assert(state.finalSlot && Math.abs(state.leadToMedia - state.shallowSpace) <= 0.1, `Expected ${tier} hero lead to use the shallow section boundary before final media ${viewport.label}.`);
         assert(state.mediaMarginEnd === 0 && Math.abs(state.mediaToHeroEnd - state.paddingEnd) <= 0.1, `Expected ${tier} hero exit boundary to begin immediately after closing media ${viewport.label}.`);
         const expectedExit = viewport.wide ? state.sectionSpace : state.sectionSpace / 2;
         assert(Math.abs(state.paddingEnd - expectedExit) <= 0.1, `Expected ${tier} hero to preserve its ${viewport.wide ? "regular" : "compact"} exit boundary ${viewport.label}.`);
         assert(Math.abs(state.fullWidthDelta) <= 1 && state.overflow <= 1, `Expected ${tier} closing hero media to remain full-width without overflow ${viewport.label}.`);
+
+        const borderlessState = await page.locator(".bf-hero.is-borderless").evaluate(root => ({
+          borderStyle: getComputedStyle(root).borderBlockStartStyle,
+          borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+          overflow: root.scrollWidth - root.clientWidth
+        }));
+        assert(borderlessState.borderStyle === "none" && borderlessState.borderWidth === 0, `Expected ${tier} borderless hero to remove only its entry rule ${viewport.label}.`);
+        assert(borderlessState.overflow <= 1, `Expected ${tier} borderless hero to avoid inline overflow ${viewport.label}.`);
       }
     }
 
@@ -3510,12 +3522,24 @@ async function verifySiteShellPrimitiveGeometry(origin: string): Promise<void> {
       color: getComputedStyle(link).color,
       decoration: getComputedStyle(link).textDecorationLine,
       fontSize: getComputedStyle(link).fontSize,
-      headingFontSize: getComputedStyle(link.parentElement as HTMLElement).fontSize
+      headingFontSize: getComputedStyle(link.parentElement as HTMLElement).fontSize,
+      expectedColor: (() => {
+        const probe = document.createElement("span");
+        probe.style.color = "var(--bf-color-link-default)";
+        link.parentElement?.append(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      })()
     }));
     assert(titleDefault.decoration === "none", `Expected a linked basic-section title to omit its default underline. Got ${titleDefault.decoration}.`);
+    assert(titleDefault.color === titleDefault.expectedColor, `Expected a linked basic-section title to retain the semantic link colour. Got ${titleDefault.color}, expected ${titleDefault.expectedColor}.`);
     assert(titleDefault.fontSize === titleDefault.headingFontSize, `Expected a linked basic-section title to inherit heading type. Got link=${titleDefault.fontSize}, heading=${titleDefault.headingFontSize}.`);
     await titleLink.hover();
     assert((await titleLink.evaluate(link => getComputedStyle(link).textDecorationLine)).includes("underline"), "Expected a linked basic-section title to underline on hover.");
+    assert((await titleLink.evaluate(link => getComputedStyle(link).color)) === titleDefault.expectedColor, "Expected a linked basic-section title to remain blue on hover.");
+    await titleLink.focus();
+    assert((await titleLink.evaluate(link => getComputedStyle(link).outlineStyle)) !== "none", "Expected a linked basic-section title to retain a visible keyboard focus outline.");
 
     await page.goto(`${origin}/demo/components/application-shell.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
