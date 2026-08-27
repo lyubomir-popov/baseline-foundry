@@ -1,18 +1,25 @@
 # Agent inbox
 
-The latest product release is on `main` at `5b5356e`. Grouped content now uses
-the existing `bf-stack is-flush` composition; the narrow
-`bf-paragraph-stack` API has been removed. Stacks resist track stretching,
-list-like components contain metric compensation, side-navigation headings use
-matching body-role nudges and margins, and the demo cap engine replaces rather
-than duplicates production compensation.
+The latest product release is on `main` at `9f0e815`. The duplicate
+`bf-eyebrow` styling hook has been removed and every active usage now routes
+through the canonical `bf-h5` role, so its tracking, casing, metrics, colour,
+and tier behavior cannot drift from H5. Static validation rejects both emitted
+CSS and active component-demo markup that reintroduce the alias.
 
-`npm test` and `npm run qa:components` were run for closeout on 2026-08-27 and
+`npm test` and `npm run qa:components` were run for closeout on 2026-08-28 and
 both pass. The strict catalogue verifier is green across all four built-in
 tiers and both font-engine surfaces with no accepted baseline failures. Static
-validation passes 5,530 checks, behavior passes, regenerated captures pass, and
-adversarial desktop/constrained browser review found no overflow or visual
-regression in the affected compositions.
+validation passes 5,618 checks, behavior passes, regenerated captures pass,
+and adversarial desktop, 390px, RTL, and baseline-overlay browser review found
+no overflow, console error, box mismatch, or visual regression. Native H5 and
+`bf-h5` occupy the same measured box in editorial, documentation, app, and OS.
+
+Grouped content uses the existing `bf-stack is-flush` composition as of
+released commit `5b5356e`; the narrow `bf-paragraph-stack` API is removed.
+Stacks resist track stretching, list-like components contain metric
+compensation, side-navigation headings use matching body-role nudges and
+margins, and the demo cap engine replaces rather than duplicates production
+compensation.
 
 Tiered lists own their internal shallow rhythm as of released commit `155c2dc`.
 Their focused baseline checks pass across all four built-in tiers, and their
