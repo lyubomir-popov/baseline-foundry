@@ -42,18 +42,18 @@
 
 ## Phase 5: User Story 3 - Downstream baseline proof (Priority: P3)
 
-- [ ] T013 [US3] Create an isolated Diagram Registry feature worktree and vendor the generated BF feature CSS without touching its dirty main checkout.
-- [ ] T014 [US3] Migrate the representative Registry Sites composition to nested internal/section stacks with no local BF override.
-- [ ] T015 [US3] Run Registry validation and browser geometry at 360px and 1280px; record evidence in `review.md`.
+- [x] T013 [US3] Create an isolated Diagram Registry feature worktree and vendor the generated BF feature CSS without touching its dirty main checkout.
+- [x] T014 [US3] Migrate the representative Registry Sites composition to nested internal/section stacks with no local BF override.
+- [x] T015 [US3] Run Registry validation and browser geometry at 360px and 1280px; record evidence in `review.md`.
 
 ---
 
 ## Phase 6: Closeout
 
-- [ ] T016 Run `npm test` and `npm run qa:components`.
-- [ ] T017 Perform in-app browser review of the BF and Registry routes, including constrained width, console, overflow, and RTL where directional.
-- [ ] T018 Complete adversarial source/API review and record generated/direct/class/downstream evidence in `review.md`.
-- [ ] T019 Update task/status owners and hand off the worktree and preview URLs.
+- [x] T016 Run `npm test` and `npm run qa:components`; record the legacy catalogue failures separately from the green focused contract in `review.md`.
+- [x] T017 Perform in-app browser review of the BF and Registry routes, including constrained width, console, overflow, and RTL where directional.
+- [x] T018 Complete adversarial source/API review and record generated/direct/class/downstream evidence in `review.md`.
+- [x] T019 Update task/status owners and hand off the worktree and preview URLs.
 
 ## Dependencies & Execution Order
 
