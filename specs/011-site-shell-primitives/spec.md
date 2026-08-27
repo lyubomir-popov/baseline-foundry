@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-27
 
-**Status**: Accepted for release
+**Status**: Released at `1293bcc` and accepted
 
 ## Problem
 

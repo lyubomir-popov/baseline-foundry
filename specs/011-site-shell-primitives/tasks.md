@@ -7,4 +7,4 @@
 - [x] T005 Dogfood the contracts in BF demos.
 - [x] T006 Add narrow/wide and LTR/RTL browser behavior evidence.
 - [x] T007 Run `npm test` and `npm run qa:components`.
-- [ ] T008 Record review, merge, release and archive the package.
+- [x] T008 Record review, merge, release and archive the package.
