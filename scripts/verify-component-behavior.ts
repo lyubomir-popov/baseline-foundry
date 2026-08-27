@@ -2755,7 +2755,7 @@ async function verifyPortedCompositionGeometry(origin: string): Promise<void> {
 
     await page.goto(`${origin}/demo/components/hero.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
-    const heroState = await page.locator(".bf-hero").first().evaluate(root => {
+    const heroState = await page.locator(".bf-hero:has(> .bf-hero-layout)").first().evaluate(root => {
       const children = Array.from(root.querySelectorAll<HTMLElement>(":scope > .bf-hero-layout > *")).map(child => child.getBoundingClientRect());
       const styles = getComputedStyle(root);
       const probe = document.createElement("span");
@@ -3037,36 +3037,103 @@ async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): Promise<
       await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
 
       for (const viewport of [
-        { width: 360, height: 1200, label: "at a narrow width" },
-        { width: 620, height: 1200, label: "at 620px" }
+        { width: 360, height: 844, label: "at a narrow width" },
+        { width: 1280, height: 900, label: "at a wide width" }
       ] as const) {
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
         await page.waitForTimeout(50);
-        const state = await page.evaluate(() => {
+        const state = await page.evaluate(viewportHeight => {
           const shells = Array.from(document.querySelectorAll<HTMLElement>(".bf-page-shell.is-site-layout"));
           const shortShell = shells[0];
           const longShell = shells[1];
+          const shortScrollOwner = shortShell?.parentElement;
+          const longScrollOwner = longShell?.parentElement;
           const shortMain = shortShell?.querySelector<HTMLElement>(":scope > .bf-site-main");
           const shortFooter = shortShell?.querySelector<HTMLElement>(":scope > .bf-site-footer.is-sticky");
           const longMain = longShell?.querySelector<HTMLElement>(":scope > .bf-site-main");
           const longFooter = longShell?.querySelector<HTMLElement>(":scope > .bf-site-footer.is-sticky");
-          if (!shortShell || !longShell || !shortMain || !shortFooter || !longMain || !longFooter) return null;
+          if (!shortShell || !longShell || !shortScrollOwner || !longScrollOwner || !shortMain || !shortFooter || !longMain || !longFooter) return null;
+          let probe = longMain.querySelector<HTMLElement>(":scope > [data-sticky-footer-long-probe]");
+          if (!probe) {
+            probe = document.createElement("div");
+            probe.dataset.stickyFooterLongProbe = "";
+            probe.setAttribute("aria-hidden", "true");
+            longMain.append(probe);
+          }
+          probe.style.blockSize = `${viewportHeight}px`;
           const shortShellStyle = getComputedStyle(shortShell);
           const longShellStyle = getComputedStyle(longShell);
+          const longMainStyle = getComputedStyle(longMain);
+          const shortScrollRect = shortScrollOwner.getBoundingClientRect();
+          const longScrollRect = longScrollOwner.getBoundingClientRect();
           return {
             shortDisplay: shortShellStyle.display,
             shortMinBlockSize: shortShellStyle.minBlockSize,
-            shortFooterBottomDelta: shortShell.getBoundingClientRect().bottom - shortFooter.getBoundingClientRect().bottom,
+            shortShellFillDelta: shortScrollRect.height - shortShell.getBoundingClientRect().height,
+            shortFooterBottomDelta: shortScrollRect.bottom - shortFooter.getBoundingClientRect().bottom,
             longDisplay: longShellStyle.display,
             longMinBlockSize: longShellStyle.minBlockSize,
+            longMainFlexShrink: longMainStyle.flexShrink,
             longFooterAfterMain: longFooter.getBoundingClientRect().top >= longMain.getBoundingClientRect().bottom - 1,
-            longShellHeight: longShell.getBoundingClientRect().height
+            longShellTallerThanOwner: longShell.getBoundingClientRect().height > longScrollRect.height + 1,
+            longFooterReachable: longScrollOwner.scrollHeight >= longFooter.offsetTop + longFooter.offsetHeight - 1,
+            shortOverflow: shortShell.scrollWidth - shortShell.clientWidth,
+            longOverflow: longShell.scrollWidth - longShell.clientWidth
           };
-        });
+        }, viewport.height);
         assert(state, `Expected ${tier} sticky-footer shell geometry at ${viewport.label}.`);
         assert(state.shortDisplay === "flex", `Expected ${tier} sticky-footer short shell to enable flex pinning ${viewport.label}.`);
-        assert(state.shortMinBlockSize !== "0px" && Math.abs(state.shortFooterBottomDelta) <= 1, `Expected ${tier} short sticky footer to meet the shell block-end ${viewport.label}.`);
-        assert(state.longDisplay === "flex" && state.longFooterAfterMain, `Expected ${tier} long sticky footer to follow content without overlay ${viewport.label}.`);
+        assert(state.shortMinBlockSize !== "0px" && Math.abs(state.shortShellFillDelta) <= 1 && Math.abs(state.shortFooterBottomDelta) <= 1, `Expected ${tier} short sticky footer to meet the application-main block-end ${viewport.label}.`);
+        assert(state.longDisplay === "flex" && state.longMainFlexShrink === "0" && state.longFooterAfterMain, `Expected ${tier} long sticky footer to follow the non-shrinking site main ${viewport.label}.`);
+        assert(state.longShellTallerThanOwner && state.longFooterReachable, `Expected ${tier} application main to scroll to the complete long shell and footer ${viewport.label}.`);
+        assert(state.shortOverflow <= 1 && state.longOverflow <= 1, `Expected ${tier} nested sticky-footer shells to avoid inline overflow ${viewport.label}.`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/components/hero.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tier of tiers) {
+      const tierSelect = page.locator("[data-page-chrome-tier-select]");
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+
+      for (const viewport of [
+        { width: 360, height: 844, wide: false, label: "at a narrow width" },
+        { width: 1280, height: 900, wide: true, label: "at a wide width" }
+      ] as const) {
+        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await page.waitForTimeout(50);
+        const state = await page.locator(".bf-hero").first().evaluate(root => {
+          const lead = root.querySelector<HTMLElement>(":scope > .bf-hero-lead.bf-section.is-shallow");
+          const media = root.querySelector<HTMLElement>(":scope > .bf-hero-media.is-full:last-child");
+          if (!lead || !media) return null;
+          const rootRect = root.getBoundingClientRect();
+          const leadRect = lead.getBoundingClientRect();
+          const mediaRect = media.getBoundingClientRect();
+          const probe = document.createElement("span");
+          probe.style.cssText = "position:absolute;visibility:hidden;display:block;block-size:var(--bf-section-space-shallow);inline-size:var(--bf-section-space)";
+          root.append(probe);
+          const shallowSpace = probe.getBoundingClientRect().height;
+          const sectionSpace = probe.getBoundingClientRect().width;
+          probe.remove();
+          return {
+            finalSlot: root.lastElementChild === media,
+            leadToMedia: mediaRect.top - leadRect.bottom,
+            shallowSpace,
+            mediaToHeroEnd: rootRect.bottom - mediaRect.bottom,
+            paddingEnd: Number.parseFloat(getComputedStyle(root).paddingBlockEnd),
+            sectionSpace,
+            mediaMarginEnd: Number.parseFloat(getComputedStyle(media).marginBlockEnd),
+            fullWidthDelta: rootRect.width - mediaRect.width,
+            overflow: root.scrollWidth - root.clientWidth
+          };
+        });
+        assert(state, `Expected ${tier} closing-media hero geometry ${viewport.label}.`);
+        assert(state.finalSlot && Math.abs(state.leadToMedia - state.shallowSpace) <= 0.1, `Expected ${tier} hero lead to use the shallow section boundary before final media ${viewport.label}.`);
+        assert(state.mediaMarginEnd === 0 && Math.abs(state.mediaToHeroEnd - state.paddingEnd) <= 0.1, `Expected ${tier} hero exit boundary to begin immediately after closing media ${viewport.label}.`);
+        const expectedExit = viewport.wide ? state.sectionSpace : state.sectionSpace / 2;
+        assert(Math.abs(state.paddingEnd - expectedExit) <= 0.1, `Expected ${tier} hero to preserve its ${viewport.wide ? "regular" : "compact"} exit boundary ${viewport.label}.`);
+        assert(Math.abs(state.fullWidthDelta) <= 1 && state.overflow <= 1, `Expected ${tier} closing hero media to remain full-width without overflow ${viewport.label}.`);
       }
     }
 

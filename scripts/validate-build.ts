@@ -384,6 +384,7 @@ function validateRenewalComponentContracts(
   assert(css.includes("container-name: bf-hero;") && css.includes("padding-block-end: calc(var(--bf-section-space) / 2);") && css.includes("padding-block-start: var(--bf-space-2);"), "Expected hero to preserve Vanilla's half/full regular section exit and compact space-2 top boundary.");
   assert(css.includes("padding-block-end: var(--bf-section-space);") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to use the wide full section exit and space-3 top boundary.");
   assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
+  assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && css.includes("margin-block-end: 0;"), "Expected hero to expose a structural lead and trim only a final full-width media slot before the hero exit boundary.");
   assert(css.includes("@container bf-hero (width >= 38.75rem)") && css.includes("@container bf-hero (width >= 64.75rem)") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero to expose medium/large descendant queries and the fallback introduction rail.");
   assert(css.includes(".bf-hero-chip.bf-chip") && css.includes("column-gap: var(--bf-space-1);"), "Expected hero chip composition to map the Vanilla icon/value gap to the BF chip and space-1 tokens.");
   assert(css.includes("container-name: bf-quote-wrapper;") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected quote wrapper to preserve the 25/75 signpost/content rail.");
@@ -527,6 +528,7 @@ function validateRenewalComponentContracts(
   const heroHtml = pages.hero ?? "";
   assert(heroHtml.includes("data-component-capture") && heroHtml.includes("data-baseline-check") && heroHtml.includes("data-overflow-check"), "Expected hero to expose capture, baseline, and overflow fixture markers.");
   assert(heroHtml.includes("bf-hero-layout") && heroHtml.includes("bf-hero-copy") && heroHtml.includes("bf-hero-media") && heroHtml.includes("bf-hero-chip"), "Expected hero to cover copy, media, chip, and layout slots.");
+  assert(heroHtml.includes("bf-hero-lead bf-section is-shallow") && heroHtml.includes("bf-figure bf-hero-media is-full") && heroHtml.indexOf("bf-hero-lead bf-section is-shallow") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a shallow lead followed by closing full-width media inside the pattern.");
   assert(heroHtml.includes("is-25-75") && heroHtml.includes("is-75-25") && heroHtml.includes("is-fallback") && heroHtml.includes("is-split-medium"), "Expected hero to cover 50/50, 25/75, 75/25, and fallback compositions.");
   assert(heroHtml.includes('dir="rtl"') && heroHtml.includes("long copy") && heroHtml.includes("<figure") && heroHtml.includes("bf-eyebrow") === false, "Expected hero to cover RTL, long-copy, and image fixtures without introducing the deprecated muted-heading API.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(heroHtml) && !/\b(?:hero)(?:__|--)[a-z]/.test(heroHtml), "Expected hero markup to avoid Jinja and legacy span APIs.");
@@ -609,6 +611,7 @@ function validateRenewalComponentContracts(
   const stickyFooterHtml = pages["sticky-footer"] ?? "";
   assert(stickyFooterHtml.includes("data-component-capture") && stickyFooterHtml.includes("data-baseline-check") && stickyFooterHtml.includes("data-overflow-container"), "Expected sticky-footer to expose capture, baseline, and overflow fixture markers.");
   assert((stickyFooterHtml.match(/bf-page-shell is-site-layout/g) ?? []).length === 2 && (stickyFooterHtml.match(/bf-site-footer is-sticky/g) ?? []).length === 2, "Expected sticky-footer to cover both short and long opt-in site shells.");
+  assert((stickyFooterHtml.match(/bf-application is-fill/g) ?? []).length === 2 && (stickyFooterHtml.match(/<main class="bf-main"/g) ?? []).length === 2 && stickyFooterHtml.includes("bf-site-main bf-panel-content"), "Expected sticky-footer to cover direct application-main nesting and the panel-content site-main composition.");
   assert(stickyFooterHtml.includes("short sticky site shell") && stickyFooterHtml.includes("long sticky site shell"), "Expected sticky-footer to distinguish short-content and long-content placement fixtures.");
   assert(!/class="[^\"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(stickyFooterHtml), "Expected sticky-footer markup to avoid legacy span APIs.");
 

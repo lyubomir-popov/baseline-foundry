@@ -13,4 +13,6 @@ Load `.github/agents/speckit.*`, `.github/prompts/speckit.*`, `.specify/`, and a
 active package's planning artifacts only when the user explicitly requests spec
 or Spec Kit work. Normal small fixes read the task-scoped source and the lean
 owners named by `AGENTS.md`.
+
+Active Spec Kit plan: [`specs/010-sticky-footer-hero-media/plan.md`](../specs/010-sticky-footer-hero-media/plan.md).
 <!-- SPECKIT END -->

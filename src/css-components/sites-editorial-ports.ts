@@ -39,7 +39,7 @@ export function sitesEditorialPortsCss(): string {
   min-inline-size: 0;
 }
 
-:where(.bf-theme) :where(.bf-hero-copy, .bf-hero-title, .bf-hero-content, .bf-hero-media, .bf-hero-signpost, .bf-hero-intro) {
+:where(.bf-theme) :where(.bf-hero-copy, .bf-hero-title, .bf-hero-content, .bf-hero-media, .bf-hero-signpost, .bf-hero-intro, .bf-hero-lead) {
   min-inline-size: 0;
   overflow-wrap: anywhere;
 }
@@ -88,6 +88,15 @@ export function sitesEditorialPortsCss(): string {
 /* Full-width media follows the paired title/content tracks. */
 :where(.bf-theme) :where(.bf-hero-media.is-full) {
   grid-column: 1 / -1;
+}
+
+/* A closing visual remains inside the hero, after a lead that composes the
+   public bf-section is-shallow boundary. The hero is an explicit pattern
+   boundary, so it trims only its final figure's semantic margin; the root's
+   existing padding remains the sole exit boundary after the media. */
+:where(.bf-theme) :where(.bf-hero) > :where(.bf-hero-media.is-full:last-child) {
+  inline-size: 100%;
+  margin-block-end: 0;
 }
 
 /* Vanilla's desktop hero boundary is 1036px. The layout descendant responds

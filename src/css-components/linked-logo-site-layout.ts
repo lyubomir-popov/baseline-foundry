@@ -186,7 +186,17 @@ export function linkedLogoSiteLayoutCss(): string {
 
 :where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-main),
 :where(.bf-theme) .bf-page-shell.is-site-layout > :where(.bf-site-main) {
+  flex: 0 0 auto;
   min-inline-size: 0;
+}
+
+/* An application main already represents the available viewport remainder
+   and owns scrolling. A directly nested site shell fills that region instead
+   of claiming a second dynamic viewport; long content can still grow the
+   shell beyond the region and remains reachable through bf-main. */
+:where(.bf-theme.bf-application) > :where(.bf-main) > .bf-page-shell.is-site-layout,
+:where(.bf-theme) :where(.bf-application) > :where(.bf-main) > .bf-page-shell.is-site-layout {
+  min-block-size: 100%;
 }
 
 :where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-footer.is-sticky),
