@@ -1,18 +1,23 @@
 # Agent inbox
 
-The latest product release is on `main` at `9f0e815`. The duplicate
-`bf-eyebrow` styling hook has been removed and every active usage now routes
-through the canonical `bf-h5` role, so its tracking, casing, metrics, colour,
-and tier behavior cannot drift from H5. Static validation rejects both emitted
-CSS and active component-demo markup that reintroduce the alias.
+The latest product release is on `main` at `e48305b`. Raw links now omit their
+underline at rest and restore it for hover and active press states. Keyboard
+focus remains an outline-only affordance, and link-shaped components retain
+their own explicit navigation or control state treatments.
 
 `npm test` and `npm run qa:components` were run for closeout on 2026-08-28 and
 both pass. The strict catalogue verifier is green across all four built-in
 tiers and both font-engine surfaces with no accepted baseline failures. Static
-validation passes 5,618 checks, behavior passes, regenerated captures pass,
-and adversarial desktop, 390px, RTL, and baseline-overlay browser review found
-no overflow, console error, box mismatch, or visual regression. Native H5 and
-`bf-h5` occupy the same measured box in editorial, documentation, app, and OS.
+validation passes 5,628 checks, behavior passes, regenerated captures pass,
+and adversarial desktop, constrained, hover, active, focus, and four-tier
+browser review found no resting underline leak, overflow, console error, or
+visual regression.
+
+The duplicate `bf-eyebrow` styling hook was removed at released commit
+`9f0e815`; every active usage routes through the canonical `bf-h5` role so its
+tracking, casing, metrics, colour, and tier behavior cannot drift from H5.
+Static validation rejects both emitted CSS and active component-demo markup
+that reintroduce the alias.
 
 Grouped content uses the existing `bf-stack is-flush` composition as of
 released commit `5b5356e`; the narrow `bf-paragraph-stack` API is removed.
