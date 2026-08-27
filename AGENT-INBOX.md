@@ -10,7 +10,7 @@ Spec 012 is implemented and ready for owner review at
 `H:\WSL_dev_projects\baseline-foundry-sites-container-spacing`. The owner
 decision replaces semantic role space-after with nested stack gaps while
 retaining top-nudge/bottom-margin baseline compensation. Generated code is at
-`c87eb42`; the Diagram Registry proof is at `5c226fd` on
+`aaee1f2`; the Diagram Registry proof is at `df84ba4` on
 `feat/013-sites-container-spacing-proof`. Focused, generated, downstream, and
 browser gates are green. The full legacy component catalogue still reports
 old occupied-border-box assumptions; exact evidence is in `review.md`. Preserve

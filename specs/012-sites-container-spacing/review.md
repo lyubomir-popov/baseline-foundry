@@ -19,7 +19,7 @@ exception is not part of this package.
 
 - Feature branch: `feat/012-sites-container-spacing`
 - Worktree: `H:\WSL_dev_projects\baseline-foundry-sites-container-spacing`
-- Generated producer commit: `c87eb42ff73139bbc028d62bf179a4a862077611`
+- Generated producer commit: `aaee1f23880d26ac0e17108791de0210834d135e`
 - `npm run build`: pass.
 - `npm run test:build`: pass, 5,459 assertions.
 - `npm run test:behavior`: pass. The real-browser probe checks all four built-in
@@ -41,9 +41,9 @@ Diagram Registry consumes the generated artifacts in an isolated worktree:
 
 - Branch: `feat/013-sites-container-spacing-proof`
 - Worktree: `H:\WSL_dev_projects\diagram-registry-sites-container-spacing`
-- Commit: `5c226fd`
-- Pinned BF commit: `c87eb42ff73139bbc028d62bf179a4a862077611`
-- Editorial CSS SHA-256: `e8739a4c46d119eb6bc24dd3e92b5133b79dad7ee095f9437122b20877ebec45`
+- Commits: `5c226fd` (initial proof), `df84ba4` (intrinsic-spacing correction)
+- Pinned BF commit: `aaee1f23880d26ac0e17108791de0210834d135e`
+- Editorial CSS SHA-256: `4f7f3ee5710c309f465ed536c25812b29da4314272d8103b53badfe2e1afa837`
 - Tokens SHA-256: `069740045de7dd4fec0f21452757be78f87a70957797b85737a6a2ee63bab163`
 
 The Registry contract audit rejects local BF replacements and now requires
@@ -69,6 +69,24 @@ an 8 px baseline. The responsive navigation was closed after a narrow reload,
 the page remained usable, and the browser warning/error log was empty. The
 reviewed spacing is block-directional, so no separate RTL geometry claim is
 applicable.
+
+## Owner-review regression corrections
+
+Owner review found two over-broad effects from making `bf-stack` a real grid:
+
+- `bf-basic-section-layout bf-stack` added the default 24 px row gap after its
+  horizontal rule, on top of the rule's existing `calc(.5rem - 1px)` margin.
+  The component's structural grid now fixes `row-gap: 0`, leaving the measured
+  rule-to-header distance at exactly 7 px.
+- Direct chip children were blockified grid items and therefore stretched on
+  the inline axis despite `display: inline-flex`. Chips now use
+  `inline-size: fit-content` and `justify-self: start`. Registry measured a
+  97.49 px direct chip inside a 640 px stack and a 132.33 px chip inside a
+  312.67 px content rail.
+
+Static assertions and the four-tier browser behavior probe cover both cases.
+Registry's vendored-contract audit also requires both corrections. The narrow
+and wide pages retained zero inline overflow and empty warning/error logs.
 
 ## Full catalogue gate
 
