@@ -7,8 +7,7 @@
  *
  * Vanilla → BF spacing mapping:
  * - Hero's `$spv--large` / `$spv--x-large` top boundary → `space-2` /
- *   `space-3`; `$spv--strip-regular / 2` / full strip bottom boundary →
- *   half `section-space` / full `section-space`.
+ *   `space-3`; the surrounding stack owns the section exit.
  * - The 50/50, 25/75 and 75/25 grid relationships use BF's intrinsic grid
  *   and gutter token at Vanilla's 620px / 1036px composition thresholds.
  * - Quote-wrapper's signpost/content and quote/citation relationships use
@@ -23,15 +22,15 @@ export function sitesEditorialPortsCss(): string {
 /* semantic gaps and every text child keeps metric compensation.        */
 /* ------------------------------------------------------------------ */
 
-/* Hero: its deliberately asymmetric boundary mirrors the current Vanilla
-   section--hero: a compact arrival space, then the normal section exit. The
-   entry rule replaces one pixel of padding so it never changes the rhythm. */
+/* Hero: the compact arrival space belongs inside its entry rule. The outer
+   stack owns the section exit, and the rule replaces one pixel of padding so
+   it never changes the rhythm. */
 :where(.bf-theme) :where(.bf-hero) {
   border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   container-name: bf-hero;
   container-type: inline-size;
   min-inline-size: 0;
-  padding-block-end: calc(var(--bf-section-space) / 2);
+  padding-block-end: 0;
   padding-block-start: calc(var(--bf-space-2) - var(--bf-border-width));
 }
 
@@ -112,7 +111,6 @@ export function sitesEditorialPortsCss(): string {
    the composition below continues to react to the allocated container. */
 @media (width >= 64.75rem) {
   :where(.bf-theme) :where(.bf-hero) {
-    padding-block-end: var(--bf-section-space);
     padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));
   }
 
@@ -163,12 +161,8 @@ export function sitesEditorialPortsCss(): string {
 :where(.bf-theme) :where(.bf-quote-wrapper) {
   container-name: bf-quote-wrapper;
   container-type: inline-size;
-  margin-block-end: var(--bf-section-space);
+  margin: 0;
   min-inline-size: 0;
-}
-
-:where(.bf-theme) :where(.bf-quote-wrapper.is-shallow) {
-  margin-block-end: var(--bf-section-space-shallow);
 }
 
 :where(.bf-theme) :where(.bf-quote-wrapper-header, .bf-quote-wrapper-layout, .bf-quote-wrapper-signpost, .bf-quote-wrapper-content, .bf-quote-wrapper-citation, .bf-quote-wrapper-media) {

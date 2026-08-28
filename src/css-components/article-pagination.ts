@@ -18,7 +18,7 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
   container-type: inline-size;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  margin-block-end: var(--bf-section-space-shallow);
+  margin: 0;
   min-inline-size: 0;
 }
 
