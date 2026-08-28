@@ -13,8 +13,9 @@ const FONT_ASSETS: FontAsset[] = [
     url: "https://github.com/google/fonts/raw/main/ofl/ubuntusans/UbuntuSans%5Bwdth%2Cwght%5D.ttf"
   },
   {
-    fileName: "IBMPlexSansVar-Roman.woff",
-    url: "https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans:vf@latest/latin-wght-normal.woff"
+    fileName: "IBMPlexSansVar-Roman.woff2",
+    localSourcePath: path.resolve("node_modules/@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2"),
+    url: "https://cdn.jsdelivr.net/npm/@fontsource-variable/ibm-plex-sans@5.3.0/files/ibm-plex-sans-latin-wght-normal.woff2"
   }
 ];
 
