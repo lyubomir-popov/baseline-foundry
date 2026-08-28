@@ -199,17 +199,31 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           const current = root.querySelector<HTMLElement>(".bf-table-of-contents-link[aria-current]");
           const spaceOneProbe = document.createElement("span");
           const spaceTwoProbe = document.createElement("span");
+          const sectionSpaceProbe = document.createElement("span");
           const textProbe = document.createElement("span");
           spaceOneProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-1)";
           spaceTwoProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-2)";
+          sectionSpaceProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
           textProbe.style.cssText = "position:absolute;visibility:hidden;color:var(--bf-color-text-default)";
-          root.append(spaceOneProbe, spaceTwoProbe, textProbe);
+          root.append(spaceOneProbe, spaceTwoProbe, sectionSpaceProbe, textProbe);
           const direction = getComputedStyle(root).direction;
           const nestedRect = nested?.getBoundingClientRect();
           const parentRect = parentLink?.getBoundingClientRect();
+          const sections = Array.from(root.querySelectorAll<HTMLElement>(":scope > .bf-table-of-contents-section"));
+          const secondSection = sections[1];
+          const secondHeading = secondSection?.querySelector<HTMLElement>(".bf-table-of-contents-heading");
+          const dividerStyle = secondSection ? getComputedStyle(secondSection, "::before") : null;
           const result = nested && parentLink && current && nestedRect && parentRect ? {
             actualWidth: root.getBoundingClientRect().width,
             direction,
+            sectionGap: Number.parseFloat(getComputedStyle(root).rowGap),
+            expectedSectionGap: sectionSpaceProbe.getBoundingClientRect().height,
+            sectionPadding: sections.map(section => {
+              const style = getComputedStyle(section);
+              return [Number.parseFloat(style.paddingBlockStart), Number.parseFloat(style.paddingBlockEnd)];
+            }),
+            dividerBlockSize: Number.parseFloat(dividerStyle?.blockSize ?? "0"),
+            dividerToHeading: secondSection && secondHeading ? secondHeading.getBoundingClientRect().top - secondSection.getBoundingClientRect().top : Number.POSITIVE_INFINITY,
             nestedMargin: Number.parseFloat(getComputedStyle(nested).marginInlineStart),
             expectedSpaceOne: spaceOneProbe.getBoundingClientRect().width,
             expectedSpaceTwo: spaceTwoProbe.getBoundingClientRect().width,
@@ -222,12 +236,15 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           } : null;
           spaceOneProbe.remove();
           spaceTwoProbe.remove();
+          sectionSpaceProbe.remove();
           textProbe.remove();
           return result;
         }, width);
         assert(state, `Expected ${tier} table-of-contents state at ${width}.`);
         const expectedIndent = expectedSpace === "var(--bf-space-1)" ? state.expectedSpaceOne : state.expectedSpaceTwo;
         assert(Math.abs(state.nestedMargin - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} at ${width}; margin=${state.nestedMargin}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
+        assert(Math.abs(state.sectionGap - state.expectedSectionGap) <= 0.1 && state.sectionPadding.every(([start, end]) => start === 0 && end === 0), `Expected ${tier} table-of-contents sections to receive their shallow separation from the parent stack without item padding at ${width}.`);
+        assert(state.dividerBlockSize === 1 && state.dividerToHeading < state.expectedSectionGap, `Expected ${tier} table-of-contents divider to paint tightly with the following heading instead of occupying the parent-owned section gap at ${width}.`);
         assert(state.currentState === "location" && Number.parseFloat(state.currentWeight) >= 600 && state.currentColor === state.defaultTextColor, `Expected ${tier} table-of-contents current link to expose its semantic current state and default-text emphasis at ${width}.`);
         assert(state.rootOverflow <= 1, `Expected ${tier} table-of-contents to avoid inline overflow at ${width}; got ${state.rootOverflow}px.`);
       }
@@ -495,14 +512,23 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
       const contentRect = root.querySelector<HTMLElement>(".bf-cta-section-content")?.getBoundingClientRect();
       const layout = root.querySelector<HTMLElement>(".bf-cta-section-layout");
       if (!contentRect || !layout) return null;
-      const probe = document.createElement("span");
-      probe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-deep)";
-      root.append(probe);
-      const sectionDeep = probe.getBoundingClientRect().height;
-      probe.remove();
-      return { offsetRatio: (contentRect.left - rootRect.left) / rootRect.width, paddingBlockStart: Number.parseFloat(getComputedStyle(layout).paddingBlockStart), sectionDeep };
+      const content = root.querySelector<HTMLElement>(".bf-cta-section-content");
+      const copy = root.querySelector<HTMLElement>(".bf-cta-section-copy");
+      const cta = root.querySelector<HTMLElement>(".bf-cta-block");
+      const heading = copy?.querySelector<HTMLElement>("h2");
+      const paragraph = copy?.querySelector<HTMLElement>("p");
+      const contentStyle = content ? getComputedStyle(content) : null;
+      return {
+        offsetRatio: (contentRect.left - rootRect.left) / rootRect.width,
+        paddingBlockStart: Number.parseFloat(getComputedStyle(layout).paddingBlockStart),
+        contentGap: Number.parseFloat(contentStyle?.rowGap ?? "0"),
+        copyToCtaGap: copy && cta ? cta.getBoundingClientRect().top - copy.getBoundingClientRect().bottom : 0,
+        textGap: heading && paragraph ? paragraph.getBoundingClientRect().top - heading.getBoundingClientRect().bottom : 0,
+        headingCompensation: heading ? Number.parseFloat(getComputedStyle(heading).marginBlockEnd) : 0
+      };
     });
-    assert(ctaState && ctaState.offsetRatio > 0.2 && Math.abs(ctaState.paddingBlockStart - ctaState.sectionDeep) <= 0.1, "Expected wide CTA section to preserve its 25/75 offset and full deep boundary.");
+    assert(ctaState && ctaState.offsetRatio > 0.2 && ctaState.paddingBlockStart === 0, "Expected wide CTA section to preserve its 25/75 offset without semantic layout padding between the rule and heading.");
+    assert(ctaState && ctaState.contentGap > 0 && Math.abs(ctaState.copyToCtaGap - ctaState.contentGap) <= 0.1 && Math.abs(ctaState.textGap - ctaState.headingCompensation) <= 0.1, "Expected CTA section to keep heading/paragraph copy tight while its content stack owns the shallow gap before the CTA block.");
 
     await page.goto(`${origin}/demo/components/text-spotlight.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -562,9 +588,15 @@ export async function verifyRichListsAndTabSectionGeometry(origin: string): Prom
       const sections = page.locator(".bf-rich-list.is-horizontal");
       const markerState = await page.evaluate(() => {
         const root = document.querySelector<HTMLElement>("main[data-baseline-label='rich horizontal list page']");
-        return root ? { markers: root.querySelectorAll("[data-baseline-check]").length, overflow: root.scrollWidth - root.clientWidth } : null;
+        const layouts = Array.from(root?.querySelectorAll<HTMLElement>(".bf-rich-list-layout") ?? []);
+        return root ? {
+          markers: root.querySelectorAll("[data-baseline-check]").length,
+          overflow: root.scrollWidth - root.clientWidth,
+          layoutRowGaps: layouts.map(layout => Number.parseFloat(getComputedStyle(layout).rowGap))
+        } : null;
       });
       assert(markerState && markerState.markers >= 18 && markerState.overflow <= 1, `Expected ${tier} rich horizontal fixtures to retain baseline markers and avoid overflow: ${JSON.stringify(markerState)}.`);
+      assert(markerState.layoutRowGaps.every(gap => gap > 0), `Expected ${tier} rich-list layouts to own a dense inter-slot stack gap.`);
 
       for (const width of ["65ch", "66ch", "100ch"] as const) {
         const states = await sections.evaluateAll((roots, widthValue) => roots.map(root => {
@@ -1001,7 +1033,8 @@ export async function verifySitesRecipeCompositions(origin: string): Promise<voi
         const state = await page.evaluate(() => {
           const sections = Array.from(document.querySelectorAll<HTMLElement>("main > .bf-section"));
           const search = document.querySelector<HTMLInputElement>(".bf-search-box input[type='search']");
-          const notice = document.querySelector<HTMLElement>(".bf-notice.is-negative[role='alert']");
+          const notification = document.querySelector<HTMLElement>(".bf-notification.is-negative[role='alert']");
+          const notificationTitle = notification?.querySelector<HTMLElement>(".bf-notification-title.bf-h6");
           const actions = Array.from(document.querySelectorAll<HTMLElement>(".bf-button"));
           return {
             sections: sections.length,
@@ -1009,14 +1042,15 @@ export async function verifySitesRecipeCompositions(origin: string): Promise<voi
             baselineMarkers: document.querySelectorAll("[data-baseline-check]").length,
             search: !!search,
             searchLabel: !!search && !!document.querySelector(`label[for='${search.id}']`),
-            notice: !!notice,
+            notification: !!notification,
+            notificationTitle: !!notificationTitle,
             actions: actions.length,
             emptySelector: document.querySelector(".bf-empty-state") !== null
           };
         });
         assert(state.sections === 3 && state.baselineMarkers >= 12, `Expected ${tier} empty-state recipes to retain three sections and baseline markers at ${width}px.`);
         assert(state.sectionOverflow.every(delta => delta <= 1), `Expected ${tier} empty-state recipes to avoid inline overflow at ${width}px.`);
-        assert(state.search && state.searchLabel && state.notice && state.actions >= 2 && !state.emptySelector, `Expected ${tier} empty-state recipes to retain accessible search/actions/notice composition without a dedicated selector at ${width}px.`);
+        assert(state.search && state.searchLabel && state.notification && state.notificationTitle && state.actions >= 2 && !state.emptySelector, `Expected ${tier} empty-state recipes to retain accessible search/actions/current-notification composition without a dedicated selector at ${width}px.`);
       }
     }
     await page.close();

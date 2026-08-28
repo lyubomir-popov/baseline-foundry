@@ -10,10 +10,10 @@
  * Vanilla → BF spacing mapping:
  * - horizontal item 8px/16px block padding → `space-1`/`space-2`;
  * - 16px grid gutters → `grid-gap-inline`;
- * - shallow/default/deep section exits → BF's existing section tokens;
  * - the 620px/1036px page breakpoints → 38.75rem/64.75rem container
  *   thresholds for descendants. Text roles keep their own metric-derived
- *   margins and baseline compensation in every tier.
+ *   margins and baseline compensation in every tier. Parent stacks own every
+ *   boundary outside the pattern.
  */
 export function sitesRichListsCss(): string {
   return `/* ------------------------------------------------------------------ */
@@ -24,19 +24,13 @@ export function sitesRichListsCss(): string {
   container-name: bf-rich-list;
   container-type: inline-size;
   min-inline-size: 0;
-  padding-block-end: calc(var(--bf-section-space) / 2);
-}
-
-:where(.bf-theme) :where(.bf-rich-list.is-shallow) {
-  padding-block-end: var(--bf-section-space-shallow);
-}
-
-:where(.bf-theme) :where(.bf-rich-list.is-deep) {
-  padding-block-end: calc(var(--bf-section-space-deep) / 2);
 }
 
 :where(.bf-theme) :where(.bf-rich-list-layout) {
+  --bf-stack-space: var(--bf-space-1);
+  align-content: start;
   display: grid;
+  gap: var(--bf-stack-space);
   grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
 }
@@ -51,14 +45,11 @@ export function sitesRichListsCss(): string {
   overflow-wrap: anywhere;
 }
 
-@media (width >= 64.75rem) {
-  :where(.bf-theme) :where(.bf-rich-list:not(.is-shallow)) {
-    padding-block-end: var(--bf-section-space);
-  }
-
-  :where(.bf-theme) :where(.bf-rich-list.is-deep) {
-    padding-block-end: var(--bf-section-space-deep);
-  }
+:where(.bf-theme) :where(.bf-rich-list-support, .bf-rich-list-content) {
+  --bf-stack-space: var(--bf-space-1);
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
 }
 
 /* ------------------------------------------------------------------ */
@@ -230,7 +221,6 @@ export function sitesRichListsCss(): string {
 
 :where(.bf-theme) :where(.bf-rich-list.is-vertical) :where(.bf-rich-list-media) {
   container-type: inline-size;
-  padding-block-end: var(--bf-section-space-shallow);
 }
 
 :where(.bf-theme) :where(.bf-rich-list.is-vertical.is-flipped) :where(.bf-rich-list-media) {
@@ -292,10 +282,6 @@ export function sitesRichListsCss(): string {
 /* Auto height has no shallow media wrapper in Vanilla. At narrow widths it
    remains a normal 3:2 frame; at the wide split it stretches with the content
    rail, clamped between the equivalent 16:9 and 2:3 heights. */
-:where(.bf-theme) :where(.bf-rich-list-media.is-auto-height) {
-  padding-block-end: 0;
-}
-
 @container bf-rich-list (width >= 64.75rem) {
   :where(.bf-theme) :where(.bf-rich-list.is-vertical) > :where(.bf-rich-list-layout) {
     align-items: stretch;

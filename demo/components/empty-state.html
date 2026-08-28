@@ -27,7 +27,19 @@
   </section>
 
   <section class="bf-section" aria-labelledby="empty-error-title" data-baseline-check="box" data-baseline-label="error empty state">
-    <aside class="bf-notice is-negative" role="alert" data-baseline-check="box" data-baseline-label="empty state error notice"><h2 class="bf-notice-title" id="empty-error-title" data-baseline-check="flow">Environments could not be loaded</h2><div class="bf-notice-content"><p data-baseline-check="flow">The service did not respond. Your existing environments have not been changed.</p><div class="bf-cta-block"><button class="bf-button" type="button" data-baseline-check="box">Try again</button><a href="#status">Check service status</a></div></div></aside>
+    <aside class="bf-notification is-negative" role="alert" data-baseline-check="box" data-baseline-label="empty state error notification">
+      <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
+      <div class="bf-notification-content">
+        <h2 class="bf-notification-title bf-h6" id="empty-error-title" data-baseline-ignore="true">Environments could not be loaded</h2>
+        <p class="bf-notification-message" data-baseline-ignore="true">The service did not respond. Your existing environments have not been changed.</p>
+      </div>
+      <div class="bf-notification-meta" data-baseline-check="box" data-baseline-label="empty state error actions">
+        <div class="bf-notification-actions">
+          <button class="bf-button is-link" type="button" data-baseline-ignore="true">Try again</button>
+          <a class="bf-button is-link" href="#status" data-baseline-ignore="true">Check service status</a>
+        </div>
+      </div>
+    </aside>
   </section>
 </main>
 <script type="module" src="../component-demo.js"></script>
