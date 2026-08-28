@@ -166,11 +166,18 @@ export function staticContentPortsCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-divided-section-list) {
-  align-content: start;
-  display: grid;
+  --bf-stack-space: 1.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+/* Preserve the pre-0.1.5 list markup; canonical composition also carries
+   bf-stack so the container remains the explicit owner of item spacing. */
+:where(.bf-theme) :where(.bf-divided-section-list:not(.bf-stack)) {
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
 }
 
 :where(.bf-theme) :where(.bf-divided-section-item) {
@@ -178,15 +185,17 @@ export function staticContentPortsCss(): string {
   display: grid;
   min-inline-size: 0;
   overflow-wrap: anywhere;
+  padding: 0;
+  position: relative;
 }
 
-:where(.bf-theme) :where(.bf-divided-section-item:not(:last-child)) {
-  padding-block-end: var(--bf-section-space-shallow);
-}
-
-:where(.bf-theme) :where(.bf-divided-section-item + .bf-divided-section-item) {
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
-  padding-block-start: calc(var(--bf-section-space-shallow) - var(--bf-border-width));
+:where(.bf-theme) :where(.bf-divided-section-item + .bf-divided-section-item)::before {
+  background: var(--bf-color-border-low-contrast);
+  block-size: var(--bf-border-width);
+  content: "";
+  inset-block-start: calc(var(--bf-stack-space) / -2);
+  inset-inline: 0;
+  position: absolute;
 }
 
 @container (width >= 38.75rem) {

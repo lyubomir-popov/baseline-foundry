@@ -77,12 +77,13 @@ export function interactiveFeedbackCss(): string {
   border: var(--bf-border-width) solid var(--bf-color-border-default);
   border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);
   color: var(--bf-color-text-default);
-  margin-block: 0 var(--bf-space-3);
+  margin-block: 0;
   max-inline-size: 100%;
   min-inline-size: 0;
   overflow-wrap: anywhere;
-  padding-block: calc(var(--bf-space-1) - var(--bf-border-width));
-  padding-inline: calc((var(--bf-space-2) * 2) + var(--bf-icon-size-default)) 0;
+  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
+  padding-block-start: 0;
+  padding-inline: calc((1rem - var(--bf-bar-thickness)) + var(--bf-icon-size-default) + 1rem) 0;
   position: relative;
 }
 
@@ -105,14 +106,14 @@ export function interactiveFeedbackCss(): string {
 :where(.bf-theme) :where(.bf-notification.is-borderless) {
   border: 0;
   padding-block: 0;
-  padding-inline: calc(var(--bf-space-2) * 2) 0;
+  padding-inline: calc(var(--bf-icon-size-default) + 1rem) 0;
 }
 
 :where(.bf-theme) :where(.bf-notification-icon) {
   background-color: var(--bf-notification-accent);
   background-image: none;
-  inset-block-start: calc(var(--bf-space-1) + ((var(--bf-body-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-body-nudge-start));
-  inset-inline-start: var(--bf-space-2);
+  inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-h6-nudge-start) - var(--bf-border-width));
+  inset-inline-start: calc(1rem - var(--bf-bar-thickness));
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-.75 5.25h1.5v5h-1.5v-5zM8 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z'/%3E%3C/svg%3E");
   mask-position: center;
   mask-repeat: no-repeat;
@@ -133,7 +134,7 @@ export function interactiveFeedbackCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-notification.is-borderless > .bf-notification-icon) {
-  inset-block-start: calc(((var(--bf-body-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-body-nudge-start));
+  inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-h6-nudge-start));
   inset-inline-start: 0;
 }
 
@@ -143,12 +144,17 @@ export function interactiveFeedbackCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-notification-content) {
-  margin-block-end: calc(var(--bf-space-2) - var(--bf-body-nudge-start));
-  padding-block-start: var(--bf-body-nudge-start);
-  padding-inline-end: var(--bf-space-4);
+  /* Neutralise the shell's top border so the first metric role starts on-grid. */
+  margin-block: calc(var(--bf-border-width) * -1) 0;
+  padding-block-start: 0;
+  padding-inline-end: calc(var(--bf-icon-size-default) + var(--bf-space-1));
 }
 
-:where(.bf-theme) :where(.bf-notification-title, .bf-notification-message, .bf-notification-timestamp) {
+:where(.bf-theme) :where(.bf-notification.is-borderless .bf-notification-content) {
+  margin-block-start: 0;
+}
+
+:where(.bf-theme) :where(.bf-notification-message, .bf-notification-timestamp) {
   font-family: var(--bf-body-font-family);
   font-size: var(--bf-body-font-size);
   font-style: var(--bf-body-font-style);
@@ -156,20 +162,22 @@ export function interactiveFeedbackCss(): string {
   max-inline-size: 100%;
 }
 
-:where(.bf-theme) :where(.bf-notification-title) {
-  font-weight: 600;
-  margin-block: 0;
-  padding-block: 0;
-}
-
 :where(.bf-theme) :where(.bf-notification-message) {
   font-weight: var(--bf-body-font-weight);
-  margin-block: 0;
-  padding-block: 0;
+  margin-block: 0 var(--bf-body-margin-bottom);
+  padding-block-end: 0;
+  padding-block-start: var(--bf-body-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-notification.is-inline .bf-notification-title, .bf-notification.is-inline .bf-notification-message) {
   display: inline;
+  margin-block: 0;
+  padding-block: 0;
+}
+
+:where(.bf-theme) :where(.bf-notification.is-inline .bf-notification-content) {
+  margin-block-end: var(--bf-h6-margin-bottom);
+  padding-block-start: var(--bf-h6-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-notification-close) {
@@ -179,7 +187,7 @@ export function interactiveFeedbackCss(): string {
   margin-block-end: 0;
   padding: 0;
   position: absolute;
-  inset-block-start: var(--bf-space-1);
+  inset-block-start: 0;
   inset-inline-end: var(--bf-space-1);
 }
 
@@ -195,7 +203,7 @@ export function interactiveFeedbackCss(): string {
   flex-wrap: wrap;
   gap: var(--bf-space-1) var(--bf-space-2);
   justify-content: space-between;
-  margin-block-end: var(--bf-space-1);
+  margin-block-end: 0;
   padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));
   padding-inline-end: var(--bf-space-2);
 }
@@ -208,7 +216,7 @@ export function interactiveFeedbackCss(): string {
 :where(.bf-theme) :where(.bf-notification-timestamp) {
   color: var(--bf-color-text-muted);
   font-weight: var(--bf-body-font-weight);
-  margin-block: 0 calc(var(--bf-space-2) - var(--bf-body-nudge-start));
+  margin-block: 0 var(--bf-body-margin-bottom);
   padding-block: var(--bf-body-nudge-start) 0;
 }
 
@@ -223,7 +231,7 @@ export function interactiveFeedbackCss(): string {
 
 :where(.bf-theme) :where(.bf-notification-actions > .bf-button.is-link) {
   flex: 0 0 auto;
-  margin-block-end: calc(var(--bf-space-2) - var(--bf-body-nudge-start));
+  margin-block-end: var(--bf-body-margin-bottom);
   padding-block: var(--bf-body-nudge-start) 0;
 }
 `;

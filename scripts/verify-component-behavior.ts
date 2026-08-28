@@ -2451,21 +2451,75 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         const baseline = probe.getBoundingClientRect().height;
         probe.remove();
         const notifications = Array.from(document.querySelectorAll<HTMLElement>(".bf-notification:not([hidden])"));
+        const borderedNotifications = notifications.filter(notification => !notification.classList.contains("is-borderless"));
+        const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const leadingIconGaps = borderedNotifications.map(notification => {
+          const notificationRect = notification.getBoundingClientRect();
+          const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
+          const barWidth = Number.parseFloat(getComputedStyle(notification).borderInlineStartWidth);
+          return iconRect.left - notificationRect.left - barWidth;
+        });
+        const iconToTextGaps = notifications.map(notification => {
+          const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
+          const contentRect = (notification.querySelector(".bf-notification-content") as HTMLElement).getBoundingClientRect();
+          return contentRect.left - iconRect.right;
+        });
+        const closeClearances = notifications.flatMap(notification => {
+          const close = notification.querySelector<HTMLElement>(".bf-notification-close");
+          const content = notification.querySelector<HTMLElement>(".bf-notification-content");
+          if (!close || !content) return [];
+          const closeStyle = getComputedStyle(close);
+          return [{
+            reserved: Number.parseFloat(getComputedStyle(content).paddingInlineEnd),
+            required: close.getBoundingClientRect().width + Number.parseFloat(closeStyle.insetInlineEnd)
+          }];
+        });
+        const documentElement = document.documentElement;
+        const originalDirection = documentElement.getAttribute("dir");
+        documentElement.setAttribute("dir", "rtl");
+        const rtlNotification = borderedNotifications[0];
+        const rtlNotificationRect = rtlNotification.getBoundingClientRect();
+        const rtlIconRect = (rtlNotification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
+        const rtlContentRect = (rtlNotification.querySelector(".bf-notification-content") as HTMLElement).getBoundingClientRect();
+        const rtlBarWidth = Number.parseFloat(getComputedStyle(rtlNotification).borderInlineStartWidth);
+        const rtlClose = document.querySelector<HTMLElement>(".bf-notification-close");
+        const rtlCloseRootRect = (rtlClose?.closest(".bf-notification") as HTMLElement).getBoundingClientRect();
+        const rtlCloseRect = rtlClose?.getBoundingClientRect();
+        const rtlGeometry = {
+          leadingIconGap: rtlNotificationRect.right - rtlIconRect.right - rtlBarWidth,
+          iconToTextGap: rtlIconRect.left - rtlContentRect.right,
+          closeAtInlineEnd: Boolean(rtlCloseRect && rtlCloseRect.left < rtlCloseRootRect.left + (rtlCloseRootRect.width / 2))
+        };
+        if (originalDirection === null) documentElement.removeAttribute("dir");
+        else documentElement.setAttribute("dir", originalDirection);
         return {
           baseline,
           barThicknessToken: getComputedStyle(document.body).getPropertyValue("--bf-bar-thickness").trim(),
-          bodyFontSize: getComputedStyle(document.body).getPropertyValue("--bf-body-font-size").trim(),
+          h6FontSize: getComputedStyle(document.querySelector(".bf-notification-title.bf-h6") as Element).fontSize,
           notificationFontSizes: notifications.map(notification => getComputedStyle(notification.querySelector(".bf-notification-title") as Element).fontSize),
-          accentWidths: notifications.filter(notification => !notification.classList.contains("is-borderless")).map(notification => Number.parseFloat(getComputedStyle(notification).borderInlineStartWidth)),
+          notificationTitlesUseH6: notifications.every(notification => notification.querySelector(".bf-notification-title")?.classList.contains("bf-h6")),
+          accentWidths: borderedNotifications.map(notification => Number.parseFloat(getComputedStyle(notification).borderInlineStartWidth)),
+          paddingBlockStarts: notifications.map(notification => Number.parseFloat(getComputedStyle(notification).paddingBlockStart)),
+          leadingIconGaps,
+          iconToTextGaps,
+          closeClearances,
+          rtlGeometry,
+          expectedLeadingIconGap: rootFontSize - 3,
+          expectedIconToTextGap: rootFontSize,
           heights: notifications.map(notification => notification.getBoundingClientRect().height),
           overflow: notifications.map(notification => notification.scrollWidth - notification.clientWidth)
         };
       });
       assert(geometry.baseline > 0, `Expected ${tier} notification fixture to resolve a positive baseline.`);
       assert(geometry.barThicknessToken === "0.1875rem" && geometry.accentWidths.every(width => width === 3), `Expected ${tier} notification accents to use the shared 3px/0.1875rem emphasis bar; got ${geometry.accentWidths.join(", ")}px/${geometry.barThicknessToken}.`);
+      assert(geometry.paddingBlockStarts.every(padding => padding === 0), `Expected ${tier} notification roots to have no top padding; got ${geometry.paddingBlockStarts.join(", ")}px.`);
+      assert(geometry.leadingIconGaps.every(gap => Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification bar-to-icon gaps to equal 1rem minus the bar thickness (${geometry.expectedLeadingIconGap}px); got ${geometry.leadingIconGaps.join(", ")}px.`);
+      assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal 1rem (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
+      assert(geometry.closeClearances.every(clearance => clearance.reserved >= clearance.required), `Expected ${tier} notification copy to clear the close control; got ${JSON.stringify(geometry.closeClearances)}.`);
+      assert(Math.abs(geometry.rtlGeometry.leadingIconGap - geometry.expectedLeadingIconGap) <= 0.05 && Math.abs(geometry.rtlGeometry.iconToTextGap - geometry.expectedIconToTextGap) <= 0.05 && geometry.rtlGeometry.closeAtInlineEnd, `Expected ${tier} notification leading geometry and close control to mirror in RTL; got ${JSON.stringify(geometry.rtlGeometry)}.`);
       assert(geometry.heights.every(height => Math.abs((height / geometry.baseline) - Math.round(height / geometry.baseline)) <= 0.05), `Expected ${tier} notification border boxes to stay baseline multiples; heights=${geometry.heights.join(", ")}, baseline=${geometry.baseline}.`);
       assert(geometry.overflow.every(delta => delta <= 1), `Expected ${tier} notifications to avoid inline overflow; deltas=${geometry.overflow.join(", ")}.`);
-      assert(geometry.notificationFontSizes.length > 0, `Expected ${tier} notification fixture typography to be measurable.`);
+      assert(geometry.notificationTitlesUseH6 && geometry.notificationFontSizes.length > 0 && geometry.notificationFontSizes.every(fontSize => fontSize === geometry.h6FontSize), `Expected ${tier} notification headings to carry bf-h6 and resolve its font size (${geometry.h6FontSize}); got classes=${geometry.notificationTitlesUseH6}, sizes=${geometry.notificationFontSizes.join(", ")}.`);
     }
 
     const dismissal = page.locator(".bf-notification-close");

@@ -396,6 +396,34 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
 
     await page.goto(`${origin}/demo/components/divided-section.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    const dividedTierSelect = page.locator("[data-page-chrome-tier-select]");
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await dividedTierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const listRhythm = await page.locator(".bf-divided-section-list").first().evaluate(list => {
+        const items = Array.from(list.querySelectorAll<HTMLElement>(".bf-divided-section-item"));
+        return {
+          isStack: list.classList.contains("bf-stack"),
+          rowGap: Number.parseFloat(getComputedStyle(list).rowGap),
+          items: items.map(item => {
+            const styles = getComputedStyle(item);
+            const dividerStyles = getComputedStyle(item, "::before");
+            return {
+              borderStart: Number.parseFloat(styles.borderBlockStartWidth),
+              dividerBlockSize: Number.parseFloat(dividerStyles.blockSize),
+              dividerInsetStart: Number.parseFloat(dividerStyles.insetBlockStart),
+              marginStart: Number.parseFloat(styles.marginBlockStart),
+              paddingEnd: Number.parseFloat(styles.paddingBlockEnd),
+              paddingStart: Number.parseFloat(styles.paddingBlockStart)
+            };
+          })
+        };
+      });
+      assert(listRhythm.isStack && listRhythm.rowGap === 24, `Expected ${tier} divided-section list to be a bf-stack with a fixed 24px gap.`);
+      assert(listRhythm.items.every(item => item.paddingStart === 0 && item.paddingEnd === 0), `Expected ${tier} divided-section items to own no block padding.`);
+      assert(listRhythm.items[0]?.borderStart === 0 && listRhythm.items[0]?.marginStart === 0, `Expected ${tier} first divided-section item to start without divider compensation.`);
+      assert(listRhythm.items.slice(1).every(item => item.borderStart === 0 && item.marginStart === 0 && item.dividerBlockSize === 1 && item.dividerInsetStart === -12), `Expected ${tier} divided-section dividers to paint outside layout at the centre of the container-owned gap.`);
+    }
     const dividedState = await page.locator(".bf-divided-section").first().evaluate(root => {
       const header = root.querySelector<HTMLElement>(".bf-divided-section-header")?.getBoundingClientRect();
       const content = root.querySelector<HTMLElement>(".bf-divided-section-content")?.getBoundingClientRect();
