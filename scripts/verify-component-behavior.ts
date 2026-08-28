@@ -2241,15 +2241,18 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
 
 async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
   const browser = await openBrowser();
 
   try {
-    const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+    const page = await browser.newPage({ viewport: { width: 1800, height: 900 } });
     const readGeometry = async (stylesheet: string, bodyClass: string) => {
       await page.setContent(`<!doctype html>
         <link rel="stylesheet" href="${origin}/demo/demo-fonts.css">
         <link rel="stylesheet" href="${origin}${stylesheet}">
-        <body class="bf-theme ${bodyClass}">
+        <body class="bf-theme ${bodyClass}" style="margin:0">
+          <div class="bf-page"><div class="bf-grid"><span>Fluid grid</span></div></div>
+          <div class="bf-fixed-width is-start-aligned">Bounded row</div>
           <input class="bf-input" value="Parity">
           <button class="bf-button">Parity</button>
           <section class="bf-panel"><header class="bf-panel-header"><h2 class="bf-panel-title">Parity</h2></header></section>
@@ -2263,7 +2266,10 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         const button = document.querySelector<HTMLElement>(".bf-button");
         const header = document.querySelector<HTMLElement>(".bf-panel-header");
         const status = document.querySelector<HTMLElement>(".bf-status-label");
-        if (!input || !button || !header || !status) {
+        const appPage = document.querySelector<HTMLElement>(".bf-page");
+        const appGrid = appPage?.querySelector<HTMLElement>(".bf-grid");
+        const fixedWidth = document.querySelector<HTMLElement>(".bf-fixed-width");
+        if (!input || !button || !header || !status || !appPage || !appGrid || !fixedWidth) {
           throw new Error("Missing surface parity fixture.");
         }
 
@@ -2278,11 +2284,16 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           panelPaddingStart: Number.parseFloat(headerStyles.paddingBlockStart) || 0,
           panelPaddingEnd: Number.parseFloat(headerStyles.paddingBlockEnd) || 0,
           panelGap: Number.parseFloat(headerStyles.gap) || 0,
-          statusHeight: status.getBoundingClientRect().height
+          statusHeight: status.getBoundingClientRect().height,
+          pageWidth: appPage.getBoundingClientRect().width,
+          gridWidth: appGrid.getBoundingClientRect().width,
+          fixedStart: fixedWidth.getBoundingClientRect().left,
+          fixedWidth: fixedWidth.getBoundingClientRect().width
         };
       });
     };
 
+    const directCaps: number[] = [];
     for (const tier of tiers) {
       const direct = await readGeometry(`/dist/tiers/${tier}/styles.css`, "");
       const classSwitched = await readGeometry("/dist/tiers/editorial/styles.css", `bf-tier-${tier}`);
@@ -2293,7 +2304,18 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           `Expected direct ${tier} ${key} (${direct[key]}px) to match class-switched geometry (${classSwitched[key]}px).`
         );
       }
+
+      assert(Math.abs(direct.fixedWidth - expectedCapPx[tier]) <= 1, `Expected direct ${tier} bf-fixed-width to resolve to ${expectedCapPx[tier]}px, got ${direct.fixedWidth}px.`);
+      assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
+      directCaps.push(direct.fixedWidth);
+      if (tier === "app") {
+        assert(direct.pageWidth > direct.fixedWidth + 100 && direct.gridWidth > direct.fixedWidth + 100, `Expected direct App bf-page/grid to stay fluid beyond the ${direct.fixedWidth}px fixed-width cap; page=${direct.pageWidth}px, grid=${direct.gridWidth}px.`);
+        assert(classSwitched.pageWidth > classSwitched.fixedWidth + 100 && classSwitched.gridWidth > classSwitched.fixedWidth + 100, `Expected class-switched App bf-page/grid to stay fluid beyond the ${classSwitched.fixedWidth}px fixed-width cap; page=${classSwitched.pageWidth}px, grid=${classSwitched.gridWidth}px.`);
+      } else {
+        assert(direct.pageWidth <= expectedCapPx[tier] + 1, `Expected ${tier} bf-page to retain its ${expectedCapPx[tier]}px cap, got ${direct.pageWidth}px.`);
+      }
     }
+    assert(directCaps.every((cap, index) => index === 0 || cap <= directCaps[index - 1]), `Expected rendered fixed-width caps to be non-increasing, got ${directCaps.join(" >= ")}px.`);
   } finally {
     await browser.close();
   }

@@ -268,14 +268,19 @@ into a broader tier set.
 
 The default theme uses Ubuntu Sans Variable and generates metric-driven typography tokens, spacing tokens, layout values, component density tokens, and a published surface manifest. Four first-class tiers plus two legacy preset aliases:
 
-| Tier/Preset | Purpose |
-|---|---|
-| `editorial` | Root default, widest long-form composition |
-| `documentation` | Tighter chapter-reading tier |
-| `app` | Canonical-facing application chrome |
-| `os` | Dense OS-style tier with metric alignment and compact control geometry |
+| Tier/Preset | Content cap | Purpose |
+|---|---:|---|
+| `editorial` | `90rem` | Root default, widest long-form composition |
+| `documentation` | `80rem` | Tighter chapter-reading tier |
+| `app` | `60rem` | Fluid application chrome with a cap only on explicit `bf-fixed-width` rows |
+| `os` | `60rem` | Dense OS-style tier with metric alignment and compact control geometry |
 
 Legacy aliases: `prose` → editorial, `app-tier` → app.
+
+The caps are a non-increasing density progression (`90 >= 80 >= 60 >= 60`).
+App `.bf-page` and application grids remain uncapped and fluid; the App/OS
+value governs only explicit bounded content. Tier and density are currently one
+coupled choice, not independent axes.
 
 Independent surface contract:
 

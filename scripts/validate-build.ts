@@ -246,6 +246,37 @@ function validateTierSurfaceParity(
   }
 }
 
+function validateTierContentCaps(
+  sharedCss: string,
+  tierArtifacts: Record<string, { tokens: Record<string, unknown>; css: string; }>
+): void {
+  const expectedCaps = new Map([
+    ["editorial", "90rem"],
+    ["documentation", "80rem"],
+    ["app", "60rem"],
+    ["os", "60rem"]
+  ]);
+  const resolvedCaps: number[] = [];
+
+  for (const tierName of tierNames) {
+    const artifact = tierArtifacts[tierName];
+    assert(artifact, `Expected generated artifacts for tier "${tierName}" while validating content caps.`);
+    const layout = (artifact.tokens.layout ?? {}) as Record<string, unknown>;
+    const expected = expectedCaps.get(tierName);
+    const direct = customPropertiesForSelector(artifact.css, ":where(.bf-theme)").get("--bf-content-max-width");
+    const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`).get("--bf-content-max-width");
+
+    assert(layout.contentMaxWidth === expected, `Expected ${tierName} content cap to resolve to ${expected}, got ${layout.contentMaxWidth}.`);
+    assert(direct === expected && scoped === expected, `Expected ${tierName} direct/scoped content caps to both resolve to ${expected}; direct=${direct}, scoped=${scoped}.`);
+    resolvedCaps.push(parseRemValue(layout.contentMaxWidth));
+  }
+
+  assert(resolvedCaps.every((cap, index) => index === 0 || cap <= resolvedCaps[index - 1]), `Expected tier caps to be non-increasing in editorial/documentation/app/os order, got ${resolvedCaps.join(" >= ")}rem.`);
+  assert(tierArtifacts.app.css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected the direct App bundle to preserve fluid bf-page geometry despite its 60rem fixed-width token.");
+  assert(tierArtifacts.app.css.includes(":where(.bf-theme) :where(.bf-page),\n:where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected the direct App bundle's unscoped default surface to preserve fluid bf-page geometry.");
+  assert(sharedCss.includes(":where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected shared App class switching to preserve fluid bf-page geometry despite its 60rem fixed-width token.");
+}
+
 async function validatePublicRuntimeAndTypes(indexDts: string, readmeMd: string): Promise<void> {
   const publicApi = await import("../dist/index.js");
   assert(Array.isArray(publicApi.tierNames), "Expected the package root runtime to export tierNames.");
@@ -986,6 +1017,7 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(roles.h2.fontWeight === 300, "Expected the app-tier preset h2 to use the lighter Ubuntu Sans pairing.");
   assert(layout.gridGapInline === '1.5rem', "Expected the app-tier preset inline grid gap token to stay at the 24px application gutter.");
   assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 32px application outer margin.");
+  assert(layout.contentMaxWidth === '60rem', "Expected the app-tier fixed-width token to use the derived 60rem cap.");
   assert(components.controlBlockPadding === '0.5rem', "Expected the app-tier preset regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
   assert(components.controlCompactBlockPadding === '0.375rem', "Expected the app-tier preset compact control block padding to preserve the legacy 2rem inline control box height.");
   assert(components.controlInlinePadding === '0.5rem', "Expected the app-tier preset compatibility control padding alias to match the action-surface spacing.");
@@ -1094,7 +1126,7 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   assert(roles.h5.letterSpacing === "0.05em", "Expected the documentation h5 role to expose five-percent letter spacing.");
   assert(roles.h6.fontSize === "1.125rem", "Expected the documentation tier h6 role font size to be 1.125rem.");
   assert(fontSizes.size === 4, "Expected the documentation tier to expose distinct heading and body font sizes.");
-  assert(layout.contentMaxWidth === "96rem", "Expected the documentation tier content width to widen to 96rem.");
+  assert(layout.contentMaxWidth === "80rem", "Expected the documentation tier content width to use the derived 80rem documentation cap.");
   assert(layout.measure === "38rem", "Expected the documentation tier reading measure to tighten to 38rem.");
   assert(layout.gridGapInline === "1.5rem", "Expected the documentation tier inline grid gap token to be 1.5rem.");
   assert(layout.gridGapBlock === "1.5rem", "Expected the documentation tier block grid gap token to be 1.5rem.");
@@ -1183,6 +1215,7 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(!roles.h6.fontVariantCaps, "Expected the OS tier h6 to remain plain text rather than small-caps.");
   assert(fontSizes.size === 3, "Expected the OS tier to stay on the canonical three-step editorial size ladder at denser values.");
   assert(layout.measure === "30rem", "Expected the OS tier reading measure to scale down to 30rem.");
+  assert(layout.contentMaxWidth === "60rem", "Expected the OS tier content cap not to exceed the 60rem App cap.");
   assert(layout.sectionSpace === "3rem", "Expected the OS tier section rhythm to scale down to 3rem.");
   assert(layout.sectionSpaceDeep === "6rem", "Expected the OS tier deep section rhythm to scale down to 6rem.");
   assert(layout.gridGapInline === "1rem", "Expected the OS tier inline grid gap token to provide the x-small 16px gutter.");
@@ -1332,6 +1365,12 @@ async function main(): Promise<void> {
   runInvariant("Surface manifest (app preset)", () => validateSurfaceManifest(appTierPreset.surfaces, "app"));
   runInvariant("Custom surface manifest (IBM Plex)", () => validateCustomSurfaceManifest(ibmPlexEngineSmoke.surfaces, "ibm-plex-engine-smoke"));
   runInvariant("Four-tier CSS/token parity", () => validateTierSurfaceParity(defaultTheme.css, {
+    editorial: editorialTier,
+    documentation: documentationTier,
+    app: appTier,
+    os: osTier
+  }));
+  runInvariant("Tier content-cap progression", () => validateTierContentCaps(defaultTheme.css, {
     editorial: editorialTier,
     documentation: documentationTier,
     app: appTier,

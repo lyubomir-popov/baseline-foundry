@@ -472,6 +472,6 @@ ${capEngineDemo}
 
 ${componentsCss(tokens, themeSurfaces)}
 
-${gridCss()}${presetCss}
+${gridCss(appScopes)}${presetCss}
 `;
 }
