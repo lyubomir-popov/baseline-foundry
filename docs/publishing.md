@@ -43,8 +43,9 @@ pins the supported npm CLI, and no npm write token or recovery code is used.
    exercises all runtime and asset entry points in an empty consumer.
 3. Commit and push the exact release candidate to `main`.
 4. Dispatch `.github/workflows/publish.yml` with
-   `resume_after_publish=false`. The workflow builds the gitignored package
-   outputs before its preflight, which requires clean `main`, exact
+   `resume_after_publish=false`. The workflow bootstraps the pinned demo font
+   and builds the gitignored package outputs before its preflight, which
+   requires clean `main`, exact
    `origin/main`, matching lockfile metadata, an unused npm version and tag, and
    the allowlisted package contents.
 5. `npm publish` obtains a short-lived OIDC credential and owns the sole

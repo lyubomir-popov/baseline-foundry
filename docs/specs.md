@@ -27,7 +27,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 | 011 Site shell primitives | [`011-site-shell-primitives/`](spec-archive/011-site-shell-primitives/) | Released at `1293bcc` on 2026-08-27; full BF tests, capture QA, browser behavior and visual review passed. |
 | 012 Hero divider and quiet linked titles | [`012-hero-link-contracts/`](spec-archive/012-hero-link-contracts/) | Released at `4d1b914` on 2026-08-27; linked titles remain blue and heroes own a rhythm-preserving default divider. |
 | 013 Sites container-owned spacing | [`013-sites-container-spacing/`](spec-archive/013-sites-container-spacing/) | Released at `2c5587d` on 2026-08-27; renumbered after archive to resolve the duplicate 012 identifier. All Sites rhythm is composed with nested stacks, with downstream Registry proof at `b388f85`. |
-| 014 Framework health hardening | [`014-framework-health-hardening/`](spec-archive/014-framework-health-hardening/) | Accepted and merged through PR #1 at `181d64d` on 2026-08-28; both supported Node release gates passed. Version 0.1.4 remains pending after two safely pre-publication workflow hardening fixes. |
+| 014 Framework health hardening | [`014-framework-health-hardening/`](spec-archive/014-framework-health-hardening/) | Accepted and merged through PR #1 at `181d64d` on 2026-08-28; both supported Node release gates passed. Version 0.1.4 remains pending after clean-checkout publication workflow hardening. |
 
 ## Candidate specifications
 

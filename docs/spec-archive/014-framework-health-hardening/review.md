@@ -153,3 +153,8 @@ with the repository workflow.
   validation had inherited build outputs. The workflow now performs the
   deterministic build before package-content preflight; that output is also the
   input to post-publish tarball checksum comparison.
+- Clean-output fix CI run `33197161932` passed both supported Node jobs. Publish
+  run `33197656449` then exposed the final clean-checkout prerequisite before
+  preflight: the ignored IBM Plex experiment font had not been bootstrapped.
+  npm still returned E404 for 0.1.4. The publish workflow now mirrors
+  `release:check` by running the pinned font setup before its preflight build.

@@ -3,12 +3,13 @@
 Spec 014 is merged through PR #1 at `181d64d` after both Node 22.14 and Node 24
 release checks passed in GitHub runs `33195228211` and `33195244095`. Its
 package is archived under `docs/spec-archive/014-framework-health-hardening/`.
-Merged-main CI runs `33195836948` and `33196489826` passed both jobs. Publish
-runs `33196344358` and `33197008574` stopped before publication: first on an
-over-escaped version-output expression, then because clean checkout had not yet
-built gitignored package outputs before preflight. npm confirms 0.1.4 remains
-unused. The workflow now builds before package-content preflight; the corrected
-release commit is pending CI and a fresh non-resume publish run.
+Merged-main CI runs `33195836948`, `33196489826` and `33197161932` passed both
+jobs. Publish runs `33196344358`, `33197008574` and `33197656449` stopped before
+publication on, respectively, version-output quoting, absent gitignored build
+outputs, and the ignored experiment font required to generate those outputs.
+npm confirms 0.1.4 remains unused. The workflow now bootstraps the pinned font
+before building and package-content preflight; the corrected release commit is
+pending CI and a fresh non-resume publish run.
 Preserve every unmerged or semantic edit, all named `tmp/` work, and the sibling
 Vanilla `yarn.lock`.
 
