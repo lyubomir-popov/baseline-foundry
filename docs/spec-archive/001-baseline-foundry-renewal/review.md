@@ -14,6 +14,16 @@ and `.bf-h5` now exclusively own that small-caps presentation. The amended
 task and public contract above supersede the original Spec 001 eyebrow name;
 no compatibility alias or second implementation is retained.
 
+## 2026-08-28 browser-gate disposition
+
+Spec 014 served the current demo and retried the explicitly requested in-app
+browser. Runtime discovery again exposed Chrome only; the requested backend was
+unavailable and Chrome was not substituted. The accepted 2026-08-21 owner
+disposition already approved merge with implementation and automated closeout
+complete. T102/T105 are therefore closed as an explicit waiver, not as a claim
+that the missing visual review occurred. All automated and later ordinary
+browser evidence below remains valid.
+
 ## 2026-08-21 owner closeout
 
 The owner directed the feature branch to be wrapped up and merged before the

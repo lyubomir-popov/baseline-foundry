@@ -2,9 +2,15 @@ name: Publish npm package
 
 on:
   workflow_dispatch:
+    inputs:
+      resume_after_publish:
+        description: Resume registry verification and GitHub release creation without republishing
+        required: false
+        default: false
+        type: boolean
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -14,6 +20,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v7
         with:
@@ -21,6 +29,49 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
+      - run: npm install --global npm@11.19.0
       - run: npm ci
       - run: npx playwright install chromium
-      - run: npm publish
+
+      - id: package
+        shell: bash
+        run: echo "version=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+
+      - name: Guard release candidate
+        shell: bash
+        run: >-
+          npm run release:preflight -- --expected-ref main
+          ${{ inputs.resume_after_publish && '--resume' || '' }}
+
+      - name: Publish through npm OIDC
+        if: ${{ !inputs.resume_after_publish }}
+        run: npm publish
+
+      - name: Verify exact registry package
+        run: npm run release:verify -- --version ${{ steps.package.outputs.version }}
+
+      - name: Prepare release assets
+        id: assets
+        shell: bash
+        run: |
+          npm pack --json > npm-pack.json
+          archive=$(node -p "JSON.parse(require('fs').readFileSync('npm-pack.json', 'utf8'))[0].filename")
+          local_sha1=$(sha1sum "$archive" | cut -d ' ' -f 1)
+          registry_sha1=$(npm view "baseline-foundry@${{ steps.package.outputs.version }}" dist.shasum)
+          test "$local_sha1" = "$registry_sha1"
+          sha1sum "$archive" > checksums.txt
+          sha256sum "$archive" >> checksums.txt
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+
+      - name: Create or resume GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.package.outputs.version }}
+          ARCHIVE: ${{ steps.assets.outputs.archive }}
+        shell: bash
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ARCHIVE" checksums.txt --clobber
+          else
+            gh release create "$TAG" "$ARCHIVE" checksums.txt --target "$GITHUB_SHA" --title "$TAG" --generate-notes
+          fi

@@ -5,8 +5,12 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-No numbered package is active. Candidate work remains unpromoted until its
-catalogued evidence trigger is met.
+Spec 014, [Framework Health Hardening](../specs/014-framework-health-hardening/spec.md),
+is active on `feat/014-framework-health-hardening`. It owns the audit follow-up
+for deterministic repository state, historical browser evidence, cohesive
+source extraction, release automation, and supported toolchain validation.
+Candidate product work remains unpromoted until its catalogued evidence trigger
+is met.
 
 ## Archive
 

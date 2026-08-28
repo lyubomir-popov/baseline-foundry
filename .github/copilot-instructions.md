@@ -14,5 +14,5 @@ active package's planning artifacts only when the user explicitly requests spec
 or Spec Kit work. Normal small fixes read the task-scoped source and the lean
 owners named by `AGENTS.md`.
 
-Active Spec Kit plan: [`specs/012-sites-container-spacing/plan.md`](../specs/012-sites-container-spacing/plan.md).
+Active Spec Kit plan: [`specs/014-framework-health-hardening/plan.md`](../specs/014-framework-health-hardening/plan.md).
 <!-- SPECKIT END -->

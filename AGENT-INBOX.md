@@ -1,5 +1,16 @@
 # Agent inbox
 
+Spec 014 is active on `feat/014-framework-health-hardening`. The owner approved
+execution of the audit follow-up, including guarded retirement of the duplicate
+typography worktree and merged historical branches. Preserve every unmerged or
+semantic edit, all named `tmp/` work, and the sibling Vanilla `yarn.lock`.
+
+The implementation and adversarial review are complete. The exact 0.1.4
+candidate is in final local validation; merge, archive and publication remain.
+Release preflight now fails closed on registry errors, negative fixtures use the
+actual latest published version, and the publish workflow compares its local
+tarball SHA-1 to npm's recorded shasum before creating GitHub release assets.
+
 Baseline Foundry 0.1.3 is released from `83d6294` / `v0.1.3` on npm and GitHub.
 The registry shasum and attached GitHub tarball both resolve to
 `947d0f5a69cfaf5b05463229230889b0f0588328`. Clean registry installation passes
@@ -75,6 +86,7 @@ light-inset figures passed the full BF test, capture and browser gates. Spec
 Spec 009 remains released at `be85d46a27d07794ec8f8057b35b557537e60a48`
 and verified in Diagram Registry at `aec3d47`.
 
-Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
-the duplicate `fix/typography-role-class-precedence` worktree. The sibling
-Vanilla checkout has user changes in `yarn.lock`; do not clean or update it.
+Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, and `tmp/vanilla-main/`.
+The duplicate `fix/typography-role-class-precedence` worktree was verified as
+line-ending-only and retired under Spec 014 owner approval. The sibling Vanilla
+checkout has user changes in `yarn.lock`; do not clean or update it.

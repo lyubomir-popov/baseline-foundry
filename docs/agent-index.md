@@ -28,6 +28,8 @@ npm run test:behavior
 npm test
 npm run qa:components
 npm run release:check
+npm run release:preflight:test
+npm run release:verify -- --pack-current
 npm run demo:serve -- --host 127.0.0.1
 ```
 
@@ -39,7 +41,9 @@ surfaces.
 Package publication and downstream migration are documented in
 [`publishing.md`](publishing.md). The generated npm tarball, rather than a Git
 source archive, is the distributable because `dist/` is intentionally not
-committed.
+committed. Routine publication is OIDC-only and resumable after the immutable
+npm step; the release workflow owns registry smoke verification, checksums,
+tagging and GitHub release assets.
 
 ## Efficient search and reading
 
