@@ -176,6 +176,7 @@ export function staticContentPortsCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-divided-section-list) {
+  --bf-divided-section-rule-to-content: calc(0.5rem - var(--bf-border-width));
   --bf-stack-space: 1.5rem;
   list-style: none;
   margin: 0;
@@ -193,6 +194,7 @@ export function staticContentPortsCss(): string {
 :where(.bf-theme) :where(.bf-divided-section-item) {
   align-content: start;
   display: grid;
+  margin: 0;
   min-inline-size: 0;
   overflow-wrap: anywhere;
   padding: 0;
@@ -203,7 +205,7 @@ export function staticContentPortsCss(): string {
   background: var(--bf-color-border-low-contrast);
   block-size: var(--bf-border-width);
   content: "";
-  inset-block-start: calc(var(--bf-stack-space) / -2);
+  inset-block-start: calc((var(--bf-divided-section-rule-to-content) + var(--bf-border-width)) * -1);
   inset-inline: 0;
   position: absolute;
 }

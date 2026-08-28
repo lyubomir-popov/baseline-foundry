@@ -92,7 +92,7 @@
     "h6": "h6"
   },
   "layout": {
-    "contentMaxWidthRem": 96,
+    "contentMaxWidthRem": 80,
     "contentPaddingInlineRem": 1.5,
     "measureRem": 38,
     "sectionSpaceBaselineUnits": 12,

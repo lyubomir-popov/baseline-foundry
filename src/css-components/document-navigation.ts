@@ -45,7 +45,11 @@ ${headingTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-in-page-navigation-list) {
+  --bf-stack-space: var(--bf-space-1);
+  align-content: start;
   border-inline-start: var(--bf-bar-thickness) solid var(--bf-color-border-low-contrast);
+  display: grid;
+  gap: var(--bf-stack-space);
   list-style: none;
   margin: 0;
   min-inline-size: 0;
@@ -53,6 +57,9 @@ ${headingTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-in-page-navigation-item) {
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
   margin: 0;
   min-inline-size: 0;
   padding: 0;
@@ -67,7 +74,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   min-inline-size: 0;
   overflow: hidden;
   overflow-wrap: anywhere;
-  padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));
+  padding-block: var(--bf-body-nudge-start) var(--bf-body-nudge-end);
   padding-inline: var(--bf-space-2) 0;
   position: relative;
   text-decoration: none;
@@ -165,6 +172,7 @@ ${bodyCaseTypeStyles}  align-items: center;
   :where(.bf-theme) :where(.bf-in-page-navigation-list) {
     border: 0;
     display: flex;
+    gap: 0;
     grid-column: 1;
     grid-row: 1;
     margin: 0;
@@ -229,7 +237,8 @@ ${bodyCaseTypeStyles}  align-items: center;
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded > .bf-in-page-navigation-nav > .bf-in-page-navigation-list, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) > .bf-in-page-navigation-nav > .bf-in-page-navigation-list) {
     background: var(--bf-color-background-alt);
     border-inline-start: var(--bf-bar-thickness) solid var(--bf-color-border-low-contrast);
-    display: block;
+    display: grid;
+    gap: var(--bf-stack-space);
     grid-column: 1 / -1;
     grid-row: 2;
     /* The mobile nav owns a bottom rule; reserve its thickness within the
@@ -240,20 +249,21 @@ ${bodyCaseTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded .bf-in-page-navigation-item, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) .bf-in-page-navigation-item) {
-    display: block;
+    display: grid;
     max-inline-size: none;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded .bf-in-page-navigation-link, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) .bf-in-page-navigation-link) {
     display: -webkit-box;
     overflow-wrap: anywhere;
-    padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));
+    padding-block: var(--bf-body-nudge-start) var(--bf-body-nudge-end);
     padding-inline: var(--bf-space-2) 0;
     white-space: normal;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded .bf-in-page-navigation-list .bf-in-page-navigation-list, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) .bf-in-page-navigation-list .bf-in-page-navigation-list) {
-    display: block;
+    display: grid;
+    gap: var(--bf-stack-space);
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded .bf-in-page-navigation-link.is-active, .bf-in-page-navigation.is-expanded .bf-in-page-navigation-link[aria-current], .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) .bf-in-page-navigation-link.is-active, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) .bf-in-page-navigation-link[aria-current])::before {
@@ -374,6 +384,10 @@ ${headingTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-list) {
+  --bf-stack-space: var(--bf-space-1);
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
   list-style: none;
   margin: 0;
   min-inline-size: 0;
@@ -381,6 +395,9 @@ ${headingTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-item) {
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
   margin: 0;
   min-inline-size: 0;
   padding: 0;
@@ -391,7 +408,7 @@ ${bodyTypeStyles}  color: var(--bf-color-link-default);
   display: block;
   margin: 0;
   overflow-wrap: anywhere;
-  padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));
+  padding-block: var(--bf-body-nudge-start) var(--bf-body-nudge-end);
   text-decoration: none;
 }
 

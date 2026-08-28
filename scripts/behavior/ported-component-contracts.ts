@@ -180,6 +180,57 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
       }
     }
 
+    await page.setViewportSize({ width: 1036, height: 960 });
+    await page.goto(`${origin}/demo/components/in-page-navigation.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+    const inPageTierSelect = page.locator("[data-page-chrome-tier-select]");
+
+    for (const tier of tiers) {
+      await inPageTierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const state = await page.evaluate(() => {
+        const roots = Array.from(document.querySelectorAll<HTMLElement>(".bf-in-page-navigation"));
+        const desktop = roots[0];
+        const expanded = roots[1];
+        if (!desktop || !expanded) return null;
+        desktop.style.inlineSize = "50rem";
+        const probeStart = document.createElement("span");
+        const probeEnd = document.createElement("span");
+        const probeGap = document.createElement("span");
+        probeStart.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-body-nudge-start)";
+        probeEnd.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-body-nudge-end)";
+        probeGap.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-space-1)";
+        desktop.append(probeStart, probeEnd, probeGap);
+        const expectedStart = probeStart.getBoundingClientRect().height;
+        const expectedEnd = probeEnd.getBoundingClientRect().height;
+        const expectedGap = probeGap.getBoundingClientRect().height;
+        const rootStates = [desktop, expanded].map(root => ({
+          links: Array.from(root.querySelectorAll<HTMLElement>(".bf-in-page-navigation-link")).map(link => {
+            const style = getComputedStyle(link);
+            return [Number.parseFloat(style.paddingBlockStart), Number.parseFloat(style.paddingBlockEnd)];
+          }),
+          listGaps: Array.from(root.querySelectorAll<HTMLElement>(".bf-in-page-navigation-list")).map(list => Number.parseFloat(getComputedStyle(list).rowGap)),
+          itemGaps: Array.from(root.querySelectorAll<HTMLElement>(".bf-in-page-navigation-item")).map(item => Number.parseFloat(getComputedStyle(item).rowGap)),
+          overflow: root.scrollWidth - root.clientWidth
+        }));
+        const result = { expectedStart, expectedEnd, expectedGap, desktop: rootStates[0], expanded: rootStates[1] };
+        probeStart.remove();
+        probeEnd.remove();
+        probeGap.remove();
+        return result;
+      });
+      assert(state, `Expected ${tier} in-page-navigation geometry.`);
+      for (const [label, rootState] of [["desktop", state.desktop], ["expanded", state.expanded]] as const) {
+        assert(rootState.links.every(([start, end]) => Math.abs(start - state.expectedStart) <= 0.1 && Math.abs(end - state.expectedEnd) <= 0.1), `Expected ${tier} ${label} in-page links to retain metric-only block padding; expected ${state.expectedStart}/${state.expectedEnd}, got ${JSON.stringify(rootState.links)}.`);
+        assert(rootState.listGaps.every(gap => Math.abs(gap - state.expectedGap) <= 0.1) && rootState.itemGaps.every(gap => Math.abs(gap - state.expectedGap) <= 0.1), `Expected ${tier} ${label} in-page lists/items to own a one-baseline gap; expected ${state.expectedGap}, got lists=${state.desktop.listGaps}, items=${state.desktop.itemGaps}.`);
+        assert(rootState.overflow <= 1, `Expected ${tier} ${label} in-page navigation to avoid inline overflow; got ${rootState.overflow}px.`);
+      }
+      const expandedCurrent = page.locator(".bf-in-page-navigation.is-expanded .bf-in-page-navigation-link[aria-current]");
+      await expandedCurrent.focus();
+      assert(await expandedCurrent.evaluate(link => document.activeElement === link && getComputedStyle(link).outlineStyle !== "none"), `Expected ${tier} expanded in-page current link to retain visible keyboard focus.`);
+    }
+
     await page.goto(`${origin}/demo/components/table-of-contents.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
     await disableDemoChromeHitTesting(page);
@@ -201,11 +252,15 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           const spaceTwoProbe = document.createElement("span");
           const sectionSpaceProbe = document.createElement("span");
           const textProbe = document.createElement("span");
+          const nudgeStartProbe = document.createElement("span");
+          const nudgeEndProbe = document.createElement("span");
           spaceOneProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-1)";
           spaceTwoProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-2)";
           sectionSpaceProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
           textProbe.style.cssText = "position:absolute;visibility:hidden;color:var(--bf-color-text-default)";
-          root.append(spaceOneProbe, spaceTwoProbe, sectionSpaceProbe, textProbe);
+          nudgeStartProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-body-nudge-start)";
+          nudgeEndProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-body-nudge-end)";
+          root.append(spaceOneProbe, spaceTwoProbe, sectionSpaceProbe, textProbe, nudgeStartProbe, nudgeEndProbe);
           const direction = getComputedStyle(root).direction;
           const nestedRect = nested?.getBoundingClientRect();
           const parentRect = parentLink?.getBoundingClientRect();
@@ -225,6 +280,14 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
             dividerBlockSize: Number.parseFloat(dividerStyle?.blockSize ?? "0"),
             dividerToHeading: secondSection && secondHeading ? secondHeading.getBoundingClientRect().top - secondSection.getBoundingClientRect().top : Number.POSITIVE_INFINITY,
             nestedMargin: Number.parseFloat(getComputedStyle(nested).marginInlineStart),
+            linkPadding: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-link")).map(link => {
+              const style = getComputedStyle(link);
+              return [Number.parseFloat(style.paddingBlockStart), Number.parseFloat(style.paddingBlockEnd)];
+            }),
+            listGaps: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-list")).map(list => Number.parseFloat(getComputedStyle(list).rowGap)),
+            itemGaps: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-item")).map(item => Number.parseFloat(getComputedStyle(item).rowGap)),
+            expectedNudgeStart: nudgeStartProbe.getBoundingClientRect().height,
+            expectedNudgeEnd: nudgeEndProbe.getBoundingClientRect().height,
             expectedSpaceOne: spaceOneProbe.getBoundingClientRect().width,
             expectedSpaceTwo: spaceTwoProbe.getBoundingClientRect().width,
             logicalIndent: direction === "rtl" ? parentRect.right - nestedRect.right : nestedRect.left - parentRect.left,
@@ -238,12 +301,16 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           spaceTwoProbe.remove();
           sectionSpaceProbe.remove();
           textProbe.remove();
+          nudgeStartProbe.remove();
+          nudgeEndProbe.remove();
           return result;
         }, width);
         assert(state, `Expected ${tier} table-of-contents state at ${width}.`);
         const expectedIndent = expectedSpace === "var(--bf-space-1)" ? state.expectedSpaceOne : state.expectedSpaceTwo;
         assert(Math.abs(state.nestedMargin - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} at ${width}; margin=${state.nestedMargin}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
         assert(Math.abs(state.sectionGap - state.expectedSectionGap) <= 0.1 && state.sectionPadding.every(([start, end]) => start === 0 && end === 0), `Expected ${tier} table-of-contents sections to receive their shallow separation from the parent stack without item padding at ${width}.`);
+        assert(state.linkPadding.every(([start, end]) => Math.abs(start - state.expectedNudgeStart) <= 0.1 && Math.abs(end - state.expectedNudgeEnd) <= 0.1), `Expected ${tier} table-of-contents links to retain metric-only block padding at ${width}; expected ${state.expectedNudgeStart}/${state.expectedNudgeEnd}, got ${JSON.stringify(state.linkPadding)}.`);
+        assert(state.listGaps.every(gap => Math.abs(gap - state.expectedSpaceOne) <= 0.1) && state.itemGaps.every(gap => Math.abs(gap - state.expectedSpaceOne) <= 0.1), `Expected ${tier} table-of-contents lists/items to own a one-baseline gap at ${width}; expected ${state.expectedSpaceOne}, got lists=${state.listGaps}, items=${state.itemGaps}.`);
         assert(state.dividerBlockSize === 1 && state.dividerToHeading < state.expectedSectionGap, `Expected ${tier} table-of-contents divider to paint tightly with the following heading instead of occupying the parent-owned section gap at ${width}.`);
         assert(state.currentState === "location" && Number.parseFloat(state.currentWeight) >= 600 && state.currentColor === state.defaultTextColor, `Expected ${tier} table-of-contents current link to expose its semantic current state and default-text emphasis at ${width}.`);
         assert(state.rootOverflow <= 1, `Expected ${tier} table-of-contents to avoid inline overflow at ${width}; got ${state.rootOverflow}px.`);
@@ -427,9 +494,15 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
       await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
       const listRhythm = await page.locator(".bf-divided-section-list").first().evaluate(list => {
         const items = Array.from(list.querySelectorAll<HTMLElement>(".bf-divided-section-item"));
+        const distanceProbe = document.createElement("span");
+        distanceProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-divided-section-rule-to-content)";
+        list.append(distanceProbe);
+        const expectedRuleToContent = distanceProbe.getBoundingClientRect().height;
+        distanceProbe.remove();
         return {
           isStack: list.classList.contains("bf-stack"),
           rowGap: Number.parseFloat(getComputedStyle(list).rowGap),
+          expectedRuleToContent,
           items: items.map(item => {
             const styles = getComputedStyle(item);
             const dividerStyles = getComputedStyle(item, "::before");
@@ -437,6 +510,7 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
               borderStart: Number.parseFloat(styles.borderBlockStartWidth),
               dividerBlockSize: Number.parseFloat(dividerStyles.blockSize),
               dividerInsetStart: Number.parseFloat(dividerStyles.insetBlockStart),
+              marginEnd: Number.parseFloat(styles.marginBlockEnd),
               marginStart: Number.parseFloat(styles.marginBlockStart),
               paddingEnd: Number.parseFloat(styles.paddingBlockEnd),
               paddingStart: Number.parseFloat(styles.paddingBlockStart)
@@ -445,9 +519,9 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
         };
       });
       assert(listRhythm.isStack && listRhythm.rowGap === 24, `Expected ${tier} divided-section list to be a bf-stack with a fixed 24px gap.`);
-      assert(listRhythm.items.every(item => item.paddingStart === 0 && item.paddingEnd === 0), `Expected ${tier} divided-section items to own no block padding.`);
-      assert(listRhythm.items[0]?.borderStart === 0 && listRhythm.items[0]?.marginStart === 0, `Expected ${tier} first divided-section item to start without divider compensation.`);
-      assert(listRhythm.items.slice(1).every(item => item.borderStart === 0 && item.marginStart === 0 && item.dividerBlockSize === 1 && item.dividerInsetStart === -12), `Expected ${tier} divided-section dividers to paint outside layout at the centre of the container-owned gap.`);
+      assert(listRhythm.items.every(item => item.paddingStart === 0 && item.paddingEnd === 0 && item.marginStart === 0 && item.marginEnd === 0), `Expected ${tier} divided-section items to own no block padding or margin.`);
+      assert(listRhythm.items[0]?.borderStart === 0, `Expected ${tier} first divided-section item to start without divider compensation.`);
+      assert(listRhythm.items.slice(1).every(item => item.borderStart === 0 && item.dividerBlockSize === 1 && Math.abs((-item.dividerInsetStart - item.dividerBlockSize) - listRhythm.expectedRuleToContent) <= 0.1 && (listRhythm.rowGap + item.dividerInsetStart) > listRhythm.expectedRuleToContent), `Expected ${tier} divided-section dividers to occupy the final half-rem before following content; gap=${listRhythm.rowGap}px, expected clear distance=${listRhythm.expectedRuleToContent}px, items=${JSON.stringify(listRhythm.items)}.`);
     }
     const dividedState = await page.locator(".bf-divided-section").first().evaluate(root => {
       const header = root.querySelector<HTMLElement>(".bf-divided-section-header")?.getBoundingClientRect();

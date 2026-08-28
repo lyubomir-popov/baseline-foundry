@@ -197,6 +197,13 @@ export function validateRenewalComponentContracts(
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-in-page-navigation)", {
     "margin": "0"
   }, "in-page navigation leaves external spacing to its parent stack");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-in-page-navigation-list)", {
+    "display": "grid",
+    "gap": "var(--bf-stack-space)"
+  }, "in-page navigation lists own desktop row rhythm");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-in-page-navigation-link)", {
+    "padding-block": "var(--bf-body-nudge-start) var(--bf-body-nudge-end)"
+  }, "in-page navigation links retain metric padding only");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents)", {
     "display": "grid",
     "gap": "var(--bf-table-of-contents-section-gap)",
@@ -207,6 +214,32 @@ export function validateRenewalComponentContracts(
     "gap": "var(--bf-stack-space)",
     "padding": "0"
   }, "table-of-contents sections own heading-to-navigation spacing without item padding");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-list)", {
+    "display": "grid",
+    "gap": "var(--bf-stack-space)"
+  }, "table-of-contents lists own inter-row rhythm");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-item)", {
+    "display": "grid",
+    "gap": "var(--bf-stack-space)",
+    "padding": "0"
+  }, "table-of-contents items own nested-list rhythm without padding");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-link)", {
+    "padding-block": "var(--bf-body-nudge-start) var(--bf-body-nudge-end)"
+  }, "table-of-contents links retain metric padding only");
+  assert(!css.includes("padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));"), "Expected document-navigation text links to contain no hidden semantic half-space padding.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-list)", {
+    "--bf-divided-section-rule-to-content": "calc(0.5rem - var(--bf-border-width))",
+    "--bf-stack-space": "1.5rem"
+  }, "divided-section list owns its fixed gap and rule-to-content contract");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-item)", {
+    "margin": "0",
+    "padding": "0"
+  }, "divided-section items remain free of semantic block spacing");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-item + .bf-divided-section-item)::before", {
+    "block-size": "var(--bf-border-width)",
+    "inset-block-start": "calc((var(--bf-divided-section-rule-to-content) + var(--bf-border-width)) * -1)"
+  }, "divided-section rules occupy the final half-rem before following content");
+  assert(!css.includes("inset-block-start: calc(var(--bf-stack-space) / -2);"), "Expected divided-section rules not to float at the midpoint of the parent-owned gap.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notice, .bf-notice.is-information, .bf-notice.is-positive, .bf-notice.is-caution, .bf-notice.is-negative)", {
     "margin": "0"
   }, "notice surfaces leave external spacing to their parent stack");

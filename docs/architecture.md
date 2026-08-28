@@ -28,6 +28,17 @@ Every tier is available as:
 Direct and class-scoped paths must resolve equal public tokens and representative
 component geometry.
 
+The built-in content caps form a non-increasing density progression:
+Editorial `90rem`, Documentation `80rem`, App `60rem`, and OS `60rem`.
+Documentation follows the rounded site-grid maximum; the App value applies only
+to explicit bounded rows such as `bf-fixed-width`. App `bf-page` and application
+grids remain fluid and edge-to-edge. OS does not exceed App, but stays equal
+until an independent consumer proves a narrower system-surface cap.
+
+Semantic tier and density are not independent BF axes today. Choosing a tier
+selects typography, rhythm, layout values, and component geometry together.
+Consumers must not mix a tier's type metrics with another tier's density tokens.
+
 ## Container-owned rhythm
 
 All four tiers use one ownership model:
