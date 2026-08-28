@@ -105,21 +105,22 @@ Build output includes:
 
 ## Install
 
-Until the first npm-registry publication, install the verified release
-artifact directly:
-
-```bash
-npm install https://github.com/lyubomir-popov/baseline-foundry/releases/download/v0.1.2/baseline-foundry-0.1.2.tgz
-```
-
-Use the attached `.tgz`, not the GitHub source archive: generated `dist/`
-artifacts are intentionally absent from Git history and are included in the
-package tarball. After the public registry package is published, the preferred
-command will be:
+Install the public package from npm:
 
 ```bash
 npm install baseline-foundry
 ```
+
+The verified GitHub release artifact remains available as a fallback for
+environments that cannot reach the npm registry:
+
+```bash
+npm install https://github.com/lyubomir-popov/baseline-foundry/releases/download/v0.1.3/baseline-foundry-0.1.3.tgz
+```
+
+Use the attached `.tgz`, not the GitHub source archive: generated `dist/`
+artifacts are intentionally absent from Git history and are included in the
+package tarball.
 
 The package name stays unscoped so existing imports such as
 `baseline-foundry/styles.css` and `baseline-foundry/build` do not change. See

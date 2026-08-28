@@ -1,21 +1,22 @@
 # Agent inbox
 
-The 0.1.2 release implementation is on `main` at `953da4a`. It consumes the
-immutable baseline-nudge-generator `v1.5.1` GitHub tag, removes the unused
-Puppeteer path, and has zero production or development audit findings. The
-generator release is pushed at `96c926f`/`v1.5.1`. npm publication for both
-repositories remains unavailable until this machine is authenticated; the Git
-tags are the downstream installation source in the meantime.
+The npm bootstrap is active. `@lyubomir-popov/baseline-nudge-generator@1.5.1`
+is published with registry shasum `d3643ea522c742b152428fa4fe0673d174d062a4`;
+BF 0.1.3 consumes the registry range `^1.5.1` and its lockfile resolves that
+exact artifact. The 0.1.3 candidate passes the full release gate, a 145-entry
+package inspection, and a clean consumer smoke test covering the root/build
+APIs plus every built-in tier CSS, token, and surface entry point. The private
+recovery-code file is ignored and is not present in the npm payload.
 
-Public npm distribution is prepared on `main` at `6437869`. The README now
-documents the verified 0.1.2 release-tarball install, `docs/publishing.md` owns
-the first-publication and migration checklist, package metadata preserves the
-unscoped `baseline-foundry` name, and a clean tarball consumer smoke test passes
-for root/build imports plus every built-in tier asset. The name returned no npm
-package on 2026-08-28, but is not reserved until publication. Publish generator
-1.5.1 first, move BF back to its registry dependency, then publish BF 0.1.3 or
-later. Portfolio must stop importing BF's private `src/build.ts` and nested
-development `tsx` before changing its current `file:` dependency.
+Routine npm releases use `.github/workflows/publish.yml` with GitHub Actions
+OIDC instead of a stored npm token. The first `baseline-foundry` publication
+must be completed interactively before its trusted-publisher relationship can
+be attached.
+
+Portfolio remains deliberately untouched. Before changing its current `file:`
+dependency, it must stop importing BF's private `src/build.ts` and nested
+development `tsx`; add `tsx` locally and use the public
+`baseline-foundry/build` export instead.
 
 0.1.2 supersedes 0.1.1 after its new clean runner exposed an ignored local IBM
 Plex experiment font. The release gate now bootstraps the exact `.woff2` asset
