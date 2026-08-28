@@ -16,14 +16,14 @@ the build regenerates all distributable tier surfaces.
 
 ## Technical Context
 
-**Language/Version**: TypeScript 7 on Node.js 22.14+; generated CSS and JSON  
-**Primary Dependencies**: `@lyubomir-popov/baseline-nudge-generator`, PostCSS, Playwright  
-**Storage**: JSON tier configuration and generated filesystem artifacts; no runtime persistence  
-**Testing**: static TypeScript validation, Playwright behavior/baseline geometry, screenshot capture  
-**Target Platform**: standards-based browsers and npm consumers  
-**Project Type**: design-system library and isolated HTML demo catalog  
-**Performance Goals**: no runtime JavaScript or additional selector family for these CSS changes  
-**Constraints**: generated `dist/` files are never hand-edited; App page/grid stays fluid; all directional CSS is logical; four-tier direct/scoped parity is exact  
+**Language/Version**: TypeScript 7 on Node.js 22.14+; generated CSS and JSON
+**Primary Dependencies**: `@lyubomir-popov/baseline-nudge-generator`, PostCSS, Playwright
+**Storage**: JSON tier configuration and generated filesystem artifacts; no runtime persistence
+**Testing**: static TypeScript validation, Playwright behavior/baseline geometry, screenshot capture
+**Target Platform**: standards-based browsers and npm consumers
+**Project Type**: design-system library and isolated HTML demo catalog
+**Performance Goals**: no runtime JavaScript or additional selector family for these CSS changes
+**Constraints**: generated `dist/` files are never hand-edited; App page/grid stays fluid; all directional CSS is logical; four-tier direct/scoped parity is exact
 **Scale/Scope**: four tier configs, two navigation families, one divided-list pattern, their demos and validation contracts
 
 ## Constitution Check

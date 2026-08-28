@@ -223,7 +223,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
       assert(state, `Expected ${tier} in-page-navigation geometry.`);
       for (const [label, rootState] of [["desktop", state.desktop], ["expanded", state.expanded]] as const) {
         assert(rootState.links.every(([start, end]) => Math.abs(start - state.expectedStart) <= 0.1 && Math.abs(end - state.expectedEnd) <= 0.1), `Expected ${tier} ${label} in-page links to retain metric-only block padding; expected ${state.expectedStart}/${state.expectedEnd}, got ${JSON.stringify(rootState.links)}.`);
-        assert(rootState.listGaps.every(gap => Math.abs(gap - state.expectedGap) <= 0.1) && rootState.itemGaps.every(gap => Math.abs(gap - state.expectedGap) <= 0.1), `Expected ${tier} ${label} in-page lists/items to own a one-baseline gap; expected ${state.expectedGap}, got lists=${state.desktop.listGaps}, items=${state.desktop.itemGaps}.`);
+        assert(rootState.listGaps.every(gap => Math.abs(gap - state.expectedGap) <= 0.1) && rootState.itemGaps.every(gap => Math.abs(gap - state.expectedGap) <= 0.1), `Expected ${tier} ${label} in-page lists/items to own a one-baseline gap; expected ${state.expectedGap}, got lists=${rootState.listGaps}, items=${rootState.itemGaps}.`);
         assert(rootState.overflow <= 1, `Expected ${tier} ${label} in-page navigation to avoid inline overflow; got ${rootState.overflow}px.`);
       }
       const expandedCurrent = page.locator(".bf-in-page-navigation.is-expanded .bf-in-page-navigation-link[aria-current]");

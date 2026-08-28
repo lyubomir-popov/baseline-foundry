@@ -1,8 +1,8 @@
 # Feature Specification: Tier Geometry Hardening
 
-**Feature Branch**: `feat/015-tier-geometry-hardening`  
-**Created**: 2026-08-28  
-**Status**: Active  
+**Feature Branch**: `feat/015-tier-geometry-hardening`
+**Created**: 2026-08-28
+**Status**: Active
 **Input**: Producer follow-up from `AGENT-INBOX.md` plus owner review of hidden component padding and divider placement.
 
 ## User Scenarios & Testing

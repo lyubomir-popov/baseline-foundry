@@ -2,6 +2,9 @@ export function gridCss(appScopes: string[] = [":where(.bf-theme.bf-tier-app)"])
   const spanRule = (span: number, indent = ""): string =>
     `${indent}:where(.bf-theme) :where(.bf-grid) > :where(.bf-span-${span}) { grid-column: auto / span ${span}; }`;
   const appPageSelectors = appScopes.map(scope => `${scope} :where(.bf-page)`).join(",\n");
+  const appPageRule = appPageSelectors
+    ? `${appPageSelectors} {\n  max-inline-size: none;\n}`
+    : "";
 
   const baseSpans = [1, 2, 4].map(span => spanRule(span)).join("\n");
   const mediumSpans = [1, 2, 4, 8].map(span => spanRule(span, "  ")).join("\n");
@@ -82,9 +85,7 @@ export function gridCss(appScopes: string[] = [":where(.bf-theme.bf-tier-app)"])
   margin-inline-start: 0;
 }
 
-${appPageSelectors} {
-  max-inline-size: none;
-}
+${appPageRule}
 
 :where(.bf-theme) :where(.bf-panel-content, .bf-accordion-panel) :where(.bf-fixed-width) {
   padding-inline: 0;

@@ -29,7 +29,7 @@
 
 - [x] T012 Regenerate source outputs with `npm run build` and run focused static, behavior, and component tests.
 - [x] T013 Run `npm test` and `npm run qa:components`.
-- [ ] T014 Perform an adversarial source/API review and record findings in `review.md`.
+- [x] T014 Perform an adversarial source/API review and record findings in `review.md`.
 - [ ] T015 Open affected demo routes for owner verification; do not merge, release, tag, or publish.
 
 ## Dependencies

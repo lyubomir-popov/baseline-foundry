@@ -2252,7 +2252,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         <link rel="stylesheet" href="${origin}${stylesheet}">
         <body class="bf-theme ${bodyClass}" style="margin:0">
           <div class="bf-page"><div class="bf-grid"><span>Fluid grid</span></div></div>
-          <div class="bf-fixed-width">Bounded row</div>
+          <div class="bf-fixed-width is-start-aligned">Bounded row</div>
           <input class="bf-input" value="Parity">
           <button class="bf-button">Parity</button>
           <section class="bf-panel"><header class="bf-panel-header"><h2 class="bf-panel-title">Parity</h2></header></section>
@@ -2287,6 +2287,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           statusHeight: status.getBoundingClientRect().height,
           pageWidth: appPage.getBoundingClientRect().width,
           gridWidth: appGrid.getBoundingClientRect().width,
+          fixedStart: fixedWidth.getBoundingClientRect().left,
           fixedWidth: fixedWidth.getBoundingClientRect().width
         };
       });
@@ -2305,6 +2306,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       }
 
       assert(Math.abs(direct.fixedWidth - expectedCapPx[tier]) <= 1, `Expected direct ${tier} bf-fixed-width to resolve to ${expectedCapPx[tier]}px, got ${direct.fixedWidth}px.`);
+      assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
       directCaps.push(direct.fixedWidth);
       if (tier === "app") {
         assert(direct.pageWidth > direct.fixedWidth + 100 && direct.gridWidth > direct.fixedWidth + 100, `Expected direct App bf-page/grid to stay fluid beyond the ${direct.fixedWidth}px fixed-width cap; page=${direct.pageWidth}px, grid=${direct.gridWidth}px.`);

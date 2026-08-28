@@ -1,7 +1,7 @@
 # Review: Tier Geometry Hardening
 
-**Date**: 2026-08-28  
-**Status**: Ready for independent adversarial and owner visual review  
+**Date**: 2026-08-28
+**Status**: Ready for owner visual review
 **Implementation commit**: `5cf6197`
 
 ## Delivered geometry
@@ -47,9 +47,21 @@ All automated gates passed from the feature worktree on 2026-08-28:
   engine illustration was skipped by design and its structural assertions ran
   under `test:build`
 
-## Outstanding independent review
+## Independent adversarial review
 
-- T014 remains open for the parent agent's adversarial source/API review.
+- The root agent reviewed the complete `main...feat/015-tier-geometry-hardening`
+  source, config, documentation, and test diff after the subagent handoff.
+- The review confirmed the requested ownership model and found no unresolved
+  high- or medium-severity product defect.
+- Three low-level hardening findings were fixed: `gridCss([])` no longer emits
+  an empty selector when no App surface is supplied; expanded in-page failures
+  now report their own measured gaps; and the wide direct/scoped parity fixture
+  explicitly exercises `bf-fixed-width is-start-aligned`.
+- The post-fix build, 5,825 static assertions, type check, behavior suite, and
+  diff whitespace check are green.
+
+## Outstanding owner review
+
 - T015 remains open for owner inspection of the layout, TOC, in-page navigation,
   and divided-section demo routes listed in `quickstart.md`.
 - No merge, release, tag, or package publication was performed. A generic
