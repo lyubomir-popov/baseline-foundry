@@ -97,19 +97,23 @@ export function sitesFoundationCss(): string {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
-  padding-block: calc(var(--bf-section-space-deep) / 2);
 }
 
 :where(.bf-theme) :where(.bf-cta-section-content) {
+  --bf-stack-space: var(--bf-section-space-shallow);
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+:where(.bf-theme) :where(.bf-cta-section-copy) {
   min-inline-size: 0;
   overflow-wrap: anywhere;
 }
 
 @container bf-cta-section (width >= 64.75rem) {
-  :where(.bf-theme) :where(.bf-cta-section-layout) {
-    padding-block: var(--bf-section-space-deep);
-  }
-
   :where(.bf-theme) :where(.bf-cta-section.is-offset) :where(.bf-cta-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);

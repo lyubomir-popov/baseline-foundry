@@ -17,7 +17,7 @@ export function editorialContentCss(options: EditorialContentCssOptions): string
   border-inline-start: var(--bf-bar-thickness) solid var(--bf-notice-border);
   color: var(--bf-color-text-default);
   display: flow-root;
-  margin-block: 0 var(--bf-section-space-shallow);
+  margin: 0;
   max-inline-size: 100%;
   padding-block: var(--bf-space-2);
   padding-inline: var(--bf-space-2);

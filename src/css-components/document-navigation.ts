@@ -20,11 +20,15 @@ export function documentNavigationCss(options: DocumentNavigationCssOptions): st
 :where(.bf-theme) :where(.bf-in-page-navigation) {
   container-name: bf-in-page-navigation;
   container-type: inline-size;
-  margin-block: 0 var(--bf-section-space-shallow);
+  margin: 0;
   min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-in-page-navigation-nav) {
+  --bf-stack-space: var(--bf-space-1);
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
   max-block-size: 100dvb;
   min-inline-size: 0;
   overflow: auto;
@@ -35,8 +39,9 @@ export function documentNavigationCss(options: DocumentNavigationCssOptions): st
 :where(.bf-theme) :where(.bf-in-page-navigation-heading) {
 ${headingTypeStyles}  color: var(--bf-color-text-muted);
   display: block;
-  margin: 0 0 var(--bf-space-1);
-  padding-block: var(--bf-h6-nudge-start) var(--bf-h6-nudge-end);
+  margin-block: 0 var(--bf-h6-margin-bottom);
+  padding-block-end: 0;
+  padding-block-start: var(--bf-h6-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-in-page-navigation-list) {
@@ -147,6 +152,7 @@ ${bodyCaseTypeStyles}  align-items: center;
     border-block-end: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 0;
     max-block-size: none;
     overflow: visible;
     position: static;
@@ -330,27 +336,41 @@ ${bodyCaseTypeStyles}  align-items: center;
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-table-of-contents) {
+  --bf-table-of-contents-section-gap: var(--bf-section-space-shallow);
+  align-content: start;
   container-name: bf-table-of-contents;
   container-type: inline-size;
-  margin-block: 0 var(--bf-section-space-shallow);
+  display: grid;
+  gap: var(--bf-table-of-contents-section-gap);
+  margin: 0;
   min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-section) {
+  --bf-stack-space: var(--bf-space-1);
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
   margin: 0;
   min-inline-size: 0;
-  padding-block-end: var(--bf-space-2);
+  padding: 0;
+  position: relative;
 }
 
-:where(.bf-theme) :where(.bf-table-of-contents-section + .bf-table-of-contents-section) {
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
-  padding-block-start: calc(var(--bf-space-2) - var(--bf-border-width));
+:where(.bf-theme) :where(.bf-table-of-contents-section + .bf-table-of-contents-section)::before {
+  background: var(--bf-color-border-low-contrast);
+  block-size: var(--bf-border-width);
+  content: "";
+  inset-block-start: 0;
+  inset-inline: 0;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-heading) {
 ${headingTypeStyles}  color: var(--bf-color-text-muted);
-  margin: 0 0 var(--bf-space-1);
-  padding-block: var(--bf-h6-nudge-start) var(--bf-h6-nudge-end);
+  margin-block: 0 var(--bf-h6-margin-bottom);
+  padding-block-end: 0;
+  padding-block-start: var(--bf-h6-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-list) {

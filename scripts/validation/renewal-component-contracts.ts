@@ -165,8 +165,17 @@ export function validateRenewalComponentContracts(
     "display": "grid",
     "row-gap": "0"
   }, "basic-section structural grids suppress the generic stack gap after their compensated rule");
-  assert(css.includes("container-name: bf-cta-section;") && css.includes("padding-block: calc(var(--bf-section-space-deep) / 2);") && css.includes("padding-block: var(--bf-section-space-deep);"), "Expected CTA section to preserve half-deep narrow padding and full-deep wide descendant padding.");
+  assert(css.includes("container-name: bf-cta-section;"), "Expected CTA section to establish its named composition container.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-cta-section-layout)", {
+    "display": "grid",
+    "grid-template-columns": "minmax(0, 1fr)"
+  }, "CTA section layout remains structural and adds no semantic block padding");
   assert(css.includes(".bf-cta-section.is-offset) :where(.bf-cta-section-layout)") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);") && css.includes(".bf-cta-section.is-offset) :where(.bf-cta-section-content)"), "Expected CTA section to expose the wide 25/75 offset content rail on descendants.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-cta-section-content)", {
+    "--bf-stack-space": "var(--bf-section-space-shallow)",
+    "display": "grid",
+    "gap": "var(--bf-stack-space)"
+  }, "CTA section content owns the shallow gap between grouped copy and CTA blocks");
   assert(css.includes("container-name: bf-text-spotlight;") && css.includes(".bf-text-spotlight-layout) {") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected text spotlight to expose its 25/75 descendant layout.");
   assert(css.includes("container-name: bf-hero;") && css.includes("border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);") && css.includes("padding-block-end: calc(var(--bf-section-space) / 2);") && css.includes("padding-block-start: calc(var(--bf-space-2) - var(--bf-border-width));"), "Expected hero to own its default entry rule while preserving Vanilla's half/full regular section exit and compact space-2 top boundary.");
   assert(css.includes(".bf-hero.is-borderless") && css.includes("border-block-start: 0;") && css.includes("padding-block-start: var(--bf-space-2);"), "Expected hero to expose a borderless opt-out without consumer CSS or a rhythm shift.");
@@ -181,6 +190,22 @@ export function validateRenewalComponentContracts(
   assert(!css.includes(".bf-basic-section.is-asymmetric") && !/\b(?:p|ui)-(?:basic-section|cta-section|text-spotlight)[-_]/.test(css) && !/\b(?:basic-section|cta-section|text-spotlight)(?:__|--)[a-z]/.test(css), "Expected Sites foundation CSS to reject asymmetric, legacy span, and Jinja compatibility APIs.");
   assert(!css.includes("bf-muted-heading") && !/\b(?:p|ui)-(?:hero|quote-wrapper)[-_]/.test(css) && !/\b(?:hero|quote-wrapper)(?:__|--)[a-z]/.test(css), "Expected hero and quote wrapper CSS to reject muted-heading, Jinja, and legacy span compatibility APIs.");
   assert(!css.includes(".bf-navigation-reduced"), "Expected reduced navigation to remain a modifier of bf-top-navigation rather than a standalone API.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-in-page-navigation)", {
+    "margin": "0"
+  }, "in-page navigation leaves external spacing to its parent stack");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents)", {
+    "display": "grid",
+    "gap": "var(--bf-table-of-contents-section-gap)",
+    "margin": "0"
+  }, "table of contents owns only its internal section gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-section)", {
+    "display": "grid",
+    "gap": "var(--bf-stack-space)",
+    "padding": "0"
+  }, "table-of-contents sections own heading-to-navigation spacing without item padding");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notice, .bf-notice.is-information, .bf-notice.is-positive, .bf-notice.is-caution, .bf-notice.is-negative)", {
+    "margin": "0"
+  }, "notice surfaces leave external spacing to their parent stack");
   assert(css.includes(".bf-password-reveal[aria-pressed='true']") && css.includes(".bf-notification[hidden]"), "Expected interactive feedback CSS to expose stateful reveal and dismissal contracts.");
   assert(css.includes("margin-block: calc(var(--bf-space-1) * -1);") && css.includes("padding-block: var(--bf-space-1);"), "Expected logo section to retain Vanilla's small negative row pull and matching wrapper compensation.");
   assert(css.includes("margin-block: calc(var(--bf-space-2) * -1);") && css.includes("padding-block: var(--bf-space-2);"), "Expected logo section to retain Vanilla's large negative row pull and matching wrapper compensation.");
@@ -313,7 +338,7 @@ export function validateRenewalComponentContracts(
   assert(basicSectionHtml.includes("bf-basic-section-layout") && basicSectionHtml.includes("is-split-medium") && basicSectionHtml.includes('class="bf-h5"') && basicSectionHtml.includes("bf-basic-section-title-link") && basicSectionHtml.includes('class="bf-stack is-flush"'), "Expected basic section to cover its layout, medium split, H5 role, linked title, and flush-stack contracts.");
   assert(!basicSectionHtml.includes("bf-paragraph-stack"), "Expected the basic section to compose grouped content with the generic flush stack instead of a content-specific wrapper.");
   const ctaSectionHtml = pages["cta-section"] ?? "";
-  assert(ctaSectionHtml.includes("bf-cta-section-layout") && ctaSectionHtml.includes("bf-cta-section-content") && ctaSectionHtml.includes("is-offset"), "Expected CTA section to cover full and offset descendant content slots.");
+  assert(ctaSectionHtml.includes("bf-cta-section-layout") && ctaSectionHtml.includes("bf-cta-section-content") && (ctaSectionHtml.match(/bf-cta-section-copy/g) ?? []).length === 2 && ctaSectionHtml.includes("is-offset"), "Expected CTA section to cover full and offset descendant content slots with grouped heading/copy content.");
   const textSpotlightHtml = pages["text-spotlight"] ?? "";
   assert((textSpotlightHtml.match(/bf-text-spotlight-item\" data-baseline-check=\"box\"/g) ?? []).length === 3, "Expected every visible text-spotlight item to participate in baseline verification.");
   assert(textSpotlightHtml.includes("bf-text-spotlight-layout") && textSpotlightHtml.includes("bf-text-spotlight-items") && textSpotlightHtml.includes("class=\"bf-h5\""), "Expected text spotlight to cover its 25/75 title rail, item list, and BF H5 title role.");
@@ -338,6 +363,11 @@ export function validateRenewalComponentContracts(
   assert(richHorizontalHtml.includes("bf-rich-list is-horizontal") && richHorizontalHtml.includes("bf-rich-list is-horizontal is-50-50") && richHorizontalHtml.includes("bf-rich-list-visual") && richHorizontalHtml.includes("bf-rich-list-support"), "Expected rich horizontal list to cover full and 50/50 media/support compositions.");
   assert(richHorizontalHtml.includes("bf-rich-list-list") && richHorizontalHtml.includes("is-ticked") && richHorizontalHtml.includes("is-bulleted") && richHorizontalHtml.includes("<ol") && richHorizontalHtml.includes("bf-rich-list-cta"), "Expected rich horizontal list to cover tick, bullet, ordered, ruled and CTA slots.");
   assert(css.includes("@container bf-rich-horizontal-items (width >= 66ch)") && css.includes("@container bf-rich-horizontal-items (width >= 100ch)"), "Expected rich horizontal list CSS to retain the 66ch and 100ch item-grid thresholds.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-rich-list-layout)", {
+    "--bf-stack-space": "var(--bf-space-1)",
+    "display": "grid",
+    "gap": "var(--bf-stack-space)"
+  }, "rich-list layouts own a dense inter-slot stack gap");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(richHorizontalHtml) && !richHorizontalHtml.includes("muted-heading") && !/\brich-list(?:__|--)[a-z]/.test(richHorizontalHtml), "Expected rich horizontal list markup to reject legacy span, deprecated, and Jinja/BEM APIs.");
 
   const richVerticalHtml = pages["rich-list-vertical"] ?? "";
@@ -419,7 +449,7 @@ export function validateRenewalComponentContracts(
   assert(emptyStateHtml.includes("data-component-capture") && emptyStateHtml.includes("data-baseline-check") && emptyStateHtml.includes("data-overflow-container"), "Expected empty-state recipes to expose capture, baseline, and overflow fixture markers.");
   assert((emptyStateHtml.match(/data-baseline-label="(?:no content empty state|user triggered empty state|error empty state)"/g) ?? []).length === 3, "Expected empty-state to cover no-content, user-triggered, and error recipes.");
   assert(!emptyStateHtml.includes("bf-empty-state"), "Expected empty-state recipes to remain pure composition without a dedicated bf-empty-state selector.");
-  assert(emptyStateHtml.includes("bf-search-box") && emptyStateHtml.includes('type="search"') && emptyStateHtml.includes("bf-button") && emptyStateHtml.includes('role="alert"') && emptyStateHtml.includes("bf-notice is-negative"), "Expected empty-state recipes to use real search, action, and negative-notice primitives.");
+  assert(emptyStateHtml.includes("bf-search-box") && emptyStateHtml.includes('type="search"') && emptyStateHtml.includes("bf-button") && emptyStateHtml.includes('role="alert"') && emptyStateHtml.includes("bf-notification is-negative") && emptyStateHtml.includes("bf-notification-title bf-h6"), "Expected empty-state recipes to use real search, action, and the current negative-notification contract.");
 
   const sortableTableHtml = pages["table-sortable"] ?? "";
   assert(sortableTableHtml.includes("data-component-capture") && sortableTableHtml.includes("data-baseline-check") && sortableTableHtml.includes("data-overflow-check"), "Expected sortable table to expose capture, baseline, and overflow fixture markers.");
