@@ -1747,8 +1747,8 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   padding-inline: calc(var(--bf-baseline) * 1.25);
 }
 
-:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-list) {
-  border-bottom-color: transparent;
+:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-list)::after {
+  content: none;
 }
 
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-item.is-title > .bf-side-navigation-link, .bf-side-navigation-item.is-title > .bf-side-navigation-text) {

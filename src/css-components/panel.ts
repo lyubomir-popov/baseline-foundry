@@ -78,9 +78,9 @@ export function panelCss(options: PanelCssOptions): string {
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
   justify-content: space-between;
-  min-block-size: calc(var(--bf-control-box-size-compact) + (var(--bf-panel-padding-block) * 2));
+  min-block-size: calc(var(--bf-control-box-size-compact) + var(--bf-panel-padding-block));
   padding-block-end: var(--bf-panel-padding-block);
-  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-block-start: 0;
   padding-inline: var(--bf-panel-padding-inline);
 }
 
