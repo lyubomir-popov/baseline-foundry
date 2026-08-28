@@ -129,6 +129,10 @@ migration contract.
 
 ## Repository quick start
 
+Repository development and the public build API are supported on Node.js
+22.14 or newer with npm 11.19. The checked-in package metadata is the
+authoritative toolchain contract.
+
 ```bash
 npm install
 npm run setup:demo-font
@@ -138,6 +142,18 @@ npm run test
 npm run screenshots:components
 npm run demo
 ```
+
+Release maintainers can validate the immutable publication boundary without
+publishing:
+
+```bash
+npm run release:preflight:test
+npm run release:verify -- --pack-current
+```
+
+The trusted workflow, resume procedure, checksum evidence, and private-source
+provenance limitation are documented in
+[`docs/publishing.md`](docs/publishing.md).
 
 List or build tiers directly with:
 

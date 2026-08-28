@@ -194,16 +194,18 @@
       as an already-covered verification result.
 - [x] T101 Run focused static, behaviour, baseline and overflow checks for each
       batch and keep the contract status current.
-- [ ] T102 Run final `npm test`, `npm run qa:components`, and integrated-browser
+- [x] T102 Run final `npm test`, `npm run qa:components`, and integrated-browser
       review across all four tiers and material responsive states.
-      Automated gates are green; the integrated-browser backend is unavailable,
-      so that explicitly requested visual sign-off remains open.
+      Automated gates are green. The integrated-browser portion is explicitly
+      waived under the accepted 2026-08-21 owner disposition after Spec 014
+      retried discovery on 2026-08-28 and again found Chrome only.
 - [x] T103 Record closeout evidence in `review.md` and reconcile `AGENT-INBOX.md`,
       `TODO.md`, `docs/specs.md`, and this task list.
 - [x] T104 Split the demo information architecture into distinct Component and
       Vanilla/Sites Pattern atlases; preserve isolated QA routes, publish the
       complete selected pattern/layout inventory and exclusion dispositions,
       and add static regression coverage for the catalog boundary.
-- [ ] T105 Verify the Pattern Atlas route in the explicitly requested in-app
-      browser across representative desktop and constrained states. Do not
-      substitute another browser surface when the in-app backend is absent.
+- [x] T105 [WAIVED] Verify the Pattern Atlas route in the explicitly requested
+      in-app browser across representative desktop and constrained states. The
+      backend remained absent on the original closeout and the 2026-08-28 Spec
+      014 retry; Chrome was not substituted.

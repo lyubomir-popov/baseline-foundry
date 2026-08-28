@@ -5,8 +5,8 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Retire the duplicate typography fix branch/worktree only with explicit
-   approval to discard its empty line-ending status artifacts.
+1. Close, merge, archive, and publish Spec 014 only after the exact 0.1.4
+   candidate passes the complete release gate and both supported CI runtimes.
 
 ## Candidate order after Spec 001
 
