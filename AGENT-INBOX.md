@@ -1,17 +1,23 @@
 # Agent inbox
 
-The latest product release is on `main` at `e48305b`. Raw links now omit their
-underline at rest and restore it for hover and active press states. Keyboard
-focus remains an outline-only affordance, and link-shaped components retain
-their own explicit navigation or control state treatments.
+The 0.1.1 release implementation is on `main` at `82acc06`. It consumes the
+immutable baseline-nudge-generator `v1.5.1` GitHub tag, removes the unused
+Puppeteer path, and has zero production or development audit findings. The
+generator release is pushed at `96c926f`/`v1.5.1`. npm publication for both
+repositories remains unavailable until this machine is authenticated; the Git
+tags are the downstream installation source in the meantime.
 
-`npm test` and `npm run qa:components` were run for closeout on 2026-08-28 and
-both pass. The strict catalogue verifier is green across all four built-in
-tiers and both font-engine surfaces with no accepted baseline failures. Static
-validation passes 5,628 checks, behavior passes, regenerated captures pass,
-and adversarial desktop, constrained, hover, active, focus, and four-tier
-browser review found no resting underline leak, overflow, console error, or
-visual regression.
+`npm run release:check` passed on 2026-08-28: type checking, `npm test`,
+`npm run qa:components`, full and production audits, 5,657 static assertions,
+all baseline and behavior checks, and 87 regenerated captures. In-app browser
+review of list and inline-list rendering found correct markers, zero horizontal
+overflow, and no visual regression. The static engine illustration is now
+explicitly screenshot-only instead of reporting a misleading zero-check pass.
+
+Raw links omit their underline at rest and restore it for hover and active
+press states. Keyboard focus remains an outline-only affordance, and
+link-shaped components retain their own explicit navigation or control state
+treatments.
 
 The duplicate `bf-eyebrow` styling hook was removed at released commit
 `9f0e815`; every active usage routes through the canonical `bf-h5` role so its
@@ -40,7 +46,9 @@ retaining top-nudge/bottom-margin baseline compensation. The complete stack
 density API is restored in producer commit `454dc4d`; Diagram Registry vendors
 that build and merges its downstream proof at `b388f85`. Static, browser,
 downstream, and responsive gates are green. Durable evidence is archived at
-`docs/spec-archive/012-sites-container-spacing/`.
+`docs/spec-archive/013-sites-container-spacing/`. The package was renumbered
+after archive to resolve the duplicate 012 identifier; its historical feature
+branch remains `feat/012-sites-container-spacing`.
 
 Spec 011 is released on `main` at `1293bcc`. Start-aligned fixed rows, aligned
 pinned panel footers, quiet linked section titles, scrollable tables and
