@@ -1,15 +1,16 @@
 # Agent inbox
 
-Spec 014 is active on `feat/014-framework-health-hardening`. The owner approved
-execution of the audit follow-up, including guarded retirement of the duplicate
-typography worktree and merged historical branches. Preserve every unmerged or
-semantic edit, all named `tmp/` work, and the sibling Vanilla `yarn.lock`.
+Spec 014 is merged through PR #1 at `181d64d` after both Node 22.14 and Node 24
+release checks passed in GitHub runs `33195228211` and `33195244095`. Its
+package is archived under `docs/spec-archive/014-framework-health-hardening/`.
+The exact 0.1.4 archive/status commit is pending merged-main CI and publication.
+Preserve every unmerged or semantic edit, all named `tmp/` work, and the sibling
+Vanilla `yarn.lock`.
 
-The implementation and adversarial review are complete. The exact 0.1.4
-candidate is in final local validation; merge, archive and publication remain.
-Release preflight now fails closed on registry errors, negative fixtures use the
-actual latest published version, and the publish workflow compares its local
-tarball SHA-1 to npm's recorded shasum before creating GitHub release assets.
+The implementation and adversarial review are complete. Release preflight now
+fails closed on registry errors, negative fixtures use the actual latest
+published version, and the publish workflow compares its local tarball SHA-1
+to npm's recorded shasum before creating GitHub release assets.
 
 Baseline Foundry 0.1.3 is released from `83d6294` / `v0.1.3` on npm and GitHub.
 The registry shasum and attached GitHub tarball both resolve to

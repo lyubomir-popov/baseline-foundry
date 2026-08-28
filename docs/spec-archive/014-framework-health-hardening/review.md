@@ -2,7 +2,7 @@
 
 **Reviewed**: in progress, 2026-08-28
 
-**Disposition**: Accepted for merge as the 0.1.4 release candidate.
+**Disposition**: Merged and archived; 0.1.4 publication pending.
 
 ## Pre-change baseline
 
@@ -139,3 +139,6 @@ with the repository workflow.
   `dist.shasum`. The existing-version fixture now discovers the latest
   published version, so it remains valid after the candidate version changes.
   No unresolved Critical, High or Medium finding remains.
+- PR #1 merged the exact reviewed feature commit `9c146d5` to `main` at
+  `181d64d`. Push and pull-request GitHub runs `33195228211` and `33195244095`
+  both passed the Node 22.14 and Node 24 release-check matrix before merge.

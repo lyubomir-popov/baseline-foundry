@@ -5,8 +5,8 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Close, merge, archive, and publish Spec 014 only after the exact 0.1.4
-   candidate passes the complete release gate and both supported CI runtimes.
+1. Publish the exact archived Spec 014 / 0.1.4 candidate after merged-main CI
+   passes, then reconcile npm, tag, GitHub release and checksum evidence.
 
 ## Candidate order after Spec 001
 
