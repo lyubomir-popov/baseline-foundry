@@ -147,3 +147,9 @@ with the repository workflow.
   preflight or publication because the package-version output step over-escaped
   its shell expression. npm still returned E404 for 0.1.4. The output command
   was reduced to one directly executable Node expression before retry.
+- Corrected-commit CI run `33196489826` passed both supported Node jobs. Publish
+  retry `33197008574` then stopped at preflight, again before npm mutation,
+  because clean checkout correctly had no gitignored `dist/index.js`. Local
+  validation had inherited build outputs. The workflow now performs the
+  deterministic build before package-content preflight; that output is also the
+  input to post-publish tarball checksum comparison.
