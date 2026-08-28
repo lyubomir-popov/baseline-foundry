@@ -5,8 +5,9 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-No package is active. Candidate product work remains unpromoted until its
-catalogued evidence trigger is met.
+| Spec | Package | Status |
+|---|---|---|
+| 015 Tier geometry hardening | [`015-tier-geometry-hardening/`](../specs/015-tier-geometry-hardening/) | Active on `feat/015-tier-geometry-hardening`; implementation and owner visual verification pending. |
 
 ## Archive
 
