@@ -397,6 +397,14 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
         return description && action ? action.top - description.bottom : -1;
       }));
       assert(actionSpacing.length === 4 && actionSpacing.every(gap => gap >= 0), `Expected ${tier} data spotlight actions not to overlap their descriptions.`);
+      const itemSpacing = await page.locator(".bf-data-spotlight").evaluateAll(roots => roots.map(root => {
+        const items = Array.from(root.querySelectorAll<HTMLElement>(".bf-data-spotlight-item"));
+        return {
+          rootMarginEnd: Number.parseFloat(getComputedStyle(root).marginBlockEnd),
+          itemPadding: items.map(item => Number.parseFloat(getComputedStyle(item).paddingBlockEnd))
+        };
+      }));
+      assert(itemSpacing.every(state => state.rootMarginEnd === 0 && state.itemPadding.every(padding => padding === 0)), `Expected ${tier} data spotlight roots and items to own no external or inter-row spacing.`);
     }
     let layoutState = await page.locator(".bf-data-spotlight.is-four-blocks").evaluate(root => {
       const items = Array.from(root.querySelectorAll<HTMLElement>(".bf-data-spotlight-item"));
@@ -550,9 +558,9 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
       root.append(probe);
       const sectionSpace = probe.getBoundingClientRect().height;
       probe.remove();
-      return { sameRow: children.length >= 2 && Math.abs(children[0].top - children[1].top) <= 1, separated: children.length >= 2 && Math.abs(children[0].left - children[1].left) > 1, paddingEnd: Number.parseFloat(styles.paddingBlockEnd), sectionSpace, overflow: root.scrollWidth - root.clientWidth };
+      return { sameRow: children.length >= 2 && Math.abs(children[0].top - children[1].top) <= 1, separated: children.length >= 2 && Math.abs(children[0].left - children[1].left) > 1, paddingEnd: Number.parseFloat(styles.paddingBlockEnd), overflow: root.scrollWidth - root.clientWidth };
     });
-    assert(heroState.sameRow && heroState.separated && Math.abs(heroState.paddingEnd - heroState.sectionSpace) <= 0.1 && heroState.overflow <= 1, "Expected wide hero to preserve its paired columns and full regular exit boundary.");
+    assert(heroState.sameRow && heroState.separated && heroState.paddingEnd === 0 && heroState.overflow <= 1, "Expected wide hero to preserve its paired columns while leaving the section exit to its surrounding stack.");
 
     await page.goto(`${origin}/demo/components/quote-wrapper.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -689,13 +697,14 @@ export async function verifyRichListsAndTabSectionGeometry(origin: string): Prom
       const geometry = await page.locator(".bf-tab-section").evaluateAll((roots, widthValue) => roots.map(root => {
         const section = root as HTMLElement;
         section.style.inlineSize = `${widthValue}px`;
-        const layout = section.querySelector<HTMLElement>(":scope > .bf-tab-section-layout");
+        const layout = section.querySelector<HTMLElement>(".bf-tab-section-body");
         const header = section.querySelector<HTMLElement>(".bf-tab-section-header")?.getBoundingClientRect();
         const intro = section.querySelector<HTMLElement>(".bf-tab-section-intro")?.getBoundingClientRect();
         const tabs = section.querySelector<HTMLElement>(".bf-tab-section-tabs")?.getBoundingClientRect();
         return {
           className: section.className,
           columns: layout ? getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
+          rowGap: layout ? Number.parseFloat(getComputedStyle(layout).rowGap) : 0,
           headerTop: header?.top ?? 0,
           introTop: intro?.top ?? 0,
           tabsTop: tabs?.top ?? 0,
@@ -707,8 +716,8 @@ export async function verifyRichListsAndTabSectionGeometry(origin: string): Prom
       }), 1036);
       assert(geometry.length === 3, `Expected ${tier} tab section to expose three layout specimens.`);
       for (const state of geometry) {
-        assert(state.columns === 4 && state.overflow <= 1, `Expected ${tier} ${state.className} tab section to retain four large grid columns without overflow.`);
-        if (state.className.includes("is-50-50") && !state.className.includes("is-deep")) {
+        assert(state.columns === 4 && state.rowGap > 0 && state.overflow <= 1, `Expected ${tier} ${state.className} tab section body to retain four large grid columns and a parent-owned shallow row gap without overflow.`);
+        if (state.className.includes("is-50-50")) {
           assert(Math.abs(state.headerTop - state.tabsTop) <= 1 && Math.abs(state.headerLeft - state.tabsLeft) > 1, `Expected ${tier} unadorned 50/50 tabs to share the large row with the heading.`);
         } else {
           assert(state.introTop === 0 || Math.abs(state.headerTop - state.introTop) <= 1, `Expected ${tier} tab section heading and intro to share their large row when intro exists.`);
@@ -718,11 +727,11 @@ export async function verifyRichListsAndTabSectionGeometry(origin: string): Prom
       const narrowGeometry = await page.locator(".bf-tab-section").evaluateAll(roots => roots.map(root => {
         const section = root as HTMLElement;
         section.style.inlineSize = "56rem";
-        const layout = section.querySelector<HTMLElement>(":scope > .bf-tab-section-layout");
+        const layout = section.querySelector<HTMLElement>(".bf-tab-section-body");
         const children = Array.from(layout?.children ?? []).map(child => child.getBoundingClientRect());
-        return { columns: layout ? getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0, rows: new Set(children.map(rect => Math.round(rect.top))).size, overflow: section.scrollWidth - section.clientWidth };
+        return { columns: layout ? getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0, rows: new Set(children.map(rect => Math.round(rect.top))).size, rowGap: layout ? Number.parseFloat(getComputedStyle(layout).rowGap) : 0, overflow: section.scrollWidth - section.clientWidth };
       }));
-      assert(narrowGeometry.every(state => state.columns === 1 && state.rows >= 2 && state.overflow <= 1), `Expected ${tier} tab sections to stack their layout below the large threshold without overflow: ${JSON.stringify(narrowGeometry)}.`);
+      assert(narrowGeometry.every(state => state.columns === 1 && state.rows >= 2 && state.rowGap > 0 && state.overflow <= 1), `Expected ${tier} tab-section bodies to stack with a parent-owned shallow gap below the large threshold without overflow: ${JSON.stringify(narrowGeometry)}.`);
 
       const firstTab = page.locator(".bf-tab-section").first().locator("[role='tab']").first();
       await firstTab.focus();
@@ -930,8 +939,7 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
         assert(state.borderStyle === "solid" && state.borderWidth > 0, `Expected ${tier} default hero to own one visible entry rule ${viewport.label}.`);
         assert(state.finalSlot && Math.abs(state.leadToMedia - state.shallowSpace) <= 0.1, `Expected ${tier} hero stack to own the shallow gap before final media ${viewport.label}.`);
         assert(state.mediaMarginEnd === 0 && Math.abs(state.mediaToHeroEnd - state.paddingEnd) <= 0.1, `Expected ${tier} hero exit boundary to begin immediately after closing media ${viewport.label}.`);
-        const expectedExit = viewport.wide ? state.sectionSpace : state.sectionSpace / 2;
-        assert(Math.abs(state.paddingEnd - expectedExit) <= 0.1, `Expected ${tier} hero to preserve its ${viewport.wide ? "regular" : "compact"} exit boundary ${viewport.label}.`);
+        assert(state.paddingEnd === 0, `Expected ${tier} hero to leave its exit boundary to the surrounding stack ${viewport.label}.`);
         assert(Math.abs(state.fullWidthDelta) <= 1 && state.overflow <= 1, `Expected ${tier} closing hero media to remain full-width without overflow ${viewport.label}.`);
 
         const borderlessState = await page.locator(".bf-hero.is-borderless").evaluate(root => ({

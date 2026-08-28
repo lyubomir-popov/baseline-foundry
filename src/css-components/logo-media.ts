@@ -21,7 +21,7 @@ export function logoMediaCss(): string {
 :where(.bf-theme) :where(.bf-logo-section) {
   container-name: bf-logo-section;
   container-type: inline-size;
-  margin-block-end: var(--bf-section-space-shallow);
+  margin: 0;
   min-inline-size: 0;
 }
 
@@ -111,7 +111,7 @@ export function logoMediaCss(): string {
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-media-object) {
-  margin-block-end: var(--bf-section-space-shallow);
+  margin: 0;
   min-inline-size: 0;
 }
 
@@ -184,8 +184,12 @@ export function logoMediaCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-media-object-meta-list) {
+  --bf-stack-space: var(--bf-space-1);
+  align-content: start;
+  display: grid;
+  gap: var(--bf-stack-space);
   list-style: none;
-  margin: var(--bf-space-1) 0 0;
+  margin: 0;
   padding: 0;
 }
 
@@ -196,10 +200,6 @@ export function logoMediaCss(): string {
   grid-template-columns: var(--bf-icon-size-default) minmax(0, 1fr);
   min-inline-size: 0;
   overflow-wrap: anywhere;
-}
-
-:where(.bf-theme) :where(.bf-media-object-meta + .bf-media-object-meta) {
-  margin-block-start: var(--bf-space-1);
 }
 
 :where(.bf-theme) :where(.bf-media-object-meta .bf-icon) {

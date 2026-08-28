@@ -177,9 +177,13 @@ export function validateRenewalComponentContracts(
     "gap": "var(--bf-stack-space)"
   }, "CTA section content owns the shallow gap between grouped copy and CTA blocks");
   assert(css.includes("container-name: bf-text-spotlight;") && css.includes(".bf-text-spotlight-layout) {") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected text spotlight to expose its 25/75 descendant layout.");
-  assert(css.includes("container-name: bf-hero;") && css.includes("border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);") && css.includes("padding-block-end: calc(var(--bf-section-space) / 2);") && css.includes("padding-block-start: calc(var(--bf-space-2) - var(--bf-border-width));"), "Expected hero to own its default entry rule while preserving Vanilla's half/full regular section exit and compact space-2 top boundary.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-hero)", {
+    "padding-block-end": "0",
+    "padding-block-start": "calc(var(--bf-space-2) - var(--bf-border-width))"
+  }, "hero owns its compact entry boundary while leaving the section exit to its surrounding stack");
+  assert(css.includes("container-name: bf-hero;") && css.includes("border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);") && !css.includes("padding-block-end: calc(var(--bf-section-space) / 2);"), "Expected hero to expose its container and default entry rule without a semantic exit.");
   assert(css.includes(".bf-hero.is-borderless") && css.includes("border-block-start: 0;") && css.includes("padding-block-start: var(--bf-space-2);"), "Expected hero to expose a borderless opt-out without consumer CSS or a rhythm shift.");
-  assert(css.includes("padding-block-end: var(--bf-section-space);") && css.includes("padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to use the wide full section exit and space-3 top boundary without border drift.");
+  assert(css.includes("padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to retain its wide space-3 entry boundary without border drift.");
   assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
   assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && !css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child) {\n  inline-size: 100%;\n  margin-block-end: 0;"), "Expected hero to expose a structural lead without a final-child semantic-margin reset.");
   assert(css.includes("@container bf-hero (width >= 38.75rem)") && css.includes("@container bf-hero (width >= 64.75rem)") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero to expose medium/large descendant queries and the fallback introduction rail.");
@@ -368,6 +372,36 @@ export function validateRenewalComponentContracts(
     "display": "grid",
     "gap": "var(--bf-stack-space)"
   }, "rich-list layouts own a dense inter-slot stack gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tab-section)", {
+    "margin": "0"
+  }, "tab sections leave external spacing to their parent stack");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tab-section-body)", {
+    "--bf-stack-space": "var(--bf-section-space-shallow)",
+    "display": "grid",
+    "gap": "var(--bf-stack-space)"
+  }, "tab-section bodies own the shallow gap between grouped copy and tabs");
+  for (const [selector, label] of [
+    [":where(.bf-theme) :where(.bf-article-pagination)", "article pagination"],
+    [":where(.bf-theme) :where(.bf-data-spotlight)", "data spotlight"],
+    [":where(.bf-theme) :where(.bf-divided-section)", "divided section"],
+    [":where(.bf-theme) :where(.bf-equal-height-row)", "equal-height row"],
+    [":where(.bf-theme) :where(.bf-linked-logo-section)", "linked-logo section"],
+    [":where(.bf-theme) :where(.bf-logo-section)", "logo section"],
+    [":where(.bf-theme) :where(.bf-media-object)", "media object"],
+    [":where(.bf-theme) :where(.bf-quote-wrapper)", "quote wrapper"]
+  ] as const) {
+    assertRuleHasDecl(ast, selector, { "margin": "0" }, `${label} leaves its external boundary to the parent stack`);
+  }
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-data-spotlight-item)", {
+    "padding": "0"
+  }, "data-spotlight items own no inter-row padding");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-media-object-meta-list)", {
+    "display": "grid",
+    "gap": "var(--bf-stack-space)",
+    "margin": "0"
+  }, "media-object metadata lists own their dense item gap");
+  assert(!css.includes(".bf-media-object-meta + .bf-media-object-meta") && !css.includes(".bf-data-spotlight-item:not(:last-child)"), "Expected metadata and data-spotlight spacing not to regress to sibling/item-owned rules.");
+  assert(!/\.bf-(?:linked-logo-section|quote-wrapper|rich-list|tab-section)\.is-(?:shallow|deep)/.test(css), "Expected former component exit modifiers not to survive as a second owner of parent-stack spacing.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(richHorizontalHtml) && !richHorizontalHtml.includes("muted-heading") && !/\brich-list(?:__|--)[a-z]/.test(richHorizontalHtml), "Expected rich horizontal list markup to reject legacy span, deprecated, and Jinja/BEM APIs.");
 
   const richVerticalHtml = pages["rich-list-vertical"] ?? "";
@@ -378,7 +412,7 @@ export function validateRenewalComponentContracts(
 
   const tabSectionHtml = pages["tab-section"] ?? "";
   assert(tabSectionHtml.includes("data-component-capture") && tabSectionHtml.includes("data-baseline-check") && tabSectionHtml.includes("data-overflow-check"), "Expected tab section to expose capture, baseline, and overflow fixture markers.");
-  assert(tabSectionHtml.includes("bf-tab-section") && tabSectionHtml.includes("is-50-50") && tabSectionHtml.includes("is-25-75") && tabSectionHtml.includes("is-shallow") && tabSectionHtml.includes("is-deep"), "Expected tab section to cover full, 50/50, 25/75, shallow, and deep compositions.");
+  assert(tabSectionHtml.includes("bf-tab-section") && tabSectionHtml.includes("is-50-50") && tabSectionHtml.includes("is-25-75") && (tabSectionHtml.match(/bf-tab-section-body/g) ?? []).length === 3 && (tabSectionHtml.match(/bf-tab-section-copy/g) ?? []).length === 3, "Expected tab section to cover full, 50/50, and 25/75 compositions with container-owned body/copy grouping.");
   assert((tabSectionHtml.match(/bf-tab-section-rule/g) ?? []).length === 2, "Expected tab section to cover the optional rule omission state.");
   assert(tabSectionHtml.includes('role="tablist"') && tabSectionHtml.includes('role="tab"') && tabSectionHtml.includes('aria-selected="true"') && tabSectionHtml.includes('aria-hidden="false"') && tabSectionHtml.includes("bf-quote-wrapper") && tabSectionHtml.includes("bf-divided-section") && tabSectionHtml.includes("bf-basic-section") && tabSectionHtml.includes("bf-logo-section"), "Expected tab section to compose accessible tabs with BF-owned nested quote, divided, basic and logo content.");
   assert(tabSectionHtml.includes('dir="rtl"') && !/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(tabSectionHtml) && !tabSectionHtml.includes("muted-heading") && !/\btab-section(?:__|--)[a-z]/.test(tabSectionHtml), "Expected tab section markup to cover RTL and reject deprecated, Jinja, and BEM APIs.");

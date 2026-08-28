@@ -119,7 +119,7 @@ export function tieredListEqualHeightRowCss(): string {
      queries cannot style their own container, so responsive descendants span
      these tracks instead of relying on an ineligible self-query. */
   grid-template-columns: repeat(8, minmax(0, 1fr));
-  margin-block-end: var(--bf-section-space-shallow);
+  margin: 0;
   position: relative;
 }
 

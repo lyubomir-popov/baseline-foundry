@@ -15,16 +15,15 @@ export function staticContentPortsCss(): string {
   return `/* ------------------------------------------------------------------ */
 /* Static content ports — Vanilla data spotlight and divided section. */
 /* Their children retain role-owned rhythm; these layout */
-/* wrappers add only structural columns, rules, and explicit section ends. */
+/* wrappers add only structural columns, rules, and internal gaps. */
 /* ------------------------------------------------------------------ */
 
 /* Data spotlight: Vanilla's equal-height wrap becomes an intrinsic grid.
    Each item begins with a public highlighted rule using the shared emphasis
-   thickness. Item padding remains item-owned, so compositions never erase the
-   shallow inter-row rhythm when the pattern narrows. */
+   thickness. The items container owns every inter-row gap. */
 :where(.bf-theme) :where(.bf-data-spotlight) {
   container-type: inline-size;
-  margin-block-end: var(--bf-section-space);
+  margin: 0;
   min-inline-size: 0;
 }
 
@@ -37,15 +36,13 @@ export function staticContentPortsCss(): string {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
+  row-gap: var(--bf-section-space-shallow);
 }
 
 :where(.bf-theme) :where(.bf-data-spotlight-item) {
   min-inline-size: 0;
   overflow-wrap: anywhere;
-}
-
-:where(.bf-theme) :where(.bf-data-spotlight-item:not(:last-child)) {
-  padding-block-end: var(--bf-section-space-shallow);
+  padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-data-spotlight-stat) {
@@ -98,16 +95,20 @@ export function staticContentPortsCss(): string {
 @container (width >= 38.75rem) {
   :where(.bf-theme) :where(.bf-data-spotlight-items) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 0;
+  }
+
+  :where(.bf-theme) :where(.bf-data-spotlight-items)::after {
+    block-size: var(--bf-section-space-shallow);
+    content: "";
+    grid-column: 1 / -1;
+    grid-row: 6;
   }
 
   :where(.bf-theme) :where(.bf-data-spotlight-header, .bf-data-spotlight-item) {
     display: grid;
     grid-row: span 5;
     grid-template-rows: subgrid;
-  }
-
-  :where(.bf-theme) :where(.bf-data-spotlight-item) {
-    padding-block-end: 0;
   }
 
   :where(.bf-theme) :where(.bf-data-spotlight.is-three-blocks) :where(.bf-data-spotlight-header) {
@@ -117,7 +118,13 @@ export function staticContentPortsCss(): string {
 
   :where(.bf-theme) :where(.bf-data-spotlight.is-three-blocks) :where(.bf-data-spotlight-item:first-of-type),
   :where(.bf-theme) :where(.bf-data-spotlight.is-four-blocks) :where(.bf-data-spotlight-item:nth-child(-n + 2)) {
-    padding-block-end: var(--bf-section-space-shallow);
+    grid-row: span 5;
+  }
+
+  :where(.bf-theme) :where(.bf-data-spotlight.is-two-blocks) :where(.bf-data-spotlight-item:nth-of-type(2)),
+  :where(.bf-theme) :where(.bf-data-spotlight.is-three-blocks) :where(.bf-data-spotlight-item:nth-of-type(n + 2)),
+  :where(.bf-theme) :where(.bf-data-spotlight.is-four-blocks) :where(.bf-data-spotlight-item:nth-of-type(n + 3)) {
+    grid-row: 7 / span 5;
   }
 }
 
@@ -130,15 +137,18 @@ export function staticContentPortsCss(): string {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  :where(.bf-theme) :where(.bf-data-spotlight-items)::after {
+    content: none;
+  }
+
   :where(.bf-theme) :where(.bf-data-spotlight.is-two-blocks) :where(.bf-data-spotlight-header) {
     block-size: 0;
     grid-column: span 2;
     overflow: visible;
   }
 
-  :where(.bf-theme) :where(.bf-data-spotlight.is-three-blocks) :where(.bf-data-spotlight-item:first-of-type),
-  :where(.bf-theme) :where(.bf-data-spotlight.is-four-blocks) :where(.bf-data-spotlight-item:nth-child(-n + 2)) {
-    padding-block-end: 0;
+  :where(.bf-theme) :where(.bf-data-spotlight-item) {
+    grid-row: span 5;
   }
 }
 
@@ -147,7 +157,7 @@ export function staticContentPortsCss(): string {
    headings, copy, and content items keep their own metric-derived rhythm. */
 :where(.bf-theme) :where(.bf-divided-section) {
   container-type: inline-size;
-  margin-block-end: var(--bf-section-space);
+  margin: 0;
   min-inline-size: 0;
 }
 

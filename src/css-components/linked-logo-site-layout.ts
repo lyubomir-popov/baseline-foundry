@@ -26,16 +26,8 @@ export function linkedLogoSiteLayoutCss(): string {
 :where(.bf-theme) :where(.bf-linked-logo-section) {
   container-name: bf-linked-logo-section;
   container-type: inline-size;
-  margin-block-end: var(--bf-section-space);
+  margin: 0;
   min-inline-size: 0;
-}
-
-:where(.bf-theme) :where(.bf-linked-logo-section.is-shallow) {
-  margin-block-end: var(--bf-section-space-shallow);
-}
-
-:where(.bf-theme) :where(.bf-linked-logo-section.is-deep) {
-  margin-block-end: var(--bf-section-space-deep);
 }
 
 :where(.bf-theme) :where(.bf-linked-logo-section-layout) {
