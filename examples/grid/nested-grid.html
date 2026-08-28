@@ -38,14 +38,16 @@
                 <h3 class="bf-h5">Parent span 2</h3>
                 <p>The child grid stays inside the half-row module instead of breaking away from it.</p>
 
-                <div class="bf-grid bf-grid-scope example-nested-inner">
-                  <div class="bf-card">
-                    <h4 class="bf-h6">Child row</h4>
-                    <p>Stacks at the narrow state.</p>
-                  </div>
-                  <div class="bf-card">
-                    <h4 class="bf-h6">Child row</h4>
-                    <p>No off-grid start line appears.</p>
+                <div class="bf-grid-scope">
+                  <div class="bf-grid example-nested-inner">
+                    <div class="bf-card">
+                      <h4 class="bf-h6">Child row</h4>
+                      <p>Stacks at the narrow state.</p>
+                    </div>
+                    <div class="bf-card">
+                      <h4 class="bf-h6">Child row</h4>
+                      <p>No off-grid start line appears.</p>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -80,14 +82,16 @@
                 <h3 class="bf-h5">Parent span 4</h3>
                 <p>The nested module now occupies half the row and subdivides into `2 + 2`.</p>
 
-                <div class="bf-grid bf-grid-scope example-nested-inner">
-                  <div class="bf-span-2 bf-card">
-                    <h4 class="bf-h6">Child span 2</h4>
-                    <p>Left child keeps the shared start edge.</p>
-                  </div>
-                  <div class="bf-span-2 bf-card">
-                    <h4 class="bf-h6">Child span 2</h4>
-                    <p>Right child ends on the same parent keyline family.</p>
+                <div class="bf-grid-scope">
+                  <div class="bf-grid example-nested-inner">
+                    <div class="bf-span-2 bf-card">
+                      <h4 class="bf-h6">Child span 2</h4>
+                      <p>Left child keeps the shared start edge.</p>
+                    </div>
+                    <div class="bf-span-2 bf-card">
+                      <h4 class="bf-h6">Child span 2</h4>
+                      <p>Right child ends on the same parent keyline family.</p>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -124,14 +128,16 @@
                 <h3 class="bf-h5">Parent span 4</h3>
                 <p>Quarter-width module on a 16-column parent, still following the same bisection rule.</p>
 
-                <div class="bf-grid bf-grid-scope example-nested-inner">
-                  <div class="bf-span-2 bf-card">
-                    <h4 class="bf-h6">Child span 2</h4>
-                    <p>Left child stays on the parent start line.</p>
-                  </div>
-                  <div class="bf-span-2 bf-card">
-                    <h4 class="bf-h6">Child span 2</h4>
-                    <p>Right child ends exactly on the module boundary.</p>
+                <div class="bf-grid-scope">
+                  <div class="bf-grid example-nested-inner">
+                    <div class="bf-span-2 bf-card">
+                      <h4 class="bf-h6">Child span 2</h4>
+                      <p>Left child stays on the parent start line.</p>
+                    </div>
+                    <div class="bf-span-2 bf-card">
+                      <h4 class="bf-h6">Child span 2</h4>
+                      <p>Right child ends exactly on the module boundary.</p>
+                    </div>
                   </div>
                 </div>
               </article>

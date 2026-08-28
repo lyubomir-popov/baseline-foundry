@@ -2242,6 +2242,7 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
 async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
+  const expectedPanelPaddingPx = { editorial: 16, documentation: 16, app: 12, os: 8 } as const;
   const browser = await openBrowser();
 
   try {
@@ -2255,7 +2256,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           <div class="bf-fixed-width is-start-aligned">Bounded row</div>
           <input class="bf-input" value="Parity">
           <button class="bf-button">Parity</button>
-          <section class="bf-panel"><header class="bf-panel-header"><h2 class="bf-panel-title">Parity</h2></header></section>
+          <section class="bf-panel"><header class="bf-panel-header"><h2 class="bf-panel-title">Parity</h2></header><footer class="bf-panel-footer"><button class="bf-panel-toggle">Footer</button></footer></section>
           <span class="bf-status-label">Parity</span>
         </body>`);
       await page.waitForFunction(expected => Array.from(document.styleSheets).some(sheet => sheet.href?.includes(expected)), stylesheet);
@@ -2265,17 +2266,19 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         const input = document.querySelector<HTMLElement>(".bf-input");
         const button = document.querySelector<HTMLElement>(".bf-button");
         const header = document.querySelector<HTMLElement>(".bf-panel-header");
+        const footer = document.querySelector<HTMLElement>(".bf-panel-footer");
         const status = document.querySelector<HTMLElement>(".bf-status-label");
         const appPage = document.querySelector<HTMLElement>(".bf-page");
         const appGrid = appPage?.querySelector<HTMLElement>(".bf-grid");
         const fixedWidth = document.querySelector<HTMLElement>(".bf-fixed-width");
-        if (!input || !button || !header || !status || !appPage || !appGrid || !fixedWidth) {
+        if (!input || !button || !header || !footer || !status || !appPage || !appGrid || !fixedWidth) {
           throw new Error("Missing surface parity fixture.");
         }
 
         const inputStyles = getComputedStyle(input);
         const buttonStyles = getComputedStyle(button);
         const headerStyles = getComputedStyle(header);
+        const footerStyles = getComputedStyle(footer);
         return {
           inputHeight: input.getBoundingClientRect().height,
           inputMarginBottom: Number.parseFloat(inputStyles.marginBottom) || 0,
@@ -2284,6 +2287,8 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           panelPaddingStart: Number.parseFloat(headerStyles.paddingBlockStart) || 0,
           panelPaddingEnd: Number.parseFloat(headerStyles.paddingBlockEnd) || 0,
           panelGap: Number.parseFloat(headerStyles.gap) || 0,
+          footerPaddingEnd: Number.parseFloat(footerStyles.paddingBlockEnd) || 0,
+          footerPaddingInlineStart: Number.parseFloat(footerStyles.paddingInlineStart) || 0,
           statusHeight: status.getBoundingClientRect().height,
           pageWidth: appPage.getBoundingClientRect().width,
           gridWidth: appGrid.getBoundingClientRect().width,
@@ -2307,6 +2312,8 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
       assert(Math.abs(direct.fixedWidth - expectedCapPx[tier]) <= 1, `Expected direct ${tier} bf-fixed-width to resolve to ${expectedCapPx[tier]}px, got ${direct.fixedWidth}px.`);
       assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
+      assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel headers to use ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
+      assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px end/inline padding, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
       directCaps.push(direct.fixedWidth);
       if (tier === "app") {
         assert(direct.pageWidth > direct.fixedWidth + 100 && direct.gridWidth > direct.fixedWidth + 100, `Expected direct App bf-page/grid to stay fluid beyond the ${direct.fixedWidth}px fixed-width cap; page=${direct.pageWidth}px, grid=${direct.gridWidth}px.`);
@@ -2316,6 +2323,40 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       }
     }
     assert(directCaps.every((cap, index) => index === 0 || cap <= directCaps[index - 1]), `Expected rendered fixed-width caps to be non-increasing, got ${directCaps.join(" >= ")}px.`);
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyNestedGridScoping(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
+    await page.goto(`${origin}/examples/grid/nested-grid.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+
+    const states = await page.locator(".example-grid-shell").evaluateAll(shells => shells.map(shell => {
+      const outerGrid = shell.querySelector<HTMLElement>(":scope > .bf-grid:not(.example-column-guide)");
+      const innerGrid = shell.querySelector<HTMLElement>(".example-nested-inner");
+      if (!outerGrid || !innerGrid) return null;
+      const children = Array.from(innerGrid.children).map(child => (child as HTMLElement).getBoundingClientRect());
+      return {
+        outerColumns: getComputedStyle(outerGrid).gridTemplateColumns.split(" ").filter(Boolean).length,
+        innerColumns: getComputedStyle(innerGrid).gridTemplateColumns.split(" ").filter(Boolean).length,
+        childCount: children.length,
+        childrenShareRow: children.length === 2 && Math.abs(children[0].top - children[1].top) <= 1,
+        innerOverflow: innerGrid.scrollWidth - innerGrid.clientWidth
+      };
+    }));
+
+    assert(states.length === 3 && states.every(Boolean), "Expected all three nested-grid specimens to expose measurable outer and inner grids.");
+    const measured = states.filter((state): state is NonNullable<typeof state> => state !== null);
+    assert(measured.map(state => state.outerColumns).join(",") === "4,8,16", `Expected nested-grid outer specimens to exercise 4/8/16 columns, got ${measured.map(state => state.outerColumns).join(",")}.`);
+    assert(measured.every(state => state.innerColumns === 4 && state.childCount === 2 && state.innerOverflow <= 1), `Expected every nested grid to resolve against its own four-column module without overflow, got ${JSON.stringify(measured)}.`);
+    assert(!measured[0].childrenShareRow && measured[1].childrenShareRow && measured[2].childrenShareRow, `Expected the narrow child cards to stack and the two span-2 specimens to share a row, got ${JSON.stringify(measured)}.`);
+    await page.close();
   } finally {
     await browser.close();
   }
@@ -2577,6 +2618,7 @@ async function main(): Promise<void> {
     await verifyRenewalCompositionContracts(origin);
     await verifyAdversarialResponsiveGeometry(origin);
     await verifyDirectAndClassSurfaceGeometry(origin);
+    await verifyNestedGridScoping(origin);
     await verifySkipLink(origin);
     await verifyParityInteractions(origin);
     await verifyReducedNavigationAndTableOfContents(origin);

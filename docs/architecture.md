@@ -39,6 +39,12 @@ Semantic tier and density are not independent BF axes today. Choosing a tier
 selects typography, rhythm, layout values, and component geometry together.
 Consumers must not mix a tier's type metrics with another tier's density tokens.
 
+Panel insets follow the same non-increasing density rule as capped content:
+Editorial and Documentation use `1rem`, App uses `0.75rem`, and OS uses
+`0.5rem`. Both inline and block panel padding move in complete baseline-grid
+increments, so denser tiers never create roomier panel headers, content, or
+footers than the tier before them.
+
 ## Container-owned rhythm
 
 All four tiers use one ownership model:
