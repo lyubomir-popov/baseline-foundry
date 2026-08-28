@@ -1,15 +1,13 @@
 # Agent inbox
 
-Spec 014 is merged through PR #1 at `181d64d` after both Node 22.14 and Node 24
-release checks passed in GitHub runs `33195228211` and `33195244095`. Its
-package is archived under `docs/spec-archive/014-framework-health-hardening/`.
-Merged-main CI runs `33195836948`, `33196489826` and `33197161932` passed both
-jobs. Publish runs `33196344358`, `33197008574` and `33197656449` stopped before
-publication on, respectively, version-output quoting, absent gitignored build
-outputs, and the ignored experiment font required to generate those outputs.
-npm confirms 0.1.4 remains unused. The workflow now bootstraps the pinned font
-before building and package-content preflight; the corrected release commit is
-pending CI and a fresh non-resume publish run.
+Spec 014 is released from `d8746e4` / `v0.1.4` on npm and GitHub. Final
+Node 22.14/24 CI run `33197801932` and OIDC publish run `33198280435` passed.
+The registry and attached GitHub tarball share SHA-1
+`093c44d1a7a5acb250cbf5c0fa1ea0471956d543`; the attached SHA-256 is
+`3abb357234db545c7add10a4dfaa613f148a4509589af1c68e790e2027756916`.
+Clean registry installation resolves 30 root exports and 21 public asset entry
+points. Durable evidence is archived under
+`docs/spec-archive/014-framework-health-hardening/`.
 Preserve every unmerged or semantic edit, all named `tmp/` work, and the sibling
 Vanilla `yarn.lock`.
 
@@ -17,13 +15,6 @@ The implementation and adversarial review are complete. Release preflight now
 fails closed on registry errors, negative fixtures use the actual latest
 published version, and the publish workflow compares its local tarball SHA-1
 to npm's recorded shasum before creating GitHub release assets.
-
-Baseline Foundry 0.1.3 is released from `83d6294` / `v0.1.3` on npm and GitHub.
-The registry shasum and attached GitHub tarball both resolve to
-`947d0f5a69cfaf5b05463229230889b0f0588328`. Clean registry installation passes
-for 30 root exports, the public build API, and all 15 built-in CSS, token, and
-surface entry points. Both release-commit CI runs (`33184961054` and
-`33184954605`) passed.
 
 `@lyubomir-popov/baseline-nudge-generator@1.5.1` is published with registry
 shasum `d3643ea522c742b152428fa4fe0673d174d062a4`; BF consumes the registry range

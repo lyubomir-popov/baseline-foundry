@@ -2,7 +2,7 @@
 
 **Reviewed**: in progress, 2026-08-28
 
-**Disposition**: Merged and archived; 0.1.4 publication pending.
+**Disposition**: Released as 0.1.4.
 
 ## Pre-change baseline
 
@@ -158,3 +158,17 @@ with the repository workflow.
   preflight: the ignored IBM Plex experiment font had not been bootstrapped.
   npm still returned E404 for 0.1.4. The publish workflow now mirrors
   `release:check` by running the pinned font setup before its preflight build.
+- Final candidate `d8746e4` passed both Node 22.14 and Node 24 jobs in CI run
+  `33197801932`. OIDC publish run `33198280435` passed font setup, deterministic
+  build, fail-closed preflight, `prepublishOnly`, exact registry installation,
+  tarball checksum comparison and GitHub release creation.
+- npm publishes `baseline-foundry@0.1.4` with SHA-1
+  `093c44d1a7a5acb250cbf5c0fa1ea0471956d543` and integrity
+  `sha512-9VrofaEpG+5knb6jO6Zui1HP4hWuYzzNW4xe2vurO04pkb+Xw0P5YXpyuRTBgQsbFcSVrm8EX/IAudmm6pJtDQ==`.
+  The independently downloaded GitHub tarball has the same SHA-1 and SHA-256
+  `3abb357234db545c7add10a4dfaa613f148a4509589af1c68e790e2027756916`;
+  both values match the attached `checksums.txt`.
+- Tag `v0.1.4` and the GitHub release target exact source commit
+  `d8746e4733723302f278350f34466f7a8b12bacd`. A fresh registry install passed
+  all 30 root exports and 21 asset entry points. Spec 014 has no remaining open
+  task or unresolved release finding.

@@ -113,7 +113,7 @@ CI runtime; each evaluated major has a recorded disposition.
 - [x] T023 Perform adversarial source/API/workflow review and rendered demo review; resolve every Critical, High and Medium finding in `specs/014-framework-health-hardening/review.md`.
 - [x] T024 Reconcile `AGENT-INBOX.md`, `TODO.md`, `docs/specs.md` and `.github/copilot-instructions.md`, bump the maintenance version in `package.json` and `package-lock.json`, then commit and merge the exact green feature branch.
 - [x] T025 On merged `main`, archive the completed package under `docs/spec-archive/014-framework-health-hardening/`, update the catalog to released-pending-publication state, and push the exact release candidate.
-- [ ] T026 Run `.github/workflows/publish.yml`, verify npm/GitHub/tag/checksum agreement, and record final evidence in `docs/spec-archive/014-framework-health-hardening/review.md` plus the live handover.
+- [x] T026 Run `.github/workflows/publish.yml`, verify npm/GitHub/tag/checksum agreement, and record final evidence in `docs/spec-archive/014-framework-health-hardening/review.md` plus the live handover.
 
 ## Dependencies & Execution Order
 

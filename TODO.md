@@ -5,8 +5,7 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Publish the exact archived Spec 014 / 0.1.4 candidate after merged-main CI
-   passes, then reconcile npm, tag, GitHub release and checksum evidence.
+No package is active. Promote only a candidate whose evidence trigger is met.
 
 ## Candidate order after Spec 001
 
