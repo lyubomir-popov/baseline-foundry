@@ -405,6 +405,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         beforeTop,
         afterTop: mainFooter.getBoundingClientRect().top,
         mainMinBlockSize: getComputedStyle(mainFooter).minBlockSize,
+        mainPaddingBlockStart: getComputedStyle(mainFooter).paddingBlockStart,
         scrollTop: content.scrollTop
       };
     });
@@ -413,6 +414,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(panelFooterState.scrollTop > 0, "Expected the main panel content to scroll under pressure.");
     assert(Math.abs(panelFooterState.afterTop - panelFooterState.beforeTop) <= 1, `Expected the main panel footer to stay fixed while panel content scrolls. Got before=${panelFooterState.beforeTop}px, after=${panelFooterState.afterTop}px.`);
     assert(Number.parseFloat(panelFooterState.mainMinBlockSize) > 0, `Expected the main panel footer to expose a minimum block size. Got ${panelFooterState.mainMinBlockSize}.`);
+    assert(panelFooterState.mainPaddingBlockStart === "0px", `Expected panel footer content to rely on child control nudges instead of container start padding. Got ${panelFooterState.mainPaddingBlockStart}.`);
 
     const spacingResetState = await page.evaluate(() => {
       const stack = document.querySelector<HTMLElement>(".bf-panel-header .bf-stack.is-flush");
@@ -525,17 +527,28 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     const alignedFooterState = await page.evaluate(() => {
       const mainFooter = document.querySelector<HTMLElement>("[data-application-layout-main-footer]");
       const navigationFooter = document.querySelector<HTMLElement>("[data-application-layout-navigation-footer]");
-      if (!mainFooter || !navigationFooter) return null;
+      const navigationList = document.querySelector<HTMLElement>('[data-baseline-label="application layout nav list one"]');
+      if (!mainFooter || !navigationFooter || !navigationList) return null;
+      const mainFooterStyles = getComputedStyle(mainFooter);
+      const navigationFooterStyles = getComputedStyle(navigationFooter);
+      const navigationListStyles = getComputedStyle(navigationList);
       return {
         mainBottom: mainFooter.getBoundingClientRect().bottom,
         navigationBottom: navigationFooter.getBoundingClientRect().bottom,
-        mainMinBlockSize: getComputedStyle(mainFooter).minBlockSize,
-        navigationMinBlockSize: getComputedStyle(navigationFooter).minBlockSize
+        mainMinBlockSize: mainFooterStyles.minBlockSize,
+        mainPaddingBlockStart: mainFooterStyles.paddingBlockStart,
+        navigationMinBlockSize: navigationFooterStyles.minBlockSize,
+        navigationPaddingBlockStart: navigationFooterStyles.paddingBlockStart,
+        navigationListMarginBottom: navigationListStyles.marginBottom,
+        navigationListPaddingBottom: navigationListStyles.paddingBottom
       };
     });
     assert(alignedFooterState, "Expected expanded navigation and main panel footers to be measurable.");
     assert(Math.abs(alignedFooterState.mainBottom - alignedFooterState.navigationBottom) <= 1, `Expected navigation and main panel footers to share the bottom edge. Got main=${alignedFooterState.mainBottom}px, navigation=${alignedFooterState.navigationBottom}px.`);
     assert(alignedFooterState.mainMinBlockSize === alignedFooterState.navigationMinBlockSize, `Expected both panel footers to share the same minimum block size. Got main=${alignedFooterState.mainMinBlockSize}, navigation=${alignedFooterState.navigationMinBlockSize}.`);
+    assert(alignedFooterState.mainPaddingBlockStart === "0px" && alignedFooterState.navigationPaddingBlockStart === "0px", `Expected both panel footers to remove container start padding. Got main=${alignedFooterState.mainPaddingBlockStart}, navigation=${alignedFooterState.navigationPaddingBlockStart}.`);
+    assert(alignedFooterState.navigationListPaddingBottom === "0px", `Expected side-navigation list groups to remove block-end padding. Got ${alignedFooterState.navigationListPaddingBottom}.`);
+    assert(alignedFooterState.navigationListMarginBottom === "0px", `Expected side-navigation list groups not to add block-end margin. Got ${alignedFooterState.navigationListMarginBottom}.`);
 
     const navigationBrandState = await page.evaluate(() => {
       const header = document.querySelector<HTMLElement>("[data-navigation-brand-header]");

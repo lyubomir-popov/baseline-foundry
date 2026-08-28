@@ -545,9 +545,12 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(":where(.bf-theme) :where(.bf-panel-content) > :last-child:not("), "Expected panel-content boundaries to preserve final-child compensation.");
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0 0 var(--bf-body-margin-bottom"), "Expected list items to carry body baseline compensation in margin-bottom.");
-  assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom: 0;"), "Expected semantic list containers not to add a second semantic space after.");
+  assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom: 0;\n  padding-block-end: 0;"), "Expected semantic list containers not to add block-end margin or padding around item compensation.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  padding-inline-start:"), "Expected prose lists to retain indentation independently of container-owned spacing.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  position: relative;"), "Expected side-navigation list groups not to add container-owned block-end spacing.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after {\n  background: var(--bf-color-border-low-contrast);\n  block-size: var(--bf-border-width);"), "Expected side-navigation dividers to stay out of list layout.");
+  assert(css.includes("min-block-size: calc(var(--bf-control-box-size-compact) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to rely on their controls' start nudge instead of adding container start padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0px;"), "Expected flush stacks to remove only their container gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-extra-dense) {\n  --bf-stack-space: var(--bf-space-half);"), "Expected extra-dense stacks to use the half-baseline gap.");

@@ -1,5 +1,13 @@
 # Agent inbox
 
+The focused list and panel-footer spacing correction is green on
+`fix/list-panel-footer-spacing` and is not yet released. Semantic `ul`/`ol`
+containers explicitly have no block-end padding, side-navigation groups own
+neither margin nor padding and paint their divider outside layout, and the BF
+`bf-panel-footer` default has no start padding. `npm test` and
+`npm run qa:components` passed on 2026-08-28; fresh side-navigation and
+application-layout captures were reviewed without visible regression.
+
 Spec 014 is released from `d8746e4` / `v0.1.4` on npm and GitHub. Final
 Node 22.14/24 CI run `33197801932` and OIDC publish run `33198280435` passed.
 The registry and attached GitHub tarball share SHA-1

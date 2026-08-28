@@ -134,16 +134,24 @@ ${bodySemiboldTypeStyles}  display: block;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   list-style: none;
-  margin: 0 0 calc(var(--bf-baseline) * 2);
-  padding: 0 0 calc((var(--bf-baseline) * 2) - var(--bf-border-width));
+  margin: 0;
+  padding: 0;
+  position: relative;
 }
 
-:where(.bf-theme) :where(.bf-side-navigation-list:last-of-type) {
-  border-bottom: 0;
-  margin-bottom: 0;
-  padding-bottom: 0;
+:where(.bf-theme) :where(.bf-side-navigation-list)::after {
+  background: var(--bf-color-border-low-contrast);
+  block-size: var(--bf-border-width);
+  content: '';
+  inset-block-end: 0;
+  inset-inline: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-list:last-of-type)::after {
+  content: none;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title) {

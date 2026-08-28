@@ -413,6 +413,7 @@ ${capEngineDemo}
 
 :where(.bf-theme) :where(ul, ol) {
   margin-bottom: 0;
+  padding-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {
