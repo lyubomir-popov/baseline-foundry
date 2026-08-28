@@ -142,3 +142,8 @@ with the repository workflow.
 - PR #1 merged the exact reviewed feature commit `9c146d5` to `main` at
   `181d64d`. Push and pull-request GitHub runs `33195228211` and `33195244095`
   both passed the Node 22.14 and Node 24 release-check matrix before merge.
+- Merged-main run `33195836948` passed both supported Node jobs at archive
+  commit `e34a2ad`. The first publish attempt, run `33196344358`, stopped before
+  preflight or publication because the package-version output step over-escaped
+  its shell expression. npm still returned E404 for 0.1.4. The output command
+  was reduced to one directly executable Node expression before retry.

@@ -3,7 +3,10 @@
 Spec 014 is merged through PR #1 at `181d64d` after both Node 22.14 and Node 24
 release checks passed in GitHub runs `33195228211` and `33195244095`. Its
 package is archived under `docs/spec-archive/014-framework-health-hardening/`.
-The exact 0.1.4 archive/status commit is pending merged-main CI and publication.
+Merged-main CI run `33195836948` passed both jobs. Publish run `33196344358`
+then failed before preflight/publication on an over-escaped version-output shell
+expression; npm confirms 0.1.4 remains unused. The corrected release commit is
+pending CI and a fresh non-resume publish run.
 Preserve every unmerged or semantic edit, all named `tmp/` work, and the sibling
 Vanilla `yarn.lock`.
 

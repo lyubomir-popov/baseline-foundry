@@ -35,7 +35,7 @@ jobs:
 
       - id: package
         shell: bash
-        run: echo "version=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+        run: node -p '"version=" + require("./package.json").version' >> "$GITHUB_OUTPUT"
 
       - name: Guard release candidate
         shell: bash
