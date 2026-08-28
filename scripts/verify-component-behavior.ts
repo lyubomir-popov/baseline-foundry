@@ -2328,6 +2328,89 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   }
 }
 
+async function verifyNarrowTierSwitchRangeGeometry(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 600, height: 480 } });
+    await page.setContent(`<!doctype html>
+      <link rel="stylesheet" href="${origin}/demo/demo-fonts.css">
+      <link rel="stylesheet" href="${origin}/dist/tiers/editorial/styles.css">
+      <body class="bf-theme bf-tier-editorial" style="margin:0;min-block-size:100vh">
+        <section class="bf-panel" style="inset-block-end:0;inset-inline:0;position:fixed">
+          <footer class="bf-panel-footer is-sticky bf-cluster is-split">
+            <output for="tier-density">Editorial</output>
+            <div class="bf-field is-range is-stacked bf-inline-size is-wide">
+              <label class="bf-form-label" for="tier-density">Density</label>
+              <div class="bf-control">
+                <div class="bf-slider">
+                  <input id="tier-density" type="range" min="0" max="3" step="1" value="0" aria-valuetext="Editorial">
+                </div>
+              </div>
+            </div>
+          </footer>
+        </section>
+        <script>
+          const tiers = ["editorial", "documentation", "app", "os"];
+          const labels = ["Editorial", "Documentation", "App", "OS"];
+          const range = document.querySelector("#tier-density");
+          const output = document.querySelector("output");
+          window.__bfTierRangeSamples = [];
+          range.addEventListener("input", () => {
+            const index = Number(range.value);
+            document.body.classList.remove(...tiers.map(tier => "bf-tier-" + tier));
+            document.body.classList.add("bf-tier-" + tiers[index]);
+            range.setAttribute("aria-valuetext", labels[index]);
+            output.value = labels[index];
+            const rect = range.getBoundingClientRect();
+            window.__bfTierRangeSamples.push({
+              tier: tiers[index],
+              value: index,
+              left: rect.left,
+              right: rect.right
+            });
+          });
+        </script>
+      </body>`);
+    await page.waitForFunction(() => document.fonts.status === "loaded");
+
+    const range = page.locator("#tier-density");
+    await range.dispatchEvent("input");
+    const initialBox = await range.boundingBox();
+    assert(initialBox && initialBox.width > 300, `Expected the narrow tier range to retain a generous track at 600px, got ${initialBox?.width ?? 0}px.`);
+    const pointerY = initialBox.y + (initialBox.height / 2);
+    await page.mouse.move(initialBox.x + 2, pointerY);
+    await page.mouse.down();
+    await page.mouse.move(initialBox.x + initialBox.width - 2, pointerY, { steps: 24 });
+    await page.mouse.up();
+
+    const state = await page.evaluate(() => {
+      const range = document.querySelector<HTMLInputElement>("#tier-density");
+      const footer = document.querySelector<HTMLElement>(".bf-panel-footer");
+      const samples = (window as typeof window & { __bfTierRangeSamples: Array<{ tier: string; value: number; left: number; right: number; }>; }).__bfTierRangeSamples;
+      if (!range || !footer) return null;
+      const rangeRect = range.getBoundingClientRect();
+      return {
+        bodyTier: Array.from(document.body.classList).find(className => className.startsWith("bf-tier-")),
+        footerOverflow: footer.scrollWidth - footer.clientWidth,
+        rangeOverflow: range.scrollWidth - range.clientWidth,
+        rangeWidth: rangeRect.width,
+        samples,
+        value: range.value
+      };
+    });
+
+    assert(state, "Expected the narrow tier-switch range fixture to remain measurable after dragging.");
+    assert(state.value === "3" && state.bodyTier === "bf-tier-os", `Expected pointer dragging to reach the OS tier; value=${state.value}, tier=${state.bodyTier}.`);
+    assert(state.samples.length >= 3 && new Set(state.samples.map(sample => sample.tier)).size === 4, `Expected the drag to exercise all four tier classes, got ${JSON.stringify(state.samples)}.`);
+    assert(state.footerOverflow <= 1 && state.rangeOverflow <= 1 && state.rangeWidth >= initialBox.width - 1, `Expected tier switching to preserve a usable, non-overflowing range; footer overflow=${state.footerOverflow}px, range overflow=${state.rangeOverflow}px, width=${state.rangeWidth}px.`);
+    assert(state.samples.every(sample => sample.right - sample.left >= 300), `Expected every tier transition to retain the range's usable track width, got ${JSON.stringify(state.samples)}.`);
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyNestedGridScoping(origin: string): Promise<void> {
   const browser = await openBrowser();
 
@@ -2618,6 +2701,7 @@ async function main(): Promise<void> {
     await verifyRenewalCompositionContracts(origin);
     await verifyAdversarialResponsiveGeometry(origin);
     await verifyDirectAndClassSurfaceGeometry(origin);
+    await verifyNarrowTierSwitchRangeGeometry(origin);
     await verifyNestedGridScoping(origin);
     await verifySkipLink(origin);
     await verifyParityInteractions(origin);

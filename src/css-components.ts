@@ -338,6 +338,10 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   grid-template-columns: minmax(0, 1fr);
 }
 
+:where(.bf-theme) :where(.bf-field.is-range.is-stacked) > :where(.bf-control, .bf-form-help) {
+  grid-column: 1;
+}
+
 :where(.bf-theme) :where(.bf-field.is-range.is-stacked) > :where(.bf-control) {
   min-inline-size: 0;
 }
