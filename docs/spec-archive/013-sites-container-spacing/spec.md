@@ -1,6 +1,8 @@
 # Feature Specification: Sites Container-Owned Spacing
 
 **Feature Branch**: `feat/012-sites-container-spacing`
+**Archive identifier**: Spec 013. The historical branch retained its original
+name after the package was renumbered to resolve an identifier collision.
 
 **Created**: 2026-08-27
 

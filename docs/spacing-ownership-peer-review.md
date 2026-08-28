@@ -40,4 +40,4 @@ For the built-in Editorial tier, which supplies BF's Sites surface:
   primitive; deciding where a large CTA uses it remains component-specific.
 
 The executable migration and evidence live in
-[`specs/012-sites-container-spacing/`](../specs/012-sites-container-spacing/).
+[`docs/spec-archive/013-sites-container-spacing/`](spec-archive/013-sites-container-spacing/).

@@ -39,7 +39,10 @@
 - [x] T021 [P] Implement orthogonal `bf-aspect.is-4-3` and `.is-contain`.
 - [x] T022 [P] Implement `bf-notice` and semantic variants with accessible demo
       guidance.
-- [x] T023 [P] Implement the tokenized, element-owned `bf-eyebrow` role.
+- [x] T023 [P] Implement the tokenized, element-owned small-caps role.
+      Superseded by the 2026-08-28 owner decision: semantic `h5` and `.bf-h5`
+      are the canonical implementation, and the duplicate `bf-eyebrow` alias
+      is retired.
 
 ### User story 1C: Sequence and control compositions
 

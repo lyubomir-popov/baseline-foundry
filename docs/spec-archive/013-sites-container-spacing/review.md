@@ -2,7 +2,7 @@
 
 ## Outcome
 
-Spec 012 implements the owner decision as a generated contract rather than a
+Spec 013 implements the owner decision as a generated contract rather than a
 consumer override. Production text keeps its real-metric top nudge, uses zero
 bottom padding, and carries only the complementary baseline compensation in
 `margin-block-end`. Semantic separation is owned by nested stacks:

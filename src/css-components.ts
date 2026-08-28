@@ -10,6 +10,7 @@ import { editorialContentCss } from "./css-components/editorial-content.js";
 import { iconCss } from "./css-components/icon.js";
 import { interactiveFeedbackCss } from "./css-components/interactive-feedback.js";
 import { interactiveTablesCss } from "./css-components/interactive-tables.js";
+import { listCss } from "./css-components/list.js";
 import { listTreeCss } from "./css-components/list-tree.js";
 import { linkedLogoSiteLayoutCss } from "./css-components/linked-logo-site-layout.js";
 import { logoMediaCss } from "./css-components/logo-media.js";
@@ -868,123 +869,7 @@ ${articlePaginationCss({
   titleTypeStyles: typeStyles(h5, { includeCase: false })
 })}
 
-:where(.bf-theme) :where(.bf-list) {
-  align-content: start;
-  display: grid;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-:where(.bf-theme) :where(.bf-list-item) {
-${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
-  margin: 0 0 var(--bf-body-margin-bottom);
-  min-inline-size: 0;
-  overflow-wrap: anywhere;
-  padding-block-end: 0;
-  padding-block-start: var(--bf-body-nudge-start);
-}
-
-:where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item) {
-  box-shadow: inset 0 1px 0 var(--bf-color-border-low-contrast);
-  padding-block-end: var(--bf-baseline);
-}
-
-:where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:first-child) {
-  box-shadow: none;
-}
-
-:where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {
-  padding-inline-start: calc(var(--bf-leading-icon-size) + var(--bf-leading-icon-gap));
-  position: relative;
-}
-
-:where(.bf-theme) :where(.bf-list-item.is-ticked)::before,
-:where(.bf-theme) :where(.bf-list-item.is-crossed)::before {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  block-size: var(--bf-leading-icon-size);
-  content: "";
-  inline-size: var(--bf-leading-icon-size);
-  left: 0;
-  position: absolute;
-  top: var(--bf-leading-icon-offset);
-}
-
-:where(.bf-theme) :where(.bf-list-item.is-ticked)::before {
-  background-image: var(--bf-ui-icon-success-grey);
-}
-
-:where(.bf-theme) :where(.bf-list-item.is-crossed)::before {
-  background-image: var(--bf-ui-icon-error-grey);
-}
-
-:where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed)::before {
-  top: calc(var(--bf-leading-icon-offset) + (var(--bf-baseline) * 0.5));
-}
-
-:where(.bf-theme) :where(ol.bf-list.is-divided) {
-  counter-reset: bf-list-counter;
-}
-
-:where(.bf-theme) :where(ol.bf-list.is-divided) > :where(.bf-list-item) {
-  counter-increment: bf-list-counter;
-  list-style: none;
-  padding-inline-start: calc(var(--bf-baseline) * 4);
-  position: relative;
-}
-
-:where(.bf-theme) :where(ol.bf-list.is-divided) > :where(.bf-list-item)::before {
-${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
-  content: counters(bf-list-counter, ".") ".";
-  inline-size: calc(var(--bf-baseline) * 2.5);
-  left: 0;
-  position: absolute;
-  text-align: right;
-  top: var(--bf-body-nudge-start);
-}
-
-:where(.bf-theme) :where(.bf-list-item) > :where(.bf-list) {
-  margin-inline-start: calc(var(--bf-baseline) * 3);
-  padding-block-start: var(--bf-body-nudge-end);
-}
-
-:where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) > :where(.bf-list) {
-  margin-inline-start: 0;
-}
-
-:where(.bf-theme) :where(.bf-inline-list) {
-  margin: 0;
-  padding: 0;
-}
-
-:where(.bf-theme) :where(.bf-inline-list-item) {
-${typeStyles(body, { includeCase: false })}  display: inline-block;
-  list-style: none;
-  margin-inline-end: calc(var(--bf-baseline) * 1.5);
-  padding-block-end: var(--bf-body-nudge-end);
-  padding-block-start: var(--bf-body-nudge-start);
-}
-
-:where(.bf-theme) :where(.bf-inline-list-item:last-of-type) {
-  margin-inline-end: 0;
-}
-
-:where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item) {
-  margin-inline-end: calc(var(--bf-baseline) * 1);
-  position: relative;
-}
-
-:where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item)::after {
-  content: "\\2022";
-  display: inline;
-  margin-inline-start: calc(var(--bf-baseline) * 0.25);
-}
-
-:where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item:last-of-type)::after {
-  content: "";
-}
+${listCss({ bodyTypeStyles })}
 
 :where(.bf-theme) :where(.bf-skip-link) {
 ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-background-alt);

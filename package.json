@@ -1,6 +1,6 @@
 {
   "name": "baseline-foundry",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lean baseline-aligned design system focused on typography, editorial flow, spacing, and grid primitives.",
   "type": "module",
   "files": [
@@ -48,7 +48,7 @@
     "./presets/app-tier.surfaces.json": "./dist/presets/app-tier/surfaces.json"
   },
   "scripts": {
-    "clean": "powershell -NoProfile -Command \"if (Test-Path dist) { Remove-Item dist -Recurse -Force }; if (Test-Path generated\\baseline) { Remove-Item generated\\baseline -Recurse -Force }\"",
+    "clean": "tsx scripts/clean.ts",
     "setup:demo-font": "tsx scripts/setup-demo-font.ts",
     "build:theme": "tsx scripts/build-theme.ts",
     "build:lib": "tsc -p tsconfig.json",
@@ -59,6 +59,10 @@
     "test:behavior": "tsx scripts/verify-component-behavior.ts",
     "test:components": "tsx scripts/verify-component-baselines.ts",
     "test": "npm run build && npm run test:build && npm run test:components && npm run test:behavior",
+    "check:types": "tsc -p tsconfig.json --noEmit",
+    "audit": "npm audit && npm audit --omit=dev",
+    "release:check": "npm run check:types && npm test && npm run qa:components && npm run audit",
+    "prepublishOnly": "npm run release:check",
     "playwright:install": "playwright install chromium",
     "compare:controls": "npm run build && tsx scripts/compare-controls.ts",
     "compare:inline-surfaces": "npm run build && tsx scripts/compare-inline-surfaces.ts",
@@ -80,14 +84,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@lyubomir-popov/baseline-nudge-generator": "^1.4.1"
+    "@lyubomir-popov/baseline-nudge-generator": "https://github.com/lyubomir-popov/baseline-nudge-generator/archive/refs/tags/v1.5.1.tar.gz"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "playwright": "^1.58.2",
-    "postcss": "^8.5.12",
-    "tsx": "^4.20.3",
+    "@types/node": "^24.13.3",
+    "playwright": "^1.62.1",
+    "postcss": "^8.5.26",
+    "tsx": "^4.23.12",
     "typescript": "^5.8.2",
-    "vite": "^7.1.5"
+    "vite": "^7.3.6"
   }
 }

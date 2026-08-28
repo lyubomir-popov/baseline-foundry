@@ -393,6 +393,11 @@ async function main(): Promise<void> {
     const report = [] as ComponentVerificationReport[];
 
     for (const componentPage of componentPages) {
+      if (componentPage.verification === "screenshot-only") {
+        console.log(`Skipped ${componentPage.name}: screenshot-only page; structural assertions run in test:build`);
+        continue;
+      }
+
       await clearPageChromeStorage(page, origin);
       await page.goto(`${origin}${componentPage.route}`, { waitUntil: "networkidle" });
       await waitForFonts(page);

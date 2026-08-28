@@ -6,6 +6,7 @@ export interface ComponentPage {
   name: string;
   route: string;
   captureProfile?: "fit" | "wide";
+  verification?: "baseline" | "screenshot-only";
 }
 
 export const componentPages: ComponentPage[] = [
@@ -76,7 +77,7 @@ export const componentPages: ComponentPage[] = [
   { name: "in-page-navigation", route: "/demo/components/in-page-navigation.html", captureProfile: "wide" },
   { name: "navigation-reduced", route: "/demo/components/navigation-reduced.html", captureProfile: "wide" },
   { name: "engine-smoke", route: "/demo/components/engine-smoke.html", captureProfile: "wide" },
-  { name: "engine-illustration", route: "/demo/components/engine-illustration.html", captureProfile: "wide" },
+  { name: "engine-illustration", route: "/demo/components/engine-illustration.html", captureProfile: "wide", verification: "screenshot-only" },
   { name: "modal", route: "/demo/components/modal.html" },
   { name: "choice-row", route: "/demo/components/choice-row.html" },
   { name: "inline-options", route: "/demo/components/inline-options.html" },

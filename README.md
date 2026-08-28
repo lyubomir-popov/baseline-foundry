@@ -288,6 +288,14 @@ Package root exports:
 - `generateBaselineGridThemeOverrideCss`
 - `initCodeSnippets`
 - `initContextualMenus`
+- `initInPageNavigations`
+- `initInteractiveFeedback`
+- `initNotificationDismissals`
+- `initPasswordReveals`
+- `initInteractiveTables`
+- `initSortableTables`
+- `initExpandingTables`
+- `initMobileCardTables`
 - `initListTree`
 - `initPanelDrawers`
 - `initRangeControls`

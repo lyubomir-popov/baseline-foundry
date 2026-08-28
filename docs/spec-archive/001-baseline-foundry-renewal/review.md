@@ -7,6 +7,13 @@ automated closeout complete. The explicitly requested in-app-browser catalog
 sign-off was not performed because that backend remained unavailable; only
 Chrome was exposed and it was not substituted.
 
+## 2026-08-28 contract supersession
+
+The owner accepted removal of the duplicate `bf-eyebrow` hook. Semantic `h5`
+and `.bf-h5` now exclusively own that small-caps presentation. The amended
+task and public contract above supersede the original Spec 001 eyebrow name;
+no compatibility alias or second implementation is retained.
+
 ## 2026-08-21 owner closeout
 
 The owner directed the feature branch to be wrapped up and merged before the

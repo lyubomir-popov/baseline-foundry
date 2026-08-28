@@ -5,13 +5,8 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-| Spec | Package | Status |
-|---|---|---|
-| 009 Semantic list spacing | [`009-semantic-list-spacing/`](../specs/009-semantic-list-spacing/) | Released at `be85d46`; downstream Registry spacing, integrity and responsive gates verified. |
-| 008 Prose list spacing | [`008-prose-list-spacing/`](../specs/008-prose-list-spacing/) | Released at `6d203e5`; downstream Registry spacing and responsive gates verified. |
-| 007 Navigation-brand panel alignment | [`007-navigation-brand-panel-alignment/`](../specs/007-navigation-brand-panel-alignment/) | Released at `454c7ae`; downstream editorial alignment verified. |
-| 006 Navigation brand and icon optics | [`006-navigation-brand-and-icon-optics/`](../specs/006-navigation-brand-and-icon-optics/) | Released on `main` at `800a68e`; downstream Registry geometry verified and pushed. |
-| 005 Side-navigation icon alignment | [`005-side-navigation-icon-alignment/`](../specs/005-side-navigation-icon-alignment/) | Released on `main` at `8728d68`; downstream Registry geometry verified and pushed. |
+No numbered package is active. Candidate work remains unpromoted until its
+catalogued evidence trigger is met.
 
 ## Archive
 
@@ -22,10 +17,16 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 | 001 Baseline Foundry renewal | [`001-baseline-foundry-renewal/`](spec-archive/001-baseline-foundry-renewal/) | Accepted and merged 2026-08-21; automated closeout green, with the unavailable in-app-browser pass recorded in `review.md`. |
 | 002 Element-owned typography selectors | [`002-element-owned-typography/`](spec-archive/002-element-owned-typography/) | Accepted and merged 2026-08-24; full build, browser behavior, and component-capture gates green. |
 | 003 Flush side-navigation composition | [`003-flush-side-navigation/`](spec-archive/003-flush-side-navigation/) | Accepted and merged 2026-08-24; downstream Registry feature branch verified without local BF overrides. |
+| 004 Application navigation geometry | [`004-application-navigation-geometry/`](spec-archive/004-application-navigation-geometry/) | Released at `f249a8a`; BF and downstream desktop/mobile navigation geometry verified. |
+| 005 Side-navigation icon alignment | [`005-side-navigation-icon-alignment/`](spec-archive/005-side-navigation-icon-alignment/) | Released at `8728d68`; downstream Registry geometry verified. |
+| 006 Navigation brand and icon optics | [`006-navigation-brand-and-icon-optics/`](spec-archive/006-navigation-brand-and-icon-optics/) | Released at `800a68e`; downstream Registry geometry verified. |
+| 007 Navigation-brand panel alignment | [`007-navigation-brand-panel-alignment/`](spec-archive/007-navigation-brand-panel-alignment/) | Released at `454c7ae`; downstream editorial alignment verified. |
+| 008 Prose list spacing | [`008-prose-list-spacing/`](spec-archive/008-prose-list-spacing/) | Released at `6d203e5`; downstream Registry spacing and responsive gates verified. |
+| 009 Semantic list spacing | [`009-semantic-list-spacing/`](spec-archive/009-semantic-list-spacing/) | Released at `be85d46`; downstream Registry spacing, integrity and responsive gates verified. |
 | 010 Sticky footer and hero media | [`010-sticky-footer-hero-media/`](spec-archive/010-sticky-footer-hero-media/) | Released at `636eff6` on 2026-08-27; full BF gates and downstream Registry responsive geometry passed. |
 | 011 Site shell primitives | [`011-site-shell-primitives/`](spec-archive/011-site-shell-primitives/) | Released at `1293bcc` on 2026-08-27; full BF tests, capture QA, browser behavior and visual review passed. |
 | 012 Hero divider and quiet linked titles | [`012-hero-link-contracts/`](spec-archive/012-hero-link-contracts/) | Released at `4d1b914` on 2026-08-27; linked titles remain blue and heroes own a rhythm-preserving default divider. |
-| 012 Sites container-owned spacing | [`012-sites-container-spacing/`](spec-archive/012-sites-container-spacing/) | Released at `2c5587d` on 2026-08-27; all Sites rhythm is composed with nested stacks, with downstream Registry proof at `b388f85`. |
+| 013 Sites container-owned spacing | [`013-sites-container-spacing/`](spec-archive/013-sites-container-spacing/) | Released at `2c5587d` on 2026-08-27; renumbered after archive to resolve the duplicate 012 identifier. All Sites rhythm is composed with nested stacks, with downstream Registry proof at `b388f85`. |
 
 ## Candidate specifications
 
@@ -46,7 +47,7 @@ features.
 | Source | Role |
 |---|---|
 | `../canonical-spacing-spec/specs/type scale/draft.md` | Type-scale and metric reference |
-| `../canonical-spacing-spec/specs/spacing/draft.md` | Governing spacing reference for container-owned semantic gaps and element-owned baseline compensation, adopted locally by Spec 012 |
+| `../canonical-spacing-spec/specs/spacing/draft.md` | Governing spacing reference for container-owned semantic gaps and element-owned baseline compensation, adopted locally by Spec 013 |
 | `../canonical-spacing-spec/specs/grid/draft.md` | Grid reference |
 | `../canonical-spacing-spec/specs/typography-article/draft.md` | Supporting editorial reference |
 | `../vanilla-framework/` | Ancestor pattern evidence, not a compatibility mandate |

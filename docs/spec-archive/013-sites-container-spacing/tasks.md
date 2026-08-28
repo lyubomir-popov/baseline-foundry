@@ -1,6 +1,7 @@
 # Tasks: Sites Container-Owned Spacing
 
-**Input**: Design documents from `/specs/012-sites-container-spacing/`
+**Input**: Archived design documents from
+`/docs/spec-archive/013-sites-container-spacing/`
 
 **Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `contracts/spacing.md`, `quickstart.md`
 
@@ -8,7 +9,7 @@
 
 ## Phase 1: Specification and governance
 
-- [x] T001 Scaffold Spec 012 on `feat/012-sites-container-spacing` in a clean worktree.
+- [x] T001 Scaffold the package on the historical `feat/012-sites-container-spacing` branch. It was renumbered to Spec 013 after archive to resolve an identifier collision.
 - [x] T002 Record the compensation, stack, token, boundary, and downstream decisions in the Spec Kit package.
 - [x] T003 Amend `.specify/memory/constitution.md`, `AGENTS.md`, `docs/architecture.md`, `docs/spacing-ownership-peer-review.md`, `docs/agent-index.md`, `docs/specs.md`, `TODO.md`, and `AGENT-INBOX.md`.
 

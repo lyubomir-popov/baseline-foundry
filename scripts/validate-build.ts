@@ -216,7 +216,7 @@ function validateTierSurfaceParity(
   }
 }
 
-async function validatePublicRuntimeAndTypes(indexDts: string): Promise<void> {
+async function validatePublicRuntimeAndTypes(indexDts: string, readmeMd: string): Promise<void> {
   const publicApi = await import("../dist/index.js");
   assert(Array.isArray(publicApi.tierNames), "Expected the package root runtime to export tierNames.");
   assert(JSON.stringify(publicApi.tierNames) === JSON.stringify(tierNames), "Expected public tierNames to expose the complete built-in registry.");
@@ -224,6 +224,16 @@ async function validatePublicRuntimeAndTypes(indexDts: string): Promise<void> {
   for (const typeName of ["TierName", "BuiltInThemeName", "ThemeSurface", "ThemeSurfaceManifest", "ThemeSurfaceManifestEntry"]) {
     assert(indexDts.includes(typeName), `Expected dist/index.d.ts to export public type ${typeName}.`);
   }
+
+  const publicApiSection = readmeMd.match(/## Public API([\s\S]*?)(?=\n## |$)/)?.[1] ?? "";
+  for (const [exportName, exportValue] of Object.entries(publicApi)) {
+    if (typeof exportValue === "function") {
+      assert(publicApiSection.includes(`\`${exportName}\``), `Expected README.md Public API to document runtime export ${exportName}.`);
+    }
+  }
+
+  const screenshotOnlyPages = componentPages.filter(page => page.verification === "screenshot-only");
+  assert(screenshotOnlyPages.length === 1 && screenshotOnlyPages[0]?.name === "engine-illustration", "Expected only the static engine illustration to opt out of baseline verification explicitly.");
 }
 
 function validateRenewalComponentContracts(
@@ -2060,7 +2070,7 @@ async function main(): Promise<void> {
     os: osTier
   }));
   runInvariant("Published package exports", () => validatePackageExports(packageJson));
-  await runInvariantAsync("Public runtime and types", () => validatePublicRuntimeAndTypes(indexDts));
+  await runInvariantAsync("Public runtime and types", () => validatePublicRuntimeAndTypes(indexDts, readmeMd));
   runInvariant("Surfaces manifest docs", () => validateSurfacesManifestDocs(surfacesManifestDoc, readmeMd));
   runInvariant("Theme config watcher", () => validateThemeConfigWatcher(viteConfigTs));
   await runInvariantAsync("Legacy panel preset removed", () => validateLegacyPanelPresetRemoval());

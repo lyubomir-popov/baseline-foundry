@@ -2,7 +2,8 @@
 
 **Branch**: `feat/012-sites-container-spacing` | **Date**: 2026-08-27 | **Spec**: [spec.md](spec.md)
 
-**Input**: Feature specification from `/specs/012-sites-container-spacing/spec.md`
+**Input**: Archived feature specification at
+`/docs/spec-archive/013-sites-container-spacing/spec.md`
 
 ## Summary
 
@@ -38,7 +39,7 @@ Replace semantic role space-after in generated layout with metric-only top-nudge
 - **Small, earned primitives**: Pass. The implementation reuses `bf-stack`, existing layout tokens, and existing pattern roots; only a clear section-gap modifier is restored.
 - **Accessible, intrinsic composition**: Pass. DOM order and semantics remain unchanged; layout uses intrinsic grid gaps and logical properties.
 - **Generated contracts and public evidence**: Pass. Source/config, generated assertions, real-browser geometry, demos, and downstream evidence are all in scope.
-- **Lean specification-owned state**: Pass. Spec 012 owns the decision, migration, tasks, QA route, and review evidence.
+- **Lean specification-owned state**: Pass. Spec 013 owns the decision, migration, tasks, QA route, and review evidence.
 
 Post-design re-check: passed. The contract introduces no child-query selectors, compatibility API, new spacing token, or consumer override.
 
@@ -47,7 +48,7 @@ Post-design re-check: passed. The contract introduces no child-query selectors, 
 ### Documentation (this feature)
 
 ```text
-specs/012-sites-container-spacing/
+docs/spec-archive/013-sites-container-spacing/
 ├── checklists/requirements.md
 ├── contracts/spacing.md
 ├── data-model.md

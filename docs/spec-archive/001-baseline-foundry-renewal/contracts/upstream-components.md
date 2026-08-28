@@ -139,11 +139,15 @@ Spec 001.
   control/field trailing compensation.
 - Standalone control invariants are unchanged outside the row.
 
-## 10. Eyebrow
+## 10. H5 visual role
 
 ```html
-<p class="bf-eyebrow">Visual language</p>
+<p class="bf-h5">Visual language</p>
 ```
 
-- Uses a BF semantic type role and element-owned trailing spacing.
-- Does not require a heading level and does not replace document hierarchy.
+- Semantic `h5` and the `.bf-h5` visual-role class share the same tokenized,
+  element-owned presentation.
+- Use the semantic element when the text is a heading and `.bf-h5` when the
+  visual role must not alter document hierarchy.
+- No separate `bf-eyebrow` alias is published; two public names for the same
+  presentation would create duplicate implementations and migration burden.
