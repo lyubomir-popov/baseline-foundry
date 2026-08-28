@@ -7,6 +7,16 @@ generator release is pushed at `96c926f`/`v1.5.1`. npm publication for both
 repositories remains unavailable until this machine is authenticated; the Git
 tags are the downstream installation source in the meantime.
 
+Public npm distribution is prepared on `main` at `6437869`. The README now
+documents the verified 0.1.2 release-tarball install, `docs/publishing.md` owns
+the first-publication and migration checklist, package metadata preserves the
+unscoped `baseline-foundry` name, and a clean tarball consumer smoke test passes
+for root/build imports plus every built-in tier asset. The name returned no npm
+package on 2026-08-28, but is not reserved until publication. Publish generator
+1.5.1 first, move BF back to its registry dependency, then publish BF 0.1.3 or
+later. Portfolio must stop importing BF's private `src/build.ts` and nested
+development `tsx` before changing its current `file:` dependency.
+
 0.1.2 supersedes 0.1.1 after its new clean runner exposed an ignored local IBM
 Plex experiment font. The release gate now bootstraps the exact `.woff2` asset
 from pinned `@fontsource-variable/ibm-plex-sans` 5.3.0 content; a missing local
