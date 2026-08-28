@@ -1,17 +1,18 @@
 # Agent inbox
 
-The npm bootstrap is active. `@lyubomir-popov/baseline-nudge-generator@1.5.1`
-is published with registry shasum `d3643ea522c742b152428fa4fe0673d174d062a4`;
-BF 0.1.3 consumes the registry range `^1.5.1` and its lockfile resolves that
-exact artifact. The 0.1.3 candidate passes the full release gate, a 145-entry
-package inspection, and a clean consumer smoke test covering the root/build
-APIs plus every built-in tier CSS, token, and surface entry point. The private
-recovery-code file is ignored and is not present in the npm payload.
+Baseline Foundry 0.1.3 is released from `83d6294` / `v0.1.3` on npm and GitHub.
+The registry shasum and attached GitHub tarball both resolve to
+`947d0f5a69cfaf5b05463229230889b0f0588328`. Clean registry installation passes
+for 30 root exports, the public build API, and all 15 built-in CSS, token, and
+surface entry points. Both release-commit CI runs (`33184961054` and
+`33184954605`) passed.
 
-Routine npm releases use `.github/workflows/publish.yml` with GitHub Actions
-OIDC instead of a stored npm token. The first `baseline-foundry` publication
-must be completed interactively before its trusted-publisher relationship can
-be attached.
+`@lyubomir-popov/baseline-nudge-generator@1.5.1` is published with registry
+shasum `d3643ea522c742b152428fa4fe0673d174d062a4`; BF consumes the registry range
+`^1.5.1` and locks that exact artifact. Both packages now trust their checked-in
+`.github/workflows/publish.yml` GitHub Actions workflow through npm OIDC. No npm
+token is stored, and `npm publish` owns the single `prepublishOnly` release gate.
+The private recovery-code file is ignored and absent from every package payload.
 
 Portfolio remains deliberately untouched. Before changing its current `file:`
 dependency, it must stop importing BF's private `src/build.ts` and nested

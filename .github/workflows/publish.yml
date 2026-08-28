@@ -23,5 +23,4 @@ jobs:
 
       - run: npm ci
       - run: npx playwright install chromium
-      - run: npm run release:check
       - run: npm publish

@@ -30,9 +30,10 @@ CSS, JSON, JavaScript, and type declarations.
 
 ## Release checklist
 
-The initial `0.1.3` publication is bootstrapped interactively because npm can
+The initial `0.1.3` publication was bootstrapped interactively because npm can
 only attach a trusted publisher after a package exists. Routine releases use
-the OIDC workflow below.
+the OIDC workflow below. `npm publish` invokes the package's `prepublishOnly`
+release gate, so the workflow does not duplicate that command.
 
 1. Bump BF to the next unused version and regenerate `package-lock.json`.
 2. Run `npm run release:check` and `npm pack --dry-run`; confirm the tarball
