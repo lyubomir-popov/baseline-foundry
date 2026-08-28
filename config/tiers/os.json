@@ -113,8 +113,8 @@
     "controlInlinePaddingFieldRem": 0.25,
     "controlVisualSizeRem": 0.75,
     "fieldGapBaselineUnits": 1,
-    "panelPaddingInlineBaselineUnits": 4,
-    "panelPaddingBlockBaselineUnits": 4,
+    "panelPaddingInlineBaselineUnits": 2,
+    "panelPaddingBlockBaselineUnits": 2,
     "accordionIndentBaselineUnits": 3
   }
 }

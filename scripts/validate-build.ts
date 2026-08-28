@@ -277,6 +277,38 @@ function validateTierContentCaps(
   assert(sharedCss.includes(":where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected shared App class switching to preserve fluid bf-page geometry despite its 60rem fixed-width token.");
 }
 
+function validateTierPanelPaddingProgression(
+  sharedCss: string,
+  tierArtifacts: Record<string, { tokens: Record<string, unknown>; css: string; }>
+): void {
+  const expectedPadding = new Map([
+    ["editorial", "1rem"],
+    ["documentation", "1rem"],
+    ["app", "0.75rem"],
+    ["os", "0.5rem"]
+  ]);
+  const resolvedInline: number[] = [];
+  const resolvedBlock: number[] = [];
+
+  for (const tierName of tierNames) {
+    const artifact = tierArtifacts[tierName];
+    assert(artifact, `Expected generated artifacts for tier "${tierName}" while validating panel padding.`);
+    const components = (artifact.tokens.components ?? {}) as Record<string, unknown>;
+    const expected = expectedPadding.get(tierName);
+    const direct = customPropertiesForSelector(artifact.css, ":where(.bf-theme)");
+    const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`);
+
+    assert(components.panelPaddingInline === expected && components.panelPaddingBlock === expected, `Expected ${tierName} panel padding tokens to resolve to ${expected}; inline=${components.panelPaddingInline}, block=${components.panelPaddingBlock}.`);
+    assert(direct.get("--bf-panel-padding-inline") === expected && direct.get("--bf-panel-padding-block") === expected, `Expected direct ${tierName} panel padding properties to resolve to ${expected}.`);
+    assert(scoped.get("--bf-panel-padding-inline") === expected && scoped.get("--bf-panel-padding-block") === expected, `Expected scoped ${tierName} panel padding properties to resolve to ${expected}.`);
+    resolvedInline.push(parseRemValue(components.panelPaddingInline));
+    resolvedBlock.push(parseRemValue(components.panelPaddingBlock));
+  }
+
+  assert(resolvedInline.every((padding, index) => index === 0 || padding <= resolvedInline[index - 1]), `Expected inline panel padding not to increase across denser tiers, got ${resolvedInline.join(" >= ")}rem.`);
+  assert(resolvedBlock.every((padding, index) => index === 0 || padding <= resolvedBlock[index - 1]), `Expected block panel padding not to increase across denser tiers, got ${resolvedBlock.join(" >= ")}rem.`);
+}
+
 async function validatePublicRuntimeAndTypes(indexDts: string, readmeMd: string): Promise<void> {
   const publicApi = await import("../dist/index.js");
   assert(Array.isArray(publicApi.tierNames), "Expected the package root runtime to export tierNames.");
@@ -448,6 +480,11 @@ async function validateExampleDogfooding(): Promise<void> {
         assert(html.includes('class="bf-application example-panel-reflow-application"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared bf-application shell.`);
         assert(html.includes('class="bf-aside is-pinned is-small example-panel-sidebar"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared pinned aside shell.`);
         assert(html.includes('class="bf-main bf-grid-scope"'), `Expected ${path.relative(process.cwd(), filePath)} to dogfood the shared bf-main surface.`);
+      }
+
+      if (path.basename(filePath) === "nested-grid.html") {
+        assert(!html.includes('class="bf-grid bf-grid-scope example-nested-inner"'), `Expected ${path.relative(process.cwd(), filePath)} not to query a grid against its wider ancestor by placing bf-grid-scope on the grid itself.`);
+        assert((html.match(/class="bf-grid-scope">\s*<div class="bf-grid example-nested-inner">/g) ?? []).length === 3, `Expected ${path.relative(process.cwd(), filePath)} to wrap every nested grid in its own query scope.`);
       }
     }
   }
@@ -1018,6 +1055,7 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.gridGapInline === '1.5rem', "Expected the app-tier preset inline grid gap token to stay at the 24px application gutter.");
   assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 32px application outer margin.");
   assert(layout.contentMaxWidth === '60rem', "Expected the app-tier fixed-width token to use the derived 60rem cap.");
+  assert(components.panelPaddingInline === '0.75rem' && components.panelPaddingBlock === '0.75rem', "Expected App panel padding to tighten to three 4px baseline units on both axes.");
   assert(components.controlBlockPadding === '0.5rem', "Expected the app-tier preset regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
   assert(components.controlCompactBlockPadding === '0.375rem', "Expected the app-tier preset compact control block padding to preserve the legacy 2rem inline control box height.");
   assert(components.controlInlinePadding === '0.5rem', "Expected the app-tier preset compatibility control padding alias to match the action-surface spacing.");
@@ -1227,8 +1265,8 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(components.controlInlinePaddingField === "0.25rem", "Expected the OS tier field padding to stay tighter than action surfaces.");
   assert(components.controlVisualSize === "0.75rem", "Expected the OS tier checkbox/radio/thumb glyphs to use a dedicated 0.75rem visual size.");
   assert(components.fieldGap === "0.25rem", "Expected the OS tier field gap to come from the dense components block.");
-  assert(components.panelPaddingInline === "1rem", "Expected the OS tier panel padding to come from the dense components block.");
-  assert(components.panelPaddingBlock === "1rem", "Expected the OS tier panel padding to come from the dense components block.");
+  assert(components.panelPaddingInline === "0.5rem", "Expected OS inline panel padding to tighten to two 4px baseline units.");
+  assert(components.panelPaddingBlock === "0.5rem", "Expected OS block panel padding to tighten to two 4px baseline units.");
   assert(components.accordionIndent === "0.75rem", "Expected the OS tier accordion indent to come from the dense components block.");
   assert(components.controlBlockPadding === "0.375rem", "Expected the OS tier regular control block padding to preserve the legacy 1.75rem control box height without a dedicated block-size token.");
   assert(components.controlCompactBlockPadding === "0.25rem", "Expected the OS tier compact control block padding to preserve the legacy 1.5rem inline control box height.");
@@ -1371,6 +1409,12 @@ async function main(): Promise<void> {
     os: osTier
   }));
   runInvariant("Tier content-cap progression", () => validateTierContentCaps(defaultTheme.css, {
+    editorial: editorialTier,
+    documentation: documentationTier,
+    app: appTier,
+    os: osTier
+  }));
+  runInvariant("Tier panel-padding progression", () => validateTierPanelPaddingProgression(defaultTheme.css, {
     editorial: editorialTier,
     documentation: documentationTier,
     app: appTier,
