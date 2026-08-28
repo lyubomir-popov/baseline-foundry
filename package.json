@@ -2,11 +2,21 @@
   "name": "baseline-foundry",
   "version": "0.1.2",
   "description": "Lean baseline-aligned design system focused on typography, editorial flow, spacing, and grid primitives.",
+  "author": "Lyubomir Popov",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lyubomir-popov/baseline-foundry.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist",
     "config",
-    "README.md"
+    "docs/publishing.md",
+    "README.md",
+    "LICENSE"
   ],
   "exports": {
     ".": {

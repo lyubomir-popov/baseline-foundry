@@ -27,6 +27,7 @@ npm run test:components
 npm run test:behavior
 npm test
 npm run qa:components
+npm run release:check
 npm run demo:serve -- --host 127.0.0.1
 ```
 
@@ -34,6 +35,11 @@ npm run demo:serve -- --host 127.0.0.1
 experiments. `npm run build:lib` compiles TypeScript. `npm test` is the full
 non-screenshot gate. `npm run qa:components` captures and verifies component
 surfaces.
+
+Package publication and downstream migration are documented in
+[`publishing.md`](publishing.md). The generated npm tarball, rather than a Git
+source archive, is the distributable because `dist/` is intentionally not
+committed.
 
 ## Efficient search and reading
 

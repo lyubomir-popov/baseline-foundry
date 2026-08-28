@@ -103,7 +103,30 @@ Build output includes:
 - `dist/index.js`
 - `dist/build.js`
 
-## Quick Start
+## Install
+
+Until the first npm-registry publication, install the verified release
+artifact directly:
+
+```bash
+npm install https://github.com/lyubomir-popov/baseline-foundry/releases/download/v0.1.2/baseline-foundry-0.1.2.tgz
+```
+
+Use the attached `.tgz`, not the GitHub source archive: generated `dist/`
+artifacts are intentionally absent from Git history and are included in the
+package tarball. After the public registry package is published, the preferred
+command will be:
+
+```bash
+npm install baseline-foundry
+```
+
+The package name stays unscoped so existing imports such as
+`baseline-foundry/styles.css` and `baseline-foundry/build` do not change. See
+[`docs/publishing.md`](docs/publishing.md) for the publication and downstream
+migration contract.
+
+## Repository quick start
 
 ```bash
 npm install

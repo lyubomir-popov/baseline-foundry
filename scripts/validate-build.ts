@@ -69,6 +69,15 @@ function assertRelativeFontFilePaths(fontFiles: Array<Record<string, unknown>>, 
 
 function validatePackageExports(packageJson: Record<string, unknown>): void {
   const exportsField = (packageJson.exports ?? {}) as Record<string, unknown>;
+  const filesField = Array.isArray(packageJson.files) ? packageJson.files : [];
+  const publishConfig = (packageJson.publishConfig ?? {}) as Record<string, unknown>;
+  const repository = (packageJson.repository ?? {}) as Record<string, unknown>;
+
+  assert(packageJson.name === "baseline-foundry", "Expected the unscoped package name to preserve existing downstream imports.");
+  assert(packageJson.license === "MIT" && filesField.includes("LICENSE"), "Expected the public package to ship its declared MIT license.");
+  assert(publishConfig.access === "public", "Expected npm publication to be explicitly public; private npm access would still require collaborators.");
+  assert(repository.url === "git+https://github.com/lyubomir-popov/baseline-foundry.git", "Expected npm metadata to identify the canonical repository.");
+
   for (const tierName of tierNames) {
     const expectedTierExports = {
       [`./tiers/${tierName}.css`]: `./dist/tiers/${tierName}/styles.css`,
