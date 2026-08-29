@@ -329,6 +329,15 @@ export function validateGridSpecPage(gridSpecHtml: string, specShellCss: string)
   assert(!gridSpecHtml.includes('pc-grid-guide'), "Expected grid.html to stop using the page-local pc-grid-guide helper.");
 }
 
+export function validateSpacingSpecPage(spacingSpecHtml: string, specShellCss: string): void {
+  assert(spacingSpecHtml.includes('<section class="bf-stack is-section-shallow" aria-labelledby="spacing-keylines">'), "Expected spacing.html to retain the in-chapter keyline comparison instead of a separate diagnostic route.");
+  assert(spacingSpecHtml.includes('class="bf-stack is-metric-flush"') && spacingSpecHtml.includes('class="bf-stack is-dense"'), "Expected spacing.html to compare the shipped stacked relationship owners.");
+  assert(spacingSpecHtml.includes('Prose-list label') && spacingSpecHtml.includes('Checkbox label') && spacingSpecHtml.includes('Radio label'), "Expected spacing.html to place common leading-mark label tracks in one compact comparison.");
+  assert(spacingSpecHtml.includes('class="bf-accordion-panel"') && spacingSpecHtml.includes('class="bf-panel-content"'), "Expected spacing.html to include disclosure continuation and panel-gutter evidence.");
+  assert(!/class="[^"]*\b(?:spacing-keyline|keyline)-(?!checkbox|radio|panel)[a-z0-9_-]*/.test(spacingSpecHtml), "Expected spacing.html to avoid page-local keyline helper classes.");
+  assert(!specShellCss.includes('keyline'), "Expected the spacing comparison to need no page-local keyline CSS.");
+}
+
 export function validateOsTierPage(pageCatalogJs: string, panelHtml: string): void {
   assert(pageCatalogJs.includes('{ title: "OS tier", href: "/demo/tiers/os.html" }'), "Expected the page catalog to register the distinct OS tier-reference page.");
   assert(panelHtml.includes('<title>Baseline Foundry OS Tier</title>'), "Expected demo/panel.html to present the OS tier title.");

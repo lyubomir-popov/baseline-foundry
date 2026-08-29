@@ -42,3 +42,16 @@ slice; exhaustive adjacency work remains open.
   capture completed across the full catalog with zero reported failures.
 - **Open:** Full Spec 017 adversarial closeout is not claimed until T005–T016
   are complete.
+
+## Review 4 — keyline audit surface
+
+- **Pass:** The existing spacing chapter now contains a compact comparison of
+  metric-flush/dense/default stacks, prose-list/checkbox/radio leading tracks,
+  disclosure continuation, and panel gutter. It uses no page-local styling or
+  separate diagnostic route.
+- **Pass:** At 560px, all three comparison groups stack with no inline
+  overflow. Editorial, Documentation, App, and OS each retain the complete
+  comparison with no overflow.
+- **Pass:** The source gate now includes a focused spacing-chapter contract
+  (6,105 total checks) so the comparison cannot silently regress to a
+  page-local keyline helper.

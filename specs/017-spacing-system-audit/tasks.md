@@ -28,6 +28,9 @@
   tiered-list header) to the shared 45rem container threshold and add focused
   constrained-width assertions.
 - [x] T018 Propose one flat class-order and primitive/slot convention from the completed inventory. Bare native elements are canonical where the basic selector owns their contract; structural slot classes remain only where placement needs them.
+- [x] T021 Add and audit the concise stacked/inline keyline comparison in the
+  existing spacing chapter; retain no separate diagnostic page or page-local
+  styling system.
 
 ## Phase 4 - Closeout
 

@@ -40,6 +40,68 @@
         </dl>
       </section>
 
+      <section class="bf-stack is-section-shallow" aria-labelledby="spacing-keylines">
+        <div class="bf-stack is-dense">
+          <h2 id="spacing-keylines">Keyline comparison</h2>
+          <p>Inspect named relationships, not a universal left edge. Marks may sit in a leading track; labels, panel copy, and controls must then follow the keyline their component owns.</p>
+        </div>
+
+        <div class="bf-grid">
+          <section class="bf-span-4 bf-stack is-dense" aria-labelledby="spacing-keylines-stacked">
+            <h3 id="spacing-keylines-stacked">Stacked</h3>
+            <div class="bf-stack is-metric-flush">
+              <h4>One title phrase</h4>
+              <p>A supporting line continues the title without semantic separation.</p>
+            </div>
+            <div class="bf-stack is-dense">
+              <h4>Related content</h4>
+              <p>A dense stack owns the close relationship inside one area.</p>
+            </div>
+            <div class="bf-stack">
+              <h4>Separate internal groups</h4>
+              <p>The default stack provides the ordinary boundary between complete groups.</p>
+            </div>
+          </section>
+
+          <section class="bf-span-4 bf-stack is-dense" aria-labelledby="spacing-keylines-inline">
+            <h3 id="spacing-keylines-inline">Inline tracks</h3>
+            <p>Content reference</p>
+            <div class="bf-prose">
+              <ul><li>Prose-list label</li></ul>
+            </div>
+            <div class="bf-checkbox">
+              <input id="spacing-keyline-checkbox" class="bf-checkbox-input" type="checkbox" checked>
+              <label class="bf-checkbox-label" for="spacing-keyline-checkbox">Checkbox label</label>
+            </div>
+            <div class="bf-radio">
+              <input id="spacing-keyline-radio" class="bf-radio-input" name="spacing-keyline-radio" type="radio" checked>
+              <label class="bf-radio-label" for="spacing-keyline-radio">Radio label</label>
+            </div>
+          </section>
+
+          <section class="bf-span-4 bf-stack is-dense" aria-labelledby="spacing-keylines-continuation">
+            <h3 id="spacing-keylines-continuation">Continuation and gutter</h3>
+            <div class="bf-accordion">
+              <ul class="bf-accordion-list bf-stack is-dense">
+                <li class="bf-accordion-group">
+                  <div class="bf-accordion-heading">
+                    <button class="bf-accordion-tab" type="button" aria-expanded="true" aria-controls="spacing-keyline-panel">Disclosure label</button>
+                  </div>
+                  <div id="spacing-keyline-panel" class="bf-accordion-panel" aria-hidden="false">
+                    <p>Panel copy continues from the label after the disclosure icon track.</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="bf-panel">
+              <div class="bf-panel-content">
+                <p>Panel content starts after its owned gutter.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
       <section class="bf-stack is-section-shallow" aria-labelledby="spacing-guidance">
         <h2 id="spacing-guidance">Authoring guidance</h2>
         <ul>

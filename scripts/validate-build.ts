@@ -23,6 +23,7 @@ import {
   validateParitySurfaceDemos,
   validatePatternAtlasPage,
   validateRangePage,
+  validateSpacingSpecPage,
   validateTopNavigationDemo,
   validateTypographicSpecimen
 } from "./validation/demo-contracts.ts";
@@ -1383,7 +1384,7 @@ async function main(): Promise<void> {
     "equal-heights",
     "empty-state"
   ].map(async pageName => [pageName, await readTextArtifact(path.resolve("demo/components", `${pageName}.html`))])));
-  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, buttonHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, patternAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, buttonHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, patternAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, spacingSpecHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/form-atlas.html")),
@@ -1423,6 +1424,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/controls.html")),
     readTextArtifact(path.resolve("demo/spec/typographic-specimen.html")),
     readTextArtifact(path.resolve("demo/spec/grid.html")),
+    readTextArtifact(path.resolve("demo/spec/spacing.html")),
     readTextArtifact(path.resolve("demo/panel.html"))
   ]);
   const [pageChromeJs, specRuntimeJs, examplePageJs] = await Promise.all([
@@ -1518,6 +1520,7 @@ async function main(): Promise<void> {
   runInvariant("Renewal component contracts", () => validateRenewalComponentContracts(defaultTheme.css, pageCatalogJs, componentAtlasHtml, patternAtlasHtml, componentDemoJs, renewalComponentPages, indexDts));
   runInvariant("Typographic specimen", () => validateTypographicSpecimen(pageCatalogJs, typographicSpecimenHtml));
   runInvariant("Grid spec page", () => validateGridSpecPage(gridSpecHtml, specShellCss));
+  runInvariant("Spacing spec page", () => validateSpacingSpecPage(spacingSpecHtml, specShellCss));
   runInvariant("OS tier page", () => validateOsTierPage(pageCatalogJs, panelHtml));
   await runInvariantAsync("Component page tier consistency", () => validateComponentPageTierConsistency(componentDemoJs));
   runInvariant("bf-only demo family", () => validateBfOnlyDemoFamily({

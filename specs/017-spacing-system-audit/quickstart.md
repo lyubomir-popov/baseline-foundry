@@ -32,7 +32,9 @@ Use the owning component or pattern routes listed in
 Switch Editorial, Documentation, App, and OS at 560px, 900px, and 1280px.
 Check direct sibling gaps, first/last glyph clearance, rules, focus outlines,
 wrapped labels, control insets, panel gutters, overflow, and hidden/collapsed
-states.
+states. On the spacing chapter, compare the stacked flush/dense/default
+relationships plus prose-list, checkbox/radio, disclosure-continuation, and
+panel-gutter tracks; do not expect every mark and label to share one left edge.
 
 ## Closeout
 

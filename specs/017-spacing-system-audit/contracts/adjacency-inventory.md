@@ -32,6 +32,19 @@ an automated or browser-verifiable route; no public diagnostic board is needed.
 | R21 | Page edge, grid gutter, fixed-width region, and panel inset | Inline | Page/grid/panel public gutter variables |
 | R22 | Responsive collapsed/expanded or hidden/visible states | Both | The same component owner at an intrinsic or shared breakpoint |
 
+## Keyline map
+
+The audit compares named tracks; it does not prescribe one universal start
+edge. The compact comparison in `/demo/spec/spacing.html` makes these tracks
+visible with ordinary components before route-specific measurements begin.
+
+| Keyline | Typical relationship | Owner |
+|---|---|---|
+| Content | Paragraph and prose-list copy | Page/grid gutter and prose-list indent |
+| Leading-mark | Bullet, checkbox, radio, or disclosure icon before its label | List/control/disclosure visual and gap variables |
+| Control/panel gutter | Input or panel text after its surrounding edge | Control/panel inset variables |
+| Disclosure continuation | Accordion panel copy under the tab label, after its icon | Disclosure icon-size plus disclosure-gap variables |
+
 ## Route inventory
 
 The relationship IDs identify the minimum audit surface. Individual specimens
@@ -168,7 +181,7 @@ from the ledger without a catalog decision.
 | `/index.html`, `/demo/components/index.html`, `/demo/patterns/index.html` | R02–R06, R09–R10, R12, R20–R22 | Shared chrome, atlas sections/cards, bottom controls |
 | `/demo/controls.html` | R05, R07–R10, R13, R18–R22 | Full control gallery and modal/panel composition |
 | `/demo/spec/typography.html`, `/demo/spec/typographic-specimen.html` | R01–R06, R20–R21 | Type hierarchy, role substitution, page/grid keylines |
-| `/demo/spec/spacing.html` | R01–R07, R20–R21 | Current authoring guidance and stack vocabulary |
+| `/demo/spec/spacing.html` | R01–R08, R11, R13, R20–R21 | Current authoring guidance, stack vocabulary, and compact real-component keyline comparison |
 | `/demo/spec/grid.html` | R02–R03, R20–R21 | Grid chapter content and guide alignment |
 | `/demo/tiers/editorial.html`, `/demo/tiers/documentation.html`, `/demo/tiers/app.html`, `/demo/tiers/os.html` | R01–R21 | Direct tier reference parity |
 | `/examples/grid/breakpoints.html` | R02–R03, R20–R22 | Responsive grid thresholds and shared chrome |

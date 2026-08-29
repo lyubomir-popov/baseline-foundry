@@ -105,6 +105,26 @@ component implementation.
    grid density, or an explicitly asymmetrical/intrinsic variant), **When** it
    uses another breakpoint, **Then** the audit records that separate reason.
 
+---
+
+### User Story 6 - Keyline relationships are easy to inspect (Priority: P1)
+
+As a system owner, I need one concise, real-component comparison in the
+spacing chapter so I can inspect the important horizontal and vertical
+relationships without relying on a separate diagnostic page or inventing a
+new local styling system.
+
+**Acceptance Scenarios**:
+
+1. **Given** the spacing chapter, **When** an owner turns on the existing
+   baseline grid, **Then** it presents compact stacked and inline comparisons
+   made only from shipped BF primitives.
+2. **Given** a leading mark (a list bullet, checkbox, radio, or disclosure
+   icon), **When** its label or panel content is inspected, **Then** the
+   comparison identifies whether it belongs to the page/content keyline, a
+   leading-mark track, a control/panel gutter, or a disclosure continuation
+   keyline; it does not assume all labels share one universal start line.
+
 ## Requirements
 
 - **FR-001**: Delete the complete historical `examples/spacing/` batch.
@@ -142,6 +162,14 @@ component implementation.
   threshold for a default readable 50/50 pattern split. Inventory every
   component and pattern with a comparable split, correct unjustified divergent
   thresholds, and record a distinct intrinsic reason for each exception.
+- **FR-014**: Keep a concise keyline-comparison section in the existing
+  consumer-facing spacing chapter. It must compare stacked relationships and
+  inline leading-mark/gutter relationships with real shipped components, not
+  page-local rulers, diagnostic rails, or custom specimen CSS.
+- **FR-015**: Treat keylines as named relationships rather than a universal
+  left edge: page/content text, leading-mark tracks, component gutters, and
+  disclosure continuations may differ only when their owning component and
+  variable family make the distinction explicit.
 
 ## Success Criteria
 
@@ -164,6 +192,8 @@ component implementation.
 - **SC-008**: Every default balanced content split in the active catalog uses
   the same 45rem query-container threshold, or has a documented non-split
   reason for a different transition.
+- **SC-009**: The spacing chapter exposes both stacked and inline keyline
+  comparisons in every tier without any page-local layout or styling class.
 
 ## Boundaries
 

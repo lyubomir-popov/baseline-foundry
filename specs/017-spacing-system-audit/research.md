@@ -30,6 +30,24 @@ spacing modes:
 1. metric geometry contributed by the rendered role;
 2. semantic separation contributed by the composition owner.
 
+## Keyline intuition
+
+A keyline is a named start or continuation relationship, not a rule that every
+visible glyph shares one left edge. Page and content text establish the primary
+reading keyline. A bullet, checkbox, radio, or disclosure icon may occupy a
+leading-mark track before that text. A control or panel begins its own content
+after its owned inset. Disclosure panel copy must continue from the disclosure
+label after the icon track.
+
+The useful audit question is therefore specific: for example, does prose-list
+copy align with the checkbox label where they are intended to share a content
+keyline, and does accordion panel copy align with its tab label? It is not
+useful to force marks, panel edges, and every text role onto one universal
+start. The spacing chapter will present these real-component comparisons beside
+stacked flush/dense/default relationships. It must use no local ruler or
+diagnostic styling; the existing baseline-grid control is sufficient when
+precise baseline inspection is needed.
+
 ## Catalog decision
 
 Keep component and pattern pages when they teach a public contract or exercise a
