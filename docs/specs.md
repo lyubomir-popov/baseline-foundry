@@ -5,9 +5,8 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-| Spec | Package | Status |
-|---|---|---|
-| 016 Component and pattern consistency | [`016-component-pattern-consistency/`](../specs/016-component-pattern-consistency/) | Ready for owner review on `feat/016-component-pattern-consistency`; all four implementation and adversarial-review passes are complete and green. |
+No package is active. Promote the next evidenced candidate on its own matching
+feature branch.
 
 ## Archive
 
@@ -15,6 +14,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 
 | Spec | Package | Disposition |
 |---|---|---|
+| 016 Component and pattern consistency | [`016-component-pattern-consistency/`](spec-archive/016-component-pattern-consistency/) | Accepted and merged to `main` from implementation commit `3956294` on 2026-08-29; all four implementation/adversarial passes, 6,052 static checks, browser behavior, baseline captures, and component screenshot QA passed. |
 | 015 Tier geometry hardening | [`015-tier-geometry-hardening/`](../specs/015-tier-geometry-hardening/) | Merged to `main` at `338f3cb`; Spec 016 supersedes its TOC row-gap and muted-H6 hierarchy after owner visual review. |
 | 001 Baseline Foundry renewal | [`001-baseline-foundry-renewal/`](spec-archive/001-baseline-foundry-renewal/) | Accepted and merged 2026-08-21; automated closeout green, with the unavailable in-app-browser pass recorded in `review.md`. |
 | 002 Element-owned typography selectors | [`002-element-owned-typography/`](spec-archive/002-element-owned-typography/) | Accepted and merged 2026-08-24; full build, browser behavior, and component-capture gates green. |
