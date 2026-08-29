@@ -20,8 +20,9 @@ export function validateAppTierDemoPage(pageName: string, html: string): void {
   assert(!/\bp-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated p-* markup and stay fully bf-* dogfooded.`);
   assert(!/\bvr-[a-z][a-z0-9_-]*/.test(html), `Expected ${pageName} to avoid deprecated vr-* markup and stay fully bf-* dogfooded.`);
   if (pageName === "application-layout.html") {
+    assert(html.includes('class="bf-navigation-bar is-responsive"'), "Expected application-layout.html to exercise the responsive branded navigation-bar contract.");
     assert(html.includes('class="bf-panel-header is-sticky is-navigation-brand"'), "Expected application-layout.html to dogfood the flush navigation-brand panel header.");
-    assert(html.includes('class="bf-top-navigation-logo is-canonical-tagged"'), "Expected application-layout.html to dogfood the Canonical tagged-logo contract in its drawer.");
+    assert((html.match(/class="bf-top-navigation-logo is-canonical-tagged"/g) ?? []).length === 2, "Expected application-layout.html to share the Canonical tagged-logo contract between its responsive bar and drawer.");
     assert(html.includes('viewBox="0 0 60.45 57.87"'), "Expected the application drawer brand to use the proportionate Circle of Friends source shape.");
     assert(html.includes("bf-panel-footer is-sticky") && html.includes("data-application-layout-main-footer") && html.includes("data-application-layout-navigation-footer"), "Expected application-layout.html to exercise aligned persistent panel footers in navigation and main panels.");
     assert((html.match(/is-control-pair bf-stack is-flush/g) ?? []).length === 5, "Expected application-layout.html control pairs to contain metric compensation with the generic flush stack.");

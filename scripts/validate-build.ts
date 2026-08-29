@@ -838,6 +838,22 @@ function validateCommonCss(css: string): void {
     "overflow": "auto",
     "overscroll-behavior": "contain"
   }, "fill-height panel bodies scroll internally");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand)", {
+    "column-gap": "calc(var(--bf-baseline) * 2)",
+    "padding-inline-end": "var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline))"
+  }, "responsive application brands use the shared panel header geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar.is-responsive)", {
+    "margin-block-end": "calc(var(--bf-border-width) * -1)"
+  }, "responsive application bars compensate their trailing keyline inside the baseline track");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application:has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed))", {
+    "grid-template-areas": "\"navigation-bar navigation-bar\"\n    \"main aside\"",
+    "grid-template-rows": "min-content minmax(0, 1fr)"
+  }, "responsive application bars retain the first row when a pinned aside is present");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application:has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive)", {
+    "block-size": "0",
+    "position": "absolute",
+    "visibility": "hidden"
+  }, "wide expanded navigation removes the compact brand row without deleting its responsive controls");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-box)", {
     "--bf-search-box-action-inline-size": "calc(1rem + (var(--bf-control-inline-padding-field) * 2))",
     "--bf-search-box-trailing-inline-size": "calc((var(--bf-search-box-action-inline-size) * 2) + var(--bf-border-width))",

@@ -528,45 +528,30 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Number.parseFloat(panelFooterState.mainMinBlockSize) > 0, `Expected the main panel footer to expose a minimum block size. Got ${panelFooterState.mainMinBlockSize}.`);
     assert(panelFooterState.mainPaddingBlockStart === "0px", `Expected panel footer content to rely on child control nudges instead of container start padding. Got ${panelFooterState.mainPaddingBlockStart}.`);
 
-    const spacingResetState = await page.evaluate(() => {
-      const stack = document.querySelector<HTMLElement>(".bf-panel-header .bf-stack.is-flush");
-      if (!(stack instanceof HTMLElement)) {
+    const responsiveBrandState = await page.evaluate(() => {
+      const bar = document.querySelector<HTMLElement>(".bf-navigation-bar.is-responsive");
+      const compactBrand = bar?.querySelector<HTMLElement>(".bf-top-navigation-logo.is-canonical-tagged");
+      const drawerBrand = document.querySelector<HTMLElement>(".bf-navigation-drawer .bf-top-navigation-logo.is-canonical-tagged");
+      const tag = compactBrand?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
+      if (!bar || !compactBrand || !drawerBrand || !tag) {
         return null;
       }
 
       return {
-        gap: getComputedStyle(stack).gap,
-        children: Array.from(stack.children).slice(0, 2).map(child => {
-          if (!(child instanceof HTMLElement)) {
-            return null;
-          }
-
-          const style = getComputedStyle(child);
-          return {
-            tag: child.tagName,
-            marginBottom: style.marginBottom,
-            paddingBlockStart: style.paddingBlockStart,
-            paddingBlockEnd: style.paddingBlockEnd
-          };
-        })
+        barDisplay: getComputedStyle(bar).display,
+        compactVisible: compactBrand.checkVisibility(),
+        drawerVisible: drawerBrand.checkVisibility(),
+        tagHeight: tag.getBoundingClientRect().height,
+        tagWidth: tag.getBoundingClientRect().width,
+        visibleHomeLinks: Array.from(document.querySelectorAll<HTMLElement>("a[aria-label='MAAS control plane home']"))
+          .filter(link => getComputedStyle(link).visibility !== "hidden" && link.getBoundingClientRect().width > 0).length
       };
     });
 
-    if (!spacingResetState) {
-      throw new Error("Expected application layout header stack to be measurable.");
-    }
-
-    assert(spacingResetState.gap === "0px", `Expected application layout header stack to stay flush. Got gap=${spacingResetState.gap}.`);
-
-    spacingResetState.children.forEach((child, index) => {
-      if (!child) {
-        throw new Error(`Expected application layout header stack child ${index + 1} to be an HTMLElement.`);
-      }
-
-      assert(Number.parseFloat(child.marginBottom) >= 0, `Expected application layout header stack child ${child.tag} to keep non-negative baseline compensation. Got ${child.marginBottom}.`);
-      assert(Number.parseFloat(child.paddingBlockStart) > 0, `Expected application layout header stack child ${child.tag} to retain metric-derived start compensation. Got ${child.paddingBlockStart}.`);
-      assert(child.paddingBlockEnd === "0px", `Expected application layout header stack child ${child.tag} to move end compensation out of padding. Got ${child.paddingBlockEnd}.`);
-    });
+    assert(responsiveBrandState, "Expected the responsive application brand to be measurable.");
+    assert(responsiveBrandState.barDisplay !== "none" && responsiveBrandState.compactVisible && !responsiveBrandState.drawerVisible, `Expected collapsed desktop navigation to expose only its compact brand. Got ${JSON.stringify(responsiveBrandState)}.`);
+    assert(responsiveBrandState.visibleHomeLinks === 1, `Expected exactly one visible application-home link while collapsed. Got ${responsiveBrandState.visibleHomeLinks}.`);
+    assert(Math.abs(responsiveBrandState.tagWidth - 22) <= 1 && Math.abs(responsiveBrandState.tagHeight - 38) <= 1, `Expected the compact Canonical tag to retain 22x38px geometry. Got ${responsiveBrandState.tagWidth}x${responsiveBrandState.tagHeight}px.`);
 
     const navigation = page.locator("#application-layout-navigation");
     const menuToggle = page.locator("[data-application-layout-toggle]").first();
@@ -611,18 +596,29 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const drawerElement = navigationElement?.querySelector<HTMLElement>(".bf-navigation-drawer");
       const panelElement = drawerElement?.querySelector<HTMLElement>(".bf-panel");
       const toggleElement = document.querySelector<HTMLElement>("[data-application-layout-toggle]");
+      const responsiveBar = document.querySelector<HTMLElement>(".bf-navigation-bar.is-responsive");
       if (!(applicationElement instanceof HTMLElement) || !(navigationElement instanceof HTMLElement) ||
           !(drawerElement instanceof HTMLElement) || !(panelElement instanceof HTMLElement) ||
-          !(toggleElement instanceof HTMLElement)) {
+          !(toggleElement instanceof HTMLElement) || !(responsiveBar instanceof HTMLElement)) {
         return null;
       }
 
       return {
         applicationBottom: applicationElement.getBoundingClientRect().bottom,
+        applicationRows: getComputedStyle(applicationElement).gridTemplateRows,
+        applicationAreas: getComputedStyle(applicationElement).gridTemplateAreas,
         collapsed: navigationElement.classList.contains("is-collapsed"),
+        drawerBlockSize: getComputedStyle(drawerElement).blockSize,
         drawerBottom: drawerElement.getBoundingClientRect().bottom,
+        navigationBlockSize: getComputedStyle(navigationElement).blockSize,
+        navigationGridArea: getComputedStyle(navigationElement).gridArea,
         navigationBottom: navigationElement.getBoundingClientRect().bottom,
         panelBottom: panelElement.getBoundingClientRect().bottom,
+        responsiveBarDisplay: getComputedStyle(responsiveBar).display,
+        responsiveBarPosition: getComputedStyle(responsiveBar).position,
+        responsiveBarVisibility: getComputedStyle(responsiveBar).visibility,
+        visibleHomeLinks: Array.from(document.querySelectorAll<HTMLElement>("a[aria-label='MAAS control plane home']"))
+          .filter(link => getComputedStyle(link).visibility !== "hidden" && link.getBoundingClientRect().width > 0).length,
         width: navigationElement.getBoundingClientRect().width,
         expanded: toggleElement.getAttribute("aria-expanded")
       };
@@ -632,9 +628,10 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(!expandedState.collapsed, "Expected application navigation toggle to expand the navigation.");
     assert(expandedState.width >= 220, `Expected expanded application navigation to be visibly wide. Got ${expandedState.width}px.`);
     assert(expandedState.expanded === "true", `Expected application navigation toggle to expose aria-expanded=true, got ${expandedState.expanded}.`);
+    assert(expandedState.responsiveBarDisplay !== "none" && expandedState.responsiveBarPosition === "absolute" && expandedState.responsiveBarVisibility === "hidden" && expandedState.visibleHomeLinks === 1, `Expected wide expanded navigation to collapse the compact bar out of layout and expose exactly one drawer brand. Got ${JSON.stringify(expandedState)}.`);
     assert(Math.abs(expandedState.drawerBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation drawer to reach the navigation bottom. Got drawer=${expandedState.drawerBottom}px, navigation=${expandedState.navigationBottom}px.`);
     assert(Math.abs(expandedState.panelBottom - expandedState.navigationBottom) <= 1, `Expected desktop navigation panel to reach the navigation bottom. Got panel=${expandedState.panelBottom}px, navigation=${expandedState.navigationBottom}px.`);
-    assert(Math.abs(expandedState.navigationBottom - expandedState.applicationBottom) <= 1, `Expected desktop navigation to reach the application bottom. Got navigation=${expandedState.navigationBottom}px, application=${expandedState.applicationBottom}px.`);
+    assert(Math.abs(expandedState.navigationBottom - expandedState.applicationBottom) <= 1, `Expected desktop navigation to reach the application bottom. Got ${JSON.stringify(expandedState)}.`);
 
     const alignedFooterState = await page.evaluate(() => {
       const mainFooter = document.querySelector<HTMLElement>("[data-application-layout-main-footer]");
@@ -827,6 +824,27 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     await disableDemoChromeHitTesting(mobilePage);
 
     const mobileToggle = mobilePage.locator("[data-application-layout-toggle]").first();
+    const mobileCollapsedBrandState = await mobilePage.evaluate(() => {
+      const compactBrand = document.querySelector<HTMLElement>(".bf-navigation-bar.is-responsive .bf-top-navigation-logo");
+      const drawerBrand = document.querySelector<HTMLElement>(".bf-navigation-drawer .bf-top-navigation-logo");
+      const application = document.querySelector<HTMLElement>(".bf-application");
+      const bar = document.querySelector<HTMLElement>(".bf-navigation-bar.is-responsive");
+      const compactRect = compactBrand?.getBoundingClientRect();
+      const drawerRect = drawerBrand?.getBoundingClientRect();
+      const drawer = drawerBrand?.closest<HTMLElement>(".bf-navigation-drawer");
+      return {
+        barAtApplicationStart: Boolean(application && bar && Math.abs(bar.getBoundingClientRect().top - application.getBoundingClientRect().top) <= 1),
+        compactVisible: Boolean(compactBrand && compactRect && getComputedStyle(compactBrand).visibility === "visible" && compactRect.width > 0 && compactRect.right > 0 && compactRect.left < innerWidth),
+        drawerVisible: Boolean(drawerBrand && drawerRect && drawer && getComputedStyle(drawerBrand).visibility === "visible" && getComputedStyle(drawer).visibility === "visible" && drawerRect.width > 0 && drawerRect.right > 0 && drawerRect.left < innerWidth),
+        visibleHomeLinks: Array.from(document.querySelectorAll<HTMLElement>("a[aria-label='MAAS control plane home']"))
+          .filter(link => {
+            const rect = link.getBoundingClientRect();
+            const ownerDrawer = link.closest<HTMLElement>(".bf-navigation-drawer");
+            return getComputedStyle(link).visibility === "visible" && (!ownerDrawer || getComputedStyle(ownerDrawer).visibility === "visible") && rect.width > 0 && rect.right > 0 && rect.left < innerWidth;
+          }).length
+      };
+    });
+    assert(mobileCollapsedBrandState.barAtApplicationStart && mobileCollapsedBrandState.compactVisible && !mobileCollapsedBrandState.drawerVisible && mobileCollapsedBrandState.visibleHomeLinks === 1, `Expected narrow collapsed navigation to expose one compact brand in the application-start row. Got ${JSON.stringify(mobileCollapsedBrandState)}.`);
     await mobileToggle.click({ force: true });
     await mobilePage.waitForTimeout(180);
 
@@ -834,15 +852,30 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
       const overlayElement = document.querySelector<HTMLElement>(".bf-navigation-overlay");
       const drawerElement = document.querySelector<HTMLElement>(".bf-navigation-drawer");
-      if (!(navigationElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement) || !(drawerElement instanceof HTMLElement)) {
+      const responsiveBar = document.querySelector<HTMLElement>(".bf-navigation-bar.is-responsive");
+      const compactBrand = responsiveBar?.querySelector<HTMLElement>(".bf-top-navigation-logo");
+      const drawerBrand = drawerElement?.querySelector<HTMLElement>(".bf-top-navigation-logo");
+      if (!(navigationElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement) || !(drawerElement instanceof HTMLElement) ||
+          !(responsiveBar instanceof HTMLElement) || !(compactBrand instanceof HTMLElement) || !(drawerBrand instanceof HTMLElement)) {
         return null;
       }
+      const compactRect = compactBrand.getBoundingClientRect();
+      const drawerBrandRect = drawerBrand.getBoundingClientRect();
 
       return {
         collapsed: navigationElement.classList.contains("is-collapsed"),
         overlayHidden: overlayElement.getAttribute("aria-hidden"),
         drawerHidden: drawerElement.getAttribute("aria-hidden"),
-        drawerLeft: drawerElement.getBoundingClientRect().left
+        drawerLeft: drawerElement.getBoundingClientRect().left,
+        responsiveBarDisplay: getComputedStyle(responsiveBar).display,
+        compactBrandVisible: getComputedStyle(compactBrand).visibility === "visible" && compactRect.width > 0 && compactRect.right > 0 && compactRect.left < innerWidth,
+        drawerBrandVisible: getComputedStyle(drawerBrand).visibility === "visible" && getComputedStyle(drawerElement).visibility === "visible" && drawerBrandRect.width > 0 && drawerBrandRect.right > 0 && drawerBrandRect.left < innerWidth,
+        visibleHomeLinks: Array.from(document.querySelectorAll<HTMLElement>("a[aria-label='MAAS control plane home']"))
+          .filter(link => {
+            const rect = link.getBoundingClientRect();
+            const ownerDrawer = link.closest<HTMLElement>(".bf-navigation-drawer");
+            return getComputedStyle(link).visibility === "visible" && (!ownerDrawer || getComputedStyle(ownerDrawer).visibility === "visible") && rect.width > 0 && rect.right > 0 && rect.left < innerWidth;
+          }).length
       };
     });
 
@@ -851,6 +884,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(mobileOpenState.overlayHidden === "false", `Expected mobile navigation overlay to be visible, got aria-hidden=${mobileOpenState.overlayHidden}.`);
     assert(mobileOpenState.drawerHidden === "false", `Expected mobile navigation drawer to be visible, got aria-hidden=${mobileOpenState.drawerHidden}.`);
     assert(mobileOpenState.drawerLeft >= -2, `Expected mobile navigation drawer to be aligned to the viewport edge, got left=${mobileOpenState.drawerLeft}.`);
+    assert(mobileOpenState.responsiveBarDisplay !== "none" && !mobileOpenState.compactBrandVisible && mobileOpenState.drawerBrandVisible && mobileOpenState.visibleHomeLinks === 1, `Expected narrow expanded navigation to retain its bar controls while exposing only the drawer brand. Got ${JSON.stringify(mobileOpenState)}.`);
 
     await mobilePage.keyboard.press("Escape");
     await mobilePage.waitForTimeout(180);
@@ -858,19 +892,33 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     const mobileClosedState = await mobilePage.evaluate(() => {
       const navigationElement = document.querySelector<HTMLElement>("#application-layout-navigation");
       const overlayElement = document.querySelector<HTMLElement>(".bf-navigation-overlay");
-      if (!(navigationElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement)) {
+      const compactBrand = document.querySelector<HTMLElement>(".bf-navigation-bar.is-responsive .bf-top-navigation-logo");
+      const drawerBrand = document.querySelector<HTMLElement>(".bf-navigation-drawer .bf-top-navigation-logo");
+      if (!(navigationElement instanceof HTMLElement) || !(overlayElement instanceof HTMLElement) || !compactBrand || !drawerBrand) {
         return null;
       }
+      const compactRect = compactBrand.getBoundingClientRect();
+      const drawerBrandRect = drawerBrand.getBoundingClientRect();
+      const drawer = drawerBrand.closest<HTMLElement>(".bf-navigation-drawer");
 
       return {
         collapsed: navigationElement.classList.contains("is-collapsed"),
-        overlayHidden: overlayElement.getAttribute("aria-hidden")
+        overlayHidden: overlayElement.getAttribute("aria-hidden"),
+        compactBrandVisible: getComputedStyle(compactBrand).visibility === "visible" && compactRect.width > 0 && compactRect.right > 0 && compactRect.left < innerWidth,
+        drawerBrandVisible: Boolean(drawer && getComputedStyle(drawerBrand).visibility === "visible" && getComputedStyle(drawer).visibility === "visible" && drawerBrandRect.width > 0 && drawerBrandRect.right > 0 && drawerBrandRect.left < innerWidth),
+        visibleHomeLinks: Array.from(document.querySelectorAll<HTMLElement>("a[aria-label='MAAS control plane home']"))
+          .filter(link => {
+            const rect = link.getBoundingClientRect();
+            const ownerDrawer = link.closest<HTMLElement>(".bf-navigation-drawer");
+            return getComputedStyle(link).visibility === "visible" && (!ownerDrawer || getComputedStyle(ownerDrawer).visibility === "visible") && rect.width > 0 && rect.right > 0 && rect.left < innerWidth;
+          }).length
       };
     });
 
     assert(mobileClosedState, "Expected mobile closed application layout state to be measurable.");
     assert(mobileClosedState.collapsed, "Expected Escape to collapse the mobile navigation drawer.");
     assert(mobileClosedState.overlayHidden === "true", `Expected mobile navigation overlay to hide after Escape, got aria-hidden=${mobileClosedState.overlayHidden}.`);
+    assert(mobileClosedState.compactBrandVisible && !mobileClosedState.drawerBrandVisible && mobileClosedState.visibleHomeLinks === 1, `Expected Escape to restore exactly one compact application brand. Got ${JSON.stringify(mobileClosedState)}.`);
 
     await mobilePage.close();
   } finally {

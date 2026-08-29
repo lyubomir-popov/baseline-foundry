@@ -50,6 +50,11 @@ ${scoped(" :where(.bf-navigation-bar) :where(.bf-panel-header)")} {
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
 }
 
+${scoped(" :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand)")} {
+  gap: calc(var(--bf-baseline) * 2);
+  padding-block: 0;
+}
+
 ${scoped(" :where(.bf-panel-controls)")} {
   gap: calc(var(--bf-baseline) * 1.5);
 }

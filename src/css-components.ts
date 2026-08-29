@@ -1673,6 +1673,32 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   z-index: 40;
 }
 
+/* A responsive application brand occupies the persistent bar only while the
+ * full navigation brand is unavailable. The same public tagged-logo contract
+ * is used in both locations; state CSS guarantees that only one copy is
+ * visible and exposed at a time. */
+:where(.bf-theme) :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand) {
+  align-items: start;
+  column-gap: calc(var(--bf-baseline) * 2);
+  padding-inline-end: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));
+}
+
+:where(.bf-theme) :where(.bf-navigation-bar.is-responsive) {
+  margin-block-end: calc(var(--bf-border-width) * -1);
+}
+
+:where(.bf-theme) :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand) > :where(.bf-top-navigation-logo.is-canonical-tagged) {
+  flex: 1 1 12rem;
+  inline-size: auto;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme) :where(.bf-application:has(> .bf-navigation:not(.is-collapsed)))
+  > :where(.bf-navigation-bar.is-responsive)
+  :where(.bf-top-navigation-logo) {
+  visibility: hidden;
+}
+
 :where(.bf-theme) :where(.bf-navigation) {
   grid-column: 1 / -1;
   grid-row: 1 / -1;
@@ -1762,6 +1788,14 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   grid-template-areas: "main aside";
   grid-template-columns: minmax(0, 1fr) minmax(0, var(--bf-application-aside-width));
   grid-template-rows: minmax(0, 1fr);
+}
+
+:where(.bf-theme) :where(.bf-application:has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed)) {
+  grid-template-areas:
+    "navigation-bar navigation-bar"
+    "main aside";
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--bf-application-aside-width));
+  grid-template-rows: min-content minmax(0, 1fr);
 }
 
 :where(.bf-theme) :where(.bf-main) {
@@ -1927,6 +1961,16 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
       "navigation-bar navigation-bar navigation-bar"
       "navigation main aside";
     grid-template-columns: minmax(0, var(--bf-application-navigation-width)) minmax(0, 1fr) minmax(0, var(--bf-application-aside-width));
+  }
+
+  :where(.bf-theme) :where(.bf-application:has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive) {
+    block-size: 0;
+    border: 0;
+    min-block-size: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    visibility: hidden;
   }
 
   :where(.bf-theme) :where(.bf-application:has(> .bf-navigation.is-collapsed)) {
