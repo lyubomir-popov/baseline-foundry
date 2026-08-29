@@ -45,10 +45,11 @@ keyline, and does accordion panel copy align with its tab label? It is not
 useful to force marks, panel edges, and every text role onto one universal
 start. The spacing chapter must instead show the same keyline-bearing
 components horizontally and vertically: prose/list, action/control/field,
-checkbox/radio/switch, chip/status, tabs/accordion, list tree/side navigation,
-table of contents, notification, panel, and table. It must use no local ruler
-or diagnostic styling; the existing baseline-grid control is sufficient when
-precise baseline inspection is needed.
+search/range/file inputs, checkbox/radio/switch, chip/status, segmented and
+choice controls, breadcrumbs/pagination, tabs/accordion, list tree/side
+navigation, table of contents, notification, panel, and table. It must use no
+local ruler or diagnostic styling; the existing baseline-grid control is
+sufficient when precise baseline inspection is needed.
 
 ## Catalog decision
 

@@ -45,12 +45,13 @@ slice; exhaustive adjacency work remains open.
 
 ## Review 4 — keyline audit surface
 
-- **Pass:** The existing spacing chapter now contains the same 23
+- **Pass:** The existing spacing chapter now contains the same 31
   keyline-bearing components in a horizontal cluster and vertical stack:
-  prose/list, actions/fields, selection controls, chips/status, tabs/accordion,
+  prose/list, actions/fields, search/range/file controls, selection/choice
+  controls, chips/status, segmented/breadcrumb/pagination, tabs/accordion,
   tree/side navigation, table of contents, notification, panel, and table. It
   uses no page-local styling or separate diagnostic route.
-- **Pass:** At 560px, every tier retains all 23 horizontal and 23 vertical
+- **Pass:** At 560px, every tier retains all 31 horizontal and 31 vertical
   instances with no inline overflow.
 - **Pass:** The source gate now includes a focused spacing-chapter contract
   (6,105 total checks) so the comparison cannot silently regress to a

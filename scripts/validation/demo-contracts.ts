@@ -336,7 +336,7 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, specShellCss: s
   const verticalStart = spacingSpecHtml.indexOf('id="spacing-keylines-vertical"');
   const horizontalAudit = spacingSpecHtml.slice(horizontalStart, verticalStart);
   const verticalAudit = spacingSpecHtml.slice(verticalStart);
-  for (const component of ["bf-checkbox", "bf-radio", "bf-switch", "bf-accordion", "bf-list-tree", "bf-side-navigation", "bf-table-of-contents", "bf-notification", "bf-panel", "bf-table"]) {
+  for (const component of ["bf-search-box", "bf-slider", "bf-segmented-control", "bf-choice-list", "bf-inline-options", "bf-breadcrumbs", "bf-pagination", "bf-checkbox", "bf-radio", "bf-switch", "bf-accordion", "bf-list-tree", "bf-side-navigation", "bf-table-of-contents", "bf-notification", "bf-panel", "bf-table"]) {
     assert(horizontalAudit.includes(component) && verticalAudit.includes(component), `Expected the ${component} keyline-bearing component to appear in both audit arrangements.`);
   }
   assert(spacingSpecHtml.includes('class="bf-cluster"') && spacingSpecHtml.includes('class="bf-stack is-dense"'), "Expected spacing.html to use only shipped horizontal and vertical composition primitives.");
