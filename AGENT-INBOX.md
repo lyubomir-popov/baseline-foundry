@@ -17,7 +17,7 @@ container-owned semantic spacing as competing modes.
 The public demo cleanup and initial 22-class adjacency inventory are complete.
 Continue with the exhaustive source audit in `tasks.md`; do not recreate the
 removed diagnostic spacing pages. The responsive branded application
-navigation producer defect is fixed in `1a48707` and merged locally to `main`.
+navigation producer defect is fixed in `1a48707` and published to `origin/main`.
 
 ## Deferred candidates
 

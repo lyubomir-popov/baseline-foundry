@@ -14,6 +14,6 @@ active package's planning artifacts only when the user explicitly requests spec
 or Spec Kit work. Normal small fixes read the task-scoped source and the lean
 owners named by `AGENTS.md`.
 
-No Spec Kit package is active. Start from `docs/specs.md` before promoting any
-candidate.
+Start from `docs/specs.md` before promoting any candidate; it is the sole owner
+of active-package status.
 <!-- SPECKIT END -->

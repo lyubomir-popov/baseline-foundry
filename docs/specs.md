@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 017 Spacing system audit | [`017-spacing-system-audit/`](../specs/017-spacing-system-audit/) | Active on `feat/017-spacing-system-audit`; removing historical diagnostic pages and specifying the exhaustive horizontal/vertical adjacency audit. |
+| 017 Spacing system audit | [`017-spacing-system-audit/`](../specs/017-spacing-system-audit/) | Active on `feat/017-spacing-system-audit`; removing historical diagnostic pages, specifying the exhaustive horizontal/vertical adjacency audit, and investigating primitive-versus-pattern-slot naming. |
 
 ## Archive
 

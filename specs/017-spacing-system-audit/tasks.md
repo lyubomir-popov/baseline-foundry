@@ -13,6 +13,7 @@
 - [ ] T006 Enumerate every component's horizontal inset/keyline relationships and assign a variable family.
 - [ ] T007 Audit raw gaps, margins, padding, transforms, and breakpoint-specific spacing across source modules.
 - [ ] T008 Compare spacing tokens and rendered relationships across all four direct and class-scoped tier surfaces.
+- [x] T017 Classify every rule-like primitive/structural-slot pairing and all native `hr` plus `bf-rule` usages in `contracts/composition-naming-audit.md`; record required, portable, redundant, and mixed cases.
 
 ## Phase 3 - Corrections and focused contracts
 
@@ -20,6 +21,7 @@
 - [ ] T010 Correct confirmed horizontal keyline/inset drift and add focused browser geometry assertions.
 - [ ] T011 Replace stale active terminology without rewriting archived historical evidence.
 - [ ] T012 Confirm retained component/pattern routes provide all necessary visual QA states.
+- [ ] T018 Propose one flat class-order and primitive/slot convention from the completed inventory; identify any separately promotable migration package without renaming public API in place.
 
 ## Phase 4 - Closeout
 

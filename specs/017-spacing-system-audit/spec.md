@@ -66,6 +66,27 @@ coverage can be proven.
    **When** a relationship is measured, **Then** its resolved value comes from
    the same public token/variable family in direct and class-switched CSS.
 
+---
+
+### User Story 4 - Legible primitive and pattern composition (Priority: P2)
+
+As a component author, I need to tell whether a class names a reusable visual
+primitive, a pattern-owned structural slot, or a state modifier, so I can
+compose supported pieces without copying redundant or competing styling.
+
+**Acceptance Scenarios**:
+
+1. **Given** a rule inside a bundled pattern, **When** its markup is reviewed,
+   **Then** the investigation identifies separately the rule's generic visual
+   contract and its pattern-specific placement contract.
+2. **Given** a native semantic element already styled by a basic selector,
+   **When** it also carries a generic primitive class, **Then** the audit
+   records whether that class is required API, intentional portability, or
+   redundant authoring.
+3. **Given** a proposed naming or migration rule, **When** it is applied to a
+   public pattern, **Then** it uses the established flat `bf-*` and `is-*`
+   vocabulary and does not introduce inheritance aliases or BEM syntax.
+
 ## Requirements
 
 - **FR-001**: Delete the complete historical `examples/spacing/` batch.
@@ -88,6 +109,17 @@ coverage can be proven.
   an existing stack contract.
 - **FR-009**: Generated files under `dist/` are rebuilt from source and never
   edited directly.
+- **FR-010**: Maintain the composition naming investigation in
+  `contracts/composition-naming-audit.md`, including every observed
+  primitive-plus-slot rule pairing, its present responsibility, and a decision
+  on whether the pairing is required, portable, or redundant.
+- **FR-011**: Evaluate native-element styling, generic primitives, structural
+  slots, modifier order, and rule-like non-`hr` elements as distinct public API
+  categories before proposing a migration.
+- **FR-012**: Do not introduce Sass-style extension, compatibility aliases, or
+  a wholesale class rename as part of the investigation. Any follow-on
+  migration must be separately planned from measured source and consumer
+  evidence.
 
 ## Success Criteria
 
@@ -103,6 +135,10 @@ coverage can be proven.
   are reviewed at wide and constrained widths in all four tiers.
 - **SC-006**: Adversarial review reports no unresolved high- or medium-severity
   ownership, API, accessibility, or responsive-spacing finding.
+- **SC-007**: Every current rule-like pattern slot is classified as structural,
+  visual, or mixed; every native `hr` plus `bf-rule` pairing is accounted for;
+  and the resulting convention can be applied by an author without consulting
+  source selectors.
 
 ## Boundaries
 
@@ -112,3 +148,6 @@ coverage can be proven.
   renamed to hide past decisions.
 - Component demos remain isolated QA routes even when a page is not linked from
   both atlases; the audit decides catalog value separately from test value.
+- The naming investigation records a proposed convention and migration trigger;
+  it does not rename stable public classes until a follow-on implementation
+  package is promoted.

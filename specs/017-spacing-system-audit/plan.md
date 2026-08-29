@@ -44,6 +44,9 @@ responsive brackets, and direct/class-switched bundles.
 4. Group findings by shared owner/token, correct source once, and verify direct
    and class-scoped output parity.
 5. Run full gates, constrained visual review, and adversarial review.
+6. In parallel with the rule/keyline inventory, classify generic primitives,
+   structural pattern slots, native semantic elements, and modifiers. Record a
+   migration recommendation only after the complete source evidence pass.
 
 ## Project Structure
 
@@ -56,7 +59,8 @@ specs/017-spacing-system-audit/
 ├── quickstart.md
 ├── review.md
 └── contracts/
-    └── adjacency-inventory.md
+    ├── adjacency-inventory.md
+    └── composition-naming-audit.md
 ```
 
 No constitutional exception is required.
