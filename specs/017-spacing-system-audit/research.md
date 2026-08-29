@@ -43,9 +43,11 @@ The useful audit question is therefore specific: for example, does prose-list
 copy align with the checkbox label where they are intended to share a content
 keyline, and does accordion panel copy align with its tab label? It is not
 useful to force marks, panel edges, and every text role onto one universal
-start. The spacing chapter will present these real-component comparisons beside
-stacked flush/dense/default relationships. It must use no local ruler or
-diagnostic styling; the existing baseline-grid control is sufficient when
+start. The spacing chapter must instead show the same keyline-bearing
+components horizontally and vertically: prose/list, action/control/field,
+checkbox/radio/switch, chip/status, tabs/accordion, list tree/side navigation,
+table of contents, notification, panel, and table. It must use no local ruler
+or diagnostic styling; the existing baseline-grid control is sufficient when
 precise baseline inspection is needed.
 
 ## Catalog decision

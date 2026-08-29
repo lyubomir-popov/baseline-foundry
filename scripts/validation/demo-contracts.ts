@@ -331,9 +331,18 @@ export function validateGridSpecPage(gridSpecHtml: string, specShellCss: string)
 
 export function validateSpacingSpecPage(spacingSpecHtml: string, specShellCss: string): void {
   assert(spacingSpecHtml.includes('<section class="bf-stack is-section-shallow" aria-labelledby="spacing-keylines">'), "Expected spacing.html to retain the in-chapter keyline comparison instead of a separate diagnostic route.");
-  assert(spacingSpecHtml.includes('class="bf-stack is-metric-flush"') && spacingSpecHtml.includes('class="bf-stack is-dense"'), "Expected spacing.html to compare the shipped stacked relationship owners.");
-  assert(spacingSpecHtml.includes('Prose-list label') && spacingSpecHtml.includes('Checkbox label') && spacingSpecHtml.includes('Radio label'), "Expected spacing.html to place common leading-mark label tracks in one compact comparison.");
-  assert(spacingSpecHtml.includes('class="bf-accordion-panel"') && spacingSpecHtml.includes('class="bf-panel-content"'), "Expected spacing.html to include disclosure continuation and panel-gutter evidence.");
+  assert(spacingSpecHtml.includes('id="spacing-keylines-horizontal"') && spacingSpecHtml.includes('id="spacing-keylines-vertical"'), "Expected spacing.html to put the audit board in horizontal and vertical arrangements.");
+  const horizontalStart = spacingSpecHtml.indexOf('id="spacing-keylines-horizontal"');
+  const verticalStart = spacingSpecHtml.indexOf('id="spacing-keylines-vertical"');
+  const horizontalAudit = spacingSpecHtml.slice(horizontalStart, verticalStart);
+  const verticalAudit = spacingSpecHtml.slice(verticalStart);
+  for (const component of ["bf-checkbox", "bf-radio", "bf-switch", "bf-accordion", "bf-list-tree", "bf-side-navigation", "bf-table-of-contents", "bf-notification", "bf-panel", "bf-table"]) {
+    assert(horizontalAudit.includes(component) && verticalAudit.includes(component), `Expected the ${component} keyline-bearing component to appear in both audit arrangements.`);
+  }
+  assert(spacingSpecHtml.includes('class="bf-cluster"') && spacingSpecHtml.includes('class="bf-stack is-dense"'), "Expected spacing.html to use only shipped horizontal and vertical composition primitives.");
+  assert(spacingSpecHtml.includes('class="bf-checkbox"') && spacingSpecHtml.includes('class="bf-radio"') && spacingSpecHtml.includes('class="bf-switch"'), "Expected spacing.html to include the keyline-bearing selection controls.");
+  assert(spacingSpecHtml.includes('class="bf-accordion-panel"') && spacingSpecHtml.includes('bf-list-tree') && spacingSpecHtml.includes('bf-side-navigation') && spacingSpecHtml.includes('bf-table-of-contents'), "Expected spacing.html to include disclosure and navigation indentation evidence.");
+  assert(spacingSpecHtml.includes('class="bf-notification') && spacingSpecHtml.includes('class="bf-panel-content"') && spacingSpecHtml.includes('class="bf-table"'), "Expected spacing.html to include notification, panel, and table inset evidence.");
   assert(!/class="[^"]*\b(?:spacing-keyline|keyline)-(?!checkbox|radio|panel)[a-z0-9_-]*/.test(spacingSpecHtml), "Expected spacing.html to avoid page-local keyline helper classes.");
   assert(!specShellCss.includes('keyline'), "Expected the spacing comparison to need no page-local keyline CSS.");
 }

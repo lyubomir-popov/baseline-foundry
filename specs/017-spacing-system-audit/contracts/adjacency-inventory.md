@@ -32,11 +32,13 @@ an automated or browser-verifiable route; no public diagnostic board is needed.
 | R21 | Page edge, grid gutter, fixed-width region, and panel inset | Inline | Page/grid/panel public gutter variables |
 | R22 | Responsive collapsed/expanded or hidden/visible states | Both | The same component owner at an intrinsic or shared breakpoint |
 
-## Keyline map
+## Candidate keyline map
 
 The audit compares named tracks; it does not prescribe one universal start
-edge. The compact comparison in `/demo/spec/spacing.html` makes these tracks
-visible with ordinary components before route-specific measurements begin.
+edge or predeclare the final number of public offsets. The component board in
+`/demo/spec/spacing.html` puts the same keyline-bearing primitives in horizontal
+and vertical arrangements so the audit can confirm, consolidate, or split these
+candidates from the paragraph left edge before route-specific measurements.
 
 | Keyline | Typical relationship | Owner |
 |---|---|---|

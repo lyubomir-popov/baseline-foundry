@@ -162,9 +162,10 @@ new local styling system.
   threshold for a default readable 50/50 pattern split. Inventory every
   component and pattern with a comparable split, correct unjustified divergent
   thresholds, and record a distinct intrinsic reason for each exception.
-- **FR-014**: Keep a concise keyline-comparison section in the existing
-  consumer-facing spacing chapter. It must compare stacked relationships and
-  inline leading-mark/gutter relationships with real shipped components, not
+- **FR-014**: Keep a component-first keyline-audit section in the existing
+  consumer-facing spacing chapter. It must place the same keyline-bearing
+  shipped components in horizontal and vertical compositions, including
+  navigation, disclosure, controls, data labels, panels, and tables—not
   page-local rulers, diagnostic rails, or custom specimen CSS.
 - **FR-015**: Treat keylines as named relationships rather than a universal
   left edge: page/content text, leading-mark tracks, component gutters, and
@@ -192,8 +193,9 @@ new local styling system.
 - **SC-008**: Every default balanced content split in the active catalog uses
   the same 45rem query-container threshold, or has a documented non-split
   reason for a different transition.
-- **SC-009**: The spacing chapter exposes both stacked and inline keyline
-  comparisons in every tier without any page-local layout or styling class.
+- **SC-009**: The spacing chapter exposes the same component set in horizontal
+  and vertical keyline comparisons in every tier without any page-local layout
+  or styling class.
 
 ## Boundaries
 

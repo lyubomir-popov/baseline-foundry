@@ -45,13 +45,13 @@ slice; exhaustive adjacency work remains open.
 
 ## Review 4 — keyline audit surface
 
-- **Pass:** The existing spacing chapter now contains a compact comparison of
-  metric-flush/dense/default stacks, prose-list/checkbox/radio leading tracks,
-  disclosure continuation, and panel gutter. It uses no page-local styling or
-  separate diagnostic route.
-- **Pass:** At 560px, all three comparison groups stack with no inline
-  overflow. Editorial, Documentation, App, and OS each retain the complete
-  comparison with no overflow.
+- **Pass:** The existing spacing chapter now contains the same 23
+  keyline-bearing components in a horizontal cluster and vertical stack:
+  prose/list, actions/fields, selection controls, chips/status, tabs/accordion,
+  tree/side navigation, table of contents, notification, panel, and table. It
+  uses no page-local styling or separate diagnostic route.
+- **Pass:** At 560px, every tier retains all 23 horizontal and 23 vertical
+  instances with no inline overflow.
 - **Pass:** The source gate now includes a focused spacing-chapter contract
   (6,105 total checks) so the comparison cannot silently regress to a
   page-local keyline helper.
