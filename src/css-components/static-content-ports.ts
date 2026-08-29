@@ -1,8 +1,8 @@
 /**
  * Static Vanilla parity ports: data spotlight and divided section. The
- * 38.75rem and 64.75rem container thresholds preserve Vanilla's 620px and
- * 1036px composition changes while allowing the patterns to respond to their
- * allocated inline size.
+ * Components use an intrinsic medium threshold for their density changes and
+ * the shared 45rem readable-split threshold for default balanced content,
+ * while responding to their allocated inline size.
  *
  * Vanilla → BF token mapping:
  * - `$spv--strip-shallow` (1.5rem) → `--bf-section-space-shallow`.
@@ -210,14 +210,7 @@ export function staticContentPortsCss(): string {
   position: absolute;
 }
 
-@container (width >= 38.75rem) {
-  :where(.bf-theme) :where(.bf-divided-section.is-split-medium) :where(.bf-divided-section-layout) {
-    column-gap: var(--bf-grid-gap-inline);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@container (width >= 64.75rem) {
+@container (width >= 45rem) {
   :where(.bf-theme) :where(.bf-divided-section) :where(.bf-divided-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));

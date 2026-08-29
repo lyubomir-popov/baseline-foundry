@@ -66,22 +66,14 @@ export function sitesFoundationCss(): string {
   text-underline-offset: 0.12em;
 }
 
-/* Vanilla splits at medium only on request, otherwise at its large breakpoint.
-   The layout descendant reacts to the root container; the query never tries to
+/* A balanced section switches at the shared readable 50/50 threshold. The
+   layout descendant reacts to the root container; the query never tries to
    restyle the container that established it. */
-@container bf-basic-section (width >= 38.75rem) {
-  :where(.bf-theme) :where(.bf-basic-section.is-split-medium) :where(.bf-basic-section-layout) {
+@container bf-basic-section (width >= 45rem) {
+  :where(.bf-theme) :where(.bf-basic-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-@container bf-basic-section (width >= 64.75rem) {
-  :where(.bf-theme) :where(.bf-basic-section:not(.is-split-medium)) :where(.bf-basic-section-layout) {
-    column-gap: var(--bf-grid-gap-inline);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
 }
 
 /* CTA section: Vanilla's 25/75 variant is an offset content rail. The full

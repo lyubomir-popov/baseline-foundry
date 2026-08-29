@@ -140,27 +140,17 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         if (!breadcrumb || fixed.length === 0 || !host) return null;
 
         const plain = document.createElement("hr");
-        const styled = document.createElement("hr");
-        styled.className = "bf-rule";
-        host.append(plain, styled);
+        host.append(plain);
         const plainStyles = getComputedStyle(plain);
-        const styledStyles = getComputedStyle(styled);
         const rules = {
           plain: {
             background: plainStyles.backgroundColor,
             blockSize: plainStyles.blockSize,
             border: plainStyles.border,
             marginBlockEnd: plainStyles.marginBlockEnd
-          },
-          styled: {
-            background: styledStyles.backgroundColor,
-            blockSize: styledStyles.blockSize,
-            border: styledStyles.border,
-            marginBlockEnd: styledStyles.marginBlockEnd
           }
         };
         plain.remove();
-        styled.remove();
 
         return {
           breadcrumbX: breadcrumb.getBoundingClientRect().left,
@@ -175,7 +165,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
       if (tier === "editorial" || tier === "documentation") {
         assert(geometry.fixed.every(region => Math.abs(region.x - geometry.breadcrumbX) <= 1), `Expected uncapped ${tier} specimen regions to share the page keyline: ${JSON.stringify(geometry)}.`);
       }
-      assert(JSON.stringify(geometry.rules.plain) === JSON.stringify(geometry.rules.styled), `Expected ${tier} plain hr and bf-rule geometry/paint to match: ${JSON.stringify(geometry.rules)}.`);
+      assert(geometry.rules.plain.blockSize === "1px" && geometry.rules.plain.marginBlockEnd !== "0px", `Expected ${tier} bare semantic hr to carry the generic rule geometry and trailing compensation: ${JSON.stringify(geometry.rules)}.`);
     }
 
     await page.close();
@@ -1917,7 +1907,7 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
         const basicLayout = document.createElement("div");
         basicLayout.className = "bf-basic-section-layout bf-stack";
         const rule = document.createElement("hr");
-        rule.className = "bf-basic-section-rule bf-rule";
+        rule.className = "bf-basic-section-rule";
         const basicHeader = document.createElement("header");
         basicHeader.className = "bf-basic-section-header";
         const basicTitle = document.createElement("h2");
@@ -2000,6 +1990,50 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
       }
     }
 
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifySharedReadableSplitThresholds(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const cases = [
+    { route: "basic-section.html", root: ".bf-basic-section", layout: ".bf-basic-section-layout", expandedColumns: 2 },
+    { route: "divided-section.html", root: ".bf-divided-section", layout: ".bf-divided-section-layout", expandedColumns: 2 },
+    { route: "tiered-list.html", root: ".bf-tiered-list:not(.is-description-full-width)", layout: ".bf-tiered-list-header", expandedColumns: 2 },
+    { route: "rich-list-horizontal.html", root: ".bf-rich-list.is-horizontal.is-50-50", layout: ".bf-rich-list-layout", expandedColumns: 2 },
+    { route: "rich-list-vertical.html", root: ".bf-rich-list.is-vertical", layout: ".bf-rich-list-layout", expandedColumns: 2 },
+    { route: "tab-section.html", root: ".bf-tab-section", layout: ".bf-tab-section-body", expandedColumns: 4 },
+    { route: "linked-logo-section.html", root: ".bf-linked-logo-section.is-50-50", layout: ".bf-linked-logo-section-layout", expandedColumns: 2 }
+  ] as const;
+
+  try {
+    const page = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 1600, height: 1200 } });
+    for (const testCase of cases) {
+      await page.goto(`${origin}/demo/components/${testCase.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      for (const tier of tiers) {
+        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        for (const allocation of [
+          { width: "44.9375rem", columns: 1, label: "below 45rem" },
+          { width: "45rem", columns: testCase.expandedColumns, label: "at 45rem" }
+        ]) {
+          const state = await page.locator(testCase.root).first().evaluate((root, expected) => {
+            const pattern = root as HTMLElement;
+            pattern.style.inlineSize = expected.width;
+            const layout = pattern.querySelector<HTMLElement>(expected.layout);
+            return layout ? {
+              columns: getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length,
+              overflow: pattern.scrollWidth - pattern.clientWidth
+            } : null;
+          }, { width: allocation.width, layout: testCase.layout });
+          assert(state !== null && state.columns === allocation.columns && state.overflow <= 1, `Expected ${tier} ${testCase.route} to use ${allocation.columns} column(s) ${allocation.label} without overflow; got ${JSON.stringify(state)}.`);
+        }
+      }
+    }
     await page.close();
   } finally {
     await browser.close();
@@ -2412,7 +2446,7 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
               ? component
               : component?.querySelector<HTMLElement>(".bf-tiered-list-items");
             const item = component?.querySelector<HTMLElement>(".bf-tiered-list-item");
-            const rule = item?.querySelector<HTMLElement>(".bf-rule");
+            const rule = item?.querySelector<HTMLElement>("hr");
             const title = item?.querySelector<HTMLElement>(".bf-tiered-list-item-title, .bf-tiered-list-item-label");
             const description = item?.querySelector<HTMLElement>(".bf-tiered-list-item-description, .bf-tiered-list-item-role, .bf-tiered-list-item-value");
             if (!component || !items || !item || !rule || !title || !description) return [name, null];
@@ -3031,6 +3065,7 @@ async function main(): Promise<void> {
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);
+    await verifySharedReadableSplitThresholds(origin);
     await verifyRenewalCompositionContracts(origin);
     await verifyAdversarialResponsiveGeometry(origin);
     await verifyDirectAndClassSurfaceGeometry(origin);

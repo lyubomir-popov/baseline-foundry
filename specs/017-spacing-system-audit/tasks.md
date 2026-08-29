@@ -13,6 +13,9 @@
 - [ ] T006 Enumerate every component's horizontal inset/keyline relationships and assign a variable family.
 - [ ] T007 Audit raw gaps, margins, padding, transforms, and breakpoint-specific spacing across source modules.
 - [ ] T008 Compare spacing tokens and rendered relationships across all four direct and class-scoped tier surfaces.
+- [x] T019 Inventory every responsive multi-column/split transition. Set the
+  default readable 50/50 threshold to 45rem (720px) of the pattern query
+  container; justify non-split and explicitly intrinsic exceptions.
 - [x] T017 Classify every rule-like primitive/structural-slot pairing and all native `hr` plus `bf-rule` usages in `contracts/composition-naming-audit.md`; record required, portable, redundant, and mixed cases.
 
 ## Phase 3 - Corrections and focused contracts
@@ -21,7 +24,10 @@
 - [ ] T010 Correct confirmed horizontal keyline/inset drift and add focused browser geometry assertions.
 - [ ] T011 Replace stale active terminology without rewriting archived historical evidence.
 - [ ] T012 Confirm retained component/pattern routes provide all necessary visual QA states.
-- [ ] T018 Propose one flat class-order and primitive/slot convention from the completed inventory; identify any separately promotable migration package without renaming public API in place.
+- [x] T020 Align confirmed default 50/50 pattern splits (including the
+  tiered-list header) to the shared 45rem container threshold and add focused
+  constrained-width assertions.
+- [x] T018 Propose one flat class-order and primitive/slot convention from the completed inventory. Bare native elements are canonical where the basic selector owns their contract; structural slot classes remain only where placement needs them.
 
 ## Phase 4 - Closeout
 

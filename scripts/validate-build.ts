@@ -608,13 +608,13 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(a:visited) {\n  color: var(--bf-color-link-visited);"), "Expected generated CSS to style visited links through the semantic theme token.");
   assert(css.includes(":where(.bf-theme) :where(a:focus-visible) {\n  outline: 2px solid var(--bf-color-focus);"), "Expected generated CSS to style raw link focus with the semantic focus token.");
   assert(css.includes(":where(.bf-theme) :where(a.bf-text-link) {\n  display: inline-block;") && css.includes("padding-block: var(--bf-body-nudge-start) 0;"), "Expected standalone text links to expose an element-qualified canonical body metric box without changing raw prose anchors.");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(hr, .bf-rule)", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(hr)", {
     "background": "var(--bf-color-rule)",
     "block-size": "1px",
     "border": "0",
     "inline-size": "100%",
     "margin": "0 0 calc(0.5rem - 1px)",
-  }, "plain hr and bf-rule share one basic-rule contract");
+  }, "plain hr receives the basic rule contract");
   assert(css.includes(":where(.bf-theme) :where(.bf-page) {\n  margin-inline: auto;\n  max-inline-size: var(--bf-content-max-width);\n  padding-inline: var(--bf-page-margin);"), "Expected bf-page gutters to resolve directly from the shared grid-row margin token.");
   assert(!css.includes("#f5f1e8"), "Expected generated CSS to avoid the old paper-like default background fallback.");
   assert(!css.includes("#0f62fe"), "Expected generated CSS to avoid the old non-Vanilla light link fallback.");

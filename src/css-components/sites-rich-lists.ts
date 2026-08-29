@@ -192,7 +192,7 @@ export function sitesRichListsCss(): string {
   }
 }
 
-@container bf-rich-list (width >= 64.75rem) {
+@container bf-rich-list (width >= 45rem) {
   :where(.bf-theme) :where(.bf-rich-list.is-horizontal.is-50-50) > :where(.bf-rich-list-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -206,7 +206,7 @@ export function sitesRichListsCss(): string {
     grid-column: 2;
   }
 
-  :where(.bf-theme) :where(.bf-rich-list.is-horizontal) > :where(.bf-rich-list-layout) > :where(.bf-rich-list-cta) {
+  :where(.bf-theme) :where(.bf-rich-list.is-horizontal.is-50-50) > :where(.bf-rich-list-layout) > :where(.bf-rich-list-cta) {
     grid-column: 2;
   }
 }
@@ -282,7 +282,7 @@ export function sitesRichListsCss(): string {
 /* Auto height has no shallow media wrapper in Vanilla. At narrow widths it
    remains a normal 3:2 frame; at the wide split it stretches with the content
    rail, clamped between the equivalent 16:9 and 2:3 heights. */
-@container bf-rich-list (width >= 64.75rem) {
+@container bf-rich-list (width >= 45rem) {
   :where(.bf-theme) :where(.bf-rich-list.is-vertical) > :where(.bf-rich-list-layout) {
     align-items: stretch;
     column-gap: var(--bf-grid-gap-inline);

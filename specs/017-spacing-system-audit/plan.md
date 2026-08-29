@@ -61,6 +61,7 @@ specs/017-spacing-system-audit/
 └── contracts/
     ├── adjacency-inventory.md
     └── composition-naming-audit.md
+    └── responsive-split-inventory.md
 ```
 
 No constitutional exception is required.

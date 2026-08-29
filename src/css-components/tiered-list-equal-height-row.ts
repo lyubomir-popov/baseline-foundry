@@ -60,9 +60,9 @@ export function tieredListEqualHeightRowCss(): string {
   padding: 0;
 }
 
-:where(.bf-theme) :where(.bf-tiered-list-header) > :where(.bf-rule),
-:where(.bf-theme) :where(.bf-tiered-list-item) > :where(.bf-rule),
-:where(.bf-theme) :where(.bf-tiered-list-cta) > :where(.bf-rule) {
+:where(.bf-theme) :where(.bf-tiered-list-header) > hr,
+:where(.bf-theme) :where(.bf-tiered-list-item) > hr,
+:where(.bf-theme) :where(.bf-tiered-list-cta) > hr {
   grid-column: 1 / -1;
 }
 
@@ -77,8 +77,8 @@ export function tieredListEqualHeightRowCss(): string {
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 
-  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width):not(.is-flush):not(.is-triple)) :where(.bf-tiered-list-item) > :where(.bf-rule),
-  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width):not(.is-flush):not(.is-triple)) :where(.bf-tiered-list-cta) > :where(.bf-rule) {
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width):not(.is-flush):not(.is-triple)) :where(.bf-tiered-list-item) > hr,
+  :where(.bf-theme) :where(.bf-tiered-list:not(.is-list-full-width):not(.is-flush):not(.is-triple)) :where(.bf-tiered-list-cta) > hr {
     grid-column: 3 / span 6;
   }
 
@@ -93,9 +93,9 @@ export function tieredListEqualHeightRowCss(): string {
 }
 
 /* ------------------------------------------------------------------ */
-/* Header split (≥ 64.75rem): unchanged 50/50 title/description.       */
+/* Header split (≥ 45rem): the shared readable 50/50 title/content split. */
 /* ------------------------------------------------------------------ */
-@container (width >= 64.75rem) {
+@container (width >= 45rem) {
   :where(.bf-theme) :where(.bf-tiered-list:not(.is-description-full-width)) :where(.bf-tiered-list-header) {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }

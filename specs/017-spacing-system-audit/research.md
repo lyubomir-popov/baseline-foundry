@@ -47,6 +47,9 @@ counterfactual spacing engines, or implementation history.
   geometry, or the active grid gutter, and which are unexplained departures?
 - Which responsive rules change spacing at a breakpoint unrelated to the
   owning grid or intrinsic component threshold?
+- Which readable default 50/50 patterns still use a breakpoint other than the
+  shared 45rem (720px) query-container threshold, and is each difference a
+  real non-split/intrinsic exception?
 - Which demos contain direct semantic siblings without an explicit stack or
   structured component owner?
 
@@ -77,6 +80,23 @@ are native `hr` elements and that `is-muted` has no rule-specific selector
 despite 26 demo occurrences. This is a no-op modifier, not a visual variant.
 It is recorded as a follow-on API decision rather than silently treated as
 working behavior.
+
+## Owner decision — native rule markup and readable split threshold
+
+Bare semantic `<hr>` is the canonical rule primitive. The theme's basic `hr`
+selector already supplies the visual contract, including the trailing
+baseline-compensation. A `bf-rule` class on that element adds verbosity and a
+second maintenance surface without changing its contract. Pattern slot classes
+remain only where a pattern needs structural placement; a highlighted native
+rule uses `<hr class="is-highlighted">`. `bf-rule` must not be expanded as an
+authoring requirement without a measured non-native use case.
+
+The default readable 50/50 composition threshold is 45rem (720px) of the
+pattern's query container. The hero already uses it, whereas the tiered-list
+header currently waits for 64.75rem; this is an audit/implementation finding.
+Grid-shell, navigation, density, and explicitly asymmetric/intrinsic changes
+are not automatically split-layout exceptions, but must state why their
+threshold differs.
 
 ## Initial removal validation
 

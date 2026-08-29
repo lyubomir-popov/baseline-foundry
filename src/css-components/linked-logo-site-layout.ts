@@ -128,21 +128,25 @@ export function linkedLogoSiteLayoutCss(): string {
   overflow-wrap: anywhere;
 }
 
-/* Vanilla's linked-logo block moves from one to two cards per row at the
-   4-column medium grid.  The section itself does not split until the 8-column
-   large grid: its macro uses large-only grid columns for the 50/50 and 25/75
-   rails.  The root establishes the query context; only descendants change. */
+/* The linked-logo block moves from one to two cards per row at the 4-column
+   medium grid. The balanced 50/50 section split uses the shared readable
+   threshold; the 25/75 content rail and four-card density retain their
+   separately measured wide threshold. The root establishes the query context;
+   only descendants change. */
 @container bf-linked-logo-section (width >= 38.75rem) {
   :where(.bf-theme) :where(.bf-linked-logo-section-logos) :where(.bf-logo-section-items) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@container bf-linked-logo-section (width >= 64.75rem) {
+@container bf-linked-logo-section (width >= 45rem) {
   :where(.bf-theme) :where(.bf-linked-logo-section.is-50-50) :where(.bf-linked-logo-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+@container bf-linked-logo-section (width >= 64.75rem) {
 
   :where(.bf-theme) :where(.bf-linked-logo-section.is-25-75) :where(.bf-linked-logo-section-layout) {
     column-gap: var(--bf-grid-gap-inline);

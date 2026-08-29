@@ -479,7 +479,7 @@ ${capEngineDemo}
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
 }
 
-:where(.bf-theme) :where(hr, .bf-rule) {
+:where(.bf-theme) :where(hr) {
   background: var(--bf-color-rule);
   block-size: 1px;
   border: 0;
@@ -491,7 +491,7 @@ ${capEngineDemo}
 
 /* Highlight rules share the same scalable emphasis-bar geometry as active
  * navigation, tabs, notifications, and document-navigation markers. */
-:where(.bf-theme) :where(hr.is-highlighted, .bf-rule.is-highlighted) {
+:where(.bf-theme) :where(hr.is-highlighted) {
   block-size: var(--bf-bar-thickness);
   margin-block-end: calc(0.5rem - var(--bf-bar-thickness));
 }

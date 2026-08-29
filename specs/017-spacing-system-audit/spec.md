@@ -87,6 +87,24 @@ compose supported pieces without copying redundant or competing styling.
    public pattern, **Then** it uses the established flat `bf-*` and `is-*`
    vocabulary and does not introduce inheritance aliases or BEM syntax.
 
+### User Story 5 - Readable split layouts change together (Priority: P1)
+
+As a reader, I need comparable content splits to collapse at the same measured
+width, so a pattern does not remain cramped merely because it uses a different
+component implementation.
+
+**Acceptance Scenarios**:
+
+1. **Given** a pattern whose default content is a balanced readable split,
+   **When** its query container reaches 45rem (720px), **Then** it may use its
+   multi-column arrangement; below that width it remains one column.
+2. **Given** the hero and tiered-list header, **When** their own containers are
+   measured, **Then** their default 50/50 title/content arrangements use the
+   same 45rem threshold.
+3. **Given** a layout that changes for a non-split reason (navigation shell,
+   grid density, or an explicitly asymmetrical/intrinsic variant), **When** it
+   uses another breakpoint, **Then** the audit records that separate reason.
+
 ## Requirements
 
 - **FR-001**: Delete the complete historical `examples/spacing/` batch.
@@ -120,6 +138,10 @@ compose supported pieces without copying redundant or competing styling.
   a wholesale class rename as part of the investigation. Any follow-on
   migration must be separately planned from measured source and consumer
   evidence.
+- **FR-013**: Treat 45rem (720px) of the query container as the shared
+  threshold for a default readable 50/50 pattern split. Inventory every
+  component and pattern with a comparable split, correct unjustified divergent
+  thresholds, and record a distinct intrinsic reason for each exception.
 
 ## Success Criteria
 
@@ -139,6 +161,9 @@ compose supported pieces without copying redundant or competing styling.
   visual, or mixed; every native `hr` plus `bf-rule` pairing is accounted for;
   and the resulting convention can be applied by an author without consulting
   source selectors.
+- **SC-008**: Every default balanced content split in the active catalog uses
+  the same 45rem query-container threshold, or has a documented non-split
+  reason for a different transition.
 
 ## Boundaries
 

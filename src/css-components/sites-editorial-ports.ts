@@ -137,9 +137,10 @@ export function sitesEditorialPortsCss(): string {
   }
 }
 
-/* Vanilla can intentionally split the three proportioned layouts at its
-   medium threshold. The modifier changes only structural tracks. */
-@container bf-hero (width >= 38.75rem) {
+/* The named variants retain their proportion but share the readable split
+   threshold with the default hero. The modifier changes only structural
+   tracks; it does not introduce an earlier cramped layout. */
+@container bf-hero (width >= 45rem) {
   :where(.bf-theme) :where(.bf-hero.is-split-medium) :where(.bf-hero-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));
