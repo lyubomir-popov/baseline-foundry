@@ -14,19 +14,10 @@ only metric compensation, while stacks and pattern containers own semantic
 spacing. Do not preserve obsolete wording that presents element-owned and
 container-owned semantic spacing as competing modes.
 
-## Current producer defect — responsive branded application navigation
-
-Diagram Registry needs application navigation to collapse at narrow widths to
-one persistent bar that keeps the Canonical mark and “Diagram registry” title
-visible beside the navigation toggle. The current drawer-only composition moves
-the brand off-canvas when `.bf-navigation` is collapsed. Registry previously
-removed `bf-navigation-bar` because composing it with the drawer produced a
-duplicated desktop fascia.
-
-Provide a supported BF application-shell composition with one compact branded
-bar while collapsed or narrow, the full pinned drawer at wide widths, no
-duplicate brand row, and correct keyboard, focus, and ARIA behavior. Validate a
-real consumer-shaped fixture at both sides of the breakpoint.
+The public demo cleanup and initial 22-class adjacency inventory are complete.
+Continue with the exhaustive source audit in `tasks.md`; do not recreate the
+removed diagnostic spacing pages. The responsive branded application
+navigation producer defect is fixed in `1a48707` and merged locally to `main`.
 
 ## Deferred candidates
 
@@ -45,17 +36,11 @@ real consumer-shaped fixture at both sides of the breakpoint.
 
 ## Last-known-green state
 
-`main` and `origin/main` point to `99d298b`. Spec 016 is accepted and archived.
-The 0.1.5 source tree passes `npm test`, `npm run qa:components`,
-`npm run release:check`, and clean package verification (30 root exports and 21
-asset entry points). npm remains at 0.1.4 and the `v0.1.5` tag is intentionally
+Local `main` points to `61439ac`; `origin/main` remains at `99d298b`. The spacing
+foundation and responsive navigation slices each pass `npm test`,
+`npm run qa:components`, and browser review; the combined merged tree also
+passes `npm test`. npm remains at 0.1.4 and the `v0.1.5` tag is intentionally
 unused until the npm-owned publication workflow runs.
-
-Panel padding progression, tier fixed-width progression, semantic list/footer
-spacing, narrow tier-switch range geometry, mixed inline-list/range footer
-geometry, raw-link states, H5/eyebrow unification, and the grouped stack
-composition are already merged to `main`; their durable evidence belongs to the
-accepted specs and Git history, not this inbox.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, and
 `tmp/vanilla-main/`. The sibling Vanilla checkout contains user changes in
