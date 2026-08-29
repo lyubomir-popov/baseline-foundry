@@ -1,7 +1,6 @@
 # Spacing ownership decision
 
-This note records the owner decision that supersedes the earlier BF-local
-element-owned review.
+This note records the current BF spacing ownership decision.
 
 ## Decision
 

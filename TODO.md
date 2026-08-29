@@ -5,10 +5,10 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No numbered package is active. Spec 016 component and pattern consistency is
-accepted and merged to `main`; its durable package is archived under
-`docs/spec-archive/016-component-pattern-consistency/`. Promote the next item
-only when its evidence trigger is met.
+Spec 017 spacing system audit is active on
+`feat/017-spacing-system-audit`. Remove obsolete diagnostic spacing routes,
+establish an exhaustive adjacency inventory, then audit horizontal and vertical
+spacing against the current container-owned semantic model.
 
 ## Candidate order after Spec 001
 

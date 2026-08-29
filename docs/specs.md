@@ -5,8 +5,9 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-No package is active. Promote the next evidenced candidate on its own matching
-feature branch.
+| Spec | Package | Status |
+|---|---|---|
+| 017 Spacing system audit | [`017-spacing-system-audit/`](../specs/017-spacing-system-audit/) | Active on `feat/017-spacing-system-audit`; removing historical diagnostic pages and specifying the exhaustive horizontal/vertical adjacency audit. |
 
 ## Archive
 
@@ -15,7 +16,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 | Spec | Package | Disposition |
 |---|---|---|
 | 016 Component and pattern consistency | [`016-component-pattern-consistency/`](spec-archive/016-component-pattern-consistency/) | Accepted and merged to `main` from implementation commit `3956294` on 2026-08-29; all four implementation/adversarial passes, 6,052 static checks, browser behavior, baseline captures, and component screenshot QA passed. |
-| 015 Tier geometry hardening | [`015-tier-geometry-hardening/`](../specs/015-tier-geometry-hardening/) | Merged to `main` at `338f3cb`; Spec 016 supersedes its TOC row-gap and muted-H6 hierarchy after owner visual review. |
+| 015 Tier geometry hardening | [`015-tier-geometry-hardening/`](spec-archive/015-tier-geometry-hardening/) | Merged to `main` at `338f3cb`; Spec 016 supersedes its TOC row-gap and muted-H6 hierarchy after owner visual review. |
 | 001 Baseline Foundry renewal | [`001-baseline-foundry-renewal/`](spec-archive/001-baseline-foundry-renewal/) | Accepted and merged 2026-08-21; automated closeout green, with the unavailable in-app-browser pass recorded in `review.md`. |
 | 002 Element-owned typography selectors | [`002-element-owned-typography/`](spec-archive/002-element-owned-typography/) | Accepted and merged 2026-08-24; full build, browser behavior, and component-capture gates green. |
 | 003 Flush side-navigation composition | [`003-flush-side-navigation/`](spec-archive/003-flush-side-navigation/) | Accepted and merged 2026-08-24; downstream Registry feature branch verified without local BF overrides. |
@@ -50,7 +51,7 @@ features.
 | Source | Role |
 |---|---|
 | `../canonical-spacing-spec/specs/type scale/draft.md` | Type-scale and metric reference |
-| `../canonical-spacing-spec/specs/spacing/draft.md` | Governing spacing reference for container-owned semantic gaps and element-owned baseline compensation, adopted locally by Spec 013 |
+| `../canonical-spacing-spec/specs/spacing/draft.md` | Governing spacing reference for container-owned semantic gaps and text-local metric compensation, adopted locally by Spec 013 |
 | `../canonical-spacing-spec/specs/grid/draft.md` | Grid reference |
 | `../canonical-spacing-spec/specs/typography-article/draft.md` | Supporting editorial reference |
 | `../vanilla-framework/` | Ancestor pattern evidence, not a compatibility mandate |

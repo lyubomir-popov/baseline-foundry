@@ -188,7 +188,10 @@ The demo runs at:
 - [http://127.0.0.1:4174/demo/patterns/index.html](http://127.0.0.1:4174/demo/patterns/index.html) — Patterns, site compositions, recipes, layouts, and documented exclusions
 - [http://127.0.0.1:4174/demo/components/engine-illustration.html](http://127.0.0.1:4174/demo/components/engine-illustration.html) — Three-way raw / compensated / cap comparison
 
-Standalone historical Canonical example batches also live under `examples/grid/` and `examples/spacing/`. Each family has one shared stylesheet (`grid-examples.css` / `spacing-examples.css`); current decisions live in the active Spec Kit package rather than one-off root prompts.
+Standalone grid examples live under `examples/grid/` and share
+`grid-examples.css`. Spacing behavior is documented by the living spacing
+chapter and verified on the component or pattern that owns each relationship;
+the catalog does not expose separate diagnostic spacing pages.
 
 ## Component and pattern QA
 
