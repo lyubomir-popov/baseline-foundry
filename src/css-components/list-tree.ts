@@ -27,7 +27,7 @@ export function listTreeCss(options: ListTreeCssOptions): string {
   position: relative;
 }
 
-:where(.bf-theme) :where(.bf-list-tree-link) {
+:where(.bf-theme) :where(a.bf-list-tree-link) {
 ${bodyTypeStyles}  color: var(--bf-color-text-default);
   cursor: pointer;
   display: block;
@@ -37,7 +37,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
   text-decoration: none;
 }
 
-:where(.bf-theme) :where(.bf-list-tree-link):hover {
+:where(.bf-theme) :where(a.bf-list-tree-link:hover) {
   color: var(--bf-color-link-default);
   text-decoration: underline;
 }

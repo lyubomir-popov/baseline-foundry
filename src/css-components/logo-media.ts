@@ -111,15 +111,17 @@ export function logoMediaCss(): string {
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-media-object) {
+  container-name: bf-media-object;
+  container-type: inline-size;
   margin: 0;
   min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-media-object-layout) {
-  display: grid;
   align-items: start;
-  column-gap: var(--bf-space-2);
-  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--bf-grid-gap-inline);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   min-inline-size: 0;
 }
 
@@ -129,6 +131,10 @@ export function logoMediaCss(): string {
   inline-size: var(--bf-space-6);
   max-inline-size: 100%;
   min-inline-size: 0;
+}
+
+:where(.bf-theme) :where(.bf-media-object-media) {
+  grid-column: 1 / span 2;
 }
 
 :where(.bf-theme) :where(.bf-media-object-media > :where(img, picture, svg, video)) {
@@ -145,6 +151,7 @@ export function logoMediaCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-media-object-content) {
+  grid-column: 3 / -1;
   min-inline-size: 0;
   overflow-wrap: anywhere;
 }
@@ -206,14 +213,18 @@ export function logoMediaCss(): string {
   margin-block-start: var(--bf-body-nudge-start);
 }
 
-:where(.bf-theme) :where(.bf-media-object.is-media-end) :where(.bf-media-object-content) {
-  grid-column: 1;
-  grid-row: 1;
-}
+@container bf-media-object (width >= 38.75rem) {
+  :where(.bf-theme) :where(.bf-media-object-layout) {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
 
-:where(.bf-theme) :where(.bf-media-object.is-media-end) :where(.bf-media-object-media) {
-  grid-column: 2;
-  grid-row: 1;
+  :where(.bf-theme) :where(.bf-media-object-media) {
+    grid-column: 1 / span 2;
+  }
+
+  :where(.bf-theme) :where(.bf-media-object-content) {
+    grid-column: 3 / -1;
+  }
 }
 `;
 }

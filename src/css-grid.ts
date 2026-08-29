@@ -95,6 +95,13 @@ ${appPageRule}
   padding-inline: 0;
 }
 
+/* A page is the outer grid row and therefore owns its horizontal gutter.
+ * Fixed-width regions nested anywhere inside it retain their cap and
+ * centering behavior without introducing a second page inset. */
+:where(.bf-theme) :where(.bf-page) :where(.bf-fixed-width) {
+  padding-inline: 0;
+}
+
 /* ------------------------------------------------------------------ */
 /* Grid base — 4 columns, all tiers                                    */
 /* ------------------------------------------------------------------ */

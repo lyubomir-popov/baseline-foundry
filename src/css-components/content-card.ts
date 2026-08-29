@@ -217,7 +217,7 @@ export function contentCardCss(): string {
   text-transform: var(--bf-h1-text-transform);
 }
 
-:where(.bf-theme) :where(.bf-content-card-main-link) {
+:where(.bf-theme) :where(a.bf-content-card-main-link) {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   color: inherit;
@@ -237,7 +237,7 @@ export function contentCardCss(): string {
   z-index: 1;
 }
 
-:where(.bf-theme) :where(.bf-content-card-main-link:is(:hover, :focus, :active, :visited)) {
+:where(.bf-theme) :where(a.bf-content-card-main-link:is(:hover, :focus, :active, :visited)) {
   color: inherit;
   text-decoration: none;
 }
@@ -324,6 +324,7 @@ export function contentCardCss(): string {
   min-inline-size: 0;
   overflow-x: auto;
   padding-block-end: var(--bf-space-1);
+  padding-block-start: calc(0.5rem - var(--bf-border-width));
   padding-inline: var(--bf-space-2);
   position: relative;
   scrollbar-width: none;

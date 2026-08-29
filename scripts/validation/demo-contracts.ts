@@ -76,7 +76,7 @@ export function validateLivingSpecControls(html: string, css: string): void {
   assert(!css.includes('.bf-controls-modal {'), "Expected demo/controls-shell.css to stop using a local modal width wrapper once workflow modal sizing ships upstream.");
 }
 
-export function validateDemoContracts(engineSmokeHtml: string, componentShellCss: string, specShellCss: string, pageChromeCss: string): void {
+export function validateDemoContracts(engineSmokeHtml: string, componentShellCss: string, specShellCss: string, pageChromeCss: string, pageChromeJs: string, componentDemoJs: string, specRuntimeJs: string, examplePageJs: string): void {
   assertNoDuplicateClassAttributes("demo/components/engine-smoke.html", engineSmokeHtml);
   assert(engineSmokeHtml.includes('<body class="bf-theme is-dark" data-component-capture data-page-surface-mode="locked-manifest">'), "Expected engine-smoke.html to pin the generated IBM Plex manifest while still using the shared component chrome.");
   assert(engineSmokeHtml.includes('../../dist/experiments/ibm-plex-engine-smoke/styles.css'), "Expected engine-smoke.html to load the generated IBM Plex smoke stylesheet.");
@@ -102,6 +102,17 @@ export function validateDemoContracts(engineSmokeHtml: string, componentShellCss
   assert(!specShellCss.includes("[data-spec-grid-stage]"), "Expected the living-spec shell to avoid old data-spec-grid-stage selectors.");
   assert(/\.pc-controls\s*\{\s*flex-wrap:\s*nowrap;/.test(pageChromeCss), "Expected shared page-chrome controls to stay on one row when space is available.");
   assert(/@media\s*\(max-width:\s*56rem\)\s*\{[\s\S]*?\.pc-controls\s*\{\s*flex-wrap:\s*wrap;/.test(pageChromeCss), "Expected shared page-chrome controls to restore wrapping in the narrow-width fallback.");
+  assert(pageChromeCss.includes(".pc-content.bf-page") && pageChromeCss.includes(":where(.bf-page, .bf-fixed-width)"), "Expected shared page chrome to own one bf-page gutter and suppress nested duplicate gutters.");
+  assert(pageChromeCss.includes(".pc-sequence") && pageChromeCss.includes("a.pc-sequence-link") && pageChromeCss.includes("text-decoration: none;"), "Expected shared page chrome to element-qualify and suppress link decoration on adjacent-page buttons.");
+  assert(pageChromeCss.includes(".pc-footer") && pageChromeCss.includes("position: fixed;") && pageChromeCss.includes("--pc-footer-block-size"), "Expected the display controls to live in a fixed bottom bar whose measured height is reserved by the document.");
+  assert(!/\.pc-(?:section|title)\s*\{[\s\S]*?font-size:/.test(pageChromeCss), "Expected page chrome to avoid a private sub-body type scale.");
+  assert(pageChromeJs.includes('contentWrapper.classList.add("pc-content", "bf-page")'), "Expected every wrapped page-chrome route to compose the public bf-page primitive.");
+  assert(pageChromeJs.includes("orderedCatalogSections()") && pageChromeJs.includes("localeCompare") && pageChromeJs.includes("renderSequenceNavigation"), "Expected page chrome to share category/alphabetic ordering between the sidebar and Previous/Next controls.");
+  assert(pageChromeJs.includes('class="bf-button is-icon pc-sequence-link') && pageChromeJs.includes('class="bf-icon ${icon}"') && pageChromeJs.includes('aria-label="${label}: ${escapeHtml(page.title)}"'), "Expected adjacent-page links to use chevron-only button geometry and expose destination names.");
+  assert(pageChromeJs.includes('class="bf-breadcrumbs pc-breadcrumbs"') && pageChromeJs.includes('aria-current="page"'), "Expected page chrome to compose the public breadcrumb hierarchy for current-page context.");
+  assert(componentDemoJs.includes('ensureTargetId(document.body, "demo-page")'), "Expected component pages to target the complete body with the global baseline overlay.");
+  assert(specRuntimeJs.includes('ensureTargetId(document.body, "spec-page")') && specRuntimeJs.includes("wrapBodyContent: true"), "Expected living-spec pages to use the global body overlay and shared bf-page wrapper.");
+  assert(examplePageJs.includes('ensureTargetId(document.body, "example-page")') && examplePageJs.includes("wrapBodyContent: true"), "Expected example pages to use the global body overlay and shared bf-page wrapper.");
 }
 
 export function validateEngineIllustrationPage(pageCatalogJs: string, componentAtlasHtml: string, engineIllustrationHtml: string, componentShellCss: string): void {
@@ -144,6 +155,8 @@ export function validateComponentAtlasPage(componentAtlasHtml: string, component
   assert(componentAtlasJs.includes('preview.classList.add("bf-card-preview")'), "Expected component-atlas.js to use the BF card preview slot.");
   assert(componentAtlasJs.includes('image.classList.add("bf-card-preview-image")'), "Expected component-atlas.js to use the BF card preview image slot.");
   assert(!componentAtlasJs.includes('demo-index-'), "Expected component-atlas.js to stop emitting the page-local demo-index helper classes.");
+  assert(!componentAtlasHtml.includes("data-demo-baseline-toggle"), "Expected the Component Atlas to rely on the sole global baseline-grid control.");
+  assert((componentAtlasHtml.match(/class="bf-text-link"/g) ?? []).length === 2, "Expected Component Atlas utility links to use the canonical standalone text-link role.");
 }
 
 export function validatePatternAtlasPage(
@@ -155,11 +168,12 @@ export function validatePatternAtlasPage(
   assertNoDuplicateClassAttributes("demo/patterns/index.html", patternAtlasHtml);
   assert(patternAtlasHtml.includes('<body class="bf-theme is-dark"'), "Expected the pattern atlas to dogfood the BF theme root.");
   assert(patternAtlasHtml.includes('data-component-capture'), "Expected the pattern atlas to expose a capture root.");
-  assert(patternAtlasHtml.includes('data-demo-baseline-toggle'), "Expected the pattern atlas to expose the shared baseline-grid control.");
+  assert(!patternAtlasHtml.includes('data-demo-baseline-toggle'), "Expected the Pattern Atlas to rely on the sole global baseline-grid control.");
+  assert((patternAtlasHtml.match(/class="bf-text-link"/g) ?? []).length === 2, "Expected Pattern Atlas utility links to use the canonical standalone text-link role.");
   assert(pageCatalogJs.includes('export const patternSections = ['), "Expected the page catalog to own a distinct patternSections registry.");
   assert(pageCatalogJs.includes('{ title: "Pattern atlas", href: "/demo/patterns/index.html" }'), "Expected the Pattern Atlas to be globally discoverable from the overview catalog.");
   assert(pageCatalogJs.includes('...patternSections,'), "Expected shared page chrome to include the pattern registry.");
-  assert(componentAtlasHtml.includes('<a href="../patterns/index.html">Pattern atlas</a>'), "Expected the Component Atlas to link directly to the Pattern Atlas.");
+  assert(componentAtlasHtml.includes('<a class="bf-text-link" href="../patterns/index.html">Pattern atlas</a>'), "Expected the Component Atlas to link directly to the Pattern Atlas with the standalone text role.");
   assert(componentAtlasJs.includes('querySelectorAll("[data-pattern-atlas-item]")'), "Expected the atlas enhancer to support semantic pattern items.");
 
   const expectedPatterns = [
@@ -167,6 +181,9 @@ export function validatePatternAtlasPage(
     "content-card",
     "data-spotlight",
     "divided-section",
+    "tiered-list",
+    "cta-block",
+    "equal-height-row",
     "credential-validation",
     "in-page-navigation",
     "logo-section",
@@ -282,8 +299,8 @@ export function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml:
   assert(pageCatalogJs.includes('{ title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" }'), "Expected the page catalog to register the typographic specimen chapter.");
   assert(specimenHtml.includes('<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">'), "Expected typographic-specimen.html to boot as a shared tier-switching spec page.");
   assert(specimenHtml.includes('<main class="bf-page is-fill" id="spec-grid-target">'), "Expected typographic-specimen.html to use the shared fill-height bf-page container.");
-  assert(specimenHtml.includes('<a href="./typographic-specimen.html" aria-current="page">Specimen</a>'), "Expected typographic-specimen.html to expose the current-page spec nav link.");
-  assert(specimenHtml.includes('<a href="../panel.html">OS tier</a>'), "Expected typographic-specimen.html to link the first-class OS tier from the local spec nav.");
+  assert(specimenHtml.includes('<a class="bf-text-link" href="./typographic-specimen.html" aria-current="page">Specimen</a>'), "Expected typographic-specimen.html to expose the current-page spec nav link with the standalone text metric role.");
+  assert(specimenHtml.includes('<a class="bf-text-link" href="../panel.html">OS tier</a>'), "Expected typographic-specimen.html to link the first-class OS tier from the local spec nav with the standalone text metric role.");
   assert(specimenHtml.includes('class="bf-fixed-width"'), "Expected typographic-specimen.html to use the shared fixed-width wrapper for the hero prose block.");
   assert(specimenHtml.includes('class="bf-fixed-width bf-grid-scope"'), "Expected typographic-specimen.html to use the shared fixed-width grid-scope wrapper for multi-column specimen sections.");
   assert(specimenHtml.includes('class="bf-span-4 bf-prose"'), "Expected typographic-specimen.html to use shared grid spans for the specimen columns.");
@@ -312,7 +329,7 @@ export function validateGridSpecPage(gridSpecHtml: string, specShellCss: string)
 }
 
 export function validateOsTierPage(pageCatalogJs: string, panelHtml: string): void {
-  assert(pageCatalogJs.includes('{ title: "OS tier", href: "/demo/panel.html" }'), "Expected the page catalog to register the OS tier page.");
+  assert(pageCatalogJs.includes('{ title: "OS tier", href: "/demo/tiers/os.html" }'), "Expected the page catalog to register the distinct OS tier-reference page.");
   assert(panelHtml.includes('<title>Baseline Foundry OS Tier</title>'), "Expected demo/panel.html to present the OS tier title.");
   assert(panelHtml.includes('../dist/tiers/editorial/styles.css'), "Expected demo/panel.html to bootstrap from the shared built-in tier stylesheet.");
   assert(!panelHtml.includes('dist/presets/panel/styles.css'), "Expected demo/panel.html to stop bootstrapping from the legacy panel preset bundle.");

@@ -43,6 +43,7 @@ export function sitesEditorialPortsCss(): string {
 
 :where(.bf-theme) :where(.bf-hero-layout) {
   display: grid;
+  gap: var(--bf-section-space-shallow);
   grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
 }
@@ -52,9 +53,9 @@ export function sitesEditorialPortsCss(): string {
   overflow-wrap: anywhere;
 }
 
-/* The normal hero keeps title, supporting heading, chip, prose and CTA in a
-   semantic copy stack. Hero titles are h1 slots and supporting titles are h2
-   slots. */
+/* Legacy copy slots remain valid for signpost variants. The default arrival
+   composition separates a title area from its supporting content area, and
+   the demo composes each area with the public stack density modifiers. */
 :where(.bf-theme) :where(.bf-hero-copy) {
   align-content: start;
   display: grid;
@@ -250,8 +251,47 @@ export function sitesEditorialPortsCss(): string {
 }
 
 @container bf-quote-wrapper (width >= 64.75rem) {
+  :where(.bf-theme) :where(.bf-quote-wrapper-header) {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  :where(.bf-theme) :where(.bf-quote-wrapper-header) > :first-child {
+    grid-column: 1 / span 6;
+  }
+
+  :where(.bf-theme) :where(.bf-quote-wrapper-header-link) {
+    grid-column: 7 / -1;
+  }
+
+  :where(.bf-theme) :where(.bf-quote-wrapper-layout) {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  :where(.bf-theme) :where(.bf-quote-wrapper-signpost) {
+    grid-column: 1 / span 2;
+  }
+
+  :where(.bf-theme) :where(.bf-quote-wrapper-content, .bf-quote-wrapper-content:only-child) {
+    display: grid;
+    grid-column: 3 / -1;
+    grid-template-columns: subgrid;
+  }
+
   :where(.bf-theme) :where(.bf-quote-wrapper-quote-row) {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  :where(.bf-theme) :where(.bf-quote-wrapper-prose) {
+    grid-column: 1 / span 4;
+  }
+
+  :where(.bf-theme) :where(.bf-quote-wrapper-citation) {
+    grid-column: 5 / -1;
+  }
+
+  :where(.bf-theme) :where(.bf-quote-wrapper-content) > :where(.bf-cta-block, .bf-quote-wrapper-media) {
+    grid-column: 1 / -1;
   }
 }
 `;

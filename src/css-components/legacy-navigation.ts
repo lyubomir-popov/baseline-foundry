@@ -217,6 +217,10 @@ ${compactButtonPadding}  padding-inline: var(--bf-panel-padding-inline);
   text-decoration: none;
 }
 
+:where(.bf-theme) :where(a.bf-side-navigation-link:is(:hover, :active)) {
+  text-decoration: none;
+}
+
 :where(.bf-theme) :where(.bf-side-navigation-link:focus:not(:focus-visible), .bf-side-navigation-accordion-button:focus:not(:focus-visible)) {
   outline: none;
 }
@@ -381,6 +385,10 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-top-navigation-link:hover, .bf-top-navigation-menu-toggle:hover, .bf-top-navigation-search-toggle:hover) {
   background: var(--bf-color-background-hover);
+  text-decoration: none;
+}
+
+:where(.bf-theme) :where(a.bf-top-navigation-link:is(:hover, :active)) {
   text-decoration: none;
 }
 
@@ -747,6 +755,21 @@ ${bodyTypeStyles}  background: transparent;
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
   align-items: baseline;
   column-gap: var(--bf-side-navigation-icon-gap);
+}
+
+/* Icon navigation keeps one stable label edge. Rows may omit a decorative
+   icon without collapsing the shared icon track and pulling their copy left. */
+:where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text):not(:has(> .bf-side-navigation-icon))::before {
+  content: "";
+  flex: 0 0 1rem;
+  inline-size: 1rem;
+}
+
+/* A collapsed icon rail cannot communicate an iconless destination. Remove
+   the alignment spacer with the hidden label so it cannot become a blank
+   visual affordance in that state. */
+:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text):not(:has(> .bf-side-navigation-icon))::before {
+  content: none;
 }
 
 /* Icon-navigation headings share the label edge, not the icon edge. This

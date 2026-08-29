@@ -10,18 +10,18 @@ ${scoped()} {
 
 ${scoped(" :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)")} {
   font-family: inherit;
-  font-size: 0.875rem;
+  font-size: var(--bf-body-font-size);
   font-style: normal;
   font-weight: 400;
-  line-height: 1.25rem;
+  line-height: var(--bf-body-line-height);
 }
 
 ${scoped(" :where(.bf-input, .bf-button, .bf-button.is-base)")} {
   font-family: inherit;
-  font-size: 0.875rem;
+  font-size: var(--bf-body-font-size);
   font-style: normal;
   font-weight: 400;
-  line-height: 1.25rem;
+  line-height: var(--bf-body-line-height);
 }
 
 ${scoped(" :where(.bf-application)")} {

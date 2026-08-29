@@ -72,6 +72,115 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
   }
 }
 
+async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 720 }
+    });
+
+    await page.goto(`${origin}/examples/grid/app-panels.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const chrome = await page.evaluate(() => {
+      const bodyStyles = getComputedStyle(document.body);
+      const breadcrumbs = Array.from(document.querySelectorAll<HTMLElement>(".pc-breadcrumbs .bf-breadcrumbs-item"));
+      const sequence = Array.from(document.querySelectorAll<HTMLElement>("a.pc-sequence-link"));
+      const footer = document.querySelector<HTMLElement>(".pc-footer");
+      return {
+        bodyFontSize: bodyStyles.fontSize,
+        bodyLineHeight: bodyStyles.lineHeight,
+        breadcrumbType: breadcrumbs.map(item => ({
+          fontSize: getComputedStyle(item).fontSize,
+          lineHeight: getComputedStyle(item).lineHeight
+        })),
+        footerBottomDelta: footer ? window.innerHeight - footer.getBoundingClientRect().bottom : null,
+        footerHeight: footer?.getBoundingClientRect().height ?? null,
+        reservedFooterSpace: Number.parseFloat(bodyStyles.paddingBlockEnd),
+        sequence: sequence.map(link => ({
+          accessibleName: link.getAttribute("aria-label"),
+          background: getComputedStyle(link).backgroundColor,
+          decoration: getComputedStyle(link).textDecorationLine,
+          iconCount: link.querySelectorAll(".bf-icon").length,
+          text: link.textContent?.trim() ?? ""
+        }))
+      };
+    });
+    assert(chrome.breadcrumbType.length === 2 && chrome.breadcrumbType.every(type => type.fontSize === chrome.bodyFontSize && type.lineHeight === chrome.bodyLineHeight), `Expected page-chrome breadcrumbs to use body typography: ${JSON.stringify(chrome)}.`);
+    assert(chrome.sequence.length === 2 && chrome.sequence.every(link => link.accessibleName && link.iconCount === 1 && link.text === "" && link.background === "rgb(255, 255, 255)" && link.decoration === "none"), `Expected white chevron-only adjacent-page link-buttons with accessible names: ${JSON.stringify(chrome.sequence)}.`);
+    assert(chrome.footerBottomDelta !== null && Math.abs(chrome.footerBottomDelta) <= 0.1 && chrome.footerHeight !== null && Math.abs(chrome.reservedFooterSpace - chrome.footerHeight) <= 0.1, `Expected fixed bottom controls to reserve their measured height: ${JSON.stringify(chrome)}.`);
+
+    const nextLink = page.locator("a.pc-sequence-link.is-next");
+    await nextLink.hover();
+    assert(await nextLink.evaluate(link => getComputedStyle(link).textDecorationLine === "none"), "Expected the element-qualified adjacent-page anchor state to remain non-underlined on hover.");
+
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(50);
+    const finalClearance = await page.evaluate(() => {
+      const footer = document.querySelector<HTMLElement>(".pc-footer");
+      const content = document.querySelector<HTMLElement>(".pc-content, main");
+      return footer && content ? footer.getBoundingClientRect().top - content.getBoundingClientRect().bottom : null;
+    });
+    assert(finalClearance !== null && finalClearance >= -1, `Expected reserved bottom-bar space to keep final page content visible; clearance=${finalClearance}.`);
+
+    await page.goto(`${origin}/demo/spec/typographic-specimen.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const geometry = await page.evaluate(() => {
+        const breadcrumb = document.querySelector<HTMLElement>(".pc-breadcrumbs");
+        const fixed = Array.from(document.querySelectorAll<HTMLElement>("main .bf-fixed-width"));
+        const host = document.querySelector<HTMLElement>("main section");
+        if (!breadcrumb || fixed.length === 0 || !host) return null;
+
+        const plain = document.createElement("hr");
+        const styled = document.createElement("hr");
+        styled.className = "bf-rule";
+        host.append(plain, styled);
+        const plainStyles = getComputedStyle(plain);
+        const styledStyles = getComputedStyle(styled);
+        const rules = {
+          plain: {
+            background: plainStyles.backgroundColor,
+            blockSize: plainStyles.blockSize,
+            border: plainStyles.border,
+            marginBlockEnd: plainStyles.marginBlockEnd
+          },
+          styled: {
+            background: styledStyles.backgroundColor,
+            blockSize: styledStyles.blockSize,
+            border: styledStyles.border,
+            marginBlockEnd: styledStyles.marginBlockEnd
+          }
+        };
+        plain.remove();
+        styled.remove();
+
+        return {
+          breadcrumbX: breadcrumb.getBoundingClientRect().left,
+          fixed: fixed.map(region => ({
+            paddingInlineStart: Number.parseFloat(getComputedStyle(region).paddingInlineStart),
+            x: region.getBoundingClientRect().left
+          })),
+          rules
+        };
+      });
+      assert(geometry && geometry.fixed.every(region => region.paddingInlineStart === 0), `Expected ${tier} specimen fixed-width regions to avoid a second gutter: ${JSON.stringify(geometry)}.`);
+      if (tier === "editorial" || tier === "documentation") {
+        assert(geometry.fixed.every(region => Math.abs(region.x - geometry.breadcrumbX) <= 1), `Expected uncapped ${tier} specimen regions to share the page keyline: ${JSON.stringify(geometry)}.`);
+      }
+      assert(JSON.stringify(geometry.rules.plain) === JSON.stringify(geometry.rules.styled), `Expected ${tier} plain hr and bf-rule geometry/paint to match: ${JSON.stringify(geometry.rules)}.`);
+    }
+
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyExamplePreferencesBeforePaint(origin: string): Promise<void> {
   const browser = await openBrowser();
 
@@ -779,11 +888,15 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     await waitForFonts(desktopPage);
     await disableDemoChromeHitTesting(desktopPage);
 
-    for (const width of [1280, 2560]) {
+    /* The shared demo shell now contributes the public page gutter. At 1280px
+       the specimen's allocated content width is below the desktop navigation
+       contract even though the outer viewport has crossed the media query. */
+    for (const width of [1440, 2560]) {
       await desktopPage.setViewportSize({ width, height: 960 });
 
       for (const tier of ["editorial", "documentation", "app", "os"] as const) {
         await desktopPage.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await desktopPage.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
         const taggedGeometry = await desktopPage.evaluate(() => {
         const navigation = document.querySelector<HTMLElement>("#top-navigation-default");
         const row = navigation?.querySelector<HTMLElement>(".bf-top-navigation-row");
@@ -1257,9 +1370,16 @@ async function verifyTopNavigation(origin: string): Promise<void> {
 
 async function verifyBodySizedUiTypography(origin: string): Promise<void> {
   const demos = [
-    { route: "/demo/components/chip.html", selector: ".bf-chip", label: "chip" },
-    { route: "/demo/components/status-label.html", selector: ".bf-status-label", label: "status label" },
-    { route: "/demo/components/badge.html", selector: ".bf-badge", label: "badge" }
+    { route: "/demo/components/button.html", selector: ".pc-content .bf-button", label: "button" },
+    { route: "/demo/components/controls.html", selector: ".pc-content .bf-form-label", label: "form label" },
+    { route: "/demo/components/controls.html", selector: ".pc-content .bf-input", label: "input" },
+    { route: "/demo/components/chip.html", selector: ".pc-content .bf-chip", label: "chip" },
+    { route: "/demo/components/status-label.html", selector: ".pc-content .bf-status-label", label: "status label" },
+    { route: "/demo/components/badge.html", selector: ".pc-content .bf-badge", label: "badge" },
+    { route: "/demo/components/breadcrumbs.html", selector: ".pc-content .bf-breadcrumbs-item", label: "breadcrumb" },
+    { route: "/demo/components/side-navigation.html", selector: ".pc-content .bf-side-navigation-link", label: "side-navigation link" },
+    { route: "/demo/components/tabs.html", selector: ".pc-content .bf-tabs-link", label: "tab" },
+    { route: "/demo/components/accordion.html", selector: ".pc-content .bf-accordion-tab", label: "accordion tab" }
   ] as const;
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const browser = await openBrowser();
@@ -1324,6 +1444,36 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
       }
     }
 
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyQualifiedAnchorStates(origin: string): Promise<void> {
+  const cases = [
+    { route: "/examples/grid/app-panels.html", selector: "a.pc-sequence-link", decoration: "none", label: "page sequence button" },
+    { route: "/demo/components/application-layout.html", selector: ".pc-content a.bf-side-navigation-link", decoration: "none", label: "side-navigation link" },
+    { route: "/demo/components/top-navigation.html", selector: ".pc-content a.bf-top-navigation-link", decoration: "none", label: "top-navigation link" },
+    { route: "/demo/components/article-pagination.html", selector: ".pc-content a.bf-article-pagination-link", decoration: "none", label: "article-pagination link" },
+    { route: "/demo/components/content-card.html", selector: ".pc-content a.bf-content-card-main-link", decoration: "none", label: "content-card main link" },
+    { route: "/demo/components/in-page-navigation.html", selector: ".pc-content a.bf-in-page-navigation-link", decoration: "none", label: "in-page-navigation link" },
+    { route: "/demo/components/table-of-contents.html", selector: ".pc-content a.bf-table-of-contents-link", decoration: "underline", label: "intentional TOC text link" },
+    { route: "/demo/components/list-tree.html", selector: ".pc-content a.bf-list-tree-link", decoration: "underline", label: "intentional tree text link" },
+    { route: "/demo/components/basic-section.html", selector: ".pc-content a.bf-basic-section-title-link", decoration: "underline", label: "intentional linked heading" }
+  ] as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    for (const testCase of cases) {
+      await page.goto(`${origin}${testCase.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const anchor = page.locator(testCase.selector).first();
+      await anchor.hover();
+      const decoration = await anchor.evaluate(element => getComputedStyle(element).textDecorationLine);
+      assert(decoration === testCase.decoration, `Expected ${testCase.label} hover decoration to be ${testCase.decoration}, got ${decoration}.`);
+    }
     await page.close();
   } finally {
     await browser.close();
@@ -1956,6 +2106,66 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
     await waitForFonts(page);
     const narrowControlTops = await page.locator(".bf-control-row > *").evaluateAll(elements => elements.map(element => element.getBoundingClientRect().top));
     assert(narrowControlTops.length === 3 && new Set(narrowControlTops.map(top => Math.round(top))).size > 1, "Expected narrow control-row children to wrap across more than one row.");
+
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    for (const route of ["/demo/components/narrow-panel.html", "/demo/components/search-and-filter.html"] as const) {
+      await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        const searchGeometry = await page.evaluate(() => {
+          const boxes = Array.from(document.querySelectorAll<HTMLElement>(".bf-search-box, .bf-search-and-filter-box"));
+          const expandedRoot = document.querySelector<HTMLElement>(".bf-search-and-filter:has(.bf-search-and-filter-panel[aria-hidden='false'])");
+          const expandedBox = expandedRoot?.querySelector<HTMLElement>(".bf-search-and-filter-box");
+          const expandedPanel = expandedRoot?.querySelector<HTMLElement>(".bf-search-and-filter-panel");
+          const heading = expandedRoot?.querySelector<HTMLElement>(".bf-filter-panel-section-heading");
+          const canonicalHeading = heading ? document.createElement("h5") : null;
+          if (canonicalHeading) {
+            canonicalHeading.className = "bf-h5";
+            canonicalHeading.style.cssText = "position:absolute;visibility:hidden";
+            document.body.append(canonicalHeading);
+          }
+          const typeProperties = ["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "textTransform", "color"] as const;
+          const result = {
+            boxes: boxes.map(box => {
+              const rect = box.getBoundingClientRect();
+              return Array.from(box.querySelectorAll<HTMLElement>("button")).map(button => {
+                const buttonRect = button.getBoundingClientRect();
+                return { top: buttonRect.top - rect.top, bottom: buttonRect.bottom - rect.bottom, heightDelta: buttonRect.height - rect.height };
+              });
+            }),
+            panelOverlap: expandedBox && expandedPanel ? expandedBox.getBoundingClientRect().bottom - expandedPanel.getBoundingClientRect().top : null,
+            headingTypeMatches: heading && canonicalHeading
+              ? typeProperties.every(property => getComputedStyle(heading)[property] === getComputedStyle(canonicalHeading)[property])
+              : null
+          };
+          canonicalHeading?.remove();
+          return result;
+        });
+        assert(searchGeometry.boxes.flat().every(button => Math.abs(button.top) <= 0.1 && Math.abs(button.bottom) <= 0.1 && Math.abs(button.heightDelta) <= 0.1), `Expected ${tier} search actions on ${route} to stay inside the occupied input block: ${JSON.stringify(searchGeometry.boxes)}.`);
+        if (route.endsWith("search-and-filter.html")) {
+          assert(searchGeometry.panelOverlap !== null && searchGeometry.panelOverlap <= 0.1, `Expected ${tier} search actions not to overlap the expanded filter panel; overlap=${searchGeometry.panelOverlap}.`);
+          assert(searchGeometry.headingTypeMatches, `Expected ${tier} filter section headings to resolve exactly like the canonical bf-h5 role.`);
+        }
+      }
+    }
+
+    for (const [tier, title] of [["editorial", "Editorial"], ["documentation", "Documentation"], ["app", "App"], ["os", "OS"]] as const) {
+      await page.goto(`${origin}/demo/tiers/${tier}.html`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const tierReferenceState = await page.evaluate(() => ({
+        activeTier: document.body.dataset.bfTier,
+        heading: document.querySelector("main h1")?.textContent?.trim(),
+        section: document.querySelector(".pc-breadcrumbs .bf-breadcrumbs-item:first-child")?.textContent?.trim(),
+        selectedTier: (document.querySelector("[data-page-chrome-tier-select]") as HTMLSelectElement | null)?.value,
+        overflow: (() => {
+          const main = document.querySelector<HTMLElement>("main");
+          return main ? main.scrollWidth - main.clientWidth : Number.POSITIVE_INFINITY;
+        })()
+      }));
+      assert(tierReferenceState.activeTier === tier && tierReferenceState.selectedTier === tier && tierReferenceState.heading === title && tierReferenceState.section === "Tier references" && tierReferenceState.overflow <= 1, `Expected the distinct ${title} tier-reference route to initialize and identify itself without overflow: ${JSON.stringify(tierReferenceState)}.`);
+    }
 
     await page.setViewportSize({ width: 820, height: 800 });
     await page.goto(`${origin}/demo/components/tabs.html`, { waitUntil: "networkidle" });
@@ -2598,7 +2808,11 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         probe.remove();
         const notifications = Array.from(document.querySelectorAll<HTMLElement>(".bf-notification:not([hidden])"));
         const borderedNotifications = notifications.filter(notification => !notification.classList.contains("is-borderless"));
-        const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const spaceProbe = document.createElement("span");
+        spaceProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-1);block-size:1px";
+        document.body.appendChild(spaceProbe);
+        const spaceOne = spaceProbe.getBoundingClientRect().width;
+        spaceProbe.remove();
         const leadingIconGaps = borderedNotifications.map(notification => {
           const notificationRect = notification.getBoundingClientRect();
           const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
@@ -2609,6 +2823,15 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
           const contentRect = (notification.querySelector(".bf-notification-content") as HTMLElement).getBoundingClientRect();
           return contentRect.left - iconRect.right;
+        });
+        const iconFirstLineCentreDeltas = notifications.map(notification => {
+          const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
+          const firstRole = notification.querySelector<HTMLElement>(".bf-notification-title, .bf-notification-message");
+          if (!firstRole) return Number.POSITIVE_INFINITY;
+          const roleRect = firstRole.getBoundingClientRect();
+          const roleStyles = getComputedStyle(firstRole);
+          const firstLineCentre = roleRect.top + Number.parseFloat(roleStyles.paddingBlockStart) + (Number.parseFloat(roleStyles.lineHeight) / 2);
+          return Math.abs((iconRect.top + (iconRect.height / 2)) - firstLineCentre);
         });
         const closeClearances = notifications.flatMap(notification => {
           const close = notification.querySelector<HTMLElement>(".bf-notification-close");
@@ -2642,16 +2865,24 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           baseline,
           barThicknessToken: getComputedStyle(document.body).getPropertyValue("--bf-bar-thickness").trim(),
           h6FontSize: getComputedStyle(document.querySelector(".bf-notification-title.bf-h6") as Element).fontSize,
-          notificationFontSizes: notifications.map(notification => getComputedStyle(notification.querySelector(".bf-notification-title") as Element).fontSize),
-          notificationTitlesUseH6: notifications.every(notification => notification.querySelector(".bf-notification-title")?.classList.contains("bf-h6")),
+          notificationFontSizes: notifications.flatMap(notification => {
+            const title = notification.querySelector(".bf-notification-title");
+            return title ? [getComputedStyle(title).fontSize] : [];
+          }),
+          notificationTitlesUseH6: notifications.filter(notification => !notification.classList.contains("is-inline")).every(notification => notification.querySelector(".bf-notification-title")?.classList.contains("bf-h6")),
+          inlineUsesSingleBodyRun: notifications.filter(notification => notification.classList.contains("is-inline")).every(notification => {
+            const message = notification.querySelector(".bf-notification-message");
+            return !notification.querySelector(".bf-notification-title") && message?.children.length === 1 && message.firstElementChild?.tagName === "STRONG";
+          }),
           accentWidths: borderedNotifications.map(notification => Number.parseFloat(getComputedStyle(notification).borderInlineStartWidth)),
           paddingBlockStarts: notifications.map(notification => Number.parseFloat(getComputedStyle(notification).paddingBlockStart)),
           leadingIconGaps,
           iconToTextGaps,
+          iconFirstLineCentreDeltas,
           closeClearances,
           rtlGeometry,
-          expectedLeadingIconGap: rootFontSize - 3,
-          expectedIconToTextGap: rootFontSize,
+          expectedLeadingIconGap: spaceOne - 3,
+          expectedIconToTextGap: spaceOne,
           heights: notifications.map(notification => notification.getBoundingClientRect().height),
           overflow: notifications.map(notification => notification.scrollWidth - notification.clientWidth)
         };
@@ -2659,13 +2890,14 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       assert(geometry.baseline > 0, `Expected ${tier} notification fixture to resolve a positive baseline.`);
       assert(geometry.barThicknessToken === "0.1875rem" && geometry.accentWidths.every(width => width === 3), `Expected ${tier} notification accents to use the shared 3px/0.1875rem emphasis bar; got ${geometry.accentWidths.join(", ")}px/${geometry.barThicknessToken}.`);
       assert(geometry.paddingBlockStarts.every(padding => padding === 0), `Expected ${tier} notification roots to have no top padding; got ${geometry.paddingBlockStarts.join(", ")}px.`);
-      assert(geometry.leadingIconGaps.every(gap => Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification bar-to-icon gaps to equal 1rem minus the bar thickness (${geometry.expectedLeadingIconGap}px); got ${geometry.leadingIconGaps.join(", ")}px.`);
-      assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal 1rem (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
+      assert(geometry.leadingIconGaps.every(gap => Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification bar-to-icon gaps to equal the compact space-1 token minus the bar thickness (${geometry.expectedLeadingIconGap}px); got ${geometry.leadingIconGaps.join(", ")}px.`);
+      assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal the compact space-1 token (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
+      assert(geometry.iconFirstLineCentreDeltas.every(delta => delta <= 0.05), `Expected ${tier} notification severity icons to align to the first title/body line; centre deltas=${geometry.iconFirstLineCentreDeltas.join(", ")}px.`);
       assert(geometry.closeClearances.every(clearance => clearance.reserved >= clearance.required), `Expected ${tier} notification copy to clear the close control; got ${JSON.stringify(geometry.closeClearances)}.`);
       assert(Math.abs(geometry.rtlGeometry.leadingIconGap - geometry.expectedLeadingIconGap) <= 0.05 && Math.abs(geometry.rtlGeometry.iconToTextGap - geometry.expectedIconToTextGap) <= 0.05 && geometry.rtlGeometry.closeAtInlineEnd, `Expected ${tier} notification leading geometry and close control to mirror in RTL; got ${JSON.stringify(geometry.rtlGeometry)}.`);
       assert(geometry.heights.every(height => Math.abs((height / geometry.baseline) - Math.round(height / geometry.baseline)) <= 0.05), `Expected ${tier} notification border boxes to stay baseline multiples; heights=${geometry.heights.join(", ")}, baseline=${geometry.baseline}.`);
       assert(geometry.overflow.every(delta => delta <= 1), `Expected ${tier} notifications to avoid inline overflow; deltas=${geometry.overflow.join(", ")}.`);
-      assert(geometry.notificationTitlesUseH6 && geometry.notificationFontSizes.length > 0 && geometry.notificationFontSizes.every(fontSize => fontSize === geometry.h6FontSize), `Expected ${tier} notification headings to carry bf-h6 and resolve its font size (${geometry.h6FontSize}); got classes=${geometry.notificationTitlesUseH6}, sizes=${geometry.notificationFontSizes.join(", ")}.`);
+      assert(geometry.notificationTitlesUseH6 && geometry.inlineUsesSingleBodyRun && geometry.notificationFontSizes.length > 0 && geometry.notificationFontSizes.every(fontSize => fontSize === geometry.h6FontSize), `Expected ${tier} separate notification headings to use bf-h6 while inline feedback stays one strong-plus-regular body run; heading classes=${geometry.notificationTitlesUseH6}, inline=${geometry.inlineUsesSingleBodyRun}, sizes=${geometry.notificationFontSizes.join(", ")}.`);
     }
 
     const dismissal = page.locator(".bf-notification-close");
@@ -2689,6 +2921,7 @@ async function main(): Promise<void> {
 
   try {
     await verifyPageChromeNavigationScroll(origin);
+    await verifyPageChromeHierarchyAndKeylines(origin);
     await verifyExamplePreferencesBeforePaint(origin);
     await verifyExampleMainClearsPageNavigation(origin);
     await verifyPinnedAsideResize(origin);
@@ -2696,6 +2929,7 @@ async function main(): Promise<void> {
     await verifyApplicationLayout(origin);
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
+    await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);
     await verifyRenewalCompositionContracts(origin);

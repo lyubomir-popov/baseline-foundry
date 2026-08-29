@@ -5,6 +5,8 @@ body:has(> .pc-root) {
   grid-template-columns: 18rem minmax(0, 1fr);
   grid-template-rows: auto 1fr;
   min-block-size: 100vh;
+  padding-block-end: var(--pc-footer-block-size, 0px);
+  scroll-padding-block-end: var(--pc-footer-block-size, 0px);
 }
 
 /* Sidebar spans both rows; header sits in the top-right cell; main */
@@ -17,6 +19,10 @@ body:has(> .pc-root) > .pc-nav {
 body:has(> .pc-root) > .pc-header {
   grid-column: 2;
   grid-row: 1;
+}
+
+body:has(> .pc-root) > .pc-footer {
+  grid-column: 2;
 }
 
 body:has(> .pc-root) > main,
@@ -59,45 +65,85 @@ body.is-dark .pc-header {
   background: color-mix(in srgb, var(--bf-color-background-default, #262626) 90%, transparent);
 }
 
+.pc-footer {
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--bf-color-background-default, #ffffff) 94%, transparent);
+  border-block-start: 1px solid color-mix(in srgb, var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12)) 100%, transparent);
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  inset-inline-start: 18rem;
+  position: fixed;
+  z-index: 130;
+}
+
+body.is-dark .pc-footer {
+  background: color-mix(in srgb, var(--bf-color-background-default, #262626) 90%, transparent);
+}
+
 .pc-content {
   min-inline-size: 0;
+}
+
+/* The shared wrapper owns the one demo-page gutter. Existing specimen roots
+ * may retain bf-page/bf-fixed-width for their public contract without creating
+ * a second inline inset inside the chrome. */
+body:has(> .pc-root) > .pc-content.bf-page > :where(.bf-page, .bf-fixed-width) {
+  padding-inline: 0;
+}
+
+/* The global switch targets body so the overlay includes the fixed navigation
+ * rail as well as the content column. */
+body.u-baseline-grid::after {
+  inset-inline: 0;
 }
 
 .pc-bar {
   align-items: center;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  justify-content: space-between;
+  gap: 0.5rem 1rem;
   padding-block: 0.5rem;
   padding-inline: max(var(--bf-page-margin, 1rem), 1rem);
 }
 
-.pc-current {
-  align-items: baseline;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.75rem;
+.pc-breadcrumbs {
+  flex: 1 1 auto;
   min-inline-size: 0;
 }
 
-.pc-section {
-  display: inline-block;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  opacity: 0.7;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.pc-sequence {
+  flex: 0 0 auto;
+  gap: var(--bf-space-1);
+  margin-inline-start: auto;
 }
 
-.pc-title {
-  display: inline-block;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+a.pc-sequence-link,
+a.pc-sequence-link:visited {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #111111;
+  min-inline-size: var(--bf-control-box-size);
+  padding-inline: var(--bf-control-inline-padding-action);
+  text-decoration: none;
+}
+
+a.pc-sequence-link:hover,
+a.pc-sequence-link:active {
+  background: #f2f2f2;
+  border-color: #f2f2f2;
+  color: #111111;
+  text-decoration: none;
+}
+
+a.pc-sequence-link > .bf-icon {
+  filter: invert(1);
+}
+
+.pc-footer-bar {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  padding-block: 0.5rem;
+  padding-inline: max(var(--bf-page-margin, 1rem), 1rem);
 }
 
 .pc-controls {
@@ -134,18 +180,25 @@ body.is-dark .pc-header {
     grid-column: 1;
   }
 
+  body:has(> .pc-root) > .pc-footer {
+    grid-column: 1;
+  }
+
   body:has(> .pc-root) > main,
   body:has(> .pc-root) > .pc-content {
     grid-column: 1;
   }
 
-  .pc-bar {
-    align-items: flex-start;
-    flex-direction: column;
+  .pc-footer {
+    inset-inline-start: 0;
   }
 
   .pc-controls {
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: flex-end;
+  }
+
+  .pc-sequence {
+    justify-content: flex-end;
   }
 }

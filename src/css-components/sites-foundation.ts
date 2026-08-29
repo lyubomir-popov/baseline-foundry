@@ -55,12 +55,12 @@ export function sitesFoundationCss(): string {
 }
 
 /* A section title may be the route action without looking like body copy. */
-:where(.bf-theme) :where(.bf-basic-section-title-link, .bf-basic-section-title-link:visited) {
+:where(.bf-theme) :where(a.bf-basic-section-title-link, a.bf-basic-section-title-link:visited) {
   color: var(--bf-color-link-default);
   text-decoration: none;
 }
 
-:where(.bf-theme) :where(.bf-basic-section-title-link:hover) {
+:where(.bf-theme) :where(a.bf-basic-section-title-link:hover) {
   text-decoration: underline;
   text-decoration-thickness: var(--bf-border-width);
   text-underline-offset: 0.12em;

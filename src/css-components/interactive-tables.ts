@@ -47,7 +47,7 @@ export function interactiveTablesCss(): string {
   outline-offset: -2px;
 }
 
-:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'], .bf-table.is-sortable th[aria-sort='descending'])::after {
+:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after {
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
@@ -57,7 +57,12 @@ export function interactiveTablesCss(): string {
   display: inline-block;
   inline-size: var(--bf-icon-size-default);
   margin-inline-start: var(--bf-space-half);
+  opacity: 0;
   vertical-align: calc((1cap - var(--bf-icon-size-default)) / 2);
+}
+
+:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'], .bf-table.is-sortable th[aria-sort='descending'])::after {
+  opacity: 1;
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'])::after {

@@ -272,6 +272,20 @@ ${generateBaselineGridThemeOverrideCss()}
   outline-offset: 2px;
 }
 
+/* Standalone anchors need the same metric-owned text box as adjacent body
+ * controls. Raw anchors remain inline so prose links still participate in the
+ * surrounding line box. */
+:where(.bf-theme) :where(a.bf-text-link) {
+  display: inline-block;
+  font-family: var(--bf-body-font-family);
+  font-size: var(--bf-body-font-size);
+  font-style: var(--bf-body-font-style);
+  font-weight: var(--bf-body-font-weight);
+  line-height: var(--bf-body-line-height);
+  margin-block: 0 var(--bf-body-margin-bottom);
+  padding-block: var(--bf-body-nudge-start) 0;
+}
+
 :where(.bf-theme) :where(code) {
   font-family: "Ubuntu Sans Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.95em;
@@ -280,7 +294,7 @@ ${generateBaselineGridThemeOverrideCss()}
 :where(.bf-theme) :where(.bf-page) {
   margin-inline: auto;
   max-inline-size: var(--bf-content-max-width);
-  padding-inline: max(var(--bf-page-margin), var(--bf-content-padding-inline));
+  padding-inline: var(--bf-page-margin);
 }
 
 :where(.bf-theme) :where(.bf-page.is-fill) {
@@ -427,21 +441,19 @@ ${capEngineDemo}
 }
 
 :where(.bf-theme) :where(.bf-prose blockquote) {
-  border-inline-start: 1px solid var(--bf-color-rule);
-  color: var(--bf-color-muted);
+  color: var(--bf-color-text-default);
   font-family: ${roleFontFamilyVar("body", body.fontStack)};
   font-size: ${roleFontSizeVar("body", body.fontSize)};
   font-style: ${roleFontStyleVar("body", body.fontStyle ?? "normal")};
   font-weight: ${roleFontWeightVar("body", body.fontWeight ?? 400)};
   line-height: ${roleLineHeightVar("body", body.lineHeight)};
   margin-bottom: ${roleMarginBottomVar("body", baselineCompensation(body.nudgeTop, baselineUnit))};
-  max-inline-size: calc(var(--bf-measure) + var(--bf-space-4));
+  max-inline-size: var(--bf-measure);
   padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
-  padding-inline-start: var(--bf-space-3);
 }
 
-:where(.bf-theme) :where(.bf-rule, .bf-prose hr) {
+:where(.bf-theme) :where(hr, .bf-rule) {
   background: var(--bf-color-rule);
   block-size: 1px;
   border: 0;
@@ -453,7 +465,7 @@ ${capEngineDemo}
 
 /* Highlight rules share the same scalable emphasis-bar geometry as active
  * navigation, tabs, notifications, and document-navigation markers. */
-:where(.bf-theme) :where(.bf-rule.is-highlighted, .bf-prose hr.is-highlighted) {
+:where(.bf-theme) :where(hr.is-highlighted, .bf-rule.is-highlighted) {
   block-size: var(--bf-bar-thickness);
   margin-block-end: calc(0.5rem - var(--bf-bar-thickness));
 }

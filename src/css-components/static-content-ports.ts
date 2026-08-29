@@ -95,11 +95,11 @@ export function staticContentPortsCss(): string {
 @container (width >= 38.75rem) {
   :where(.bf-theme) :where(.bf-data-spotlight-items) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 0;
+    row-gap: var(--bf-space-1);
   }
 
   :where(.bf-theme) :where(.bf-data-spotlight-items)::after {
-    block-size: var(--bf-section-space-shallow);
+    block-size: calc(var(--bf-section-space-shallow) - (var(--bf-space-1) * 2));
     content: "";
     grid-column: 1 / -1;
     grid-row: 6;

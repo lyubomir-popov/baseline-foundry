@@ -238,8 +238,7 @@ export async function initSpecRuntime({ initComponents } = {}) {
 
   const supportedTiers = supportedTierNames().map(name => ({ value: name, label: tierConfig[name]?.label ?? name }));
   const currentTier = detectTier();
-  const baselineTarget = document.querySelector("main.bf-page") ?? document.body;
-  const baselineTargetId = ensureTargetId(baselineTarget, "spec-grid-target");
+  const baselineTargetId = ensureTargetId(document.body, "spec-page");
   const chrome = injectPageChrome({
     controls: {
       baselineLabel: "Baseline grid",
@@ -248,7 +247,8 @@ export async function initSpecRuntime({ initComponents } = {}) {
       showTone: true,
       tierOptions: supportedTiers
     },
-    currentPath: window.location.pathname
+    currentPath: window.location.pathname,
+    wrapBodyContent: true
   });
 
   if (!(chrome.tierSelect instanceof HTMLSelectElement) || !(chrome.toneToggle instanceof HTMLInputElement) || !(chrome.baselineToggle instanceof HTMLInputElement) || !baselineTargetId) {

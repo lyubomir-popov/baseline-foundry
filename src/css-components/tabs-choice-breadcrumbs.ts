@@ -63,6 +63,10 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
 }
 
+:where(.bf-theme) :where(a.bf-tabs-link:hover) {
+  text-decoration: none;
+}
+
 :where(.bf-theme) :where(.bf-tabs-link:focus:not(:focus-visible)) {
   outline: none;
 }

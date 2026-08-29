@@ -144,6 +144,8 @@ export function validateRenewalComponentContracts(
   assert(css.includes("transform: translateY(var(--bf-navigation-brand-title-optical-offset-block));"), "Expected navigation-brand titles to consume the shared block-axis optical offset.");
   assert(css.includes("transform: translateY(var(--bf-side-navigation-icon-optical-offset-block));"), "Expected expanded icon navigation to consume the block-axis optical offset.");
   assert(css.includes("padding-inline-start: calc(var(--bf-panel-padding-inline) + 1rem + var(--bf-side-navigation-icon-gap));"), "Expected icon-navigation headings to align with the menu labels rather than the icons.");
+  assert(css.includes(":not(:has(> .bf-side-navigation-icon))::before") && css.includes("flex: 0 0 1rem;"), "Expected iconless rows in icon navigation to reserve the same mark slot as icon-bearing rows.");
+  assert(css.includes(".bf-navigation.is-collapsed) :where(.bf-side-navigation.is-icons)") && css.includes("content: none;"), "Expected collapsed icon navigation to remove the spacer from iconless rows alongside their hidden labels.");
   assert(css.includes(":where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-icon) {\n  transform: none;"), "Expected collapsed application navigation to reset the expanded icon optical offset.");
   assert(!css.includes("block-size: calc(var(--bf-body-line-height) + (var(--bf-top-navigation-link-padding-block) * 2));"), "Expected tagged navigation not to stretch its tag to the full occupied row.");
   assert(!css.includes("--bf-top-navigation-brand-region"), "Expected generated tier CSS to remove the fixed top-navigation brand-region token.");
@@ -190,7 +192,7 @@ export function validateRenewalComponentContracts(
   assert(css.includes(".bf-hero-chip.bf-chip") && css.includes("column-gap: var(--bf-space-1);"), "Expected hero chip composition to map the Vanilla icon/value gap to the BF chip and space-1 tokens.");
   assert(css.includes("container-name: bf-quote-wrapper;") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected quote wrapper to preserve the 25/75 signpost/content rail.");
   assert(css.includes(".bf-quote-wrapper-quote-row)"), "Expected quote wrapper to expose a dedicated quote/citation rail.");
-  assert(css.includes("@container bf-quote-wrapper (width >= 38.75rem)") && css.includes("@container bf-quote-wrapper (width >= 64.75rem)") && css.includes("grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);"), "Expected quote wrapper to retune quote/citation proportions at the large container threshold.");
+  assert(css.includes("@container bf-quote-wrapper (width >= 38.75rem)") && css.includes("@container bf-quote-wrapper (width >= 64.75rem)") && css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));") && css.includes("grid-template-columns: subgrid;"), "Expected quote wrapper to align its signpost, quote, citation, and header to one shared large grid.");
   assert(!css.includes(".bf-basic-section.is-asymmetric") && !/\b(?:p|ui)-(?:basic-section|cta-section|text-spotlight)[-_]/.test(css) && !/\b(?:basic-section|cta-section|text-spotlight)(?:__|--)[a-z]/.test(css), "Expected Sites foundation CSS to reject asymmetric, legacy span, and Jinja compatibility APIs.");
   assert(!css.includes("bf-muted-heading") && !/\b(?:p|ui)-(?:hero|quote-wrapper)[-_]/.test(css) && !/\b(?:hero|quote-wrapper)(?:__|--)[a-z]/.test(css), "Expected hero and quote wrapper CSS to reject muted-heading, Jinja, and legacy span compatibility APIs.");
   assert(!css.includes(".bf-navigation-reduced"), "Expected reduced navigation to remain a modifier of bf-top-navigation rather than a standalone API.");
@@ -201,7 +203,7 @@ export function validateRenewalComponentContracts(
     "display": "grid",
     "gap": "var(--bf-stack-space)"
   }, "in-page navigation lists own desktop row rhythm");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-in-page-navigation-link)", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-in-page-navigation-link)", {
     "padding-block": "var(--bf-body-nudge-start) var(--bf-body-nudge-end)"
   }, "in-page navigation links retain metric padding only");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents)", {
@@ -210,11 +212,13 @@ export function validateRenewalComponentContracts(
     "margin": "0"
   }, "table of contents owns only its internal section gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-section)", {
+    "--bf-stack-space": "0px",
     "display": "grid",
     "gap": "var(--bf-stack-space)",
     "padding": "0"
   }, "table-of-contents sections own heading-to-navigation spacing without item padding");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-list)", {
+    "--bf-stack-space": "0px",
     "display": "grid",
     "gap": "var(--bf-stack-space)"
   }, "table-of-contents lists own inter-row rhythm");
@@ -223,7 +227,11 @@ export function validateRenewalComponentContracts(
     "gap": "var(--bf-stack-space)",
     "padding": "0"
   }, "table-of-contents items own nested-list rhythm without padding");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-link)", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-heading)", {
+    "color": "var(--bf-color-text-default)",
+    "padding-block-end": "0"
+  }, "table-of-contents section headings use the canonical prominent heading color without an extra row gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-table-of-contents-link)", {
     "padding-block": "var(--bf-body-nudge-start) var(--bf-body-nudge-end)"
   }, "table-of-contents links retain metric padding only");
   assert(!css.includes("padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));"), "Expected document-navigation text links to contain no hidden semantic half-space padding.");
@@ -247,16 +255,17 @@ export function validateRenewalComponentContracts(
   assert(css.includes("margin-block: calc(var(--bf-space-1) * -1);") && css.includes("padding-block: var(--bf-space-1);"), "Expected logo section to retain Vanilla's small negative row pull and matching wrapper compensation.");
   assert(css.includes("margin-block: calc(var(--bf-space-2) * -1);") && css.includes("padding-block: var(--bf-space-2);"), "Expected logo section to retain Vanilla's large negative row pull and matching wrapper compensation.");
   assert(css.includes("block-size: calc(var(--bf-space-8) + var(--bf-space-1));") && css.includes("block-size: calc(var(--bf-space-12) + var(--bf-space-1));"), "Expected logo section marks to use intrinsic small and large BF slot sizes.");
-  assert(css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes(".bf-media-object-layout"), "Expected media object to keep a persistent side-by-side intrinsic media/content grid.");
-  assert(!css.includes("@container bf-media-object") && !css.includes("container-name: bf-media-object;"), "Expected media object not to introduce a collapsing container-query API.");
+  assert(css.includes("container-name: bf-media-object;") && css.includes("grid-template-columns: repeat(4, minmax(0, 1fr));") && css.includes("@container bf-media-object (width >= 38.75rem)") && css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));"), "Expected media object to use its own four/eight-column container grid.");
+  assert(css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;") && !css.includes(".bf-media-object.is-media-end"), "Expected media object media and copy to occupy the first two and remaining grid columns without a directional variant.");
   assert(css.includes("container-name: bf-content-card;") && css.includes(".bf-content-card-wrapper") && css.includes(".bf-content-card-footer-inner"), "Expected content-card to expose its named allocation container, wrapper, and footer rail contracts.");
+  assert(css.includes("padding-block-start: calc(0.5rem - var(--bf-border-width));"), "Expected content-card footer rails to own the canonical half-rem clearance after their top rule.");
   assert(css.includes("@container bf-content-card (width >= 28.75rem)") && css.includes("@container bf-content-card (width >= 60rem)"), "Expected content-card to preserve intrinsic horizontal and feature reflow thresholds.");
   assert(css.includes("-webkit-line-clamp: 3;") && css.includes("-webkit-line-clamp: 2;"), "Expected content-card to retain the Vanilla title/description clamp contracts.");
   assert(!css.includes(".bf-content-card.has-image") && !css.includes(".bf-content-card.has-description"), "Expected content-card styling to use only is-* modifiers.");
   assert(!/\b(?:p|ui)-(?:content-card)[-_]/.test(css) && !/\bcontent-card(?:__|--)[a-z]/.test(css), "Expected content-card CSS to reject legacy Jinja/BEM compatibility APIs.");
   assert(!css.includes(".bf-logo-block") && !css.includes(".bf-logo-section.is-dense") && !css.includes(".has-misaligned"), "Expected generated CSS to reject deprecated logo-block, logo-density, and misaligned compatibility APIs without blocking the public stack density modifier.");
   assert(!/\[data-[^\]]+\]|\.(?:p|ui)-[a-z][a-z0-9_-]*/.test(css), "Expected generated CSS to avoid styled data-* selectors and deprecated p-/ui-* APIs.");
-  assert(css.includes(".bf-table.is-sortable th[aria-sort]") && css.includes(".bf-table-sort-button:focus-visible"), "Expected sortable tables to expose semantic sort-header and keyboard-focus states.");
+  assert(css.includes(".bf-table.is-sortable th[aria-sort]") && css.includes(".bf-table-sort-button:focus-visible") && css.includes("opacity: 0;") && css.includes("opacity: 1;"), "Expected sortable tables to expose semantic sort-header and keyboard-focus states while reserving indicator geometry in every state.");
   assert(css.includes(".bf-table.is-expanding .bf-table-expand-toggle") && css.includes(".bf-table-expanding-row[hidden]"), "Expected expanding tables to expose controlled toggle and hidden-row states.");
   assert(css.includes(".bf-table-mobile-card-frame") && css.includes(".bf-table.is-mobile-card") && css.includes(".bf-table-card-label"), "Expected mobile-card tables to expose the responsive frame, table modifier, and generated heading-label contracts.");
   assert(!/\.bf-table[^{}]*\[data-[^\]]+\]/.test(css), "Expected interactive table CSS to keep data-* attributes as runtime/test hooks rather than styling selectors.");
@@ -273,6 +282,9 @@ export function validateRenewalComponentContracts(
   assert(componentDemoJs.includes("initInteractiveTables();"), "Expected component-demo.js to initialize interactive table behavior on fixture pages.");
 
   const registeredRoutes = new Set(componentPages.map(page => page.route));
+  for (const [tier, title] of [["editorial", "Editorial"], ["documentation", "Documentation"], ["app", "App"], ["os", "OS"]] as const) {
+    assert(pageCatalogJs.includes(`{ title: "${title} tier", href: "/demo/tiers/${tier}.html" }`), `Expected Tier references to expose one distinct ${title} route.`);
+  }
   for (const [pageName, title, atlas] of [
     ["docs-layout", "Documentation layout", "component"],
     ["page-shell", "Page shell", "component"],
@@ -280,6 +292,9 @@ export function validateRenewalComponentContracts(
     ["notice", "Notice", "component"],
     ["data-spotlight", "Data spotlight", "pattern"],
     ["divided-section", "Divided section", "pattern"],
+    ["tiered-list", "Tiered list", "pattern"],
+    ["cta-block", "CTA block", "pattern"],
+    ["equal-height-row", "Equal-height row", "pattern"],
     ["in-page-navigation", "In-page navigation", "pattern"],
     ["navigation-reduced", "Reduced navigation", "pattern"],
     ["table-of-contents", "Table of contents", "pattern"],
@@ -377,13 +392,15 @@ export function validateRenewalComponentContracts(
   const ctaSectionHtml = pages["cta-section"] ?? "";
   assert(ctaSectionHtml.includes("bf-cta-section-layout") && ctaSectionHtml.includes("bf-cta-section-content") && (ctaSectionHtml.match(/bf-cta-section-copy/g) ?? []).length === 2 && ctaSectionHtml.includes("is-offset"), "Expected CTA section to cover full and offset descendant content slots with grouped heading/copy content.");
   const textSpotlightHtml = pages["text-spotlight"] ?? "";
-  assert((textSpotlightHtml.match(/bf-text-spotlight-item\" data-baseline-check=\"box\"/g) ?? []).length === 3, "Expected every visible text-spotlight item to participate in baseline verification.");
+  assert((textSpotlightHtml.match(/bf-text-spotlight-item bf-stack is-dense\" data-baseline-check=\"box\"/g) ?? []).length === 3, "Expected every visible text-spotlight item to participate in baseline verification.");
+  assert(textSpotlightHtml.includes("bf-text-spotlight-items bf-stack is-dense") && (textSpotlightHtml.match(/bf-text-spotlight-item bf-stack is-dense/g) ?? []).length === 3, "Expected text-spotlight rows and their ruled content groups to use the canonical dense stack.");
   assert(textSpotlightHtml.includes("bf-text-spotlight-layout") && textSpotlightHtml.includes("bf-text-spotlight-items") && textSpotlightHtml.includes("class=\"bf-h5\""), "Expected text spotlight to cover its 25/75 title rail, item list, and BF H5 title role.");
 
   const heroHtml = pages.hero ?? "";
   assert(heroHtml.includes("data-component-capture") && heroHtml.includes("data-baseline-check") && heroHtml.includes("data-overflow-check"), "Expected hero to expose capture, baseline, and overflow fixture markers.");
-  assert(heroHtml.includes("bf-hero-layout") && heroHtml.includes("bf-hero-copy") && heroHtml.includes("bf-hero-media") && heroHtml.includes("bf-hero-chip"), "Expected hero to cover copy, media, chip, and layout slots.");
-  assert(heroHtml.includes("bf-hero bf-stack") && heroHtml.includes("class=\"bf-hero-lead\"") && heroHtml.includes("bf-figure bf-hero-media is-full is-light-inset") && heroHtml.indexOf("class=\"bf-hero-lead\"") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a stacked lead followed by light-inset closing media inside the pattern.");
+  assert(heroHtml.includes("bf-hero-layout") && heroHtml.includes("bf-hero-title") && heroHtml.includes("bf-hero-content") && heroHtml.includes("bf-hero-media") && heroHtml.includes("bf-hero-chip"), "Expected hero to cover title, content, media, chip, and layout slots.");
+  assert(heroHtml.includes("bf-hero bf-stack") && heroHtml.includes("bf-hero-lead bf-hero-layout") && heroHtml.includes("bf-figure bf-hero-media is-full is-light-inset") && heroHtml.indexOf("bf-hero-lead bf-hero-layout") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a split lead followed by light-inset closing media inside the pattern.");
+  assert((heroHtml.match(/bf-hero-title bf-stack is-flush/g) ?? []).length >= 3, "Expected paired hero headings to share the reusable flush title-stack contract.");
   assert(heroHtml.includes("is-25-75") && heroHtml.includes("is-75-25") && heroHtml.includes("is-fallback") && heroHtml.includes("is-split-medium") && heroHtml.includes("is-borderless"), "Expected hero to cover 50/50, 25/75, 75/25, fallback, and borderless compositions.");
   assert(heroHtml.includes('dir="rtl"') && heroHtml.includes("long copy") && heroHtml.includes("<figure"), "Expected hero to cover RTL, long-copy, and image fixtures.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(heroHtml) && !/\b(?:hero)(?:__|--)[a-z]/.test(heroHtml), "Expected hero markup to avoid Jinja and legacy span APIs.");
@@ -405,6 +422,33 @@ export function validateRenewalComponentContracts(
     "display": "grid",
     "gap": "var(--bf-stack-space)"
   }, "rich-list layouts own a dense inter-slot stack gap");
+
+  const requiredPatternRhythmOwners = [
+    ["content-card", "bf-content-card-primary bf-stack is-dense", 7],
+    ["data-spotlight", "bf-data-spotlight-item bf-stack is-dense", 9],
+    ["divided-section", "bf-divided-section-item bf-stack is-dense", 3],
+    ["notification", "bf-notification-content bf-stack is-extra-dense", 2],
+    ["logo-section", "bf-stack is-section-shallow", 2],
+    ["media-object", "bf-media-object-content bf-stack is-dense", 2],
+    ["tiered-list", "bf-tiered-list-cta-block bf-stack is-dense", 1],
+    ["basic-section", "bf-basic-section-content bf-stack is-dense", 2],
+    ["cta-section", "bf-cta-section-copy bf-stack is-dense", 2],
+    ["linked-logo-section", "bf-linked-logo-section-header bf-stack is-dense", 3],
+    ["quote-wrapper", "bf-quote-wrapper-content bf-stack is-dense", 2],
+    ["rich-list-vertical", "bf-rich-list-copy bf-stack is-dense", 4],
+    ["tab-section", "bf-tab-section-intro bf-stack is-dense", 2],
+    ["text-spotlight", "bf-text-spotlight-item bf-stack is-dense", 3],
+    ["empty-state", "bf-section bf-stack is-dense", 3],
+    ["equal-heights", "bf-section bf-stack is-section-shallow", 3],
+    ["sticky-footer", "bf-fixed-width bf-section bf-stack is-dense", 2]
+  ] as const;
+  for (const [pageName, fragment, expectedCount] of requiredPatternRhythmOwners) {
+    const html = pages[pageName] ?? "";
+    const actualCount = html.split(fragment).length - 1;
+    assert(actualCount === expectedCount, `Expected ${pageName} to expose ${expectedCount} explicit rhythm owner(s) matching ${fragment}; found ${actualCount}.`);
+  }
+  assert((pages.accordion ?? "").includes("bf-accordion-list bf-stack is-dense"), "Expected accordion content groups to use the canonical dense stack owner.");
+
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tab-section)", {
     "margin": "0"
   }, "tab sections leave external spacing to their parent stack");
@@ -474,18 +518,21 @@ export function validateRenewalComponentContracts(
   assert(notificationHtml.includes("data-component-capture") && notificationHtml.includes("data-baseline-check") && notificationHtml.includes("data-overflow-container"), "Expected notification to expose capture, baseline, and overflow fixture markers.");
   assert(notificationHtml.includes("bf-notification is-information") && notificationHtml.includes("bf-notification is-positive") && notificationHtml.includes("bf-notification is-caution") && notificationHtml.includes("bf-notification is-negative"), "Expected notification to cover all severity variants.");
   assert(notificationHtml.includes("bf-notification-meta") && notificationHtml.includes("bf-notification-actions") && notificationHtml.includes("bf-notification-close"), "Expected notification to cover metadata, actions, and dismissal contracts.");
+  assert((notificationHtml.match(/bf-notification-content bf-stack is-extra-dense/g) ?? []).length === 2 && (notificationHtml.match(/bf-notification-content bf-stack is-dense/g) ?? []).length === 2, "Expected simple notification title/body groups to use compact rhythm while metadata-bearing groups retain a full-baseline internal gap.");
+  assert(notificationHtml.includes('<p class="bf-notification-message" data-baseline-ignore="true"><strong id="notification-caution-title">Review required:</strong>') && !notificationHtml.includes('id="notification-caution-title" class="bf-notification-title'), "Expected the inline notification to express a single sentence as strong and regular spans in one body metric box.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(notificationHtml), "Expected notification markup to avoid deprecated p-/ui-* APIs.");
 
   const logoSectionHtml = pages["logo-section"] ?? "";
   assert(logoSectionHtml.includes("data-component-capture") && logoSectionHtml.includes("data-baseline-check") && logoSectionHtml.includes("data-overflow-check"), "Expected logo section to expose capture, baseline, and overflow fixture markers.");
   assert(logoSectionHtml.includes("bf-logo-section-items") && logoSectionHtml.includes("bf-logo-section-item bf-logo-section-link") && logoSectionHtml.includes("bf-logo-section-logo") && logoSectionHtml.includes("bf-logo-section is-contained"), "Expected logo section to cover intrinsic links, marks, and contained-ratio fixtures.");
-  assert(!/<[^>]+class="[^"]*(?:logo-block|\bis-dense\b|\bhas-misaligned\b)/.test(logoSectionHtml), "Expected logo section markup to reject deprecated logo-block, dense, and misaligned compatibility APIs.");
+  assert(!/<[^>]+class="[^"]*(?:logo-block|\bhas-misaligned\b)/.test(logoSectionHtml), "Expected logo section markup to reject deprecated logo-block and misaligned compatibility APIs.");
+  assert(logoSectionHtml.includes("bf-stack is-section-shallow") && logoSectionHtml.includes("bf-stack is-dense"), "Expected logo-section areas to use a shallow section boundary and dense internal copy stacks.");
 
   const mediaObjectHtml = pages["media-object"] ?? "";
-  assert((mediaObjectHtml.match(/bf-media-object-content bf-stack is-flush/g) ?? []).length === 3, "Expected every media-object content slot to contain metric compensation with the generic flush stack.");
+  assert((mediaObjectHtml.match(/bf-media-object-content bf-stack is-dense/g) ?? []).length === 2, "Expected every media-object content slot to use the generic dense stack.");
   assert(mediaObjectHtml.includes("data-component-capture") && mediaObjectHtml.includes("data-baseline-check") && mediaObjectHtml.includes("data-overflow-check"), "Expected media object to expose capture, baseline, and overflow fixture markers.");
   assert(mediaObjectHtml.includes("bf-media-object-layout") && mediaObjectHtml.includes("bf-media-object-media") && mediaObjectHtml.includes("bf-media-object-content") && mediaObjectHtml.includes("bf-media-object-meta-list"), "Expected media object to cover persistent grid, media, content, and metadata slots.");
-  assert(mediaObjectHtml.includes("bf-media-object is-media-end") && mediaObjectHtml.includes("bf-media-object is-large"), "Expected media object to cover directional and large intrinsic-size fixtures.");
+  assert(mediaObjectHtml.includes("bf-media-object is-large") && !mediaObjectHtml.includes("is-media-end") && !mediaObjectHtml.includes('dir="rtl"'), "Expected media object to cover regular and large intrinsic sizes without the unsupported directional fixture.");
 
   const contentCardHtml = pages["content-card"] ?? "";
   assert(contentCardHtml.includes("data-component-capture") && contentCardHtml.includes("data-baseline-check") && contentCardHtml.includes("data-overflow-check"), "Expected content-card to expose capture, baseline, and overflow fixture markers.");
@@ -522,6 +569,12 @@ export function validateRenewalComponentContracts(
   assert(sortableTableHtml.includes("data-component-capture") && sortableTableHtml.includes("data-baseline-check") && sortableTableHtml.includes("data-overflow-check"), "Expected sortable table to expose capture, baseline, and overflow fixture markers.");
   assert(sortableTableHtml.includes("bf-table is-sortable") && sortableTableHtml.includes("bf-table-sort-button") && sortableTableHtml.includes("aria-sort") && sortableTableHtml.includes('dir="rtl"'), "Expected sortable table to cover semantic sort controls and RTL pressure fixtures.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(sortableTableHtml), "Expected sortable table markup to avoid deprecated p-/ui-* APIs.");
+
+  for (const pageName of ["cta-section", "hero", "linked-logo-section", "quote-wrapper", "rich-list-horizontal", "rich-list-vertical", "tab-section", "empty-state"] as const) {
+    const pageHtml = pages[pageName] ?? "";
+    const directCtaAnchors = [...pageHtml.matchAll(/<a\s+class="([^"]*)"[^>]*>/g)].map(match => match[1]).filter(classes => classes.includes("bf-button") || classes.includes("bf-text-link"));
+    assert(directCtaAnchors.length > 0 && directCtaAnchors.every(classes => classes.includes("bf-button") || classes.includes("bf-text-link")), `Expected ${pageName} standalone actions to opt into a button or canonical text-link metric role.`);
+  }
 
   const expandingTableHtml = pages["table-expanding"] ?? "";
   assert(expandingTableHtml.includes("data-component-capture") && expandingTableHtml.includes("data-baseline-check") && expandingTableHtml.includes("data-overflow-check"), "Expected expanding table to expose capture, baseline, and overflow fixture markers.");

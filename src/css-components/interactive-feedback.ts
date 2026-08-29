@@ -81,9 +81,9 @@ export function interactiveFeedbackCss(): string {
   max-inline-size: 100%;
   min-inline-size: 0;
   overflow-wrap: anywhere;
-  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
+  padding-block-end: max(0rem, calc(var(--bf-space-half) - var(--bf-border-width)));
   padding-block-start: 0;
-  padding-inline: calc((1rem - var(--bf-bar-thickness)) + var(--bf-icon-size-default) + 1rem) 0;
+  padding-inline: calc((var(--bf-space-1) - var(--bf-bar-thickness)) + var(--bf-icon-size-default) + var(--bf-space-1)) var(--bf-space-1);
   position: relative;
 }
 
@@ -106,14 +106,14 @@ export function interactiveFeedbackCss(): string {
 :where(.bf-theme) :where(.bf-notification.is-borderless) {
   border: 0;
   padding-block: 0;
-  padding-inline: calc(var(--bf-icon-size-default) + 1rem) 0;
+  padding-inline: calc(var(--bf-icon-size-default) + var(--bf-space-1)) 0;
 }
 
 :where(.bf-theme) :where(.bf-notification-icon) {
   background-color: var(--bf-notification-accent);
   background-image: none;
   inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-h6-nudge-start) - var(--bf-border-width));
-  inset-inline-start: calc(1rem - var(--bf-bar-thickness));
+  inset-inline-start: calc(var(--bf-space-1) - var(--bf-bar-thickness));
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-.75 5.25h1.5v5h-1.5v-5zM8 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z'/%3E%3C/svg%3E");
   mask-position: center;
   mask-repeat: no-repeat;
@@ -138,6 +138,10 @@ export function interactiveFeedbackCss(): string {
   inset-inline-start: 0;
 }
 
+:where(.bf-theme) :where(.bf-notification.is-inline > .bf-notification-icon) {
+  inset-block-start: calc(((var(--bf-body-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-body-nudge-start) - var(--bf-border-width));
+}
+
 :where(.bf-theme) :where(.bf-notification-content, .bf-notification-meta) {
   max-inline-size: 100%;
   min-inline-size: 0;
@@ -151,7 +155,19 @@ export function interactiveFeedbackCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-notification.is-borderless .bf-notification-content) {
+  --bf-stack-space: 0px;
   margin-block-start: 0;
+}
+
+/* Metadata-bearing notifications use a full baseline between title and copy,
+   and pair it with the full end inset. This keeps both the metadata boundary
+   and the complete shell on-grid; simpler messages retain compact rhythm. */
+:where(.bf-theme) :where(.bf-notification:has(> .bf-notification-meta)) {
+  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
+}
+
+:where(.bf-theme) :where(.bf-notification.is-inline) {
+  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
 }
 
 :where(.bf-theme) :where(.bf-notification-message, .bf-notification-timestamp) {
@@ -169,17 +185,6 @@ export function interactiveFeedbackCss(): string {
   padding-block-start: var(--bf-body-nudge-start);
 }
 
-:where(.bf-theme) :where(.bf-notification.is-inline .bf-notification-title, .bf-notification.is-inline .bf-notification-message) {
-  display: inline;
-  margin-block: 0;
-  padding-block: 0;
-}
-
-:where(.bf-theme) :where(.bf-notification.is-inline .bf-notification-content) {
-  margin-block-end: var(--bf-h6-margin-bottom);
-  padding-block-start: var(--bf-h6-nudge-start);
-}
-
 :where(.bf-theme) :where(.bf-notification-close) {
   block-size: calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default));
   border: 0;
@@ -188,7 +193,7 @@ export function interactiveFeedbackCss(): string {
   padding: 0;
   position: absolute;
   inset-block-start: 0;
-  inset-inline-end: var(--bf-space-1);
+  inset-inline-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-notification.is-borderless .bf-notification-close) {

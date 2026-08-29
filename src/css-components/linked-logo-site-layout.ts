@@ -32,6 +32,7 @@ export function linkedLogoSiteLayoutCss(): string {
 
 :where(.bf-theme) :where(.bf-linked-logo-section-layout) {
   display: grid;
+  gap: var(--bf-section-space-shallow);
   grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
 }
@@ -64,7 +65,7 @@ export function linkedLogoSiteLayoutCss(): string {
   max-inline-size: none;
 }
 
-:where(.bf-theme) :where(.bf-linked-logo-section-card) {
+:where(.bf-theme) :where(a.bf-linked-logo-section-card) {
   align-content: start;
   align-items: stretch;
   color: inherit;
@@ -76,7 +77,7 @@ export function linkedLogoSiteLayoutCss(): string {
   text-decoration: none;
 }
 
-:where(.bf-theme) :where(.bf-linked-logo-section-card:hover) :where(.bf-linked-logo-section-card-copy) {
+:where(.bf-theme) :where(a.bf-linked-logo-section-card:hover) :where(.bf-linked-logo-section-card-copy) {
   text-decoration: underline;
 }
 

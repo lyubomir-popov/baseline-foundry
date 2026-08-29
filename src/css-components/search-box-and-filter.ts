@@ -2,7 +2,6 @@ type SearchBoxAndFilterCssOptions = {
   bodySelectedStartNudge: string;
   bodyTypeStyles: string;
   buttonBlockPaddingVar: string;
-  h6TypeStyles: string;
   inputMarginBottom: string;
 };
 
@@ -11,7 +10,6 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
     bodySelectedStartNudge,
     bodyTypeStyles,
     buttonBlockPaddingVar,
-    h6TypeStyles,
     inputMarginBottom,
   } = options;
 
@@ -33,12 +31,12 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 
 :where(.bf-theme) :where(.bf-search-box-reset, .bf-search-box-button) {
   align-items: center;
-  block-size: var(--bf-control-box-size);
+  block-size: auto;
   display: inline-flex;
   inline-size: var(--bf-search-box-action-inline-size);
+  inset-block: 0;
   justify-content: center;
   position: absolute;
-  top: 0;
 }
 
 :where(.bf-theme) :where(.bf-search-box-reset) {
@@ -131,17 +129,17 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 :where(.bf-theme) :where(.bf-search-and-filter-search-button) {
   appearance: none;
   background: transparent;
-  block-size: var(--bf-control-box-size);
+  block-size: auto;
   border: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   inline-size: var(--bf-search-and-filter-action-inline-size);
+  inset-block: 0;
   inset-inline-end: 0;
   margin: 0;
   padding: 0;
   position: absolute;
   text-indent: -9999px;
-  top: 0;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-search-button)::before {
@@ -173,11 +171,11 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-clear) {
-  block-size: var(--bf-control-box-size);
+  block-size: auto;
   inline-size: var(--bf-search-and-filter-action-inline-size);
+  inset-block: 0;
   inset-inline-end: var(--bf-search-and-filter-action-inline-size);
   position: absolute;
-  top: 0;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-selected-count) {
@@ -252,7 +250,6 @@ ${bodyTypeStyles}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-filter-panel-section-heading) {
-${h6TypeStyles}  color: var(--bf-color-text-muted);
   margin: 0;
   padding-block: 0;
 }

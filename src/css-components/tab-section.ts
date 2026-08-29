@@ -52,7 +52,7 @@ export function tabSectionCss(): string {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
-  row-gap: 0;
+  row-gap: var(--bf-space-1);
 }
 
 :where(.bf-theme) :where(.bf-tab-section-header, .bf-tab-section-intro, .bf-tab-section-tabs) {

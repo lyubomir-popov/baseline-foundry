@@ -310,7 +310,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
         assert(Math.abs(state.nestedMargin - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} at ${width}; margin=${state.nestedMargin}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
         assert(Math.abs(state.sectionGap - state.expectedSectionGap) <= 0.1 && state.sectionPadding.every(([start, end]) => start === 0 && end === 0), `Expected ${tier} table-of-contents sections to receive their shallow separation from the parent stack without item padding at ${width}.`);
         assert(state.linkPadding.every(([start, end]) => Math.abs(start - state.expectedNudgeStart) <= 0.1 && Math.abs(end - state.expectedNudgeEnd) <= 0.1), `Expected ${tier} table-of-contents links to retain metric-only block padding at ${width}; expected ${state.expectedNudgeStart}/${state.expectedNudgeEnd}, got ${JSON.stringify(state.linkPadding)}.`);
-        assert(state.listGaps.every(gap => Math.abs(gap - state.expectedSpaceOne) <= 0.1) && state.itemGaps.every(gap => Math.abs(gap - state.expectedSpaceOne) <= 0.1), `Expected ${tier} table-of-contents lists/items to own a one-baseline gap at ${width}; expected ${state.expectedSpaceOne}, got lists=${state.listGaps}, items=${state.itemGaps}.`);
+        assert(state.listGaps.every(gap => Math.abs(gap) <= 0.1) && state.itemGaps.every(gap => Math.abs(gap) <= 0.1), `Expected ${tier} table-of-contents rows to match the side-navigation zero-gap rhythm at ${width}; got lists=${state.listGaps}, items=${state.itemGaps}.`);
         assert(state.dividerBlockSize === 1 && state.dividerToHeading < state.expectedSectionGap, `Expected ${tier} table-of-contents divider to paint tightly with the following heading instead of occupying the parent-owned section gap at ${width}.`);
         assert(state.currentState === "location" && Number.parseFloat(state.currentWeight) >= 600 && state.currentColor === state.defaultTextColor, `Expected ${tier} table-of-contents current link to expose its semantic current state and default-text emphasis at ${width}.`);
         assert(state.rootOverflow <= 1, `Expected ${tier} table-of-contents to avoid inline overflow at ${width}; got ${state.rootOverflow}px.`);
@@ -365,20 +365,29 @@ export async function verifyInteractiveTables(origin: string): Promise<void> {
     const coresButton = page.locator(".bf-table.is-sortable").first().locator(".bf-table-sort-button", { hasText: "Cores" });
     const coresHeader = coresButton.locator("xpath=..");
     const coreValues = async (): Promise<string[]> => page.locator(".bf-table.is-sortable").first().locator("tbody tr td:nth-child(3)").allTextContents();
+    const columnWidths = async (): Promise<number[]> => page.locator(".bf-table.is-sortable").first().locator("thead th").evaluateAll(headers => headers.map(header => header.getBoundingClientRect().width));
+    const initialWidths = await columnWidths();
+    const assertStableWidths = async (state: string): Promise<void> => {
+      const widths = await columnWidths();
+      assert(widths.length === initialWidths.length && widths.every((width, index) => Math.abs(width - initialWidths[index]) <= 0.1), `Expected sortable-table column widths to remain stable in ${state}; initial=${initialWidths.join(", ")}, current=${widths.join(", ")}.`);
+    };
 
     await coresButton.focus();
     await coresButton.press("Enter");
     assert(await coresHeader.getAttribute("aria-sort") === "ascending", "Expected first sortable-table activation to set aria-sort=ascending.");
     assert(JSON.stringify(await coreValues()) === JSON.stringify(["2", "4", "8", "16"]), "Expected sortable table numeric values to sort ascending.");
     assert(await page.locator(".bf-table.is-sortable").first().locator("th[aria-sort='ascending']").count() === 1, "Expected sortable table to expose exactly one active sort column.");
+    await assertStableWidths("ascending state");
 
     await coresButton.press("Space");
     assert(await coresHeader.getAttribute("aria-sort") === "descending", "Expected second sortable-table activation to set aria-sort=descending.");
     assert(JSON.stringify(await coreValues()) === JSON.stringify(["16", "8", "4", "2"]), "Expected sortable table numeric values to sort descending.");
+    await assertStableWidths("descending state");
 
     await coresButton.click();
     assert(await coresHeader.getAttribute("aria-sort") === "none", "Expected third sortable-table activation to restore aria-sort=none.");
     assert(JSON.stringify(await coreValues()) === JSON.stringify(["8", "2", "16", "4"]), "Expected sortable table to restore its original row order.");
+    await assertStableWidths("restored state");
     const sortFocus = await coresButton.evaluate(button => ({
       focused: document.activeElement === button,
       outline: getComputedStyle(button).outlineStyle
@@ -552,13 +561,39 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
 
     await page.goto(`${origin}/demo/components/media-object.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
-    const mediaState = await page.locator(".bf-media-object").first().evaluate(root => {
-      (root as HTMLElement).style.inlineSize = "19rem";
-      const media = root.querySelector<HTMLElement>(".bf-media-object-media")?.getBoundingClientRect();
-      const content = root.querySelector<HTMLElement>(".bf-media-object-content")?.getBoundingClientRect();
-      return media && content ? { sameRow: Math.abs(media.top - content.top) <= 1, separated: Math.abs(media.left - content.left) > 1, overflow: root.scrollWidth - root.clientWidth } : null;
-    });
-    assert(mediaState?.sameRow && mediaState.separated && mediaState.overflow <= 1, "Expected media object to retain Vanilla's persistent side-by-side layout in a narrow container.");
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const mediaState = await page.locator(".bf-media-object").first().evaluate(root => {
+        (root as HTMLElement).style.removeProperty("inline-size");
+        const wideLayout = root.querySelector<HTMLElement>(".bf-media-object-layout");
+        const wideMedia = root.querySelector<HTMLElement>(".bf-media-object-media")?.getBoundingClientRect();
+        const wideContent = root.querySelector<HTMLElement>(".bf-media-object-content")?.getBoundingClientRect();
+        const wideLayoutRect = wideLayout?.getBoundingClientRect();
+        const wide = wideLayout && wideLayoutRect && wideMedia && wideContent ? {
+          columnCount: getComputedStyle(wideLayout).gridTemplateColumns.split(" ").length,
+          sameRow: Math.abs(wideMedia.top - wideContent.top) <= 1,
+          mediaAtStart: Math.abs(wideMedia.left - wideLayoutRect.left) <= 1,
+          contentAfterMedia: wideContent.left > wideMedia.left,
+          overflow: root.scrollWidth - root.clientWidth
+        } : null;
+        (root as HTMLElement).style.inlineSize = "19rem";
+        const narrowLayout = root.querySelector<HTMLElement>(".bf-media-object-layout");
+        const narrowMedia = root.querySelector<HTMLElement>(".bf-media-object-media")?.getBoundingClientRect();
+        const narrowContent = root.querySelector<HTMLElement>(".bf-media-object-content")?.getBoundingClientRect();
+        const narrowLayoutRect = narrowLayout?.getBoundingClientRect();
+        const narrow = narrowLayout && narrowLayoutRect && narrowMedia && narrowContent ? {
+          columnCount: getComputedStyle(narrowLayout).gridTemplateColumns.split(" ").length,
+          sameRow: Math.abs(narrowMedia.top - narrowContent.top) <= 1,
+          mediaAtStart: Math.abs(narrowMedia.left - narrowLayoutRect.left) <= 1,
+          contentAfterMedia: narrowContent.left > narrowMedia.left,
+          overflow: root.scrollWidth - root.clientWidth
+        } : null;
+        return { wide, narrow };
+      });
+      assert(mediaState.wide?.columnCount === 8 && mediaState.wide.sameRow && mediaState.wide.mediaAtStart && mediaState.wide.contentAfterMedia && mediaState.wide.overflow <= 1, `Expected ${tier} media object to use the shared eight-column wide grid with media in columns 1–2 and content from column 3.`);
+      assert(mediaState.narrow?.columnCount === 4 && mediaState.narrow.sameRow && mediaState.narrow.mediaAtStart && mediaState.narrow.contentAfterMedia && mediaState.narrow.overflow <= 1, `Expected ${tier} media object to retain its first-two/remaining-column relationship on the four-column narrow grid.`);
+    }
 
     await page.goto(`${origin}/demo/components/basic-section.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -604,13 +639,14 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
         offsetRatio: (contentRect.left - rootRect.left) / rootRect.width,
         paddingBlockStart: Number.parseFloat(getComputedStyle(layout).paddingBlockStart),
         contentGap: Number.parseFloat(contentStyle?.rowGap ?? "0"),
+        copyGap: Number.parseFloat(copy ? getComputedStyle(copy).rowGap : "0"),
         copyToCtaGap: copy && cta ? cta.getBoundingClientRect().top - copy.getBoundingClientRect().bottom : 0,
         textGap: heading && paragraph ? paragraph.getBoundingClientRect().top - heading.getBoundingClientRect().bottom : 0,
         headingCompensation: heading ? Number.parseFloat(getComputedStyle(heading).marginBlockEnd) : 0
       };
     });
     assert(ctaState && ctaState.offsetRatio > 0.2 && ctaState.paddingBlockStart === 0, "Expected wide CTA section to preserve its 25/75 offset without semantic layout padding between the rule and heading.");
-    assert(ctaState && ctaState.contentGap > 0 && Math.abs(ctaState.copyToCtaGap - ctaState.contentGap) <= 0.1 && Math.abs(ctaState.textGap - ctaState.headingCompensation) <= 0.1, "Expected CTA section to keep heading/paragraph copy tight while its content stack owns the shallow gap before the CTA block.");
+    assert(ctaState && ctaState.contentGap > ctaState.copyGap && ctaState.copyGap > 0 && Math.abs(ctaState.copyToCtaGap - ctaState.contentGap) <= 0.1 && Math.abs(ctaState.textGap - ctaState.headingCompensation - ctaState.copyGap) <= 0.1, "Expected CTA section to use a dense copy gap inside the grouped text and a larger shallow boundary before the CTA block.");
 
     await page.goto(`${origin}/demo/components/text-spotlight.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -641,10 +677,28 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
     const quoteState = await page.locator(".bf-quote-wrapper").first().evaluate(root => {
       const signpost = root.querySelector<HTMLElement>(".bf-quote-wrapper-signpost")?.getBoundingClientRect();
       const content = root.querySelector<HTMLElement>(".bf-quote-wrapper-content")?.getBoundingClientRect();
-      const quote = root.querySelector("blockquote");
-      return signpost && content ? { signpostRatio: signpost.width / root.getBoundingClientRect().width, contentRatio: content.width / root.getBoundingClientRect().width, sameRow: Math.abs(signpost.top - content.top) <= 1, semanticQuote: quote?.tagName === "BLOCKQUOTE", overflow: root.scrollWidth - root.clientWidth } : null;
+      const prose = root.querySelector<HTMLElement>(".bf-quote-wrapper-prose")?.getBoundingClientRect();
+      const citation = root.querySelector<HTMLElement>(".bf-quote-wrapper-citation")?.getBoundingClientRect();
+      const headerLink = root.querySelector<HTMLElement>(".bf-quote-wrapper-header-link")?.getBoundingClientRect();
+      const media = root.querySelector<HTMLElement>(".bf-quote-wrapper-media")?.getBoundingClientRect();
+      const quote = root.querySelector<HTMLElement>("blockquote");
+      const quoteStyles = quote ? getComputedStyle(quote) : null;
+      return signpost && content && prose && citation && headerLink && media ? {
+        signpostRatio: signpost.width / root.getBoundingClientRect().width,
+        contentRatio: content.width / root.getBoundingClientRect().width,
+        sameRow: Math.abs(signpost.top - content.top) <= 1,
+        semanticQuote: quote?.tagName === "BLOCKQUOTE",
+        citationKeylineDelta: Math.abs(citation.left - headerLink.left),
+        mediaKeylineDelta: Math.abs(media.left - content.left),
+        proseKeylineDelta: Math.abs(prose.left - content.left),
+        quoteBorder: Number.parseFloat(quoteStyles?.borderInlineStartWidth ?? "0"),
+        quotePadding: Number.parseFloat(quoteStyles?.paddingInlineStart ?? "0"),
+        overflow: root.scrollWidth - root.clientWidth
+      } : null;
     });
     assert(quoteState?.sameRow && quoteState.signpostRatio < 0.3 && quoteState.contentRatio > 0.65 && quoteState.semanticQuote && quoteState.overflow <= 1, "Expected quote wrapper to preserve its 25/75 signpost/content relationship around a semantic blockquote.");
+    assert(quoteState && quoteState.citationKeylineDelta <= 1 && quoteState.mediaKeylineDelta <= 1 && quoteState.proseKeylineDelta <= 1, `Expected quote header, citation, prose, and media to share the large grid keylines: ${JSON.stringify(quoteState)}.`);
+    assert(quoteState && quoteState.quoteBorder === 0 && quoteState.quotePadding === 0, `Expected the plain-text blockquote to keep no decorative inline rule or indent: ${JSON.stringify(quoteState)}.`);
 
     await page.close();
   } finally {
@@ -1176,6 +1230,11 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
           const titleStyle = title ? getComputedStyle(title) : null;
           const linkStyle = mainLink ? getComputedStyle(mainLink) : null;
           const descriptionStyle = description ? getComputedStyle(description) : null;
+          const footer = card.querySelector<HTMLElement>(".bf-content-card-footer");
+          const footerInner = card.querySelector<HTMLElement>(".bf-content-card-footer-inner");
+          const firstFooterItem = footerInner?.firstElementChild as HTMLElement | null;
+          const footerRect = footer?.getBoundingClientRect();
+          const footerItemRect = firstFooterItem?.getBoundingClientRect();
           return {
             className: card.className,
             width: cardRect.width,
@@ -1194,6 +1253,7 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
             descriptionClamp: descriptionStyle?.webkitLineClamp ?? "",
             descriptionLineHeight: descriptionStyle ? Number.parseFloat(descriptionStyle.lineHeight) : 0,
             descriptionHeight: description?.getBoundingClientRect().height ?? 0,
+            footerClearance: footerRect && footerItemRect ? footerItemRect.top - footerRect.top - Number.parseFloat(getComputedStyle(footer).borderBlockStartWidth) : null,
             overflow: card.scrollWidth - card.clientWidth
           };
         })
@@ -1206,6 +1266,7 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
         assert(Math.abs(card.height - Math.round(card.height / state.baseline) * state.baseline) <= contentCardBaselineTolerancePx, `Expected ${label} ${card.className} card height to snap to the baseline (height=${card.height}, baseline=${state.baseline}).`);
         assert(Math.abs(card.wrapperHeight - Math.round(card.wrapperHeight / state.baseline) * state.baseline) <= contentCardBaselineTolerancePx, `Expected ${label} ${card.className} wrapper height to snap to the baseline (height=${card.wrapperHeight}, baseline=${state.baseline}).`);
         assert(card.overflow <= 1, `Expected ${label} ${card.className} card to avoid inline overflow.`);
+        if (card.footerClearance !== null) assert(card.footerClearance >= 7, `Expected ${label} ${card.className} footer content to clear its top rule by the canonical half-rem allowance; got ${card.footerClearance}px.`);
       }
     };
 

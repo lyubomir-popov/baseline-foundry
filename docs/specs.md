@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 015 Tier geometry hardening | [`015-tier-geometry-hardening/`](../specs/015-tier-geometry-hardening/) | Active on `feat/015-tier-geometry-hardening`; implementation and owner visual verification pending. |
+| 016 Component and pattern consistency | [`016-component-pattern-consistency/`](../specs/016-component-pattern-consistency/) | Active on `feat/016-component-pattern-consistency`; all three review passes complete and ready for owner acceptance. |
 
 ## Archive
 
@@ -15,6 +15,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 
 | Spec | Package | Disposition |
 |---|---|---|
+| 015 Tier geometry hardening | [`015-tier-geometry-hardening/`](../specs/015-tier-geometry-hardening/) | Merged to `main` at `338f3cb`; Spec 016 supersedes its TOC row-gap and muted-H6 hierarchy after owner visual review. |
 | 001 Baseline Foundry renewal | [`001-baseline-foundry-renewal/`](spec-archive/001-baseline-foundry-renewal/) | Accepted and merged 2026-08-21; automated closeout green, with the unavailable in-app-browser pass recorded in `review.md`. |
 | 002 Element-owned typography selectors | [`002-element-owned-typography/`](spec-archive/002-element-owned-typography/) | Accepted and merged 2026-08-24; full build, browser behavior, and component-capture gates green. |
 | 003 Flush side-navigation composition | [`003-flush-side-navigation/`](spec-archive/003-flush-side-navigation/) | Accepted and merged 2026-08-24; downstream Registry feature branch verified without local BF overrides. |

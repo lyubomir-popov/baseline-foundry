@@ -260,12 +260,12 @@ async function main() {
     captureTarget = chrome.contentWrapper;
   }
 
-  const captureTargetId = ensureTargetId(captureTarget, "component-grid-target");
+  const baselineTargetId = ensureTargetId(document.body, "demo-page");
 
   let baselineMode = "auto";
 
-  if (chrome.baselineToggle instanceof HTMLInputElement && captureTargetId) {
-    chrome.baselineToggle.setAttribute("aria-controls", captureTargetId);
+  if (chrome.baselineToggle instanceof HTMLInputElement && baselineTargetId) {
+    chrome.baselineToggle.setAttribute("aria-controls", baselineTargetId);
     const storedBaseline = readStoredBaseline();
     const tierBasedDefault = runtime.baselineShouldDefaultToOn(initialSurface) ? "on" : "off";
     chrome.baselineToggle.dataset.baselineDefault = storedBaseline ?? tierBasedDefault;

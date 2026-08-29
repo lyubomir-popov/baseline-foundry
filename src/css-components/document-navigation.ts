@@ -66,7 +66,7 @@ ${headingTypeStyles}  color: var(--bf-color-text-muted);
   position: relative;
 }
 
-:where(.bf-theme) :where(.bf-in-page-navigation-link) {
+:where(.bf-theme) :where(a.bf-in-page-navigation-link) {
 ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   display: -webkit-box;
   line-clamp: 2;
@@ -82,7 +82,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   -webkit-box-orient: vertical;
 }
 
-:where(.bf-theme) :where(.bf-in-page-navigation-link:hover) {
+:where(.bf-theme) :where(a.bf-in-page-navigation-link:hover) {
   color: var(--bf-color-text-default);
   text-decoration: none;
 }
@@ -357,7 +357,7 @@ ${bodyCaseTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-section) {
-  --bf-stack-space: var(--bf-space-1);
+  --bf-stack-space: 0px;
   align-content: start;
   display: grid;
   gap: var(--bf-stack-space);
@@ -377,14 +377,13 @@ ${bodyCaseTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-heading) {
-${headingTypeStyles}  color: var(--bf-color-text-muted);
-  margin-block: 0 var(--bf-h6-margin-bottom);
+  color: var(--bf-color-text-default);
+  margin: 0;
   padding-block-end: 0;
-  padding-block-start: var(--bf-h6-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-list) {
-  --bf-stack-space: var(--bf-space-1);
+  --bf-stack-space: 0px;
   align-content: start;
   display: grid;
   gap: var(--bf-stack-space);
@@ -403,7 +402,7 @@ ${headingTypeStyles}  color: var(--bf-color-text-muted);
   padding: 0;
 }
 
-:where(.bf-theme) :where(.bf-table-of-contents-link) {
+:where(.bf-theme) :where(a.bf-table-of-contents-link) {
 ${bodyTypeStyles}  color: var(--bf-color-link-default);
   display: block;
   margin: 0;
@@ -412,7 +411,7 @@ ${bodyTypeStyles}  color: var(--bf-color-link-default);
   text-decoration: none;
 }
 
-:where(.bf-theme) :where(.bf-table-of-contents-link:hover) {
+:where(.bf-theme) :where(a.bf-table-of-contents-link:hover) {
   color: var(--bf-color-text-default);
   text-decoration: underline;
 }

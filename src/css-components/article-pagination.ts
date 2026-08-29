@@ -22,7 +22,7 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
   min-inline-size: 0;
 }
 
-:where(.bf-theme) :where(.bf-article-pagination-link) {
+:where(.bf-theme) :where(a.bf-article-pagination-link) {
   background-color: var(--bf-color-background-default);
   border: var(--bf-border-width) solid transparent;
   box-sizing: border-box;
@@ -38,8 +38,9 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
   text-decoration: none;
 }
 
-:where(.bf-theme) :where(.bf-article-pagination-link:hover) {
+:where(.bf-theme) :where(a.bf-article-pagination-link:hover) {
   background-color: var(--bf-color-background-hover);
+  text-decoration: none;
 }
 
 :where(.bf-theme) :where(.bf-article-pagination-link:focus:not(:focus-visible)) {

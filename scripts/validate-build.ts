@@ -530,6 +530,9 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-grid) :where(.bf-fixed-width)", {
     "padding-inline": "0",
   }, "nested fixed-width wrappers inside bf-grid avoid adding a second page gutter");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-page) :where(.bf-fixed-width)", {
+    "padding-inline": "0",
+  }, "fixed-width regions inside a page defer to the page-owned gutter");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.is-guide) > * {\n  background: color-mix(in srgb, var(--bf-color-accent) 18%, var(--bf-color-background-default));"), "Expected shared CSS to expose the BF-owned grid guide modifier for breakpoint specimens.");
   assert(css.includes("--bf-grid-gap-inline: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px inline gutter without a separate 460px switch.");
   assert(css.includes("--bf-grid-gap-block: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px block-gap token for non-bf-grid layouts.");
@@ -579,6 +582,15 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(a:is(:hover, :active)) {\n  text-decoration: underline;"), "Expected raw links to expose an underline only while hovered or pressed.");
   assert(css.includes(":where(.bf-theme) :where(a:visited) {\n  color: var(--bf-color-link-visited);"), "Expected generated CSS to style visited links through the semantic theme token.");
   assert(css.includes(":where(.bf-theme) :where(a:focus-visible) {\n  outline: 2px solid var(--bf-color-focus);"), "Expected generated CSS to style raw link focus with the semantic focus token.");
+  assert(css.includes(":where(.bf-theme) :where(a.bf-text-link) {\n  display: inline-block;") && css.includes("padding-block: var(--bf-body-nudge-start) 0;"), "Expected standalone text links to expose an element-qualified canonical body metric box without changing raw prose anchors.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(hr, .bf-rule)", {
+    "background": "var(--bf-color-rule)",
+    "block-size": "1px",
+    "border": "0",
+    "inline-size": "100%",
+    "margin": "0 0 calc(0.5rem - 1px)",
+  }, "plain hr and bf-rule share one basic-rule contract");
+  assert(css.includes(":where(.bf-theme) :where(.bf-page) {\n  margin-inline: auto;\n  max-inline-size: var(--bf-content-max-width);\n  padding-inline: var(--bf-page-margin);"), "Expected bf-page gutters to resolve directly from the shared grid-row margin token.");
   assert(!css.includes("#f5f1e8"), "Expected generated CSS to avoid the old paper-like default background fallback.");
   assert(!css.includes("#0f62fe"), "Expected generated CSS to avoid the old non-Vanilla light link fallback.");
   assert(css.includes(`--bf-baseline-grid-color: ${BASELINE_GRID_DEFAULT_COLOR};`), "Expected baseline-grid overlays to declare a default line color.");
@@ -1026,6 +1038,7 @@ function validateAppTierCss(css: string): void {
   assert(css.includes(':where(.bf-theme.bf-tier-app) {'), "Expected the app-tier preset CSS to expose the app-tier runtime selector.");
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
+  assert(css.includes('font-size: var(--bf-body-font-size);') && css.includes('line-height: var(--bf-body-line-height);'), "Expected app non-heading UI to consume the tier body role instead of a copied private size.");
   assert(css.includes(':where(.bf-panel.is-fill)'), "Expected the app-tier CSS to include the canonical fill-height panel helper.");
   assert(!css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to avoid a shared panel shadow token now that bf-panel no longer carries card chrome.");
   assert(!css.includes('box-shadow: var(--bf-app-panel-shadow);'), "Expected the app-tier preset CSS to avoid applying panel box shadows through bf-panel.");
@@ -1294,6 +1307,7 @@ async function main(): Promise<void> {
   const indexDts = await readTextArtifact(path.resolve("dist/index.d.ts"));
   const renewalComponentPages = Object.fromEntries(await Promise.all([
     "article-pagination",
+    "accordion",
     "aspect",
     "basic-section",
     "cta-section",
@@ -1368,6 +1382,11 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/spec/grid.html")),
     readTextArtifact(path.resolve("demo/panel.html"))
   ]);
+  const [pageChromeJs, specRuntimeJs, examplePageJs] = await Promise.all([
+    readTextArtifact(path.resolve("demo/page-chrome.js")),
+    readTextArtifact(path.resolve("demo/spec-runtime.js")),
+    readTextArtifact(path.resolve("demo/example-page.js"))
+  ]);
 
   runInvariant("Common CSS (default)", () => validateCommonCss(defaultTheme.css));
   runInvariant("Common CSS (editorial)", () => validateCommonCss(editorialTier.css));
@@ -1433,7 +1452,7 @@ async function main(): Promise<void> {
     "demo/controls-shell.css": controlsShellCss
   }));
   await runInvariantAsync("Example dogfooding", () => validateExampleDogfooding());
-  runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, componentShellCss, specShellCss, pageChromeCss));
+  runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, componentShellCss, specShellCss, pageChromeCss, pageChromeJs, componentDemoJs, specRuntimeJs, examplePageJs));
   runInvariant("Engine illustration page", () => validateEngineIllustrationPage(pageCatalogJs, componentAtlasHtml, engineIllustrationHtml, componentShellCss));
   runInvariant("Range page", () => validateRangePage(rangeHtml, componentShellCss));
   runInvariant("Button demo", () => validateButtonDemo(buttonHtml));

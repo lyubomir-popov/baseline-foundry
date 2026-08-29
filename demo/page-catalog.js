@@ -13,7 +13,10 @@ export const specChapterPages = [
 ];
 
 export const tierPages = [
-  { title: "OS tier", href: "/demo/panel.html" }
+  { title: "Editorial tier", href: "/demo/tiers/editorial.html" },
+  { title: "Documentation tier", href: "/demo/tiers/documentation.html" },
+  { title: "App tier", href: "/demo/tiers/app.html" },
+  { title: "OS tier", href: "/demo/tiers/os.html" }
 ];
 
 export const componentSections = [
@@ -62,9 +65,6 @@ export const componentSections = [
       { title: "Icon", href: "/demo/components/icon.html" },
       { title: "List", href: "/demo/components/list.html" },
       { title: "Inline list", href: "/demo/components/inline-list.html" },
-      { title: "Tiered list", href: "/demo/components/tiered-list.html" },
-      { title: "CTA block", href: "/demo/components/cta-block.html" },
-      { title: "Equal-height row", href: "/demo/components/equal-height-row.html" },
       { title: "Figure", href: "/demo/components/figure.html" },
       { title: "Aspect", href: "/demo/components/aspect.html" },
       { title: "Table", href: "/demo/components/table.html" }
@@ -119,6 +119,9 @@ export const patternSections = [
       { title: "Content card", href: "/demo/components/content-card.html" },
       { title: "Data spotlight", href: "/demo/components/data-spotlight.html" },
       { title: "Divided section", href: "/demo/components/divided-section.html" },
+      { title: "Tiered list", href: "/demo/components/tiered-list.html" },
+      { title: "CTA block", href: "/demo/components/cta-block.html" },
+      { title: "Equal-height row", href: "/demo/components/equal-height-row.html" },
       { title: "Password reveal and validation", href: "/demo/components/credential-validation.html" },
       { title: "In-page navigation", href: "/demo/components/in-page-navigation.html" },
       { title: "Logo section", href: "/demo/components/logo-section.html" },

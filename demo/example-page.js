@@ -74,8 +74,7 @@ export function initExamplePage() {
     document.documentElement.style.colorScheme = storedTone;
   }
 
-  const captureTarget = document.querySelector("[data-example-grid-target]") ?? document.body;
-  const targetId = ensureTargetId(captureTarget, "example-grid-target");
+  const targetId = ensureTargetId(document.body, "example-page");
   const controls = injectPageChrome({
     controls: {
       selectedTier: currentTier,
@@ -83,7 +82,8 @@ export function initExamplePage() {
       showTone: true,
       tierOptions: TIER_OPTIONS
     },
-    currentPath: window.location.pathname
+    currentPath: window.location.pathname,
+    wrapBodyContent: true
   });
 
   if (!(controls.baselineToggle instanceof HTMLInputElement) || !(controls.toneToggle instanceof HTMLInputElement) || !(controls.tierSelect instanceof HTMLSelectElement) || !targetId) {

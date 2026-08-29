@@ -34,6 +34,13 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
   background-color: var(--bf-color-background-hover);
 }
 
+/* Anchor buttons are controls, not prose links. Qualifying the element and
+ * its interaction states prevents the generic anchor underline from leaking
+ * through while leaving the explicit is-link variant unchanged. */
+:where(.bf-theme) :where(a.bf-button:not(.is-link):is(:hover, :active)) {
+  text-decoration: none;
+}
+
 :where(.bf-theme) :where(.bf-button:not(.is-base):is(:active, [aria-pressed='true'])) {
   background-color: var(--bf-color-background-active);
 }

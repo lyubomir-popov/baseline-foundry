@@ -5,7 +5,10 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No package is active. Promote only a candidate whose evidence trigger is met.
+Spec 016 component and pattern consistency is active on
+`feat/016-component-pattern-consistency`. All three owner-review implementation
+passes, recurrence audits, and closeout gates are complete; the package is
+waiting for owner acceptance.
 
 ## Candidate order after Spec 001
 

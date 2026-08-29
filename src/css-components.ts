@@ -960,7 +960,6 @@ ${searchBoxAndFilterCss({
   bodySelectedStartNudge,
   bodyTypeStyles,
   buttonBlockPaddingVar,
-  h6TypeStyles,
   inputMarginBottom,
 })}
 

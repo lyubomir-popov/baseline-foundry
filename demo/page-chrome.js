@@ -61,8 +61,67 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;");
 }
 
+const authoredSequenceSections = new Set(["Overview", "Spec chapters", "Tier references"]);
+
+function orderedCatalogSections() {
+  return pageCatalogSections.map(section => ({
+    ...section,
+    items: authoredSequenceSections.has(section.heading)
+      ? [...section.items]
+      : [...section.items].sort((a, b) => a.title.localeCompare(b.title, "en", { sensitivity: "base" }))
+  }));
+}
+
+function adjacentPages(currentPath) {
+  const pages = orderedCatalogSections().flatMap(section => section.items);
+  const index = pages.findIndex(page => normalizePagePath(page.href) === currentPath);
+
+  if (index < 0) {
+    return { previous: null, next: null };
+  }
+
+  return {
+    previous: pages[index - 1] ?? null,
+    next: pages[index + 1] ?? null
+  };
+}
+
+function renderSequenceLink(page, direction) {
+  if (!page) {
+    return "";
+  }
+
+  const label = direction === "previous" ? "Previous" : "Next";
+  const icon = direction === "previous" ? "is-chevron-left" : "is-chevron-right";
+  return `<a class="bf-button is-icon pc-sequence-link is-${direction}" href="${page.href}" rel="${direction === "previous" ? "prev" : "next"}" aria-label="${label}: ${escapeHtml(page.title)}" title="${escapeHtml(page.title)}"><span class="bf-icon ${icon}" aria-hidden="true"></span></a>`;
+}
+
+function renderSequenceNavigation(currentPath) {
+  const { previous, next } = adjacentPages(currentPath);
+
+  if (!previous && !next) {
+    return "";
+  }
+
+  return `
+    <nav class="bf-cluster pc-sequence" aria-label="Adjacent pages">
+      ${renderSequenceLink(previous, "previous")}
+      ${renderSequenceLink(next, "next")}
+    </nav>`;
+}
+
+function renderBreadcrumbs(page) {
+  return `
+    <nav class="bf-breadcrumbs pc-breadcrumbs" aria-label="Breadcrumb">
+      <ol class="bf-breadcrumbs-items">
+        <li class="bf-breadcrumbs-item"><span>${escapeHtml(page.section)}</span></li>
+        <li class="bf-breadcrumbs-item"><span aria-current="page">${escapeHtml(page.title)}</span></li>
+      </ol>
+    </nav>`;
+}
+
 function renderDrawerSections(currentPath) {
-  return pageCatalogSections
+  return orderedCatalogSections()
     .map(section => {
       const items = section.items
         .map(item => {
@@ -151,7 +210,7 @@ export function injectPageChrome(options = {}) {
   let contentWrapper = null;
   if (options.wrapBodyContent) {
     contentWrapper = document.createElement("div");
-    contentWrapper.classList.add("pc-content");
+    contentWrapper.classList.add("pc-content", "bf-page");
 
     const nodesToMove = Array.from(document.body.childNodes).filter(node => {
       return !(node instanceof HTMLScriptElement);
@@ -172,6 +231,8 @@ export function injectPageChrome(options = {}) {
           ${controls.tierOptions.length > 0 ? renderSelect(controls.tierOptions, controls.selectedTier) : ""}
         </div>`
     : "";
+  const sequenceMarkup = renderSequenceNavigation(currentPath);
+  const breadcrumbsMarkup = renderBreadcrumbs(currentPage);
 
   const nav = document.createElement("aside");
   nav.classList.add("pc-root", "pc-nav");
@@ -192,12 +253,18 @@ export function injectPageChrome(options = {}) {
   header.dataset.baselineIgnore = "true";
   header.innerHTML = `
     <div class="pc-bar">
-      <div class="pc-current">
-        <span class="pc-section">${escapeHtml(currentPage.section)}</span>
-        <strong class="pc-title">${escapeHtml(currentPage.title)}</strong>
-      </div>
-      ${controlsMarkup}
+      ${breadcrumbsMarkup}
+      ${sequenceMarkup}
     </div>`;
+
+  const footer = controlsMarkup ? document.createElement("footer") : null;
+  if (footer) {
+    footer.classList.add("pc-root", "pc-footer");
+    footer.dataset.pageChrome = "true";
+    footer.dataset.captureIgnore = "true";
+    footer.dataset.baselineIgnore = "true";
+    footer.innerHTML = `<div class="pc-footer-bar">${controlsMarkup}</div>`;
+  }
 
   document.body.insertBefore(header, document.body.firstChild);
   document.body.insertBefore(nav, header);
@@ -208,9 +275,23 @@ export function injectPageChrome(options = {}) {
     document.body.insertBefore(contentWrapper, firstScript ?? null);
   }
 
-  const toneToggle = header.querySelector("[data-page-chrome-tone-toggle]");
-  const baselineToggle = header.querySelector("[data-page-chrome-baseline-toggle]");
-  const tierSelect = header.querySelector("[data-page-chrome-tier-select]");
+  if (footer) {
+    const firstScript = document.body.querySelector(":scope > script");
+    document.body.insertBefore(footer, firstScript ?? null);
+    const reserveFooter = () => {
+      document.body.style.setProperty("--pc-footer-block-size", `${footer.getBoundingClientRect().height}px`);
+    };
+    reserveFooter();
+    if (typeof ResizeObserver === "function") {
+      const observer = new ResizeObserver(reserveFooter);
+      observer.observe(footer);
+      window.addEventListener("pagehide", () => observer.disconnect(), { once: true });
+    }
+  }
+
+  const toneToggle = footer?.querySelector("[data-page-chrome-tone-toggle]") ?? null;
+  const baselineToggle = footer?.querySelector("[data-page-chrome-baseline-toggle]") ?? null;
+  const tierSelect = footer?.querySelector("[data-page-chrome-tier-select]") ?? null;
 
   if (controls?.tierAriaLabel && tierSelect instanceof HTMLSelectElement) {
     tierSelect.setAttribute("aria-label", controls.tierAriaLabel);
@@ -219,6 +300,7 @@ export function injectPageChrome(options = {}) {
   return {
     baselineToggle,
     contentWrapper,
+    footer,
     header,
     nav,
     root: nav,
