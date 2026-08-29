@@ -36,8 +36,8 @@ navigation producer defect is fixed in `1a48707` and merged locally to `main`.
 
 ## Last-known-green state
 
-Local `main` points to `61439ac`; `origin/main` remains at `99d298b`. The spacing
-foundation and responsive navigation slices each pass `npm test`,
+The spacing foundation and responsive navigation fix are merged and published
+to `origin/main`. Both slices pass `npm test`,
 `npm run qa:components`, and browser review; the combined merged tree also
 passes `npm test`. npm remains at 0.1.4 and the `v0.1.5` tag is intentionally
 unused until the npm-owned publication workflow runs.
