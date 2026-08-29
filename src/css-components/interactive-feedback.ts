@@ -170,6 +170,15 @@ export function interactiveFeedbackCss(): string {
   padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
 }
 
+/* Return the cancelled H6/body metric edges to the shell boundary. The
+ * Documentation tier deliberately gives those roles different metrics, so
+ * deriving this inset keeps every bordered notification on-grid without
+ * reopening the visible title/copy gap. Keep this after the shell variants so
+ * the metric relationship owns their final compensation. */
+:where(.bf-theme) :where(.bf-notification:has(> .bf-notification-content.is-metric-flush):not(.is-borderless)) {
+  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width) + var(--bf-baseline) - var(--bf-h6-nudge-start) - var(--bf-body-margin-bottom));
+}
+
 :where(.bf-theme) :where(.bf-notification-message, .bf-notification-timestamp) {
   font-family: var(--bf-body-font-family);
   font-size: var(--bf-body-font-size);

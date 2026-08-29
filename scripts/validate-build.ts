@@ -299,14 +299,42 @@ function validateTierPanelPaddingProgression(
     const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`);
 
     assert(components.panelPaddingInline === expected && components.panelPaddingBlock === expected, `Expected ${tierName} panel padding tokens to resolve to ${expected}; inline=${components.panelPaddingInline}, block=${components.panelPaddingBlock}.`);
-    assert(direct.get("--bf-panel-padding-inline") === expected && direct.get("--bf-panel-padding-block") === expected, `Expected direct ${tierName} panel padding properties to resolve to ${expected}.`);
-    assert(scoped.get("--bf-panel-padding-inline") === expected && scoped.get("--bf-panel-padding-block") === expected, `Expected scoped ${tierName} panel padding properties to resolve to ${expected}.`);
+    assert(direct.get("--bf-panel-padding-inline") === expected && direct.get("--bf-panel-padding-block") === expected, `Expected direct ${tierName} panel fallback padding properties to resolve to ${expected}.`);
+    assert(scoped.get("--bf-panel-padding-inline") === expected && scoped.get("--bf-panel-padding-block") === expected, `Expected scoped ${tierName} panel fallback padding properties to resolve to ${expected}.`);
     resolvedInline.push(parseRemValue(components.panelPaddingInline));
     resolvedBlock.push(parseRemValue(components.panelPaddingBlock));
   }
 
   assert(resolvedInline.every((padding, index) => index === 0 || padding <= resolvedInline[index - 1]), `Expected inline panel padding not to increase across denser tiers, got ${resolvedInline.join(" >= ")}rem.`);
   assert(resolvedBlock.every((padding, index) => index === 0 || padding <= resolvedBlock[index - 1]), `Expected block panel padding not to increase across denser tiers, got ${resolvedBlock.join(" >= ")}rem.`);
+}
+
+function validateTierStripSpaceProgression(
+  sharedCss: string,
+  tierArtifacts: Record<string, { tokens: Record<string, unknown>; css: string; }>
+): void {
+  const expectedSpacing = new Map([
+    ["editorial", "4rem"],
+    ["documentation", "3rem"],
+    ["app", "3rem"],
+    ["os", "2rem"]
+  ]);
+  const resolved: number[] = [];
+
+  for (const tierName of tierNames) {
+    const artifact = tierArtifacts[tierName];
+    assert(artifact, `Expected generated artifacts for tier "${tierName}" while validating strip spacing.`);
+    const layout = (artifact.tokens.layout ?? {}) as Record<string, unknown>;
+    const expected = expectedSpacing.get(tierName);
+    const direct = customPropertiesForSelector(artifact.css, ":where(.bf-theme)").get("--bf-strip-space");
+    const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`).get("--bf-strip-space");
+
+    assert(layout.stripSpace === expected, `Expected ${tierName} strip spacing token to resolve to ${expected}, got ${layout.stripSpace}.`);
+    assert(direct === expected && scoped === expected, `Expected ${tierName} direct/scoped strip spacing to both resolve to ${expected}; direct=${direct}, scoped=${scoped}.`);
+    resolved.push(parseRemValue(layout.stripSpace));
+  }
+
+  assert(resolved.every((space, index) => index === 0 || space <= resolved[index - 1]), `Expected strip spacing not to increase across editorial/documentation/app/os, got ${resolved.join(" >= ")}rem.`);
 }
 
 async function validatePublicRuntimeAndTypes(indexDts: string, readmeMd: string): Promise<void> {
@@ -486,6 +514,14 @@ async function validateExampleDogfooding(): Promise<void> {
         assert(!html.includes('class="bf-grid bf-grid-scope example-nested-inner"'), `Expected ${path.relative(process.cwd(), filePath)} not to query a grid against its wider ancestor by placing bf-grid-scope on the grid itself.`);
         assert((html.match(/class="bf-grid-scope">\s*<div class="bf-grid example-nested-inner">/g) ?? []).length === 3, `Expected ${path.relative(process.cwd(), filePath)} to wrap every nested grid in its own query scope.`);
       }
+
+      if (path.basename(filePath) === "horizontal-keylines.html") {
+        for (const specimen of ["tabs", "side-navigation", "accordion", "choices", "fields", "buttons", "panel"]) {
+          assert(html.includes(`data-keyline-specimen="${specimen}"`), `Expected ${path.relative(process.cwd(), filePath)} to include the ${specimen} keyline specimen.`);
+        }
+        assert(html.includes("bf-stack is-metric-flush") && html.includes("--bf-control-inline-padding-field") && html.includes("--bf-grid-gap-inline"), `Expected ${path.relative(process.cwd(), filePath)} to document the metric-flush, field-padding, and panel-gutter owners.`);
+        assert(!html.includes("style="), `Expected ${path.relative(process.cwd(), filePath)} to avoid inline specimen styling.`);
+      }
     }
   }
 
@@ -493,10 +529,14 @@ async function validateExampleDogfooding(): Promise<void> {
 
   const gridExamplesCss = await readTextArtifact(path.resolve("examples/grid/grid-examples.css"));
   const spacingExamplesCss = await readTextArtifact(path.resolve("examples/spacing/spacing-examples.css"));
+  const horizontalKeylinesCss = await readTextArtifact(path.resolve("examples/spacing/horizontal-keylines.css"));
+  const pageCatalogJs = await readTextArtifact(path.resolve("demo/page-catalog.js"));
 
   assert(examplePageJs.includes('initApplicationLayouts') && examplePageJs.includes('initPanelDrawers'), 'Expected demo/example-page.js to initialize the shared application-layout and panel-drawer runtimes for example pages.');
   assertNoStyledDataSelectors("examples/grid/grid-examples.css", gridExamplesCss);
   assertNoStyledDataSelectors("examples/spacing/spacing-examples.css", spacingExamplesCss);
+  assertNoStyledDataSelectors("examples/spacing/horizontal-keylines.css", horizontalKeylinesCss);
+  assert(pageCatalogJs.includes('{ title: "Horizontal keylines", href: "/examples/spacing/horizontal-keylines.html" }'), "Expected the spacing catalog to expose the horizontal-keyline comparison page.");
   assert(!/\.(?:example)-(?:frame|fixed-width|hero|stack|actions|card|surface|callout|span-demo|span-row|tier-group|nested-specimens|stage-shell|stage-header)(?![a-z0-9_-])/.test(gridExamplesCss), "Expected grid examples CSS to avoid generic non-dogfooded wrapper/card classes.");
   assert(!/\.(?:spacing)-(?:fixed-width|hero|stack|actions|card|surface|density-card|baseline-box|defaults|inline-row)(?![a-z0-9_-])/.test(spacingExamplesCss), "Expected spacing examples CSS to avoid generic non-dogfooded wrapper/card classes.");
 }
@@ -633,12 +673,14 @@ function validateCommonCss(css: string): void {
   assert(css.includes("min-block-size: calc(var(--bf-control-box-size-compact) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to rely on their controls' start nudge instead of adding container start padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0px;"), "Expected flush stacks to remove only their container gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-metric-flush) {\n  --bf-stack-space: 0px;") && css.includes(":where(.bf-theme) .bf-stack.is-metric-flush > :where(") && css.includes(":has(+ :where(") && css.includes(" + :where(") && css.includes("margin-block-end: 0;") && css.includes("padding-block-start: 0;"), "Expected metric-flush stacks to cancel only configured adjacent text-role compensation and start nudges.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-extra-dense) {\n  --bf-stack-space: var(--bf-space-half);"), "Expected extra-dense stacks to use the half-baseline gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-dense) {\n  --bf-stack-space: var(--bf-space-1);"), "Expected dense stacks to use the one-baseline gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-loose) {\n  --bf-stack-space: var(--bf-space-2);"), "Expected loose stacks to use the two-baseline gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected explicitly shallow section stacks to use the shallow section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected section stacks to own the tier's regular section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
+  assert(css.includes("padding-inline-start: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));"), "Expected accordion panels to share the tab label keyline through disclosure geometry variables.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 1px);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 1px thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
@@ -1435,6 +1477,12 @@ async function main(): Promise<void> {
     os: osTier
   }));
   runInvariant("Tier panel-padding progression", () => validateTierPanelPaddingProgression(defaultTheme.css, {
+    editorial: editorialTier,
+    documentation: documentationTier,
+    app: appTier,
+    os: osTier
+  }));
+  runInvariant("Tier strip-space progression", () => validateTierStripSpaceProgression(defaultTheme.css, {
     editorial: editorialTier,
     documentation: documentationTier,
     app: appTier,

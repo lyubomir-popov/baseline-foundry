@@ -2,6 +2,7 @@ export function gridCss(appScopes: string[] = [":where(.bf-theme.bf-tier-app)"])
   const spanRule = (span: number, indent = ""): string =>
     `${indent}:where(.bf-theme) :where(.bf-grid) > :where(.bf-span-${span}) { grid-column: auto / span ${span}; }`;
   const appPageSelectors = appScopes.map(scope => `${scope} :where(.bf-page)`).join(",\n");
+  const appGutterSelectors = [...new Set([...appScopes, ":where(.bf-theme.bf-tier-app)"])].join(",\n  ");
   const appPageRule = appPageSelectors
     ? `${appPageSelectors} {\n  max-inline-size: none;\n}`
     : "";
@@ -38,7 +39,7 @@ export function gridCss(appScopes: string[] = [":where(.bf-theme.bf-tier-app)"])
     --bf-page-margin: 2rem;
   }
 
-  :where(.bf-theme.bf-tier-app) {
+  ${appGutterSelectors} {
     --bf-grid-gap-inline: 1.5rem;
     --bf-grid-gap-block: 1.5rem;
   }

@@ -93,7 +93,7 @@ function renderSequenceLink(page, direction) {
 
   const label = direction === "previous" ? "Previous" : "Next";
   const icon = direction === "previous" ? "is-chevron-left" : "is-chevron-right";
-  return `<a class="bf-button is-icon pc-sequence-link is-${direction}" href="${page.href}" rel="${direction === "previous" ? "prev" : "next"}" aria-label="${label}: ${escapeHtml(page.title)}" title="${escapeHtml(page.title)}"><span class="bf-icon ${icon}" aria-hidden="true"></span></a>`;
+  return `<a class="bf-button is-base is-icon pc-sequence-link is-${direction}" href="${page.href}" rel="${direction === "previous" ? "prev" : "next"}" aria-label="${label}: ${escapeHtml(page.title)}" title="${escapeHtml(page.title)}"><span class="bf-icon ${icon}" aria-hidden="true"></span></a>`;
 }
 
 function renderSequenceNavigation(currentPath) {
@@ -104,7 +104,7 @@ function renderSequenceNavigation(currentPath) {
   }
 
   return `
-    <nav class="bf-cluster pc-sequence" aria-label="Adjacent pages">
+    <nav class="bf-theme is-dark bf-cluster pc-sequence" aria-label="Adjacent pages">
       ${renderSequenceLink(previous, "previous")}
       ${renderSequenceLink(next, "next")}
     </nav>`;

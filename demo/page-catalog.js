@@ -171,6 +171,7 @@ export const gridExamplePages = [
 ];
 
 export const spacingExamplePages = [
+  { title: "Horizontal keylines", href: "/examples/spacing/horizontal-keylines.html" },
   { title: "Element-owned composition", href: "/examples/spacing/element-vs-container.html" },
   { title: "Bottom-only resilience", href: "/examples/spacing/bottom-only-resilience.html" },
   { title: "Semantic spacing stack", href: "/examples/spacing/semantic-spacing-stack.html" },

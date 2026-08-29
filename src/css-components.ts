@@ -1359,7 +1359,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   margin: 0;
   overflow: hidden;
   padding-block-start: var(--bf-baseline);
-  padding-inline-start: calc(var(--bf-accordion-indent) + ${roleFontSizeVar("body", body.fontSize)} + var(--bf-baseline));
+  padding-inline-start: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));
 }
 
 :where(.bf-theme) :where(.bf-accordion-panel[aria-hidden='true']) {

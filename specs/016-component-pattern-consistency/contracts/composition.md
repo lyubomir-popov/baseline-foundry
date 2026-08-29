@@ -4,7 +4,8 @@
 
 | Relationship | Required composition | Meaning |
 |---|---|---|
-| H1/H2 or equivalent title fragments read as one title | `bf-stack is-flush` | Zero semantic gap; metric compensation remains |
+| Equivalent title fragments read as one title | `bf-stack is-flush` | Zero semantic gap; metric compensation remains |
+| Separate text roles must visually abut | `bf-stack is-metric-flush` | Zero semantic gap and cancellation of the adjacent end compensation/start nudge |
 | Heading, copy, metadata, or actions within one pattern area | `bf-stack is-dense` | One tier baseline between direct children |
 | Complete header/body/footer, copy/media, or other pattern areas | `bf-stack is-section-shallow` or an equivalent component-owned shallow gap | Larger pattern boundary |
 
@@ -36,10 +37,11 @@ No role-owned margin may substitute for these container relationships.
 
 ## Hero grid
 
-- Wide default: two equal tracks with the title area in track 1 and supporting
+- Default split threshold: a 45rem hero container, independent of the wider
+  page-level 64.75rem threshold.
+- Wide default: two equal tracks with H1 in track 1 and H2 plus supporting
   content in track 2.
-- Title area: flush stack for H1/H2 fragments.
-- Supporting area: dense stack.
+- Supporting area: dense stack with H2 as its first child.
 - Full media: spans `1 / -1` after title/content.
 - Narrow: one track in source order.
 
@@ -82,7 +84,8 @@ No role-owned margin may substitute for these container relationships.
 - Top left: public `bf-breadcrumbs`, body role metrics, current page announced
   with `aria-current="page"`.
 - Top right: accessible `bf-button is-base is-icon` anchor controls containing
-  only previous/next chevrons; visual paint remains white in both tones.
+  only previous/next chevrons; the shared dark-tone button/icon tokens create
+  white chevrons without private page-chrome paint.
 - Fixed bottom: theme switch, global baseline switch, and tier selector; its
   measured height is reserved so document content is never covered.
 - A `bf-page` owns the sole inline gutter. Descendant `bf-fixed-width` keeps
@@ -92,3 +95,17 @@ No role-owned margin may substitute for these container relationships.
   containing geometry documents a smaller exception.
 - A component that suppresses anchor decoration uses element-qualified normal
   and interaction selectors; generic prose anchor behavior remains unchanged.
+
+## Horizontal keylines and tier density
+
+- Accordion panel start = `--bf-disclosure-icon-inline-size` +
+  `--bf-disclosure-gap`, matching the tab label start.
+- Panel header/content/footer inline padding = `--bf-grid-gap-inline`; the
+  configured panel inset remains only the fallback if no grid gutter exists.
+- The comparison page shows the paragraph rail and labels intended departures:
+  control chrome, disclosure/selection mark, or nested content.
+- Site-footer strip spacing is 4rem Editorial, 3rem Documentation, 3rem App,
+  and 2rem OS. Equal-root Docs/App tiers stay equal; the OS footer decreases.
+- Shared structural thresholds remain 38.75rem, 64.75rem, and 105.0625rem.
+  Component-intrinsic exceptions are documented beside the owning selector;
+  the hero's measured exception is 45rem.

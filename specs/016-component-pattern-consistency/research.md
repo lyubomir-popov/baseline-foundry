@@ -163,3 +163,82 @@ Generic anchors underline on hover. Components that intentionally suppress
 decoration must express that decision on element-qualified anchor selectors in
 both normal and interaction states. Intentional prose/text-link underlines
 remain part of their distinct contract.
+
+## Fourth owner-review evidence and decisions
+
+### Sequence controls already have a canonical composition
+
+Diagram Generator uses `bf-button is-base is-icon` with a nested
+`bf-icon is-chevron-left|right`; it adds no local background, border, color, or
+filter. BF page chrome used the same icon names but omitted `is-base`, then
+recreated white paint with four hard-coded colors and `filter: invert(1)`. The
+canonical public composition is sufficient in the dark chrome.
+
+### Accordion label and panel copy are one keyline
+
+Pre-fix Editorial browser evidence: tab label x=56px, panel paragraph x=72px,
+a 16px mismatch. The tab label offset is the actual disclosure geometry
+(16px icon + 16px gap = 32px); the panel used an unrelated 48px formula
+(`accordionIndent + body font size + baseline`). The panel must derive its
+start from the same disclosure variables as the tab.
+
+### Metric flush is a relationship, not a negative spacing scale
+
+With a zero-gap notification stack, the separate H6/body glyph gap is 12.66px:
+1.44px H6 end compensation plus 6.56px body start nudge account for 8px of it.
+A parent modifier can cancel those two adjacent metric edges and leave the
+natural glyph clearance (~4.66px). It does not invent negative `gap`, change
+type metrics globally, or guess a tier baseline multiple.
+
+### Footer jump is in the site strip producer token
+
+Pre-fix wide measurements (strip spacing / rendered footer height): Editorial
+64px / 95.99px; Documentation 48px / 71.99px; App 64px / 87.99px; OS 48px /
+67.99px. App grows despite sharing Documentation's 14px/20px body role. The
+monotonic producer sequence is 64/48/48/32px, expressed as 8/12/12/8 baseline
+units in the respective tier configs.
+
+### Breakpoint taxonomy
+
+Most site patterns use the shared 38.75rem and 64.75rem grid thresholds.
+Intrinsic exceptions already exist for content cards (28.75rem/60rem), article
+pagination (28.75rem), document navigation (20rem/40rem), and content-driven
+rich lists (66ch/100ch). The default hero incorrectly waited for 64.75rem even
+though its two text rails remain practical at roughly 720px. It therefore earns
+a documented 45rem container threshold; the 25/75 modifier keeps its separate
+38.75rem opt-in behavior.
+
+### Panels share the active grid gutter
+
+The current panel insets are fixed tier values (16/16/12/8px) while the active
+main-grid gutter changes at viewport brackets (16/24/32px). The comparison page
+needs one explainable rail, so public panel header/content/footer padding uses
+the live grid-gutter variable with the configured tier inset only as fallback.
+
+### CSS-practice and breakpoint sweep
+
+The source/demo sweep excluded generated outputs and classified every match for
+styled `data-*`, deprecated `p-*`/`ui-*`, BEM, `!important`, private icon paint,
+underlines, and non-shared breakpoints.
+
+- Public source has no styled `data-*`, deprecated public prefix, or BEM API.
+  The remaining `p-*`/BEM strings are isolated comparison fixtures for the
+  external framework under test; the only `!important` is injected by browser
+  tests to disable page-chrome hit testing.
+- Page sequence controls no longer define private colors, borders, backgrounds,
+  filters, or hover paint. Public button/theme/icon contracts own all of it.
+- Remaining underline declarations belong to explicit prose/link affordances
+  or their interaction states. Browser contracts verify that control-like
+  navigation anchors remain undecorated.
+- Producer layout uses the shared 38.75rem/64.75rem/105.0625rem thresholds.
+  Documented intrinsic exceptions remain content-card, pagination,
+  document-navigation, rich-list, and the measured 45rem default hero split.
+  Demo-only 56rem chrome wrapping and 70/72/80rem specimen framing do not alter
+  public component APIs.
+- The sweep exposed a direct-App scope omission: its large gutter did not match
+  class-switched App. `src/css-grid.ts` now gives both entry points the same
+  active 24px large gutter, which the panel-gutter comparison consumes.
+- Diagram Registry remains a read-only consumer pinned to its vendored BF
+  revision. It uses the canonical chevron/icon contract and adds no producer
+  override for these fixes; refreshing its dependency is downstream work after
+  the BF commit is selected.

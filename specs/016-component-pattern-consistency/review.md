@@ -2,7 +2,7 @@
 
 ## Status
 
-All three implementation/review passes are complete. The package is ready for
+All four implementation/review passes are complete. The package is ready for
 owner review on `feat/016-component-pattern-consistency`.
 
 ## Automated evidence
@@ -179,3 +179,61 @@ No unresolved high- or medium-severity findings remain after the second pass.
    intentional text-link underlines remain explicit.
 
 No unresolved high- or medium-severity findings remain after the third pass.
+
+## Fourth owner-review pass
+
+### Automated and browser evidence
+
+- `npm run test:build`: passed, 6,052 checks.
+- `npm test`: passed after a source-driven rebuild, including every registered
+  four-tier baseline capture and the expanded browser behavior matrix.
+- `npm run qa:components`: passed and refreshed the complete screenshot set.
+- Page Previous/Next links now render the canonical
+  `bf-button is-base is-icon` contract in the shared dark rail. Computed paint
+  is transparent with white chevrons, accessible destination names, no text,
+  no underline, and no page-chrome color/filter override.
+- Default heroes split at an exact 45rem container threshold: 719px remains one
+  rail and 720px places H1 left, H2/supporting content right, with media across
+  both columns. Wide and constrained visual states were reviewed.
+- Accordion panel text and tab-label starts differ by at most 1px in every
+  tier. Both derive from the disclosure icon-size and gap variables.
+- Metric-flush notification pairs compute to zero stack gap, zero intervening
+  heading margin and body start nudge, with glyph clearance at or below one
+  baseline. Non-text siblings such as dismiss buttons do not change the pair;
+  producer-owned shell compensation keeps all four tier captures on-grid.
+- Site-footer strip spacing is 64/48/48/32px across
+  Editorial/Documentation/App/OS. Rendered footer height is non-increasing at
+  both 360px and 1280px test widths.
+- Panel header/content/footer insets equal the active grid gutter, including
+  direct and class-switched App entry points, while nested card grids retain
+  their own component token. The live horizontal-keyline page covers tabs,
+  navigation, accordion, checkbox/radio, fields, textarea, buttons, and panels
+  without overflow in every tier.
+- The CSS-practice sweep found no public styled `data-*`, deprecated prefix,
+  BEM API, private sequence paint, or unexplained production `!important`.
+  Shared breakpoints and documented intrinsic exceptions are recorded in
+  `research.md`; Diagram Registry remained read-only consumer evidence.
+
+### Fourth adversarial findings
+
+1. **High: page sequence controls duplicated the public button/icon paint.**
+   Resolved by composing the canonical base/icon contract and deleting private
+   colors, borders, backgrounds, filters, and hover styling.
+2. **Medium: the first metric-flush selector treated any trailing control as a
+   text-role boundary.** Resolved by collapsing only adjacent configured text
+   roles, so an absolutely positioned dismiss button cannot strip the body
+   role's outer compensation.
+3. **Medium: a global panel-token rewrite leaked the page gutter into nested
+   card grids.** Resolved with a panel-local derived inset variable and the
+   configured panel token as fallback; nested consumers remain unchanged.
+4. **Medium: direct App and class-switched App resolved different large
+   gutters.** Resolved in the grid producer by including both entry points in
+   the 24px App gutter scope.
+5. **Medium: Documentation H6/body metrics do not sum to the same outer
+   remainder as the other tiers.** Resolved with notification-shell
+   compensation derived from the real H6/body metric variables, preserving the
+   visible flush relationship and restoring baseline captures.
+6. **Medium: the App site-strip token increased after Documentation.** Resolved
+   with the monotonic 64/48/48/32px sequence and wide/narrow geometry tests.
+
+No unresolved high- or medium-severity findings remain after the fourth pass.

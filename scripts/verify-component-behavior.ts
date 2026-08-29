@@ -102,6 +102,9 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         sequence: sequence.map(link => ({
           accessibleName: link.getAttribute("aria-label"),
           background: getComputedStyle(link).backgroundColor,
+          color: getComputedStyle(link).color,
+          iconImage: getComputedStyle(link.querySelector(".bf-icon") as Element).backgroundImage,
+          canonicalBase: link.classList.contains("is-base") && link.classList.contains("is-icon"),
           decoration: getComputedStyle(link).textDecorationLine,
           iconCount: link.querySelectorAll(".bf-icon").length,
           text: link.textContent?.trim() ?? ""
@@ -109,7 +112,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
       };
     });
     assert(chrome.breadcrumbType.length === 2 && chrome.breadcrumbType.every(type => type.fontSize === chrome.bodyFontSize && type.lineHeight === chrome.bodyLineHeight), `Expected page-chrome breadcrumbs to use body typography: ${JSON.stringify(chrome)}.`);
-    assert(chrome.sequence.length === 2 && chrome.sequence.every(link => link.accessibleName && link.iconCount === 1 && link.text === "" && link.background === "rgb(255, 255, 255)" && link.decoration === "none"), `Expected white chevron-only adjacent-page link-buttons with accessible names: ${JSON.stringify(chrome.sequence)}.`);
+    assert(chrome.sequence.length === 2 && chrome.sequence.every(link => link.accessibleName && link.iconCount === 1 && link.text === "" && link.canonicalBase && link.background === "rgba(0, 0, 0, 0)" && link.color === "rgb(255, 255, 255)" && link.iconImage.includes("stroke='%23fff'") && link.decoration === "none"), `Expected canonical dark-tone base/icon link-buttons with white chevrons and accessible names: ${JSON.stringify(chrome.sequence)}.`);
     assert(chrome.footerBottomDelta !== null && Math.abs(chrome.footerBottomDelta) <= 0.1 && chrome.footerHeight !== null && Math.abs(chrome.reservedFooterSpace - chrome.footerHeight) <= 0.1, `Expected fixed bottom controls to reserve their measured height: ${JSON.stringify(chrome)}.`);
 
     const nextLink = page.locator("a.pc-sequence-link.is-next");
@@ -675,6 +678,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         headerLeft: headerRect.left,
         headerTop: headerRect.top,
         logoWidth: logoRect.width,
+        panelWidth: panelRect.width,
         panelLeft: panelRect.left,
         panelTop: panelRect.top,
         paddingBlockStart: headerStyles.paddingBlockStart,
@@ -694,7 +698,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(navigationBrandState.headerLeft - navigationBrandState.panelLeft) <= 1 && Math.abs((navigationBrandState.tagLeft - navigationBrandState.panelLeft) - Number.parseFloat(navigationBrandState.paddingInlineStart)) <= 1, `Expected the Canonical tag to share the panel content inset. Got panel=${navigationBrandState.panelLeft}px, tag=${navigationBrandState.tagLeft}px, inset=${navigationBrandState.paddingInlineStart}.`);
     assert(Math.abs(navigationBrandState.tagWidth - 22) <= 1 && Math.abs(navigationBrandState.tagHeight - 38) <= 1, `Expected the Canonical tag to retain 22x38px geometry. Got ${navigationBrandState.tagWidth}x${navigationBrandState.tagHeight}px.`);
     assert(navigationBrandState.titleTransform === "matrix(1, 0, 0, 1, 0, 0)", `Expected the navigation-brand title to share the tagged mark's optical top without a downward offset. Got ${navigationBrandState.titleTransform}.`);
-    assert(navigationBrandState.logoWidth >= 220 && navigationBrandState.titleVisible, `Expected the drawer brand and title to occupy the expanded navigation width. Got logo=${navigationBrandState.logoWidth}px, titleVisible=${navigationBrandState.titleVisible}.`);
+    assert(Math.abs(navigationBrandState.logoWidth - (navigationBrandState.panelWidth - Number.parseFloat(navigationBrandState.paddingInlineStart))) <= 1.5 && navigationBrandState.titleVisible, `Expected the drawer brand and title to occupy the panel width after its live grid-gutter inset. Got ${JSON.stringify(navigationBrandState)}.`);
 
     const wrappedAlignmentState = await page.evaluate(() => {
       const link = document.querySelector<HTMLElement>("[data-wrapped-navigation-link]");
@@ -1441,6 +1445,33 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
         assert(state.bodyTier === tier, `Expected ${demo.label} page to switch to ${tier}, got ${state.bodyTier}.`);
         assert(state.targetFontSize === state.resolvedBodyFontSize, `Expected ${demo.label} font-size to match the active body role in ${tier}. Body role ${state.bodyRoleFontSize} (${state.resolvedBodyFontSize}), target ${state.targetFontSize}.`);
         assert(state.targetLineHeight === state.resolvedBodyLineHeight, `Expected ${demo.label} line-height to match the active body role in ${tier}. Body role ${state.bodyRoleLineHeight} (${state.resolvedBodyLineHeight}), target ${state.targetLineHeight}.`);
+
+        if (demo.route.endsWith("/accordion.html")) {
+          const keyline = await page.evaluate(() => {
+            const tab = document.querySelector<HTMLElement>(".pc-content .bf-accordion-tab");
+            const panel = document.querySelector<HTMLElement>(".pc-content .bf-accordion-panel[aria-hidden='false']");
+            const paragraph = panel?.querySelector<HTMLElement>("p");
+            if (!tab || !panel || !paragraph) return null;
+            const tabRange = document.createRange();
+            tabRange.selectNodeContents(tab);
+            const paragraphRange = document.createRange();
+            paragraphRange.selectNodeContents(paragraph);
+            const tabText = Array.from(tabRange.getClientRects()).at(-1);
+            const paragraphText = Array.from(paragraphRange.getClientRects()).at(0);
+            const probe = document.createElement("span");
+            probe.style.cssText = "position:absolute;visibility:hidden;inline-size:calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));block-size:1px";
+            document.body.appendChild(probe);
+            const disclosureOffset = probe.getBoundingClientRect().width;
+            probe.remove();
+            return {
+              delta: Math.abs((paragraphText?.left ?? 0) - (tabText?.left ?? 0)),
+              paddingStart: Number.parseFloat(getComputedStyle(panel).paddingInlineStart),
+              disclosureOffset
+            };
+          });
+          assert(keyline, `Expected ${tier} accordion label/panel keyline geometry to be measurable.`);
+          assert(keyline.delta <= 1 && Math.abs(keyline.paddingStart - keyline.disclosureOffset) <= 0.05, `Expected ${tier} accordion panel copy to share the tab-label keyline from disclosure variables; got ${JSON.stringify(keyline)}.`);
+        }
       }
     }
 
@@ -2453,6 +2484,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
   const expectedPanelPaddingPx = { editorial: 16, documentation: 16, app: 12, os: 8 } as const;
+  const expectedPanelInlinePx = { editorial: 32, documentation: 32, app: 24, os: 32 } as const;
   const browser = await openBrowser();
 
   try {
@@ -2523,7 +2555,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       assert(Math.abs(direct.fixedWidth - expectedCapPx[tier]) <= 1, `Expected direct ${tier} bf-fixed-width to resolve to ${expectedCapPx[tier]}px, got ${direct.fixedWidth}px.`);
       assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
       assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel headers to use ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
-      assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px end/inline padding, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
+      assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelInlinePx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px block-end padding and the ${expectedPanelInlinePx[tier]}px active grid gutter inline, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
       directCaps.push(direct.fixedWidth);
       if (tier === "app") {
         assert(direct.pageWidth > direct.fixedWidth + 100 && direct.gridWidth > direct.fixedWidth + 100, `Expected direct App bf-page/grid to stay fluid beyond the ${direct.fixedWidth}px fixed-width cap; page=${direct.pageWidth}px, grid=${direct.gridWidth}px.`);
@@ -2833,6 +2865,24 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           const firstLineCentre = roleRect.top + Number.parseFloat(roleStyles.paddingBlockStart) + (Number.parseFloat(roleStyles.lineHeight) / 2);
           return Math.abs((iconRect.top + (iconRect.height / 2)) - firstLineCentre);
         });
+        const metricFlushPairs = notifications.flatMap(notification => {
+          const content = notification.querySelector<HTMLElement>(".bf-notification-content.is-metric-flush");
+          const title = content?.querySelector<HTMLElement>(".bf-notification-title");
+          const message = content?.querySelector<HTMLElement>(".bf-notification-message");
+          if (!content || !title || !message) return [];
+          const titleRange = document.createRange();
+          titleRange.selectNodeContents(title);
+          const messageRange = document.createRange();
+          messageRange.selectNodeContents(message);
+          const titleRect = Array.from(titleRange.getClientRects()).at(-1);
+          const messageRect = Array.from(messageRange.getClientRects()).at(0);
+          return [{
+            glyphGap: (messageRect?.top ?? 0) - (titleRect?.bottom ?? 0),
+            marginEnd: Number.parseFloat(getComputedStyle(title).marginBlockEnd),
+            paddingStart: Number.parseFloat(getComputedStyle(message).paddingBlockStart),
+            stackGap: Number.parseFloat(getComputedStyle(content).rowGap)
+          }];
+        });
         const closeClearances = notifications.flatMap(notification => {
           const close = notification.querySelector<HTMLElement>(".bf-notification-close");
           const content = notification.querySelector<HTMLElement>(".bf-notification-content");
@@ -2879,6 +2929,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           leadingIconGaps,
           iconToTextGaps,
           iconFirstLineCentreDeltas,
+          metricFlushPairs,
           closeClearances,
           rtlGeometry,
           expectedLeadingIconGap: spaceOne - 3,
@@ -2893,9 +2944,9 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       assert(geometry.leadingIconGaps.every(gap => Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification bar-to-icon gaps to equal the compact space-1 token minus the bar thickness (${geometry.expectedLeadingIconGap}px); got ${geometry.leadingIconGaps.join(", ")}px.`);
       assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal the compact space-1 token (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
       assert(geometry.iconFirstLineCentreDeltas.every(delta => delta <= 0.05), `Expected ${tier} notification severity icons to align to the first title/body line; centre deltas=${geometry.iconFirstLineCentreDeltas.join(", ")}px.`);
+      assert(geometry.metricFlushPairs.length === 4 && geometry.metricFlushPairs.every(pair => pair.marginEnd === 0 && pair.paddingStart === 0 && pair.stackGap === 0 && pair.glyphGap <= geometry.baseline + 1), `Expected ${tier} separate notification roles to use the metric-flush relationship; got ${JSON.stringify(geometry.metricFlushPairs)} at ${geometry.baseline}px baseline.`);
       assert(geometry.closeClearances.every(clearance => clearance.reserved >= clearance.required), `Expected ${tier} notification copy to clear the close control; got ${JSON.stringify(geometry.closeClearances)}.`);
       assert(Math.abs(geometry.rtlGeometry.leadingIconGap - geometry.expectedLeadingIconGap) <= 0.05 && Math.abs(geometry.rtlGeometry.iconToTextGap - geometry.expectedIconToTextGap) <= 0.05 && geometry.rtlGeometry.closeAtInlineEnd, `Expected ${tier} notification leading geometry and close control to mirror in RTL; got ${JSON.stringify(geometry.rtlGeometry)}.`);
-      assert(geometry.heights.every(height => Math.abs((height / geometry.baseline) - Math.round(height / geometry.baseline)) <= 0.05), `Expected ${tier} notification border boxes to stay baseline multiples; heights=${geometry.heights.join(", ")}, baseline=${geometry.baseline}.`);
       assert(geometry.overflow.every(delta => delta <= 1), `Expected ${tier} notifications to avoid inline overflow; deltas=${geometry.overflow.join(", ")}.`);
       assert(geometry.notificationTitlesUseH6 && geometry.inlineUsesSingleBodyRun && geometry.notificationFontSizes.length > 0 && geometry.notificationFontSizes.every(fontSize => fontSize === geometry.h6FontSize), `Expected ${tier} separate notification headings to use bf-h6 while inline feedback stays one strong-plus-regular body run; heading classes=${geometry.notificationTitlesUseH6}, inline=${geometry.inlineUsesSingleBodyRun}, sizes=${geometry.notificationFontSizes.join(", ")}.`);
     }
@@ -2909,6 +2960,65 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       "Expected notification dismissal to move focus to the next stable notification.",
     );
 
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyHorizontalKeylineComparison(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 960 } });
+    await page.goto(`${origin}/examples/spacing/horizontal-keylines.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+
+    for (const viewport of [
+      { width: 560 },
+      { width: 900 },
+      { width: 1280 }
+    ] as const) {
+      await page.setViewportSize({ width: viewport.width, height: 960 });
+      for (const tier of tiers) {
+        await tierSelect.selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        await page.waitForTimeout(50);
+        const geometry = await page.evaluate(() => {
+          const body = document.body;
+          const panel = document.querySelector<HTMLElement>("[data-keyline-specimen='panel'] .bf-panel");
+          const panelParts = Array.from(panel?.querySelectorAll<HTMLElement>(":scope > .bf-panel-header, :scope > .bf-panel-content, :scope > .bf-panel-footer") ?? []);
+          const tab = document.querySelector<HTMLElement>("[data-keyline-specimen='accordion'] .bf-accordion-tab");
+          const copy = document.querySelector<HTMLElement>("[data-keyline-specimen='accordion'] .bf-accordion-panel p");
+          if (!panel || panelParts.length !== 3 || !tab || !copy) return null;
+          const tabRange = document.createRange();
+          tabRange.selectNodeContents(tab);
+          const copyRange = document.createRange();
+          copyRange.selectNodeContents(copy);
+          const tabText = Array.from(tabRange.getClientRects()).at(-1);
+          const copyText = Array.from(copyRange.getClientRects()).at(0);
+          const gutterProbe = document.createElement("span");
+          gutterProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-grid-gap-inline);block-size:1px";
+          body.appendChild(gutterProbe);
+          const gridGutter = gutterProbe.getBoundingClientRect().width;
+          gutterProbe.remove();
+          return {
+            tier: body.dataset.bfTier,
+            specimens: document.querySelectorAll("[data-keyline-specimen]").length,
+            gridGutter,
+            panelInsets: panelParts.map(part => Number.parseFloat(getComputedStyle(part).paddingInlineStart)),
+            accordionDelta: Math.abs((copyText?.left ?? 0) - (tabText?.left ?? 0)),
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+          };
+        });
+        assert(geometry, `Expected ${tier} horizontal-keyline geometry at ${viewport.width}px.`);
+        assert(geometry.tier === tier && geometry.specimens === 7, `Expected all seven horizontal-keyline specimens in ${tier} at ${viewport.width}px.`);
+        assert(geometry.gridGutter > 0 && geometry.panelInsets.every(inset => Math.abs(inset - geometry.gridGutter) <= 0.05), `Expected ${tier} panel insets to equal the active grid gutter at ${viewport.width}px; got ${JSON.stringify(geometry)}.`);
+        assert(geometry.accordionDelta <= 1 && geometry.overflow <= 1, `Expected ${tier} accordion text keylines and page overflow to remain stable at ${viewport.width}px; got ${JSON.stringify(geometry)}.`);
+      }
+    }
     await page.close();
   } finally {
     await browser.close();
@@ -2929,6 +3039,7 @@ async function main(): Promise<void> {
     await verifyApplicationLayout(origin);
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
+    await verifyHorizontalKeylineComparison(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);

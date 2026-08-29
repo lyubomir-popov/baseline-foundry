@@ -6,7 +6,7 @@
 
 **Status**: Active
 
-**Input**: Owner review of application navigation, search controls, document navigation, hero, linked-logo, quote-wrapper, tab-section, catalog hierarchy, and missing container-owned rhythm across bundled patterns.
+**Input**: Owner review of application navigation, search controls, document navigation, hero, linked-logo, quote-wrapper, tab-section, catalog hierarchy, horizontal keylines, tier-responsive footer density, and missing container-owned rhythm across bundled patterns.
 
 ## User Scenarios & Testing
 
@@ -115,20 +115,21 @@ indentation.
 half, and the quote wrapper creates unrelated fractional grids, visibly
 breaking cross-section keylines.
 
-**Independent Test**: At wide containers, the hero places its flush H1/H2 title
-block in the left half and supporting copy/actions in the right half, with
+**Independent Test**: At containers of 720px or wider, the hero places H1 in
+the left half and H2 plus supporting copy/actions in the right half, with
 optional media spanning the full layout. The quote header, signpost, quote,
-citation, CTA, and media align to one eight-column grid. At narrow containers
-both patterns collapse in source order without overflow and remain logical in
-RTL.
+citation, CTA, and media align to one eight-column grid. Below that practical
+hero threshold both patterns collapse in source order without overflow and
+remain logical in RTL.
 
 **Acceptance Scenarios**:
 
 1. **Given** a wide default hero, **When** its tracks are measured, **Then** its
-   title block occupies the left half, supporting content occupies the right
-   half, and full media spans both halves.
-2. **Given** an H1/H2 hero title pair, **When** rendered, **Then** it uses the
-   shared flush-stack contract and reads as one bold-to-light heading block.
+   H1 occupies the left half, H2 and supporting content occupy the right half,
+   and full media spans both halves.
+2. **Given** a hero container just above or below 720px, **When** rendered,
+   **Then** its 50/50 composition remains above the threshold and collapses
+   below it without using the earlier 1036px page breakpoint.
 3. **Given** a wide quote wrapper, **When** its tracks are measured, **Then**
    signpost/content resolve to 2/6 columns and quote/citation resolve to 4/2
    subgrid columns on the same eight-column keylines.
@@ -227,6 +228,65 @@ match; and specimen copy, grids, and chrome begin on one shared page keyline.
    hovered or activated, **Then** an element-qualified component rule prevents
    the generic anchor underline from leaking into that affordance.
 
+---
+
+### User Story 8 - One horizontal keyline system (Priority: P1)
+
+As a component author, I need controls, navigation, disclosures, and panels to
+show where their text deliberately departs from the paragraph keyline, using
+shared geometry rather than unrelated per-component indents.
+
+**Independent Test**: Open the horizontal-keyline comparison page in every
+tier and at wide and constrained widths. Accordion labels and panel copy share
+one computed text edge; panel insets follow the active main-grid gutter; and
+tabs, navigation, check/radio controls, fields, buttons, and text areas expose
+their intentional label/control offsets against one visible paragraph rail.
+
+**Acceptance Scenarios**:
+
+1. **Given** an expanded accordion, **When** the tab label and first panel text
+   are measured, **Then** both begin at the same inline coordinate, derived
+   from the disclosure icon size and disclosure gap variables.
+2. **Given** a panel at any shared grid breakpoint, **When** its header,
+   content, and footer are measured, **Then** their inline padding equals the
+   current `--bf-grid-gap-inline` value.
+3. **Given** the keyline comparison page, **When** a reviewer switches tier or
+   viewport, **Then** each specimen retains a visible paragraph reference rail
+   and names whether its departure is content, control chrome, or selection
+   mark geometry.
+4. **Given** a notification title followed by separate body copy, **When** the
+   pair is composed as a metric-flush relationship, **Then** the title's end
+   compensation and the copy's start nudge are both cancelled without a
+   negative gap or element-specific notification override.
+
+---
+
+### User Story 9 - Monotonic tier density and disciplined responsive CSS (Priority: P1)
+
+As a reviewer moving between tiers and viewport sizes, I need footer depth and
+pattern breakpoints to change predictably instead of becoming larger in a
+smaller-root tier or collapsing a usable composition prematurely.
+
+**Independent Test**: Compare site footers and heroes through Editorial,
+Documentation, App, and OS at the specified viewport brackets. Footer strip
+depth is non-increasing as root type reduces; Docs and App do not jump despite
+sharing the same body size; default heroes remain 50/50 at a 720px container;
+and a source audit reports no private page-chrome button paint, icon filters,
+styled data selectors, BEM aliases, or unexplained pattern breakpoints.
+
+**Acceptance Scenarios**:
+
+1. **Given** the four built-in tiers, **When** site-footer strip spacing and
+   rendered footer height are compared in Editorial → Documentation → App → OS
+   order, **Then** neither sequence increases.
+2. **Given** page-chrome Previous/Next controls in dark tone, **When** compared
+   with Diagram Generator's canonical controls, **Then** both use
+   `bf-button is-base is-icon` with the shared white chevron paint and no local
+   background, border, color, or filter override.
+3. **Given** component and pattern CSS, **When** media/container queries are
+   audited, **Then** shared page-grid thresholds and intentional intrinsic
+   thresholds are distinguishable, documented, and regression checked.
+
 ## Edge Cases
 
 - Icon navigation rows may contain a status chip, nested lists, wrapped labels,
@@ -278,8 +338,9 @@ match; and specimen copy, grids, and chrome begin on one shared page keyline.
   stacks between complete pattern areas.
 - **FR-011**: The pattern sweep MUST cover every active page in the pattern
   catalog and correct confirmed zero-gap semantic sibling defects.
-- **FR-012**: Wide heroes MUST use a 50/50 title/content grid by default and
-  MUST allow media to span the complete grid.
+- **FR-012**: Hero containers at least 45rem wide MUST use a 50/50 grid by
+  default, place H1 in the first track, place H2 and supporting content in the
+  second track, and allow media to span the complete grid.
 - **FR-013**: Quote wrappers MUST align header, signpost, content, quote,
   citation, actions, and media to a shared eight-column grid.
 - **FR-014**: BF prose blockquotes MUST render as plain body text without a
@@ -308,8 +369,9 @@ match; and specimen copy, grids, and chrome begin on one shared page keyline.
   media in columns 1-2 and content in columns 3-8; the existing media sizes
   MUST remain unchanged and the RTL fixture/modifier is not required.
 - **FR-025**: Notifications MUST use compact token-owned insets, align their
-  severity icon with the first text line, and model a bold lead plus regular
-  continuation as one semantic text run rather than a negative-gap utility.
+  severity icon with the first text line, use one semantic text run when lead
+  and continuation form one sentence, and use the shared metric-flush stack
+  modifier when distinct title/body blocks must visually abut.
 - **FR-026**: Sortable table headers MUST reserve indicator geometry in every
   sort state so activation changes no column width by more than 1px.
 - **FR-027**: The recurrence sweep MUST inspect all catalogued pages for bare
@@ -334,6 +396,27 @@ match; and specimen copy, grids, and chrome begin on one shared page keyline.
 - **FR-034**: The recurrence review MUST inspect the sibling Diagram Registry
   as read-only consumer evidence and MUST NOT introduce downstream overrides
   for defects owned by Baseline Foundry.
+- **FR-035**: Page-chrome sequence links MUST compose the same
+  `bf-button is-base is-icon` markup as Diagram Generator and MUST NOT carry
+  private button paint or icon filters.
+- **FR-036**: Expanded accordion panel text MUST align with its tab label using
+  `--bf-disclosure-icon-inline-size` plus `--bf-disclosure-gap`; copied font-size
+  or baseline arithmetic MUST NOT define that shared keyline.
+- **FR-037**: A reusable metric-flush stack modifier MUST cancel the preceding
+  text role's block-end compensation and the following text role's block-start
+  nudge while retaining ordinary role typography and avoiding negative gaps.
+- **FR-038**: Site-footer strip spacing and rendered height MUST be
+  non-increasing in Editorial → Documentation → App → OS order; equal body-size
+  tiers MAY use equal spacing.
+- **FR-039**: Panel header, content, and footer inline padding MUST resolve from
+  the active `--bf-grid-gap-inline`, with the configured panel value retained
+  only as a fallback for custom surfaces that omit grid tokens.
+- **FR-040**: A catalogued horizontal-keyline comparison page MUST include
+  paragraph, tabs, side navigation, check/radio, accordion, inputs, buttons,
+  textarea, and panel specimens in all four tiers.
+- **FR-041**: Responsive CSS review MUST classify shared grid thresholds and
+  component-intrinsic thresholds and MUST reject one-off demo overrides that
+  restyle public component paint.
 
 ## Success Criteria
 
@@ -350,8 +433,9 @@ match; and specimen copy, grids, and chrome begin on one shared page keyline.
 - **SC-004**: Every pattern identified by the pre-implementation audit as a
   zero-gap semantic-sibling defect has an explicit flush, dense, or shallow
   stack owner and a regression assertion.
-- **SC-005**: Wide hero title/content tracks are equal within 1px and full media
-  spans their combined width; narrow and RTL fixtures have at most 1px overflow.
+- **SC-005**: At a 720px hero container the two tracks are equal within 1px,
+  H1 begins in track one, H2 begins in track two, and full media spans their
+  combined width; below 720px the layout is one track with at most 1px overflow.
 - **SC-006**: Wide quote-wrapper outer tracks resolve to two and six shared grid
   columns, and quote/citation edges align to four and two content subgrid
   columns within 1px.
@@ -377,6 +461,18 @@ match; and specimen copy, grids, and chrome begin on one shared page keyline.
 - **SC-015**: The public/demo typography sweep reports no unexplained fixed
   sub-body UI size and browser interaction checks report no accidental
   underline on component affordances.
+- **SC-016**: Accordion tab-label and expanded-panel text edges differ by at
+  most 1px in every tier and direction.
+- **SC-017**: Metric-flush notification title/copy pairs have no semantic stack
+  gap, a visual glyph gap no greater than one baseline, and remain baseline
+  aligned in all four tiers.
+- **SC-018**: Site-footer strip spacing and height are non-increasing across the
+  ordered tier sequence at wide and constrained test widths.
+- **SC-019**: Panel inline padding equals the current grid gutter within 1px at
+  the x-small, small/medium, and large viewport brackets.
+- **SC-020**: Static CSS-practice checks find no private sequence-button paint,
+  icon inversion filter, styled data selector, BEM public alias, `!important`,
+  or undocumented hero breakpoint in the affected source/demo surfaces.
 
 ## Assumptions
 
@@ -393,4 +489,6 @@ match; and specimen copy, grids, and chrome begin on one shared page keyline.
   more predictable than one global alphabet, while Overview, chapters, and
   tier references retain their intentional learning/density sequence.
 - A negative-gap family is deliberately excluded: negative `gap` is invalid
-  CSS and baseline subtraction would drift across arbitrary role pairs.
+  CSS. The narrowly defined `is-metric-flush` parent modifier cancels only the
+  adjacent roles' metric compensation/nudge and does not subtract a guessed
+  baseline multiple.

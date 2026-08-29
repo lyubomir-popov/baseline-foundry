@@ -32,7 +32,7 @@ verified through direct and class-scoped paths.
 
 **Constraints**: Container-owned semantic spacing; metric compensation retained; flat public API; logical CSS; direct/scoped four-tier parity; generated `dist/` never hand-edited
 
-**Scale/Scope**: Three navigation/search families, one catalog, all active pattern demos, two site composition grids, four tiers
+**Scale/Scope**: Three navigation/search families, one catalog, all active pattern demos, two site composition grids, one horizontal-keyline atlas, four tiers
 
 ## Constitution Check
 
@@ -55,7 +55,10 @@ verified through direct and class-scoped paths.
   Spec 015 is recorded as merged and superseded where owner review changed its
   TOC decisions.
 
-Post-design re-check: pending implementation.
+Post-design re-check: PASS for the first three review phases. The fourth pass
+adds one earned relationship modifier (`bf-stack is-metric-flush`), derives
+accordion/panel geometry from existing public variables, and changes tier
+producer values rather than consumer CSS. No exception is required.
 
 ## Project Structure
 
@@ -78,9 +81,11 @@ specs/016-component-pattern-consistency/
 ```text
 src/css.ts
 src/css-components.ts
-src/css-components/{legacy-navigation,search-box-and-filter,document-navigation,sites-editorial-ports,linked-logo-site-layout,tab-section}.ts
+src/css-components/{legacy-navigation,search-box-and-filter,document-navigation,sites-editorial-ports,linked-logo-site-layout,tab-section,panel,interactive-feedback}.ts
+config/tiers/{editorial,documentation,app,os}.json
 demo/{page-catalog,page-chrome,tier-reference}.js
 demo/tiers/*.html
+examples/spacing/horizontal-keylines.{html,css}
 demo/components/{index,application-layout,narrow-panel,search-and-filter,table-of-contents,hero,linked-logo-section,quote-wrapper,tab-section,...}.html
 demo/patterns/index.html
 scripts/{validate-build,verify-component-behavior}.ts

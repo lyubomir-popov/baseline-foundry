@@ -7,6 +7,7 @@ export function panelCss(options: PanelCssOptions): string {
   const { bodyTypeStyles, h4TypeStyles } = options;
 
   return `:where(.bf-theme) :where(.bf-panel) {
+  --bf-panel-content-padding-inline: var(--bf-grid-gap-inline, var(--bf-panel-padding-inline));
   background: var(--bf-color-background-default);
   color: var(--bf-color-text-default);
   display: flex;
@@ -29,6 +30,9 @@ export function panelCss(options: PanelCssOptions): string {
   overscroll-behavior: contain;
 }
 
+/* Panel chrome and content consume the live page-grid gutter through a local
+ * derived property, so their internal text rails follow the same
+ * viewport brackets as surrounding page content. */
 :where(.bf-theme) :where(.bf-panel-header) {
   align-items: start;
   display: flex;
@@ -37,7 +41,7 @@ export function panelCss(options: PanelCssOptions): string {
   justify-content: space-between;
   padding-block-end: var(--bf-panel-padding-block);
   padding-block-start: var(--bf-panel-padding-block);
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));
 }
 
 /* A navigation brand keeps the Canonical tag attached to the panel's top edge
@@ -47,7 +51,7 @@ export function panelCss(options: PanelCssOptions): string {
   gap: 0;
   padding-block: 0;
   padding-inline-end: 0;
-  padding-inline-start: var(--bf-panel-padding-inline);
+  padding-inline-start: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));
 }
 
 :where(.bf-theme) :where(.bf-panel-header.is-navigation-brand) > :where(.bf-top-navigation-logo.is-canonical-tagged) {
@@ -81,7 +85,7 @@ export function panelCss(options: PanelCssOptions): string {
   min-block-size: calc(var(--bf-control-box-size-compact) + var(--bf-panel-padding-block));
   padding-block-end: var(--bf-panel-padding-block);
   padding-block-start: 0;
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));
 }
 
 :where(.bf-theme) :where(.bf-panel-footer.is-sticky) {
@@ -142,7 +146,7 @@ ${bodyTypeStyles}  align-items: center;
   min-block-size: 0;
   padding-block-end: var(--bf-panel-padding-block);
   padding-block-start: var(--bf-panel-padding-block);
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));
 }
 
 :where(.bf-theme) :where(.bf-panel-content.is-flush) {

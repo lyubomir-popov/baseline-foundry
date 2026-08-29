@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 016 Component and pattern consistency | [`016-component-pattern-consistency/`](../specs/016-component-pattern-consistency/) | Active on `feat/016-component-pattern-consistency`; all three review passes complete and ready for owner acceptance. |
+| 016 Component and pattern consistency | [`016-component-pattern-consistency/`](../specs/016-component-pattern-consistency/) | Ready for owner review on `feat/016-component-pattern-consistency`; all four implementation and adversarial-review passes are complete and green. |
 
 ## Archive
 

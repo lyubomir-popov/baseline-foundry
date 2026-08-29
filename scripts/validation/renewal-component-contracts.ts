@@ -188,7 +188,7 @@ export function validateRenewalComponentContracts(
   assert(css.includes("padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to retain its wide space-3 entry boundary without border drift.");
   assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
   assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && !css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child) {\n  inline-size: 100%;\n  margin-block-end: 0;"), "Expected hero to expose a structural lead without a final-child semantic-margin reset.");
-  assert(css.includes("@container bf-hero (width >= 38.75rem)") && css.includes("@container bf-hero (width >= 64.75rem)") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero to expose medium/large descendant queries and the fallback introduction rail.");
+  assert(css.includes("@container bf-hero (width >= 38.75rem)") && css.includes("@container bf-hero (width >= 45rem)") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero to expose its explicit medium modifier, measured 720px default split, and fallback introduction rail.");
   assert(css.includes(".bf-hero-chip.bf-chip") && css.includes("column-gap: var(--bf-space-1);"), "Expected hero chip composition to map the Vanilla icon/value gap to the BF chip and space-1 tokens.");
   assert(css.includes("container-name: bf-quote-wrapper;") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected quote wrapper to preserve the 25/75 signpost/content rail.");
   assert(css.includes(".bf-quote-wrapper-quote-row)"), "Expected quote wrapper to expose a dedicated quote/citation rail.");
@@ -399,6 +399,7 @@ export function validateRenewalComponentContracts(
   const heroHtml = pages.hero ?? "";
   assert(heroHtml.includes("data-component-capture") && heroHtml.includes("data-baseline-check") && heroHtml.includes("data-overflow-check"), "Expected hero to expose capture, baseline, and overflow fixture markers.");
   assert(heroHtml.includes("bf-hero-layout") && heroHtml.includes("bf-hero-title") && heroHtml.includes("bf-hero-content") && heroHtml.includes("bf-hero-media") && heroHtml.includes("bf-hero-chip"), "Expected hero to cover title, content, media, chip, and layout slots.");
+  assert(/bf-hero-title bf-stack is-flush">\s*<h1 id="hero-default-title"[\s\S]*?<\/header>\s*<div class="bf-hero-content bf-stack is-dense">\s*<h2/.test(heroHtml), "Expected the default hero to place H1 in the left title rail and H2 at the start of the right content rail.");
   assert(heroHtml.includes("bf-hero bf-stack") && heroHtml.includes("bf-hero-lead bf-hero-layout") && heroHtml.includes("bf-figure bf-hero-media is-full is-light-inset") && heroHtml.indexOf("bf-hero-lead bf-hero-layout") < heroHtml.indexOf("bf-figure bf-hero-media is-full"), "Expected hero to cover a split lead followed by light-inset closing media inside the pattern.");
   assert((heroHtml.match(/bf-hero-title bf-stack is-flush/g) ?? []).length >= 3, "Expected paired hero headings to share the reusable flush title-stack contract.");
   assert(heroHtml.includes("is-25-75") && heroHtml.includes("is-75-25") && heroHtml.includes("is-fallback") && heroHtml.includes("is-split-medium") && heroHtml.includes("is-borderless"), "Expected hero to cover 50/50, 25/75, 75/25, fallback, and borderless compositions.");
@@ -427,7 +428,7 @@ export function validateRenewalComponentContracts(
     ["content-card", "bf-content-card-primary bf-stack is-dense", 7],
     ["data-spotlight", "bf-data-spotlight-item bf-stack is-dense", 9],
     ["divided-section", "bf-divided-section-item bf-stack is-dense", 3],
-    ["notification", "bf-notification-content bf-stack is-extra-dense", 2],
+    ["notification", "bf-notification-content bf-stack is-metric-flush", 4],
     ["logo-section", "bf-stack is-section-shallow", 2],
     ["media-object", "bf-media-object-content bf-stack is-dense", 2],
     ["tiered-list", "bf-tiered-list-cta-block bf-stack is-dense", 1],
@@ -518,7 +519,7 @@ export function validateRenewalComponentContracts(
   assert(notificationHtml.includes("data-component-capture") && notificationHtml.includes("data-baseline-check") && notificationHtml.includes("data-overflow-container"), "Expected notification to expose capture, baseline, and overflow fixture markers.");
   assert(notificationHtml.includes("bf-notification is-information") && notificationHtml.includes("bf-notification is-positive") && notificationHtml.includes("bf-notification is-caution") && notificationHtml.includes("bf-notification is-negative"), "Expected notification to cover all severity variants.");
   assert(notificationHtml.includes("bf-notification-meta") && notificationHtml.includes("bf-notification-actions") && notificationHtml.includes("bf-notification-close"), "Expected notification to cover metadata, actions, and dismissal contracts.");
-  assert((notificationHtml.match(/bf-notification-content bf-stack is-extra-dense/g) ?? []).length === 2 && (notificationHtml.match(/bf-notification-content bf-stack is-dense/g) ?? []).length === 2, "Expected simple notification title/body groups to use compact rhythm while metadata-bearing groups retain a full-baseline internal gap.");
+  assert((notificationHtml.match(/bf-notification-content bf-stack is-metric-flush/g) ?? []).length === 4, "Expected every separate notification title/body pair to use the shared metric-flush relationship.");
   assert(notificationHtml.includes('<p class="bf-notification-message" data-baseline-ignore="true"><strong id="notification-caution-title">Review required:</strong>') && !notificationHtml.includes('id="notification-caution-title" class="bf-notification-title'), "Expected the inline notification to express a single sentence as strong and regular spans in one body metric box.");
   assert(!/class="[^"]*\b(?:p|ui)-[a-z][a-z0-9_-]*/.test(notificationHtml), "Expected notification markup to avoid deprecated p-/ui-* APIs.");
 

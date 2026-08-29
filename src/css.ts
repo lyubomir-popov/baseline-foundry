@@ -189,6 +189,17 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
   const roleRules = Object.entries(tokens.roles)
     .map(([roleName, token]) => textRule(roleName, selectorsForRole(roleName), token, baselineUnit, EXTRA_STYLES_BY_ROLE[roleName] ?? ""))
     .join("\n");
+  const semanticMetricFlushSelectors = Object.keys(tokens.roles).flatMap(roleName => {
+    if (roleName === "body") return ["p"];
+    if (/^h[1-6]$/.test(roleName)) return [roleName];
+    if (roleName === "meta") return ["figcaption"];
+    return [];
+  });
+  const metricFlushTextSelectors = [...new Set([
+    "blockquote",
+    ...semanticMetricFlushSelectors,
+    ...Object.keys(tokens.roles).map(roleName => `.bf-${roleName}`)
+  ])].join(", ");
 
   const capEngineDemo = `/* DEMO ONLY — Cap-derived nudges are unreliable (ascender ≠ cap height).\n   The approximation (line-height + 1cap) / 2 drifts at larger sizes.\n   Kept as a reference for why metrics-derived nudges are used instead. */\n` +
     Object.entries(tokens.roles)
@@ -380,6 +391,13 @@ ${generateBaselineGridThemeOverrideCss()}
   --bf-stack-space: 0px;
 }
 
+/* A metric-flush stack is an explicit relationship between adjacent text
+ * roles. It retains the outer role nudges while cancelling only the preceding
+ * end compensation and following start nudge; no guessed negative gap is used. */
+:where(.bf-theme) :where(.bf-stack.is-metric-flush) {
+  --bf-stack-space: 0px;
+}
+
 :where(.bf-theme) :where(.bf-stack.is-extra-dense) {
   --bf-stack-space: var(--bf-space-half);
 }
@@ -422,6 +440,14 @@ ${generateBaselineGridThemeOverrideCss()}
 }
 
 ${roleRules}
+
+:where(.bf-theme) .bf-stack.is-metric-flush > :where(${metricFlushTextSelectors}):has(+ :where(${metricFlushTextSelectors})) {
+  margin-block-end: 0;
+}
+
+:where(.bf-theme) .bf-stack.is-metric-flush > :where(${metricFlushTextSelectors}) + :where(${metricFlushTextSelectors}) {
+  padding-block-start: 0;
+}
 
 ${capEngineDemo}
 

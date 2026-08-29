@@ -8,8 +8,8 @@
  * Vanilla → BF spacing mapping:
  * - Hero's `$spv--large` / `$spv--x-large` top boundary → `space-2` /
  *   `space-3`; the surrounding stack owns the section exit.
- * - The 50/50, 25/75 and 75/25 grid relationships use BF's intrinsic grid
- *   and gutter token at Vanilla's 620px / 1036px composition thresholds.
+ * - The default 50/50 relationship remains viable from a measured 720px
+ *   allocation; explicit 25/75 and 75/25 variants retain their own thresholds.
  * - Quote-wrapper's signpost/content and quote/citation relationships use
  *   the same 25/75 and 2/1 proportions. A quotation itself remains the
  *   existing semantic BF prose `blockquote`; it is not recreated as a
@@ -105,11 +105,8 @@ export function sitesEditorialPortsCss(): string {
   inline-size: 100%;
 }
 
-/* Vanilla's desktop hero boundary is 1036px. The layout descendant responds
-   to the root container so embedding it in a narrower rail still collapses
-   correctly. */
-/* The section boundary itself follows Vanilla's page-level desktop switch;
-   the composition below continues to react to the allocated container. */
+/* The section boundary follows the page-level desktop switch, while the
+   two-column composition uses its measured intrinsic allocation below. */
 @media (width >= 64.75rem) {
   :where(.bf-theme) :where(.bf-hero) {
     padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));
@@ -120,7 +117,7 @@ export function sitesEditorialPortsCss(): string {
   }
 }
 
-@container bf-hero (width >= 64.75rem) {
+@container bf-hero (width >= 45rem) {
   :where(.bf-theme) :where(.bf-hero-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -116,28 +116,6 @@ body.u-baseline-grid::after {
   margin-inline-start: auto;
 }
 
-a.pc-sequence-link,
-a.pc-sequence-link:visited {
-  background: #ffffff;
-  border-color: #ffffff;
-  color: #111111;
-  min-inline-size: var(--bf-control-box-size);
-  padding-inline: var(--bf-control-inline-padding-action);
-  text-decoration: none;
-}
-
-a.pc-sequence-link:hover,
-a.pc-sequence-link:active {
-  background: #f2f2f2;
-  border-color: #f2f2f2;
-  color: #111111;
-  text-decoration: none;
-}
-
-a.pc-sequence-link > .bf-icon {
-  filter: invert(1);
-}
-
 .pc-footer-bar {
   align-items: center;
   display: flex;

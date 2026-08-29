@@ -5,10 +5,11 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-Spec 016 component and pattern consistency is active on
-`feat/016-component-pattern-consistency`. All three owner-review implementation
-passes, recurrence audits, and closeout gates are complete; the package is
-waiting for owner acceptance.
+Spec 016 component and pattern consistency is ready for owner review on
+`feat/016-component-pattern-consistency`. The first three passes are merged to
+local `main` at `1e8a483`; the fourth canonical-button, keyline, breakpoint,
+tier-density, and comparison-page pass is complete and green on the feature
+branch.
 
 ## Candidate order after Spec 001
 

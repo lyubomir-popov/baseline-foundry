@@ -87,10 +87,43 @@
   perform and record the third adversarial review with no unresolved high- or
   medium-severity findings.
 
+## Phase 9: Fourth owner-review keylines and tier-responsive density
+
+- [x] T038 [US9] Reopen Spec 016 with canonical sequence-button, 45rem hero,
+  accordion keyline, metric-flush, monotonic footer, panel-gutter, breakpoint
+  taxonomy, and horizontal-keyline comparison contracts in
+  `specs/016-component-pattern-consistency/`.
+- [x] T039 [US9] Replace page-chrome sequence paint with the canonical
+  Diagram Generator `bf-button is-base is-icon` composition and add CSS-practice
+  assertions in `demo/page-chrome.{js,css}` and `scripts/validate-build.ts`.
+- [x] T040 [US8] Put hero H2 at the start of the right content rail, keep the
+  default 50/50 layout through the 45rem container threshold, and extend
+  `src/css-components/sites-editorial-ports.ts`, `demo/components/hero.html`,
+  and browser contracts.
+- [x] T041 [US8] Derive accordion panel start from disclosure icon/gap variables
+  and add the reusable `bf-stack is-metric-flush` relationship in
+  `src/css-components.ts`, `src/css.ts`, and notification demo/contracts.
+- [x] T042 [US9] Make site-footer strip spacing monotonic and panel inline
+  padding follow the active grid gutter in `config/tiers/*.json`,
+  `src/css-components.ts`, and `src/css-components/panel.ts`.
+- [x] T043 [US8] Add and catalog the live horizontal-keyline comparison at
+  `examples/spacing/horizontal-keylines.html` with minimal specimen framing CSS
+  and static/browser assertions.
+- [x] T044 [US9] Complete the source CSS-practice and breakpoint taxonomy sweep,
+  record attributable findings in `research.md`, and resolve in-scope producer
+  violations without downstream overrides.
+- [x] T045 Run focused generation/static/behavior checks, visually review every
+  affected route in all four tiers and constrained widths, then run `npm test`
+  and `npm run qa:components`.
+- [x] T046 Perform and record the fourth adversarial API/accessibility/geometry
+  review in `specs/016-component-pattern-consistency/review.md` with no
+  unresolved high- or medium-severity findings.
+
 ## Dependencies
 
 - T004-T006, T007-T009, T010-T012, and T013-T016 depend on T001-T003.
 - T017-T021 depend on all user stories.
+- T039-T044 depend on T038; T045-T046 depend on T039-T044.
 
 ## Parallel opportunities
 

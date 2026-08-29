@@ -32,6 +32,7 @@ Review each route in Editorial, Documentation, App, and OS:
 - `/examples/grid/app-panels.html`
 - `/examples/grid/editorial-site.html`
 - `/demo/spec/typographic-specimen.html`
+- `/examples/spacing/horizontal-keylines.html`
 
 At desktop and constrained widths check focus, wrapping, overflow, hidden tab
 panels, popup stacking, global baseline coverage, page gutters, Previous/Next
@@ -42,6 +43,13 @@ For the third owner-review pass also verify plain `hr`/`.bf-rule` equivalence,
 body-sized breadcrumb/control typography, chevron-only top navigation, fixed
 bottom controls and final-content clearance, absence of accidental component
 anchor underlines, and one horizontal gutter across nested fixed-width regions.
+
+For the fourth owner-review pass verify canonical base/icon sequence controls,
+H1-left/H2-right hero composition at 719/720px container brackets, accordion
+tab/panel text-edge equality, metric-flush notification title/copy, monotonic
+site-footer height, panel-padding/grid-gutter equality, and every specimen on
+the horizontal-keyline comparison page. Reset the temporary browser viewport
+after the pass.
 
 ## Closeout
 

@@ -961,6 +961,8 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
 
     await page.goto(`${origin}/demo/components/sticky-footer.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    const footerHeightProgression = new Map<string, number[]>();
+    const footerStripProgression = new Map<string, number[]>();
     for (const tier of tiers) {
       const tierSelect = page.locator("[data-page-chrome-tier-select]");
       await tierSelect.selectOption(tier);
@@ -1008,6 +1010,8 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
             longMainOverflow: longMain.scrollHeight - longMain.clientHeight,
             longShellTallerThanOwner: longShell.getBoundingClientRect().height > longScrollRect.height + 1,
             longFooterReachable: longScrollOwner.scrollHeight >= longFooter.offsetTop + longFooter.offsetHeight - 1,
+            shortFooterHeight: shortFooter.getBoundingClientRect().height,
+            stripSpace: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-strip-space")),
             shortOverflow: shortShell.scrollWidth - shortShell.clientWidth,
             longOverflow: longShell.scrollWidth - longShell.clientWidth
           };
@@ -1019,7 +1023,14 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
         assert(state.longMainOverflow <= 1, `Expected ${tier} long sticky-footer main not to shrink below its content ${viewport.label}; overflow=${state.longMainOverflow}px.`);
         assert(state.longShellTallerThanOwner && state.longFooterReachable, `Expected ${tier} application main to scroll to the complete long shell and footer ${viewport.label}.`);
         assert(state.shortOverflow <= 1 && state.longOverflow <= 1, `Expected ${tier} nested sticky-footer shells to avoid inline overflow ${viewport.label}.`);
+        footerHeightProgression.set(viewport.label, [...(footerHeightProgression.get(viewport.label) ?? []), state.shortFooterHeight]);
+        footerStripProgression.set(viewport.label, [...(footerStripProgression.get(viewport.label) ?? []), state.stripSpace]);
       }
+    }
+    for (const [label, heights] of footerHeightProgression) {
+      assert(heights.every((height, index) => index === 0 || height <= heights[index - 1] + 0.1), `Expected site-footer height not to increase across Editorial/Documentation/App/OS ${label}; got ${heights.join(" >= ")}px.`);
+      const spaces = footerStripProgression.get(label) ?? [];
+      assert(spaces.every((space, index) => index === 0 || space <= spaces[index - 1] + 0.1), `Expected site-footer strip spacing not to increase across Editorial/Documentation/App/OS ${label}; got ${spaces.join(" >= ")}px.`);
     }
 
     await page.goto(`${origin}/demo/components/hero.html`, { waitUntil: "networkidle" });
@@ -1077,6 +1088,38 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
         }));
         assert(borderlessState.borderStyle === "none" && borderlessState.borderWidth === 0, `Expected ${tier} borderless hero to remove only its entry rule ${viewport.label}.`);
         assert(borderlessState.overflow <= 1, `Expected ${tier} borderless hero to avoid inline overflow ${viewport.label}.`);
+      }
+
+      for (const allocation of [
+        { width: "44.9375rem", columns: 1, label: "at 719px" },
+        { width: "45rem", columns: 2, label: "at 720px" }
+      ] as const) {
+        const split = await page.locator(".bf-hero").nth(1).evaluate((root, expected) => {
+          const hero = root as HTMLElement;
+          hero.style.inlineSize = expected.width;
+          const layout = hero.querySelector<HTMLElement>(":scope > .bf-hero-layout");
+          const title = layout?.querySelector<HTMLElement>(":scope > .bf-hero-title");
+          const content = layout?.querySelector<HTMLElement>(":scope > .bf-hero-content");
+          const h1 = title?.querySelector<HTMLElement>("h1");
+          const h2 = content?.querySelector<HTMLElement>("h2");
+          const media = layout?.querySelector<HTMLElement>(":scope > .bf-hero-media.is-full");
+          if (!layout || !title || !content || !h1 || !h2 || !media) return null;
+          const layoutRect = layout.getBoundingClientRect();
+          const titleRect = title.getBoundingClientRect();
+          const contentRect = content.getBoundingClientRect();
+          const mediaRect = media.getBoundingClientRect();
+          return {
+            columns: getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length,
+            h1InTitle: h1.parentElement === title,
+            h2InContent: h2.parentElement === content,
+            equalTracks: Math.abs(titleRect.width - contentRect.width) <= 1,
+            mediaWidthDelta: Math.abs(layoutRect.width - mediaRect.width),
+            overflow: hero.scrollWidth - hero.clientWidth
+          };
+        }, allocation);
+        assert(split, `Expected ${tier} default hero split geometry ${allocation.label}.`);
+        assert(split.columns === allocation.columns && split.h1InTitle && split.h2InContent && split.mediaWidthDelta <= 1 && split.overflow <= 1, `Expected ${tier} hero to place H1 left/H2 right and use ${allocation.columns} column(s) ${allocation.label}; got ${JSON.stringify(split)}.`);
+        if (allocation.columns === 2) assert(split.equalTracks, `Expected ${tier} default hero tracks to remain 50/50 ${allocation.label}.`);
       }
     }
 

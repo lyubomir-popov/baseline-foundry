@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spacing Example: Horizontal Keylines</title>
+  <link id="example-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../../demo/page-chrome.css">
+  <link rel="stylesheet" href="./spacing-examples.css">
+  <link rel="stylesheet" href="./horizontal-keylines.css">
+</head>
+<body class="bf-theme bf-tier-editorial is-dark" data-bf-tone="dark">
+  <script src="../../demo/example-page-init.js"></script>
+  <main class="example-grid-target bf-stack is-section" data-example-grid-target data-horizontal-keyline-page>
+    <header class="bf-fixed-width bf-stack is-dense">
+      <h1>Horizontal keylines</h1>
+      <p>The caution rail marks the paragraph keyline. Each live specimen shows whether text stays on that rail or departs because of control chrome, a disclosure or selection mark, or a panel gutter.</p>
+    </header>
+
+    <section class="bf-fixed-width bf-stack is-section-shallow keyline-board" aria-labelledby="keyline-components-title">
+      <h2 id="keyline-components-title" class="bf-h4">Navigation and disclosure</h2>
+
+      <article class="bf-stack is-dense keyline-specimen" data-keyline-specimen="tabs">
+        <header class="bf-stack is-metric-flush"><h3 class="bf-h5">Tabs</h3><p class="bf-meta">Departure owner: action padding inside each tab.</p></header>
+        <div class="bf-stack is-dense keyline-rail">
+          <p class="keyline-reference">Paragraph reference</p>
+          <div class="bf-tabs">
+            <ul class="bf-tabs-list" role="tablist">
+              <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="keyline-tabs-panel-one" tabindex="0">Overview</button></li>
+              <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="keyline-tabs-panel-two" tabindex="-1">Settings</button></li>
+            </ul>
+            <div id="keyline-tabs-panel-one" class="bf-tabs-panel" role="tabpanel" aria-hidden="false"><p>Selected panel content returns to the component content rail.</p></div>
+            <div id="keyline-tabs-panel-two" class="bf-tabs-panel" role="tabpanel" aria-hidden="true"><p>Hidden settings content.</p></div>
+          </div>
+        </div>
+      </article>
+
+      <hr class="bf-rule">
+
+      <article class="bf-stack is-dense keyline-specimen" data-keyline-specimen="side-navigation">
+        <header class="bf-stack is-metric-flush"><h3 class="bf-h5">Side navigation</h3><p class="bf-meta">Departure owner: navigation item padding and nested disclosure depth.</p></header>
+        <div class="bf-stack is-dense keyline-rail">
+          <p class="keyline-reference">Paragraph reference</p>
+          <nav class="bf-side-navigation keyline-nav" aria-label="Keyline comparison navigation">
+            <ul class="bf-side-navigation-list">
+              <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#keyline-components-title"><span class="bf-side-navigation-label">Overview</span></a></li>
+              <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" aria-current="page" href="#keyline-components-title"><span class="bf-side-navigation-label">Active section</span></a></li>
+            </ul>
+          </nav>
+        </div>
+      </article>
+
+      <hr class="bf-rule">
+
+      <article class="bf-stack is-dense keyline-specimen" data-keyline-specimen="accordion">
+        <header class="bf-stack is-metric-flush"><h3 class="bf-h5">Accordion</h3><p class="bf-meta">Departure owner: one shared disclosure icon plus gap; header and panel text must align.</p></header>
+        <div class="bf-stack is-dense keyline-rail">
+          <p class="keyline-reference">Paragraph reference</p>
+          <div class="bf-accordion">
+            <ul class="bf-accordion-list bf-stack is-dense">
+              <li class="bf-accordion-group">
+                <div class="bf-accordion-heading"><button class="bf-accordion-tab" type="button" aria-expanded="true" aria-controls="keyline-accordion-panel">Disclosure label</button></div>
+                <div id="keyline-accordion-panel" class="bf-accordion-panel bf-stack is-dense" aria-hidden="false"><p>Expanded panel text shares the disclosure label keyline.</p></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="bf-fixed-width bf-stack is-section-shallow keyline-board" aria-labelledby="keyline-controls-title">
+      <h2 id="keyline-controls-title" class="bf-h4">Selection and field controls</h2>
+
+      <article class="bf-stack is-dense keyline-specimen" data-keyline-specimen="choices">
+        <header class="bf-stack is-metric-flush"><h3 class="bf-h5">Checkboxes and radios</h3><p class="bf-meta">Departure owner: selection mark size plus the shared mark-to-label gap.</p></header>
+        <div class="bf-stack is-dense keyline-rail">
+          <p class="keyline-reference">Paragraph reference</p>
+          <div class="bf-stack is-dense">
+            <div class="bf-checkbox"><input id="keyline-checkbox" class="bf-checkbox-input" type="checkbox" checked><label class="bf-checkbox-label" for="keyline-checkbox">Show keyline guides</label></div>
+            <div class="bf-radio"><input id="keyline-radio" class="bf-radio-input" name="keyline-radio" type="radio" checked><label class="bf-radio-label" for="keyline-radio">Use the shared gutter</label></div>
+          </div>
+        </div>
+      </article>
+
+      <hr class="bf-rule">
+
+      <article class="bf-stack is-dense keyline-specimen" data-keyline-specimen="fields">
+        <header class="bf-stack is-metric-flush"><h3 class="bf-h5">Inputs and text areas</h3><p class="bf-meta">Departure owner: field border and `--bf-control-inline-padding-field`.</p></header>
+        <div class="bf-stack is-dense keyline-rail">
+          <p class="keyline-reference">Paragraph reference</p>
+          <label class="bf-field" for="keyline-input"><span class="bf-form-label">Project name</span><span class="bf-control"><input id="keyline-input" class="bf-input" type="text" value="Baseline Foundry"></span></label>
+          <label class="bf-field" for="keyline-textarea"><span class="bf-form-label">Notes</span><span class="bf-control"><textarea id="keyline-textarea" class="bf-input" rows="3">The text-area value uses the same field inset as the text input.</textarea></span></label>
+        </div>
+      </article>
+
+      <hr class="bf-rule">
+
+      <article class="bf-stack is-dense keyline-specimen" data-keyline-specimen="buttons">
+        <header class="bf-stack is-metric-flush"><h3 class="bf-h5">Buttons</h3><p class="bf-meta">Departure owner: action padding; the button border itself remains on the paragraph rail.</p></header>
+        <div class="bf-stack is-dense keyline-rail">
+          <p class="keyline-reference">Paragraph reference</p>
+          <div class="bf-cluster keyline-control-row"><button class="bf-button" type="button">Save changes</button><button class="bf-button is-base" type="button">Cancel</button></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="bf-fixed-width bf-stack is-section-shallow keyline-board" aria-labelledby="keyline-panel-title">
+      <h2 id="keyline-panel-title" class="bf-h4">Panel gutter</h2>
+      <article class="bf-stack is-dense keyline-specimen" data-keyline-specimen="panel">
+        <header class="bf-stack is-metric-flush"><h3 class="bf-h5">Header, content, and footer</h3><p class="bf-meta">Departure owner: the active <code>--bf-grid-gap-inline</code> main-grid gutter at this viewport.</p></header>
+        <div class="bf-stack is-dense keyline-rail">
+          <p class="keyline-reference">Paragraph reference</p>
+          <section class="bf-panel keyline-panel">
+            <header class="bf-panel-header"><h4 class="bf-panel-title">Panel heading</h4></header>
+            <div class="bf-panel-content bf-stack is-dense"><p>Panel text begins one live grid gutter after the outer paragraph rail.</p><label class="bf-field" for="keyline-panel-input"><span class="bf-form-label">Panel field</span><span class="bf-control"><input id="keyline-panel-input" class="bf-input" type="text" value="Aligned content"></span></label></div>
+            <footer class="bf-panel-footer"><button class="bf-button is-base" type="button">Close</button><button class="bf-button" type="button">Apply</button></footer>
+          </section>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="../../demo/example-page.js"></script>
+</body>
+</html>

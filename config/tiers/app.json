@@ -98,7 +98,7 @@
     "sectionSpaceBaselineUnits": 4,
     "sectionSpaceShallowBaselineUnits": 2,
     "sectionSpaceDeepBaselineUnits": 8,
-    "stripSpaceBaselineUnits": 16,
+    "stripSpaceBaselineUnits": 12,
     "gridGapInlineBaselineUnits": 6,
     "gridGapBlockBaselineUnits": 6,
     "pageMarginBaselineUnits": 8
