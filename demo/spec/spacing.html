@@ -9,64 +9,53 @@
 </head>
 <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">
   <main class="bf-page is-fill" id="spec-grid-target">
+    <div class="bf-stack is-section">
+      <header class="bf-stack is-dense">
+        <h1>Spacing</h1>
+        <p class="bf-body">One ownership model governs every built-in tier: containers express semantic relationships, while text retains only the metric adjustments required for baseline alignment.</p>
+      </header>
 
-    <div class="bf-stack bf-section">
-      <nav class="bf-cluster">
-        <a class="bf-text-link" href="../../index.html">Home</a>
-        <a class="bf-text-link" href="./typography.html">Typography</a>
-        <a class="bf-text-link" href="./spacing.html" aria-current="page">Spacing</a>
-        <a class="bf-text-link" href="./grid.html">Grid</a>
-        <a class="bf-text-link" href="./typographic-specimen.html">Specimen</a>
-        <a class="bf-text-link" href="../panel.html">OS tier</a>
-      </nav>
-    </div>
-
-    <div class="bf-stack bf-section">
-      <h2>Lorem ipsum dolor sit amet</h2>
-      <div class="bf-grid">
-        <div class="bf-span-4">
-          <div class="bf-prose">
-            <h3>Sed ut perspiciatis unde omnis</h3>
-            <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
-            <ul>
-              <li>Lorem ipsum dolor sit amet</li>
-              <li>Consectetur adipiscing elit</li>
-              <li>Sed do eiusmod tempor incididunt</li>
-            </ul>
-            <blockquote>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet.</blockquote>
-            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti.</p>
+      <section class="bf-stack is-section-shallow" aria-labelledby="spacing-ownership">
+        <h2 id="spacing-ownership">Ownership</h2>
+        <div class="bf-grid">
+          <div class="bf-span-4 bf-stack is-dense">
+            <h3 class="bf-h5">Containers express meaning</h3>
+            <p>Use <code>bf-stack</code> and its density modifiers for vertical relationships. Patterns may own a focused internal gap when their structure has a stable semantic meaning.</p>
+          </div>
+          <div class="bf-span-4 bf-stack is-dense">
+            <h3 class="bf-h5">Text retains metric geometry</h3>
+            <p>Heading and body roles keep their measured start nudge and complementary end margin. Those values align glyphs; they do not choose the semantic distance to the next sibling.</p>
           </div>
         </div>
-        <div class="bf-span-4">
-          <div class="bf-stack is-flush">
-            <p>Lorem ipsum dolor sit amet</p>
-            <p>Consectetur adipiscing elit</p>
-            <p>Sed do eiusmod tempor incididunt</p>
-            <p>Ut labore et dolore magna aliqua</p>
-            <p>Quis nostrud exercitation ullamco</p>
-          </div>
-        </div>
-      </div>
-    </div>
+      </section>
 
-    <div class="bf-stack bf-section">
-      <h2>Lorem ipsum</h2>
-      <ul>
-        <li><a href="../../examples/spacing/element-vs-container.html">Element-owned composition</a></li>
-        <li><a href="../../examples/spacing/bottom-only-resilience.html">Bottom-only resilience</a></li>
-        <li><a href="../../examples/spacing/semantic-spacing-stack.html">Semantic spacing stack</a></li>
-        <li><a href="../../examples/spacing/last-child-reset.html">Scoped boundary compensation</a></li>
-        <li><a href="../../examples/spacing/container-density.html">Component density</a></li>
-        <li><a href="../../examples/spacing/app-provisions.html">App provisions</a></li>
-        <li><a href="../../examples/spacing/border-compensation.html">Border compensation</a></li>
-        <li><a href="../../examples/spacing/nudge-baseline.html">Metrics-derived nudges</a></li>
-        <li><a href="../../examples/spacing/substitutability.html">Substitutability</a></li>
-        <li><a href="../../examples/spacing/horizontal-sibling.html">Horizontal sibling</a></li>
-      </ul>
-    </div>
+      <section class="bf-stack is-section-shallow" aria-labelledby="spacing-scale">
+        <h2 id="spacing-scale">Composition scale</h2>
+        <dl class="bf-stack is-dense">
+          <div class="bf-stack is-flush"><dt><code>is-flush</code></dt><dd>One continuous title or text relationship with no semantic gap.</dd></div>
+          <div class="bf-stack is-flush"><dt><code>is-extra-dense</code></dt><dd>The smallest explicit separation for tightly constrained component internals.</dd></div>
+          <div class="bf-stack is-flush"><dt><code>is-dense</code></dt><dd>Related content within one header, body, footer, field, or pattern area.</dd></div>
+          <div class="bf-stack is-flush"><dt>Default stack</dt><dd>The standard boundary between complete internal groups.</dd></div>
+          <div class="bf-stack is-flush"><dt><code>is-section</code> and <code>is-section-deep</code></dt><dd>Major document and campaign boundaries, selected deliberately rather than inherited from child roles.</dd></div>
+        </dl>
+      </section>
 
+      <section class="bf-stack is-section-shallow" aria-labelledby="spacing-guidance">
+        <h2 id="spacing-guidance">Authoring guidance</h2>
+        <ul>
+          <li>Wrap semantic siblings in the stack that describes their relationship.</li>
+          <li>Nest stacks when a title pair, content group, and pattern boundary need different densities.</li>
+          <li>Do not add role-specific bottom spacing, last-child resets, negative gaps, or consumer pixel offsets.</li>
+          <li>Review the component or pattern demo that owns a relationship; diagnostic spacing pages are not part of the public catalog.</li>
+        </ul>
+        <nav class="bf-cluster" aria-label="Related spacing documentation">
+          <a class="bf-text-link" href="../components/layout.html">Layout primitives</a>
+          <a class="bf-text-link" href="../components/typography.html">Typography roles</a>
+          <a class="bf-text-link" href="../patterns/index.html">Pattern atlas</a>
+        </nav>
+      </section>
+    </div>
   </main>
-
   <script type="module" src="../spec-shell.js"></script>
 </body>
 </html>

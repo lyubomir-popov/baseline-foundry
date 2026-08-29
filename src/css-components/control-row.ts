@@ -1,4 +1,4 @@
-/** A wrapping form composition whose children retain their owned spacing. */
+/** A wrapping form composition whose children retain their metric geometry. */
 export function controlRowCss(): string {
   return `:where(.bf-theme) :where(.bf-control-row) {
   align-items: end;

@@ -472,7 +472,7 @@ function validateTypographySelectorOwnership(css: string): void {
 }
 
 async function validateExampleDogfooding(): Promise<void> {
-  const exampleDirs = [path.resolve("examples/grid"), path.resolve("examples/spacing")];
+  const exampleDirs = [path.resolve("examples/grid")];
 
   for (const exampleDir of exampleDirs) {
     const fileNames = (await fs.readdir(exampleDir)).filter(fileName => fileName.endsWith(".html"));
@@ -515,30 +515,15 @@ async function validateExampleDogfooding(): Promise<void> {
         assert((html.match(/class="bf-grid-scope">\s*<div class="bf-grid example-nested-inner">/g) ?? []).length === 3, `Expected ${path.relative(process.cwd(), filePath)} to wrap every nested grid in its own query scope.`);
       }
 
-      if (path.basename(filePath) === "horizontal-keylines.html") {
-        for (const specimen of ["tabs", "side-navigation", "accordion", "choices", "fields", "buttons", "panel"]) {
-          assert(html.includes(`data-keyline-specimen="${specimen}"`), `Expected ${path.relative(process.cwd(), filePath)} to include the ${specimen} keyline specimen.`);
-        }
-        assert(html.includes("bf-stack is-metric-flush") && html.includes("--bf-control-inline-padding-field") && html.includes("--bf-grid-gap-inline"), `Expected ${path.relative(process.cwd(), filePath)} to document the metric-flush, field-padding, and panel-gutter owners.`);
-        assert(!html.includes("style="), `Expected ${path.relative(process.cwd(), filePath)} to avoid inline specimen styling.`);
-      }
     }
   }
 
   const examplePageJs = await readTextArtifact(path.resolve("demo/example-page.js"));
 
   const gridExamplesCss = await readTextArtifact(path.resolve("examples/grid/grid-examples.css"));
-  const spacingExamplesCss = await readTextArtifact(path.resolve("examples/spacing/spacing-examples.css"));
-  const horizontalKeylinesCss = await readTextArtifact(path.resolve("examples/spacing/horizontal-keylines.css"));
-  const pageCatalogJs = await readTextArtifact(path.resolve("demo/page-catalog.js"));
-
   assert(examplePageJs.includes('initApplicationLayouts') && examplePageJs.includes('initPanelDrawers'), 'Expected demo/example-page.js to initialize the shared application-layout and panel-drawer runtimes for example pages.');
   assertNoStyledDataSelectors("examples/grid/grid-examples.css", gridExamplesCss);
-  assertNoStyledDataSelectors("examples/spacing/spacing-examples.css", spacingExamplesCss);
-  assertNoStyledDataSelectors("examples/spacing/horizontal-keylines.css", horizontalKeylinesCss);
-  assert(pageCatalogJs.includes('{ title: "Horizontal keylines", href: "/examples/spacing/horizontal-keylines.html" }'), "Expected the spacing catalog to expose the horizontal-keyline comparison page.");
   assert(!/\.(?:example)-(?:frame|fixed-width|hero|stack|actions|card|surface|callout|span-demo|span-row|tier-group|nested-specimens|stage-shell|stage-header)(?![a-z0-9_-])/.test(gridExamplesCss), "Expected grid examples CSS to avoid generic non-dogfooded wrapper/card classes.");
-  assert(!/\.(?:spacing)-(?:fixed-width|hero|stack|actions|card|surface|density-card|baseline-box|defaults|inline-row)(?![a-z0-9_-])/.test(spacingExamplesCss), "Expected spacing examples CSS to avoid generic non-dogfooded wrapper/card classes.");
 }
 
 function validateCommonCss(css: string): void {

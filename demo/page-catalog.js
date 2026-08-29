@@ -170,28 +170,13 @@ export const gridExamplePages = [
   { title: "Column span rule", href: "/examples/grid/column-span-rule.html" }
 ];
 
-export const spacingExamplePages = [
-  { title: "Horizontal keylines", href: "/examples/spacing/horizontal-keylines.html" },
-  { title: "Element-owned composition", href: "/examples/spacing/element-vs-container.html" },
-  { title: "Bottom-only resilience", href: "/examples/spacing/bottom-only-resilience.html" },
-  { title: "Semantic spacing stack", href: "/examples/spacing/semantic-spacing-stack.html" },
-  { title: "Scoped boundary compensation", href: "/examples/spacing/last-child-reset.html" },
-  { title: "Component density", href: "/examples/spacing/container-density.html" },
-  { title: "App provisions", href: "/examples/spacing/app-provisions.html" },
-  { title: "Border compensation", href: "/examples/spacing/border-compensation.html" },
-  { title: "Metrics-derived nudges", href: "/examples/spacing/nudge-baseline.html" },
-  { title: "Substitutability", href: "/examples/spacing/substitutability.html" },
-  { title: "Horizontal sibling", href: "/examples/spacing/horizontal-sibling.html" }
-];
-
 export const pageCatalogSections = [
   { heading: "Overview", items: overviewPages },
   { heading: "Spec chapters", items: specChapterPages },
   { heading: "Tier references", items: tierPages },
   ...componentSections,
   ...patternSections,
-  { heading: "Grid examples", items: gridExamplePages },
-  { heading: "Spacing examples", items: spacingExamplePages }
+  { heading: "Grid examples", items: gridExamplePages }
 ];
 
 export function normalizePagePath(pathname) {

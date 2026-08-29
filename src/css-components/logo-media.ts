@@ -107,7 +107,7 @@ export function logoMediaCss(): string {
 
 /* ------------------------------------------------------------------ */
 /* Media object — semantic media/content slots with a container-owned */
-/* structural collapse only. Content roles retain their own spacing.  */
+/* structural collapse. Content roles retain their metric boxes.      */
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-media-object) {

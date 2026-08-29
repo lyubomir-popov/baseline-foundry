@@ -200,7 +200,7 @@ async function verifyExamplePreferencesBeforePaint(origin: string): Promise<void
     });
 
     await page.route("**/demo/example-page.js", route => route.abort());
-    await page.goto(`${origin}/examples/spacing/element-vs-container.html`, { waitUntil: "load" });
+    await page.goto(`${origin}/examples/grid/breakpoints.html`, { waitUntil: "load" });
 
     const preRuntimeState = await page.evaluate(() => ({
       background: getComputedStyle(document.body).backgroundColor,
@@ -229,7 +229,7 @@ async function verifyExampleMainClearsPageNavigation(origin: string): Promise<vo
       viewport: { width: 1440, height: 900 }
     });
 
-    await page.goto(`${origin}/examples/spacing/app-provisions.html`, { waitUntil: "networkidle" });
+    await page.goto(`${origin}/examples/grid/app-panels.html`, { waitUntil: "networkidle" });
     const geometry = await page.evaluate(() => {
       const nav = document.querySelector<HTMLElement>(".pc-nav");
       const main = document.querySelector<HTMLElement>("main[data-example-grid-target]");
@@ -249,8 +249,8 @@ async function verifyExampleMainClearsPageNavigation(origin: string): Promise<vo
       };
     });
 
-    assert(geometry?.headingVisible, "Expected App Provisions to render visible main-area content.");
-    assert(geometry.mainStartsAfterNavigation && geometry.mainWidth > 600, `Expected App Provisions main content to clear the fixed navigation; nav right=${geometry.navRight}, main width=${geometry.mainWidth}.`);
+    assert(geometry?.headingVisible, "Expected App panels to render visible main-area content.");
+    assert(geometry.mainStartsAfterNavigation && geometry.mainWidth > 600, `Expected App panels main content to clear the fixed navigation; nav right=${geometry.navRight}, main width=${geometry.mainWidth}.`);
   } finally {
     await browser.close();
   }
@@ -2966,65 +2966,6 @@ async function verifyParityInteractions(origin: string): Promise<void> {
   }
 }
 
-async function verifyHorizontalKeylineComparison(origin: string): Promise<void> {
-  const browser = await openBrowser();
-  const tiers = ["editorial", "documentation", "app", "os"] as const;
-
-  try {
-    const page = await browser.newPage({ viewport: { width: 1280, height: 960 } });
-    await page.goto(`${origin}/examples/spacing/horizontal-keylines.html`, { waitUntil: "networkidle" });
-    await waitForFonts(page);
-    const tierSelect = page.locator("[data-page-chrome-tier-select]");
-
-    for (const viewport of [
-      { width: 560 },
-      { width: 900 },
-      { width: 1280 }
-    ] as const) {
-      await page.setViewportSize({ width: viewport.width, height: 960 });
-      for (const tier of tiers) {
-        await tierSelect.selectOption(tier);
-        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
-        await page.waitForTimeout(50);
-        const geometry = await page.evaluate(() => {
-          const body = document.body;
-          const panel = document.querySelector<HTMLElement>("[data-keyline-specimen='panel'] .bf-panel");
-          const panelParts = Array.from(panel?.querySelectorAll<HTMLElement>(":scope > .bf-panel-header, :scope > .bf-panel-content, :scope > .bf-panel-footer") ?? []);
-          const tab = document.querySelector<HTMLElement>("[data-keyline-specimen='accordion'] .bf-accordion-tab");
-          const copy = document.querySelector<HTMLElement>("[data-keyline-specimen='accordion'] .bf-accordion-panel p");
-          if (!panel || panelParts.length !== 3 || !tab || !copy) return null;
-          const tabRange = document.createRange();
-          tabRange.selectNodeContents(tab);
-          const copyRange = document.createRange();
-          copyRange.selectNodeContents(copy);
-          const tabText = Array.from(tabRange.getClientRects()).at(-1);
-          const copyText = Array.from(copyRange.getClientRects()).at(0);
-          const gutterProbe = document.createElement("span");
-          gutterProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-grid-gap-inline);block-size:1px";
-          body.appendChild(gutterProbe);
-          const gridGutter = gutterProbe.getBoundingClientRect().width;
-          gutterProbe.remove();
-          return {
-            tier: body.dataset.bfTier,
-            specimens: document.querySelectorAll("[data-keyline-specimen]").length,
-            gridGutter,
-            panelInsets: panelParts.map(part => Number.parseFloat(getComputedStyle(part).paddingInlineStart)),
-            accordionDelta: Math.abs((copyText?.left ?? 0) - (tabText?.left ?? 0)),
-            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
-          };
-        });
-        assert(geometry, `Expected ${tier} horizontal-keyline geometry at ${viewport.width}px.`);
-        assert(geometry.tier === tier && geometry.specimens === 7, `Expected all seven horizontal-keyline specimens in ${tier} at ${viewport.width}px.`);
-        assert(geometry.gridGutter > 0 && geometry.panelInsets.every(inset => Math.abs(inset - geometry.gridGutter) <= 0.05), `Expected ${tier} panel insets to equal the active grid gutter at ${viewport.width}px; got ${JSON.stringify(geometry)}.`);
-        assert(geometry.accordionDelta <= 1 && geometry.overflow <= 1, `Expected ${tier} accordion text keylines and page overflow to remain stable at ${viewport.width}px; got ${JSON.stringify(geometry)}.`);
-      }
-    }
-    await page.close();
-  } finally {
-    await browser.close();
-  }
-}
-
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const { server, origin } = await createStaticServer(rootDir);
@@ -3039,7 +2980,6 @@ async function main(): Promise<void> {
     await verifyApplicationLayout(origin);
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
-    await verifyHorizontalKeylineComparison(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);
