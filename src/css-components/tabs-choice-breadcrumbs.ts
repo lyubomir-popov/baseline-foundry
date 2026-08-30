@@ -45,15 +45,15 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
 ${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
-  border-bottom: var(--bf-bar-thickness) solid transparent;
+  border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-color-text-muted);
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
   margin-bottom: 0;
-  padding-block-end: calc(var(--bf-body-nudge-end) + var(--bf-baseline) - var(--bf-bar-thickness));
-  padding-block-start: var(--bf-body-nudge-start);
+  padding-block-end: calc(var(--bf-single-line-row-padding-block) + var(--bf-single-line-row-margin-block-end));
+  padding-block-start: var(--bf-single-line-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-action);
   text-decoration: none;
 }
@@ -78,7 +78,7 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']) {
-  border-bottom-color: var(--bf-color-text-default);
+  box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
 }
 

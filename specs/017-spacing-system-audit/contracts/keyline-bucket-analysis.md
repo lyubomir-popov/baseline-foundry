@@ -3,8 +3,9 @@
 ## Decision frame
 
 An inline start and an occupied block are separate questions. A component may
-share the compact control block rhythm without sharing a page-edge start, and a
-chip may align to an inline text baseline without being a control row. Treating
+share the body-sized single-line row rhythm without sharing a page-edge start,
+and prose may provide the baseline reference without becoming an interaction
+target. Treating
 both questions as one “indent bucket” is what creates near-matches and one-off
 compensations.
 
@@ -41,22 +42,20 @@ navigation depth remain structural offsets, not component insets.
 
 | Family | Members | Current evidence | Audit rule |
 |---|---|---|---|
-| Text run | prose, headings, list copy, labels/help, breadcrumbs | font metric start nudge and complementary end compensation | Do not add semantic role margins to make a visual match. |
-| Field/action block | fields, buttons, icon-only buttons, segmented controls, pagination | metric-derived symmetric padding; icon-only buttons retain the body line through a zero-width strut | Compare occupied block, not border-box height. Field and command families may share height while remaining distinct horizontally; do not add target heights. |
-| Compact navigation row | list rows, list-tree, side-navigation, segmented control | `--bf-control-box-size-compact` | A compact block family only; its inline start remains component-specific. |
-| Tick row | checkbox and radio | `--bf-tick-row-block-size` | Keep separate from the wider switch track. |
-| Switch row | switch | `--bf-switch-row-block-size` | Intentional isolated family: its visual is twice the standard mark width. |
+| Text run | prose, headings, list copy, labels/help, breadcrumbs | font metric start nudge and complementary end compensation | Text supplies the baseline reference; do not enlarge document flow into an interaction target. |
+| Body-sized single-line interface row | fields, buttons, icon-only buttons, segmented controls, pagination, list-tree, side-navigation, checkbox/radio, TOC links, status, validation, switch, divided rows, tabs, accordion, chip | `--bf-single-line-row-padding-block`, `--bf-single-line-row-margin-block-end`, and `--bf-single-line-row-visual-offset` | One border-aware occupied family in every tier. Inline insets remain component-specific; no component-local height or offset family is permitted. Tabs absorb trailing compensation into end padding so their emphasis rule still meets the list boundary. |
 | Field wrapper | label/control/help, range and choice compositions | `--bf-field-gap` | This measures vertical relationships within a form composition, not the child control height. |
 | Surface/table special cases | panels/options, notification, table | panel padding; notification shell; table row variables | Do not flatten unrelated surface and table geometry into compact controls. |
 | Surface region | panel/card/header/body/footer, notification/notice, popups, footer bands | panel inset and nested stack owner | Region padding and stack gaps own this; a child must not compensate the boundary. |
 
 ## Status, chip, and badge conclusion
 
-- Chip content now uses the field inset with scalable border compensation, so
-  its first glyph lands on green beside a table cell or field.
-- Status labels use body metrics, shrink to their painted content in grid
-  contexts, and use the same green inset. They remain a semantic colour-state
-  surface rather than an alias for chip.
+- Chip content uses the field inset and the same border-aware block contract as
+  a button, so its first glyph and occupied end no longer form a separate
+  comfortable-action family.
+- Status labels use symmetric shared row padding, shrink to their painted
+  content in grid contexts, and use the green inset. They remain a semantic
+  colour-state surface rather than an alias for chip.
 - `bf-chip.is-borderless` is the neutral inline label treatment. Its transparent
   border preserves the same occupied geometry as an ordinary chip; the vertical
   audit compares it directly with body text and a chip/badge pair in one inline
@@ -97,11 +96,12 @@ navigation depth remain structural offsets, not component insets.
 5. The vertical audit uses compact horizontal family rows. Every raw specimen
    is 5rem wide, carries its identity in the real component content instead of
    a per-item H6, starts on a red rule, and paints its own blue occupied end.
-   Measurements across all four tiers establish control, compact/nestable row,
-   text-run, dense-action, and comfortable-action families. Table and
-   breadcrumb rhythm remain explicit independent contracts; multiline and
-   content-driven surfaces are excluded because their height does not answer
-   the child-padding question.
+   A five-letter paragraph opens every row and exposes the real text baseline.
+   Measurements across all four tiers consolidate 23 body-sized interface
+   specimens into one occupied family, with metric text references and
+   table/breadcrumb rhythm retained as two explicit non-control contracts.
+   Multiline and content-driven surfaces remain excluded because their height
+   does not answer the child-padding question.
 
 ## Three-guide conformance ledger
 
@@ -142,8 +142,8 @@ exhaustive ledger from measured cross-tier evidence.
 
 | Finding | Source owner | Needed comparison | Candidate action |
 |---|---|---|---|
-| Status-label height / table compensation | `chip-badge-status.ts`, `table.ts` | Body metric box, status painted box, segmented compact row, table row across all tiers | Corrected to body nudges and a fit-content painted box; retain the status-bearing table-row branch as a separate vertical-rhythm contract. |
-| Chip baseline | `chip-badge-status.ts` | Inline chip with adjacent body text and table/field content | Corrected with scalable border compensation; regular and borderless chips share occupied geometry. |
+| Status-label height / table compensation | `chip-badge-status.ts`, `table.ts` | Body metric box, status painted box, shared interface row, table row across all tiers | Corrected to symmetric shared-row padding and a fit-content painted box; retain the status-bearing table-row branch as a separate vertical-rhythm contract. |
+| Chip baseline | `chip-badge-status.ts` | Chip beside button/accordion text and table/field content | Corrected through the shared border-aware row contract; regular and borderless chips share button occupied geometry. |
 | Ticked list icon and label edge | `list.ts`, `css.ts`, form control styles | Icon centre against first text line and prose/ticked/selection label edge in all tiers | Corrected to the shared leading-mark family; retain a browser geometry check in closeout. |
 | Table compactness | `table.ts` | Header/body cell occupied row, embedded input, chip/status label | Cell text now shares the green field inset; table row rhythm remains table-owned. |
 
@@ -184,7 +184,8 @@ The horizontal fixture keeps number, select, and table-cell content together,
 and presents accordion, list tree, switch, side navigation, table of contents,
 and notification as one icon-led/navigation review bucket. That presentation
 does not reclassify page margin, grid gutter, navigation depth, or TOC nesting
-as component-padding levels. The vertical fixture uses minimal demo-owned
-scroll framing and horizontal start/end rules; those guides expose occupied
-geometry without changing it. Offset overrides, explanatory filler, and
-substitute mock components are not permitted.
+as component-padding levels. The vertical fixture uses one long shared
+single-line interface row, a metric-text reference row, and an independent
+table/breadcrumb row. Minimal demo-owned scroll framing and horizontal
+start/end rules expose occupied geometry without changing it. Offset overrides,
+explanatory filler, and substitute mock components are not permitted.

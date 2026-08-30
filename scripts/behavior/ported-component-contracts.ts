@@ -252,15 +252,13 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           const spaceTwoProbe = document.createElement("span");
           const sectionSpaceProbe = document.createElement("span");
           const textProbe = document.createElement("span");
-          const nudgeStartProbe = document.createElement("span");
-          const nudgeEndProbe = document.createElement("span");
+          const rowPaddingProbe = document.createElement("span");
           spaceOneProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-1)";
           spaceTwoProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-2)";
           sectionSpaceProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
           textProbe.style.cssText = "position:absolute;visibility:hidden;color:var(--bf-color-text-default)";
-          nudgeStartProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-body-nudge-start)";
-          nudgeEndProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-body-nudge-end)";
-          root.append(spaceOneProbe, spaceTwoProbe, sectionSpaceProbe, textProbe, nudgeStartProbe, nudgeEndProbe);
+          rowPaddingProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-single-line-row-padding-block)";
+          root.append(spaceOneProbe, spaceTwoProbe, sectionSpaceProbe, textProbe, rowPaddingProbe);
           const direction = getComputedStyle(root).direction;
           const nestedRect = nested?.getBoundingClientRect();
           const parentRect = parentLink?.getBoundingClientRect();
@@ -286,8 +284,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
             }),
             listGaps: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-list")).map(list => Number.parseFloat(getComputedStyle(list).rowGap)),
             itemGaps: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-item")).map(item => Number.parseFloat(getComputedStyle(item).rowGap)),
-            expectedNudgeStart: nudgeStartProbe.getBoundingClientRect().height,
-            expectedNudgeEnd: nudgeEndProbe.getBoundingClientRect().height,
+            expectedRowPadding: rowPaddingProbe.getBoundingClientRect().height,
             expectedSpaceOne: spaceOneProbe.getBoundingClientRect().width,
             expectedSpaceTwo: spaceTwoProbe.getBoundingClientRect().width,
             logicalIndent: direction === "rtl" ? parentRect.right - nestedRect.right : nestedRect.left - parentRect.left,
@@ -301,15 +298,14 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           spaceTwoProbe.remove();
           sectionSpaceProbe.remove();
           textProbe.remove();
-          nudgeStartProbe.remove();
-          nudgeEndProbe.remove();
+          rowPaddingProbe.remove();
           return result;
         }, width);
         assert(state, `Expected ${tier} table-of-contents state at ${width}.`);
         const expectedIndent = expectedSpace === "var(--bf-space-1)" ? state.expectedSpaceOne : state.expectedSpaceTwo;
         assert(Math.abs(state.nestedMargin - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} at ${width}; margin=${state.nestedMargin}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
         assert(Math.abs(state.sectionGap - state.expectedSectionGap) <= 0.1 && state.sectionPadding.every(([start, end]) => start === 0 && end === 0), `Expected ${tier} table-of-contents sections to receive their shallow separation from the parent stack without item padding at ${width}.`);
-        assert(state.linkPadding.every(([start, end]) => Math.abs(start - state.expectedNudgeStart) <= 0.1 && Math.abs(end - state.expectedNudgeEnd) <= 0.1), `Expected ${tier} table-of-contents links to retain metric-only block padding at ${width}; expected ${state.expectedNudgeStart}/${state.expectedNudgeEnd}, got ${JSON.stringify(state.linkPadding)}.`);
+        assert(state.linkPadding.every(([start, end]) => Math.abs(start - state.expectedRowPadding) <= 0.1 && Math.abs(end - state.expectedRowPadding) <= 0.1), `Expected ${tier} table-of-contents links to share symmetric single-line row padding at ${width}; expected ${state.expectedRowPadding}, got ${JSON.stringify(state.linkPadding)}.`);
         assert(state.listGaps.every(gap => Math.abs(gap) <= 0.1) && state.itemGaps.every(gap => Math.abs(gap) <= 0.1), `Expected ${tier} table-of-contents rows to match the side-navigation zero-gap rhythm at ${width}; got lists=${state.listGaps}, items=${state.itemGaps}.`);
         assert(state.dividerBlockSize === 1 && state.dividerToHeading < state.expectedSectionGap, `Expected ${tier} table-of-contents divider to paint tightly with the following heading instead of occupying the parent-owned section gap at ${width}.`);
         assert(state.currentState === "location" && Number.parseFloat(state.currentWeight) >= 600 && state.currentColor === state.defaultTextColor, `Expected ${tier} table-of-contents current link to expose its semantic current state and default-text emphasis at ${width}.`);

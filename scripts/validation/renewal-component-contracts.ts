@@ -152,7 +152,7 @@ export function validateRenewalComponentContracts(
   assert(!css.includes("--bf-top-navigation-brand-region"), "Expected generated tier CSS to remove the fixed top-navigation brand-region token.");
   assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));") && css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;"), "Expected grid-aligned navigation to share the eight-column page grid and begin primary navigation at column three.");
   assert(css.includes("--bf-bar-thickness: 0.1875rem;"), "Expected generated tier CSS to expose the shared rem-based 0.1875rem emphasis-bar token.");
-  assert(css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notice-border);") && css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);") && css.includes("border-bottom: var(--bf-bar-thickness) solid transparent;") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notices, notifications, tabs, and highlight rules to consume the shared emphasis-bar token.");
+  assert(css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notice-border);") && css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);") && css.includes("box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notices, notifications, tabs, and highlight rules to consume the shared emphasis-bar token.");
   assert(css.includes("container-name: bf-article-pagination;") && css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes("inline-size: calc((100cqi - var(--bf-space-2)) / 2);"), "Expected article pagination to retain its named container and persistent equal-half structure.");
   assert(css.includes("column-gap: var(--bf-space-2);") && css.includes("row-gap: var(--bf-space-half);"), "Expected article pagination to map Vanilla's medium and x-small spacing to BF rhythm tokens.");
   assert(css.includes("padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination to use semantic medium padding with metric baseline compensation.");
@@ -243,8 +243,10 @@ export function validateRenewalComponentContracts(
     "padding-block-end": "0"
   }, "table-of-contents section headings use the canonical prominent heading color without an extra row gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-table-of-contents-link)", {
-    "padding-block": "var(--bf-body-nudge-start) var(--bf-body-nudge-end)"
-  }, "table-of-contents links retain metric padding only");
+    "border-block": "var(--bf-border-width) solid transparent",
+    "margin": "0 0 var(--bf-single-line-row-margin-block-end)",
+    "padding-block": "var(--bf-single-line-row-padding-block)"
+  }, "table-of-contents links share the body-sized single-line row contract");
   assert(!css.includes("padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));"), "Expected document-navigation text links to contain no hidden semantic half-space padding.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-list)", {
     "--bf-divided-section-rule-to-content": "calc(0.5rem - var(--bf-border-width))",

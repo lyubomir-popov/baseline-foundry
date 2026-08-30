@@ -116,7 +116,8 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const buttonBlockPaddingVar = "var(--bf-button-block-padding)";
   const bodyLineHeight = roleLineHeightVar("body", body.lineHeight);
   const inputMarginBottom = controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, "0rem");
-  const buttonMarginBottom = controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, "0rem");
+  const singleLineRowMarginBottom = controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, "0rem");
+  const buttonMarginBottom = "var(--bf-single-line-row-margin-block-end)";
   const bodySelectedStartNudge = roleSelectedStartNudgeVar("body", body.nudgeTop);
   const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
   const h4LineHeight = roleLineHeightVar("h4", h4.lineHeight);
@@ -124,7 +125,7 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
-  const buttonPadding = controlPadding(buttonBlockPaddingVar);
+  const buttonPadding = "  padding-block: var(--bf-single-line-row-padding-block);\n";
 
   return `:where(.bf-theme) {
 ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable command targets; field surfaces can tighten independently. */
@@ -141,6 +142,12 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-component-inline-inset-continuation: var(--bf-disclosure-label-inline-offset);
   --bf-input-block-padding: ${bodySelectedStartNudge};
   --bf-button-block-padding: ${bodySelectedStartNudge};
+  /* One border-aware occupied-block contract for body-sized, single-line UI.
+     Components may paint their block borders differently, but their text line,
+     padding and trailing baseline compensation must resolve through this pair. */
+  --bf-single-line-row-padding-block: max(0rem, calc(var(--bf-button-block-padding) - var(--bf-border-width)));
+  --bf-single-line-row-margin-block-end: ${singleLineRowMarginBottom};
+  --bf-single-line-row-visual-offset: calc((var(--bf-body-line-height) - var(--bf-control-visual-size)) / 2);
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
   --bf-slider-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-slider-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-slider-track-size)", bodySelectedStartNudge)};
@@ -149,9 +156,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-table-row-content-size: calc(${bodyLineHeight} + (var(--bf-table-row-padding) * 2) + var(--bf-table-row-border-size));
   --bf-table-row-block-size: calc(var(--bf-table-row-content-size) + mod(calc(var(--bf-baseline) - mod(var(--bf-table-row-content-size), var(--bf-baseline))), var(--bf-baseline)));
   --bf-table-row-line-height: calc(var(--bf-table-row-block-size) - (var(--bf-table-row-padding) * 2) - var(--bf-table-row-border-size));
-  --bf-switch-row-block-size: calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge});
   --bf-switch-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
-  --bf-tick-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-tick-box-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-leading-mark-size: var(--bf-control-visual-size);
   --bf-leading-mark-gap: var(--bf-component-inline-inset-field);
@@ -208,8 +213,6 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-leading-icon-gap: var(--bf-leading-mark-gap);
   --bf-leading-icon-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-leading-icon-size)", bodySelectedStartNudge)};
   --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-field);
-  --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-component-inline-inset-action) * 0.25) - var(--bf-border-width)));
-  --bf-ui-chip-block-size: calc(${bodyLineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
   --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
   --bf-grid-max-inline-size: var(--bf-content-max-width);
@@ -508,8 +511,8 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
 }
 
 :where(.bf-theme) :where(.bf-checkbox, .bf-radio) {
+  display: grid;
   margin: 0;
-  min-block-size: var(--bf-tick-row-block-size);
   padding-inline-start: var(--bf-leading-mark-group-inset);
   position: relative;
 }
@@ -526,12 +529,11 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
 
 :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
+  border-block: var(--bf-border-width) solid transparent;
   cursor: pointer;
   display: block;
-  margin-bottom: 0;
-  min-block-size: var(--bf-tick-row-block-size);
-  padding-block-end: ${bodySelectedEndNudge};
-  padding-block-start: ${bodySelectedStartNudge};
+  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+  padding-block: var(--bf-single-line-row-padding-block);
   padding-inline-start: var(--bf-tick-label-offset);
   position: relative;
 }
@@ -613,7 +615,6 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   align-items: flex-start;
   display: inline-flex;
   gap: var(--bf-field-gap);
-  min-block-size: var(--bf-switch-row-block-size);
   position: relative;
 }
 
@@ -672,19 +673,19 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-switch-label) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
+  border-block: var(--bf-border-width) solid transparent;
   cursor: pointer;
   display: inline-block;
-  margin: 0 0 var(--bf-body-margin-bottom);
-  padding-block-end: 0;
-  padding-block-start: ${bodySelectedStartNudge};
+  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+  padding-block: var(--bf-single-line-row-padding-block);
 }
 
 :where(.bf-theme) :where(.bf-validation-message) {
-${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
-  margin: 0 0 var(--bf-body-margin-bottom);
+${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width) solid transparent;
+  color: var(--bf-color-text-muted);
+  margin: 0 0 var(--bf-single-line-row-margin-block-end);
   margin-inline-start: var(--bf-leading-mark-group-inset);
-  padding-block-end: 0;
-  padding-block-start: ${bodySelectedStartNudge};
+  padding-block: var(--bf-single-line-row-padding-block);
   padding-inline-start: var(--bf-leading-mark-offset);
   position: relative;
 }
@@ -946,8 +947,6 @@ ${tableCss({
 ${chipBadgeStatusCss({
   bodyCaseTypeStyles: typeStyles(body),
   bodyLineHeight,
-  bodySelectedEndNudge,
-  bodySelectedStartNudge,
   bodyTypeStyles,
 })}
 
@@ -1006,8 +1005,7 @@ ${legacyNavigationCss({
   bodySemiboldTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
   bodyTypeStyles,
   buttonMarginBottom,
-  buttonPadding,
-  compactButtonPadding: controlPadding(controlCompactBlockPaddingVar, "0rem")
+  buttonPadding
 })}
 
 :where(.bf-theme) :where(.bf-contextual-menu, .bf-contextual-menu.is-left, .bf-contextual-menu.is-center) {
@@ -1351,14 +1349,15 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   appearance: none;
   background: transparent;
   border: 0;
+  border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: flex;
   gap: var(--bf-disclosure-gap);
   inline-size: 100%;
   justify-content: flex-start;
-  min-block-size: var(--bf-control-box-size);
-  padding-block: var(--bf-control-block-padding);
+  margin-block-end: var(--bf-single-line-row-margin-block-end);
+  padding-block: var(--bf-single-line-row-padding-block);
   padding-inline: 0;
   text-align: left;
 }

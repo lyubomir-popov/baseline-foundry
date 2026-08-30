@@ -1,8 +1,6 @@
 type ChipBadgeStatusCssOptions = {
   bodyCaseTypeStyles: string;
   bodyLineHeight: string;
-  bodySelectedEndNudge: string;
-  bodySelectedStartNudge: string;
   bodyTypeStyles: string;
 };
 
@@ -10,8 +8,6 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   const {
     bodyCaseTypeStyles,
     bodyLineHeight,
-    bodySelectedEndNudge,
-    bodySelectedStartNudge,
     bodyTypeStyles,
   } = options;
 
@@ -31,16 +27,16 @@ ${bodyTypeStyles}  align-items: baseline;
   gap: 0;
   inline-size: fit-content;
   justify-self: start;
-  margin: 0 var(--bf-ui-chip-padding-inline) var(--bf-field-gap) 0;
+  margin: 0 var(--bf-ui-chip-padding-inline) var(--bf-single-line-row-margin-block-end) 0;
   max-inline-size: 100%;
-  min-block-size: var(--bf-ui-chip-block-size);
-  padding-block: var(--bf-ui-chip-padding-block);
+  padding-block: var(--bf-single-line-row-padding-block);
   padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
   position: relative;
   text-decoration: none;
   user-select: none;
-  /* Inline-flex exposes the first text child's baseline. Do not reapply the
-     body metric nudge here: that lowers chip text beside an ordinary body run. */
+  /* Inline-flex exposes the first text child's baseline. The surrounding
+     border-aware row contract now matches buttons instead of inventing a
+     second chip-only occupied height. */
   vertical-align: baseline;
   white-space: nowrap;
 }
@@ -154,15 +150,15 @@ ${bodyTypeStyles}  align-items: center;
   --bf-ui-status-background: color-mix(in srgb, var(--bf-color-background-alt) 70%, black);
   --bf-ui-status-color: var(--bf-color-button-positive-text);
   background-color: var(--bf-ui-status-background);
+  border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-ui-status-color);
   display: inline-block;
   inline-size: fit-content;
   justify-self: start;
-${bodyTypeStyles}  margin: 0;
-  /* A status label renders body text, so its paint must use the matching
-     metric box. H5 nudges shifted the coloured block in documentation tier. */
-  padding-block-end: ${bodySelectedEndNudge};
-  padding-block-start: ${bodySelectedStartNudge};
+${bodyTypeStyles}  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+  /* Status paint is physically symmetric and shares the same occupied block
+     as a button; typography still comes from the body role. */
+  padding-block: var(--bf-single-line-row-padding-block);
   padding-inline: var(--bf-ui-chip-padding-inline);
   text-align: center;
   text-decoration: none;

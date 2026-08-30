@@ -242,31 +242,43 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       await verticalTierSelect.selectOption(tier);
       await page.waitForSelector(`body.bf-tier-${tier}`);
       const occupiedBlockGeometry = await page.evaluate(() => {
-        const families: Record<string, Array<{ label: string; height: number; width: number }>> = {};
-        for (const headingId of ["vertical-controls", "vertical-compact", "vertical-text-runs", "vertical-dense-actions", "vertical-comfortable-actions", "vertical-variants"]) {
+        const families: Record<string, Array<{ label: string; height: number; textTop: number | null; width: number }>> = {};
+        for (const headingId of ["vertical-controls", "vertical-text-runs", "vertical-variants"]) {
           const section = document.getElementById(headingId)?.closest("section");
           if (!section) throw new Error(`Missing vertical audit family: ${headingId}.`);
-          families[headingId] = Array.from(section.querySelectorAll<HTMLElement>(".spacing-block-sample")).map(sample => ({
-            label: sample.getAttribute("aria-label") ?? "unlabelled",
-            height: sample.querySelector<HTMLElement>(".spacing-block-probe")?.getBoundingClientRect().height ?? 0,
-            width: sample.getBoundingClientRect().width
-          }));
+          families[headingId] = Array.from(section.querySelectorAll<HTMLElement>(".spacing-block-sample")).map(sample => {
+            const probe = sample.querySelector<HTMLElement>(".spacing-block-probe");
+            const range = document.createRange();
+            if (probe) range.selectNodeContents(probe);
+            const textFragments = probe
+              ? Array.from(range.getClientRects()).filter(rect => rect.width > 0 && rect.height > 0)
+              : [];
+            return {
+              label: sample.getAttribute("aria-label") ?? "unlabelled",
+              height: probe?.getBoundingClientRect().height ?? 0,
+              textTop: textFragments[1]?.top ?? null,
+              width: sample.getBoundingClientRect().width
+            };
+          });
         }
         const scrollRows = Array.from(document.querySelectorAll<HTMLElement>(".spacing-block-scroll"));
         const firstProbe = document.querySelector<HTMLElement>(".spacing-block-probe");
         const before = firstProbe ? getComputedStyle(firstProbe, "::before") : null;
         const after = firstProbe ? getComputedStyle(firstProbe, "::after") : null;
+        const statusLabel = document.querySelector<HTMLElement>(".bf-status-label");
+        const statusStyles = statusLabel ? getComputedStyle(statusLabel) : null;
         const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
         return {
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * rootSize,
           borderWidth: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-border-width")) * rootSize,
           rootSize,
-          controls: families["vertical-controls"],
-          compact: families["vertical-compact"],
+          interfaceRows: families["vertical-controls"],
           textRuns: families["vertical-text-runs"],
-          denseActions: families["vertical-dense-actions"],
-          comfortableActions: families["vertical-comfortable-actions"],
           independent: families["vertical-variants"],
+          statusPadding: statusStyles ? {
+            end: Number.parseFloat(statusStyles.paddingBlockEnd),
+            start: Number.parseFloat(statusStyles.paddingBlockStart)
+          } : null,
           scrollRows: scrollRows.map(row => ({ overflowX: getComputedStyle(row).overflowX })),
           startRule: before ? { blockSize: Number.parseFloat(before.blockSize), top: Number.parseFloat(before.top) } : null,
           endRule: after ? { blockSize: Number.parseFloat(after.blockSize), bottom: Number.parseFloat(after.bottom) } : null
@@ -276,22 +288,25 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         const heights = samples.map(sample => sample.height);
         assert(Math.max(...heights) - Math.min(...heights) < 0.51, `Expected ${tier} ${name} specimens to share one occupied-block family; got ${JSON.stringify(samples)}.`);
       };
-      assert(occupiedBlockGeometry.controls.length === 9, `Expected ${tier} control-height bucket to contain all nine single-line control specimens.`);
-      assertSharedHeight("control-height", occupiedBlockGeometry.controls);
-      assertSharedHeight("compact-row", occupiedBlockGeometry.compact);
+      assert(occupiedBlockGeometry.interfaceRows.length === 24, `Expected ${tier} shared interface bucket to contain the reference plus all 23 single-line specimens.`);
+      const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
+      const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
+      assertSharedHeight("single-line interface", interfaceComponents);
+      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - interfaceReference.textTop) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
       assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
-      assertSharedHeight("dense-action", occupiedBlockGeometry.denseActions);
-      assertSharedHeight("comfortable-action", occupiedBlockGeometry.comfortableActions);
+      const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
+      assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
+      assert(occupiedBlockGeometry.statusPadding && Math.abs(occupiedBlockGeometry.statusPadding.start - occupiedBlockGeometry.statusPadding.end) < 0.01, `Expected ${tier} status-label paint to be symmetrically padded in the block direction; got ${JSON.stringify(occupiedBlockGeometry.statusPadding)}.`);
       const tableHeight = occupiedBlockGeometry.independent.find(sample => sample.label === "Table cell")?.height ?? 0;
-      const controlHeight = occupiedBlockGeometry.controls[0].height;
+      const controlHeight = interfaceComponents[0].height;
       assert(Math.abs(tableHeight - controlHeight) <= occupiedBlockGeometry.baseline + Math.max(occupiedBlockGeometry.borderWidth * 2, 0.51), `Expected ${tier} density-tuned repeated-data rows to remain within one baseline of the single-line control family; controls=${controlHeight}, table=${tableHeight}, baseline=${occupiedBlockGeometry.baseline}.`);
-      const allSamples = [...occupiedBlockGeometry.controls, ...occupiedBlockGeometry.compact, ...occupiedBlockGeometry.textRuns, ...occupiedBlockGeometry.denseActions, ...occupiedBlockGeometry.comfortableActions, ...occupiedBlockGeometry.independent];
+      const allSamples = [...occupiedBlockGeometry.interfaceRows, ...occupiedBlockGeometry.textRuns, ...occupiedBlockGeometry.independent];
       assert(allSamples.every(sample => Math.abs(sample.width - occupiedBlockGeometry.rootSize * 5) < 0.1), `Expected every ${tier} vertical specimen to retain the shared 5rem width; got ${JSON.stringify(allSamples)}.`);
       assert(occupiedBlockGeometry.scrollRows.every(row => row.overflowX === "auto"), `Expected every ${tier} vertical audit bucket to retain horizontal overflow at narrow viewports; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
       assert(occupiedBlockGeometry.startRule && occupiedBlockGeometry.endRule && occupiedBlockGeometry.startRule.top === 0 && occupiedBlockGeometry.endRule.bottom === 0 && occupiedBlockGeometry.startRule.blockSize === occupiedBlockGeometry.borderWidth && occupiedBlockGeometry.endRule.blockSize === occupiedBlockGeometry.borderWidth, `Expected ${tier} red-start and blue-end rules to use the scalable border token at opposing block edges; got ${JSON.stringify(occupiedBlockGeometry)}.`);
     }
     assert(await page.locator("[data-spacing-keyline-debug]").count() === 0 && await page.locator("[data-spacing-keyline]").count() === 0, "Expected the vertical occupied-block audit to avoid the horizontal inset overlay.");
-    assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator(".spacing-block-scroll").count() === 6, "Expected the vertical audit to retain shared chrome around six horizontal comparison rows.");
+    assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator(".spacing-block-scroll").count() === 3, "Expected the vertical audit to retain shared chrome around three horizontal comparison rows.");
     assert(runtimeErrors.length === 0, `Expected the spacing audit runtime console to remain clean; received ${runtimeErrors.join(" | ")}.`);
     await page.goto(`${origin}/demo/components/side-navigation.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -906,13 +921,14 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     const collapsedGeometry = await navigation.evaluate(element => {
       const links = Array.from(element.querySelectorAll<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item > .bf-side-navigation-link"));
+      const referenceBlockSize = links[0]?.getBoundingClientRect().height ?? 0;
       return links.map(link => {
         const linkRect = link.getBoundingClientRect();
         const icon = link.querySelector<HTMLElement>(".bf-side-navigation-icon");
         const iconRect = icon?.getBoundingClientRect();
         return {
           blockSize: linkRect.height,
-          compactBlockSize: Number.parseFloat(getComputedStyle(link).minBlockSize),
+          referenceBlockSize,
           iconCenterDelta: iconRect ? Math.abs(((iconRect.top + iconRect.bottom) / 2) - ((linkRect.top + linkRect.bottom) / 2)) : null,
           iconTransform: icon ? getComputedStyle(icon).transform : null
         };
@@ -920,7 +936,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     });
     assert(collapsedGeometry.length > 0, "Expected collapsed application navigation rows to be measurable.");
     collapsedGeometry.forEach((row, index) => {
-      assert(row.blockSize <= row.compactBlockSize + 1, `Expected collapsed navigation row ${index + 1} to retain compact control height. Got row=${row.blockSize}px, compact=${row.compactBlockSize}px.`);
+      assert(row.referenceBlockSize > 0 && (row.blockSize === 0 || Math.abs(row.blockSize - row.referenceBlockSize) <= 1), `Expected visible collapsed navigation row ${index + 1} to retain the shared single-line navigation height. Got row=${row.blockSize}px, reference=${row.referenceBlockSize}px.`);
       if (row.iconCenterDelta !== null) {
         assert(row.iconCenterDelta <= 1, `Expected collapsed navigation icon ${index + 1} to remain centred in its compact row. Got delta=${row.iconCenterDelta}px.`);
         assert(row.iconTransform === "none", `Expected collapsed navigation icon ${index + 1} to reset the expanded optical offset. Got transform=${row.iconTransform}.`);
@@ -2642,13 +2658,13 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
         if (!list || !active) return null;
         const styles = getComputedStyle(active);
         return {
+          boxShadow: styles.boxShadow,
           gap: Math.abs(list.getBoundingClientRect().bottom - active.getBoundingClientRect().bottom),
-          thickness: Number.parseFloat(styles.borderBottomWidth),
           token: styles.getPropertyValue("--bf-bar-thickness").trim()
         };
       });
       assert(tabRule !== null && tabRule.gap <= 1.1, `Expected ${tier} active tab rule to meet the list boundary, got ${tabRule?.gap}px.`);
-      assert(tabRule.thickness === 3 && tabRule.token === "0.1875rem", `Expected ${tier} active tab rule to use the shared 3px/0.1875rem emphasis bar; got ${tabRule.thickness}px/${tabRule.token}.`);
+      assert(tabRule.boxShadow.includes("-3px") && tabRule.boxShadow.includes("inset") && tabRule.token === "0.1875rem", `Expected ${tier} active tab rule to paint the shared inset 3px/0.1875rem emphasis bar; got ${tabRule.boxShadow}/${tabRule.token}.`);
     }
 
     await page.goto(`${origin}/demo/components/notice.html`, { waitUntil: "networkidle" });

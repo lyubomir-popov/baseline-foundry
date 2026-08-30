@@ -39,9 +39,10 @@ wrapped labels, control insets, panel gutters, overflow, and hidden/collapsed
 states. Confirm the axis tabs change panels without changing the spacing-page
 pathname. On the horizontal audit, compare only the named inline variable
 family; on the vertical audit, compare each 5rem specimen's red shared start
-with its blue occupied end. Controls, compact rows, text runs, dense actions,
-and comfortable actions must each remain internally equal across all tiers.
-Repeated-data and document-trail rows remain named independent contracts.
+with its blue occupied end and its text against the leading five-letter
+paragraph. All body-sized single-line interface specimens must share one height
+and baseline across all tiers. Metric prose and repeated-data/document-trail
+rows remain named non-control contracts.
 
 ## Closeout
 

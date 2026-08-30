@@ -4,7 +4,6 @@ export interface LegacyNavigationCssOptions {
   bodyTypeStyles: string;
   buttonMarginBottom: string;
   buttonPadding: string;
-  compactButtonPadding: string;
 }
 
 export function legacyNavigationCss(options: LegacyNavigationCssOptions): string {
@@ -13,8 +12,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
     bodySemiboldTypeStyles,
     bodyTypeStyles,
     buttonMarginBottom,
-    buttonPadding,
-    compactButtonPadding
+    buttonPadding
   } = options;
 
   return `:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
@@ -161,12 +159,14 @@ ${bodySemiboldTypeStyles}  display: block;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {
+  display: grid;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title) {
+  display: grid;
   margin: 0;
   position: relative;
 }
@@ -175,14 +175,15 @@ ${bodySemiboldTypeStyles}  display: block;
 ${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
+  border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-color-text-inactive);
   display: flex;
   gap: calc(var(--bf-baseline) * 0.5);
   inline-size: 100%;
   justify-content: flex-start;
-  margin: 0;
-  min-block-size: var(--bf-control-box-size-compact);
-${compactButtonPadding}  padding-inline: var(--bf-side-navigation-content-inset);
+  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+  padding-block: var(--bf-single-line-row-padding-block);
+  padding-inline: var(--bf-side-navigation-content-inset);
   --bf-side-navigation-row-inset: var(--bf-side-navigation-content-inset);
   position: relative;
   text-align: left;

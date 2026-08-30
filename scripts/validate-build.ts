@@ -712,15 +712,15 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-switch-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place switch geometry from the active body line geometry.");
   assert(css.includes("--bf-tick-box-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place tick geometry from the active body line geometry.");
   assert(css.includes("--bf-leading-mark-gap: var(--bf-component-inline-inset-field);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the shared leading-mark family and field inset.");
-  assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);") && css.includes("inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));"), "Expected the enlarged radio dot to remain concentric with its outer circle.");
-  assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
+  assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);") && css.includes("inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));"), "Expected the enlarged radio dot to remain concentric with its outer circle inside the shared row geometry.");
+  assert(css.includes("--bf-single-line-row-padding-block:") && css.includes("--bf-single-line-row-margin-block-end:") && css.includes("--bf-single-line-row-visual-offset:"), "Expected generated CSS to expose one border-aware occupied-block contract for body-sized single-line UI.");
   assert(css.includes("--bf-control-block-padding:"), "Expected generated CSS to define the regular control block padding token.");
   assert(css.includes("--bf-control-block-padding-compact:"), "Expected generated CSS to define the compact control block padding token.");
   assert(css.includes("--bf-input-block-padding:"), "Expected generated CSS to define the tier-selectable input block padding token.");
   assert(css.includes("--bf-button-block-padding:"), "Expected generated CSS to define the tier-selectable button block padding token.");
   assert(css.includes("--bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));"), "Expected generated CSS to derive regular control box size from the control block padding token.");
   assert(css.includes("padding-block: max(0rem, calc(var(--bf-input-block-padding) - var(--bf-border-width)));"), "Expected bordered inputs to resolve block padding from the tier-selectable input padding token.");
-  assert(css.includes("padding-block: max(0rem, calc(var(--bf-button-block-padding) - var(--bf-border-width)));"), "Expected bordered buttons to resolve block padding from the tier-selectable button padding token.");
+  assert(css.includes("padding-block: var(--bf-single-line-row-padding-block);"), "Expected bordered buttons and body-sized single-line rows to share one padding contract.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive) {\n  background-color: var(--bf-color-button-positive-default);"), "Expected generated CSS to define the bf-button.is-positive surface from the themed positive tokens.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:hover) {\n  background-color: var(--bf-color-button-positive-hover);"), "Expected bf-button.is-positive to surface the themed positive hover token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true'])) {\n  background-color: var(--bf-color-button-positive-active);"), "Expected bf-button.is-positive to surface the themed positive active token.");
@@ -837,7 +837,7 @@ function validateCommonCss(css: string): void {
   }, "status labels keep the canonical inline label treatment");
   const statusLabelRuleStart = css.indexOf(":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {");
   const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
-  assert(statusLabelRule.includes("padding-block-start: var(--bf-body-nudge-start") && statusLabelRule.includes("padding-block-end: var(--bf-body-nudge-end)"), "Expected status-label paint to use body metric nudges rather than H5 metric nudges.");
+  assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-single-line-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-single-line-row-margin-block-end)"), "Expected status-label paint to use the symmetric shared single-line row contract.");
   assert(css.includes("--bf-ui-icon-number-stepper: url(\"data:image/svg+xml,"), "Expected number inputs to reuse the compact paired-chevron asset.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(input[type='number'])", {
     "appearance": "textfield",
@@ -984,7 +984,8 @@ function validateCommonCss(css: string): void {
   }, "list-tree leaves align directly to the shared continuation rail");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree-toggle)", {
     "gap": "var(--bf-disclosure-gap)",
-    "margin": "0"
+    "margin": "0 0 var(--bf-single-line-row-margin-block-end)",
+    "padding-block": "var(--bf-single-line-row-padding-block)"
   }, "list-tree disclosures derive their text start from the shared mark canvas and gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree) :where(.bf-list-tree[aria-hidden='false'])", {
     "display": "block"

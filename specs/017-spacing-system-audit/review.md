@@ -230,3 +230,30 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
 - **Evidence:** `npm run build`, `npm run test:build` (6,573 checks),
   `npm run test:behavior`, `npm test`, and `npm run qa:components` passed with
   zero component-baseline failures.
+
+## Review 10 — one body-sized single-line occupied family
+
+- **Finding resolved — hidden height families:** Compact navigation, tick,
+  switch, status, validation, divided-list, tab, accordion, and chip rules each
+  derived block geometry differently. Browser measurements exposed tier-
+  dependent baseline drift even where two boxes happened to share a height.
+- **Pass — shared source contract:** `--bf-single-line-row-padding-block`,
+  `--bf-single-line-row-margin-block-end`, and the shared visual offset now own
+  border-aware body-sized rows. No target block size or authored pixel length
+  was added. Tabs internalise trailing compensation so the emphasis rule stays
+  attached to the list boundary.
+- **Pass — measured baseline and height:** A five-letter paragraph opens every
+  audit row. Across all four tiers, 23 interface specimens share one occupied
+  height and every measurable text fragment lands within the rendered rounding
+  tolerance of that reference. Status padding is physically symmetric; chip
+  and accordion text now share the button line.
+- **Pass — concise audit model:** The vertical fixture is three long 5rem-cell
+  rows: the unified interface family, metric text references, and explicit
+  table/breadcrumb contracts. Light and dark screenshots retained the shared
+  page chrome and showed both ends of the horizontally scrolled interface row.
+- **Evidence:** `npm test` passed, including 6,587 build contracts, the full
+  four-tier component-baseline matrix, and component behavior. Fresh
+  `npm run qa:components` screenshots then passed with zero baseline failures.
+  Live light/dark browser measurements across all four tiers found 23 shared
+  interface heights within 0.011 rendered pixels and text within 0.334
+  rendered pixels of the five-letter reference; the console remained clean.

@@ -403,11 +403,12 @@ ${bodyCaseTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(a.bf-table-of-contents-link) {
-${bodyTypeStyles}  color: var(--bf-color-link-default);
+${bodyTypeStyles}  border-block: var(--bf-border-width) solid transparent;
+  color: var(--bf-color-link-default);
   display: block;
-  margin: 0;
+  margin: 0 0 var(--bf-single-line-row-margin-block-end);
   overflow-wrap: anywhere;
-  padding-block: var(--bf-body-nudge-start) var(--bf-body-nudge-end);
+  padding-block: var(--bf-single-line-row-padding-block);
   text-decoration: none;
 }
 

@@ -22,6 +22,7 @@ export function listTreeCss(options: ListTreeCssOptions): string {
 }
 
 :where(.bf-theme) :where(.bf-list-tree-item) {
+  display: grid;
   margin: 0;
   padding-left: 0;
   position: relative;
@@ -29,11 +30,11 @@ export function listTreeCss(options: ListTreeCssOptions): string {
 
 :where(.bf-theme) :where(a.bf-list-tree-link) {
 ${bodyTypeStyles}  color: var(--bf-color-text-default);
+  border-block: var(--bf-border-width) solid transparent;
   cursor: pointer;
   display: block;
-  margin: 0;
-  min-block-size: var(--bf-control-box-size-compact);
-  padding-block: var(--bf-control-block-padding-compact);
+  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+  padding-block: var(--bf-single-line-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-continuation) var(--bf-component-inline-inset-action);
   text-decoration: none;
 }
@@ -60,13 +61,13 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 ${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
+  border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-color-text-default);
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   gap: var(--bf-disclosure-gap);
-  margin: 0;
-  min-block-size: var(--bf-control-box-size-compact);
-  padding-block: var(--bf-control-block-padding-compact);
+  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+  padding-block: var(--bf-single-line-row-padding-block);
   padding-inline: 0 calc(var(--bf-baseline) * 0.5);
   text-align: left;
   width: 100%;

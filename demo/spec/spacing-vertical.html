@@ -20,20 +20,25 @@
         <header class="bf-stack is-dense">
           <h1>Vertical occupied-block audit</h1>
           <p>
-            Red marks the shared start. Blue marks each component's occupied
-            end; components share a row only when their height contract is the
-            same across all four tiers.
+            The five-letter paragraph establishes the body-text baseline. Red
+            marks the shared start and blue marks the occupied end, making both
+            text drift and gratuitous single-line heights visible.
           </p>
         </header>
 
         <section class="bf-stack is-dense" aria-labelledby="vertical-controls">
-          <h2 class="bf-h6" id="vertical-controls">Control height</h2>
+          <h2 class="bf-h6" id="vertical-controls">
+            Shared single-line interface height
+          </h2>
           <div
             class="spacing-block-scroll"
             tabindex="0"
-            aria-label="Single-line control height comparison"
+            aria-label="Shared single-line interface height comparison"
           >
             <div class="spacing-block-track">
+              <article class="spacing-block-sample" aria-label="Baseline reference">
+                <div class="spacing-block-probe"><p>Abcde</p></div>
+              </article>
               <article class="spacing-block-sample" aria-label="Text input">
                 <div class="spacing-block-probe">
                   <div class="bf-control">
@@ -148,18 +153,6 @@
                   </div>
                 </div>
               </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="bf-stack is-dense" aria-labelledby="vertical-compact">
-          <h2 class="bf-h6" id="vertical-compact">Compact row height</h2>
-          <div
-            class="spacing-block-scroll"
-            tabindex="0"
-            aria-label="Compact and nestable row height comparison"
-          >
-            <div class="spacing-block-track">
               <article class="spacing-block-sample" aria-label="Tree disclosure">
                 <div class="spacing-block-probe">
                   <ul class="bf-list-tree">
@@ -179,7 +172,7 @@
                 <div class="spacing-block-probe">
                   <ul class="bf-list-tree">
                     <li class="bf-list-tree-item">
-                      <a class="bf-list-tree-link" href="#vertical-compact">
+                      <a class="bf-list-tree-link" href="#vertical-controls">
                         Child
                       </a>
                     </li>
@@ -193,7 +186,7 @@
                       <li class="bf-side-navigation-item">
                         <a
                           class="bf-side-navigation-link"
-                          href="#vertical-compact"
+                          href="#vertical-controls"
                         >
                           <span class="bf-side-navigation-label">Side</span>
                         </a>
@@ -250,35 +243,6 @@
                   </div>
                 </div>
               </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="bf-stack is-dense" aria-labelledby="vertical-text-runs">
-          <h2 class="bf-h6" id="vertical-text-runs">Text-run height</h2>
-          <div
-            class="spacing-block-scroll"
-            tabindex="0"
-            aria-label="Text and label height comparison"
-          >
-            <div class="spacing-block-track">
-              <article class="spacing-block-sample" aria-label="Paragraph">
-                <div class="spacing-block-probe"><p>Text</p></div>
-              </article>
-              <article class="spacing-block-sample" aria-label="Text link">
-                <div class="spacing-block-probe">
-                  <a class="bf-text-link" href="#vertical-text-runs">Link</a>
-                </div>
-              </article>
-              <article class="spacing-block-sample" aria-label="Prose list">
-                <div class="spacing-block-probe">
-                  <div class="bf-prose">
-                    <ul>
-                      <li>List</li>
-                    </ul>
-                  </div>
-                </div>
-              </article>
               <article class="spacing-block-sample" aria-label="Table of contents link">
                 <div class="spacing-block-probe">
                   <aside class="bf-table-of-contents">
@@ -287,7 +251,7 @@
                         <li class="bf-table-of-contents-item">
                           <a
                             class="bf-table-of-contents-link"
-                            href="#vertical-text-runs"
+                            href="#vertical-controls"
                           >
                             Contents
                           </a>
@@ -316,18 +280,6 @@
                   </label>
                 </div>
               </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="bf-stack is-dense" aria-labelledby="vertical-dense-actions">
-          <h2 class="bf-h6" id="vertical-dense-actions">Dense action height</h2>
-          <div
-            class="spacing-block-scroll"
-            tabindex="0"
-            aria-label="Dense action row height comparison"
-          >
-            <div class="spacing-block-track">
               <article class="spacing-block-sample" aria-label="Divided list row">
                 <div class="spacing-block-probe">
                   <ul class="bf-list is-divided">
@@ -351,20 +303,6 @@
                   </ul>
                 </div>
               </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="bf-stack is-dense" aria-labelledby="vertical-comfortable-actions">
-          <h2 class="bf-h6" id="vertical-comfortable-actions">
-            Comfortable action height
-          </h2>
-          <div
-            class="spacing-block-scroll"
-            tabindex="0"
-            aria-label="Comfortable action height comparison"
-          >
-            <div class="spacing-block-track">
               <article class="spacing-block-sample" aria-label="Accordion">
                 <div class="spacing-block-probe">
                   <div class="bf-accordion">
@@ -396,6 +334,38 @@
           </div>
         </section>
 
+        <section class="bf-stack is-dense" aria-labelledby="vertical-text-runs">
+          <h2 class="bf-h6" id="vertical-text-runs">Metric text references</h2>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Body-text metric comparison"
+          >
+            <div class="spacing-block-track">
+              <article class="spacing-block-sample" aria-label="Baseline reference">
+                <div class="spacing-block-probe"><p>Abcde</p></div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Paragraph">
+                <div class="spacing-block-probe"><p>Text</p></div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Text link">
+                <div class="spacing-block-probe">
+                  <a class="bf-text-link" href="#vertical-text-runs">Link</a>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Prose list">
+                <div class="spacing-block-probe">
+                  <div class="bf-prose">
+                    <ul>
+                      <li>List</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
         <section class="bf-stack is-dense" aria-labelledby="vertical-variants">
           <h2 class="bf-h6" id="vertical-variants">Independent contracts</h2>
           <p>
@@ -408,6 +378,9 @@
             aria-label="Deliberately distinct occupied heights"
           >
             <div class="spacing-block-track">
+              <article class="spacing-block-sample" aria-label="Baseline reference">
+                <div class="spacing-block-probe"><p>Abcde</p></div>
+              </article>
               <article class="spacing-block-sample" aria-label="Table cell">
                 <div class="spacing-block-probe">
                   <table class="bf-table">
