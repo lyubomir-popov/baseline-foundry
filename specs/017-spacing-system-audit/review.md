@@ -1,7 +1,7 @@
 # Review: Spacing System Audit
 
-Status: interim adversarial review after rule-native-markup and shared-split
-slice; exhaustive adjacency work remains open.
+Status: final adversarial review; no unresolved high- or medium-severity API,
+accessibility, responsive, spacing-ownership, or review-runtime finding.
 
 ## Review 1 — rule authoring and semantic API
 
@@ -40,8 +40,8 @@ slice; exhaustive adjacency work remains open.
   layout.
 - **Pass:** Component baseline verification and `qa:components` screenshot
   capture completed across the full catalog with zero reported failures.
-- **Open:** Full Spec 017 adversarial closeout is not claimed until T005–T016
-  are complete.
+- **Pass:** T005–T016 are complete; the final adversarial pass and release
+  gates found no unresolved high- or medium-severity issue.
 
 ## Review 4 — axis-specific audit surface
 
@@ -100,7 +100,7 @@ slice; exhaustive adjacency work remains open.
   fourth guide: red is the literal one-rem inset, green is compact field-like
   content, and blue owns marked/disclosure copy.
 - **Current regression validation:** `npm run build`, `npm run test:build`
-  (6,263 checks), `npm run test:behavior`, `npm test`, and
+  (6,439 checks), `npm run test:behavior`, `npm test`, and
   `npm run qa:components` passed. Browser review confirmed
   both audit routes inside the shared 18rem page chrome in light and dark
   themes, with clean fresh consoles. The fixed red/green/blue 0.0625rem overlay
@@ -117,3 +117,52 @@ slice; exhaustive adjacency work remains open.
   horizontal audit and side-navigation component were inspected with page
   chrome present; linked and plain specimen headings both resolved to the same
   one-rem start.
+
+## Review 6 — release-blocking adversarial findings
+
+- **High finding resolved — stale review server:** The source contained the
+  grouped navigation rail, but the long-running Vite process retained an old
+  page-chrome module graph in the Windows/WSL-shared workspace. This reproduced
+  the reported edge-touching rail and missing rules in a real browser. Vite now
+  polls that workspace; a source edit made after restart appeared through the
+  same running `127.0.0.1:4173` process without another restart. Static
+  validation contracts the polling configuration.
+- **Medium finding resolved — masked inline baseline:** The compact tag audit
+  used a flex cluster, so it did not exercise CSS inline baseline behaviour.
+  A true inline body/chip/borderless-chip row exposed a tier-dependent chip
+  text drop. Removing the redundant negative vertical-align compensation gives
+  both chip treatments zero text-bottom delta beside body text in all four
+  tiers; behavior coverage now measures that relationship.
+- **Medium finding resolved — unclassified surface starts:** Copy-bearing
+  fields, cards, option cards, inline options, modal regions, drawer headers,
+  tooltips, search popups and code regions now choose continuation. Contextual
+  menu and code-header dropdown commands choose action. The legacy panel inset
+  remains a direct padding owner only on the structural top-navigation row;
+  no fourth author-visible component guide remains.
+- **Medium finding resolved — misleading tiered-list fixture:** The invalid
+  full-width list specimens were removed, but the replacement 28rem cap sat
+  below the compact row's 32rem query threshold. The two- and three-slot rows
+  now live in a supported eight-column BF grid span and visibly render their
+  intended slots. The 16-column nested-grid proof was widened to 110rem so its
+  content box still clears the 105.0625rem query threshold after the shared
+  continuation inset.
+- **Terminology and inbox:** Active “element-owned spacing” headings were
+  replaced with the current container-owned model. The human inbox items are
+  represented by durable demo, source, test and contract changes, and the
+  inbox has returned to its empty header.
+
+## Review 7 — final visual evidence
+
+- A real external browser showed the horizontal audit in light Editorial and
+  dark OS with shared chrome present, exactly 13 navigation groups, 12 real
+  separators, a one-rem heading/link inset, and a 1.5rem inter-group gap.
+- The three rem-authored fixed overlay lines resolved to one rendered pixel at
+  the default root, 50% opacity, and red/green/blue. The number and select
+  affordances visibly shared their canvas and trailing position; leading marks,
+  disclosure rows, notification and panel copy were inspected on the same
+  guides.
+- The vertical audit was inspected in light and dark with shared chrome. Its
+  true-inline body/chip/borderless-chip row has zero measured baseline delta in
+  Editorial, Documentation, App and OS. Affected card/surface and code-snippet
+  routes were also inspected in light/dark with no overflow or browser-console
+  warnings.

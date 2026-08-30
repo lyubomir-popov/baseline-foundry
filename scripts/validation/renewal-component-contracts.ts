@@ -370,7 +370,7 @@ export function validateRenewalComponentContracts(
   const tieredListHtml = pages["tiered-list"] ?? "";
   assert(tieredListHtml.includes("bf-tiered-list is-flush") && tieredListHtml.includes("bf-tiered-list is-triple"), "Expected tiered-list demo to cover flush and triple layouts.");
   assert(tieredListHtml.includes("bf-tiered-list-item-role"), "Expected tiered-list demo to cover the role slot.");
-  assert(!tieredListHtml.includes("is-list-full-width") && tieredListHtml.includes("bf-inline-size is-x-wide bf-stack is-section"), "Expected the tiered-list demo to omit invalid full-width list specimens and frame compact row variants in an explicit constrained container.");
+  assert(!tieredListHtml.includes("is-list-full-width") && tieredListHtml.includes('class="bf-grid"') && tieredListHtml.includes('class="bf-span-8 bf-stack is-section"'), "Expected the tiered-list demo to omit invalid full-width list specimens and frame compact row variants in a supported eight-column grid span.");
   assert(!tieredListHtml.includes("bf-tiered-list bf-stack"), "Expected tiered-list patterns to own their internal rhythm without a stack utility.");
   assert(!tieredListHtml.includes("bf-tiered-list-items bf-stack"), "Expected tiered-list items to own their internal rhythm without a stack utility.");
   assert((tieredListHtml.match(/<hr data-baseline-check="flow">/g) ?? []).length >= 4, "Expected compact tiered-list demo rows to render and baseline-check their direct-child divider contract.");

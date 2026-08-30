@@ -35,7 +35,7 @@ navigation depth remain structural offsets, not component insets.
 | Field content | Text inside a field-like compact surface | `--bf-component-inline-inset-field`, sourced from the tier field-control inset | input, number, select, textarea, search field, table cell, chip, status label | These members share the green guide. Number/select reserve their own trailing affordance slot. |
 | Command content | Text inside a command surface | `--bf-component-inline-inset-action`, sourced from the tier action-control inset | button, icon button, segmented control, tabs, pagination, file selector button, plain side-navigation rows | Buttons and plain navigation commands belong here horizontally, never in the field bucket. |
 | Icon-label continuation | Icon canvas to label/panel continuation | `--bf-component-inline-inset-continuation`, sourced from the shared disclosure label offset | accordion, list tree, notification copy, accordion panel continuation, side-navigation disclosure/icon labels | Mark starts are calculated backward so copy resolves to the same measured 2rem audit line. Navigation depth remains layout-owned and is added only after this base. |
-| Surface content | First content after a bounded surface edge | `--bf-panel-padding-inline` | panel/card/notice/notification/modal/drawer/search popup/footer, inline-options group | Keep distinct from the outer frame and compact controls. Surface padding is a region contract. |
+| Bounded regions | Structural edge around a surface whose child starts resolve to a component guide | named surface/layout placement, then one of the three component insets for author-visible content | panel/card/notice/notification/modal/drawer/search popup/footer, inline-options group | The boundary may remain layout-owned, but it does not authorize a fourth author-visible component start. Children choose field, action, or continuation; symmetric/centred geometry has no first-glyph guide. |
 
 ## Occupied-block rhythm
 
@@ -59,7 +59,8 @@ navigation depth remain structural offsets, not component insets.
   surface rather than an alias for chip.
 - `bf-chip.is-borderless` is the neutral inline label treatment. Its transparent
   border preserves the same occupied geometry as an ordinary chip; the vertical
-  audit compares it directly with body text and a chip/badge pair.
+  audit compares it directly with body text and a chip/badge pair in one inline
+  formatting context, so flex-item alignment cannot hide a baseline departure.
 - Badges remain centred counters. Their symmetric internal padding has no
   meaningful first-glyph keyline and therefore does not create another guide.
 
@@ -108,7 +109,7 @@ not component padding and must not be moved onto a component guide.
 | accordion rules, `list-tree.ts`, `interactive-feedback.ts`, panel continuation | accordion tab/panel, list-tree toggle, notification title/message, panel content | Blue — disclosure/copy continuation |
 | switch rules | switch label | Blue in the shared icon-led comparison; the wider switch track remains component-owned |
 | `legacy-navigation.ts`, `document-navigation.ts`, `navigation-layout.ts` | root/child side navigation, top navigation, reduced navigation, TOC, in-page navigation, article pagination | Plain side-navigation commands use red; disclosure/icon labels use blue; structural depth and asymmetric destination slots remain layout-owned. |
-| `panel.ts`, `cards-options.ts`, content/surface modules | panel/card/notice/modal/drawer/popup/footer and inline-options regions | Panel content uses blue in every tier; other bounded regions keep their named region inset unless measurement proves the same continuation |
+| `panel.ts`, `cards-options.ts`, content/surface modules | panel/card/option card/fieldset/modal/drawer/tooltip/search popup/code snippet/inline-options regions | Copy-bearing bounded regions use blue/continuation. Contextual-menu and code-header dropdown commands use red/action. The top-navigation row retains the legacy panel token only as structural shell placement; reserved prompt and line-number slots are internal continuations from the chosen blue content edge. |
 | grid/site/pattern modules | page, fixed width, grids, docs/app shells, hero, section, tiered list, content card, media object, rich layouts | Layout-owned grid placement, span, gutter, or region boundary; never a component-padding guide |
 | zero/symmetric primitives | plain text, headings, labels/help, inline list, badge, icon, rule, centred icon-only control | Zero inset or symmetric geometry; no first-glyph guide is required |
 

@@ -205,7 +205,7 @@ ${bodyTypeStyles}  appearance: none;
   gap: var(--bf-field-gap);
   opacity: 1;
   padding-bottom: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
   padding-top: var(--bf-panel-padding-block);
   position: absolute;
   top: 100%;

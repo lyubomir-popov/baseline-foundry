@@ -399,6 +399,7 @@ function validateThemeConfigWatcher(viteConfigTs: string): void {
   assert(viteConfigTs.includes('name: "baseline-foundry-theme-config-watcher"'), "Expected vite.config.ts to register the JSON-config theme rebuild watcher.");
   assert(viteConfigTs.includes("build:theme"), "Expected vite.config.ts to rerun npm run build:theme when config JSON changes.");
   assert(viteConfigTs.includes('type: "full-reload"'), "Expected vite.config.ts to trigger a full reload after rebuilding theme artifacts.");
+  assert(viteConfigTs.includes("watch:") && viteConfigTs.includes("usePolling: true"), "Expected the demo server to poll the Windows/WSL-shared workspace so long-running browser review does not retain a stale module graph.");
 }
 
 async function validateLegacyPanelPresetRemoval(): Promise<void> {
@@ -674,6 +675,25 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
   assert(css.includes("--bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));") && css.includes("--bf-component-inline-inset-field: var(--bf-control-inline-padding-field);") && css.includes("--bf-component-inline-inset-action: var(--bf-control-inline-padding-action);") && css.includes("--bf-component-inline-inset-continuation: var(--bf-disclosure-label-inline-offset);"), "Expected components to expose exactly the field, action, and continuation inline inset families.");
   assert(css.includes("padding-inline-start: var(--bf-component-inline-inset-continuation);"), "Expected accordion panels to share the continuation inset.");
+  for (const [selector, inset] of [
+    [":where(.bf-theme) :where(fieldset, .bf-fieldset)", "continuation"],
+    [":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", "continuation"],
+    [":where(.bf-theme) :where(.bf-option-card)", "continuation"],
+    [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "continuation"],
+    [":where(.bf-theme) :where(.bf-side-navigation-drawer-header)", "continuation"],
+    [":where(.bf-theme) :where(.bf-contextual-menu-link)", "action"],
+    [":where(.bf-theme) :where(.bf-tooltip-message)", "continuation"],
+    [":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)", "continuation"],
+    [":where(.bf-theme) :where(.bf-code-snippet-title)", "continuation"],
+    [":where(.bf-theme) :where(.bf-code-snippet-dropdown)", "action"],
+    [":where(.bf-theme) :where(.bf-code-snippet-block, .bf-code-snippet-block.is-icon, .bf-code-snippet-block.is-numbered)", "continuation"]
+  ] as const) {
+    assertRuleHasDecl(ast, selector, {
+      "padding-inline": `var(--bf-component-inline-inset-${inset})`
+    }, `${selector} chooses the shared ${inset} component inset`);
+  }
+  assert((css.match(/padding-inline: var\(--bf-panel-padding-inline\);/g) ?? []).length === 1, "Expected the legacy panel inline token to remain only on the structural top-navigation row, not author-visible component content.");
+  assert(css.includes("vertical-align: baseline;") && !css.includes("vertical-align: calc(var(--bf-border-width) - var(--bf-body-nudge-start"), "Expected inline chips to expose their first text baseline without reapplying the body metric nudge.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 0.0625rem);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 0.0625rem thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
@@ -973,8 +993,8 @@ function validateCommonCss(css: string): void {
     "border-bottom": "var(--bf-border-width) solid var(--bf-color-border-default)",
     "display": "grid",
     "gap": "var(--bf-field-gap)",
-    "padding-inline": "var(--bf-panel-padding-inline)"
-  }, "inline options keep the canonical stacked options panel layout");
+    "padding-inline": "var(--bf-component-inline-inset-continuation)"
+  }, "inline options keep the canonical stacked layout on the shared continuation inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-option-grid)", {
     "display": "grid",
     "grid-template-columns": "repeat(auto-fit, minmax(min(100%, 10rem), 1fr))"

@@ -376,7 +376,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   margin: 0;
   min-inline-size: 0;
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
   padding-block-start: var(--bf-panel-padding-block);
 }
 
@@ -1064,7 +1064,7 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   margin: 0;
   overflow: hidden;
   padding-block: var(--bf-control-block-padding-compact);
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-align: left;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -1123,7 +1123,7 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
   opacity: 0;
   padding-block-end: ${bodySelectedEndNudge};
   padding-block-start: ${bodySelectedStartNudge};
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
   pointer-events: none;
   position: absolute;
   top: 100%;
@@ -1457,7 +1457,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 :where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer) {
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
   padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
 }
 
 :where(.bf-theme) :where(.bf-modal-header) {
@@ -1538,7 +1538,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-default);
   margin: 0;
   overflow-wrap: anywhere;
   padding-block: var(--bf-panel-padding-block);
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-dropdowns) {
@@ -1567,7 +1567,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   min-block-size: calc(${bodyLineHeight} + (var(--bf-panel-padding-block) * 2));
   min-inline-size: 0;
   padding-block: var(--bf-panel-padding-block);
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-align: start;
 }
 
@@ -1596,7 +1596,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   min-inline-size: 0;
   overflow-x: auto;
   padding-block: var(--bf-panel-padding-block);
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
   tab-size: 2;
   white-space: pre;
 }
@@ -1612,14 +1612,14 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon) {
   cursor: copy;
-  padding-inline-start: calc(var(--bf-panel-padding-inline) + (var(--bf-baseline) * 3));
+  padding-inline-start: calc(var(--bf-component-inline-inset-continuation) + (var(--bf-baseline) * 3));
   position: relative;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon)::before {
 ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   content: "$";
-  inset-inline-start: var(--bf-panel-padding-inline);
+  inset-inline-start: var(--bf-component-inline-inset-continuation);
   inset-block-start: var(--bf-panel-padding-block);
   position: absolute;
 }

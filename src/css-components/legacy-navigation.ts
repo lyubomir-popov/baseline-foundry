@@ -88,7 +88,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   margin-bottom: calc(var(--bf-baseline) * 2);
   padding-bottom: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
   padding-top: var(--bf-panel-padding-block);
   position: sticky;
   top: 0;

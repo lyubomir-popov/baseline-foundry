@@ -228,6 +228,35 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(await number.inputValue() === String(Number(originalValue) + 1), "Expected the numeric field to retain native keyboard increment behaviour.");
     await number.press("ArrowDown");
     assert(await number.inputValue() === originalValue, "Expected the numeric field to retain native keyboard decrement behaviour.");
+    await page.goto(`${origin}/demo/spec/spacing-vertical.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const verticalTierSelect = page.getByLabel("Tier", { exact: true });
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await verticalTierSelect.selectOption(tier);
+      await page.waitForSelector(`body.bf-tier-${tier}`);
+      const inlineTagGeometry = await page.evaluate(() => {
+        const row = document.querySelector<HTMLElement>('section[aria-labelledby="vertical-tags"] p.bf-body');
+        const bodyText = Array.from(row?.childNodes ?? []).find(node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+        const chipValues = Array.from(row?.querySelectorAll<HTMLElement>(".bf-chip-value") ?? []);
+        if (!row || !bodyText || chipValues.length !== 2) throw new Error("Missing true-inline chip comparison.");
+        const bodyRange = document.createRange();
+        bodyRange.selectNodeContents(bodyText);
+        const bodyBottom = bodyRange.getBoundingClientRect().bottom;
+        return {
+          chipBottomDeltas: chipValues.map(value => {
+            const valueRange = document.createRange();
+            valueRange.selectNodeContents(value);
+            return valueRange.getBoundingClientRect().bottom - bodyBottom;
+          }),
+          isFlexMask: row.classList.contains("bf-cluster"),
+          verticalAlignments: Array.from(row.querySelectorAll<HTMLElement>(".bf-chip")).map(chip => getComputedStyle(chip).verticalAlign)
+        };
+      });
+      assert(!inlineTagGeometry.isFlexMask, `Expected ${tier} compact tags to share a true inline formatting context rather than a flex alignment mask.`);
+      assert(inlineTagGeometry.chipBottomDeltas.every(delta => Math.abs(delta) < 0.1), `Expected ${tier} regular and borderless chip text to share the adjacent body baseline; deltas=${inlineTagGeometry.chipBottomDeltas.join(", ")}.`);
+      assert(inlineTagGeometry.verticalAlignments.every(value => value === "baseline"), `Expected ${tier} inline chips to use their first text baseline without another metric nudge.`);
+    }
+    assert(await page.locator("[data-spacing-keyline-debug]").count() === 1 && await page.locator("[data-spacing-keyline]").count() === 3, "Expected the vertical audit to retain the same three-line overlay after its true-inline tag review.");
     assert(runtimeErrors.length === 0, `Expected the spacing audit runtime console to remain clean; received ${runtimeErrors.join(" | ")}.`);
     await page.goto(`${origin}/demo/spec/spacing.html`, { waitUntil: "networkidle" });
     assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator("[data-spacing-keyline-debug]").count() === 0, "Expected the spacing overview to retain shared chrome without the audit-only keyline overlay.");

@@ -21,7 +21,7 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
   overflow: auto;
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
   padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
 }
 
 :where(.bf-theme) :where(.bf-card.is-highlighted) {
@@ -138,7 +138,7 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
   min-inline-size: 0;
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
   padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
   text-align: left;
 }
 

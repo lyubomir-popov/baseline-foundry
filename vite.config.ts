@@ -181,6 +181,14 @@ export default defineConfig({
     port: parseInt(process.env.VITE_PORT || "4174", 10),
     strictPort: true,
     open: "/",
+    // The repository commonly runs from a Windows/WSL-shared workspace, where
+    // native filesystem events can be dropped. Polling keeps a long-running
+    // review server synchronized with source edits instead of retaining a
+    // stale module graph until the process is restarted.
+    watch: {
+      usePolling: true,
+      interval: 200,
+    },
     headers: {
       "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
       "Pragma": "no-cache",

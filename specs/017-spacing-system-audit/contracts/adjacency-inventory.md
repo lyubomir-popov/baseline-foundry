@@ -32,21 +32,22 @@ an automated or browser-verifiable route; no public diagnostic board is needed.
 | R21 | Page edge, grid gutter, fixed-width region, and panel inset | Inline | Page/grid/panel public gutter variables |
 | R22 | Responsive collapsed/expanded or hidden/visible states | Both | The same component owner at an intrinsic or shared breakpoint |
 
-## Candidate keyline map
+## Confirmed keyline map
 
-The audit compares named tracks; it does not prescribe one universal start
-edge or predeclare the final number of public offsets. The full-width
+The audit compares named tracks rather than prescribing one universal start
+edge. The full-width
 `/demo/spec/spacing-horizontal.html` and `/demo/spec/spacing-vertical.html`
 routes put the relevant keyline-bearing primitives in separately classified
-arrangements so the audit can confirm, consolidate, or split these candidates
-from the paragraph left edge before route-specific measurements.
+arrangements. Author-visible component starts resolve to field, action, or
+continuation; the switch is the only measured component exception. Page/grid
+placement and navigation depth remain named structural offsets.
 
 | Keyline | Typical relationship | Owner |
 |---|---|---|
-| Content | Paragraph and prose-list copy | Page/grid gutter and prose-list indent |
-| Leading-mark | Bullet, checkbox, radio, or disclosure icon before its label | List/control/disclosure visual and gap variables |
-| Control/panel gutter | Input or panel text after its surrounding edge | Control/panel inset variables |
-| Disclosure continuation | Accordion panel copy under the tab label, after its icon | Disclosure icon-size plus disclosure-gap variables |
+| Field (green) | Input, table-cell, chip, status, compact field-like content | `--bf-component-inline-inset-field` |
+| Action (red) | Button, tab, pagination, plain navigation and menu commands | `--bf-component-inline-inset-action` |
+| Continuation (blue) | Copy after a mark/disclosure and copy-bearing bounded regions | `--bf-component-inline-inset-continuation` |
+| Structural placement | Page/grid edge, navigation depth, reserved prompt/indicator slots | Named layout or internal-slot owner; never a fourth component inset |
 
 ## Route inventory
 
@@ -205,4 +206,10 @@ During T005–T012, each finding appended below must record:
 
 | Finding | Route | Relationship ID | Source owner | Token/variable | Direct/scoped tiers | Widths | Status |
 |---|---|---|---|---|---|---|---|
-| _Populate from measured audit_ |  |  |  |  |  |  |  |
+| Page-rail groups need tight rule-to-heading spacing and loose group separation | Shared page chrome; side navigation | R06, R12, R20 | `legacy-navigation.ts`, `page-chrome.js` | action inset; `--bf-side-navigation-group-gap` | Editorial, Documentation, App, OS | Wide and constrained | Resolved; real rules, grouped H3+UL wrappers, 1.5rem group gap |
+| Native number affordance reserved a duplicate browser slot | Horizontal audit; number/select | R07, R09 | `css-components.ts` | field inset and shared 1rem affordance canvas | All four | Wide and enlarged-root | Resolved; one field-owned SVG, native keyboard semantics retained |
+| Prose/state/choice marks and copy used unrelated offsets | Horizontal audit; list/checkbox/radio | R04, R08–R09 | `css.ts`, `list.ts`, selection rules | leading-mark family to continuation | All four | Wide and enlarged-root | Resolved; common mark centre and blue copy start |
+| Disclosure and icon-led labels drifted across components | Horizontal audit | R09, R11–R13, R18 | accordion, list-tree, navigation, notification, panel | continuation inset | All four | Wide and constrained | Resolved; zero measured copy-line spread |
+| Copy-bearing bounded regions retained an unclassified tier panel inset | Surface, modal, card, popup and code routes | R13, R15, R19, R21 | surface component modules | continuation for copy; action for commands | All four | Wide and constrained | Resolved; structural top-navigation row is the only direct legacy panel-inset consumer |
+| Flex-row tag comparison hid the real inline chip baseline | Vertical audit | R05, R09 | `chip-badge-status.ts` | native inline baseline | All four | Wide | Resolved; regular and borderless chip text have zero baseline delta beside body text |
+| Compact tiered-list examples were capped below their own split threshold | Tiered list | R04–R06, R22 | tiered-list demo and component query | BF grid span and 32rem component threshold | All four | Wide and constrained | Resolved; invalid full-width variants removed and compact rows framed by supported eight-column grid span |

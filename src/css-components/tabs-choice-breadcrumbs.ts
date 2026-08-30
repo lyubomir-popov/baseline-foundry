@@ -176,7 +176,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   gap: var(--bf-field-gap);
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
   padding-block-start: var(--bf-panel-padding-block);
-  padding-inline: var(--bf-panel-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-continuation);
 }
 
 :where(.bf-theme) :where(.bf-inline-options-heading) {

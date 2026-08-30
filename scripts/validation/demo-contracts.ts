@@ -358,7 +358,7 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
   }
   assert(horizontalAuditHtml.includes('type="number"') && verticalAuditHtml.includes('type="number"'), "Expected both audits to expose a numeric input.");
   const compactTagsBucket = verticalAuditHtml.slice(verticalAuditHtml.indexOf('id="vertical-tags"'), verticalAuditHtml.indexOf('id="vertical-surfaces"'));
-  assert(compactTagsBucket.includes('class="bf-cluster"') && compactTagsBucket.includes('class="bf-body"') && compactTagsBucket.includes('class="bf-chip"') && compactTagsBucket.includes('bf-badge') && compactTagsBucket.includes('is-borderless') && !compactTagsBucket.includes('bf-status-label'), "Expected compact data tags to compare inline body text, chip with badge, and the borderless-chip label treatment.");
+  assert(compactTagsBucket.includes('<p class="bf-body">') && !compactTagsBucket.includes('class="bf-cluster"') && compactTagsBucket.includes('class="bf-chip"') && compactTagsBucket.includes('bf-badge') && compactTagsBucket.includes('is-borderless') && !compactTagsBucket.includes('bf-status-label'), "Expected compact data tags to compare body text, a chip with badge, and the borderless-chip label treatment in one true inline formatting context.");
   assert(!specShellCss.includes('keyline'), "Expected the spacing comparison to need no page-local keyline CSS.");
 }
 

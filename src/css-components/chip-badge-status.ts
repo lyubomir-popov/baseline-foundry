@@ -39,7 +39,9 @@ ${bodyTypeStyles}  align-items: baseline;
   position: relative;
   text-decoration: none;
   user-select: none;
-  vertical-align: calc(var(--bf-border-width) - ${bodySelectedStartNudge});
+  /* Inline-flex exposes the first text child's baseline. Do not reapply the
+     body metric nudge here: that lowers chip text beside an ordinary body run. */
+  vertical-align: baseline;
   white-space: nowrap;
 }
 
