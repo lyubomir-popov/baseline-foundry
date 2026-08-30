@@ -7,7 +7,7 @@ export function panelCss(options: PanelCssOptions): string {
   const { bodyTypeStyles, h4TypeStyles } = options;
 
   return `:where(.bf-theme) :where(.bf-panel) {
-  --bf-panel-content-padding-inline: var(--bf-grid-gap-inline, var(--bf-panel-padding-inline));
+  --bf-panel-content-padding-inline: var(--bf-disclosure-label-inline-offset);
   background: var(--bf-color-background-default);
   color: var(--bf-color-text-default);
   display: flex;

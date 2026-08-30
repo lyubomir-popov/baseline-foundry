@@ -91,7 +91,7 @@ ${bodyTypeStyles}  align-items: center;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
   margin: 0 0 ${buttonMarginBottom};
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
+${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action-bordered);
   text-decoration: none;
 }
 

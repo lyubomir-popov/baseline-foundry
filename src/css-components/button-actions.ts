@@ -16,7 +16,7 @@ ${bodyTypeStyles}  appearance: none;
   cursor: pointer;
   display: inline-block;
   margin-bottom: ${buttonMarginBottom};
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
+${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action-bordered);
   text-align: center;
   text-decoration: none;
 }

@@ -70,15 +70,36 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         const icon = pseudo(selector);
         return host.left + host.paddingLeft + icon.width + host.gap;
       };
+      const textStart = selector => {
+        const element = document.querySelector(selector);
+        if (!element) throw new Error("Missing spacing-audit text host: " + selector);
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+        let node = walker.nextNode();
+        while (node && !node.textContent.trim()) node = walker.nextNode();
+        if (!node) throw new Error("Missing spacing-audit text: " + selector);
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        return range.getBoundingClientRect().left;
+      };
       const radio = box(".bf-radio-label");
       const radioOuter = pseudo(".bf-radio-label");
       const radioDot = pseudo(".bf-radio-label", "::after");
       const radioOuterStyle = getComputedStyle(document.querySelector(".bf-radio-label"), "::before");
+      const checkbox = box(".bf-checkbox-label");
+      const checkboxOuter = pseudo(".bf-checkbox-label");
+      const checkboxCheck = pseudo(".bf-checkbox-label", "::after");
       const prose = box(".bf-prose ul > li");
       const proseDot = pseudo(".bf-prose ul > li");
+      const markCenter = selector => {
+        const host = box(selector);
+        const mark = pseudo(selector);
+        return host.left + mark.left + (mark.width / 2);
+      };
       const page = box("main.bf-page");
       const red = document.querySelector("[data-spacing-keyline='one-rem-inset']");
-      if (!red) throw new Error("Missing the one-rem debug keyline.");
+      const green = document.querySelector("[data-spacing-keyline='field-text-start']");
+      const blue = document.querySelector("[data-spacing-keyline='disclosure-label-start']");
+      if (!red || !green || !blue) throw new Error("Missing a spacing debug keyline.");
       return {
         proseDotCenter: prose.left + proseDot.left + (proseDot.width / 2),
         radioCenter: radio.left + radioOuter.left + (radioOuter.width / 2),
@@ -88,17 +109,30 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         radioDotWidth: radioDot.width,
         borderWidth: number(radioOuterStyle.borderInlineStartWidth),
         expectedRadioDotWidth: (radioOuter.width * 0.375) + number(radioOuterStyle.borderInlineStartWidth),
+        checkboxCenter: checkbox.left + checkboxOuter.left + (checkboxOuter.width / 2),
+        checkboxCenterY: checkbox.top + checkboxOuter.top + (checkboxOuter.height / 2),
+        checkboxCheckCenterY: checkbox.top + checkboxCheck.top + (checkboxCheck.height / 2),
+        leadingMarkCenters: [".bf-prose ul > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label"].map(markCenter),
+        markedTextStarts: [".bf-prose ul > li", ".bf-prose ol > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label", ".bf-validation-message"].map(textStart),
+        fieldTextStarts: [".bf-table td", ".bf-chip-value", ".bf-status-label"].map(textStart),
+        commandTextStarts: [".bf-button", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
         accordionStart: iconLabelStart(".bf-accordion-tab"),
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
         notificationStart: box(".bf-notification-title").left,
         panelStart: box(".bf-panel-content p").left,
         redStart: red.getBoundingClientRect().left,
+        greenStart: green.getBoundingClientRect().left,
+        blueStart: blue.getBoundingClientRect().left,
         expectedRedStart: page.left + page.paddingLeft + Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
       };
     })()`);
-    assert(Math.abs(alignmentGeometry.proseDotCenter - alignmentGeometry.radioCenter) < 0.51, "Expected the prose dot and radio control to share one leading-mark centre.");
-    assert(Math.abs(alignmentGeometry.radioDotCenterX - (alignmentGeometry.radioCenter - alignmentGeometry.borderWidth)) < 0.01 && Math.abs(alignmentGeometry.radioDotCenterY - (alignmentGeometry.radioCenterY - alignmentGeometry.borderWidth)) < 0.01, "Expected the radio inner dot to sit one scalable border unit left and above the outer-circle centre.");
+    assert(Math.max(...alignmentGeometry.leadingMarkCenters) - Math.min(...alignmentGeometry.leadingMarkCenters) < 0.51, "Expected prose-list, state-list, checkbox, and radio marks to share one leading-mark centre.");
+    assert(Math.abs(alignmentGeometry.radioDotCenterX - alignmentGeometry.radioCenter) < 0.01 && Math.abs(alignmentGeometry.radioDotCenterY - alignmentGeometry.radioCenterY) < 0.01, "Expected the radio inner dot to be concentric with the outer circle.");
     assert(Math.abs(alignmentGeometry.radioDotWidth - alignmentGeometry.expectedRadioDotWidth) < 0.01, "Expected the radio inner dot to be one scalable border unit wider than its previous proportional size.");
+    assert(Math.abs(alignmentGeometry.checkboxCenterY - alignmentGeometry.checkboxCheckCenterY) <= alignmentGeometry.borderWidth * 0.5, "Expected the checkbox check to sit optically within half a scalable border unit of the outer-box centre.");
+    assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), "Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline.");
+    assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell, chip, and status-label text to share the green field-inset keyline.");
+    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, segmented-control, tab, and pagination text to share the red one-rem action keyline.");
     assert(Math.max(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) - Math.min(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) < 0.51, "Expected accordion, list-tree, notification, and panel copy to share one icon-label continuation keyline.");
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent a literal one-rem page inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
@@ -180,7 +214,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(enlargedGeometry.lineAuthoredWidth === "0.0625rem" && enlargedGeometry.lineAuthoredLeft.endsWith("rem"), "Expected the enlarged overlay to retain rem-authored width and position values.");
     assert(Math.abs(enlargedGeometry.redStart - enlargedGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to retain its literal one-rem inset after root enlargement.");
     const enlargedRadioCenterShift = (enlargedGeometry.radioOuterLeft + (enlargedGeometry.radioOuterWidth / 2)) - (enlargedGeometry.radioDotLeft + (enlargedGeometry.radioDotWidth / 2));
-    assert(Math.abs(enlargedGeometry.radioDotWidth - ((enlargedGeometry.radioOuterWidth * 0.375) + enlargedGeometry.borderWidth)) < 0.02 && Math.abs(enlargedRadioCenterShift - enlargedGeometry.borderWidth) < 0.02, `Expected the radio inner-dot growth and optical shift to scale by the rem-based border unit; got ${JSON.stringify(enlargedGeometry)}.`);
+    assert(Math.abs(enlargedGeometry.radioDotWidth - ((enlargedGeometry.radioOuterWidth * 0.375) + enlargedGeometry.borderWidth)) < 0.02 && Math.abs(enlargedRadioCenterShift) < 0.02, `Expected the radio inner-dot growth to scale by the rem-based border unit while remaining concentric; got ${JSON.stringify(enlargedGeometry)}.`);
     assert(enlargedGeometry.numberCanvas === enlargedGeometry.selectCanvas && enlargedGeometry.numberCanvas === "32px 32px", "Expected number and select chevron canvases to scale together at the enlarged root size.");
     assert(enlargedGeometry.chromePresent, "Expected shared page chrome to remain present after root enlargement.");
     await page.evaluate(() => {
@@ -2619,7 +2653,6 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
       const measurements = await page.evaluate((widths) => {
         const selectors = {
           default: ".bf-tiered-list:not(.is-description-full-width):not(.is-list-full-width):not(.is-flush):not(.is-triple)",
-          fullWidth: ".bf-tiered-list.is-list-full-width",
           flush: ".bf-tiered-list.is-flush",
           triple: ".bf-tiered-list.is-triple"
         } as const;
@@ -2671,11 +2704,10 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
 
       assert(measurements, `Expected tiered-list threshold measurements for ${tier}.`);
       for (const measurement of measurements) {
-        const { default: defaultVariant, fullWidth, flush, triple } = measurement.variants;
-        assert(defaultVariant && fullWidth && flush && triple, `Expected all tiered-list variants at ${measurement.width}rem for ${tier}.`);
+        const { default: defaultVariant, flush, triple } = measurement.variants;
+        assert(defaultVariant && flush && triple, `Expected all displayed tiered-list variants at ${measurement.width}rem for ${tier}.`);
         const aboveBreakpoint = measurement.width === 38.75;
         assert(defaultVariant.gridColumns === (aboveBreakpoint ? 8 : 1), `Expected ${tier} default tiered list at ${measurement.width}rem to use ${aboveBreakpoint ? "eight" : "one"} explicit column(s), got ${defaultVariant.gridColumns}.`);
-        assert(fullWidth.gridColumns === 1, `Expected ${tier} full-width tiered list at ${measurement.width}rem to stay one-column, got ${fullWidth.gridColumns}.`);
         assert(flush.gridColumns === 2, `Expected ${tier} flush tiered list at ${measurement.width}rem to retain two explicit columns, got ${flush.gridColumns}.`);
         assert(triple.gridColumns === 3, `Expected ${tier} triple tiered list at ${measurement.width}rem to retain three explicit columns, got ${triple.gridColumns}.`);
 
@@ -2684,7 +2716,7 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
           assert(Math.abs(variant.itemsGap - variant.expectedItemsGap) <= 0.1, `Expected ${tier} ${name} tiered-list items to own the default shallow stack gap, got ${variant.itemsGap}px instead of ${variant.expectedItemsGap}px.`);
         }
 
-        for (const [name, variant] of Object.entries({ fullWidth, flush, triple })) {
+        for (const [name, variant] of Object.entries({ flush, triple })) {
           assert(variant.overflow <= 1, `Expected ${tier} ${name} tiered list at ${measurement.width}rem to avoid inline overflow.`);
           assert(Math.abs(variant.ruleStartOffset) <= 1 && Math.abs(variant.ruleEndDelta) <= 1, `Expected ${tier} ${name} tiered-list rule at ${measurement.width}rem to span its explicit row.`);
           assert(variant.ruleBottom <= variant.titleTop + 1, `Expected ${tier} ${name} tiered-list rule at ${measurement.width}rem to remain above its heading.`);
@@ -2751,7 +2783,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
   const expectedPanelPaddingPx = { editorial: 16, documentation: 16, app: 12, os: 8 } as const;
-  const expectedPanelInlinePx = { editorial: 32, documentation: 32, app: 24, os: 32 } as const;
+  const expectedPanelInlinePx = { editorial: 32, documentation: 32, app: 32, os: 32 } as const;
   const browser = await openBrowser();
 
   try {

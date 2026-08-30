@@ -35,7 +35,7 @@ ${bodyTypeStyles}  align-items: baseline;
   max-inline-size: 100%;
   min-block-size: var(--bf-ui-chip-block-size);
   padding-block: var(--bf-ui-chip-padding-block);
-  padding-inline: var(--bf-ui-chip-padding-inline);
+  padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
   position: relative;
   text-decoration: none;
   user-select: none;
@@ -77,6 +77,15 @@ ${bodyTypeStyles}  align-items: baseline;
   --bf-ui-chip-background: var(--bf-color-background-information-default);
   --bf-ui-chip-background-hover: var(--bf-color-background-information-hover);
   --bf-ui-chip-background-active: var(--bf-color-background-information-active);
+}
+
+:where(.bf-theme) :where(.bf-chip.is-borderless) {
+  --bf-ui-chip-border: transparent;
+  --bf-ui-chip-border-hover: transparent;
+  --bf-ui-chip-border-active: transparent;
+  --bf-ui-chip-background: transparent;
+  --bf-ui-chip-background-hover: transparent;
+  --bf-ui-chip-background-active: transparent;
 }
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):hover {
@@ -145,6 +154,8 @@ ${bodyTypeStyles}  align-items: center;
   background-color: var(--bf-ui-status-background);
   color: var(--bf-ui-status-color);
   display: inline-block;
+  inline-size: fit-content;
+  justify-self: start;
 ${bodyTypeStyles}  margin: 0;
   /* A status label renders body text, so its paint must use the matching
      metric box. H5 nudges shifted the coloured block in documentation tier. */

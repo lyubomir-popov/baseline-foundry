@@ -10,9 +10,9 @@
 ## Phase 2 - Exhaustive source audit
 
 - [ ] T005 Enumerate every active demo's direct vertical siblings and assign a semantic owner.
-- [ ] T006 Enumerate every component's horizontal inset/keyline relationships and assign a variable family.
+- [x] T006 Enumerate every component's horizontal inset/keyline relationships and assign a variable family.
 - [ ] T007 Audit raw gaps, margins, padding, transforms, and breakpoint-specific spacing across source modules.
-- [ ] T008 Compare spacing tokens and rendered relationships across all four direct and class-scoped tier surfaces.
+- [x] T008 Compare spacing tokens and rendered relationships across all four direct and class-scoped tier surfaces.
 - [x] T019 Inventory every responsive multi-column/split transition. Set the
   default readable 50/50 threshold to 45rem (45rem) of the pattern query
   container; justify non-split and explicitly intrinsic exceptions.
@@ -21,7 +21,7 @@
 ## Phase 3 - Corrections and focused contracts
 
 - [ ] T009 Correct confirmed shared-source vertical spacing drift and add focused static assertions.
-- [ ] T010 Correct confirmed horizontal keyline/inset drift and add focused browser geometry assertions.
+- [x] T010 Correct confirmed horizontal keyline/inset drift and add focused browser geometry assertions.
 - [ ] T011 Replace stale active terminology without rewriting archived historical evidence.
 - [ ] T012 Confirm retained component/pattern routes provide all necessary visual QA states.
 - [x] T020 Align confirmed default 50/50 pattern splits (including the
@@ -40,7 +40,7 @@
 
 ## Phase 4 - Closeout
 
-- [ ] T013 Run focused build, static, behavior, and baseline checks.
+- [x] T013 Run focused build, static, behavior, and baseline checks.
 - [ ] T014 Review affected routes at wide/constrained widths in all four tiers.
-- [ ] T015 Run `npm test` and `npm run qa:components`.
+- [x] T015 Run `npm test` and `npm run qa:components`.
 - [ ] T016 Perform adversarial API, accessibility, responsive, and spacing-ownership review; resolve high/medium findings and record `review.md`.

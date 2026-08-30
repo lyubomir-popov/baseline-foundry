@@ -7,6 +7,10 @@ export function listCss({ bodyTypeStyles }: { bodyTypeStyles: string }): string 
   padding: 0;
 }
 
+:where(.bf-theme) :where(.bf-list:has(> .bf-list-item:is(.is-ticked, .is-crossed)), ol.bf-list.is-divided) {
+  padding-inline-start: var(--bf-leading-mark-group-inset);
+}
+
 :where(.bf-theme) :where(.bf-list-item) {
 ${bodyTypeStyles}  color: var(--bf-color-text-default);
   margin: 0 0 var(--bf-body-margin-bottom);
@@ -26,7 +30,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {
-  padding-inline-start: calc(var(--bf-leading-icon-size) + var(--bf-leading-icon-gap));
+  padding-inline-start: var(--bf-leading-mark-offset);
   position: relative;
 }
 

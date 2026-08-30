@@ -149,6 +149,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-leading-mark-size: var(--bf-control-visual-size);
   --bf-leading-mark-gap: var(--bf-control-inline-padding-field);
   --bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));
+  --bf-leading-mark-group-inset: calc(var(--bf-disclosure-label-inline-offset) - var(--bf-leading-mark-offset));
   --bf-tick-label-offset: var(--bf-leading-mark-offset);
   --bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));
   --bf-list-marker-dot-size: calc(var(--bf-border-width) * 4);
@@ -178,6 +179,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-authoring-accent-focus-ring: rgba(246, 183, 60, 0.55);
   --bf-application-resize-handle-active: var(--bf-authoring-accent-strong);
   --bf-application-resize-handle-focus-ring: var(--bf-authoring-accent-focus-ring);
+  --bf-control-inline-padding-action-bordered: max(0rem, calc(var(--bf-control-inline-padding-action) - var(--bf-border-width)));
   --bf-top-navigation-link-padding-inline: var(--bf-control-inline-padding-action);
   --bf-top-navigation-end-slot-inline-size: calc(1rem + var(--bf-control-inline-padding-field));
   --bf-top-navigation-search-toggle-inline-size: calc(1rem + (var(--bf-control-inline-padding-field) * 2));
@@ -198,7 +200,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-leading-icon-size: var(--bf-leading-mark-size);
   --bf-leading-icon-gap: var(--bf-leading-mark-gap);
   --bf-leading-icon-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-leading-icon-size)", bodySelectedStartNudge)};
-  --bf-ui-chip-padding-inline: calc(${bodyLineHeight} * 0.4);
+  --bf-ui-chip-padding-inline: var(--bf-control-inline-padding-field);
   --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-control-inline-padding-action) * 0.25) - var(--bf-border-width)));
   --bf-ui-chip-block-size: calc(${bodyLineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
   --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
@@ -449,7 +451,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   cursor: pointer;
   margin-inline-end: var(--bf-field-gap);
   min-block-size: var(--bf-control-box-size-compact);
-${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action);
+${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action-bordered);
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -498,6 +500,7 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
 :where(.bf-theme) :where(.bf-checkbox, .bf-radio) {
   margin: 0;
   min-block-size: var(--bf-tick-row-block-size);
+  padding-inline-start: var(--bf-leading-mark-group-inset);
   position: relative;
 }
 
@@ -549,7 +552,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   border-left: calc(var(--bf-border-width) * 2) solid var(--bf-color-background-default);
   inline-size: calc(var(--bf-control-visual-size) * 0.6);
   inset-inline-start: calc(var(--bf-control-visual-size) * 0.2);
-  inset-block-start: calc(var(--bf-tick-box-offset) + (var(--bf-control-visual-size) * 0.18));
+  inset-block-start: calc(var(--bf-tick-box-offset) + (var(--bf-control-visual-size) * 0.18) + (var(--bf-border-width) * 2));
   opacity: 0;
   transform: rotate(-45deg);
 }
@@ -563,8 +566,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   block-size: var(--bf-radio-dot-size);
   border-radius: 50%;
   inline-size: var(--bf-radio-dot-size);
-  inset-inline-start: calc(((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5) - var(--bf-border-width));
-  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5) - var(--bf-border-width));
+  inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);
+  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));
   opacity: 0;
 }
 
@@ -669,9 +672,10 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 :where(.bf-theme) :where(.bf-validation-message) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   margin: 0 0 var(--bf-body-margin-bottom);
+  margin-inline-start: var(--bf-leading-mark-group-inset);
   padding-block-end: 0;
   padding-block-start: ${bodySelectedStartNudge};
-  padding-inline-start: calc(var(--bf-control-visual-size) + var(--bf-field-gap));
+  padding-inline-start: var(--bf-leading-mark-offset);
   position: relative;
 }
 
@@ -1248,7 +1252,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
   min-inline-size: var(--bf-control-box-size);
-${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action);
+${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action-bordered);
   text-align: center;
   text-decoration: none;
 }

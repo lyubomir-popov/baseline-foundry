@@ -656,9 +656,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0 0 var(--bf-body-margin-bottom"), "Expected list items to carry body baseline compensation in margin-bottom.");
   assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom: 0;\n  padding-block-end: 0;"), "Expected semantic list containers not to add block-end margin or padding around item compensation.");
-  assert(css.includes("--bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));"), "Expected controls and marker-bearing lists to share one explicit leading-mark offset family.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-prose ol) {\n  padding-inline-start: calc(var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));") && css.includes(":where(.bf-theme) :where(.bf-prose ol > li) {\n  padding-inline-start: calc(var(--bf-leading-mark-size) * 0.5);"), "Expected ordered prose lists to retain complementary shared-leading-mark compensation.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul) {\n  list-style: none;\n  padding-inline-start: 0;") && css.includes(":where(.bf-theme) :where(.bf-prose ul > li) {\n  padding-inline-start: var(--bf-leading-mark-offset);") && css.includes("inline-size: var(--bf-list-marker-dot-size);\n  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));"), "Expected unordered prose-list dots to occupy the shared leading-mark canvas.");
+  assert(css.includes("--bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));") && css.includes("--bf-leading-mark-group-inset: calc(var(--bf-disclosure-label-inline-offset) - var(--bf-leading-mark-offset));"), "Expected controls and marker-bearing lists to share an explicit leading-mark family that reaches the disclosure continuation keyline.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose ol) {\n  padding-inline-start: calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));") && css.includes(":where(.bf-theme) :where(.bf-prose ol > li) {\n  padding-inline-start: calc(var(--bf-leading-mark-size) * 0.5);"), "Expected ordered prose lists to retain complementary shared-leading-mark compensation after the group inset.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul) {\n  list-style: none;\n  padding-inline-start: var(--bf-leading-mark-group-inset);") && css.includes(":where(.bf-theme) :where(.bf-prose ul > li) {\n  padding-inline-start: var(--bf-leading-mark-offset);") && css.includes("inline-size: var(--bf-list-marker-dot-size);\n  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));"), "Expected unordered prose-list dots to occupy the shared leading-mark canvas and their text to reach the disclosure continuation keyline.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  position: relative;"), "Expected side-navigation list groups not to add container-owned block-end spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after {\n  background: var(--bf-color-border-low-contrast);\n  block-size: var(--bf-border-width);"), "Expected side-navigation dividers to stay out of list layout.");
@@ -692,7 +692,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-switch-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place switch geometry from the active body line geometry.");
   assert(css.includes("--bf-tick-box-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place tick geometry from the active body line geometry.");
   assert(css.includes("--bf-leading-mark-gap: var(--bf-control-inline-padding-field);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the shared leading-mark family and field inline padding token.");
-  assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc(((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5) - var(--bf-border-width));"), "Expected the radio dot to grow by one border pixel and retain its measured one-pixel optical shift.");
+  assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);") && css.includes("inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));"), "Expected the enlarged radio dot to remain concentric with its outer circle.");
   assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
   assert(css.includes("--bf-control-block-padding:"), "Expected generated CSS to define the regular control block padding token.");
   assert(css.includes("--bf-control-block-padding-compact:"), "Expected generated CSS to define the compact control block padding token.");
@@ -790,7 +790,7 @@ function validateCommonCss(css: string): void {
     "width": "100%"
   }, "tables keep the canonical BF table layout contract");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
-    "padding-inline-start": "calc((var(--bf-baseline) * 0.75) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
+    "padding-inline-start": "calc(var(--bf-control-inline-padding-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
   }, "table icon-placeholder cells keep the leading-icon gutter");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
     "--bf-ui-chip-border": "var(--bf-color-border-neutral)",
@@ -809,6 +809,8 @@ function validateCommonCss(css: string): void {
   }, "badges keep the canonical body-sized pill geometry");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", {
     "display": "inline-block",
+    "inline-size": "fit-content",
+    "justify-self": "start",
     "text-decoration": "none",
     "white-space": "nowrap"
   }, "status labels keep the canonical inline label treatment");
@@ -1137,8 +1139,8 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(components.panelPaddingInline === '0.75rem' && components.panelPaddingBlock === '0.75rem', "Expected App panel padding to tighten to three 0.25rem baseline units on both axes.");
   assert(components.controlBlockPadding === '0.5rem', "Expected the app-tier preset regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
   assert(components.controlCompactBlockPadding === '0.375rem', "Expected the app-tier preset compact control block padding to preserve the legacy 2rem inline control box height.");
-  assert(components.controlInlinePadding === '0.5rem', "Expected the app-tier preset compatibility control padding alias to match the action-surface spacing.");
-  assert(components.controlInlinePaddingAction === '0.5rem', "Expected the app-tier preset action padding to tighten for top-level commands.");
+  assert(components.controlInlinePadding === '1rem', "Expected the app-tier preset compatibility control padding alias to match the one-rem action keyline.");
+  assert(components.controlInlinePaddingAction === '1rem', "Expected the app-tier preset action padding to use the shared one-rem command keyline.");
   assert(components.controlInlinePaddingField === '0.25rem', "Expected the app-tier preset field padding to tighten for dense data entry.");
   assert(!("controlMinBlockSize" in components), "Expected the app-tier preset tokens to stop exposing legacy control height tokens.");
   assert(!("controlMinBlockSizeDense" in components), "Expected the app-tier preset tokens to stop exposing legacy dense control height tokens.");
@@ -1339,8 +1341,8 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(layout.gridGapBlock === "1rem", "Expected the OS tier block grid gap token to provide the x-small 1rem gap.");
   assert(layout.pageMargin === "1rem", "Expected the OS tier page margin token to provide the x-small 1rem margin.");
   assert(components.radius === "0rem", "Expected the OS tier controls to stay square like PVR/Vanilla.");
-  assert(components.controlInlinePadding === "0.5rem", "Expected the OS tier compatibility control padding alias to match the action spacing.");
-  assert(components.controlInlinePaddingAction === "0.5rem", "Expected the OS tier action padding to use the dense command target value.");
+  assert(components.controlInlinePadding === "1rem", "Expected the OS tier compatibility control padding alias to match the one-rem action keyline.");
+  assert(components.controlInlinePaddingAction === "1rem", "Expected the OS tier action padding to use the shared one-rem command keyline.");
   assert(components.controlInlinePaddingField === "0.25rem", "Expected the OS tier field padding to stay tighter than action surfaces.");
   assert(components.controlVisualSize === "0.75rem", "Expected the OS tier checkbox/radio/thumb glyphs to use a dedicated 0.75rem visual size.");
   assert(components.fieldGap === "0.25rem", "Expected the OS tier field gap to come from the dense components block.");
@@ -1424,6 +1426,7 @@ async function main(): Promise<void> {
     "accordion",
     "aspect",
     "basic-section",
+    "chip",
     "cta-section",
     "data-spotlight",
     "divided-section",

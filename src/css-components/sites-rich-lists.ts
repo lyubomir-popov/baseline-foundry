@@ -115,8 +115,12 @@ export function sitesRichListsCss(): string {
 
 /* Prefixes are logical here even though the shared list predates BF's
    logical-property rule. This keeps ticks, bullets and numbers RTL-safe. */
+:where(.bf-theme) :where(.bf-rich-list-list:has(> .bf-list-item:is(.is-ticked, .is-crossed)), .bf-rich-list-list.is-bulleted, ol.bf-rich-list-list) {
+  padding-inline-start: var(--bf-leading-mark-group-inset);
+}
+
 :where(.bf-theme) :where(.bf-rich-list-list) > .bf-list-item:is(.is-ticked, .is-crossed) {
-  padding-inline-start: calc(var(--bf-leading-icon-size) + var(--bf-leading-icon-gap));
+  padding-inline-start: var(--bf-leading-mark-offset);
 }
 
 :where(.bf-theme) :where(.bf-rich-list-list) > .bf-list-item:is(.is-ticked, .is-crossed)::before {
@@ -126,7 +130,7 @@ export function sitesRichListsCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-rich-list-list.is-bulleted) > :where(.bf-list-item) {
-  padding-inline-start: calc(var(--bf-leading-icon-size) + var(--bf-leading-icon-gap));
+  padding-inline-start: var(--bf-leading-mark-offset);
 }
 
 :where(.bf-theme) :where(.bf-rich-list-list.is-bulleted) > :where(.bf-list-item)::before {
@@ -145,7 +149,7 @@ export function sitesRichListsCss(): string {
 
 :where(.bf-theme) :where(ol.bf-rich-list-list) > :where(.bf-list-item) {
   counter-increment: bf-rich-horizontal-counter;
-  padding-inline-start: calc(var(--bf-leading-icon-size) + var(--bf-leading-icon-gap));
+  padding-inline-start: var(--bf-leading-mark-offset);
 }
 
 :where(.bf-theme) :where(ol.bf-rich-list-list) > :where(.bf-list-item)::before {

@@ -457,7 +457,7 @@ ${capEngineDemo}
 }
 
 :where(.bf-theme) :where(.bf-prose ol) {
-  padding-inline-start: calc(var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));
+  padding-inline-start: calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));
 }
 
 :where(.bf-theme) :where(.bf-prose ol > li) {
@@ -466,7 +466,7 @@ ${capEngineDemo}
 
 :where(.bf-theme) :where(.bf-prose ul) {
   list-style: none;
-  padding-inline-start: 0;
+  padding-inline-start: var(--bf-leading-mark-group-inset);
 }
 
 :where(.bf-theme) :where(.bf-prose ul > li) {

@@ -243,7 +243,7 @@ ${bodyTypeStyles}  align-items: center;
   margin-bottom: ${buttonMarginBottom};
   max-inline-size: 100%;
   overflow: hidden;
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
+${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action-bordered);
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;

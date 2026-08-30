@@ -44,13 +44,16 @@
               </tbody>
             </table>
           </div>
+          <button class="bf-chip" type="button"><span class="bf-chip-value">Chip</span></button>
+          <span class="bf-chip is-borderless"><span class="bf-chip-value">Borderless chip</span></span>
+          <span class="bf-status-label is-information">Status label</span>
         </div>
       </section>
 
       <section class="bf-stack is-dense" aria-labelledby="horizontal-actions">
         <h2 class="bf-h6" id="horizontal-actions">Horizontal — command inset</h2>
         <div class="bf-stack is-dense">
-          <button class="bf-button" type="button">Button</button>
+          <div><button class="bf-button" type="button">Button</button></div>
           <div class="bf-segmented-control bf-inline-size is-medium">
             <ul class="bf-segmented-control-list">
               <li class="bf-segmented-control-item"><button class="bf-segmented-control-button is-active" type="button">First</button></li>
@@ -74,7 +77,9 @@
         <h2 class="bf-h6" id="horizontal-marks">Horizontal — leading-mark offset</h2>
         <div class="bf-stack is-dense">
           <div class="bf-prose"><ul><li>Prose list</li></ul></div>
+          <div class="bf-prose"><ol><li>Ordered prose list</li></ol></div>
           <ul class="bf-list is-divided"><li class="bf-list-item is-ticked">List row</li></ul>
+          <ul class="bf-list is-divided"><li class="bf-list-item is-crossed">Crossed list row</li></ul>
           <div class="bf-checkbox">
             <input id="horizontal-checkbox" class="bf-checkbox-input" type="checkbox" checked>
             <label class="bf-checkbox-label" for="horizontal-checkbox">Checkbox</label>
@@ -83,6 +88,7 @@
             <input id="horizontal-radio" class="bf-radio-input" name="horizontal-radio" type="radio" checked>
             <label class="bf-radio-label" for="horizontal-radio">Radio</label>
           </div>
+          <p class="bf-validation-message">Validation message</p>
         </div>
       </section>
 

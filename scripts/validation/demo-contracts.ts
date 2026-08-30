@@ -343,7 +343,9 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
   assert(horizontalAuditHtml.includes('Horizontal — field and cell content inset') && horizontalAuditHtml.includes('Horizontal — command inset') && horizontalAuditHtml.includes('Horizontal — leading-mark offset') && horizontalAuditHtml.includes('Horizontal — icon-led and navigation label offset'), "Expected the horizontal audit to present the concise measured inset groups.");
   assert(!horizontalAuditHtml.includes('<code>--bf-') && !verticalAuditHtml.includes('<code>--bf-'), "Expected audit headings to omit implementation-variable labels.");
   const fieldBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-fields"'), horizontalAuditHtml.indexOf('id="horizontal-actions"'));
-  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell'), "Expected number, select, and table-cell insets to remain directly comparable in the field bucket.");
+  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell') && fieldBucket.includes('bf-chip') && fieldBucket.includes('is-borderless') && fieldBucket.includes('bf-status-label'), "Expected number, select, table-cell, regular/borderless chip, and status-label insets to remain directly comparable in the field bucket.");
+  const markBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-marks"'), horizontalAuditHtml.indexOf('id="horizontal-icon-navigation"'));
+  assert(markBucket.includes('<ul>') && markBucket.includes('<ol>') && markBucket.includes('is-ticked') && markBucket.includes('is-crossed') && markBucket.includes('bf-checkbox') && markBucket.includes('bf-radio') && markBucket.includes('bf-validation-message'), "Expected the leading-mark bucket to cover prose bullets/numbers, state-list marks, checkbox, radio, and validation copy.");
   const iconNavigationBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-icon-navigation"'), horizontalAuditHtml.indexOf('id="horizontal-surfaces"'));
   for (const component of ["bf-accordion", "bf-list-tree", "bf-switch", "bf-side-navigation", "bf-table-of-contents", "bf-notification"]) {
     assert(iconNavigationBucket.includes(component), `Expected the shared icon-led/navigation bucket to include ${component}.`);
@@ -353,6 +355,8 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
     assert(horizontalAuditHtml.includes(component) || verticalAuditHtml.includes(component), `Expected the axis-specific audits to retain ${component} evidence.`);
   }
   assert(horizontalAuditHtml.includes('type="number"') && verticalAuditHtml.includes('type="number"'), "Expected both audits to expose a numeric input.");
+  const compactTagsBucket = verticalAuditHtml.slice(verticalAuditHtml.indexOf('id="vertical-tags"'), verticalAuditHtml.indexOf('id="vertical-surfaces"'));
+  assert(compactTagsBucket.includes('class="bf-cluster"') && compactTagsBucket.includes('class="bf-body"') && compactTagsBucket.includes('class="bf-chip"') && compactTagsBucket.includes('bf-badge') && compactTagsBucket.includes('is-borderless') && !compactTagsBucket.includes('bf-status-label'), "Expected compact data tags to compare inline body text, chip with badge, and the borderless-chip label treatment.");
   assert(!specShellCss.includes('keyline'), "Expected the spacing comparison to need no page-local keyline CSS.");
 }
 

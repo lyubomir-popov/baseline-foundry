@@ -73,23 +73,32 @@ slice; exhaustive adjacency work remains open.
   select, without Chromium's additional spin slot. Status labels now use body,
   rather than H5, metric nudges, fixing the documentation-tier coloured-block
   shift.
+- **Pass:** Field, table-cell, chip, borderless-chip, and status-label content
+  share green. Commands use the literal one-rem red inset in all four tiers;
+  bordered command surfaces subtract the scalable border from their authored
+  padding so the first glyph still lands exactly on red.
 - **Pass:** Prose lists, ticked/crossed lists and checkbox/radio labels share
-  the leading-mark size/gap/offset family. The unordered-list dot is painted
-  in the shared mark canvas, so its centre exactly matches tick, checkbox, and
-  radio. The radio inner dot is one border pixel larger and sits exactly one
-  pixel left/up of the outer-circle centre. The divided-list half-baseline icon
-  offset was removed.
+  the leading-mark size/gap/offset family. Their copy uses a calculated
+  tier-specific remainder to land on blue without a fourth guide. The
+  unordered-list dot, state-list marks, checkbox, and radio share an exact
+  centre. The enlarged radio dot is concentric with its outer circle, and the
+  checkbox check is within one-third of a scalable border unit of optical
+  centre. The divided-list half-baseline icon offset was removed.
 - **Pass:** Accordion, list-tree, notification, and panel copy now share one
-  measured 2rem icon-label continuation. The notification icon is derived
+  measured 2rem icon-label continuation in every tier. The notification icon is derived
   backward from that copy line so every tier retains its compact icon-to-text
-  gap. The audit did not add a fourth guide: red moved from the uninformative
-  page edge to a literal one-rem inset, while blue owns the shared copy line.
+  gap. The App panel's former 1.5rem content inset was the final outlier and now
+  resolves through the same blue continuation owner. The audit did not add a
+  fourth guide: red is the literal one-rem inset, green is compact field-like
+  content, and blue owns marked/disclosure copy.
 - **Current regression validation:** `npm run build`, `npm run test:build`
-  (6,231 checks), `npm run test:behavior`, `npm test`, and
+  (6,261 checks), `npm run test:behavior`, `npm test`, and
   `npm run qa:components` passed. Browser review confirmed
   both audit routes inside the shared 18rem page chrome in light and dark
-  themes, with clean fresh consoles. The fixed red/green/blue 0.0625rem overlay is
-  visible at 50% opacity on only those routes and recalculates after tier and
-  viewport changes. Number/select canvases, the shared 0.1875rem disclosure-icon
-  optical drop, the common leading-mark centreline, and the shared 2rem copy
-  line were visually confirmed in documentation and OS tiers in both tones.
+  themes, with clean fresh consoles. The fixed red/green/blue 0.0625rem overlay
+  is visible at 50% opacity on only those routes and recalculates after tier and
+  viewport changes. Playwright measured zero keyline delta for the field,
+  command, marked-copy, accordion, list-tree, notification, and panel fixtures
+  across all four tiers in both tones; the common mark-centre spread and radio
+  concentric delta were also zero. Light Editorial and dark OS screenshots were
+  inspected directly after runtime initialisation.

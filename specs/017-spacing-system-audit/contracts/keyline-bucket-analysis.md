@@ -20,8 +20,8 @@ where a measurement confirms that the same padding relationship is shared.
 | Outer frame | Viewport or shell edge to first content | `--bf-page-margin`; grid gap is between columns | `bf-page`, `bf-fixed-width`, app shell and site footer | Keep distinct. Grid gap is not a page inset. |
 | Grid side inset | Edge of a grid-aligned shell/panel to its first rail | `--bf-panel-content-padding-inline`, falling back to `--bf-grid-gap-inline` | root side navigation, navigation brand, panel-aligned site rails | Keep distinct from the page frame. Root side navigation now uses this resolved grid inset. |
 | Reading content | Text edge after the page frame | page/grid placement; prose list variable for marker offset | paragraph, headings, prose body, text links, field labels/help, accordion panel copy, notification copy | Keep as the reference track. |
-| Leading mark | Mark box before a label, then label start | `--bf-leading-mark-size`, `--bf-leading-mark-gap`, `--bf-leading-mark-offset`, `--bf-list-marker-dot-size` | prose UL/OL, ticked/crossed list, checkbox, radio, validation message | Consolidate only these measured members. The prose UL dot now occupies the same mark canvas as the selection controls; switches and disclosures retain wider tracks. |
-| Field content | Text inside a field surface | `--bf-control-inline-padding-field` | input, number, select, textarea, search field | Separate from commands; number/select reserve their own trailing affordance slot. |
+| Leading mark | Mark box before a label, then label start | `--bf-leading-mark-size`, `--bf-leading-mark-gap`, `--bf-leading-mark-offset`, `--bf-leading-mark-group-inset`, `--bf-list-marker-dot-size` | prose UL/OL, ticked/crossed list, rich-list markers, checkbox, radio, validation message | The marks share one centre and the copy shares the blue continuation guide. The group inset is the calculated remainder to blue in each tier, not a fixed extra inset that would overshoot in dense tiers. |
+| Field content | Text inside a field-like compact surface | `--bf-control-inline-padding-field`, with border compensation where the surface has an inline border | input, number, select, textarea, search field, table cell, chip, status label | These members share the green guide. Number/select reserve their own trailing affordance slot. |
 | Command content | Text inside a command surface | `--bf-control-inline-padding-action` | button, icon button, segmented control, tabs, pagination, file selector button | Buttons belong here horizontally, never in the field bucket. |
 | Icon-label continuation | Icon canvas to label/panel continuation | `--bf-icon-label-inline-offset`, `--bf-disclosure-label-inline-offset`, `--bf-disclosure-icon-optical-offset-block` | accordion, list tree, notification copy, accordion panel continuation | Accordion, list tree, notification copy, and panel content resolve to the same measured 2rem audit line. Navigation depth remains layout-owned and is not forced onto it. |
 | Surface content | First content after a bounded surface edge | `--bf-panel-padding-inline` | panel/card/notice/notification/modal/drawer/search popup/footer, inline-options group | Keep distinct from the outer frame and compact controls. Surface padding is a region contract. |
@@ -39,21 +39,18 @@ where a measurement confirms that the same padding relationship is shared.
 | Surface/table special cases | panels/options, notification, table | panel padding; notification shell; table row variables | Do not flatten unrelated surface and table geometry into compact controls. |
 | Surface region | panel/card/header/body/footer, notification/notice, popups, footer bands | panel inset and nested stack owner | Region padding and stack gaps own this; a child must not compensate the boundary. |
 
-## Status, chip, and badge conclusion so far
+## Status, chip, and badge conclusion
 
-- A chip is an inline, bordered tag with `vertical-align` border compensation.
-  It is not presently a compact control row, so comparing its glyph baseline
-  directly with a checkbox row is a category error until the audit defines a
-  shared inline context.
-- A status label is intended as an inline data label, but it currently uses
-  **H5** start/end nudges while rendering body typography. That is a confirmed
-  metric mismatch and explains its vertically asymmetric paint. Correct it to
-  body metrics before considering a replacement or a borderless-chip API.
-- Keep `bf-status-label` for now. Removing it or aliasing it to a borderless
-  chip would change semantic and colour contracts; that needs product evidence
-  beyond a geometry correction.
-- Table rows that contain a status label have a special padding branch. Recheck
-  that branch after the label uses body metrics; it may become redundant.
+- Chip content now uses the field inset with scalable border compensation, so
+  its first glyph lands on green beside a table cell or field.
+- Status labels use body metrics, shrink to their painted content in grid
+  contexts, and use the same green inset. They remain a semantic colour-state
+  surface rather than an alias for chip.
+- `bf-chip.is-borderless` is the neutral inline label treatment. Its transparent
+  border preserves the same occupied geometry as an ordinary chip; the vertical
+  audit compares it directly with body text and a chip/badge pair.
+- Badges remain centred counters. Their symmetric internal padding has no
+  meaningful first-glyph keyline and therefore does not create another guide.
 
 ## Confirmed corrections
 
@@ -71,8 +68,10 @@ where a measurement confirms that the same padding relationship is shared.
    dense tiers. They now share the explicit leading-mark family; divided list
    icons no longer add a half-baseline downward offset. The unordered-list dot
    is painted in that shared mark canvas, so its centre exactly matches the
-   tick, checkbox, and radio centre in every tier. The radio inner dot is one
-   border pixel larger and optically shifted one pixel left/up.
+   tick, checkbox, and radio centre in every tier. Their text now reaches the
+   existing blue continuation guide through one calculated group inset. The
+   enlarged radio inner dot is concentric with the outer circle, and the
+   checkbox check is lowered by two scalable border units into optical centre.
 4. Accordion and panel copy already established the same 2rem continuation.
    List-tree root compensation and notification padding now resolve through
    that relationship too. Notification icons are positioned backward from the
@@ -80,16 +79,35 @@ where a measurement confirms that the same padding relationship is shared.
    audit keyline was introduced: red is the literal one-rem inset, green is the
    field-text start, and blue is the shared icon-label continuation.
 
-## Measurement queue before further correction
+## Three-guide conformance ledger
 
-## Proposed inline-scale consolidation
+The overlay deliberately stays at three guides. This ledger is exhaustive by
+source owner: repeated selectors inherit the listed family rather than
+creating component-local guides. “Layout-owned” entries are audited, but are
+not component padding and must not be moved onto a component guide.
+
+| Source owner | Public members covered | Guide or disposition |
+|---|---|---|
+| `css-components.ts` field rules and `search-box-and-filter.ts` | input, password, number, select, textarea, search, search-and-filter, range numeric field | Green — field content |
+| `table.ts`, `interactive-tables.ts` | header/body cells, icon-placeholder cells, sort/expand/mobile-card cells | Green for ordinary cell content; reserved icon/indicator slots continue from green |
+| `chip-badge-status.ts` | chip, borderless chip, status label | Green; badge is a centred-counter exception |
+| `button-actions.ts`, command rules in `css-components.ts`, `tabs-choice-breadcrumbs.ts` | button, icon button, file-selector button, segmented control, tabs, pagination | Red/action family; bordered members compensate their own border. Tier-authored action density remains a token decision and does not create a public keyline variable. |
+| `css.ts`, `list.ts`, `sites-rich-lists.ts`, selection and validation rules in `css-components.ts` | prose UL/OL, divided/ordered/ticked/crossed lists, rich-list markers, checkbox, radio, validation message | Blue copy continuation; common mark centre between red and blue |
+| accordion rules, `list-tree.ts`, `interactive-feedback.ts`, panel continuation | accordion tab/panel, list-tree toggle, notification title/message, panel content | Blue — disclosure/copy continuation |
+| switch rules | switch label | Blue in the shared icon-led comparison; the wider switch track remains component-owned |
+| `legacy-navigation.ts`, `document-navigation.ts`, `navigation-layout.ts` | root/child side navigation, top navigation, reduced navigation, TOC, in-page navigation, article pagination | Layout-owned rail/depth or asymmetric destination slot; no new component guide |
+| `panel.ts`, `cards-options.ts`, content/surface modules | panel/card/notice/modal/drawer/popup/footer and inline-options regions | Panel content uses blue in every tier; other bounded regions keep their named region inset unless measurement proves the same continuation |
+| grid/site/pattern modules | page, fixed width, grids, docs/app shells, hero, section, tiered list, content card, media object, rich layouts | Layout-owned grid placement, span, gutter, or region boundary; never a component-padding guide |
+| zero/symmetric primitives | plain text, headings, labels/help, inline list, badge, icon, rule, centred icon-only control | Zero inset or symmetric geometry; no first-glyph guide is required |
+
+## Inline-scale consolidation rule
 
 Audit the following as a reduction target, not a forced equivalence:
 
 | Level | Relationship candidates | Current evidence | Constraint |
 |---|---|---|---|
 | Narrow | Field text inset | `--bf-control-inline-padding-field` | Keep field surfaces compact. |
-| Standard | Commands, tabs, top navigation, marker-to-label and disclosures | action inset, leading-mark gap, disclosure gap | Align only after icon/text first-line geometry passes in all tiers. |
+| Standard | Literal one-rem reference and command/action inset | action inset | Compare command members to red; preserve explicit tier-token evidence rather than introducing offsets. |
 | Generous | Notifications, panels/cards and surface regions | notification shell, panel inset | Preserve page/grid frame and navigation depth as separate layout relationships. |
 
 Page margins, grid gutters, side-navigation depth and TOC nesting are not
@@ -99,10 +117,10 @@ token family with border compensation rather than per-component offsets.
 
 | Finding | Source owner | Needed comparison | Candidate action |
 |---|---|---|---|
-| Status-label height / table compensation | `chip-badge-status.ts`, `table.ts` | Body metric box, status painted box, segmented compact row, table row across all tiers | Replace H5 nudges with body nudges; then retain/remove table special case from evidence. |
-| Chip baseline | `chip-badge-status.ts` | Inline chip with adjacent body text; checkbox/radio/switch occupied rows | Retain border compensation only if it makes an inline text run correct. Do not give a chip control-row padding spec by assumption. |
+| Status-label height / table compensation | `chip-badge-status.ts`, `table.ts` | Body metric box, status painted box, segmented compact row, table row across all tiers | Corrected to body nudges and a fit-content painted box; retain the status-bearing table-row branch as a separate vertical-rhythm contract. |
+| Chip baseline | `chip-badge-status.ts` | Inline chip with adjacent body text and table/field content | Corrected with scalable border compensation; regular and borderless chips share occupied geometry. |
 | Ticked list icon and label edge | `list.ts`, `css.ts`, form control styles | Icon centre against first text line and prose/ticked/selection label edge in all tiers | Corrected to the shared leading-mark family; retain a browser geometry check in closeout. |
-| Table compactness | `table.ts` | Header/body cell occupied row, embedded input, chip/status label | Share compact block rhythm only; keep table column padding as a table contract unless a common edge is shown. |
+| Table compactness | `table.ts` | Header/body cell occupied row, embedded input, chip/status label | Cell text now shares the green field inset; table row rhythm remains table-owned. |
 
 ## Exhaustive inline-offset audit list
 
