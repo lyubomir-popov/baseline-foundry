@@ -14,6 +14,8 @@ Use the owning component or pattern routes listed in
 `contracts/adjacency-inventory.md`. At minimum review:
 
 - `/demo/spec/spacing.html`
+- `/demo/spec/spacing-horizontal.html`
+- `/demo/spec/spacing-vertical.html`
 - `/demo/components/typography.html`
 - `/demo/components/layout.html`
 - `/demo/components/form-atlas.html`
@@ -32,9 +34,9 @@ Use the owning component or pattern routes listed in
 Switch Editorial, Documentation, App, and OS at 560px, 900px, and 1280px.
 Check direct sibling gaps, first/last glyph clearance, rules, focus outlines,
 wrapped labels, control insets, panel gutters, overflow, and hidden/collapsed
-states. On the spacing chapter, compare the stacked flush/dense/default
-relationships plus prose-list, checkbox/radio, disclosure-continuation, and
-panel-gutter tracks; do not expect every mark and label to share one left edge.
+states. On the horizontal audit, compare only the named inline variable family;
+on the vertical audit, compare only the named occupied-block/metric family. Do
+not expect every mark and label to share one left edge or one control height.
 
 ## Closeout
 

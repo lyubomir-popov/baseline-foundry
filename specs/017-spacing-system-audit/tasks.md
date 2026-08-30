@@ -28,9 +28,15 @@
   tiered-list header) to the shared 45rem container threshold and add focused
   constrained-width assertions.
 - [x] T018 Propose one flat class-order and primitive/slot convention from the completed inventory. Bare native elements are canonical where the basic selector owns their contract; structural slot classes remain only where placement needs them.
-- [x] T021 Add and audit a component-first horizontal/vertical keyline board
-  in the existing spacing chapter; retain no separate diagnostic page or
-  page-local styling system.
+- [x] T021 Add and audit component-first horizontal and vertical spacing routes
+  beside the spacing overview; retain no page-local styling system.
+- [x] T022 Build the evidence-led keyline-bucket analysis and enumerate every
+  component/pattern that creates an author-visible inline offset.
+- [x] T023 Recompose the audit as full-width, axis-specific variable-family
+  buckets. Each H2 names its horizontal or vertical relationship and raw
+  component specimens; do not use the 50/50 documentation layout.
+- [x] T024 Correct confirmed root navigation, number-stepper canvas, status,
+  and leading-mark findings only after their family geometry is measured.
 
 ## Phase 4 - Closeout
 

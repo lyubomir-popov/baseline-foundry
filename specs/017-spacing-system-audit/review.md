@@ -43,16 +43,53 @@ slice; exhaustive adjacency work remains open.
 - **Open:** Full Spec 017 adversarial closeout is not claimed until T005–T016
   are complete.
 
-## Review 4 — keyline audit surface
+## Review 4 — axis-specific audit surface
 
-- **Pass:** The existing spacing chapter now contains the same 31
-  keyline-bearing components in a horizontal cluster and vertical stack:
-  prose/list, actions/fields, search/range/file controls, selection/choice
-  controls, chips/status, segmented/breadcrumb/pagination, tabs/accordion,
-  tree/side navigation, table of contents, notification, panel, and table. It
-  uses no page-local styling or separate diagnostic route.
-- **Pass:** At 560px, every tier retains all 31 horizontal and 31 vertical
-  instances with no inline overflow.
-- **Pass:** The source gate now includes a focused spacing-chapter contract
-  (6,105 total checks) so the comparison cannot silently regress to a
-  page-local keyline helper.
+- **Pass:** The spacing overview now leads to distinct full-width horizontal
+  and vertical audit routes. Neither route uses a hero or basic-section 50/50
+  composition, so the raw components have the room needed for direct review.
+- **Pass:** Every audit heading identifies exactly one axis and one variable or
+  occupied-block family. Button/segmented/tab/pagination controls are in the
+  horizontal action-inset family; they are not mixed with field insets.
+- **Pass:** Accordion, list tree, switch, side navigation, TOC, and notification
+  appear together in one icon-led/navigation review bucket. Table-cell content
+  appears beside the field inset comparison. Page margin, grid gutter,
+  navigation depth, and TOC nesting remain layout contracts rather than
+  component-padding buckets.
+
+## Review 5 — measured bucket consolidation and confirmed fixes
+
+- **Pass:** The keyline analysis distinguishes axis-specific field/action,
+  leading-mark, disclosure, side-navigation, TOC, panel, and specialist inset
+  relationships from vertical metric-box and occupied-block families. It
+  records all remaining author-visible offset owners before proposing another
+  utility or component.
+- **Pass:** Root side-navigation now inherits the same grid-aligned panel inset
+  as its navigation brand, with the grid gutter as the standalone fallback;
+  nested rows retain only their baseline depth increments.
+- **Pass:** Numeric fields retain native input semantics and keyboard
+  increment/decrement behaviour. Their field-owned paired chevron uses the
+  same 16px canvas, vertical centre, trailing position, and reserved padding as
+  select, without Chromium's additional spin slot. Status labels now use body,
+  rather than H5, metric nudges, fixing the documentation-tier coloured-block
+  shift.
+- **Pass:** Prose lists, ticked/crossed lists and checkbox/radio labels share
+  the leading-mark size/gap/offset family. The unordered-list dot is painted
+  in the shared mark canvas, so its centre exactly matches tick, checkbox, and
+  radio. The radio inner dot is one border pixel larger and sits exactly one
+  pixel left/up of the outer-circle centre. The divided-list half-baseline icon
+  offset was removed.
+- **Pass:** Accordion, list-tree, notification, and panel copy now share one
+  measured 32px icon-label continuation. The notification icon is derived
+  backward from that copy line so every tier retains its compact icon-to-text
+  gap. The audit did not add a fourth guide: red moved from the uninformative
+  page edge to a literal one-rem inset, while blue owns the shared copy line.
+- **Current regression validation:** `npm run build`, `npm run test:build`
+  (6,231 checks), `npm run test:behavior`, `npm test`, and
+  `npm run qa:components` passed. Browser review confirmed
+  both audit routes inside the shared 288px page chrome in light and dark
+  themes, with clean fresh consoles. The fixed red/green/blue 1px overlay is
+  visible at 50% opacity on only those routes and recalculates after tier and
+  viewport changes. Number/select canvases, the shared 3px disclosure-icon
+  optical drop, the common leading-mark centreline, and the shared 32px copy
+  line were visually confirmed in documentation and OS tiers in both tones.

@@ -18,6 +18,9 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   } = options;
 
   return `:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
+  /* Root navigation shares the grid-aligned panel rail with its brand. It
+     deliberately does not inherit the denser generic surface padding. */
+  --bf-side-navigation-content-inset: var(--bf-panel-content-padding-inline, var(--bf-grid-gap-inline));
   color: var(--bf-color-text-inactive);
   display: block;
   inline-size: 100%;
@@ -170,7 +173,7 @@ ${bodyTypeStyles}  align-items: center;
   justify-content: flex-start;
   margin: 0;
   min-block-size: var(--bf-control-box-size-compact);
-${compactButtonPadding}  padding-inline: var(--bf-panel-padding-inline);
+${compactButtonPadding}  padding-inline: var(--bf-side-navigation-content-inset);
   position: relative;
   text-align: left;
   text-decoration: none;
@@ -187,20 +190,20 @@ ${compactButtonPadding}  padding-inline: var(--bf-panel-padding-inline);
 
 :where(.bf-theme) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked),
 :where(.bf-theme) :where(.bf-side-navigation-list) > :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title) > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: var(--bf-panel-padding-inline);
+  padding-inline-start: var(--bf-side-navigation-content-inset);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-panel-padding-inline) + (var(--bf-baseline) * 2));
+  padding-inline-start: calc(var(--bf-side-navigation-content-inset) + (var(--bf-baseline) * 2));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-panel-padding-inline) + (var(--bf-baseline) * 4));
+  padding-inline-start: calc(var(--bf-side-navigation-content-inset) + (var(--bf-baseline) * 4));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
@@ -208,7 +211,7 @@ ${compactButtonPadding}  padding-inline: var(--bf-panel-padding-inline);
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-panel-padding-inline) + (var(--bf-baseline) * 6));
+  padding-inline-start: calc(var(--bf-side-navigation-content-inset) + (var(--bf-baseline) * 6));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-link:hover, .bf-side-navigation-accordion-button:hover) {
@@ -689,11 +692,12 @@ ${bodyTypeStyles}  align-items: center;
   content: "";
   flex: 0 0 var(--bf-disclosure-icon-inline-size);
   inline-size: var(--bf-disclosure-icon-inline-size);
+  transform: translateY(var(--bf-disclosure-icon-optical-offset-block));
   transition: transform 120ms ease;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-accordion-button[aria-expanded='false'], .bf-side-navigation-expand[aria-expanded='false'])::before {
-  transform: rotate(-90deg);
+  transform: translateY(var(--bf-disclosure-icon-optical-offset-block)) rotate(-90deg);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-expand) {
@@ -775,7 +779,7 @@ ${bodyTypeStyles}  background: transparent;
 /* Icon-navigation headings share the label edge, not the icon edge. This
    keeps section names aligned with both the menu copy and a tagged wordmark. */
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked) {
-  padding-inline-start: calc(var(--bf-panel-padding-inline) + 1rem + var(--bf-side-navigation-icon-gap));
+  padding-inline-start: calc(var(--bf-side-navigation-content-inset) + 1rem + var(--bf-side-navigation-icon-gap));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-icon) > svg {

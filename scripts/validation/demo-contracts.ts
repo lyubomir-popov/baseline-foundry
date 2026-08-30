@@ -329,21 +329,30 @@ export function validateGridSpecPage(gridSpecHtml: string, specShellCss: string)
   assert(!gridSpecHtml.includes('pc-grid-guide'), "Expected grid.html to stop using the page-local pc-grid-guide helper.");
 }
 
-export function validateSpacingSpecPage(spacingSpecHtml: string, specShellCss: string): void {
-  assert(spacingSpecHtml.includes('<section class="bf-stack is-section-shallow" aria-labelledby="spacing-keylines">'), "Expected spacing.html to retain the in-chapter keyline comparison instead of a separate diagnostic route.");
-  assert(spacingSpecHtml.includes('id="spacing-keylines-horizontal"') && spacingSpecHtml.includes('id="spacing-keylines-vertical"'), "Expected spacing.html to put the audit board in horizontal and vertical arrangements.");
-  const horizontalStart = spacingSpecHtml.indexOf('id="spacing-keylines-horizontal"');
-  const verticalStart = spacingSpecHtml.indexOf('id="spacing-keylines-vertical"');
-  const horizontalAudit = spacingSpecHtml.slice(horizontalStart, verticalStart);
-  const verticalAudit = spacingSpecHtml.slice(verticalStart);
-  for (const component of ["bf-search-box", "bf-slider", "bf-segmented-control", "bf-choice-list", "bf-inline-options", "bf-breadcrumbs", "bf-pagination", "bf-checkbox", "bf-radio", "bf-switch", "bf-accordion", "bf-list-tree", "bf-side-navigation", "bf-table-of-contents", "bf-notification", "bf-panel", "bf-table"]) {
-    assert(horizontalAudit.includes(component) && verticalAudit.includes(component), `Expected the ${component} keyline-bearing component to appear in both audit arrangements.`);
+export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAuditHtml: string, verticalAuditHtml: string, specShellCss: string): void {
+  assert(spacingSpecHtml.includes('<main class="bf-page is-fill" id="spec-grid-target">'), "Expected spacing.html to remain a full-width spacing overview.");
+  assert(spacingSpecHtml.includes('href="./spacing-horizontal.html"') && spacingSpecHtml.includes('href="./spacing-vertical.html"'), "Expected the spacing overview to link to the separate horizontal and vertical audits.");
+  for (const [name, html, pageId] of [["horizontal", horizontalAuditHtml, "spacing-horizontal-audit"], ["vertical", verticalAuditHtml, "spacing-vertical-audit"]] as const) {
+    assert(html.includes(`<main class="bf-page is-fill" id="${pageId}">`), `Expected the ${name} audit to be full width.`);
+    assert(!html.includes('bf-hero') && !html.includes('bf-basic-section'), `Expected the ${name} audit to avoid 50/50 documentation compositions.`);
+    assert(html.includes('class="bf-stack is-section"') && html.includes('class="bf-stack is-dense"'), `Expected the ${name} audit to use only shipped stack composition.`);
+    assert(!/class="[^"]*\b(?:spacing-keyline|keyline)-(?!checkbox|radio|panel)[a-z0-9_-]*/.test(html), `Expected the ${name} audit to avoid page-local keyline helper classes.`);
   }
-  assert(spacingSpecHtml.includes('class="bf-cluster"') && spacingSpecHtml.includes('class="bf-stack is-dense"'), "Expected spacing.html to use only shipped horizontal and vertical composition primitives.");
-  assert(spacingSpecHtml.includes('class="bf-checkbox"') && spacingSpecHtml.includes('class="bf-radio"') && spacingSpecHtml.includes('class="bf-switch"'), "Expected spacing.html to include the keyline-bearing selection controls.");
-  assert(spacingSpecHtml.includes('class="bf-accordion-panel"') && spacingSpecHtml.includes('bf-list-tree') && spacingSpecHtml.includes('bf-side-navigation') && spacingSpecHtml.includes('bf-table-of-contents'), "Expected spacing.html to include disclosure and navigation indentation evidence.");
-  assert(spacingSpecHtml.includes('class="bf-notification') && spacingSpecHtml.includes('class="bf-panel-content"') && spacingSpecHtml.includes('class="bf-table"'), "Expected spacing.html to include notification, panel, and table inset evidence.");
-  assert(!/class="[^"]*\b(?:spacing-keyline|keyline)-(?!checkbox|radio|panel)[a-z0-9_-]*/.test(spacingSpecHtml), "Expected spacing.html to avoid page-local keyline helper classes.");
+  assert((horizontalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 5, "Expected compact H6-styled headings throughout the horizontal audit.");
+  assert((verticalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 9, "Expected compact H6-styled headings throughout the vertical audit.");
+  assert(horizontalAuditHtml.includes('Horizontal — field and cell content inset') && horizontalAuditHtml.includes('Horizontal — command inset') && horizontalAuditHtml.includes('Horizontal — leading-mark offset') && horizontalAuditHtml.includes('Horizontal — icon-led and navigation label offset'), "Expected the horizontal audit to present the concise measured inset groups.");
+  assert(!horizontalAuditHtml.includes('<code>--bf-') && !verticalAuditHtml.includes('<code>--bf-'), "Expected audit headings to omit implementation-variable labels.");
+  const fieldBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-fields"'), horizontalAuditHtml.indexOf('id="horizontal-actions"'));
+  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell'), "Expected number, select, and table-cell insets to remain directly comparable in the field bucket.");
+  const iconNavigationBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-icon-navigation"'), horizontalAuditHtml.indexOf('id="horizontal-surfaces"'));
+  for (const component of ["bf-accordion", "bf-list-tree", "bf-switch", "bf-side-navigation", "bf-table-of-contents", "bf-notification"]) {
+    assert(iconNavigationBucket.includes(component), `Expected the shared icon-led/navigation bucket to include ${component}.`);
+  }
+  assert(!horizontalAuditHtml.includes("Navigation depth") && !horizontalAuditHtml.includes("Nested item"), "Expected page/grid gutter and navigation depth to stay outside component-padding buckets.");
+  for (const component of ["bf-search-box", "bf-slider", "bf-segmented-control", "bf-choice-list", "bf-inline-options", "bf-breadcrumbs", "bf-pagination", "bf-checkbox", "bf-radio", "bf-switch", "bf-accordion", "bf-list-tree", "bf-side-navigation", "bf-table-of-contents", "bf-notification", "bf-panel", "bf-table"]) {
+    assert(horizontalAuditHtml.includes(component) || verticalAuditHtml.includes(component), `Expected the axis-specific audits to retain ${component} evidence.`);
+  }
+  assert(horizontalAuditHtml.includes('type="number"') && verticalAuditHtml.includes('type="number"'), "Expected both audits to expose a numeric input.");
   assert(!specShellCss.includes('keyline'), "Expected the spacing comparison to need no page-local keyline CSS.");
 }
 

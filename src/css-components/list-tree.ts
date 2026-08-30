@@ -8,7 +8,7 @@ export function listTreeCss(options: ListTreeCssOptions): string {
   return `:where(.bf-theme) :where(.bf-list-tree) {
   list-style: none;
   margin: 0;
-  padding-left: calc(var(--bf-baseline) * 0.5);
+  padding-left: 0;
 }
 
 :where(.bf-theme) :where(.bf-list-tree) :where(.bf-list-tree) {
@@ -62,11 +62,11 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-flex;
-  gap: calc(var(--bf-baseline) * 0.5);
+  gap: var(--bf-disclosure-gap);
   margin: 0 0 0 calc(var(--bf-baseline) * -1.5);
   min-block-size: var(--bf-control-box-size-compact);
   padding-block: var(--bf-control-block-padding-compact);
-  padding-inline: calc(var(--bf-baseline) * 0.25) calc(var(--bf-baseline) * 0.5);
+  padding-inline: 0 calc(var(--bf-baseline) * 0.5);
   text-align: left;
   width: 100%;
 }
@@ -93,11 +93,11 @@ ${bodyTypeStyles}  align-items: center;
   content: "";
   flex: 0 0 1rem;
   inline-size: 1rem;
-  transform: rotate(-90deg);
+  transform: translateY(var(--bf-disclosure-icon-optical-offset-block)) rotate(-90deg);
 }
 
 :where(.bf-theme) :where(.bf-list-tree-toggle[aria-expanded='true'])::before {
-  transform: rotate(0deg);
+  transform: translateY(var(--bf-disclosure-icon-optical-offset-block)) rotate(0deg);
 }
 `;
 }

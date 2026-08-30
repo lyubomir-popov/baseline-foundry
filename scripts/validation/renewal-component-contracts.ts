@@ -137,13 +137,14 @@ export function validateRenewalComponentContracts(
   assert(css.includes("block-size: var(--bf-top-navigation-logo-tag-block-size);"), "Expected the tagged navigation block to preserve its fixed 38px tag height.");
   assert(css.includes("padding-block: 0 var(--bf-top-navigation-logo-icon-bottom-offset);"), "Expected the tagged navigation mark to preserve its fixed tag-bottom inset.");
   assert(css.includes("transform: translateX(var(--bf-top-navigation-logo-icon-optical-offset-inline));"), "Expected the Circle of Friends to compensate for its asymmetric source bounds.");
-  assert(css.includes("--bf-side-navigation-icon-optical-offset-block: 0.1875rem;"), "Expected side-navigation to expose the shared 3px icon optical offset.");
+  assert(css.includes("--bf-icon-label-optical-offset-block: 0.1875rem;") && css.includes("--bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);"), "Expected side-navigation to inherit the shared 3px icon-and-label optical offset.");
   assert(css.includes("--bf-side-navigation-icon-gap: 0.625rem;"), "Expected icon-navigation to expose the shared 10px icon-to-label gap.");
   assert(css.includes("--bf-navigation-brand-title-optical-offset-block: 0rem;"), "Expected panel-aligned navigation brands to share the tagged mark's optical top without a downward offset.");
-  assert(css.includes("padding-inline-start: var(--bf-panel-padding-inline);"), "Expected navigation-brand headers to share the opposing panel-content inset.");
+  assert(css.includes("padding-inline-start: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));"), "Expected navigation-brand headers to share the opposing panel-content inset.");
   assert(css.includes("transform: translateY(var(--bf-navigation-brand-title-optical-offset-block));"), "Expected navigation-brand titles to consume the shared block-axis optical offset.");
   assert(css.includes("transform: translateY(var(--bf-side-navigation-icon-optical-offset-block));"), "Expected expanded icon navigation to consume the block-axis optical offset.");
-  assert(css.includes("padding-inline-start: calc(var(--bf-panel-padding-inline) + 1rem + var(--bf-side-navigation-icon-gap));"), "Expected icon-navigation headings to align with the menu labels rather than the icons.");
+  assert(css.includes("--bf-side-navigation-content-inset: var(--bf-panel-content-padding-inline, var(--bf-grid-gap-inline));"), "Expected root side-navigation rows to inherit the grid-aligned panel inset rather than generic panel padding.");
+  assert(css.includes("padding-inline-start: calc(var(--bf-side-navigation-content-inset) + 1rem + var(--bf-side-navigation-icon-gap));"), "Expected icon-navigation headings to align with the menu labels rather than the icons.");
   assert(css.includes(":not(:has(> .bf-side-navigation-icon))::before") && css.includes("flex: 0 0 1rem;"), "Expected iconless rows in icon navigation to reserve the same mark slot as icon-bearing rows.");
   assert(css.includes(".bf-navigation.is-collapsed) :where(.bf-side-navigation.is-icons)") && css.includes("content: none;"), "Expected collapsed icon navigation to remove the spacer from iconless rows alongside their hidden labels.");
   assert(css.includes(":where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-icon) {\n  transform: none;"), "Expected collapsed application navigation to reset the expanded icon optical offset.");

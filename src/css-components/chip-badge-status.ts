@@ -1,9 +1,8 @@
 type ChipBadgeStatusCssOptions = {
   bodyCaseTypeStyles: string;
   bodyLineHeight: string;
+  bodySelectedEndNudge: string;
   bodySelectedStartNudge: string;
-  h5SelectedEndNudge: string;
-  h5SelectedStartNudge: string;
   bodyTypeStyles: string;
 };
 
@@ -11,9 +10,8 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   const {
     bodyCaseTypeStyles,
     bodyLineHeight,
+    bodySelectedEndNudge,
     bodySelectedStartNudge,
-    h5SelectedEndNudge,
-    h5SelectedStartNudge,
     bodyTypeStyles,
   } = options;
 
@@ -148,8 +146,10 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-ui-status-color);
   display: inline-block;
 ${bodyTypeStyles}  margin: 0;
-  padding-block-end: ${h5SelectedEndNudge};
-  padding-block-start: ${h5SelectedStartNudge};
+  /* A status label renders body text, so its paint must use the matching
+     metric box. H5 nudges shifted the coloured block in documentation tier. */
+  padding-block-end: ${bodySelectedEndNudge};
+  padding-block-start: ${bodySelectedStartNudge};
   padding-inline: var(--bf-ui-chip-padding-inline);
   text-align: center;
   text-decoration: none;

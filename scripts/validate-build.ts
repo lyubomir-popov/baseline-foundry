@@ -652,7 +652,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0 0 var(--bf-body-margin-bottom"), "Expected list items to carry body baseline compensation in margin-bottom.");
   assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom: 0;\n  padding-block-end: 0;"), "Expected semantic list containers not to add block-end margin or padding around item compensation.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {\n  padding-inline-start:"), "Expected prose lists to retain indentation independently of container-owned spacing.");
+  assert(css.includes("--bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));"), "Expected controls and marker-bearing lists to share one explicit leading-mark offset family.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose ol) {\n  padding-inline-start: calc(var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));") && css.includes(":where(.bf-theme) :where(.bf-prose ol > li) {\n  padding-inline-start: calc(var(--bf-leading-mark-size) * 0.5);"), "Expected ordered prose lists to retain complementary shared-leading-mark compensation.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-prose ul) {\n  list-style: none;\n  padding-inline-start: 0;") && css.includes(":where(.bf-theme) :where(.bf-prose ul > li) {\n  padding-inline-start: var(--bf-leading-mark-offset);") && css.includes("inline-size: var(--bf-list-marker-dot-size);\n  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));"), "Expected unordered prose-list dots to occupy the shared leading-mark canvas.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  position: relative;"), "Expected side-navigation list groups not to add container-owned block-end spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after {\n  background: var(--bf-color-border-low-contrast);\n  block-size: var(--bf-border-width);"), "Expected side-navigation dividers to stay out of list layout.");
@@ -666,7 +668,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected explicitly shallow section stacks to use the shallow section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected section stacks to own the tier's regular section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
-  assert(css.includes("padding-inline-start: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));"), "Expected accordion panels to share the tab label keyline through disclosure geometry variables.");
+  assert(css.includes("--bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));") && css.includes("--bf-disclosure-label-inline-offset: var(--bf-icon-label-inline-offset);"), "Expected icon-led components to expose one shared label continuation offset.");
+  assert(css.includes("padding-inline-start: var(--bf-disclosure-label-inline-offset);"), "Expected accordion panels to share the tab label keyline through the shared icon-label offset.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 1px);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 1px thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
@@ -684,7 +687,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to derive slider rail placement from the active body line geometry.");
   assert(css.includes("--bf-switch-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place switch geometry from the active body line geometry.");
   assert(css.includes("--bf-tick-box-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place tick geometry from the active body line geometry.");
-  assert(css.includes("--bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding-field));"), "Expected generated CSS to derive tick label spacing from the field inline padding token.");
+  assert(css.includes("--bf-leading-mark-gap: var(--bf-control-inline-padding-field);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the shared leading-mark family and field inline padding token.");
+  assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc(((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5) - var(--bf-border-width));"), "Expected the radio dot to grow by one border pixel and retain its measured one-pixel optical shift.");
   assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
   assert(css.includes("--bf-control-block-padding:"), "Expected generated CSS to define the regular control block padding token.");
   assert(css.includes("--bf-control-block-padding-compact:"), "Expected generated CSS to define the compact control block padding token.");
@@ -804,6 +808,17 @@ function validateCommonCss(css: string): void {
     "text-decoration": "none",
     "white-space": "nowrap"
   }, "status labels keep the canonical inline label treatment");
+  const statusLabelRuleStart = css.indexOf(":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {");
+  const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
+  assert(statusLabelRule.includes("padding-block-start: var(--bf-body-nudge-start") && statusLabelRule.includes("padding-block-end: var(--bf-body-nudge-end)"), "Expected status-label paint to use body metric nudges rather than H5 metric nudges.");
+  assert(css.includes("--bf-ui-icon-number-stepper: url(\"data:image/svg+xml,"), "Expected number inputs to reuse the compact paired-chevron asset.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(input[type='number'])", {
+    "appearance": "textfield",
+    "background-position": "right var(--bf-control-inline-padding-field) center",
+    "background-size": "1rem 1rem",
+    "padding-inline-end": "calc(var(--bf-control-inline-padding-field) * 2.5)"
+  }, "number inputs use one field-owned paired-chevron canvas aligned with select");
+  assert(css.includes("input[type='number'])::-webkit-inner-spin-button,\n:where(.bf-theme) :where(input[type='number'])::-webkit-outer-spin-button {\n  appearance: none;\n  margin: 0;"), "Expected Chromium number inputs to remove the duplicate browser-reserved spin slot.");
   assert(css.includes("--bf-ui-badge-padding-inline: calc(var(--bf-body-line-height"), "Expected badge geometry to scale from the active body line-height rather than an h5 fallback.");
   assert(css.includes("min-width: calc(var(--bf-body-line-height"), "Expected badge minimum width to scale from the active body line-height.");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before", "chip value separators");
@@ -865,6 +880,7 @@ function validateCommonCss(css: string): void {
   }, "search-and-filter inputs reserve their trailing affordance space from the field padding token");
   assert(css.includes("--bf-disclosure-gap: 1rem;"), "Expected generated CSS to define the shared disclosure text-gap token.");
   assert(css.includes("--bf-disclosure-icon-inline-size: 1rem;"), "Expected generated CSS to define the shared disclosure icon-size token.");
+  assert(css.includes("--bf-disclosure-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);"), "Expected disclosure chevrons to share the icon-and-label optical offset family.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-accordion-button)", {
     "gap": "var(--bf-disclosure-gap)"
   }, "side-navigation accordion buttons use the shared disclosure gap instead of the generic compact row gap");
@@ -918,7 +934,8 @@ function validateCommonCss(css: string): void {
     "--bf-icon-transform": "rotate(180deg)"
   }, "upward chevrons reuse the shared down glyph and rotate it in place");
   assert(css.includes(":where(.bf-theme) :where(.bf-list) {\n  align-content: start;\n  display: grid;"), "Expected base lists to contain item compensation without stretching occupied tracks.");
-    assert(css.includes(":where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {"), "Expected generated CSS to include ticked and crossed list-item styling.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {"), "Expected generated CSS to include ticked and crossed list-item styling.");
+  assert(!css.includes("top: calc(var(--bf-leading-icon-offset) + (var(--bf-baseline) * 0.5));"), "Expected divided list icons to share the first-line alignment instead of sinking by half a baseline.");
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-list)"), "Expected generated CSS to include the inline-list styling.");
   assert(css.includes(":where(.bf-theme) :where(.bf-skip-link)"), "Expected generated CSS to include the skip-link styling.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree)", {
@@ -928,8 +945,8 @@ function validateCommonCss(css: string): void {
     "display": "block"
   }, "expanded list-tree branches reveal nested lists");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree-toggle[aria-expanded='true'])::before", {
-    "transform": "rotate(0deg)"
-  }, "expanded list-tree toggles rotate the chevron into the open state");
+    "transform": "translateY(var(--bf-disclosure-icon-optical-offset-block)) rotate(0deg)"
+  }, "expanded list-tree toggles retain the shared icon-and-label optical offset in the open state");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal)", {
     "--bf-ui-tabs-equal-min": "8rem"
   }, "equal-width tabs expose the canonical minimum track variable");
@@ -1384,7 +1401,7 @@ async function main(): Promise<void> {
     "equal-heights",
     "empty-state"
   ].map(async pageName => [pageName, await readTextArtifact(path.resolve("demo/components", `${pageName}.html`))])));
-  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, buttonHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, patternAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, spacingSpecHtml, panelHtml] = await Promise.all([
+  const [engineSmokeHtml, engineIllustrationHtml, formAtlasHtml, rangeHtml, buttonHtml, componentAtlasJs, componentDemoJs, componentShellCss, specShellCss, pageChromeCss, pageCatalogJs, controlsShellCss, applicationShellHtml, applicationLayoutHtml, tabsHtml, panelTabsHtml, accordionHtml, sideNavigationHtml, topNavigationHtml, contextualMenuHtml, tooltipHtml, iconHtml, listHtml, inlineListHtml, tieredListHtml, ctaBlockHtml, equalHeightRowHtml, figureHtml, aspectHtml, tableHtml, listTreeHtml, codeSnippetHtml, skipLinkHtml, demoIndexHtml, componentAtlasHtml, patternAtlasHtml, demoControlsHtml, typographicSpecimenHtml, gridSpecHtml, spacingSpecHtml, spacingHorizontalAuditHtml, spacingVerticalAuditHtml, panelHtml] = await Promise.all([
     readTextArtifact(path.resolve("demo/components/engine-smoke.html")),
     readTextArtifact(path.resolve("demo/components/engine-illustration.html")),
     readTextArtifact(path.resolve("demo/components/form-atlas.html")),
@@ -1425,6 +1442,8 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/spec/typographic-specimen.html")),
     readTextArtifact(path.resolve("demo/spec/grid.html")),
     readTextArtifact(path.resolve("demo/spec/spacing.html")),
+    readTextArtifact(path.resolve("demo/spec/spacing-horizontal.html")),
+    readTextArtifact(path.resolve("demo/spec/spacing-vertical.html")),
     readTextArtifact(path.resolve("demo/panel.html"))
   ]);
   const [pageChromeJs, specRuntimeJs, examplePageJs] = await Promise.all([
@@ -1520,7 +1539,7 @@ async function main(): Promise<void> {
   runInvariant("Renewal component contracts", () => validateRenewalComponentContracts(defaultTheme.css, pageCatalogJs, componentAtlasHtml, patternAtlasHtml, componentDemoJs, renewalComponentPages, indexDts));
   runInvariant("Typographic specimen", () => validateTypographicSpecimen(pageCatalogJs, typographicSpecimenHtml));
   runInvariant("Grid spec page", () => validateGridSpecPage(gridSpecHtml, specShellCss));
-  runInvariant("Spacing spec page", () => validateSpacingSpecPage(spacingSpecHtml, specShellCss));
+  runInvariant("Spacing spec page", () => validateSpacingSpecPage(spacingSpecHtml, spacingHorizontalAuditHtml, spacingVerticalAuditHtml, specShellCss));
   runInvariant("OS tier page", () => validateOsTierPage(pageCatalogJs, panelHtml));
   await runInvariantAsync("Component page tier consistency", () => validateComponentPageTierConsistency(componentDemoJs));
   runInvariant("bf-only demo family", () => validateBfOnlyDemoFamily({

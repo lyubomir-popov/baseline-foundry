@@ -456,8 +456,33 @@ ${capEngineDemo}
   padding-block-end: 0;
 }
 
-:where(.bf-theme) :where(.bf-prose ul, .bf-prose ol) {
-  padding-inline-start: var(--bf-space-4);
+:where(.bf-theme) :where(.bf-prose ol) {
+  padding-inline-start: calc(var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));
+}
+
+:where(.bf-theme) :where(.bf-prose ol > li) {
+  padding-inline-start: calc(var(--bf-leading-mark-size) * 0.5);
+}
+
+:where(.bf-theme) :where(.bf-prose ul) {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+:where(.bf-theme) :where(.bf-prose ul > li) {
+  padding-inline-start: var(--bf-leading-mark-offset);
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-prose ul > li)::before {
+  background: currentColor;
+  block-size: var(--bf-list-marker-dot-size);
+  border-radius: 50%;
+  content: "";
+  inline-size: var(--bf-list-marker-dot-size);
+  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));
+  inset-inline-start: calc((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5);
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-prose li) {

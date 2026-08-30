@@ -17,6 +17,144 @@ async function readAsideWidth(page: import("playwright").Page): Promise<number> 
   return page.locator(".bf-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
 }
 
+async function verifyNumberStepperChevron(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 720 }
+    });
+    const runtimeErrors: string[] = [];
+    page.on("pageerror", error => runtimeErrors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") runtimeErrors.push(message.text());
+    });
+    await page.goto(`${origin}/demo/spec/spacing-horizontal.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator(".pc-footer").count() === 1, "Expected the horizontal audit to retain the shared page chrome and side navigation.");
+    const overlay = page.locator("[data-spacing-keyline-debug]");
+    const keylines = page.locator("[data-spacing-keyline]");
+    assert(await overlay.count() === 1 && await keylines.count() === 3, "Expected the horizontal audit to install exactly one three-line keyline overlay.");
+    const initialUpdateCount = Number(await overlay.getAttribute("data-spacing-keyline-update-count"));
+    const initialKeylines = await keylines.evaluateAll(lines => lines.map(line => {
+      const style = getComputedStyle(line);
+      return {
+        color: style.backgroundColor,
+        left: style.left,
+        opacity: style.opacity,
+        width: style.width
+      };
+    }));
+    assert(initialKeylines.every(line => line.opacity === "0.5" && line.width === "1px"), "Expected every spacing keyline to remain one pixel wide at 50% opacity.");
+    assert(initialKeylines.map(line => line.color).join("|") === "rgb(255, 0, 0)|rgb(0, 128, 0)|rgb(0, 0, 255)", "Expected one-rem, field-text, and disclosure-label keylines to remain red, green, and blue.");
+    const alignmentGeometry = await page.evaluate(`(() => {
+      const number = value => Number.parseFloat(value) || 0;
+      const box = selector => {
+        const element = document.querySelector(selector);
+        if (!element) throw new Error("Missing spacing-audit element: " + selector);
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return { left: rect.left, top: rect.top, paddingLeft: number(style.paddingLeft), gap: number(style.gap) };
+      };
+      const pseudo = (selector, name = "::before") => {
+        const element = document.querySelector(selector);
+        if (!element) throw new Error("Missing spacing-audit pseudo host: " + selector);
+        const style = getComputedStyle(element, name);
+        return { left: number(style.left), top: number(style.top), width: number(style.width), height: number(style.height) };
+      };
+      const iconLabelStart = selector => {
+        const host = box(selector);
+        const icon = pseudo(selector);
+        return host.left + host.paddingLeft + icon.width + host.gap;
+      };
+      const radio = box(".bf-radio-label");
+      const radioOuter = pseudo(".bf-radio-label");
+      const radioDot = pseudo(".bf-radio-label", "::after");
+      const prose = box(".bf-prose ul > li");
+      const proseDot = pseudo(".bf-prose ul > li");
+      const page = box("main.bf-page");
+      const red = document.querySelector("[data-spacing-keyline='one-rem-inset']");
+      if (!red) throw new Error("Missing the one-rem debug keyline.");
+      return {
+        proseDotCenter: prose.left + proseDot.left + (proseDot.width / 2),
+        radioCenter: radio.left + radioOuter.left + (radioOuter.width / 2),
+        radioDotCenterX: radio.left + radioDot.left + (radioDot.width / 2),
+        radioCenterY: radio.top + radioOuter.top + (radioOuter.height / 2),
+        radioDotCenterY: radio.top + radioDot.top + (radioDot.height / 2),
+        radioDotWidth: radioDot.width,
+        expectedRadioDotWidth: (radioOuter.width * 0.375) + 1,
+        accordionStart: iconLabelStart(".bf-accordion-tab"),
+        listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
+        notificationStart: box(".bf-notification-title").left,
+        panelStart: box(".bf-panel-content p").left,
+        redStart: red.getBoundingClientRect().left,
+        expectedRedStart: page.left + page.paddingLeft + Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+      };
+    })()`);
+    assert(Math.abs(alignmentGeometry.proseDotCenter - alignmentGeometry.radioCenter) < 0.51, "Expected the prose dot and radio control to share one leading-mark centre.");
+    assert(Math.abs(alignmentGeometry.radioDotCenterX - (alignmentGeometry.radioCenter - 1)) < 0.01 && Math.abs(alignmentGeometry.radioDotCenterY - (alignmentGeometry.radioCenterY - 1)) < 0.01, "Expected the radio inner dot to sit one pixel left and above the outer-circle centre.");
+    assert(Math.abs(alignmentGeometry.radioDotWidth - alignmentGeometry.expectedRadioDotWidth) < 0.01, "Expected the radio inner dot to be one pixel wider than its previous proportional size.");
+    assert(Math.max(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) - Math.min(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) < 0.51, "Expected accordion, list-tree, notification, and panel copy to share one icon-label continuation keyline.");
+    assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent a literal one-rem page inset.");
+    const tierSelect = page.getByLabel("Tier", { exact: true });
+    const initialTier = await tierSelect.inputValue();
+    const nextTier = initialTier === "editorial" ? "documentation" : "editorial";
+    await tierSelect.selectOption(nextTier);
+    await page.waitForSelector(`body.bf-tier-${nextTier}`);
+    await page.waitForTimeout(50);
+    const tierKeylines = await keylines.evaluateAll(lines => lines.map(line => getComputedStyle(line).left));
+    const tierUpdateCount = Number(await overlay.getAttribute("data-spacing-keyline-update-count"));
+    assert(tierUpdateCount > initialUpdateCount && tierKeylines.every(left => left.endsWith("px")), "Expected spacing keylines to refresh after a tier change.");
+    await page.setViewportSize({ width: 1200, height: 720 });
+    await page.waitForTimeout(50);
+    const resizedKeylines = await keylines.evaluateAll(lines => lines.map(line => getComputedStyle(line).left));
+    const resizedUpdateCount = Number(await overlay.getAttribute("data-spacing-keyline-update-count"));
+    assert(resizedUpdateCount > tierUpdateCount && resizedKeylines.every(left => left.endsWith("px")), "Expected spacing keylines to refresh after a viewport resize.");
+    const number = page.locator('input[type="number"]').first();
+    const select = page.locator("select").first();
+    const box = await number.boundingBox();
+    assert(box, "Expected the horizontal spacing audit to expose a measurable numeric field.");
+    const [numberGeometry, selectGeometry] = await Promise.all([
+      number.evaluate(element => {
+        const style = getComputedStyle(element);
+        return {
+          appearance: style.appearance,
+          backgroundImage: style.backgroundImage,
+          backgroundPosition: style.backgroundPosition,
+          backgroundSize: style.backgroundSize,
+          paddingInlineEnd: style.paddingInlineEnd
+        };
+      }),
+      select.evaluate(element => {
+        const style = getComputedStyle(element);
+        return {
+          backgroundPosition: style.backgroundPosition,
+          backgroundSize: style.backgroundSize,
+          paddingInlineEnd: style.paddingInlineEnd
+        };
+      })
+    ]);
+    assert(numberGeometry.appearance === "textfield", "Expected the number field to remove the duplicate browser spin slot.");
+    assert(numberGeometry.backgroundImage.includes("svg+xml"), "Expected the number field to paint one paired-chevron asset.");
+    assert(numberGeometry.backgroundPosition === selectGeometry.backgroundPosition, "Expected number and select chevrons to share the same trailing position.");
+    assert(numberGeometry.backgroundSize === selectGeometry.backgroundSize, "Expected number and select chevrons to share the same 16px canvas.");
+    assert(numberGeometry.paddingInlineEnd === selectGeometry.paddingInlineEnd, "Expected number and select to reserve the same trailing canvas space.");
+    const originalValue = await number.inputValue();
+    await number.focus();
+    await number.press("ArrowUp");
+    assert(await number.inputValue() === String(Number(originalValue) + 1), "Expected the numeric field to retain native keyboard increment behaviour.");
+    await number.press("ArrowDown");
+    assert(await number.inputValue() === originalValue, "Expected the numeric field to retain native keyboard decrement behaviour.");
+    assert(runtimeErrors.length === 0, `Expected the spacing audit runtime console to remain clean; received ${runtimeErrors.join(" | ")}.`);
+    await page.goto(`${origin}/demo/spec/spacing.html`, { waitUntil: "networkidle" });
+    assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator("[data-spacing-keyline-debug]").count() === 0, "Expected the spacing overview to retain shared chrome without the audit-only keyline overlay.");
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
   const browser = await openBrowser();
 
@@ -2926,6 +3064,8 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         spaceProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-1);block-size:1px";
         document.body.appendChild(spaceProbe);
         const spaceOne = spaceProbe.getBoundingClientRect().width;
+        spaceProbe.style.inlineSize = "var(--bf-icon-label-inline-offset)";
+        const iconLabelOffset = spaceProbe.getBoundingClientRect().width;
         spaceProbe.remove();
         const leadingIconGaps = borderedNotifications.map(notification => {
           const notificationRect = notification.getBoundingClientRect();
@@ -3014,7 +3154,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           metricFlushPairs,
           closeClearances,
           rtlGeometry,
-          expectedLeadingIconGap: spaceOne - 3,
+          expectedLeadingIconGap: iconLabelOffset - 16 - spaceOne - 3,
           expectedIconToTextGap: spaceOne,
           heights: notifications.map(notification => notification.getBoundingClientRect().height),
           overflow: notifications.map(notification => notification.scrollWidth - notification.clientWidth)
@@ -3023,7 +3163,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       assert(geometry.baseline > 0, `Expected ${tier} notification fixture to resolve a positive baseline.`);
       assert(geometry.barThicknessToken === "0.1875rem" && geometry.accentWidths.every(width => width === 3), `Expected ${tier} notification accents to use the shared 3px/0.1875rem emphasis bar; got ${geometry.accentWidths.join(", ")}px/${geometry.barThicknessToken}.`);
       assert(geometry.paddingBlockStarts.every(padding => padding === 0), `Expected ${tier} notification roots to have no top padding; got ${geometry.paddingBlockStarts.join(", ")}px.`);
-      assert(geometry.leadingIconGaps.every(gap => Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification bar-to-icon gaps to equal the compact space-1 token minus the bar thickness (${geometry.expectedLeadingIconGap}px); got ${geometry.leadingIconGaps.join(", ")}px.`);
+      assert(geometry.leadingIconGaps.every(gap => Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification icons to preserve the shared label continuation while retaining the compact icon-to-text gap (${geometry.expectedLeadingIconGap}px after the bar); got ${geometry.leadingIconGaps.join(", ")}px.`);
       assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal the compact space-1 token (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
       assert(geometry.iconFirstLineCentreDeltas.every(delta => delta <= 0.05), `Expected ${tier} notification severity icons to align to the first title/body line; centre deltas=${geometry.iconFirstLineCentreDeltas.join(", ")}px.`);
       assert(geometry.metricFlushPairs.length === 4 && geometry.metricFlushPairs.every(pair => pair.marginEnd === 0 && pair.paddingStart === 0 && pair.stackGap === 0 && pair.glyphGap <= geometry.baseline + 1), `Expected ${tier} separate notification roles to use the metric-flush relationship; got ${JSON.stringify(geometry.metricFlushPairs)} at ${geometry.baseline}px baseline.`);
@@ -3053,6 +3193,7 @@ async function main(): Promise<void> {
   const { server, origin } = await createStaticServer(rootDir);
 
   try {
+    await verifyNumberStepperChevron(origin);
     await verifyPageChromeNavigationScroll(origin);
     await verifyPageChromeHierarchyAndKeylines(origin);
     await verifyExamplePreferencesBeforePaint(origin);

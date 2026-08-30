@@ -35,10 +35,11 @@ an automated or browser-verifiable route; no public diagnostic board is needed.
 ## Candidate keyline map
 
 The audit compares named tracks; it does not prescribe one universal start
-edge or predeclare the final number of public offsets. The component board in
-`/demo/spec/spacing.html` puts the same keyline-bearing primitives in horizontal
-and vertical arrangements so the audit can confirm, consolidate, or split these
-candidates from the paragraph left edge before route-specific measurements.
+edge or predeclare the final number of public offsets. The full-width
+`/demo/spec/spacing-horizontal.html` and `/demo/spec/spacing-vertical.html`
+routes put the relevant keyline-bearing primitives in separately classified
+arrangements so the audit can confirm, consolidate, or split these candidates
+from the paragraph left edge before route-specific measurements.
 
 | Keyline | Typical relationship | Owner |
 |---|---|---|
@@ -183,7 +184,9 @@ from the ledger without a catalog decision.
 | `/index.html`, `/demo/components/index.html`, `/demo/patterns/index.html` | R02–R06, R09–R10, R12, R20–R22 | Shared chrome, atlas sections/cards, bottom controls |
 | `/demo/controls.html` | R05, R07–R10, R13, R18–R22 | Full control gallery and modal/panel composition |
 | `/demo/spec/typography.html`, `/demo/spec/typographic-specimen.html` | R01–R06, R20–R21 | Type hierarchy, role substitution, page/grid keylines |
-| `/demo/spec/spacing.html` | R01–R08, R11, R13, R20–R21 | Current authoring guidance, stack vocabulary, and compact real-component keyline comparison |
+| `/demo/spec/spacing.html` | R01–R08, R11, R13, R20–R21 | Current authoring guidance and route index |
+| `/demo/spec/spacing-horizontal.html` | R02–R08, R11–R14 | Full-width inline padding, marker, disclosure, navigation, and surface-inset audit |
+| `/demo/spec/spacing-vertical.html` | R01–R08, R11, R13–R14, R20 | Full-width metric-box, occupied-block, field-wrapper, and surface-block audit |
 | `/demo/spec/grid.html` | R02–R03, R20–R21 | Grid chapter content and guide alignment |
 | `/demo/tiers/editorial.html`, `/demo/tiers/documentation.html`, `/demo/tiers/app.html`, `/demo/tiers/os.html` | R01–R21 | Direct tier reference parity |
 | `/examples/grid/breakpoints.html` | R02–R03, R20–R22 | Responsive grid thresholds and shared chrome |

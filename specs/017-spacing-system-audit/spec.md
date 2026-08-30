@@ -109,29 +109,50 @@ component implementation.
 
 ### User Story 6 - Keyline relationships are easy to inspect (Priority: P1)
 
-As a system owner, I need one concise, real-component comparison in the
-spacing chapter so I can inspect the important horizontal and vertical
-relationships without relying on a separate diagnostic page or inventing a
-new local styling system.
+As a system owner, I need concise, real-component comparisons separated by
+axis so I can inspect horizontal and vertical padding without mixing their
+unrelated variables or inventing a local styling system.
 
 **Acceptance Scenarios**:
 
-1. **Given** the spacing chapter, **When** an owner turns on the existing
-   baseline grid, **Then** it presents compact stacked and inline comparisons
-   made only from shipped BF primitives.
+1. **Given** either axis-specific spacing audit, **When** an owner turns on the
+   existing baseline grid, **Then** it presents compact comparisons made only
+   from shipped BF primitives in a full-width page.
 2. **Given** a leading mark (a list bullet, checkbox, radio, or disclosure
    icon), **When** its label or panel content is inspected, **Then** the
    comparison identifies whether it belongs to the page/content keyline, a
    leading-mark track, a control/panel gutter, or a disclosure continuation
    keyline; it does not assume all labels share one universal start line.
 
+---
+
+### User Story 7 - A small, evidence-led keyline vocabulary (Priority: P1)
+
+As a system owner, I need keyline families to be few, named, and backed by
+shared variables, so comparable components do not acquire individually tuned
+indents or occupied heights.
+
+**Acceptance Scenarios**:
+
+1. **Given** controls, data labels, marker rows, navigation rows, surfaces,
+   and page/grid frames, **When** their inline starts and occupied blocks are
+   audited, **Then** each belongs to a documented family or has a measured
+   reason to differ.
+2. **Given** the consumer-facing spacing audits, **When** an owner audits one
+   axis, **Then** every group names that axis and one measured variable family;
+   it does not group components merely because they share a semantic role.
+3. **Given** a component that looks misaligned because of border or font
+   compensation, **When** a correction is proposed, **Then** it is measured
+   against its role family before a new utility, class, or component is added.
+
 ## Requirements
 
 - **FR-001**: Delete the complete historical `examples/spacing/` batch.
 - **FR-002**: Remove deleted routes from the catalog, living spec, root page,
   README, static validation, browser behavior, and screenshot inventories.
-- **FR-003**: Keep `demo/spec/spacing.html` as the sole consumer-facing spacing
-  explanation and rewrite it around the current ownership model.
+- **FR-003**: Keep `demo/spec/spacing.html` as the short consumer-facing
+  spacing overview and provide full-width horizontal and vertical audit routes
+  beside it, all written around the current ownership model.
 - **FR-004**: Preserve useful preference, page-chrome, stack-density, panel
   inset, and accordion alignment checks by routing them through real demos or
   hidden DOM probes.
@@ -162,15 +183,28 @@ new local styling system.
   threshold for a default readable 50/50 pattern split. Inventory every
   component and pattern with a comparable split, correct unjustified divergent
   thresholds, and record a distinct intrinsic reason for each exception.
-- **FR-014**: Keep a component-first keyline-audit section in the existing
-  consumer-facing spacing chapter. It must place the same keyline-bearing
-  shipped components in horizontal and vertical compositions, including
-  navigation, disclosure, controls, data labels, panels, and tables—not
-  page-local rulers, diagnostic rails, or custom specimen CSS.
+- **FR-014**: Keep component-first horizontal and vertical spacing audits as
+  separate full-width consumer-facing routes. Each must place raw shipped
+  components under one axis-specific variable family, including navigation,
+  disclosure, controls, data labels, panels, and tables—not page-local rulers,
+  diagnostic rails, custom specimen CSS, or a 50/50 documentation layout.
 - **FR-015**: Treat keylines as named relationships rather than a universal
   left edge: page/content text, leading-mark tracks, component gutters, and
   disclosure continuations may differ only when their owning component and
   variable family make the distinction explicit.
+- **FR-016**: Maintain `contracts/keyline-bucket-analysis.md` as the
+  evidence-led family map. It must distinguish inline-start tracks from
+  occupied-block rhythm, state the smallest defensible family set, and list
+  every component/pattern that creates an author-visible indent.
+- **FR-017**: Use the resolved grid side inset for the root side-navigation
+  inset: `--bf-panel-content-padding-inline` where a panel establishes it,
+  otherwise `--bf-grid-gap-inline`. Nested navigation may add only its
+  documented depth step; generic panel padding must not independently tune the
+  root navigation keyline.
+- **FR-018**: Preserve native number-input semantics and keyboard increment /
+  decrement behaviour. The visible paired-chevron affordance must occupy one
+  measured 16px canvas at the same trailing position as select, without a
+  second browser-reserved spin slot or unexplained spare trailing space.
 
 ## Success Criteria
 
@@ -193,9 +227,16 @@ new local styling system.
 - **SC-008**: Every default balanced content split in the active catalog uses
   the same 45rem query-container threshold, or has a documented non-split
   reason for a different transition.
-- **SC-009**: The spacing chapter exposes the same component set in horizontal
-  and vertical keyline comparisons in every tier without any page-local layout
-  or styling class.
+- **SC-009**: The horizontal and vertical audits cover the keyline-bearing
+  component set in every tier without page-local layout or styling classes;
+  each component is classified independently for each axis.
+- **SC-010**: The bucket analysis accounts for every public component or
+  pattern that creates a visible author-controlled inline offset, including
+  navigation depth, list markers, fields, table cells, surface insets, and
+  page/grid gutters.
+- **SC-011**: Root side-navigation labels and their navigation-brand peer use
+  the same resolved grid side inset in every built-in tier; nested labels add
+  only the documented depth increment.
 
 ## Boundaries
 

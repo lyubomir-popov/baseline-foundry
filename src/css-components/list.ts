@@ -51,10 +51,6 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
   background-image: var(--bf-ui-icon-error-grey);
 }
 
-:where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed)::before {
-  top: calc(var(--bf-leading-icon-offset) + (var(--bf-baseline) * 0.5));
-}
-
 :where(.bf-theme) :where(ol.bf-list.is-divided) {
   counter-reset: bf-list-counter;
 }

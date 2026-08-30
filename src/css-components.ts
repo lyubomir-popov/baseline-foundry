@@ -121,8 +121,6 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
   const h4LineHeight = roleLineHeightVar("h4", h4.lineHeight);
   const h5LineHeight = roleLineHeightVar("h5", h5.lineHeight);
-  const h5SelectedStartNudge = roleSelectedStartNudgeVar("h5", h5.nudgeTop);
-  const h5SelectedEndNudge = roleSelectedEndNudgeVar("h5");
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
@@ -132,6 +130,8 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
 ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable command targets; field surfaces can tighten independently. */
   --bf-disclosure-gap: 1rem;
   --bf-disclosure-icon-inline-size: 1rem;
+  --bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));
+  --bf-disclosure-label-inline-offset: var(--bf-icon-label-inline-offset);
   --bf-input-block-padding: ${bodySelectedStartNudge};
   --bf-button-block-padding: ${bodySelectedStartNudge};
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
@@ -146,8 +146,12 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-switch-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-tick-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-tick-box-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
-  --bf-tick-label-offset: calc(var(--bf-control-visual-size) + var(--bf-control-inline-padding-field));
-  --bf-radio-dot-size: calc(var(--bf-control-visual-size) * 0.375);
+  --bf-leading-mark-size: var(--bf-control-visual-size);
+  --bf-leading-mark-gap: var(--bf-control-inline-padding-field);
+  --bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));
+  --bf-tick-label-offset: var(--bf-leading-mark-offset);
+  --bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));
+  --bf-list-marker-dot-size: calc(var(--bf-border-width) * 4);
   --bf-app-drawer-width-icon: 2rem;
   --bf-app-drawer-width-small: 15rem;
   --bf-app-drawer-width-small-max: 20rem;
@@ -159,7 +163,9 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-app-aside-width-max: var(--bf-app-drawer-width-medium-max);
   --bf-app-navigation-width: 15rem;
   --bf-app-navigation-width-collapsed: 3rem;
-  --bf-side-navigation-icon-optical-offset-block: 0.1875rem;
+  --bf-icon-label-optical-offset-block: 0.1875rem;
+  --bf-disclosure-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
+  --bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
   --bf-side-navigation-icon-gap: 0.625rem;
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
   --bf-authoring-accent: #f6b73c;
@@ -189,8 +195,8 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-icon-size-large: 4rem;
   --bf-icon-size-x-large: 4.5rem;
   --bf-icon-size-xx-large: 6rem;
-  --bf-leading-icon-size: calc(var(--bf-baseline) * 2);
-  --bf-leading-icon-gap: calc(var(--bf-baseline) * 1);
+  --bf-leading-icon-size: var(--bf-leading-mark-size);
+  --bf-leading-icon-gap: var(--bf-leading-mark-gap);
   --bf-leading-icon-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-leading-icon-size)", bodySelectedStartNudge)};
   --bf-ui-chip-padding-inline: calc(${bodyLineHeight} * 0.4);
   --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-control-inline-padding-action) * 0.25) - var(--bf-border-width)));
@@ -211,6 +217,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-application-navigation-width-collapsed: var(--bf-app-navigation-width-collapsed);
 ${foundryComponentColorVars("light")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
+  --bf-ui-icon-number-stepper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 5.75 8 2l3.75 3.75M4.25 10.25 8 14l3.75-3.75'/%3E%3C/svg%3E");
   --bf-ui-icon-close: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.25 4.25 11.75 11.75M11.75 4.25 4.25 11.75' fill='none' stroke='%23111' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
   --bf-ui-icon-error-grey: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 1.52588e-05C12.4183 1.52588e-05 16 3.58174 16 8.00002C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8.00002C0 3.58174 3.58172 1.52588e-05 8 1.52588e-05ZM10.2821 4.63808L11.3427 5.69874L9.05007 7.99008L11.3427 10.2821L10.2821 11.3427L7.99007 9.05008L5.69873 11.3427L4.63807 10.2821L6.92907 7.99008L4.63807 5.69874L5.69873 4.63808L7.99007 6.92908L10.2821 4.63808ZM1.5 8.00002C1.5 4.41016 4.41015 1.50002 8 1.50002C11.5899 1.50002 14.5 4.41016 14.5 8.00002C14.5 11.5899 11.5899 14.5 8 14.5C4.41015 14.5 1.5 11.5899 1.5 8.00002Z' fill='%23111' fill-rule='evenodd'/%3E%3C/svg%3E");
   --bf-ui-icon-search: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.964 1a5.964 5.964 0 014.709 9.623l4.303 4.305-1.06 1.06-4.306-4.305A5.964 5.964 0 116.963 1zm0 1.5a4.464 4.464 0 100 8.927 4.464 4.464 0 000-8.927z' fill='%23111' fill-rule='nonzero'/%3E%3C/svg%3E");
@@ -255,6 +262,7 @@ ${(themeSurfaces ?? []).map(surface => {
 :where(.bf-theme.is-dark) {
 ${foundryComponentColorVars("dark")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
+  --bf-ui-icon-number-stepper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 5.75 8 2l3.75 3.75M4.25 10.25 8 14l3.75-3.75'/%3E%3C/svg%3E");
   --bf-ui-icon-close: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.25 4.25 11.75 11.75M11.75 4.25 4.25 11.75' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
   --bf-ui-icon-error-grey: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 1.52588e-05C12.4183 1.52588e-05 16 3.58174 16 8.00002C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8.00002C0 3.58174 3.58172 1.52588e-05 8 1.52588e-05ZM10.2821 4.63808L11.3427 5.69874L9.05007 7.99008L11.3427 10.2821L10.2821 11.3427L7.99007 9.05008L5.69873 11.3427L4.63807 10.2821L6.92907 7.99008L4.63807 5.69874L5.69873 4.63808L7.99007 6.92908L10.2821 4.63808ZM1.5 8.00002C1.5 4.41016 4.41015 1.50002 8 1.50002C11.5899 1.50002 14.5 4.41016 14.5 8.00002C14.5 11.5899 11.5899 14.5 8 14.5C4.41015 14.5 1.5 11.5899 1.5 8.00002Z' fill='%23fff' fill-rule='evenodd'/%3E%3C/svg%3E");
   --bf-ui-icon-search: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.964 1a5.964 5.964 0 014.709 9.623l4.303 4.305-1.06 1.06-4.306-4.305A5.964 5.964 0 116.963 1zm0 1.5a4.464 4.464 0 100 8.927 4.464 4.464 0 000-8.927z' fill='%23fff' fill-rule='nonzero'/%3E%3C/svg%3E");
@@ -460,6 +468,18 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
   font-variant-numeric: tabular-nums;
 }
 
+/* Number fields retain their native input semantics and keyboard stepping,
+   while one field-owned background paints the compact pair. Sharing select's
+   16px canvas and end position avoids a second browser-reserved spin slot. */
+:where(.bf-theme) :where(input[type='number']) {
+  appearance: textfield;
+  background-image: var(--bf-ui-icon-number-stepper);
+  background-position: right var(--bf-control-inline-padding-field) center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  padding-inline-end: calc(var(--bf-control-inline-padding-field) * 2.5);
+}
+
 :where(.bf-theme) :where(.bf-slider-input) {
   flex: 0 1 5rem;
   inline-size: min(100%, 5rem);
@@ -471,6 +491,7 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
 
 :where(.bf-theme) :where(input[type='number'])::-webkit-inner-spin-button,
 :where(.bf-theme) :where(input[type='number'])::-webkit-outer-spin-button {
+  appearance: none;
   margin: 0;
 }
 
@@ -542,8 +563,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   block-size: var(--bf-radio-dot-size);
   border-radius: 50%;
   inline-size: var(--bf-radio-dot-size);
-  inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);
-  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));
+  inset-inline-start: calc(((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5) - var(--bf-border-width));
+  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5) - var(--bf-border-width));
   opacity: 0;
 }
 
@@ -911,9 +932,8 @@ ${tableCss({
 ${chipBadgeStatusCss({
   bodyCaseTypeStyles: typeStyles(body),
   bodyLineHeight,
+  bodySelectedEndNudge,
   bodySelectedStartNudge,
-  h5SelectedEndNudge,
-  h5SelectedStartNudge,
   bodyTypeStyles,
 })}
 
@@ -1348,18 +1368,19 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   display: inline-block;
   flex: none;
   inline-size: var(--bf-disclosure-icon-inline-size);
+  transform: translateY(var(--bf-disclosure-icon-optical-offset-block));
   transition: transform 120ms ease;
 }
 
 :where(.bf-theme) :where(.bf-accordion-tab[aria-expanded='false'])::before {
-  transform: rotate(-90deg);
+  transform: translateY(var(--bf-disclosure-icon-optical-offset-block)) rotate(-90deg);
 }
 
 :where(.bf-theme) :where(.bf-accordion-panel) {
   margin: 0;
   overflow: hidden;
   padding-block-start: var(--bf-baseline);
-  padding-inline-start: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));
+  padding-inline-start: var(--bf-disclosure-label-inline-offset);
 }
 
 :where(.bf-theme) :where(.bf-accordion-panel[aria-hidden='true']) {

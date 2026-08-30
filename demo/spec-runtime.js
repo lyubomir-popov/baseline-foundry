@@ -3,6 +3,53 @@ import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
 const rootPrefix= document.documentElement.dataset.specRoot ?? "..";
+let updateSpacingKeylineDebug = null;
+
+function installSpacingKeylineDebug() {
+  const isSpacingAudit = [
+    "/demo/spec/spacing-horizontal.html",
+    "/demo/spec/spacing-vertical.html"
+  ].some(route => window.location.pathname.endsWith(route));
+  if (!isSpacingAudit) return;
+
+  const overlay = document.createElement("div");
+  overlay.setAttribute("aria-hidden", "true");
+  overlay.dataset.spacingKeylineDebug = "";
+  overlay.dataset.spacingKeylineUpdateCount = "0";
+  overlay.style.cssText = "inset:0;pointer-events:none;position:fixed;z-index:9999;";
+  const lines = [
+    ["one-rem-inset", "red"],
+    ["field-text-start", "green"],
+    ["disclosure-label-start", "blue"]
+  ].map(([keyline, color]) => {
+    const line = document.createElement("i");
+    line.dataset.spacingKeyline = keyline;
+    line.style.cssText = `background:${color};height:100vh;opacity:.5;position:absolute;top:0;width:1px;`;
+    overlay.append(line);
+    return line;
+  });
+  updateSpacingKeylineDebug = () => {
+    overlay.dataset.spacingKeylineUpdateCount = String(Number(overlay.dataset.spacingKeylineUpdateCount) + 1);
+    const page = document.querySelector("main.bf-page");
+    const field = document.querySelector("input[type='text'], input[type='number'], select, textarea");
+    const disclosure = document.querySelector(".bf-accordion-tab, .bf-list-tree-toggle, .bf-side-navigation-accordion-button");
+    if (page) {
+      const pageStyle = getComputedStyle(page);
+      const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+      lines[0].style.left = `${page.getBoundingClientRect().left + Number.parseFloat(pageStyle.paddingInlineStart) + rootRem}px`;
+    }
+    if (field) lines[1].style.left = `${field.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(field).paddingInlineStart)}px`;
+    if (disclosure) {
+      const disclosureStyle = getComputedStyle(disclosure);
+      const icon = getComputedStyle(disclosure, "::before");
+      lines[2].style.left = `${disclosure.getBoundingClientRect().left + Number.parseFloat(disclosureStyle.paddingInlineStart) + Number.parseFloat(icon.inlineSize) + Number.parseFloat(disclosureStyle.gap)}px`;
+    }
+  };
+  document.body.append(overlay);
+  updateSpacingKeylineDebug();
+  window.addEventListener("resize", updateSpacingKeylineDebug, { passive: true });
+  document.fonts?.ready.then(updateSpacingKeylineDebug);
+}
 let activeTierLoad = 0;
 let tierSelect = null;
 let toneToggle = null;
@@ -198,6 +245,7 @@ async function applyTier(tierName) {
   document.body.classList.remove(...BUILT_IN_TIER_CLASSES);
   document.body.classList.add("bf-theme", tier.className);
   document.body.dataset.bfTier = tierName;
+  requestAnimationFrame(() => updateSpacingKeylineDebug?.());
 
   setText("[data-spec-current-tier]", tier.label);
   setText("[data-spec-tier-description]", tier.description);
@@ -218,6 +266,7 @@ async function applyTier(tierName) {
     }
 
     renderTokens(tokens);
+    requestAnimationFrame(() => updateSpacingKeylineDebug?.());
   } catch (error) {
     if (loadId !== activeTierLoad) {
       return;
@@ -248,6 +297,7 @@ export async function initSpecRuntime({ initComponents } = {}) {
       tierOptions: supportedTiers
     },
     currentPath: window.location.pathname,
+    sectionLabel: document.body.dataset.pageSectionLabel ?? (window.location.pathname.includes("/demo/spec/spacing-") ? "Spacing chapter" : undefined),
     wrapBodyContent: true
   });
 
@@ -301,4 +351,5 @@ export async function initSpecRuntime({ initComponents } = {}) {
 
   applyTone(preferredTone === "dark" ? "dark" : "light", { persist: false });
   await applyTier(initialTier);
+  installSpacingKeylineDebug();
 }
