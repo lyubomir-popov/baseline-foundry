@@ -338,11 +338,13 @@ export function validateGridSpecPage(gridSpecHtml: string, specShellCss: string)
 
 export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAuditHtml: string, verticalAuditHtml: string, specShellCss: string): void {
   assert(spacingSpecHtml.includes('<main class="bf-page is-fill" id="spec-grid-target">'), "Expected spacing.html to remain a full-width spacing overview.");
-  assert(spacingSpecHtml.includes('href="./spacing-horizontal.html"') && spacingSpecHtml.includes('href="./spacing-vertical.html"'), "Expected the spacing overview to link to the separate horizontal and vertical audits.");
+  assert((spacingSpecHtml.match(/class="bf-basic-section is-shallow"/g) ?? []).length === 2 && spacingSpecHtml.includes('class="bf-basic-section-header bf-stack is-dense"') && spacingSpecHtml.includes('class="bf-basic-section-content bf-stack is-dense"'), "Expected the spacing overview copy to use the shipped heading-left/content-right basic-section composition.");
+  assert(spacingSpecHtml.includes('data-spacing-audit-tabs') && spacingSpecHtml.includes('role="tablist"') && spacingSpecHtml.includes('data-spacing-audit-panel="horizontal"') && spacingSpecHtml.includes('data-spacing-audit-panel="vertical"'), "Expected the spacing overview to switch between axis audits with in-page tabs.");
+  assert(spacingSpecHtml.includes('data-spacing-audit-source="./spacing-horizontal.html"') && spacingSpecHtml.includes('data-spacing-audit-source="./spacing-vertical.html"') && spacingSpecHtml.includes('src="../spacing-audits.js"'), "Expected the in-page tabs to reuse the readable axis-audit source pages.");
   for (const [name, html, pageId] of [["horizontal", horizontalAuditHtml, "spacing-horizontal-audit"], ["vertical", verticalAuditHtml, "spacing-vertical-audit"]] as const) {
     assert(html.includes(`<main class="bf-page is-fill" id="${pageId}">`), `Expected the ${name} audit to be full width.`);
     assert(!html.includes('bf-hero') && !html.includes('bf-basic-section'), `Expected the ${name} audit to avoid 50/50 documentation compositions.`);
-    assert(html.includes('class="bf-stack is-section"') && html.includes('class="bf-stack is-dense"'), `Expected the ${name} audit to use only shipped stack composition.`);
+    assert(html.includes('class="bf-stack') && html.includes('class="bf-stack is-dense"'), `Expected the ${name} audit to use only shipped stack composition.`);
     assert(!/class="[^"]*\b(?:spacing-keyline|keyline)-(?!checkbox|radio|panel)[a-z0-9_-]*/.test(html), `Expected the ${name} audit to avoid page-local keyline helper classes.`);
   }
   assert((horizontalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 5, "Expected compact H6-styled headings throughout the horizontal audit.");
@@ -359,14 +361,15 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
   }
   assert(iconNavigationBucket.includes("Tree child") && iconNavigationBucket.includes("Side navigation, plain") && iconNavigationBucket.includes("Side navigation, disclosure"), "Expected tree-child, plain-navigation, and disclosure-navigation copy to remain directly comparable on the shared continuation rail.");
   assert(!horizontalAuditHtml.includes("Navigation depth") && !horizontalAuditHtml.includes("Nested item"), "Expected page/grid gutter and navigation depth to stay outside component-padding buckets.");
-  for (const component of ["bf-search-box", "bf-slider", "bf-segmented-control", "bf-choice-list", "bf-inline-options", "bf-breadcrumbs", "bf-pagination", "bf-checkbox", "bf-radio", "bf-switch", "bf-accordion", "bf-list-tree", "bf-side-navigation", "bf-table-of-contents", "bf-notification", "bf-panel", "bf-table"]) {
+  for (const component of ["bf-search-box", "bf-segmented-control", "bf-choice-list", "bf-breadcrumbs", "bf-pagination", "bf-checkbox", "bf-radio", "bf-switch", "bf-accordion", "bf-list-tree", "bf-side-navigation", "bf-table-of-contents", "bf-notification", "bf-panel", "bf-table"]) {
     assert(horizontalAuditHtml.includes(component) || verticalAuditHtml.includes(component), `Expected the axis-specific audits to retain ${component} evidence.`);
   }
   assert(horizontalAuditHtml.includes('type="number"') && verticalAuditHtml.includes('type="number"'), "Expected both audits to expose a numeric input.");
-  const compactTagsBucket = verticalAuditHtml.slice(verticalAuditHtml.indexOf('id="vertical-tags"'), verticalAuditHtml.indexOf('id="vertical-document"'));
-  assert(compactTagsBucket.includes('<p class="bf-body">') && !compactTagsBucket.includes('class="bf-cluster"') && compactTagsBucket.includes('class="bf-chip"') && compactTagsBucket.includes('bf-badge') && compactTagsBucket.includes('is-borderless') && compactTagsBucket.includes('bf-status-label'), "Expected compact rows to compare body text, chip and badge variants, and the standalone status-label treatment in one audit bucket.");
+  assert(!verticalAuditHtml.includes('<h3') && !verticalAuditHtml.includes('<textarea') && !verticalAuditHtml.includes('type="file"') && !verticalAuditHtml.includes('type="range"'), "Expected the compact vertical audit to label specimens through their real component content and omit multiline or stacked fields.");
+  assert(verticalAuditHtml.includes('id="vertical-controls"') && verticalAuditHtml.includes('id="vertical-compact"') && verticalAuditHtml.includes('id="vertical-text-runs"') && verticalAuditHtml.includes('id="vertical-dense-actions"') && verticalAuditHtml.includes('id="vertical-comfortable-actions"') && verticalAuditHtml.includes('id="vertical-variants"'), "Expected the vertical audit to bucket specimens by measured occupied height, with independent contracts called out explicitly.");
   assert((verticalAuditHtml.match(/class="spacing-block-scroll"/g) ?? []).length === 6 && (verticalAuditHtml.match(/class="spacing-block-track"/g) ?? []).length === 6, "Expected the vertical audit to use six horizontally scrollable occupied-block comparison rows.");
-  assert((verticalAuditHtml.match(/class="spacing-block-probe"/g) ?? []).length >= 30, "Expected the vertical audit to expose a broad occupied-block specimen inventory.");
+  assert((verticalAuditHtml.match(/spacing-block-probe/g) ?? []).length === 28, "Expected the vertical audit to expose the focused single-row occupied-block specimen inventory.");
+  assert(/\.spacing-block-sample\s*\{[^}]*flex:\s*0 0 5rem;/s.test(specShellCss), "Expected every compact vertical specimen to use the shared 5rem audit width.");
   assert(specShellCss.includes(".spacing-block-scroll") && specShellCss.includes("overflow-x: auto;") && specShellCss.includes(".spacing-block-probe::before") && specShellCss.includes(".spacing-block-probe::after"), "Expected the vertical audit shell to provide horizontal scrolling plus shared-start and occupied-end rules.");
   assert(!verticalAuditHtml.includes("data-spacing-keyline-debug") && !verticalAuditHtml.includes("data-spacing-keyline="), "Expected the vertical audit to avoid the horizontal inset overlay.");
 }

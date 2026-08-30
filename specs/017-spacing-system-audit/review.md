@@ -202,3 +202,31 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
   and `npm run qa:components` then passed with zero component-baseline
   failures. Temporary browser servers now bind within the browser-safe dynamic
   port range, removing the observed `ERR_UNSAFE_PORT` release-gate flake.
+
+## Review 9 — tabbed chapter and measured 5rem height families
+
+- **Pass — chapter composition:** The spacing chapter uses two shipped
+  basic-section rows for heading-left/content-right guidance. Horizontal and
+  vertical audit buttons are keyboard-operable BF tabs; they change the panel
+  and URL hash without changing the page pathname.
+- **Pass — single source:** The tab panels load the readable axis-route section
+  markup rather than duplicating it. Direct horizontal and vertical routes
+  remain available for isolated QA, while the chapter contains one H1 and the
+  active panel is labelled by its selected tab.
+- **Pass — measured vertical buckets:** Every raw specimen is exactly 5rem
+  wide. Playwright measured equality across Editorial, Documentation, App, and
+  OS for nine controls; six compact tree/navigation/choice rows; seven text
+  runs; the divided-list/tab pair; and the accordion/chip pair. Table remains
+  within one baseline of controls but is documented with breadcrumbs as an
+  independent density contract.
+- **Pass — focused evidence:** Per-specimen H6 labels, textarea, file, range,
+  and content-driven composite surfaces are absent. The actual component copy
+  identifies each compact specimen, and the six rows sit closer through the
+  normal pattern stack rather than a section stack.
+- **Pass — overlay and browser state:** A fresh real-browser review in light
+  and dark retained one shared header and side navigation with no console
+  errors. Horizontal shows the three one-rendered-pixel rem-authored guides;
+  vertical hides them and retains its red-start/blue-end rules.
+- **Evidence:** `npm run build`, `npm run test:build` (6,573 checks),
+  `npm run test:behavior`, `npm test`, and `npm run qa:components` passed with
+  zero component-baseline failures.

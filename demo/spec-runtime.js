@@ -6,7 +6,9 @@ const rootPrefix= document.documentElement.dataset.specRoot ?? "..";
 let updateHorizontalKeylineDebug = null;
 
 function installHorizontalKeylineDebug() {
-  if (!window.location.pathname.endsWith("/demo/spec/spacing-horizontal.html")) return;
+  const isHorizontalRoute = window.location.pathname.endsWith("/demo/spec/spacing-horizontal.html");
+  const isSpacingChapter = window.location.pathname.endsWith("/demo/spec/spacing.html");
+  if (!isHorizontalRoute && !isSpacingChapter) return;
 
   const overlay = document.createElement("div");
   overlay.setAttribute("aria-hidden", "true");
@@ -25,14 +27,22 @@ function installHorizontalKeylineDebug() {
     return line;
   });
   updateHorizontalKeylineDebug = () => {
+    const horizontalPanel = isSpacingChapter
+      ? document.querySelector("[data-spacing-audit-panel='horizontal']")
+      : null;
+    const isHorizontalVisible = !horizontalPanel || horizontalPanel.getAttribute("aria-hidden") !== "true";
+    overlay.hidden = !isHorizontalVisible;
+    if (!isHorizontalVisible) return;
+
     overlay.dataset.spacingKeylineUpdateCount = String(Number(overlay.dataset.spacingKeylineUpdateCount) + 1);
     const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
     const setLineLeft = (line, leftInCssPixels) => {
       line.style.left = `${leftInCssPixels / rootRem}rem`;
     };
     const page = document.querySelector("main.bf-page");
-    const field = document.querySelector("input[type='text'], input[type='number'], select, textarea");
-    const disclosure = document.querySelector(".bf-accordion-tab, .bf-list-tree-toggle, .bf-side-navigation-accordion-button");
+    const auditRoot = horizontalPanel ?? document;
+    const field = auditRoot.querySelector("input[type='text'], input[type='number'], select, textarea");
+    const disclosure = auditRoot.querySelector(".bf-accordion-tab, .bf-list-tree-toggle, .bf-side-navigation-accordion-button");
     if (page) {
       const pageStyle = getComputedStyle(page);
       setLineLeft(lines[0], page.getBoundingClientRect().left + Number.parseFloat(pageStyle.paddingInlineStart) + rootRem);
@@ -48,6 +58,17 @@ function installHorizontalKeylineDebug() {
   updateHorizontalKeylineDebug();
   window.addEventListener("resize", updateHorizontalKeylineDebug, { passive: true });
   document.fonts?.ready.then(updateHorizontalKeylineDebug);
+  document.addEventListener("bf:spacing-audits-ready", updateHorizontalKeylineDebug);
+  const auditTabs = document.querySelector("[data-spacing-audit-tabs]");
+  if (auditTabs) {
+    const observer = new MutationObserver(() => requestAnimationFrame(updateHorizontalKeylineDebug));
+    observer.observe(auditTabs, {
+      attributeFilter: ["aria-hidden"],
+      attributes: true,
+      childList: true,
+      subtree: true
+    });
+  }
 }
 let activeTierLoad = 0;
 let tierSelect = null;

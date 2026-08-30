@@ -150,9 +150,11 @@ indents or occupied heights.
 - **FR-001**: Delete the complete historical `examples/spacing/` batch.
 - **FR-002**: Remove deleted routes from the catalog, living spec, root page,
   README, static validation, browser behavior, and screenshot inventories.
-- **FR-003**: Keep `demo/spec/spacing.html` as the short consumer-facing
-  spacing overview and provide full-width horizontal and vertical audit routes
-  beside it, all written around the current ownership model.
+- **FR-003**: Keep `demo/spec/spacing.html` as the consumer-facing spacing
+  chapter. Present its guidance with the shipped heading-left/content-right
+  basic-section composition, then expose the horizontal and vertical audits as
+  keyboard-operable in-page tabs. Retain the full-width axis routes as readable
+  source and direct-QA fixtures rather than requiring chapter navigation.
 - **FR-004**: Preserve useful preference, page-chrome, stack-density, panel
   inset, and accordion alignment checks by routing them through real demos or
   hidden DOM probes.
@@ -184,12 +186,12 @@ indents or occupied heights.
   component and pattern with a comparable split, correct unjustified divergent
   thresholds, and record a distinct intrinsic reason for each exception.
 - **FR-014**: Keep component-first horizontal and vertical spacing audits as
-  separate full-width consumer-facing routes. Each must place raw shipped
-  components under one axis-specific variable family, including navigation,
-  disclosure, controls, data labels, panels, and tables. Minimal demo-only
-  guide and overflow framing may reveal the measured axis, but it must not
-  alter component geometry, substitute mock components, or recreate a 50/50
-  documentation layout.
+  readable full-width source routes and reuse their sections inside the
+  spacing chapter's in-page tab panels. Each must place raw shipped components
+  under one axis-specific variable family, including navigation, disclosure,
+  controls, data labels, panels, and tables. Minimal demo-only guide and
+  overflow framing may reveal the measured axis, but it must not alter
+  component geometry or substitute mock components.
 - **FR-015**: Treat keylines as named relationships rather than a universal
   left edge: page/content text, leading-mark tracks, component gutters, and
   disclosure continuations may differ only when their owning component and

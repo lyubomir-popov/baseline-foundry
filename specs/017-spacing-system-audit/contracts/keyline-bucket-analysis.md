@@ -94,12 +94,14 @@ navigation depth remain structural offsets, not component insets.
    from the shared copy line, preserving each tier's compact icon-to-text gap.
    No fourth audit keyline was introduced: red is the literal one-rem inset,
    green is the field-text start, and blue is the shared copy continuation.
-5. The vertical audit uses long horizontally scrollable family rows. A red
-   rule marks the common block start and each specimen paints its own blue
-   occupied end. Single-line fields/buttons/segmented/pagination/icon-only
-   controls share a family; tab actions move with navigation, while density-
-   tuned table rows remain within one baseline of controls rather than being
-   flattened into them.
+5. The vertical audit uses compact horizontal family rows. Every raw specimen
+   is 5rem wide, carries its identity in the real component content instead of
+   a per-item H6, starts on a red rule, and paints its own blue occupied end.
+   Measurements across all four tiers establish control, compact/nestable row,
+   text-run, dense-action, and comfortable-action families. Table and
+   breadcrumb rhythm remain explicit independent contracts; multiline and
+   content-driven surfaces are excluded because their height does not answer
+   the child-padding question.
 
 ## Three-guide conformance ledger
 
@@ -172,10 +174,12 @@ shared family fixture only after its source owner is named here.
 
 ## Consumer audit fixture
 
-`/demo/spec/spacing.html` is a short overview only. The full-width
+`/demo/spec/spacing.html` uses two shipped basic-section rows for concise
+heading-left/content-right guidance, then loads the horizontal and vertical
+audits into keyboard-operable in-page tabs. The full-width
 `/demo/spec/spacing-horizontal.html` and `/demo/spec/spacing-vertical.html`
-routes separately group raw shipped components by exactly one axis and named
-variable family. They deliberately do not use hero/basic-section 50/50 rails.
+routes remain the readable source and direct-QA fixtures, so the chapter does
+not duplicate the component markup.
 The horizontal fixture keeps number, select, and table-cell content together,
 and presents accordion, list tree, switch, side navigation, table of contents,
 and notification as one icon-led/navigation review bucket. That presentation

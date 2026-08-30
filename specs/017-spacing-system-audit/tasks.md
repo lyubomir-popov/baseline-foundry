@@ -55,3 +55,7 @@
 - [x] T016 Perform adversarial API, accessibility, responsive, and spacing-ownership review; resolve high/medium findings and record `review.md`.
 - [x] T028 Re-run light/dark browser review, four-tier geometry checks, full
   release gates, and upstream merge after the owner follow-up.
+- [x] T029 Recompose the spacing chapter with basic-section guidance and
+  in-page horizontal/vertical tabs; reduce the vertical audit to 5rem raw
+  specimens grouped by measured cross-tier occupied height, without per-item
+  H6 labels or multiline/content-driven fixtures.

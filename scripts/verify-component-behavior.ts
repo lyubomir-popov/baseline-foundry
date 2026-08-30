@@ -241,39 +241,17 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     for (const tier of ["editorial", "documentation", "app", "os"] as const) {
       await verticalTierSelect.selectOption(tier);
       await page.waitForSelector(`body.bf-tier-${tier}`);
-      const inlineTagGeometry = await page.evaluate(() => {
-        const row = document.querySelector<HTMLElement>('section[aria-labelledby="vertical-tags"] p.bf-body');
-        const bodyText = Array.from(row?.childNodes ?? []).find(node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
-        const chipValues = Array.from(row?.querySelectorAll<HTMLElement>(".bf-chip-value") ?? []);
-        if (!row || !bodyText || chipValues.length !== 2) throw new Error("Missing true-inline chip comparison.");
-        const bodyRange = document.createRange();
-        bodyRange.selectNodeContents(bodyText);
-        const bodyBottom = bodyRange.getBoundingClientRect().bottom;
-        return {
-          chipBottomDeltas: chipValues.map(value => {
-            const valueRange = document.createRange();
-            valueRange.selectNodeContents(value);
-            return valueRange.getBoundingClientRect().bottom - bodyBottom;
-          }),
-          isFlexMask: row.classList.contains("bf-cluster"),
-          verticalAlignments: Array.from(row.querySelectorAll<HTMLElement>(".bf-chip")).map(chip => getComputedStyle(chip).verticalAlign)
-        };
-      });
-      assert(!inlineTagGeometry.isFlexMask, `Expected ${tier} compact tags to share a true inline formatting context rather than a flex alignment mask.`);
-      assert(inlineTagGeometry.chipBottomDeltas.every(delta => Math.abs(delta) < 0.1), `Expected ${tier} regular and borderless chip text to share the adjacent body baseline; deltas=${inlineTagGeometry.chipBottomDeltas.join(", ")}.`);
-      assert(inlineTagGeometry.verticalAlignments.every(value => value === "baseline"), `Expected ${tier} inline chips to use their first text baseline without another metric nudge.`);
       const occupiedBlockGeometry = await page.evaluate(() => {
-        const controlsSection = document.getElementById("vertical-controls")?.closest("section");
-        const navigationSection = document.getElementById("vertical-navigation")?.closest("section");
-        if (!controlsSection || !navigationSection) throw new Error("Missing vertical audit family section.");
-        const controls = Array.from(controlsSection.querySelectorAll<HTMLElement>(".spacing-block-sample")).map(sample => ({
-          label: sample.querySelector(":scope > .bf-h6")?.textContent?.trim() ?? "unlabelled",
-          height: sample.querySelector<HTMLElement>(".spacing-block-probe")?.getBoundingClientRect().height ?? 0
-        }));
-        const navigation = Array.from(navigationSection.querySelectorAll<HTMLElement>(".spacing-block-sample")).map(sample => ({
-          label: sample.querySelector(":scope > .bf-h6")?.textContent?.trim() ?? "unlabelled",
-          height: sample.querySelector<HTMLElement>(".spacing-block-probe")?.getBoundingClientRect().height ?? 0
-        }));
+        const families: Record<string, Array<{ label: string; height: number; width: number }>> = {};
+        for (const headingId of ["vertical-controls", "vertical-compact", "vertical-text-runs", "vertical-dense-actions", "vertical-comfortable-actions", "vertical-variants"]) {
+          const section = document.getElementById(headingId)?.closest("section");
+          if (!section) throw new Error(`Missing vertical audit family: ${headingId}.`);
+          families[headingId] = Array.from(section.querySelectorAll<HTMLElement>(".spacing-block-sample")).map(sample => ({
+            label: sample.getAttribute("aria-label") ?? "unlabelled",
+            height: sample.querySelector<HTMLElement>(".spacing-block-probe")?.getBoundingClientRect().height ?? 0,
+            width: sample.getBoundingClientRect().width
+          }));
+        }
         const scrollRows = Array.from(document.querySelectorAll<HTMLElement>(".spacing-block-scroll"));
         const firstProbe = document.querySelector<HTMLElement>(".spacing-block-probe");
         const before = firstProbe ? getComputedStyle(firstProbe, "::before") : null;
@@ -282,22 +260,34 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         return {
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * rootSize,
           borderWidth: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-border-width")) * rootSize,
-          controls,
-          navigation,
-          scrollRows: scrollRows.map(row => ({ clientWidth: row.clientWidth, scrollWidth: row.scrollWidth })),
+          rootSize,
+          controls: families["vertical-controls"],
+          compact: families["vertical-compact"],
+          textRuns: families["vertical-text-runs"],
+          denseActions: families["vertical-dense-actions"],
+          comfortableActions: families["vertical-comfortable-actions"],
+          independent: families["vertical-variants"],
+          scrollRows: scrollRows.map(row => ({ overflowX: getComputedStyle(row).overflowX })),
           startRule: before ? { blockSize: Number.parseFloat(before.blockSize), top: Number.parseFloat(before.top) } : null,
           endRule: after ? { blockSize: Number.parseFloat(after.blockSize), bottom: Number.parseFloat(after.bottom) } : null
         };
       });
-      const controlFamily = occupiedBlockGeometry.controls.slice(0, 8).map(sample => sample.height);
-      assert(Math.max(...controlFamily) - Math.min(...controlFamily) < 0.51, `Expected ${tier} single-line fields, buttons, segmented control, and pagination to share one occupied-block family; got ${JSON.stringify(occupiedBlockGeometry.controls)}.`);
-      const tableHeight = occupiedBlockGeometry.controls.find(sample => sample.label === "Table cell")?.height ?? 0;
-      const controlHeight = controlFamily[0];
+      const assertSharedHeight = (name: string, samples: Array<{ height: number }>) => {
+        const heights = samples.map(sample => sample.height);
+        assert(Math.max(...heights) - Math.min(...heights) < 0.51, `Expected ${tier} ${name} specimens to share one occupied-block family; got ${JSON.stringify(samples)}.`);
+      };
+      assert(occupiedBlockGeometry.controls.length === 9, `Expected ${tier} control-height bucket to contain all nine single-line control specimens.`);
+      assertSharedHeight("control-height", occupiedBlockGeometry.controls);
+      assertSharedHeight("compact-row", occupiedBlockGeometry.compact);
+      assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
+      assertSharedHeight("dense-action", occupiedBlockGeometry.denseActions);
+      assertSharedHeight("comfortable-action", occupiedBlockGeometry.comfortableActions);
+      const tableHeight = occupiedBlockGeometry.independent.find(sample => sample.label === "Table cell")?.height ?? 0;
+      const controlHeight = occupiedBlockGeometry.controls[0].height;
       assert(Math.abs(tableHeight - controlHeight) <= occupiedBlockGeometry.baseline + Math.max(occupiedBlockGeometry.borderWidth * 2, 0.51), `Expected ${tier} density-tuned repeated-data rows to remain within one baseline of the single-line control family; controls=${controlHeight}, table=${tableHeight}, baseline=${occupiedBlockGeometry.baseline}.`);
-      const compactNavigationLabels = ["Tree disclosure", "Tree child", "Side-navigation link", "Side-navigation disclosure"];
-      const compactNavigationHeights = occupiedBlockGeometry.navigation.filter(sample => compactNavigationLabels.includes(sample.label)).map(sample => sample.height);
-      assert(compactNavigationHeights.length === compactNavigationLabels.length && Math.max(...compactNavigationHeights) - Math.min(...compactNavigationHeights) < 0.51, `Expected ${tier} nestable tree and side-navigation rows to share one compact occupied-block family; got ${JSON.stringify(occupiedBlockGeometry.navigation)}.`);
-      assert(occupiedBlockGeometry.scrollRows.every(row => row.scrollWidth > row.clientWidth), `Expected every ${tier} vertical audit bucket to remain a genuinely horizontal, scrollable comparison row; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
+      const allSamples = [...occupiedBlockGeometry.controls, ...occupiedBlockGeometry.compact, ...occupiedBlockGeometry.textRuns, ...occupiedBlockGeometry.denseActions, ...occupiedBlockGeometry.comfortableActions, ...occupiedBlockGeometry.independent];
+      assert(allSamples.every(sample => Math.abs(sample.width - occupiedBlockGeometry.rootSize * 5) < 0.1), `Expected every ${tier} vertical specimen to retain the shared 5rem width; got ${JSON.stringify(allSamples)}.`);
+      assert(occupiedBlockGeometry.scrollRows.every(row => row.overflowX === "auto"), `Expected every ${tier} vertical audit bucket to retain horizontal overflow at narrow viewports; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
       assert(occupiedBlockGeometry.startRule && occupiedBlockGeometry.endRule && occupiedBlockGeometry.startRule.top === 0 && occupiedBlockGeometry.endRule.bottom === 0 && occupiedBlockGeometry.startRule.blockSize === occupiedBlockGeometry.borderWidth && occupiedBlockGeometry.endRule.blockSize === occupiedBlockGeometry.borderWidth, `Expected ${tier} red-start and blue-end rules to use the scalable border token at opposing block edges; got ${JSON.stringify(occupiedBlockGeometry)}.`);
     }
     assert(await page.locator("[data-spacing-keyline-debug]").count() === 0 && await page.locator("[data-spacing-keyline]").count() === 0, "Expected the vertical occupied-block audit to avoid the horizontal inset overlay.");
@@ -333,7 +323,18 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       assert(Math.max(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) - Math.min(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) < 0.51, `Expected ${theme} brand tag, plain row, and disclosure row to share the continuation rail; got ${JSON.stringify(primaryNavigationGeometry)}.`);
     }
     await page.goto(`${origin}/demo/spec/spacing.html`, { waitUntil: "networkidle" });
-    assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator("[data-spacing-keyline-debug]").count() === 0, "Expected the spacing overview to retain shared chrome without the audit-only keyline overlay.");
+    await page.waitForSelector("#spacing-horizontal-panel .spacing-audit-panel-content", { state: "attached" });
+    await page.waitForSelector("#spacing-vertical-panel .spacing-audit-panel-content", { state: "attached" });
+    const chapterOverlay = page.locator("[data-spacing-keyline-debug]");
+    assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await chapterOverlay.isVisible(), "Expected the spacing overview to retain shared chrome and show the horizontal keylines with the horizontal tab.");
+    const chapterPathname = new URL(page.url()).pathname;
+    await page.getByRole("tab", { name: "Vertical padding" }).click();
+    await page.waitForFunction(() => {
+      const panel = document.getElementById("spacing-vertical-panel");
+      const overlay = document.querySelector<HTMLElement>("[data-spacing-keyline-debug]");
+      return panel?.getAttribute("aria-hidden") === "false" && overlay?.hidden === true;
+    });
+    assert(await page.locator("#spacing-vertical-panel").getAttribute("aria-hidden") === "false" && !await chapterOverlay.isVisible() && new URL(page.url()).pathname === chapterPathname, "Expected the vertical audit tab to switch in place without navigation or horizontal keylines.");
     await page.close();
   } finally {
     await browser.close();

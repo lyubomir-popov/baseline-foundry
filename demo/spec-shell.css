@@ -51,26 +51,19 @@ body {
 .spacing-block-track {
   align-items: start;
   display: flex;
-  gap: var(--bf-grid-gap-inline);
+  gap: var(--bf-space-1);
   inline-size: max-content;
   min-inline-size: 100%;
   padding-block: var(--bf-space-half) var(--bf-space-1);
 }
 
 .spacing-block-sample {
-  display: grid;
-  flex: 0 0 var(--spacing-block-sample-inline-size, 14rem);
-  grid-template-rows: calc(var(--bf-baseline) * 4) auto;
+  flex: 0 0 5rem;
   min-inline-size: 0;
 }
 
-.spacing-block-sample.is-wide {
-  --spacing-block-sample-inline-size: 20rem;
-}
-
-.spacing-block-sample > :where(.bf-h6) {
-  margin: 0;
-  overflow-wrap: anywhere;
+.spacing-audit-panel-content {
+  padding-block-start: var(--bf-space-2);
 }
 
 .spacing-block-probe {
@@ -84,7 +77,7 @@ body {
 .spacing-block-probe::after {
   block-size: var(--bf-border-width);
   content: "";
-  inset-inline: calc(var(--bf-grid-gap-inline) / -2);
+  inset-inline: calc(var(--bf-space-1) / -2);
   opacity: 0.5;
   pointer-events: none;
   position: absolute;

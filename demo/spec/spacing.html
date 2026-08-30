@@ -1,34 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-spec-root="../..">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baseline Foundry Spacing</title>
-  <link id="spec-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
-  <link rel="stylesheet" href="../spec-shell.css">
-</head>
-<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">
-  <main class="bf-page is-fill" id="spec-grid-target">
-    <div class="bf-stack is-section">
-      <header class="bf-stack is-dense">
-        <h1>Spacing</h1>
-        <p>Containers own semantic relationships; text keeps only metric baseline compensation.</p>
-      </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baseline Foundry Spacing</title>
+    <link
+      id="spec-tier-stylesheet"
+      rel="stylesheet"
+      href="../../dist/tiers/editorial/styles.css"
+    />
+    <link rel="stylesheet" href="../spec-shell.css" />
+  </head>
+  <body
+    class="bf-theme bf-tier-editorial"
+    data-page-tier-options="editorial,documentation,app,os"
+  >
+    <main class="bf-page is-fill" id="spec-grid-target">
+      <div class="bf-stack is-section">
+        <section
+          class="bf-basic-section is-shallow"
+          aria-labelledby="spacing-title"
+        >
+          <div class="bf-basic-section-layout bf-stack">
+            <hr class="bf-basic-section-rule" />
+            <header class="bf-basic-section-header bf-stack is-dense">
+              <h1 id="spacing-title">Spacing</h1>
+            </header>
+            <div class="bf-basic-section-content bf-stack is-dense">
+              <p>
+                Containers own semantic relationships; text keeps only metric
+                baseline compensation.
+              </p>
+            </div>
+          </div>
+        </section>
 
-      <section class="bf-stack is-dense" aria-labelledby="spacing-inline-insets">
-        <h2 id="spacing-inline-insets">Three component insets</h2>
-        <p>Every component-owned inline start chooses field, action, or continuation. Borders and leading marks may compensate back from that named line; page margins, grid gutters, and navigation depth do not create another component inset. The wider switch track is the sole reviewed exception.</p>
-      </section>
+        <section
+          class="bf-basic-section is-shallow"
+          aria-labelledby="spacing-inline-insets"
+        >
+          <div class="bf-basic-section-layout bf-stack">
+            <hr class="bf-basic-section-rule" />
+            <header class="bf-basic-section-header bf-stack is-dense">
+              <h2 id="spacing-inline-insets">Three component insets</h2>
+            </header>
+            <div class="bf-basic-section-content bf-stack is-dense">
+              <p>
+                Every component-owned inline start chooses field, action, or
+                continuation. Borders and leading marks may compensate back
+                from that named line; page margins, grid gutters, and
+                navigation depth do not create another component inset. The
+                wider switch track is the sole reviewed exception.
+              </p>
+            </div>
+          </div>
+        </section>
 
-      <section class="bf-stack is-dense" aria-labelledby="spacing-audits">
-        <h2 id="spacing-audits">Padding audits</h2>
-        <nav class="bf-cluster" aria-label="Spacing audit routes">
-          <a class="bf-text-link" href="./spacing-horizontal.html">Horizontal padding</a>
-          <a class="bf-text-link" href="./spacing-vertical.html">Vertical padding</a>
-        </nav>
-      </section>
-    </div>
-  </main>
-  <script type="module" src="../spec-shell.js"></script>
-</body>
+        <section aria-label="Padding audits">
+          <div class="bf-tabs" data-spacing-audit-tabs>
+            <ul
+              class="bf-tabs-list"
+              role="tablist"
+              aria-label="Spacing axis"
+            >
+              <li class="bf-tabs-item">
+                <button
+                  class="bf-tabs-link"
+                  id="spacing-horizontal-tab"
+                  type="button"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="spacing-horizontal-panel"
+                  tabindex="0"
+                >
+                  Horizontal padding
+                </button>
+              </li>
+              <li class="bf-tabs-item">
+                <button
+                  class="bf-tabs-link"
+                  id="spacing-vertical-tab"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="spacing-vertical-panel"
+                  tabindex="-1"
+                >
+                  Vertical padding
+                </button>
+              </li>
+            </ul>
+            <div
+              class="bf-tabs-panel"
+              id="spacing-horizontal-panel"
+              role="tabpanel"
+              aria-labelledby="spacing-horizontal-tab"
+              aria-hidden="false"
+              data-spacing-audit-panel="horizontal"
+              data-spacing-audit-source="./spacing-horizontal.html"
+            >
+              <p>Loading horizontal padding audit…</p>
+            </div>
+            <div
+              class="bf-tabs-panel"
+              id="spacing-vertical-panel"
+              role="tabpanel"
+              aria-labelledby="spacing-vertical-tab"
+              aria-hidden="true"
+              data-spacing-audit-panel="vertical"
+              data-spacing-audit-source="./spacing-vertical.html"
+            >
+              <p>Loading vertical padding audit…</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="../spec-shell.js"></script>
+    <script type="module" src="../spacing-audits.js"></script>
+  </body>
 </html>
