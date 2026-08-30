@@ -1,23 +1,17 @@
 # Agent inbox
 
-## Active package — Spec 017 spacing-system audit
+## Accepted package — Spec 017 spacing-system audit
 
 Remove developer-only spacing and horizontal-keyline pages from the public demo
 catalog. Audit which remaining examples teach a consumer-facing contract and
 retire specimens that only expose implementation diagnostics.
 
-Spec 017 is active on `feat/017-spacing-system-audit` and inventories horizontal and
-vertical adjacency across components and patterns. Its fixtures must place all
-relevant elements tightly enough to expose accidental gaps, missing gaps,
-keyline departures, and tier drift. Use the current ownership model: text keeps
-only metric compensation, while stacks and pattern containers own semantic
-spacing. Do not preserve obsolete wording that presents element-owned and
-container-owned semantic spacing as competing modes.
-
-The public demo cleanup and initial 22-class adjacency inventory are complete.
-Continue with the exhaustive source audit in `tasks.md`; do not recreate the
-removed diagnostic spacing pages. The responsive branded application
-navigation producer defect is fixed in `1a48707` and published to `origin/main`.
+Spec 017 is accepted on `feat/017-spacing-system-audit` at implementation commit
+`9406ea5`. The public demo cleanup, exhaustive adjacency audit, three-keyline
+component inset consolidation, shared page-rail repair, and final adversarial
+review are complete. Do not recreate the removed diagnostic spacing pages or
+introduce an unclassified component inset. Text keeps only metric compensation;
+stacks and pattern containers own semantic spacing.
 
 ## Deferred candidates
 
@@ -36,11 +30,16 @@ navigation producer defect is fixed in `1a48707` and published to `origin/main`.
 
 ## Last-known-green state
 
-The spacing foundation and responsive navigation fix are merged and published
-to `origin/main`. Both slices pass `npm test`,
-`npm run qa:components`, and browser review; the combined merged tree also
-passes `npm test`. npm remains at 0.1.4 and the `v0.1.5` tag is intentionally
-unused until the npm-owned publication workflow runs.
+The accepted Spec 017 implementation passes `npm test` (including 6,439 build
+contracts and component behavior), `npm run qa:components`, and live browser
+review in light and dark across the horizontal and vertical audit routes. The
+demo server at `http://127.0.0.1:4173` uses polling so edits in the shared
+Windows/WSL workspace remain visible without repeated restarts. The earlier
+feature tip `f9731a2` remains tagged as downstream release candidate
+`v0.1.5-rc.0`, and Diagram Registry currently consumes that older exact build;
+it must be advanced after the accepted Spec 017 commits reach `origin/main`.
+npm remains at 0.1.4 and the final `v0.1.5` tag remains reserved for the
+npm-owned publication workflow.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, and
 `tmp/vanilla-main/`. The sibling Vanilla checkout contains user changes in

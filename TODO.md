@@ -5,10 +5,9 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-Spec 017 spacing system audit is active on
-`feat/017-spacing-system-audit`. Remove obsolete diagnostic spacing routes,
-establish an exhaustive adjacency inventory, then audit horizontal and vertical
-spacing against the current container-owned semantic model.
+Spec 017 spacing system audit is accepted at implementation commit `9406ea5`.
+No implementation package is active. Merge and downstream release evidence may
+be recorded before promoting another candidate.
 
 ## Candidate order after Spec 001
 

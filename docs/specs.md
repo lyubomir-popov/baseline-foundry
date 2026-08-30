@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 017 Spacing system audit | [`017-spacing-system-audit/`](../specs/017-spacing-system-audit/) | Active on `feat/017-spacing-system-audit`; removing historical diagnostic pages, specifying the exhaustive horizontal/vertical adjacency audit, auditing primitive-versus-pattern-slot naming, and standardising readable 50/50 split thresholds. |
+| 017 Spacing system audit | [`017-spacing-system-audit/`](../specs/017-spacing-system-audit/) | Accepted on `feat/017-spacing-system-audit` at implementation commit `9406ea5`; the exhaustive three-keyline audit, component inset consolidation, shared-rail repair, long-running demo watcher hardening, and final browser/release gates are complete. |
 
 ## Archive
 

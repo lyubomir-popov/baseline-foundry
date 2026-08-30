@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-29
 
-**Status**: Active
+**Status**: Accepted
 
 **Input**: Owner direction to remove historical spacing/keyline debug pages,
 replace obsolete ownership language, and begin an exhaustive horizontal and
