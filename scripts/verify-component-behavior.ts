@@ -118,6 +118,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         commandTextStarts: [".bf-button", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
         accordionStart: iconLabelStart(".bf-accordion-tab"),
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
+        sideNavigationStart: textStart(".bf-side-navigation-accordion-button"),
         notificationStart: box(".bf-notification-title").left,
         panelStart: box(".bf-panel-content p").left,
         redStart: red.getBoundingClientRect().left,
@@ -133,7 +134,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), "Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline.");
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell, chip, and status-label text to share the green field-inset keyline.");
     assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, segmented-control, tab, and pagination text to share the red one-rem action keyline.");
-    assert(Math.max(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) - Math.min(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) < 0.51, "Expected accordion, list-tree, notification, and panel copy to share one icon-label continuation keyline.");
+    assert(Math.max(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.sideNavigationStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) - Math.min(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.sideNavigationStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) < 0.51, "Expected accordion, list-tree, side-navigation disclosure, notification, and panel copy to share one continuation keyline.");
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent a literal one-rem page inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
     const initialTier = await tierSelect.inputValue();
@@ -356,7 +357,12 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         const breadcrumb = document.querySelector<HTMLElement>(".pc-breadcrumbs");
         const fixed = Array.from(document.querySelectorAll<HTMLElement>("main .bf-fixed-width"));
         const host = document.querySelector<HTMLElement>("main section");
-        if (!breadcrumb || fixed.length === 0 || !host) return null;
+        const navigation = document.querySelector<HTMLElement>(".pc-nav .bf-side-navigation");
+        const navigationGroups = Array.from(document.querySelectorAll<HTMLElement>(".pc-nav .bf-side-navigation-group"));
+        const firstHeading = navigationGroups[0]?.querySelector<HTMLElement>(".bf-side-navigation-heading");
+        const firstLink = navigationGroups[0]?.querySelector<HTMLElement>(".bf-side-navigation-link");
+        const secondRule = navigationGroups[1]?.querySelector<HTMLElement>(":scope > hr");
+        if (!breadcrumb || fixed.length === 0 || !host || !navigation || !firstHeading || !firstLink || !secondRule) return null;
 
         const plain = document.createElement("hr");
         host.append(plain);
@@ -371,13 +377,27 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         };
         plain.remove();
 
+        const navigationRect = navigation.getBoundingClientRect();
+        const headingRect = firstHeading.getBoundingClientRect();
+        const firstGroupRect = navigationGroups[0].getBoundingClientRect();
+        const linkRange = document.createRange();
+        linkRange.selectNodeContents(firstLink);
+
         return {
           breadcrumbX: breadcrumb.getBoundingClientRect().left,
           fixed: fixed.map(region => ({
             paddingInlineStart: Number.parseFloat(getComputedStyle(region).paddingInlineStart),
             x: region.getBoundingClientRect().left
           })),
-          rules
+          rules,
+          navigation: {
+            actionInset: Number.parseFloat(getComputedStyle(navigation).getPropertyValue("--bf-component-inline-inset-action")) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+            groupGap: secondRule.getBoundingClientRect().top - firstGroupRect.bottom,
+            groupGapTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 1.5,
+            headingTextInset: headingRect.left + Number.parseFloat(getComputedStyle(firstHeading).paddingInlineStart) - navigationRect.left,
+            linkTextInset: linkRange.getBoundingClientRect().left - navigationRect.left,
+            rulesPerGroup: navigationGroups.map((group, index) => ({ index, count: group.querySelectorAll(":scope > hr").length }))
+          }
         };
       });
       assert(geometry && geometry.fixed.every(region => region.paddingInlineStart === 0), `Expected ${tier} specimen fixed-width regions to avoid a second gutter: ${JSON.stringify(geometry)}.`);
@@ -385,6 +405,9 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         assert(geometry.fixed.every(region => Math.abs(region.x - geometry.breadcrumbX) <= 1), `Expected uncapped ${tier} specimen regions to share the page keyline: ${JSON.stringify(geometry)}.`);
       }
       assert(geometry.rules.plain.blockSize === "1px" && geometry.rules.plain.marginBlockEnd !== "0px", `Expected ${tier} bare semantic hr to carry the generic rule geometry and trailing compensation: ${JSON.stringify(geometry.rules)}.`);
+      assert(Math.abs(geometry.navigation.headingTextInset - geometry.navigation.actionInset) <= 0.1 && Math.abs(geometry.navigation.linkTextInset - geometry.navigation.actionInset) <= 0.1, `Expected ${tier} page-navigation headings and plain commands to land on the action inset: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.groupGap - geometry.navigation.groupGapTarget) <= 0.1, `Expected ${tier} page-navigation heading/list groups to be separated by 1.5rem: ${JSON.stringify(geometry.navigation)}.`);
+      assert(geometry.navigation.rulesPerGroup.every(group => group.count === (group.index === 0 ? 0 : 1)), `Expected ${tier} page-navigation groups after the first to begin with exactly one real rule: ${JSON.stringify(geometry.navigation.rulesPerGroup)}.`);
     }
 
     await page.close();

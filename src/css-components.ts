@@ -132,6 +132,13 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-disclosure-icon-inline-size: 1rem;
   --bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));
   --bf-disclosure-label-inline-offset: var(--bf-icon-label-inline-offset);
+  /* Every component-owned inline start resolves to one of these three rails.
+     Field and action values remain tier inputs; continuation is the shared
+     icon/mark-to-copy line. Structural page, grid and navigation-depth offsets
+     are deliberately outside this component inset contract. */
+  --bf-component-inline-inset-field: var(--bf-control-inline-padding-field);
+  --bf-component-inline-inset-action: var(--bf-control-inline-padding-action);
+  --bf-component-inline-inset-continuation: var(--bf-disclosure-label-inline-offset);
   --bf-input-block-padding: ${bodySelectedStartNudge};
   --bf-button-block-padding: ${bodySelectedStartNudge};
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
@@ -147,9 +154,9 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-tick-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-tick-box-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-leading-mark-size: var(--bf-control-visual-size);
-  --bf-leading-mark-gap: var(--bf-control-inline-padding-field);
+  --bf-leading-mark-gap: var(--bf-component-inline-inset-field);
   --bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));
-  --bf-leading-mark-group-inset: calc(var(--bf-disclosure-label-inline-offset) - var(--bf-leading-mark-offset));
+  --bf-leading-mark-group-inset: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-offset));
   --bf-tick-label-offset: var(--bf-leading-mark-offset);
   --bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));
   --bf-list-marker-dot-size: calc(var(--bf-border-width) * 4);
@@ -179,10 +186,10 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-authoring-accent-focus-ring: rgba(246, 183, 60, 0.55);
   --bf-application-resize-handle-active: var(--bf-authoring-accent-strong);
   --bf-application-resize-handle-focus-ring: var(--bf-authoring-accent-focus-ring);
-  --bf-control-inline-padding-action-bordered: max(0rem, calc(var(--bf-control-inline-padding-action) - var(--bf-border-width)));
-  --bf-top-navigation-link-padding-inline: var(--bf-control-inline-padding-action);
-  --bf-top-navigation-end-slot-inline-size: calc(1rem + var(--bf-control-inline-padding-field));
-  --bf-top-navigation-search-toggle-inline-size: calc(1rem + (var(--bf-control-inline-padding-field) * 2));
+  --bf-control-inline-padding-action-bordered: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
+  --bf-top-navigation-link-padding-inline: var(--bf-component-inline-inset-action);
+  --bf-top-navigation-end-slot-inline-size: calc(1rem + var(--bf-component-inline-inset-field));
+  --bf-top-navigation-search-toggle-inline-size: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
   --bf-top-navigation-link-padding-block: max(var(--bf-body-nudge-start), calc(var(--bf-baseline) * 1.5));
   --bf-top-navigation-search-max-inline-size: 20rem;
   --bf-top-navigation-logo-tag-inline-size: 1.375rem;
@@ -200,8 +207,8 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-leading-icon-size: var(--bf-leading-mark-size);
   --bf-leading-icon-gap: var(--bf-leading-mark-gap);
   --bf-leading-icon-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-leading-icon-size)", bodySelectedStartNudge)};
-  --bf-ui-chip-padding-inline: var(--bf-control-inline-padding-field);
-  --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-control-inline-padding-action) * 0.25) - var(--bf-border-width)));
+  --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-field);
+  --bf-ui-chip-padding-block: max(0rem, calc((var(--bf-component-inline-inset-action) * 0.25) - var(--bf-border-width)));
   --bf-ui-chip-block-size: calc(${bodyLineHeight} + (var(--bf-ui-chip-padding-block) * 2) + (var(--bf-border-width) * 2));
   --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
@@ -390,7 +397,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   max-inline-size: 100%;
   min-inline-size: 0;
   margin-bottom: ${inputMarginBottom};
-${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-field);
+${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(input[type='color'].bf-color-input) {
@@ -460,10 +467,10 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
 
 :where(.bf-theme) :where(select) {
   background-image: var(--bf-ui-icon-chevron-down);
-  background-position: right var(--bf-control-inline-padding-field) center;
+  background-position: right var(--bf-component-inline-inset-field) center;
   background-repeat: no-repeat;
   background-size: 1rem 1rem;
-  padding-inline-end: calc(var(--bf-control-inline-padding-field) * 2.5);
+  padding-inline-end: calc(var(--bf-component-inline-inset-field) * 2.5);
 }
 
 :where(.bf-theme) :where(input[type='number'], .bf-slider-input) {
@@ -476,10 +483,10 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
 :where(.bf-theme) :where(input[type='number']) {
   appearance: textfield;
   background-image: var(--bf-ui-icon-number-stepper);
-  background-position: right var(--bf-control-inline-padding-field) center;
+  background-position: right var(--bf-component-inline-inset-field) center;
   background-repeat: no-repeat;
   background-size: 1rem 1rem;
-  padding-inline-end: calc(var(--bf-control-inline-padding-field) * 2.5);
+  padding-inline-end: calc(var(--bf-component-inline-inset-field) * 2.5);
 }
 
 :where(.bf-theme) :where(.bf-slider-input) {
@@ -1384,7 +1391,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   margin: 0;
   overflow: hidden;
   padding-block-start: var(--bf-baseline);
-  padding-inline-start: var(--bf-disclosure-label-inline-offset);
+  padding-inline-start: var(--bf-component-inline-inset-continuation);
 }
 
 :where(.bf-theme) :where(.bf-accordion-panel[aria-hidden='true']) {

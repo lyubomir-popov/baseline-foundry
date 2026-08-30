@@ -8,22 +8,33 @@ chip may align to an inline text baseline without being a control row. Treating
 both questions as one “indent bucket” is what creates near-matches and one-off
 compensations.
 
-The smallest defensible public vocabulary is therefore a short list of
-**axis-specific variable families**, not semantic categories and not a request
-for new utility classes. Existing public variables should be consolidated only
-where a measurement confirms that the same padding relationship is shared.
+The smallest defensible public vocabulary is three component-owned inline
+insets, not semantic categories and not a request for new utility classes:
+
+- `--bf-component-inline-inset-field` — compact field/data content (green).
+- `--bf-component-inline-inset-action` — commands and plain navigation rows
+  (red, one rem).
+- `--bf-component-inline-inset-continuation` — copy after a leading mark or
+  disclosure icon (blue, two rem).
+
+Every new component with an author-visible inline start must choose one of
+these three variables. It may compensate its own border or move a known mark
+canvas backward from the chosen copy line, but it must not introduce an
+unaccounted inset. The switch is the only reviewed exception because its track
+is intentionally wider than the common mark canvas. Page/grid placement and
+navigation depth remain structural offsets, not component insets.
 
 ## Inline tracks
 
 | Track | Relationship | Current/shared owner | Members to compare | Decision |
 |---|---|---|---|---|
 | Outer frame | Viewport or shell edge to first content | `--bf-page-margin`; grid gap is between columns | `bf-page`, `bf-fixed-width`, app shell and site footer | Keep distinct. Grid gap is not a page inset. |
-| Grid side inset | Edge of a grid-aligned shell/panel to its first rail | `--bf-panel-content-padding-inline`, falling back to `--bf-grid-gap-inline` | root side navigation, navigation brand, panel-aligned site rails | Keep distinct from the page frame. Root side navigation now uses this resolved grid inset. |
+| Grid side inset | Edge of a grid-aligned shell/panel to its first rail | grid placement and `--bf-grid-gap-inline` | navigation brand, panel-aligned site rails | Keep distinct from the page frame and the three component insets. |
 | Reading content | Text edge after the page frame | page/grid placement; prose list variable for marker offset | paragraph, headings, prose body, text links, field labels/help, accordion panel copy, notification copy | Keep as the reference track. |
 | Leading mark | Mark box before a label, then label start | `--bf-leading-mark-size`, `--bf-leading-mark-gap`, `--bf-leading-mark-offset`, `--bf-leading-mark-group-inset`, `--bf-list-marker-dot-size` | prose UL/OL, ticked/crossed list, rich-list markers, checkbox, radio, validation message | The marks share one centre and the copy shares the blue continuation guide. The group inset is the calculated remainder to blue in each tier, not a fixed extra inset that would overshoot in dense tiers. |
-| Field content | Text inside a field-like compact surface | `--bf-control-inline-padding-field`, with border compensation where the surface has an inline border | input, number, select, textarea, search field, table cell, chip, status label | These members share the green guide. Number/select reserve their own trailing affordance slot. |
-| Command content | Text inside a command surface | `--bf-control-inline-padding-action` | button, icon button, segmented control, tabs, pagination, file selector button | Buttons belong here horizontally, never in the field bucket. |
-| Icon-label continuation | Icon canvas to label/panel continuation | `--bf-icon-label-inline-offset`, `--bf-disclosure-label-inline-offset`, `--bf-disclosure-icon-optical-offset-block` | accordion, list tree, notification copy, accordion panel continuation | Accordion, list tree, notification copy, and panel content resolve to the same measured 2rem audit line. Navigation depth remains layout-owned and is not forced onto it. |
+| Field content | Text inside a field-like compact surface | `--bf-component-inline-inset-field`, sourced from the tier field-control inset | input, number, select, textarea, search field, table cell, chip, status label | These members share the green guide. Number/select reserve their own trailing affordance slot. |
+| Command content | Text inside a command surface | `--bf-component-inline-inset-action`, sourced from the tier action-control inset | button, icon button, segmented control, tabs, pagination, file selector button, plain side-navigation rows | Buttons and plain navigation commands belong here horizontally, never in the field bucket. |
+| Icon-label continuation | Icon canvas to label/panel continuation | `--bf-component-inline-inset-continuation`, sourced from the shared disclosure label offset | accordion, list tree, notification copy, accordion panel continuation, side-navigation disclosure/icon labels | Mark starts are calculated backward so copy resolves to the same measured 2rem audit line. Navigation depth remains layout-owned and is added only after this base. |
 | Surface content | First content after a bounded surface edge | `--bf-panel-padding-inline` | panel/card/notice/notification/modal/drawer/search popup/footer, inline-options group | Keep distinct from the outer frame and compact controls. Surface padding is a region contract. |
 
 ## Occupied-block rhythm
@@ -54,11 +65,12 @@ where a measurement confirms that the same padding relationship is shared.
 
 ## Confirmed corrections
 
-1. Root side-navigation rows and headings now use
-   `--bf-side-navigation-content-inset`, resolved from
-   `--bf-panel-content-padding-inline` or the grid-gutter fallback. Their peer
-   navigation brand uses the same resolved grid rail; depth adds only the
-   existing baseline steps.
+1. Plain side-navigation rows and headings use the action inset. Disclosure
+   and icon rows calculate their mark start from the continuation inset, so
+   their labels land on blue without inheriting a panel or grid gutter. Depth
+   adds only its named structural step. Documentation drawers group each H3
+   with its UL, space those groups by 1.5rem, and place a real rule before every
+   group except the first; list pseudo-elements do not paint separators.
 2. Numeric fields retain native input semantics and keyboard increment /
    decrement behaviour. One field-owned background paints the compact pair in
    the same 1rem canvas and trailing position as select; Chromium's duplicate
@@ -95,7 +107,7 @@ not component padding and must not be moved onto a component guide.
 | `css.ts`, `list.ts`, `sites-rich-lists.ts`, selection and validation rules in `css-components.ts` | prose UL/OL, divided/ordered/ticked/crossed lists, rich-list markers, checkbox, radio, validation message | Blue copy continuation; common mark centre between red and blue |
 | accordion rules, `list-tree.ts`, `interactive-feedback.ts`, panel continuation | accordion tab/panel, list-tree toggle, notification title/message, panel content | Blue — disclosure/copy continuation |
 | switch rules | switch label | Blue in the shared icon-led comparison; the wider switch track remains component-owned |
-| `legacy-navigation.ts`, `document-navigation.ts`, `navigation-layout.ts` | root/child side navigation, top navigation, reduced navigation, TOC, in-page navigation, article pagination | Layout-owned rail/depth or asymmetric destination slot; no new component guide |
+| `legacy-navigation.ts`, `document-navigation.ts`, `navigation-layout.ts` | root/child side navigation, top navigation, reduced navigation, TOC, in-page navigation, article pagination | Plain side-navigation commands use red; disclosure/icon labels use blue; structural depth and asymmetric destination slots remain layout-owned. |
 | `panel.ts`, `cards-options.ts`, content/surface modules | panel/card/notice/modal/drawer/popup/footer and inline-options regions | Panel content uses blue in every tier; other bounded regions keep their named region inset unless measurement proves the same continuation |
 | grid/site/pattern modules | page, fixed width, grids, docs/app shells, hero, section, tiered list, content card, media object, rich layouts | Layout-owned grid placement, span, gutter, or region boundary; never a component-padding guide |
 | zero/symmetric primitives | plain text, headings, labels/help, inline list, badge, icon, rule, centred icon-only control | Zero inset or symmetric geometry; no first-glyph guide is required |
@@ -111,9 +123,10 @@ Audit the following as a reduction target, not a forced equivalence:
 | Generous | Notifications, panels/cards and surface regions | notification shell, panel inset | Preserve page/grid frame and navigation depth as separate layout relationships. |
 
 Page margins, grid gutters, side-navigation depth and TOC nesting are not
-component padding levels; they must remain grid/layout contracts. The next
-correction pass measures whether the standard candidates can use one shared
-token family with border compensation rather than per-component offsets.
+component padding levels; they remain grid/layout contracts. New components
+must select field, action, or continuation before adding any border or mark
+compensation. No fourth component rail may be introduced without updating this
+exhaustive ledger from measured cross-tier evidence.
 
 | Finding | Source owner | Needed comparison | Candidate action |
 |---|---|---|---|

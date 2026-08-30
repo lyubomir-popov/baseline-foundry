@@ -196,11 +196,14 @@ indents or occupied heights.
   evidence-led family map. It must distinguish inline-start tracks from
   occupied-block rhythm, state the smallest defensible family set, and list
   every component/pattern that creates an author-visible indent.
-- **FR-017**: Use the resolved grid side inset for the root side-navigation
-  inset: `--bf-panel-content-padding-inline` where a panel establishes it,
-  otherwise `--bf-grid-gap-inline`. Nested navigation may add only its
-  documented depth step; generic panel padding must not independently tune the
-  root navigation keyline.
+- **FR-017**: Every component-owned inline start MUST resolve through
+  `--bf-component-inline-inset-field`,
+  `--bf-component-inline-inset-action`, or
+  `--bf-component-inline-inset-continuation`. Root side-navigation commands use
+  action; disclosure and icon labels calculate their mark start so their copy
+  reaches continuation. Nested navigation may add only its documented depth
+  step. Page margins and grid gutters are layout placement, not a fourth
+  component inset.
 - **FR-018**: Preserve native number-input semantics and keyboard increment /
   decrement behaviour. The visible paired-chevron affordance must occupy one
   measured 1rem canvas at the same trailing position as select, without a
@@ -234,9 +237,11 @@ indents or occupied heights.
   pattern that creates a visible author-controlled inline offset, including
   navigation depth, list markers, fields, table cells, surface insets, and
   page/grid gutters.
-- **SC-011**: Root side-navigation labels and their navigation-brand peer use
-  the same resolved grid side inset in every built-in tier; nested labels add
-  only the documented depth increment.
+- **SC-011**: Root side-navigation commands land on the action inset and
+  disclosure/icon labels land on continuation in every built-in tier. The
+  switch is the sole reviewed component whose wider track prevents its label
+  from sharing those three starts; nested navigation adds only the documented
+  depth increment.
 
 ## Boundaries
 

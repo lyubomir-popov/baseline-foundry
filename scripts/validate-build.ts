@@ -656,12 +656,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0 0 var(--bf-body-margin-bottom"), "Expected list items to carry body baseline compensation in margin-bottom.");
   assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom: 0;\n  padding-block-end: 0;"), "Expected semantic list containers not to add block-end margin or padding around item compensation.");
-  assert(css.includes("--bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));") && css.includes("--bf-leading-mark-group-inset: calc(var(--bf-disclosure-label-inline-offset) - var(--bf-leading-mark-offset));"), "Expected controls and marker-bearing lists to share an explicit leading-mark family that reaches the disclosure continuation keyline.");
+  assert(css.includes("--bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));") && css.includes("--bf-leading-mark-group-inset: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-offset));"), "Expected controls and marker-bearing lists to share an explicit leading-mark family that reaches the continuation inset.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ol) {\n  padding-inline-start: calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));") && css.includes(":where(.bf-theme) :where(.bf-prose ol > li) {\n  padding-inline-start: calc(var(--bf-leading-mark-size) * 0.5);"), "Expected ordered prose lists to retain complementary shared-leading-mark compensation after the group inset.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul) {\n  list-style: none;\n  padding-inline-start: var(--bf-leading-mark-group-inset);") && css.includes(":where(.bf-theme) :where(.bf-prose ul > li) {\n  padding-inline-start: var(--bf-leading-mark-offset);") && css.includes("inline-size: var(--bf-list-marker-dot-size);\n  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));"), "Expected unordered prose-list dots to occupy the shared leading-mark canvas and their text to reach the disclosure continuation keyline.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  position: relative;"), "Expected side-navigation list groups not to add container-owned block-end spacing.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after {\n  background: var(--bf-color-border-low-contrast);\n  block-size: var(--bf-border-width);"), "Expected side-navigation dividers to stay out of list layout.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-groups) {\n  align-content: start;\n  display: grid;\n  gap: var(--bf-side-navigation-group-gap);") && css.includes("--bf-side-navigation-group-gap: 1.5rem;"), "Expected side-navigation heading/list groups to own the fixed 1.5rem separation.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group) {\n  display: grid;\n  gap: 0rem;") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected real rules inside tight side-navigation groups instead of list divider pseudo-elements.");
   assert(css.includes("min-block-size: calc(var(--bf-control-box-size-compact) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to rely on their controls' start nudge instead of adding container start padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0rem;"), "Expected flush stacks to remove only their container gap.");
@@ -672,8 +672,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected explicitly shallow section stacks to use the shallow section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected section stacks to own the tier's regular section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
-  assert(css.includes("--bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));") && css.includes("--bf-disclosure-label-inline-offset: var(--bf-icon-label-inline-offset);"), "Expected icon-led components to expose one shared label continuation offset.");
-  assert(css.includes("padding-inline-start: var(--bf-disclosure-label-inline-offset);"), "Expected accordion panels to share the tab label keyline through the shared icon-label offset.");
+  assert(css.includes("--bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));") && css.includes("--bf-component-inline-inset-field: var(--bf-control-inline-padding-field);") && css.includes("--bf-component-inline-inset-action: var(--bf-control-inline-padding-action);") && css.includes("--bf-component-inline-inset-continuation: var(--bf-disclosure-label-inline-offset);"), "Expected components to expose exactly the field, action, and continuation inline inset families.");
+  assert(css.includes("padding-inline-start: var(--bf-component-inline-inset-continuation);"), "Expected accordion panels to share the continuation inset.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 0.0625rem);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 0.0625rem thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
@@ -691,7 +691,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to derive slider rail placement from the active body line geometry.");
   assert(css.includes("--bf-switch-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place switch geometry from the active body line geometry.");
   assert(css.includes("--bf-tick-box-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place tick geometry from the active body line geometry.");
-  assert(css.includes("--bf-leading-mark-gap: var(--bf-control-inline-padding-field);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the shared leading-mark family and field inline padding token.");
+  assert(css.includes("--bf-leading-mark-gap: var(--bf-component-inline-inset-field);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the shared leading-mark family and field inset.");
   assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);") && css.includes("inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));"), "Expected the enlarged radio dot to remain concentric with its outer circle.");
   assert(css.includes("min-block-size: var(--bf-tick-row-block-size);"), "Expected checkbox and radio rows to use the shared tick-row block-size variable.");
   assert(css.includes("--bf-control-block-padding:"), "Expected generated CSS to define the regular control block padding token.");
@@ -790,7 +790,7 @@ function validateCommonCss(css: string): void {
     "width": "100%"
   }, "tables keep the canonical BF table layout contract");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
-    "padding-inline-start": "calc(var(--bf-control-inline-padding-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
+    "padding-inline-start": "calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
   }, "table icon-placeholder cells keep the leading-icon gutter");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
     "--bf-ui-chip-border": "var(--bf-color-border-neutral)",
@@ -820,9 +820,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-ui-icon-number-stepper: url(\"data:image/svg+xml,"), "Expected number inputs to reuse the compact paired-chevron asset.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(input[type='number'])", {
     "appearance": "textfield",
-    "background-position": "right var(--bf-control-inline-padding-field) center",
+    "background-position": "right var(--bf-component-inline-inset-field) center",
     "background-size": "1rem 1rem",
-    "padding-inline-end": "calc(var(--bf-control-inline-padding-field) * 2.5)"
+    "padding-inline-end": "calc(var(--bf-component-inline-inset-field) * 2.5)"
   }, "number inputs use one field-owned paired-chevron canvas aligned with select");
   assert(css.includes("input[type='number'])::-webkit-inner-spin-button,\n:where(.bf-theme) :where(input[type='number'])::-webkit-outer-spin-button {\n  appearance: none;\n  margin: 0;"), "Expected Chromium number inputs to remove the duplicate browser-reserved spin slot.");
   assert(css.includes("--bf-ui-badge-padding-inline: calc(var(--bf-body-line-height"), "Expected badge geometry to scale from the active body line-height rather than an h5 fallback.");
@@ -862,7 +862,7 @@ function validateCommonCss(css: string): void {
     "visibility": "hidden"
   }, "wide expanded navigation removes the compact brand row without deleting its responsive controls");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-box)", {
-    "--bf-search-box-action-inline-size": "calc(1rem + (var(--bf-control-inline-padding-field) * 2))",
+    "--bf-search-box-action-inline-size": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))",
     "--bf-search-box-trailing-inline-size": "calc((var(--bf-search-box-action-inline-size) * 2) + var(--bf-border-width))",
     "display": "flex",
     "position": "relative"
@@ -874,7 +874,7 @@ function validateCommonCss(css: string): void {
     "display": "grid"
   }, "search-and-filter keeps the canonical outer grid shell");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-box)", {
-    "--bf-search-and-filter-action-inline-size": "calc(1rem + (var(--bf-control-inline-padding-field) * 2))",
+    "--bf-search-and-filter-action-inline-size": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))",
     "--bf-search-and-filter-trailing-inline-size": "calc(var(--bf-search-and-filter-action-inline-size) * 2)",
     "display": "inline-flex",
     "flex": "1 1 12rem",
@@ -967,7 +967,7 @@ function validateCommonCss(css: string): void {
     "display": "grid",
     "grid-template-columns": "auto minmax(0, 1fr) auto",
     "gap": "calc(var(--bf-baseline) * 0.75)",
-    "padding-inline": "var(--bf-control-inline-padding-field)"
+    "padding-inline": "var(--bf-component-inline-inset-field)"
   }, "choice rows keep the canonical selection-row layout while tightening with the field padding token");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-options)", {
     "border-bottom": "var(--bf-border-width) solid var(--bf-color-border-default)",

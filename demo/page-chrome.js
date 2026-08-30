@@ -122,7 +122,7 @@ function renderBreadcrumbs(page) {
 
 function renderDrawerSections(currentPath) {
   return orderedCatalogSections()
-    .map(section => {
+    .map((section, index) => {
       const items = section.items
         .map(item => {
           const isCurrent = normalizePagePath(item.href) === currentPath;
@@ -137,10 +137,13 @@ function renderDrawerSections(currentPath) {
         .join("");
 
       return `
-        <h3 class="bf-side-navigation-heading">${escapeHtml(section.heading)}</h3>
-        <ul class="bf-side-navigation-list">
-          ${items}
-        </ul>`;
+        <section class="bf-side-navigation-group">
+          ${index > 0 ? "<hr>" : ""}
+          <h3 class="bf-side-navigation-heading">${escapeHtml(section.heading)}</h3>
+          <ul class="bf-side-navigation-list">
+            ${items}
+          </ul>
+        </section>`;
     })
     .join("");
 }
@@ -242,8 +245,10 @@ export function injectPageChrome(options = {}) {
   nav.dataset.captureIgnore = "true";
   nav.dataset.baselineIgnore = "true";
   nav.innerHTML = `
-    <nav class="bf-side-navigation-drawer" aria-label="Page list">
-      ${renderDrawerSections(currentPath)}
+    <nav class="bf-side-navigation bf-side-navigation-drawer" aria-label="Page list">
+      <div class="bf-side-navigation-groups">
+        ${renderDrawerSections(currentPath)}
+      </div>
     </nav>`;
 
   const header = document.createElement("header");

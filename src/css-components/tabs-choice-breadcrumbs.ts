@@ -54,7 +54,7 @@ ${bodyTypeStyles}  align-items: center;
   margin-bottom: 0;
   padding-block-end: calc(var(--bf-body-nudge-end) + var(--bf-baseline) - var(--bf-bar-thickness));
   padding-block-start: var(--bf-body-nudge-start);
-  padding-inline: var(--bf-control-inline-padding-action);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-decoration: none;
 }
 
@@ -130,7 +130,7 @@ ${bodyTypeStyles}  align-items: center;
   grid-template-columns: auto minmax(0, 1fr) auto;
   margin: 0 0 ${buttonMarginBottom};
   min-inline-size: 0;
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding-field);
+${buttonPadding}  padding-inline: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-choice-row:hover) {

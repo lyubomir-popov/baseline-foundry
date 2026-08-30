@@ -45,14 +45,14 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   margin: 0;
   overflow: hidden;
   padding-block: var(--bf-table-row-padding);
-  padding-inline: var(--bf-control-inline-padding-field);
+  padding-inline: var(--bf-component-inline-inset-field);
   text-align: left;
   text-overflow: ellipsis;
   vertical-align: top;
 }
 
 :where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder) {
-  padding-inline-start: calc(var(--bf-control-inline-padding-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap));
+  padding-inline-start: calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap));
 }
 
 :where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder) > :where(.bf-icon:first-child) {

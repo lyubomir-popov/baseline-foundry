@@ -1,11 +1,32 @@
 <!DOCTYPE html>
 <html lang="en" data-spec-root="../..">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Baseline Foundry Spacing</title><link id="spec-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css"><link rel="stylesheet" href="../spec-shell.css"></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baseline Foundry Spacing</title>
+  <link id="spec-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../spec-shell.css">
+</head>
 <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">
   <main class="bf-page is-fill" id="spec-grid-target">
     <div class="bf-stack is-section">
-      <header class="bf-stack is-dense"><h1>Spacing</h1><p>Containers own semantic relationships; text keeps only metric baseline compensation.</p></header>
-      <section class="bf-stack is-dense" aria-labelledby="spacing-audits"><h2 id="spacing-audits">Padding audits</h2><nav class="bf-cluster" aria-label="Spacing audit routes"><a class="bf-text-link" href="./spacing-horizontal.html">Horizontal padding</a><a class="bf-text-link" href="./spacing-vertical.html">Vertical padding</a></nav></section>
+      <header class="bf-stack is-dense">
+        <h1>Spacing</h1>
+        <p>Containers own semantic relationships; text keeps only metric baseline compensation.</p>
+      </header>
+
+      <section class="bf-stack is-dense" aria-labelledby="spacing-inline-insets">
+        <h2 id="spacing-inline-insets">Three component insets</h2>
+        <p>Every component-owned inline start chooses field, action, or continuation. Borders and leading marks may compensate back from that named line; page margins, grid gutters, and navigation depth do not create another component inset. The wider switch track is the sole reviewed exception.</p>
+      </section>
+
+      <section class="bf-stack is-dense" aria-labelledby="spacing-audits">
+        <h2 id="spacing-audits">Padding audits</h2>
+        <nav class="bf-cluster" aria-label="Spacing audit routes">
+          <a class="bf-text-link" href="./spacing-horizontal.html">Horizontal padding</a>
+          <a class="bf-text-link" href="./spacing-vertical.html">Vertical padding</a>
+        </nav>
+      </section>
     </div>
   </main>
   <script type="module" src="../spec-shell.js"></script>

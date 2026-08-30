@@ -14,7 +14,7 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   } = options;
 
   return `:where(.bf-theme) :where(.bf-search-box) {
-  --bf-search-box-action-inline-size: calc(1rem + (var(--bf-control-inline-padding-field) * 2));
+  --bf-search-box-action-inline-size: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
   --bf-search-box-trailing-inline-size: calc((var(--bf-search-box-action-inline-size) * 2) + var(--bf-border-width));
   display: flex;
   inline-size: 100%;
@@ -112,7 +112,7 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-box) {
-  --bf-search-and-filter-action-inline-size: calc(1rem + (var(--bf-control-inline-padding-field) * 2));
+  --bf-search-and-filter-action-inline-size: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
   --bf-search-and-filter-trailing-inline-size: calc(var(--bf-search-and-filter-action-inline-size) * 2);
   display: inline-flex;
   flex: 1 1 12rem;

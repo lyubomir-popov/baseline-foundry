@@ -18,12 +18,28 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   } = options;
 
   return `:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
-  /* Root navigation shares the grid-aligned panel rail with its brand. It
-     deliberately does not inherit the denser generic surface padding. */
-  --bf-side-navigation-content-inset: var(--bf-panel-content-padding-inline, var(--bf-grid-gap-inline));
+  /* Plain navigation commands use the action rail. Icon-led rows move only their mark canvas,
+     so their copy reaches the shared continuation rail without a fourth
+     component inset. Navigation depth is added separately below. */
+  --bf-side-navigation-content-inset: var(--bf-component-inline-inset-action);
+  --bf-side-navigation-disclosure-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));
+  --bf-side-navigation-depth-step: var(--bf-space-2);
+  --bf-side-navigation-group-gap: 1.5rem;
   color: var(--bf-color-text-inactive);
   display: block;
   inline-size: 100%;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-groups) {
+  align-content: start;
+  display: grid;
+  gap: var(--bf-side-navigation-group-gap);
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-group) {
+  display: grid;
+  gap: 0rem;
+  min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-drawer) {
@@ -134,27 +150,17 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action-bordere
 ${bodySemiboldTypeStyles}  display: block;
   margin: 0 0 var(--bf-body-margin-bottom);
   padding-block: var(--bf-body-nudge-start) 0;
+  padding-inline: var(--bf-side-navigation-content-inset);
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-heading.is-linked) {
+  padding-inline: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {
   list-style: none;
   margin: 0;
   padding: 0;
-  position: relative;
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-list)::after {
-  background: var(--bf-color-border-low-contrast);
-  block-size: var(--bf-border-width);
-  content: '';
-  inset-block-end: 0;
-  inset-inline: 0;
-  pointer-events: none;
-  position: absolute;
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-list:last-of-type)::after {
-  content: none;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title) {
@@ -174,12 +180,14 @@ ${bodyTypeStyles}  align-items: center;
   margin: 0;
   min-block-size: var(--bf-control-box-size-compact);
 ${compactButtonPadding}  padding-inline: var(--bf-side-navigation-content-inset);
+  --bf-side-navigation-row-inset: var(--bf-side-navigation-content-inset);
   position: relative;
   text-align: left;
   text-decoration: none;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-accordion-button) {
+  --bf-side-navigation-row-inset: var(--bf-side-navigation-disclosure-inset);
   gap: var(--bf-disclosure-gap);
 }
 
@@ -188,22 +196,21 @@ ${compactButtonPadding}  padding-inline: var(--bf-side-navigation-content-inset)
   font-weight: 600;
 }
 
-:where(.bf-theme) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked),
 :where(.bf-theme) :where(.bf-side-navigation-list) > :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title) > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: var(--bf-side-navigation-content-inset);
+  padding-inline-start: var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-content-inset) + (var(--bf-baseline) * 2));
+  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + var(--bf-side-navigation-depth-step));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-content-inset) + (var(--bf-baseline) * 4));
+  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + (var(--bf-side-navigation-depth-step) * 2));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
@@ -211,7 +218,7 @@ ${compactButtonPadding}  padding-inline: var(--bf-side-navigation-content-inset)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
   > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-content-inset) + (var(--bf-baseline) * 6));
+  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + (var(--bf-side-navigation-depth-step) * 3));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-link:hover, .bf-side-navigation-accordion-button:hover) {
@@ -757,6 +764,7 @@ ${bodyTypeStyles}  background: transparent;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
+  --bf-side-navigation-row-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - 1rem - var(--bf-side-navigation-icon-gap)));
   align-items: baseline;
   column-gap: var(--bf-side-navigation-icon-gap);
 }
@@ -778,8 +786,12 @@ ${bodyTypeStyles}  background: transparent;
 
 /* Icon-navigation headings share the label edge, not the icon edge. This
    keeps section names aligned with both the menu copy and a tagged wordmark. */
-:where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked) {
-  padding-inline-start: calc(var(--bf-side-navigation-content-inset) + 1rem + var(--bf-side-navigation-icon-gap));
+:where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading:not(.is-linked)) {
+  padding-inline-start: var(--bf-component-inline-inset-continuation);
+}
+
+:where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading.is-linked) > :where(.bf-side-navigation-link) {
+  padding-inline-start: var(--bf-component-inline-inset-continuation);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-icon) > svg {

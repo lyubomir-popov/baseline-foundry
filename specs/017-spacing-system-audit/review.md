@@ -64,9 +64,17 @@ slice; exhaustive adjacency work remains open.
   relationships from vertical metric-box and occupied-block families. It
   records all remaining author-visible offset owners before proposing another
   utility or component.
-- **Pass:** Root side-navigation now inherits the same grid-aligned panel inset
-  as its navigation brand, with the grid gutter as the standalone fallback;
-  nested rows retain only their baseline depth increments.
+- **Pass:** The component inset vocabulary is now explicit in source: field,
+  action, and continuation are the only component-owned inline starts. Plain
+  side-navigation headings/commands use action; disclosure and icon rows move
+  their mark canvas backward so the copy lands on continuation. Page/grid
+  placement and named navigation depth remain structural rather than creating
+  another component inset.
+- **Pass:** Page-chrome and component-demo documentation drawers use a grouped
+  H3-plus-UL structure. Groups have an authored 1.5rem gap; every group after
+  the first begins with a real `hr`, tightly followed by its H3. The former
+  list `::after` divider was removed, and linked headings no longer receive a
+  second nested action inset.
 - **Pass:** Numeric fields retain native input semantics and keyboard
   increment/decrement behaviour. Their field-owned paired chevron uses the
   same 1rem canvas, vertical centre, trailing position, and reserved padding as
@@ -92,7 +100,7 @@ slice; exhaustive adjacency work remains open.
   fourth guide: red is the literal one-rem inset, green is compact field-like
   content, and blue owns marked/disclosure copy.
 - **Current regression validation:** `npm run build`, `npm run test:build`
-  (6,261 checks), `npm run test:behavior`, `npm test`, and
+  (6,263 checks), `npm run test:behavior`, `npm test`, and
   `npm run qa:components` passed. Browser review confirmed
   both audit routes inside the shared 18rem page chrome in light and dark
   themes, with clean fresh consoles. The fixed red/green/blue 0.0625rem overlay
@@ -102,3 +110,10 @@ slice; exhaustive adjacency work remains open.
   across all four tiers in both tones; the common mark-centre spread and radio
   concentric delta were also zero. Light Editorial and dark OS screenshots were
   inspected directly after runtime initialisation.
+- **Latest navigation review:** Playwright measured the shared page-navigation
+  heading and plain-link starts at exactly one rem, the disclosure specimen at
+  zero delta from blue, and group separation at exactly 1.5rem in all four
+  tiers and both tones. Light Editorial and dark OS screenshots of both the
+  horizontal audit and side-navigation component were inspected with page
+  chrome present; linked and plain specimen headings both resolved to the same
+  one-rem start.
