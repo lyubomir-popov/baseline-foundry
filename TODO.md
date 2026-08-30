@@ -5,7 +5,7 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-Spec 017 spacing system audit is accepted at implementation commit `9406ea5`.
+Spec 017 spacing system audit is accepted at implementation commit `3d6570a`.
 No implementation package is active. Merge and downstream release evidence may
 be recorded before promoting another candidate.
 

@@ -7,9 +7,10 @@ catalog. Audit which remaining examples teach a consumer-facing contract and
 retire specimens that only expose implementation diagnostics.
 
 Spec 017 is accepted on `feat/017-spacing-system-audit` at implementation commit
-`9406ea5`. The public demo cleanup, exhaustive adjacency audit, three-keyline
-component inset consolidation, shared page-rail repair, and final adversarial
-review are complete. Do not recreate the removed diagnostic spacing pages or
+`3d6570a`. The public demo cleanup, exhaustive adjacency audit, three-keyline
+component inset consolidation, branded continuation-rail repair, horizontal
+occupied-block audit, select pressure handling, and final adversarial review
+are complete. Do not recreate the removed diagnostic spacing pages or
 introduce an unclassified component inset. Text keeps only metric compensation;
 stacks and pattern containers own semantic spacing.
 
@@ -30,9 +31,12 @@ stacks and pattern containers own semantic spacing.
 
 ## Last-known-green state
 
-The accepted Spec 017 implementation passes `npm test` (including 6,439 build
+The accepted Spec 017 implementation passes `npm test` (including 6,571 build
 contracts and component behavior), `npm run qa:components`, and live browser
-review in light and dark across the horizontal and vertical audit routes. The
+review in light and dark across the horizontal/vertical audits, branded side
+navigation, and constrained select. The horizontal route alone owns the fixed
+three-line inset overlay; the vertical route owns six scrollable occupied-block
+rows. Temporary QA servers use the browser-safe dynamic port range. The
 demo server at `http://127.0.0.1:4173` uses polling so edits in the shared
 Windows/WSL workspace remain visible without repeated restarts. The earlier
 feature tip `f9731a2` remains tagged as downstream release candidate
