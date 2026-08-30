@@ -37,7 +37,7 @@ export interface ThemeLayoutConfig {
 }
 
 export interface ThemeComponentsConfig {
-  borderWidthPx: number;
+  borderWidthRem: number;
   radiusRem: number;
   controlBlockPaddingRem: number;
   controlCompactBlockPaddingRem?: number;

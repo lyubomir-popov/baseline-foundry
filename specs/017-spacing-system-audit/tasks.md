@@ -14,7 +14,7 @@
 - [ ] T007 Audit raw gaps, margins, padding, transforms, and breakpoint-specific spacing across source modules.
 - [ ] T008 Compare spacing tokens and rendered relationships across all four direct and class-scoped tier surfaces.
 - [x] T019 Inventory every responsive multi-column/split transition. Set the
-  default readable 50/50 threshold to 45rem (720px) of the pattern query
+  default readable 50/50 threshold to 45rem (45rem) of the pattern query
   container; justify non-split and explicitly intrinsic exceptions.
 - [x] T017 Classify every rule-like primitive/structural-slot pairing and all native `hr` plus `bf-rule` usages in `contracts/composition-naming-audit.md`; record required, portable, redundant, and mixed cases.
 

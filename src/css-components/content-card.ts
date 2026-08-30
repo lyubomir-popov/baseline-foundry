@@ -3,14 +3,14 @@
  * separate family from the general-purpose `bf-card` primitive.
  *
  * Vanilla -> BF rhythm mapping (Vanilla's spacing unit is 0.5rem):
- * - 16px content padding/gap -> `--bf-space-2`.
- * - 8px footer/image spacing -> `--bf-space-1`.
- * - 32px wrapper separation -> `--bf-space-4`.
- * - 380px vertical minimum -> 48 BF baselines (384px in editorial), avoiding
+ * - 1rem content padding/gap -> `--bf-space-2`.
+ * - 0.5rem footer/image spacing -> `--bf-space-1`.
+ * - 2rem wrapper separation -> `--bf-space-4`.
+ * - 23.75rem vertical minimum -> 48 BF baselines (24rem in editorial), avoiding
  *   Vanilla's half-baseline ending while retaining its occupied silhouette.
- * - 192px horizontal/text minimum -> 24 BF baselines.
- * - 352px eight-column minimum -> 44 BF baselines.
- * - 284px horizontal media width -> 36 BF baselines (288px in editorial).
+ * - 12rem horizontal/text minimum -> 24 BF baselines.
+ * - 22rem eight-column minimum -> 44 BF baselines.
+ * - 17.75rem horizontal media width -> 36 BF baselines (18rem in editorial).
  *
  * The root card establishes a named query container. Only descendants change
  * inside container queries; this avoids the invalid query-the-container-itself
@@ -40,7 +40,7 @@ export function contentCardCss(): string {
 /* Snap the grid-row wrapper after intrinsic image/copy measurement. Because
    the card flexes inside it, peers retain Vanilla's equal-height row while
    the card edge and the following row both land on BF baselines. */
-@supports (block-size: calc-size(auto, round(up, size, 1px))) {
+@supports (block-size: calc-size(auto, round(up, size, 0.0625rem))) {
   :where(.bf-theme) :where(.bf-content-card-wrapper) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));
   }
@@ -247,8 +247,8 @@ export function contentCardCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-content-card:has(.bf-content-card-main-link:focus-visible)) {
-  outline: 3px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.1875rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 /* All nested actions sit above the expanded main-link hit area. This includes
@@ -362,11 +362,11 @@ export function contentCardCss(): string {
 
 /* Internal geometry responds to the card's allocated width. The card root is
    only the container; the frame/media/body descendants own queried styles. */
-/* Vanilla switches the viewport at 620px/1036px. A four-column card is much
+/* Vanilla switches the viewport at 38.75rem/64.75rem. A four-column card is much
    narrower than that viewport after grid margins and gutters, so its internal
-   horizontal layout uses Vanilla's 460px minimum viable allocation. The
-   eight-column 50/50 split starts at the roughly 960px allocation left by the
-   1036px viewport. This preserves the rendered switch in embedded BF grids. */
+   horizontal layout uses Vanilla's 28.75rem minimum viable allocation. The
+   eight-column 50/50 split starts at the roughly 60rem allocation left by the
+   64.75rem viewport. This preserves the rendered switch in embedded BF grids. */
 @container bf-content-card (width < 28.75rem) {
   :where(.bf-theme) :where(.bf-content-card-frame:not(:has(.bf-content-card-footer))) {
     min-block-size: 0;

@@ -266,7 +266,7 @@ ${generateBaselineGridThemeOverrideCss()}
 :where(.bf-theme) :where(a) {
   color: var(--bf-color-link);
   text-decoration: none;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 0.0625rem;
   text-underline-offset: 0.12em;
 }
 
@@ -279,8 +279,8 @@ ${generateBaselineGridThemeOverrideCss()}
 }
 
 :where(.bf-theme) :where(a:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 /* Standalone anchors need the same metric-owned text box as adjacent body
@@ -388,14 +388,14 @@ ${generateBaselineGridThemeOverrideCss()}
 }
 
 :where(.bf-theme) :where(.bf-stack.is-flush) {
-  --bf-stack-space: 0px;
+  --bf-stack-space: 0rem;
 }
 
 /* A metric-flush stack is an explicit relationship between adjacent text
  * roles. It retains the outer role nudges while cancelling only the preceding
  * end compensation and following start nudge; no guessed negative gap is used. */
 :where(.bf-theme) :where(.bf-stack.is-metric-flush) {
-  --bf-stack-space: 0px;
+  --bf-stack-space: 0rem;
 }
 
 :where(.bf-theme) :where(.bf-stack.is-extra-dense) {
@@ -506,12 +506,12 @@ ${capEngineDemo}
 
 :where(.bf-theme) :where(hr) {
   background: var(--bf-color-rule);
-  block-size: 1px;
+  block-size: 0.0625rem;
   border: 0;
   inline-size: 100%;
   /* Reserve one half-rem rhythm step after the rule, including its */
   /* thickness, so borderless content does not touch the divider. */
-  margin: 0 0 calc(0.5rem - 1px);
+  margin: 0 0 calc(0.5rem - 0.0625rem);
 }
 
 /* Highlight rules share the same scalable emphasis-bar geometry as active
@@ -522,7 +522,7 @@ ${capEngineDemo}
 }
 
 :where(.bf-theme) :where(.bf-token-row) {
-  border-top: 1px solid var(--bf-color-rule);
+  border-top: 0.0625rem solid var(--bf-color-rule);
   display: grid;
   gap: var(--bf-space-1);
   padding-top: var(--bf-space-2);

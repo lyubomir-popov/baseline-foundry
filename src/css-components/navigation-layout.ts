@@ -14,8 +14,8 @@ export function navigationLayoutCss(): string {
 }
 
 /* The tagged treatment is opt-in. The Circle of Friends is aligned to the
- * first title line, then the 38px tag extends upward to the navigation edge.
- * Its 22px inline size preserves the established 38:22 (~1.73) tag ratio; the
+ * first title line, then the 2.375rem tag extends upward to the navigation edge.
+ * Its 1.375rem inline size preserves the established 38:22 (~1.73) tag ratio; the
  * tag must not stretch to the full occupied navigation row. */
 :where(.bf-theme) :where(.bf-top-navigation-logo.is-canonical-tagged) {
   min-inline-size: 0;
@@ -69,8 +69,8 @@ export function navigationLayoutCss(): string {
   line-height: var(--bf-top-navigation-logo-title-line-height, var(--bf-body-line-height, 1.5));
   overflow: visible;
   overflow-wrap: anywhere;
-  /* The first title line and the 16px mark share the mark's fixed centre:
-   * tag block-end minus the 6px inset minus half the mark. Symmetric title
+  /* The first title line and the 1rem mark share the mark's fixed centre:
+   * tag block-end minus the 0.375rem inset minus half the mark. Symmetric title
    * padding keeps the occupied row stable across all four type-density tiers. */
   padding-block: calc(
     var(--bf-top-navigation-logo-tag-block-size)

@@ -2,7 +2,7 @@
 
 This inventory distinguishes a readable content split from density, navigation,
 or fixed-mark geometry. A balanced content split has one shared transition:
-the pattern's own query container is 45rem (720px) wide. The viewport is not a
+the pattern's own query container is 45rem (45rem) wide. The viewport is not a
 proxy for that allocation.
 
 ## Shared balanced split
@@ -36,6 +36,6 @@ proxy for that allocation.
   the shared 45rem source surface.
 - Browser behavior: use the component routes in the table, both immediately
   below and at a 45rem allocated container width, for all four tiers.
-- Visual review on 2026-08-29: a 697px tiered-list allocation remained one
-  column and a 737px allocation became two columns; no reviewed pattern had
+- Visual review on 2026-08-29: a 43.5625rem tiered-list allocation remained one
+  column and a 46.0625rem allocation became two columns; no reviewed pattern had
   inline overflow at the expanded state.

@@ -534,10 +534,14 @@ function validateCommonCss(css: string): void {
   const ast = parseCss(css);
   assert(!css.includes("@font-face"), "Expected built-in CSS to leave runtime font URLs to the consumer-owned font declaration.");
   assert(!css.includes("UbuntuSans[wdth,wght].ttf"), "Expected built-in CSS to avoid a runtime URL to the unbundled development font.");
-  assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px threshold for the 8-column grid.");
-  assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 1681px threshold for the 16-column grid.");
-  assert(css.includes("@media (width >= 38.75rem)"), "Expected CSS to use the Canonical 620px viewport breakpoint for gutters and outer margins.");
-  assert(css.includes("@media (width >= 64.75rem)"), "Expected CSS to use the Canonical 1036px viewport breakpoint for large outer margins.");
+  assert(
+    !/-?(?:\d+(?:\.\d+)?|\.\d+)px\b/.test(css),
+    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens.",
+  );
+  assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 38.75rem threshold for the 8-column grid.");
+  assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 105.0625rem threshold for the 16-column grid.");
+  assert(css.includes("@media (width >= 38.75rem)"), "Expected CSS to use the Canonical 38.75rem viewport breakpoint for gutters and outer margins.");
+  assert(css.includes("@media (width >= 64.75rem)"), "Expected CSS to use the Canonical 64.75rem viewport breakpoint for large outer margins.");
   assert(css.includes(":where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected app-tier page to be fluid (no max-width cap).");
   assert(css.includes(":where(.bf-theme) :where(.bf-page.is-fill) {\n  min-block-size: 100vh;\n  padding-block-end: var(--bf-section-space);"), "Expected shared CSS to expose the fill-height bf-page modifier used by the spec and controls shells.");
   assert(css.includes(":where(.bf-theme) :where(.bf-inline-size) {\n  --bf-inline-size: 18rem;\n  flex: 0 1 var(--bf-inline-size);\n  inline-size: min(100%, var(--bf-inline-size));\n  min-inline-size: min(100%, var(--bf-inline-size));"), "Expected shared CSS to expose the BF-owned bounded inline-size utility used by clustered inspection rows.");
@@ -560,15 +564,15 @@ function validateCommonCss(css: string): void {
     "padding-inline": "0",
   }, "fixed-width regions inside a page defer to the page-owned gutter");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.is-guide) > * {\n  background: color-mix(in srgb, var(--bf-color-accent) 18%, var(--bf-color-background-default));"), "Expected shared CSS to expose the BF-owned grid guide modifier for breakpoint specimens.");
-  assert(css.includes("--bf-grid-gap-inline: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px inline gutter without a separate 460px switch.");
-  assert(css.includes("--bf-grid-gap-block: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px block-gap token for non-bf-grid layouts.");
-  assert(css.includes("--bf-page-margin: 1rem;"), "Expected CSS to define the default 240-619px x-small 16px outer margin without a separate 460px switch.");
-  assert(css.includes("--bf-grid-gap-inline: 1.5rem;"), "Expected CSS to define the small-and-up 24px grid gutter.");
-  assert(css.includes("--bf-page-margin: 1.5rem;"), "Expected CSS to define the small 24px outer margin.");
+  assert(css.includes("--bf-grid-gap-inline: 1rem;"), "Expected CSS to define the default 240-38.6875rem x-small 1rem inline gutter without a separate 28.75rem switch.");
+  assert(css.includes("--bf-grid-gap-block: 1rem;"), "Expected CSS to define the default 240-38.6875rem x-small 1rem block-gap token for non-bf-grid layouts.");
+  assert(css.includes("--bf-page-margin: 1rem;"), "Expected CSS to define the default 240-38.6875rem x-small 1rem outer margin without a separate 28.75rem switch.");
+  assert(css.includes("--bf-grid-gap-inline: 1.5rem;"), "Expected CSS to define the small-and-up 1.5rem grid gutter.");
+  assert(css.includes("--bf-page-margin: 1.5rem;"), "Expected CSS to define the small 1.5rem outer margin.");
   assert(css.includes("gap: 0 var(--bf-grid-gap-inline);"), "Expected bf-grid to keep row-gap at 0 and use only the inline gutter token.");
-  assert(css.includes("@media (width >= 64.75rem) {\n  :where(.bf-theme) {\n    --bf-grid-gap-inline: 2rem;\n    --bf-grid-gap-block: 2rem;\n    --bf-page-margin: 2rem;"), "Expected CSS to widen the default editorial gutter to 32px at large breakpoints.");
-  assert(css.includes(":where(.bf-theme.bf-tier-app) {\n    --bf-grid-gap-inline: 1.5rem;\n    --bf-grid-gap-block: 1.5rem;"), "Expected CSS to keep app-tier gutters at 24px inside the large-breakpoint override.");
-  assert(css.includes("--bf-page-margin: 2rem;"), "Expected CSS to define the large-and-up 32px outer margin.");
+  assert(css.includes("@media (width >= 64.75rem) {\n  :where(.bf-theme) {\n    --bf-grid-gap-inline: 2rem;\n    --bf-grid-gap-block: 2rem;\n    --bf-page-margin: 2rem;"), "Expected CSS to widen the default editorial gutter to 2rem at large breakpoints.");
+  assert(css.includes(":where(.bf-theme.bf-tier-app) {\n    --bf-grid-gap-inline: 1.5rem;\n    --bf-grid-gap-block: 1.5rem;"), "Expected CSS to keep app-tier gutters at 1.5rem inside the large-breakpoint override.");
+  assert(css.includes("--bf-page-margin: 2rem;"), "Expected CSS to define the large-and-up 2rem outer margin.");
   assert(!css.includes("@container (width >= 42rem) {\n  .bf-grid"), "Expected grid CSS to avoid the older 42rem 8-column threshold.");
   assert(!css.includes("@container (width >= 72rem) {\n  .bf-grid"), "Expected grid CSS to avoid the older 72rem 16-column threshold.");
   assert(!css.includes(".u-fixed-width"), "Expected generated CSS to omit the old fixed-width alias.");
@@ -607,14 +611,14 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(a) {\n  color: var(--bf-color-link);\n  text-decoration: none;"), "Expected raw links to omit their underline in the resting state.");
   assert(css.includes(":where(.bf-theme) :where(a:is(:hover, :active)) {\n  text-decoration: underline;"), "Expected raw links to expose an underline only while hovered or pressed.");
   assert(css.includes(":where(.bf-theme) :where(a:visited) {\n  color: var(--bf-color-link-visited);"), "Expected generated CSS to style visited links through the semantic theme token.");
-  assert(css.includes(":where(.bf-theme) :where(a:focus-visible) {\n  outline: 2px solid var(--bf-color-focus);"), "Expected generated CSS to style raw link focus with the semantic focus token.");
+  assert(css.includes(":where(.bf-theme) :where(a:focus-visible) {\n  outline: 0.125rem solid var(--bf-color-focus);"), "Expected generated CSS to style raw link focus with the semantic focus token.");
   assert(css.includes(":where(.bf-theme) :where(a.bf-text-link) {\n  display: inline-block;") && css.includes("padding-block: var(--bf-body-nudge-start) 0;"), "Expected standalone text links to expose an element-qualified canonical body metric box without changing raw prose anchors.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(hr)", {
     "background": "var(--bf-color-rule)",
-    "block-size": "1px",
+    "block-size": "0.0625rem",
     "border": "0",
     "inline-size": "100%",
-    "margin": "0 0 calc(0.5rem - 1px)",
+    "margin": "0 0 calc(0.5rem - 0.0625rem)",
   }, "plain hr receives the basic rule contract");
   assert(css.includes(":where(.bf-theme) :where(.bf-page) {\n  margin-inline: auto;\n  max-inline-size: var(--bf-content-max-width);\n  padding-inline: var(--bf-page-margin);"), "Expected bf-page gutters to resolve directly from the shared grid-row margin token.");
   assert(!css.includes("#f5f1e8"), "Expected generated CSS to avoid the old paper-like default background fallback.");
@@ -660,8 +664,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after {\n  background: var(--bf-color-border-low-contrast);\n  block-size: var(--bf-border-width);"), "Expected side-navigation dividers to stay out of list layout.");
   assert(css.includes("min-block-size: calc(var(--bf-control-box-size-compact) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to rely on their controls' start nudge instead of adding container start padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0px;"), "Expected flush stacks to remove only their container gap.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-metric-flush) {\n  --bf-stack-space: 0px;") && css.includes(":where(.bf-theme) .bf-stack.is-metric-flush > :where(") && css.includes(":has(+ :where(") && css.includes(" + :where(") && css.includes("margin-block-end: 0;") && css.includes("padding-block-start: 0;"), "Expected metric-flush stacks to cancel only configured adjacent text-role compensation and start nudges.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0rem;"), "Expected flush stacks to remove only their container gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-metric-flush) {\n  --bf-stack-space: 0rem;") && css.includes(":where(.bf-theme) .bf-stack.is-metric-flush > :where(") && css.includes(":has(+ :where(") && css.includes(" + :where(") && css.includes("margin-block-end: 0;") && css.includes("padding-block-start: 0;"), "Expected metric-flush stacks to cancel only configured adjacent text-role compensation and start nudges.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-extra-dense) {\n  --bf-stack-space: var(--bf-space-half);"), "Expected extra-dense stacks to use the half-baseline gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-dense) {\n  --bf-stack-space: var(--bf-space-1);"), "Expected dense stacks to use the one-baseline gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-loose) {\n  --bf-stack-space: var(--bf-space-2);"), "Expected loose stacks to use the two-baseline gap.");
@@ -670,7 +674,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
   assert(css.includes("--bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));") && css.includes("--bf-disclosure-label-inline-offset: var(--bf-icon-label-inline-offset);"), "Expected icon-led components to expose one shared label continuation offset.");
   assert(css.includes("padding-inline-start: var(--bf-disclosure-label-inline-offset);"), "Expected accordion panels to share the tab label keyline through the shared icon-label offset.");
-  assert(css.includes("margin: 0 0 calc(0.5rem - 1px);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 1px thickness.");
+  assert(css.includes("margin: 0 0 calc(0.5rem - 0.0625rem);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 0.0625rem thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
   assert(!css.includes("padding-block: var(--bf-strip-space);"), "Expected strip rhythm to avoid symmetric top-and-bottom padding.");
@@ -905,7 +909,7 @@ function validateCommonCss(css: string): void {
     "padding-inline-end": "calc(var(--bf-top-navigation-link-padding-inline) + var(--bf-top-navigation-end-slot-inline-size))"
   }, "top-navigation dropdown toggles reserve their chevron slot from the shared end-slot token");
   // One baseline split across the row edges keeps the complete navigation bar
-  // on each tier's own baseline, including the 4px app and OS tiers.
+  // on each tier's own baseline, including the 0.25rem app and OS tiers.
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-top-navigation-row)", {
     "display": "flex",
     "flex-direction": "column",
@@ -1009,9 +1013,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-application.is-fill)"), "Expected generated CSS to expose the full-viewport application modifier.");
   assert(css.includes("block-size: 100dvb;\n  max-block-size: 100dvb;\n  min-block-size: 100dvb;"), "Expected the full-viewport application modifier to own a definite dynamic viewport block size.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-label)", {
-    "block-size": "1px",
+    "block-size": "0.0625rem",
     "clip-path": "inset(50%)",
-    "inline-size": "1px",
+    "inline-size": "0.0625rem",
     "position": "absolute",
     "white-space": "nowrap"
   }, "collapsed application navigation keeps labels accessible without layout size");
@@ -1045,7 +1049,7 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".bf-aside.is-overlay.is-narrow"), "Expected generated CSS to omit the old narrow overlay modifier.");
   assert(!css.includes(".bf-aside.is-overlay.is-wide"), "Expected generated CSS to omit the old wide overlay modifier.");
   assert(css.includes(":where(.bf-application-aside-resize-handle)"), "Expected generated CSS to include the pinned-aside resize handle selector.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible {\n  outline: 2px solid var(--bf-application-resize-handle-focus-ring);"), "Expected the pinned-aside resize handle to expose the shared authoring focus-ring token.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible {\n  outline: 0.125rem solid var(--bf-application-resize-handle-focus-ring);"), "Expected the pinned-aside resize handle to expose the shared authoring focus-ring token.");
   assert(css.includes("background: var(--bf-application-resize-handle-active);"), "Expected the pinned-aside resize handle active state to use the shared authoring accent token.");
   assert(css.includes("cursor: ew-resize;"), "Expected generated CSS to make the resize handle advertise horizontal resizing.");
   assert(css.includes("touch-action: none;"), "Expected generated CSS to make the resize handle safe for pointer dragging.");
@@ -1079,7 +1083,7 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(roles.h1 && roles.h2 && roles.h3 && roles.h4 && roles.h5 && roles.h6, "Expected generated tokens to include the standard heading roles.");
   assert(fontFiles.length > 0, "Expected generated tokens to include at least one font file.");
   assert(components.borderWidth, "Expected generated tokens to include component border width.");
-  assert(components.barThickness === "0.1875rem", "Expected generated tokens to include the shared rem-based 3px emphasis-bar thickness.");
+  assert(components.barThickness === "0.1875rem", "Expected generated tokens to include the shared rem-based 0.1875rem emphasis-bar thickness.");
   assert(!("topNavigationBrandRegion" in components), "Expected generated tokens to remove the obsolete fixed navigation brand region.");
   assert(components.controlBlockPadding, "Expected generated tokens to include regular control block padding.");
   assert(components.controlCompactBlockPadding, "Expected generated tokens to include compact control block padding.");
@@ -1127,10 +1131,10 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
 
   assert(roles.h1.fontSize === '1.5rem', "Expected the app-tier preset h1 role font size to be 1.5rem.");
   assert(roles.h2.fontWeight === 300, "Expected the app-tier preset h2 to use the lighter Ubuntu Sans pairing.");
-  assert(layout.gridGapInline === '1.5rem', "Expected the app-tier preset inline grid gap token to stay at the 24px application gutter.");
-  assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 32px application outer margin.");
+  assert(layout.gridGapInline === '1.5rem', "Expected the app-tier preset inline grid gap token to stay at the 1.5rem application gutter.");
+  assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 2rem application outer margin.");
   assert(layout.contentMaxWidth === '60rem', "Expected the app-tier fixed-width token to use the derived 60rem cap.");
-  assert(components.panelPaddingInline === '0.75rem' && components.panelPaddingBlock === '0.75rem', "Expected App panel padding to tighten to three 4px baseline units on both axes.");
+  assert(components.panelPaddingInline === '0.75rem' && components.panelPaddingBlock === '0.75rem', "Expected App panel padding to tighten to three 0.25rem baseline units on both axes.");
   assert(components.controlBlockPadding === '0.5rem', "Expected the app-tier preset regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
   assert(components.controlCompactBlockPadding === '0.375rem', "Expected the app-tier preset compact control block padding to preserve the legacy 2rem inline control box height.");
   assert(components.controlInlinePadding === '0.5rem', "Expected the app-tier preset compatibility control padding alias to match the action-surface spacing.");
@@ -1277,9 +1281,9 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   assert(roles.h5.fontVariantCaps === "all-small-caps", "Expected the prose default h5 to use true small-caps.");
   assert(roles.h5.letterSpacing === "0.05em", "Expected the prose default h5 to use five-percent letter spacing with small caps.");
   assert(fontSizes.size === 3, "Expected the prose default theme to expose distinct heading and body font sizes.");
-  assert(layout.gridGapInline === "1rem", "Expected the prose default inline grid gap token to provide the x-small 16px gutter.");
-  assert(layout.gridGapBlock === "1rem", "Expected the prose default block grid gap token to provide the x-small 16px gap.");
-  assert(layout.pageMargin === "1rem", "Expected the prose default page margin token to provide the x-small 16px margin.");
+  assert(layout.gridGapInline === "1rem", "Expected the prose default inline grid gap token to provide the x-small 1rem gutter.");
+  assert(layout.gridGapBlock === "1rem", "Expected the prose default block grid gap token to provide the x-small 1rem gap.");
+  assert(layout.pageMargin === "1rem", "Expected the prose default page margin token to provide the x-small 1rem margin.");
   assert(layout.sectionSpace === "4rem", "Expected the prose default section rhythm to be 4rem.");
   assert(components.radius === "0rem", "Expected the prose default controls to stay square, matching the compat visual direction.");
   assert(components.controlBlockPadding === "0.5rem", "Expected the prose default regular control block padding to preserve the 2.5rem editorial control box height without a dedicated block-size token.");
@@ -1331,17 +1335,17 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(layout.contentMaxWidth === "60rem", "Expected the OS tier content cap not to exceed the 60rem App cap.");
   assert(layout.sectionSpace === "3rem", "Expected the OS tier section rhythm to scale down to 3rem.");
   assert(layout.sectionSpaceDeep === "6rem", "Expected the OS tier deep section rhythm to scale down to 6rem.");
-  assert(layout.gridGapInline === "1rem", "Expected the OS tier inline grid gap token to provide the x-small 16px gutter.");
-  assert(layout.gridGapBlock === "1rem", "Expected the OS tier block grid gap token to provide the x-small 16px gap.");
-  assert(layout.pageMargin === "1rem", "Expected the OS tier page margin token to provide the x-small 16px margin.");
+  assert(layout.gridGapInline === "1rem", "Expected the OS tier inline grid gap token to provide the x-small 1rem gutter.");
+  assert(layout.gridGapBlock === "1rem", "Expected the OS tier block grid gap token to provide the x-small 1rem gap.");
+  assert(layout.pageMargin === "1rem", "Expected the OS tier page margin token to provide the x-small 1rem margin.");
   assert(components.radius === "0rem", "Expected the OS tier controls to stay square like PVR/Vanilla.");
   assert(components.controlInlinePadding === "0.5rem", "Expected the OS tier compatibility control padding alias to match the action spacing.");
   assert(components.controlInlinePaddingAction === "0.5rem", "Expected the OS tier action padding to use the dense command target value.");
   assert(components.controlInlinePaddingField === "0.25rem", "Expected the OS tier field padding to stay tighter than action surfaces.");
   assert(components.controlVisualSize === "0.75rem", "Expected the OS tier checkbox/radio/thumb glyphs to use a dedicated 0.75rem visual size.");
   assert(components.fieldGap === "0.25rem", "Expected the OS tier field gap to come from the dense components block.");
-  assert(components.panelPaddingInline === "0.5rem", "Expected OS inline panel padding to tighten to two 4px baseline units.");
-  assert(components.panelPaddingBlock === "0.5rem", "Expected OS block panel padding to tighten to two 4px baseline units.");
+  assert(components.panelPaddingInline === "0.5rem", "Expected OS inline panel padding to tighten to two 0.25rem baseline units.");
+  assert(components.panelPaddingBlock === "0.5rem", "Expected OS block panel padding to tighten to two 0.25rem baseline units.");
   assert(components.accordionIndent === "0.75rem", "Expected the OS tier accordion indent to come from the dense components block.");
   assert(components.controlBlockPadding === "0.375rem", "Expected the OS tier regular control block padding to preserve the legacy 1.75rem control box height without a dedicated block-size token.");
   assert(components.controlCompactBlockPadding === "0.25rem", "Expected the OS tier compact control block padding to preserve the legacy 1.5rem inline control box height.");
@@ -1350,6 +1354,55 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact list items to use the compact control block padding token.");
   assert(css.includes("--bf-control-visual-size: 0.75rem;"), "Expected the OS tier CSS to expose a dedicated visual control size token.");
   assert(css.includes("block-size: var(--bf-control-visual-size);"), "Expected checkbox/radio/thumb visuals to size from the dedicated control visual token.");
+}
+
+async function collectFiles(rootDir: string, extensions: ReadonlySet<string>): Promise<string[]> {
+  const files: string[] = [];
+
+  for (const entry of await fs.readdir(rootDir, { withFileTypes: true })) {
+    const entryPath = path.join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...await collectFiles(entryPath, extensions));
+    } else if (entry.isFile() && extensions.has(path.extname(entry.name))) {
+      files.push(entryPath);
+    }
+  }
+
+  return files;
+}
+
+async function validateScalableAuthoredLengths(): Promise<void> {
+  const sourceFiles = [
+    ...await collectFiles(path.resolve("src"), new Set([".ts"])),
+    ...await collectFiles(path.resolve("demo"), new Set([".css"])),
+    ...await collectFiles(path.resolve("examples"), new Set([".css"])),
+    path.resolve("demo/page-chrome.js"),
+    path.resolve("demo/spec-runtime.js"),
+  ];
+  const htmlFiles = [
+    ...await collectFiles(path.resolve("demo"), new Set([".html"])),
+    ...await collectFiles(path.resolve("examples"), new Set([".html"])),
+  ];
+  const violations: string[] = [];
+
+  for (const filePath of sourceFiles) {
+    if (/px\b/.test(await fs.readFile(filePath, "utf8"))) {
+      violations.push(path.relative(process.cwd(), filePath));
+    }
+  }
+
+  for (const filePath of htmlFiles) {
+    const html = await fs.readFile(filePath, "utf8");
+    const authoredStyles = [
+      ...Array.from(html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi), match => match[1]),
+      ...Array.from(html.matchAll(/\bstyle\s*=\s*(["'])([\s\S]*?)\1/gi), match => match[2]),
+    ].join("\n");
+    if (/px\b/.test(authoredStyles)) {
+      violations.push(path.relative(process.cwd(), filePath));
+    }
+  }
+
+  assert(violations.length === 0, `Expected authored component and demo styles to use rem-scalable lengths; found px units in ${violations.join(", ")}.`);
 }
 
 async function main(): Promise<void> {
@@ -1452,6 +1505,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/example-page.js"))
   ]);
 
+  await runInvariantAsync("Scalable authored lengths", validateScalableAuthoredLengths);
   runInvariant("Common CSS (default)", () => validateCommonCss(defaultTheme.css));
   runInvariant("Common CSS (editorial)", () => validateCommonCss(editorialTier.css));
   runInvariant("Common CSS (documentation)", () => validateCommonCss(documentationTier.css));

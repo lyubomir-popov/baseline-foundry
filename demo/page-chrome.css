@@ -5,8 +5,8 @@ body:has(> .pc-root) {
   grid-template-columns: 18rem minmax(0, 1fr);
   grid-template-rows: auto 1fr;
   min-block-size: 100vh;
-  padding-block-end: var(--pc-footer-block-size, 0px);
-  scroll-padding-block-end: var(--pc-footer-block-size, 0px);
+  padding-block-end: var(--pc-footer-block-size, 0rem);
+  scroll-padding-block-end: var(--pc-footer-block-size, 0rem);
 }
 
 /* Sidebar spans both rows; header sits in the top-right cell; main */
@@ -37,7 +37,7 @@ body:has(> .pc-root) > .pc-content {
 .pc-nav {
   background: color-mix(in srgb, var(--bf-color-background-default, #ffffff) 96%, transparent);
   block-size: 100vh;
-  border-inline-end: 1px solid color-mix(in srgb, var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12)) 100%, transparent);
+  border-inline-end: 0.0625rem solid color-mix(in srgb, var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12)) 100%, transparent);
   display: flex;
   flex-direction: column;
   inline-size: 18rem;
@@ -53,9 +53,9 @@ body.is-dark .pc-nav {
 }
 
 .pc-header {
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(0.75rem);
   background: color-mix(in srgb, var(--bf-color-background-default, #ffffff) 94%, transparent);
-  border-block-end: 1px solid color-mix(in srgb, var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12)) 100%, transparent);
+  border-block-end: 0.0625rem solid color-mix(in srgb, var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12)) 100%, transparent);
   inset-block-start: 0;
   position: sticky;
   z-index: 130;
@@ -66,9 +66,9 @@ body.is-dark .pc-header {
 }
 
 .pc-footer {
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(0.75rem);
   background: color-mix(in srgb, var(--bf-color-background-default, #ffffff) 94%, transparent);
-  border-block-start: 1px solid color-mix(in srgb, var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12)) 100%, transparent);
+  border-block-start: 0.0625rem solid color-mix(in srgb, var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12)) 100%, transparent);
   inset-block-end: 0;
   inset-inline-end: 0;
   inset-inline-start: 18rem;

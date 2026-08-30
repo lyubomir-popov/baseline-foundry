@@ -42,7 +42,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
 }
 
 :where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-expanded) :where(.bf-side-navigation-drawer) {
-  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38);
+  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
   transform: translateX(0);
 }
 
@@ -126,8 +126,8 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-toggle:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked) {
@@ -229,8 +229,8 @@ ${compactButtonPadding}  padding-inline: var(--bf-side-navigation-content-inset)
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-link:focus-visible, .bf-side-navigation-accordion-button:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true']) {
@@ -400,8 +400,8 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-link:focus-visible, .bf-top-navigation-menu-toggle:focus-visible, .bf-top-navigation-search-toggle:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link),
@@ -520,8 +520,8 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown-item:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-search-label) {

@@ -17,8 +17,8 @@ export function generateBaselineGridOverlayCss(options: BaselineGridOverlayOptio
   background-image: linear-gradient(
     to top,
     var(--bf-baseline-grid-color),
-    var(--bf-baseline-grid-color) 1px,
-    transparent 1px,
+    var(--bf-baseline-grid-color) 0.0625rem,
+    transparent 0.0625rem,
     transparent
   );
   background-size: 100% var(--bf-baseline-grid-size);

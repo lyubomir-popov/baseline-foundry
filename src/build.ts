@@ -91,7 +91,7 @@ const REQUIRED_LAYOUT_FIELDS = [
 ] as const satisfies readonly (keyof ThemeConfig["layout"])[];
 
 const REQUIRED_COMPONENT_FIELDS = [
-  "borderWidthPx",
+  "borderWidthRem",
   "radiusRem",
   "controlBlockPaddingRem",
   "controlInlinePaddingRem",
@@ -284,9 +284,9 @@ function buildComponentTokens(config: ThemeConfig): ComponentTokens {
   const controlInlinePaddingFieldRem = config.components.controlInlinePaddingFieldRem ?? (controlInlinePaddingActionRem / 2);
 
   return {
-    borderWidth: `${config.components.borderWidthPx}px`,
-    // Vanilla's shared $bar-thickness: 3px at a 16px root, expressed in rem
-    // so emphasis bars scale with root text sizing while thin borders do not.
+    borderWidth: toRem(config.components.borderWidthRem),
+    // Vanilla's shared $bar-thickness is represented as 0.1875rem so emphasis
+    // bars and thin borders both scale with root text sizing.
     barThickness: toRem(3 / 16),
     radius: toRem(config.components.radiusRem),
     controlBlockPadding: toRem(config.components.controlBlockPaddingRem),

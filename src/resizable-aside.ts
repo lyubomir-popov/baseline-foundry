@@ -204,7 +204,13 @@ function readPersistedWidth(storageKey: string | null): number | null {
     }
 
     const parsedWidth = Number.parseFloat(rawWidth);
-    return Number.isFinite(parsedWidth) ? parsedWidth : null;
+    if (!Number.isFinite(parsedWidth)) {
+      return null;
+    }
+
+    return rawWidth.trim().endsWith("rem")
+      ? parsedWidth * Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+      : parsedWidth;
   } catch {
     return null;
   }
@@ -216,7 +222,8 @@ function writePersistedWidth(storageKey: string | null, widthPx: number): void {
   }
 
   try {
-    localStorage.setItem(storageKey, String(Math.round(widthPx)));
+    const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    localStorage.setItem(storageKey, `${widthPx / rootRem}rem`);
   } catch {
     // Ignore storage failures so the shell still works in restricted environments.
   }
@@ -237,9 +244,11 @@ function clearPersistedWidth(storageKey: string | null): void {
 function applyWidth(application: HTMLElement, aside: HTMLElement, handle: HTMLElement, storageKey: string | null, widthPx: number, persist: boolean): number {
   const { minPx, maxPx } = getWidthBounds(application, aside, handle);
   const nextWidthPx = clamp(widthPx, minPx, maxPx);
+  const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+  const nextWidthRem = nextWidthPx / rootRem;
 
-  application.style.setProperty("--bf-app-aside-width", `${nextWidthPx}px`);
-  application.style.setProperty("--bf-application-aside-width", `${nextWidthPx}px`);
+  application.style.setProperty("--bf-app-aside-width", `${nextWidthRem}rem`);
+  application.style.setProperty("--bf-application-aside-width", `${nextWidthRem}rem`);
   updateHandleA11y(application, aside, handle, nextWidthPx);
 
   if (persist) {

@@ -89,7 +89,7 @@ function currentObservers(root: ParentNode): Array<IntersectionObserver> {
       const activeLink = nearest ? linksByTarget.get(nearest[0]) : null;
       if (activeLink) setCurrentLink(navigation, activeLink);
     }, {
-      rootMargin: "-10% 0px -60% 0px",
+      rootMargin: "-10% 0rem -60% 0rem",
       threshold: [0, 0.5]
     });
 

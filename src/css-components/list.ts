@@ -17,7 +17,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item) {
-  box-shadow: inset 0 1px 0 var(--bf-color-border-low-contrast);
+  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-low-contrast);
   padding-block-end: var(--bf-baseline);
 }
 

@@ -31,7 +31,7 @@ ${scoped(" :where(.bf-application)")} {
 ${scoped(" :where(.bf-navigation-drawer)")},
 ${scoped(" :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer)")},
 ${scoped(" :where(.bf-aside.is-overlay, .bf-aside.is-drawer)")} {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 0 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.12), 0 0 0.1875rem rgba(0, 0, 0, 0.12);
 }
 
 ${scoped(" :where(.bf-panel-header)")} {

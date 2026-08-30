@@ -69,7 +69,7 @@ counterfactual spacing engines, or implementation history.
 - Which responsive rules change spacing at a breakpoint unrelated to the
   owning grid or intrinsic component threshold?
 - Which readable default 50/50 patterns still use a breakpoint other than the
-  shared 45rem (720px) query-container threshold, and is each difference a
+  shared 45rem (45rem) query-container threshold, and is each difference a
   real non-split/intrinsic exception?
 - Which demos contain direct semantic siblings without an explicit stack or
   structured component owner?
@@ -112,7 +112,7 @@ remain only where a pattern needs structural placement; a highlighted native
 rule uses `<hr class="is-highlighted">`. `bf-rule` must not be expanded as an
 authoring requirement without a measured non-native use case.
 
-The default readable 50/50 composition threshold is 45rem (720px) of the
+The default readable 50/50 composition threshold is 45rem (45rem) of the
 pattern's query container. The hero already uses it, whereas the tiered-list
 header currently waits for 64.75rem; this is an audit/implementation finding.
 Grid-shell, navigation, density, and explicitly asymmetric/intrinsic changes

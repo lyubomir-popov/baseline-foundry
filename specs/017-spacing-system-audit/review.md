@@ -21,10 +21,10 @@ slice; exhaustive adjacency work remains open.
 - **Pass:** Hero, basic section, divided section, tiered-list header, rich
   lists, tab section, and linked-logo 50/50 layouts use a 45rem query-container
   threshold.
-- **Pass:** Visual inspection at a 760px viewport produced a 697px tiered-list
-  allocation that stayed one column; at 800px it allocated 737px and became
+- **Pass:** Visual inspection at a 47.5rem viewport produced a 43.5625rem tiered-list
+  allocation that stayed one column; at 50rem it allocated 46.0625rem and became
   two columns with no overflow. The other reviewed shared-split surfaces also
-  had no overflow at their 737–752px expanded allocations.
+  had no overflow at their 737–47rem expanded allocations.
 - **Pass:** 25/75 rails, repeated-card density, navigation, and grid-shell
   transitions remain documented exceptions rather than accidental divergent
   50/50 implementations.
@@ -69,7 +69,7 @@ slice; exhaustive adjacency work remains open.
   nested rows retain only their baseline depth increments.
 - **Pass:** Numeric fields retain native input semantics and keyboard
   increment/decrement behaviour. Their field-owned paired chevron uses the
-  same 16px canvas, vertical centre, trailing position, and reserved padding as
+  same 1rem canvas, vertical centre, trailing position, and reserved padding as
   select, without Chromium's additional spin slot. Status labels now use body,
   rather than H5, metric nudges, fixing the documentation-tier coloured-block
   shift.
@@ -80,16 +80,16 @@ slice; exhaustive adjacency work remains open.
   pixel left/up of the outer-circle centre. The divided-list half-baseline icon
   offset was removed.
 - **Pass:** Accordion, list-tree, notification, and panel copy now share one
-  measured 32px icon-label continuation. The notification icon is derived
+  measured 2rem icon-label continuation. The notification icon is derived
   backward from that copy line so every tier retains its compact icon-to-text
   gap. The audit did not add a fourth guide: red moved from the uninformative
   page edge to a literal one-rem inset, while blue owns the shared copy line.
 - **Current regression validation:** `npm run build`, `npm run test:build`
   (6,231 checks), `npm run test:behavior`, `npm test`, and
   `npm run qa:components` passed. Browser review confirmed
-  both audit routes inside the shared 288px page chrome in light and dark
-  themes, with clean fresh consoles. The fixed red/green/blue 1px overlay is
+  both audit routes inside the shared 18rem page chrome in light and dark
+  themes, with clean fresh consoles. The fixed red/green/blue 0.0625rem overlay is
   visible at 50% opacity on only those routes and recalculates after tier and
-  viewport changes. Number/select canvases, the shared 3px disclosure-icon
-  optical drop, the common leading-mark centreline, and the shared 32px copy
+  viewport changes. Number/select canvases, the shared 0.1875rem disclosure-icon
+  optical drop, the common leading-mark centreline, and the shared 2rem copy
   line were visually confirmed in documentation and OS tiers in both tones.

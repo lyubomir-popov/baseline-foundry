@@ -14,8 +14,8 @@ export function gridCss(appScopes: string[] = [":where(.bf-theme.bf-tier-app)"])
   return `/* ------------------------------------------------------------------ */
 /* Gutter and margin escalation — viewport-based, all tiers            */
 /* Grid spec v0.3 §2.3: gutters set by global viewport breakpoint.     */
-/* Baseline Foundry models the spec's 460px x-small row as part of the */
-/* default <620px bracket because the values do not change at 460px.   */
+/* Baseline Foundry models the spec's 28.75rem x-small row as part of the */
+/* default <38.75rem bracket because the values do not change at 28.75rem.   */
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) {
@@ -124,7 +124,7 @@ ${appPageRule}
 
 :where(.bf-theme) :where(.bf-grid.is-guide) > * {
   background: color-mix(in srgb, var(--bf-color-accent) 18%, var(--bf-color-background-default));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bf-color-accent) 50%, var(--bf-color-rule));
+  box-shadow: inset 0 0 0 0.0625rem color-mix(in srgb, var(--bf-color-accent) 50%, var(--bf-color-rule));
   min-block-size: calc(var(--bf-baseline) * 4);
 }
 

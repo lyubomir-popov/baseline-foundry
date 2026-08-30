@@ -1,14 +1,14 @@
 /**
  * Vanilla parity ports: logo section and media object.
  *
- * Vanilla → BF rhythm mapping (at Vanilla's 8px unit):
- * - Logo mark heights 72px / 104px → `space-8 + space-1` / `space-12 +
+ * Vanilla → BF rhythm mapping (at Vanilla's 0.5rem unit):
+ * - Logo mark heights 4.5rem / 6.5rem → `space-8 + space-1` / `space-12 +
  *   space-1` (nine / thirteen BF baselines).
- * - Logo 32px inline gap → `space-4`; Vanilla's 8px / 16px negative row pull
+ * - Logo 2rem inline gap → `space-4`; Vanilla's 0.5rem / 1rem negative row pull
  *   and matching wrapper compensation → `space-1` / `space-2`.
- * - Media thumbnails 48px / 96px → `space-6` / `space-12`; their 16px
- *   gap → `space-2`; trailing 24px → `section-space-shallow`; metadata top
- *   8px → `space-1`.
+ * - Media thumbnails 3rem / 6rem → `space-6` / `space-12`; their 1rem
+ *   gap → `space-2`; trailing 1.5rem → `section-space-shallow`; metadata top
+ *   0.5rem → `space-1`.
  *
  * Those are relative values, rather than fixed pixels, so the same semantics
  * retain the deliberately denser documentation, app, and OS tiers.
@@ -55,8 +55,8 @@ export function logoMediaCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-logo-section-link:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-logo-section-logo) {
@@ -83,7 +83,7 @@ export function logoMediaCss(): string {
   inline-size: 100%;
 }
 
-/* Vanilla's small breakpoint is 620px. The items descendant, rather than the
+/* Vanilla's small breakpoint is 38.75rem. The items descendant, rather than the
    query container itself, responds when its allocated space reaches it. */
 @container bf-logo-section (width >= 38.75rem) {
   :where(.bf-theme) :where(.bf-logo-section-items) {

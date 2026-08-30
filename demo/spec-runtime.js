@@ -24,25 +24,28 @@ function installSpacingKeylineDebug() {
   ].map(([keyline, color]) => {
     const line = document.createElement("i");
     line.dataset.spacingKeyline = keyline;
-    line.style.cssText = `background:${color};height:100vh;opacity:.5;position:absolute;top:0;width:1px;`;
+    line.style.cssText = `background:${color};height:100vh;opacity:.5;position:absolute;top:0;width:0.0625rem;`;
     overlay.append(line);
     return line;
   });
   updateSpacingKeylineDebug = () => {
     overlay.dataset.spacingKeylineUpdateCount = String(Number(overlay.dataset.spacingKeylineUpdateCount) + 1);
+    const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const setLineLeft = (line, leftInCssPixels) => {
+      line.style.left = `${leftInCssPixels / rootRem}rem`;
+    };
     const page = document.querySelector("main.bf-page");
     const field = document.querySelector("input[type='text'], input[type='number'], select, textarea");
     const disclosure = document.querySelector(".bf-accordion-tab, .bf-list-tree-toggle, .bf-side-navigation-accordion-button");
     if (page) {
       const pageStyle = getComputedStyle(page);
-      const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-      lines[0].style.left = `${page.getBoundingClientRect().left + Number.parseFloat(pageStyle.paddingInlineStart) + rootRem}px`;
+      setLineLeft(lines[0], page.getBoundingClientRect().left + Number.parseFloat(pageStyle.paddingInlineStart) + rootRem);
     }
-    if (field) lines[1].style.left = `${field.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(field).paddingInlineStart)}px`;
+    if (field) setLineLeft(lines[1], field.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(field).paddingInlineStart));
     if (disclosure) {
       const disclosureStyle = getComputedStyle(disclosure);
       const icon = getComputedStyle(disclosure, "::before");
-      lines[2].style.left = `${disclosure.getBoundingClientRect().left + Number.parseFloat(disclosureStyle.paddingInlineStart) + Number.parseFloat(icon.inlineSize) + Number.parseFloat(disclosureStyle.gap)}px`;
+      setLineLeft(lines[2], disclosure.getBoundingClientRect().left + Number.parseFloat(disclosureStyle.paddingInlineStart) + Number.parseFloat(icon.inlineSize) + Number.parseFloat(disclosureStyle.gap));
     }
   };
   document.body.append(overlay);

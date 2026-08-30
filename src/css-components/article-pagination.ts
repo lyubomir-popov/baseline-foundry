@@ -48,8 +48,8 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
 }
 
 :where(.bf-theme) :where(.bf-article-pagination-link:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-article-pagination-link.is-previous) {
@@ -141,12 +141,12 @@ ${titleTypeStyles}  color: inherit;
 
   :where(.bf-theme) :where(.bf-article-pagination-link.is-previous:not(:only-child) .bf-article-pagination-label),
   :where(.bf-theme) :where(.bf-article-pagination-link.is-previous:not(:only-child) .bf-article-pagination-title) {
-    block-size: 1px;
+    block-size: 0.0625rem;
     border: 0;
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
-    inline-size: 1px;
-    margin: -1px;
+    inline-size: 0.0625rem;
+    margin: -0.0625rem;
     overflow: hidden;
     padding: 0;
     position: absolute;

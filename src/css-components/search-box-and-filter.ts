@@ -53,7 +53,7 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   inset-inline-end: var(--bf-border-width);
   margin: 0;
   padding: 0;
-  text-indent: -9999px;
+  text-indent: -624.9375rem;
 }
 
 :where(.bf-theme) :where(.bf-search-box-button)::before {
@@ -80,8 +80,8 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 }
 
 :where(.bf-theme) :where(.bf-search-box-reset:focus-visible, .bf-search-box-button:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter) {
@@ -96,7 +96,7 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 :where(.bf-theme) :where(.bf-search-and-filter-search-container) {
   align-items: stretch;
   background: transparent;
-  box-shadow: inset 0 -1px 0 var(--bf-color-border-high-contrast);
+  box-shadow: inset 0 -0.0625rem 0 var(--bf-color-border-high-contrast);
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
@@ -139,7 +139,7 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   margin: 0;
   padding: 0;
   position: absolute;
-  text-indent: -9999px;
+  text-indent: -624.9375rem;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-search-button)::before {
@@ -166,8 +166,8 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-search-button:focus-visible, .bf-search-and-filter-selected-count:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-clear) {
@@ -200,7 +200,7 @@ ${bodyTypeStyles}  appearance: none;
   background-color: var(--bf-color-background-inputs);
   border: var(--bf-border-width) solid var(--bf-color-border-default);
   border-top: 0;
-  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38);
+  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
   display: grid;
   gap: var(--bf-field-gap);
   opacity: 1;

@@ -8,7 +8,7 @@
  * Vanilla → BF spacing mapping:
  * - Hero's `$spv--large` / `$spv--x-large` top boundary → `space-2` /
  *   `space-3`; the surrounding stack owns the section exit.
- * - The default 50/50 relationship remains viable from a measured 720px
+ * - The default 50/50 relationship remains viable from a measured 45rem
  *   allocation; explicit 25/75 and 75/25 variants retain their own thresholds.
  * - Quote-wrapper's signpost/content and quote/citation relationships use
  *   the same 25/75 and 2/1 proportions. A quotation itself remains the
@@ -82,7 +82,7 @@ export function sitesEditorialPortsCss(): string {
    allocated a fluid grid track. Snap only the media block to the active tier
    baseline so the following semantic text remains on-grid; its inline track
    and the surrounding Vanilla proportions remain unchanged. */
-@supports (block-size: calc-size(auto, round(up, size, 1px))) {
+@supports (block-size: calc-size(auto, round(up, size, 0.0625rem))) {
   :where(.bf-theme) :where(.bf-hero-media > .bf-aspect, .bf-hero-signpost > :where(img, picture, video, canvas, svg)) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));
   }
@@ -210,7 +210,7 @@ export function sitesEditorialPortsCss(): string {
 /* The quote rail can also be a fractional grid track. Keep its media from
    introducing a sub-baseline row while leaving quotation and citation rhythm
    entirely baseline-compensated while its stack owns semantic gaps. */
-@supports (block-size: calc-size(auto, round(up, size, 1px))) {
+@supports (block-size: calc-size(auto, round(up, size, 0.0625rem))) {
   :where(.bf-theme) :where(.bf-quote-wrapper-signpost > :where(img, picture, svg), .bf-quote-wrapper-media > .bf-aspect) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));
   }

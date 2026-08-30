@@ -23,7 +23,7 @@ where a measurement confirms that the same padding relationship is shared.
 | Leading mark | Mark box before a label, then label start | `--bf-leading-mark-size`, `--bf-leading-mark-gap`, `--bf-leading-mark-offset`, `--bf-list-marker-dot-size` | prose UL/OL, ticked/crossed list, checkbox, radio, validation message | Consolidate only these measured members. The prose UL dot now occupies the same mark canvas as the selection controls; switches and disclosures retain wider tracks. |
 | Field content | Text inside a field surface | `--bf-control-inline-padding-field` | input, number, select, textarea, search field | Separate from commands; number/select reserve their own trailing affordance slot. |
 | Command content | Text inside a command surface | `--bf-control-inline-padding-action` | button, icon button, segmented control, tabs, pagination, file selector button | Buttons belong here horizontally, never in the field bucket. |
-| Icon-label continuation | Icon canvas to label/panel continuation | `--bf-icon-label-inline-offset`, `--bf-disclosure-label-inline-offset`, `--bf-disclosure-icon-optical-offset-block` | accordion, list tree, notification copy, accordion panel continuation | Accordion, list tree, notification copy, and panel content resolve to the same measured 32px audit line. Navigation depth remains layout-owned and is not forced onto it. |
+| Icon-label continuation | Icon canvas to label/panel continuation | `--bf-icon-label-inline-offset`, `--bf-disclosure-label-inline-offset`, `--bf-disclosure-icon-optical-offset-block` | accordion, list tree, notification copy, accordion panel continuation | Accordion, list tree, notification copy, and panel content resolve to the same measured 2rem audit line. Navigation depth remains layout-owned and is not forced onto it. |
 | Surface content | First content after a bounded surface edge | `--bf-panel-padding-inline` | panel/card/notice/notification/modal/drawer/search popup/footer, inline-options group | Keep distinct from the outer frame and compact controls. Surface padding is a region contract. |
 
 ## Occupied-block rhythm
@@ -64,7 +64,7 @@ where a measurement confirms that the same padding relationship is shared.
    existing baseline steps.
 2. Numeric fields retain native input semantics and keyboard increment /
    decrement behaviour. One field-owned background paints the compact pair in
-   the same 16px canvas and trailing position as select; Chromium's duplicate
+   the same 1rem canvas and trailing position as select; Chromium's duplicate
    reserved spin slot is removed.
 3. Prose lists, ticked/crossed lists, checkbox and radio labels previously
    resolved their mark-to-copy distance from unrelated baseline multiples in
@@ -73,7 +73,7 @@ where a measurement confirms that the same padding relationship is shared.
    is painted in that shared mark canvas, so its centre exactly matches the
    tick, checkbox, and radio centre in every tier. The radio inner dot is one
    border pixel larger and optically shifted one pixel left/up.
-4. Accordion and panel copy already established the same 32px continuation.
+4. Accordion and panel copy already established the same 2rem continuation.
    List-tree root compensation and notification padding now resolve through
    that relationship too. Notification icons are positioned backward from the
    shared copy line, preserving each tier's compact icon-to-text gap. No fourth

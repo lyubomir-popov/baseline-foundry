@@ -73,8 +73,8 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-tabs-link:focus-visible) {
   color: var(--bf-color-text-default);
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']) {
@@ -138,8 +138,8 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-field);
 }
 
 :where(.bf-theme) :where(.bf-choice-row:has(:focus-visible)) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-choice-row input[type='radio']) {
@@ -269,8 +269,8 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button:focus-visible, .bf-tab-buttons-button:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
   z-index: 2;
 }
 

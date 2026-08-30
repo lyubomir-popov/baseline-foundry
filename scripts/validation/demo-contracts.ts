@@ -323,9 +323,9 @@ export function validateGridSpecPage(gridSpecHtml: string, specShellCss: string)
   assert(specShellCss.includes('resize: horizontal;'), "Expected spec-shell.css to keep the breakpoint specimen resizable.");
   assert(specShellCss.includes('overflow: hidden;'), "Expected spec-shell.css to keep the breakpoint specimen resizable by clipping overflow.");
   assert(specShellCss.includes('min-inline-size: 15rem;'), "Expected spec-shell.css to keep the breakpoint specimen minimum width.");
-  assert(/\.specimen-grid-scope\.is-grid-4\s*\{\s*inline-size:\s*38\.6875rem;/.test(specShellCss), "Expected spec-shell.css to seed the 4-column specimen at the 619px breakpoint edge.");
-  assert(/\.specimen-grid-scope\.is-grid-8\s*\{\s*inline-size:\s*64\.6875rem;/.test(specShellCss), "Expected spec-shell.css to seed the 8-column specimen at the 1035px breakpoint edge.");
-  assert(/\.specimen-grid-scope\.is-grid-16\s*\{\s*inline-size:\s*105\.0625rem;/.test(specShellCss), "Expected spec-shell.css to seed the 16-column specimen at the 1681px breakpoint edge.");
+  assert(/\.specimen-grid-scope\.is-grid-4\s*\{\s*inline-size:\s*38\.6875rem;/.test(specShellCss), "Expected spec-shell.css to seed the 4-column specimen at the 38.6875rem breakpoint edge.");
+  assert(/\.specimen-grid-scope\.is-grid-8\s*\{\s*inline-size:\s*64\.6875rem;/.test(specShellCss), "Expected spec-shell.css to seed the 8-column specimen at the 64.6875rem breakpoint edge.");
+  assert(/\.specimen-grid-scope\.is-grid-16\s*\{\s*inline-size:\s*105\.0625rem;/.test(specShellCss), "Expected spec-shell.css to seed the 16-column specimen at the 105.0625rem breakpoint edge.");
   assert(!gridSpecHtml.includes('pc-grid-guide'), "Expected grid.html to stop using the page-local pc-grid-guide helper.");
 }
 

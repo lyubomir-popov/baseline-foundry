@@ -407,8 +407,8 @@ ${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-control-inline
 
 :where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--bf-color-background-active);
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):disabled {
@@ -470,7 +470,7 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
 
 /* Number fields retain their native input semantics and keyboard stepping,
    while one field-owned background paints the compact pair. Sharing select's
-   16px canvas and end position avoids a second browser-reserved spin slot. */
+   1rem canvas and end position avoids a second browser-reserved spin slot. */
 :where(.bf-theme) :where(input[type='number']) {
   appearance: textfield;
   background-image: var(--bf-ui-icon-number-stepper);
@@ -587,13 +587,13 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 }
 
 :where(.bf-theme) :where(.bf-checkbox-input:focus-visible + .bf-checkbox-label)::before {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-radio-input:focus-visible + .bf-radio-label)::before {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-switch) {
@@ -649,8 +649,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 }
 
 :where(.bf-theme) :where(.bf-switch-input:focus-visible + .bf-switch-slider) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-switch-input:disabled + .bf-switch-slider) {
@@ -806,7 +806,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
   block-size: var(--bf-control-visual-size);
   border-radius: 50%;
-  box-shadow: 0 0 calc(var(--bf-control-visual-size) * 0.25) 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
   inline-size: var(--bf-control-visual-size);
   margin-top: calc((var(--bf-slider-track-size) - var(--bf-control-visual-size)) / 2);
 }
@@ -832,7 +832,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
   block-size: var(--bf-control-visual-size);
   border-radius: 50%;
-  box-shadow: 0 0 calc(var(--bf-control-visual-size) * 0.25) 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
   inline-size: var(--bf-control-visual-size);
 }
 
@@ -901,11 +901,11 @@ ${listCss({ bodyTypeStyles })}
 ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-background-alt);
   color: var(--bf-color-link-default);
   display: block;
-  left: -999px;
+  left: -62.4375rem;
   max-inline-size: calc(100vw - var(--bf-baseline));
   position: absolute;
   text-decoration: none;
-  top: -999px;
+  top: -62.4375rem;
 }
 
 :where(.bf-theme) :where(.bf-skip-link:hover) {
@@ -914,7 +914,7 @@ ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-backgrou
 
 :where(.bf-theme) :where(.bf-skip-link:focus, .bf-skip-link:focus-visible) {
   left: calc(var(--bf-baseline) * 0.5);
-  outline: 2px solid var(--bf-color-focus);
+  outline: 0.125rem solid var(--bf-color-focus);
   outline-offset: 0;
   padding-block: calc(var(--bf-baseline) * 1.5);
   padding-inline: calc(var(--bf-baseline) * 1.5);
@@ -947,7 +947,7 @@ ${chipBadgeStatusCss({
   margin: 0;
   padding: 0;
   position: relative;
-  text-indent: -9999px;
+  text-indent: -624.9375rem;
 }
 
 :where(.bf-theme) :where(.bf-chip-dismiss) {
@@ -959,7 +959,7 @@ ${chipBadgeStatusCss({
 :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::before,
 :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::after {
   background: currentColor;
-  block-size: 2px;
+  block-size: 0.125rem;
   content: "";
   inline-size: 0.75rem;
   left: 50%;
@@ -1006,7 +1006,7 @@ ${legacyNavigationCss({
 :where(.bf-theme) :where(.bf-contextual-menu-dropdown) {
   background: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-default);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.28);
   display: none;
   list-style: none;
   margin: 0;
@@ -1040,7 +1040,7 @@ ${legacyNavigationCss({
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group) {
-  box-shadow: inset 0 1px 0 var(--bf-color-border-default);
+  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-default);
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-link) {
@@ -1079,8 +1079,8 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-link):focus-visible {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-link.is-disabled, .bf-contextual-menu-link[disabled]) {
@@ -1103,7 +1103,7 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 
 :where(.bf-theme) :where(.bf-tooltip-message) {
 ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-background-alt);
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default), 0 12px 32px rgba(0, 0, 0, 0.24);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default), 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
   color: var(--bf-color-text-default);
   inline-size: max-content;
   left: 0;
@@ -1262,8 +1262,8 @@ ${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inlin
 }
 
 :where(.bf-theme) :where(.bf-pagination-link:focus-visible, .bf-pagination-link.is-previous:focus-visible, .bf-pagination-link.is-next:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-pagination-link.is-active, .bf-pagination-link[aria-current='page'], .bf-pagination-link[aria-current='true']) {
@@ -1354,8 +1354,8 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-accordion-tab):focus-visible {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-accordion-tab)::before {
@@ -1510,7 +1510,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 :where(.bf-theme) :where(.bf-code-snippet-header) {
   align-items: start;
   background: var(--bf-color-background-active);
-  box-shadow: inset 0 -1px 0 var(--bf-color-border-default);
+  box-shadow: inset 0 -0.0625rem 0 var(--bf-color-border-default);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -1542,7 +1542,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-default);
 :where(.bf-theme) :where(.bf-code-snippet-header.is-stacked) :where(.bf-code-snippet-dropdowns) {
   justify-content: stretch;
   margin-inline-start: 0;
-  box-shadow: inset 0 1px 0 var(--bf-color-border-default);
+  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-default);
   width: 100%;
 }
 
@@ -1561,7 +1561,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-dropdown) + :where(.bf-code-snippet-dropdown) {
-  box-shadow: inset 1px 0 0 var(--bf-color-border-default);
+  box-shadow: inset 0.0625rem 0 0 var(--bf-color-border-default);
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-dropdown):focus:not(:focus-visible) {
@@ -1569,8 +1569,8 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-dropdown):focus-visible {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-block, .bf-code-snippet-block.is-icon, .bf-code-snippet-block.is-numbered) {
@@ -1623,7 +1623,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon.is-copied) {
   background: color-mix(in srgb, var(--bf-color-background-alt) 78%, var(--bf-color-background-information-default));
-  box-shadow: inset 0 0 0 1px var(--bf-color-border-information);
+  box-shadow: inset 0 0 0 0.0625rem var(--bf-color-border-information);
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon):focus:not(:focus-visible) {
@@ -1631,8 +1631,8 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon):focus-visible {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-numbered) {
@@ -1766,7 +1766,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {
-  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38);
+  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
   transform: translateX(0);
   visibility: visible;
 }
@@ -1776,10 +1776,10 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-label) {
-  block-size: 1px;
+  block-size: 0.0625rem;
   clip-path: inset(50%);
-  inline-size: 1px;
-  max-inline-size: 1px;
+  inline-size: 0.0625rem;
+  max-inline-size: 0.0625rem;
   opacity: 0;
   overflow: hidden;
   pointer-events: none;
@@ -1857,7 +1857,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-aside.is-overlay, .bf-aside.is-drawer) {
   align-self: stretch;
   block-size: auto;
-  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38);
+  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
   bottom: 0;
   grid-column: 1 / -1;
   grid-row: 1 / -1;
@@ -1947,14 +1947,14 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-application-aside-resize-handle)::after {
   background: var(--bf-color-border-default);
-  border-radius: 999px;
+  border-radius: 62.4375rem;
   content: "";
   inset-block: var(--bf-panel-padding-block);
-  inset-inline-start: calc(50% - 1px);
+  inset-inline-start: calc(50% - 0.0625rem);
   opacity: 0.95;
   position: absolute;
   transition: background-color 120ms ease, opacity 120ms ease;
-  width: 2px;
+  width: 0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-application-aside-resize-handle):hover::after,
@@ -1964,8 +1964,8 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible {
-  outline: 2px solid var(--bf-application-resize-handle-focus-ring);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-application-resize-handle-focus-ring);
+  outline-offset: -0.125rem;
 }
 
 @media (min-width: 64.75rem) {

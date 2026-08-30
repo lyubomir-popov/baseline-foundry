@@ -8,9 +8,9 @@
  * content paired with one responsive image or video slot.
  *
  * Vanilla → BF spacing mapping:
- * - horizontal item 8px/16px block padding → `space-1`/`space-2`;
- * - 16px grid gutters → `grid-gap-inline`;
- * - the 620px/1036px page breakpoints → 38.75rem/64.75rem container
+ * - horizontal item 0.5rem/1rem block padding → `space-1`/`space-2`;
+ * - 1rem grid gutters → `grid-gap-inline`;
+ * - the 38.75rem/64.75rem page breakpoints → 38.75rem/64.75rem container
  *   thresholds for descendants. Text roles keep their own metric-derived
  *   margins and baseline compensation in every tier. Parent stacks own every
  *   boundary outside the pattern.
@@ -76,7 +76,7 @@ export function sitesRichListsCss(): string {
 /* A full-width ratio inside a fluid Sites rail otherwise leaves the next
    heading on a fractional pixel. The visual alone absorbs the trailing
    compensation; semantic children retain their own margins unchanged. */
-@supports (block-size: calc-size(auto, round(up, size, 1px))) {
+@supports (block-size: calc-size(auto, round(up, size, 0.0625rem))) {
   :where(.bf-theme) :where(.bf-rich-list-visual > .bf-aspect) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));
   }
@@ -239,7 +239,7 @@ export function sitesRichListsCss(): string {
 /* The media object deliberately stretches across fluid 1/2 and 2/3 ratios.
    Snap that resulting block, rather than resetting content spacing, so each
    tier's baseline survives both portrait and landscape allocations. */
-@supports (block-size: calc-size(auto, round(up, size, 1px))) {
+@supports (block-size: calc-size(auto, round(up, size, 0.0625rem))) {
   :where(.bf-theme) :where(.bf-rich-list-media-frame) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));
   }
@@ -331,7 +331,7 @@ export function sitesRichListsCss(): string {
     min-block-size: 56.25cqi;
   }
 
-  @supports (min-block-size: round(up, 1px, 1px)) {
+  @supports (min-block-size: round(up, 0.0625rem, 0.0625rem)) {
     :where(.bf-theme) :where(.bf-rich-list-media.is-auto-height) :where(.bf-rich-list-media-frame) {
       max-block-size: round(down, 150cqi, var(--bf-baseline));
       min-block-size: round(up, 56.25cqi, var(--bf-baseline));

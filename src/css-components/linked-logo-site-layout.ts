@@ -8,10 +8,10 @@
  * link/mark contract; the additional card slots are semantic link content,
  * not the deprecated `logo-block` API.
  *
- * Vanilla → BF mapping (Vanilla's 8px spacing unit):
+ * Vanilla → BF mapping (Vanilla's 0.5rem spacing unit):
  * - linked-logo image container: retained 16:9 aspect relationship;
- * - muted rule to copy: 8px → `--bf-space-1`, compensating its border;
- * - grid gutter: 24px / 32px breakpoint values → existing
+ * - muted rule to copy: 0.5rem → `--bf-space-1`, compensating its border;
+ * - grid gutter: 1.5rem / 2rem breakpoint values → existing
  *   `--bf-grid-gap-inline` (BF's tier-aware grid geometry);
  * - macro section boundaries: existing shallow/default/deep section tokens.
  *
@@ -96,7 +96,7 @@ export function linkedLogoSiteLayoutCss(): string {
    of baselines tall. Keep the visual ratio exact and put only the residual
    rhythm compensation after the mark; the copy keeps its own semantic
    spacing and the occupied card still lands on the tier grid. */
-@supports (margin-block-end: round(up, 1px, 1px)) {
+@supports (margin-block-end: round(up, 0.0625rem, 0.0625rem)) {
   :where(.bf-theme) :where(.bf-linked-logo-section-mark) {
     margin-block-end: calc(
       round(up, calc(100cqi * 9 / 16), var(--bf-baseline))

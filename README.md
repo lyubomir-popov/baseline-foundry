@@ -495,7 +495,7 @@ Example sketch for a downstream Ubuntu Sans theme:
 		"pageMarginBaselineUnits": 2
 	},
 	"components": {
-		"borderWidthPx": 1,
+		"borderWidthRem": 0.0625,
 		"radiusRem": 0,
 		"controlBlockPaddingRem": 0.5,
 		"controlCompactBlockPaddingRem": 0.25,

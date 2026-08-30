@@ -96,7 +96,7 @@ component implementation.
 **Acceptance Scenarios**:
 
 1. **Given** a pattern whose default content is a balanced readable split,
-   **When** its query container reaches 45rem (720px), **Then** it may use its
+   **When** its query container reaches 45rem (45rem), **Then** it may use its
    multi-column arrangement; below that width it remains one column.
 2. **Given** the hero and tiered-list header, **When** their own containers are
    measured, **Then** their default 50/50 title/content arrangements use the
@@ -179,7 +179,7 @@ indents or occupied heights.
   a wholesale class rename as part of the investigation. Any follow-on
   migration must be separately planned from measured source and consumer
   evidence.
-- **FR-013**: Treat 45rem (720px) of the query container as the shared
+- **FR-013**: Treat 45rem (45rem) of the query container as the shared
   threshold for a default readable 50/50 pattern split. Inventory every
   component and pattern with a comparable split, correct unjustified divergent
   thresholds, and record a distinct intrinsic reason for each exception.
@@ -203,7 +203,7 @@ indents or occupied heights.
   root navigation keyline.
 - **FR-018**: Preserve native number-input semantics and keyboard increment /
   decrement behaviour. The visible paired-chevron affordance must occupy one
-  measured 16px canvas at the same trailing position as select, without a
+  measured 1rem canvas at the same trailing position as select, without a
   second browser-reserved spin slot or unexplained spare trailing space.
 
 ## Success Criteria

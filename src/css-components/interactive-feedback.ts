@@ -155,7 +155,7 @@ export function interactiveFeedbackCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-notification.is-borderless .bf-notification-content) {
-  --bf-stack-space: 0px;
+  --bf-stack-space: 0rem;
   margin-block-start: 0;
 }
 

@@ -44,8 +44,8 @@ Read in this order:
 - Controls follow the Vanilla occupied-block model: symmetric nudge-derived
   padding, no target block size, and trailing compensation that snaps the
   occupied block to the grid.
-- Canonical tagged navigation preserves the 38px-by-22px tag, 16px mark box,
-  and fixed 6px mark-to-tag-bottom offset. The mark aligns to the first title
+- Canonical tagged navigation preserves the 2.375rem-by-1.375rem tag, 1rem mark
+  box, and fixed 0.375rem mark-to-tag-bottom offset. The mark aligns to the first title
   line rather than the tag centre; the tag attaches to the navigation top and
   must not stretch to the full occupied row.
 - `bf-grid`, `bf-stack`, `bf-cluster`, and `bf-section` stay small and

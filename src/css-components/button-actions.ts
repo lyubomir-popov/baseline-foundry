@@ -50,8 +50,8 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
 }
 
 :where(.bf-theme) :where(.bf-button, .bf-button.is-base):focus-visible {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: 0.125rem;
 }
 
 /* ------------------------------------------------------------------ */
@@ -123,7 +123,7 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action);
   background-color: transparent;
   color: var(--bf-color-link-default);
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 0.0625rem;
   text-underline-offset: 0.075em;
 }
 

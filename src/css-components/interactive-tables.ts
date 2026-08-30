@@ -20,10 +20,10 @@ export function interactiveTablesCss(): string {
   cursor: inherit;
   display: inline-block;
   font: inherit;
-  margin: -2px calc(var(--bf-space-half) * -1);
+  margin: -0.125rem calc(var(--bf-space-half) * -1);
   max-inline-size: 100%;
   overflow: hidden;
-  padding: 2px var(--bf-space-half);
+  padding: 0.125rem var(--bf-space-half);
   text-align: inherit;
   text-decoration: inherit;
   text-overflow: inherit;
@@ -34,7 +34,7 @@ export function interactiveTablesCss(): string {
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]:hover, .bf-table-sort-button:focus-visible) {
   color: var(--bf-color-link-default);
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 0.0625rem;
   text-underline-offset: 0.075em;
 }
 
@@ -43,8 +43,8 @@ export function interactiveTablesCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-table-sort-button:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after {
@@ -101,9 +101,9 @@ export function interactiveTablesCss(): string {
   }
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > thead) {
-    block-size: 1px;
+    block-size: 0.0625rem;
     clip-path: inset(50%);
-    inline-size: 1px;
+    inline-size: 0.0625rem;
     overflow: hidden;
     position: absolute;
     white-space: nowrap;

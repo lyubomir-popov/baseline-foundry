@@ -136,7 +136,7 @@ export function tieredListEqualHeightRowCss(): string {
 /* Responsive aspect media can make a shared subgrid track land between
    baselines. Snap that media box itself; the surrounding composition still
    does not own or erase any child's semantic margins. */
-@supports (block-size: calc-size(auto, round(up, size, 1px))) {
+@supports (block-size: calc-size(auto, round(up, size, 0.0625rem))) {
   :where(.bf-theme) :where(.bf-equal-height-row-item) > :where(.bf-aspect) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));
   }
@@ -215,7 +215,7 @@ export function tieredListEqualHeightRowCss(): string {
 :where(.bf-theme) :where(.bf-equal-height-row.is-divider-3:not(.is-divider-1))::before,
 :where(.bf-theme) :where(.bf-equal-height-row.is-divider-3:not(.is-divider-2))::after {
   background-color: var(--bf-color-border-low-contrast);
-  block-size: 1px;
+  block-size: 0.0625rem;
   content: "";
   display: none;
   grid-column: 1 / -1;

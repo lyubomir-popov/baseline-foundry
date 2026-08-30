@@ -70,7 +70,7 @@ a {
 
 .example-column-guide .bf-span-1 {
   background: color-mix(in srgb, #ff4f90 18%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #ff4f90 55%, rgba(0, 0, 0, 0.1));
+  box-shadow: inset 0 0 0 0.0625rem color-mix(in srgb, #ff4f90 55%, rgba(0, 0, 0, 0.1));
   min-block-size: 100%;
 }
 
@@ -107,7 +107,7 @@ a {
     linear-gradient(135deg, rgba(0, 102, 204, 0.12), rgba(15, 149, 161, 0.12)),
     linear-gradient(180deg, rgba(0, 0, 0, 0.04), transparent 35%),
     var(--bf-color-background-default, #ffffff);
-  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  border: 0.0625rem solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
   min-block-size: calc(var(--bf-baseline, 0.5rem) * 28);
 }
 
@@ -117,7 +117,7 @@ a {
 }
 
 .example-docs-nav {
-  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  border: 0.0625rem solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
 }
 
 .example-docs-content,
@@ -144,7 +144,7 @@ a {
 
 .example-application-frame,
 .example-panel-reflow-application {
-  border: 1px solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
+  border: 0.0625rem solid var(--bf-color-border-low-contrast, rgba(0, 0, 0, 0.12));
 }
 
 .example-application-frame {

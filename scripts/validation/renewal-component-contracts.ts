@@ -134,11 +134,11 @@ export function validateRenewalComponentContracts(
   }
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-row) {\n  padding-block: 0;"), "Expected the navigation layout contract to remove row-owned vertical padding.");
   assert(css.includes("background: var(--bf-color-brand);"), "Expected the tagged navigation brand block to use the Ubuntu-orange semantic token.");
-  assert(css.includes("block-size: var(--bf-top-navigation-logo-tag-block-size);"), "Expected the tagged navigation block to preserve its fixed 38px tag height.");
+  assert(css.includes("block-size: var(--bf-top-navigation-logo-tag-block-size);"), "Expected the tagged navigation block to preserve its fixed 2.375rem tag height.");
   assert(css.includes("padding-block: 0 var(--bf-top-navigation-logo-icon-bottom-offset);"), "Expected the tagged navigation mark to preserve its fixed tag-bottom inset.");
   assert(css.includes("transform: translateX(var(--bf-top-navigation-logo-icon-optical-offset-inline));"), "Expected the Circle of Friends to compensate for its asymmetric source bounds.");
-  assert(css.includes("--bf-icon-label-optical-offset-block: 0.1875rem;") && css.includes("--bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);"), "Expected side-navigation to inherit the shared 3px icon-and-label optical offset.");
-  assert(css.includes("--bf-side-navigation-icon-gap: 0.625rem;"), "Expected icon-navigation to expose the shared 10px icon-to-label gap.");
+  assert(css.includes("--bf-icon-label-optical-offset-block: 0.1875rem;") && css.includes("--bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);"), "Expected side-navigation to inherit the shared 0.1875rem icon-and-label optical offset.");
+  assert(css.includes("--bf-side-navigation-icon-gap: 0.625rem;"), "Expected icon-navigation to expose the shared 0.625rem icon-to-label gap.");
   assert(css.includes("--bf-navigation-brand-title-optical-offset-block: 0rem;"), "Expected panel-aligned navigation brands to share the tagged mark's optical top without a downward offset.");
   assert(css.includes("padding-inline-start: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));"), "Expected navigation-brand headers to share the opposing panel-content inset.");
   assert(css.includes("transform: translateY(var(--bf-navigation-brand-title-optical-offset-block));"), "Expected navigation-brand titles to consume the shared block-axis optical offset.");
@@ -151,7 +151,7 @@ export function validateRenewalComponentContracts(
   assert(!css.includes("block-size: calc(var(--bf-body-line-height) + (var(--bf-top-navigation-link-padding-block) * 2));"), "Expected tagged navigation not to stretch its tag to the full occupied row.");
   assert(!css.includes("--bf-top-navigation-brand-region"), "Expected generated tier CSS to remove the fixed top-navigation brand-region token.");
   assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));") && css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;"), "Expected grid-aligned navigation to share the eight-column page grid and begin primary navigation at column three.");
-  assert(css.includes("--bf-bar-thickness: 0.1875rem;"), "Expected generated tier CSS to expose the shared rem-based 3px emphasis-bar token.");
+  assert(css.includes("--bf-bar-thickness: 0.1875rem;"), "Expected generated tier CSS to expose the shared rem-based 0.1875rem emphasis-bar token.");
   assert(css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notice-border);") && css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);") && css.includes("border-bottom: var(--bf-bar-thickness) solid transparent;") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notices, notifications, tabs, and highlight rules to consume the shared emphasis-bar token.");
   assert(css.includes("container-name: bf-article-pagination;") && css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes("inline-size: calc((100cqi - var(--bf-space-2)) / 2);"), "Expected article pagination to retain its named container and persistent equal-half structure.");
   assert(css.includes("column-gap: var(--bf-space-2);") && css.includes("row-gap: var(--bf-space-half);"), "Expected article pagination to map Vanilla's medium and x-small spacing to BF rhythm tokens.");
@@ -189,7 +189,7 @@ export function validateRenewalComponentContracts(
   assert(css.includes("padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to retain its wide space-3 entry boundary without border drift.");
   assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
   assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && !css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child) {\n  inline-size: 100%;\n  margin-block-end: 0;"), "Expected hero to expose a structural lead without a final-child semantic-margin reset.");
-  assert(css.includes("@container bf-hero (width >= 45rem)") && css.includes(".bf-hero.is-split-medium") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero variants and its default split to share the measured 720px threshold, with a fallback introduction rail.");
+  assert(css.includes("@container bf-hero (width >= 45rem)") && css.includes(".bf-hero.is-split-medium") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero variants and its default split to share the measured 45rem threshold, with a fallback introduction rail.");
   for (const requiredSplit of [
     ".bf-tiered-list:not(.is-description-full-width)",
     ".bf-divided-section) :where(.bf-divided-section-layout)",
@@ -223,13 +223,13 @@ export function validateRenewalComponentContracts(
     "margin": "0"
   }, "table of contents owns only its internal section gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-section)", {
-    "--bf-stack-space": "0px",
+    "--bf-stack-space": "0rem",
     "display": "grid",
     "gap": "var(--bf-stack-space)",
     "padding": "0"
   }, "table-of-contents sections own heading-to-navigation spacing without item padding");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-list)", {
-    "--bf-stack-space": "0px",
+    "--bf-stack-space": "0rem",
     "display": "grid",
     "gap": "var(--bf-stack-space)"
   }, "table-of-contents lists own inter-row rhythm");

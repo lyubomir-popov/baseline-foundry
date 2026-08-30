@@ -40,13 +40,15 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     const initialKeylines = await keylines.evaluateAll(lines => lines.map(line => {
       const style = getComputedStyle(line);
       return {
+        authoredLeft: (line as HTMLElement).style.left,
+        authoredWidth: (line as HTMLElement).style.width,
         color: style.backgroundColor,
         left: style.left,
         opacity: style.opacity,
         width: style.width
       };
     }));
-    assert(initialKeylines.every(line => line.opacity === "0.5" && line.width === "1px"), "Expected every spacing keyline to remain one pixel wide at 50% opacity.");
+    assert(initialKeylines.every(line => line.opacity === "0.5" && line.width === "1px" && line.authoredWidth === "0.0625rem" && line.authoredLeft.endsWith("rem")), "Expected every spacing keyline to use rem-authored geometry and resolve to one CSS pixel at the default root size with 50% opacity.");
     assert(initialKeylines.map(line => line.color).join("|") === "rgb(255, 0, 0)|rgb(0, 128, 0)|rgb(0, 0, 255)", "Expected one-rem, field-text, and disclosure-label keylines to remain red, green, and blue.");
     const alignmentGeometry = await page.evaluate(`(() => {
       const number = value => Number.parseFloat(value) || 0;
@@ -71,6 +73,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       const radio = box(".bf-radio-label");
       const radioOuter = pseudo(".bf-radio-label");
       const radioDot = pseudo(".bf-radio-label", "::after");
+      const radioOuterStyle = getComputedStyle(document.querySelector(".bf-radio-label"), "::before");
       const prose = box(".bf-prose ul > li");
       const proseDot = pseudo(".bf-prose ul > li");
       const page = box("main.bf-page");
@@ -83,7 +86,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         radioCenterY: radio.top + radioOuter.top + (radioOuter.height / 2),
         radioDotCenterY: radio.top + radioDot.top + (radioDot.height / 2),
         radioDotWidth: radioDot.width,
-        expectedRadioDotWidth: (radioOuter.width * 0.375) + 1,
+        borderWidth: number(radioOuterStyle.borderInlineStartWidth),
+        expectedRadioDotWidth: (radioOuter.width * 0.375) + number(radioOuterStyle.borderInlineStartWidth),
         accordionStart: iconLabelStart(".bf-accordion-tab"),
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
         notificationStart: box(".bf-notification-title").left,
@@ -93,8 +97,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       };
     })()`);
     assert(Math.abs(alignmentGeometry.proseDotCenter - alignmentGeometry.radioCenter) < 0.51, "Expected the prose dot and radio control to share one leading-mark centre.");
-    assert(Math.abs(alignmentGeometry.radioDotCenterX - (alignmentGeometry.radioCenter - 1)) < 0.01 && Math.abs(alignmentGeometry.radioDotCenterY - (alignmentGeometry.radioCenterY - 1)) < 0.01, "Expected the radio inner dot to sit one pixel left and above the outer-circle centre.");
-    assert(Math.abs(alignmentGeometry.radioDotWidth - alignmentGeometry.expectedRadioDotWidth) < 0.01, "Expected the radio inner dot to be one pixel wider than its previous proportional size.");
+    assert(Math.abs(alignmentGeometry.radioDotCenterX - (alignmentGeometry.radioCenter - alignmentGeometry.borderWidth)) < 0.01 && Math.abs(alignmentGeometry.radioDotCenterY - (alignmentGeometry.radioCenterY - alignmentGeometry.borderWidth)) < 0.01, "Expected the radio inner dot to sit one scalable border unit left and above the outer-circle centre.");
+    assert(Math.abs(alignmentGeometry.radioDotWidth - alignmentGeometry.expectedRadioDotWidth) < 0.01, "Expected the radio inner dot to be one scalable border unit wider than its previous proportional size.");
     assert(Math.max(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) - Math.min(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) < 0.51, "Expected accordion, list-tree, notification, and panel copy to share one icon-label continuation keyline.");
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent a literal one-rem page inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
@@ -103,14 +107,14 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     await tierSelect.selectOption(nextTier);
     await page.waitForSelector(`body.bf-tier-${nextTier}`);
     await page.waitForTimeout(50);
-    const tierKeylines = await keylines.evaluateAll(lines => lines.map(line => getComputedStyle(line).left));
+    const tierKeylines = await keylines.evaluateAll(lines => lines.map(line => ({ authored: (line as HTMLElement).style.left, computed: getComputedStyle(line).left })));
     const tierUpdateCount = Number(await overlay.getAttribute("data-spacing-keyline-update-count"));
-    assert(tierUpdateCount > initialUpdateCount && tierKeylines.every(left => left.endsWith("px")), "Expected spacing keylines to refresh after a tier change.");
+    assert(tierUpdateCount > initialUpdateCount && tierKeylines.every(left => left.authored.endsWith("rem") && left.computed.endsWith("px")), "Expected rem-authored spacing keylines to refresh after a tier change.");
     await page.setViewportSize({ width: 1200, height: 720 });
     await page.waitForTimeout(50);
-    const resizedKeylines = await keylines.evaluateAll(lines => lines.map(line => getComputedStyle(line).left));
+    const resizedKeylines = await keylines.evaluateAll(lines => lines.map(line => ({ authored: (line as HTMLElement).style.left, computed: getComputedStyle(line).left })));
     const resizedUpdateCount = Number(await overlay.getAttribute("data-spacing-keyline-update-count"));
-    assert(resizedUpdateCount > tierUpdateCount && resizedKeylines.every(left => left.endsWith("px")), "Expected spacing keylines to refresh after a viewport resize.");
+    assert(resizedUpdateCount > tierUpdateCount && resizedKeylines.every(left => left.authored.endsWith("rem") && left.computed.endsWith("px")), "Expected rem-authored spacing keylines to refresh after a viewport resize.");
     const number = page.locator('input[type="number"]').first();
     const select = page.locator("select").first();
     const box = await number.boundingBox();
@@ -140,6 +144,49 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(numberGeometry.backgroundPosition === selectGeometry.backgroundPosition, "Expected number and select chevrons to share the same trailing position.");
     assert(numberGeometry.backgroundSize === selectGeometry.backgroundSize, "Expected number and select chevrons to share the same 16px canvas.");
     assert(numberGeometry.paddingInlineEnd === selectGeometry.paddingInlineEnd, "Expected number and select to reserve the same trailing canvas space.");
+    const enlargedGeometry = await page.evaluate(() => {
+      document.documentElement.style.fontSize = "200%";
+      window.dispatchEvent(new Event("resize"));
+      const numberField = document.querySelector<HTMLInputElement>('input[type="number"]');
+      const selectField = document.querySelector<HTMLSelectElement>("select");
+      const radioLabel = document.querySelector<HTMLElement>(".bf-radio-label");
+      const red = document.querySelector<HTMLElement>("[data-spacing-keyline='one-rem-inset']");
+      const pageElement = document.querySelector<HTMLElement>("main.bf-page");
+      if (!numberField || !selectField || !radioLabel || !red || !pageElement) throw new Error("Missing enlarged-root spacing specimen.");
+      const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const radioOuter = getComputedStyle(radioLabel, "::before");
+      const radioDot = getComputedStyle(radioLabel, "::after");
+      const numberStyle = getComputedStyle(numberField);
+      const selectStyle = getComputedStyle(selectField);
+      return {
+        rootSize,
+        borderWidth: Number.parseFloat(radioOuter.borderInlineStartWidth),
+        lineWidth: Number.parseFloat(getComputedStyle(red).width),
+        lineAuthoredWidth: red.style.width,
+        lineAuthoredLeft: red.style.left,
+        redStart: red.getBoundingClientRect().left,
+        expectedRedStart: pageElement.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(pageElement).paddingInlineStart) + rootSize,
+        radioOuterWidth: Number.parseFloat(radioOuter.width),
+        radioDotWidth: Number.parseFloat(radioDot.width),
+        radioOuterLeft: Number.parseFloat(radioOuter.left),
+        radioDotLeft: Number.parseFloat(radioDot.left),
+        numberCanvas: numberStyle.backgroundSize,
+        selectCanvas: selectStyle.backgroundSize,
+        chromePresent: Boolean(document.querySelector(".pc-nav") && document.querySelector(".pc-header") && document.querySelector(".pc-footer"))
+      };
+    });
+    assert(Math.abs(enlargedGeometry.rootSize - 32) < 0.01, `Expected the enlarged-root audit to resolve to twice the default root size; got ${enlargedGeometry.rootSize}.`);
+    assert(Math.abs(enlargedGeometry.borderWidth - 2) < 0.01 && Math.abs(enlargedGeometry.lineWidth - 2) < 0.01, `Expected borders and overlay keylines to scale together from their 0.0625rem source length; got ${JSON.stringify(enlargedGeometry)}.`);
+    assert(enlargedGeometry.lineAuthoredWidth === "0.0625rem" && enlargedGeometry.lineAuthoredLeft.endsWith("rem"), "Expected the enlarged overlay to retain rem-authored width and position values.");
+    assert(Math.abs(enlargedGeometry.redStart - enlargedGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to retain its literal one-rem inset after root enlargement.");
+    const enlargedRadioCenterShift = (enlargedGeometry.radioOuterLeft + (enlargedGeometry.radioOuterWidth / 2)) - (enlargedGeometry.radioDotLeft + (enlargedGeometry.radioDotWidth / 2));
+    assert(Math.abs(enlargedGeometry.radioDotWidth - ((enlargedGeometry.radioOuterWidth * 0.375) + enlargedGeometry.borderWidth)) < 0.02 && Math.abs(enlargedRadioCenterShift - enlargedGeometry.borderWidth) < 0.02, `Expected the radio inner-dot growth and optical shift to scale by the rem-based border unit; got ${JSON.stringify(enlargedGeometry)}.`);
+    assert(enlargedGeometry.numberCanvas === enlargedGeometry.selectCanvas && enlargedGeometry.numberCanvas === "32px 32px", "Expected number and select chevron canvases to scale together at the enlarged root size.");
+    assert(enlargedGeometry.chromePresent, "Expected shared page chrome to remain present after root enlargement.");
+    await page.evaluate(() => {
+      document.documentElement.style.fontSize = "";
+      window.dispatchEvent(new Event("resize"));
+    });
     const originalValue = await number.inputValue();
     await number.focus();
     await number.press("ArrowUp");

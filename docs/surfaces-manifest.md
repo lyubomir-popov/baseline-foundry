@@ -145,7 +145,7 @@ serialized legacy `spaceAfter` data does not drive layout.
 
 ```jsonc
 {
-  "borderWidth": "1px",
+  "borderWidth": "0.0625rem",
   "barThickness": "0.1875rem",
   "radius": "0.125rem",
   "controlBlockPadding": "0.41rem",

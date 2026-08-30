@@ -279,7 +279,8 @@ export function injectPageChrome(options = {}) {
     const firstScript = document.body.querySelector(":scope > script");
     document.body.insertBefore(footer, firstScript ?? null);
     const reserveFooter = () => {
-      document.body.style.setProperty("--pc-footer-block-size", `${footer.getBoundingClientRect().height}px`);
+      const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+      document.body.style.setProperty("--pc-footer-block-size", `${footer.getBoundingClientRect().height / rootRem}rem`);
     };
     reserveFooter();
     if (typeof ResizeObserver === "function") {

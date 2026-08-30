@@ -46,7 +46,7 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 
 :where(.bf-theme) :where(a.bf-card:hover, a.bf-card.is-highlighted:hover, a.bf-card.is-overlay:hover, a.bf-card.is-muted:hover) {
   border-color: var(--bf-color-focus);
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 :where(.bf-theme) :where(a.bf-card:focus:not(:focus-visible), a.bf-card.is-highlighted:focus:not(:focus-visible), a.bf-card.is-overlay:focus:not(:focus-visible), a.bf-card.is-muted:focus:not(:focus-visible)) {
@@ -54,8 +54,8 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 }
 
 :where(.bf-theme) :where(a.bf-card:focus-visible, a.bf-card.is-highlighted:focus-visible, a.bf-card.is-overlay:focus-visible, a.bf-card.is-muted:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-card.is-preview) {
@@ -151,7 +151,7 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 :where(.bf-theme) :where(button.bf-option-card:hover:not(:disabled)) {
   background: var(--bf-color-background-hover);
   border-color: var(--bf-color-focus);
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 :where(.bf-theme) :where(.bf-option-card.is-active),
@@ -162,8 +162,8 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 }
 
 :where(.bf-theme) :where(button.bf-option-card:focus-visible) {
-  outline: 2px solid var(--bf-color-focus);
-  outline-offset: -2px;
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-option-card-label) {

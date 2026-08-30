@@ -31,7 +31,7 @@ Use the owning component or pattern routes listed in
 - `/demo/components/tab-section.html`
 - `/demo/patterns/index.html`
 
-Switch Editorial, Documentation, App, and OS at 560px, 900px, and 1280px.
+Switch Editorial, Documentation, App, and OS at 35rem, 56.25rem, and 80rem.
 Check direct sibling gaps, first/last glyph clearance, rules, focus outlines,
 wrapped labels, control insets, panel gutters, overflow, and hidden/collapsed
 states. On the horizontal audit, compare only the named inline variable family;

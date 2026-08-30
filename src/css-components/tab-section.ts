@@ -7,7 +7,7 @@
  * divided-section and basic-section remain independent BF components.
  *
  * Vanilla → BF mapping:
- * - 720px readable split switch → the 45rem descendant container query.
+ * - 45rem readable split switch → the 45rem descendant container query.
  * - section boundaries → the parent stack selected by the composition.
  * - the intermediate p-section--shallow before a separate tab rail →
  *   a shallow gap owned by the tab-section body.

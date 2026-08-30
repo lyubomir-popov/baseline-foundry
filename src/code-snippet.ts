@@ -33,7 +33,7 @@ async function copySnippetText(copyBlock: HTMLElement): Promise<boolean> {
   textarea.value = text;
   textarea.setAttribute("readonly", "");
   textarea.style.position = "fixed";
-  textarea.style.inset = "-9999px";
+  textarea.style.inset = "-624.9375rem";
   document.body.append(textarea);
   textarea.select();
 
