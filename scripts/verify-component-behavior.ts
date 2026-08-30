@@ -118,7 +118,9 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         commandTextStarts: [".bf-button", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
         accordionStart: iconLabelStart(".bf-accordion-tab"),
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
-        sideNavigationStart: textStart(".bf-side-navigation-accordion-button"),
+        treeChildStart: textStart(".bf-list-tree .bf-list-tree .bf-list-tree-link"),
+        sideNavigationPlainStart: textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
+        sideNavigationDisclosureStart: textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-accordion-button'),
         notificationStart: box(".bf-notification-title").left,
         panelStart: box(".bf-panel-content p").left,
         redStart: red.getBoundingClientRect().left,
@@ -134,7 +136,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), "Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline.");
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell, chip, and status-label text to share the green field-inset keyline.");
     assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, segmented-control, tab, and pagination text to share the red one-rem action keyline.");
-    assert(Math.max(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.sideNavigationStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) - Math.min(alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.sideNavigationStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart) < 0.51, "Expected accordion, list-tree, side-navigation disclosure, notification, and panel copy to share one continuation keyline.");
+    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
+    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected accordion, list-tree disclosure/child, plain/disclosure side-navigation, notification, and panel copy to share one continuation keyline; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent a literal one-rem page inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
     const initialTier = await tierSelect.inputValue();
@@ -170,7 +173,10 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         return {
           backgroundPosition: style.backgroundPosition,
           backgroundSize: style.backgroundSize,
-          paddingInlineEnd: style.paddingInlineEnd
+          overflow: style.overflow,
+          paddingInlineEnd: style.paddingInlineEnd,
+          textOverflow: style.textOverflow,
+          whiteSpace: style.whiteSpace
         };
       })
     ]);
@@ -179,6 +185,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(numberGeometry.backgroundPosition === selectGeometry.backgroundPosition, "Expected number and select chevrons to share the same trailing position.");
     assert(numberGeometry.backgroundSize === selectGeometry.backgroundSize, "Expected number and select chevrons to share the same 16px canvas.");
     assert(numberGeometry.paddingInlineEnd === selectGeometry.paddingInlineEnd, "Expected number and select to reserve the same trailing canvas space.");
+    assert(["hidden", "clip"].includes(selectGeometry.overflow) && selectGeometry.textOverflow === "ellipsis" && selectGeometry.whiteSpace === "nowrap", `Expected constrained selects to truncate before their trailing chevron; got ${JSON.stringify(selectGeometry)}.`);
     const enlargedGeometry = await page.evaluate(() => {
       document.documentElement.style.fontSize = "200%";
       window.dispatchEvent(new Event("resize"));
@@ -255,9 +262,76 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       assert(!inlineTagGeometry.isFlexMask, `Expected ${tier} compact tags to share a true inline formatting context rather than a flex alignment mask.`);
       assert(inlineTagGeometry.chipBottomDeltas.every(delta => Math.abs(delta) < 0.1), `Expected ${tier} regular and borderless chip text to share the adjacent body baseline; deltas=${inlineTagGeometry.chipBottomDeltas.join(", ")}.`);
       assert(inlineTagGeometry.verticalAlignments.every(value => value === "baseline"), `Expected ${tier} inline chips to use their first text baseline without another metric nudge.`);
+      const occupiedBlockGeometry = await page.evaluate(() => {
+        const controlsSection = document.getElementById("vertical-controls")?.closest("section");
+        const navigationSection = document.getElementById("vertical-navigation")?.closest("section");
+        if (!controlsSection || !navigationSection) throw new Error("Missing vertical audit family section.");
+        const controls = Array.from(controlsSection.querySelectorAll<HTMLElement>(".spacing-block-sample")).map(sample => ({
+          label: sample.querySelector(":scope > .bf-h6")?.textContent?.trim() ?? "unlabelled",
+          height: sample.querySelector<HTMLElement>(".spacing-block-probe")?.getBoundingClientRect().height ?? 0
+        }));
+        const navigation = Array.from(navigationSection.querySelectorAll<HTMLElement>(".spacing-block-sample")).map(sample => ({
+          label: sample.querySelector(":scope > .bf-h6")?.textContent?.trim() ?? "unlabelled",
+          height: sample.querySelector<HTMLElement>(".spacing-block-probe")?.getBoundingClientRect().height ?? 0
+        }));
+        const scrollRows = Array.from(document.querySelectorAll<HTMLElement>(".spacing-block-scroll"));
+        const firstProbe = document.querySelector<HTMLElement>(".spacing-block-probe");
+        const before = firstProbe ? getComputedStyle(firstProbe, "::before") : null;
+        const after = firstProbe ? getComputedStyle(firstProbe, "::after") : null;
+        const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        return {
+          baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * rootSize,
+          borderWidth: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-border-width")) * rootSize,
+          controls,
+          navigation,
+          scrollRows: scrollRows.map(row => ({ clientWidth: row.clientWidth, scrollWidth: row.scrollWidth })),
+          startRule: before ? { blockSize: Number.parseFloat(before.blockSize), top: Number.parseFloat(before.top) } : null,
+          endRule: after ? { blockSize: Number.parseFloat(after.blockSize), bottom: Number.parseFloat(after.bottom) } : null
+        };
+      });
+      const controlFamily = occupiedBlockGeometry.controls.slice(0, 8).map(sample => sample.height);
+      assert(Math.max(...controlFamily) - Math.min(...controlFamily) < 0.51, `Expected ${tier} single-line fields, buttons, segmented control, and pagination to share one occupied-block family; got ${JSON.stringify(occupiedBlockGeometry.controls)}.`);
+      const tableHeight = occupiedBlockGeometry.controls.find(sample => sample.label === "Table cell")?.height ?? 0;
+      const controlHeight = controlFamily[0];
+      assert(Math.abs(tableHeight - controlHeight) <= occupiedBlockGeometry.baseline + Math.max(occupiedBlockGeometry.borderWidth * 2, 0.51), `Expected ${tier} density-tuned repeated-data rows to remain within one baseline of the single-line control family; controls=${controlHeight}, table=${tableHeight}, baseline=${occupiedBlockGeometry.baseline}.`);
+      const compactNavigationLabels = ["Tree disclosure", "Tree child", "Side-navigation link", "Side-navigation disclosure"];
+      const compactNavigationHeights = occupiedBlockGeometry.navigation.filter(sample => compactNavigationLabels.includes(sample.label)).map(sample => sample.height);
+      assert(compactNavigationHeights.length === compactNavigationLabels.length && Math.max(...compactNavigationHeights) - Math.min(...compactNavigationHeights) < 0.51, `Expected ${tier} nestable tree and side-navigation rows to share one compact occupied-block family; got ${JSON.stringify(occupiedBlockGeometry.navigation)}.`);
+      assert(occupiedBlockGeometry.scrollRows.every(row => row.scrollWidth > row.clientWidth), `Expected every ${tier} vertical audit bucket to remain a genuinely horizontal, scrollable comparison row; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
+      assert(occupiedBlockGeometry.startRule && occupiedBlockGeometry.endRule && occupiedBlockGeometry.startRule.top === 0 && occupiedBlockGeometry.endRule.bottom === 0 && occupiedBlockGeometry.startRule.blockSize === occupiedBlockGeometry.borderWidth && occupiedBlockGeometry.endRule.blockSize === occupiedBlockGeometry.borderWidth, `Expected ${tier} red-start and blue-end rules to use the scalable border token at opposing block edges; got ${JSON.stringify(occupiedBlockGeometry)}.`);
     }
-    assert(await page.locator("[data-spacing-keyline-debug]").count() === 1 && await page.locator("[data-spacing-keyline]").count() === 3, "Expected the vertical audit to retain the same three-line overlay after its true-inline tag review.");
+    assert(await page.locator("[data-spacing-keyline-debug]").count() === 0 && await page.locator("[data-spacing-keyline]").count() === 0, "Expected the vertical occupied-block audit to avoid the horizontal inset overlay.");
+    assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator(".spacing-block-scroll").count() === 6, "Expected the vertical audit to retain shared chrome around six horizontal comparison rows.");
     assert(runtimeErrors.length === 0, `Expected the spacing audit runtime console to remain clean; received ${runtimeErrors.join(" | ")}.`);
+    await page.goto(`${origin}/demo/components/side-navigation.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const theme of ["is-light", "is-dark"] as const) {
+      const primaryNavigationGeometry = await page.evaluate(activeTheme => {
+        document.body.classList.remove("is-light", "is-dark");
+        document.body.classList.add(activeTheme);
+        const aside = document.querySelector<HTMLElement>("#component-side-navigation-aside");
+        const tag = aside?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
+        const title = aside?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
+        const plain = aside?.querySelector<HTMLElement>(".bf-side-navigation-item.is-title > .bf-side-navigation-link");
+        const disclosure = aside?.querySelector<HTMLElement>(".bf-side-navigation-accordion-button");
+        if (!aside || !tag || !title || !plain || !disclosure) throw new Error("Missing branded primary side-navigation fixture.");
+        const plainNode = Array.from(plain.childNodes).find(node => node.textContent?.trim()) ?? plain;
+        const disclosureNode = Array.from(disclosure.childNodes).find(node => node.textContent?.trim()) ?? disclosure;
+        const plainRange = document.createRange();
+        plainRange.selectNodeContents(plainNode);
+        const disclosureRange = document.createRange();
+        disclosureRange.selectNodeContents(disclosureNode);
+        return {
+          tagLeft: tag.getBoundingClientRect().left,
+          tagBackground: getComputedStyle(tag).backgroundColor,
+          title: title.textContent?.trim(),
+          plainStart: plainRange.getBoundingClientRect().left,
+          disclosureStart: disclosureRange.getBoundingClientRect().left
+        };
+      }, theme);
+      assert(primaryNavigationGeometry.title === "Baseline Foundry" && primaryNavigationGeometry.tagBackground === "rgb(233, 84, 32)", `Expected ${theme} primary navigation to expose the orange tagged Baseline Foundry brand; got ${JSON.stringify(primaryNavigationGeometry)}.`);
+      assert(Math.max(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) - Math.min(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) < 0.51, `Expected ${theme} brand tag, plain row, and disclosure row to share the continuation rail; got ${JSON.stringify(primaryNavigationGeometry)}.`);
+    }
     await page.goto(`${origin}/demo/spec/spacing.html`, { waitUntil: "networkidle" });
     assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator("[data-spacing-keyline-debug]").count() === 0, "Expected the spacing overview to retain shared chrome without the audit-only keyline overlay.");
     await page.close();
@@ -411,6 +485,11 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         const firstGroupRect = navigationGroups[0].getBoundingClientRect();
         const linkRange = document.createRange();
         linkRange.selectNodeContents(firstLink);
+        const continuationProbe = document.createElement("span");
+        continuationProbe.style.cssText = "display:block;inline-size:var(--bf-component-inline-inset-continuation);position:absolute;visibility:hidden";
+        navigation.append(continuationProbe);
+        const continuationInset = continuationProbe.getBoundingClientRect().width;
+        continuationProbe.remove();
 
         return {
           breadcrumbX: breadcrumb.getBoundingClientRect().left,
@@ -420,7 +499,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
           })),
           rules,
           navigation: {
-            actionInset: Number.parseFloat(getComputedStyle(navigation).getPropertyValue("--bf-component-inline-inset-action")) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+            continuationInset,
             groupGap: secondRule.getBoundingClientRect().top - firstGroupRect.bottom,
             groupGapTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 1.5,
             headingTextInset: headingRect.left + Number.parseFloat(getComputedStyle(firstHeading).paddingInlineStart) - navigationRect.left,
@@ -434,7 +513,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         assert(geometry.fixed.every(region => Math.abs(region.x - geometry.breadcrumbX) <= 1), `Expected uncapped ${tier} specimen regions to share the page keyline: ${JSON.stringify(geometry)}.`);
       }
       assert(geometry.rules.plain.blockSize === "1px" && geometry.rules.plain.marginBlockEnd !== "0px", `Expected ${tier} bare semantic hr to carry the generic rule geometry and trailing compensation: ${JSON.stringify(geometry.rules)}.`);
-      assert(Math.abs(geometry.navigation.headingTextInset - geometry.navigation.actionInset) <= 0.1 && Math.abs(geometry.navigation.linkTextInset - geometry.navigation.actionInset) <= 0.1, `Expected ${tier} page-navigation headings and plain commands to land on the action inset: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.headingTextInset - geometry.navigation.continuationInset) <= 0.1 && Math.abs(geometry.navigation.linkTextInset - geometry.navigation.continuationInset) <= 0.1, `Expected ${tier} page-navigation headings and plain commands to land on the continuation inset: ${JSON.stringify(geometry.navigation)}.`);
       assert(Math.abs(geometry.navigation.groupGap - geometry.navigation.groupGapTarget) <= 0.1, `Expected ${tier} page-navigation heading/list groups to be separated by 1.5rem: ${JSON.stringify(geometry.navigation)}.`);
       assert(geometry.navigation.rulesPerGroup.every(group => group.count === (group.index === 0 ? 0 : 1)), `Expected ${tier} page-navigation groups after the first to begin with exactly one real rule: ${JSON.stringify(geometry.navigation.rulesPerGroup)}.`);
     }

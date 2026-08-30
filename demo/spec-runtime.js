@@ -3,14 +3,10 @@ import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
 const rootPrefix= document.documentElement.dataset.specRoot ?? "..";
-let updateSpacingKeylineDebug = null;
+let updateHorizontalKeylineDebug = null;
 
-function installSpacingKeylineDebug() {
-  const isSpacingAudit = [
-    "/demo/spec/spacing-horizontal.html",
-    "/demo/spec/spacing-vertical.html"
-  ].some(route => window.location.pathname.endsWith(route));
-  if (!isSpacingAudit) return;
+function installHorizontalKeylineDebug() {
+  if (!window.location.pathname.endsWith("/demo/spec/spacing-horizontal.html")) return;
 
   const overlay = document.createElement("div");
   overlay.setAttribute("aria-hidden", "true");
@@ -28,7 +24,7 @@ function installSpacingKeylineDebug() {
     overlay.append(line);
     return line;
   });
-  updateSpacingKeylineDebug = () => {
+  updateHorizontalKeylineDebug = () => {
     overlay.dataset.spacingKeylineUpdateCount = String(Number(overlay.dataset.spacingKeylineUpdateCount) + 1);
     const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
     const setLineLeft = (line, leftInCssPixels) => {
@@ -49,9 +45,9 @@ function installSpacingKeylineDebug() {
     }
   };
   document.body.append(overlay);
-  updateSpacingKeylineDebug();
-  window.addEventListener("resize", updateSpacingKeylineDebug, { passive: true });
-  document.fonts?.ready.then(updateSpacingKeylineDebug);
+  updateHorizontalKeylineDebug();
+  window.addEventListener("resize", updateHorizontalKeylineDebug, { passive: true });
+  document.fonts?.ready.then(updateHorizontalKeylineDebug);
 }
 let activeTierLoad = 0;
 let tierSelect = null;
@@ -248,7 +244,7 @@ async function applyTier(tierName) {
   document.body.classList.remove(...BUILT_IN_TIER_CLASSES);
   document.body.classList.add("bf-theme", tier.className);
   document.body.dataset.bfTier = tierName;
-  requestAnimationFrame(() => updateSpacingKeylineDebug?.());
+  requestAnimationFrame(() => updateHorizontalKeylineDebug?.());
 
   setText("[data-spec-current-tier]", tier.label);
   setText("[data-spec-tier-description]", tier.description);
@@ -269,7 +265,7 @@ async function applyTier(tierName) {
     }
 
     renderTokens(tokens);
-    requestAnimationFrame(() => updateSpacingKeylineDebug?.());
+    requestAnimationFrame(() => updateHorizontalKeylineDebug?.());
   } catch (error) {
     if (loadId !== activeTierLoad) {
       return;
@@ -354,5 +350,5 @@ export async function initSpecRuntime({ initComponents } = {}) {
 
   applyTone(preferredTone === "dark" ? "dark" : "light", { persist: false });
   await applyTier(initialTier);
-  installSpacingKeylineDebug();
+  installHorizontalKeylineDebug();
 }

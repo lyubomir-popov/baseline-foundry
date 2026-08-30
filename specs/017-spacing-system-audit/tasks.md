@@ -37,6 +37,15 @@
   component specimens; do not use the 50/50 documentation layout.
 - [x] T024 Correct confirmed root navigation, number-stepper canvas, status,
   and leading-mark findings only after their family geometry is measured.
+- [x] T025 Align branded primary side navigation, plain rows, disclosure rows,
+  and tree leaves to the shared continuation rail without changing page/grid
+  placement or adding a fourth component inset.
+- [x] T026 Recompose the vertical audit as horizontally scrollable occupied-
+  block rows with shared-start and per-specimen end rules; remove the inline-
+  keyline overlay from that route.
+- [x] T027 Add constrained select truncation and preserve one trailing chevron
+  canvas; restore icon-only buttons to the normal occupied control rhythm with
+  a metric strut rather than a target height.
 
 ## Phase 4 - Closeout
 
@@ -44,3 +53,5 @@
 - [x] T014 Review affected routes at wide/constrained widths in all four tiers.
 - [x] T015 Run `npm test` and `npm run qa:components`.
 - [x] T016 Perform adversarial API, accessibility, responsive, and spacing-ownership review; resolve high/medium findings and record `review.md`.
+- [x] T028 Re-run light/dark browser review, four-tier geometry checks, full
+  release gates, and upstream merge after the owner follow-up.

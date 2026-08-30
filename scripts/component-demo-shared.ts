@@ -137,10 +137,33 @@ export async function createStaticServer(rootDir: string): Promise<{ server: htt
     }
   });
 
-  await new Promise<void>((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", () => resolve());
-  });
+  /* Chromium blocks a small set of legacy service ports even on localhost.
+     Asking the OS for any ephemeral port can therefore make browser QA fail
+     before the page loads. The IANA dynamic range sits above that blocklist;
+     retrying within it keeps parallel test runs collision-safe. */
+  const firstDynamicPort = 49_152 + Math.floor(Math.random() * 16_384);
+  let listening = false;
+  let lastListenError: unknown = null;
+  for (let attempt = 0; attempt < 20 && !listening; attempt += 1) {
+    const port = 49_152 + ((firstDynamicPort - 49_152 + (attempt * 7_919)) % 16_384);
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const onError = (error: Error) => reject(error);
+        server.once("error", onError);
+        server.listen(port, "127.0.0.1", () => {
+          server.off("error", onError);
+          resolve();
+        });
+      });
+      listening = true;
+    } catch (error) {
+      lastListenError = error;
+      if (!(error instanceof Error) || !("code" in error) || error.code !== "EADDRINUSE") throw error;
+    }
+  }
+  if (!listening) {
+    throw lastListenError instanceof Error ? lastListenError : new Error("Unable to bind a browser-safe static server port.");
+  }
 
   const address = server.address();
   if (!address || typeof address === "string") {

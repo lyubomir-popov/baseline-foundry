@@ -470,7 +470,10 @@ ${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-contr
   background-position: right var(--bf-component-inline-inset-field) center;
   background-repeat: no-repeat;
   background-size: 1rem 1rem;
+  overflow: hidden;
   padding-inline-end: calc(var(--bf-component-inline-inset-field) * 2.5);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 :where(.bf-theme) :where(input[type='number'], .bf-slider-input) {

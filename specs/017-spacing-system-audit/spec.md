@@ -186,8 +186,10 @@ indents or occupied heights.
 - **FR-014**: Keep component-first horizontal and vertical spacing audits as
   separate full-width consumer-facing routes. Each must place raw shipped
   components under one axis-specific variable family, including navigation,
-  disclosure, controls, data labels, panels, and tables—not page-local rulers,
-  diagnostic rails, custom specimen CSS, or a 50/50 documentation layout.
+  disclosure, controls, data labels, panels, and tables. Minimal demo-only
+  guide and overflow framing may reveal the measured axis, but it must not
+  alter component geometry, substitute mock components, or recreate a 50/50
+  documentation layout.
 - **FR-015**: Treat keylines as named relationships rather than a universal
   left edge: page/content text, leading-mark tracks, component gutters, and
   disclosure continuations may differ only when their owning component and
@@ -199,11 +201,11 @@ indents or occupied heights.
 - **FR-017**: Every component-owned inline start MUST resolve through
   `--bf-component-inline-inset-field`,
   `--bf-component-inline-inset-action`, or
-  `--bf-component-inline-inset-continuation`. Root side-navigation commands use
-  action; disclosure and icon labels calculate their mark start so their copy
-  reaches continuation. Nested navigation may add only its documented depth
-  step. Page margins and grid gutters are layout placement, not a fourth
-  component inset.
+  `--bf-component-inline-inset-continuation`. Root side-navigation copy,
+  including headings, plain rows, disclosures, and icon labels, lands on one
+  continuation rail; marked rows calculate their mark start backward from that
+  copy line. Nested navigation may add only its documented depth step. Page
+  margins and grid gutters are layout placement, not a fourth component inset.
 - **FR-018**: Preserve native number-input semantics and keyboard increment /
   decrement behaviour. The visible paired-chevron affordance must occupy one
   measured 1rem canvas at the same trailing position as select, without a
@@ -237,11 +239,11 @@ indents or occupied heights.
   pattern that creates a visible author-controlled inline offset, including
   navigation depth, list markers, fields, table cells, surface insets, and
   page/grid gutters.
-- **SC-011**: Root side-navigation commands land on the action inset and
-  disclosure/icon labels land on continuation in every built-in tier. The
-  switch is the sole reviewed component whose wider track prevents its label
-  from sharing those three starts; nested navigation adds only the documented
-  depth increment.
+- **SC-011**: Root side-navigation headings, plain rows, disclosure labels,
+  tree leaves, and tagged primary-navigation brand blocks land on continuation
+  in every built-in tier. The switch is the sole reviewed component whose
+  wider track prevents its label from sharing those three starts; nested
+  navigation adds only the documented depth increment.
 
 ## Boundaries
 

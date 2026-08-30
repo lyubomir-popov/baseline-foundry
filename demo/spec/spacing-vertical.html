@@ -1,225 +1,647 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-spec-root="../..">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baseline Foundry Vertical Padding Audit</title>
-  <link id="spec-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
-  <link rel="stylesheet" href="../spec-shell.css">
-</head>
-<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">
-  <main class="bf-page is-fill" id="spacing-vertical-audit">
-    <div class="bf-stack is-section">
-      <header class="bf-stack is-dense">
-        <h1>Vertical padding audit</h1>
-        <p>Each vertical run shares one occupied-block or metric-box relationship.</p>
-      </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baseline Foundry Vertical Padding Audit</title>
+    <link
+      id="spec-tier-stylesheet"
+      rel="stylesheet"
+      href="../../dist/tiers/editorial/styles.css"
+    />
+    <link rel="stylesheet" href="../spec-shell.css" />
+  </head>
+  <body
+    class="bf-theme bf-tier-editorial"
+    data-page-tier-options="editorial,documentation,app,os"
+  >
+    <main class="bf-page is-fill" id="spacing-vertical-audit">
+      <div class="bf-stack is-section">
+        <header class="bf-stack is-dense">
+          <h1>Vertical occupied-block audit</h1>
+          <p>
+            Red marks the shared start. Blue marks each component's occupied
+            end; an unbroken blue rule means the row consumes the same height.
+          </p>
+        </header>
 
-      <section class="bf-stack is-dense" aria-labelledby="vertical-text">
-        <h2 class="bf-h6" id="vertical-text">Vertical — body metric box</h2>
-        <div class="bf-stack is-dense">
-          <p>Paragraph</p>
-          <a class="bf-text-link" href="#vertical-text">Text link</a>
-          <div class="bf-prose"><ul><li>Prose list</li></ul></div>
-          <nav class="bf-breadcrumbs" aria-label="Vertical breadcrumbs">
-            <ol class="bf-breadcrumbs-items">
-              <li class="bf-breadcrumbs-item"><a href="#vertical-text">Parent</a></li>
-              <li class="bf-breadcrumbs-item"><span aria-current="page">Current</span></li>
-            </ol>
-          </nav>
-          <aside class="bf-table-of-contents bf-inline-size is-medium">
-            <section class="bf-table-of-contents-section">
-              <h3 class="bf-table-of-contents-heading bf-h5">Contents</h3>
-              <nav aria-label="Vertical table of contents">
-                <ul class="bf-table-of-contents-list">
-                  <li class="bf-table-of-contents-item"><a class="bf-table-of-contents-link" href="#vertical-text">Contents item</a></li>
-                </ul>
-              </nav>
-            </section>
-          </aside>
-        </div>
-      </section>
-
-      <section class="bf-stack is-dense" aria-labelledby="vertical-fields">
-        <h2 class="bf-h6" id="vertical-fields">Vertical — field occupied block</h2>
-        <div class="bf-stack is-dense">
-          <div class="bf-control bf-inline-size is-compact"><input class="bf-input" type="text" value="Text input" aria-label="Vertical text input"></div>
-          <div class="bf-control bf-inline-size is-compact"><input class="bf-input" type="number" value="42" aria-label="Vertical number input"></div>
-          <div class="bf-control bf-inline-size is-compact">
-            <select aria-label="Vertical select"><option>Select</option></select>
-          </div>
-          <div class="bf-control bf-inline-size is-regular"><textarea aria-label="Vertical textarea">Textarea</textarea></div>
-          <div class="bf-search-box bf-inline-size is-regular">
-            <input class="bf-search-box-input bf-input" type="search" value="Search" aria-label="Vertical search">
-            <button class="bf-search-box-reset" type="button">Reset</button>
-            <button class="bf-search-box-button" type="button">Search</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="bf-stack is-dense" aria-labelledby="vertical-actions">
-        <h2 class="bf-h6" id="vertical-actions">Vertical — command occupied block</h2>
-        <div class="bf-stack is-dense">
-          <button class="bf-button" type="button">Button</button>
-          <button class="bf-button is-base is-icon" type="button" aria-label="Next"><span class="bf-icon is-chevron-right" aria-hidden="true"></span></button>
-          <nav class="bf-pagination" aria-label="Vertical pagination">
-            <ul class="bf-pagination-items">
-              <li class="bf-pagination-item"><a class="bf-pagination-link is-previous" href="#vertical-actions">Previous</a></li>
-              <li class="bf-pagination-item"><a class="bf-pagination-link" href="#vertical-actions" aria-current="page">1</a></li>
-            </ul>
-          </nav>
-          <div class="bf-accordion bf-inline-size is-medium">
-            <ul class="bf-accordion-list bf-stack is-dense">
-              <li class="bf-accordion-group">
-                <div class="bf-accordion-heading">
-                  <button class="bf-accordion-tab" type="button" aria-expanded="true" aria-controls="vertical-accordion">Accordion</button>
+        <section class="bf-stack is-dense" aria-labelledby="vertical-controls">
+          <h2 class="bf-h6" id="vertical-controls">Single-line controls</h2>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Single-line control height comparison"
+          >
+            <div class="spacing-block-track">
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Text input</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-control">
+                    <input
+                      class="bf-input"
+                      type="text"
+                      value="Text input"
+                      aria-label="Vertical text input"
+                    />
+                  </div>
                 </div>
-                <div id="vertical-accordion" class="bf-accordion-panel" aria-hidden="false"><p>Panel</p></div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="bf-stack is-dense" aria-labelledby="vertical-compact">
-        <h2 class="bf-h6" id="vertical-compact">Vertical — compact row occupied block</h2>
-        <div class="bf-stack is-dense">
-          <ul class="bf-list is-divided"><li class="bf-list-item is-ticked">List row</li></ul>
-          <ul class="bf-list-tree bf-inline-size is-medium">
-            <li class="bf-list-tree-item" aria-expanded="true">
-              <button class="bf-list-tree-toggle" type="button" aria-expanded="true" aria-controls="vertical-tree">List tree</button>
-              <ul id="vertical-tree" class="bf-list-tree" aria-hidden="false">
-                <li class="bf-list-tree-item"><a class="bf-list-tree-link" href="#vertical-compact">Tree child</a></li>
-              </ul>
-            </li>
-          </ul>
-          <div class="bf-inline-size is-medium">
-            <nav class="bf-side-navigation" aria-label="Vertical side navigation">
-              <ul class="bf-side-navigation-list">
-                <li class="bf-side-navigation-item">
-                  <a class="bf-side-navigation-link" href="#vertical-compact"><span class="bf-side-navigation-label">Side navigation</span></a>
-                </li>
-                <li class="bf-side-navigation-item">
-                  <button class="bf-side-navigation-accordion-button" type="button" aria-expanded="true">Side accordion</button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div class="bf-segmented-control bf-inline-size is-medium">
-            <ul class="bf-segmented-control-list">
-              <li class="bf-segmented-control-item"><button class="bf-segmented-control-button is-active" type="button" aria-pressed="true">First</button></li>
-              <li class="bf-segmented-control-item"><button class="bf-segmented-control-button" type="button" aria-pressed="false">Second</button></li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="bf-stack is-dense" aria-labelledby="vertical-tabs">
-        <h2 class="bf-h6" id="vertical-tabs">Vertical — tab row occupied block</h2>
-        <div class="bf-tabs bf-inline-size is-medium">
-          <ul class="bf-tabs-list" role="tablist">
-            <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="vertical-tab">Tab</button></li>
-          </ul>
-          <div id="vertical-tab" class="bf-tabs-panel" role="tabpanel"><p>Panel</p></div>
-        </div>
-      </section>
-
-      <section class="bf-stack is-dense" aria-labelledby="vertical-ticks">
-        <h2 class="bf-h6" id="vertical-ticks">Vertical — tick row occupied block</h2>
-        <div class="bf-stack is-dense">
-          <div class="bf-checkbox">
-            <input id="vertical-checkbox" class="bf-checkbox-input" type="checkbox" checked>
-            <label class="bf-checkbox-label" for="vertical-checkbox">Checkbox</label>
-          </div>
-          <div class="bf-radio">
-            <input id="vertical-radio" class="bf-radio-input" name="vertical-radio" type="radio" checked>
-            <label class="bf-radio-label" for="vertical-radio">Radio</label>
-          </div>
-        </div>
-      </section>
-
-      <section class="bf-stack is-dense" aria-labelledby="vertical-switch">
-        <h2 class="bf-h6" id="vertical-switch">Vertical — switch row occupied block</h2>
-        <label class="bf-switch">
-          <input class="bf-switch-input" type="checkbox" checked>
-          <span class="bf-switch-slider" aria-hidden="true"></span>
-          <span class="bf-switch-label">Switch</span>
-        </label>
-      </section>
-
-      <section class="bf-stack is-dense" aria-labelledby="vertical-field-stack">
-        <h2 class="bf-h6" id="vertical-field-stack">Vertical — field wrapper gap</h2>
-        <div class="bf-stack is-dense">
-          <div class="bf-field bf-inline-size is-regular">
-            <label class="bf-form-label" for="vertical-file">File</label>
-            <div class="bf-control"><input id="vertical-file" type="file"></div>
-            <p class="bf-form-help">File help</p>
-          </div>
-          <div class="bf-field is-range is-stacked bf-inline-size is-medium">
-            <label class="bf-form-label" for="vertical-range">Range</label>
-            <div class="bf-control">
-              <div class="bf-slider">
-                <input id="vertical-range" type="range" min="0" max="100" value="50">
-                <input class="bf-slider-input" type="number" min="0" max="100" value="50">
-              </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Number input</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-control">
+                    <input
+                      class="bf-input"
+                      type="number"
+                      value="42"
+                      aria-label="Vertical number input"
+                    />
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Select, constrained</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-control">
+                    <select aria-label="Vertical select">
+                      <option>
+                        Concept and relationship mapping for distributed systems
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Search</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-search-box">
+                    <input
+                      class="bf-search-box-input bf-input"
+                      type="search"
+                      value="Search"
+                      aria-label="Vertical search"
+                    /><button class="bf-search-box-reset" type="button">
+                      Reset</button
+                    ><button class="bf-search-box-button" type="button">
+                      Search
+                    </button>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Button</h3>
+                <div class="spacing-block-probe">
+                  <button class="bf-button" type="button">Button</button>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Icon button</h3>
+                <div class="spacing-block-probe">
+                  <button
+                    class="bf-button is-base is-icon"
+                    type="button"
+                    aria-label="Next"
+                  >
+                    <span
+                      class="bf-icon is-chevron-right"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Segmented control</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-segmented-control">
+                    <ul class="bf-segmented-control-list">
+                      <li class="bf-segmented-control-item">
+                        <button
+                          class="bf-segmented-control-button is-active"
+                          type="button"
+                          aria-pressed="true"
+                        >
+                          First
+                        </button>
+                      </li>
+                      <li class="bf-segmented-control-item">
+                        <button
+                          class="bf-segmented-control-button"
+                          type="button"
+                          aria-pressed="false"
+                        >
+                          Second
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Pagination</h3>
+                <div class="spacing-block-probe">
+                  <nav class="bf-pagination" aria-label="Vertical pagination">
+                    <ul class="bf-pagination-items">
+                      <li class="bf-pagination-item">
+                        <a
+                          class="bf-pagination-link is-previous"
+                          href="#vertical-controls"
+                          >Previous</a
+                        >
+                      </li>
+                      <li class="bf-pagination-item">
+                        <a
+                          class="bf-pagination-link"
+                          href="#vertical-controls"
+                          aria-current="page"
+                          >1</a
+                        >
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Table cell</h3>
+                <div class="spacing-block-probe">
+                  <table class="bf-table">
+                    <tbody>
+                      <tr>
+                        <td>Table cell</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
             </div>
           </div>
-          <div class="bf-choice-list bf-inline-size is-wide">
-            <label class="bf-choice-row">
-              <input type="radio" name="vertical-choice" checked>
-              <span class="bf-choice-row-name">Choice row</span>
-              <span class="bf-choice-row-meta">Meta</span>
-            </label>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="bf-stack is-dense" aria-labelledby="vertical-tags">
-        <h2 class="bf-h6" id="vertical-tags">Vertical — compact data-tag occupied blocks</h2>
-        <p class="bf-body">
-          Body text
-          <button class="bf-chip" type="button"><span class="bf-chip-value">Chip</span><span class="bf-badge">3</span></button>
-          <span class="bf-chip is-borderless"><span class="bf-chip-value">Borderless chip</span></span>
-        </p>
-      </section>
-
-      <section class="bf-stack is-dense" aria-labelledby="vertical-surfaces">
-        <h2 class="bf-h6" id="vertical-surfaces">Vertical — surface padding</h2>
-        <div class="bf-stack is-dense">
-          <div class="bf-panel bf-inline-size is-wide">
-            <div class="bf-panel-header"><h3 class="bf-panel-title">Panel</h3></div>
-            <div class="bf-panel-content"><p>Content</p></div>
-            <div class="bf-panel-footer"><button class="bf-button" type="button">Panel action</button></div>
-          </div>
-          <div class="bf-inline-options bf-inline-size is-wide">
-            <div class="bf-inline-options-heading">Inline options</div>
-            <div class="bf-inline-options-options">
-              <label class="bf-inline-options-option"><input type="radio" name="vertical-inline" checked><span>Option</span></label>
+        <section
+          class="bf-stack is-dense"
+          aria-labelledby="vertical-navigation"
+        >
+          <h2 class="bf-h6" id="vertical-navigation">
+            Navigation and disclosure rows
+          </h2>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Navigation and disclosure height comparison"
+          >
+            <div class="spacing-block-track">
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Accordion</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-accordion">
+                    <ul class="bf-accordion-list">
+                      <li class="bf-accordion-group">
+                        <div class="bf-accordion-heading">
+                          <button
+                            class="bf-accordion-tab"
+                            type="button"
+                            aria-expanded="true"
+                          >
+                            Accordion
+                          </button>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Tree disclosure</h3>
+                <div class="spacing-block-probe">
+                  <ul class="bf-list-tree">
+                    <li class="bf-list-tree-item">
+                      <button
+                        class="bf-list-tree-toggle"
+                        type="button"
+                        aria-expanded="true"
+                      >
+                        List tree
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Tree child</h3>
+                <div class="spacing-block-probe">
+                  <ul class="bf-list-tree">
+                    <li class="bf-list-tree-item">
+                      <a class="bf-list-tree-link" href="#vertical-navigation"
+                        >Tree child</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Side-navigation link</h3>
+                <div class="spacing-block-probe">
+                  <nav
+                    class="bf-side-navigation"
+                    aria-label="Vertical side-navigation link"
+                  >
+                    <ul class="bf-side-navigation-list">
+                      <li class="bf-side-navigation-item">
+                        <a
+                          class="bf-side-navigation-link"
+                          href="#vertical-navigation"
+                          ><span class="bf-side-navigation-label"
+                            >Side navigation</span
+                          ></a
+                        >
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Side-navigation disclosure</h3>
+                <div class="spacing-block-probe">
+                  <nav
+                    class="bf-side-navigation"
+                    aria-label="Vertical side-navigation disclosure"
+                  >
+                    <ul class="bf-side-navigation-list">
+                      <li class="bf-side-navigation-item">
+                        <button
+                          class="bf-side-navigation-accordion-button"
+                          type="button"
+                          aria-expanded="true"
+                        >
+                          Side accordion
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Contents link</h3>
+                <div class="spacing-block-probe">
+                  <aside class="bf-table-of-contents">
+                    <nav aria-label="Vertical table of contents">
+                      <ul class="bf-table-of-contents-list">
+                        <li class="bf-table-of-contents-item">
+                          <a
+                            class="bf-table-of-contents-link"
+                            href="#vertical-navigation"
+                            >Contents item</a
+                          >
+                        </li>
+                      </ul>
+                    </nav>
+                  </aside>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Tab action</h3>
+                <div>
+                  <ul class="bf-tabs-list" role="tablist">
+                    <li class="bf-tabs-item spacing-block-probe">
+                      <button
+                        class="bf-tabs-link"
+                        type="button"
+                        role="tab"
+                        aria-selected="true"
+                      >
+                        Tab
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </article>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="bf-stack is-dense" aria-labelledby="vertical-exceptions">
-        <h2 class="bf-h6" id="vertical-exceptions">Vertical — specialised shell blocks</h2>
-        <div class="bf-stack is-dense">
-          <section class="bf-notification is-information bf-inline-size is-wide">
-            <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
-            <div class="bf-notification-content bf-stack is-metric-flush">
-              <h3 class="bf-notification-title bf-h6">Notification</h3>
-              <p class="bf-notification-message">Message</p>
+        <section class="bf-stack is-dense" aria-labelledby="vertical-tags">
+          <h2 class="bf-h6" id="vertical-tags">
+            Marked and inline compact rows
+          </h2>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Marked and compact row height comparison"
+          >
+            <div class="spacing-block-track">
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Prose list</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-prose">
+                    <ul>
+                      <li>Prose list</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Divided list row</h3>
+                <div class="spacing-block-probe">
+                  <ul class="bf-list is-divided">
+                    <li class="bf-list-item is-ticked">List row</li>
+                  </ul>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Checkbox</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-checkbox">
+                    <input
+                      id="vertical-checkbox"
+                      class="bf-checkbox-input"
+                      type="checkbox"
+                      checked
+                    /><label class="bf-checkbox-label" for="vertical-checkbox"
+                      >Checkbox</label
+                    >
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Radio</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-radio">
+                    <input
+                      id="vertical-radio"
+                      class="bf-radio-input"
+                      name="vertical-radio"
+                      type="radio"
+                      checked
+                    /><label class="bf-radio-label" for="vertical-radio"
+                      >Radio</label
+                    >
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Switch</h3>
+                <div class="spacing-block-probe">
+                  <label class="bf-switch"
+                    ><input
+                      class="bf-switch-input"
+                      type="checkbox"
+                      checked
+                    /><span class="bf-switch-slider" aria-hidden="true"></span
+                    ><span class="bf-switch-label">Switch</span></label
+                  >
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Body and inline chips</h3>
+                <div class="spacing-block-probe">
+                  <p class="bf-body">
+                    Body text
+                    <button class="bf-chip" type="button">
+                      <span class="bf-chip-value">Chip</span
+                      ><span class="bf-badge">3</span>
+                    </button>
+                    <span class="bf-chip is-borderless"
+                      ><span class="bf-chip-value">Borderless chip</span></span
+                    >
+                  </p>
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Status label</h3>
+                <div class="spacing-block-probe">
+                  <span class="bf-status-label is-information"
+                    >Status label</span
+                  >
+                </div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Validation message</h3>
+                <div class="spacing-block-probe">
+                  <p class="bf-validation-message">Validation message</p>
+                </div>
+              </article>
             </div>
-          </section>
-          <div class="bf-inline-size is-wide">
-            <table class="bf-table">
-              <thead><tr><th>Header</th><th>Value</th></tr></thead>
-              <tbody><tr><td>Cell</td><td>Value</td></tr></tbody>
-            </table>
           </div>
-        </div>
-      </section>
-    </div>
-  </main>
-  <script type="module" src="../spec-shell.js"></script>
-</body>
+        </section>
+
+        <section class="bf-stack is-dense" aria-labelledby="vertical-document">
+          <h2 class="bf-h6" id="vertical-document">
+            Text and document-navigation rows
+          </h2>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Text and document-navigation height comparison"
+          >
+            <div class="spacing-block-track">
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Paragraph</h3>
+                <div class="spacing-block-probe"><p>Paragraph</p></div>
+              </article>
+              <article class="spacing-block-sample">
+                <h3 class="bf-h6">Text link</h3>
+                <div class="spacing-block-probe">
+                  <a class="bf-text-link" href="#vertical-document"
+                    >Text link</a
+                  >
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Breadcrumbs</h3>
+                <div class="spacing-block-probe">
+                  <nav class="bf-breadcrumbs" aria-label="Vertical breadcrumbs">
+                    <ol class="bf-breadcrumbs-items">
+                      <li class="bf-breadcrumbs-item">
+                        <a href="#vertical-document">Parent</a>
+                      </li>
+                      <li class="bf-breadcrumbs-item">
+                        <span aria-current="page">Current</span>
+                      </li>
+                    </ol>
+                  </nav>
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Contents section</h3>
+                <div class="spacing-block-probe">
+                  <aside class="bf-table-of-contents">
+                    <section class="bf-table-of-contents-section">
+                      <h3 class="bf-table-of-contents-heading bf-h5">
+                        Contents
+                      </h3>
+                      <nav aria-label="Vertical contents section">
+                        <ul class="bf-table-of-contents-list">
+                          <li class="bf-table-of-contents-item">
+                            <a
+                              class="bf-table-of-contents-link"
+                              href="#vertical-document"
+                              >Contents item</a
+                            >
+                          </li>
+                        </ul>
+                      </nav>
+                    </section>
+                  </aside>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="bf-stack is-dense"
+          aria-labelledby="vertical-stacked-fields"
+        >
+          <h2 class="bf-h6" id="vertical-stacked-fields">
+            Multi-line and stacked fields
+          </h2>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Stacked field height comparison"
+          >
+            <div class="spacing-block-track">
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Textarea</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-control">
+                    <textarea aria-label="Vertical textarea">Textarea</textarea>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">File field</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-field">
+                    <label class="bf-form-label" for="vertical-file"
+                      >File</label
+                    >
+                    <div class="bf-control">
+                      <input id="vertical-file" type="file" />
+                    </div>
+                    <p class="bf-form-help">File help</p>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Range field</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-field is-range is-stacked">
+                    <label class="bf-form-label" for="vertical-range"
+                      >Range</label
+                    >
+                    <div class="bf-control">
+                      <div class="bf-slider">
+                        <input
+                          id="vertical-range"
+                          type="range"
+                          min="0"
+                          max="100"
+                          value="50"
+                        /><input
+                          class="bf-slider-input"
+                          type="number"
+                          min="0"
+                          max="100"
+                          value="50"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Choice row</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-choice-list">
+                    <label class="bf-choice-row"
+                      ><input
+                        type="radio"
+                        name="vertical-choice"
+                        checked
+                      /><span class="bf-choice-row-name">Choice row</span
+                      ><span class="bf-choice-row-meta">Meta</span></label
+                    >
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="bf-stack is-dense" aria-labelledby="vertical-surfaces">
+          <h2 class="bf-h6" id="vertical-surfaces">Composite surfaces</h2>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Composite surface height comparison"
+          >
+            <div class="spacing-block-track">
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Notification</h3>
+                <div class="spacing-block-probe">
+                  <section class="bf-notification is-information">
+                    <span
+                      class="bf-icon bf-notification-icon"
+                      aria-hidden="true"
+                    ></span>
+                    <div
+                      class="bf-notification-content bf-stack is-metric-flush"
+                    >
+                      <h3 class="bf-notification-title bf-h6">Notification</h3>
+                      <p class="bf-notification-message">Message</p>
+                    </div>
+                  </section>
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Panel</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-panel">
+                    <div class="bf-panel-header">
+                      <h3 class="bf-panel-title">Panel</h3>
+                    </div>
+                    <div class="bf-panel-content"><p>Content</p></div>
+                    <div class="bf-panel-footer">
+                      <button class="bf-button" type="button">
+                        Panel action
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Inline options</h3>
+                <div class="spacing-block-probe">
+                  <div class="bf-inline-options">
+                    <div class="bf-inline-options-heading">Inline options</div>
+                    <div class="bf-inline-options-options">
+                      <label class="bf-inline-options-option"
+                        ><input
+                          type="radio"
+                          name="vertical-inline"
+                          checked
+                        /><span>Option</span></label
+                      >
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample is-wide">
+                <h3 class="bf-h6">Card</h3>
+                <div class="spacing-block-probe">
+                  <article class="bf-card bf-stack">
+                    <header class="bf-card-header">
+                      <h3 class="bf-h5">Card</h3>
+                    </header>
+                    <div class="bf-card-content"><p>Content</p></div>
+                  </article>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="../spec-shell.js"></script>
+  </body>
 </html>

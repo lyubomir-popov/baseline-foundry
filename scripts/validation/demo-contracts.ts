@@ -27,6 +27,11 @@ export function validateAppTierDemoPage(pageName: string, html: string): void {
     assert(html.includes("bf-panel-footer is-sticky") && html.includes("data-application-layout-main-footer") && html.includes("data-application-layout-navigation-footer"), "Expected application-layout.html to exercise aligned persistent panel footers in navigation and main panels.");
     assert((html.match(/is-control-pair bf-stack is-flush/g) ?? []).length === 5, "Expected application-layout.html control pairs to contain metric compensation with the generic flush stack.");
   }
+  if (pageName === "side-navigation.html") {
+    assert(html.includes('class="bf-panel-header is-sticky is-navigation-brand"'), "Expected side-navigation.html to exercise the primary-navigation brand header.");
+    assert(html.includes('class="bf-top-navigation-logo is-canonical-tagged"') && html.includes('viewBox="0 0 60.45 57.87"') && html.includes('>Baseline Foundry<'), "Expected side-navigation.html to expose the tagged Circle of Friends and Baseline Foundry wordmark.");
+    assert(html.includes('aria-label="Primary application navigation"') && html.includes('class="bf-side-navigation-accordion-button"'), "Expected side-navigation.html to compare plain and disclosure rows in a primary application rail.");
+  }
 }
 
 export function validateLivingSpecHome(html: string): void {
@@ -341,7 +346,7 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
     assert(!/class="[^"]*\b(?:spacing-keyline|keyline)-(?!checkbox|radio|panel)[a-z0-9_-]*/.test(html), `Expected the ${name} audit to avoid page-local keyline helper classes.`);
   }
   assert((horizontalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 5, "Expected compact H6-styled headings throughout the horizontal audit.");
-  assert((verticalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 9, "Expected compact H6-styled headings throughout the vertical audit.");
+  assert((verticalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 6, "Expected compact H6-styled headings throughout the vertical audit.");
   assert(horizontalAuditHtml.includes('Horizontal — field and cell content inset') && horizontalAuditHtml.includes('Horizontal — command inset') && horizontalAuditHtml.includes('Horizontal — leading-mark offset') && horizontalAuditHtml.includes('Horizontal — icon-led and navigation label offset'), "Expected the horizontal audit to present the concise measured inset groups.");
   assert(!horizontalAuditHtml.includes('<code>--bf-') && !verticalAuditHtml.includes('<code>--bf-'), "Expected audit headings to omit implementation-variable labels.");
   const fieldBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-fields"'), horizontalAuditHtml.indexOf('id="horizontal-actions"'));
@@ -352,14 +357,18 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
   for (const component of ["bf-accordion", "bf-list-tree", "bf-switch", "bf-side-navigation", "bf-table-of-contents", "bf-notification"]) {
     assert(iconNavigationBucket.includes(component), `Expected the shared icon-led/navigation bucket to include ${component}.`);
   }
+  assert(iconNavigationBucket.includes("Tree child") && iconNavigationBucket.includes("Side navigation, plain") && iconNavigationBucket.includes("Side navigation, disclosure"), "Expected tree-child, plain-navigation, and disclosure-navigation copy to remain directly comparable on the shared continuation rail.");
   assert(!horizontalAuditHtml.includes("Navigation depth") && !horizontalAuditHtml.includes("Nested item"), "Expected page/grid gutter and navigation depth to stay outside component-padding buckets.");
   for (const component of ["bf-search-box", "bf-slider", "bf-segmented-control", "bf-choice-list", "bf-inline-options", "bf-breadcrumbs", "bf-pagination", "bf-checkbox", "bf-radio", "bf-switch", "bf-accordion", "bf-list-tree", "bf-side-navigation", "bf-table-of-contents", "bf-notification", "bf-panel", "bf-table"]) {
     assert(horizontalAuditHtml.includes(component) || verticalAuditHtml.includes(component), `Expected the axis-specific audits to retain ${component} evidence.`);
   }
   assert(horizontalAuditHtml.includes('type="number"') && verticalAuditHtml.includes('type="number"'), "Expected both audits to expose a numeric input.");
-  const compactTagsBucket = verticalAuditHtml.slice(verticalAuditHtml.indexOf('id="vertical-tags"'), verticalAuditHtml.indexOf('id="vertical-surfaces"'));
-  assert(compactTagsBucket.includes('<p class="bf-body">') && !compactTagsBucket.includes('class="bf-cluster"') && compactTagsBucket.includes('class="bf-chip"') && compactTagsBucket.includes('bf-badge') && compactTagsBucket.includes('is-borderless') && !compactTagsBucket.includes('bf-status-label'), "Expected compact data tags to compare body text, a chip with badge, and the borderless-chip label treatment in one true inline formatting context.");
-  assert(!specShellCss.includes('keyline'), "Expected the spacing comparison to need no page-local keyline CSS.");
+  const compactTagsBucket = verticalAuditHtml.slice(verticalAuditHtml.indexOf('id="vertical-tags"'), verticalAuditHtml.indexOf('id="vertical-document"'));
+  assert(compactTagsBucket.includes('<p class="bf-body">') && !compactTagsBucket.includes('class="bf-cluster"') && compactTagsBucket.includes('class="bf-chip"') && compactTagsBucket.includes('bf-badge') && compactTagsBucket.includes('is-borderless') && compactTagsBucket.includes('bf-status-label'), "Expected compact rows to compare body text, chip and badge variants, and the standalone status-label treatment in one audit bucket.");
+  assert((verticalAuditHtml.match(/class="spacing-block-scroll"/g) ?? []).length === 6 && (verticalAuditHtml.match(/class="spacing-block-track"/g) ?? []).length === 6, "Expected the vertical audit to use six horizontally scrollable occupied-block comparison rows.");
+  assert((verticalAuditHtml.match(/class="spacing-block-probe"/g) ?? []).length >= 30, "Expected the vertical audit to expose a broad occupied-block specimen inventory.");
+  assert(specShellCss.includes(".spacing-block-scroll") && specShellCss.includes("overflow-x: auto;") && specShellCss.includes(".spacing-block-probe::before") && specShellCss.includes(".spacing-block-probe::after"), "Expected the vertical audit shell to provide horizontal scrolling plus shared-start and occupied-end rules.");
+  assert(!verticalAuditHtml.includes("data-spacing-keyline-debug") && !verticalAuditHtml.includes("data-spacing-keyline="), "Expected the vertical audit to avoid the horizontal inset overlay.");
 }
 
 export function validateOsTierPage(pageCatalogJs: string, panelHtml: string): void {

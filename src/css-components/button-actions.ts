@@ -150,6 +150,19 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action-bordere
   justify-content: center;
 }
 
+/* An icon-only flex button has no text line box to preserve the occupied
+ * control rhythm. A zero-width metric strut restores the active body line
+ * without imposing a target block size or changing icon/label spacing. */
+:where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label))) {
+  column-gap: 0;
+}
+
+:where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))::before {
+  block-size: var(--bf-body-line-height);
+  content: "";
+  inline-size: 0;
+}
+
 :where(.bf-theme) :where(.bf-button-label) {
   min-inline-size: 0;
 }

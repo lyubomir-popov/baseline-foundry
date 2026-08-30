@@ -1,100 +1,467 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Side Navigation Demo</title>
-  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
-  <link rel="stylesheet" href="../component-shell.css">
-</head>
-<body class="bf-theme bf-tier-app is-light" data-component-capture>
-<section class="bf-stack" data-baseline-ignore="true" style="padding:calc(var(--bf-baseline) * 4)">
- <section class="bf-stack" data-baseline-check="box" data-baseline-label="side navigation docs section">
- <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="side navigation docs kicker">Documentation drawer</h5>
- <div class="bf-side-navigation is-sticky is-drawer-expanded" id="component-side-navigation-docs" data-baseline-ignore="true">
- <button class="bf-side-navigation-toggle" type="button" aria-controls="component-side-navigation-docs" aria-expanded="true">Toggle side navigation</button>
- <div class="bf-side-navigation-overlay" aria-controls="component-side-navigation-docs" aria-hidden="false"></div>
- <nav class="bf-side-navigation-drawer" aria-label="Example documentation navigation">
-   <div class="bf-side-navigation-drawer-header">
-     <button class="bf-side-navigation-toggle is-in-drawer" type="button" aria-controls="component-side-navigation-docs" aria-expanded="true">Toggle side navigation</button>
-   </div>
-   <div class="bf-side-navigation-groups">
-     <section class="bf-side-navigation-group">
-       <h3 class="bf-side-navigation-heading" data-baseline-check="flow" data-baseline-label="side navigation docs heading one">Introduction</h3>
-       <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="side navigation docs list one">
-         <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs item one"><a class="bf-side-navigation-link" href="#">About MAAS</a></li>
-         <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs item two"><a class="bf-side-navigation-link" href="#">Explore MAAS</a></li>
-         <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs item three"><a class="bf-side-navigation-link" href="#">Quick start<span class="bf-side-navigation-status"><span class="bf-chip is-positive">New</span></span></a></li>
-       </ul>
-     </section>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Side Navigation Demo</title>
+    <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../component-shell.css" />
+  </head>
+  <body class="bf-theme bf-tier-app is-light" data-component-capture>
+    <section
+      class="bf-stack"
+      data-baseline-ignore="true"
+      style="padding: calc(var(--bf-baseline) * 4)"
+    >
+      <section
+        class="bf-stack"
+        data-baseline-check="box"
+        data-baseline-label="side navigation docs section"
+      >
+        <h5
+          class="bf-h5"
+          data-baseline-check="flow"
+          data-baseline-label="side navigation docs kicker"
+        >
+          Documentation drawer
+        </h5>
+        <div
+          class="bf-side-navigation is-sticky is-drawer-expanded"
+          id="component-side-navigation-docs"
+          data-baseline-ignore="true"
+        >
+          <button
+            class="bf-side-navigation-toggle"
+            type="button"
+            aria-controls="component-side-navigation-docs"
+            aria-expanded="true"
+          >
+            Toggle side navigation
+          </button>
+          <div
+            class="bf-side-navigation-overlay"
+            aria-controls="component-side-navigation-docs"
+            aria-hidden="false"
+          ></div>
+          <nav
+            class="bf-side-navigation-drawer"
+            aria-label="Example documentation navigation"
+          >
+            <div class="bf-side-navigation-drawer-header">
+              <button
+                class="bf-side-navigation-toggle is-in-drawer"
+                type="button"
+                aria-controls="component-side-navigation-docs"
+                aria-expanded="true"
+              >
+                Toggle side navigation
+              </button>
+            </div>
+            <div class="bf-side-navigation-groups">
+              <section class="bf-side-navigation-group">
+                <h3
+                  class="bf-side-navigation-heading"
+                  data-baseline-check="flow"
+                  data-baseline-label="side navigation docs heading one"
+                >
+                  Introduction
+                </h3>
+                <ul
+                  class="bf-side-navigation-list"
+                  data-baseline-check="box"
+                  data-baseline-label="side navigation docs list one"
+                >
+                  <li
+                    class="bf-side-navigation-item"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation docs item one"
+                  >
+                    <a class="bf-side-navigation-link" href="#">About MAAS</a>
+                  </li>
+                  <li
+                    class="bf-side-navigation-item"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation docs item two"
+                  >
+                    <a class="bf-side-navigation-link" href="#">Explore MAAS</a>
+                  </li>
+                  <li
+                    class="bf-side-navigation-item"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation docs item three"
+                  >
+                    <a class="bf-side-navigation-link" href="#"
+                      >Quick start<span class="bf-side-navigation-status"
+                        ><span class="bf-chip is-positive">New</span></span
+                      ></a
+                    >
+                  </li>
+                </ul>
+              </section>
 
-     <section class="bf-side-navigation-group">
-       <hr>
-       <h3 class="bf-side-navigation-heading" data-baseline-check="flow" data-baseline-label="side navigation docs heading two">Machines</h3>
-       <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="side navigation docs list two">
-         <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs item four"><a class="bf-side-navigation-link" href="#">Commission machines</a></li>
-         <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs item five">
-           <button class="bf-side-navigation-accordion-button" type="button" aria-expanded="true" data-baseline-check="box" data-baseline-label="side navigation docs accordion">Testing</button>
-           <ul class="bf-side-navigation-list" aria-expanded="true" aria-hidden="false" data-baseline-check="box" data-baseline-label="side navigation docs nested list">
-             <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs nested item one"><a class="bf-side-navigation-link" href="#">Hardware testing</a></li>
-             <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs nested item two"><a class="bf-side-navigation-link" href="#">Network testing</a></li>
-             <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs nested item three"><a class="bf-side-navigation-link" aria-current="page" href="#">Commissioning and hardware testing scripts</a></li>
-           </ul>
-         </li>
-         <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs item six"><a class="bf-side-navigation-link" href="#">Deploy machines</a></li>
-       </ul>
-     </section>
+              <section class="bf-side-navigation-group">
+                <hr />
+                <h3
+                  class="bf-side-navigation-heading"
+                  data-baseline-check="flow"
+                  data-baseline-label="side navigation docs heading two"
+                >
+                  Machines
+                </h3>
+                <ul
+                  class="bf-side-navigation-list"
+                  data-baseline-check="box"
+                  data-baseline-label="side navigation docs list two"
+                >
+                  <li
+                    class="bf-side-navigation-item"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation docs item four"
+                  >
+                    <a class="bf-side-navigation-link" href="#"
+                      >Commission machines</a
+                    >
+                  </li>
+                  <li
+                    class="bf-side-navigation-item"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation docs item five"
+                  >
+                    <button
+                      class="bf-side-navigation-accordion-button"
+                      type="button"
+                      aria-expanded="true"
+                      data-baseline-check="box"
+                      data-baseline-label="side navigation docs accordion"
+                    >
+                      Testing
+                    </button>
+                    <ul
+                      class="bf-side-navigation-list"
+                      aria-expanded="true"
+                      aria-hidden="false"
+                      data-baseline-check="box"
+                      data-baseline-label="side navigation docs nested list"
+                    >
+                      <li
+                        class="bf-side-navigation-item"
+                        data-baseline-check="box"
+                        data-baseline-label="side navigation docs nested item one"
+                      >
+                        <a class="bf-side-navigation-link" href="#"
+                          >Hardware testing</a
+                        >
+                      </li>
+                      <li
+                        class="bf-side-navigation-item"
+                        data-baseline-check="box"
+                        data-baseline-label="side navigation docs nested item two"
+                      >
+                        <a class="bf-side-navigation-link" href="#"
+                          >Network testing</a
+                        >
+                      </li>
+                      <li
+                        class="bf-side-navigation-item"
+                        data-baseline-check="box"
+                        data-baseline-label="side navigation docs nested item three"
+                      >
+                        <a
+                          class="bf-side-navigation-link"
+                          aria-current="page"
+                          href="#"
+                          >Commissioning and hardware testing scripts</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                  <li
+                    class="bf-side-navigation-item"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation docs item six"
+                  >
+                    <a class="bf-side-navigation-link" href="#"
+                      >Deploy machines</a
+                    >
+                  </li>
+                </ul>
+              </section>
 
-     <section class="bf-side-navigation-group">
-       <hr>
-       <h3 class="bf-side-navigation-heading is-linked" data-baseline-check="flow" data-baseline-label="side navigation docs heading three"><a class="bf-side-navigation-link" href="#">Troubleshoot</a></h3>
-       <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="side navigation docs list three">
-         <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs item seven"><a class="bf-side-navigation-link" href="#">Getting help</a></li>
-         <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation docs item eight"><a class="bf-side-navigation-link" href="#">Logs and diagnostics<span class="bf-side-navigation-status"><span class="bf-chip is-information">Updated</span></span></a></li>
-       </ul>
-     </section>
-   </div>
- </nav>
- </div>
- </section>
+              <section class="bf-side-navigation-group">
+                <hr />
+                <h3
+                  class="bf-side-navigation-heading is-linked"
+                  data-baseline-check="flow"
+                  data-baseline-label="side navigation docs heading three"
+                >
+                  <a class="bf-side-navigation-link" href="#">Troubleshoot</a>
+                </h3>
+                <ul
+                  class="bf-side-navigation-list"
+                  data-baseline-check="box"
+                  data-baseline-label="side navigation docs list three"
+                >
+                  <li
+                    class="bf-side-navigation-item"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation docs item seven"
+                  >
+                    <a class="bf-side-navigation-link" href="#">Getting help</a>
+                  </li>
+                  <li
+                    class="bf-side-navigation-item"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation docs item eight"
+                  >
+                    <a class="bf-side-navigation-link" href="#"
+                      >Logs and diagnostics<span
+                        class="bf-side-navigation-status"
+                        ><span class="bf-chip is-information"
+                          >Updated</span
+                        ></span
+                      ></a
+                    >
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </nav>
+        </div>
+      </section>
 
- <section class="bf-stack" data-baseline-ignore="true">
- <h5 class="bf-h5" data-baseline-check="flow" data-baseline-label="side navigation app kicker">Application aside</h5>
- <div class="bf-application" data-baseline-ignore="true" style="min-block-size:calc(var(--bf-baseline) * 56)">
- <main class="bf-main" data-baseline-ignore="true">
- <div class="bf-stage-shell" data-baseline-ignore="true">
- <div class="bf-fixed-width" data-baseline-ignore="true">
- <div data-baseline-ignore="true" style="align-content:start;display:grid;min-block-size:calc(var(--bf-baseline) * 40);padding:calc(var(--bf-baseline) * 4)">
- <h5 class="bf-h5">Canvas</h5>
- <p class="bf-body">The working surface stays separate while the navigation keeps its own width and nested structure.</p>
- </div>
- </div>
- </div>
- </main>
- <aside id="component-side-navigation-aside" class="bf-aside is-pinned is-small" data-baseline-ignore="true">
- <div class="bf-application-aside-resize-handle" role="separator" tabindex="0" aria-controls="component-side-navigation-aside" aria-label="Resize panel" aria-orientation="vertical" data-baseline-ignore="true"></div>
- <nav class="bf-side-navigation" aria-label="Application navigation" data-baseline-ignore="true" style="padding-block:var(--bf-panel-padding-block)">
- <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="side navigation app list one">
- <li class="bf-side-navigation-item is-title" data-baseline-check="box" data-baseline-label="side navigation app title"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Workspace</span></a></li>
- <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app item one"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Machines</span></a>
- <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="side navigation app nested list one">
- <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app nested item one"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Overview</span></a></li>
- <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app nested item two"><a class="bf-side-navigation-link" aria-current="page" href="#"><span class="bf-side-navigation-label">Commission</span></a></li>
- <li class="bf-side-navigation-item" data-baseline-check="box" data-baseline-label="side navigation app nested item three"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Deployment</span><span class="bf-side-navigation-status"><span class="bf-status-label is-caution">3</span></span></a></li>
- </ul>
- </li>
- <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Networking</span></a></li>
- <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Users</span><span class="bf-side-navigation-status"><span class="bf-chip is-information">Beta</span></span></a></li>
- </ul>
- <ul class="bf-side-navigation-list">
- <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Feedback</span></a></li>
- <li class="bf-side-navigation-item"><span class="bf-side-navigation-text"><span class="bf-side-navigation-label">Version 0.4.0</span><span class="bf-side-navigation-status"><span class="bf-chip is-caution">Beta</span></span></span></li>
- </ul>
- </nav>
- </aside>
- </div>
- </section>
-</section>
-<script type="module" src="../component-demo.js"></script>
-</body>
+      <section class="bf-stack" data-baseline-ignore="true">
+        <h5
+          class="bf-h5"
+          data-baseline-check="flow"
+          data-baseline-label="side navigation app kicker"
+        >
+          Application aside
+        </h5>
+        <div
+          class="bf-application"
+          data-baseline-ignore="true"
+          style="min-block-size: calc(var(--bf-baseline) * 56)"
+        >
+          <main class="bf-main" data-baseline-ignore="true">
+            <div class="bf-stage-shell" data-baseline-ignore="true">
+              <div class="bf-fixed-width" data-baseline-ignore="true">
+                <div
+                  data-baseline-ignore="true"
+                  style="
+                    align-content: start;
+                    display: grid;
+                    min-block-size: calc(var(--bf-baseline) * 40);
+                    padding: calc(var(--bf-baseline) * 4);
+                  "
+                >
+                  <h5 class="bf-h5">Canvas</h5>
+                  <p class="bf-body">
+                    The working surface stays separate while the navigation
+                    keeps its own width and nested structure.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </main>
+          <aside
+            id="component-side-navigation-aside"
+            class="bf-aside is-pinned is-small"
+            data-baseline-ignore="true"
+          >
+            <div
+              class="bf-application-aside-resize-handle"
+              role="separator"
+              tabindex="0"
+              aria-controls="component-side-navigation-aside"
+              aria-label="Resize panel"
+              aria-orientation="vertical"
+              data-baseline-ignore="true"
+            ></div>
+            <section class="bf-panel is-fill" data-baseline-ignore="true">
+              <div
+                class="bf-panel-header is-sticky is-navigation-brand"
+                data-baseline-ignore="true"
+              >
+                <div
+                  class="bf-top-navigation-logo is-canonical-tagged"
+                  data-baseline-ignore="true"
+                >
+                  <a
+                    class="bf-top-navigation-link"
+                    href="#"
+                    aria-label="Baseline Foundry home"
+                  >
+                    <span class="bf-top-navigation-logo-tag" aria-hidden="true">
+                      <svg
+                        class="bf-top-navigation-logo-icon"
+                        viewBox="0 0 60.45 57.87"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          cx="9.66"
+                          cy="27.41"
+                          r="8.12"
+                          fill="currentColor"
+                        />
+                        <circle
+                          cx="43.48"
+                          cy="9.61"
+                          r="8.12"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M7.34 38.71A26.67 26.67 0 0 0 32.58 55.55a11.47 11.47 0 0 1-2.49-7q-1.09-.15-2.09-.36a19.62 19.62 0 0 1-13.45-10.36 11.49 11.49 0 0 1-7.21.88Z"
+                          fill="currentColor"
+                        />
+                        <circle
+                          cx="41.65"
+                          cy="48.35"
+                          r="8.12"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M48.9 39.31a11.58 11.58 0 0 1 4 6.25 26.64 26.64 0 0 0 1.36-31.63 11.47 11.47 0 0 1-4.7 5.54 19.73 19.73 0 0 1-.66 19.84ZM9.68 15.85a11.44 11.44 0 0 1 2.4.25 11.72 11.72 0 0 1 3.77 1.54 19.73 19.73 0 0 1 16-8.56 12.15 12.15 0 0 1 .22-1.9 11.75 11.75 0 0 1 2.34-4.89A26.9 26.9 0 0 0 8.82 15.88c.29-.02.57-.03.86-.03Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                    <span class="bf-top-navigation-logo-title"
+                      >Baseline Foundry</span
+                    >
+                  </a>
+                </div>
+              </div>
+              <div
+                class="bf-panel-content is-flush"
+                data-baseline-ignore="true"
+              >
+                <nav
+                  class="bf-side-navigation"
+                  aria-label="Primary application navigation"
+                  data-baseline-ignore="true"
+                >
+                  <ul
+                    class="bf-side-navigation-list"
+                    data-baseline-check="box"
+                    data-baseline-label="side navigation app list one"
+                  >
+                    <li
+                      class="bf-side-navigation-item is-title"
+                      data-baseline-check="box"
+                      data-baseline-label="side navigation app title"
+                    >
+                      <a class="bf-side-navigation-link" href="#"
+                        ><span class="bf-side-navigation-label"
+                          >Workspace</span
+                        ></a
+                      >
+                    </li>
+                    <li
+                      class="bf-side-navigation-item"
+                      data-baseline-check="box"
+                      data-baseline-label="side navigation app item one"
+                    >
+                      <button
+                        class="bf-side-navigation-accordion-button"
+                        type="button"
+                        aria-expanded="true"
+                        aria-controls="side-navigation-app-machines"
+                      >
+                        Machines
+                      </button>
+                      <ul
+                        id="side-navigation-app-machines"
+                        class="bf-side-navigation-list"
+                        aria-expanded="true"
+                        aria-hidden="false"
+                        data-baseline-check="box"
+                        data-baseline-label="side navigation app nested list one"
+                      >
+                        <li
+                          class="bf-side-navigation-item"
+                          data-baseline-check="box"
+                          data-baseline-label="side navigation app nested item one"
+                        >
+                          <a class="bf-side-navigation-link" href="#"
+                            ><span class="bf-side-navigation-label"
+                              >Overview</span
+                            ></a
+                          >
+                        </li>
+                        <li
+                          class="bf-side-navigation-item"
+                          data-baseline-check="box"
+                          data-baseline-label="side navigation app nested item two"
+                        >
+                          <a
+                            class="bf-side-navigation-link"
+                            aria-current="page"
+                            href="#"
+                            ><span class="bf-side-navigation-label"
+                              >Commission</span
+                            ></a
+                          >
+                        </li>
+                        <li
+                          class="bf-side-navigation-item"
+                          data-baseline-check="box"
+                          data-baseline-label="side navigation app nested item three"
+                        >
+                          <a class="bf-side-navigation-link" href="#"
+                            ><span class="bf-side-navigation-label"
+                              >Deployment</span
+                            ><span class="bf-side-navigation-status"
+                              ><span class="bf-status-label is-caution"
+                                >3</span
+                              ></span
+                            ></a
+                          >
+                        </li>
+                      </ul>
+                    </li>
+                    <li class="bf-side-navigation-item">
+                      <a class="bf-side-navigation-link" href="#"
+                        ><span class="bf-side-navigation-label"
+                          >Networking</span
+                        ></a
+                      >
+                    </li>
+                    <li class="bf-side-navigation-item">
+                      <a class="bf-side-navigation-link" href="#"
+                        ><span class="bf-side-navigation-label">Users</span
+                        ><span class="bf-side-navigation-status"
+                          ><span class="bf-chip is-information"
+                            >Beta</span
+                          ></span
+                        ></a
+                      >
+                    </li>
+                  </ul>
+                  <ul class="bf-side-navigation-list">
+                    <li class="bf-side-navigation-item">
+                      <a class="bf-side-navigation-link" href="#"
+                        ><span class="bf-side-navigation-label"
+                          >Feedback</span
+                        ></a
+                      >
+                    </li>
+                    <li class="bf-side-navigation-item">
+                      <span class="bf-side-navigation-text"
+                        ><span class="bf-side-navigation-label"
+                          >Version 0.4.0</span
+                        ><span class="bf-side-navigation-status"
+                          ><span class="bf-chip is-caution">Beta</span></span
+                        ></span
+                      >
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </section>
+    <script type="module" src="../component-demo.js"></script>
+  </body>
 </html>

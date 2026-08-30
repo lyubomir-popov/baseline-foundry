@@ -23,7 +23,7 @@ export function listTreeCss(options: ListTreeCssOptions): string {
 
 :where(.bf-theme) :where(.bf-list-tree-item) {
   margin: 0;
-  padding-left: calc(var(--bf-baseline) * 1.5);
+  padding-left: 0;
   position: relative;
 }
 
@@ -34,6 +34,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
   margin: 0;
   min-block-size: var(--bf-control-box-size-compact);
   padding-block: var(--bf-control-block-padding-compact);
+  padding-inline: var(--bf-component-inline-inset-continuation) var(--bf-component-inline-inset-action);
   text-decoration: none;
 }
 
@@ -63,7 +64,7 @@ ${bodyTypeStyles}  align-items: center;
   cursor: pointer;
   display: inline-flex;
   gap: var(--bf-disclosure-gap);
-  margin: 0 0 0 calc(var(--bf-baseline) * -1.5);
+  margin: 0;
   min-block-size: var(--bf-control-box-size-compact);
   padding-block: var(--bf-control-block-padding-compact);
   padding-inline: 0 calc(var(--bf-baseline) * 0.5);

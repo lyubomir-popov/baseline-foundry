@@ -23,6 +23,8 @@ Use the owning component or pattern routes listed in
 - `/demo/components/tabs.html`
 - `/demo/components/panel-tabs.html`
 - `/demo/components/application-layout.html`
+- `/demo/components/side-navigation.html`
+- `/demo/components/select.html`
 - `/demo/components/table-of-contents.html`
 - `/demo/components/notification.html`
 - `/demo/components/content-card.html`
@@ -35,8 +37,10 @@ Switch Editorial, Documentation, App, and OS at 35rem, 56.25rem, and 80rem.
 Check direct sibling gaps, first/last glyph clearance, rules, focus outlines,
 wrapped labels, control insets, panel gutters, overflow, and hidden/collapsed
 states. On the horizontal audit, compare only the named inline variable family;
-on the vertical audit, compare only the named occupied-block/metric family. Do
-not expect every mark and label to share one left edge or one control height.
+on the vertical audit, scroll each horizontal bucket and compare its red shared
+start with the blue occupied ends. Do not expect unrelated surface, repeated-
+data, navigation, and control families to share one height; require any
+difference to have a named density or composition owner.
 
 ## Closeout
 

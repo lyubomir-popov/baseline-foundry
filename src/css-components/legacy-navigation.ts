@@ -21,7 +21,10 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   /* Plain navigation commands use the action rail. Icon-led rows move only their mark canvas,
      so their copy reaches the shared continuation rail without a fourth
      component inset. Navigation depth is added separately below. */
-  --bf-side-navigation-content-inset: var(--bf-component-inline-inset-action);
+  /* Navigation copy uses one continuation rail whether a row has a leading
+     disclosure/icon slot or not. The mark canvas is derived backwards from
+     that rail, so iconless rows never introduce a fourth text start. */
+  --bf-side-navigation-content-inset: var(--bf-component-inline-inset-continuation);
   --bf-side-navigation-disclosure-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));
   --bf-side-navigation-depth-step: var(--bf-space-2);
   --bf-side-navigation-group-gap: 1.5rem;

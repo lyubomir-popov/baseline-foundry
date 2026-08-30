@@ -12,10 +12,10 @@ The smallest defensible public vocabulary is three component-owned inline
 insets, not semantic categories and not a request for new utility classes:
 
 - `--bf-component-inline-inset-field` — compact field/data content (green).
-- `--bf-component-inline-inset-action` — commands and plain navigation rows
-  (red, one rem).
+- `--bf-component-inline-inset-action` — commands (red, one rem).
 - `--bf-component-inline-inset-continuation` — copy after a leading mark or
-  disclosure icon (blue, two rem).
+  disclosure icon, plain navigation copy, tree leaves, and tagged application-
+  navigation brand blocks (blue, two rem).
 
 Every new component with an author-visible inline start must choose one of
 these three variables. It may compensate its own border or move a known mark
@@ -33,8 +33,8 @@ navigation depth remain structural offsets, not component insets.
 | Reading content | Text edge after the page frame | page/grid placement; prose list variable for marker offset | paragraph, headings, prose body, text links, field labels/help, accordion panel copy, notification copy | Keep as the reference track. |
 | Leading mark | Mark box before a label, then label start | `--bf-leading-mark-size`, `--bf-leading-mark-gap`, `--bf-leading-mark-offset`, `--bf-leading-mark-group-inset`, `--bf-list-marker-dot-size` | prose UL/OL, ticked/crossed list, rich-list markers, checkbox, radio, validation message | The marks share one centre and the copy shares the blue continuation guide. The group inset is the calculated remainder to blue in each tier, not a fixed extra inset that would overshoot in dense tiers. |
 | Field content | Text inside a field-like compact surface | `--bf-component-inline-inset-field`, sourced from the tier field-control inset | input, number, select, textarea, search field, table cell, chip, status label | These members share the green guide. Number/select reserve their own trailing affordance slot. |
-| Command content | Text inside a command surface | `--bf-component-inline-inset-action`, sourced from the tier action-control inset | button, icon button, segmented control, tabs, pagination, file selector button, plain side-navigation rows | Buttons and plain navigation commands belong here horizontally, never in the field bucket. |
-| Icon-label continuation | Icon canvas to label/panel continuation | `--bf-component-inline-inset-continuation`, sourced from the shared disclosure label offset | accordion, list tree, notification copy, accordion panel continuation, side-navigation disclosure/icon labels | Mark starts are calculated backward so copy resolves to the same measured 2rem audit line. Navigation depth remains layout-owned and is added only after this base. |
+| Command content | Text inside a command surface | `--bf-component-inline-inset-action`, sourced from the tier action-control inset | button, icon button, segmented control, tabs, pagination, file selector button | Commands belong here horizontally, never in the field bucket. |
+| Icon-label continuation | Component copy rail, with or without a leading mark | `--bf-component-inline-inset-continuation`, sourced from the shared disclosure label offset | accordion, list-tree toggle/leaf, notification copy, accordion panel continuation, side-navigation heading/plain/disclosure/icon labels, tagged application-navigation block | Mark starts are calculated backward so marked and unmarked copy resolves to the same measured 2rem audit line. Navigation depth remains layout-owned and is added only after this base. |
 | Bounded regions | Structural edge around a surface whose child starts resolve to a component guide | named surface/layout placement, then one of the three component insets for author-visible content | panel/card/notice/notification/modal/drawer/search popup/footer, inline-options group | The boundary may remain layout-owned, but it does not authorize a fourth author-visible component start. Children choose field, action, or continuation; symmetric/centred geometry has no first-glyph guide. |
 
 ## Occupied-block rhythm
@@ -42,7 +42,7 @@ navigation depth remain structural offsets, not component insets.
 | Family | Members | Current evidence | Audit rule |
 |---|---|---|---|
 | Text run | prose, headings, list copy, labels/help, breadcrumbs | font metric start nudge and complementary end compensation | Do not add semantic role margins to make a visual match. |
-| Field/action block | fields, buttons, pagination, accordion headers | `--bf-control-box-size` plus the corresponding padding calculation | Compare occupied block, not border-box height. Field and command families may share height while remaining distinct horizontally. |
+| Field/action block | fields, buttons, icon-only buttons, segmented controls, pagination | metric-derived symmetric padding; icon-only buttons retain the body line through a zero-width strut | Compare occupied block, not border-box height. Field and command families may share height while remaining distinct horizontally; do not add target heights. |
 | Compact navigation row | list rows, list-tree, side-navigation, segmented control | `--bf-control-box-size-compact` | A compact block family only; its inline start remains component-specific. |
 | Tick row | checkbox and radio | `--bf-tick-row-block-size` | Keep separate from the wider switch track. |
 | Switch row | switch | `--bf-switch-row-block-size` | Intentional isolated family: its visual is twice the standard mark width. |
@@ -66,16 +66,18 @@ navigation depth remain structural offsets, not component insets.
 
 ## Confirmed corrections
 
-1. Plain side-navigation rows and headings use the action inset. Disclosure
-   and icon rows calculate their mark start from the continuation inset, so
-   their labels land on blue without inheriting a panel or grid gutter. Depth
-   adds only its named structural step. Documentation drawers group each H3
+1. Plain side-navigation rows, headings, disclosures, tree leaves, and the
+   tagged primary-navigation block use the continuation inset. Marked rows
+   calculate their mark start backward from that copy rail, so labels land on
+   blue without inheriting a panel or grid gutter. Depth adds only its named
+   structural step. Documentation drawers group each H3
    with its UL, space those groups by 1.5rem, and place a real rule before every
    group except the first; list pseudo-elements do not paint separators.
 2. Numeric fields retain native input semantics and keyboard increment /
    decrement behaviour. One field-owned background paints the compact pair in
    the same 1rem canvas and trailing position as select; Chromium's duplicate
-   reserved spin slot is removed.
+   reserved spin slot is removed. Select reserves the same trailing region and
+   ellipsizes a long selected value before the chevron.
 3. Prose lists, ticked/crossed lists, checkbox and radio labels previously
    resolved their mark-to-copy distance from unrelated baseline multiples in
    dense tiers. They now share the explicit leading-mark family; divided list
@@ -86,11 +88,18 @@ navigation depth remain structural offsets, not component insets.
    enlarged radio inner dot is concentric with the outer circle, and the
    checkbox check is lowered by two scalable border units into optical centre.
 4. Accordion and panel copy already established the same 2rem continuation.
-   List-tree root compensation and notification padding now resolve through
-   that relationship too. Notification icons are positioned backward from the
-   shared copy line, preserving each tier's compact icon-to-text gap. No fourth
-   audit keyline was introduced: red is the literal one-rem inset, green is the
-   field-text start, and blue is the shared icon-label continuation.
+   List-tree disclosure/leaf geometry, side-navigation plain/disclosure rows,
+   tagged primary-navigation blocks, and notification padding now resolve
+   through that relationship too. Notification icons are positioned backward
+   from the shared copy line, preserving each tier's compact icon-to-text gap.
+   No fourth audit keyline was introduced: red is the literal one-rem inset,
+   green is the field-text start, and blue is the shared copy continuation.
+5. The vertical audit uses long horizontally scrollable family rows. A red
+   rule marks the common block start and each specimen paints its own blue
+   occupied end. Single-line fields/buttons/segmented/pagination/icon-only
+   controls share a family; tab actions move with navigation, while density-
+   tuned table rows remain within one baseline of controls rather than being
+   flattened into them.
 
 ## Three-guide conformance ledger
 
@@ -104,11 +113,11 @@ not component padding and must not be moved onto a component guide.
 | `css-components.ts` field rules and `search-box-and-filter.ts` | input, password, number, select, textarea, search, search-and-filter, range numeric field | Green — field content |
 | `table.ts`, `interactive-tables.ts` | header/body cells, icon-placeholder cells, sort/expand/mobile-card cells | Green for ordinary cell content; reserved icon/indicator slots continue from green |
 | `chip-badge-status.ts` | chip, borderless chip, status label | Green; badge is a centred-counter exception |
-| `button-actions.ts`, command rules in `css-components.ts`, `tabs-choice-breadcrumbs.ts` | button, icon button, file-selector button, segmented control, tabs, pagination | Red/action family; bordered members compensate their own border. Tier-authored action density remains a token decision and does not create a public keyline variable. |
+| `button-actions.ts`, command rules in `css-components.ts`, `tabs-choice-breadcrumbs.ts` | button, icon button, file-selector button, segmented control, tabs, pagination | Red/action family; bordered members compensate their own border. Icon-only controls preserve the same occupied body line without a target height. Tier-authored action density remains a token decision and does not create a public keyline variable. |
 | `css.ts`, `list.ts`, `sites-rich-lists.ts`, selection and validation rules in `css-components.ts` | prose UL/OL, divided/ordered/ticked/crossed lists, rich-list markers, checkbox, radio, validation message | Blue copy continuation; common mark centre between red and blue |
 | accordion rules, `list-tree.ts`, `interactive-feedback.ts`, panel continuation | accordion tab/panel, list-tree toggle, notification title/message, panel content | Blue — disclosure/copy continuation |
 | switch rules | switch label | Blue in the shared icon-led comparison; the wider switch track remains component-owned |
-| `legacy-navigation.ts`, `document-navigation.ts`, `navigation-layout.ts` | root/child side navigation, top navigation, reduced navigation, TOC, in-page navigation, article pagination | Plain side-navigation commands use red; disclosure/icon labels use blue; structural depth and asymmetric destination slots remain layout-owned. |
+| `legacy-navigation.ts`, `document-navigation.ts`, `navigation-layout.ts` | root/child side navigation, tagged primary-navigation brand, top navigation, reduced navigation, TOC, in-page navigation, article pagination | Side-navigation headings, plain/disclosure/icon rows, tree leaves, and tagged app-navigation blocks use blue; structural depth and asymmetric destination slots remain layout-owned. |
 | `panel.ts`, `cards-options.ts`, content/surface modules | panel/card/option card/fieldset/modal/drawer/tooltip/search popup/code snippet/inline-options regions | Copy-bearing bounded regions use blue/continuation. Contextual-menu and code-header dropdown commands use red/action. The top-navigation row retains the legacy panel token only as structural shell placement; reserved prompt and line-number slots are internal continuations from the chosen blue content edge. |
 | grid/site/pattern modules | page, fixed width, grids, docs/app shells, hero, section, tiered list, content card, media object, rich layouts | Layout-owned grid placement, span, gutter, or region boundary; never a component-padding guide |
 | zero/symmetric primitives | plain text, headings, labels/help, inline list, badge, icon, rule, centred icon-only control | Zero inset or symmetric geometry; no first-glyph guide is required |
@@ -171,6 +180,7 @@ The horizontal fixture keeps number, select, and table-cell content together,
 and presents accordion, list tree, switch, side navigation, table of contents,
 and notification as one icon-led/navigation review bucket. That presentation
 does not reclassify page margin, grid gutter, navigation depth, or TOC nesting
-as component-padding levels.
-No local rulers, offset classes, explanatory filler, or substitute mock
-components are permitted.
+as component-padding levels. The vertical fixture uses minimal demo-owned
+scroll framing and horizontal start/end rules; those guides expose occupied
+geometry without changing it. Offset overrides, explanatory filler, and
+substitute mock components are not permitted.

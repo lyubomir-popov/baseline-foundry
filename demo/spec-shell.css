@@ -35,3 +35,68 @@ body {
 .specimen-grid-scope.is-grid-16 {
   inline-size: 105.0625rem;
 }
+
+/* Vertical spacing is reviewed as occupied blocks in long, scrollable rows.
+ * Every probe starts on the same red rule and draws its own blue end segment;
+ * equal occupied heights therefore resolve as one continuous horizontal line. */
+.spacing-block-scroll {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block-end: var(--bf-space-1);
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.spacing-block-track {
+  align-items: start;
+  display: flex;
+  gap: var(--bf-grid-gap-inline);
+  inline-size: max-content;
+  min-inline-size: 100%;
+  padding-block: var(--bf-space-half) var(--bf-space-1);
+}
+
+.spacing-block-sample {
+  display: grid;
+  flex: 0 0 var(--spacing-block-sample-inline-size, 14rem);
+  grid-template-rows: calc(var(--bf-baseline) * 4) auto;
+  min-inline-size: 0;
+}
+
+.spacing-block-sample.is-wide {
+  --spacing-block-sample-inline-size: 20rem;
+}
+
+.spacing-block-sample > :where(.bf-h6) {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.spacing-block-probe {
+  align-content: start;
+  display: grid;
+  min-inline-size: 0;
+  position: relative;
+}
+
+.spacing-block-probe::before,
+.spacing-block-probe::after {
+  block-size: var(--bf-border-width);
+  content: "";
+  inset-inline: calc(var(--bf-grid-gap-inline) / -2);
+  opacity: 0.5;
+  pointer-events: none;
+  position: absolute;
+  z-index: 10;
+}
+
+.spacing-block-probe::before {
+  background: red;
+  inset-block-start: 0;
+}
+
+.spacing-block-probe::after {
+  background: blue;
+  inset-block-end: 0;
+}

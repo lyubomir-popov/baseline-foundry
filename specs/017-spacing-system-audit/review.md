@@ -66,10 +66,11 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
   utility or component.
 - **Pass:** The component inset vocabulary is now explicit in source: field,
   action, and continuation are the only component-owned inline starts. Plain
-  side-navigation headings/commands use action; disclosure and icon rows move
-  their mark canvas backward so the copy lands on continuation. Page/grid
-  placement and named navigation depth remain structural rather than creating
-  another component inset.
+  side-navigation headings/commands, disclosure rows, tree leaves, and the
+  tagged application-navigation block share continuation; marked rows move
+  their mark canvas backward from that copy rail. Page/grid placement and
+  named navigation depth remain structural rather than creating another
+  component inset.
 - **Pass:** Page-chrome and component-demo documentation drawers use a grouped
   H3-plus-UL structure. Groups have an authored 1.5rem gap; every group after
   the first begins with a real `hr`, tightly followed by its H3. The former
@@ -99,24 +100,23 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
   resolves through the same blue continuation owner. The audit did not add a
   fourth guide: red is the literal one-rem inset, green is compact field-like
   content, and blue owns marked/disclosure copy.
-- **Current regression validation:** `npm run build`, `npm run test:build`
-  (6,439 checks), `npm run test:behavior`, `npm test`, and
-  `npm run qa:components` passed. Browser review confirmed
-  both audit routes inside the shared 18rem page chrome in light and dark
-  themes, with clean fresh consoles. The fixed red/green/blue 0.0625rem overlay
-  is visible at 50% opacity on only those routes and recalculates after tier and
-  viewport changes. Playwright measured zero keyline delta for the field,
+- **Current regression validation:** Browser review confirmed both audit routes
+  inside the shared 18rem page chrome in light and dark themes, with clean
+  fresh consoles. The fixed red/green/blue 0.0625rem overlay is visible at 50%
+  opacity only on the horizontal route and recalculates after tier and viewport
+  changes; the vertical route instead uses horizontal start/end rules.
+  Playwright measured zero keyline delta for the field,
   command, marked-copy, accordion, list-tree, notification, and panel fixtures
   across all four tiers in both tones; the common mark-centre spread and radio
   concentric delta were also zero. Light Editorial and dark OS screenshots were
   inspected directly after runtime initialisation.
 - **Latest navigation review:** Playwright measured the shared page-navigation
-  heading and plain-link starts at exactly one rem, the disclosure specimen at
-  zero delta from blue, and group separation at exactly 1.5rem in all four
+  heading, plain-link, disclosure, tree-leaf, and tagged-brand starts at the
+  two-rem continuation rail, and group separation at exactly 1.5rem in all four
   tiers and both tones. Light Editorial and dark OS screenshots of both the
   horizontal audit and side-navigation component were inspected with page
   chrome present; linked and plain specimen headings both resolved to the same
-  one-rem start.
+  two-rem continuation start.
 
 ## Review 6 — release-blocking adversarial findings
 
@@ -155,7 +155,8 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
 
 - A real external browser showed the horizontal audit in light Editorial and
   dark OS with shared chrome present, exactly 13 navigation groups, 12 real
-  separators, a one-rem heading/link inset, and a 1.5rem inter-group gap.
+  separators, a two-rem heading/link continuation inset, and a 1.5rem
+  inter-group gap.
 - The three rem-authored fixed overlay lines resolved to one rendered pixel at
   the default root, 50% opacity, and red/green/blue. The number and select
   affordances visibly shared their canvas and trailing position; leading marks,
@@ -166,3 +167,38 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
   Editorial, Documentation, App and OS. Affected card/surface and code-snippet
   routes were also inspected in light/dark with no overflow or browser-console
   warnings.
+
+## Review 8 — owner follow-up: branded rail, truncation, and block rhythm
+
+- **Pass — no fourth inset:** The page/grid margin remains responsive layout
+  geometry. The tagged orange Circle of Friends block, Baseline Foundry
+  wordmark composition, root plain side-navigation row, disclosure label,
+  list-tree parent/child, accordion, notification, and panel all consume the
+  local continuation inset. This avoids coupling component internals to a
+  viewport-dependent grid margin.
+- **Pass — real primary-navigation fixture:** `side-navigation.html` now
+  contains the Canonical tagged orange brand inside a sticky navigation-brand
+  panel header, followed by plain and disclosure primary-navigation rows.
+  Playwright measured the tag, Workspace, and Machines starts at the same
+  coordinate in light and dark.
+- **Pass — select pressure:** Select owns one 1rem trailing chevron canvas and
+  clips/ellipsizes long selected text before it. Light/dark browser review of a
+  constrained specimen showed no text/chevron collision.
+- **Pass — vertical audit model:** Six horizontally scrollable rows compare
+  shipped specimens at a shared red block start and individual blue occupied
+  ends. The inset overlay is absent. Controls form one occupied family across
+  all tiers; tabs remain with navigation, and density-tuned table rows are
+  permitted to differ by no more than one baseline rather than being flattened
+  into controls.
+- **Finding resolved — icon-only control collapse:** Inline-flex icon-only
+  buttons previously lost the body line box and became shorter than text
+  controls. A zero-width body-line metric strut restores occupied rhythm
+  without a target height; the icon-only specialization is gapless so close
+  controls do not gain inline overflow.
+- **Evidence:** `npm run build`, `npm run test:build` (6,571 checks), and
+  `npm run test:behavior` passed. In-app browser screenshots verified the
+  horizontal/vertical audits, branded side-navigation rail, and constrained
+  select in light and dark with shared chrome and clean consoles. `npm test`
+  and `npm run qa:components` then passed with zero component-baseline
+  failures. Temporary browser servers now bind within the browser-safe dynamic
+  port range, removing the observed `ERR_UNSAFE_PORT` release-gate flake.

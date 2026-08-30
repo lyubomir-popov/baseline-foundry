@@ -45,8 +45,8 @@ placement and navigation depth remain named structural offsets.
 | Keyline | Typical relationship | Owner |
 |---|---|---|
 | Field (green) | Input, table-cell, chip, status, compact field-like content | `--bf-component-inline-inset-field` |
-| Action (red) | Button, tab, pagination, plain navigation and menu commands | `--bf-component-inline-inset-action` |
-| Continuation (blue) | Copy after a mark/disclosure and copy-bearing bounded regions | `--bf-component-inline-inset-continuation` |
+| Action (red) | Button, tab, pagination, and menu commands | `--bf-component-inline-inset-action` |
+| Continuation (blue) | Side-navigation copy, tree leaves, copy after a mark/disclosure, tagged primary-navigation blocks, and copy-bearing bounded regions | `--bf-component-inline-inset-continuation` |
 | Structural placement | Page/grid edge, navigation depth, reserved prompt/indicator slots | Named layout or internal-slot owner; never a fourth component inset |
 
 ## Route inventory
@@ -206,7 +206,7 @@ During T005–T012, each finding appended below must record:
 
 | Finding | Route | Relationship ID | Source owner | Token/variable | Direct/scoped tiers | Widths | Status |
 |---|---|---|---|---|---|---|---|
-| Page-rail groups need tight rule-to-heading spacing and loose group separation | Shared page chrome; side navigation | R06, R12, R20 | `legacy-navigation.ts`, `page-chrome.js` | action inset; `--bf-side-navigation-group-gap` | Editorial, Documentation, App, OS | Wide and constrained | Resolved; real rules, grouped H3+UL wrappers, 1.5rem group gap |
+| Page-rail groups need tight rule-to-heading spacing and loose group separation | Shared page chrome; side navigation | R06, R12, R20 | `legacy-navigation.ts`, `page-chrome.js` | continuation inset; `--bf-side-navigation-group-gap` | Editorial, Documentation, App, OS | Wide and constrained | Resolved; real rules, grouped H3+UL wrappers, 1.5rem group gap |
 | Native number affordance reserved a duplicate browser slot | Horizontal audit; number/select | R07, R09 | `css-components.ts` | field inset and shared 1rem affordance canvas | All four | Wide and enlarged-root | Resolved; one field-owned SVG, native keyboard semantics retained |
 | Prose/state/choice marks and copy used unrelated offsets | Horizontal audit; list/checkbox/radio | R04, R08–R09 | `css.ts`, `list.ts`, selection rules | leading-mark family to continuation | All four | Wide and enlarged-root | Resolved; common mark centre and blue copy start |
 | Disclosure and icon-led labels drifted across components | Horizontal audit | R09, R11–R13, R18 | accordion, list-tree, navigation, notification, panel | continuation inset | All four | Wide and constrained | Resolved; zero measured copy-line spread |

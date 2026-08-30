@@ -1,156 +1,307 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-spec-root="../..">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baseline Foundry Horizontal Padding Audit</title>
-  <link id="spec-tier-stylesheet" rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
-  <link rel="stylesheet" href="../spec-shell.css">
-</head>
-<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">
-  <main class="bf-page is-fill" id="spacing-horizontal-audit">
-    <div class="bf-stack is-section">
-      <header class="bf-stack is-dense">
-        <h1>Horizontal padding audit</h1>
-        <p>Each vertical run shares one inline relationship.</p>
-      </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baseline Foundry Horizontal Padding Audit</title>
+    <link
+      id="spec-tier-stylesheet"
+      rel="stylesheet"
+      href="../../dist/tiers/editorial/styles.css"
+    />
+    <link rel="stylesheet" href="../spec-shell.css" />
+  </head>
+  <body
+    class="bf-theme bf-tier-editorial"
+    data-page-tier-options="editorial,documentation,app,os"
+  >
+    <main class="bf-page is-fill" id="spacing-horizontal-audit">
+      <div class="bf-stack is-section">
+        <header class="bf-stack is-dense">
+          <h1>Horizontal padding audit</h1>
+          <p>Each vertical run shares one inline relationship.</p>
+        </header>
 
-      <section class="bf-stack is-dense" aria-labelledby="horizontal-fields">
-        <h2 class="bf-h6" id="horizontal-fields">Horizontal — field and cell content inset</h2>
-        <div class="bf-stack is-dense">
-          <div class="bf-control bf-inline-size is-compact">
-            <input class="bf-input" type="text" value="Text input" aria-label="Text input">
+        <section class="bf-stack is-dense" aria-labelledby="horizontal-fields">
+          <h2 class="bf-h6" id="horizontal-fields">
+            Horizontal — field and cell content inset
+          </h2>
+          <div class="bf-stack is-dense">
+            <div class="bf-control bf-inline-size is-compact">
+              <input
+                class="bf-input"
+                type="text"
+                value="Text input"
+                aria-label="Text input"
+              />
+            </div>
+            <div class="bf-control bf-inline-size is-compact">
+              <input
+                class="bf-input"
+                type="number"
+                value="42"
+                aria-label="Number input"
+              />
+            </div>
+            <div class="bf-control bf-inline-size is-compact">
+              <select aria-label="Select">
+                <option>
+                  Concept and relationship mapping for distributed systems
+                </option>
+              </select>
+            </div>
+            <div class="bf-control bf-inline-size is-regular">
+              <textarea aria-label="Textarea">Textarea</textarea>
+            </div>
+            <div class="bf-search-box bf-inline-size is-regular">
+              <input
+                class="bf-search-box-input bf-input"
+                type="search"
+                value="Search"
+                aria-label="Search"
+              />
+              <button class="bf-search-box-reset" type="button">Reset</button>
+              <button class="bf-search-box-button" type="button">Search</button>
+            </div>
+            <div class="bf-inline-size is-compact">
+              <table class="bf-table">
+                <tbody>
+                  <tr>
+                    <td>Table cell</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <button class="bf-chip" type="button">
+              <span class="bf-chip-value">Chip</span>
+            </button>
+            <span class="bf-chip is-borderless"
+              ><span class="bf-chip-value">Borderless chip</span></span
+            >
+            <span class="bf-status-label is-information">Status label</span>
           </div>
-          <div class="bf-control bf-inline-size is-compact">
-            <input class="bf-input" type="number" value="42" aria-label="Number input">
-          </div>
-          <div class="bf-control bf-inline-size is-compact">
-            <select aria-label="Select">
-              <option>Select</option>
-            </select>
-          </div>
-          <div class="bf-control bf-inline-size is-regular">
-            <textarea aria-label="Textarea">Textarea</textarea>
-          </div>
-          <div class="bf-search-box bf-inline-size is-regular">
-            <input class="bf-search-box-input bf-input" type="search" value="Search" aria-label="Search">
-            <button class="bf-search-box-reset" type="button">Reset</button>
-            <button class="bf-search-box-button" type="button">Search</button>
-          </div>
-          <div class="bf-inline-size is-compact">
-            <table class="bf-table">
-              <tbody>
-                <tr><td>Table cell</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <button class="bf-chip" type="button"><span class="bf-chip-value">Chip</span></button>
-          <span class="bf-chip is-borderless"><span class="bf-chip-value">Borderless chip</span></span>
-          <span class="bf-status-label is-information">Status label</span>
-        </div>
-      </section>
+        </section>
 
-      <section class="bf-stack is-dense" aria-labelledby="horizontal-actions">
-        <h2 class="bf-h6" id="horizontal-actions">Horizontal — command inset</h2>
-        <div class="bf-stack is-dense">
-          <div><button class="bf-button" type="button">Button</button></div>
-          <div class="bf-segmented-control bf-inline-size is-medium">
-            <ul class="bf-segmented-control-list">
-              <li class="bf-segmented-control-item"><button class="bf-segmented-control-button is-active" type="button">First</button></li>
-              <li class="bf-segmented-control-item"><button class="bf-segmented-control-button" type="button">Second</button></li>
-            </ul>
+        <section class="bf-stack is-dense" aria-labelledby="horizontal-actions">
+          <h2 class="bf-h6" id="horizontal-actions">
+            Horizontal — command inset
+          </h2>
+          <div class="bf-stack is-dense">
+            <div><button class="bf-button" type="button">Button</button></div>
+            <div class="bf-segmented-control bf-inline-size is-medium">
+              <ul class="bf-segmented-control-list">
+                <li class="bf-segmented-control-item">
+                  <button
+                    class="bf-segmented-control-button is-active"
+                    type="button"
+                  >
+                    First
+                  </button>
+                </li>
+                <li class="bf-segmented-control-item">
+                  <button class="bf-segmented-control-button" type="button">
+                    Second
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div class="bf-tabs bf-inline-size is-medium">
+              <ul class="bf-tabs-list" role="tablist">
+                <li class="bf-tabs-item">
+                  <button
+                    class="bf-tabs-link"
+                    type="button"
+                    role="tab"
+                    aria-selected="true"
+                  >
+                    Tab
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <nav class="bf-pagination" aria-label="Pagination">
+              <ul class="bf-pagination-items">
+                <li class="bf-pagination-item">
+                  <a
+                    class="bf-pagination-link"
+                    href="#horizontal-actions"
+                    aria-current="page"
+                    >1</a
+                  >
+                </li>
+              </ul>
+            </nav>
           </div>
-          <div class="bf-tabs bf-inline-size is-medium">
-            <ul class="bf-tabs-list" role="tablist">
-              <li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="true">Tab</button></li>
-            </ul>
-          </div>
-          <nav class="bf-pagination" aria-label="Pagination">
-            <ul class="bf-pagination-items">
-              <li class="bf-pagination-item"><a class="bf-pagination-link" href="#horizontal-actions" aria-current="page">1</a></li>
-            </ul>
-          </nav>
-        </div>
-      </section>
+        </section>
 
-      <section class="bf-stack is-dense" aria-labelledby="horizontal-marks">
-        <h2 class="bf-h6" id="horizontal-marks">Horizontal — leading-mark offset</h2>
-        <div class="bf-stack is-dense">
-          <div class="bf-prose"><ul><li>Prose list</li></ul></div>
-          <div class="bf-prose"><ol><li>Ordered prose list</li></ol></div>
-          <ul class="bf-list is-divided"><li class="bf-list-item is-ticked">List row</li></ul>
-          <ul class="bf-list is-divided"><li class="bf-list-item is-crossed">Crossed list row</li></ul>
-          <div class="bf-checkbox">
-            <input id="horizontal-checkbox" class="bf-checkbox-input" type="checkbox" checked>
-            <label class="bf-checkbox-label" for="horizontal-checkbox">Checkbox</label>
+        <section class="bf-stack is-dense" aria-labelledby="horizontal-marks">
+          <h2 class="bf-h6" id="horizontal-marks">
+            Horizontal — leading-mark offset
+          </h2>
+          <div class="bf-stack is-dense">
+            <div class="bf-prose">
+              <ul>
+                <li>Prose list</li>
+              </ul>
+            </div>
+            <div class="bf-prose">
+              <ol>
+                <li>Ordered prose list</li>
+              </ol>
+            </div>
+            <ul class="bf-list is-divided">
+              <li class="bf-list-item is-ticked">List row</li>
+            </ul>
+            <ul class="bf-list is-divided">
+              <li class="bf-list-item is-crossed">Crossed list row</li>
+            </ul>
+            <div class="bf-checkbox">
+              <input
+                id="horizontal-checkbox"
+                class="bf-checkbox-input"
+                type="checkbox"
+                checked
+              />
+              <label class="bf-checkbox-label" for="horizontal-checkbox"
+                >Checkbox</label
+              >
+            </div>
+            <div class="bf-radio">
+              <input
+                id="horizontal-radio"
+                class="bf-radio-input"
+                name="horizontal-radio"
+                type="radio"
+                checked
+              />
+              <label class="bf-radio-label" for="horizontal-radio">Radio</label>
+            </div>
+            <p class="bf-validation-message">Validation message</p>
           </div>
-          <div class="bf-radio">
-            <input id="horizontal-radio" class="bf-radio-input" name="horizontal-radio" type="radio" checked>
-            <label class="bf-radio-label" for="horizontal-radio">Radio</label>
-          </div>
-          <p class="bf-validation-message">Validation message</p>
-        </div>
-      </section>
+        </section>
 
-      <section class="bf-stack is-dense" aria-labelledby="horizontal-icon-navigation">
-        <h2 class="bf-h6" id="horizontal-icon-navigation">Horizontal — icon-led and navigation label offset</h2>
-        <div class="bf-stack is-dense">
-          <div class="bf-accordion bf-inline-size is-medium">
-            <ul class="bf-accordion-list bf-stack is-dense">
-              <li class="bf-accordion-group">
-                <div class="bf-accordion-heading">
-                  <button class="bf-accordion-tab" type="button" aria-expanded="true">Accordion</button>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <ul class="bf-list-tree bf-inline-size is-medium">
-            <li class="bf-list-tree-item" aria-expanded="true">
-              <button class="bf-list-tree-toggle" type="button" aria-expanded="true">List tree</button>
-            </li>
-          </ul>
-          <label class="bf-switch">
-            <input class="bf-switch-input" type="checkbox" checked>
-            <span class="bf-switch-slider" aria-hidden="true"></span>
-            <span class="bf-switch-label">Switch</span>
-          </label>
-          <nav class="bf-side-navigation bf-inline-size is-medium" aria-label="Side navigation">
-            <ul class="bf-side-navigation-list">
-              <li class="bf-side-navigation-item">
-                <button class="bf-side-navigation-accordion-button" type="button" aria-expanded="true">Side navigation</button>
-              </li>
-            </ul>
-          </nav>
-          <aside class="bf-table-of-contents bf-inline-size is-medium">
-            <section class="bf-table-of-contents-section">
-              <h3 class="bf-table-of-contents-heading bf-h5">Contents</h3>
-              <nav aria-label="Table of contents">
-                <ul class="bf-table-of-contents-list">
-                  <li class="bf-table-of-contents-item">
-                    <a class="bf-table-of-contents-link" href="#horizontal-icon-navigation">Contents item</a>
+        <section
+          class="bf-stack is-dense"
+          aria-labelledby="horizontal-icon-navigation"
+        >
+          <h2 class="bf-h6" id="horizontal-icon-navigation">
+            Horizontal — icon-led and navigation label offset
+          </h2>
+          <div class="bf-stack is-dense">
+            <div class="bf-accordion bf-inline-size is-medium">
+              <ul class="bf-accordion-list bf-stack is-dense">
+                <li class="bf-accordion-group">
+                  <div class="bf-accordion-heading">
+                    <button
+                      class="bf-accordion-tab"
+                      type="button"
+                      aria-expanded="true"
+                    >
+                      Accordion
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <ul class="bf-list-tree bf-inline-size is-medium">
+              <li class="bf-list-tree-item" aria-expanded="true">
+                <button
+                  class="bf-list-tree-toggle"
+                  type="button"
+                  aria-expanded="true"
+                  aria-controls="horizontal-tree"
+                >
+                  List tree
+                </button>
+                <ul
+                  id="horizontal-tree"
+                  class="bf-list-tree"
+                  aria-hidden="false"
+                >
+                  <li class="bf-list-tree-item">
+                    <a
+                      class="bf-list-tree-link"
+                      href="#horizontal-icon-navigation"
+                      >Tree child</a
+                    >
                   </li>
                 </ul>
-              </nav>
+              </li>
+            </ul>
+            <label class="bf-switch">
+              <input class="bf-switch-input" type="checkbox" checked />
+              <span class="bf-switch-slider" aria-hidden="true"></span>
+              <span class="bf-switch-label">Switch</span>
+            </label>
+            <nav
+              class="bf-side-navigation bf-inline-size is-medium"
+              aria-label="Side navigation"
+            >
+              <ul class="bf-side-navigation-list">
+                <li class="bf-side-navigation-item">
+                  <a
+                    class="bf-side-navigation-link"
+                    href="#horizontal-icon-navigation"
+                    ><span class="bf-side-navigation-label"
+                      >Side navigation, plain</span
+                    ></a
+                  >
+                </li>
+                <li class="bf-side-navigation-item">
+                  <button
+                    class="bf-side-navigation-accordion-button"
+                    type="button"
+                    aria-expanded="true"
+                  >
+                    Side navigation, disclosure
+                  </button>
+                </li>
+              </ul>
+            </nav>
+            <aside class="bf-table-of-contents bf-inline-size is-medium">
+              <section class="bf-table-of-contents-section">
+                <h3 class="bf-table-of-contents-heading bf-h5">Contents</h3>
+                <nav aria-label="Table of contents">
+                  <ul class="bf-table-of-contents-list">
+                    <li class="bf-table-of-contents-item">
+                      <a
+                        class="bf-table-of-contents-link"
+                        href="#horizontal-icon-navigation"
+                        >Contents item</a
+                      >
+                    </li>
+                  </ul>
+                </nav>
+              </section>
+            </aside>
+            <section
+              class="bf-notification is-information bf-inline-size is-wide"
+            >
+              <span
+                class="bf-icon bf-notification-icon"
+                aria-hidden="true"
+              ></span>
+              <div class="bf-notification-content bf-stack is-metric-flush">
+                <h3 class="bf-notification-title bf-h6">Notification</h3>
+                <p class="bf-notification-message">Message</p>
+              </div>
             </section>
-          </aside>
-          <section class="bf-notification is-information bf-inline-size is-wide">
-            <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
-            <div class="bf-notification-content bf-stack is-metric-flush">
-              <h3 class="bf-notification-title bf-h6">Notification</h3>
-              <p class="bf-notification-message">Message</p>
-            </div>
-          </section>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <section class="bf-stack is-dense" aria-labelledby="horizontal-surfaces">
-        <h2 class="bf-h6" id="horizontal-surfaces">Horizontal — continuation inset in surfaces</h2>
-        <div class="bf-panel bf-inline-size is-wide">
-          <div class="bf-panel-content"><p>Panel</p></div>
-        </div>
-      </section>
-    </div>
-  </main>
-  <script type="module" src="../spec-shell.js"></script>
-</body>
+        <section
+          class="bf-stack is-dense"
+          aria-labelledby="horizontal-surfaces"
+        >
+          <h2 class="bf-h6" id="horizontal-surfaces">
+            Horizontal — continuation inset in surfaces
+          </h2>
+          <div class="bf-panel bf-inline-size is-wide">
+            <div class="bf-panel-content"><p>Panel</p></div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="../spec-shell.js"></script>
+  </body>
 </html>

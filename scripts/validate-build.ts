@@ -731,6 +731,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link:hover) {\n  background-color: transparent;\n  color: var(--bf-color-link-default);\n  text-decoration: underline;"), "Expected bf-button.is-link hover state to keep transparent chrome and restore underline treatment.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-space-1);"), "Expected bf-button.is-icon to use the shared spacing token for its explicit icon/label relationship.");
+  assert(css.includes(':where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label))) {\n  column-gap: 0;\n}\n\n:where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))::before {\n  block-size: var(--bf-body-line-height);\n  content: "";\n  inline-size: 0;'), "Expected icon-only buttons to preserve the occupied body line through a gapless zero-width metric strut rather than a target block size.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-space-2);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: 0;"), "Expected generated CSS to keep bf-cta-block externally neutral for stack ownership.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
@@ -844,6 +845,13 @@ function validateCommonCss(css: string): void {
     "background-size": "1rem 1rem",
     "padding-inline-end": "calc(var(--bf-component-inline-inset-field) * 2.5)"
   }, "number inputs use one field-owned paired-chevron canvas aligned with select");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(select)", {
+    "background-position": "right var(--bf-component-inline-inset-field) center",
+    "background-size": "1rem 1rem",
+    "overflow": "hidden",
+    "text-overflow": "ellipsis",
+    "white-space": "nowrap"
+  }, "selects reserve one trailing chevron canvas and truncate long selected values");
   assert(css.includes("input[type='number'])::-webkit-inner-spin-button,\n:where(.bf-theme) :where(input[type='number'])::-webkit-outer-spin-button {\n  appearance: none;\n  margin: 0;"), "Expected Chromium number inputs to remove the duplicate browser-reserved spin slot.");
   assert(css.includes("--bf-ui-badge-padding-inline: calc(var(--bf-body-line-height"), "Expected badge geometry to scale from the active body line-height rather than an h5 fallback.");
   assert(css.includes("min-width: calc(var(--bf-body-line-height"), "Expected badge minimum width to scale from the active body line-height.");
@@ -967,6 +975,17 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree)", {
     "list-style": "none"
   }, "list-tree root keeps list semantics reset");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree-item)", {
+    "padding-left": "0",
+    "position": "relative"
+  }, "list-tree items avoid adding an unaccounted navigation-depth inset");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-list-tree-link)", {
+    "padding-inline": "var(--bf-component-inline-inset-continuation) var(--bf-component-inline-inset-action)"
+  }, "list-tree leaves align directly to the shared continuation rail");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree-toggle)", {
+    "gap": "var(--bf-disclosure-gap)",
+    "margin": "0"
+  }, "list-tree disclosures derive their text start from the shared mark canvas and gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree) :where(.bf-list-tree[aria-hidden='false'])", {
     "display": "block"
   }, "expanded list-tree branches reveal nested lists");
