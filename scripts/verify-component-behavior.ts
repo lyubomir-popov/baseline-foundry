@@ -2121,19 +2121,54 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
           const nestedCell = nestedRow?.querySelector<HTMLElement>("td");
           const nestedChip = nestedRow?.querySelector<HTMLElement>(".bf-chip.is-nested");
           const nestedBadge = nestedChip?.querySelector<HTMLElement>(".bf-badge.is-nested");
+          const controlTable = document.querySelector<HTMLTableElement>(
+            "[aria-label='Table control row fit comparison']"
+          );
+          const plainTextRow = controlTable?.querySelector<HTMLElement>(
+            "[aria-label='Plain text row']"
+          );
+          const controlRow = controlTable?.querySelector<HTMLElement>(
+            "tr.is-control-row[aria-label='Control row']"
+          );
+          const controlCell = controlRow?.querySelector<HTMLElement>("td");
+          const controlTargets = controlRow
+            ? [
+                controlRow.querySelector<HTMLElement>("[aria-label='Table text input']"),
+                controlRow.querySelector<HTMLElement>("[aria-label='Table number input']"),
+                controlRow.querySelector<HTMLElement>(".bf-button"),
+                controlRow.querySelector<HTMLElement>(".bf-checkbox-label"),
+                controlRow.querySelector<HTMLElement>(".bf-radio-label")
+              ]
+            : [];
+          const standaloneTargets = [
+            document.querySelector<HTMLElement>("[aria-label='Text input'] .bf-input"),
+            document.querySelector<HTMLElement>("[aria-label='Number input'] .bf-input"),
+            document.querySelector<HTMLElement>("[aria-label='Button'] .bf-button"),
+            document.querySelector<HTMLElement>("[aria-label='Checkbox'] .bf-checkbox-label"),
+            document.querySelector<HTMLElement>("[aria-label='Radio'] .bf-radio-label")
+          ];
           if (
             !activeTab ||
             !plainRow ||
             !nestedRow ||
             !nestedCell ||
             !nestedChip ||
-            !nestedBadge
+            !nestedBadge ||
+            !plainTextRow ||
+            !controlRow ||
+            !controlCell ||
+            controlTargets.some(target => !target) ||
+            standaloneTargets.some(target => !target)
           ) {
             return null;
           }
           const chipRect = nestedChip.getBoundingClientRect();
           const badgeRect = nestedBadge.getBoundingClientRect();
           const activeStyles = getComputedStyle(activeTab);
+          const controlCellStyles = getComputedStyle(controlCell);
+          const rowBorderSize = Number.parseFloat(
+            getComputedStyle(document.body).getPropertyValue("--bf-table-row-border-size")
+          );
           return {
             activeClass: activeTab.classList.contains("is-active"),
             activeRule: activeStyles.boxShadow,
@@ -2147,7 +2182,28 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             cellLineHeight: Number.parseFloat(getComputedStyle(nestedCell).lineHeight),
             badgeContained:
               badgeRect.top >= chipRect.top - 0.1 &&
-              badgeRect.bottom <= chipRect.bottom + 0.1
+              badgeRect.bottom <= chipRect.bottom + 0.1,
+            controlRowHeightDelta: Math.abs(
+              controlRow.getBoundingClientRect().height -
+                plainTextRow.getBoundingClientRect().height
+            ),
+            controlTargetHeightDeltas: controlTargets.map((target, index) =>
+              Math.abs(
+                target!.getBoundingClientRect().height -
+                  standaloneTargets[index]!.getBoundingClientRect().height
+              )
+            ),
+            controlCellPaddingBlockStart: Number.parseFloat(
+              controlCellStyles.paddingBlockStart
+            ),
+            controlCellPaddingBlockEnd: Number.parseFloat(
+              controlCellStyles.paddingBlockEnd
+            ),
+            controlCellBorderBlockEnd: Number.parseFloat(
+              controlCellStyles.borderBlockEndWidth
+            ),
+            controlCellOverflow: controlCellStyles.overflow,
+            rowBorderSize
           };
         });
         assert(
@@ -2164,6 +2220,18 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             audit.chipHeight <= audit.cellLineHeight + 0.1 &&
             audit.rowHeightDelta <= 0.1,
           `Expected ${tier}/${tone} nested badge to fit inside the compact table chip without enlarging its row: ${JSON.stringify(audit)}.`
+        );
+        assert(
+          audit &&
+            audit.controlRowHeightDelta <= audit.rowBorderSize &&
+            audit.controlTargetHeightDeltas.every(
+              delta => delta <= audit.rowBorderSize
+            ) &&
+            audit.controlCellPaddingBlockStart === 0 &&
+            audit.controlCellPaddingBlockEnd === 0 &&
+            audit.controlCellBorderBlockEnd === 0 &&
+            audit.controlCellOverflow === "visible",
+          `Expected ${tier}/${tone} full controls to retain their standalone height without enlarging the explicit table control row: ${JSON.stringify(audit)}.`
         );
       }
     }

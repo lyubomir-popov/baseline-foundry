@@ -117,6 +117,15 @@ also reserve their real in-box separator. This is one height family with two
 ownership modes—control margin compensation or host-owned in-box
 compensation—not a separate density bucket.
 
+A table row containing full inputs, bordered buttons, checkboxes, or radios
+uses the explicit `tr.is-control-row` modifier. Those controls keep their normal
+standalone target geometry; the row removes only the cell block inset that
+would otherwise count the same occupied space twice. Intermediate separators
+paint inside the row rather than adding height, and the cell leaves overflow
+visible so focus rings are not clipped. This is a host-ownership contract, not
+a compact-control variant, and it never applies implicitly from `:has()` or
+ancestry.
+
 Side-navigation lists preserve the same natural link paint and trailing
 compensation as controls, but their grid tracks use the shared single-line row
 token. The link is start-aligned inside each track so rasterised rem borders do

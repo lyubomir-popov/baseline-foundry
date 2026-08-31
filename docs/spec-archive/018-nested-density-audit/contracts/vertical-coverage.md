@@ -38,12 +38,14 @@ cell primitive. These representatives are explicit; they are not omissions.
 | Status label | side-navigation text row | `bf-status-label is-nested`; navigation owns the row |
 | Badge | tab | `bf-badge is-nested`; tab owns the row |
 | Badge | nested chip in a table cell | `bf-chip is-nested` and `bf-badge is-nested`; table owns the row |
+| Text and number inputs, button, checkbox, radio | explicit table control row | controls remain normal-sized; `tr.is-control-row` removes duplicate cell block inset and the table owns the separator |
 
 The application-layout table and navigation fixtures, the side-navigation
-component fixture, the tab fixture, and the nested badge-in-chip table fixture
-use these same explicit modifiers. Content-card footer chips, search/filter chips, and
-hero chips remain standalone because their parent is a flow/cluster rather
-than an existing body-sized host row.
+component fixture, the tab fixture, the nested badge-in-chip table fixture, and
+the paired plain/control table rows use these same explicit ownership rules.
+Content-card footer chips, search/filter chips, and hero chips remain standalone
+because their parent is a flow/cluster rather than an existing body-sized host
+row.
 
 ## Catalog disposition
 

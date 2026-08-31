@@ -507,7 +507,8 @@
             Every supported auxiliary nesting is shown in its real host. Chips,
             status labels, and badges use the explicit is-nested modifier; an
             inline table action remains a normal link button so its interactive
-            target is not silently reduced.
+            target is not silently reduced. The paired table below compares an
+            ordinary text row with full controls in the same row rhythm.
           </p>
           <div
             class="spacing-block-scroll"
@@ -679,6 +680,71 @@
                 </div>
               </article>
             </div>
+          </div>
+          <div class="bf-table-scroll">
+            <table
+              class="bf-table"
+              aria-label="Table control row fit comparison"
+            >
+              <tbody>
+                <tr aria-label="Plain text row">
+                  <td>Lorem ipsum</td>
+                  <td>Lorem ipsum</td>
+                  <td>Lorem ipsum</td>
+                  <td>Lorem ipsum</td>
+                  <td>Lorem ipsum</td>
+                </tr>
+                <tr class="is-control-row" aria-label="Control row">
+                  <td>
+                    <input
+                      class="bf-input"
+                      type="text"
+                      value="Text"
+                      aria-label="Table text input"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="bf-input"
+                      type="number"
+                      value="42"
+                      aria-label="Table number input"
+                    />
+                  </td>
+                  <td><button class="bf-button" type="button">Button</button></td>
+                  <td>
+                    <div class="bf-checkbox">
+                      <input
+                        class="bf-checkbox-input"
+                        id="table-row-checkbox"
+                        type="checkbox"
+                        checked
+                      />
+                      <label
+                        class="bf-checkbox-label"
+                        for="table-row-checkbox"
+                      >
+                        Check
+                      </label>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="bf-radio">
+                      <input
+                        class="bf-radio-input"
+                        id="table-row-radio"
+                        name="table-row-radio"
+                        type="radio"
+                        checked
+                      />
+                      <label class="bf-radio-label" for="table-row-radio">
+                        Radio
+                      </label>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
       </div>

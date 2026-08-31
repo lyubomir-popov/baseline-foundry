@@ -52,6 +52,24 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   vertical-align: top;
 }
 
+/* Full controls already occupy the shared single-line row block. An explicit
+   control row therefore removes the cell's duplicate block inset while its
+   separator becomes non-occupying paint. The controls retain their normal
+   target geometry and the table continues to own the row boundary. */
+:where(.bf-theme) :where(.bf-table tr.is-control-row > :where(th, td)) {
+  border-block-end: 0;
+  overflow: visible;
+  padding-block: 0;
+}
+
+:where(.bf-theme) :where(.bf-table tbody tr.is-control-row:not(:last-child) > :where(th, td)) {
+  box-shadow: inset 0 calc(var(--bf-table-row-border-size) * -1) 0 var(--bf-color-border-low-contrast);
+}
+
+:where(.bf-theme) :where(.bf-table tfoot tr.is-control-row > :where(th, td)) {
+  box-shadow: inset 0 calc(var(--bf-table-row-border-size) * -1) 0 var(--bf-color-border-low-contrast);
+}
+
 :where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder) {
   padding-inline-start: calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap));
 }

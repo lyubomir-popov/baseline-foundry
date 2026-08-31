@@ -829,6 +829,14 @@ function validateCommonCss(css: string): void {
     "table-layout": "auto",
     "width": "100%"
   }, "tables keep the canonical BF table layout contract");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table tr.is-control-row > :where(th, td))", {
+    "border-block-end": "0",
+    "overflow": "visible",
+    "padding-block": "0"
+  }, "explicit table control rows remove only the duplicate cell block inset and leave focus paint visible");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table tbody tr.is-control-row:not(:last-child) > :where(th, td))", {
+    "box-shadow": "inset 0 calc(var(--bf-table-row-border-size) * -1) 0 var(--bf-color-border-low-contrast)"
+  }, "table control rows paint intermediate separators without adding block size");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
     "padding-inline-start": "calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
   }, "table icon-placeholder cells keep the leading-icon gutter");
