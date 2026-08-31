@@ -26,11 +26,14 @@ export function validateAppTierDemoPage(pageName: string, html: string): void {
     assert(html.includes('viewBox="0 0 60.45 57.87"'), "Expected the application drawer brand to use the proportionate Circle of Friends source shape.");
     assert(html.includes("bf-panel-footer is-sticky") && html.includes("data-application-layout-main-footer") && html.includes("data-application-layout-navigation-footer"), "Expected application-layout.html to exercise aligned persistent panel footers in navigation and main panels.");
     assert((html.match(/is-control-pair bf-stack is-flush/g) ?? []).length === 5, "Expected application-layout.html control pairs to contain metric compensation with the generic flush stack.");
+    assert((html.match(/\b(?:bf-chip|bf-status-label)[^"\n]*\bis-nested\b/g) ?? []).length === 6, "Expected every application-layout navigation/table auxiliary surface to opt into the explicit nested fit contract.");
   }
   if (pageName === "side-navigation.html") {
+    assert(html.includes('class="bf-panel bf-side-navigation-drawer"') && html.includes('class="bf-panel-header is-navigation-brand"'), "Expected side-navigation.html to exercise the optional documentation-drawer brand composition.");
     assert(html.includes('class="bf-panel-header is-sticky is-navigation-brand"'), "Expected side-navigation.html to exercise the primary-navigation brand header.");
-    assert(html.includes('class="bf-top-navigation-logo is-canonical-tagged"') && html.includes('viewBox="0 0 60.45 57.87"') && html.includes('>Baseline Foundry<'), "Expected side-navigation.html to expose the tagged Circle of Friends and Baseline Foundry wordmark.");
+    assert((html.match(/class="bf-top-navigation-logo is-canonical-tagged"/g) ?? []).length === 2 && (html.match(/src="\.\.\/assets\/canonical-mark\.svg"/g) ?? []).length === 2 && html.includes('>Baseline Foundry<'), "Expected both side-navigation compositions to reuse the tagged Circle of Friends asset and Baseline Foundry wordmark.");
     assert(html.includes('aria-label="Primary application navigation"') && html.includes('class="bf-side-navigation-accordion-button"'), "Expected side-navigation.html to compare plain and disclosure rows in a primary application rail.");
+    assert((html.match(/\b(?:bf-chip|bf-status-label)[^"\n]*\bis-nested\b/g) ?? []).length === 5, "Expected every side-navigation auxiliary chip/status surface to opt into the explicit nested fit contract.");
   }
 }
 
@@ -113,10 +116,11 @@ export function validateDemoContracts(engineSmokeHtml: string, componentShellCss
   assert(pageChromeCss.includes(".pc-footer") && pageChromeCss.includes("position: fixed;") && pageChromeCss.includes("--pc-footer-block-size"), "Expected the display controls to live in a fixed bottom bar whose measured height is reserved by the document.");
   assert(!/\.pc-(?:section|title)\s*\{[\s\S]*?font-size:/.test(pageChromeCss), "Expected page chrome to avoid a private sub-body type scale.");
   assert(pageChromeJs.includes('contentWrapper.classList.add("pc-content", "bf-page")'), "Expected every wrapped page-chrome route to compose the public bf-page primitive.");
-  assert(pageChromeJs.includes('class="bf-side-navigation bf-side-navigation-drawer"') && pageChromeJs.includes('class="bf-side-navigation-groups"'), "Expected the shared drawer to initialise the side-navigation inset and grouped navigation contracts.");
-  assert(pageChromeJs.includes('class="bf-side-navigation-group"') && pageChromeJs.includes('${index > 0 ? "<hr>" : ""}'), "Expected every page-chrome heading/list pair after the first to begin with a real rule inside its group.");
+  assert(pageChromeJs.includes("renderNavigationBrand()") && pageChromeJs.includes('class="bf-panel-header is-sticky is-navigation-brand"') && pageChromeJs.includes('src="/demo/assets/canonical-mark.svg"'), "Expected shared demo chrome to compose the optional sticky tagged navigation brand from public BF primitives.");
+  assert(pageChromeJs.includes('class="bf-panel bf-side-navigation"') && !pageChromeJs.includes('class="bf-panel bf-side-navigation bf-side-navigation-drawer"') && pageChromeJs.includes('class="bf-side-navigation-groups"'), "Expected the persistent shared rail to compose the panel-owned brand inset with grouped side navigation without inheriting the off-canvas drawer transform.");
+  assert(pageChromeJs.includes('class="bf-side-navigation-group"') && pageChromeJs.includes('class="bf-side-navigation-group-header"') && pageChromeJs.includes('${index > 0 ? "<hr>" : ""}'), "Expected every page-chrome heading/list pair to separate its tight rule/heading header from the group-owned list gap.");
   assert(pageChromeJs.includes("orderedCatalogSections()") && pageChromeJs.includes("localeCompare") && pageChromeJs.includes("renderSequenceNavigation"), "Expected page chrome to share category/alphabetic ordering between the sidebar and Previous/Next controls.");
-  assert(pageChromeJs.includes('class="bf-theme is-dark bf-cluster pc-sequence"') && pageChromeJs.includes('class="bf-button is-base is-icon pc-sequence-link') && pageChromeJs.includes('class="bf-icon ${icon}"') && pageChromeJs.includes('aria-label="${label}: ${escapeHtml(page.title)}"'), "Expected adjacent-page links to use the canonical dark-theme base/icon chevron composition and expose destination names.");
+  assert(pageChromeJs.includes('class="bf-cluster pc-sequence"') && !pageChromeJs.includes('class="bf-theme is-dark bf-cluster pc-sequence"') && pageChromeJs.includes('class="bf-button is-base is-icon pc-sequence-link') && pageChromeJs.includes('class="bf-icon ${icon}"') && pageChromeJs.includes('aria-label="${label}: ${escapeHtml(page.title)}"'), "Expected adjacent-page links to inherit the live page tone while retaining the canonical base/icon chevron composition and destination names.");
   assert(pageChromeJs.includes('class="bf-breadcrumbs pc-breadcrumbs"') && pageChromeJs.includes('aria-current="page"'), "Expected page chrome to compose the public breadcrumb hierarchy for current-page context.");
   assert(componentDemoJs.includes('ensureTargetId(document.body, "demo-page")'), "Expected component pages to target the complete body with the global baseline overlay.");
   assert(specRuntimeJs.includes('ensureTargetId(document.body, "spec-page")') && specRuntimeJs.includes("wrapBodyContent: true"), "Expected living-spec pages to use the global body overlay and shared bf-page wrapper.");
@@ -254,6 +258,9 @@ export function validateButtonDemo(buttonHtml: string): void {
 
 export function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
   validateBfOnlyDemoPage("tabs.html", demoPages.tabs);
+  assert(demoPages.tabs.includes('class="bf-badge is-negative is-nested"'), "Expected tabs.html to exercise an explicitly nested badge beside a plain comparison tab.");
+  validateBfOnlyDemoPage("badge.html", demoPages.badge);
+  assert(demoPages.badge.includes('class="bf-badge is-nested"'), "Expected badge.html to mark its badge-in-chip specimen as an explicit nested composition.");
   validateBfOnlyDemoPage("panel-tabs.html", demoPages.panelTabs);
   validateBfOnlyDemoPage("accordion.html", demoPages.accordion);
   validateBfOnlyDemoPage("contextual-menu.html", demoPages.contextualMenu);
@@ -348,7 +355,7 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
     assert(!/class="[^"]*\b(?:spacing-keyline|keyline)-(?!checkbox|radio|panel)[a-z0-9_-]*/.test(html), `Expected the ${name} audit to avoid page-local keyline helper classes.`);
   }
   assert((horizontalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 5, "Expected compact H6-styled headings throughout the horizontal audit.");
-  assert((verticalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length === 3, "Expected the vertical audit to present only the shared interface row, metric text references, and independent contracts.");
+  assert((verticalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length === 3, "Expected the vertical audit to present only the shared interface, unboxed text, and real nested-context families.");
   assert(horizontalAuditHtml.includes('Horizontal — field and cell content inset') && horizontalAuditHtml.includes('Horizontal — command inset') && horizontalAuditHtml.includes('Horizontal — leading-mark offset') && horizontalAuditHtml.includes('Horizontal — icon-led and navigation label offset'), "Expected the horizontal audit to present the concise measured inset groups.");
   assert(!horizontalAuditHtml.includes('<code>--bf-') && !verticalAuditHtml.includes('<code>--bf-'), "Expected audit headings to omit implementation-variable labels.");
   const fieldBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-fields"'), horizontalAuditHtml.indexOf('id="horizontal-actions"'));
@@ -366,11 +373,21 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
     assert(horizontalAuditHtml.includes(component) || verticalAuditHtml.includes(component), `Expected the axis-specific audits to retain ${component} evidence.`);
   }
   assert(horizontalAuditHtml.includes('type="number"') && verticalAuditHtml.includes('type="number"'), "Expected both audits to expose a numeric input.");
-  assert(!verticalAuditHtml.includes('<h3') && !verticalAuditHtml.includes('<textarea') && !verticalAuditHtml.includes('type="file"') && !verticalAuditHtml.includes('type="range"'), "Expected the compact vertical audit to label specimens through their real component content and omit multiline or stacked fields.");
-  assert(verticalAuditHtml.includes('id="vertical-controls"') && verticalAuditHtml.includes('id="vertical-text-runs"') && verticalAuditHtml.includes('id="vertical-variants"'), "Expected the vertical audit to separate the unified interface family, metric text references, and independent contracts.");
+  assert(!verticalAuditHtml.includes('<h3') && !verticalAuditHtml.includes('<textarea'), "Expected the compact vertical audit to label specimens through their real component content and omit multiline fields.");
+  assert(verticalAuditHtml.includes('id="vertical-controls"') && verticalAuditHtml.includes('id="vertical-text-runs"') && verticalAuditHtml.includes('id="vertical-nested-contexts"'), "Expected the vertical audit to separate the unified interface family, unboxed text metrics, and real nested contexts.");
+  assert(verticalAuditHtml.includes("Unboxed text metrics") && !verticalAuditHtml.includes("Independent contracts") && verticalAuditHtml.includes("have no component padding"), "Expected the vertical audit to explain why unboxed text remains metric-driven instead of receiving interface padding.");
+  for (const specimen of ["Color input", "File input", "Range control", "Contextual menu item", "Chip", "Status label", "Table cell", "Form label", "Form help", "Breadcrumbs"]) {
+    assert(verticalAuditHtml.includes(`aria-label="${specimen}"`), `Expected the exhaustive vertical audit to include ${specimen}.`);
+  }
+  assert(verticalAuditHtml.indexOf('aria-label="Chip"') < verticalAuditHtml.indexOf('aria-label="Text input"') && verticalAuditHtml.indexOf('aria-label="Tab action"') < verticalAuditHtml.indexOf('aria-label="Text input"') && verticalAuditHtml.includes('aria-selected="true"') && verticalAuditHtml.includes("Active"), "Expected the standalone pill chip and thick-bar active tab to appear at the front of the shared single-line comparison.");
+  for (const specimen of ["Plain table cell", "Table chip", "Table status label", "Table badge", "Table link action", "Side navigation chip", "Side navigation status label", "Tab badge", "Chip badge"]) {
+    assert(verticalAuditHtml.includes(`aria-label="${specimen}"`), `Expected the exhaustive nested row to include ${specimen} in its real host.`);
+  }
+  assert((verticalAuditHtml.match(/class="bf-chip[^\"]*is-nested/g) ?? []).length === 2 && (verticalAuditHtml.match(/class="bf-status-label[^\"]*is-nested/g) ?? []).length === 2 && (verticalAuditHtml.match(/class="bf-badge[^\"]*is-nested/g) ?? []).length === 3, "Expected the nested audit to cover every supported chip, status-label, and badge host combination explicitly.");
+  assert(verticalAuditHtml.includes('class="bf-button is-link"') && !verticalAuditHtml.includes('bf-button is-link is-nested'), "Expected the table action to retain the normal link-button contract instead of gaining an undersized nested modifier.");
   assert((verticalAuditHtml.match(/class="spacing-block-scroll"/g) ?? []).length === 3 && (verticalAuditHtml.match(/class="bf-cluster is-dense is-nowrap"/g) ?? []).length === 3, "Expected the vertical audit to use three horizontally scrollable BF cluster rows.");
   assert(!verticalAuditHtml.includes("spacing-block-track") && !specShellCss.includes(".spacing-block-track"), "Expected the vertical audit to avoid a page-local track layout that can displace specimens from the baseline grid.");
-  assert((verticalAuditHtml.match(/spacing-block-probe/g) ?? []).length === 31 && (verticalAuditHtml.match(/>Abcde</g) ?? []).length === 3, "Expected the vertical audit to expose the focused specimen inventory with a five-letter baseline reference at the front of every row.");
+  assert((verticalAuditHtml.match(/spacing-block-probe/g) ?? []).length === 47 && (verticalAuditHtml.match(/>Abcde</g) ?? []).length === 3, "Expected the vertical audit to expose the exhaustive specimen inventory with a five-letter baseline reference at the front of every row.");
   assert(/\.spacing-block-sample\s*\{[^}]*flex:\s*0 0 5rem;/s.test(specShellCss), "Expected every compact vertical specimen to use the shared 5rem audit width.");
   assert(specShellCss.includes(".spacing-block-scroll") && specShellCss.includes("overflow-x: auto;") && specShellCss.includes(".spacing-block-scroll::-webkit-scrollbar") && specShellCss.includes("block-size: var(--bf-space-2);") && specShellCss.includes(".spacing-block-probe::before") && specShellCss.includes(".spacing-block-probe::after"), "Expected the vertical audit shell to provide baseline-snapped horizontal scrolling plus shared-start and occupied-end rules.");
   assert(!verticalAuditHtml.includes("data-spacing-keyline-debug") && !verticalAuditHtml.includes("data-spacing-keyline="), "Expected the vertical audit to avoid the horizontal inset overlay.");

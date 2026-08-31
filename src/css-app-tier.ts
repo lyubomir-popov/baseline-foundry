@@ -16,6 +16,12 @@ ${scoped(" :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base,
   line-height: var(--bf-body-line-height);
 }
 
+/* Preserve the public nested fit after the preset's general typography pass.
+   The modifier remains explicit and zero-specificity in every app scope. */
+${scoped(" :where(.bf-status-label.is-nested, .bf-chip.is-nested)")} {
+  line-height: var(--bf-nested-auxiliary-line-height);
+}
+
 ${scoped(" :where(.bf-input, .bf-button, .bf-button.is-base)")} {
   font-family: inherit;
   font-size: var(--bf-body-font-size);

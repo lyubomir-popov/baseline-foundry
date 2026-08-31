@@ -104,7 +104,7 @@ function renderSequenceNavigation(currentPath) {
   }
 
   return `
-    <nav class="bf-theme is-dark bf-cluster pc-sequence" aria-label="Adjacent pages">
+    <nav class="bf-cluster pc-sequence" aria-label="Adjacent pages">
       ${renderSequenceLink(previous, "previous")}
       ${renderSequenceLink(next, "next")}
     </nav>`;
@@ -118,6 +118,20 @@ function renderBreadcrumbs(page) {
         <li class="bf-breadcrumbs-item"><span aria-current="page">${escapeHtml(page.title)}</span></li>
       </ol>
     </nav>`;
+}
+
+function renderNavigationBrand() {
+  return `
+    <div class="bf-panel-header is-sticky is-navigation-brand">
+      <div class="bf-top-navigation-logo is-canonical-tagged">
+        <a class="bf-top-navigation-link" href="/demo/" aria-label="Baseline Foundry home">
+          <span class="bf-top-navigation-logo-tag" aria-hidden="true">
+            <img class="bf-top-navigation-logo-icon" src="/demo/assets/canonical-mark.svg" alt="">
+          </span>
+          <span class="bf-top-navigation-logo-title">Baseline Foundry</span>
+        </a>
+      </div>
+    </div>`;
 }
 
 function renderDrawerSections(currentPath) {
@@ -138,8 +152,10 @@ function renderDrawerSections(currentPath) {
 
       return `
         <section class="bf-side-navigation-group">
-          ${index > 0 ? "<hr>" : ""}
-          <h3 class="bf-side-navigation-heading">${escapeHtml(section.heading)}</h3>
+          <div class="bf-side-navigation-group-header">
+            ${index > 0 ? "<hr>" : ""}
+            <h3 class="bf-side-navigation-heading">${escapeHtml(section.heading)}</h3>
+          </div>
           <ul class="bf-side-navigation-list">
             ${items}
           </ul>
@@ -245,7 +261,8 @@ export function injectPageChrome(options = {}) {
   nav.dataset.captureIgnore = "true";
   nav.dataset.baselineIgnore = "true";
   nav.innerHTML = `
-    <nav class="bf-side-navigation bf-side-navigation-drawer" aria-label="Page list">
+    <nav class="bf-panel bf-side-navigation" aria-label="Page list">
+      ${renderNavigationBrand()}
       <div class="bf-side-navigation-groups">
         ${renderDrawerSections(currentPath)}
       </div>

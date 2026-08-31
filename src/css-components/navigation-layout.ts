@@ -69,13 +69,11 @@ export function navigationLayoutCss(): string {
   line-height: var(--bf-top-navigation-logo-title-line-height, var(--bf-body-line-height, 1.5));
   overflow: visible;
   overflow-wrap: anywhere;
-  /* The first title line and the 1rem mark share the mark's fixed centre:
-   * tag block-end minus the 0.375rem inset minus half the mark. Symmetric title
-   * padding keeps the occupied row stable across all four type-density tiers. */
+  /* The first title line and the 1rem mark share the public brand-line centre.
+   * The derived brand block is twice that fixed centre, so the orange tag can
+   * extend upward without changing the title or adjacent-header baseline. */
   padding-block: calc(
-    var(--bf-top-navigation-logo-tag-block-size)
-    - var(--bf-top-navigation-logo-icon-bottom-offset)
-    - (var(--bf-top-navigation-logo-icon-size) / 2)
+    var(--bf-navigation-brand-line-center-block)
     - (var(--bf-top-navigation-logo-title-line-height, var(--bf-body-line-height, 1.5rem)) / 2)
   );
   text-overflow: clip;

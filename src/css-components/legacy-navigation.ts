@@ -26,6 +26,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   --bf-side-navigation-disclosure-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));
   --bf-side-navigation-depth-step: var(--bf-space-2);
   --bf-side-navigation-group-gap: 1.5rem;
+  --bf-side-navigation-heading-list-gap: 0.5rem;
   color: var(--bf-color-text-inactive);
   display: block;
   inline-size: 100%;
@@ -39,8 +40,28 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
 
 :where(.bf-theme) :where(.bf-side-navigation-group) {
   display: grid;
+  gap: var(--bf-side-navigation-heading-list-gap);
+  min-inline-size: 0;
+}
+
+/* Keep the divider and heading as one tight header. The group owns only the
+   larger transition from that header to its list, so the compensated rule
+   cannot change the heading/list phase. */
+:where(.bf-theme) :where(.bf-side-navigation-group-header) {
+  display: grid;
   gap: 0rem;
   min-inline-size: 0;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {
+  inline-size: auto;
+  margin-inline: var(--bf-side-navigation-content-inset) 0;
+}
+
+/* A single-line group heading occupies four baselines. min-block-size keeps
+   that phase exact while still allowing a long heading to wrap and grow. */
+:where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading) {
+  min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-margin-bottom));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-drawer) {
@@ -160,6 +181,7 @@ ${bodySemiboldTypeStyles}  display: block;
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {
   display: grid;
+  grid-auto-rows: var(--bf-single-line-row-block-size);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -173,6 +195,7 @@ ${bodySemiboldTypeStyles}  display: block;
 
 :where(.bf-theme) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
 ${bodyTypeStyles}  align-items: center;
+  align-self: start;
   background: transparent;
   border: 0;
   border-block: var(--bf-border-width) solid transparent;

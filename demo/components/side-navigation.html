@@ -44,9 +44,29 @@
             aria-hidden="false"
           ></div>
           <nav
-            class="bf-side-navigation-drawer"
+            class="bf-panel bf-side-navigation-drawer"
             aria-label="Example documentation navigation"
           >
+            <div class="bf-panel-header is-navigation-brand">
+              <div class="bf-top-navigation-logo is-canonical-tagged">
+                <a
+                  class="bf-top-navigation-link"
+                  href="#"
+                  aria-label="Baseline Foundry home"
+                >
+                  <span class="bf-top-navigation-logo-tag" aria-hidden="true">
+                    <img
+                      class="bf-top-navigation-logo-icon"
+                      src="../assets/canonical-mark.svg"
+                      alt=""
+                    />
+                  </span>
+                  <span class="bf-top-navigation-logo-title"
+                    >Baseline Foundry</span
+                  >
+                </a>
+              </div>
+            </div>
             <div class="bf-side-navigation-drawer-header">
               <button
                 class="bf-side-navigation-toggle is-in-drawer"
@@ -59,13 +79,15 @@
             </div>
             <div class="bf-side-navigation-groups">
               <section class="bf-side-navigation-group">
-                <h3
-                  class="bf-side-navigation-heading"
-                  data-baseline-check="flow"
-                  data-baseline-label="side navigation docs heading one"
-                >
-                  Introduction
-                </h3>
+                <div class="bf-side-navigation-group-header">
+                  <h3
+                    class="bf-side-navigation-heading"
+                    data-baseline-check="flow"
+                    data-baseline-label="side navigation docs heading one"
+                  >
+                    Introduction
+                  </h3>
+                </div>
                 <ul
                   class="bf-side-navigation-list"
                   data-baseline-check="box"
@@ -92,7 +114,9 @@
                   >
                     <a class="bf-side-navigation-link" href="#"
                       >Quick start<span class="bf-side-navigation-status"
-                        ><span class="bf-chip is-positive">New</span></span
+                        ><span class="bf-chip is-positive is-nested"
+                          >New</span
+                        ></span
                       ></a
                     >
                   </li>
@@ -100,14 +124,16 @@
               </section>
 
               <section class="bf-side-navigation-group">
-                <hr />
-                <h3
-                  class="bf-side-navigation-heading"
-                  data-baseline-check="flow"
-                  data-baseline-label="side navigation docs heading two"
-                >
-                  Machines
-                </h3>
+                <div class="bf-side-navigation-group-header">
+                  <hr />
+                  <h3
+                    class="bf-side-navigation-heading"
+                    data-baseline-check="flow"
+                    data-baseline-label="side navigation docs heading two"
+                  >
+                    Machines
+                  </h3>
+                </div>
                 <ul
                   class="bf-side-navigation-list"
                   data-baseline-check="box"
@@ -188,14 +214,16 @@
               </section>
 
               <section class="bf-side-navigation-group">
-                <hr />
-                <h3
-                  class="bf-side-navigation-heading is-linked"
-                  data-baseline-check="flow"
-                  data-baseline-label="side navigation docs heading three"
-                >
-                  <a class="bf-side-navigation-link" href="#">Troubleshoot</a>
-                </h3>
+                <div class="bf-side-navigation-group-header">
+                  <hr />
+                  <h3
+                    class="bf-side-navigation-heading is-linked"
+                    data-baseline-check="flow"
+                    data-baseline-label="side navigation docs heading three"
+                  >
+                    <a class="bf-side-navigation-link" href="#">Troubleshoot</a>
+                  </h3>
+                </div>
                 <ul
                   class="bf-side-navigation-list"
                   data-baseline-check="box"
@@ -216,7 +244,7 @@
                     <a class="bf-side-navigation-link" href="#"
                       >Logs and diagnostics<span
                         class="bf-side-navigation-status"
-                        ><span class="bf-chip is-information"
+                        ><span class="bf-chip is-information is-nested"
                           >Updated</span
                         ></span
                       ></a
@@ -292,38 +320,11 @@
                     aria-label="Baseline Foundry home"
                   >
                     <span class="bf-top-navigation-logo-tag" aria-hidden="true">
-                      <svg
+                      <img
                         class="bf-top-navigation-logo-icon"
-                        viewBox="0 0 60.45 57.87"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          cx="9.66"
-                          cy="27.41"
-                          r="8.12"
-                          fill="currentColor"
-                        />
-                        <circle
-                          cx="43.48"
-                          cy="9.61"
-                          r="8.12"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M7.34 38.71A26.67 26.67 0 0 0 32.58 55.55a11.47 11.47 0 0 1-2.49-7q-1.09-.15-2.09-.36a19.62 19.62 0 0 1-13.45-10.36 11.49 11.49 0 0 1-7.21.88Z"
-                          fill="currentColor"
-                        />
-                        <circle
-                          cx="41.65"
-                          cy="48.35"
-                          r="8.12"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M48.9 39.31a11.58 11.58 0 0 1 4 6.25 26.64 26.64 0 0 0 1.36-31.63 11.47 11.47 0 0 1-4.7 5.54 19.73 19.73 0 0 1-.66 19.84ZM9.68 15.85a11.44 11.44 0 0 1 2.4.25 11.72 11.72 0 0 1 3.77 1.54 19.73 19.73 0 0 1 16-8.56 12.15 12.15 0 0 1 .22-1.9 11.75 11.75 0 0 1 2.34-4.89A26.9 26.9 0 0 0 8.82 15.88c.29-.02.57-.03.86-.03Z"
-                          fill="currentColor"
-                        />
-                      </svg>
+                        src="../assets/canonical-mark.svg"
+                        alt=""
+                      />
                     </span>
                     <span class="bf-top-navigation-logo-title"
                       >Baseline Foundry</span
@@ -411,7 +412,8 @@
                             ><span class="bf-side-navigation-label"
                               >Deployment</span
                             ><span class="bf-side-navigation-status"
-                              ><span class="bf-status-label is-caution"
+                              ><span
+                                class="bf-status-label is-caution is-nested"
                                 >3</span
                               ></span
                             ></a
@@ -430,7 +432,7 @@
                       <a class="bf-side-navigation-link" href="#"
                         ><span class="bf-side-navigation-label">Users</span
                         ><span class="bf-side-navigation-status"
-                          ><span class="bf-chip is-information"
+                          ><span class="bf-chip is-information is-nested"
                             >Beta</span
                           ></span
                         ></a
@@ -450,7 +452,9 @@
                         ><span class="bf-side-navigation-label"
                           >Version 0.4.0</span
                         ><span class="bf-side-navigation-status"
-                          ><span class="bf-chip is-caution">Beta</span></span
+                          ><span class="bf-chip is-caution is-nested"
+                            >Beta</span
+                          ></span
                         ></span
                       >
                     </li>

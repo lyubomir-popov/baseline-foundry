@@ -1,6 +1,27 @@
 # Agent inbox
 
-## Release handover — 0.1.5 / archived Spec 017
+## Active package — Spec 018 nested density audit (implemented; awaiting owner review)
+
+Add the existing optional orange tagged brand composition to shared demo chrome
+and the side-navigation component fixture. Audit nested chip/status/badge
+geometry through an explicit `is-nested` modifier that fits the host body line
+without negative margins, transforms, target block sizes, or automatic context
+selectors. Do not generalise this into an undersized bordered-button contract.
+The reopened vertical coverage work is complete. The vague independent-contract
+bucket is replaced by unboxed text and real nested hosts; every distinct
+single-line primitive is visible or has an explicit representative/content-
+driven disposition in the package contract. The reopened side-navigation
+rhythm correction is complete: rule and heading belong to a tight public group
+header, the group owns a 0.5rem header-to-list gap, and the compensated rule
+runs from the continuation text rail to the navigation end edge. Repeated
+navigation items now occupy shared five-baseline tracks, eliminating raster
+drift without changing their natural control paint. The shared tagged-brand
+line, demo breadcrumb, active tab, chip, color control, and inline range have
+also been reviewed at enlarged zoom in all four tiers and both tones. The
+focused and full gates plus four-tier light/dark browser review are green. Do
+not merge or publish without owner review.
+
+## Previous release — 0.1.5 / archived Spec 017
 
 Remove developer-only spacing and horizontal-keyline pages from the public demo
 catalog. Audit which remaining examples teach a consumer-facing contract and
@@ -30,6 +51,13 @@ containers own semantic spacing.
   to the public `baseline-foundry/build` export.
 
 ## Last-known-green state
+
+The current Spec 018 branch passes `npm test` with 6,936 static contracts,
+zero component-baseline failures, and clean browser behavior. It also passes
+`npm run qa:components` after a fresh full-catalog screenshot capture. The
+shared demo remains running at `http://127.0.0.1:4173`; the persistent chrome,
+optional orange tagged brand, active thick-bar tab, and corrected vertical
+audit were visibly present in the final live refresh.
 
 The released Spec 017 implementation passes `npm test` (including 6,739 build
 contracts and component behavior), `npm run qa:components`, and Playwright

@@ -21,7 +21,7 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
 ${bodyTypeStyles}  align-items: baseline;
   background-color: var(--bf-ui-chip-background);
   border: var(--bf-border-width) solid var(--bf-ui-chip-border);
-  border-radius: 1rem;
+  border-radius: var(--bf-ui-chip-radius);
   color: var(--bf-color-text-default);
   display: inline-flex;
   gap: 0;
@@ -183,6 +183,38 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-single-line-row-margin-block-end);
 :where(.bf-theme) :where(.bf-status-label.is-negative) {
   --bf-ui-status-background: var(--bf-color-border-negative);
   --bf-ui-status-color: var(--bf-color-button-negative-text);
+}
+
+/* Nested auxiliary surfaces fit a body-sized flex/grid host instead of
+   carrying a second standalone occupied-row contract. This modifier is
+   explicit so component density never changes merely because of ancestry. */
+:where(.bf-theme) :where(.bf-chip.is-nested, .bf-status-label.is-nested) {
+  line-height: var(--bf-nested-auxiliary-line-height);
+  margin-block: 0;
+  padding-block: var(--bf-nested-auxiliary-padding-block);
+}
+
+:where(.bf-theme) :where(.bf-chip.is-nested) {
+  border: 0;
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);
+}
+
+:where(.bf-theme) :where(.bf-chip.is-nested:hover) {
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-hover);
+}
+
+:where(.bf-theme) :where(.bf-chip.is-nested:is(:active, [aria-pressed='true'], .is-selected)) {
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-active);
+}
+
+:where(.bf-theme) :where(.bf-status-label.is-nested) {
+  border-block-width: 0;
+}
+
+:where(.bf-theme) :where(.bf-badge.is-nested) {
+  align-self: center;
+  line-height: var(--bf-nested-auxiliary-line-height);
+  vertical-align: middle;
 }
 `;
 }

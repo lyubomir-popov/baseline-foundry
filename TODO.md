@@ -5,9 +5,13 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No implementation package is active. Spec 017 was released as 0.1.5 from
-`2d1099c`; registry, tag, tarball, checksum, and clean-install verification are
-recorded in its archived review.
+Spec 018 nested density audit is implemented and awaiting owner review. Its
+nested auxiliary-surface and vertical-coverage work is complete, and grouped
+side navigation now separates the tight compensated rule/heading header from
+the group's 0.5rem heading-to-list gap while aligning each rule to the
+continuation text rail. Shared five-baseline navigation tracks prevent repeated
+raster drift, and the tagged-brand/header line plus the first-row chip, active
+tab, color, and inline-range specimens are verified across every tier and tone.
 
 ## Candidate order after Spec 001
 

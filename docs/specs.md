@@ -5,7 +5,9 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-No implementation package is active.
+| Spec | Package | Status |
+|---|---|---|
+| 018 Nested density audit | [`018-nested-density-audit/`](../specs/018-nested-density-audit/) | Implemented on `feat/018-nested-density-audit`; awaiting owner review of the explicit nested auxiliary-surface fit contract, exhaustive vertical-audit coverage, shared header/brand baseline, and raster-stable side-navigation and single-line rows. |
 
 ## Archive
 

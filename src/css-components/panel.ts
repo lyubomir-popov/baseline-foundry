@@ -58,10 +58,6 @@ export function panelCss(options: PanelCssOptions): string {
   inline-size: 100%;
 }
 
-:where(.bf-theme) :where(.bf-panel-header.is-navigation-brand) :where(.bf-top-navigation-logo-title) {
-  transform: translateY(var(--bf-navigation-brand-title-optical-offset-block));
-}
-
 :where(.bf-theme) :where(.bf-panel-header) > :where(.bf-panel-title) {
   min-inline-size: 0;
 }

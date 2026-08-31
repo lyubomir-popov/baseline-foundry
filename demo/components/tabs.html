@@ -1,32 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tabs Demo</title>
-  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
-  <link rel="stylesheet" href="../component-shell.css">
-</head>
-<body class="bf-theme is-dark" data-component-capture>
-<section class="bf-stack" data-baseline-check="box" data-baseline-label="tabs section">
- <p class="bf-body" data-baseline-check="flow" data-baseline-label="tabs geometry note">The selected tab rule meets the list rule while the tab set retains its occupied baseline rhythm.</p>
- <div class="bf-tabs" data-baseline-check="box" data-baseline-label="tabs component">
- <ul class="bf-tabs-list" role="tablist" data-baseline-ignore="true">
- <li class="bf-tabs-item" data-baseline-ignore="true">
- <button class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="tabs-panel-1" tabindex="0" data-baseline-check="box" data-baseline-label="tabs tab 1">Document</button>
- </li>
- <li class="bf-tabs-item" data-baseline-ignore="true">
- <button class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="tabs-panel-2" tabindex="-1" data-baseline-check="box" data-baseline-label="tabs tab 2">Export</button>
- </li>
- </ul>
- <div id="tabs-panel-1" class="bf-tabs-panel" role="tabpanel" aria-hidden="false">
- <p class="bf-body" data-baseline-check="flow" data-baseline-label="tabs body">Document-scoped controls can sit on the same dense baseline model as the rest of the inspector.</p>
- </div>
- <div id="tabs-panel-2" class="bf-tabs-panel" role="tabpanel" aria-hidden="true">
- <p class="bf-body" data-baseline-ignore="true">Hidden export panel.</p>
- </div>
- </div>
- </section>
-  <script type="module" src="../component-demo.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabs Demo</title>
+    <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../component-shell.css" />
+  </head>
+  <body class="bf-theme is-dark" data-component-capture>
+    <section
+      class="bf-stack"
+      data-baseline-check="box"
+      data-baseline-label="tabs section"
+    >
+      <p
+        class="bf-body"
+        data-baseline-check="flow"
+        data-baseline-label="tabs geometry note"
+      >
+        The selected tab rule meets the list rule while the tab set retains its
+        occupied baseline rhythm.
+      </p>
+      <div
+        class="bf-tabs"
+        data-baseline-check="box"
+        data-baseline-label="tabs component"
+      >
+        <ul class="bf-tabs-list" role="tablist" data-baseline-ignore="true">
+          <li class="bf-tabs-item" data-baseline-ignore="true">
+            <button
+              class="bf-tabs-link"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="tabs-panel-1"
+              tabindex="0"
+              data-baseline-check="box"
+              data-baseline-label="tabs tab 1"
+            >
+              <span>Document</span>
+              <span class="bf-badge is-negative is-nested">3</span>
+            </button>
+          </li>
+          <li class="bf-tabs-item" data-baseline-ignore="true">
+            <button
+              class="bf-tabs-link"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="tabs-panel-2"
+              tabindex="-1"
+              data-baseline-check="box"
+              data-baseline-label="tabs tab 2"
+            >
+              Export
+            </button>
+          </li>
+        </ul>
+        <div
+          id="tabs-panel-1"
+          class="bf-tabs-panel"
+          role="tabpanel"
+          aria-hidden="false"
+        >
+          <p
+            class="bf-body"
+            data-baseline-check="flow"
+            data-baseline-label="tabs body"
+          >
+            Document-scoped controls can sit on the same dense baseline model
+            as the rest of the inspector.
+          </p>
+        </div>
+        <div
+          id="tabs-panel-2"
+          class="bf-tabs-panel"
+          role="tabpanel"
+          aria-hidden="true"
+        >
+          <p class="bf-body" data-baseline-ignore="true">
+            Hidden export panel.
+          </p>
+        </div>
+      </div>
+    </section>
+    <script type="module" src="../component-demo.js"></script>
+  </body>
 </html>

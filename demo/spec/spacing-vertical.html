@@ -22,7 +22,9 @@
           <p>
             The five-letter paragraph establishes the body-text baseline. Red
             marks the shared start and blue marks the occupied end, making both
-            text drift and gratuitous single-line heights visible.
+            text drift and gratuitous single-line heights visible. Unboxed text
+            is compared separately from padded interface rows; nested surfaces
+            are always shown inside their real host component.
           </p>
         </header>
 
@@ -30,14 +32,47 @@
           <h2 class="bf-h6" id="vertical-controls">
             Shared single-line interface height
           </h2>
+          <p>
+            These are body-sized fields, actions, navigation rows, and repeated
+            data cells. Different paint is allowed; their complete occupied
+            blocks should resolve to the same single-line rhythm.
+          </p>
           <div
             class="spacing-block-scroll"
             tabindex="0"
             aria-label="Shared single-line interface height comparison"
           >
             <div class="bf-cluster is-dense is-nowrap">
-              <article class="spacing-block-sample" aria-label="Baseline reference">
+              <article
+                class="spacing-block-sample"
+                aria-label="Baseline reference"
+              >
                 <div class="spacing-block-probe"><p>Abcde</p></div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Chip">
+                <div class="spacing-block-probe">
+                  <button class="bf-chip" type="button">
+                    <span class="bf-chip-value">Chip</span>
+                  </button>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Tab action">
+                <div class="spacing-block-probe">
+                  <div class="bf-tabs">
+                    <ul class="bf-tabs-list" role="tablist">
+                      <li class="bf-tabs-item">
+                        <button
+                          class="bf-tabs-link"
+                          type="button"
+                          role="tab"
+                          aria-selected="true"
+                        >
+                          Active
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </article>
               <article class="spacing-block-sample" aria-label="Text input">
                 <div class="spacing-block-probe">
@@ -72,6 +107,18 @@
                   </div>
                 </div>
               </article>
+              <article class="spacing-block-sample" aria-label="Color input">
+                <div class="spacing-block-probe">
+                  <div class="bf-control bf-color-control">
+                    <input
+                      class="bf-color-input"
+                      type="color"
+                      value="#0066cc"
+                      aria-label="Vertical color input"
+                    />
+                  </div>
+                </div>
+              </article>
               <article class="spacing-block-sample" aria-label="Search">
                 <div class="spacing-block-probe">
                   <div class="bf-search-box">
@@ -87,6 +134,34 @@
                     <button class="bf-search-box-button" type="button">
                       Search
                     </button>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="File input">
+                <div class="spacing-block-probe">
+                  <div class="bf-control">
+                    <input type="file" aria-label="Vertical file input" />
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Range control">
+                <div class="spacing-block-probe">
+                  <div class="bf-slider">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value="64"
+                      aria-label="Vertical range input"
+                    />
+                    <input
+                      class="bf-slider-input"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value="64"
+                      aria-label="Vertical range value"
+                    />
                   </div>
                 </div>
               </article>
@@ -109,7 +184,10 @@
                   </button>
                 </div>
               </article>
-              <article class="spacing-block-sample" aria-label="Segmented control">
+              <article
+                class="spacing-block-sample"
+                aria-label="Segmented control"
+              >
                 <div class="spacing-block-probe">
                   <div class="bf-segmented-control">
                     <ul class="bf-segmented-control-list">
@@ -179,9 +257,15 @@
                   </ul>
                 </div>
               </article>
-              <article class="spacing-block-sample" aria-label="Side-navigation link">
+              <article
+                class="spacing-block-sample"
+                aria-label="Side-navigation link"
+              >
                 <div class="spacing-block-probe">
-                  <nav class="bf-side-navigation" aria-label="Plain side navigation">
+                  <nav
+                    class="bf-side-navigation"
+                    aria-label="Plain side navigation"
+                  >
                     <ul class="bf-side-navigation-list">
                       <li class="bf-side-navigation-item">
                         <a
@@ -195,9 +279,15 @@
                   </nav>
                 </div>
               </article>
-              <article class="spacing-block-sample" aria-label="Side-navigation disclosure">
+              <article
+                class="spacing-block-sample"
+                aria-label="Side-navigation disclosure"
+              >
                 <div class="spacing-block-probe">
-                  <nav class="bf-side-navigation" aria-label="Disclosure side navigation">
+                  <nav
+                    class="bf-side-navigation"
+                    aria-label="Disclosure side navigation"
+                  >
                     <ul class="bf-side-navigation-list">
                       <li class="bf-side-navigation-item">
                         <button
@@ -243,7 +333,10 @@
                   </div>
                 </div>
               </article>
-              <article class="spacing-block-sample" aria-label="Table of contents link">
+              <article
+                class="spacing-block-sample"
+                aria-label="Table of contents link"
+              >
                 <div class="spacing-block-probe">
                   <aside class="bf-table-of-contents">
                     <nav aria-label="Vertical table of contents">
@@ -287,24 +380,6 @@
                   </ul>
                 </div>
               </article>
-              <article class="spacing-block-sample" aria-label="Tab action">
-                <div class="spacing-block-probe">
-                  <div class="bf-tabs">
-                    <ul class="bf-tabs-list" role="tablist">
-                      <li class="bf-tabs-item">
-                        <button
-                          class="bf-tabs-link"
-                          type="button"
-                          role="tab"
-                          aria-selected="true"
-                        >
-                          Tab
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </article>
               <article class="spacing-block-sample" aria-label="Accordion">
                 <div class="spacing-block-probe">
                   <div class="bf-accordion">
@@ -324,64 +399,15 @@
                   </div>
                 </div>
               </article>
-              <article class="spacing-block-sample" aria-label="Chip">
+              <article
+                class="spacing-block-sample"
+                aria-label="Contextual menu item"
+              >
                 <div class="spacing-block-probe">
-                  <button class="bf-chip" type="button">
-                    <span class="bf-chip-value">Chip</span>
-                    <span class="bf-badge">3</span>
+                  <button class="bf-contextual-menu-link" type="button">
+                    Menu
                   </button>
                 </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="bf-stack is-dense" aria-labelledby="vertical-text-runs">
-          <h2 class="bf-h6" id="vertical-text-runs">Metric text references</h2>
-          <div
-            class="spacing-block-scroll"
-            tabindex="0"
-            aria-label="Body-text metric comparison"
-          >
-            <div class="bf-cluster is-dense is-nowrap">
-              <article class="spacing-block-sample" aria-label="Baseline reference">
-                <div class="spacing-block-probe"><p>Abcde</p></div>
-              </article>
-              <article class="spacing-block-sample" aria-label="Paragraph">
-                <div class="spacing-block-probe"><p>Text</p></div>
-              </article>
-              <article class="spacing-block-sample" aria-label="Text link">
-                <div class="spacing-block-probe">
-                  <a class="bf-text-link" href="#vertical-text-runs">Link</a>
-                </div>
-              </article>
-              <article class="spacing-block-sample" aria-label="Prose list">
-                <div class="spacing-block-probe">
-                  <div class="bf-prose">
-                    <ul>
-                      <li>List</li>
-                    </ul>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="bf-stack is-dense" aria-labelledby="vertical-variants">
-          <h2 class="bf-h6" id="vertical-variants">Independent contracts</h2>
-          <p>
-            Repeated-data and document-trail rhythm remain visible without
-            forcing either into an unrelated component-height family.
-          </p>
-          <div
-            class="spacing-block-scroll"
-            tabindex="0"
-            aria-label="Deliberately distinct occupied heights"
-          >
-            <div class="bf-cluster is-dense is-nowrap">
-              <article class="spacing-block-sample" aria-label="Baseline reference">
-                <div class="spacing-block-probe"><p>Abcde</p></div>
               </article>
               <article class="spacing-block-sample" aria-label="Table cell">
                 <div class="spacing-block-probe">
@@ -394,6 +420,66 @@
                   </table>
                 </div>
               </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="bf-stack is-dense" aria-labelledby="vertical-text-runs">
+          <h2 class="bf-h6" id="vertical-text-runs">
+            Unboxed text metrics
+          </h2>
+          <p>
+            These roles have no component padding. Their occupied height comes
+            only from the font's measured top nudge, line box, and trailing
+            baseline compensation, so making them control-height would add
+            padding that has no semantic owner.
+          </p>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Body-text metric comparison"
+          >
+            <div class="bf-cluster is-dense is-nowrap">
+              <article
+                class="spacing-block-sample"
+                aria-label="Baseline reference"
+              >
+                <div class="spacing-block-probe"><p>Abcde</p></div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Paragraph">
+                <div class="spacing-block-probe"><p>Text</p></div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Text link">
+                <div class="spacing-block-probe">
+                  <a class="bf-text-link" href="#vertical-text-runs">Link</a>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Form label">
+                <div class="spacing-block-probe">
+                  <span class="bf-form-label">Label</span>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Form help">
+                <div class="spacing-block-probe">
+                  <p class="bf-form-help">Help</p>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Inline list">
+                <div class="spacing-block-probe">
+                  <ul class="bf-inline-list">
+                    <li class="bf-inline-list-item">Inline</li>
+                  </ul>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Prose list">
+                <div class="spacing-block-probe">
+                  <div class="bf-prose">
+                    <ul>
+                      <li>List</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
               <article class="spacing-block-sample" aria-label="Breadcrumbs">
                 <div class="spacing-block-probe">
                   <nav class="bf-breadcrumbs" aria-label="Vertical breadcrumbs">
@@ -403,6 +489,180 @@
                       </li>
                     </ol>
                   </nav>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="bf-stack is-dense"
+          aria-labelledby="vertical-nested-contexts"
+        >
+          <h2 class="bf-h6" id="vertical-nested-contexts">
+            Nested single-line contexts
+          </h2>
+          <p>
+            Every supported auxiliary nesting is shown in its real host. Chips,
+            status labels, and badges use the explicit is-nested modifier; an
+            inline table action remains a normal link button so its interactive
+            target is not silently reduced.
+          </p>
+          <div
+            class="spacing-block-scroll"
+            tabindex="0"
+            aria-label="Nested single-line component comparison"
+          >
+            <div class="bf-cluster is-dense is-nowrap">
+              <article
+                class="spacing-block-sample"
+                aria-label="Baseline reference"
+              >
+                <div class="spacing-block-probe"><p>Abcde</p></div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Plain table cell">
+                <div class="spacing-block-probe">
+                  <table class="bf-table">
+                    <tbody>
+                      <tr>
+                        <td>Cell</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Table chip">
+                <div class="spacing-block-probe">
+                  <table class="bf-table">
+                    <tbody>
+                      <tr>
+                        <td><span class="bf-chip is-nested">Chip</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+              <article
+                class="spacing-block-sample"
+                aria-label="Table status label"
+              >
+                <div class="spacing-block-probe">
+                  <table class="bf-table">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <span class="bf-status-label is-positive is-nested">
+                            Status
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Table badge">
+                <div class="spacing-block-probe">
+                  <table class="bf-table">
+                    <tbody>
+                      <tr>
+                        <td><span class="bf-badge is-nested">3</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+              <article
+                class="spacing-block-sample"
+                aria-label="Table link action"
+              >
+                <div class="spacing-block-probe">
+                  <table class="bf-table">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <button class="bf-button is-link" type="button">
+                            Action
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+              <article
+                class="spacing-block-sample"
+                aria-label="Side navigation chip"
+              >
+                <div class="spacing-block-probe">
+                  <nav
+                    class="bf-side-navigation"
+                    aria-label="Navigation chip context"
+                  >
+                    <ul class="bf-side-navigation-list">
+                      <li class="bf-side-navigation-item">
+                        <a
+                          class="bf-side-navigation-link"
+                          href="#vertical-nested-contexts"
+                        >
+                          <span class="bf-side-navigation-label">Nav</span>
+                          <span class="bf-side-navigation-status">
+                            <span class="bf-chip is-information is-nested">
+                              3
+                            </span>
+                          </span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </article>
+              <article
+                class="spacing-block-sample"
+                aria-label="Side navigation status label"
+              >
+                <div class="spacing-block-probe">
+                  <nav
+                    class="bf-side-navigation"
+                    aria-label="Navigation status context"
+                  >
+                    <ul class="bf-side-navigation-list">
+                      <li class="bf-side-navigation-item">
+                        <span class="bf-side-navigation-text">
+                          <span class="bf-side-navigation-label">Nav</span>
+                          <span class="bf-side-navigation-status">
+                            <span
+                              class="bf-status-label is-caution is-nested"
+                            >
+                              3
+                            </span>
+                          </span>
+                        </span>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Tab badge">
+                <div class="spacing-block-probe">
+                  <div role="tablist" aria-label="Nested badge tab context">
+                    <button
+                      class="bf-tabs-link"
+                      type="button"
+                      role="tab"
+                      aria-selected="true"
+                    >
+                      T
+                      <span class="bf-badge is-negative is-nested">3</span>
+                    </button>
+                  </div>
+                </div>
+              </article>
+              <article class="spacing-block-sample" aria-label="Chip badge">
+                <div class="spacing-block-probe">
+                  <button class="bf-chip" type="button">
+                    <span class="bf-chip-value">Chip</span>
+                    <span class="bf-badge is-nested">3</span>
+                  </button>
                 </div>
               </article>
             </div>

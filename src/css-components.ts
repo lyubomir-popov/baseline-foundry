@@ -110,8 +110,6 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const h6 = tokens.roles.h6 ?? body;
   const baselineUnit = tokens.baselineUnit;
   const components = tokens.components;
-  const controlBlockPaddingVar = "var(--bf-control-block-padding)";
-  const controlCompactBlockPaddingVar = "var(--bf-control-block-padding-compact)";
   const inputBlockPaddingVar = "var(--bf-input-block-padding)";
   const buttonBlockPaddingVar = "var(--bf-button-block-padding)";
   const bodyLineHeight = roleLineHeightVar("body", body.lineHeight);
@@ -147,14 +145,21 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
      padding and trailing baseline compensation must resolve through this pair. */
   --bf-single-line-row-padding-block: max(0rem, calc(var(--bf-button-block-padding) - var(--bf-border-width)));
   --bf-single-line-row-margin-block-end: ${singleLineRowMarginBottom};
+  --bf-single-line-row-block-size: calc(${bodyLineHeight} + (var(--bf-single-line-row-padding-block) * 2) + (var(--bf-border-width) * 2) + var(--bf-single-line-row-margin-block-end));
+  --bf-single-line-row-in-box-padding-block-start: ${bodySelectedStartNudge};
+  --bf-single-line-row-in-box-padding-block-end: max(0rem, calc(var(--bf-single-line-row-block-size) - ${bodyLineHeight} - var(--bf-single-line-row-in-box-padding-block-start)));
   --bf-single-line-row-visual-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
+  /* Auxiliary surfaces may opt into a host-owned nested composition. The
+     shorter line and capped symmetric padding fit their complete paint inside
+     the host body line without introducing a second row rhythm. */
+  --bf-nested-auxiliary-line-height: max(1em, calc(var(--bf-body-line-height) - var(--bf-baseline)));
+  --bf-nested-auxiliary-padding-block: min(var(--bf-single-line-row-padding-block), max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-auxiliary-line-height)) / 2)));
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
-  --bf-slider-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
+  --bf-slider-row-block-size: var(--bf-single-line-row-block-size);
   --bf-slider-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-slider-track-size)", bodySelectedStartNudge)};
   --bf-table-row-border-size: var(--bf-border-width);
-  --bf-table-row-padding-block-start: ${bodySelectedStartNudge};
-  --bf-table-row-content-size: calc(${bodyLineHeight} + (var(--bf-table-row-padding-block-start) * 2) + var(--bf-table-row-border-size));
-  --bf-table-row-block-size: calc(var(--bf-table-row-content-size) + mod(calc(var(--bf-baseline) - mod(var(--bf-table-row-content-size), var(--bf-baseline))), var(--bf-baseline)));
+  --bf-table-row-padding-block-start: var(--bf-single-line-row-in-box-padding-block-start);
+  --bf-table-row-block-size: var(--bf-single-line-row-block-size);
   --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start) - var(--bf-table-row-border-size)));
   --bf-table-row-line-height: ${bodyLineHeight};
   --bf-switch-track-offset: var(--bf-single-line-row-visual-offset);
@@ -204,7 +209,8 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-top-navigation-logo-tag-gap: 0.25rem;
   --bf-top-navigation-logo-icon-bottom-offset: 0.375rem;
   --bf-top-navigation-logo-icon-optical-offset-inline: -0.0125rem;
-  --bf-navigation-brand-title-optical-offset-block: 0rem;
+  --bf-navigation-brand-line-center-block: calc(var(--bf-top-navigation-logo-tag-block-size) - var(--bf-top-navigation-logo-icon-bottom-offset) - (var(--bf-top-navigation-logo-icon-size) / 2));
+  --bf-navigation-brand-block-size: calc(var(--bf-navigation-brand-line-center-block) * 2);
   --bf-icon-size-default: 1rem;
   --bf-icon-size-medium: 2.5rem;
   --bf-icon-size-large: 4rem;
@@ -214,6 +220,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-leading-icon-gap: var(--bf-leading-mark-gap);
   --bf-leading-icon-offset: var(--bf-single-line-row-visual-offset);
   --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-field);
+  --bf-ui-chip-radius: 999rem;
   --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
   --bf-grid-max-inline-size: var(--bf-content-max-width);
@@ -400,10 +407,33 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 ${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-component-inline-inset-field);
 }
 
-:where(.bf-theme) :where(input[type='color'].bf-color-input) {
+:where(.bf-theme) :where(.bf-color-control) {
+  display: grid;
+  grid-template-areas: "color-control";
   inline-size: 4rem;
-  min-block-size: var(--bf-control-box-size);
-  padding: calc(var(--bf-baseline) * 0.5);
+}
+
+/* Native color inputs do not expose a body-text line box. This invisible
+   metric strut gives their wrapper the same natural padding/border/margin
+   construction as every textual control, including under browser zoom. */
+:where(.bf-theme) :where(.bf-color-control)::before {
+  border-block: var(--bf-border-width) solid transparent;
+  content: "\\00a0";
+  grid-area: color-control;
+  line-height: var(--bf-body-line-height);
+  margin-bottom: var(--bf-single-line-row-margin-block-end);
+  padding-block: var(--bf-single-line-row-padding-block);
+  visibility: hidden;
+}
+
+:where(.bf-theme) :where(.bf-color-control) > :where(input[type='color'].bf-color-input) {
+  align-self: stretch;
+  block-size: auto;
+  grid-area: color-control;
+  inline-size: 100%;
+  margin-bottom: var(--bf-single-line-row-margin-block-end);
+  min-block-size: 0;
+  padding: var(--bf-border-width);
 }
 
 :where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
@@ -439,13 +469,13 @@ ${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-component-inli
 :where(.bf-theme) :where(input[type='file']) {
 ${typeStyles(body, { includeCase: false })}  background: transparent;
   border: 0 solid transparent;
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
-  border-top: var(--bf-border-width) solid transparent;
+  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);
   color: var(--bf-color-text-default);
   margin-bottom: ${inputMarginBottom};
   max-inline-size: 100%;
   min-inline-size: 0;
-${controlPadding(inputBlockPaddingVar)}  padding-inline: 0;
+  padding-block: 0;
+  padding-inline: 0;
   width: 100%;
 }
 
@@ -457,8 +487,9 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   color: var(--bf-color-text-default);
   cursor: pointer;
   margin-inline-end: var(--bf-field-gap);
-  min-block-size: var(--bf-control-box-size-compact);
-${controlPadding(controlCompactBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action-bordered);
+  min-block-size: 0;
+  padding-block: var(--bf-single-line-row-padding-block);
+  padding-inline: var(--bf-control-inline-padding-action-bordered);
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -802,6 +833,15 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   padding: 0;
 }
 
+/* A composite slider's numeric field owns the shared occupied row. Stretching
+   the track within that real sibling height avoids a second nominal-height
+   calculation that can diverge when rem borders are rasterised under zoom. */
+:where(.bf-theme) :where(.bf-slider:not(.is-stacked)):not(:where(.bf-field.is-range.is-stacked) :where(.bf-slider)) > :where(input[type='range']) {
+  align-self: stretch;
+  block-size: auto;
+  margin-block: 0;
+}
+
 :where(.bf-theme) :where(input[type='range']):focus:not(:focus-visible) {
   outline: none;
 }
@@ -1061,7 +1101,8 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   display: block;
   margin: 0;
   overflow: hidden;
-  padding-block: var(--bf-control-block-padding-compact);
+  padding-block-end: var(--bf-single-line-row-in-box-padding-block-end);
+  padding-block-start: var(--bf-single-line-row-in-box-padding-block-start);
   padding-inline: var(--bf-component-inline-inset-action);
   text-align: left;
   text-decoration: none;

@@ -253,7 +253,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       const occupiedBlockGeometry = await page.evaluate(() => {
         const families: Record<string, Array<{ label: string; height: number; textTop: number | null; width: number }>> = {};
         const familyGeometry: Record<string, { top: number; bottom: number; height: number; headingHeight: number; scrollHeight: number }> = {};
-        for (const headingId of ["vertical-controls", "vertical-text-runs", "vertical-variants"]) {
+        for (const headingId of ["vertical-controls", "vertical-text-runs", "vertical-nested-contexts"]) {
           const section = document.getElementById(headingId)?.closest("section");
           if (!section) throw new Error(`Missing vertical audit family: ${headingId}.`);
           const sectionRect = section.getBoundingClientRect();
@@ -294,7 +294,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
           rootSize,
           interfaceRows: families["vertical-controls"],
           textRuns: families["vertical-text-runs"],
-          independent: families["vertical-variants"],
+          nested: families["vertical-nested-contexts"],
           familyGeometry,
           statusPadding: statusStyles ? {
             end: Number.parseFloat(statusStyles.paddingBlockEnd),
@@ -320,17 +320,23 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
           endRule: after ? { blockSize: Number.parseFloat(after.blockSize), bottom: Number.parseFloat(after.bottom) } : null
         };
       });
+      const renderedBorderTolerance = Math.max(occupiedBlockGeometry.borderWidth, 0.51);
       const assertSharedHeight = (name: string, samples: Array<{ height: number }>) => {
         const heights = samples.map(sample => sample.height);
-        assert(Math.max(...heights) - Math.min(...heights) < 0.51, `Expected ${tier} ${name} specimens to share one occupied-block family; got ${JSON.stringify(samples)}.`);
+        assert(Math.max(...heights) - Math.min(...heights) <= renderedBorderTolerance, `Expected ${tier} ${name} specimens to share one occupied-block family within one rasterised rem-based border; got ${JSON.stringify(samples)}.`);
       };
-      assert(occupiedBlockGeometry.interfaceRows.length === 24, `Expected ${tier} shared interface bucket to contain the reference plus all 23 single-line specimens.`);
+      assert(occupiedBlockGeometry.interfaceRows.length === 29, `Expected ${tier} shared interface bucket to contain the reference plus all 28 distinct single-line specimens.`);
+      assert(occupiedBlockGeometry.textRuns.length === 8, `Expected ${tier} unboxed-text bucket to contain the reference plus all seven distinct metric roles.`);
+      assert(occupiedBlockGeometry.nested.length === 10, `Expected ${tier} nested bucket to contain the reference plus all nine supported host/content combinations.`);
       const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
       assertSharedHeight("single-line interface", interfaceComponents);
       assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - interfaceReference.textTop) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
       assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
-      const familyReferences = [interfaceReference, occupiedBlockGeometry.textRuns[0], occupiedBlockGeometry.independent[0]];
+      const nestedReference = occupiedBlockGeometry.nested[0];
+      const nestedHosts = occupiedBlockGeometry.nested.slice(1);
+      assertSharedHeight("nested host", nestedHosts);
+      const familyReferences = [interfaceReference, occupiedBlockGeometry.textRuns[0], nestedReference];
       const baselinePhase = (position: number) => ((position % occupiedBlockGeometry.baseline) + occupiedBlockGeometry.baseline) % occupiedBlockGeometry.baseline;
       const interfaceReferencePhase = interfaceReference.textTop === null ? null : baselinePhase(interfaceReference.textTop);
       assert(familyReferences.every(sample => sample?.label === "Baseline reference" && sample.textTop !== null) && interfaceReferencePhase !== null && familyReferences.every(sample => {
@@ -338,15 +344,20 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         const delta = Math.abs(phase - interfaceReferencePhase);
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
       }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
-      assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} metric text references to share their five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
-      assert(occupiedBlockGeometry.independent.every(sample => sample.textTop === null || occupiedBlockGeometry.independent[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.independent[0].textTop) < 0.51), `Expected ${tier} independent-contract text to retain the page baseline without flattening component height; got ${JSON.stringify(occupiedBlockGeometry.independent)}.`);
+      assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
+      assert(occupiedBlockGeometry.nested.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || Math.abs(sample.textTop - nestedReference.textTop) <= renderedBorderTolerance), `Expected ${tier} nested host text to retain the page baseline while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
       assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
+      for (const label of ["Chip", "Tab action", "Color input", "Range control"] as const) {
+        const specimen = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === label);
+        assert(specimen && Math.abs(specimen.height - interfaceComponents[0].height) <= 0.1, `Expected ${tier} ${label} to resolve through the same rendered single-line height as the text control; control=${interfaceComponents[0].height}, specimen=${JSON.stringify(specimen)}.`);
+      }
       assert(occupiedBlockGeometry.statusPadding && Math.abs(occupiedBlockGeometry.statusPadding.start - occupiedBlockGeometry.statusPadding.end) < 0.01, `Expected ${tier} status-label paint to be symmetrically padded in the block direction; got ${JSON.stringify(occupiedBlockGeometry.statusPadding)}.`);
-      const tableHeight = occupiedBlockGeometry.independent.find(sample => sample.label === "Table cell")?.height ?? 0;
+      const tableHeight = interfaceComponents.find(sample => sample.label === "Table cell")?.height ?? 0;
       const controlHeight = interfaceComponents[0].height;
-      assert(Math.abs(tableHeight - controlHeight) <= occupiedBlockGeometry.baseline + Math.max(occupiedBlockGeometry.borderWidth * 2, 0.51), `Expected ${tier} density-tuned repeated-data rows to remain within one baseline of the single-line control family; controls=${controlHeight}, table=${tableHeight}, baseline=${occupiedBlockGeometry.baseline}.`);
-      const allSamples = [...occupiedBlockGeometry.interfaceRows, ...occupiedBlockGeometry.textRuns, ...occupiedBlockGeometry.independent];
+      assert(Math.abs(tableHeight - controlHeight) <= renderedBorderTolerance, `Expected ${tier} table cells to target the same single-line height as controls; controls=${controlHeight}, table=${tableHeight}.`);
+      assert(nestedHosts.every(sample => Math.abs(sample.height - controlHeight) <= renderedBorderTolerance), `Expected ${tier} real nested hosts to retain the shared single-line height; controls=${controlHeight}, nested=${JSON.stringify(nestedHosts)}.`);
+      const allSamples = [...occupiedBlockGeometry.interfaceRows, ...occupiedBlockGeometry.textRuns, ...occupiedBlockGeometry.nested];
       assert(allSamples.every(sample => Math.abs(sample.width - occupiedBlockGeometry.rootSize * 5) < 0.1), `Expected every ${tier} vertical specimen to retain the shared 5rem width; got ${JSON.stringify(allSamples)}.`);
       assert(occupiedBlockGeometry.scrollRows.every(row => row.overflowX === "auto" && row.clusterPaddingBlock === 0 && Math.abs(row.scrollbarBlockSize - (occupiedBlockGeometry.baseline * 2)) < 0.1 && row.probeStartDelta !== null && Math.abs(row.probeStartDelta) < 0.1), `Expected every ${tier} vertical audit bucket to use an unpadded BF cluster and a baseline-snapped scrollbar without displacing its probes; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
       assert(occupiedBlockGeometry.startRule && occupiedBlockGeometry.endRule && occupiedBlockGeometry.startRule.top === 0 && occupiedBlockGeometry.endRule.bottom === 0 && occupiedBlockGeometry.startRule.blockSize === occupiedBlockGeometry.borderWidth && occupiedBlockGeometry.endRule.blockSize === occupiedBlockGeometry.borderWidth, `Expected ${tier} red-start and blue-end rules to use the scalable border token at opposing block edges; got ${JSON.stringify(occupiedBlockGeometry)}.`);
@@ -430,22 +441,31 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
     const readNavigationState = () => page.evaluate(() => {
       const nav = document.querySelector<HTMLElement>(".pc-nav");
       const active = nav?.querySelector<HTMLElement>(".bf-side-navigation-link[aria-current='page']");
-      if (!nav || !active) return null;
+      const brand = nav?.querySelector<HTMLElement>(".bf-panel-header.is-navigation-brand");
+      const tag = brand?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
+      const icon = brand?.querySelector<HTMLImageElement>(".bf-top-navigation-logo-icon");
+      const rootLink = nav?.querySelector<HTMLElement>(".bf-side-navigation-link");
+      if (!nav || !active || !brand || !tag || !rootLink) return null;
       const navRect = nav.getBoundingClientRect();
       const activeRect = active.getBoundingClientRect();
+      const rootRange = document.createRange();
+      rootRange.selectNodeContents(rootLink);
       return {
         activeVisible: activeRect.top >= navRect.top && activeRect.bottom <= navRect.bottom,
+        brandTop: brand.getBoundingClientRect().top,
+        iconLoaded: Boolean(icon?.complete && icon.naturalWidth > 0),
+        railDelta: Math.abs(tag.getBoundingClientRect().left - rootRange.getBoundingClientRect().left),
         scrollTop: nav.scrollTop
       };
     });
 
     const navigatedState = await readNavigationState();
-    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0, "Expected page navigation to preserve its scrolled position and keep the clicked entry visible.");
+    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0 && navigatedState.brandTop === 0 && navigatedState.iconLoaded && navigatedState.railDelta <= 0.1, `Expected page navigation to preserve its scrolled position, sticky loaded brand, and shared tag/text rail: ${JSON.stringify(navigatedState)}.`);
 
     await page.reload({ waitUntil: "networkidle" });
     await page.waitForTimeout(80);
     const reloadedState = await readNavigationState();
-    assert(reloadedState?.activeVisible && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll to survive reload; before=${navigatedState.scrollTop}, after=${reloadedState?.scrollTop}.`);
+    assert(reloadedState?.activeVisible && reloadedState.brandTop === 0 && reloadedState.iconLoaded && reloadedState.railDelta <= 0.1 && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll and sticky tagged brand to survive reload; before=${JSON.stringify(navigatedState)}, after=${JSON.stringify(reloadedState)}.`);
 
     await page.evaluate(key => sessionStorage.removeItem(key), storageKey);
     await page.goto(`${origin}/demo/components/data-spotlight.html`, { waitUntil: "networkidle" });
@@ -474,9 +494,24 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
       const breadcrumbs = Array.from(document.querySelectorAll<HTMLElement>(".pc-breadcrumbs .bf-breadcrumbs-item"));
       const sequence = Array.from(document.querySelectorAll<HTMLElement>("a.pc-sequence-link"));
       const footer = document.querySelector<HTMLElement>(".pc-footer");
+      const header = document.querySelector<HTMLElement>(".pc-header");
+      const bar = document.querySelector<HTMLElement>(".pc-bar");
+      const brandTitle = document.querySelector<HTMLElement>(".pc-nav .bf-top-navigation-logo-title");
+      const currentCrumb = document.querySelector<HTMLElement>(".pc-breadcrumbs [aria-current='page']");
+      const brandRange = document.createRange();
+      if (brandTitle) brandRange.selectNodeContents(brandTitle);
+      const brandRect = brandTitle ? brandRange.getBoundingClientRect() : null;
+      const crumbRange = document.createRange();
+      if (currentCrumb) crumbRange.selectNodeContents(currentCrumb);
+      const crumbRect = currentCrumb ? crumbRange.getBoundingClientRect() : null;
       return {
         bodyFontSize: bodyStyles.fontSize,
         bodyLineHeight: bodyStyles.lineHeight,
+        brandBlockSize: brandTitle?.getBoundingClientRect().height ?? null,
+        brandText: brandRect ? { top: brandRect.top, bottom: brandRect.bottom } : null,
+        crumbText: crumbRect ? { top: crumbRect.top, bottom: crumbRect.bottom } : null,
+        headerHeight: header?.getBoundingClientRect().height ?? null,
+        barHeight: bar?.getBoundingClientRect().height ?? null,
         breadcrumbType: breadcrumbs.map(item => ({
           fontSize: getComputedStyle(item).fontSize,
           lineHeight: getComputedStyle(item).lineHeight
@@ -492,13 +527,25 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
           canonicalBase: link.classList.contains("is-base") && link.classList.contains("is-icon"),
           decoration: getComputedStyle(link).textDecorationLine,
           iconCount: link.querySelectorAll(".bf-icon").length,
+          nestedTheme: Boolean(link.closest(".pc-sequence")?.classList.contains("bf-theme")),
           text: link.textContent?.trim() ?? ""
         }))
       };
     });
     assert(chrome.breadcrumbType.length === 2 && chrome.breadcrumbType.every(type => type.fontSize === chrome.bodyFontSize && type.lineHeight === chrome.bodyLineHeight), `Expected page-chrome breadcrumbs to use body typography: ${JSON.stringify(chrome)}.`);
-    assert(chrome.sequence.length === 2 && chrome.sequence.every(link => link.accessibleName && link.iconCount === 1 && link.text === "" && link.canonicalBase && link.background === "rgba(0, 0, 0, 0)" && link.color === "rgb(255, 255, 255)" && link.iconImage.includes("stroke='%23fff'") && link.decoration === "none"), `Expected canonical dark-tone base/icon link-buttons with white chevrons and accessible names: ${JSON.stringify(chrome.sequence)}.`);
+    assert(chrome.sequence.length === 2 && chrome.sequence.every(link => link.accessibleName && link.iconCount === 1 && link.text === "" && link.canonicalBase && !link.nestedTheme && link.background === "rgba(0, 0, 0, 0)" && link.color === "rgb(0, 0, 0)" && link.iconImage.includes("stroke='%23000'") && link.decoration === "none"), `Expected canonical light-tone base/icon link-buttons to inherit the page tone and expose accessible names: ${JSON.stringify(chrome.sequence)}.`);
+    assert(chrome.brandText && chrome.crumbText && Math.abs(chrome.brandText.top - chrome.crumbText.top) <= 0.1 && Math.abs(chrome.brandText.bottom - chrome.crumbText.bottom) <= 0.1, `Expected the tagged brand title and breadcrumb to share one fixed header text line: ${JSON.stringify(chrome)}.`);
+    assert(chrome.brandBlockSize !== null && chrome.headerHeight !== null && chrome.barHeight !== null && Math.abs(chrome.headerHeight - chrome.brandBlockSize) <= 0.1 && Math.abs(chrome.barHeight - chrome.brandBlockSize) <= 0.1, `Expected the header rule to paint in-box while the bar occupies exactly the derived tagged-brand block: ${JSON.stringify(chrome)}.`);
     assert(chrome.footerBottomDelta !== null && Math.abs(chrome.footerBottomDelta) <= 0.1 && chrome.footerHeight !== null && Math.abs(chrome.reservedFooterSpace - chrome.footerHeight) <= 0.1, `Expected fixed bottom controls to reserve their measured height: ${JSON.stringify(chrome)}.`);
+
+    const toneControl = page.locator("label:has([data-page-chrome-tone-toggle])");
+    await toneControl.click();
+    const darkSequence = await page.locator("a.pc-sequence-link").evaluateAll(links => links.map(link => ({
+      color: getComputedStyle(link).color,
+      iconImage: getComputedStyle(link.querySelector(".bf-icon") as Element).backgroundImage
+    })));
+    assert(darkSequence.length === 2 && darkSequence.every(link => link.color === "rgb(255, 255, 255)" && link.iconImage.includes("stroke='%23fff'")), `Expected adjacent-page buttons to update with the live dark page tone: ${JSON.stringify(darkSequence)}.`);
+    await toneControl.click();
 
     const nextLink = page.locator("a.pc-sequence-link.is-next");
     await nextLink.hover();
@@ -524,10 +571,13 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         const host = document.querySelector<HTMLElement>("main section");
         const navigation = document.querySelector<HTMLElement>(".pc-nav .bf-side-navigation");
         const navigationGroups = Array.from(document.querySelectorAll<HTMLElement>(".pc-nav .bf-side-navigation-group"));
+        const firstHeader = navigationGroups[0]?.querySelector<HTMLElement>(":scope > .bf-side-navigation-group-header");
         const firstHeading = navigationGroups[0]?.querySelector<HTMLElement>(".bf-side-navigation-heading");
+        const firstList = navigationGroups[0]?.querySelector<HTMLElement>(":scope > .bf-side-navigation-list");
         const firstLink = navigationGroups[0]?.querySelector<HTMLElement>(".bf-side-navigation-link");
-        const secondRule = navigationGroups[1]?.querySelector<HTMLElement>(":scope > hr");
-        if (!breadcrumb || fixed.length === 0 || !host || !navigation || !firstHeading || !firstLink || !secondRule) return null;
+        const secondHeader = navigationGroups[1]?.querySelector<HTMLElement>(":scope > .bf-side-navigation-group-header");
+        const secondRule = secondHeader?.querySelector<HTMLElement>(":scope > hr");
+        if (!breadcrumb || fixed.length === 0 || !host || !navigation || !firstHeader || !firstHeading || !firstList || !firstLink || !secondHeader || !secondRule) return null;
 
         const plain = document.createElement("hr");
         host.append(plain);
@@ -543,8 +593,15 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         plain.remove();
 
         const navigationRect = navigation.getBoundingClientRect();
+        const firstHeaderRect = firstHeader.getBoundingClientRect();
         const headingRect = firstHeading.getBoundingClientRect();
+        const firstListRect = firstList.getBoundingClientRect();
         const firstGroupRect = navigationGroups[0].getBoundingClientRect();
+        const secondGroupRect = navigationGroups[1].getBoundingClientRect();
+        const secondRuleRect = secondRule.getBoundingClientRect();
+        const secondRuleStyles = getComputedStyle(secondRule);
+        const baseline = Number.parseFloat(getComputedStyle(navigation).getPropertyValue("--bf-baseline")) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const navigationItems = Array.from(navigation.querySelectorAll<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item"));
         const linkRange = document.createRange();
         linkRange.selectNodeContents(firstLink);
         const continuationProbe = document.createElement("span");
@@ -562,11 +619,24 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
           rules,
           navigation: {
             continuationInset,
-            groupGap: secondRule.getBoundingClientRect().top - firstGroupRect.bottom,
+            groupGap: secondGroupRect.top - firstGroupRect.bottom,
             groupGapTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 1.5,
+            headingListGap: firstListRect.top - firstHeaderRect.bottom,
+            headingListGapTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.5,
             headingTextInset: headingRect.left + Number.parseFloat(getComputedStyle(firstHeading).paddingInlineStart) - navigationRect.left,
             linkTextInset: linkRange.getBoundingClientRect().left - navigationRect.left,
-            rulesPerGroup: navigationGroups.map((group, index) => ({ index, count: group.querySelectorAll(":scope > hr").length }))
+            ruleInset: secondRuleRect.left - navigationRect.left,
+            ruleEndSpread: navigationRect.right - secondRuleRect.right,
+            ruleOccupiedBlock: secondRuleRect.height + Number.parseFloat(secondRuleStyles.marginBlockEnd),
+            ruleOccupiedBlockTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.5,
+            baseline,
+            groupTops: navigationGroups.map(group => group.getBoundingClientRect().top),
+            itemTracks: navigationItems.map(item => {
+              const rect = item.getBoundingClientRect();
+              return { top: rect.top, height: rect.height };
+            }),
+            headerGaps: navigationGroups.map(group => Number.parseFloat(getComputedStyle(group.querySelector<HTMLElement>(":scope > .bf-side-navigation-group-header")!).rowGap)),
+            rulesPerGroup: navigationGroups.map((group, index) => ({ index, count: group.querySelectorAll(":scope > .bf-side-navigation-group-header > hr").length }))
           }
         };
       });
@@ -577,6 +647,17 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
       assert(geometry.rules.plain.blockSize === "1px" && geometry.rules.plain.marginBlockEnd !== "0px", `Expected ${tier} bare semantic hr to carry the generic rule geometry and trailing compensation: ${JSON.stringify(geometry.rules)}.`);
       assert(Math.abs(geometry.navigation.headingTextInset - geometry.navigation.continuationInset) <= 0.1 && Math.abs(geometry.navigation.linkTextInset - geometry.navigation.continuationInset) <= 0.1, `Expected ${tier} page-navigation headings and plain commands to land on the continuation inset: ${JSON.stringify(geometry.navigation)}.`);
       assert(Math.abs(geometry.navigation.groupGap - geometry.navigation.groupGapTarget) <= 0.1, `Expected ${tier} page-navigation heading/list groups to be separated by 1.5rem: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.headingListGap - geometry.navigation.headingListGapTarget) <= 0.1, `Expected ${tier} page-navigation group headers to keep a 0.5rem transition to their lists: ${JSON.stringify(geometry.navigation)}.`);
+      assert(geometry.navigation.headerGaps.every(gap => gap === 0), `Expected ${tier} page-navigation rules and headings to remain a tight zero-gap header unit: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.ruleInset - geometry.navigation.continuationInset) <= 0.1 && Math.abs(geometry.navigation.ruleEndSpread) <= 0.1, `Expected ${tier} page-navigation rules to start on the continuation text rail and reach the navigation end edge: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.ruleOccupiedBlock - geometry.navigation.ruleOccupiedBlockTarget) <= 0.1, `Expected ${tier} page-navigation rules to preserve the compensated half-rem occupied block: ${JSON.stringify(geometry.navigation)}.`);
+      const phaseDistance = (a: number, b: number, baseline: number) => {
+        const delta = Math.abs((((a - b) % baseline) + baseline) % baseline);
+        return Math.min(delta, baseline - delta);
+      };
+      const navigationPhaseTolerance = 0.25;
+      assert(geometry.navigation.itemTracks.every(item => phaseDistance(item.height, 0, geometry.navigation.baseline) <= navigationPhaseTolerance) && geometry.navigation.itemTracks.every(item => phaseDistance(item.top, geometry.navigation.itemTracks[0].top, geometry.navigation.baseline) <= navigationPhaseTolerance), `Expected ${tier} side-navigation item tracks to absorb rasterised border remainder and preserve one repeated baseline phase: ${JSON.stringify(geometry.navigation)}.`);
+      assert(geometry.navigation.groupTops.every(top => phaseDistance(top, geometry.navigation.groupTops[0], geometry.navigation.baseline) <= navigationPhaseTolerance), `Expected ${tier} compensated rules and group spacing not to shift later side-navigation groups off phase: ${JSON.stringify(geometry.navigation)}.`);
       assert(geometry.navigation.rulesPerGroup.every(group => group.count === (group.index === 0 ? 0 : 1)), `Expected ${tier} page-navigation groups after the first to begin with exactly one real rule: ${JSON.stringify(geometry.navigation.rulesPerGroup)}.`);
     }
 
@@ -1097,7 +1178,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(navigationBrandState.headerTop - navigationBrandState.panelTop) <= 1 && Math.abs(navigationBrandState.tagTop - navigationBrandState.panelTop) <= 1, `Expected the Canonical tag to meet the panel's top edge. Got panel=${navigationBrandState.panelTop}px, header=${navigationBrandState.headerTop}px, tag=${navigationBrandState.tagTop}px.`);
     assert(Math.abs(navigationBrandState.headerLeft - navigationBrandState.panelLeft) <= 1 && Math.abs((navigationBrandState.tagLeft - navigationBrandState.panelLeft) - Number.parseFloat(navigationBrandState.paddingInlineStart)) <= 1, `Expected the Canonical tag to share the panel content inset. Got panel=${navigationBrandState.panelLeft}px, tag=${navigationBrandState.tagLeft}px, inset=${navigationBrandState.paddingInlineStart}.`);
     assert(Math.abs(navigationBrandState.tagWidth - 22) <= 1 && Math.abs(navigationBrandState.tagHeight - 38) <= 1, `Expected the Canonical tag to retain 22x38px geometry. Got ${navigationBrandState.tagWidth}x${navigationBrandState.tagHeight}px.`);
-    assert(navigationBrandState.titleTransform === "matrix(1, 0, 0, 1, 0, 0)", `Expected the navigation-brand title to share the tagged mark's optical top without a downward offset. Got ${navigationBrandState.titleTransform}.`);
+    assert(navigationBrandState.titleTransform === "none", `Expected the navigation-brand title to use the fixed brand-line centre without a second optical transform. Got ${navigationBrandState.titleTransform}.`);
     assert(Math.abs(navigationBrandState.logoWidth - (navigationBrandState.panelWidth - Number.parseFloat(navigationBrandState.paddingInlineStart))) <= 1.5 && navigationBrandState.titleVisible, `Expected the drawer brand and title to occupy the panel width after its live grid-gutter inset. Got ${JSON.stringify(navigationBrandState)}.`);
 
     const wrappedAlignmentState = await page.evaluate(() => {
@@ -1923,6 +2004,95 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
           assert(keyline, `Expected ${tier} accordion label/panel keyline geometry to be measurable.`);
           assert(keyline.delta <= 1 && Math.abs(keyline.paddingStart - keyline.disclosureOffset) <= 0.05, `Expected ${tier} accordion panel copy to share the tab-label keyline from disclosure variables; got ${JSON.stringify(keyline)}.`);
         }
+      }
+    }
+
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const tones = ["light", "dark"] as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 900 }
+    });
+
+    const selectTone = async (tone: typeof tones[number]): Promise<void> => {
+      const toggle = page.locator("[data-page-chrome-tone-toggle]");
+      const wantsDark = tone === "dark";
+      if (await toggle.isChecked() !== wantsDark) {
+        await toggle.setChecked(wantsDark, { force: true });
+      }
+      await page.waitForFunction(expectedDark => document.body.classList.contains("is-dark") === expectedDark, wantsDark);
+    };
+
+    await page.goto(`${origin}/demo/components/side-navigation.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      await selectTone(tone);
+      for (const tier of tiers) {
+        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        const navigation = await page.evaluate(() => {
+          const plainHost = document.querySelector<HTMLElement>(".pc-content .bf-side-navigation-link:not(:has(.is-nested))");
+          const nested = Array.from(document.querySelectorAll<HTMLElement>(".pc-content :is(.bf-chip, .bf-status-label).is-nested"));
+          if (!plainHost || nested.length === 0) return null;
+          const plainHeight = plainHost.getBoundingClientRect().height;
+          return nested.map(child => {
+            const host = child.closest<HTMLElement>(".bf-side-navigation-link, .bf-side-navigation-text");
+            const childStyles = getComputedStyle(child);
+            const hostStyles = host ? getComputedStyle(host) : null;
+            return {
+              childHeight: child.getBoundingClientRect().height,
+              childKind: child.classList.contains("bf-chip") ? "chip" : "status",
+              hostHeight: host?.getBoundingClientRect().height ?? 0,
+              hostLineHeight: Number.parseFloat(hostStyles?.lineHeight ?? "0"),
+              marginBlockEnd: Number.parseFloat(childStyles.marginBlockEnd),
+              marginBlockStart: Number.parseFloat(childStyles.marginBlockStart),
+              paddingBlockEnd: Number.parseFloat(childStyles.paddingBlockEnd),
+              paddingBlockStart: Number.parseFloat(childStyles.paddingBlockStart),
+              borderBlockEnd: Number.parseFloat(childStyles.borderBlockEndWidth),
+              borderBlockStart: Number.parseFloat(childStyles.borderBlockStartWidth),
+              boxShadow: childStyles.boxShadow,
+              plainHeight
+            };
+          });
+        });
+        assert(navigation?.length === 5, `Expected ${tier}/${tone} side navigation to expose five nested auxiliary fixtures: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => Math.abs(item.hostHeight - item.plainHeight) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces not to enlarge side-navigation rows: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => item.childHeight <= item.hostLineHeight + 0.1), `Expected ${tier}/${tone} nested auxiliary paint to fit inside the host body line: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => item.marginBlockStart === 0 && item.marginBlockEnd === 0 && Math.abs(item.paddingBlockStart - item.paddingBlockEnd) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces to use zero block margins and symmetric padding: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => item.borderBlockStart === 0 && item.borderBlockEnd === 0 && (item.childKind !== "chip" || item.boxShadow !== "none")), `Expected ${tier}/${tone} nested auxiliary borders to paint without adding block footprint: ${JSON.stringify(navigation)}.`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/components/tabs.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      await selectTone(tone);
+      for (const tier of tiers) {
+        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        const tabs = await page.evaluate(() => {
+          const nestedTab = document.querySelector<HTMLElement>(".bf-tabs-link:has(.bf-badge.is-nested)");
+          const plainTab = document.querySelector<HTMLElement>(".bf-tabs-link:not(:has(.bf-badge))");
+          const badge = nestedTab?.querySelector<HTMLElement>(".bf-badge.is-nested");
+          if (!nestedTab || !plainTab || !badge) return null;
+          return {
+            badgeHeight: badge.getBoundingClientRect().height,
+            nestedHeight: nestedTab.getBoundingClientRect().height,
+            nestedLineHeight: Number.parseFloat(getComputedStyle(nestedTab).lineHeight),
+            plainHeight: plainTab.getBoundingClientRect().height
+          };
+        });
+        assert(tabs && Math.abs(tabs.nestedHeight - tabs.plainHeight) <= 0.1 && tabs.badgeHeight <= tabs.nestedLineHeight + 0.1, `Expected ${tier}/${tone} nested tab badge to fit without changing the tab row: ${JSON.stringify(tabs)}.`);
       }
     }
 
@@ -3476,6 +3646,7 @@ async function main(): Promise<void> {
     await verifyApplicationLayout(origin);
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
+    await verifyNestedAuxiliaryGeometry(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);
