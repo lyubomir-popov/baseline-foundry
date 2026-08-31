@@ -126,3 +126,8 @@
 - `baseline-foundry@0.1.6` installs cleanly with 30 root exports and 21 asset
   entry points. Tag `v0.1.6` resolves to `fdc1af7`; the GitHub release contains
   `baseline-foundry-0.1.6.tgz` and `checksums.txt`.
+- Follow-up release candidate `77ffcfe` was pushed to `main` at 0.1.7 after the
+  full release gate and clean packed-package verification passed. OIDC run
+  `33415864663` published and verified the exact registry package, then created
+  tag `v0.1.7` and the GitHub release with
+  `baseline-foundry-0.1.7.tgz` and `checksums.txt`.

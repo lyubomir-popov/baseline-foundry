@@ -5,16 +5,19 @@
 None. Spec 018 is accepted, merged, and archived. Do not promote a candidate
 without its catalogued evidence trigger.
 
-## Previous release — 0.1.6 / archived Spec 018
+## Previous release — 0.1.7 / archived Spec 018 follow-up
 
 The optional orange tagged brand, explicit nested chip/status/badge fit,
 exhaustive vertical coverage, active thick-bar tab, shared header/breadcrumb
 line, raster-stable side-navigation tracks, and zoom-stable single-line color
-and inline-range rows are complete. Do not generalise `is-nested` into an
-undersized bordered-button contract or reintroduce page-local spacing fixes.
-The OIDC workflow published `baseline-foundry@0.1.6` from `fdc1af7`, tagged
-that exact commit as `v0.1.6`, verified a clean registry install, and attached
-the npm tarball plus checksum records to the GitHub release.
+and inline-range rows are complete. The 0.1.7 follow-up makes the audit tab's
+initial state explicit and proves that a nested badge fits inside a compact
+table-hosted chip without enlarging its row. Keep the standalone chip for
+standalone targets; do not generalise `is-nested` into an undersized bordered
+button contract or reintroduce page-local spacing fixes. OIDC run `33415864663`
+published `baseline-foundry@0.1.7` from `77ffcfe`, tagged that exact commit as
+`v0.1.7`, verified a clean registry install, and attached the npm tarball plus
+checksum records to the GitHub release.
 
 ## Previous release — 0.1.5 / archived Spec 017
 
@@ -47,14 +50,15 @@ containers own semantic spacing.
 
 ## Last-known-green state
 
-The released 0.1.6 implementation passes `npm test` with 6,936 static
+The released 0.1.7 implementation passes `npm test` with 6,956 static
 contracts, zero component-baseline failures, and clean browser behavior. It
 also passes `npm run qa:components` after a fresh full-catalog screenshot
 capture. The shared demo remains running at `http://127.0.0.1:4173`; the
 persistent chrome, optional orange tagged brand, active thick-bar tab, and
 corrected vertical audit were visibly present in the final live refresh. A
 post-publication clean install verified 30 root exports and 21 asset entry
-points from the registry package.
+points from the registry package. Tag `v0.1.7` resolves to `77ffcfe`; its
+GitHub release contains the npm tarball and checksum record.
 
 The released Spec 017 implementation passes `npm test` (including 6,739 build
 contracts and component behavior), `npm run qa:components`, and Playwright

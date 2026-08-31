@@ -6,8 +6,9 @@ in `docs/specs.md`; per-spec tasks live in the package.
 ## Now
 
 No numbered package is active. Spec 018 is accepted, merged, archived, and
-released as 0.1.6. Promote the next package only when one of the catalogued
-evidence triggers is satisfied.
+released as 0.1.6 with its active-tab and nested chip/badge correction patched
+in 0.1.7. Promote the next package only when one of the catalogued evidence
+triggers is satisfied.
 
 ## Candidate order after Spec 001
 
