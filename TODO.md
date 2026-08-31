@@ -5,13 +5,9 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-Spec 018 nested density audit is implemented and awaiting owner review. Its
-nested auxiliary-surface and vertical-coverage work is complete, and grouped
-side navigation now separates the tight compensated rule/heading header from
-the group's 0.5rem heading-to-list gap while aligning each rule to the
-continuation text rail. Shared five-baseline navigation tracks prevent repeated
-raster drift, and the tagged-brand/header line plus the first-row chip, active
-tab, color, and inline-range specimens are verified across every tier and tone.
+No numbered package is active. Spec 018 is accepted, merged, archived, and
+prepared as the 0.1.6 release candidate. Promote the next package only when one
+of the catalogued evidence triggers is satisfied.
 
 ## Candidate order after Spec 001
 

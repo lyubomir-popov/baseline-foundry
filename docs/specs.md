@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 018 Nested density audit | [`018-nested-density-audit/`](../specs/018-nested-density-audit/) | Implemented on `feat/018-nested-density-audit`; awaiting owner review of the explicit nested auxiliary-surface fit contract, exhaustive vertical-audit coverage, shared header/brand baseline, and raster-stable side-navigation and single-line rows. |
+| None | — | No active numbered package. |
 
 ## Archive
 
@@ -15,6 +15,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 
 | Spec | Package | Disposition |
 |---|---|---|
+| 018 Nested density audit | [`018-nested-density-audit/`](spec-archive/018-nested-density-audit/) | Accepted and merged to `main` as the 0.1.6 release candidate after explicit nested auxiliary-surface fit, exhaustive vertical coverage, shared header/brand alignment, raster-stable side navigation, 6,936 static contracts, browser behavior, and full component screenshot QA passed. |
 | 017 Spacing system audit | [`017-spacing-system-audit/`](spec-archive/017-spacing-system-audit/) | Released as 0.1.5 from `2d1099c` on 2026-08-31 after the three-keyline and occupied-block audits, downstream tagged-brand proof, four-tier light/dark browser review, 6,739 static contracts, full behavior, component screenshot QA, OIDC publication, and registry/tarball/checksum reconciliation passed. |
 | 016 Component and pattern consistency | [`016-component-pattern-consistency/`](spec-archive/016-component-pattern-consistency/) | Accepted and merged to `main` from implementation commit `3956294` on 2026-08-29; all four implementation/adversarial passes, 6,052 static checks, browser behavior, baseline captures, and component screenshot QA passed. |
 | 015 Tier geometry hardening | [`015-tier-geometry-hardening/`](spec-archive/015-tier-geometry-hardening/) | Merged to `main` at `338f3cb`; Spec 016 supersedes its TOC row-gap and muted-H6 hierarchy after owner visual review. |

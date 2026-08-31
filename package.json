@@ -1,6 +1,6 @@
 {
   "name": "baseline-foundry",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Lean baseline-aligned design system focused on typography, editorial flow, spacing, and grid primitives.",
   "author": "Lyubomir Popov",
   "type": "module",
