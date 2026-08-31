@@ -99,7 +99,8 @@ from per-control height modifiers.
 An explicit `is-nested` modifier is the narrow exception for auxiliary chips,
 status labels, and badges composed inside an existing body-sized flex or grid
 row. It removes up to one active baseline of leading from the child line box,
-without making that line shorter than `1em`, caps symmetric block padding so
+without making that line shorter than the body-font-size token (one body em),
+caps symmetric block padding so
 the complete paint fits within the host body line, and removes the child's
 standalone block margin. A nested chip paints its border as an inset shadow so
 the border does not create a second block footprint. The host owns the occupied

@@ -7,7 +7,8 @@ border box and trailing compensation participate in the host flex line.
 Reducing padding alone cannot remove one baseline consistently: Documentation
 and App have almost no standalone block padding, while Editorial and OS have
 more. Reducing the child line-height by one tier baseline is consistent and
-keeps at least `1em` in all built-in tiers. Capping symmetric padding to the
+keeps at least the body-font-size token (one body em) in all built-in tiers.
+Capping symmetric padding to the
 remaining host-line space then prevents the border box from enlarging the row.
 
 Negative margins, transforms, automatic ancestor selectors, and a general

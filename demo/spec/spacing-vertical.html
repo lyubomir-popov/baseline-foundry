@@ -62,10 +62,11 @@
                     <ul class="bf-tabs-list" role="tablist">
                       <li class="bf-tabs-item">
                         <button
-                          class="bf-tabs-link"
+                          class="bf-tabs-link is-active"
                           type="button"
                           role="tab"
                           aria-selected="true"
+                          tabindex="0"
                         >
                           Active
                         </button>
@@ -646,10 +647,11 @@
                 <div class="spacing-block-probe">
                   <div role="tablist" aria-label="Nested badge tab context">
                     <button
-                      class="bf-tabs-link"
+                      class="bf-tabs-link is-active"
                       type="button"
                       role="tab"
                       aria-selected="true"
+                      tabindex="0"
                     >
                       T
                       <span class="bf-badge is-negative is-nested">3</span>
@@ -657,12 +659,23 @@
                   </div>
                 </div>
               </article>
-              <article class="spacing-block-sample" aria-label="Chip badge">
+              <article
+                class="spacing-block-sample"
+                aria-label="Table chip badge"
+              >
                 <div class="spacing-block-probe">
-                  <button class="bf-chip" type="button">
-                    <span class="bf-chip-value">Chip</span>
-                    <span class="bf-badge is-nested">3</span>
-                  </button>
+                  <table class="bf-table">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <button class="bf-chip is-nested" type="button">
+                            <span class="bf-chip-value">Chip</span>
+                            <span class="bf-badge is-nested">3</span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </article>
             </div>

@@ -37,11 +37,11 @@ cell primitive. These representatives are explicit; they are not omissions.
 | Chip | side-navigation link | `bf-chip is-nested`; navigation owns the row |
 | Status label | side-navigation text row | `bf-status-label is-nested`; navigation owns the row |
 | Badge | tab | `bf-badge is-nested`; tab owns the row |
-| Badge | chip | `bf-badge is-nested`; chip owns the standalone row |
+| Badge | nested chip in a table cell | `bf-chip is-nested` and `bf-badge is-nested`; table owns the row |
 
 The application-layout table and navigation fixtures, the side-navigation
-component fixture, the tab fixture, and the badge-in-chip fixture use these
-same explicit modifiers. Content-card footer chips, search/filter chips, and
+component fixture, the tab fixture, and the nested badge-in-chip table fixture
+use these same explicit modifiers. Content-card footer chips, search/filter chips, and
 hero chips remain standalone because their parent is a flow/cluster rather
 than an existing body-sized host row.
 

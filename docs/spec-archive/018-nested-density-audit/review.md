@@ -8,7 +8,8 @@
 - `is-nested` is limited to auxiliary chips, status labels, and badges. No
   automatic ancestor selector or `bf-button.is-nested` contract was added.
 - Nested line-height removes up to one active rem-based baseline of leading but
-  never falls below `1em`. Symmetric padding is capped to the host body line;
+  never falls below the body-font-size token (one body em). Symmetric padding
+  is capped to the host body line;
   block margins are zero; chip borders paint as an inset shadow and add no
   occupied-block footprint.
 - Table actions remain normal-sized `bf-button is-link` actions. The active tier
@@ -82,6 +83,15 @@
   dark after a fresh build. Shared chrome and the tagged brand remained present
   in all eight states; chip, active tab, text, color, and range end rules shared
   one rendered height in every tier and tone.
+- Follow-up review made the audit tab's initial state explicit through its
+  class, ARIA state, and roving tabindex. The badge-in-chip fixture now uses a
+  genuinely compact chip inside a table row; its line floor resolves from the
+  body-font-size token rather than an inherited `em`, and its value text
+  inherits that compact line so the nested badge cannot enlarge the row.
+- Follow-up validation passed `npm test` with 6,956 static contracts and clean
+  component baselines and browser behavior, then passed a fresh full-catalog
+  `npm run qa:components` capture. Live light/editorial and dark/OS review
+  confirmed the active rule before interaction and the contained badge.
 
 ## Vertical coverage findings
 

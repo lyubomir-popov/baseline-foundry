@@ -244,7 +244,9 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(await number.inputValue() === String(Number(originalValue) + 1), "Expected the numeric field to retain native keyboard increment behaviour.");
     await number.press("ArrowDown");
     assert(await number.inputValue() === originalValue, "Expected the numeric field to retain native keyboard decrement behaviour.");
-    await page.goto(`${origin}/demo/spec/spacing-vertical.html`, { waitUntil: "networkidle" });
+    await page.goto(`${origin}/demo/spec/spacing-vertical.html`, {
+      waitUntil: "networkidle"
+    });
     await waitForFonts(page);
     const verticalTierSelect = page.getByLabel("Tier", { exact: true });
     for (const tier of ["editorial", "documentation", "app", "os"] as const) {
@@ -1936,7 +1938,10 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
 
       for (const tier of tiers) {
         await tierSelect.selectOption(tier);
-        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        await page.waitForFunction(
+          expectedTier => document.body.dataset.bfTier === expectedTier,
+          tier
+        );
         await page.waitForTimeout(180);
 
         const state = await page.evaluate(({ selector }) => {
@@ -2093,6 +2098,73 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
           };
         });
         assert(tabs && Math.abs(tabs.nestedHeight - tabs.plainHeight) <= 0.1 && tabs.badgeHeight <= tabs.nestedLineHeight + 0.1, `Expected ${tier}/${tone} nested tab badge to fit without changing the tab row: ${JSON.stringify(tabs)}.`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/spec/spacing-vertical.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      await selectTone(tone);
+      for (const tier of tiers) {
+        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        const audit = await page.evaluate(() => {
+          const activeTab = document.querySelector<HTMLElement>(
+            "[aria-label='Tab action'] .bf-tabs-link"
+          );
+          const plainRow = document.querySelector<HTMLElement>(
+            "[aria-label='Plain table cell'] .bf-table tr"
+          );
+          const nestedRow = document.querySelector<HTMLElement>(
+            "[aria-label='Table chip badge'] .bf-table tr"
+          );
+          const nestedCell = nestedRow?.querySelector<HTMLElement>("td");
+          const nestedChip = nestedRow?.querySelector<HTMLElement>(".bf-chip.is-nested");
+          const nestedBadge = nestedChip?.querySelector<HTMLElement>(".bf-badge.is-nested");
+          if (
+            !activeTab ||
+            !plainRow ||
+            !nestedRow ||
+            !nestedCell ||
+            !nestedChip ||
+            !nestedBadge
+          ) {
+            return null;
+          }
+          const chipRect = nestedChip.getBoundingClientRect();
+          const badgeRect = nestedBadge.getBoundingClientRect();
+          const activeStyles = getComputedStyle(activeTab);
+          return {
+            activeClass: activeTab.classList.contains("is-active"),
+            activeRule: activeStyles.boxShadow,
+            selected: activeTab.getAttribute("aria-selected"),
+            tabIndex: activeTab.getAttribute("tabindex"),
+            rowHeightDelta: Math.abs(
+              plainRow.getBoundingClientRect().height -
+                nestedRow.getBoundingClientRect().height
+            ),
+            chipHeight: chipRect.height,
+            cellLineHeight: Number.parseFloat(getComputedStyle(nestedCell).lineHeight),
+            badgeContained:
+              badgeRect.top >= chipRect.top - 0.1 &&
+              badgeRect.bottom <= chipRect.bottom + 0.1
+          };
+        });
+        assert(
+          audit &&
+            audit.activeClass &&
+            audit.selected === "true" &&
+            audit.tabIndex === "0" &&
+            audit.activeRule !== "none",
+          `Expected ${tier}/${tone} audit tab to paint its active rule before interaction: ${JSON.stringify(audit)}.`
+        );
+        assert(
+          audit &&
+            audit.badgeContained &&
+            audit.chipHeight <= audit.cellLineHeight + 0.1 &&
+            audit.rowHeightDelta <= 0.1,
+          `Expected ${tier}/${tone} nested badge to fit inside the compact table chip without enlarging its row: ${JSON.stringify(audit)}.`
+        );
       }
     }
 

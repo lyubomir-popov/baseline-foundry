@@ -152,7 +152,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   /* Auxiliary surfaces may opt into a host-owned nested composition. The
      shorter line and capped symmetric padding fit their complete paint inside
      the host body line without introducing a second row rhythm. */
-  --bf-nested-auxiliary-line-height: max(1em, calc(var(--bf-body-line-height) - var(--bf-baseline)));
+  --bf-nested-auxiliary-line-height: max(var(--bf-body-font-size), calc(var(--bf-body-line-height) - var(--bf-baseline)));
   --bf-nested-auxiliary-padding-block: min(var(--bf-single-line-row-padding-block), max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-auxiliary-line-height)) / 2)));
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
   --bf-slider-row-block-size: var(--bf-single-line-row-block-size);
@@ -294,7 +294,7 @@ ${foundryComponentColorVars("dark")}
   margin: 0;
 }
 
-.bf-theme button {
+:where(.bf-theme) :where(button) {
   font: inherit;
 }
 

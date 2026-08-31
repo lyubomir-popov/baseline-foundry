@@ -199,6 +199,13 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-single-line-row-margin-block-end);
   box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);
 }
 
+/* Chip parts normally carry the standalone body line explicitly. A compact
+   chip must pass its reduced line through to those parts so a nested badge
+   can fit without making the host row taller. */
+:where(.bf-theme) :where(.bf-chip.is-nested) :where(.bf-chip-lead, .bf-chip-value) {
+  line-height: inherit;
+}
+
 :where(.bf-theme) :where(.bf-chip.is-nested:hover) {
   box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-hover);
 }

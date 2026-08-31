@@ -858,7 +858,8 @@ function validateCommonCss(css: string): void {
   const statusLabelRuleStart = css.indexOf(":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {");
   const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
   assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-single-line-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-single-line-row-margin-block-end)"), "Expected status-label paint to use the symmetric shared single-line row contract.");
-  assert(css.includes("--bf-nested-auxiliary-line-height: max(1em, calc(var(--bf-body-line-height) - var(--bf-baseline)));") && css.includes("--bf-nested-auxiliary-padding-block: min(var(--bf-single-line-row-padding-block), max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-auxiliary-line-height)) / 2)));"), "Expected nested auxiliary geometry to derive from body type and the active rem-based baseline without a separate density scale.");
+  assert(css.includes("--bf-nested-auxiliary-line-height: max(var(--bf-body-font-size), calc(var(--bf-body-line-height) - var(--bf-baseline)));") && css.includes("--bf-nested-auxiliary-padding-block: min(var(--bf-single-line-row-padding-block), max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-auxiliary-line-height)) / 2)));"), "Expected nested auxiliary geometry to derive from the explicit body-font-size floor and active rem-based baseline without a separate density scale.");
+  assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
   assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-single-line-row-margin-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural single-line row as textual controls.");
   assert(css.includes("padding-block-end: var(--bf-single-line-row-in-box-padding-block-end);") && css.includes("padding-block-start: var(--bf-single-line-row-in-box-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested, .bf-status-label.is-nested)", {
@@ -870,6 +871,9 @@ function validateCommonCss(css: string): void {
     "border": "0",
     "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border)"
   }, "nested chips paint their border without adding block footprint");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested) :where(.bf-chip-lead, .bf-chip-value)", {
+    "line-height": "inherit"
+  }, "nested chip parts inherit the compact host line so badges cannot enlarge it");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "border-block-width": "0"
   }, "nested status labels remove their transparent block border footprint");

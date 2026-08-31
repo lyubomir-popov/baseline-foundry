@@ -11,7 +11,8 @@ composition. The owning panel supplies the continuation inset, so the tag and
 root navigation copy share one rail.
 
 Nested auxiliary surfaces use an explicit `is-nested` modifier. Their line box
-is the body line-height minus one active baseline, clamped to `1em`. Symmetric
+is the body line-height minus one active baseline, clamped to the explicit
+body-font-size token (one body em). Symmetric
 block padding is capped at the lesser of the standalone padding and the space
 that lets the complete nested border box fit inside the host body line. Block
 margins are zero because the flex/grid host owns the row rhythm; therefore
