@@ -243,9 +243,20 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       await page.waitForSelector(`body.bf-tier-${tier}`);
       const occupiedBlockGeometry = await page.evaluate(() => {
         const families: Record<string, Array<{ label: string; height: number; textTop: number | null; width: number }>> = {};
+        const familyGeometry: Record<string, { top: number; bottom: number; height: number; headingHeight: number; scrollHeight: number }> = {};
         for (const headingId of ["vertical-controls", "vertical-text-runs", "vertical-variants"]) {
           const section = document.getElementById(headingId)?.closest("section");
           if (!section) throw new Error(`Missing vertical audit family: ${headingId}.`);
+          const sectionRect = section.getBoundingClientRect();
+          const headingRect = document.getElementById(headingId)?.getBoundingClientRect();
+          const scrollRect = section.querySelector<HTMLElement>(".spacing-block-scroll")?.getBoundingClientRect();
+          familyGeometry[headingId] = {
+            top: sectionRect.top,
+            bottom: sectionRect.bottom,
+            height: sectionRect.height,
+            headingHeight: headingRect?.height ?? 0,
+            scrollHeight: scrollRect?.height ?? 0
+          };
           families[headingId] = Array.from(section.querySelectorAll<HTMLElement>(".spacing-block-sample")).map(sample => {
             const probe = sample.querySelector<HTMLElement>(".spacing-block-probe");
             const range = document.createRange();
@@ -275,11 +286,27 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
           interfaceRows: families["vertical-controls"],
           textRuns: families["vertical-text-runs"],
           independent: families["vertical-variants"],
+          familyGeometry,
           statusPadding: statusStyles ? {
             end: Number.parseFloat(statusStyles.paddingBlockEnd),
             start: Number.parseFloat(statusStyles.paddingBlockStart)
           } : null,
-          scrollRows: scrollRows.map(row => ({ overflowX: getComputedStyle(row).overflowX })),
+          scrollRows: scrollRows.map(row => {
+            const cluster = row.querySelector<HTMLElement>(".bf-cluster.is-dense.is-nowrap");
+            const firstProbe = cluster?.querySelector<HTMLElement>(".spacing-block-probe");
+            return {
+              overflowX: getComputedStyle(row).overflowX,
+              clusterPaddingBlock: cluster ? Number.parseFloat(getComputedStyle(cluster).paddingBlock) : null,
+              scrollbarBlockSize: Number.parseFloat(getComputedStyle(row, "::-webkit-scrollbar").blockSize),
+              renderedScrollbarBlockSize: row.offsetHeight - row.clientHeight,
+              overflows: row.scrollWidth > row.clientWidth,
+              clusterHeight: cluster?.getBoundingClientRect().height ?? 0,
+              scrollHeight: row.getBoundingClientRect().height,
+              probeStartDelta: cluster && firstProbe
+                ? firstProbe.getBoundingClientRect().top - cluster.getBoundingClientRect().top
+                : null
+            };
+          }),
           startRule: before ? { blockSize: Number.parseFloat(before.blockSize), top: Number.parseFloat(before.top) } : null,
           endRule: after ? { blockSize: Number.parseFloat(after.blockSize), bottom: Number.parseFloat(after.bottom) } : null
         };
@@ -294,6 +321,16 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       assertSharedHeight("single-line interface", interfaceComponents);
       assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - interfaceReference.textTop) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
       assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
+      const familyReferences = [interfaceReference, occupiedBlockGeometry.textRuns[0], occupiedBlockGeometry.independent[0]];
+      const baselinePhase = (position: number) => ((position % occupiedBlockGeometry.baseline) + occupiedBlockGeometry.baseline) % occupiedBlockGeometry.baseline;
+      const interfaceReferencePhase = interfaceReference.textTop === null ? null : baselinePhase(interfaceReference.textTop);
+      assert(familyReferences.every(sample => sample?.label === "Baseline reference" && sample.textTop !== null) && interfaceReferencePhase !== null && familyReferences.every(sample => {
+        const phase = baselinePhase(sample?.textTop ?? 0);
+        const delta = Math.abs(phase - interfaceReferencePhase);
+        return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
+      }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
+      assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} metric text references to share their five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
+      assert(occupiedBlockGeometry.independent.every(sample => sample.textTop === null || occupiedBlockGeometry.independent[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.independent[0].textTop) < 0.51), `Expected ${tier} independent-contract text to retain the page baseline without flattening component height; got ${JSON.stringify(occupiedBlockGeometry.independent)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
       assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
       assert(occupiedBlockGeometry.statusPadding && Math.abs(occupiedBlockGeometry.statusPadding.start - occupiedBlockGeometry.statusPadding.end) < 0.01, `Expected ${tier} status-label paint to be symmetrically padded in the block direction; got ${JSON.stringify(occupiedBlockGeometry.statusPadding)}.`);
@@ -302,7 +339,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       assert(Math.abs(tableHeight - controlHeight) <= occupiedBlockGeometry.baseline + Math.max(occupiedBlockGeometry.borderWidth * 2, 0.51), `Expected ${tier} density-tuned repeated-data rows to remain within one baseline of the single-line control family; controls=${controlHeight}, table=${tableHeight}, baseline=${occupiedBlockGeometry.baseline}.`);
       const allSamples = [...occupiedBlockGeometry.interfaceRows, ...occupiedBlockGeometry.textRuns, ...occupiedBlockGeometry.independent];
       assert(allSamples.every(sample => Math.abs(sample.width - occupiedBlockGeometry.rootSize * 5) < 0.1), `Expected every ${tier} vertical specimen to retain the shared 5rem width; got ${JSON.stringify(allSamples)}.`);
-      assert(occupiedBlockGeometry.scrollRows.every(row => row.overflowX === "auto"), `Expected every ${tier} vertical audit bucket to retain horizontal overflow at narrow viewports; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
+      assert(occupiedBlockGeometry.scrollRows.every(row => row.overflowX === "auto" && row.clusterPaddingBlock === 0 && Math.abs(row.scrollbarBlockSize - (occupiedBlockGeometry.baseline * 2)) < 0.1 && row.probeStartDelta !== null && Math.abs(row.probeStartDelta) < 0.1), `Expected every ${tier} vertical audit bucket to use an unpadded BF cluster and a baseline-snapped scrollbar without displacing its probes; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
       assert(occupiedBlockGeometry.startRule && occupiedBlockGeometry.endRule && occupiedBlockGeometry.startRule.top === 0 && occupiedBlockGeometry.endRule.bottom === 0 && occupiedBlockGeometry.startRule.blockSize === occupiedBlockGeometry.borderWidth && occupiedBlockGeometry.endRule.blockSize === occupiedBlockGeometry.borderWidth, `Expected ${tier} red-start and blue-end rules to use the scalable border token at opposing block edges; got ${JSON.stringify(occupiedBlockGeometry)}.`);
     }
     assert(await page.locator("[data-spacing-keyline-debug]").count() === 0 && await page.locator("[data-spacing-keyline]").count() === 0, "Expected the vertical occupied-block audit to avoid the horizontal inset overlay.");

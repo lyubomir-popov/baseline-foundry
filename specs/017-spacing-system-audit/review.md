@@ -257,3 +257,29 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
   Live light/dark browser measurements across all four tiers found 23 shared
   interface heights within 0.011 rendered pixels and text within 0.334
   rendered pixels of the five-letter reference; the console remained clean.
+
+## Review 11 — baseline-phase audit hardening
+
+- **Finding resolved — audit wrapper changed the result:** The private
+  `spacing-block-track` added a half-baseline block-start inset before every
+  specimen. It has been removed. The three scroll rows now compose the public
+  `bf-cluster` primitive with its dense, no-wrap modifiers; the cluster owns
+  only an inline gap and has zero block padding.
+- **Pass — platform chrome stays on phase:** The horizontal scrollbar consumes
+  two baseline units through a rem-derived spacing token. It can no longer
+  shift every following family by a platform-dependent fractional height.
+- **Pass — source metrics remain real:** Breadcrumb items now retain the body
+  role's measured start nudge and trailing compensation. Table cells retain
+  the real body line height and place spare density compensation at the block
+  end instead of stretching the line box. Tab separators paint inside the tab
+  list, leaving both the tab occupied height and list-to-panel gap as whole
+  baseline relationships.
+- **Pass — measured and visual evidence:** Playwright checked all three rows in
+  Editorial, Documentation, App, and OS: the five-letter references share one
+  page-wide baseline phase, component text matches its row reference, clusters
+  have zero block padding, and scrollbar size resolves to exactly two
+  baselines. Full-page light/dark screenshots retained the shared navigation,
+  header, footer, visible baseline grid, and clean console. The complete
+  four-tier component baseline run reported zero failures after the tab
+  boundary correction. `npm test` and `npm run qa:components` both passed;
+  build validation now contains 6,738 contracts.

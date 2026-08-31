@@ -17,18 +17,16 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
 
   return `:where(.bf-theme) :where(.bf-tabs) {
   display: grid;
+  gap: var(--bf-space-2);
   min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-tabs-list) {
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
+  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);
   display: flex;
   gap: 0;
   list-style: none;
-  /* Tabs keep their occupied block on the grid at the list boundary rather
-     than leaving each link's control compensation between its active rule and
-     the list rule. */
-  margin: 0 0 calc((var(--bf-baseline) * 2) - var(--bf-border-width));
+  margin: 0;
   min-inline-size: 0;
   overflow-x: auto;
   padding: 0;
@@ -299,8 +297,10 @@ ${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action-bordere
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) {
 ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
-  margin: 0;
+  margin: 0 0 var(--bf-body-margin-bottom);
   min-inline-size: 0;
+  padding-block-end: 0;
+  padding-block-start: var(--bf-body-nudge-start);
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) + :where(.bf-breadcrumbs-item)::before {

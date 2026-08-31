@@ -423,10 +423,19 @@ ${generateBaselineGridThemeOverrideCss()}
 }
 
 :where(.bf-theme) :where(.bf-cluster) {
+  --bf-cluster-space: var(--bf-space-2);
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--bf-space-2);
+  gap: var(--bf-cluster-space);
+}
+
+:where(.bf-theme) :where(.bf-cluster.is-dense) {
+  --bf-cluster-space: var(--bf-space-1);
+}
+
+:where(.bf-theme) :where(.bf-cluster.is-nowrap) {
+  flex-wrap: nowrap;
 }
 
 :where(.bf-theme) :where(.bf-cluster.is-split) {

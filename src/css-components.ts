@@ -152,10 +152,11 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-slider-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-slider-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-slider-track-size)", bodySelectedStartNudge)};
   --bf-table-row-border-size: var(--bf-border-width);
-  --bf-table-row-padding: ${bodySelectedStartNudge};
-  --bf-table-row-content-size: calc(${bodyLineHeight} + (var(--bf-table-row-padding) * 2) + var(--bf-table-row-border-size));
+  --bf-table-row-padding-block-start: ${bodySelectedStartNudge};
+  --bf-table-row-content-size: calc(${bodyLineHeight} + (var(--bf-table-row-padding-block-start) * 2) + var(--bf-table-row-border-size));
   --bf-table-row-block-size: calc(var(--bf-table-row-content-size) + mod(calc(var(--bf-baseline) - mod(var(--bf-table-row-content-size), var(--bf-baseline))), var(--bf-baseline)));
-  --bf-table-row-line-height: calc(var(--bf-table-row-block-size) - (var(--bf-table-row-padding) * 2) - var(--bf-table-row-border-size));
+  --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start) - var(--bf-table-row-border-size)));
+  --bf-table-row-line-height: ${bodyLineHeight};
   --bf-switch-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-tick-box-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-leading-mark-size: var(--bf-control-visual-size);

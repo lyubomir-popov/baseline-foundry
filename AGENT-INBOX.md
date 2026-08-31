@@ -31,14 +31,17 @@ containers own semantic spacing.
 
 ## Last-known-green state
 
-The accepted Spec 017 implementation passes `npm test` (including 6,587 build
-contracts and component behavior), `npm run qa:components`, and live browser
-review in light and dark. The spacing chapter presents basic-section guidance
+The accepted Spec 017 implementation passes `npm test` (including 6,738 build
+contracts and component behavior), `npm run qa:components`, and Playwright
+review in light and dark across all four tiers. The spacing chapter presents basic-section guidance
 and reuses both axis routes in in-page BF tabs. Horizontal owns the fixed
 three-line inset overlay while active; vertical hides it and owns three compact
 occupied-block rows whose raw specimens are 5rem wide. A five-letter paragraph
 anchors each text baseline, and 23 body-sized interface specimens share one
-border-aware occupied-height contract across all tiers. Temporary QA servers use the browser-safe dynamic port
+border-aware occupied-height contract across all tiers. The vertical audit uses
+an unpadded public BF cluster rather than a private geometry-changing track;
+its scrollbar occupies whole baseline units, and page-wide text phase is now
+an executable browser contract. Temporary QA servers use the browser-safe dynamic port
 range. The demo server at `http://127.0.0.1:4173` uses polling so edits in the
 shared Windows/WSL workspace remain visible without repeated restarts. The
 earlier feature tip `f9731a2` remains tagged as downstream release candidate

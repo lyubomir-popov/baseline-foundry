@@ -189,3 +189,18 @@ single-line interface row, a metric-text reference row, and an independent
 table/breadcrumb row. Minimal demo-owned scroll framing and horizontal
 start/end rules expose occupied geometry without changing it. Offset overrides,
 explanatory filler, and substitute mock components are not permitted.
+
+## Block-axis audit rule
+
+Audit framing must never alter the geometry it is measuring. The vertical
+rows therefore use the public `bf-cluster` primitive with a one-baseline inline
+gap, no wrapping, and zero block padding; there is no private track wrapper.
+Scrollbar chrome consumes a rem-derived whole number of baseline units so it
+cannot change the phase of later rows.
+
+Text-bearing components retain their actual type metrics. Density compensation
+belongs after the line box: breadcrumbs keep the body metric nudge and margin
+compensation, while table cells keep the body line height and place remaining
+row compensation at block end. Painted separators, such as the tab-list rule,
+must not be subtracted from a container gap or otherwise create a fractional
+layout relationship.

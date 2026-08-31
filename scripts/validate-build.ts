@@ -554,6 +554,16 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-cluster.is-split)", {
     "justify-content": "space-between",
   }, "split clusters distribute their first and final groups while preserving wrapping");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-cluster)", {
+    "--bf-cluster-space": "var(--bf-space-2)",
+    "gap": "var(--bf-cluster-space)"
+  }, "clusters expose one container-owned gap variable");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-cluster.is-dense)", {
+    "--bf-cluster-space": "var(--bf-space-1)"
+  }, "dense clusters use a one-baseline gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-cluster.is-nowrap)", {
+    "flex-wrap": "nowrap"
+  }, "nowrap clusters preserve a single intrinsic row");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(h5),\n:where(.bf-theme) .bf-h5", {
     "letter-spacing": "var(--bf-h5-letter-spacing, 0.05em)",
   }, "h5 roles expose the intended five-percent tracking");
@@ -639,10 +649,9 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");
   assert(css.includes(":where(.bf-theme) :where(thead th) {\n  font-family: var(--bf-body-font-family"), "Expected CSS to style table headers as body-role text.");
-  assert(css.includes("--bf-table-row-padding: var(--bf-body-nudge-start"), "Expected generated CSS to derive symmetric table row padding from the body nudge in nudged tiers.");
-  assert(css.includes("--bf-table-row-line-height: calc(var(--bf-table-row-block-size) - (var(--bf-table-row-padding) * 2) - var(--bf-table-row-border-size));"), "Expected table row line-height to be solved from the row block size, symmetric padding, and in-box border.");
+  assert(css.includes("--bf-table-row-padding-block-start: var(--bf-body-nudge-start") && css.includes("--bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - var(--bf-body-line-height") && css.includes("--bf-table-row-line-height: var(--bf-body-line-height"), "Expected table rows to preserve body text metrics and place remaining row compensation at the block end.");
   assert(css.includes(":where(.bf-theme) :where(th, td) {\n  border: 0;\n  border-block-end: var(--bf-table-row-border-size) solid transparent;"), "Expected table cells to reserve border space inside the row box instead of relying on inset shadows.");
-  assert(css.includes("padding-block: var(--bf-table-row-padding);"), "Expected table cells to use symmetric block padding from the shared table row padding variable.");
+  assert(css.includes("padding-block-end: var(--bf-table-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-table-row-padding-block-start);"), "Expected table cells to consume the shared metric start and trailing row-compensation variables.");
   assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine demo override selector.");
   assert(css.includes(":where(.bf-engine-cap) :where(p),\n:where(.bf-engine-cap) .bf-body {\n  margin-block-end: 0;"), "Expected the cap-engine demo to replace production margin compensation when its two-sided padding occupies the complete baseline step.");
   assert(css.includes(":where(.bf-theme.bf-tier-app)"), "Expected generated CSS to include the app-tier runtime flag selector.");
@@ -803,6 +812,11 @@ function validateCommonCss(css: string): void {
     "list-style": "none",
     "padding": "0"
   }, "breadcrumbs keep the canonical wrapped trail layout");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-breadcrumbs-item)", {
+    "margin": "0 0 var(--bf-body-margin-bottom)",
+    "padding-block-end": "0",
+    "padding-block-start": "var(--bf-body-nudge-start)"
+  }, "breadcrumb text retains the body role's metric baseline compensation");
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(table, .bf-table)", {
     "border-collapse": "separate",
@@ -996,6 +1010,17 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal)", {
     "--bf-ui-tabs-equal-min": "8rem"
   }, "equal-width tabs expose the canonical minimum track variable");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs)", {
+    "display": "grid",
+    "gap": "var(--bf-space-2)"
+  }, "tabs own the relationship between their list and panel");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
+    "box-shadow": "inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default)",
+    "margin": "0"
+  }, "tab lists paint their boundary without changing layout and do not leak trailing margin");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-link)", {
+    "padding-block-end": "calc(var(--bf-single-line-row-padding-block) + var(--bf-single-line-row-margin-block-end))"
+  }, "tab links retain the shared occupied height independently of the painted list boundary");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)", {
     "display": "grid",
     "gap": "calc(var(--bf-baseline) * 2)",

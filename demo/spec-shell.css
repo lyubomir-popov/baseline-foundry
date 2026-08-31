@@ -45,16 +45,12 @@ body {
   overflow-y: hidden;
   padding-block-end: var(--bf-space-1);
   scrollbar-gutter: stable;
-  scrollbar-width: thin;
 }
 
-.spacing-block-track {
-  align-items: start;
-  display: flex;
-  gap: var(--bf-space-1);
-  inline-size: max-content;
-  min-inline-size: 100%;
-  padding-block: var(--bf-space-half) var(--bf-space-1);
+/* Horizontal audit chrome consumes a whole number of baseline units so a
+ * platform scrollbar cannot change the phase of every following specimen. */
+.spacing-block-scroll::-webkit-scrollbar {
+  block-size: var(--bf-space-2);
 }
 
 .spacing-block-sample {
