@@ -6,8 +6,8 @@ in `docs/specs.md`; per-spec tasks live in the package.
 ## Now
 
 No numbered package is active. Spec 018 is accepted, merged, archived, and
-prepared as the 0.1.6 release candidate. Promote the next package only when one
-of the catalogued evidence triggers is satisfied.
+released as 0.1.6. Promote the next package only when one of the catalogued
+evidence triggers is satisfied.
 
 ## Candidate order after Spec 001
 

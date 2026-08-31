@@ -102,3 +102,17 @@
 - `npm run test:behavior`: pass.
 - `npm test`: pass.
 - `npm run qa:components`: pass, zero component-baseline failures.
+
+## Release evidence
+
+- Release candidate `fdc1af7` was pushed to `main` with package metadata at
+  0.1.6 after `release:preflight:test`, `release:check`, and clean-package
+  verification passed.
+- OIDC run `33407886292` published the immutable npm version successfully,
+  then encountered an npm propagation `ETARGET` during its immediate
+  exact-version install. Resume run `33408438187` skipped publication and
+  completed exact registry verification, checksum generation, tagging, and
+  release creation.
+- `baseline-foundry@0.1.6` installs cleanly with 30 root exports and 21 asset
+  entry points. Tag `v0.1.6` resolves to `fdc1af7`; the GitHub release contains
+  `baseline-foundry-0.1.6.tgz` and `checksums.txt`.
