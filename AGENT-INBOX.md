@@ -8,13 +8,13 @@ without its catalogued evidence trigger.
 ## Active follow-up
 
 Branch `fix/table-row-control-fit` compares a plain table row with a row of
-normal text/number inputs, button, checkbox, and radio controls. The intended
-contract keeps controls full-sized and uses explicit `tr.is-control-row` host
-ownership to avoid duplicate cell block inset. Do not publish to npm or create
-a release unless the user explicitly asks. `npm test` passes with 7,012 static
-contracts and clean component/browser checks; `npm run qa:components` also
-passes. Live light/editorial and dark/OS review confirms the row fit without
-clipping the controls or their keyboard focus paint.
+explicitly nested text/number inputs, button, checkbox, and radio controls. The
+controls use the same opt-in host-owned density model as nested chips while the
+ordinary table cells retain their inset and separator. Do not publish to npm or
+create a release unless the user explicitly asks. `npm test` passes with 7,054
+static contracts plus component and behavior checks; `npm run qa:components`
+also passes. Live browser review confirms the compact row, centered selection
+marks, visible input focus paint, shared page chrome, and a clean console.
 
 ## Previous release — 0.1.7 / archived Spec 018 follow-up
 

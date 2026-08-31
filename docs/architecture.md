@@ -97,17 +97,21 @@ snaps the occupied block to the next grid line. Density comes from the tier, not
 from per-control height modifiers.
 
 An explicit `is-nested` modifier is the narrow exception for auxiliary chips,
-status labels, and badges composed inside an existing body-sized flex or grid
-row. It removes up to one active baseline of leading from the child line box,
-without making that line shorter than the body-font-size token (one body em),
-caps symmetric block padding so
-the complete paint fits within the host body line, and removes the child's
-standalone block margin. A nested chip paints its border as an inset shadow so
-the border does not create a second block footprint. The host owns the occupied
-row and prevents margin collapse. This is not a general density scale: it is
-never inferred from ancestry, and it does not shrink bordered buttons or other
-standalone interactive targets. Nested table actions use the existing
-inline/link-button contract.
+status labels, badges, and controls composed inside an existing body-sized flex
+or grid row. It removes up to one active baseline of leading from the child
+line box, without making that line shorter than the body-font-size token (one
+body em), caps symmetric block padding so the complete paint fits within the
+host body line, and removes the child's standalone block margin. A nested chip
+paints its border as an inset shadow so the border does not create a second
+block footprint. The host owns the occupied row and prevents margin collapse.
+Nested inputs, bordered buttons, checkboxes,
+and radios retain real borders; border-aware symmetric padding keeps their
+complete border box within the host body line. Replaced text and number inputs
+also use that token-derived border-box sum as their nested block size to remove
+the browser's larger intrinsic input floor. This is not a general density scale:
+it is never inferred from ancestry, and standalone interactive targets remain
+unchanged. Nested table link actions use the existing inline/link-button
+contract.
 
 Repeated rows that cannot use margins snap compensation inside the row box.
 Table cells and contextual-menu commands target the same public single-line
@@ -117,14 +121,12 @@ also reserve their real in-box separator. This is one height family with two
 ownership modes—control margin compensation or host-owned in-box
 compensation—not a separate density bucket.
 
-A table row containing full inputs, bordered buttons, checkboxes, or radios
-uses the explicit `tr.is-control-row` modifier. Those controls keep their normal
-standalone target geometry; the row removes only the cell block inset that
-would otherwise count the same occupied space twice. Intermediate separators
-paint inside the row rather than adding height, and the cell leaves overflow
-visible so focus rings are not clipped. This is a host-ownership contract, not
-a compact-control variant, and it never applies implicitly from `:has()` or
-ancestry.
+A table row containing inputs, bordered buttons, checkboxes, or radios keeps
+the ordinary table-cell inset and separator. Each compact child opts in with
+`is-nested`, fits within the cell's body line, and removes its standalone margin
+compensation. The table continues to own the occupied row and focus clearance;
+no row-specific geometry, `:has()` inference, or ancestry-based density is
+introduced.
 
 Side-navigation lists preserve the same natural link paint and trailing
 compensation as controls, but their grid tracks use the shared single-line row

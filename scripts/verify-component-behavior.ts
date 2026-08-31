@@ -2128,8 +2128,9 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             "[aria-label='Plain text row']"
           );
           const controlRow = controlTable?.querySelector<HTMLElement>(
-            "tr.is-control-row[aria-label='Control row']"
+            "tr[aria-label='Control row']"
           );
+          const plainTextCell = plainTextRow?.querySelector<HTMLElement>("td");
           const controlCell = controlRow?.querySelector<HTMLElement>("td");
           const controlTargets = controlRow
             ? [
@@ -2147,6 +2148,12 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             document.querySelector<HTMLElement>("[aria-label='Checkbox'] .bf-checkbox-label"),
             document.querySelector<HTMLElement>("[aria-label='Radio'] .bf-radio-label")
           ];
+          const nestedSelectionLabels = controlRow
+            ? [
+                controlRow.querySelector<HTMLElement>(".bf-checkbox.is-nested > .bf-checkbox-label"),
+                controlRow.querySelector<HTMLElement>(".bf-radio.is-nested > .bf-radio-label")
+              ]
+            : [];
           if (
             !activeTab ||
             !plainRow ||
@@ -2156,18 +2163,21 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             !nestedBadge ||
             !plainTextRow ||
             !controlRow ||
+            !plainTextCell ||
             !controlCell ||
             controlTargets.some(target => !target) ||
-            standaloneTargets.some(target => !target)
+            standaloneTargets.some(target => !target) ||
+            nestedSelectionLabels.some(label => !label)
           ) {
             return null;
           }
           const chipRect = nestedChip.getBoundingClientRect();
           const badgeRect = nestedBadge.getBoundingClientRect();
           const activeStyles = getComputedStyle(activeTab);
+          const plainTextCellStyles = getComputedStyle(plainTextCell);
           const controlCellStyles = getComputedStyle(controlCell);
           const rowBorderSize = Number.parseFloat(
-            getComputedStyle(document.body).getPropertyValue("--bf-table-row-border-size")
+            plainTextCellStyles.borderBlockEndWidth
           );
           return {
             activeClass: activeTab.classList.contains("is-active"),
@@ -2187,12 +2197,20 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
               controlRow.getBoundingClientRect().height -
                 plainTextRow.getBoundingClientRect().height
             ),
-            controlTargetHeightDeltas: controlTargets.map((target, index) =>
-              Math.abs(
-                target!.getBoundingClientRect().height -
-                  standaloneTargets[index]!.getBoundingClientRect().height
-              )
+            controlTargetHeights: controlTargets.map(
+              target => target!.getBoundingClientRect().height
             ),
+            standaloneTargetHeights: standaloneTargets.map(
+              target => target!.getBoundingClientRect().height
+            ),
+            nestedSelectionMarkCenterDeltas: nestedSelectionLabels.map(label => {
+              const labelHeight = label!.getBoundingClientRect().height;
+              const markStyles = getComputedStyle(label!, "::before");
+              const markStart = Number.parseFloat(markStyles.insetBlockStart);
+              const markSize = Number.parseFloat(markStyles.blockSize);
+              return Math.abs(markStart + (markSize / 2) - (labelHeight / 2));
+            }),
+            controlCellLineHeight: Number.parseFloat(controlCellStyles.lineHeight),
             controlCellPaddingBlockStart: Number.parseFloat(
               controlCellStyles.paddingBlockStart
             ),
@@ -2203,6 +2221,16 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
               controlCellStyles.borderBlockEndWidth
             ),
             controlCellOverflow: controlCellStyles.overflow,
+            plainCellPaddingBlockStart: Number.parseFloat(
+              plainTextCellStyles.paddingBlockStart
+            ),
+            plainCellPaddingBlockEnd: Number.parseFloat(
+              plainTextCellStyles.paddingBlockEnd
+            ),
+            plainCellBorderBlockEnd: Number.parseFloat(
+              plainTextCellStyles.borderBlockEndWidth
+            ),
+            plainCellOverflow: plainTextCellStyles.overflow,
             rowBorderSize
           };
         });
@@ -2224,14 +2252,25 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
         assert(
           audit &&
             audit.controlRowHeightDelta <= audit.rowBorderSize &&
-            audit.controlTargetHeightDeltas.every(
+            audit.controlTargetHeights.every(
+              height => height <= audit.controlCellLineHeight + audit.rowBorderSize
+            ) &&
+            audit.controlTargetHeights.every(
+              (height, index) =>
+                audit.standaloneTargetHeights[index] - height > audit.rowBorderSize
+            ) &&
+            audit.nestedSelectionMarkCenterDeltas.every(
               delta => delta <= audit.rowBorderSize
             ) &&
-            audit.controlCellPaddingBlockStart === 0 &&
-            audit.controlCellPaddingBlockEnd === 0 &&
-            audit.controlCellBorderBlockEnd === 0 &&
-            audit.controlCellOverflow === "visible",
-          `Expected ${tier}/${tone} full controls to retain their standalone height without enlarging the explicit table control row: ${JSON.stringify(audit)}.`
+            Math.abs(
+              audit.controlCellPaddingBlockStart - audit.plainCellPaddingBlockStart
+            ) <= audit.rowBorderSize &&
+            Math.abs(
+              audit.controlCellPaddingBlockEnd - audit.plainCellPaddingBlockEnd
+            ) <= audit.rowBorderSize &&
+            audit.controlCellBorderBlockEnd === audit.plainCellBorderBlockEnd &&
+            audit.controlCellOverflow === audit.plainCellOverflow,
+          `Expected ${tier}/${tone} explicitly nested controls to fit inside the ordinary table-cell rhythm: ${JSON.stringify(audit)}.`
         );
       }
     }

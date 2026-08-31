@@ -30,6 +30,10 @@ ${scoped(" :where(.bf-input, .bf-button, .bf-button.is-base)")} {
   line-height: var(--bf-body-line-height);
 }
 
+${scoped(" :where(.bf-input.is-nested, .bf-button.is-nested, .bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label)")} {
+  line-height: var(--bf-nested-control-line-height);
+}
+
 ${scoped(" :where(.bf-application)")} {
   background: var(--bf-app-demo-page-bg);
 }

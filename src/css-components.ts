@@ -16,6 +16,7 @@ import { legacyNavigationCss } from "./css-components/legacy-navigation.js";
 import { linkedLogoSiteLayoutCss } from "./css-components/linked-logo-site-layout.js";
 import { logoMediaCss } from "./css-components/logo-media.js";
 import { navigationLayoutCss } from "./css-components/navigation-layout.js";
+import { nestedControlsCss } from "./css-components/nested-controls.js";
 import { panelCss } from "./css-components/panel.js";
 import { searchBoxAndFilterCss } from "./css-components/search-box-and-filter.js";
 import { sitesFoundationCss } from "./css-components/sites-foundation.js";
@@ -154,6 +155,13 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
      the host body line without introducing a second row rhythm. */
   --bf-nested-auxiliary-line-height: max(var(--bf-body-font-size), calc(var(--bf-body-line-height) - var(--bf-baseline)));
   --bf-nested-auxiliary-padding-block: min(var(--bf-single-line-row-padding-block), max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-auxiliary-line-height)) / 2)));
+  /* Interactive controls use the same explicit host-owned nesting model, but
+     retain their real borders. Border-aware padding keeps their complete
+     border box within one body line. */
+  --bf-nested-control-line-height: max(var(--bf-control-visual-size), var(--bf-nested-auxiliary-line-height));
+  --bf-nested-control-padding-block: max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-control-line-height) - (var(--bf-border-width) * 2)) / 2));
+  --bf-nested-control-block-size: calc(var(--bf-nested-control-line-height) + (var(--bf-nested-control-padding-block) * 2) + (var(--bf-border-width) * 2));
+  --bf-nested-control-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-control-padding-block) + ((var(--bf-nested-control-line-height) - var(--bf-control-visual-size)) / 2));
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
   --bf-slider-row-block-size: var(--bf-single-line-row-block-size);
   --bf-slider-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-slider-track-size)", bodySelectedStartNudge)};
@@ -899,6 +907,8 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
 ${iconCss()}
 
 ${buttonActionsCss({ bodyTypeStyles, buttonMarginBottom, buttonPadding })}
+
+${nestedControlsCss()}
 
 ${ctaFigureAspectCss()}
 

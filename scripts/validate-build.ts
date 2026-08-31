@@ -829,14 +829,19 @@ function validateCommonCss(css: string): void {
     "table-layout": "auto",
     "width": "100%"
   }, "tables keep the canonical BF table layout contract");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table tr.is-control-row > :where(th, td))", {
-    "border-block-end": "0",
-    "overflow": "visible",
-    "padding-block": "0"
-  }, "explicit table control rows remove only the duplicate cell block inset and leave focus paint visible");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table tbody tr.is-control-row:not(:last-child) > :where(th, td))", {
-    "box-shadow": "inset 0 calc(var(--bf-table-row-border-size) * -1) 0 var(--bf-color-border-low-contrast)"
-  }, "table control rows paint intermediate separators without adding block size");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-input.is-nested, .bf-button.is-nested)", {
+    "line-height": "var(--bf-nested-control-line-height)",
+    "margin-block": "0",
+    "padding-block": "var(--bf-nested-control-padding-block)"
+  }, "explicit nested fields and buttons fit within a host-owned body line");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-input.is-nested)", {
+    "block-size": "var(--bf-nested-control-block-size)"
+  }, "nested textual fields replace the browser intrinsic floor with their token-derived border box");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label)", {
+    "line-height": "var(--bf-nested-control-line-height)",
+    "margin-block": "0",
+    "padding-block": "var(--bf-nested-control-padding-block)"
+  }, "explicit nested selection controls fit within a host-owned body line");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
     "padding-inline-start": "calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
   }, "table icon-placeholder cells keep the leading-icon gutter");
@@ -867,6 +872,7 @@ function validateCommonCss(css: string): void {
   const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
   assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-single-line-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-single-line-row-margin-block-end)"), "Expected status-label paint to use the symmetric shared single-line row contract.");
   assert(css.includes("--bf-nested-auxiliary-line-height: max(var(--bf-body-font-size), calc(var(--bf-body-line-height) - var(--bf-baseline)));") && css.includes("--bf-nested-auxiliary-padding-block: min(var(--bf-single-line-row-padding-block), max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-auxiliary-line-height)) / 2)));"), "Expected nested auxiliary geometry to derive from the explicit body-font-size floor and active rem-based baseline without a separate density scale.");
+  assert(css.includes("--bf-nested-control-line-height: max(var(--bf-control-visual-size), var(--bf-nested-auxiliary-line-height));") && css.includes("--bf-nested-control-padding-block: max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-control-line-height) - (var(--bf-border-width) * 2)) / 2));") && css.includes("--bf-nested-control-block-size: calc(var(--bf-nested-control-line-height) + (var(--bf-nested-control-padding-block) * 2) + (var(--bf-border-width) * 2));") && css.includes("--bf-nested-control-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-control-padding-block) + ((var(--bf-nested-control-line-height) - var(--bf-control-visual-size)) / 2));"), "Expected nested interactive controls to use border-aware rem geometry within the host body line.");
   assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
   assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-single-line-row-margin-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural single-line row as textual controls.");
   assert(css.includes("padding-block-end: var(--bf-single-line-row-in-box-padding-block-end);") && css.includes("padding-block-start: var(--bf-single-line-row-in-box-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
@@ -890,7 +896,7 @@ function validateCommonCss(css: string): void {
     "line-height": "var(--bf-nested-auxiliary-line-height)",
     "vertical-align": "middle"
   }, "nested badges fit and centre within a host-owned body line");
-  assert(!css.includes(".bf-button.is-nested"), "Expected the nested auxiliary contract not to shrink bordered action targets.");
+  assert(css.includes(".bf-button.is-nested"), "Expected bordered action targets to expose only the explicit nested composition modifier.");
   assert(css.includes("--bf-ui-icon-number-stepper: url(\"data:image/svg+xml,"), "Expected number inputs to reuse the compact paired-chevron asset.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(input[type='number'])", {
     "appearance": "textfield",
@@ -1210,6 +1216,7 @@ function validateAppTierCss(css: string): void {
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-status-label.is-nested, .bf-chip.is-nested) {\n  line-height: var(--bf-nested-auxiliary-line-height);'), "Expected the app-tier preset to preserve the explicit nested auxiliary line fit after its general typography pass.");
+  assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-input.is-nested, .bf-button.is-nested, .bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label) {\n  line-height: var(--bf-nested-control-line-height);'), "Expected the app-tier preset to preserve explicit nested interactive-control line fit after its general typography pass.");
   assert(css.includes('font-size: var(--bf-body-font-size);') && css.includes('line-height: var(--bf-body-line-height);'), "Expected app non-heading UI to consume the tier body role instead of a copied private size.");
   assert(css.includes(':where(.bf-panel.is-fill)'), "Expected the app-tier CSS to include the canonical fill-height panel helper.");
   assert(!css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to avoid a shared panel shadow token now that bf-panel no longer carries card chrome.");

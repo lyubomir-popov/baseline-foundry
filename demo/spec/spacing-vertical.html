@@ -508,7 +508,8 @@
             status labels, and badges use the explicit is-nested modifier; an
             inline table action remains a normal link button so its interactive
             target is not silently reduced. The paired table below compares an
-            ordinary text row with full controls in the same row rhythm.
+            ordinary text row with explicitly nested controls in the same row
+            rhythm.
           </p>
           <div
             class="spacing-block-scroll"
@@ -694,10 +695,10 @@
                   <td>Lorem ipsum</td>
                   <td>Lorem ipsum</td>
                 </tr>
-                <tr class="is-control-row" aria-label="Control row">
+                <tr aria-label="Control row">
                   <td>
                     <input
-                      class="bf-input"
+                      class="bf-input is-nested"
                       type="text"
                       value="Text"
                       aria-label="Table text input"
@@ -705,15 +706,19 @@
                   </td>
                   <td>
                     <input
-                      class="bf-input"
+                      class="bf-input is-nested"
                       type="number"
                       value="42"
                       aria-label="Table number input"
                     />
                   </td>
-                  <td><button class="bf-button" type="button">Button</button></td>
                   <td>
-                    <div class="bf-checkbox">
+                    <button class="bf-button is-nested" type="button">
+                      Button
+                    </button>
+                  </td>
+                  <td>
+                    <div class="bf-checkbox is-nested">
                       <input
                         class="bf-checkbox-input"
                         id="table-row-checkbox"
@@ -729,7 +734,7 @@
                     </div>
                   </td>
                   <td>
-                    <div class="bf-radio">
+                    <div class="bf-radio is-nested">
                       <input
                         class="bf-radio-input"
                         id="table-row-radio"
