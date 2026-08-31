@@ -115,7 +115,7 @@ The verified GitHub release artifact remains available as a fallback for
 environments that cannot reach the npm registry:
 
 ```bash
-npm install https://github.com/lyubomir-popov/baseline-foundry/releases/download/v0.1.6/baseline-foundry-0.1.6.tgz
+npm install https://github.com/lyubomir-popov/baseline-foundry/releases/download/v0.1.7/baseline-foundry-0.1.7.tgz
 ```
 
 Use the attached `.tgz`, not the GitHub source archive: generated `dist/`
