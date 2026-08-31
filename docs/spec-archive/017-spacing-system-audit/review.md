@@ -311,5 +311,10 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
 - **Evidence:** `npm test` passed with 6,739 build contracts, zero four-tier
   component-baseline failures, and passing browser behavior. `npm run
   qa:components` regenerated every component capture and passed the full
-  baseline matrix. The final registry, tag, tarball, and checksum evidence is
-  recorded after the npm-owned publication workflow completes.
+  baseline matrix. The npm 11.19 release contract, negative preflight fixtures,
+  clean exact-main preflight, and local packed-package verifier passed. GitHub
+  Actions run `33346154913` published `baseline-foundry@0.1.5` through OIDC,
+  clean-installed all 30 root exports and 21 asset entry points, tagged
+  `2d1099c` as `v0.1.5`, and created the GitHub release. The attached tarball's
+  SHA-1 `07ea68f48a78de5628120aa4a0db26e95c216fb8` matches npm; its SHA-256 is
+  `773b95a42d1d2d73d41d51adf1887d981c2610b8264623623168f7fcfe499cd5`.

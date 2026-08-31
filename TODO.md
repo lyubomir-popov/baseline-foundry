@@ -5,9 +5,9 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No implementation package is active. Spec 017 is accepted, its final 0.1.5
-release candidate is green, and publication evidence may be recorded before
-promoting another candidate.
+No implementation package is active. Spec 017 was released as 0.1.5 from
+`2d1099c`; registry, tag, tarball, checksum, and clean-install verification are
+recorded in its archived review.
 
 ## Candidate order after Spec 001
 

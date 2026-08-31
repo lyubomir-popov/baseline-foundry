@@ -13,7 +13,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 
 | Spec | Package | Disposition |
 |---|---|---|
-| 017 Spacing system audit | [`017-spacing-system-audit/`](spec-archive/017-spacing-system-audit/) | Accepted for 0.1.5 on 2026-08-31 after the three-keyline and occupied-block audits, downstream tagged-brand proof, four-tier light/dark browser review, 6,739 static contracts, full behavior, and component screenshot QA passed. Final publication evidence is recorded in the package review. |
+| 017 Spacing system audit | [`017-spacing-system-audit/`](spec-archive/017-spacing-system-audit/) | Released as 0.1.5 from `2d1099c` on 2026-08-31 after the three-keyline and occupied-block audits, downstream tagged-brand proof, four-tier light/dark browser review, 6,739 static contracts, full behavior, component screenshot QA, OIDC publication, and registry/tarball/checksum reconciliation passed. |
 | 016 Component and pattern consistency | [`016-component-pattern-consistency/`](spec-archive/016-component-pattern-consistency/) | Accepted and merged to `main` from implementation commit `3956294` on 2026-08-29; all four implementation/adversarial passes, 6,052 static checks, browser behavior, baseline captures, and component screenshot QA passed. |
 | 015 Tier geometry hardening | [`015-tier-geometry-hardening/`](spec-archive/015-tier-geometry-hardening/) | Merged to `main` at `338f3cb`; Spec 016 supersedes its TOC row-gap and muted-H6 hierarchy after owner visual review. |
 | 001 Baseline Foundry renewal | [`001-baseline-foundry-renewal/`](spec-archive/001-baseline-foundry-renewal/) | Accepted and merged 2026-08-21; automated closeout green, with the unavailable in-app-browser pass recorded in `review.md`. |

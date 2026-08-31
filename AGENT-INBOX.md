@@ -31,7 +31,7 @@ containers own semantic spacing.
 
 ## Last-known-green state
 
-The accepted Spec 017 implementation passes `npm test` (including 6,739 build
+The released Spec 017 implementation passes `npm test` (including 6,739 build
 contracts and component behavior), `npm run qa:components`, and Playwright
 review in light and dark across all four tiers. The spacing chapter presents basic-section guidance
 and reuses both axis routes in in-page BF tabs. Horizontal owns the fixed
@@ -46,9 +46,11 @@ range. The demo server at `http://127.0.0.1:4173` uses polling so edits in the
 shared Windows/WSL workspace remain visible without repeated restarts. The
 earlier feature tip `f9731a2` remains tagged as downstream release candidate
 `v0.1.5-rc.0`, and Diagram Registry currently consumes that older exact build.
-The final `v0.1.5` tag remains reserved for the npm-owned publication workflow;
-record the registry, tag, tarball, checksum, and downstream-advance evidence
-after that workflow succeeds.
+The npm-owned workflow published `baseline-foundry@0.1.5` from `2d1099c`,
+created `v0.1.5` at that exact commit, verified a clean registry install, and
+attached the reconciled npm tarball plus checksums to the GitHub release.
+Diagram Registry can now advance from the release candidate as a separate,
+lockfile-visible downstream change.
 
 Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, and
 `tmp/vanilla-main/`. The sibling Vanilla checkout contains user changes in
