@@ -283,3 +283,33 @@ accessibility, responsive, spacing-ownership, or review-runtime finding.
   four-tier component baseline run reported zero failures after the tab
   boundary correction. `npm test` and `npm run qa:components` both passed;
   build validation now contains 6,738 contracts.
+
+## Review 12 — downstream brand and release-health audit
+
+- **Finding resolved — substitute navigation specimen:** The horizontal audit
+  now uses Diagram Registry's Circle of Friends SVG and canonical tagged-brand
+  markup, changing only the wordmark to “Baseline Foundry”. The brand sits in
+  a real navigation-brand panel header above plain and disclosure side-
+  navigation rows rather than beside a synthetic navigation fragment.
+- **Pass — one continuation rail:** Playwright waited for runtime, fonts, and
+  the imported SVG before measuring. In Editorial, Documentation, App, and OS,
+  in both light and dark, the orange tag, plain row, and disclosure row had
+  zero rendered-pixel start spread. Shared chrome and the three keyline overlay
+  remained visible and browser consoles were clean.
+- **Findings resolved — generated CSS hygiene:** The shared body-line visual
+  offset now feeds switch, tick, and leading-icon geometry. A dead control
+  reserve, a retired table-padding variable, and a duplicate dark-theme
+  selector were removed, with static rejection guards. No local specimen CSS,
+  fourth inset, target height, or new authored pixel length was introduced.
+- **Pass — documentation and maintenance:** Durable architecture now records
+  cluster modifier ownership and the actual table-row compensation model. The
+  release fallback points to 0.1.5, `tsx` is current, the supported Node 24
+  type major remains deliberate, and `npm audit` reports zero vulnerabilities.
+  A project-wide TODO/FIXME/HACK and compatibility scan found no undocumented
+  active debt; remaining legacy references are named modules or rejection
+  contracts.
+- **Evidence:** `npm test` passed with 6,739 build contracts, zero four-tier
+  component-baseline failures, and passing browser behavior. `npm run
+  qa:components` regenerated every component capture and passed the full
+  baseline matrix. The final registry, tag, tarball, and checksum evidence is
+  recorded after the npm-owned publication workflow completes.

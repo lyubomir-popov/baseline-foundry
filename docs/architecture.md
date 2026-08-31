@@ -82,6 +82,12 @@ that margin is metric compensation, not semantic spacing. Their owning stack
 sets the boundary to the next sibling, and the following first baseline stays
 on the active grid.
 
+`bf-cluster` owns inline sibling relationships. Its default gap is two
+baselines; `is-dense` selects one baseline, `is-split` distributes the first
+and final groups, and `is-nowrap` preserves one intrinsic row when horizontal
+overflow belongs to an outer scroller. These modifiers do not add block
+padding or erase child metric compensation.
+
 ## Controls and ruled rows
 
 Controls use the Vanilla occupied-block model. Symmetric block padding is the
@@ -90,9 +96,11 @@ fractional relative to the baseline. Trailing compensation plus semantic space
 snaps the occupied block to the next grid line. Density comes from the tier, not
 from per-control height modifiers.
 
-Repeated rows that cannot use margins snap the row box instead: symmetric
-padding, a real in-box separator, and a solved line height inside a block size
-that is a baseline multiple.
+Repeated rows that cannot use margins snap the row box instead. Table cells
+retain the measured body start nudge and real body line height; any remaining
+density compensation is placed at block end beside the real in-box separator.
+The resulting row block remains a baseline multiple without stretching text
+metrics or pretending the compensation is symmetric.
 
 ## Surface and manifest pipeline
 

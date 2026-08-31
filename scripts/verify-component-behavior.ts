@@ -32,6 +32,10 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     });
     await page.goto(`${origin}/demo/spec/spacing-horizontal.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    await page.waitForFunction(() => {
+      const brandIcon = document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-icon');
+      return Boolean(brandIcon?.complete && brandIcon.naturalWidth > 0);
+    });
     assert(await page.locator(".pc-nav").count() === 1 && await page.locator(".pc-header").count() === 1 && await page.locator(".pc-footer").count() === 1, "Expected the horizontal audit to retain the shared page chrome and side navigation.");
     const overlay = page.locator("[data-spacing-keyline-debug]");
     const keylines = page.locator("[data-spacing-keyline]");
@@ -96,6 +100,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         return host.left + mark.left + (mark.width / 2);
       };
       const page = box("main.bf-page");
+      const brandIcon = document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-icon');
       const red = document.querySelector("[data-spacing-keyline='one-rem-inset']");
       const green = document.querySelector("[data-spacing-keyline='field-text-start']");
       const blue = document.querySelector("[data-spacing-keyline='disclosure-label-start']");
@@ -119,6 +124,9 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         accordionStart: iconLabelStart(".bf-accordion-tab"),
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
         treeChildStart: textStart(".bf-list-tree .bf-list-tree .bf-list-tree-link"),
+        brandTagStart: box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').left,
+        brandTitle: textStart('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-title'),
+        brandIconLoaded: Boolean(brandIcon?.complete && brandIcon.naturalWidth > 0),
         sideNavigationPlainStart: textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
         sideNavigationDisclosureStart: textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-accordion-button'),
         notificationStart: box(".bf-notification-title").left,
@@ -136,8 +144,9 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), "Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline.");
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell, chip, and status-label text to share the green field-inset keyline.");
     assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, segmented-control, tab, and pagination text to share the red one-rem action keyline.");
-    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
-    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected accordion, list-tree disclosure/child, plain/disclosure side-navigation, notification, and panel copy to share one continuation keyline; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
+    assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
+    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
+    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, plain/disclosure side-navigation, notification, and panel copy to share one continuation keyline; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent a literal one-rem page inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
     const initialTier = await tierSelect.inputValue();

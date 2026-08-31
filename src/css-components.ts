@@ -147,7 +147,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
      padding and trailing baseline compensation must resolve through this pair. */
   --bf-single-line-row-padding-block: max(0rem, calc(var(--bf-button-block-padding) - var(--bf-border-width)));
   --bf-single-line-row-margin-block-end: ${singleLineRowMarginBottom};
-  --bf-single-line-row-visual-offset: calc((var(--bf-body-line-height) - var(--bf-control-visual-size)) / 2);
+  --bf-single-line-row-visual-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
   --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
   --bf-slider-row-block-size: max(var(--bf-control-box-size-compact), calc(${bodySelectedStartNudge} + ${bodyLineHeight} + ${bodySelectedEndNudge}));
   --bf-slider-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-slider-track-size)", bodySelectedStartNudge)};
@@ -157,8 +157,8 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-table-row-block-size: calc(var(--bf-table-row-content-size) + mod(calc(var(--bf-baseline) - mod(var(--bf-table-row-content-size), var(--bf-baseline))), var(--bf-baseline)));
   --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start) - var(--bf-table-row-border-size)));
   --bf-table-row-line-height: ${bodyLineHeight};
-  --bf-switch-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
-  --bf-tick-box-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
+  --bf-switch-track-offset: var(--bf-single-line-row-visual-offset);
+  --bf-tick-box-offset: var(--bf-single-line-row-visual-offset);
   --bf-leading-mark-size: var(--bf-control-visual-size);
   --bf-leading-mark-gap: var(--bf-component-inline-inset-field);
   --bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));
@@ -212,7 +212,7 @@ ${componentAlignmentVars(components)}  /* Action surfaces keep comfortable comma
   --bf-icon-size-xx-large: 6rem;
   --bf-leading-icon-size: var(--bf-leading-mark-size);
   --bf-leading-icon-gap: var(--bf-leading-mark-gap);
-  --bf-leading-icon-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-leading-icon-size)", bodySelectedStartNudge)};
+  --bf-leading-icon-offset: var(--bf-single-line-row-visual-offset);
   --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-field);
   --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
@@ -265,13 +265,9 @@ ${(themeSurfaces ?? []).map(surface => {
   const inputBlockPadding = bodySurface && parseRemValue(bodySurface.nudgeTop) > 0
     ? bodySurface.nudgeTop
     : surfaceComponents.controlBlockPadding;
-  const tableRowPadding = bodySurface && parseRemValue(bodySurface.nudgeTop) > 0
-    ? bodySurface.nudgeTop
-    : surfaceComponents.controlCompactBlockPadding;
-  return `:where(.bf-theme.${surface.className}) {\n  --bf-control-baseline-reserve: 0rem;\n  --bf-input-block-padding: ${inputBlockPadding};\n  --bf-button-block-padding: ${inputBlockPadding};\n  --bf-table-row-padding: ${tableRowPadding};\n${componentAlignmentVars(surfaceComponents)}\n}\n`;
+  return `:where(.bf-theme.${surface.className}) {\n  --bf-input-block-padding: ${inputBlockPadding};\n  --bf-button-block-padding: ${inputBlockPadding};\n${componentAlignmentVars(surfaceComponents)}\n}\n`;
 }).join("\n")}
 
-:where(.bf-theme.is-dark),
 :where(.bf-theme.is-dark) {
 ${foundryComponentColorVars("dark")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");

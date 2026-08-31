@@ -5,9 +5,9 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-Spec 017 spacing system audit is accepted at implementation commit `3d6570a`.
-No implementation package is active. Merge and downstream release evidence may
-be recorded before promoting another candidate.
+No implementation package is active. Spec 017 is accepted, its final 0.1.5
+release candidate is green, and publication evidence may be recorded before
+promoting another candidate.
 
 ## Candidate order after Spec 001
 

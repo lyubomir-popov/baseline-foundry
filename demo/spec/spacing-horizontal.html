@@ -233,31 +233,59 @@
               <span class="bf-switch-slider" aria-hidden="true"></span>
               <span class="bf-switch-label">Switch</span>
             </label>
-            <nav
-              class="bf-side-navigation bf-inline-size is-medium"
-              aria-label="Side navigation"
+            <section
+              id="horizontal-branded-navigation"
+              class="bf-panel bf-inline-size is-medium"
+              aria-label="Branded primary side navigation"
             >
-              <ul class="bf-side-navigation-list">
-                <li class="bf-side-navigation-item">
+              <div class="bf-panel-header is-navigation-brand">
+                <div class="bf-top-navigation-logo is-canonical-tagged">
                   <a
-                    class="bf-side-navigation-link"
+                    class="bf-top-navigation-link"
                     href="#horizontal-icon-navigation"
-                    ><span class="bf-side-navigation-label"
-                      >Side navigation, plain</span
-                    ></a
+                    aria-label="Baseline Foundry home"
                   >
-                </li>
-                <li class="bf-side-navigation-item">
-                  <button
-                    class="bf-side-navigation-accordion-button"
-                    type="button"
-                    aria-expanded="true"
-                  >
-                    Side navigation, disclosure
-                  </button>
-                </li>
-              </ul>
-            </nav>
+                    <span
+                      class="bf-top-navigation-logo-tag"
+                      aria-hidden="true"
+                    >
+                      <img
+                        class="bf-top-navigation-logo-icon"
+                        src="../assets/canonical-mark.svg"
+                        alt=""
+                      />
+                    </span>
+                    <span class="bf-top-navigation-logo-title"
+                      >Baseline Foundry</span
+                    >
+                  </a>
+                </div>
+              </div>
+              <div class="bf-panel-content is-flush">
+                <nav class="bf-side-navigation" aria-label="Side navigation">
+                  <ul class="bf-side-navigation-list">
+                    <li class="bf-side-navigation-item">
+                      <a
+                        class="bf-side-navigation-link"
+                        href="#horizontal-icon-navigation"
+                        ><span class="bf-side-navigation-label"
+                          >Side navigation, plain</span
+                        ></a
+                      >
+                    </li>
+                    <li class="bf-side-navigation-item">
+                      <button
+                        class="bf-side-navigation-accordion-button"
+                        type="button"
+                        aria-expanded="true"
+                      >
+                        Side navigation, disclosure
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </section>
             <aside class="bf-table-of-contents bf-inline-size is-medium">
               <section class="bf-table-of-contents-section">
                 <h3 class="bf-table-of-contents-heading bf-h5">Contents</h3>

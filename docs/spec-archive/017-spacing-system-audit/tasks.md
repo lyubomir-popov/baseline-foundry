@@ -59,3 +59,6 @@
   in-page horizontal/vertical tabs; reduce the vertical audit to 5rem raw
   specimens grouped by measured cross-tier occupied height, without per-item
   H6 labels or multiline/content-driven fixtures.
+- [x] T030 Port the downstream tagged primary-navigation mark into the
+  horizontal audit, complete a repository-wide architecture and maintenance
+  audit, remove confirmed stale CSS output, and repeat the full release gates.
