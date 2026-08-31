@@ -1,5 +1,16 @@
 export function iconCss(): string {
-  return `:where(.bf-theme) :where(.bf-icon) {
+  return `:where(.bf-theme) {
+  --bf-icon-size-default: 1rem;
+  --bf-icon-size-medium: 2.5rem;
+  --bf-icon-size-large: 4rem;
+  --bf-icon-size-x-large: 4.5rem;
+  --bf-icon-size-xx-large: 6rem;
+  --bf-leading-icon-size: var(--bf-leading-mark-size);
+  --bf-leading-icon-gap: var(--bf-leading-mark-gap);
+  --bf-leading-icon-offset: var(--bf-interface-row-visual-offset);
+}
+
+:where(.bf-theme) :where(.bf-icon) {
   --bf-icon-image: none;
   --bf-icon-size: var(--bf-icon-size-default);
   --bf-icon-transform: none;

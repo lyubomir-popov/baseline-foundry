@@ -497,14 +497,13 @@ Example sketch for a downstream Ubuntu Sans theme:
 	"components": {
 		"borderWidthRem": 0.0625,
 		"radiusRem": 0,
-		"controlBlockPaddingRem": 0.5,
-		"controlCompactBlockPaddingRem": 0.25,
-		"controlInlinePaddingRem": 1,
+		"inlineInsetFieldRem": 0.5,
+		"inlineInsetActionRem": 1,
+		"inlineInsetContinuationRem": 2,
 		"controlVisualSizeRem": 0.75,
 		"fieldGapBaselineUnits": 1,
 		"panelPaddingInlineBaselineUnits": 2,
-		"panelPaddingBlockBaselineUnits": 2,
-		"accordionIndentBaselineUnits": 3
+		"panelPaddingBlockBaselineUnits": 2
 	}
 }
 ```

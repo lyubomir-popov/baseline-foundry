@@ -1,7 +1,6 @@
 type SearchBoxAndFilterCssOptions = {
   bodySelectedStartNudge: string;
   bodyTypeStyles: string;
-  buttonBlockPaddingVar: string;
   inputMarginBottom: string;
 };
 
@@ -9,7 +8,6 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   const {
     bodySelectedStartNudge,
     bodyTypeStyles,
-    buttonBlockPaddingVar,
     inputMarginBottom,
   } = options;
 
@@ -108,7 +106,7 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-search-container[aria-expanded='false']) {
-  min-block-size: var(--bf-control-box-size);
+  min-block-size: var(--bf-interface-row-painted-block-size);
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-box) {
@@ -187,7 +185,7 @@ ${bodyTypeStyles}  appearance: none;
   cursor: pointer;
   display: inline-flex;
   margin: 0;
-  padding-block: ${buttonBlockPaddingVar};
+  padding-block: ${bodySelectedStartNudge};
   padding-inline: 0;
   position: static;
 }

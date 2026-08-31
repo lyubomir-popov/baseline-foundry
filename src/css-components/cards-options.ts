@@ -134,7 +134,7 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
   display: grid;
   gap: var(--bf-field-gap);
   margin: 0;
-  min-block-size: calc((var(--bf-control-box-size) * 2) + var(--bf-baseline));
+  min-block-size: calc((var(--bf-interface-row-occupied-block-size) * 2) + var(--bf-baseline));
   min-inline-size: 0;
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
   padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));

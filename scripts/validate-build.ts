@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "../src/baseline-grid-theme.js";
+import { nestedFieldSelector, nestedInteractiveSelector, nestedTextInputTypes } from "../src/css-components/nested-controls.js";
 import { tierNames } from "../src/presets.ts";
 import { componentPages } from "./component-demo-shared.ts";
 import { assert, getCheckCount } from "./validation-assert.ts";
@@ -185,16 +186,13 @@ const COMPONENT_TOKEN_PROPERTIES: Record<string, string> = {
   borderWidth: "--bf-border-width",
   barThickness: "--bf-bar-thickness",
   radius: "--bf-radius",
-  controlBlockPadding: "--bf-control-block-padding",
-  controlCompactBlockPadding: "--bf-control-block-padding-compact",
-  controlInlinePadding: "--bf-control-inline-padding",
-  controlInlinePaddingAction: "--bf-control-inline-padding-action",
-  controlInlinePaddingField: "--bf-control-inline-padding-field",
+  inlineInsetField: "--bf-component-inline-inset-field",
+  inlineInsetAction: "--bf-component-inline-inset-action",
+  inlineInsetContinuation: "--bf-component-inline-inset-continuation",
   controlVisualSize: "--bf-control-visual-size",
   fieldGap: "--bf-field-gap",
   panelPaddingInline: "--bf-panel-padding-inline",
-  panelPaddingBlock: "--bf-panel-padding-block",
-  accordionIndent: "--bf-accordion-indent"
+  panelPaddingBlock: "--bf-panel-padding-block"
 };
 
 function expectedTierProperties(tokens: Record<string, unknown>): Map<string, string> {
@@ -649,8 +647,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");
   assert(css.includes(":where(.bf-theme) :where(thead th) {\n  font-family: var(--bf-body-font-family"), "Expected CSS to style table headers as body-role text.");
-  assert(css.includes("--bf-single-line-row-block-size: calc(var(--bf-body-line-height") && css.includes("--bf-single-line-row-in-box-padding-block-start: var(--bf-body-nudge-start") && css.includes("--bf-single-line-row-in-box-padding-block-end: max(0rem, calc(var(--bf-single-line-row-block-size) - var(--bf-body-line-height"), "Expected bordered controls and marginless repeated rows to share one rem/token-derived occupied-block target with explicit in-box compensation.");
-  assert(css.includes("--bf-table-row-padding-block-start: var(--bf-single-line-row-in-box-padding-block-start);") && css.includes("--bf-table-row-block-size: var(--bf-single-line-row-block-size);") && css.includes("--bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - var(--bf-body-line-height") && css.includes("--bf-table-row-line-height: var(--bf-body-line-height"), "Expected table rows to preserve body text metrics while targeting the shared single-line occupied block.");
+  assert(css.includes("--bf-interface-row-painted-block-size: calc(var(--bf-interface-row-line-height)") && css.includes("--bf-interface-row-compensation-block-end: mod(") && css.includes("--bf-interface-row-occupied-block-size: calc(var(--bf-interface-row-painted-block-size) + var(--bf-interface-row-compensation-block-end));") && css.includes("--bf-in-box-row-padding-block-start: var(--bf-interface-row-content-offset-block-start);") && css.includes("--bf-in-box-row-padding-block-end: max(0rem, calc(var(--bf-interface-row-occupied-block-size) - var(--bf-interface-row-line-height)"), "Expected bordered controls and marginless repeated rows to share one rem/token-derived occupied-block target with explicit in-box compensation.");
+  assert(css.includes("--bf-table-row-padding-block-start: var(--bf-in-box-row-padding-block-start);") && css.includes("--bf-table-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - var(--bf-body-line-height") && css.includes("--bf-table-row-line-height: var(--bf-body-line-height"), "Expected table rows to preserve body text metrics while targeting the shared interface-row occupied block.");
   assert(css.includes(":where(.bf-theme) :where(th, td) {\n  border: 0;\n  border-block-end: var(--bf-table-row-border-size) solid transparent;"), "Expected table cells to reserve border space inside the row box instead of relying on inset shadows.");
   assert(css.includes("padding-block-end: var(--bf-table-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-table-row-padding-block-start);"), "Expected table cells to consume the shared metric start and trailing row-compensation variables.");
   assert(!css.includes("tbody tr:has(.bf-status-label) > td"), "Expected table density not to depend on a contextual status-label selector; nested auxiliaries opt in explicitly.");
@@ -674,10 +672,10 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-groups) {\n  align-content: start;\n  display: grid;\n  gap: var(--bf-side-navigation-group-gap);") && css.includes("--bf-side-navigation-group-gap: 1.5rem;"), "Expected side-navigation heading/list groups to own the fixed 1.5rem separation.");
   assert(css.includes("--bf-side-navigation-heading-list-gap: 0.5rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group) {\n  display: grid;\n  gap: var(--bf-side-navigation-heading-list-gap);"), "Expected each side-navigation group to own the fixed half-rem transition from its header to its list.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) {\n  display: grid;\n  gap: 0rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {\n  inline-size: auto;\n  margin-inline: var(--bf-side-navigation-content-inset) 0;") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected real compensated rules and headings to share a tight header, with each rule running from the continuation text rail to the navigation edge.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  display: grid;\n  grid-auto-rows: var(--bf-single-line-row-block-size);") && css.includes("align-self: start;"), "Expected repeated side-navigation rows to use the shared single-line track while preserving their natural control paint at the track start.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) {\n  display: grid;\n  gap: 0rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {\n  inline-size: auto;\n  margin-inline: var(--bf-side-navigation-content-inset) 0;") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected real compensated rules and headings to share a tight header, with each rule running from the continuation text inset to the navigation edge.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  display: grid;\n  grid-auto-rows: var(--bf-interface-row-occupied-block-size);") && css.includes("align-self: start;"), "Expected repeated side-navigation rows to use the shared interface-row track while preserving their natural control paint at the track start.");
   assert(css.includes("min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-margin-bottom));"), "Expected single-line side-navigation group headings to reserve a four-baseline occupied block without counting metric compensation twice.");
-  assert(css.includes("min-block-size: calc(var(--bf-control-box-size-compact) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to rely on their controls' start nudge instead of adding container start padding.");
+  assert(css.includes("min-block-size: calc(var(--bf-interface-row-occupied-block-size) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to combine the regular interface row with their structural end padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0rem;"), "Expected flush stacks to remove only their container gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-metric-flush) {\n  --bf-stack-space: 0rem;") && css.includes(":where(.bf-theme) .bf-stack.is-metric-flush > :where(") && css.includes(":has(+ :where(") && css.includes(" + :where(") && css.includes("margin-block-end: 0;") && css.includes("padding-block-start: 0;"), "Expected metric-flush stacks to cancel only configured adjacent text-role compensation and start nudges.");
@@ -687,17 +685,14 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-shallow) {\n  --bf-stack-space: var(--bf-section-space-shallow);"), "Expected explicitly shallow section stacks to use the shallow section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section) {\n  --bf-stack-space: var(--bf-section-space);"), "Expected section stacks to own the tier's regular section gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-section-deep) {\n  --bf-stack-space: var(--bf-section-space-deep);"), "Expected deep section stacks to use the deep section gap.");
-  assert(css.includes("--bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));") && css.includes("--bf-component-inline-inset-field: var(--bf-control-inline-padding-field);") && css.includes("--bf-component-inline-inset-action: var(--bf-control-inline-padding-action);") && css.includes("--bf-component-inline-inset-continuation: var(--bf-disclosure-label-inline-offset);"), "Expected components to expose exactly the field, action, and continuation inline inset families.");
+  assert(css.includes("--bf-component-inline-inset-field:") && css.includes("--bf-component-inline-inset-action:") && css.includes("--bf-component-inline-inset-continuation:") && !css.includes("--bf-disclosure-label-inline-offset:") && !css.includes("--bf-icon-label-inline-offset:"), "Expected field, action, and continuation to be authoritative component inset inputs rather than aliases of one component.");
   assert(css.includes("padding-inline-start: var(--bf-component-inline-inset-continuation);"), "Expected accordion panels to share the continuation inset.");
   for (const [selector, inset] of [
-    [":where(.bf-theme) :where(fieldset, .bf-fieldset)", "continuation"],
     [":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", "continuation"],
     [":where(.bf-theme) :where(.bf-option-card)", "continuation"],
     [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "continuation"],
-    [":where(.bf-theme) :where(.bf-side-navigation-drawer-header)", "continuation"],
     [":where(.bf-theme) :where(.bf-contextual-menu-link)", "action"],
     [":where(.bf-theme) :where(.bf-tooltip-message)", "continuation"],
-    [":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)", "continuation"],
     [":where(.bf-theme) :where(.bf-code-snippet-title)", "continuation"],
     [":where(.bf-theme) :where(.bf-code-snippet-dropdown)", "action"],
     [":where(.bf-theme) :where(.bf-code-snippet-block, .bf-code-snippet-block.is-icon, .bf-code-snippet-block.is-numbered)", "continuation"]
@@ -706,7 +701,15 @@ function validateCommonCss(css: string): void {
       "padding-inline": `var(--bf-component-inline-inset-${inset})`
     }, `${selector} chooses the shared ${inset} component inset`);
   }
-  assert((css.match(/padding-inline: var\(--bf-panel-padding-inline\);/g) ?? []).length === 1, "Expected the legacy panel inline token to remain only on the structural top-navigation row, not author-visible component content.");
+  for (const selector of [
+    ":where(.bf-theme) :where(fieldset, .bf-fieldset)",
+    ":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)",
+    ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)"
+  ]) {
+    assertRuleHasDecl(ast, selector, {
+      "padding-inline": "var(--bf-panel-padding-inline)"
+    }, `${selector} consumes structural panel padding rather than a component content inset`);
+  }
   assert(css.includes("vertical-align: baseline;") && !css.includes("vertical-align: calc(var(--bf-border-width) - var(--bf-body-nudge-start"), "Expected inline chips to expose their first text baseline without reapplying the body metric nudge.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 0.0625rem);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 0.0625rem thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
@@ -719,22 +722,33 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-stage-shell"), "Expected CSS to include the stage-shell helper.");
   assert(css.includes(".u-baseline-grid"), "Expected CSS to include the baseline grid utility.");
   assert(!css.includes("min-inline-size: 8em;"), "Expected text-like controls to avoid hard minimum widths that break narrow panels.");
-  assert(css.includes("input[type='file'])::file-selector-button") && css.includes("box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);") && css.includes("padding-block: var(--bf-single-line-row-padding-block);"), "Expected file inputs to paint one field rule and avoid double-padding around their selector button.");
+  assert(css.includes("input[type='file'])::file-selector-button") && css.includes("box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);") && css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected file inputs to paint one field rule and avoid double-padding around their selector button.");
   assert(css.includes(":where(.bf-control) {\n  display: grid;\n  gap: var(--bf-field-gap);\n  min-inline-size: 0;"), "Expected form controls to allow shrinking inside narrow containers.");
   assert(css.includes(":where(.bf-field.is-checkbox) :where(.bf-control) {\n  gap: 0;"), "Expected checkbox field controls to avoid downstream gap overrides.");
-  assert(css.includes("--bf-slider-row-block-size: var(--bf-single-line-row-block-size);") && css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place the slider rail metrically within the shared single-line row.");
-  assert(css.includes("--bf-single-line-row-visual-offset: calc(var(--bf-body-nudge-start") && css.includes("--bf-switch-track-offset: var(--bf-single-line-row-visual-offset);") && css.includes("--bf-tick-box-offset: var(--bf-single-line-row-visual-offset);") && css.includes("--bf-leading-icon-offset: var(--bf-single-line-row-visual-offset);"), "Expected switch, tick, and leading-icon geometry to share one body-line visual offset.");
-  assert(css.includes("--bf-leading-mark-gap: var(--bf-component-inline-inset-field);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the shared leading-mark family and field inset.");
+  assert(css.includes("--bf-slider-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place the slider track metrically within the shared interface row.");
+  assert(css.includes("--bf-interface-row-visual-offset: calc(var(--bf-interface-row-content-offset-block-start)") && css.includes("--bf-switch-track-offset: var(--bf-interface-row-visual-offset);") && css.includes("--bf-tick-box-offset: var(--bf-interface-row-visual-offset);") && css.includes("--bf-leading-icon-offset: var(--bf-interface-row-visual-offset);"), "Expected switch, tick, and leading-icon geometry to share one body-line visual offset.");
+  assert(css.includes("--bf-leading-mark-gap: var(--bf-field-gap);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the shared mark gap rather than an unrelated inset.");
   assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);") && css.includes("inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));"), "Expected the enlarged radio dot to remain concentric with its outer circle inside the shared row geometry.");
-  assert(css.includes("--bf-single-line-row-padding-block:") && css.includes("--bf-single-line-row-margin-block-end:") && css.includes("--bf-single-line-row-visual-offset:"), "Expected generated CSS to expose one border-aware occupied-block contract for body-sized single-line UI.");
-  assert(!css.includes("--bf-control-baseline-reserve:") && !css.includes("--bf-table-row-padding:") && !css.includes(":where(.bf-theme.is-dark),\n:where(.bf-theme.is-dark)"), "Expected generated CSS to omit retired alignment variables and duplicate dark-theme selectors.");
-  assert(css.includes("--bf-control-block-padding:"), "Expected generated CSS to define the regular control block padding token.");
-  assert(css.includes("--bf-control-block-padding-compact:"), "Expected generated CSS to define the compact control block padding token.");
-  assert(css.includes("--bf-input-block-padding:"), "Expected generated CSS to define the tier-selectable input block padding token.");
-  assert(css.includes("--bf-button-block-padding:"), "Expected generated CSS to define the tier-selectable button block padding token.");
-  assert(css.includes("--bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));"), "Expected generated CSS to derive regular control box size from the control block padding token.");
-  assert(css.includes("padding-block: max(0rem, calc(var(--bf-input-block-padding) - var(--bf-border-width)));"), "Expected bordered inputs to resolve block padding from the tier-selectable input padding token.");
-  assert(css.includes("padding-block: var(--bf-single-line-row-padding-block);"), "Expected bordered buttons and body-sized single-line rows to share one padding contract.");
+  assert(css.includes("--bf-interface-row-padding-block:") && css.includes("--bf-interface-row-compensation-block-end:") && css.includes("--bf-interface-row-visual-offset:"), "Expected generated CSS to expose one border-aware occupied-block contract for body-sized single-line UI.");
+  for (const retiredVariable of [
+    "--bf-control-baseline-reserve:",
+    "--bf-control-block-padding:",
+    "--bf-control-block-padding-compact:",
+    "--bf-control-box-size:",
+    "--bf-control-box-size-compact:",
+    "--bf-control-inline-padding:",
+    "--bf-input-block-padding:",
+    "--bf-button-block-padding:",
+    "--bf-single-line-row-",
+    "--bf-nested-auxiliary-",
+    "--bf-nested-control-",
+    "--bf-accordion-indent:",
+    "--bf-authoring-accent"
+  ]) {
+    assert(!css.includes(retiredVariable), `Expected generated CSS to omit retired spacing variable ${retiredVariable}.`);
+  }
+  assert(!css.includes("--bf-table-row-padding:") && !css.includes(":where(.bf-theme.is-dark),\n:where(.bf-theme.is-dark)"), "Expected generated CSS to omit retired table alignment variables and duplicate dark-theme selectors.");
+  assert(css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected bordered controls and body-sized single-line rows to share one regular padding contract.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive) {\n  background-color: var(--bf-color-button-positive-default);"), "Expected generated CSS to define the bf-button.is-positive surface from the themed positive tokens.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:hover) {\n  background-color: var(--bf-color-button-positive-hover);"), "Expected bf-button.is-positive to surface the themed positive hover token.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true'])) {\n  background-color: var(--bf-color-button-positive-active);"), "Expected bf-button.is-positive to surface the themed positive active token.");
@@ -766,7 +780,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-cinematic) {\n  aspect-ratio: 12 / 5;"), "Expected bf-aspect.is-cinematic modifier to apply the 12:5 (2.4:1) ratio.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-square) {\n  aspect-ratio: 1 / 1;"), "Expected bf-aspect.is-square modifier to apply the 1:1 ratio.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect) > :where(img, picture, video, canvas, iframe) {"), "Expected bf-aspect to make embedded media fill the slot.");
-  assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact inline surfaces to use the compact control block padding token.");
+  assert(css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected regular inline surfaces to use the shared metric-derived row padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) {\n  container-type: inline-size;\n  gap: var(--bf-field-gap);"), "Expected grid CSS to include the dense control-grid recipe on top of bf-grid.");
   assert(css.includes(":where(.bf-theme):where(.bf-page, .bf-grid-scope,"), "Expected grid CSS to include a compound selector so container-type applies when the theme scope and grid-scope are on the same element.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control, .bf-grid-item.is-control-pair) {\n  grid-column: auto / span 4;"), "Expected grid CSS to include the default dense control-grid recipe spans.");
@@ -829,18 +843,20 @@ function validateCommonCss(css: string): void {
     "table-layout": "auto",
     "width": "100%"
   }, "tables keep the canonical BF table layout contract");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-input.is-nested, .bf-button.is-nested)", {
-    "line-height": "var(--bf-nested-control-line-height)",
+  assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedInteractiveSelector})`, {
+    "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
-    "padding-block": "var(--bf-nested-control-padding-block)"
+    "padding-block": "var(--bf-nested-framed-row-padding-block)"
   }, "explicit nested fields and buttons fit within a host-owned body line");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-input.is-nested)", {
-    "block-size": "var(--bf-nested-control-block-size)"
+  assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedFieldSelector})`, {
+    "block-size": "var(--bf-nested-framed-row-painted-block-size)"
   }, "nested textual fields replace the browser intrinsic floor with their token-derived border box");
+  assert(nestedTextInputTypes.every(type => css.includes(`input.bf-input.is-nested[type='${type}']`)), "Expected every supported nested textual input type to be explicit in the positive allowlist.");
+  assert(!css.includes("input.bf-input.is-nested:not([type='file'])") && !css.includes("button.bf-button.is-nested") && css.includes(".bf-button.is-nested:not(.is-link)"), "Expected nested density to reject catch-all inputs and link buttons while remaining element-agnostic for bordered buttons.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label)", {
-    "line-height": "var(--bf-nested-control-line-height)",
+    "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
-    "padding-block": "var(--bf-nested-control-padding-block)"
+    "padding-block": "var(--bf-nested-framed-row-padding-block)"
   }, "explicit nested selection controls fit within a host-owned body line");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
     "padding-inline-start": "calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
@@ -870,16 +886,16 @@ function validateCommonCss(css: string): void {
   }, "status labels keep the canonical inline label treatment");
   const statusLabelRuleStart = css.indexOf(":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {");
   const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
-  assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-single-line-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-single-line-row-margin-block-end)"), "Expected status-label paint to use the symmetric shared single-line row contract.");
-  assert(css.includes("--bf-nested-auxiliary-line-height: max(var(--bf-body-font-size), calc(var(--bf-body-line-height) - var(--bf-baseline)));") && css.includes("--bf-nested-auxiliary-padding-block: min(var(--bf-single-line-row-padding-block), max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-auxiliary-line-height)) / 2)));"), "Expected nested auxiliary geometry to derive from the explicit body-font-size floor and active rem-based baseline without a separate density scale.");
-  assert(css.includes("--bf-nested-control-line-height: max(var(--bf-control-visual-size), var(--bf-nested-auxiliary-line-height));") && css.includes("--bf-nested-control-padding-block: max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-control-line-height) - (var(--bf-border-width) * 2)) / 2));") && css.includes("--bf-nested-control-block-size: calc(var(--bf-nested-control-line-height) + (var(--bf-nested-control-padding-block) * 2) + (var(--bf-border-width) * 2));") && css.includes("--bf-nested-control-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-control-padding-block) + ((var(--bf-nested-control-line-height) - var(--bf-control-visual-size)) / 2));"), "Expected nested interactive controls to use border-aware rem geometry within the host body line.");
+  assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-interface-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end)"), "Expected status-label paint to use the symmetric shared interface-row contract.");
+  assert(css.includes("--bf-nested-row-line-height: max(var(--bf-body-font-size), calc(var(--bf-interface-row-line-height) - var(--bf-baseline)), var(--bf-control-visual-size));") && css.includes("--bf-nested-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height)) / 2));") && css.includes("--bf-nested-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-row-padding-block) * 2));"), "Expected nested surface geometry to derive from the host body line without a second density scale.");
+  assert(css.includes("--bf-nested-framed-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height) - (var(--bf-border-width) * 2)) / 2));") && css.includes("--bf-nested-framed-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2));") && css.includes("--bf-nested-framed-row-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-framed-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));"), "Expected nested interactive controls to use an explicit two-border ledger within the host body line.");
   assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
-  assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-single-line-row-margin-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural single-line row as textual controls.");
-  assert(css.includes("padding-block-end: var(--bf-single-line-row-in-box-padding-block-end);") && css.includes("padding-block-start: var(--bf-single-line-row-in-box-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
+  assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-interface-row-compensation-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural interface row as textual controls.");
+  assert(css.includes("padding-block-end: var(--bf-in-box-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-in-box-row-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested, .bf-status-label.is-nested)", {
-    "line-height": "var(--bf-nested-auxiliary-line-height)",
+    "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
-    "padding-block": "var(--bf-nested-auxiliary-padding-block)"
+    "padding-block": "var(--bf-nested-row-padding-block)"
   }, "nested chip and status surfaces fit a host-owned body line");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested)", {
     "border": "0",
@@ -893,7 +909,7 @@ function validateCommonCss(css: string): void {
   }, "nested status labels remove their transparent block border footprint");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-badge.is-nested)", {
     "align-self": "center",
-    "line-height": "var(--bf-nested-auxiliary-line-height)",
+    "line-height": "var(--bf-nested-row-line-height)",
     "vertical-align": "middle"
   }, "nested badges fit and centre within a host-owned body line");
   assert(css.includes(".bf-button.is-nested"), "Expected bordered action targets to expose only the explicit nested composition modifier.");
@@ -934,8 +950,11 @@ function validateCommonCss(css: string): void {
   }, "fill-height panel bodies scroll internally");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand)", {
     "column-gap": "calc(var(--bf-baseline) * 2)",
-    "padding-inline-end": "var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline))"
+    "padding-inline-end": "var(--bf-panel-content-padding-inline)"
   }, "responsive application brands use the shared panel header geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-search-container[aria-expanded='false'])", {
+    "min-block-size": "var(--bf-interface-row-painted-block-size)"
+  }, "collapsed search-and-filter hosts leave trailing compensation to their external margin");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar.is-responsive)", {
     "margin-block-end": "calc(var(--bf-border-width) * -1)"
   }, "responsive application bars compensate their trailing keyline inside the baseline track");
@@ -1009,6 +1028,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("transform: rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to point downward before expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: rotate(180deg);\n}"), "Expected active top-navigation chevrons to rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
+  assert(css.includes("--bf-top-navigation-reduced-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));") && css.includes("top: var(--bf-top-navigation-reduced-row-block-size);"), "Expected reduced top navigation to absorb the complete interface-row compensation and place dropdowns from that occupied row.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon)", {
     "background-size": "contain",
     "display": "inline-block",
@@ -1040,11 +1060,11 @@ function validateCommonCss(css: string): void {
   }, "list-tree items avoid adding an unaccounted navigation-depth inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-list-tree-link)", {
     "padding-inline": "var(--bf-component-inline-inset-continuation) var(--bf-component-inline-inset-action)"
-  }, "list-tree leaves align directly to the shared continuation rail");
+  }, "list-tree leaves align directly to the shared continuation inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree-toggle)", {
     "gap": "var(--bf-disclosure-gap)",
-    "margin": "0 0 var(--bf-single-line-row-margin-block-end)",
-    "padding-block": "var(--bf-single-line-row-padding-block)"
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
+    "padding-block": "var(--bf-interface-row-padding-block)"
   }, "list-tree disclosures derive their text start from the shared mark canvas and gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree) :where(.bf-list-tree[aria-hidden='false'])", {
     "display": "block"
@@ -1064,7 +1084,7 @@ function validateCommonCss(css: string): void {
     "margin": "0"
   }, "tab lists paint their boundary without changing layout and do not leak trailing margin");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-link)", {
-    "padding-block-end": "calc(var(--bf-single-line-row-padding-block) + var(--bf-single-line-row-margin-block-end))"
+    "padding-block-end": "calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end))"
   }, "tab links retain the shared occupied height independently of the painted list boundary");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)", {
     "display": "grid",
@@ -1091,7 +1111,7 @@ function validateCommonCss(css: string): void {
   }, "option-grid keeps the canonical auto-fit card layout");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-option-card)", {
     "display": "grid",
-    "min-block-size": "calc((var(--bf-control-box-size) * 2) + var(--bf-baseline))",
+    "min-block-size": "calc((var(--bf-interface-row-occupied-block-size) * 2) + var(--bf-baseline))",
     "text-align": "left"
   }, "option-card keeps the canonical stacked selection-card treatment");
   assert(css.includes(":where(.bf-form-help.is-tight)"), "Expected generated CSS to include the tight helper-text modifier.");
@@ -1113,10 +1133,11 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel-toggle)", {
     "appearance": "none",
     "background": "transparent",
-    "border": "0",
+    "border": "0 solid transparent",
+    "border-block-width": "var(--bf-border-width)",
     "display": "inline-flex",
-    "padding-block": "var(--bf-control-block-padding-compact)"
-  }, "panel toggle styling stays on the shared compact control contract");
+    "padding-block": "var(--bf-interface-row-padding-block)"
+  }, "panel toggle styling stays on the regular metric-derived interface contract");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel-content.is-flush)", {
     "padding-block": "0",
     "padding-inline": "0"
@@ -1162,7 +1183,7 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".bf-aside.is-overlay.is-wide"), "Expected generated CSS to omit the old wide overlay modifier.");
   assert(css.includes(":where(.bf-application-aside-resize-handle)"), "Expected generated CSS to include the pinned-aside resize handle selector.");
   assert(css.includes(":where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible {\n  outline: 0.125rem solid var(--bf-application-resize-handle-focus-ring);"), "Expected the pinned-aside resize handle to expose the shared authoring focus-ring token.");
-  assert(css.includes("background: var(--bf-application-resize-handle-active);"), "Expected the pinned-aside resize handle active state to use the shared authoring accent token.");
+  assert(css.includes("background: var(--bf-application-resize-handle-active);"), "Expected the pinned-aside resize handle active state to use its theme-owned component color.");
   assert(css.includes("cursor: ew-resize;"), "Expected generated CSS to make the resize handle advertise horizontal resizing.");
   assert(css.includes("touch-action: none;"), "Expected generated CSS to make the resize handle safe for pointer dragging.");
   assert(css.includes(":where(.bf-application.is-resizing-aside)"), "Expected generated CSS to expose the resizing application state.");
@@ -1197,11 +1218,9 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
   assert(components.borderWidth, "Expected generated tokens to include component border width.");
   assert(components.barThickness === "0.1875rem", "Expected generated tokens to include the shared rem-based 0.1875rem emphasis-bar thickness.");
   assert(!("topNavigationBrandRegion" in components), "Expected generated tokens to remove the obsolete fixed navigation brand region.");
-  assert(components.controlBlockPadding, "Expected generated tokens to include regular control block padding.");
-  assert(components.controlCompactBlockPadding, "Expected generated tokens to include compact control block padding.");
-  assert(components.controlInlinePadding, "Expected generated tokens to include component padding.");
-  assert(components.controlInlinePaddingAction, "Expected generated tokens to include action-surface inline padding.");
-  assert(components.controlInlinePaddingField, "Expected generated tokens to include field-surface inline padding.");
+  assert(components.inlineInsetField, "Expected generated tokens to include the field component inset.");
+  assert(components.inlineInsetAction, "Expected generated tokens to include the action component inset.");
+  assert(components.inlineInsetContinuation, "Expected generated tokens to include the continuation component inset.");
   assert(components.controlVisualSize, "Expected generated tokens to include component visual size.");
   assert(!("controlMinBlockSize" in components), "Expected generated tokens to stop exposing legacy control height tokens.");
   assert(!("controlMinBlockSizeDense" in components), "Expected generated tokens to stop exposing legacy dense control height tokens.");
@@ -1214,9 +1233,8 @@ function validateAppTierCss(css: string): void {
   assert(!css.includes('UbuntuSans[wdth,wght].ttf'), "Expected built-in app CSS to avoid a URL to the unbundled development font.");
   assert(css.includes(':where(.bf-theme.bf-tier-app) {'), "Expected the app-tier preset CSS to expose the app-tier runtime selector.");
   assert(css.includes('--bf-app-demo-page-bg: var(--vf-color-background-alt, #f7f7f7);'), "Expected the app-tier preset CSS to expose the light application page background token through the shared semantic background token.");
-  assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button, .bf-button.is-base, .bf-status-label, .bf-chip, .bf-checkbox-label, .bf-radio-label, .bf-tabs-link, .bf-accordion-tab, .bf-validation-message)'), "Expected the app-tier preset CSS to restyle app controls toward the Canonical body-text treatment.");
-  assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-status-label.is-nested, .bf-chip.is-nested) {\n  line-height: var(--bf-nested-auxiliary-line-height);'), "Expected the app-tier preset to preserve the explicit nested auxiliary line fit after its general typography pass.");
-  assert(css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-input.is-nested, .bf-button.is-nested, .bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label) {\n  line-height: var(--bf-nested-control-line-height);'), "Expected the app-tier preset to preserve explicit nested interactive-control line fit after its general typography pass.");
+  assert(!css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-form-label, .bf-form-help, .bf-button'), "Expected the app tier to set scoped inputs instead of restyling leaf components.");
+  assert(!css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-status-label.is-nested, .bf-chip.is-nested)') && !css.includes(':where(.bf-theme.bf-tier-app) :where(.bf-input.is-nested'), "Expected nested contracts to consume tier inputs without app-specific restorative selectors.");
   assert(css.includes('font-size: var(--bf-body-font-size);') && css.includes('line-height: var(--bf-body-line-height);'), "Expected app non-heading UI to consume the tier body role instead of a copied private size.");
   assert(css.includes(':where(.bf-panel.is-fill)'), "Expected the app-tier CSS to include the canonical fill-height panel helper.");
   assert(!css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to avoid a shared panel shadow token now that bf-panel no longer carries card chrome.");
@@ -1249,11 +1267,9 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 2rem application outer margin.");
   assert(layout.contentMaxWidth === '60rem', "Expected the app-tier fixed-width token to use the derived 60rem cap.");
   assert(components.panelPaddingInline === '0.75rem' && components.panelPaddingBlock === '0.75rem', "Expected App panel padding to tighten to three 0.25rem baseline units on both axes.");
-  assert(components.controlBlockPadding === '0.5rem', "Expected the app-tier preset regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
-  assert(components.controlCompactBlockPadding === '0.375rem', "Expected the app-tier preset compact control block padding to preserve the legacy 2rem inline control box height.");
-  assert(components.controlInlinePadding === '1rem', "Expected the app-tier preset compatibility control padding alias to match the one-rem action keyline.");
-  assert(components.controlInlinePaddingAction === '1rem', "Expected the app-tier preset action padding to use the shared one-rem command keyline.");
-  assert(components.controlInlinePaddingField === '0.25rem', "Expected the app-tier preset field padding to tighten for dense data entry.");
+  assert(components.inlineInsetField === '0.25rem', "Expected the App field inset to tighten for dense data entry.");
+  assert(components.inlineInsetAction === '1rem', "Expected the App action inset to preserve the shared command start.");
+  assert(components.inlineInsetContinuation === '2rem', "Expected the App continuation inset to preserve the shared icon-led copy start.");
   assert(!("controlMinBlockSize" in components), "Expected the app-tier preset tokens to stop exposing legacy control height tokens.");
   assert(!("controlMinBlockSizeDense" in components), "Expected the app-tier preset tokens to stop exposing legacy dense control height tokens.");
   assert(css.includes('.bf-h1'), "Expected the app-tier preset CSS to emit role utility selectors like the other presets.");
@@ -1364,11 +1380,9 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   assert(layout.pageMargin === "1.5rem", "Expected the documentation tier page margin token to be 1.5rem.");
   assert(layout.sectionSpace === "3rem", "Expected the documentation tier section rhythm to be 3rem.");
   assert(layout.sectionSpaceDeep === "6rem", "Expected the documentation tier deep section rhythm to be 6rem.");
-  assert(components.controlBlockPadding === "0.5rem", "Expected the documentation tier regular control block padding to preserve the 2.25rem control box height without a dedicated block-size token.");
-  assert(components.controlCompactBlockPadding === "0.375rem", "Expected the documentation tier compact control block padding to preserve the legacy 2rem inline control box height.");
-  assert(components.controlInlinePadding === "1rem", "Expected the documentation tier compatibility control padding alias to match the action spacing.");
-  assert(components.controlInlinePaddingAction === "1rem", "Expected the documentation tier action padding to stay comfortable.");
-  assert(components.controlInlinePaddingField === "0.5rem", "Expected the documentation tier field padding to tighten relative to actions.");
+  assert(components.inlineInsetField === "0.5rem", "Expected the Documentation field inset to tighten relative to actions.");
+  assert(components.inlineInsetAction === "1rem", "Expected the Documentation action inset to stay comfortable.");
+  assert(components.inlineInsetContinuation === "2rem", "Expected the Documentation continuation inset to preserve the shared icon-led copy start.");
   assert(components.controlVisualSize === "0.875rem", "Expected the documentation tier visual control size to tighten slightly.");
   assert(css.includes('.bf-h1'), "Expected the documentation tier CSS to emit role utility selectors.");
 }
@@ -1400,8 +1414,9 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.pageMargin === "1rem", "Expected the prose default page margin token to provide the x-small 1rem margin.");
   assert(layout.sectionSpace === "4rem", "Expected the prose default section rhythm to be 4rem.");
   assert(components.radius === "0rem", "Expected the prose default controls to stay square, matching the compat visual direction.");
-  assert(components.controlBlockPadding === "0.5rem", "Expected the prose default regular control block padding to preserve the 2.5rem editorial control box height without a dedicated block-size token.");
-  assert(components.controlCompactBlockPadding === "0.25rem", "Expected the prose default compact control block padding to support tighter inline surfaces.");
+  assert(components.inlineInsetField === "0.5rem", "Expected the Editorial field inset to preserve its readable content start.");
+  assert(components.inlineInsetAction === "1rem", "Expected the Editorial action inset to preserve the shared command start.");
+  assert(components.inlineInsetContinuation === "2rem", "Expected the Editorial continuation inset to preserve the shared icon-led copy start.");
   assert(components.controlVisualSize === "1rem", "Expected the prose default control glyphs to use a dedicated 1rem visual size.");
 
   for (const roleName of Object.keys(roles)) {
@@ -1453,19 +1468,15 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(layout.gridGapBlock === "1rem", "Expected the OS tier block grid gap token to provide the x-small 1rem gap.");
   assert(layout.pageMargin === "1rem", "Expected the OS tier page margin token to provide the x-small 1rem margin.");
   assert(components.radius === "0rem", "Expected the OS tier controls to stay square like PVR/Vanilla.");
-  assert(components.controlInlinePadding === "1rem", "Expected the OS tier compatibility control padding alias to match the one-rem action keyline.");
-  assert(components.controlInlinePaddingAction === "1rem", "Expected the OS tier action padding to use the shared one-rem command keyline.");
-  assert(components.controlInlinePaddingField === "0.25rem", "Expected the OS tier field padding to stay tighter than action surfaces.");
+  assert(components.inlineInsetField === "0.25rem", "Expected the OS field inset to stay tighter than action surfaces.");
+  assert(components.inlineInsetAction === "1rem", "Expected the OS action inset to use the shared command start.");
+  assert(components.inlineInsetContinuation === "2rem", "Expected the OS continuation inset to preserve the shared icon-led copy start.");
   assert(components.controlVisualSize === "0.75rem", "Expected the OS tier checkbox/radio/thumb glyphs to use a dedicated 0.75rem visual size.");
   assert(components.fieldGap === "0.25rem", "Expected the OS tier field gap to come from the dense components block.");
   assert(components.panelPaddingInline === "0.5rem", "Expected OS inline panel padding to tighten to two 0.25rem baseline units.");
   assert(components.panelPaddingBlock === "0.5rem", "Expected OS block panel padding to tighten to two 0.25rem baseline units.");
-  assert(components.accordionIndent === "0.75rem", "Expected the OS tier accordion indent to come from the dense components block.");
-  assert(components.controlBlockPadding === "0.375rem", "Expected the OS tier regular control block padding to preserve the legacy 1.75rem control box height without a dedicated block-size token.");
-  assert(components.controlCompactBlockPadding === "0.25rem", "Expected the OS tier compact control block padding to preserve the legacy 1.5rem inline control box height.");
-
   assert(typeof roles.body.nudgeTop === "string" && css.includes(`--bf-body-nudge-start: ${roles.body.nudgeTop};`), "Expected compact list items to expose the OS tier body nudge.");
-  assert(css.includes("padding-block: var(--bf-control-block-padding-compact);"), "Expected compact list items to use the compact control block padding token.");
+  assert(css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected OS single-line items to use the regular metric-derived row padding.");
   assert(css.includes("--bf-control-visual-size: 0.75rem;"), "Expected the OS tier CSS to expose a dedicated visual control size token.");
   assert(css.includes("block-size: var(--bf-control-visual-size);"), "Expected checkbox/radio/thumb visuals to size from the dedicated control visual token.");
 }

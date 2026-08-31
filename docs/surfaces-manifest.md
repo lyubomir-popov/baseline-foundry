@@ -148,14 +148,13 @@ serialized legacy `spaceAfter` data does not drive layout.
   "borderWidth": "0.0625rem",
   "barThickness": "0.1875rem",
   "radius": "0.125rem",
-  "controlBlockPadding": "0.41rem",
-  "controlCompactBlockPadding": "0rem",
-  "controlInlinePadding": "0.5rem",
+  "inlineInsetField": "0.5rem",
+  "inlineInsetAction": "1rem",
+  "inlineInsetContinuation": "2rem",
   "controlVisualSize": "1rem",
   "fieldGap": "0.5rem",
   "panelPaddingInline": "1rem",
-  "panelPaddingBlock": "1rem",
-  "accordionIndent": "1.5rem"
+  "panelPaddingBlock": "1rem"
 }
 ```
 

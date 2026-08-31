@@ -39,16 +39,13 @@ export interface ThemeLayoutConfig {
 export interface ThemeComponentsConfig {
   borderWidthRem: number;
   radiusRem: number;
-  controlBlockPaddingRem: number;
-  controlCompactBlockPaddingRem?: number;
-  controlInlinePaddingRem: number;
-  controlInlinePaddingActionRem?: number;
-  controlInlinePaddingFieldRem?: number;
+  inlineInsetFieldRem: number;
+  inlineInsetActionRem: number;
+  inlineInsetContinuationRem: number;
   controlVisualSizeRem: number;
   fieldGapBaselineUnits: number;
   panelPaddingInlineBaselineUnits: number;
   panelPaddingBlockBaselineUnits: number;
-  accordionIndentBaselineUnits: number;
 }
 
 export interface ThemeConfig {
@@ -103,16 +100,13 @@ export interface ComponentTokens {
   borderWidth: string;
   barThickness: string;
   radius: string;
-  controlBlockPadding: string;
-  controlCompactBlockPadding: string;
-  controlInlinePadding: string;
-  controlInlinePaddingAction: string;
-  controlInlinePaddingField: string;
+  inlineInsetField: string;
+  inlineInsetAction: string;
+  inlineInsetContinuation: string;
   controlVisualSize: string;
   fieldGap: string;
   panelPaddingInline: string;
   panelPaddingBlock: string;
-  accordionIndent: string;
 }
 
 export interface ThemeTokens {

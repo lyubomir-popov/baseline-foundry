@@ -93,19 +93,13 @@ const REQUIRED_LAYOUT_FIELDS = [
 const REQUIRED_COMPONENT_FIELDS = [
   "borderWidthRem",
   "radiusRem",
-  "controlBlockPaddingRem",
-  "controlInlinePaddingRem",
+  "inlineInsetFieldRem",
+  "inlineInsetActionRem",
+  "inlineInsetContinuationRem",
   "controlVisualSizeRem",
   "fieldGapBaselineUnits",
   "panelPaddingInlineBaselineUnits",
-  "panelPaddingBlockBaselineUnits",
-  "accordionIndentBaselineUnits"
-] as const satisfies readonly (keyof ThemeConfig["components"])[];
-
-const OPTIONAL_COMPONENT_FIELDS = [
-  "controlCompactBlockPaddingRem",
-  "controlInlinePaddingActionRem",
-  "controlInlinePaddingFieldRem"
+  "panelPaddingBlockBaselineUnits"
 ] as const satisfies readonly (keyof ThemeConfig["components"])[];
 
 function assertNoDuplicateRoleKeys(raw: string, configPath: string): void {
@@ -158,11 +152,24 @@ function validateConfig(config: ThemeConfig): void {
     assertFiniteNumberConfigField(config.components[field], `components.${field}`);
   }
 
-  for (const field of OPTIONAL_COMPONENT_FIELDS) {
-    const value = config.components[field];
-    if (value !== undefined) {
-      assertFiniteNumberConfigField(value, `components.${field}`);
-    }
+  if (config.components.borderWidthRem <= 0 || config.components.controlVisualSizeRem <= 0) {
+    throw new Error("Component border width and control visual size must be greater than zero.");
+  }
+
+  if (
+    config.components.radiusRem < 0 ||
+    config.components.inlineInsetFieldRem < 0 ||
+    config.components.inlineInsetActionRem < 0 ||
+    config.components.inlineInsetContinuationRem < 0 ||
+    config.components.fieldGapBaselineUnits < 0 ||
+    config.components.panelPaddingInlineBaselineUnits < 0 ||
+    config.components.panelPaddingBlockBaselineUnits < 0
+  ) {
+    throw new Error("Component radius, inline insets, gaps, and surface padding must be non-negative.");
+  }
+
+  if (config.components.inlineInsetActionRem < config.components.borderWidthRem) {
+    throw new Error("Component action inset must contain its bordered action edge.");
   }
 
   const elementIdentifiers = new Set<string>();
@@ -280,27 +287,19 @@ function toTypographyToken(identifier: string, token: BaselineGeneratorElementTo
 }
 
 function buildComponentTokens(config: ThemeConfig): ComponentTokens {
-  const controlInlinePaddingActionRem = config.components.controlInlinePaddingActionRem ?? config.components.controlInlinePaddingRem;
-  const controlInlinePaddingFieldRem = config.components.controlInlinePaddingFieldRem ?? (controlInlinePaddingActionRem / 2);
-
   return {
     borderWidth: toRem(config.components.borderWidthRem),
     // Vanilla's shared $bar-thickness is represented as 0.1875rem so emphasis
     // bars and thin borders both scale with root text sizing.
     barThickness: toRem(3 / 16),
     radius: toRem(config.components.radiusRem),
-    controlBlockPadding: toRem(config.components.controlBlockPaddingRem),
-    controlCompactBlockPadding: toRem(
-      config.components.controlCompactBlockPaddingRem ?? config.components.controlBlockPaddingRem
-    ),
-    controlInlinePadding: toRem(controlInlinePaddingActionRem),
-    controlInlinePaddingAction: toRem(controlInlinePaddingActionRem),
-    controlInlinePaddingField: toRem(controlInlinePaddingFieldRem),
+    inlineInsetField: toRem(config.components.inlineInsetFieldRem),
+    inlineInsetAction: toRem(config.components.inlineInsetActionRem),
+    inlineInsetContinuation: toRem(config.components.inlineInsetContinuationRem),
     controlVisualSize: toRem(config.components.controlVisualSizeRem),
     fieldGap: toRem(config.components.fieldGapBaselineUnits * config.baselineUnit),
     panelPaddingInline: toRem(config.components.panelPaddingInlineBaselineUnits * config.baselineUnit),
-    panelPaddingBlock: toRem(config.components.panelPaddingBlockBaselineUnits * config.baselineUnit),
-    accordionIndent: toRem(config.components.accordionIndentBaselineUnits * config.baselineUnit)
+    panelPaddingBlock: toRem(config.components.panelPaddingBlockBaselineUnits * config.baselineUnit)
   };
 }
 
@@ -318,6 +317,31 @@ function buildThemeTokens(config: ThemeConfig, baselineTokens: BaselineGenerator
       return [roleName, roleToken];
     })
   );
+
+  const body = roles.body;
+  if (!body) {
+    throw new Error('Theme tokens require a generated "body" role.');
+  }
+
+  const nestedLineHeight = Math.max(
+    parseRem(body.fontSize),
+    parseRem(body.lineHeight) - parseRem(baselineTokens.baselineUnit),
+    config.components.controlVisualSizeRem
+  );
+  const nestedFramedPaint = nestedLineHeight + (config.components.borderWidthRem * 2);
+  if (nestedFramedPaint > parseRem(body.lineHeight)) {
+    throw new Error(
+      `Nested framed controls require ${toRem(nestedFramedPaint)}, which exceeds the body line ${body.lineHeight}.`
+    );
+  }
+
+  const leadingMarkNeed = config.components.controlVisualSizeRem +
+    (config.components.fieldGapBaselineUnits * config.baselineUnit);
+  if (config.components.inlineInsetContinuationRem < leadingMarkNeed) {
+    throw new Error(
+      `Continuation inset ${toRem(config.components.inlineInsetContinuationRem)} cannot contain the leading mark and gap ${toRem(leadingMarkNeed)}.`
+    );
+  }
 
   return {
     baselineUnit: baselineTokens.baselineUnit,

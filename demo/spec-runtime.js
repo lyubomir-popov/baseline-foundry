@@ -150,7 +150,7 @@ function renderTokens(tokens) {
   setText('[data-spec-token="grid-gap"]', `${layout.gridGapInline ?? "-"} inline / ${layout.gridGapBlock ?? "-"} block`);
   setText('[data-spec-token="page-margin"]', layout.pageMargin ?? "-");
   setText('[data-spec-token="section-space"]', `${layout.sectionSpace ?? "-"} default / ${layout.sectionSpaceDeep ?? "-"} deep`);
-  setText('[data-spec-token="control-size"]', `${components.controlBlockPadding ?? "-"} inset / ${components.controlCompactBlockPadding ?? "-"} compact`);
+  setText('[data-spec-token="control-size"]', `${components.inlineInsetField ?? "-"} field / ${components.inlineInsetAction ?? "-"} action / ${components.inlineInsetContinuation ?? "-"} continuation`);
   setText('[data-spec-token="role-count"]', String(Object.keys(roles).length));
 
   if (roleList instanceof HTMLElement) {
@@ -265,7 +265,7 @@ async function applyTier(tierName) {
   document.body.classList.remove(...BUILT_IN_TIER_CLASSES);
   document.body.classList.add("bf-theme", tier.className);
   document.body.dataset.bfTier = tierName;
-  requestAnimationFrame(() => updateHorizontalKeylineDebug?.());
+  updateHorizontalKeylineDebug?.();
 
   setText("[data-spec-current-tier]", tier.label);
   setText("[data-spec-tier-description]", tier.description);
@@ -286,7 +286,7 @@ async function applyTier(tierName) {
     }
 
     renderTokens(tokens);
-    requestAnimationFrame(() => updateHorizontalKeylineDebug?.());
+    updateHorizontalKeylineDebug?.();
   } catch (error) {
     if (loadId !== activeTierLoad) {
       return;

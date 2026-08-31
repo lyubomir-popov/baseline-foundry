@@ -1,10 +1,12 @@
 import { buttonActionsCss } from "./css-components/button-actions.js";
 import { articlePaginationCss } from "./css-components/article-pagination.js";
+import { applicationGeometryCss } from "./css-components/application-geometry.js";
 import { cardsOptionsCss } from "./css-components/cards-options.js";
 import { chipBadgeStatusCss } from "./css-components/chip-badge-status.js";
 import { ctaFigureAspectCss } from "./css-components/cta-figure-aspect.js";
 import { controlRowCss } from "./css-components/control-row.js";
 import { contentCardCss } from "./css-components/content-card.js";
+import { alignedVisualStart, controlGeometryCss } from "./css-components/control-geometry.js";
 import { documentNavigationCss } from "./css-components/document-navigation.js";
 import { editorialContentCss } from "./css-components/editorial-content.js";
 import { iconCss } from "./css-components/icon.js";
@@ -16,6 +18,7 @@ import { legacyNavigationCss } from "./css-components/legacy-navigation.js";
 import { linkedLogoSiteLayoutCss } from "./css-components/linked-logo-site-layout.js";
 import { logoMediaCss } from "./css-components/logo-media.js";
 import { navigationLayoutCss } from "./css-components/navigation-layout.js";
+import { navigationGeometryCss } from "./css-components/navigation-geometry.js";
 import { nestedControlsCss } from "./css-components/nested-controls.js";
 import { panelCss } from "./css-components/panel.js";
 import { searchBoxAndFilterCss } from "./css-components/search-box-and-filter.js";
@@ -27,12 +30,9 @@ import { tableCss } from "./css-components/table.js";
 import { tabSectionCss } from "./css-components/tab-section.js";
 import { tabsChoiceBreadcrumbsCss } from "./css-components/tabs-choice-breadcrumbs.js";
 import { tieredListEqualHeightRowCss } from "./css-components/tiered-list-equal-height-row.js";
+import { componentContractsCss } from "./css-component-contracts.js";
 import { foundryComponentColorVars } from "./vanilla-theme-colors.js";
-import type { ComponentTokens, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
-
-function parseRemValue(rem: string): number {
-  return Number.parseFloat(rem.replace("rem", ""));
-}
+import type { ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
 
 function roleFontFamilyVar(roleName: string, fallback?: string): string {
   return fallback ? `var(--bf-${roleName}-font-family, ${fallback})` : `var(--bf-${roleName}-font-family)`;
@@ -84,39 +84,15 @@ function roleSelectedEndNudgeVar(roleName: string, fallback?: string): string {
   return fallback ? `var(--bf-${roleName}-nudge-end, ${fallback})` : `var(--bf-${roleName}-nudge-end)`;
 }
 
-function controlPadding(blockPaddingVar: string, borderWidthVar = "var(--bf-border-width)"): string {
-  return `  padding-block: max(0rem, calc(${blockPaddingVar} - ${borderWidthVar}));\n`;
-}
-
-function controlMarginBottomExpression(lineHeightVar: string, blockPaddingVar: string, spaceAfter: string): string {
-  return `calc(${spaceAfter} + mod(calc(var(--bf-baseline) - mod(calc(${lineHeightVar} + (${blockPaddingVar} * 2)), var(--bf-baseline))), var(--bf-baseline)))`;
-}
-
-function componentAlignmentVars(components: ComponentTokens): string {
-  return `  --bf-border-width: ${components.borderWidth};\n  --bf-bar-thickness: ${components.barThickness};\n  --bf-radius: ${components.radius};\n  --bf-control-block-padding: ${components.controlBlockPadding};\n  --bf-control-block-padding-compact: ${components.controlCompactBlockPadding};\n  --bf-control-box-size: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding) * 2));\n  --bf-control-box-size-compact: calc(var(--bf-body-line-height) + (var(--bf-control-block-padding-compact) * 2));\n  --bf-control-inline-padding: ${components.controlInlinePadding};\n  --bf-control-inline-padding-action: ${components.controlInlinePaddingAction};\n  --bf-control-inline-padding-field: ${components.controlInlinePaddingField};\n  --bf-control-visual-size: ${components.controlVisualSize};\n  --bf-field-gap: ${components.fieldGap};\n  --bf-panel-padding-inline: ${components.panelPaddingInline};\n  --bf-panel-padding-block: ${components.panelPaddingBlock};\n  --bf-accordion-indent: ${components.accordionIndent};\n`;
-}
-
-function alignedVisualStart(lineHeightVar: string, visualSize: string, startVar: string, offset = "0rem"): string {
-  if (offset === "0rem") {
-    return `calc(${startVar} + ((${lineHeightVar} - ${visualSize}) / 2))`;
-  }
-
-  return `calc(${startVar} + ((${lineHeightVar} - ${visualSize}) / 2) + ${offset})`;
-}
-
 export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[]): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
   const h6 = tokens.roles.h6 ?? body;
   const baselineUnit = tokens.baselineUnit;
-  const components = tokens.components;
-  const inputBlockPaddingVar = "var(--bf-input-block-padding)";
-  const buttonBlockPaddingVar = "var(--bf-button-block-padding)";
   const bodyLineHeight = roleLineHeightVar("body", body.lineHeight);
-  const inputMarginBottom = controlMarginBottomExpression(bodyLineHeight, inputBlockPaddingVar, "0rem");
-  const singleLineRowMarginBottom = controlMarginBottomExpression(bodyLineHeight, buttonBlockPaddingVar, "0rem");
-  const buttonMarginBottom = "var(--bf-single-line-row-margin-block-end)";
+  const inputMarginBottom = "var(--bf-interface-row-compensation-block-end)";
+  const buttonMarginBottom = "var(--bf-interface-row-compensation-block-end)";
   const bodySelectedStartNudge = roleSelectedStartNudgeVar("body", body.nudgeTop);
   const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
   const h4LineHeight = roleLineHeightVar("h4", h4.lineHeight);
@@ -124,125 +100,13 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
-  const buttonPadding = "  padding-block: var(--bf-single-line-row-padding-block);\n";
+  const buttonPadding = "  padding-block: var(--bf-interface-row-padding-block);\n";
 
-  return `:where(.bf-theme) {
-${componentAlignmentVars(components)}  /* Action surfaces keep comfortable command targets; field surfaces can tighten independently. */
-  --bf-disclosure-gap: 1rem;
-  --bf-disclosure-icon-inline-size: 1rem;
-  --bf-icon-label-inline-offset: calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));
-  --bf-disclosure-label-inline-offset: var(--bf-icon-label-inline-offset);
-  /* Every component-owned inline start resolves to one of these three rails.
-     Field and action values remain tier inputs; continuation is the shared
-     icon/mark-to-copy line. Structural page, grid and navigation-depth offsets
-     are deliberately outside this component inset contract. */
-  --bf-component-inline-inset-field: var(--bf-control-inline-padding-field);
-  --bf-component-inline-inset-action: var(--bf-control-inline-padding-action);
-  --bf-component-inline-inset-continuation: var(--bf-disclosure-label-inline-offset);
-  --bf-input-block-padding: ${bodySelectedStartNudge};
-  --bf-button-block-padding: ${bodySelectedStartNudge};
-  /* One border-aware occupied-block contract for body-sized, single-line UI.
-     Components may paint their block borders differently, but their text line,
-     padding and trailing baseline compensation must resolve through this pair. */
-  --bf-single-line-row-padding-block: max(0rem, calc(var(--bf-button-block-padding) - var(--bf-border-width)));
-  --bf-single-line-row-margin-block-end: ${singleLineRowMarginBottom};
-  --bf-single-line-row-block-size: calc(${bodyLineHeight} + (var(--bf-single-line-row-padding-block) * 2) + (var(--bf-border-width) * 2) + var(--bf-single-line-row-margin-block-end));
-  --bf-single-line-row-in-box-padding-block-start: ${bodySelectedStartNudge};
-  --bf-single-line-row-in-box-padding-block-end: max(0rem, calc(var(--bf-single-line-row-block-size) - ${bodyLineHeight} - var(--bf-single-line-row-in-box-padding-block-start)));
-  --bf-single-line-row-visual-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-control-visual-size)", bodySelectedStartNudge)};
-  /* Auxiliary surfaces may opt into a host-owned nested composition. The
-     shorter line and capped symmetric padding fit their complete paint inside
-     the host body line without introducing a second row rhythm. */
-  --bf-nested-auxiliary-line-height: max(var(--bf-body-font-size), calc(var(--bf-body-line-height) - var(--bf-baseline)));
-  --bf-nested-auxiliary-padding-block: min(var(--bf-single-line-row-padding-block), max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-auxiliary-line-height)) / 2)));
-  /* Interactive controls use the same explicit host-owned nesting model, but
-     retain their real borders. Border-aware padding keeps their complete
-     border box within one body line. */
-  --bf-nested-control-line-height: max(var(--bf-control-visual-size), var(--bf-nested-auxiliary-line-height));
-  --bf-nested-control-padding-block: max(0rem, calc((var(--bf-body-line-height) - var(--bf-nested-control-line-height) - (var(--bf-border-width) * 2)) / 2));
-  --bf-nested-control-block-size: calc(var(--bf-nested-control-line-height) + (var(--bf-nested-control-padding-block) * 2) + (var(--bf-border-width) * 2));
-  --bf-nested-control-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-control-padding-block) + ((var(--bf-nested-control-line-height) - var(--bf-control-visual-size)) / 2));
-  --bf-slider-track-size: calc(var(--bf-baseline) * 0.25);
-  --bf-slider-row-block-size: var(--bf-single-line-row-block-size);
-  --bf-slider-track-offset: ${alignedVisualStart(bodyLineHeight, "var(--bf-slider-track-size)", bodySelectedStartNudge)};
-  --bf-table-row-border-size: var(--bf-border-width);
-  --bf-table-row-padding-block-start: var(--bf-single-line-row-in-box-padding-block-start);
-  --bf-table-row-block-size: var(--bf-single-line-row-block-size);
-  --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start) - var(--bf-table-row-border-size)));
-  --bf-table-row-line-height: ${bodyLineHeight};
-  --bf-switch-track-offset: var(--bf-single-line-row-visual-offset);
-  --bf-tick-box-offset: var(--bf-single-line-row-visual-offset);
-  --bf-leading-mark-size: var(--bf-control-visual-size);
-  --bf-leading-mark-gap: var(--bf-component-inline-inset-field);
-  --bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));
-  --bf-leading-mark-group-inset: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-offset));
-  --bf-tick-label-offset: var(--bf-leading-mark-offset);
-  --bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));
-  --bf-list-marker-dot-size: calc(var(--bf-border-width) * 4);
-  --bf-app-drawer-width-icon: 2rem;
-  --bf-app-drawer-width-small: 15rem;
-  --bf-app-drawer-width-small-max: 20rem;
-  --bf-app-drawer-width-medium: 29.0625rem;
-  --bf-app-drawer-width-medium-max: 40rem;
-  --bf-app-drawer-width-large: min(100vw, max(40rem, 50vw));
-  --bf-app-aside-width: var(--bf-app-drawer-width-medium);
-  --bf-app-aside-width-min: var(--bf-app-drawer-width-small);
-  --bf-app-aside-width-max: var(--bf-app-drawer-width-medium-max);
-  --bf-app-navigation-width: 15rem;
-  --bf-app-navigation-width-collapsed: 3rem;
-  --bf-icon-label-optical-offset-block: 0.1875rem;
-  --bf-disclosure-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
-  --bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
-  --bf-side-navigation-icon-gap: 0.625rem;
-  --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
-  --bf-authoring-accent: #f6b73c;
-  --bf-authoring-accent-hover: #e0a030;
-  --bf-authoring-accent-line: rgba(246, 183, 60, 0.9);
-  --bf-authoring-accent-strong: rgba(246, 183, 60, 0.95);
-  --bf-authoring-accent-outline: rgba(246, 183, 60, 0.4);
-  --bf-authoring-accent-outline-strong: rgba(246, 183, 60, 0.8);
-  --bf-authoring-accent-shadow: rgba(246, 183, 60, 0.22);
-  --bf-authoring-accent-focus-ring: rgba(246, 183, 60, 0.55);
-  --bf-application-resize-handle-active: var(--bf-authoring-accent-strong);
-  --bf-application-resize-handle-focus-ring: var(--bf-authoring-accent-focus-ring);
-  --bf-control-inline-padding-action-bordered: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
-  --bf-top-navigation-link-padding-inline: var(--bf-component-inline-inset-action);
-  --bf-top-navigation-end-slot-inline-size: calc(1rem + var(--bf-component-inline-inset-field));
-  --bf-top-navigation-search-toggle-inline-size: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
-  --bf-top-navigation-link-padding-block: max(var(--bf-body-nudge-start), calc(var(--bf-baseline) * 1.5));
-  --bf-top-navigation-search-max-inline-size: 20rem;
-  --bf-top-navigation-logo-tag-inline-size: 1.375rem;
-  --bf-top-navigation-logo-tag-block-size: 2.375rem;
-  --bf-top-navigation-logo-icon-size: 1rem;
-  --bf-top-navigation-logo-tag-gap: 0.25rem;
-  --bf-top-navigation-logo-icon-bottom-offset: 0.375rem;
-  --bf-top-navigation-logo-icon-optical-offset-inline: -0.0125rem;
-  --bf-navigation-brand-line-center-block: calc(var(--bf-top-navigation-logo-tag-block-size) - var(--bf-top-navigation-logo-icon-bottom-offset) - (var(--bf-top-navigation-logo-icon-size) / 2));
-  --bf-navigation-brand-block-size: calc(var(--bf-navigation-brand-line-center-block) * 2);
-  --bf-icon-size-default: 1rem;
-  --bf-icon-size-medium: 2.5rem;
-  --bf-icon-size-large: 4rem;
-  --bf-icon-size-x-large: 4.5rem;
-  --bf-icon-size-xx-large: 6rem;
-  --bf-leading-icon-size: var(--bf-leading-mark-size);
-  --bf-leading-icon-gap: var(--bf-leading-mark-gap);
-  --bf-leading-icon-offset: var(--bf-single-line-row-visual-offset);
-  --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-field);
-  --bf-ui-chip-radius: 999rem;
-  --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
-  --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
-  --bf-grid-max-inline-size: var(--bf-content-max-width);
-  --bf-application-drawer-width-icon: var(--bf-app-drawer-width-icon);
-  --bf-application-drawer-width-small: var(--bf-app-drawer-width-small);
-  --bf-application-drawer-width-small-max: var(--bf-app-drawer-width-small-max);
-  --bf-application-drawer-width-medium: var(--bf-app-drawer-width-medium);
-  --bf-application-drawer-width-medium-max: var(--bf-app-drawer-width-medium-max);
-  --bf-application-drawer-width-large: var(--bf-app-drawer-width-large);
-  --bf-application-aside-width: var(--bf-app-aside-width);
-  --bf-application-aside-width-min: var(--bf-app-aside-width-min);
-  --bf-application-aside-width-max: var(--bf-app-aside-width-max);
-  --bf-application-navigation-width: var(--bf-app-navigation-width);
-  --bf-application-navigation-width-collapsed: var(--bf-app-navigation-width-collapsed);
+  return `${componentContractsCss(tokens, themeSurfaces)}
+${controlGeometryCss({ bodyLineHeight, bodySelectedStartNudge })}
+${applicationGeometryCss()}
+${navigationGeometryCss()}
+:where(.bf-theme) {
 ${foundryComponentColorVars("light")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
   --bf-ui-icon-number-stepper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 5.75 8 2l3.75 3.75M4.25 10.25 8 14l3.75-3.75'/%3E%3C/svg%3E");
@@ -268,20 +132,6 @@ ${foundryComponentColorVars("light")}
 :where(.bf-theme.bf-engine-cap) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
   margin-bottom: ${inputMarginBottom};
 }
-
-${(themeSurfaces ?? []).map(surface => {
-  if (!surface.className) {
-    return "";
-  }
-
-  const surfaceTokens = surface.tokens;
-  const bodySurface = surfaceTokens.roles.body;
-  const surfaceComponents = surfaceTokens.components;
-  const inputBlockPadding = bodySurface && parseRemValue(bodySurface.nudgeTop) > 0
-    ? bodySurface.nudgeTop
-    : surfaceComponents.controlBlockPadding;
-  return `:where(.bf-theme.${surface.className}) {\n  --bf-input-block-padding: ${inputBlockPadding};\n  --bf-button-block-padding: ${inputBlockPadding};\n${componentAlignmentVars(surfaceComponents)}\n}\n`;
-}).join("\n")}
 
 :where(.bf-theme.is-dark) {
 ${foundryComponentColorVars("dark")}
@@ -391,7 +241,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   margin: 0;
   min-inline-size: 0;
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-component-inline-inset-continuation);
+  padding-inline: var(--bf-panel-padding-inline);
   padding-block-start: var(--bf-panel-padding-block);
 }
 
@@ -412,7 +262,8 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   max-inline-size: 100%;
   min-inline-size: 0;
   margin-bottom: ${inputMarginBottom};
-${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-component-inline-inset-field);
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-color-control) {
@@ -429,8 +280,8 @@ ${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-component-inli
   content: "\\00a0";
   grid-area: color-control;
   line-height: var(--bf-body-line-height);
-  margin-bottom: var(--bf-single-line-row-margin-block-end);
-  padding-block: var(--bf-single-line-row-padding-block);
+  margin-bottom: var(--bf-interface-row-compensation-block-end);
+  padding-block: var(--bf-interface-row-padding-block);
   visibility: hidden;
 }
 
@@ -439,7 +290,7 @@ ${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-component-inli
   block-size: auto;
   grid-area: color-control;
   inline-size: 100%;
-  margin-bottom: var(--bf-single-line-row-margin-block-end);
+  margin-bottom: var(--bf-interface-row-compensation-block-end);
   min-block-size: 0;
   padding: var(--bf-border-width);
 }
@@ -470,7 +321,7 @@ ${controlPadding(inputBlockPaddingVar)}  padding-inline: var(--bf-component-inli
 
 :where(.bf-theme) :where(textarea) {
   block-size: auto;
-  min-block-size: calc(var(--bf-control-box-size) * 2);
+  min-block-size: calc((var(--bf-interface-row-occupied-block-size) * 2) - var(--bf-interface-row-compensation-block-end));
   resize: vertical;
 }
 
@@ -496,8 +347,8 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   cursor: pointer;
   margin-inline-end: var(--bf-field-gap);
   min-block-size: 0;
-  padding-block: var(--bf-single-line-row-padding-block);
-  padding-inline: var(--bf-control-inline-padding-action-bordered);
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action-bordered);
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -568,8 +419,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   border-block: var(--bf-border-width) solid transparent;
   cursor: pointer;
   display: block;
-  margin: 0 0 var(--bf-single-line-row-margin-block-end);
-  padding-block: var(--bf-single-line-row-padding-block);
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline-start: var(--bf-tick-label-offset);
   position: relative;
 }
@@ -712,16 +563,16 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   border-block: var(--bf-border-width) solid transparent;
   cursor: pointer;
   display: inline-block;
-  margin: 0 0 var(--bf-single-line-row-margin-block-end);
-  padding-block: var(--bf-single-line-row-padding-block);
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
+  padding-block: var(--bf-interface-row-padding-block);
 }
 
 :where(.bf-theme) :where(.bf-validation-message) {
 ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-color-text-muted);
-  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   margin-inline-start: var(--bf-leading-mark-group-inset);
-  padding-block: var(--bf-single-line-row-padding-block);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline-start: var(--bf-leading-mark-offset);
   position: relative;
 }
@@ -1039,7 +890,6 @@ ${chipBadgeStatusCss({
 ${searchBoxAndFilterCss({
   bodySelectedStartNudge,
   bodyTypeStyles,
-  buttonBlockPaddingVar,
   inputMarginBottom,
 })}
 
@@ -1111,8 +961,8 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   display: block;
   margin: 0;
   overflow: hidden;
-  padding-block-end: var(--bf-single-line-row-in-box-padding-block-end);
-  padding-block-start: var(--bf-single-line-row-in-box-padding-block-start);
+  padding-block-end: var(--bf-in-box-row-padding-block-end);
+  padding-block-start: var(--bf-in-box-row-padding-block-start);
   padding-inline: var(--bf-component-inline-inset-action);
   text-align: left;
   text-decoration: none;
@@ -1266,6 +1116,7 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 }
 
 :where(.bf-theme) :where(nav.bf-pagination) {
+  --bf-pagination-slot-inline-size: var(--bf-interface-row-occupied-block-size);
   display: block;
 }
 
@@ -1291,8 +1142,9 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 
 :where(.bf-theme) :where(.bf-pagination-item.is-truncation) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
-  min-block-size: var(--bf-control-box-size);
-  padding-block: var(--bf-control-block-padding);
+  border-block: var(--bf-border-width) solid transparent;
+  margin-block-end: var(--bf-interface-row-compensation-block-end);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline: calc(var(--bf-baseline) * 0.5);
 }
 
@@ -1307,8 +1159,9 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
-  min-inline-size: var(--bf-control-box-size);
-${controlPadding(buttonBlockPaddingVar)}  padding-inline: var(--bf-control-inline-padding-action-bordered);
+  min-inline-size: var(--bf-pagination-slot-inline-size);
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action-bordered);
   text-align: center;
   text-decoration: none;
 }
@@ -1404,8 +1257,8 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   gap: var(--bf-disclosure-gap);
   inline-size: 100%;
   justify-content: flex-start;
-  margin-block-end: var(--bf-single-line-row-margin-block-end);
-  padding-block: var(--bf-single-line-row-padding-block);
+  margin-block-end: var(--bf-interface-row-compensation-block-end);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline: 0;
   text-align: left;
 }
@@ -1507,7 +1360,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 :where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer) {
   padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
   padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-component-inline-inset-continuation);
+  padding-inline: var(--bf-panel-padding-inline);
 }
 
 :where(.bf-theme) :where(.bf-modal-header) {
@@ -1762,7 +1615,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand) {
   align-items: start;
   column-gap: calc(var(--bf-baseline) * 2);
-  padding-inline-end: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));
+  padding-inline-end: var(--bf-panel-content-padding-inline);
 }
 
 :where(.bf-theme) :where(.bf-navigation-bar.is-responsive) {

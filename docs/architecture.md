@@ -39,11 +39,14 @@ Semantic tier and density are not independent BF axes today. Choosing a tier
 selects typography, rhythm, layout values, and component geometry together.
 Consumers must not mix a tier's type metrics with another tier's density tokens.
 
-Panel insets follow the same non-increasing density rule as capped content:
-Editorial and Documentation use `1rem`, App uses `0.75rem`, and OS uses
-`0.5rem`. Both inline and block panel padding move in complete baseline-grid
-increments, so denser tiers never create roomier panel headers, content, or
-footers than the tier before them.
+Structural surface padding follows the same non-increasing density rule as
+capped content: Editorial and Documentation use `1rem`, App uses `0.75rem`,
+and OS uses `0.5rem`. Fieldsets, modal regions, drawer chrome, and other
+layout-owned surfaces consume that token. The copy-bearing `bf-panel`
+component instead places its header, content, and footer on the continuation
+inset; its block padding remains tier-owned. This keeps component copy on one
+of the three declared insets without treating structural surface placement as
+a fourth inset.
 
 ## Container-owned rhythm
 
@@ -90,31 +93,29 @@ padding or erase child metric compensation.
 
 ## Controls and ruled rows
 
-Controls use the Vanilla occupied-block model. Symmetric block padding is the
-active body nudge minus border width. The natural border box is allowed to be
-fractional relative to the baseline. Trailing compensation plus semantic space
-snaps the occupied block to the next grid line. Density comes from the tier, not
-from per-control height modifiers.
+Component-owned first-glyph starts choose the field, action, or continuation
+inset. Product tiers—Editorial, Documentation, App, and OS—supply those input
+values. Page margins, grid gutters, navigation depth, and structural surface
+padding remain separate layout contracts. The complete formulas and component
+classification live in [Component spacing architecture](spacing-architecture-proposal.md).
 
-An explicit `is-nested` modifier is the narrow exception for auxiliary chips,
-status labels, badges, and controls composed inside an existing body-sized flex
-or grid row. It removes up to one active baseline of leading from the child
-line box, without making that line shorter than the body-font-size token (one
-body em), caps symmetric block padding so the complete paint fits within the
-host body line, and removes the child's standalone block margin. A nested chip
-paints its border as an inset shadow so the border does not create a second
-block footprint. The host owns the occupied row and prevents margin collapse.
-Nested inputs, bordered buttons, checkboxes,
-and radios retain real borders; border-aware symmetric padding keeps their
-complete border box within the host body line. Replaced text and number inputs
-also use that token-derived border-box sum as their nested block size to remove
-the browser's larger intrinsic input floor. This is not a general density scale:
-it is never inferred from ancestry, and standalone interactive targets remain
-unchanged. Nested table link actions use the existing inline/link-button
-contract.
+Controls use one metric-derived occupied-block model. Symmetric block padding
+is the active body nudge minus border width. The painted border box may be
+fractional relative to the baseline; block-end compensation snaps its occupied
+block to the next grid line. There is no separate compact scale or authored
+target height.
+
+An explicit `is-nested` modifier is the narrow exception for chips, status
+labels, badges, and single-line controls composed inside a host-owned body
+line. One nested line formula feeds two paint ledgers: zero-footprint surfaces
+and controls with two real block borders. Both fit inside the host body line
+and contribute no external margin. Text, number, search, password, email, URL,
+telephone, and select fields are positively allowlisted. Date/time, textarea,
+file, colour, range, link-button, and multiline content are excluded. Density
+is never inferred from ancestry.
 
 Repeated rows that cannot use margins snap compensation inside the row box.
-Table cells and contextual-menu commands target the same public single-line
+Table cells and contextual-menu commands target the same public interface-row
 occupied block as controls: they retain the measured body start nudge and real
 body line height, then place remaining compensation at block end. Table cells
 also reserve their real in-box separator. This is one height family with two
@@ -122,14 +123,14 @@ ownership modes—control margin compensation or host-owned in-box
 compensation—not a separate density bucket.
 
 A table row containing inputs, bordered buttons, checkboxes, or radios keeps
-the ordinary table-cell inset and separator. Each compact child opts in with
+the ordinary table-cell inset and separator. Each nested child opts in with
 `is-nested`, fits within the cell's body line, and removes its standalone margin
 compensation. The table continues to own the occupied row and focus clearance;
 no row-specific geometry, `:has()` inference, or ancestry-based density is
 introduced.
 
 Side-navigation lists preserve the same natural link paint and trailing
-compensation as controls, but their grid tracks use the shared single-line row
+compensation as controls, but their grid tracks use the shared interface-row
 token. The link is start-aligned inside each track so rasterised rem borders do
 not stretch its text or paint; the track absorbs any subpixel remainder. This
 keeps item-to-item baselines on one phase under browser zoom without inventing
@@ -159,7 +160,7 @@ Grouped side navigation uses three explicit spacing owners. The outer
 `bf-side-navigation-groups` container separates complete groups;
 `bf-side-navigation-group` owns the fixed 0.5rem transition from its header to
 its list; and `bf-side-navigation-group-header` keeps a real compensated `hr`
-and its H6-styled heading tight. The rule begins on the continuation text rail
+and its H6-styled heading tight. The rule begins on the continuation text inset
 and stretches to the navigation end edge. Rules never come from list pseudo-
 elements, and their one-half-rem occupied block must not shift later headings
 off the active baseline phase. A single-line group heading reserves four

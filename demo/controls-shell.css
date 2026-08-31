@@ -32,7 +32,7 @@
 }
 
 .bf-controls-menu-panel {
-  padding-block-end: calc(var(--bf-control-box-size, 2rem) * 3);
+  padding-block-end: calc(var(--bf-interface-row-occupied-block-size, 2rem) * 3);
 }
 
 .bf-controls-panel :where(.bf-pagination-items),

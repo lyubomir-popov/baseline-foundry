@@ -129,6 +129,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         brandIconLoaded: Boolean(brandIcon?.complete && brandIcon.naturalWidth > 0),
         sideNavigationPlainStart: textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
         sideNavigationDisclosureStart: textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-accordion-button'),
+        tableOfContentsHeadingStart: textStart(".bf-table-of-contents-heading"),
+        tableOfContentsLinkStart: textStart(".bf-table-of-contents-link"),
         notificationStart: box(".bf-notification-title").left,
         panelStart: box(".bf-panel-content p").left,
         redStart: red.getBoundingClientRect().left,
@@ -145,10 +147,78 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell, chip, and status-label text to share the green field-inset keyline.");
     assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, segmented-control, tab, and pagination text to share the red one-rem action keyline.");
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
-    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
-    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, plain/disclosure side-navigation, notification, and panel copy to share one continuation keyline; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
+    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
+    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, plain/disclosure side-navigation, table of contents, notification, and panel copy to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent a literal one-rem page inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
+    const toneToggle = page.locator("[data-page-chrome-tone-toggle]");
+    for (const tone of ["light", "dark"] as const) {
+      const wantsDark = tone === "dark";
+      if (await toneToggle.isChecked() !== wantsDark) {
+        await toneToggle.setChecked(wantsDark, { force: true });
+      }
+      await page.waitForFunction(expectedDark => document.body.classList.contains("is-dark") === expectedDark, wantsDark);
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await tierSelect.selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        await page.waitForTimeout(50);
+        const matrix = await page.evaluate(`(() => {
+          const textStart = selector => {
+            const element = document.querySelector(selector);
+            if (!element) throw new Error("Missing spacing matrix element: " + selector + ".");
+            const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+            let node = walker.nextNode();
+            while (node && !node.textContent?.trim()) node = walker.nextNode();
+            if (!node) throw new Error("Missing spacing matrix text: " + selector + ".");
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            return range.getBoundingClientRect().left;
+          };
+          const line = name => {
+            const element = document.querySelector("[data-spacing-keyline='" + name + "']");
+            if (!element) throw new Error("Missing spacing matrix keyline: " + name + ".");
+            return element.getBoundingClientRect().left;
+          };
+          const markCenter = selector => {
+            const element = document.querySelector(selector);
+            if (!element) throw new Error("Missing spacing matrix mark: " + selector + ".");
+            const host = element.getBoundingClientRect();
+            const mark = getComputedStyle(element, "::before");
+            return host.left + Number.parseFloat(mark.left) + (Number.parseFloat(mark.width) / 2);
+          };
+          const numberStyle = getComputedStyle(document.querySelector('input[type="number"]'));
+          const selectStyle = getComputedStyle(document.querySelector("select"));
+          return {
+            action: [".bf-button", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
+            continuation: [
+              textStart(".bf-accordion-tab"),
+              textStart(".bf-list-tree-toggle"),
+              textStart(".bf-list-tree .bf-list-tree .bf-list-tree-link"),
+              document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').getBoundingClientRect().left,
+              textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
+              textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-accordion-button'),
+              textStart(".bf-table-of-contents-heading"),
+              textStart(".bf-table-of-contents-link"),
+              document.querySelector(".bf-notification-title").getBoundingClientRect().left,
+              textStart(".bf-panel-content p")
+            ],
+            field: [".bf-table td", ".bf-chip-value", ".bf-status-label"].map(textStart),
+            keylines: { action: line("one-rem-inset"), field: line("field-text-start"), continuation: line("disclosure-label-start") },
+            markCenters: [".bf-prose ul > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label"].map(markCenter),
+            numberSelect: {
+              positionEqual: numberStyle.backgroundPosition === selectStyle.backgroundPosition,
+              sizeEqual: numberStyle.backgroundSize === selectStyle.backgroundSize,
+              paddingEqual: numberStyle.paddingInlineEnd === selectStyle.paddingInlineEnd
+            }
+          };
+        })()`);
+        assert(matrix.action.every(start => Math.abs(start - matrix.keylines.action) < 0.51), `Expected ${tier}/${tone} action copy to share the action inset: ${JSON.stringify(matrix)}.`);
+        assert(matrix.field.every(start => Math.abs(start - matrix.keylines.field) < 0.51), `Expected ${tier}/${tone} field copy to share the field inset: ${JSON.stringify(matrix)}.`);
+        assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, notification, and panel copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
+        assert(Math.max(...matrix.markCenters) - Math.min(...matrix.markCenters) < 0.51, `Expected ${tier}/${tone} leading marks to share one centre: ${JSON.stringify(matrix.markCenters)}.`);
+        assert(matrix.numberSelect.positionEqual && matrix.numberSelect.sizeEqual && matrix.numberSelect.paddingEqual, `Expected ${tier}/${tone} number and select trailing artwork to remain identical: ${JSON.stringify(matrix.numberSelect)}.`);
+      }
+    }
     const initialTier = await tierSelect.inputValue();
     const nextTier = initialTier === "editorial" ? "documentation" : "editorial";
     await tierSelect.selectOption(nextTier);
@@ -238,6 +308,26 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       document.documentElement.style.fontSize = "";
       window.dispatchEvent(new Event("resize"));
     });
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1.25 });
+    const zoomGeometry = await page.evaluate(() => {
+      const fieldLine = document.querySelector<HTMLElement>("[data-spacing-keyline='field-text-start']");
+      const continuationLine = document.querySelector<HTMLElement>("[data-spacing-keyline='disclosure-label-start']");
+      const field = document.querySelector<HTMLElement>(".bf-chip-value");
+      const continuation = document.querySelector<HTMLElement>(".bf-panel-content p");
+      if (!fieldLine || !continuationLine || !field || !continuation) throw new Error("Missing zoom keylines or specimens.");
+      const fieldRange = document.createRange();
+      fieldRange.selectNodeContents(field);
+      const continuationRange = document.createRange();
+      continuationRange.selectNodeContents(continuation);
+      return {
+        continuationDelta: Math.abs(continuationRange.getBoundingClientRect().left - continuationLine.getBoundingClientRect().left),
+        fieldDelta: Math.abs(fieldRange.getBoundingClientRect().left - fieldLine.getBoundingClientRect().left),
+        scale: window.visualViewport?.scale ?? 1
+      };
+    });
+    assert(Math.abs(zoomGeometry.scale - 1.25) < 0.01 && zoomGeometry.fieldDelta < 0.51 && zoomGeometry.continuationDelta < 0.51, `Expected inset alignment to survive a non-100% Chromium page scale; got ${JSON.stringify(zoomGeometry)}.`);
+    await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
     const originalValue = await number.inputValue();
     await number.focus();
     await number.press("ArrowUp");
@@ -290,10 +380,34 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         const statusLabel = document.querySelector<HTMLElement>(".bf-status-label");
         const statusStyles = statusLabel ? getComputedStyle(statusLabel) : null;
         const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const rejectedDate = document.createElement("input");
+        rejectedDate.className = "bf-input is-nested";
+        rejectedDate.type = "date";
+        rejectedDate.style.cssText = "position:absolute;visibility:hidden";
+        const rejectedLinkButton = document.createElement("button");
+        rejectedLinkButton.className = "bf-button is-link is-nested";
+        rejectedLinkButton.textContent = "Rejected link button";
+        rejectedLinkButton.style.cssText = "position:absolute;visibility:hidden";
+        document.body.append(rejectedDate, rejectedLinkButton);
+        const allowedNestedInput = document.querySelector<HTMLElement>("[aria-label='Table text input']");
+        const allowedNestedButton = document.querySelector<HTMLElement>("[aria-label='Table control row fit comparison'] .bf-button.is-nested");
+        const nestedApi = allowedNestedInput && allowedNestedButton ? {
+          allowedButtonLine: Number.parseFloat(getComputedStyle(allowedNestedButton).lineHeight),
+          allowedButtonMargin: Number.parseFloat(getComputedStyle(allowedNestedButton).marginBlockEnd),
+          allowedInputLine: Number.parseFloat(getComputedStyle(allowedNestedInput).lineHeight),
+          allowedInputMargin: Number.parseFloat(getComputedStyle(allowedNestedInput).marginBlockEnd),
+          rejectedDateLine: Number.parseFloat(getComputedStyle(rejectedDate).lineHeight),
+          rejectedDateMargin: Number.parseFloat(getComputedStyle(rejectedDate).marginBlockEnd),
+          rejectedLinkLine: Number.parseFloat(getComputedStyle(rejectedLinkButton).lineHeight),
+          rejectedLinkMargin: Number.parseFloat(getComputedStyle(rejectedLinkButton).marginBlockEnd)
+        } : null;
+        rejectedDate.remove();
+        rejectedLinkButton.remove();
         return {
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * rootSize,
           borderWidth: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-border-width")) * rootSize,
           rootSize,
+          nestedApi,
           interfaceRows: families["vertical-controls"],
           textRuns: families["vertical-text-runs"],
           nested: families["vertical-nested-contexts"],
@@ -330,6 +444,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       assert(occupiedBlockGeometry.interfaceRows.length === 29, `Expected ${tier} shared interface bucket to contain the reference plus all 28 distinct single-line specimens.`);
       assert(occupiedBlockGeometry.textRuns.length === 8, `Expected ${tier} unboxed-text bucket to contain the reference plus all seven distinct metric roles.`);
       assert(occupiedBlockGeometry.nested.length === 10, `Expected ${tier} nested bucket to contain the reference plus all nine supported host/content combinations.`);
+      assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.allowedInputLine === occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.allowedInputMargin === 0 && occupiedBlockGeometry.nestedApi.allowedButtonMargin === 0, `Expected ${tier} allowlisted nested fields and bordered buttons to consume the nested contract: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
+      assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.rejectedDateLine > occupiedBlockGeometry.nestedApi.allowedInputLine && occupiedBlockGeometry.nestedApi.rejectedLinkLine > occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.rejectedDateMargin > 0, `Expected ${tier} date inputs and link buttons to reject the nested API and retain their non-nested line geometry: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
       const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
       assertSharedHeight("single-line interface", interfaceComponents);
@@ -394,7 +510,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         };
       }, theme);
       assert(primaryNavigationGeometry.title === "Baseline Foundry" && primaryNavigationGeometry.tagBackground === "rgb(233, 84, 32)", `Expected ${theme} primary navigation to expose the orange tagged Baseline Foundry brand; got ${JSON.stringify(primaryNavigationGeometry)}.`);
-      assert(Math.max(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) - Math.min(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) < 0.51, `Expected ${theme} brand tag, plain row, and disclosure row to share the continuation rail; got ${JSON.stringify(primaryNavigationGeometry)}.`);
+      assert(Math.max(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) - Math.min(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) < 0.51, `Expected ${theme} brand tag, plain row, and disclosure row to share the continuation inset; got ${JSON.stringify(primaryNavigationGeometry)}.`);
     }
     await page.goto(`${origin}/demo/spec/spacing.html`, { waitUntil: "networkidle" });
     await page.waitForSelector("#spacing-horizontal-panel .spacing-audit-panel-content", { state: "attached" });
@@ -456,18 +572,18 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
         activeVisible: activeRect.top >= navRect.top && activeRect.bottom <= navRect.bottom,
         brandTop: brand.getBoundingClientRect().top,
         iconLoaded: Boolean(icon?.complete && icon.naturalWidth > 0),
-        railDelta: Math.abs(tag.getBoundingClientRect().left - rootRange.getBoundingClientRect().left),
+        insetDelta: Math.abs(tag.getBoundingClientRect().left - rootRange.getBoundingClientRect().left),
         scrollTop: nav.scrollTop
       };
     });
 
     const navigatedState = await readNavigationState();
-    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0 && navigatedState.brandTop === 0 && navigatedState.iconLoaded && navigatedState.railDelta <= 0.1, `Expected page navigation to preserve its scrolled position, sticky loaded brand, and shared tag/text rail: ${JSON.stringify(navigatedState)}.`);
+    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0 && navigatedState.brandTop === 0 && navigatedState.iconLoaded && navigatedState.insetDelta <= 0.1, `Expected page navigation to preserve its scrolled position, sticky loaded brand, and shared tag/text continuation inset: ${JSON.stringify(navigatedState)}.`);
 
     await page.reload({ waitUntil: "networkidle" });
     await page.waitForTimeout(80);
     const reloadedState = await readNavigationState();
-    assert(reloadedState?.activeVisible && reloadedState.brandTop === 0 && reloadedState.iconLoaded && reloadedState.railDelta <= 0.1 && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll and sticky tagged brand to survive reload; before=${JSON.stringify(navigatedState)}, after=${JSON.stringify(reloadedState)}.`);
+    assert(reloadedState?.activeVisible && reloadedState.brandTop === 0 && reloadedState.iconLoaded && reloadedState.insetDelta <= 0.1 && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll and sticky tagged brand to survive reload; before=${JSON.stringify(navigatedState)}, after=${JSON.stringify(reloadedState)}.`);
 
     await page.evaluate(key => sessionStorage.removeItem(key), storageKey);
     await page.goto(`${origin}/demo/components/data-spotlight.html`, { waitUntil: "networkidle" });
@@ -651,7 +767,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
       assert(Math.abs(geometry.navigation.groupGap - geometry.navigation.groupGapTarget) <= 0.1, `Expected ${tier} page-navigation heading/list groups to be separated by 1.5rem: ${JSON.stringify(geometry.navigation)}.`);
       assert(Math.abs(geometry.navigation.headingListGap - geometry.navigation.headingListGapTarget) <= 0.1, `Expected ${tier} page-navigation group headers to keep a 0.5rem transition to their lists: ${JSON.stringify(geometry.navigation)}.`);
       assert(geometry.navigation.headerGaps.every(gap => gap === 0), `Expected ${tier} page-navigation rules and headings to remain a tight zero-gap header unit: ${JSON.stringify(geometry.navigation)}.`);
-      assert(Math.abs(geometry.navigation.ruleInset - geometry.navigation.continuationInset) <= 0.1 && Math.abs(geometry.navigation.ruleEndSpread) <= 0.1, `Expected ${tier} page-navigation rules to start on the continuation text rail and reach the navigation end edge: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.ruleInset - geometry.navigation.continuationInset) <= 0.1 && Math.abs(geometry.navigation.ruleEndSpread) <= 0.1, `Expected ${tier} page-navigation rules to start on the continuation text inset and reach the navigation end edge: ${JSON.stringify(geometry.navigation)}.`);
       assert(Math.abs(geometry.navigation.ruleOccupiedBlock - geometry.navigation.ruleOccupiedBlockTarget) <= 0.1, `Expected ${tier} page-navigation rules to preserve the compensated half-rem occupied block: ${JSON.stringify(geometry.navigation)}.`);
       const phaseDistance = (a: number, b: number, baseline: number) => {
         const delta = Math.abs((((a - b) % baseline) + baseline) % baseline);
@@ -2994,6 +3110,7 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
           const expandedRoot = document.querySelector<HTMLElement>(".bf-search-and-filter:has(.bf-search-and-filter-panel[aria-hidden='false'])");
           const expandedBox = expandedRoot?.querySelector<HTMLElement>(".bf-search-and-filter-box");
           const expandedPanel = expandedRoot?.querySelector<HTMLElement>(".bf-search-and-filter-panel");
+          const collapsedContainer = document.querySelector<HTMLElement>(".bf-search-and-filter-search-container[aria-expanded='false']");
           const heading = expandedRoot?.querySelector<HTMLElement>(".bf-filter-panel-section-heading");
           const canonicalHeading = heading ? document.createElement("h5") : null;
           if (canonicalHeading) {
@@ -3001,6 +3118,18 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
             canonicalHeading.style.cssText = "position:absolute;visibility:hidden";
             document.body.append(canonicalHeading);
           }
+          const contractValues = Object.fromEntries([
+            "--bf-interface-row-occupied-block-size",
+            "--bf-interface-row-painted-block-size"
+          ].map(property => {
+            const probe = document.createElement("i");
+            probe.style.cssText = "display:block;inset:0;position:fixed;visibility:hidden";
+            probe.style.blockSize = `var(${property})`;
+            document.body.appendChild(probe);
+            const value = probe.getBoundingClientRect().height;
+            probe.remove();
+            return [property, value];
+          }));
           const typeProperties = ["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "textTransform", "color"] as const;
           const result = {
             boxes: boxes.map(box => {
@@ -3010,6 +3139,12 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
                 return { top: buttonRect.top - rect.top, bottom: buttonRect.bottom - rect.bottom, heightDelta: buttonRect.height - rect.height };
               });
             }),
+            collapsed: collapsedContainer ? {
+              height: collapsedContainer.getBoundingClientRect().height,
+              marginEnd: Number.parseFloat(getComputedStyle(collapsedContainer).marginBlockEnd),
+              occupied: contractValues["--bf-interface-row-occupied-block-size"],
+              painted: contractValues["--bf-interface-row-painted-block-size"]
+            } : null,
             panelOverlap: expandedBox && expandedPanel ? expandedBox.getBoundingClientRect().bottom - expandedPanel.getBoundingClientRect().top : null,
             headingTypeMatches: heading && canonicalHeading
               ? typeProperties.every(property => getComputedStyle(heading)[property] === getComputedStyle(canonicalHeading)[property])
@@ -3020,6 +3155,7 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
         });
         assert(searchGeometry.boxes.flat().every(button => Math.abs(button.top) <= 0.1 && Math.abs(button.bottom) <= 0.1 && Math.abs(button.heightDelta) <= 0.1), `Expected ${tier} search actions on ${route} to stay inside the occupied input block: ${JSON.stringify(searchGeometry.boxes)}.`);
         if (route.endsWith("search-and-filter.html")) {
+          assert(searchGeometry.collapsed && Math.abs(searchGeometry.collapsed.height - searchGeometry.collapsed.painted) <= 0.05 && Math.abs(searchGeometry.collapsed.height + searchGeometry.collapsed.marginEnd - searchGeometry.collapsed.occupied) <= 0.05, `Expected ${tier} collapsed search-and-filter to count its external row compensation exactly once: ${JSON.stringify(searchGeometry.collapsed)}.`);
           assert(searchGeometry.panelOverlap !== null && searchGeometry.panelOverlap <= 0.1, `Expected ${tier} search actions not to overlap the expanded filter panel; overlap=${searchGeometry.panelOverlap}.`);
           assert(searchGeometry.headingTypeMatches, `Expected ${tier} filter section headings to resolve exactly like the canonical bf-h5 role.`);
         }
@@ -3340,6 +3476,8 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           <div class="bf-fixed-width is-start-aligned">Bounded row</div>
           <input class="bf-input" value="Parity">
           <button class="bf-button">Parity</button>
+          <input class="bf-input is-nested" type="text" value="Nested parity">
+          <table class="bf-table"><tbody><tr><td>Table parity</td></tr></tbody></table>
           <section class="bf-panel"><header class="bf-panel-header"><h2 class="bf-panel-title">Parity</h2></header><footer class="bf-panel-footer"><button class="bf-panel-toggle">Footer</button></footer></section>
           <span class="bf-status-label">Parity</span>
         </body>`);
@@ -3349,15 +3487,35 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       return page.evaluate(() => {
         const input = document.querySelector<HTMLElement>(".bf-input");
         const button = document.querySelector<HTMLElement>(".bf-button");
+        const nestedInput = document.querySelector<HTMLElement>(".bf-input.is-nested");
+        const tableRow = document.querySelector<HTMLElement>(".bf-table tr");
         const header = document.querySelector<HTMLElement>(".bf-panel-header");
         const footer = document.querySelector<HTMLElement>(".bf-panel-footer");
         const status = document.querySelector<HTMLElement>(".bf-status-label");
         const appPage = document.querySelector<HTMLElement>(".bf-page");
         const appGrid = appPage?.querySelector<HTMLElement>(".bf-grid");
         const fixedWidth = document.querySelector<HTMLElement>(".bf-fixed-width");
-        if (!input || !button || !header || !footer || !status || !appPage || !appGrid || !fixedWidth) {
+        if (!input || !button || !nestedInput || !tableRow || !header || !footer || !status || !appPage || !appGrid || !fixedWidth) {
           throw new Error("Missing surface parity fixture.");
         }
+
+        const contractValues = Object.fromEntries([
+          "--bf-body-line-height",
+          "--bf-in-box-row-padding-block-end",
+          "--bf-in-box-row-padding-block-start",
+          "--bf-nested-framed-row-painted-block-size",
+          "--bf-interface-row-compensation-block-end",
+          "--bf-interface-row-occupied-block-size",
+          "--bf-interface-row-painted-block-size"
+        ].map(property => {
+          const probe = document.createElement("i");
+          probe.style.cssText = "display:block;inset:0;position:fixed;visibility:hidden";
+          probe.style.blockSize = `var(${property})`;
+          document.body.appendChild(probe);
+          const value = probe.getBoundingClientRect().height;
+          probe.remove();
+          return [property, value];
+        }));
 
         const inputStyles = getComputedStyle(input);
         const buttonStyles = getComputedStyle(button);
@@ -3368,6 +3526,15 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           inputMarginBottom: Number.parseFloat(inputStyles.marginBottom) || 0,
           buttonHeight: button.getBoundingClientRect().height,
           buttonMarginBottom: Number.parseFloat(buttonStyles.marginBottom) || 0,
+          bodyLine: contractValues["--bf-body-line-height"],
+          inBoxPaddingEnd: contractValues["--bf-in-box-row-padding-block-end"],
+          inBoxPaddingStart: contractValues["--bf-in-box-row-padding-block-start"],
+          nestedFramedPainted: contractValues["--bf-nested-framed-row-painted-block-size"],
+          nestedInputHeight: nestedInput.getBoundingClientRect().height,
+          regularCompensation: contractValues["--bf-interface-row-compensation-block-end"],
+          regularOccupied: contractValues["--bf-interface-row-occupied-block-size"],
+          regularPainted: contractValues["--bf-interface-row-painted-block-size"],
+          tableRowHeight: tableRow.getBoundingClientRect().height,
           panelPaddingStart: Number.parseFloat(headerStyles.paddingBlockStart) || 0,
           panelPaddingEnd: Number.parseFloat(headerStyles.paddingBlockEnd) || 0,
           panelGap: Number.parseFloat(headerStyles.gap) || 0,
@@ -3398,6 +3565,11 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
       assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel headers to use ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
       assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelInlinePx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px block-end padding and the ${expectedPanelInlinePx[tier]}px active grid gutter inline, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
+      assert(Math.abs(direct.regularPainted + direct.regularCompensation - direct.regularOccupied) <= 0.05, `Expected direct ${tier} painted row plus compensation to equal its occupied row: ${JSON.stringify(direct)}.`);
+      assert(Math.abs(direct.inputHeight + direct.inputMarginBottom - direct.regularOccupied) <= 0.05 && Math.abs(direct.buttonHeight + direct.buttonMarginBottom - direct.regularOccupied) <= 0.05, `Expected direct ${tier} fields and buttons to consume one complete regular occupied row: ${JSON.stringify(direct)}.`);
+      assert(Math.abs(direct.bodyLine + direct.inBoxPaddingStart + direct.inBoxPaddingEnd - direct.regularOccupied) <= 0.05, `Expected direct ${tier} in-box start, body line, and end compensation to equal the occupied row: ${JSON.stringify(direct)}.`);
+      assert(Math.abs(direct.nestedInputHeight - direct.nestedFramedPainted) <= 0.05 && direct.nestedInputHeight <= direct.bodyLine + 0.05, `Expected direct ${tier} nested framed fields to use the derived paint ledger and fit inside the host body line: ${JSON.stringify(direct)}.`);
+      assert(Math.abs(direct.tableRowHeight - direct.regularOccupied) <= 0.1, `Expected direct ${tier} table rows to absorb the shared occupied contract in-box: ${JSON.stringify(direct)}.`);
       directCaps.push(direct.fixedWidth);
       if (tier === "app") {
         assert(direct.pageWidth > direct.fixedWidth + 100 && direct.gridWidth > direct.fixedWidth + 100, `Expected direct App bf-page/grid to stay fluid beyond the ${direct.fixedWidth}px fixed-width cap; page=${direct.pageWidth}px, grid=${direct.gridWidth}px.`);
@@ -3686,8 +3858,8 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         spaceProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-1);block-size:1px";
         document.body.appendChild(spaceProbe);
         const spaceOne = spaceProbe.getBoundingClientRect().width;
-        spaceProbe.style.inlineSize = "var(--bf-icon-label-inline-offset)";
-        const iconLabelOffset = spaceProbe.getBoundingClientRect().width;
+        spaceProbe.style.inlineSize = "var(--bf-component-inline-inset-continuation)";
+        const continuationInset = spaceProbe.getBoundingClientRect().width;
         spaceProbe.remove();
         const leadingIconGaps = borderedNotifications.map(notification => {
           const notificationRect = notification.getBoundingClientRect();
@@ -3700,6 +3872,11 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           const contentRect = (notification.querySelector(".bf-notification-content") as HTMLElement).getBoundingClientRect();
           return contentRect.left - iconRect.right;
         });
+        const referenceIcon = borderedNotifications[0]?.querySelector<HTMLElement>(".bf-notification-icon");
+        const referenceIconSize = referenceIcon?.getBoundingClientRect().width ?? 0;
+        const referenceBarWidth = borderedNotifications[0]
+          ? Number.parseFloat(getComputedStyle(borderedNotifications[0]).borderInlineStartWidth)
+          : 0;
         const iconFirstLineCentreDeltas = notifications.map(notification => {
           const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
           const firstRole = notification.querySelector<HTMLElement>(".bf-notification-title, .bf-notification-message");
@@ -3776,7 +3953,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           metricFlushPairs,
           closeClearances,
           rtlGeometry,
-          expectedLeadingIconGap: iconLabelOffset - 16 - spaceOne - 3,
+          expectedLeadingIconGap: continuationInset - referenceIconSize - spaceOne - referenceBarWidth,
           expectedIconToTextGap: spaceOne,
           heights: notifications.map(notification => notification.getBoundingClientRect().height),
           overflow: notifications.map(notification => notification.scrollWidth - notification.clientWidth)

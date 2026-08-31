@@ -140,10 +140,10 @@ export function validateRenewalComponentContracts(
   assert(css.includes("--bf-icon-label-optical-offset-block: 0.1875rem;") && css.includes("--bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);"), "Expected side-navigation to inherit the shared 0.1875rem icon-and-label optical offset.");
   assert(css.includes("--bf-side-navigation-icon-gap: 0.625rem;"), "Expected icon-navigation to expose the shared 0.625rem icon-to-label gap.");
   assert(css.includes("--bf-navigation-brand-line-center-block: calc(var(--bf-top-navigation-logo-tag-block-size) - var(--bf-top-navigation-logo-icon-bottom-offset) - (var(--bf-top-navigation-logo-icon-size) / 2));") && css.includes("--bf-navigation-brand-block-size: calc(var(--bf-navigation-brand-line-center-block) * 2);"), "Expected panel-aligned navigation brands to expose one fixed mark/title line centre and its derived occupied block.");
-  assert(css.includes("padding-inline-start: var(--bf-panel-content-padding-inline, var(--bf-panel-padding-inline));"), "Expected navigation-brand headers to share the opposing panel-content inset.");
+  assert(css.includes("padding-inline-start: var(--bf-panel-content-padding-inline);"), "Expected navigation-brand headers to share the opposing panel-content inset.");
   assert(!css.includes("--bf-navigation-brand-title-optical-offset-block") && !css.includes("transform: translateY(var(--bf-navigation-brand-title-optical-offset-block));"), "Expected navigation-brand titles to use the fixed line-centre contract without a second optical translation.");
   assert(css.includes("transform: translateY(var(--bf-side-navigation-icon-optical-offset-block));"), "Expected expanded icon navigation to consume the block-axis optical offset.");
-  assert(css.includes("--bf-side-navigation-content-inset: var(--bf-component-inline-inset-continuation);") && css.includes("--bf-side-navigation-disclosure-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));"), "Expected plain and disclosure side-navigation copy to resolve to the same continuation rail without introducing another component inset.");
+  assert(css.includes("--bf-side-navigation-content-inset: var(--bf-component-inline-inset-continuation);") && css.includes("--bf-side-navigation-disclosure-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));"), "Expected plain and disclosure side-navigation copy to resolve to the same continuation inset without introducing another component inset.");
   assert(css.includes("padding-inline-start: var(--bf-component-inline-inset-continuation);"), "Expected icon-navigation headings to align with the menu-label continuation inset.");
   assert(css.includes(":not(:has(> .bf-side-navigation-icon))::before") && css.includes("flex: 0 0 1rem;"), "Expected iconless rows in icon navigation to reserve the same mark slot as icon-bearing rows.");
   assert(css.includes(".bf-navigation.is-collapsed) :where(.bf-side-navigation.is-icons)") && css.includes("content: none;"), "Expected collapsed icon navigation to remove the spacer from iconless rows alongside their hidden labels.");
@@ -240,12 +240,15 @@ export function validateRenewalComponentContracts(
   }, "table-of-contents items own nested-list rhythm without padding");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-heading)", {
     "color": "var(--bf-color-text-default)",
-    "padding-block-end": "0"
+    "padding-block-end": "0",
+    "padding-inline-start": "var(--bf-component-inline-inset-continuation)"
   }, "table-of-contents section headings use the canonical prominent heading color without an extra row gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-table-of-contents-link)", {
     "border-block": "var(--bf-border-width) solid transparent",
-    "margin": "0 0 var(--bf-single-line-row-margin-block-end)",
-    "padding-block": "var(--bf-single-line-row-padding-block)"
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
+    "padding-block": "var(--bf-interface-row-padding-block)",
+    "padding-inline-end": "var(--bf-component-inline-inset-action)",
+    "padding-inline-start": "var(--bf-component-inline-inset-continuation)"
   }, "table-of-contents links share the body-sized single-line row contract");
   assert(!css.includes("padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));"), "Expected document-navigation text links to contain no hidden semantic half-space padding.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-list)", {

@@ -257,7 +257,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           spaceTwoProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-2)";
           sectionSpaceProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
           textProbe.style.cssText = "position:absolute;visibility:hidden;color:var(--bf-color-text-default)";
-          rowPaddingProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-single-line-row-padding-block)";
+          rowPaddingProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-interface-row-padding-block)";
           root.append(spaceOneProbe, spaceTwoProbe, sectionSpaceProbe, textProbe, rowPaddingProbe);
           const direction = getComputedStyle(root).direction;
           const nestedRect = nested?.getBoundingClientRect();

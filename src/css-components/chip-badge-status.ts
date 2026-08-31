@@ -11,7 +11,14 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
     bodyTypeStyles,
   } = options;
 
-  return `:where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) {
+  return `:where(.bf-theme) {
+  --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-field);
+  --bf-ui-chip-radius: 999rem;
+  --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
+  --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
+}
+
+:where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) {
   --bf-ui-chip-border: var(--bf-color-border-neutral);
   --bf-ui-chip-border-hover: var(--bf-color-border-neutral);
   --bf-ui-chip-border-active: var(--bf-color-border-neutral);
@@ -27,9 +34,9 @@ ${bodyTypeStyles}  align-items: baseline;
   gap: 0;
   inline-size: fit-content;
   justify-self: start;
-  margin: 0 var(--bf-ui-chip-padding-inline) var(--bf-single-line-row-margin-block-end) 0;
+  margin: 0 var(--bf-ui-chip-padding-inline) var(--bf-interface-row-compensation-block-end) 0;
   max-inline-size: 100%;
-  padding-block: var(--bf-single-line-row-padding-block);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
   position: relative;
   text-decoration: none;
@@ -155,10 +162,10 @@ ${bodyTypeStyles}  align-items: center;
   display: inline-block;
   inline-size: fit-content;
   justify-self: start;
-${bodyTypeStyles}  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   /* Status paint is physically symmetric and shares the same occupied block
      as a button; typography still comes from the body role. */
-  padding-block: var(--bf-single-line-row-padding-block);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-ui-chip-padding-inline);
   text-align: center;
   text-decoration: none;
@@ -189,9 +196,9 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-single-line-row-margin-block-end);
    carrying a second standalone occupied-row contract. This modifier is
    explicit so component density never changes merely because of ancestry. */
 :where(.bf-theme) :where(.bf-chip.is-nested, .bf-status-label.is-nested) {
-  line-height: var(--bf-nested-auxiliary-line-height);
+  line-height: var(--bf-nested-row-line-height);
   margin-block: 0;
-  padding-block: var(--bf-nested-auxiliary-padding-block);
+  padding-block: var(--bf-nested-row-padding-block);
 }
 
 :where(.bf-theme) :where(.bf-chip.is-nested) {
@@ -199,7 +206,7 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-single-line-row-margin-block-end);
   box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);
 }
 
-/* Chip parts normally carry the standalone body line explicitly. A compact
+/* Chip parts normally carry the standalone body line explicitly. A nested
    chip must pass its reduced line through to those parts so a nested badge
    can fit without making the host row taller. */
 :where(.bf-theme) :where(.bf-chip.is-nested) :where(.bf-chip-lead, .bf-chip-value) {
@@ -220,7 +227,7 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-single-line-row-margin-block-end);
 
 :where(.bf-theme) :where(.bf-badge.is-nested) {
   align-self: center;
-  line-height: var(--bf-nested-auxiliary-line-height);
+  line-height: var(--bf-nested-row-line-height);
   vertical-align: middle;
 }
 `;

@@ -7,7 +7,15 @@ type TableCssOptions = {
 export function tableCss(options: TableCssOptions): string {
   const { bodyLineHeight, bodyMediumTypeStyles, bodyTypeStyles } = options;
 
-  return `:where(.bf-theme) :where(.bf-table-scroll) {
+  return `:where(.bf-theme) {
+  --bf-table-row-border-size: var(--bf-border-width);
+  --bf-table-row-padding-block-start: var(--bf-in-box-row-padding-block-start);
+  --bf-table-row-block-size: var(--bf-interface-row-occupied-block-size);
+  --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start) - var(--bf-table-row-border-size)));
+  --bf-table-row-line-height: ${bodyLineHeight};
+}
+
+:where(.bf-theme) :where(.bf-table-scroll) {
   max-inline-size: 100%;
   min-inline-size: 0;
   overflow-x: auto;

@@ -16,12 +16,12 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   } = options;
 
   return `:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
-  /* Plain navigation commands use the action rail. Icon-led rows move only their mark canvas,
-     so their copy reaches the shared continuation rail without a fourth
+  /* Plain navigation commands use the action inset. Icon-led rows move only their mark canvas,
+     so their copy reaches the shared continuation inset without a fourth
      component inset. Navigation depth is added separately below. */
-  /* Navigation copy uses one continuation rail whether a row has a leading
+  /* Navigation copy uses one continuation inset whether a row has a leading
      disclosure/icon slot or not. The mark canvas is derived backwards from
-     that rail, so iconless rows never introduce a fourth text start. */
+     that inset, so iconless rows never introduce a fourth text start. */
   --bf-side-navigation-content-inset: var(--bf-component-inline-inset-continuation);
   --bf-side-navigation-disclosure-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));
   --bf-side-navigation-depth-step: var(--bf-space-2);
@@ -110,7 +110,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   margin-bottom: calc(var(--bf-baseline) * 2);
   padding-bottom: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-component-inline-inset-continuation);
+  padding-inline: var(--bf-panel-padding-inline);
   padding-top: var(--bf-panel-padding-block);
   position: sticky;
   top: 0;
@@ -129,7 +129,7 @@ ${bodyTypeStyles}  align-items: center;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
   margin: 0 0 ${buttonMarginBottom};
-${buttonPadding}  padding-inline: var(--bf-control-inline-padding-action-bordered);
+${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordered);
   text-decoration: none;
 }
 
@@ -181,7 +181,7 @@ ${bodySemiboldTypeStyles}  display: block;
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {
   display: grid;
-  grid-auto-rows: var(--bf-single-line-row-block-size);
+  grid-auto-rows: var(--bf-interface-row-occupied-block-size);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -204,8 +204,8 @@ ${bodyTypeStyles}  align-items: center;
   gap: calc(var(--bf-baseline) * 0.5);
   inline-size: 100%;
   justify-content: flex-start;
-  margin: 0 0 var(--bf-single-line-row-margin-block-end);
-  padding-block: var(--bf-single-line-row-padding-block);
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-side-navigation-content-inset);
   --bf-side-navigation-row-inset: var(--bf-side-navigation-content-inset);
   position: relative;
@@ -741,7 +741,7 @@ ${bodyTypeStyles}  background: transparent;
   cursor: pointer;
   inset-block-start: 0;
   margin: 0;
-  min-block-size: var(--bf-control-box-size-compact);
+  min-block-size: var(--bf-interface-row-occupied-block-size);
   padding-inline: calc(var(--bf-baseline) * 0.5);
   position: absolute;
   right: 0;

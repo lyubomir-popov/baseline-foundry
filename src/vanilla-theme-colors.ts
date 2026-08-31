@@ -167,6 +167,11 @@ const FOUNDRY_COMPONENT_COLOR_SOURCES = {
   "--bf-color-focus": "--vf-color-focus"
 } as const satisfies Record<CssVarName, CssVarName>;
 
+const FOUNDRY_COMPONENT_FIXED_COLORS = {
+  "--bf-application-resize-handle-active": "rgba(246, 183, 60, 0.95)",
+  "--bf-application-resize-handle-focus-ring": "rgba(246, 183, 60, 0.55)"
+} as const satisfies CssVarMap;
+
 function cssVarBlock(vars: CssVarMap): string {
   return `${Object.entries(vars)
     .map(([name, value]) => `  ${name}: ${value};`)
@@ -230,5 +235,5 @@ export function foundryThemeRootColorVars(tone: ThemeTone): string {
 }
 
 export function foundryComponentColorVars(tone: ThemeTone): string {
-  return aliasBlock(FOUNDRY_COMPONENT_COLOR_SOURCES, tone, componentAliasFallback);
+  return `${aliasBlock(FOUNDRY_COMPONENT_COLOR_SOURCES, tone, componentAliasFallback)}${cssVarBlock(FOUNDRY_COMPONENT_FIXED_COLORS)}`;
 }

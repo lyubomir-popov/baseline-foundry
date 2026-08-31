@@ -124,14 +124,15 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-in-page-navigation-toggle) {
 ${bodyCaseTypeStyles}  align-items: center;
   background: var(--bf-color-background-default);
-  border: 0;
+  border: 0 solid transparent;
+  border-block-width: var(--bf-border-width);
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: none;
   justify-content: center;
   margin: 0;
-  min-block-size: var(--bf-control-box-size-compact);
-  padding-block: var(--bf-control-block-padding-compact);
+  padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));
+  padding-block-start: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-space-1);
 }
 
@@ -193,9 +194,11 @@ ${bodyCaseTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation-link) {
+    border-block: var(--bf-border-width) solid transparent;
     display: block;
     overflow: hidden;
-    padding-block: calc(var(--bf-control-block-padding-compact) - var(--bf-border-width));
+    padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));
+    padding-block-start: var(--bf-interface-row-padding-block);
     padding-inline: var(--bf-space-1);
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -282,7 +285,7 @@ ${bodyCaseTypeStyles}  align-items: center;
  * controller contracts while matching Vanilla's reduced chrome. */
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) {
   background: var(--bf-color-background-alt);
-  --bf-top-navigation-link-padding-block: var(--bf-control-block-padding-compact);
+  --bf-top-navigation-reduced-row-block-size: var(--bf-interface-row-occupied-block-size);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-logo-tag) {
@@ -295,10 +298,13 @@ ${bodyCaseTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-logo) > :where(.bf-top-navigation-link),
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-link, .bf-top-navigation-menu-toggle, .bf-top-navigation-search-toggle) {
+  border: 0 solid transparent;
+  border-block-width: var(--bf-border-width);
   color: var(--bf-color-text-muted);
   font-size: var(--bf-body-font-size);
   line-height: var(--bf-body-line-height);
-  padding-block: var(--bf-top-navigation-link-padding-block);
+  padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));
+  padding-block-start: var(--bf-interface-row-padding-block);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-logo.is-canonical-tagged) > :where(.bf-top-navigation-link) {
@@ -323,7 +329,7 @@ ${bodyCaseTypeStyles}  align-items: center;
 
 @media (min-width: 64.75rem) {
   :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-dropdown) {
-    top: calc((var(--bf-top-navigation-link-padding-block) * 2) + var(--bf-body-line-height));
+    top: var(--bf-top-navigation-reduced-row-block-size);
   }
 
   :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search) {
@@ -332,7 +338,7 @@ ${bodyCaseTypeStyles}  align-items: center;
     box-shadow: 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
     inset-block-start: 100%;
     inset-inline-end: 0;
-    padding: var(--bf-control-block-padding-compact) var(--bf-top-navigation-link-padding-inline);
+    padding: var(--bf-panel-padding-block) var(--bf-top-navigation-link-padding-inline);
     position: absolute;
   }
 
@@ -380,6 +386,7 @@ ${bodyCaseTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
   margin: 0;
   padding-block-end: 0;
+  padding-inline-start: var(--bf-component-inline-inset-continuation);
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-list) {
@@ -406,9 +413,11 @@ ${bodyCaseTypeStyles}  align-items: center;
 ${bodyTypeStyles}  border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-color-link-default);
   display: block;
-  margin: 0 0 var(--bf-single-line-row-margin-block-end);
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   overflow-wrap: anywhere;
-  padding-block: var(--bf-single-line-row-padding-block);
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline-end: var(--bf-component-inline-inset-action);
+  padding-inline-start: var(--bf-component-inline-inset-continuation);
   text-decoration: none;
 }
 
