@@ -77,6 +77,12 @@ once from its own block-end calculation.
 
 There is no independent compact control scale and no authored target height.
 
+Unboxed text is intentionally not expanded to that interface height. Paragraph
+copy, links, labels, help, list text, and breadcrumbs have no component-owned
+paint or target area; their box contains only the measured font start nudge,
+line box, and trailing baseline compensation. A container, not the text role,
+owns any semantic separation around it.
+
 ## Nested block contract
 
 `is-nested` is an explicit composition contract for a child placed inside a
@@ -89,10 +95,10 @@ Two ledgers cover the only material paint cases:
 | Zero-footprint block edge | chip, status label, badge line | `--bf-nested-row-line-height`, `--bf-nested-row-padding-block`, `--bf-nested-row-painted-block-size` |
 | Two real block borders | text/number/select input, bordered button, checkbox, radio | `--bf-nested-framed-row-padding-block`, `--bf-nested-framed-row-painted-block-size`, `--bf-nested-framed-row-visual-offset` |
 
-The nested line is the maximum of body font size, body line minus one active
-baseline, and control visual size. Both ledgers fit within the host body line
-and contribute no external block margin. Build validation rejects a tier whose
-visual and borders cannot fit.
+The nested line is body line minus one active baseline. Both ledgers fit within
+the host body line and contribute no external block margin. Build validation
+rejects a tier when that designed line cannot contain its body font, control
+visual, or two real block borders.
 
 The modifier positively allowlists text, number, search, password, email, URL,
 telephone, and select fields. It is intentionally unavailable to date/time,
@@ -116,6 +122,40 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Switch | Reviewed exception | Regular | Its wider track prevents reuse of the common mark canvas |
 | Fieldset, modal regions, drawer chrome | Structural surface padding | Region-owned | Uses `--bf-panel-padding-inline`, not a component inset |
 | Page, grid, navigation nesting | Structural layout | Layout-owned | Never folded into component padding |
+
+## Reviewed compositions
+
+Side-navigation lists preserve the same natural link paint and trailing
+compensation as controls, but their grid tracks use the shared interface-row
+token. The link is start-aligned inside each track so rasterised rem borders
+do not stretch its text or paint; the track absorbs any subpixel remainder.
+This keeps item-to-item baselines on one phase under browser zoom without
+inventing a navigation-only height.
+
+The replaced native color input composes through `bf-color-control`. Because a
+color input has no body-text line box, the wrapper contributes an invisible
+metric strut using the shared line, symmetric padding, rem border, and
+trailing compensation; the native input stretches into that row. Composite
+sliders use their paired numeric field as the occupied-row owner and stretch
+the range track within it. These are explicit component compositions, not
+audit-page height patches.
+
+Canonical tagged navigation exposes one derived brand line centre: tag block
+size minus the fixed mark-bottom offset and half the mark. Twice that centre is
+the 3rem brand/header block. Brand titles and adjacent breadcrumbs align to the
+same line without optical transforms; the fixed 2.375rem-by-1.375rem tag and
+1rem mark geometry remain independent of the header's inline extension.
+
+Grouped side navigation uses three explicit spacing owners. The outer
+`bf-side-navigation-groups` container separates complete groups;
+`bf-side-navigation-group` owns the fixed 0.5rem transition from its header to
+its list; and `bf-side-navigation-group-header` keeps a real compensated `hr`
+and its H6-styled heading tight. The rule begins on the continuation text inset
+and stretches to the navigation end edge. Rules never come from list pseudo-
+elements, and their one-half-rem occupied block must not shift later headings
+off the active baseline phase. A single-line group heading reserves four
+baselines through a minimum block size; longer headings may still wrap and
+grow, while the common case cannot accumulate fractional font-box drift.
 
 ## Ownership and cascade
 

@@ -93,79 +93,10 @@ padding or erase child metric compensation.
 
 ## Controls and ruled rows
 
-Component-owned first-glyph starts choose the field, action, or continuation
-inset. Product tiers—Editorial, Documentation, App, and OS—supply those input
-values. Page margins, grid gutters, navigation depth, and structural surface
-padding remain separate layout contracts. The complete formulas and component
-classification live in [Component spacing architecture](spacing-architecture-proposal.md).
-
-Controls use one metric-derived occupied-block model. Symmetric block padding
-is the active body nudge minus border width. The painted border box may be
-fractional relative to the baseline; block-end compensation snaps its occupied
-block to the next grid line. There is no separate compact scale or authored
-target height.
-
-An explicit `is-nested` modifier is the narrow exception for chips, status
-labels, badges, and single-line controls composed inside a host-owned body
-line. One nested line formula feeds two paint ledgers: zero-footprint surfaces
-and controls with two real block borders. Both fit inside the host body line
-and contribute no external margin. Text, number, search, password, email, URL,
-telephone, and select fields are positively allowlisted. Date/time, textarea,
-file, colour, range, link-button, and multiline content are excluded. Density
-is never inferred from ancestry.
-
-Repeated rows that cannot use margins snap compensation inside the row box.
-Table cells and contextual-menu commands target the same public interface-row
-occupied block as controls: they retain the measured body start nudge and real
-body line height, then place remaining compensation at block end. Table cells
-also reserve their real in-box separator. This is one height family with two
-ownership modes—control margin compensation or host-owned in-box
-compensation—not a separate density bucket.
-
-A table row containing inputs, bordered buttons, checkboxes, or radios keeps
-the ordinary table-cell inset and separator. Each nested child opts in with
-`is-nested`, fits within the cell's body line, and removes its standalone margin
-compensation. The table continues to own the occupied row and focus clearance;
-no row-specific geometry, `:has()` inference, or ancestry-based density is
-introduced.
-
-Side-navigation lists preserve the same natural link paint and trailing
-compensation as controls, but their grid tracks use the shared interface-row
-token. The link is start-aligned inside each track so rasterised rem borders do
-not stretch its text or paint; the track absorbs any subpixel remainder. This
-keeps item-to-item baselines on one phase under browser zoom without inventing
-a navigation-only height.
-
-The replaced native color input composes through `bf-color-control`. Because a
-color input has no body-text line box, the wrapper contributes an invisible
-metric strut using the shared line, symmetric padding, rem border, and trailing
-compensation; the native input stretches into that row. Composite sliders use
-their paired numeric field as the occupied-row owner and stretch the range
-track within it. These are explicit component compositions, not audit-page
-height patches.
-
-Canonical tagged navigation exposes one derived brand line centre: tag block
-size minus the fixed mark-bottom offset and half the mark. Twice that centre is
-the 3rem brand/header block. Brand titles and adjacent breadcrumbs align to the
-same line without optical transforms; the fixed 2.375rem-by-1.375rem tag and
-1rem mark geometry remain independent of the header's inline extension.
-
-Unboxed text is intentionally not expanded to that interface height. Paragraph
-copy, links, labels, help, list text, and breadcrumbs have no component-owned
-paint or target area; their box contains only the measured font start nudge,
-line box, and trailing baseline compensation. A container, not the text role,
-owns any semantic separation around it.
-
-Grouped side navigation uses three explicit spacing owners. The outer
-`bf-side-navigation-groups` container separates complete groups;
-`bf-side-navigation-group` owns the fixed 0.5rem transition from its header to
-its list; and `bf-side-navigation-group-header` keeps a real compensated `hr`
-and its H6-styled heading tight. The rule begins on the continuation text inset
-and stretches to the navigation end edge. Rules never come from list pseudo-
-elements, and their one-half-rem occupied block must not shift later headings
-off the active baseline phase. A single-line group heading reserves four
-baselines through a minimum block size; longer headings may still wrap and
-grow, while the common case cannot accumulate fractional font-box drift.
+Product tiers supply component input facts while shared contracts derive leaf
+geometry once; the complete formulas, ownership modes, allowlists,
+classifications, and reviewed exceptions live in
+[Component spacing architecture](component-spacing-architecture.md).
 
 ## Surface and manifest pipeline
 

@@ -323,11 +323,17 @@ function buildThemeTokens(config: ThemeConfig, baselineTokens: BaselineGenerator
     throw new Error('Theme tokens require a generated "body" role.');
   }
 
-  const nestedLineHeight = Math.max(
-    parseRem(body.fontSize),
-    parseRem(body.lineHeight) - parseRem(baselineTokens.baselineUnit),
-    config.components.controlVisualSizeRem
-  );
+  const nestedLineHeight = parseRem(body.lineHeight) - parseRem(baselineTokens.baselineUnit);
+  if (nestedLineHeight < parseRem(body.fontSize)) {
+    throw new Error(
+      `Nested line ${toRem(nestedLineHeight)} cannot contain the body font ${body.fontSize}.`
+    );
+  }
+  if (nestedLineHeight < config.components.controlVisualSizeRem) {
+    throw new Error(
+      `Nested line ${toRem(nestedLineHeight)} cannot contain the control visual ${toRem(config.components.controlVisualSizeRem)}.`
+    );
+  }
   const nestedFramedPaint = nestedLineHeight + (config.components.borderWidthRem * 2);
   if (nestedFramedPaint > parseRem(body.lineHeight)) {
     throw new Error(

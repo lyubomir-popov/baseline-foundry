@@ -46,8 +46,9 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
 
   /* Nested children fit inside the host body line and contribute no external
      compensation. Zero-footprint surfaces and real two-border controls use
-     the same line with explicit border-ledger outputs. */
-  --bf-nested-row-line-height: max(var(--bf-body-font-size), calc(var(--bf-interface-row-line-height) - var(--bf-baseline)), var(--bf-control-visual-size));
+     the body line minus one baseline; build validation proves that this line
+     can contain the font, visual and framed ledgers for every tier. */
+  --bf-nested-row-line-height: calc(var(--bf-interface-row-line-height) - var(--bf-baseline));
   --bf-nested-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height)) / 2));
   --bf-nested-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-row-padding-block) * 2));
   --bf-nested-framed-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height) - (var(--bf-border-width) * 2)) / 2));

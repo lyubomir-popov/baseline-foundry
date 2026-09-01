@@ -169,6 +169,47 @@ function customPropertiesForSelector(css: string, selector: string): Map<string,
   return properties;
 }
 
+/* Generated-bundle hygiene only: declaration existence is intentionally
+   scope-blind, fallback-bearing references remain optional, and demo CSS or
+   inline demo styles are outside the artifact set passed to this validator. */
+function findUndeclaredBfVariableReferences(css: string): string[] {
+  const ast = parseCss(css);
+  const declarations = new Set<string>();
+  const referencesWithoutFallback = new Set<string>();
+
+  ast.walkDecls(declaration => {
+    if (declaration.prop.startsWith("--bf-")) {
+      declarations.add(declaration.prop);
+    }
+
+    for (const match of declaration.value.matchAll(/var\(\s*(--bf-[a-z0-9-]+)\s*([,)])/g)) {
+      if (match[2] === ")") {
+        referencesWithoutFallback.add(match[1]);
+      }
+    }
+  });
+
+  ast.walkAtRules(atRule => {
+    for (const match of atRule.params.matchAll(/var\(\s*(--bf-[a-z0-9-]+)\s*([,)])/g)) {
+      if (match[2] === ")") {
+        referencesWithoutFallback.add(match[1]);
+      }
+    }
+  });
+
+  return [...referencesWithoutFallback]
+    .filter(reference => !declarations.has(reference))
+    .sort();
+}
+
+function validateDeclaredBfVariableReferences(css: string): void {
+  const undeclared = findUndeclaredBfVariableReferences(css);
+  assert(
+    undeclared.length === 0,
+    `Expected every fallback-free var(--bf-*) reference to have a declaration in the same bundle; missing ${undeclared.join(", ")}.`
+  );
+}
+
 const LAYOUT_TOKEN_PROPERTIES: Record<string, string> = {
   contentMaxWidth: "--bf-content-max-width",
   contentPaddingInline: "--bf-content-padding-inline",
@@ -887,7 +928,7 @@ function validateCommonCss(css: string): void {
   const statusLabelRuleStart = css.indexOf(":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {");
   const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
   assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-interface-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end)"), "Expected status-label paint to use the symmetric shared interface-row contract.");
-  assert(css.includes("--bf-nested-row-line-height: max(var(--bf-body-font-size), calc(var(--bf-interface-row-line-height) - var(--bf-baseline)), var(--bf-control-visual-size));") && css.includes("--bf-nested-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height)) / 2));") && css.includes("--bf-nested-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-row-padding-block) * 2));"), "Expected nested surface geometry to derive from the host body line without a second density scale.");
+  assert(css.includes("--bf-nested-row-line-height: calc(var(--bf-interface-row-line-height) - var(--bf-baseline));") && !css.includes("--bf-nested-row-line-height: max(") && css.includes("--bf-nested-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height)) / 2));") && css.includes("--bf-nested-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-row-padding-block) * 2));"), "Expected nested surface geometry to use the designed body-line-minus-baseline expression without silently selecting among unrelated constraints.");
   assert(css.includes("--bf-nested-framed-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height) - (var(--bf-border-width) * 2)) / 2));") && css.includes("--bf-nested-framed-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2));") && css.includes("--bf-nested-framed-row-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-framed-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));"), "Expected nested interactive controls to use an explicit two-border ledger within the host body line.");
   assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
   assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-interface-row-compensation-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural interface row as textual controls.");
@@ -1543,6 +1584,16 @@ async function main(): Promise<void> {
   const prosePreset = await readThemeArtifacts(path.resolve("dist/presets/prose"));
   const appTierPreset = await readThemeArtifacts(path.resolve("dist/presets/app-tier"));
   const ibmPlexEngineSmoke = await readThemeArtifacts(path.resolve("dist/experiments/ibm-plex-engine-smoke"));
+  const generatedCssArtifacts = {
+    default: defaultTheme.css,
+    editorial: editorialTier.css,
+    documentation: documentationTier.css,
+    app: appTier.css,
+    os: osTier.css,
+    prose: prosePreset.css,
+    "app-tier": appTierPreset.css,
+    "ibm-plex-engine-smoke": ibmPlexEngineSmoke.css
+  };
   const indexDts = await readTextArtifact(path.resolve("dist/index.d.ts"));
   const renewalComponentPages = Object.fromEntries(await Promise.all([
     "article-pagination",
@@ -1636,17 +1687,18 @@ async function main(): Promise<void> {
   runInvariant("Common CSS (default)", () => validateCommonCss(defaultTheme.css));
   runInvariant("Common CSS (editorial)", () => validateCommonCss(editorialTier.css));
   runInvariant("Common CSS (documentation)", () => validateCommonCss(documentationTier.css));
+  runInvariant("Common CSS (app)", () => validateCommonCss(appTier.css));
   runInvariant("Common CSS (OS)", () => validateCommonCss(osTier.css));
   runInvariant("Common CSS (prose preset)", () => validateCommonCss(prosePreset.css));
-  for (const [surfaceName, css] of Object.entries({
-    default: defaultTheme.css,
-    editorial: editorialTier.css,
-    documentation: documentationTier.css,
-    app: appTier.css,
-    os: osTier.css,
-    prose: prosePreset.css,
-    "app-tier": appTierPreset.css
-  })) {
+  runInvariant("Common CSS (app preset)", () => validateCommonCss(appTierPreset.css));
+  runInvariant("BF variable reference detector", () => {
+    assert(findUndeclaredBfVariableReferences(":root { color: var(--bf-missing); }").includes("--bf-missing"), "Expected the BF variable reference detector to reject a fallback-free dangling reference.");
+    assert(findUndeclaredBfVariableReferences(":root { color: var(--bf-optional, currentColor); }").length === 0, "Expected the BF variable reference detector to allow an optional reference with a fallback.");
+  });
+  for (const [surfaceName, css] of Object.entries(generatedCssArtifacts)) {
+    runInvariant(`Declared BF variables (${surfaceName})`, () => validateDeclaredBfVariableReferences(css));
+  }
+  for (const [surfaceName, css] of Object.entries(generatedCssArtifacts)) {
     runInvariant(`Typography selector ownership (${surfaceName})`, () => validateTypographySelectorOwnership(css));
   }
   runInvariant("App tier CSS (app)", () => validateAppTierCss(appTier.css));
