@@ -955,7 +955,6 @@ function validateCommonCss(css: string): void {
     [":where(.bf-theme) :where(.bf-chip.is-nested)", "var(--bf-nested-row-painted-block-size)"],
     [":where(.bf-theme) :where(.bf-badge.is-nested)", "var(--bf-nested-row-line-height)"],
     [":where(.bf-theme) :where(.bf-button.is-link.is-icon:not(:has(.bf-button-label)))", "var(--bf-body-line-height)"],
-    [":where(.bf-theme) :where(.bf-button.is-icon.is-nested:not(.is-link):not(:has(.bf-button-label)))", "calc(var(--bf-body-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2))"],
     [":where(.bf-theme) :where(.bf-notification-close)", "var(--bf-notification-close-painted-block-size)"]
   ]);
   const emittedSquareAliases = new Map<string, string>();
@@ -970,6 +969,7 @@ function validateCommonCss(css: string): void {
   for (const [selector, value] of expectedSquareAliases) {
     assert(emittedSquareAliases.get(selector) === value, `Expected ${selector} to re-point --bf-square-block-size to ${value}, got ${emittedSquareAliases.get(selector) ?? "nothing"}.`);
   }
+  assert(!css.includes(":where(.bf-theme) :where(.bf-button.is-icon.is-nested:not(.is-link):not(:has(.bf-button-label)))"), "Expected bordered nested icon-only buttons to remain outside block-derived membership because their icon canvas cannot fit the OS host line with padding and borders.");
   const expectedSquareConsumers = [
     ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)",
     ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))",

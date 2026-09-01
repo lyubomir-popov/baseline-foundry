@@ -2454,7 +2454,7 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
   const tones = ["light", "dark"] as const;
   const browser = await openBrowser();
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-  const shapeTolerance = 1.05;
+  const shapeTolerance = 0.51;
 
   const setSurface = async (tier: typeof tiers[number], tone: typeof tones[number]): Promise<void> => {
     const toneToggle = page.locator("[data-page-chrome-tone-toggle]");
@@ -2655,7 +2655,7 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
       for (const tier of tiers) {
         await setSurface(tier, tone);
         const buttons = await readBoxes("[data-block-derived-icon-button]");
-        assert(buttons.length === 4, `Expected regular, nested, and link-style icon-only button fixtures in ${tier}/${tone}.`);
+        assert(buttons.length === 3, `Expected regular and link-style icon-only button fixtures in ${tier}/${tone}.`);
         for (const [index, button] of buttons.entries()) {
           assertSquare(button, `${tier}/${tone} icon-only button ${index + 1}`);
           assert(button.paddingInlineStart === 0 && button.paddingInlineEnd === 0, `Expected ${tier}/${tone} icon-only button ${index + 1} to omit the label-framing action inset; got ${JSON.stringify(button)}.`);

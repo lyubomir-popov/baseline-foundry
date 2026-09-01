@@ -31,7 +31,6 @@ differs.
 | `.bf-chip` | body line | interface row padding | 2 real | interface row painted |
 | `.bf-chip.is-nested` | nested row line | nested row padding | inset paint, no box border | nested row painted |
 | `.bf-button.is-icon` no label | body line via strut | interface row padding | 2 real | interface row painted |
-| `.bf-button.is-icon.is-nested` no label | body line via the unchanged metric strut | nested framed padding | 2 real | body line + nested framed padding + borders |
 | `.bf-button.is-link.is-icon` no label | body line via strut | none | none | body line |
 | `.bf-notification-close` | icon canvas | one `--bf-space-1` on each block edge | none | `2 * space-1 + icon canvas` |
 | bare numbered `.bf-pagination-link:not(.is-previous):not(.is-next)` | body line | interface row padding | 2 real | interface row painted |
@@ -42,6 +41,11 @@ never names a ledger.
 
 Any future member must add a row here before it may consume the alias. That
 row, not the alias name, is what prevents the badge defect recurring.
+
+A bordered `.bf-button.is-icon.is-nested` is deliberately not a member. In OS,
+its 1rem icon canvas alone equals the complete host line, so adding two borders
+and framed padding cannot satisfy the nested fit invariant. Supporting it would
+require a separate icon-size decision; `is-nested` does not silently shrink it.
 
 ## Painted, never occupied
 

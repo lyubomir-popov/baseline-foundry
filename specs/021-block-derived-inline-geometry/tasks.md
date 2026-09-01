@@ -5,7 +5,7 @@ former single-character and radius questions are closed; do not reopen them.
 
 - [x] T001 Capture current painted inline and block extents for every member in
   [`contracts/block-derived-matrix.md`](contracts/block-derived-matrix.md), in
-  all four tiers, standalone and nested, light and dark. Record the ellipse and
+  all four tiers, in every supported standalone and nested state, light and dark. Record the ellipse and
   rectangle ratios so the fix is measurable rather than asserted. Include the
   `.bf-article-pagination-link` collapsed state for the audit record even
   though it is not a member.
@@ -52,5 +52,8 @@ former single-character and radius questions are closed; do not reopen them.
 - [x] T014 Run `npm test` and `npm run qa:components` with fresh captures,
   record evidence in `review.md`, and request owner and stakeholder visual
   acceptance.
-- [ ] T015 Merge and archive only after acceptance. Do not publish or release
+- [ ] T015 Record the owner decisions for R3 target-size disposition and R4
+  chip keyline ownership, encode them consistently, and rerun `npm test` plus
+  fresh `npm run qa:components` captures.
+- [ ] T016 Merge and archive only after acceptance. Do not publish or release
   without a separate explicit request.

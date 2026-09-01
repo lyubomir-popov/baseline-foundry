@@ -10,24 +10,35 @@ article pagination, and labelled previous/next pagination controls are outside
 membership. Do not merge, publish, release, or start Spec 020 without separate
 closeout direction.
 
-## Re-review requested — Spec 021
+## Re-review follow-up — Spec 021, two owner decisions pending
 
-The implementation is ready for owner and originating-stakeholder re-review on
-`feat/021-block-derived-inline-geometry`. Start with
-[`specs/021-block-derived-inline-geometry/review.md`](specs/021-block-derived-inline-geometry/review.md),
-then inspect the live demo at `http://127.0.0.1:4174/` across all four tiers.
-Pay particular attention to the documented chip overflow-padding resolution,
-the table-hosted interactive nested chip, link-style and nested icon actions,
-notification close, and bare versus labelled pagination.
+Full evidence is appended to
+[`specs/021-block-derived-inline-geometry/review.md`](specs/021-block-derived-inline-geometry/review.md).
 
-`npm test` passes with 9,723 static checks, every component baseline family at
-zero failures, and green browser behavior. Fresh `npm run qa:components`
-captures and baseline verification also pass with zero failures. A final Sol
-architecture/cascade/verification review found no remaining blocking, major,
-or substantive findings after all eight initial findings and four follow-up
-evidence gaps were closed. Owner/stakeholder visual acceptance remains pending;
-do not merge, archive, publish, release, push this feature branch, or begin Spec
-020 without separate direction.
+- **R1 hardened; reported discrepancy does not reproduce.** The requested
+  shape tolerance is now `0.51`. Direct measurements in the installed stable
+  Chrome and Edge engines across all tiers put the default-alias chip and icon
+  button at 0–0.016px error, and the complete behavior sweep passes. No
+  target-like block floor was added. A contrary result now needs its exact
+  selector, browser/zoom/device scale, font-ready state and expression.
+- **R2 resolved by exclusion.** Re-pointing the strut cannot solve OS: its 16px
+  icon already fills the 16px host line before padding and borders. Bordered
+  nested icon-only buttons are removed from alias membership, demo, behavior,
+  contract and architecture. Static validation rejects reintroduction.
+- **R3 owner decision.** Accept the WCAG spacing exception for natural-size
+  icon-only actions in Documentation, App and OS, or reopen the no-target-block
+  rule to create a direct 24×24px target. The first preserves tier density but
+  makes compliance composition-dependent; the second changes vertical
+  architecture.
+- **R4 owner decision.** Keep exact one-character circles in Documentation and
+  leave the Field keyline, or restore Field padding and accept a subtle
+  23.24×21.81px Documentation stadium. The latter preserves the shared text
+  keyline for every longer chip in every tier.
+
+Focused gates pass: 9,716 static checks and complete component behavior. Full
+`npm test` and fresh `npm run qa:components` wait for R3/R4 to be encoded.
+Owner/stakeholder acceptance remains pending. Do not merge, archive, publish,
+release, push this feature branch, or begin Spec 020 without separate direction.
 
 ## Active follow-up
 

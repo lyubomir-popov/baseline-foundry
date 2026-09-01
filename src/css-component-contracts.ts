@@ -85,10 +85,6 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
   --bf-square-block-size: var(--bf-body-line-height);
 }
 
-:where(.bf-theme) :where(.bf-button.is-icon.is-nested:not(.is-link):not(:has(.bf-button-label))) {
-  --bf-square-block-size: calc(var(--bf-body-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2));
-}
-
 :where(.bf-theme) :where(.bf-notification-close) {
   --bf-square-block-size: var(--bf-notification-close-painted-block-size);
 }

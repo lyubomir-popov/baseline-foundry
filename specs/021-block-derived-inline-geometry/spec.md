@@ -2,9 +2,9 @@
 
 **Feature Branch**: `feat/021-block-derived-inline-geometry`
 **Date**: 2026-09-01
-**Status**: Re-review requested. Owner decisions of 2026-09-01 are folded in;
-implementation, rendered verification, and independent adversarial review are
-complete, with owner/stakeholder acceptance and merge still pending.
+**Status**: Re-review follow-up. R1 is hardened and does not reproduce in
+Chrome or Edge; R2 is resolved by excluding bordered nested icon-only buttons.
+R3/R4 owner decisions, final gates, acceptance, and merge remain pending.
 
 ## Problem
 
@@ -97,8 +97,10 @@ outcome without a mechanism.
 - The minimum applies universally to badges and chips. Content that fits inside
   it renders as a circle; wider content renders as a stadium at the same
   painted block. No content-length modifier is introduced.
-- An icon-only action is square in all four tiers, standalone and nested, with
-  its width equal to the grid-aligned height it already paints.
+- A regular or link-style icon-only action is square in all four tiers, with
+  its width equal to the grid-aligned height it already paints. Bordered nested
+  icon-only buttons remain unsupported because their icon canvas cannot fit
+  the OS host line alongside padding and borders.
 - Numbered pagination slots stop using the occupied block and stop carrying an
   action inset around a bare digit.
 - No component gains a target block size, an authored width, a transform or an
@@ -147,8 +149,9 @@ outcome without a mechanism.
    one rasterised border width.
 3. Wider chip and badge content renders as a stadium with the same painted
    block extent, and never clips at two, three, four or five characters.
-4. `.bf-button.is-icon` with no label renders with equal painted inline and
-   block extents in all four tiers, standalone and nested.
+4. Regular and link-style `.bf-button.is-icon` controls with no label render
+   with equal painted inline and block extents in all four tiers. A bordered
+   `.is-nested` icon-only button is explicitly outside membership.
 5. Bare numbered `.bf-pagination-link` slots derive from the painted block
    rather than the occupied block and carry no action inset around a digit.
    Labelled previous/next controls retain the Action contract.

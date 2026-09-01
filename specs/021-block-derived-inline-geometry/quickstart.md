@@ -7,8 +7,9 @@
   standalone, borderless, and table-hosted nested.
 - Badge specimens wherever a chip hosts one, including the nested
   chip-with-badge case that Spec 018 introduced.
-- `demo/components/button.html` — regular, table-hosted nested, link-style, and
-  real page-chrome icon-only buttons.
+- `demo/components/button.html` — regular, link-style, and real page-chrome
+  icon-only buttons. Bordered nested icon-only buttons are an explicit
+  non-member because their icon canvas cannot fit the OS host line.
 - `demo/components/notification.html` — the specialized borderless dismiss
   action and the copy clearance reserved for its square paint.
 - `demo/components/pagination.html` — bare numbered slots plus labelled

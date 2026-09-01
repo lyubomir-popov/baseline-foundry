@@ -19,10 +19,10 @@ four component families onto it. No new geometry is computed.
 re-pointed per member and state, matching what that component actually paints
 rather than which shared ledger it sits in.
 
-This includes the nested icon-only button's unchanged body-line metric strut.
-Its nested padding comes from the nested framed ledger, but its content-height
-fact remains the body line, so its alias composes those actual facts instead of
-copying the ledger's nominal painted-block name.
+Bordered nested icon-only buttons are excluded. Browser measurement proved that
+the 1rem OS icon canvas alone equals the complete host line, leaving no room
+for two borders and framed padding. Supporting that composition would require
+a separate icon-size decision rather than an alias re-point.
 
 The distinction is not academic. The nested-badge defect exists because a
 component adopted the nested ledger on one axis and kept a standalone value on
