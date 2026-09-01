@@ -72,12 +72,6 @@
                 </tbody>
               </table>
             </div>
-            <button class="bf-chip" type="button">
-              <span class="bf-chip-value">Chip</span>
-            </button>
-            <span class="bf-chip is-borderless"
-              ><span class="bf-chip-value">Borderless chip</span></span
-            >
             <span class="bf-status-label is-information">Status label</span>
           </div>
         </section>
@@ -123,11 +117,38 @@
               <ul class="bf-pagination-items">
                 <li class="bf-pagination-item">
                   <a
-                    class="bf-pagination-link"
+                    class="bf-pagination-link is-next"
                     href="#horizontal-actions"
-                    aria-current="page"
-                    >1</a
+                    >Next</a
                   >
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </section>
+
+        <section
+          class="bf-stack is-dense"
+          aria-labelledby="horizontal-block-derived"
+        >
+          <h2 class="bf-h6" id="horizontal-block-derived">
+            Horizontal — block-derived minimum
+          </h2>
+          <div class="bf-stack is-dense">
+            <button class="bf-chip" type="button">
+              <span class="bf-chip-value">1</span>
+            </button>
+            <span class="bf-chip is-borderless"
+              ><span class="bf-chip-value">12</span></span
+            >
+            <span class="bf-badge">3</span>
+            <button class="bf-button is-icon" type="button" aria-label="Search">
+              <span class="bf-icon is-search" aria-hidden="true"></span>
+            </button>
+            <nav class="bf-pagination" aria-label="Numbered pagination">
+              <ul class="bf-pagination-items">
+                <li class="bf-pagination-item">
+                  <a class="bf-pagination-link" href="#horizontal-block-derived">1</a>
                 </li>
               </ul>
             </nav>

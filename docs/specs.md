@@ -7,7 +7,15 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| None | — | No active numbered package. |
+| 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](../specs/021-block-derived-inline-geometry/) | Re-review requested on `feat/021-block-derived-inline-geometry`. Implementation, four-tier rendered verification, and independent adversarial review are complete; owner/stakeholder acceptance is pending. |
+
+## Preserved drafts
+
+Specs 019 and 020 remain preserved on
+`feat/019-tier-responsive-action-insets`; they are deliberately absent from
+this branch so completing Spec 021 cannot merge an unimplemented draft.
+The owner accepted Spec 020's supersession of Spec 019. Promote Spec 020 from
+a fresh branch only after Spec 021 is accepted.
 
 ## Archive
 

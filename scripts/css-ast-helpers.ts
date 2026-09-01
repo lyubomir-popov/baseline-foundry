@@ -87,18 +87,26 @@ export function assertRuleHasDecl(
   context?: string
 ): void {
   const label = context ?? selector;
-  const rule = findRule(root, selector);
-  assert(rule !== null, `Expected rule "${selector}" to exist (${label}).`);
+  const rules = findRules(root, selector);
+  const completeRule = rules.find(rule => Object.entries(expectedDecls).every(([prop, expected]) => {
+    const declaration = findDecl(rule, prop);
+    return declaration?.value === expected;
+  }));
+  const observed = rules.map(rule => {
+    const declarations = Object.keys(expectedDecls)
+      .map(prop => findDecl(rule, prop))
+      .filter((decl): decl is Declaration => decl !== null)
+      .map(decl => `"${decl.prop}: ${decl.value}"`);
+    return `[${declarations.join(", ")}]`;
+  });
+  assert(
+    completeRule !== undefined,
+    `Expected one rule "${selector}" to contain ${JSON.stringify(expectedDecls)} but got ${observed.join(", ")} (${label}).`
+  );
   for (const [prop, expected] of Object.entries(expectedDecls)) {
-    const decl = findDecl(rule, prop);
-    assert(
-      decl !== null,
-      `Expected rule "${selector}" to declare "${prop}" (${label}).`
-    );
-    assert(
-      decl.value === expected,
-      `Expected rule "${selector}" to declare "${prop}: ${expected}" but got "${prop}: ${decl.value}" (${label}).`
-    );
+    const declaration = findDecl(completeRule, prop);
+    assert(declaration !== null, `Expected the complete rule "${selector}" to declare "${prop}" (${label}).`);
+    assert(declaration.value === expected, `Expected the complete rule "${selector}" to declare "${prop}: ${expected}" but got "${prop}: ${declaration.value}" (${label}).`);
   }
 }
 
@@ -113,11 +121,13 @@ export function assertRuleMissingDecl(
   context?: string
 ): void {
   const label = context ?? selector;
-  const rule = findRule(root, selector);
-  assert(rule !== null, `Expected rule "${selector}" to exist (${label}).`);
-  const decl = findDecl(rule, prop);
+  const rules = findRules(root, selector);
+  assert(rules.length > 0, `Expected rule "${selector}" to exist (${label}).`);
+  const declarations = rules
+    .map(rule => findDecl(rule, prop))
+    .filter((decl): decl is Declaration => decl !== null);
   assert(
-    decl === null,
+    declarations.length === 0,
     `Expected rule "${selector}" not to declare "${prop}" but it does (${label}).`
   );
 }

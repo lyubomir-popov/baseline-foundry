@@ -5,10 +5,14 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No numbered package is active. Spec 018 is accepted, merged, archived, and
-released as 0.1.6 with its active-tab and nested chip/badge correction patched
-in 0.1.7. Promote the next package only when one of the catalogued evidence
-triggers is satisfied.
+Spec 021 is active on `feat/021-block-derived-inline-geometry`. Its
+member-specific painted-block implementation and four-tier rendered checks are
+complete, and independent adversarial review has no remaining substantive
+findings. Owner/stakeholder acceptance is the remaining closeout step. Do not
+merge, publish, release, or begin Spec 020 without separate closeout direction.
+
+After Spec 021 is accepted, promote Spec 020 on a fresh branch. Spec 020
+supersedes unimplemented Spec 019 and owns the approved horizontal matrix.
 
 ## Candidate order after Spec 001
 
@@ -28,7 +32,6 @@ matching feature branch only when its catalogued evidence trigger is met.
 
 ## Unnumbered backlog
 
-- Dense icon/keyline spacing and the future boundary of `bf-button.is-icon`.
 - Switch versus slider track language.
 - Downstream-generated authoring chroma surface; never a built-in tier by
   default.

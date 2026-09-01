@@ -1,20 +1,18 @@
 type ChipBadgeStatusCssOptions = {
   bodyCaseTypeStyles: string;
-  bodyLineHeight: string;
   bodyTypeStyles: string;
 };
 
 export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   const {
     bodyCaseTypeStyles,
-    bodyLineHeight,
     bodyTypeStyles,
   } = options;
 
   return `:where(.bf-theme) {
   --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-field);
   --bf-ui-chip-radius: 999rem;
-  --bf-ui-badge-padding-inline: calc(${bodyLineHeight} * 0.25);
+  --bf-ui-badge-padding-inline: var(--bf-border-width);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
 }
 
@@ -33,11 +31,15 @@ ${bodyTypeStyles}  align-items: baseline;
   display: inline-flex;
   gap: 0;
   inline-size: fit-content;
+  justify-content: center;
   justify-self: start;
   margin: 0 var(--bf-ui-chip-padding-inline) var(--bf-interface-row-compensation-block-end) 0;
   max-inline-size: 100%;
+  min-inline-size: var(--bf-square-block-size);
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
+  /* Keep overflow padding token-derived while allowing a fitting glyph to
+     fall inside the block-derived minimum in every tier. */
+  padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - (var(--bf-border-width) * 2)));
   position: relative;
   text-decoration: none;
   user-select: none;
@@ -129,17 +131,15 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 ${bodyTypeStyles}  align-items: center;
   background-color: var(--bf-color-text-default);
   border-radius: 1rem;
-  box-sizing: content-box;
   color: var(--bf-color-background-default);
   display: inline-block;
   margin: 0;
-  max-inline-size: 4ch;
-  min-width: calc(${bodyLineHeight} - (var(--bf-ui-badge-padding-inline) * 2));
-  overflow: hidden;
+  min-inline-size: var(--bf-square-block-size);
   padding-block: 0;
   padding-inline: var(--bf-ui-badge-padding-inline);
   text-align: center;
   text-indent: 0;
+  white-space: nowrap;
 }
 
 :where(.bf-theme) :where(.bf-badge.is-negative) {

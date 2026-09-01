@@ -2,19 +2,42 @@
 
 ## Active package
 
-None. Spec 018 is accepted, merged, and archived. Do not promote a candidate
-without its catalogued evidence trigger.
+Spec 021, [`specs/021-block-derived-inline-geometry/`](specs/021-block-derived-inline-geometry/),
+is active on `feat/021-block-derived-inline-geometry`. The owner-approved
+contract derives inline minima from each member's own painted block for chips,
+badges, bare icon buttons, and bare numbered-pagination slots. Status labels,
+article pagination, and labelled previous/next pagination controls are outside
+membership. Do not merge, publish, release, or start Spec 020 without separate
+closeout direction.
+
+## Re-review requested — Spec 021
+
+The implementation is ready for owner and originating-stakeholder re-review on
+`feat/021-block-derived-inline-geometry`. Start with
+[`specs/021-block-derived-inline-geometry/review.md`](specs/021-block-derived-inline-geometry/review.md),
+then inspect the live demo at `http://127.0.0.1:4174/` across all four tiers.
+Pay particular attention to the documented chip overflow-padding resolution,
+the table-hosted interactive nested chip, link-style and nested icon actions,
+notification close, and bare versus labelled pagination.
+
+`npm test` passes with 9,723 static checks, every component baseline family at
+zero failures, and green browser behavior. Fresh `npm run qa:components`
+captures and baseline verification also pass with zero failures. A final Sol
+architecture/cascade/verification review found no remaining blocking, major,
+or substantive findings after all eight initial findings and four follow-up
+evidence gaps were closed. Owner/stakeholder visual acceptance remains pending;
+do not merge, archive, publish, release, push this feature branch, or begin Spec
+020 without separate direction.
 
 ## Active follow-up
 
-Branch `fix/table-row-control-fit` compares a plain table row with a row of
-explicitly nested text/number inputs, button, checkbox, and radio controls. The
-controls use the same opt-in host-owned density model as nested chips while the
-ordinary table cells retain their inset and separator. Do not publish to npm or
-create a release unless the user explicitly asks. `npm test` passes with 7,054
-static contracts plus component and behavior checks; `npm run qa:components`
-also passes. Live browser review confirms the compact row, centered selection
-marks, visible input focus paint, shared page chrome, and a clean console.
+The accepted architecture fixes are on pushed `main` at `b99b66a`. That exact
+commit passes `npm test` with 8,653 static checks and zero baseline/behavior
+failures, plus fresh `npm run qa:components` captures. The pre-split state is
+recoverable at `snapshot/pre-split-2026-09-01` (`62b92b8`); Spec 019/020/021
+draft history is preserved separately at `d49bb40`. Seven verified merged
+remote branches and three verified merged local branches were removed after
+the push; `fix/active-tab-nested-chip` remains by explicit instruction.
 
 ## Previous release — 0.1.7 / archived Spec 018 follow-up
 

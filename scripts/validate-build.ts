@@ -5,7 +5,7 @@ import { nestedFieldSelector, nestedInteractiveSelector, nestedTextInputTypes } 
 import { tierNames } from "../src/presets.ts";
 import { componentPages } from "./component-demo-shared.ts";
 import { assert, getCheckCount } from "./validation-assert.ts";
-import { parseCss, assertRuleHasDecl } from "./css-ast-helpers.ts";
+import { parseCss, assertRuleHasDecl, assertRuleMissingDecl } from "./css-ast-helpers.ts";
 import { validateRenewalComponentContracts } from "./validation/renewal-component-contracts.ts";
 import { assertNoDuplicateClassAttributes } from "./validation/html-contract-helpers.ts";
 import {
@@ -800,7 +800,17 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link:hover) {\n  background-color: transparent;\n  color: var(--bf-color-link-default);\n  text-decoration: underline;"), "Expected bf-button.is-link hover state to keep transparent chrome and restore underline treatment.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-space-1);"), "Expected bf-button.is-icon to use the shared spacing token for its explicit icon/label relationship.");
-  assert(css.includes(':where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label))) {\n  column-gap: 0;\n}\n\n:where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))::before {\n  block-size: var(--bf-body-line-height);\n  content: "";\n  inline-size: 0;'), "Expected icon-only buttons to preserve the occupied body line through a gapless zero-width metric strut rather than a target block size.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))", {
+    "column-gap": "0",
+    "justify-self": "start",
+    "min-inline-size": "var(--bf-square-block-size)",
+    "padding-inline": "0"
+  }, "icon-only buttons derive their intrinsic square from their painted block without a text inset");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))::before", {
+    "block-size": "var(--bf-body-line-height)",
+    "content": '""',
+    "inline-size": "0"
+  }, "icon-only buttons preserve the occupied body line through a zero-width metric strut");
   assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-space-2);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: 0;"), "Expected generated CSS to keep bf-cta-block externally neutral for stack ownership.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
@@ -907,7 +917,10 @@ function validateCommonCss(css: string): void {
     "--bf-ui-chip-background": "var(--bf-color-background-neutral-default)",
     "display": "inline-flex",
     "inline-size": "fit-content",
+    "justify-content": "center",
     "justify-self": "start",
+    "min-inline-size": "var(--bf-square-block-size)",
+    "padding-inline": "max(0rem, calc(var(--bf-ui-chip-padding-inline) - (var(--bf-border-width) * 2)))",
     "white-space": "nowrap"
   }, "chips keep the canonical neutral token defaults and inline chip layout");
   assert(css.includes("--bf-ui-chip-radius: 999rem;") && css.includes("border-radius: var(--bf-ui-chip-radius);"), "Expected standalone and nested chips to use the shared rem-based pill radius.");
@@ -915,9 +928,15 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", {
     "display": "inline-block",
+    "min-inline-size": "var(--bf-square-block-size)",
+    "padding-inline": "var(--bf-ui-badge-padding-inline)",
     "text-align": "center",
-    "text-indent": "0"
+    "text-indent": "0",
+    "white-space": "nowrap"
   }, "badges keep the canonical body-sized pill geometry");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "box-sizing", "badge sizing follows the shared border-box contract instead of a losing local content-box override");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "max-inline-size", "badges grow with wider counter content instead of clipping at an arbitrary character cap");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "overflow", "badges do not hide wider counter content");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", {
     "display": "inline-block",
     "inline-size": "fit-content",
@@ -930,6 +949,130 @@ function validateCommonCss(css: string): void {
   assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-interface-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end)"), "Expected status-label paint to use the symmetric shared interface-row contract.");
   assert(css.includes("--bf-nested-row-line-height: calc(var(--bf-interface-row-line-height) - var(--bf-baseline));") && !css.includes("--bf-nested-row-line-height: max(") && css.includes("--bf-nested-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height)) / 2));") && css.includes("--bf-nested-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-row-padding-block) * 2));"), "Expected nested surface geometry to use the designed body-line-minus-baseline expression without silently selecting among unrelated constraints.");
   assert(css.includes("--bf-nested-framed-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height) - (var(--bf-border-width) * 2)) / 2));") && css.includes("--bf-nested-framed-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2));") && css.includes("--bf-nested-framed-row-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-framed-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));"), "Expected nested interactive controls to use an explicit two-border ledger within the host body line.");
+  const expectedSquareAliases = new Map<string, string>([
+    [":where(.bf-theme)", "var(--bf-interface-row-painted-block-size)"],
+    [":where(.bf-theme) :where(.bf-badge)", "var(--bf-interface-row-line-height)"],
+    [":where(.bf-theme) :where(.bf-chip.is-nested)", "var(--bf-nested-row-painted-block-size)"],
+    [":where(.bf-theme) :where(.bf-badge.is-nested)", "var(--bf-nested-row-line-height)"],
+    [":where(.bf-theme) :where(.bf-button.is-link.is-icon:not(:has(.bf-button-label)))", "var(--bf-body-line-height)"],
+    [":where(.bf-theme) :where(.bf-button.is-icon.is-nested:not(.is-link):not(:has(.bf-button-label)))", "calc(var(--bf-body-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2))"],
+    [":where(.bf-theme) :where(.bf-notification-close)", "var(--bf-notification-close-painted-block-size)"]
+  ]);
+  const emittedSquareAliases = new Map<string, string>();
+  let emittedSquareAliasCount = 0;
+  ast.walkDecls("--bf-square-block-size", declaration => {
+    const parent = declaration.parent;
+    assert(parent?.type === "rule", "Expected every square-block alias declaration to belong to a selector rule.");
+    emittedSquareAliasCount += 1;
+    emittedSquareAliases.set(parent.selector, declaration.value);
+  });
+  assert(emittedSquareAliasCount === expectedSquareAliases.size && emittedSquareAliases.size === expectedSquareAliases.size, `Expected exactly ${expectedSquareAliases.size} unique square-block alias states, got ${emittedSquareAliasCount} declarations and ${JSON.stringify([...emittedSquareAliases])}.`);
+  for (const [selector, value] of expectedSquareAliases) {
+    assert(emittedSquareAliases.get(selector) === value, `Expected ${selector} to re-point --bf-square-block-size to ${value}, got ${emittedSquareAliases.get(selector) ?? "nothing"}.`);
+  }
+  const expectedSquareConsumers = [
+    ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)",
+    ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))",
+    ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)",
+    ":where(.bf-theme) :where(.bf-pagination-link:not(.is-previous):not(.is-next))"
+  ].sort();
+  const emittedSquareConsumers: string[] = [];
+  ast.walkDecls("min-inline-size", declaration => {
+    if (declaration.value !== "var(--bf-square-block-size)") return;
+    const parent = declaration.parent;
+    assert(parent?.type === "rule", "Expected every square-block consumer to belong to a selector rule.");
+    emittedSquareConsumers.push(parent.selector);
+  });
+  assert(JSON.stringify(emittedSquareConsumers.sort()) === JSON.stringify(expectedSquareConsumers), `Expected only the reviewed block-derived membership to consume the square alias, got ${JSON.stringify(emittedSquareConsumers)}.`);
+  ast.walkRules(rule => {
+    if (!rule.selector.includes("bf-tier-")) return;
+    const isBlockDerivedOverride = rule.selector.includes("bf-chip") || rule.selector.includes("bf-badge") || rule.selector.includes("bf-button.is-icon") || rule.selector.includes("bf-pagination-link");
+    let repointsSquare = false;
+    rule.walkDecls("--bf-square-block-size", () => { repointsSquare = true; });
+    assert(!isBlockDerivedOverride && !repointsSquare, `Expected block-derived geometry to avoid per-tier overrides; found ${rule.selector}.`);
+  });
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-pagination-link:not(.is-previous):not(.is-next))", {
+    "min-inline-size": "var(--bf-square-block-size)",
+    "padding-inline": "0"
+  }, "bare numbered pagination consumes painted-block geometry without an action inset");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", {
+    "border-radius": "var(--bf-radius)",
+    "padding-inline": "var(--bf-component-inline-inset-action-bordered)"
+  }, "labelled pagination controls retain the Action contract and shared radius");
+  assert(!css.includes("--bf-pagination-slot-inline-size"), "Expected pagination to retire its occupied-block inline slot alias.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notification, .bf-notification.is-information, .bf-notification.is-positive, .bf-notification.is-caution, .bf-notification.is-negative)", {
+    "--bf-notification-close-painted-block-size": "calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default))"
+  }, "notification owns the painted block of its specialized borderless icon action");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notification-close)", {
+    "block-size": "var(--bf-square-block-size)",
+    "inline-size": "var(--bf-square-block-size)",
+    "padding": "0"
+  }, "notification close action reuses its painted block on both axes");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notification-content)", {
+    "padding-inline-end": "var(--bf-notification-close-painted-block-size)"
+  }, "notification copy reserves the complete square close-action paint");
+  for (const selector of [
+    ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))",
+    ":where(.bf-theme) :where(.bf-pagination-link:not(.is-previous):not(.is-next))"
+  ]) {
+    for (const property of ["aspect-ratio", "block-size", "inline-size", "transform", "border-radius"]) {
+      assertRuleMissingDecl(ast, selector, property, `${selector} derives square geometry without an authored size, transform, aspect ratio, or radius change`);
+    }
+  }
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
+    "border-radius": "var(--bf-ui-chip-radius)"
+  }, "chip remains one of the two permitted radius owners");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", {
+    "border-radius": "1rem"
+  }, "badge remains one of the two permitted radius owners");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", "border-radius", "status labels remain rectangular and outside block-derived membership");
+  const permittedRadiusSelectors = new Set([
+    ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)",
+    ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)"
+  ]);
+  const expectedUnaffectedRadii = [
+    ":where(.bf-theme) :where(.bf-application-aside-resize-handle)::after => 62.4375rem",
+    ":where(.bf-theme) :where(.bf-button, .bf-button.is-base) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-button.is-link) => 0",
+    ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
+    ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-prose ul > li)::before => 50%",
+    ":where(.bf-theme) :where(.bf-radio-label)::after => 50%",
+    ":where(.bf-theme) :where(.bf-radio-label)::before => 50%",
+    ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) => 0",
+    ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-switch-slider) => var(--bf-control-visual-size)",
+    ":where(.bf-theme) :where(.bf-switch-slider)::before => 50%",
+    ":where(.bf-theme) :where(.bf-validation-message)::before => 50%",
+    ":where(.bf-theme) :where(input[type='file'])::file-selector-button => var(--bf-radius)",
+    ":where(.bf-theme) :where(input[type='range']) => var(--bf-baseline)",
+    ":where(.bf-theme) :where(input[type='range'])::-moz-range-progress => var(--bf-baseline)",
+    ":where(.bf-theme) :where(input[type='range'])::-moz-range-thumb => 50%",
+    ":where(.bf-theme) :where(input[type='range'])::-moz-range-track => var(--bf-baseline)",
+    ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-runnable-track => var(--bf-baseline)",
+    ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb => 50%"
+  ].sort();
+  const unaffectedRadii: string[] = [];
+  ast.walkDecls("border-radius", declaration => {
+    const parent = declaration.parent;
+    assert(parent?.type === "rule", "Expected every border-radius declaration to belong to a selector rule.");
+    if (!permittedRadiusSelectors.has(parent.selector)) unaffectedRadii.push(`${parent.selector} => ${declaration.value}`);
+  });
+  assert(JSON.stringify(unaffectedRadii.sort()) === JSON.stringify(expectedUnaffectedRadii), `Expected every radius outside chip and badge to retain the reviewed declaration set; got ${JSON.stringify(unaffectedRadii)}.`);
+  const expectedUnaffectedRadiusLonghands = [
+    ":where(.bf-theme) :where(.bf-segmented-control-item:first-child .bf-segmented-control-button, .bf-tab-buttons-item:first-child .bf-tab-buttons-button) :: border-end-start-radius => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-segmented-control-item:first-child .bf-segmented-control-button, .bf-tab-buttons-item:first-child .bf-tab-buttons-button) :: border-start-start-radius => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-segmented-control-item:last-child .bf-segmented-control-button, .bf-tab-buttons-item:last-child .bf-tab-buttons-button) :: border-end-end-radius => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-segmented-control-item:last-child .bf-segmented-control-button, .bf-tab-buttons-item:last-child .bf-tab-buttons-button) :: border-start-end-radius => var(--bf-radius)"
+  ].sort();
+  const unaffectedRadiusLonghands: string[] = [];
+  ast.walkDecls(/^border-.+-radius$/, declaration => {
+    const parent = declaration.parent;
+    assert(parent?.type === "rule", "Expected every radius longhand declaration to belong to a selector rule.");
+    unaffectedRadiusLonghands.push(`${parent.selector} :: ${declaration.prop} => ${declaration.value}`);
+  });
+  assert(JSON.stringify(unaffectedRadiusLonghands.sort()) === JSON.stringify(expectedUnaffectedRadiusLonghands), `Expected every radius longhand to retain the reviewed declaration set; got ${JSON.stringify(unaffectedRadiusLonghands)}.`);
   assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
   assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-interface-row-compensation-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural interface row as textual controls.");
   assert(css.includes("padding-block-end: var(--bf-in-box-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-in-box-row-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
@@ -969,8 +1112,8 @@ function validateCommonCss(css: string): void {
     "white-space": "nowrap"
   }, "selects reserve one trailing chevron canvas and truncate long selected values");
   assert(css.includes("input[type='number'])::-webkit-inner-spin-button,\n:where(.bf-theme) :where(input[type='number'])::-webkit-outer-spin-button {\n  appearance: none;\n  margin: 0;"), "Expected Chromium number inputs to remove the duplicate browser-reserved spin slot.");
-  assert(css.includes("--bf-ui-badge-padding-inline: calc(var(--bf-body-line-height"), "Expected badge geometry to scale from the active body line-height rather than an h5 fallback.");
-  assert(css.includes("min-width: calc(var(--bf-body-line-height"), "Expected badge minimum width to scale from the active body line-height.");
+  assert(css.includes("--bf-ui-badge-padding-inline: var(--bf-border-width);") && !css.includes("--bf-ui-badge-padding-inline: calc("), "Expected badge overflow padding to stay token-derived without reconstructing a block size from typography.");
+  assert(!css.includes("min-width: calc(var(--bf-body-line-height") && !css.includes("min-inline-size: calc(var(--bf-body-line-height"), "Expected badge inline floors to resolve through the cascade-repointed square contract rather than a build-time body-line interpolation.");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before", "chip value separators");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "badges");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", "status labels");

@@ -155,6 +155,9 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
  * without imposing a target block size or changing icon/label spacing. */
 :where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label))) {
   column-gap: 0;
+  justify-self: start;
+  min-inline-size: var(--bf-square-block-size);
+  padding-inline: 0;
 }
 
 :where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))::before {

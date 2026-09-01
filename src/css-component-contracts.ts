@@ -55,6 +55,11 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
   --bf-nested-framed-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2));
   --bf-nested-framed-row-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-framed-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));
 
+  /* Block-derived members consume one inline-minimum name. The default is
+     the regular framed paint; selectors below re-point the name to what each
+     member actually paints, rather than to the row ledger it occupies. */
+  --bf-square-block-size: var(--bf-interface-row-painted-block-size);
+
   /* Leading marks are positioned backwards from the continuation copy inset;
      a mark never creates a fourth content inset. */
   --bf-leading-mark-size: var(--bf-control-visual-size);
@@ -62,6 +67,30 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
   --bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));
   --bf-leading-mark-group-inset: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-offset));
   --bf-tick-label-offset: var(--bf-leading-mark-offset);
+}
+
+:where(.bf-theme) :where(.bf-badge) {
+  --bf-square-block-size: var(--bf-interface-row-line-height);
+}
+
+:where(.bf-theme) :where(.bf-chip.is-nested) {
+  --bf-square-block-size: var(--bf-nested-row-painted-block-size);
+}
+
+:where(.bf-theme) :where(.bf-badge.is-nested) {
+  --bf-square-block-size: var(--bf-nested-row-line-height);
+}
+
+:where(.bf-theme) :where(.bf-button.is-link.is-icon:not(:has(.bf-button-label))) {
+  --bf-square-block-size: var(--bf-body-line-height);
+}
+
+:where(.bf-theme) :where(.bf-button.is-icon.is-nested:not(.is-link):not(:has(.bf-button-label))) {
+  --bf-square-block-size: calc(var(--bf-body-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2));
+}
+
+:where(.bf-theme) :where(.bf-notification-close) {
+  --bf-square-block-size: var(--bf-notification-close-painted-block-size);
 }
 
 ${themeSurfaces

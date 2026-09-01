@@ -119,7 +119,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         checkboxCheckCenterY: checkbox.top + checkboxCheck.top + (checkboxCheck.height / 2),
         leadingMarkCenters: [".bf-prose ul > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label"].map(markCenter),
         markedTextStarts: [".bf-prose ul > li", ".bf-prose ol > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label", ".bf-validation-message"].map(textStart),
-        fieldTextStarts: [".bf-table td", ".bf-chip-value", ".bf-status-label"].map(textStart),
+        fieldTextStarts: [".bf-table td", ".bf-status-label"].map(textStart),
         commandTextStarts: [".bf-button", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
         accordionStart: iconLabelStart(".bf-accordion-tab"),
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
@@ -144,7 +144,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(Math.abs(alignmentGeometry.radioDotWidth - alignmentGeometry.expectedRadioDotWidth) < 0.01, "Expected the radio inner dot to be one scalable border unit wider than its previous proportional size.");
     assert(Math.abs(alignmentGeometry.checkboxCenterY - alignmentGeometry.checkboxCheckCenterY) <= alignmentGeometry.borderWidth * 0.5, "Expected the checkbox check to sit optically within half a scalable border unit of the outer-box centre.");
     assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), "Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline.");
-    assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell, chip, and status-label text to share the green field-inset keyline.");
+    assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell and status-label text to share the green field-inset keyline.");
     assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, segmented-control, tab, and pagination text to share the red one-rem action keyline.");
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
     const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
@@ -202,7 +202,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
               document.querySelector(".bf-notification-title").getBoundingClientRect().left,
               textStart(".bf-panel-content p")
             ],
-            field: [".bf-table td", ".bf-chip-value", ".bf-status-label"].map(textStart),
+            field: [".bf-table td", ".bf-status-label"].map(textStart),
             keylines: { action: line("one-rem-inset"), field: line("field-text-start"), continuation: line("disclosure-label-start") },
             markCenters: [".bf-prose ul > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label"].map(markCenter),
             numberSelect: {
@@ -313,7 +313,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     const zoomGeometry = await page.evaluate(() => {
       const fieldLine = document.querySelector<HTMLElement>("[data-spacing-keyline='field-text-start']");
       const continuationLine = document.querySelector<HTMLElement>("[data-spacing-keyline='disclosure-label-start']");
-      const field = document.querySelector<HTMLElement>(".bf-chip-value");
+      const field = document.querySelector<HTMLElement>(".bf-status-label");
       const continuation = document.querySelector<HTMLElement>(".bf-panel-content p");
       if (!fieldLine || !continuationLine || !field || !continuation) throw new Error("Missing zoom keylines or specimens.");
       const fieldRange = document.createRange();
@@ -2449,6 +2449,286 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
   }
 }
 
+async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const tones = ["light", "dark"] as const;
+  const browser = await openBrowser();
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const shapeTolerance = 1.05;
+
+  const setSurface = async (tier: typeof tiers[number], tone: typeof tones[number]): Promise<void> => {
+    const toneToggle = page.locator("[data-page-chrome-tone-toggle]");
+    const wantsDark = tone === "dark";
+    if (await toneToggle.isChecked() !== wantsDark) {
+      await toneToggle.setChecked(wantsDark, { force: true });
+    }
+    await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+    await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+  };
+
+  const readBoxes = async (selector: string) => page.locator(selector).evaluateAll(elements => elements.map(element => {
+    const target = element as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const style = getComputedStyle(target);
+    const range = document.createRange();
+    range.selectNodeContents(target);
+    const contentRect = range.getBoundingClientRect();
+    return {
+      width: rect.width,
+      height: rect.height,
+      clientWidth: target.clientWidth,
+      scrollWidth: target.scrollWidth,
+      minInlineSize: style.minInlineSize,
+      paddingInlineStart: Number.parseFloat(style.paddingInlineStart),
+      paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
+      contentCenterDelta: contentRect.width > 0
+        ? (contentRect.left + (contentRect.width / 2)) - (rect.left + (rect.width / 2))
+        : null
+    };
+  }));
+
+  const assertSquare = (box: Awaited<ReturnType<typeof readBoxes>>[number], label: string): void => {
+    assert(Math.abs(box.width - box.height) <= shapeTolerance, `Expected ${label} to match painted inline and block extents within one rasterised border; got ${JSON.stringify(box)}.`);
+  };
+
+  const assertNoClip = (box: Awaited<ReturnType<typeof readBoxes>>[number], label: string): void => {
+    assert(box.scrollWidth <= box.clientWidth + 1, `Expected ${label} not to clip its content; got ${JSON.stringify(box)}.`);
+  };
+
+  const assertCentered = (box: Awaited<ReturnType<typeof readBoxes>>[number], label: string): void => {
+    assert(box.contentCenterDelta !== null && Math.abs(box.contentCenterDelta) <= 0.51, `Expected ${label} content to be horizontally centred inside its painted square; got ${JSON.stringify(box)}.`);
+  };
+
+  const assertTargetSizeOrSpacing = async (selector: string, label: string): Promise<void> => {
+    const targets = await page.locator(selector).evaluateAll(elements => {
+      type TargetGeometry = {
+        element: HTMLElement;
+        rect: DOMRect;
+        centreX: number;
+        centreY: number;
+        containsMinimumSquare: boolean;
+      };
+      const pointerTargetSelector = "a[href], button, input, select, textarea, summary, [role='button'], [role='link'], [role='checkbox'], [role='radio'], [role='switch'], [role='tab'], [role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio'], [role='option'], [role='slider'], [role='spinbutton'], [role='textbox'], [role='combobox']";
+      const allTargets = [...document.querySelectorAll<HTMLElement>(pointerTargetSelector)]
+        .filter(target => {
+          const rect = target.getBoundingClientRect();
+          const style = getComputedStyle(target);
+          return rect.width > 0 && rect.height > 0 && style.visibility !== "hidden" && style.display !== "none";
+        })
+        .map((target): TargetGeometry => {
+          const rect = target.getBoundingClientRect();
+          const style = getComputedStyle(target);
+          const radii = [
+            style.borderTopLeftRadius,
+            style.borderTopRightRadius,
+            style.borderBottomRightRadius,
+            style.borderBottomLeftRadius
+          ].map(value => {
+            const parts = value.split(/\s+/).map(part => Number.parseFloat(part));
+            return [parts[0] || 0, parts[1] || parts[0] || 0] as [number, number];
+          });
+          const scale = Math.min(
+            1,
+            ...[
+              rect.width / Math.max(radii[0][0] + radii[1][0], 1),
+              rect.width / Math.max(radii[3][0] + radii[2][0], 1),
+              rect.height / Math.max(radii[0][1] + radii[3][1], 1),
+              rect.height / Math.max(radii[1][1] + radii[2][1], 1)
+            ]
+          );
+          const insetX = (rect.width - 24) / 2;
+          const insetY = (rect.height - 24) / 2;
+          const containsSquare = rect.width >= 24 && rect.height >= 24 && radii.every(([rawX, rawY]) => {
+            const radiusX = rawX * scale;
+            const radiusY = rawY * scale;
+            if (radiusX === 0 || radiusY === 0 || insetX >= radiusX || insetY >= radiusY) return true;
+            const x = (insetX - radiusX) / radiusX;
+            const y = (insetY - radiusY) / radiusY;
+            return (x * x) + (y * y) <= 1.0001;
+          });
+          return {
+            element: target,
+            rect,
+            centreX: rect.left + (rect.width / 2),
+            centreY: rect.top + (rect.height / 2),
+            containsMinimumSquare: containsSquare
+          };
+        });
+      return elements.map(element => {
+        const ownTarget = allTargets.find(target => target.element === element);
+        if (!ownTarget) throw new Error("Expected reviewed target to be present in the page target inventory.");
+        const { rect, centreX, centreY, containsMinimumSquare } = ownTarget;
+        const clearances = allTargets
+          .filter(other => other.element !== element)
+          .map(other => {
+            if (!other.containsMinimumSquare) {
+              return Math.hypot(other.centreX - centreX, other.centreY - centreY) - 24;
+            }
+            const nearestX = Math.max(other.rect.left, Math.min(centreX, other.rect.right));
+            const nearestY = Math.max(other.rect.top, Math.min(centreY, other.rect.bottom));
+            return Math.hypot(nearestX - centreX, nearestY - centreY) - 12;
+          });
+        const minimumClearance = clearances.length > 0 ? Math.min(...clearances) : Number.POSITIVE_INFINITY;
+        return {
+          width: rect.width,
+          height: rect.height,
+          containsMinimumSquare,
+          minimumSpacingClearance: minimumClearance,
+          passesSpacing: minimumClearance >= -0.01
+        };
+      });
+    });
+    for (const target of targets) {
+      assert(target.containsMinimumSquare || target.passesSpacing, `Expected ${label} to contain an axis-aligned 24px square or pass the WCAG 2.5.8 pairwise spacing-circle test; got ${JSON.stringify(target)}.`);
+    }
+  };
+
+  try {
+    await page.goto(`${origin}/demo/components/chip.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      for (const tier of tiers) {
+        await setSurface(tier, tone);
+        const chips = await readBoxes("[data-block-derived-chip]:not(.is-nested)");
+        assert(chips.length === 6, `Expected six chip shape and overflow fixtures in ${tier}/${tone}.`);
+        assertSquare(chips[0], `${tier}/${tone} one-character chip`);
+        assertCentered(chips[0], `${tier}/${tone} one-character chip`);
+        assertSquare(chips[5], `${tier}/${tone} one-character borderless chip`);
+        assertCentered(chips[5], `${tier}/${tone} one-character borderless chip`);
+        assert(chips[3].width > chips[3].height + shapeTolerance && Math.abs(chips[3].height - chips[0].height) <= shapeTolerance, `Expected ${tier}/${tone} four-character chip to grow into a stadium without changing its painted block; got ${JSON.stringify(chips)}.`);
+        assertNoClip(chips[1], `${tier}/${tone} two-character chip`);
+        assertNoClip(chips[2], `${tier}/${tone} three-character chip`);
+        assertNoClip(chips[3], `${tier}/${tone} four-character chip`);
+        assertNoClip(chips[4], `${tier}/${tone} five-character chip`);
+        await assertTargetSizeOrSpacing("button[data-block-derived-chip]:not(.is-nested)", `${tier}/${tone} interactive standalone chip`);
+      }
+    }
+
+    for (const tone of tones) {
+      for (const tier of tiers) {
+        await setSurface(tier, tone);
+        const nestedChips = await readBoxes("[data-block-derived-chip].is-nested");
+        assert(nestedChips.length === 5, `Expected one-through-five-character nested chip fixtures in ${tier}/${tone}.`);
+        assertSquare(nestedChips[0], `${tier}/${tone} nested one-character chip`);
+        assertCentered(nestedChips[0], `${tier}/${tone} nested one-character chip`);
+        assert(nestedChips[3].width > nestedChips[3].height + shapeTolerance && Math.abs(nestedChips[3].height - nestedChips[0].height) <= shapeTolerance, `Expected ${tier}/${tone} nested four-character chip to grow into a stadium; got ${JSON.stringify(nestedChips)}.`);
+        assertNoClip(nestedChips[1], `${tier}/${tone} nested two-character chip`);
+        assertNoClip(nestedChips[2], `${tier}/${tone} nested three-character chip`);
+        assertNoClip(nestedChips[3], `${tier}/${tone} nested four-character chip`);
+        assertNoClip(nestedChips[4], `${tier}/${tone} nested five-character chip`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/spec/spacing-vertical.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      for (const tier of tiers) {
+        await setSurface(tier, tone);
+        const [nestedInteractiveChip] = await readBoxes("[data-block-derived-interactive-nested-chip]");
+        assert(nestedInteractiveChip, `Expected the table-hosted interactive nested chip in ${tier}/${tone}.`);
+        assertNoClip(nestedInteractiveChip, `${tier}/${tone} table-hosted interactive nested chip`);
+        await assertTargetSizeOrSpacing("[data-block-derived-interactive-nested-chip]", `${tier}/${tone} table-hosted interactive nested chip`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/components/badge.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      for (const tier of tiers) {
+        await setSurface(tier, tone);
+        const badges = await readBoxes("[data-block-derived-badge]");
+        assert(badges.length === 10, `Expected standalone and nested one-through-five-character badge fixtures in ${tier}/${tone}.`);
+        assertSquare(badges[0], `${tier}/${tone} one-character badge`);
+        assertSquare(badges[5], `${tier}/${tone} nested one-character badge`);
+        assert(badges[3].width > badges[3].height + shapeTolerance && Math.abs(badges[3].height - badges[0].height) <= shapeTolerance, `Expected ${tier}/${tone} four-character badge to grow into a stadium without changing its painted block; got ${JSON.stringify(badges)}.`);
+        assert(badges[8].width > badges[8].height + shapeTolerance && Math.abs(badges[8].height - badges[5].height) <= shapeTolerance, `Expected ${tier}/${tone} nested four-character badge to grow into a stadium; got ${JSON.stringify(badges)}.`);
+        for (const [index, badge] of badges.entries()) {
+          if (index === 0 || index === 5) continue;
+          assertNoClip(badge, `${tier}/${tone} badge fixture ${index + 1}`);
+        }
+      }
+    }
+
+    await page.goto(`${origin}/demo/components/button.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      for (const tier of tiers) {
+        await setSurface(tier, tone);
+        const buttons = await readBoxes("[data-block-derived-icon-button]");
+        assert(buttons.length === 4, `Expected regular, nested, and link-style icon-only button fixtures in ${tier}/${tone}.`);
+        for (const [index, button] of buttons.entries()) {
+          assertSquare(button, `${tier}/${tone} icon-only button ${index + 1}`);
+          assert(button.paddingInlineStart === 0 && button.paddingInlineEnd === 0, `Expected ${tier}/${tone} icon-only button ${index + 1} to omit the label-framing action inset; got ${JSON.stringify(button)}.`);
+        }
+        await assertTargetSizeOrSpacing("[data-block-derived-icon-button]", `${tier}/${tone} icon-only button`);
+        const pageChromeButtons = await readBoxes(".pc-sequence-link");
+        assert(pageChromeButtons.length > 0, `Expected real page-chrome icon-only links in ${tier}/${tone}.`);
+        for (const button of pageChromeButtons) assertSquare(button, `${tier}/${tone} page-chrome icon-only link`);
+        await assertTargetSizeOrSpacing(".pc-sequence-link", `${tier}/${tone} page-chrome icon-only link`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/components/notification.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      for (const tier of tiers) {
+        await setSurface(tier, tone);
+        const [close] = await readBoxes(".bf-notification-close");
+        assert(close, `Expected the specialized notification close action in ${tier}/${tone}.`);
+        assertSquare(close, `${tier}/${tone} notification close action`);
+        assert(close.paddingInlineStart === 0 && close.paddingInlineEnd === 0, `Expected ${tier}/${tone} notification close action to omit label-framing padding; got ${JSON.stringify(close)}.`);
+        await assertTargetSizeOrSpacing(".bf-notification-close", `${tier}/${tone} notification close action`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/components/pagination.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      for (const tier of tiers) {
+        await setSurface(tier, tone);
+        const numbered = await readBoxes("[data-block-derived-pagination]");
+        const labelled = await readBoxes(".bf-pagination-link.is-previous, .bf-pagination-link.is-next");
+        assert(numbered.length === 3 && labelled.length === 2, `Expected numbered and labelled pagination fixtures in ${tier}/${tone}.`);
+        for (const number of numbered) {
+          assertSquare(number, `${tier}/${tone} numbered pagination slot`);
+          assert(number.paddingInlineStart === 0 && number.paddingInlineEnd === 0, `Expected ${tier}/${tone} numbered pagination to omit the Action inset; got ${JSON.stringify(number)}.`);
+        }
+        assert(labelled.every(link => link.paddingInlineStart > 0 && link.paddingInlineEnd > 0 && link.width > link.height), `Expected ${tier}/${tone} labelled previous/next pagination to retain the Action contract; got ${JSON.stringify(labelled)}.`);
+        await assertTargetSizeOrSpacing("[data-block-derived-pagination]", `${tier}/${tone} numbered pagination`);
+      }
+    }
+
+    await page.goto(`${origin}/demo/components/article-pagination.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tone of tones) {
+      for (const tier of tiers) {
+        await setSurface(tier, tone);
+        const collapsed = await page.locator(".article-pagination-demo-narrow .bf-article-pagination").evaluate(navigation => {
+          const previous = navigation.querySelector<HTMLElement>(".bf-article-pagination-link.is-previous");
+          const label = previous?.querySelector<HTMLElement>(".bf-article-pagination-label");
+          if (!previous || !label) return null;
+          const rect = previous.getBoundingClientRect();
+          const style = getComputedStyle(previous);
+          const labelStyle = getComputedStyle(label);
+          return {
+            width: rect.width,
+            height: rect.height,
+            minInlineSize: style.minInlineSize,
+            paddingInlineStart: Number.parseFloat(style.paddingInlineStart),
+            paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
+            labelClipPath: labelStyle.clipPath,
+            labelWidth: label.getBoundingClientRect().width
+          };
+        });
+        assert(collapsed && collapsed.minInlineSize === "0px" && collapsed.paddingInlineStart > 0 && collapsed.paddingInlineEnd > 0 && collapsed.labelWidth <= 1, `Expected ${tier}/${tone} collapsed article pagination to remain a responsive labelled control outside block-derived membership; got ${JSON.stringify(collapsed)}.`);
+      }
+    }
+  } finally {
+    await page.close();
+    await browser.close();
+  }
+}
+
 async function verifyQualifiedAnchorStates(origin: string): Promise<void> {
   const cases = [
     { route: "/examples/grid/app-panels.html", selector: "a.pc-sequence-link", decoration: "none", label: "page sequence button" },
@@ -4055,6 +4335,7 @@ async function main(): Promise<void> {
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
     await verifyNestedAuxiliaryGeometry(origin);
+    await verifyBlockDerivedInlineGeometry(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);

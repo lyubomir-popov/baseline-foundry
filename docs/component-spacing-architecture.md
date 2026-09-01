@@ -26,7 +26,9 @@ The config keys are `inlineInsetFieldRem`, `inlineInsetActionRem`, and
 
 Page margins, grid gutters, navigation depth, and structural surface padding
 are not component insets. A border, icon, or mark may be compensated inside a
-component, but it must resolve the first glyph to one of the three insets.
+component, but author-visible text must resolve its first glyph to one of the
+three insets. Content with no meaningful text advance may instead use the
+reviewed block-derived minimum described below.
 
 ## Product-tier inputs
 
@@ -111,14 +113,14 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 |---|---|---|---|
 | Text, number, select, search, password, email, URL, telephone | Field | Regular; framed nested when explicitly hosted | Real borders; select and number share one trailing `1rem` chevron canvas |
 | Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
-| Chip and status label | Field | Regular; zero-footprint nested | Chip nested border is inset paint; status removes transparent block borders |
-| Button, segmented action, pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
+| Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
+| Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
+| Chip, badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; explicitly re-pointed for nested, link-style, and specialized paint | `--bf-square-block-size` follows paint, never occupied compensation; fitting chip content is centred and its overflow padding is token-derived rather than a Field-keyline claim; chip and badge alone may own pill/circle radius, while button and pagination retain their existing radius |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
 | Checkbox, radio, prose/list marks, validation | Continuation copy | Regular; framed nested for selection controls | Mark position is calculated backward from the continuation copy inset |
 | Accordion, list tree, side-navigation copy, table of contents, notification | Continuation | Regular | Icon canvas and gap do not create another inset; TOC nesting adds only structural depth after the root inset |
 | Reduced top navigation | Action | Regular in-box | Each command absorbs the complete occupied-row compensation; dropdown placement derives from that occupied row |
 | Panel component content and tagged primary-navigation brand | Continuation | Region-owned | Panel exposes a local content-padding property; the tagged brand and navigation copy share the same start |
-| Badge | Centred exception | Regular text or zero-footprint nested | Symmetric counter geometry has no first-glyph inset |
 | Switch | Reviewed exception | Regular | Its wider track prevents reuse of the common mark canvas |
 | Fieldset, modal regions, drawer chrome | Structural surface padding | Region-owned | Uses `--bf-panel-padding-inline`, not a component inset |
 | Page, grid, navigation nesting | Structural layout | Layout-owned | Never folded into component padding |
@@ -182,11 +184,14 @@ formulas.
 For a new component:
 
 1. choose Field, Action, or Continuation for every author-visible first glyph;
-2. classify its block behavior as regular, regular in-box, or explicitly
+2. use block-derived inline geometry only for reviewed content with no
+   meaningful text advance, and map the member's own painted block rather than
+   a shared occupied-block ledger;
+3. classify its block behavior as regular, regular in-box, or explicitly
    nested;
-3. account for every painted border exactly once;
-4. keep structural layout offsets outside the component inset;
-5. add a computed browser assertion if the component introduces a new host or
+4. account for every painted border exactly once;
+5. keep structural layout offsets outside the component inset;
+6. add a computed browser assertion if the component introduces a new host or
    border composition.
 
 A new shared inset, density scale, target height, or tier-owned leaf override
@@ -225,6 +230,8 @@ and non-100% browser zoom. The browser checks compare:
 - number/select trailing artwork and truncation; and
 - tagged brand, navigation, panel, disclosure, mark, and notification starts;
 - rejected nested input and link-button cases; and
+- circles, stadium overflow, square icon actions, and bare numbered pagination
+  against each member's painted block; and
 - a non-100% Chromium page-scale context in addition to root-font scaling.
 
 The horizontal and vertical spacing demos are inspection surfaces. Their local

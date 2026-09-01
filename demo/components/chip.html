@@ -10,6 +10,12 @@
 <body class="bf-theme is-dark" data-component-capture>
 <section class="bf-stack" data-baseline-check="box" data-baseline-label="chip section">
  <div class="bf-cluster" data-baseline-check="box" data-baseline-label="chip row">
+ <button class="bf-chip" type="button" data-block-derived-chip="1" data-baseline-check="box" data-baseline-label="chip one character">1</button>
+ <button class="bf-chip" type="button" data-block-derived-chip="2" data-baseline-check="box" data-baseline-label="chip two characters">12</button>
+ <button class="bf-chip" type="button" data-block-derived-chip="3" data-baseline-check="box" data-baseline-label="chip three characters">123</button>
+ <button class="bf-chip" type="button" data-block-derived-chip="4" data-baseline-check="box" data-baseline-label="chip four characters">1234</button>
+ <button class="bf-chip" type="button" data-block-derived-chip="5" data-baseline-check="box" data-baseline-label="chip five characters">12345</button>
+ <button class="bf-chip is-borderless" type="button" data-block-derived-chip="borderless-1" data-baseline-check="box" data-baseline-label="chip borderless one character">1</button>
  <button class="bf-chip" type="button" data-baseline-check="box" data-baseline-label="chip default">
  <span class="bf-chip-lead" data-baseline-ignore="true">Mode</span>
  <span class="bf-chip-value" data-baseline-ignore="true">Frame</span>
@@ -21,6 +27,23 @@
  <span class="bf-chip-value" data-baseline-ignore="true">Borderless</span>
  </span>
  </div>
+ </section>
+ <section class="bf-stack" data-baseline-ignore="true" aria-label="Nested chip overflow specimens">
+  <table class="bf-table">
+   <tbody>
+    <tr>
+     <td>
+      <span class="bf-cluster is-dense is-nowrap">
+       <span class="bf-chip is-nested" data-block-derived-chip="nested-1">1</span>
+       <span class="bf-chip is-nested" data-block-derived-chip="nested-2">12</span>
+       <span class="bf-chip is-nested" data-block-derived-chip="nested-3">123</span>
+       <span class="bf-chip is-nested" data-block-derived-chip="nested-4">1234</span>
+       <span class="bf-chip is-nested" data-block-derived-chip="nested-5">12345</span>
+      </span>
+     </td>
+    </tr>
+   </tbody>
+  </table>
  </section>
   <script type="module" src="../component-demo.js"></script>
 </body>

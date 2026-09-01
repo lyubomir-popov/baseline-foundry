@@ -73,6 +73,7 @@ export function interactiveFeedbackCss(): string {
 
 :where(.bf-theme) :where(.bf-notification, .bf-notification.is-information, .bf-notification.is-positive, .bf-notification.is-caution, .bf-notification.is-negative) {
   --bf-notification-accent: var(--bf-color-border-information);
+  --bf-notification-close-painted-block-size: calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default));
   background: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-default);
   border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);
@@ -151,7 +152,7 @@ export function interactiveFeedbackCss(): string {
   /* Neutralise the shell's top border so the first metric role starts on-grid. */
   margin-block: calc(var(--bf-border-width) * -1) 0;
   padding-block-start: 0;
-  padding-inline-end: calc(var(--bf-icon-size-default) + var(--bf-space-1));
+  padding-inline-end: var(--bf-notification-close-painted-block-size);
 }
 
 :where(.bf-theme) :where(.bf-notification.is-borderless .bf-notification-content) {
@@ -195,9 +196,9 @@ export function interactiveFeedbackCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-notification-close) {
-  block-size: calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default));
+  block-size: var(--bf-square-block-size);
   border: 0;
-  inline-size: var(--bf-icon-size-default);
+  inline-size: var(--bf-square-block-size);
   margin-block-end: 0;
   padding: 0;
   position: absolute;

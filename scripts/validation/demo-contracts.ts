@@ -356,10 +356,15 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
   }
   assert((horizontalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 5, "Expected compact H6-styled headings throughout the horizontal audit.");
   assert((verticalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length === 3, "Expected the vertical audit to present only the shared interface, unboxed text, and real nested-context families.");
+  assert(verticalAuditHtml.includes("data-block-derived-interactive-nested-chip"), "Expected the vertical audit to retain the table-hosted interactive nested chip used for target-size evidence.");
   assert(horizontalAuditHtml.includes('Horizontal — field and cell content inset') && horizontalAuditHtml.includes('Horizontal — command inset') && horizontalAuditHtml.includes('Horizontal — leading-mark offset') && horizontalAuditHtml.includes('Horizontal — icon-led and navigation label offset'), "Expected the horizontal audit to present the concise measured inset groups.");
   assert(!horizontalAuditHtml.includes('<code>--bf-') && !verticalAuditHtml.includes('<code>--bf-'), "Expected audit headings to omit implementation-variable labels.");
   const fieldBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-fields"'), horizontalAuditHtml.indexOf('id="horizontal-actions"'));
-  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell') && fieldBucket.includes('bf-chip') && fieldBucket.includes('is-borderless') && fieldBucket.includes('bf-status-label'), "Expected number, select, table-cell, regular/borderless chip, and status-label insets to remain directly comparable in the field bucket.");
+  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell') && fieldBucket.includes('bf-status-label') && !fieldBucket.includes('bf-chip'), "Expected number, select, table-cell, and status-label insets to remain directly comparable while block-derived chips stay outside the field bucket.");
+  const blockDerivedBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-block-derived"'), horizontalAuditHtml.indexOf('id="horizontal-marks"'));
+  for (const component of ["bf-chip", "is-borderless", "bf-badge", "bf-button is-icon", "bf-pagination-link"]) {
+    assert(blockDerivedBucket.includes(component), `Expected the block-derived bucket to include ${component}.`);
+  }
   const markBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-marks"'), horizontalAuditHtml.indexOf('id="horizontal-icon-navigation"'));
   assert(markBucket.includes('<ul>') && markBucket.includes('<ol>') && markBucket.includes('is-ticked') && markBucket.includes('is-crossed') && markBucket.includes('bf-checkbox') && markBucket.includes('bf-radio') && markBucket.includes('bf-validation-message'), "Expected the leading-mark bucket to cover prose bullets/numbers, state-list marks, checkbox, radio, and validation copy.");
   const iconNavigationBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-icon-navigation"'), horizontalAuditHtml.indexOf('id="horizontal-surfaces"'));
