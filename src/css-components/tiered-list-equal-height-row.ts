@@ -101,6 +101,16 @@ export function tieredListEqualHeightRowCss(): string {
   }
 }
 
+/* Match application navigation's viewport transition. The persistent rail
+   narrows the main container, but its presence still denotes the desktop
+   composition; both the rail and this header become compact below 48rem. */
+@media (min-width: 48rem) {
+  :where(.bf-theme.bf-application) :where(.bf-tiered-list:not(.is-description-full-width)) :where(.bf-tiered-list-header),
+  :where(.bf-theme) :where(.bf-application) :where(.bf-tiered-list:not(.is-description-full-width)) :where(.bf-tiered-list-header) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Equal-height row (Vanilla parity).                                  */
 /* Cross-column row alignment via CSS subgrid: each column is a 4-row  */

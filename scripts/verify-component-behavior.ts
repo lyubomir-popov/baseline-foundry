@@ -1080,12 +1080,34 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
         const drawer = navigation?.querySelector<HTMLElement>(".bf-navigation-drawer");
         const overlay = navigation?.querySelector<HTMLElement>(".bf-navigation-overlay");
-        if (!application || !navigation || !drawer || !overlay) return null;
+        const content = application?.querySelector<HTMLElement>(".bf-main .bf-panel-content");
+        if (!application || !navigation || !drawer || !overlay || !content) return null;
+
+        const fixture = document.createElement("div");
+        fixture.innerHTML = `
+          <section class="bf-basic-section">
+            <div class="bf-basic-section-layout">
+              <div class="bf-basic-section-header">Header</div>
+              <div class="bf-basic-section-content">Content</div>
+            </div>
+          </section>
+          <section class="bf-tiered-list">
+            <div class="bf-tiered-list-header">
+              <div>Title</div>
+              <div>Description</div>
+            </div>
+          </section>
+        `;
+        content.append(fixture);
+        const basicLayout = fixture.querySelector<HTMLElement>(".bf-basic-section-layout");
+        const tieredHeader = fixture.querySelector<HTMLElement>(".bf-tiered-list-header");
         return {
           areas: getComputedStyle(application).gridTemplateAreas,
+          basicColumns: basicLayout ? getComputedStyle(basicLayout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
           drawerHidden: drawer.getAttribute("aria-hidden"),
           drawerPosition: getComputedStyle(drawer).position,
-          overlayDisplay: getComputedStyle(overlay).display
+          overlayDisplay: getComputedStyle(overlay).display,
+          tieredHeaderColumns: tieredHeader ? getComputedStyle(tieredHeader).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0
         };
       });
       assert(state, `Expected application navigation state ${boundary.label}.`);
@@ -1093,6 +1115,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       assert(state.drawerHidden === (boundary.persistent ? "false" : "true"), `Expected application navigation accessibility state to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.drawerPosition === (boundary.persistent ? "static" : "fixed"), `Expected application navigation drawer positioning to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert((state.overlayDisplay === "none") === boundary.persistent, `Expected application navigation overlay lifecycle to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+      const expectedColumns = boundary.persistent ? 2 : 1;
+      assert(state.basicColumns === expectedColumns, `Expected application basic-section to use ${expectedColumns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
+      assert(state.tieredHeaderColumns === expectedColumns, `Expected application tiered-list header to use ${expectedColumns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
     }
 
     await page.setViewportSize({ width: 1440, height: 960 });

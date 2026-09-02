@@ -76,6 +76,19 @@ export function sitesFoundationCss(): string {
   }
 }
 
+/* Application chrome switches as one composition at the viewport boundary.
+   The persistent navigation reduces the main allocation by its own width, so
+   the intrinsic query alone would briefly stack this split while the rail was
+   still visible. Keep the desktop split whenever application navigation is
+   persistent; below 48rem the intrinsic base remains one column. */
+@media (min-width: 48rem) {
+  :where(.bf-theme.bf-application) :where(.bf-basic-section-layout),
+  :where(.bf-theme) :where(.bf-application) :where(.bf-basic-section-layout) {
+    column-gap: var(--bf-grid-gap-inline);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* CTA section: Vanilla's 25/75 variant is an offset content rail. The full
    variant stays naturally full-width. Typography and action presentation are
    supplied by real heading elements and bf-cta-block. */
