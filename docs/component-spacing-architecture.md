@@ -115,7 +115,7 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
 | Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
 | Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
-| Chip | Field plus block-derived minimum | Regular; zero-footprint nested | The Field inset keeps chip text on the shared glyph keyline; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. `--bf-square-block-size` prevents a short chip becoming narrower than its own painted block. Documentation standalone and Editorial/Documentation nested one-character chips are slight stadiums; use a badge for a circular counter. |
+| Chip | Action plus block-derived minimum | Regular; zero-footprint nested | The Action inset frames chip commands; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. `--bf-square-block-size` prevents a short chip becoming narrower than its own painted block. One-character chips are stadiums in every tier; use a badge for a circular counter. |
 | Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to chips and badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
 | Checkbox, radio, prose/list marks, validation | Continuation copy | Regular; framed nested for selection controls | Mark position is calculated backward from the continuation copy inset |
@@ -204,14 +204,29 @@ normative unit used by WCAG 2.2 success criterion 2.5.8, not a design-system
 spacing token. It does not change the control's block size, occupied geometry,
 or token-derived painted square.
 
-An out-of-flow target still needs container-owned clearance. A `.bf-actions`
-group containing link-style icon buttons derives the target overflow from that
-same normative minimum and leaves one border width of positive clearance
-between adjacent targets. This changes only the OS icon-link group gap, from
-the normal 0.25rem Field gap to 0.5625rem. The `is-nowrap` form also reserves
-the transparent overflow as scrollport padding because a scrolling overflow
-container otherwise clips positioned descendants. These are supported
-composition rules, not target block sizes or changes to control paint.
+An out-of-flow target still needs layout clearance. Each supported icon-only
+button derives its own per-edge overflow from the same normative minimum and
+reserves that space with `margin-inline`. The allowance therefore travels with
+the target through `.bf-actions`, `.bf-cluster`, and other non-clipping
+compositions; ordinary container gap tokens remain unchanged and no container
+infers geometry through `:has()`.
+
+When such a composition can wrap, its author adds `is-icon-target-wrap` to the
+wrapping container. The modifier puts baseline-rounded block clearance on each
+direct icon-only target, preventing targets on adjacent flex or grid rows from
+overlapping without changing standalone control geometry. Supporting engines
+round the exact shortfall up to the active baseline; the conservative fallback
+uses one baseline. The modifier is generic rather than tied to one primitive.
+
+A scrolling overflow container can still clip positioned descendants at its
+edges. Such a container opts in explicitly with
+`is-icon-target-scrollport`. The modifier reserves a symmetric,
+baseline-rounded allowance. Supporting engines resolve that allowance to zero
+in Editorial and one complete baseline in Documentation, App, and OS; the
+fallback uses one safe baseline in every tier. Exact rounding is deliberately
+uncapped, so custom configurations with a larger target shortfall can reserve
+more than one baseline. This explicit modifier is part of the target
+composition contract, not a target block size or a change to control paint.
 
 ## Removed contracts
 

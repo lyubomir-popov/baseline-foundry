@@ -37,17 +37,18 @@ former single-character and radius questions are closed; do not reopen them.
 - [x] T009 Add static assertions for contract emission per tier and per member
   state, a rejection assertion for any build-time-interpolated inline floor,
   and a rejection assertion for authored lengths introduced by this package
-  except the three reviewed uses of the same 24px pointer-target constant: two
-  target axes and one supported-container overflow derivation.
+  except the five reviewed uses of the same 24px pointer-target constant: two
+  target axes, one target-owned inline derivation, one explicit wrapping-row
+  block derivation, and one explicit scrollport allowance.
 - [x] T010 Add browser assertions measuring equal *painted* inline and block
   extents — explicitly painted, not occupied, since the two coincide in some
-  tiers — for fitting chips and badges and for square icon actions and
+  tiers — for Action-framed chips, fitting badges, and square icon actions and
   pagination slots, in all four tiers and both tones, plus centred fitting chip
-  content, the accepted intrinsic Field-chip stadiums, link-style icon actions,
-  directly hittable icon targets at edges and corners in LTR/RTL ordinary and
-  nowrap action groups, a forced 1.5 device-scale raster sweep of both default
-  alias members, and unclipped stadium behaviour from two through five
-  characters.
+  content, the Action-framed chip stadiums, link-style icon actions, directly
+  hittable icon targets at edges and corners in LTR/RTL actions, clusters, and
+  explicit scrollports at both logical extremes, a forced 1.5 device-scale
+  raster sweep of both default alias members, and unclipped stadium behaviour
+  from two through five characters.
 - [x] T011 Confirm the existing four-tier occupied-block and vertical
   assertions pass unmodified. Do not adjust them to accommodate this package.
 - [x] T012 Add the block-derived row to the classification table in
@@ -58,8 +59,16 @@ former single-character and radius questions are closed; do not reopen them.
 - [x] T014 Run `npm test` and `npm run qa:components` with fresh captures,
   record evidence in `review.md`, and request owner and stakeholder visual
   acceptance.
-- [x] T015 Record the accepted R3 direct pointer-target disposition and R4
-  Field-chip keyline ownership, encode them consistently, and rerun `npm test`
-  plus fresh `npm run qa:components` captures.
-- [ ] T016 Merge and archive only after acceptance. Do not publish or release
+- [x] T015 Record the first R3/R4 re-review dispositions, encode them
+  consistently, and rerun `npm test` plus fresh `npm run qa:components`
+  captures.
+- [x] T016 Address S1–S4 structurally: move inline clearance onto every target,
+  replace contextual `:has()` container geometry with explicit generic
+  `is-icon-target-wrap` and `is-icon-target-scrollport` contracts, round the
+  exact block shortfall to the baseline without a custom-config cap, remove the
+  OS 9px gap, and move chips to the owner-directed Action inset while preserving
+  its internal badge gap on Field.
+- [ ] T017 Run final gates and an independent adversarial review, address any
+  substantive finding, then request and record a fresh Opus re-review.
+- [ ] T018 Merge and archive only after acceptance. Do not publish or release
   without a separate explicit request.

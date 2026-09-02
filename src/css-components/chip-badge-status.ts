@@ -10,7 +10,7 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   } = options;
 
   return `:where(.bf-theme) {
-  --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-field);
+  --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-action);
   --bf-ui-chip-radius: 999rem;
   --bf-ui-badge-padding-inline: var(--bf-border-width);
   --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
@@ -33,11 +33,11 @@ ${bodyTypeStyles}  align-items: baseline;
   inline-size: fit-content;
   justify-content: center;
   justify-self: start;
-  margin: 0 var(--bf-ui-chip-padding-inline) var(--bf-interface-row-compensation-block-end) 0;
+  margin: 0 var(--bf-component-inline-inset-field) var(--bf-interface-row-compensation-block-end) 0;
   max-inline-size: 100%;
   min-inline-size: var(--bf-square-block-size);
   padding-block: var(--bf-interface-row-padding-block);
-  /* Chips keep the Field text keyline; the block-derived minimum prevents a
+  /* Chips use the Action text keyline; the block-derived minimum prevents a
      short chip from becoming narrower than its painted row. */
   padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
   position: relative;
@@ -133,6 +133,8 @@ ${bodyTypeStyles}  align-items: center;
   border-radius: 1rem;
   color: var(--bf-color-background-default);
   display: inline-block;
+  inline-size: fit-content;
+  justify-self: start;
   margin: 0;
   min-inline-size: var(--bf-square-block-size);
   padding-block: 0;
@@ -150,7 +152,7 @@ ${bodyTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) :where(.bf-badge, .bf-badge.is-negative) {
   align-self: center;
   margin-inline-end: var(--bf-ui-badge-overhang);
-  margin-inline-start: var(--bf-ui-chip-padding-inline);
+  margin-inline-start: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {
@@ -166,7 +168,7 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   /* Status paint is physically symmetric and shares the same occupied block
      as a button; typography still comes from the body role. */
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: var(--bf-ui-chip-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-field);
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
@@ -205,7 +207,7 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   border: 0;
   box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);
   /* The nested border is inset paint rather than box geometry, so the glyph
-     needs the complete Field inset instead of subtracting a real border. */
+     needs the complete Action inset instead of subtracting a real border. */
   padding-inline: var(--bf-ui-chip-padding-inline);
 }
 

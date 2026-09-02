@@ -89,8 +89,10 @@ opposite direction.
 
 ## Decision: minimum rather than fixed size
 
-A minimum makes one character exactly circular, lets two or more grow into a
-stadium, and cannot clip. A fixed size would clip a three-digit counter.
+A minimum makes fitting content exactly circular, lets wider intrinsic content
+grow into a stadium, and cannot clip. A fixed size would clip a three-digit
+counter. Badges exercise the circular fitting case; Action-framed chips are
+stadiums while still consuming the same protective floor.
 
 This is why neither of the two options the stakeholder question posed — derive
 the padding, or force max and min extents — is quite right on its own. Deriving
@@ -137,10 +139,11 @@ mechanism. The member/state table is what prevents recurrence.
 
 CSS cannot select on content length. The block-derived minimum therefore
 applies universally to badges and chips, and the circle is the case where
-intrinsic padded content fits inside it. Chips retain the Field inset so their
-common multi-word form shares the field glyph keyline. Documentation's
-one-character chip is about 1.43px wider than its minimum and is accepted as a
-slight stadium; badges own the exact circular-counter case.
+intrinsic padded content fits inside it. The owner moved chips to the Action
+inset on 2026-09-02: regular chips subtract their real border and nested chips
+keep the full inset because their border is inset paint. One-character chips
+are therefore stadiums in every tier; badges own the exact circular-counter
+case.
 
 No content-length modifier is introduced.
 
@@ -157,13 +160,18 @@ Squaring an OS icon button reduces its paint from roughly 3rem to roughly
 1.25rem inline. The accepted resolution is not a target block size and does not
 rely on arbitrary consumer spacing: a transparent absolutely positioned
 `::after` extends the pointer target to at least 24-by-24 CSS pixels without
-entering flow or changing paint. Supported `.bf-actions` groups derive the
-extension overflow from the same minimum, add one border width of positive
-clearance between adjacent icon-link targets, and reserve that overflow as
-padding when `is-nowrap` would otherwise clip it. The 24px value remains a
-CSS-pixel constant because WCAG 2.2 success criterion 2.5.8 defines the
-requirement in CSS pixels; it is not a BF spacing token. Interactive chips and
-numbered pagination retain their measured direct or spacing dispositions.
+entering flow or changing paint. Each supported target derives its inline
+margin from the same minimum, so non-overlap follows the button through actions,
+clusters, and other ordinary containers. Wrapping containers opt in with
+`is-icon-target-wrap` so direct targets reserve block clearance between rows;
+clipping containers opt in with `is-icon-target-scrollport`. Supporting engines
+round each exact shortfall up to the active baseline without a one-baseline
+cap, while the safe fallback reserves one baseline. No container geometry
+depends on contextual `:has()`.
+The 24px value remains a CSS-pixel constant because WCAG 2.2 success criterion
+2.5.8 defines the requirement in CSS pixels; it is not a BF spacing token.
+Interactive chips and numbered pagination retain their measured direct or
+spacing dispositions.
 
 ## Resolved: fractional border rasterisation
 

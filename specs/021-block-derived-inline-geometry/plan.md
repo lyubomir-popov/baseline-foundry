@@ -39,17 +39,16 @@ table is per member and state, and enumerated in the contract.
 ### Minimum, not size
 
 `min-inline-size: var(--bf-square-block-size)` with token-derived
-`padding-inline` retained for overflow. One character produces exactly the
-painted block; more characters grow the box. Nothing clips, and nothing
-overrides intrinsic sizing.
+`padding-inline` retained for overflow. Content that fits produces exactly the
+painted block; wider intrinsic content grows the box. Nothing clips, and
+nothing overrides intrinsic sizing.
 
-Browser measurement exposed one implementation constraint hidden by the draft:
-Documentation's one-character chip is intrinsically about 1.43px wider than its
-painted block when it keeps the Field-keyline padding. A minimum cannot shrink
-that box. The accepted resolution keeps chips in Field and treats this one case
-as a slight stadium; badges own exact circular counters. The block-derived
-minimum still prevents every chip from becoming narrower than its painted row,
-while longer chip text keeps the shared Field glyph edge in every tier.
+The owner moved chips to the Action inset on 2026-09-02. A regular chip uses
+`Action − real border`; a nested chip uses the full Action inset because its
+border is inset paint rather than box geometry. The block-derived minimum still
+prevents every chip from becoming narrower than its painted row, while the
+Action-framed intrinsic width makes one-character chips stadiums in all tiers.
+Badges own exact circular counters.
 
 For icon-only buttons the action inset is removed rather than retained, because
 there is no label for it to frame; the icon centres inside the minimum through
@@ -61,16 +60,23 @@ The square paint remains naturally dense. An absolutely positioned transparent
 `::after` extends the pointer target to `max(100%, 24px)` on both axes without
 entering flow or occupied-block measurement. WCAG 2.2 success criterion 2.5.8
 defines the minimum in CSS pixels, so this is one normative constant reused by
-both target axes and the action-container clearance derivation; it is not a
-painted size or BF spacing token.
+both target axes, the per-target inline allowance, the wrapping-row block
+allowance, and the explicit scrollport allowance; it is not a painted size or
+BF spacing token.
 
-Browser hit testing showed that two generated targets which touch exactly can
-lose their shared edge to sibling paint order, and that `is-nowrap` clips
-positioned descendants at its scrollport. Supported `.bf-actions` groups with
-link icons therefore leave one `--bf-border-width` of positive clearance. The
-nowrap form also reserves the derived transparent target overflow as padding.
-This is a targeted composition adjustment—only the OS icon-link group gap
-changes—while the controls' paint and occupied block remain unchanged.
+Browser hit testing showed that two generated targets which overlap can route
+part of one control's target to its sibling, and that a scrollport clips
+positioned descendants. Each supported icon-only button therefore reserves its
+own inline overflow with margin; this follows the target through actions,
+clusters, and other ordinary containers while their gap tokens stay unchanged.
+Wrapping containers opt in with `is-icon-target-wrap`, which reserves
+baseline-rounded block clearance on each direct target so adjacent rows cannot
+overlap. Clipping containers independently opt in with
+`is-icon-target-scrollport`, which reserves symmetric baseline-rounded edge
+containment. Supporting engines round the exact shortfall, including zero in
+Editorial and more than one baseline for sufficiently dense custom configs;
+the safe fallback reserves one baseline. No container geometry depends on
+contextual `:has()`.
 
 ### Badge cleanup
 
@@ -116,12 +122,14 @@ they are not to be adjusted to accommodate this package.
   browser review.
 - **Small composable primitives**: Pass. One derived alias and no wrapper
   elements. The existing structural label-slot test distinguishes bare icon
-  buttons; no ancestry-inferred density is introduced.
+  buttons; no ancestry- or contextual-container-inferred geometry is
+  introduced. The button may inspect its own label slot to select its state.
 - **Accessible behavior**: Pass. The paint remains naturally dense while the
   icon-only pointer target is directly extended to 24-by-24 CSS pixels in every
-  tier, with positive separation and nowrap-scrollport containment in supported
-  action groups. Other changed interactive members retain measured direct or
-  spacing dispositions.
+  tier. Target-owned inline margins preserve separation in ordinary
+  compositions, while explicit wrap and scrollport modifiers preserve row and
+  edge clearance where those contexts need it. Other changed interactive
+  members retain measured direct or spacing dispositions.
 - **Generated-source ownership**: Pass.
 - **Spec-owned state**: Pass on promotion.
 
@@ -132,8 +140,8 @@ The accessibility risk was real. An OS icon-only button moves from roughly
 composition-dependent. The accepted disposition squares the paint and extends
 the pointer target with a transparent out-of-flow 24 CSS-pixel square. This
 preserves control density and makes the target direct in every tier; supported
-action containers own the small clearance needed to keep adjacent targets
-distinct and unclipped.
+targets own their inline clearance, and clipping containers explicitly opt into
+baseline-rounded edge containment.
 
 The reviewed alternatives were:
 
@@ -151,7 +159,5 @@ now checks the extension itself and edge hit testing.
 
 The second risk was that "single character" is not a state CSS can select on.
 That is closed: the minimum applies universally to badges and chips, and the
-circle is simply the case where intrinsic padded content fits inside it. Chips
-retain Field padding; Documentation standalone and Editorial/Documentation
-nested one-character chips are therefore slight stadiums, and consumers use a
-badge when the semantic need is a circular counter.
+use Action padding, so one-character chips are stadiums in every tier and
+consumers use a badge when the semantic need is a circular counter.

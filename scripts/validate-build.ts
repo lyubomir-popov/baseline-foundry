@@ -576,9 +576,9 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("UbuntuSans[wdth,wght].ttf"), "Expected built-in CSS to avoid a runtime URL to the unbundled development font.");
   const normativeTargetMinimums = css.match(/24px\b/g) ?? [];
   assert(
-    normativeTargetMinimums.length === 3 &&
+    normativeTargetMinimums.length === 5 &&
     !/-?(?:\d+(?:\.\d+)?|\.\d+)px\b/.test(css.replaceAll("24px", "")),
-    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except for the three reviewed uses of the 24 CSS-pixel target minimum.",
+    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except for the five reviewed uses of the 24 CSS-pixel target minimum.",
   );
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 38.75rem threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 105.0625rem threshold for the 16-column grid.");
@@ -803,12 +803,22 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-space-1);"), "Expected bf-button.is-icon to use the shared spacing token for its explicit icon/label relationship.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
+    "--bf-action-target-overflow": "max(0rem, calc((24px - var(--bf-square-block-size)) / 2))",
     "column-gap": "0",
     "justify-self": "start",
+    "margin-inline": "var(--bf-action-target-overflow)",
     "min-inline-size": "var(--bf-square-block-size)",
     "padding-inline": "0",
     "position": "relative"
   }, "icon-only buttons derive their intrinsic square from their painted block without a text inset");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
+    "--bf-action-target-block-clearance": "var(--bf-baseline)",
+    "margin-block-end": "calc(var(--bf-action-target-block-clearance) + var(--bf-interface-row-compensation-block-end))",
+    "margin-block-start": "var(--bf-action-target-block-clearance)"
+  }, "explicit wrapping target containers add safe baseline-owned block clearance without changing standalone occupied geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
+    "margin-block-end": "var(--bf-action-target-block-clearance)"
+  }, "link icon targets replace regular trailing compensation with symmetric target clearance");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::before", {
     "block-size": "var(--bf-body-line-height)",
     "content": '""',
@@ -828,13 +838,21 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions)", {
     "gap": "var(--bf-field-gap)"
   }, "ordinary action groups retain the Field gap");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions:has(> .bf-button.is-link.is-icon))", {
-    "--bf-action-target-overflow": "max(0rem, calc((24px - var(--bf-body-line-height)) / 2))",
-    "gap": "max(var(--bf-field-gap), calc((var(--bf-action-target-overflow) * 2) + var(--bf-border-width)))"
-  }, "action groups containing link icons reserve raster-safe container-owned clearance between adjacent 24 CSS-pixel targets");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-link.is-icon))", {
-    "padding": "var(--bf-action-target-overflow)"
-  }, "nowrap action scrollports reserve the transparent target overflow instead of clipping it");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.is-icon-target-scrollport)", {
+    "--bf-icon-target-scrollport-padding": "var(--bf-baseline)",
+    "padding-block": "var(--bf-icon-target-scrollport-padding)",
+    "padding-inline": "var(--bf-icon-target-scrollport-padding)"
+  }, "explicit icon-target scrollports reserve a baseline-rounded allowance without contextual inference");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
+    "--bf-action-target-block-clearance": "round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline))"
+  }, "supporting engines round the exact target block shortfall up to a complete active baseline");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.is-icon-target-scrollport)", {
+    "--bf-icon-target-scrollport-padding": "round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline))"
+  }, "supporting engines round the exact scrollport shortfall up without a one-baseline cap");
+  const contextualIconTargetHas = /\.(?:bf-actions|bf-cluster|is-icon-target-wrap|is-icon-target-scrollport)(?=[^>+~,{]*:has\()/;
+  ast.walkRules(rule => {
+    assert(!contextualIconTargetHas.test(rule.selector), `Expected icon target container ${rule.selector} never to infer geometry through :has().`);
+  });
   assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-space-2);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: 0;"), "Expected generated CSS to keep bf-cta-block externally neutral for stack ownership.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
@@ -947,17 +965,25 @@ function validateCommonCss(css: string): void {
     "padding-inline": "max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)))",
     "white-space": "nowrap"
   }, "chips keep the canonical neutral token defaults and inline chip layout");
+  assertRuleHasDecl(ast, ":where(.bf-theme)", {
+    "--bf-ui-chip-padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "chips use the shared Action inset while retaining their block-derived minimum");
   assert(css.includes("--bf-ui-chip-radius: 999rem;") && css.includes("border-radius: var(--bf-ui-chip-radius);"), "Expected standalone and nested chips to use the shared rem-based pill radius.");
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", {
     "display": "inline-block",
+    "inline-size": "fit-content",
+    "justify-self": "start",
     "min-inline-size": "var(--bf-square-block-size)",
     "padding-inline": "var(--bf-ui-badge-padding-inline)",
     "text-align": "center",
     "text-indent": "0",
     "white-space": "nowrap"
   }, "badges keep the canonical body-sized pill geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) :where(.bf-badge, .bf-badge.is-negative)", {
+    "margin-inline-start": "var(--bf-component-inline-inset-field)"
+  }, "moving the chip's outer keyline to Action does not inflate its internal badge relationship");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "box-sizing", "badge sizing follows the shared border-box contract instead of a losing local content-box override");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "max-inline-size", "badges grow with wider counter content instead of clipping at an arbitrary character cap");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "overflow", "badges do not hide wider counter content");
@@ -1743,7 +1769,7 @@ async function validateScalableAuthoredLengths(): Promise<void> {
     }
   }
 
-  assert(normativeTargetOccurrences === 3, `Expected exactly three uses of the normative 24 CSS-pixel target minimum (two target axes and one non-overlap gap), got ${normativeTargetOccurrences}.`);
+  assert(normativeTargetOccurrences === 5, `Expected exactly five uses of the normative 24 CSS-pixel target minimum (two target axes, target-owned inline and block allowances, and one scrollport allowance), got ${normativeTargetOccurrences}.`);
   assert(violations.length === 0, `Expected authored component and demo styles to use rem-scalable lengths except for the reviewed 24 CSS-pixel target minimum; found other px units in ${violations.join(", ")}.`);
 }
 

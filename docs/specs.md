@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](../specs/021-block-derived-inline-geometry/) | Recommended re-review resolutions and independent adversarial hardening are implemented on `feat/021-block-derived-inline-geometry`: fractional-scale raster coverage is restored, icon-only controls have a direct 24 CSS-pixel target with supported-container clearance, chips retain the Field keyline, and bordered nested icon-only buttons are excluded at the production selector. Final gates are green at 9,947 static checks plus fresh component QA; Opus re-review and acceptance are pending. |
+| 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](../specs/021-block-derived-inline-geometry/) | S1–S4 follow-up is implemented on `feat/021-block-derived-inline-geometry`: chips use the Action inset, icon targets carry portable inline clearance, wrapping and clipping containers use explicit baseline-rounded modifiers without contextual `:has()`, and bordered nested icon-only buttons remain excluded. Final local gates and the independent adversarial pass are green at 19,048 static checks plus fresh component QA; Opus re-review and acceptance are pending. |
 
 ## Preserved drafts
 

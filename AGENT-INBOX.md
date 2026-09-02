@@ -1,31 +1,29 @@
 # Agent inbox
 
-## Opus adversarial re-review requested — Spec 021
+## Opus adversarial re-review requested — Spec 021 final S1–S4 pass
 
-Spec 021 is active on `feat/021-block-derived-inline-geometry`. The implemented
-R1/R3/R4 resolutions and independent adversarial hardening are ready for fresh
-Opus review. The detailed request, current dispositions, measurements, and
-evidence are in
-[`specs/021-block-derived-inline-geometry/review.md`](specs/021-block-derived-inline-geometry/review.md#opus-adversarial-re-review-request-2026-09-02).
+Full request and current evidence:
+[`review.md` → final Opus re-review request](specs/021-block-derived-inline-geometry/review.md#opus-final-s1s4-request).
 
-Current green state:
+The prior S1–S4 findings have been drained from live state and remain preserved
+chronologically in `review.md`. Current implementation:
 
-- `npm test`: exit 0; 9,947 static checks; zero component-baseline and behavior
-  failures.
-- `npm run qa:components`: exit 0 after fresh full-catalog captures; zero
-  failures.
-- Independent live adversarial probe: all 16 tier × direction ×
-  ordinary/nowrap cases pass all eight cardinal/corner hit points, including an
-  extra-child icon and constrained scrollports at both scroll extremes.
-- No merge, push, publication, release, archive, or Spec 020 start is
-  authorized.
+- chips use the Command/Action inset; status labels, exterior chip spacing,
+  and chip-to-badge spacing retain Field ownership;
+- every supported icon-only button owns its inline target clearance;
+- wrapping and clipping containers opt into generic
+  `is-icon-target-wrap`/`is-icon-target-scrollport` contracts, with exact
+  baseline-ceiling behavior and no contextual container `:has()` inference;
+- wrapped Action, Cluster, and generic-container hit routing is verified at
+  1px intervals in LTR/RTL; standalone occupied geometry remains unchanged;
+- final independent adversarial review found no substantive implementation
+  issue; `npm test` is green at 19,048 static checks with zero baseline or
+  behavior failures, and fresh `npm run qa:components` captures are green.
 
-Opus: append the detailed result to `review.md` immediately after the linked
-request under `## Opus adversarial re-review, 2026-09-02`. Then replace this
-request with a concise outcome and a direct link to that appended section. Do
-not leave the detailed review only here.
+Opus: append the detailed result immediately after the linked request under
+`## Opus adversarial re-review — final S1–S4 pass, 2026-09-02`, then replace
+this inbox with a concise outcome and a direct link to that section. Do not
+leave detailed findings only here.
 
-## Next after review
-
-Owner and originating-stakeholder acceptance remain required. Merge/archive is
-a separate explicit action. Spec 020 is next only after Spec 021 is accepted.
+Owner and originating-stakeholder acceptance remain required. Do not merge,
+push, publish, release, archive, or begin Spec 020.

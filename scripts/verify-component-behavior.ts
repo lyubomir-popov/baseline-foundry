@@ -119,8 +119,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         checkboxCheckCenterY: checkbox.top + checkboxCheck.top + (checkboxCheck.height / 2),
         leadingMarkCenters: [".bf-prose ul > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label"].map(markCenter),
         markedTextStarts: [".bf-prose ul > li", ".bf-prose ol > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label", ".bf-validation-message"].map(textStart),
-        fieldTextStarts: [".bf-table td", ".bf-chip", ".bf-chip.is-borderless", ".bf-status-label"].map(textStart),
-        commandTextStarts: [".bf-button", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
+        fieldTextStarts: [".bf-table td", ".bf-status-label"].map(textStart),
+        commandTextStarts: [".bf-button", ".bf-chip", ".bf-chip.is-borderless", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
         accordionStart: iconLabelStart(".bf-accordion-tab"),
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
         treeChildStart: textStart(".bf-list-tree .bf-list-tree .bf-list-tree-link"),
@@ -144,8 +144,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(Math.abs(alignmentGeometry.radioDotWidth - alignmentGeometry.expectedRadioDotWidth) < 0.01, "Expected the radio inner dot to be one scalable border unit wider than its previous proportional size.");
     assert(Math.abs(alignmentGeometry.checkboxCenterY - alignmentGeometry.checkboxCheckCenterY) <= alignmentGeometry.borderWidth * 0.5, "Expected the checkbox check to sit optically within half a scalable border unit of the outer-box centre.");
     assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), "Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline.");
-    assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell, chip, and status-label text to share the green field-inset keyline.");
-    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, segmented-control, tab, and pagination text to share the red one-rem action keyline.");
+    assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell and status-label text to share the green field-inset keyline.");
+    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, chip, segmented-control, tab, and pagination text to share the red one-rem Action keyline.");
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
     const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
     assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, plain/disclosure side-navigation, table of contents, notification, and panel copy to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
@@ -189,7 +189,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
           const numberStyle = getComputedStyle(document.querySelector('input[type="number"]'));
           const selectStyle = getComputedStyle(document.querySelector("select"));
           return {
-            action: [".bf-button", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
+            action: [".bf-button", ".bf-chip", ".bf-chip.is-borderless", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
             continuation: [
               textStart(".bf-accordion-tab"),
               textStart(".bf-list-tree-toggle"),
@@ -202,7 +202,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
               document.querySelector(".bf-notification-title").getBoundingClientRect().left,
               textStart(".bf-panel-content p")
             ],
-            field: [".bf-table td", ".bf-chip", ".bf-chip.is-borderless", ".bf-status-label"].map(textStart),
+            field: [".bf-table td", ".bf-status-label"].map(textStart),
             keylines: { action: line("one-rem-inset"), field: line("field-text-start"), continuation: line("disclosure-label-start") },
             markCenters: [".bf-prose ul > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label"].map(markCenter),
             numberSelect: {
@@ -2614,6 +2614,15 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         const hit = document.elementFromPoint(x, y);
         return hit === target || (hit instanceof Node && target.contains(hit));
       });
+      let interiorSamples = 0;
+      let interiorMisses = 0;
+      for (let y = top; y <= bottom; y += 1) {
+        for (let x = left; x <= right; x += 1) {
+          const hit = document.elementFromPoint(x, y);
+          interiorSamples += 1;
+          if (!(hit === target || (hit instanceof Node && target.contains(hit)))) interiorMisses += 1;
+        }
+      }
       return {
         paintWidth: rect.width,
         paintHeight: rect.height,
@@ -2621,7 +2630,9 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         extensionHeight,
         extensionPosition: extension.position,
         extensionPointerEvents: extension.pointerEvents,
-        hitEdges
+        hitEdges,
+        interiorMisses,
+        interiorSamples
       };
     }));
 
@@ -2629,7 +2640,7 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
       assert(
         target.extensionWidth >= 24 && target.extensionHeight >= 24 &&
         target.extensionPosition === "absolute" && target.extensionPointerEvents === "auto" &&
-        target.hitEdges.every(Boolean),
+        target.hitEdges.every(Boolean) && target.interiorSamples > 0 && target.interiorMisses === 0,
         `Expected ${label} to expose a directly hittable 24 CSS-pixel square without changing its paint; got ${JSON.stringify(target)}.`
       );
     }
@@ -2643,17 +2654,9 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         await setSurface(tier, tone);
         const chips = await readBoxes("[data-block-derived-chip]:not(.is-nested)");
         assert(chips.length === 6, `Expected six chip shape and overflow fixtures in ${tier}/${tone}.`);
-        if (tier === "documentation") {
-          assert(chips[0].width > chips[0].height && chips[0].width - chips[0].height <= 2, `Expected ${tier}/${tone} one-character Field chip to become only the intrinsic-width stadium; got ${JSON.stringify(chips[0])}.`);
-        } else {
-          assertSquare(chips[0], `${tier}/${tone} one-character chip`);
-        }
+        assert(chips[0].width > chips[0].height + shapeTolerance, `Expected ${tier}/${tone} one-character Action-framed chip to render as a stadium above its block-derived floor; got ${JSON.stringify(chips[0])}.`);
         assertCentered(chips[0], `${tier}/${tone} one-character chip`);
-        if (tier === "documentation") {
-          assert(chips[5].width > chips[5].height && chips[5].width - chips[5].height <= 2, `Expected ${tier}/${tone} one-character borderless Field chip to become only the intrinsic-width stadium; got ${JSON.stringify(chips[5])}.`);
-        } else {
-          assertSquare(chips[5], `${tier}/${tone} one-character borderless chip`);
-        }
+        assert(chips[5].width > chips[5].height + shapeTolerance, `Expected ${tier}/${tone} one-character borderless Action-framed chip to render as a stadium above its block-derived floor; got ${JSON.stringify(chips[5])}.`);
         assertCentered(chips[5], `${tier}/${tone} one-character borderless chip`);
         assert(chips[3].width > chips[3].height + shapeTolerance && Math.abs(chips[3].height - chips[0].height) <= shapeTolerance, `Expected ${tier}/${tone} four-character chip to grow into a stadium without changing its painted block; got ${JSON.stringify(chips)}.`);
         assertNoClip(chips[1], `${tier}/${tone} two-character chip`);
@@ -2668,14 +2671,17 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
       for (const tier of tiers) {
         await setSurface(tier, tone);
         const nestedChips = await readBoxes("[data-block-derived-chip].is-nested");
-        const nestedFieldInset = await page.locator(".bf-table td").first().evaluate(cell => Number.parseFloat(getComputedStyle(cell).paddingInlineStart));
+        const nestedActionInset = await page.locator("[data-block-derived-chip].is-nested").first().evaluate(chip => {
+          const probe = document.createElement("span");
+          probe.style.cssText = "padding-inline-start:var(--bf-component-inline-inset-action);position:fixed;visibility:hidden";
+          chip.append(probe);
+          const inset = Number.parseFloat(getComputedStyle(probe).paddingInlineStart);
+          probe.remove();
+          return inset;
+        });
         assert(nestedChips.length === 5, `Expected one-through-five-character nested chip fixtures in ${tier}/${tone}.`);
-        assert(nestedChips.every(chip => Math.abs(chip.paddingInlineStart - nestedFieldInset) <= 0.01 && Math.abs(chip.paddingInlineEnd - nestedFieldInset) <= 0.01), `Expected ${tier}/${tone} nested chip glyphs to retain the complete ${nestedFieldInset}px Field inset because their border is inset paint; got ${JSON.stringify(nestedChips)}.`);
-        if (tier === "editorial" || tier === "documentation") {
-          assert(nestedChips[0].width > nestedChips[0].height && nestedChips[0].width - nestedChips[0].height <= 4.1, `Expected ${tier}/${tone} nested one-character Field chip to become only its intrinsic-width stadium; got ${JSON.stringify(nestedChips[0])}.`);
-        } else {
-          assertSquare(nestedChips[0], `${tier}/${tone} nested one-character chip`);
-        }
+        assert(nestedChips.every(chip => Math.abs(chip.paddingInlineStart - nestedActionInset) <= 0.01 && Math.abs(chip.paddingInlineEnd - nestedActionInset) <= 0.01), `Expected ${tier}/${tone} nested chip glyphs to retain the complete ${nestedActionInset}px Action inset because their border is inset paint; got ${JSON.stringify(nestedChips)}.`);
+        assert(nestedChips[0].width > nestedChips[0].height + shapeTolerance, `Expected ${tier}/${tone} nested one-character Action-framed chip to render as a stadium above its block-derived floor; got ${JSON.stringify(nestedChips[0])}.`);
         assertCentered(nestedChips[0], `${tier}/${tone} nested one-character chip`);
         assert(nestedChips[3].width > nestedChips[3].height + shapeTolerance && Math.abs(nestedChips[3].height - nestedChips[0].height) <= shapeTolerance, `Expected ${tier}/${tone} nested four-character chip to grow into a stadium; got ${JSON.stringify(nestedChips)}.`);
         assertNoClip(nestedChips[1], `${tier}/${tone} nested two-character chip`);
@@ -2699,6 +2705,17 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
 
     await page.goto(`${origin}/demo/components/badge.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    await page.evaluate(() => {
+      const stack = document.createElement("div");
+      stack.className = "bf-stack";
+      stack.style.cssText = "position:fixed;right:1rem;top:1rem;z-index:10000";
+      const badge = document.createElement("span");
+      badge.className = "bf-badge";
+      badge.setAttribute("data-direct-stack-badge", "");
+      badge.textContent = "1";
+      stack.append(badge);
+      document.body.append(stack);
+    });
     for (const tone of tones) {
       for (const tier of tiers) {
         await setSurface(tier, tone);
@@ -2712,6 +2729,19 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
           if (index === 0 || index === 5) continue;
           assertNoClip(badge, `${tier}/${tone} badge fixture ${index + 1}`);
         }
+        const [directStackBadge] = await readBoxes("[data-direct-stack-badge]");
+        assert(directStackBadge, `Expected a direct bf-stack badge fixture in ${tier}/${tone}.`);
+        assertSquare(directStackBadge, `${tier}/${tone} direct bf-stack badge`);
+        const compositeBadgeGap = await page.locator(".bf-chip .bf-badge").first().evaluate(badge => {
+          const probe = document.createElement("span");
+          probe.style.cssText = "padding-inline-start:var(--bf-component-inline-inset-field);position:fixed;visibility:hidden";
+          badge.parentElement?.append(probe);
+          const expected = Number.parseFloat(getComputedStyle(probe).paddingInlineStart);
+          const actual = Number.parseFloat(getComputedStyle(badge).marginInlineStart);
+          probe.remove();
+          return { actual, expected };
+        });
+        assert(Math.abs(compositeBadgeGap.actual - compositeBadgeGap.expected) <= 0.01, `Expected ${tier}/${tone} moving the chip's outer keyline to leave its internal badge gap on Field; got ${JSON.stringify(compositeBadgeGap)}.`);
       }
     }
 
@@ -2730,29 +2760,31 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
       excluded.append(excludedIcon);
       document.body.append(excluded);
 
-      const actions = document.createElement("div");
-      actions.className = "bf-actions";
-      actions.setAttribute("data-adjacent-icon-target-fixture", "");
-      actions.style.cssText = "position:fixed;left:50%;top:1rem;z-index:10000";
-      for (const label of ["Previous", "Next"]) {
-        const button = document.createElement("button");
-        button.className = "bf-button is-link is-icon";
-        button.type = "button";
-        button.setAttribute("aria-label", label);
-        button.setAttribute("data-adjacent-icon-target", "");
-        const icon = document.createElement("span");
-        icon.className = `bf-icon ${label === "Previous" ? "is-chevron-left" : "is-chevron-right"}`;
-        icon.setAttribute("aria-hidden", "true");
-        button.append(icon);
-        if (label === "Previous") {
-          const indicator = document.createElement("span");
-          indicator.setAttribute("aria-hidden", "true");
-          indicator.setAttribute("data-non-label-icon-child", "");
-          button.append(indicator);
+      for (const [kind, left] of [["actions", "42%"], ["cluster", "70%"]] as const) {
+        const group = document.createElement("div");
+        group.className = kind === "actions" ? "bf-actions is-icon-target-wrap" : "bf-cluster is-dense is-icon-target-wrap";
+        group.setAttribute("data-adjacent-icon-target-fixture", kind);
+        group.style.cssText = `position:fixed;left:${left};top:1rem;z-index:10000`;
+        for (const label of ["Previous", "Next"]) {
+          const button = document.createElement("button");
+          button.className = "bf-button is-link is-icon";
+          button.type = "button";
+          button.setAttribute("aria-label", `${kind} ${label}`);
+          button.setAttribute("data-adjacent-icon-target", kind);
+          const icon = document.createElement("span");
+          icon.className = `bf-icon ${label === "Previous" ? "is-chevron-left" : "is-chevron-right"}`;
+          icon.setAttribute("aria-hidden", "true");
+          button.append(icon);
+          if (kind === "actions" && label === "Previous") {
+            const indicator = document.createElement("span");
+            indicator.setAttribute("aria-hidden", "true");
+            indicator.setAttribute("data-non-label-icon-child", "");
+            button.append(indicator);
+          }
+          group.append(button);
         }
-        actions.append(button);
+        document.body.append(group);
       }
-      document.body.append(actions);
     });
     for (const tone of tones) {
       for (const tier of tiers) {
@@ -2775,34 +2807,122 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         });
         assert(excludedNested.paddingInlineStart > 0 && excludedNested.paddingInlineEnd > 0 && excludedNested.extensionContent === "none", `Expected ${tier}/${tone} the unsupported bordered nested icon-only button to remain outside block-derived geometry and pointer-target extension; got ${JSON.stringify(excludedNested)}.`);
         await assertExtendedPointerTarget("[data-block-derived-icon-button]", `${tier}/${tone} icon-only button`);
-        const adjacentTargetGeometry = await page.locator("[data-adjacent-icon-target-fixture]").evaluate(actions => {
-          const targets = Array.from(actions.querySelectorAll<HTMLElement>("[data-adjacent-icon-target]"));
+        const adjacentTargetGeometry = await page.locator("[data-adjacent-icon-target-fixture]").evaluateAll(groups => groups.map(group => {
+          const targets = Array.from(group.querySelectorAll<HTMLElement>("[data-adjacent-icon-target]"));
           const rects = targets.map(target => target.getBoundingClientRect());
           return {
-            gap: Number.parseFloat(getComputedStyle(actions).columnGap),
-            borderWidth: Number.parseFloat(getComputedStyle(actions).getPropertyValue("--bf-border-width")),
+            kind: group.getAttribute("data-adjacent-icon-target-fixture"),
+            gap: Number.parseFloat(getComputedStyle(group).columnGap),
+            borderWidth: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-border-width")),
+            baseline: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-baseline")),
+            targetMarginBlockStart: targets[0] ? Number.parseFloat(getComputedStyle(targets[0]).marginBlockStart) : Number.POSITIVE_INFINITY,
             centreDistance: rects.length === 2
               ? Math.abs((rects[1].left + (rects[1].width / 2)) - (rects[0].left + (rects[0].width / 2)))
               : 0
           };
-        });
-        assert(adjacentTargetGeometry.gap > 0 && adjacentTargetGeometry.centreDistance >= 24 + adjacentTargetGeometry.borderWidth - 0.01, `Expected ${tier}/${tone} the supported action container to leave one raster-safe border beyond the 24 CSS-pixel target centres; got ${JSON.stringify(adjacentTargetGeometry)}.`);
-        await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} adjacent link-style icon-only button`);
+        }));
+        assert(adjacentTargetGeometry.every(geometry => {
+          const blockRemainder = geometry.targetMarginBlockStart % geometry.baseline;
+          return geometry.gap > 0 && geometry.centreDistance >= 24 + geometry.borderWidth - 0.01 &&
+            (blockRemainder <= 0.01 || Math.abs(blockRemainder - geometry.baseline) <= 0.01);
+        }), `Expected ${tier}/${tone} each ordinary BF container to leave positive raster-safe clearance beyond adjacent 24 CSS-pixel target centres and keep target-owned block margins on phase; got ${JSON.stringify(adjacentTargetGeometry)}.`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} portable adjacent link-style icon-only button`);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "rtl"));
         await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} RTL adjacent link-style icon-only button`);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "ltr"));
-        await page.locator("[data-adjacent-icon-target-fixture]").evaluate(element => element.classList.add("is-nowrap"));
-        await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} nowrap-scrollport adjacent link-style icon-only button`);
+        await page.locator("[data-adjacent-icon-target-fixture]").evaluateAll(elements => {
+          for (const element of elements) (element as HTMLElement).style.inlineSize = "1.5rem";
+        });
+        const wrappedTargetGeometry = await page.locator("[data-adjacent-icon-target-fixture]").evaluateAll(groups => groups.map(group => {
+          const targets = Array.from(group.querySelectorAll<HTMLElement>("[data-adjacent-icon-target]"));
+          const rects = targets.map(target => target.getBoundingClientRect());
+          return {
+            kind: group.getAttribute("data-adjacent-icon-target-fixture"),
+            borderWidth: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-border-width")),
+            centreDistance: rects.length === 2
+              ? Math.abs((rects[1].top + (rects[1].height / 2)) - (rects[0].top + (rects[0].height / 2)))
+              : 0
+          };
+        }));
+        assert(wrappedTargetGeometry.every(geometry => geometry.centreDistance >= 24 + geometry.borderWidth - 0.01), `Expected ${tier}/${tone} wrapped actions and clusters to retain positive block-axis clearance between 24 CSS-pixel targets; got ${JSON.stringify(wrappedTargetGeometry)}.`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} wrapped adjacent link-style icon-only button`);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "rtl"));
-        await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} RTL nowrap-scrollport adjacent link-style icon-only button`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} RTL wrapped adjacent link-style icon-only button`);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "ltr"));
-        await page.locator("[data-adjacent-icon-target-fixture]").evaluate(element => element.classList.remove("is-nowrap"));
+        await page.locator("[data-adjacent-icon-target-fixture]").evaluateAll(elements => {
+          for (const element of elements) (element as HTMLElement).style.removeProperty("inline-size");
+        });
+        const actionsFixture = page.locator("[data-adjacent-icon-target-fixture='actions']");
+        await actionsFixture.evaluate(element => {
+          element.classList.remove("is-icon-target-wrap");
+          element.classList.add("is-nowrap", "is-icon-target-scrollport");
+          (element as HTMLElement).style.inlineSize = "2.5rem";
+        });
+        const scrollportGeometry = await actionsFixture.evaluate(element => {
+          const style = getComputedStyle(element);
+          const target = element.querySelector<HTMLElement>("[data-adjacent-icon-target]");
+          const targetRect = target?.getBoundingClientRect();
+          const extension = target ? getComputedStyle(target, "::after") : null;
+          return {
+            baseline: Number.parseFloat(style.getPropertyValue("--bf-baseline")),
+            paddingBlockStart: Number.parseFloat(style.paddingBlockStart),
+            paddingBlockEnd: Number.parseFloat(style.paddingBlockEnd),
+            paddingInlineStart: Number.parseFloat(style.paddingInlineStart),
+            paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
+            requiredBlockOverflow: targetRect && extension ? Math.max(0, (Number.parseFloat(extension.height) - targetRect.height) / 2) : Number.POSITIVE_INFINITY
+          };
+        });
+        const blockPhaseRemainder = scrollportGeometry.paddingBlockStart % scrollportGeometry.baseline;
+        assert(
+          Math.abs(scrollportGeometry.paddingBlockStart - scrollportGeometry.paddingBlockEnd) <= 0.01 &&
+          Math.abs(scrollportGeometry.paddingInlineStart - scrollportGeometry.paddingInlineEnd) <= 0.01 &&
+          Math.abs(scrollportGeometry.paddingInlineStart - scrollportGeometry.paddingBlockStart) <= 0.01 &&
+          (blockPhaseRemainder <= 0.01 || Math.abs(blockPhaseRemainder - scrollportGeometry.baseline) <= 0.01) &&
+          scrollportGeometry.paddingBlockStart >= scrollportGeometry.requiredBlockOverflow - 0.01,
+          `Expected ${tier}/${tone} the explicit icon-target scrollport allowance to be symmetric, sufficient, and rounded to a complete baseline; got ${JSON.stringify(scrollportGeometry)}.`
+        );
+        await actionsFixture.evaluate(element => { element.scrollLeft = 0; });
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} nowrap-scrollport start icon target`);
+        await actionsFixture.evaluate(element => { element.scrollLeft = element.scrollWidth; });
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} nowrap-scrollport end icon target`);
+        await page.locator("html").evaluate(element => element.setAttribute("dir", "rtl"));
+        await actionsFixture.evaluate(element => { element.scrollLeft = 0; });
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} RTL nowrap-scrollport start icon target`);
+        await actionsFixture.evaluate(element => { element.scrollLeft = -element.scrollWidth; });
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} RTL nowrap-scrollport end icon target`);
+        await page.locator("html").evaluate(element => element.setAttribute("dir", "ltr"));
+        await actionsFixture.evaluate(element => {
+          element.classList.remove("is-nowrap", "is-icon-target-scrollport");
+          element.classList.add("is-icon-target-wrap");
+          (element as HTMLElement).style.removeProperty("inline-size");
+        });
         const pageChromeButtons = await readBoxes(".pc-sequence-link");
         assert(pageChromeButtons.length > 0, `Expected real page-chrome icon-only links in ${tier}/${tone}.`);
         for (const button of pageChromeButtons) assertSquare(button, `${tier}/${tone} page-chrome icon-only link`);
         await assertExtendedPointerTarget(".pc-sequence-link", `${tier}/${tone} page-chrome icon-only link`);
       }
     }
+
+    const customClearance = async (bodyLine: string) => page.locator("[data-adjacent-icon-target-fixture='actions']").evaluate((element, value) => {
+      element.classList.add("is-icon-target-scrollport");
+      (element as HTMLElement).style.setProperty("--bf-baseline", "0.25rem");
+      (element as HTMLElement).style.setProperty("--bf-body-line-height", value);
+      const target = element.querySelector<HTMLElement>("[data-adjacent-icon-target]");
+      const targetStyle = target ? getComputedStyle(target) : null;
+      const containerStyle = getComputedStyle(element);
+      const result = {
+        targetMarginBlockStart: targetStyle ? Number.parseFloat(targetStyle.marginBlockStart) : Number.POSITIVE_INFINITY,
+        scrollportPaddingBlockStart: Number.parseFloat(containerStyle.paddingBlockStart)
+      };
+      element.classList.remove("is-icon-target-scrollport");
+      (element as HTMLElement).style.removeProperty("--bf-baseline");
+      (element as HTMLElement).style.removeProperty("--bf-body-line-height");
+      return result;
+    }, bodyLine);
+    const nearMinimumClearance = await customClearance("1.4375rem");
+    assert(Math.abs(nearMinimumClearance.targetMarginBlockStart - 4) <= 0.01 && Math.abs(nearMinimumClearance.scrollportPaddingBlockStart - 4) <= 0.01, `Expected a sub-baseline custom target shortfall to round up to one complete baseline; got ${JSON.stringify(nearMinimumClearance)}.`);
+    const multiBaselineClearance = await customClearance("0.5rem");
+    assert(Math.abs(multiBaselineClearance.targetMarginBlockStart - 8) <= 0.01 && Math.abs(multiBaselineClearance.scrollportPaddingBlockStart - 8) <= 0.01, `Expected a large custom target shortfall to round above one baseline instead of being capped; got ${JSON.stringify(multiBaselineClearance)}.`);
 
     await page.goto(`${origin}/demo/components/notification.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -2919,9 +3039,7 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
       const aliasDifference = Math.abs(chip.minInlineSize - chip.height);
       assert(aliasDifference <= shapeTolerance, `Expected the forced-scale ${tier} chip default alias to track its rasterised painted block within one authored border; got ${JSON.stringify(chip)}.`);
       assert(chip.width >= chip.minInlineSize - 0.01, `Expected the forced-scale ${tier} chip to honour its block-derived inline floor; got ${JSON.stringify(chip)}.`);
-      if (tier !== "documentation") {
-        assert(Math.abs(chip.width - chip.height) <= shapeTolerance, `Expected the forced-scale ${tier} fitting chip to stay square within one authored rasterised border; got ${JSON.stringify(chip)}.`);
-      }
+      assert(chip.width > chip.height + shapeTolerance, `Expected the forced-scale ${tier} one-character Action-framed chip to remain a stadium while exercising the default alias; got ${JSON.stringify(chip)}.`);
       if ([chip.borderBlockStartWidth, chip.borderBlockEndWidth].some(width => width > 0.65 && width < 0.68)) {
         sawFractionalBorder = true;
       }

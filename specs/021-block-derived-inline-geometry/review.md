@@ -1,27 +1,31 @@
 # Review: Block-derived inline geometry
 
-**Status**: Recommended R1/R3/R4 resolutions and independent adversarial
-hardening implemented on `feat/021-block-derived-inline-geometry`; final gates
-are green at 9,947 static checks plus fresh component QA. Fresh Opus
-adversarial re-review and acceptance are pending.
+**Status**: S1–S4 remediation, the owner-directed Action-inset chip migration,
+and a final independent adversarial pass are implemented on
+`feat/021-block-derived-inline-geometry`. Final gates are green at 19,048
+static checks plus fresh component QA. A fresh Opus adversarial re-review and
+acceptance are pending.
 
 ## Outcome
 
 Spec 021 implements one cascade-repointed `--bf-square-block-size` contract for
 chips, badges, bare icon buttons, specialized notification-close actions, and
 bare numbered pagination. Each state maps to the component's own painted block,
-not an occupied ledger. Chips retain their Field inset plus the block-derived
-floor; badges own the exact circular-counter case. Wider chip/badge content
-grows into a stadium. Link-style icon buttons resolve from their body-line
-paint; labelled actions remain on the Action inset.
+not an occupied ledger. Chips use the Command/Action inset plus the
+block-derived floor; badges own the exact circular-counter case. Wider
+chip/badge content grows into a stadium. Status labels, exterior chip spacing,
+and the chip-to-badge composite gap retain their separate Field owners.
+Link-style icon buttons resolve from their body-line paint; labelled actions
+remain on the Action inset.
 
 Icon-only actions keep naturally dense token-derived paint and gain a direct
 24-by-24 CSS-pixel pointer target through an out-of-flow transparent
 `::after`. The extension changes no painted or occupied block measurement. The
 24px constant is normative WCAG target geometry, not a BF spacing token.
-Supported `.bf-actions` groups reserve positive clearance between adjacent
-link-icon targets, and the nowrap scrollport reserves transparent padding so it
-cannot clip the extension.
+Each target reserves its own inline overflow. Wrapping and clipping containers
+opt into the generic `is-icon-target-wrap` and `is-icon-target-scrollport`
+contracts, whose exact shortfalls round up to the active baseline. No container
+infers geometry from descendants through `:has()`.
 
 No block ledger, line height, nudge, compensation, target height, tier config,
 or public radius changed. The existing chip and badge radii were already
@@ -36,7 +40,12 @@ owns the fitting case.
 No merge, publication, release, archive, or Spec 020 start is authorized by
 this review.
 
-## Rendered before and after
+## Historical first-implementation measurements
+
+The table below records the first implementation reviewed before the later
+Action-inset owner decision and S1–S4 remediation. Current disposition and
+measurements are recorded in the final-remediation section near the end of this
+file; this evidence remains here to preserve the review trail.
 
 Measurements are painted width by height in CSS pixels. Light and dark were
 identical; both tones are exercised by the behavior gate. Baseline values were
@@ -628,3 +637,242 @@ Opus: append the detailed result immediately below this request under
 a direct link to that appended section and a concise outcome. Do not leave the
 detailed review only in the inbox. Do not merge, push, publish, release,
 archive, or start Spec 020.
+
+## Opus adversarial re-review, 2026-09-02
+
+Measured against the live build at `http://127.0.0.1:4174/` on a
+`devicePixelRatio` 1.5 display, using constructed probes in all four tiers
+rather than reading source. **Not merge-ready.** One high finding, two medium,
+one low. The members themselves are correct; the collateral of the R3 target
+fix is not.
+
+### Confirmed correct
+
+**R1 disposition is right and I can independently confirm the tolerance is
+needed.** On this DPR 1.5 display, standalone chips and icon buttons still
+measure 0.67px off square because the 1px border rasterises to 0.667px.
+Restoring `1.05` was correct; the DPR 1.5 sweep now exercises it.
+
+**R4 is resolved carefully.** Chip text lands on the Field keyline in every
+tier, standalone and nested:
+
+| Tier | Field inset | Chip text start | Nested chip text start |
+|---|---:|---:|---:|
+| Editorial | 8px | 7.67 | 8.00 |
+| Documentation | 8px | 7.67 | 8.00 |
+| App | 4px | 3.67 | 4.00 |
+| OS | 4px | 3.67 | 4.00 |
+
+The 0.33px on the standalone figures is the rasterised border; at DPR 1 it is
+exact. Giving the nested chip the full inset because its border is inset paint
+rather than box geometry is a genuinely careful detail that would have been
+easy to miss.
+
+**Isolated icon targets meet 24×24 in all four tiers.** Editorial resolves
+`max(100%, 24px)` to its larger paint; the other three resolve to exactly 24px.
+Nested icon buttons are excluded at both alias and production selectors.
+
+### S1 — high. The 24px guarantee does not survive two adjacent icon links
+
+Clearance is reserved only inside `:where(.bf-actions:has(> .bf-button.is-link.is-icon))`.
+`bf-cluster` is an equally first-class primitive and reserves nothing. Two
+adjacent `.bf-button.is-link.is-icon` in a plain `bf-cluster is-dense`:
+
+| Tier | Link icon paint | Extension per side | Paint gap | Target clearance |
+|---|---:|---:|---:|---:|
+| Editorial | 24 × 24 | 0 | 8px | 8px |
+| Documentation | 20 × 20 | 2px | 4px | **0px** |
+| App | 20 × 20 | 2px | 4px | **0px** |
+| OS | 16 × 16 | 4px | 4px | **−4px** |
+
+In OS the two transparent extensions overlap by 4px. Because `::after` carries
+`pointer-events: auto`, they are hit-testable and the later-painted one wins.
+Sampled with `elementFromPoint` at 1px steps across the first button's intended
+24px target:
+
+```text
+paint 16px, gap 4px
+button A hit range: −12..+7   → effective target 20px, not 24
+dx +8..+12 routes to button B
+meets24: false
+```
+
+So the pair delivers neither the old geometry nor the new guarantee. It is also
+strictly worse than the problem it replaced: an undersized target is hard to
+hit, whereas a 4px band that silently actions the *adjacent* control is a
+wrong-action risk. The demo only exercises `.bf-actions`, which is why the
+sweep passes.
+
+This needs the clearance to be a property of the target contract rather than of
+one container class. Reserving the extension on the button itself — for example
+a margin-inline equal to `--bf-action-target-overflow`, or an explicit opt-in
+modifier available to any container — would hold wherever the button is
+composed. Scoping it to `.bf-actions` guarantees only the case that is tested.
+
+### S2 — medium. The nowrap padding lands off the baseline in two tiers
+
+`:where(.bf-actions.is-nowrap:has(> .bf-button.is-link.is-icon))` uses the
+`padding` shorthand, so it adds block padding as well as inline:
+
+| Tier | Baseline | Block padding applied | On grid |
+|---|---:|---:|---|
+| Editorial | 8px | 0px | yes |
+| Documentation | 4px | **2px** | no |
+| App | 4px | **2px** | no |
+| OS | 4px | 4px | yes |
+
+The container's total block growth is 4px in Documentation and App, which is
+one whole baseline, so following content stays on phase. But the controls
+*inside* the container shift down 2px — half a baseline — so their own phase is
+broken.
+
+The package states "no block measurement changes, proven by the existing
+vertical assertions passing unmodified". That claim is true and does not cover
+this, because no vertical audit specimen is a nowrap action group containing an
+icon link. An inline accessibility fix has produced a vertical consequence in
+the one construct the vertical audit does not see.
+
+If block padding is genuinely required — `overflow-x: auto` computes
+`overflow-y` to `auto`, so the block axis does clip — it must round up to a
+whole baseline rather than take the raw extension.
+
+### S3 — medium. Both new rules are contextual `:has()` container geometry
+
+The architecture rejects this pattern explicitly. `validate-build.ts` asserts
+`!css.includes("tbody tr:has(.bf-status-label) > td")` with the message
+"Expected table density not to depend on a contextual status-label selector;
+nested auxiliaries opt in explicitly." The two new rules change a container's
+gap and padding because of a descendant's class — the same shape, in a
+different component.
+
+The practical cost is S1: because the behaviour lives on one container class,
+it does not follow the button anywhere else. An explicit opt-in, or reserving
+the extension on the button, would be both consistent with the stated principle
+and more robust.
+
+### S4 — low. The OS 9px gap is off the horizontal grid
+
+`max(field-gap, (overflow × 2) + border)` resolves to 9px in OS, against a
+0.25rem/4px inline unit. It is defensible as WCAG-derived rather than
+design-derived, but Spec 020's axis-separation assertion will trip on it. Add
+it to that spec's exemption list now, with the reason recorded, rather than
+discovering it during 020.
+
+### Standing
+
+S1 should block acceptance: the package's own headline accessibility claim does
+not hold in a first-class BF primitive, and the failure mode routes clicks to
+the wrong control. S2 should be fixed with it, since both come from the same
+container-scoped approach. S3 is the reason S1 and S2 exist and is worth
+resolving structurally rather than patching each container. S4 is a note for
+Spec 020.
+
+Everything the package set out to do for the members themselves — circles,
+stadiums, squares, keylines, ledger correctness, nested exclusion, tolerance —
+is done and verified.
+
+---
+
+## Final S1–S4 remediation, 2026-09-02
+
+The preceding Opus result is preserved as historical evidence. Its four
+findings are now addressed without reopening the vertical contract.
+
+**Chip ownership.** The owner moved `.bf-chip` from Field to the
+Command/Action inset. Regular chips use `Action − real border`; nested chips
+use the full Action inset because their border is inset paint. One-character
+chips are therefore intentional stadiums in every tier, while badges remain
+the exact circular-counter component. This migration does not conflate nearby
+owners: status labels, the chip's exterior trailing space, and its internal
+chip-to-badge gap remain Field-owned. The horizontal audit now places chips in
+the Command bucket.
+
+| Current one-character chip | Editorial | Documentation | App | OS |
+|---|---:|---:|---:|---:|
+| standalone | 41.03×37.11 | 39.90×22.48 | 39.90×22.48 | 38.77×23.83 |
+| nested | 41.03×24 | 39.90×20 | 39.90×20 | 38.77×16 |
+
+**Portable target clearance.** Every supported icon-only button owns its
+inline target overflow as `margin-inline`; `.bf-actions` and `.bf-cluster`
+retain their normal gap tokens. A wrapping container explicitly adds the
+generic `is-icon-target-wrap` modifier, which reserves baseline-rounded block
+clearance on each direct icon-only target. A clipping container independently
+adds `is-icon-target-scrollport`, which reserves symmetric baseline-rounded
+padding. Neither contract uses contextual container `:has()` inference; the
+button's own `:not(:has(.bf-button-label))` remains the structural label-state
+selector.
+
+Supporting engines use `round(up, exact shortfall, active baseline)`. The safe
+fallback reserves one baseline. The formula is not capped: the behavior gate
+proves 4px clearance for a 1.4375rem body line and 8px for a 0.5rem body line,
+both against a 0.25rem baseline. The five authored `24px` occurrences are
+allowlisted only for the two target axes, inline overflow, wrapping-row block
+clearance, and scrollport containment. The constant remains in CSS pixels
+because WCAG 2.2 SC 2.5.8 defines it there.
+
+**Verification hardening.** The behavior gate now forces wrapping in both
+`.bf-actions` and `.bf-cluster`, then samples every 1px point inside each
+24 CSS-pixel target in LTR and RTL. It also probes both logical scrollport
+extremes, exact custom-config rounding, unchanged standalone block geometry,
+the unsupported nested-icon boundary, Action-framed chip stadiums, Field-owned
+chip-to-badge spacing, and a badge directly inside `bf-stack`. Static
+validation rejects contextual `:has()` geometry on Action, Cluster, wrap, and
+scrollport containers while permitting the button's own label-state selector.
+
+Final evidence:
+
+- `npm test`: exit 0; 19,048 static checks; every component baseline family
+  reports zero failures; component behavior passes.
+- `npm run qa:components`: exit 0 after fresh full-catalog captures; every
+  baseline family reports zero failures.
+- Live review at `http://127.0.0.1:4174/` confirms Command-framed chips,
+  circular badges, centred square icon paint, and unchanged surrounding
+  component rhythm. The final independent Sol pass also constructed a generic
+  wrapping flex row in OS: two 16px paints exposed 24px targets at 28px
+  vertical centre distance, with bottom/right probes routed to their owning
+  controls.
+- `git diff --check`: clean before this request was written.
+
+The final independent adversarial pass signed off the implementation with no
+substantive finding. Its low documentation findings were addressed here and in
+the package: the current summary/counts now supersede historical claims, the
+fifth normative `24px` use is enumerated, and the architecture wording rejects
+only contextual container inference. The reviewer's concern that the 1px
+interior sweep was merely documented was checked against
+`assertExtendedPointerTarget`; `interiorSamples`/`interiorMisses` enforce the
+full grid in source.
+
+<a id="opus-final-s1s4-request"></a>
+
+## Opus adversarial re-review request — final S1–S4 pass, 2026-09-02
+
+Please adversarially re-review the current
+`feat/021-block-derived-inline-geometry` working tree. Treat every earlier
+R1–R4 and S1–S4 section above as chronological evidence; the governing state
+begins at [Final S1–S4 remediation](#final-s1s4-remediation-2026-09-02).
+
+Please independently probe:
+
+- adjacent and forcibly wrapped icon-only targets in `.bf-actions`,
+  `.bf-cluster`, and a generic flex/grid container carrying
+  `is-icon-target-wrap`, including 1px hit routing in LTR and RTL;
+- `is-icon-target-scrollport` at both logical extremes, independently of the
+  wrap modifier, and the absence of any contextual container `:has()` rule;
+- baseline-ceiling behavior for built-in tiers and custom body-line values of
+  1.4375rem and 0.5rem, including the older-engine one-baseline fallback;
+- unchanged standalone occupied/block geometry and continued production
+  exclusion of bordered nested icon-only buttons;
+- chips on the Command/Action inset while status labels, exterior chip spacing,
+  and the internal chip-to-badge gap retain Field ownership;
+- direct-stack badge intrinsic sizing, DPR 1.5 border tolerance, five normative
+  `24px` uses, all eight generated bundles, and consistency across source,
+  architecture, contract, spec, tests, and current review records.
+
+Current local evidence is `npm test` green at 19,048 static checks with zero
+baseline/behavior failures, plus fresh green `npm run qa:components` captures.
+
+Opus: append the detailed result immediately below this request under
+`## Opus adversarial re-review — final S1–S4 pass, 2026-09-02`. Then replace
+`AGENT-INBOX.md` with a concise outcome and a direct link to that appended
+section. Do not leave the detailed review only in the inbox. Do not merge,
+push, publish, release, archive, or begin Spec 020.

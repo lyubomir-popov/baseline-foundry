@@ -154,11 +154,28 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
  * control rhythm. A zero-width metric strut restores the active body line
  * without imposing a target block size or changing icon/label spacing. */
 :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+  --bf-action-target-overflow: max(0rem, calc((24px - var(--bf-square-block-size)) / 2));
+
   column-gap: 0;
   justify-self: start;
+  margin-inline: var(--bf-action-target-overflow);
   min-inline-size: var(--bf-square-block-size);
   padding-inline: 0;
   position: relative;
+}
+
+/* Wrapping target rows reserve their block clearance explicitly. The modifier
+ * is container-agnostic: bf-actions, bf-cluster, and consumer flex/grid rows
+ * can all opt in without inferring geometry from their descendants. */
+:where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+  --bf-action-target-block-clearance: var(--bf-baseline);
+
+  margin-block-end: calc(var(--bf-action-target-block-clearance) + ${buttonMarginBottom});
+  margin-block-start: var(--bf-action-target-block-clearance);
+}
+
+:where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+  margin-block-end: var(--bf-action-target-block-clearance);
 }
 
 :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::before {
@@ -193,16 +210,6 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   min-inline-size: 0;
 }
 
-/* Adjacent link icons can need four CSS pixels of target extension per edge
- * in OS. Their supported action container reserves that overflow plus one
- * raster-safe border of positive clearance. Other action groups keep the
- * ordinary Field gap. */
-:where(.bf-theme) :where(.bf-actions:has(> .bf-button.is-link.is-icon)) {
-  --bf-action-target-overflow: max(0rem, calc((24px - var(--bf-body-line-height)) / 2));
-
-  gap: max(var(--bf-field-gap), calc((var(--bf-action-target-overflow) * 2) + var(--bf-border-width)));
-}
-
 :where(.bf-theme) :where(.bf-actions.is-end) {
   justify-content: flex-end;
 }
@@ -213,11 +220,27 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   scrollbar-width: thin;
 }
 
-/* A nowrap scrollport clips out-of-flow descendants at every edge. Reserve
- * only the transparent extension needed by icon links so their pointer target
- * remains wholly hittable without changing the controls' painted geometry. */
-:where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-link.is-icon)) {
-  padding: var(--bf-action-target-overflow);
+/* Overflow containers clip out-of-flow pointer extensions on the block axis.
+ * Opt in explicitly when an icon target sits in a scrollport. Like the wrap
+ * modifier, this contract is container-agnostic and never inferred through
+ * contextual :has(). */
+:where(.bf-theme) :where(.is-icon-target-scrollport) {
+  --bf-icon-target-scrollport-padding: var(--bf-baseline);
+
+  padding-block: var(--bf-icon-target-scrollport-padding);
+  padding-inline: var(--bf-icon-target-scrollport-padding);
+}
+
+/* Modern CSS can round the exact per-edge shortfall up to the active baseline.
+ * The one-baseline fallback stays safe and on phase in older engines. */
+@supports (margin-block-start: round(up, 0.0625rem, 0.0625rem)) {
+  :where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+    --bf-action-target-block-clearance: round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
+  }
+
+  :where(.bf-theme) :where(.is-icon-target-scrollport) {
+    --bf-icon-target-scrollport-padding: round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
+  }
 }
 
 :where(.bf-theme) :where(.bf-actions.is-nowrap) > * {
