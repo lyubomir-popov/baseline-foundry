@@ -82,8 +82,8 @@ export function sitesFoundationCss(): string {
    still visible. Keep the desktop split whenever application navigation is
    persistent; below 48rem the intrinsic base remains one column. */
 @media (min-width: 48rem) {
-  :where(.bf-theme.bf-application) :where(.bf-basic-section-layout),
-  :where(.bf-theme) :where(.bf-application) :where(.bf-basic-section-layout) {
+  :where(.bf-theme.bf-application) > :where(.bf-main) :where(.bf-basic-section-layout),
+  :where(.bf-theme) :where(.bf-application) > :where(.bf-main) :where(.bf-basic-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
