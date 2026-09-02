@@ -158,12 +158,12 @@ export function validateRenewalComponentContracts(
   assert(css.includes("padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination to use semantic medium padding with metric baseline compensation.");
   assert(!css.includes("padding-block: calc(var(--bf-panel-padding-block) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination not to inherit panel-density padding.");
   assert(css.includes("@container bf-article-pagination (width < 28.75rem)") && css.includes("inline-size: calc(var(--bf-space-6) + var(--bf-space-1));"), "Expected article pagination to retain Vanilla's compact previous-link threshold and mapped width.");
-  assert(css.includes("@container (width >= 38.75rem)") && css.includes(".bf-data-spotlight.is-three-blocks") && css.includes("@container (width >= 45rem)") && css.includes(".bf-divided-section) :where(.bf-divided-section-layout)"), "Expected static content ports to expose intrinsic data-spotlight density and the shared readable split composition.");
+  assert(css.includes("@container (width >= 38.75rem)") && css.includes(".bf-data-spotlight.is-three-blocks") && css.includes("@container (width >= 48rem)") && css.includes(".bf-divided-section) :where(.bf-divided-section-layout)"), "Expected static content ports to expose intrinsic data-spotlight density and the shared readable split composition.");
   assert(css.includes("grid-row: span 5;") && css.includes("grid-template-rows: subgrid;"), "Expected data spotlight subgrids to reserve distinct rows for the highlight rule, statistic, headline, description, and action.");
   assert(css.includes("@container (width >= 64.75rem)") && css.includes(".bf-data-spotlight.is-two-blocks") && css.includes(".bf-divided-section) :where(.bf-divided-section-layout)"), "Expected static content ports to expose their large container-query compositions.");
   assert(!css.includes("bf-muted-heading"), "Expected the deprecated muted-heading port to remain absent from generated CSS.");
-  assert(css.includes("container-name: bf-basic-section;") && css.includes("@container bf-basic-section (width >= 45rem)") && css.includes("grid-template-columns: repeat(2, minmax(0, 1fr));"), "Expected basic section to establish the shared readable 50/50 container-query breakpoint.");
-  assert(css.includes("@container bf-basic-section (width >= 45rem)") && css.includes(".bf-basic-section-layout) {\n    column-gap: var(--bf-grid-gap-inline);"), "Expected basic section 50/50 layout rules to target the layout descendant at the shared breakpoint.");
+  assert(css.includes("container-name: bf-basic-section;") && css.includes("@container bf-basic-section (width >= 48rem)") && css.includes("grid-template-columns: repeat(2, minmax(0, 1fr));"), "Expected basic section to establish the shared readable 50/50 container-query breakpoint.");
+  assert(css.includes("@container bf-basic-section (width >= 48rem)") && css.includes(".bf-basic-section-layout) {\n    column-gap: var(--bf-grid-gap-inline);"), "Expected basic section 50/50 layout rules to target the layout descendant at the shared breakpoint.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-basic-section-layout)", {
     "display": "grid",
     "row-gap": "0"
@@ -189,7 +189,7 @@ export function validateRenewalComponentContracts(
   assert(css.includes("padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to retain its wide space-3 entry boundary without border drift.");
   assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
   assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && !css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child) {\n  inline-size: 100%;\n  margin-block-end: 0;"), "Expected hero to expose a structural lead without a final-child semantic-margin reset.");
-  assert(css.includes("@container bf-hero (width >= 45rem)") && css.includes(".bf-hero.is-split-medium") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero variants and its default split to share the measured 45rem threshold, with a fallback introduction rail.");
+  assert(css.includes("@container bf-hero (width >= 48rem)") && css.includes(".bf-hero.is-split-medium") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero variants and its default split to share the measured 48rem threshold, with a fallback introduction rail.");
   for (const requiredSplit of [
     ".bf-tiered-list:not(.is-description-full-width)",
     ".bf-divided-section) :where(.bf-divided-section-layout)",
@@ -198,7 +198,7 @@ export function validateRenewalComponentContracts(
     ".bf-tab-section-body",
     ".bf-linked-logo-section.is-50-50"
   ]) {
-    assert(css.includes("45rem") && css.includes(requiredSplit), `Expected ${requiredSplit} to participate in the shared readable 50/50 split contract.`);
+    assert(css.includes("48rem") && css.includes(requiredSplit), `Expected ${requiredSplit} to participate in the shared readable 50/50 split contract.`);
   }
   assert(css.includes(".bf-hero-chip.bf-chip") && css.includes("column-gap: var(--bf-space-1);"), "Expected hero chip composition to map the Vanilla icon/value gap to the BF chip and space-1 tokens.");
   assert(css.includes("container-name: bf-quote-wrapper;") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected quote wrapper to preserve the 25/75 signpost/content rail.");

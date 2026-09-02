@@ -11,7 +11,7 @@ const CLOSE_SELECTOR = "[data-application-layout-close]";
 const PIN_SELECTOR = "[data-application-layout-pin]";
 const COLLAPSED_CLASS = "is-collapsed";
 const PINNED_CLASS = "is-pinned";
-const LARGE_BREAKPOINT = "(min-width: 64.75rem)";
+const LARGE_BREAKPOINT = "(min-width: 48rem)";
 
 const lastTriggerByNavigation = new WeakMap<HTMLElement, HTMLElement>();
 

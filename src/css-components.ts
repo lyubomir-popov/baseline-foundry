@@ -1882,7 +1882,10 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   outline-offset: -0.125rem;
 }
 
-@media (min-width: 64.75rem) {
+/* Application navigation becomes persistent at the same 48rem boundary used
+ * by readable split compositions. Standalone top and document navigation keep
+ * their own large-screen contracts. */
+@media (min-width: 48rem) {
   :where(.bf-theme) :where(.bf-application:has(> .bf-navigation)) {
     grid-template-areas:
       "navigation-bar navigation-bar"
@@ -1922,6 +1925,10 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   }
 
   :where(.bf-theme) :where(.bf-navigation-overlay) {
+    display: none;
+  }
+
+  :where(.bf-theme) :where(.bf-application) :where(.bf-side-navigation-toggle) {
     display: none;
   }
 

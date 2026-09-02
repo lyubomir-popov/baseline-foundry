@@ -1069,6 +1069,33 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       viewport: { width: 1440, height: 960 }
     });
 
+    for (const boundary of [
+      { width: 767, persistent: false, label: "below 48rem" },
+      { width: 768, persistent: true, label: "at 48rem" }
+    ] as const) {
+      await page.setViewportSize({ width: boundary.width, height: 960 });
+      await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+      const state = await page.evaluate(() => {
+        const application = document.querySelector<HTMLElement>(".bf-application");
+        const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
+        const drawer = navigation?.querySelector<HTMLElement>(".bf-navigation-drawer");
+        const overlay = navigation?.querySelector<HTMLElement>(".bf-navigation-overlay");
+        if (!application || !navigation || !drawer || !overlay) return null;
+        return {
+          areas: getComputedStyle(application).gridTemplateAreas,
+          drawerHidden: drawer.getAttribute("aria-hidden"),
+          drawerPosition: getComputedStyle(drawer).position,
+          overlayDisplay: getComputedStyle(overlay).display
+        };
+      });
+      assert(state, `Expected application navigation state ${boundary.label}.`);
+      assert(state.areas.includes('"navigation main') === boundary.persistent, `Expected application navigation persistence to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+      assert(state.drawerHidden === (boundary.persistent ? "false" : "true"), `Expected application navigation accessibility state to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+      assert(state.drawerPosition === (boundary.persistent ? "static" : "fixed"), `Expected application navigation drawer positioning to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+      assert((state.overlayDisplay === "none") === boundary.persistent, `Expected application navigation overlay lifecycle to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+    }
+
+    await page.setViewportSize({ width: 1440, height: 960 });
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(page);
     await disableDemoChromeHitTesting(page);
@@ -1418,7 +1445,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     const mobilePage = await browser.newPage({
       deviceScaleFactor: 1,
-      viewport: { width: 900, height: 960 }
+      viewport: { width: 767, height: 960 }
     });
 
     await mobilePage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -2896,8 +2923,8 @@ async function verifySharedReadableSplitThresholds(origin: string): Promise<void
         await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
         await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
         for (const allocation of [
-          { width: "44.9375rem", columns: 1, label: "below 45rem" },
-          { width: "45rem", columns: testCase.expandedColumns, label: "at 45rem" }
+          { width: "47.9375rem", columns: 1, label: "below 48rem" },
+          { width: "48rem", columns: testCase.expandedColumns, label: "at 48rem" }
         ]) {
           const state = await page.locator(testCase.root).first().evaluate((root, expected) => {
             const pattern = root as HTMLElement;

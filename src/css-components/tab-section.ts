@@ -7,7 +7,7 @@
  * divided-section and basic-section remain independent BF components.
  *
  * Vanilla → BF mapping:
- * - 45rem readable split switch → the 45rem descendant container query.
+ * - 48rem readable split switch → the 48rem descendant container query.
  * - section boundaries → the parent stack selected by the composition.
  * - the intermediate p-section--shallow before a separate tab rail →
  *   a shallow gap owned by the tab-section body.
@@ -64,7 +64,7 @@ export function tabSectionCss(): string {
   align-self: start;
 }
 
-@container bf-tab-section (width >= 45rem) {
+@container bf-tab-section (width >= 48rem) {
   :where(.bf-theme) :where(.bf-tab-section-body) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(4, minmax(0, 1fr));

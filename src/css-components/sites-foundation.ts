@@ -69,7 +69,7 @@ export function sitesFoundationCss(): string {
 /* A balanced section switches at the shared readable 50/50 threshold. The
    layout descendant reacts to the root container; the query never tries to
    restyle the container that established it. */
-@container bf-basic-section (width >= 45rem) {
+@container bf-basic-section (width >= 48rem) {
   :where(.bf-theme) :where(.bf-basic-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));

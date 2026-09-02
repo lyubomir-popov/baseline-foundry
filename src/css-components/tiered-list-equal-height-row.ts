@@ -93,9 +93,9 @@ export function tieredListEqualHeightRowCss(): string {
 }
 
 /* ------------------------------------------------------------------ */
-/* Header split (≥ 45rem): the shared readable 50/50 title/content split. */
+/* Header split (≥ 48rem): the shared readable 50/50 title/content split. */
 /* ------------------------------------------------------------------ */
-@container (width >= 45rem) {
+@container (width >= 48rem) {
   :where(.bf-theme) :where(.bf-tiered-list:not(.is-description-full-width)) :where(.bf-tiered-list-header) {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
