@@ -153,17 +153,32 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
 /* An icon-only flex button has no text line box to preserve the occupied
  * control rhythm. A zero-width metric strut restores the active body line
  * without imposing a target block size or changing icon/label spacing. */
-:where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label))) {
+:where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
   column-gap: 0;
   justify-self: start;
   min-inline-size: var(--bf-square-block-size);
   padding-inline: 0;
+  position: relative;
 }
 
-:where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))::before {
+:where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::before {
   block-size: var(--bf-body-line-height);
   content: "";
   inline-size: 0;
+}
+
+/* WCAG 2.2 SC 2.5.8 defines its minimum in CSS pixels. This transparent,
+ * out-of-flow box extends only the pointer target; it does not change the
+ * control's paint or occupied block geometry. */
+:where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::after {
+  block-size: max(100%, 24px);
+  content: "";
+  inline-size: max(100%, 24px);
+  left: 50%;
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  translate: -50% -50%;
 }
 
 :where(.bf-theme) :where(.bf-button-label) {
@@ -178,6 +193,16 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   min-inline-size: 0;
 }
 
+/* Adjacent link icons can need four CSS pixels of target extension per edge
+ * in OS. Their supported action container reserves that overflow plus one
+ * raster-safe border of positive clearance. Other action groups keep the
+ * ordinary Field gap. */
+:where(.bf-theme) :where(.bf-actions:has(> .bf-button.is-link.is-icon)) {
+  --bf-action-target-overflow: max(0rem, calc((24px - var(--bf-body-line-height)) / 2));
+
+  gap: max(var(--bf-field-gap), calc((var(--bf-action-target-overflow) * 2) + var(--bf-border-width)));
+}
+
 :where(.bf-theme) :where(.bf-actions.is-end) {
   justify-content: flex-end;
 }
@@ -186,6 +211,13 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   flex-wrap: nowrap;
   overflow-x: auto;
   scrollbar-width: thin;
+}
+
+/* A nowrap scrollport clips out-of-flow descendants at every edge. Reserve
+ * only the transparent extension needed by icon links so their pointer target
+ * remains wholly hittable without changing the controls' painted geometry. */
+:where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-link.is-icon)) {
+  padding: var(--bf-action-target-overflow);
 }
 
 :where(.bf-theme) :where(.bf-actions.is-nowrap) > * {

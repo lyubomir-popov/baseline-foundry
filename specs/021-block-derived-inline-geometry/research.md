@@ -133,13 +133,14 @@ host line through padding while the badge paints no block padding. It would
 also leave chips, numbered pagination, and icon buttons without a reusable
 mechanism. The member/state table is what prevents recurrence.
 
-## Closed: single-character selection
+## Closed: single-character selection and chip keyline
 
-CSS cannot select on content length. The owner has resolved this by removing
-the question: the block-derived minimum applies universally to badges and
-chips, and the circle is the case where intrinsic content fits inside it. Short
-multi-character chips become wider than they are today, which is accepted — a
-chip narrower than the row it sits in reads as an accident.
+CSS cannot select on content length. The block-derived minimum therefore
+applies universally to badges and chips, and the circle is the case where
+intrinsic padded content fits inside it. Chips retain the Field inset so their
+common multi-word form shares the field glyph keyline. Documentation's
+one-character chip is about 1.43px wider than its minimum and is accepted as a
+slight stadium; badges own the exact circular-counter case.
 
 No content-length modifier is introduced.
 
@@ -152,9 +153,23 @@ slots become square and keep `--bf-radius`.
 
 ## Resolved: changed interactive target size
 
-Squaring an OS icon button reduces it from roughly 3rem to roughly 1.25rem
-inline, and numbered pagination plus interactive fitting chips can also become
-undersized targets. The owner approved resolution against one of the four
-dispositions in the contract. Rendered measurement, rounded-corner containment,
-and the selected disposition are recorded in `review.md` rather than assumed
-here.
+Squaring an OS icon button reduces its paint from roughly 3rem to roughly
+1.25rem inline. The accepted resolution is not a target block size and does not
+rely on arbitrary consumer spacing: a transparent absolutely positioned
+`::after` extends the pointer target to at least 24-by-24 CSS pixels without
+entering flow or changing paint. Supported `.bf-actions` groups derive the
+extension overflow from the same minimum, add one border width of positive
+clearance between adjacent icon-link targets, and reserve that overflow as
+padding when `is-nowrap` would otherwise clip it. The 24px value remains a
+CSS-pixel constant because WCAG 2.2 success criterion 2.5.8 defines the
+requirement in CSS pixels; it is not a BF spacing token. Interactive chips and
+numbered pagination retain their measured direct or spacing dispositions.
+
+## Resolved: fractional border rasterisation
+
+At 150% device scale an authored 1px border can render as 0.666667 CSS px. Two
+block borders then make a formula-derived inline minimum about 0.67px wider
+than the rendered block without either formula being wrong. Shape comparison
+therefore permits 1.05px—one authored border—and a forced 1.5-scale browser
+sweep proves that the allowance is exercised. A 0.51px tolerance is valid only
+at integer scale and would reject correct output on common Windows displays.

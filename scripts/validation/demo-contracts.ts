@@ -254,6 +254,7 @@ export function validateButtonDemo(buttonHtml: string): void {
   validateBfOnlyDemoPage("button.html", buttonHtml);
   assert(buttonHtml.includes('data-baseline-label="icon-only button stacked 1"'), "Expected button.html to include an icon-only button specimen for dense-surface verification.");
   assert(buttonHtml.includes('data-baseline-label="icon-only button stacked 2"'), "Expected button.html to include a second icon-only button specimen so both neutral and negative icon-only states stay visible in QA.");
+  assert(buttonHtml.includes('display:grid;gap:var(--bf-space-2)" data-baseline-check="box" data-baseline-label="icon button stack"'), "Expected the icon-button specimen stack to keep adjacent transparent targets separate in every tier.");
 }
 
 export function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
@@ -360,9 +361,9 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
   assert(horizontalAuditHtml.includes('Horizontal — field and cell content inset') && horizontalAuditHtml.includes('Horizontal — command inset') && horizontalAuditHtml.includes('Horizontal — leading-mark offset') && horizontalAuditHtml.includes('Horizontal — icon-led and navigation label offset'), "Expected the horizontal audit to present the concise measured inset groups.");
   assert(!horizontalAuditHtml.includes('<code>--bf-') && !verticalAuditHtml.includes('<code>--bf-'), "Expected audit headings to omit implementation-variable labels.");
   const fieldBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-fields"'), horizontalAuditHtml.indexOf('id="horizontal-actions"'));
-  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell') && fieldBucket.includes('bf-status-label') && !fieldBucket.includes('bf-chip'), "Expected number, select, table-cell, and status-label insets to remain directly comparable while block-derived chips stay outside the field bucket.");
+  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell') && fieldBucket.includes('bf-chip') && fieldBucket.includes('is-borderless') && fieldBucket.includes('bf-status-label'), "Expected number, select, table-cell, regular/borderless chip, and status-label insets to remain directly comparable in the field bucket.");
   const blockDerivedBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-block-derived"'), horizontalAuditHtml.indexOf('id="horizontal-marks"'));
-  for (const component of ["bf-chip", "is-borderless", "bf-badge", "bf-button is-icon", "bf-pagination-link"]) {
+  for (const component of ["bf-badge", "bf-button is-icon", "bf-pagination-link"]) {
     assert(blockDerivedBucket.includes(component), `Expected the block-derived bucket to include ${component}.`);
   }
   const markBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-marks"'), horizontalAuditHtml.indexOf('id="horizontal-icon-navigation"'));

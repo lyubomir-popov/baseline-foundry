@@ -2,9 +2,10 @@
 
 **Feature Branch**: `feat/021-block-derived-inline-geometry`
 **Date**: 2026-09-01
-**Status**: Re-review follow-up. R1 is hardened and does not reproduce in
-Chrome or Edge; R2 is resolved by excluding bordered nested icon-only buttons.
-R3/R4 owner decisions, final gates, acceptance, and merge remain pending.
+**Status**: Recommended re-review resolutions and independent adversarial
+hardening implemented; final gates green at 9,947 static checks plus fresh
+component QA. Fresh Opus re-review, acceptance and merge remain separate
+owner decisions.
 
 ## Problem
 
@@ -94,13 +95,21 @@ outcome without a mechanism.
 - One named contract exposes each member's own painted block as an inline
   minimum, re-pointed by the cascade per member and state so a nested consumer
   cannot pick up a standalone value.
-- The minimum applies universally to badges and chips. Content that fits inside
-  it renders as a circle; wider content renders as a stadium at the same
-  painted block. No content-length modifier is introduced.
+- The minimum applies universally to badges and chips. Content whose intrinsic
+  padded width fits inside it renders as a circle; wider content renders as a
+  stadium at the same painted block. Chips retain their Field text inset, so
+  Documentation standalone and Editorial/Documentation nested one-character
+  chips are slight stadiums; badges own the exact circular counter case. No
+  content-length modifier is introduced.
 - A regular or link-style icon-only action is square in all four tiers, with
   its width equal to the grid-aligned height it already paints. Bordered nested
   icon-only buttons remain unsupported because their icon canvas cannot fit
   the OS host line alongside padding and borders.
+- Icon-only actions expose a direct 24-by-24 CSS-pixel pointer target through
+  an out-of-flow transparent extension without changing control paint, block
+  geometry, or occupied size. Supported adjacent `.bf-actions` compositions
+  reserve positive target clearance, and `is-nowrap` reserves transparent
+  scrollport padding so overflow cannot clip the target.
 - Numbered pagination slots stop using the occupied block and stop carrying an
   action inset around a bare digit.
 - No component gains a target block size, an authored width, a transform or an
@@ -131,9 +140,10 @@ outcome without a mechanism.
   Target size is measured per tier and resolved against WCAG 2.2 success
   criterion 2.5.8 for icon-only actions, interactive chips, and numbered
   pagination.
-- All icon centring and sizing derives from existing variables. No rem literal,
-  pixel value, magic multiplier or per-tier override may be introduced to make
-  an icon look centred.
+- All icon paint centring and sizing derives from existing variables. No rem
+  literal, pixel value, magic multiplier or per-tier override may be introduced
+  to make an icon look centred. The sole pixel exception is the normative 24
+  CSS-pixel pointer-target minimum from WCAG 2.2 success criterion 2.5.8.
 - Publication, release, merge and archive require separate owner direction.
 
 ## Acceptance
@@ -143,10 +153,13 @@ outcome without a mechanism.
    [`contracts/block-derived-matrix.md`](contracts/block-derived-matrix.md). A
    consumer references one name and never selects a ledger. Adding a member
    without adding its row fails the build.
-2. A `.bf-chip` and `.bf-badge` whose intrinsic content fits the minimum
-   renders with equal painted inline and block extents in all four tiers,
-   standalone and nested, in light and dark. Measured in the browser, within
-   one rasterised border width.
+2. A `.bf-badge` whose intrinsic content fits the minimum renders with equal
+   painted inline and block extents in all four tiers, standalone and nested,
+   in light and dark. A `.bf-chip` does the same wherever its Field-framed
+   intrinsic width fits. Documentation's standalone one-character chip and
+   Editorial/Documentation nested one-character chips are explicitly accepted
+   slight stadiums. Measured in the browser, within one rasterised border
+   width.
 3. Wider chip and badge content renders as a stadium with the same painted
    block extent, and never clips at two, three, four or five characters.
 4. Regular and link-style `.bf-button.is-icon` controls with no label render
@@ -155,10 +168,11 @@ outcome without a mechanism.
 5. Bare numbered `.bf-pagination-link` slots derive from the painted block
    rather than the occupied block and carry no action inset around a digit.
    Labelled previous/next controls retain the Action contract.
-6. Every value in the icon-only and pagination geometry resolves from an
-   existing variable. A static assertion rejects an authored rem or pixel
-   length, a magic multiplier or a per-tier override introduced by this
-   package.
+6. Every value in the icon-only painted geometry and pagination geometry
+   resolves from an existing variable. A static assertion rejects an authored
+   rem or pixel paint length, a magic multiplier or a per-tier override. It
+   permits exactly three uses of the same normative `24px` constant: the two
+   pointer-target axes and the supported action-container overflow derivation.
 7. Target size for changed interactive members is recorded per tier and
    resolved against WCAG 2.2 success criterion 2.5.8 by one of the four
    dispositions in the contract. The check accounts for rounded target shapes
@@ -188,6 +202,24 @@ content fits inside it. No modifier, no content-length selection.
 **Changed interactive target size** is an implementation measurement rather
 than an open design question: T005 measures icon-only actions, interactive
 chips, and numbered pagination, then one of four recorded dispositions applies.
+
+**R1 raster tolerance.** The reported 0.67px mismatch was a correct 1px border
+rasterising to 0.666667 CSS px at 150% device scale, not a formula defect. The
+shape tolerance is 1.05px and a forced-scale browser sweep must exercise more
+than 0.51px of it.
+
+**R3 target-size disposition.** Icon-only actions use an out-of-flow
+transparent 24 CSS-pixel square. This is a direct target, not a spacing
+exception, and does not reopen the no-target-block-size rule. Supported
+`.bf-actions` groups leave one border width of positive clearance between
+adjacent icon-link targets; their `is-nowrap` form reserves the transparent
+overflow inside its scrollport. The OS icon-link group gap is therefore
+0.5625rem instead of the ordinary 0.25rem Field gap.
+
+**R4 chip keyline ownership.** Chips remain Field-framed and retain the
+block-derived minimum as an inline floor. Badges own exact circular counters;
+Documentation standalone and Editorial/Documentation nested one-character
+chips are accepted slight stadiums.
 
 ## Relationship to Spec 020
 

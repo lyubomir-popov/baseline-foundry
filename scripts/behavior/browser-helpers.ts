@@ -6,9 +6,12 @@ export function assert(condition: unknown, message: string): asserts condition {
   }
 }
 
-export async function openBrowser(): Promise<import("playwright").Browser> {
+export async function openBrowser(options: { forceDeviceScaleFactor?: number } = {}): Promise<import("playwright").Browser> {
   try {
-    return await chromium.launch();
+    const args = options.forceDeviceScaleFactor === undefined
+      ? []
+      : [`--force-device-scale-factor=${options.forceDeviceScaleFactor}`];
+    return await chromium.launch({ args });
   } catch (error) {
     if (error instanceof Error && error.message.includes("Executable doesn't exist")) {
       throw new Error("Playwright Chromium is not installed. Run `npm run playwright:install` once before behavior verification.");

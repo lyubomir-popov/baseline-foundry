@@ -24,9 +24,10 @@ former single-character and radius questions are closed; do not reopen them.
   in the contract before changing geometry.
 - [x] T006 Adopt the contract for `.bf-button.is-icon` with no label: set
   `min-inline-size` from the alias, set `padding-inline: 0`, and let the
-  existing flex centring and metric strut place the icon. Every value derives
-  from an existing variable; no rem literal, pixel value, magic multiplier or
-  per-tier override.
+  existing flex centring and metric strut place the icon. Every painted value
+  derives from an existing variable; the only pixel value is the normative 24
+  CSS-pixel out-of-flow pointer target, with no magic multiplier or per-tier
+  override.
 - [x] T007 Correct `nav.bf-pagination`: apply the painted-block alias and
   remove the bordered action inset for bare numbered links only. Labelled
   previous/next controls retain their Action inset.
@@ -35,13 +36,18 @@ former single-character and radius questions are closed; do not reopen them.
   component's radius declaration changed in this package.
 - [x] T009 Add static assertions for contract emission per tier and per member
   state, a rejection assertion for any build-time-interpolated inline floor,
-  and a rejection assertion for authored lengths introduced by this package.
+  and a rejection assertion for authored lengths introduced by this package
+  except the three reviewed uses of the same 24px pointer-target constant: two
+  target axes and one supported-container overflow derivation.
 - [x] T010 Add browser assertions measuring equal *painted* inline and block
   extents — explicitly painted, not occupied, since the two coincide in some
   tiers — for fitting chips and badges and for square icon actions and
   pagination slots, in all four tiers and both tones, plus centred fitting chip
-  content, link-style icon actions, and unclipped stadium behaviour from two
-  through five characters.
+  content, the accepted intrinsic Field-chip stadiums, link-style icon actions,
+  directly hittable icon targets at edges and corners in LTR/RTL ordinary and
+  nowrap action groups, a forced 1.5 device-scale raster sweep of both default
+  alias members, and unclipped stadium behaviour from two through five
+  characters.
 - [x] T011 Confirm the existing four-tier occupied-block and vertical
   assertions pass unmodified. Do not adjust them to accommodate this package.
 - [x] T012 Add the block-derived row to the classification table in
@@ -52,8 +58,8 @@ former single-character and radius questions are closed; do not reopen them.
 - [x] T014 Run `npm test` and `npm run qa:components` with fresh captures,
   record evidence in `review.md`, and request owner and stakeholder visual
   acceptance.
-- [ ] T015 Record the owner decisions for R3 target-size disposition and R4
-  chip keyline ownership, encode them consistently, and rerun `npm test` plus
-  fresh `npm run qa:components` captures.
+- [x] T015 Record the accepted R3 direct pointer-target disposition and R4
+  Field-chip keyline ownership, encode them consistently, and rerun `npm test`
+  plus fresh `npm run qa:components` captures.
 - [ ] T016 Merge and archive only after acceptance. Do not publish or release
   without a separate explicit request.

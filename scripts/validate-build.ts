@@ -574,9 +574,11 @@ function validateCommonCss(css: string): void {
   const ast = parseCss(css);
   assert(!css.includes("@font-face"), "Expected built-in CSS to leave runtime font URLs to the consumer-owned font declaration.");
   assert(!css.includes("UbuntuSans[wdth,wght].ttf"), "Expected built-in CSS to avoid a runtime URL to the unbundled development font.");
+  const normativeTargetMinimums = css.match(/24px\b/g) ?? [];
   assert(
-    !/-?(?:\d+(?:\.\d+)?|\.\d+)px\b/.test(css),
-    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens.",
+    normativeTargetMinimums.length === 3 &&
+    !/-?(?:\d+(?:\.\d+)?|\.\d+)px\b/.test(css.replaceAll("24px", "")),
+    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except for the three reviewed uses of the 24 CSS-pixel target minimum.",
   );
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 38.75rem threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 105.0625rem threshold for the 16-column grid.");
@@ -800,17 +802,39 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link:hover) {\n  background-color: transparent;\n  color: var(--bf-color-link-default);\n  text-decoration: underline;"), "Expected bf-button.is-link hover state to keep transparent chrome and restore underline treatment.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-space-1);"), "Expected bf-button.is-icon to use the shared spacing token for its explicit icon/label relationship.");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
     "column-gap": "0",
     "justify-self": "start",
     "min-inline-size": "var(--bf-square-block-size)",
-    "padding-inline": "0"
+    "padding-inline": "0",
+    "position": "relative"
   }, "icon-only buttons derive their intrinsic square from their painted block without a text inset");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))::before", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::before", {
     "block-size": "var(--bf-body-line-height)",
     "content": '""',
     "inline-size": "0"
   }, "icon-only buttons preserve the occupied body line through a zero-width metric strut");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::after", {
+    "block-size": "max(100%, 24px)",
+    "content": '""',
+    "inline-size": "max(100%, 24px)",
+    "left": "50%",
+    "pointer-events": "auto",
+    "position": "absolute",
+    "top": "50%",
+    "translate": "-50% -50%"
+  }, "icon-only buttons extend their pointer target to the normative 24 CSS-pixel minimum without changing paint or flow");
+  assert(!css.includes(":where(.bf-button.is-icon:not(:has(.bf-button-label)))"), "Expected the icon-only geometry selector to exclude the unsupported nested state at the production match boundary.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions)", {
+    "gap": "var(--bf-field-gap)"
+  }, "ordinary action groups retain the Field gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions:has(> .bf-button.is-link.is-icon))", {
+    "--bf-action-target-overflow": "max(0rem, calc((24px - var(--bf-body-line-height)) / 2))",
+    "gap": "max(var(--bf-field-gap), calc((var(--bf-action-target-overflow) * 2) + var(--bf-border-width)))"
+  }, "action groups containing link icons reserve raster-safe container-owned clearance between adjacent 24 CSS-pixel targets");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-link.is-icon))", {
+    "padding": "var(--bf-action-target-overflow)"
+  }, "nowrap action scrollports reserve the transparent target overflow instead of clipping it");
   assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-space-2);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: 0;"), "Expected generated CSS to keep bf-cta-block externally neutral for stack ownership.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
@@ -920,7 +944,7 @@ function validateCommonCss(css: string): void {
     "justify-content": "center",
     "justify-self": "start",
     "min-inline-size": "var(--bf-square-block-size)",
-    "padding-inline": "max(0rem, calc(var(--bf-ui-chip-padding-inline) - (var(--bf-border-width) * 2)))",
+    "padding-inline": "max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)))",
     "white-space": "nowrap"
   }, "chips keep the canonical neutral token defaults and inline chip layout");
   assert(css.includes("--bf-ui-chip-radius: 999rem;") && css.includes("border-radius: var(--bf-ui-chip-radius);"), "Expected standalone and nested chips to use the shared rem-based pill radius.");
@@ -954,7 +978,7 @@ function validateCommonCss(css: string): void {
     [":where(.bf-theme) :where(.bf-badge)", "var(--bf-interface-row-line-height)"],
     [":where(.bf-theme) :where(.bf-chip.is-nested)", "var(--bf-nested-row-painted-block-size)"],
     [":where(.bf-theme) :where(.bf-badge.is-nested)", "var(--bf-nested-row-line-height)"],
-    [":where(.bf-theme) :where(.bf-button.is-link.is-icon:not(:has(.bf-button-label)))", "var(--bf-body-line-height)"],
+    [":where(.bf-theme) :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label)))", "var(--bf-body-line-height)"],
     [":where(.bf-theme) :where(.bf-notification-close)", "var(--bf-notification-close-painted-block-size)"]
   ]);
   const emittedSquareAliases = new Map<string, string>();
@@ -969,10 +993,10 @@ function validateCommonCss(css: string): void {
   for (const [selector, value] of expectedSquareAliases) {
     assert(emittedSquareAliases.get(selector) === value, `Expected ${selector} to re-point --bf-square-block-size to ${value}, got ${emittedSquareAliases.get(selector) ?? "nothing"}.`);
   }
-  assert(!css.includes(":where(.bf-theme) :where(.bf-button.is-icon.is-nested:not(.is-link):not(:has(.bf-button-label)))"), "Expected bordered nested icon-only buttons to remain outside block-derived membership because their icon canvas cannot fit the OS host line with padding and borders.");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-button.is-link.is-icon:not(:has(.bf-button-label)))"), "Expected the link-style alias to exclude the unsupported nested icon-only state at the production match boundary.");
   const expectedSquareConsumers = [
     ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)",
-    ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))",
+    ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))",
     ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)",
     ":where(.bf-theme) :where(.bf-pagination-link:not(.is-previous):not(.is-next))"
   ].sort();
@@ -1012,7 +1036,7 @@ function validateCommonCss(css: string): void {
     "padding-inline-end": "var(--bf-notification-close-painted-block-size)"
   }, "notification copy reserves the complete square close-action paint");
   for (const selector of [
-    ":where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))",
+    ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))",
     ":where(.bf-theme) :where(.bf-pagination-link:not(.is-previous):not(.is-next))"
   ]) {
     for (const property of ["aspect-ratio", "block-size", "inline-size", "transform", "border-radius"]) {
@@ -1083,7 +1107,8 @@ function validateCommonCss(css: string): void {
   }, "nested chip and status surfaces fit a host-owned body line");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested)", {
     "border": "0",
-    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border)"
+    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border)",
+    "padding-inline": "var(--bf-ui-chip-padding-inline)"
   }, "nested chips paint their border without adding block footprint");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested) :where(.bf-chip-lead, .bf-chip-value)", {
     "line-height": "inherit"
@@ -1693,9 +1718,16 @@ async function validateScalableAuthoredLengths(): Promise<void> {
     ...await collectFiles(path.resolve("examples"), new Set([".html"])),
   ];
   const violations: string[] = [];
+  let normativeTargetOccurrences = 0;
 
   for (const filePath of sourceFiles) {
-    if (/px\b/.test(await fs.readFile(filePath, "utf8"))) {
+    const source = await fs.readFile(filePath, "utf8");
+    const relativePath = path.relative(process.cwd(), filePath).replaceAll("\\", "/");
+    if (relativePath === "src/css-components/button-actions.ts") {
+      const occurrences = source.match(/24px\b/g) ?? [];
+      normativeTargetOccurrences += occurrences.length;
+      if (/px\b/.test(source.replaceAll("24px", ""))) violations.push(relativePath);
+    } else if (/px\b/.test(source)) {
       violations.push(path.relative(process.cwd(), filePath));
     }
   }
@@ -1711,7 +1743,8 @@ async function validateScalableAuthoredLengths(): Promise<void> {
     }
   }
 
-  assert(violations.length === 0, `Expected authored component and demo styles to use rem-scalable lengths; found px units in ${violations.join(", ")}.`);
+  assert(normativeTargetOccurrences === 3, `Expected exactly three uses of the normative 24 CSS-pixel target minimum (two target axes and one non-overlap gap), got ${normativeTargetOccurrences}.`);
+  assert(violations.length === 0, `Expected authored component and demo styles to use rem-scalable lengths except for the reviewed 24 CSS-pixel target minimum; found other px units in ${violations.join(", ")}.`);
 }
 
 async function main(): Promise<void> {

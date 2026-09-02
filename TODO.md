@@ -7,11 +7,12 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 Spec 021 is active on `feat/021-block-derived-inline-geometry`. Its
 member-specific painted-block implementation and four-tier rendered checks are
-in re-review follow-up. R1 is hardened and does not reproduce in Chrome/Edge;
-R2 is resolved by dropping unsupported bordered nested icon membership. R3
-target-size disposition and R4 chip-keyline ownership require owner decisions,
-then final gates and acceptance. Do not merge, publish, release, or begin Spec
-020 without separate closeout direction.
+in re-review follow-up. The accepted resolutions restore fractional-scale
+raster coverage, directly extend icon-only targets to 24 CSS pixels, keep chips
+on the Field keyline, and exclude unsupported bordered nested icon membership.
+Final gates are green at 9,947 static checks plus fresh component QA. Fresh
+Opus adversarial re-review and owner acceptance remain. Do not merge, publish,
+release, or begin Spec 020 without separate closeout direction.
 
 After Spec 021 is accepted, promote Spec 020 on a fresh branch. Spec 020
 supersedes unimplemented Spec 019 and owns the approved horizontal matrix.

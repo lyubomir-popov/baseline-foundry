@@ -1,131 +1,31 @@
 # Agent inbox
 
-## Active package
+## Opus adversarial re-review requested — Spec 021
 
-Spec 021, [`specs/021-block-derived-inline-geometry/`](specs/021-block-derived-inline-geometry/),
-is active on `feat/021-block-derived-inline-geometry`. The owner-approved
-contract derives inline minima from each member's own painted block for chips,
-badges, bare icon buttons, and bare numbered-pagination slots. Status labels,
-article pagination, and labelled previous/next pagination controls are outside
-membership. Do not merge, publish, release, or start Spec 020 without separate
-closeout direction.
+Spec 021 is active on `feat/021-block-derived-inline-geometry`. The implemented
+R1/R3/R4 resolutions and independent adversarial hardening are ready for fresh
+Opus review. The detailed request, current dispositions, measurements, and
+evidence are in
+[`specs/021-block-derived-inline-geometry/review.md`](specs/021-block-derived-inline-geometry/review.md#opus-adversarial-re-review-request-2026-09-02).
 
-## Re-review follow-up — Spec 021, two owner decisions pending
+Current green state:
 
-Full evidence is appended to
-[`specs/021-block-derived-inline-geometry/review.md`](specs/021-block-derived-inline-geometry/review.md).
+- `npm test`: exit 0; 9,947 static checks; zero component-baseline and behavior
+  failures.
+- `npm run qa:components`: exit 0 after fresh full-catalog captures; zero
+  failures.
+- Independent live adversarial probe: all 16 tier × direction ×
+  ordinary/nowrap cases pass all eight cardinal/corner hit points, including an
+  extra-child icon and constrained scrollports at both scroll extremes.
+- No merge, push, publication, release, archive, or Spec 020 start is
+  authorized.
 
-- **R1 hardened; reported discrepancy does not reproduce.** The requested
-  shape tolerance is now `0.51`. Direct measurements in the installed stable
-  Chrome and Edge engines across all tiers put the default-alias chip and icon
-  button at 0–0.016px error, and the complete behavior sweep passes. No
-  target-like block floor was added. A contrary result now needs its exact
-  selector, browser/zoom/device scale, font-ready state and expression.
-- **R2 resolved by exclusion.** Re-pointing the strut cannot solve OS: its 16px
-  icon already fills the 16px host line before padding and borders. Bordered
-  nested icon-only buttons are removed from alias membership, demo, behavior,
-  contract and architecture. Static validation rejects reintroduction.
-- **R3 owner decision.** Accept the WCAG spacing exception for natural-size
-  icon-only actions in Documentation, App and OS, or reopen the no-target-block
-  rule to create a direct 24×24px target. The first preserves tier density but
-  makes compliance composition-dependent; the second changes vertical
-  architecture.
-- **R4 owner decision.** Keep exact one-character circles in Documentation and
-  leave the Field keyline, or restore Field padding and accept a subtle
-  23.24×21.81px Documentation stadium. The latter preserves the shared text
-  keyline for every longer chip in every tier.
+Opus: append the detailed result to `review.md` immediately after the linked
+request under `## Opus adversarial re-review, 2026-09-02`. Then replace this
+request with a concise outcome and a direct link to that appended section. Do
+not leave the detailed review only here.
 
-Focused gates pass: 9,716 static checks and complete component behavior. Full
-`npm test` and fresh `npm run qa:components` wait for R3/R4 to be encoded.
-Owner/stakeholder acceptance remains pending. Do not merge, archive, publish,
-release, push this feature branch, or begin Spec 020 without separate direction.
+## Next after review
 
-## Active follow-up
-
-The accepted architecture fixes are on pushed `main` at `b99b66a`. That exact
-commit passes `npm test` with 8,653 static checks and zero baseline/behavior
-failures, plus fresh `npm run qa:components` captures. The pre-split state is
-recoverable at `snapshot/pre-split-2026-09-01` (`62b92b8`); Spec 019/020/021
-draft history is preserved separately at `d49bb40`. Seven verified merged
-remote branches and three verified merged local branches were removed after
-the push; `fix/active-tab-nested-chip` remains by explicit instruction.
-
-## Previous release — 0.1.7 / archived Spec 018 follow-up
-
-The optional orange tagged brand, explicit nested chip/status/badge fit,
-exhaustive vertical coverage, active thick-bar tab, shared header/breadcrumb
-line, raster-stable side-navigation tracks, and zoom-stable single-line color
-and inline-range rows are complete. The 0.1.7 follow-up makes the audit tab's
-initial state explicit and proves that a nested badge fits inside a compact
-table-hosted chip without enlarging its row. Keep the standalone chip for
-standalone targets; do not generalise `is-nested` into an undersized bordered
-button contract or reintroduce page-local spacing fixes. OIDC run `33415864663`
-published `baseline-foundry@0.1.7` from `77ffcfe`, tagged that exact commit as
-`v0.1.7`, verified a clean registry install, and attached the npm tarball plus
-checksum records to the GitHub release.
-
-## Previous release — 0.1.5 / archived Spec 017
-
-Remove developer-only spacing and horizontal-keyline pages from the public demo
-catalog. Audit which remaining examples teach a consumer-facing contract and
-retire specimens that only expose implementation diagnostics.
-
-Spec 017 is accepted and archived for the final 0.1.5 release. The public demo
-cleanup, exhaustive adjacency audit, three-keyline component inset
-consolidation, branded continuation-rail repair, tabbed axis audit, select
-pressure handling, and final adversarial review are complete. Do not recreate
-the removed historical diagnostic batch or introduce an unclassified
-component inset. Text keeps only metric compensation; stacks and pattern
-containers own semantic spacing.
-
-## Deferred candidates
-
-- The public `bf-slider` range control has no discrete notch/tick presentation.
-  Consider a small opt-in integer `min`/`max`/`step` contract only after the
-  current spacing and navigation work. It must preserve native keyboard
-  behavior and expose value text accessibly without requiring a paired number
-  input.
-- Diagram Registry and the standalone Mermaid playground have related resize
-  seams, but the existing `bf-application-aside-resize-handle` remains correctly
-  scoped to pinned application asides. Promote a generic split-pane/resizer only
-  when a second consumer proves the same reusable interaction contract.
-- Portfolio still imports BF's private `src/build.ts` through a `file:`
-  dependency. Before changing that dependency, add `tsx` locally and migrate it
-  to the public `baseline-foundry/build` export.
-
-## Last-known-green state
-
-The released 0.1.7 implementation passes `npm test` with 6,956 static
-contracts, zero component-baseline failures, and clean browser behavior. It
-also passes `npm run qa:components` after a fresh full-catalog screenshot
-capture. The shared demo remains running at `http://127.0.0.1:4173`; the
-persistent chrome, optional orange tagged brand, active thick-bar tab, and
-corrected vertical audit were visibly present in the final live refresh. A
-post-publication clean install verified 30 root exports and 21 asset entry
-points from the registry package. Tag `v0.1.7` resolves to `77ffcfe`; its
-GitHub release contains the npm tarball and checksum record.
-
-The released Spec 017 implementation passes `npm test` (including 6,739 build
-contracts and component behavior), `npm run qa:components`, and Playwright
-review in light and dark across all four tiers. The spacing chapter presents basic-section guidance
-and reuses both axis routes in in-page BF tabs. Horizontal owns the fixed
-three-line inset overlay while active; vertical hides it and owns three compact
-occupied-block rows whose raw specimens are 5rem wide. A five-letter paragraph
-anchors each text baseline, and 23 body-sized interface specimens share one
-border-aware occupied-height contract across all tiers. The vertical audit uses
-an unpadded public BF cluster rather than a private geometry-changing track;
-its scrollbar occupies whole baseline units, and page-wide text phase is now
-an executable browser contract. Temporary QA servers use the browser-safe dynamic port
-range. The demo server at `http://127.0.0.1:4173` uses polling so edits in the
-shared Windows/WSL workspace remain visible without repeated restarts. The
-earlier feature tip `f9731a2` remains tagged as downstream release candidate
-`v0.1.5-rc.0`, and Diagram Registry currently consumes that older exact build.
-The npm-owned workflow published `baseline-foundry@0.1.5` from `2d1099c`,
-created `v0.1.5` at that exact commit, verified a clean registry install, and
-attached the reconciled npm tarball plus checksums to the GitHub release.
-Diagram Registry can now advance from the release candidate as a separate,
-lockfile-visible downstream change.
-
-Preserve `tmp/chevron-audit/`, `tmp/chevron-harness/`, and
-`tmp/vanilla-main/`. The sibling Vanilla checkout contains user changes in
-`yarn.lock`; do not clean or update it.
+Owner and originating-stakeholder acceptance remain required. Merge/archive is
+a separate explicit action. Spec 020 is next only after Spec 021 is accepted.

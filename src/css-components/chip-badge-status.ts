@@ -37,9 +37,9 @@ ${bodyTypeStyles}  align-items: baseline;
   max-inline-size: 100%;
   min-inline-size: var(--bf-square-block-size);
   padding-block: var(--bf-interface-row-padding-block);
-  /* Keep overflow padding token-derived while allowing a fitting glyph to
-     fall inside the block-derived minimum in every tier. */
-  padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - (var(--bf-border-width) * 2)));
+  /* Chips keep the Field text keyline; the block-derived minimum prevents a
+     short chip from becoming narrower than its painted row. */
+  padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
   position: relative;
   text-decoration: none;
   user-select: none;
@@ -204,6 +204,9 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
 :where(.bf-theme) :where(.bf-chip.is-nested) {
   border: 0;
   box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);
+  /* The nested border is inset paint rather than box geometry, so the glyph
+     needs the complete Field inset instead of subtracting a real border. */
+  padding-inline: var(--bf-ui-chip-padding-inline);
 }
 
 /* Chip parts normally carry the standalone body line explicitly. A nested

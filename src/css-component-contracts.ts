@@ -81,7 +81,7 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
   --bf-square-block-size: var(--bf-nested-row-line-height);
 }
 
-:where(.bf-theme) :where(.bf-button.is-link.is-icon:not(:has(.bf-button-label))) {
+:where(.bf-theme) :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
   --bf-square-block-size: var(--bf-body-line-height);
 }
 

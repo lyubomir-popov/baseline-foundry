@@ -44,20 +44,33 @@ painted block; more characters grow the box. Nothing clips, and nothing
 overrides intrinsic sizing.
 
 Browser measurement exposed one implementation constraint hidden by the draft:
-Documentation's one-character chip was intrinsically 23.90px wide against a
-22.48px painted block under the former Field-keyline padding. A minimum cannot
-shrink that box. The implementation therefore subtracts one additional border
-unit on each inline edge and centres the fitting content. This is an explicit
-consequence of moving chips out of the Field classification: their overflow
-padding remains derived from existing variables, but their glyph edge no longer
-claims the Field keyline. The choice is surfaced in `review.md` for owner visual
-acceptance rather than hidden as an incidental CSS adjustment.
+Documentation's one-character chip is intrinsically about 1.43px wider than its
+painted block when it keeps the Field-keyline padding. A minimum cannot shrink
+that box. The accepted resolution keeps chips in Field and treats this one case
+as a slight stadium; badges own exact circular counters. The block-derived
+minimum still prevents every chip from becoming narrower than its painted row,
+while longer chip text keeps the shared Field glyph edge in every tier.
 
 For icon-only buttons the action inset is removed rather than retained, because
 there is no label for it to frame; the icon centres inside the minimum through
 the existing flex centring. Link-style icon buttons re-point the same alias to
 their body-line paint because `is-link` removes the regular padding and border.
 The unsupported nested-link combination never receives the framed nested value.
+
+The square paint remains naturally dense. An absolutely positioned transparent
+`::after` extends the pointer target to `max(100%, 24px)` on both axes without
+entering flow or occupied-block measurement. WCAG 2.2 success criterion 2.5.8
+defines the minimum in CSS pixels, so this is one normative constant reused by
+both target axes and the action-container clearance derivation; it is not a
+painted size or BF spacing token.
+
+Browser hit testing showed that two generated targets which touch exactly can
+lose their shared edge to sibling paint order, and that `is-nowrap` clips
+positioned descendants at its scrollport. Supported `.bf-actions` groups with
+link icons therefore leave one `--bf-border-width` of positive clearance. The
+nowrap form also reserves the derived transparent target overflow as padding.
+This is a targeted composition adjustment—only the OS icon-link group gap
+changes—while the controls' paint and occupied block remain unchanged.
 
 ### Badge cleanup
 
@@ -104,18 +117,25 @@ they are not to be adjusted to accommodate this package.
 - **Small composable primitives**: Pass. One derived alias and no wrapper
   elements. The existing structural label-slot test distinguishes bare icon
   buttons; no ancestry-inferred density is introduced.
-- **Accessible behavior**: Conditional. An icon-only action may become narrower
-  than it is today. Target size must be measured per tier and the result
-  accepted or the design revised. This is the one place the package can fail
-  its own constitution check, and T005 exists to find out early.
+- **Accessible behavior**: Pass. The paint remains naturally dense while the
+  icon-only pointer target is directly extended to 24-by-24 CSS pixels in every
+  tier, with positive separation and nowrap-scrollport containment in supported
+  action groups. Other changed interactive members retain measured direct or
+  spacing dispositions.
 - **Generated-source ownership**: Pass.
 - **Spec-owned state**: Pass on promotion.
 
 ## Risk
 
-The accessibility risk is the real one. Today an OS icon-only button is roughly
-3rem wide; a square would be roughly 1.25rem. That is a substantial reduction in
-pointer target area in the densest tier. Permitted dispositions are:
+The accessibility risk was real. An OS icon-only button moves from roughly
+3rem wide paint to roughly 1.25rem, so relying on surrounding spacing would be
+composition-dependent. The accepted disposition squares the paint and extends
+the pointer target with a transparent out-of-flow 24 CSS-pixel square. This
+preserves control density and makes the target direct in every tier; supported
+action containers own the small clearance needed to keep adjacent targets
+distinct and unclipped.
+
+The reviewed alternatives were:
 
 1. Square the button and rely on the surrounding hit area or spacing where the
    pattern already provides it.
@@ -126,11 +146,12 @@ pointer target area in the densest tier. Permitted dispositions are:
 4. Demonstrate and record the WCAG 2.2 spacing exception for an undersized
    target.
 
-Deciding this before implementation would be guessing. T005 measures first.
+T005 measured before the disposition was selected; the final browser contract
+now checks the extension itself and edge hit testing.
 
 The second risk was that "single character" is not a state CSS can select on.
 That is closed: the minimum applies universally to badges and chips, and the
-circle is simply the case where intrinsic content fits inside it. Short
-multi-character chips become wider than they are today, which the owner has
-accepted as correct — a chip narrower than the row it sits in reads as an
-accident.
+circle is simply the case where intrinsic padded content fits inside it. Chips
+retain Field padding; Documentation standalone and Editorial/Documentation
+nested one-character chips are therefore slight stadiums, and consumers use a
+badge when the semantic need is a circular counter.

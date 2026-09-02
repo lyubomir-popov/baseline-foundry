@@ -115,7 +115,8 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
 | Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
 | Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
-| Chip, badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to chips and badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded because their icon canvas cannot fit the OS host line with padding and borders; fitting chip content is centred and its overflow padding is token-derived rather than a Field-keyline claim; chip and badge alone may own pill/circle radius, while button and pagination retain their existing radius |
+| Chip | Field plus block-derived minimum | Regular; zero-footprint nested | The Field inset keeps chip text on the shared glyph keyline; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. `--bf-square-block-size` prevents a short chip becoming narrower than its own painted block. Documentation standalone and Editorial/Documentation nested one-character chips are slight stadiums; use a badge for a circular counter. |
+| Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to chips and badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
 | Checkbox, radio, prose/list marks, validation | Continuation copy | Regular; framed nested for selection controls | Mark position is calculated backward from the continuation copy inset |
 | Accordion, list tree, side-navigation copy, table of contents, notification | Continuation | Regular | Icon canvas and gap do not create another inset; TOC nesting adds only structural depth after the root inset |
@@ -196,6 +197,21 @@ For a new component:
 
 A new shared inset, density scale, target height, or tier-owned leaf override
 requires an architecture decision. Numeric resemblance is not sufficient.
+
+Icon-only buttons extend their pointer target, not their paint, to at least
+24-by-24 CSS pixels with an out-of-flow pseudo-element. The `24px` value is the
+normative unit used by WCAG 2.2 success criterion 2.5.8, not a design-system
+spacing token. It does not change the control's block size, occupied geometry,
+or token-derived painted square.
+
+An out-of-flow target still needs container-owned clearance. A `.bf-actions`
+group containing link-style icon buttons derives the target overflow from that
+same normative minimum and leaves one border width of positive clearance
+between adjacent targets. This changes only the OS icon-link group gap, from
+the normal 0.25rem Field gap to 0.5625rem. The `is-nowrap` form also reserves
+the transparent overflow as scrollport padding because a scrolling overflow
+container otherwise clips positioned descendants. These are supported
+composition rules, not target block sizes or changes to control paint.
 
 ## Removed contracts
 

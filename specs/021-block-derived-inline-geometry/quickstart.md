@@ -30,9 +30,14 @@ browser measurement also found that the standalone badge's losing
 `content-box` declaration left it slightly elliptical. Both states must be
 measured.
 
-**Check two through five characters.** One character should be a circle; wider
-content should become a stadium with the same height. A fixed-size or overflow
-cap regression shows up at the longer fixtures, not at one.
+**Check one through five characters.** Badges with fitting content should be
+circles; wider badges become stadiums. Chips retain the Field inset: a fitting
+chip is square, while Documentation's standalone and Editorial/Documentation
+nested one-character chips are deliberately slight stadiums. Regular chips
+subtract their real border from the inset; nested chips keep the full inset
+because their border is inset paint. Use a badge for an exact circular counter.
+A fixed-size or overflow-cap regression shows up at the longer fixtures, not
+at one.
 
 **Check the block axis has not moved.** Overlay the before capture of any row
 containing a chip or badge. Any change in row height is a defect — this package
@@ -40,7 +45,18 @@ must be inline-only.
 
 **Check every changed interactive target before accepting the square.** Cover
 icon buttons, interactive chips, and numbered pagination against the recorded
-per-tier values, actual rounded shape, and adjacent targets.
+per-tier values, actual rounded shape, and adjacent targets. For icon-only
+buttons, inspect the transparent `::after`: it must be at least 24-by-24 CSS
+pixels and directly hittable without changing the painted or occupied box.
+Probe cardinal edges and corners in LTR and RTL. Put adjacent link-style icon
+buttons in both ordinary and `is-nowrap` `.bf-actions` groups: the targets must
+have positive separation and the scrollport must not clip any edge.
+
+**Exercise fractional rasterisation.** The behavior gate launches one Chromium
+sweep with a forced 1.5 device scale. It covers both default-alias members:
+fitting chips and icon-only buttons. An authored 1px border should resolve to
+about 0.666667 CSS px and use more than 0.51px, but no more than 1.05px, of the
+reviewed shape tolerance.
 
 ## Tier sweep
 
