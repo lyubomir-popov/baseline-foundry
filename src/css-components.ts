@@ -1882,9 +1882,8 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   outline-offset: -0.125rem;
 }
 
-/* Application navigation becomes persistent at the same 48rem boundary used
- * by readable split compositions. Standalone top and document navigation keep
- * their own large-screen contracts. */
+/* Application navigation becomes persistent at 48rem. Standalone top and
+ * document navigation keep their own large-screen contracts. */
 @media (min-width: 48rem) {
   :where(.bf-theme) :where(.bf-application:has(> .bf-navigation)) {
     grid-template-areas:

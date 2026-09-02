@@ -1070,8 +1070,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     });
 
     for (const boundary of [
-      { width: 767, persistent: false, label: "below 48rem" },
-      { width: 768, persistent: true, label: "at 48rem" }
+      { width: 640, persistent: false, columns: 1, label: "at a narrow pattern allocation" },
+      { width: 767, persistent: false, columns: 2, label: "below 48rem after the drawer releases space" },
+      { width: 768, persistent: true, columns: 1, label: "at 48rem with the rail consuming the pattern allocation" }
     ] as const) {
       await page.setViewportSize({ width: boundary.width, height: 960 });
       await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -1080,6 +1081,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
         const drawer = navigation?.querySelector<HTMLElement>(".bf-navigation-drawer");
         const overlay = navigation?.querySelector<HTMLElement>(".bf-navigation-overlay");
+        for (const aside of application?.querySelectorAll(":scope > .bf-aside") ?? []) aside.remove();
         const content = application?.querySelector<HTMLElement>(".bf-main .bf-panel-content");
         if (!application || !navigation || !drawer || !overlay || !content) return null;
 
@@ -1115,9 +1117,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       assert(state.drawerHidden === (boundary.persistent ? "false" : "true"), `Expected application navigation accessibility state to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.drawerPosition === (boundary.persistent ? "static" : "fixed"), `Expected application navigation drawer positioning to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert((state.overlayDisplay === "none") === boundary.persistent, `Expected application navigation overlay lifecycle to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
-      const expectedColumns = boundary.persistent ? 2 : 1;
-      assert(state.basicColumns === expectedColumns, `Expected application basic-section to use ${expectedColumns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
-      assert(state.tieredHeaderColumns === expectedColumns, `Expected application tiered-list header to use ${expectedColumns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
+      assert(state.basicColumns === boundary.columns, `Expected application basic-section to use ${boundary.columns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
+      assert(state.tieredHeaderColumns === boundary.columns, `Expected application tiered-list header to use ${boundary.columns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
     }
 
     await page.setViewportSize({ width: 1440, height: 960 });
@@ -2930,13 +2931,13 @@ async function verifySharedReadableSplitThresholds(origin: string): Promise<void
   const browser = await openBrowser();
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const cases = [
-    { route: "basic-section.html", root: ".bf-basic-section", layout: ".bf-basic-section-layout", expandedColumns: 2 },
-    { route: "divided-section.html", root: ".bf-divided-section", layout: ".bf-divided-section-layout", expandedColumns: 2 },
-    { route: "tiered-list.html", root: ".bf-tiered-list:not(.is-description-full-width)", layout: ".bf-tiered-list-header", expandedColumns: 2 },
-    { route: "rich-list-horizontal.html", root: ".bf-rich-list.is-horizontal.is-50-50", layout: ".bf-rich-list-layout", expandedColumns: 2 },
-    { route: "rich-list-vertical.html", root: ".bf-rich-list.is-vertical", layout: ".bf-rich-list-layout", expandedColumns: 2 },
-    { route: "tab-section.html", root: ".bf-tab-section", layout: ".bf-tab-section-body", expandedColumns: 4 },
-    { route: "linked-logo-section.html", root: ".bf-linked-logo-section.is-50-50", layout: ".bf-linked-logo-section-layout", expandedColumns: 2 }
+    { route: "basic-section.html", root: ".bf-basic-section", layout: ".bf-basic-section-layout", below: "38.6875rem", threshold: "38.75rem", expandedColumns: 2 },
+    { route: "divided-section.html", root: ".bf-divided-section", layout: ".bf-divided-section-layout", below: "44.9375rem", threshold: "45rem", expandedColumns: 2 },
+    { route: "tiered-list.html", root: ".bf-tiered-list:not(.is-description-full-width)", layout: ".bf-tiered-list-header", below: "38.6875rem", threshold: "38.75rem", expandedColumns: 2 },
+    { route: "rich-list-horizontal.html", root: ".bf-rich-list.is-horizontal.is-50-50", layout: ".bf-rich-list-layout", below: "44.9375rem", threshold: "45rem", expandedColumns: 2 },
+    { route: "rich-list-vertical.html", root: ".bf-rich-list.is-vertical", layout: ".bf-rich-list-layout", below: "44.9375rem", threshold: "45rem", expandedColumns: 2 },
+    { route: "tab-section.html", root: ".bf-tab-section", layout: ".bf-tab-section-body", below: "44.9375rem", threshold: "45rem", expandedColumns: 4 },
+    { route: "linked-logo-section.html", root: ".bf-linked-logo-section.is-50-50", layout: ".bf-linked-logo-section-layout", below: "44.9375rem", threshold: "45rem", expandedColumns: 2 }
   ] as const;
 
   try {
@@ -2948,8 +2949,8 @@ async function verifySharedReadableSplitThresholds(origin: string): Promise<void
         await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
         await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
         for (const allocation of [
-          { width: "47.9375rem", columns: 1, label: "below 48rem" },
-          { width: "48rem", columns: testCase.expandedColumns, label: "at 48rem" }
+          { width: testCase.below, columns: 1, label: `below ${testCase.threshold}` },
+          { width: testCase.threshold, columns: testCase.expandedColumns, label: `at ${testCase.threshold}` }
         ]) {
           const state = await page.locator(testCase.root).first().evaluate((root, expected) => {
             const pattern = root as HTMLElement;

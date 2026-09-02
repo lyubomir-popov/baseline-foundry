@@ -1,7 +1,7 @@
 /**
  * Static Vanilla parity ports: data spotlight and divided section. The
  * Components use an intrinsic medium threshold for their density changes and
- * the shared 48rem readable-split threshold for default balanced content,
+ * the shared 45rem readable-split threshold for default balanced content,
  * while responding to their allocated inline size.
  *
  * Vanilla → BF token mapping:
@@ -210,7 +210,7 @@ export function staticContentPortsCss(): string {
   position: absolute;
 }
 
-@container (width >= 48rem) {
+@container (width >= 45rem) {
   :where(.bf-theme) :where(.bf-divided-section) :where(.bf-divided-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));

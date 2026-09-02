@@ -139,7 +139,7 @@ export function linkedLogoSiteLayoutCss(): string {
   }
 }
 
-@container bf-linked-logo-section (width >= 48rem) {
+@container bf-linked-logo-section (width >= 45rem) {
   :where(.bf-theme) :where(.bf-linked-logo-section.is-50-50) :where(.bf-linked-logo-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));

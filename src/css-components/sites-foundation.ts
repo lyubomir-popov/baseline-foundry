@@ -66,24 +66,11 @@ export function sitesFoundationCss(): string {
   text-underline-offset: 0.12em;
 }
 
-/* A balanced section switches at the shared readable 50/50 threshold. The
+/* A balanced section switches at the standard medium container threshold. The
    layout descendant reacts to the root container; the query never tries to
    restyle the container that established it. */
-@container bf-basic-section (width >= 48rem) {
+@container bf-basic-section (width >= 38.75rem) {
   :where(.bf-theme) :where(.bf-basic-section-layout) {
-    column-gap: var(--bf-grid-gap-inline);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* Application chrome switches as one composition at the viewport boundary.
-   The persistent navigation reduces the main allocation by its own width, so
-   the intrinsic query alone would briefly stack this split while the rail was
-   still visible. Keep the desktop split whenever application navigation is
-   persistent; below 48rem the intrinsic base remains one column. */
-@media (min-width: 48rem) {
-  :where(.bf-theme.bf-application) > :where(.bf-main) :where(.bf-basic-section-layout),
-  :where(.bf-theme) :where(.bf-application) > :where(.bf-main) :where(.bf-basic-section-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

@@ -769,7 +769,7 @@ export async function verifyRichListsAndTabSectionGeometry(origin: string): Prom
     for (const tier of tiers) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
       await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
-      for (const width of [767, 768] as const) {
+      for (const width of [719, 720] as const) {
         const states = await page.locator(".bf-rich-list.is-vertical").evaluateAll((roots, widthValue) => roots.map(root => {
           const section = root as HTMLElement;
           section.style.inlineSize = `${widthValue}px`;
@@ -792,13 +792,13 @@ export async function verifyRichListsAndTabSectionGeometry(origin: string): Prom
           };
         }), width);
         for (const state of states) {
-          const wide = width === 768;
+          const wide = width === 720;
           assert(state.columns === (wide ? 2 : 1), `Expected ${tier} rich vertical ${state.className} to switch to ${wide ? "two" : "one"} layout column(s) at ${width}px.`);
           assert(state.overflow <= 1, `Expected ${tier} rich vertical ${state.className} to avoid overflow at ${width}px.`);
           if (wide) {
             assert(state.sameRow && (state.className.includes("is-flipped") ? state.flippedColumns.join(",") === "2,1" : state.flippedColumns.join(",") === "1,2"), `Expected ${tier} rich vertical ${state.className} to preserve its wide logical column order.`);
           } else {
-            assert(!state.sameRow, `Expected ${tier} rich vertical ${state.className} to stack content and media below 768px.`);
+            assert(!state.sameRow, `Expected ${tier} rich vertical ${state.className} to stack content and media below 720px.`);
           }
           if (state.className.includes("is-contain")) assert(state.fit === "contain", `Expected ${tier} flipped rich vertical media to use object-fit contain.`);
           if (state.className.includes("is-video")) assert(Math.abs(state.frameRatio - (16 / 9)) <= 0.04, `Expected ${tier} video rich vertical frame to retain 16:9.`);
@@ -837,7 +837,7 @@ export async function verifyRichListsAndTabSectionGeometry(origin: string): Prom
           tabsLeft: tabs?.left ?? 0,
           overflow: section.scrollWidth - section.clientWidth
         };
-      }), 768);
+      }), 720);
       assert(geometry.length === 3, `Expected ${tier} tab section to expose three layout specimens.`);
       for (const state of geometry) {
         assert(state.columns === 4 && state.rowGap > 0 && state.overflow <= 1, `Expected ${tier} ${state.className} tab section body to retain four large grid columns and a parent-owned shallow row gap without overflow.`);
@@ -850,12 +850,12 @@ export async function verifyRichListsAndTabSectionGeometry(origin: string): Prom
       }
       const narrowGeometry = await page.locator(".bf-tab-section").evaluateAll(roots => roots.map(root => {
         const section = root as HTMLElement;
-        section.style.inlineSize = "47.9375rem";
+        section.style.inlineSize = "44.9375rem";
         const layout = section.querySelector<HTMLElement>(".bf-tab-section-body");
         const children = Array.from(layout?.children ?? []).map(child => child.getBoundingClientRect());
         return { columns: layout ? getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0, rows: new Set(children.map(rect => Math.round(rect.top))).size, rowGap: layout ? Number.parseFloat(getComputedStyle(layout).rowGap) : 0, overflow: section.scrollWidth - section.clientWidth };
       }));
-      assert(narrowGeometry.every(state => state.columns === 1 && state.rows >= 2 && state.rowGap > 0 && state.overflow <= 1), `Expected ${tier} tab-section bodies to stack with a parent-owned shallow gap below the shared 48rem threshold without overflow: ${JSON.stringify(narrowGeometry)}.`);
+      assert(narrowGeometry.every(state => state.columns === 1 && state.rows >= 2 && state.rowGap > 0 && state.overflow <= 1), `Expected ${tier} tab-section bodies to stack with a parent-owned shallow gap below the shared 45rem threshold without overflow: ${JSON.stringify(narrowGeometry)}.`);
 
       const firstTab = page.locator(".bf-tab-section").first().locator("[role='tab']").first();
       await firstTab.focus();
@@ -1087,8 +1087,8 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
       }
 
       for (const allocation of [
-        { width: "47.9375rem", columns: 1, label: "at 767px" },
-        { width: "48rem", columns: 2, label: "at 768px" }
+        { width: "44.9375rem", columns: 1, label: "at 719px" },
+        { width: "45rem", columns: 2, label: "at 720px" }
       ] as const) {
         const split = await page.locator(".bf-hero").nth(1).evaluate((root, expected) => {
           const hero = root as HTMLElement;

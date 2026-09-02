@@ -8,7 +8,7 @@
  * Vanilla → BF spacing mapping:
  * - Hero's `$spv--large` / `$spv--x-large` top boundary → `space-2` /
  *   `space-3`; the surrounding stack owns the section exit.
- * - The default 50/50 relationship remains viable from a measured 48rem
+ * - The default 50/50 relationship remains viable from a measured 45rem
  *   allocation; explicit 25/75 and 75/25 variants retain their own thresholds.
  * - Quote-wrapper's signpost/content and quote/citation relationships use
  *   the same 25/75 and 2/1 proportions. A quotation itself remains the
@@ -117,7 +117,7 @@ export function sitesEditorialPortsCss(): string {
   }
 }
 
-@container bf-hero (width >= 48rem) {
+@container bf-hero (width >= 45rem) {
   :where(.bf-theme) :where(.bf-hero-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -140,7 +140,7 @@ export function sitesEditorialPortsCss(): string {
 /* The named variants retain their proportion but share the readable split
    threshold with the default hero. The modifier changes only structural
    tracks; it does not introduce an earlier cramped layout. */
-@container bf-hero (width >= 48rem) {
+@container bf-hero (width >= 45rem) {
   :where(.bf-theme) :where(.bf-hero.is-split-medium) :where(.bf-hero-layout) {
     column-gap: var(--bf-grid-gap-inline);
     grid-template-columns: repeat(2, minmax(0, 1fr));
