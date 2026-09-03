@@ -16,6 +16,30 @@ static contracts plus component and behavior checks; `npm run qa:components`
 also passes. Live browser review confirms the compact row, centered selection
 marks, visible input focus paint, shared page chrome, and a clean console.
 
+## Cross-repository token architecture
+
+The owner-approved governing contract is
+[`docs/cross-repo-token-architecture-spec.md`](docs/cross-repo-token-architecture-spec.md).
+The final independent sign-off is
+[`docs/cross-repo-token-architecture-signoff-review.md`](docs/cross-repo-token-architecture-signoff-review.md);
+its required corrections are incorporated. The durable execution sequence is
+[`docs/cross-repo-token-architecture-implementation-handoff.md`](docs/cross-repo-token-architecture-implementation-handoff.md).
+
+Implementation is authorised, but merge, push, publication, release, and
+downstream adoption require separate approval. Begin in the clean
+`design-tokens` repository with exact typography/plumbing, then baseline and
+component-spacing tokens. Do not implement this work on
+`feat/019-tier-responsive-action-insets`: 020a absorbs 019, and Spec 021 has an
+independent worktree.
+
+Settled policy: `spacing.baseline` resolves to 0.5rem for Site and 0.25rem for
+Docs/App/OS; exact line heights are typography-owned dimensions carried by a
+Canonical extension because DTCG 2025.10 permits only a numeric multiplier;
+Site display is 84px/96px; Site secondary 14px/20px is the sole current
+semantic half-step family and knowingly exits on the half-phase; controls are
+intrinsic with no target height; and Pragma may retain `1cap` only under the
+measured control-ledger envelope in the governing spec.
+
 ## Previous release — 0.1.7 / archived Spec 018 follow-up
 
 The optional orange tagged brand, explicit nested chip/status/badge fit,
