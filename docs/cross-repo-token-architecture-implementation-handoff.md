@@ -11,6 +11,10 @@ The governing contract is
 [`cross-repo-token-architecture-spec.md`](cross-repo-token-architecture-spec.md).
 The final adversarial evidence is
 [`cross-repo-token-architecture-signoff-review.md`](cross-repo-token-architecture-signoff-review.md).
+PR 1 implementation evidence is recorded in the
+[`initial implementation review`](cross-repo-token-architecture-pr1-implementation-review.md)
+and the
+[`correction review`](cross-repo-token-architecture-pr1-correction-review.md).
 When a review statement conflicts with the governing contract, the contract
 wins. In particular, the sign-off counted six differing BF target cells;
 source and built artifacts prove seven: action and continuation in Docs/App/OS,
@@ -65,12 +69,13 @@ This is the first implementation step in `design-tokens`.
 PR 1 may change generated typography only to eliminate decimal line-height
 drift and implement the approved Site display change. It adds no spacing IDs.
 
-### PR 1 implementation checkpoint — corrected, awaiting final review
+### PR 1 implementation checkpoint — accepted, ready to land
 
 Implemented in the clean `design-tokens` worktree on
-`feat/exact-typography-token-plumbing`. The full review range is
-`5a7aca3..c8e7424`: initial implementation `c6d4267`, followed by review
-corrections `c8e7424`. Nothing has been merged, pushed, published, or released.
+`feat/exact-typography-token-plumbing`. The accepted range is
+`5a7aca3..6c9914e`: initial implementation `c6d4267`, blocking-review
+corrections `c8e7424`, and final invariant hardening `6c9914e`. Nothing has
+been merged, pushed, published, or released.
 The delivery-compatible Pragma preparation is isolated on
 `feat/exact-typography-adoption` at `67d93d372`, based on `7fa3e67e3`; it has
 likewise not been merged or pushed.
@@ -103,21 +108,31 @@ call `resolver.apply({ typography: "site" })` directly must migrate to
 `resolver.apply({ product: "site" })`; otherwise they silently receive the
 default product set.
 
-Validation at the checkpoint:
+The correction review returned **ready to land** for design-tokens and **safe
+to retain independently** for the Pragma preparation. Its N1/N5 alias-drift
+class is closed by a generated-output test that resolves every bounded legacy
+alias and compares it with its canonical source. N3 is closed more broadly than
+requested: the registry is required at every builder boundary. N4 was already
+covered by the explicit per-file dependency map, including each colour
+family's dependency on `modifiers.theme.css`. N2 belongs to PR 4: the 14px/20px
+exception is a token-layer gate until Pragma binds `text.secondary`, after
+which its required rendered fixture proves the accepted half-phase exit.
 
-- plugin build and all 247 plugin tests pass;
+Validation at the accepted checkpoint:
+
+- plugin build and all 248 plugin tests pass;
 - token build succeeds with 706 resolver tokens and all 122 token tests pass;
 - all 42 token-type tests and TypeScript checks pass;
 - all three new LSP visibility/discovery tests pass; and
 - the complete LSP suite retains its existing 61 Windows-host failures caused
-  by POSIX path/URI expectations. The sorted failing-test names at `5a7aca3`
-  and on the feature branch have the identical SHA-256 digest
-  `8d5da958b91278b5266d2a359222d6a3065af5894f4f65335ae2db9f1bb866ad`.
+  by POSIX path/URI expectations. Fresh full runs at `5a7aca3` and `6c9914e`
+  have identical sorted full-name arrays. Encoded as UTF-8, joined by LF, with
+  no terminal newline, both produce SHA-256
+  `8eaa5007e899205854ff3017f8bcab20307124860528db3e81f3fb32a2703452`.
 
-Obtain final adversarial review and land the design-token checkpoint before
-starting the independent PR 2 branch. The Pragma preparation may land in its
-own repository before or after the token release because its fallback preserves
-compatibility with design-tokens 0.8.1.
+Land the design-token checkpoint before starting the independent PR 2 branch.
+The Pragma preparation may land in its own repository before or after the token
+release because its fallback preserves compatibility with design-tokens 0.8.1.
 
 ## PR 2 — baseline and component spacing
 
