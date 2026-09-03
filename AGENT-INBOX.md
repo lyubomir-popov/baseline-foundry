@@ -41,6 +41,30 @@ semantic half-step family and knowingly exits on the half-phase; controls are
 intrinsic with no target height; and Pragma may retain `1cap` only under the
 measured control-ledger envelope in the governing spec.
 
+### Opus implementation review request
+
+Adversarially review `design-tokens` commit `c6d4267` on
+`feat/exact-typography-token-plumbing` against PR 1 in the governing spec. Diff
+it from `5a7aca3`. Do not edit, commit, push, merge, publish, or release.
+
+Verify the implementation rather than trusting its snapshots: lowercase-kebab
+naming and collision failure (including context-only IDs); bounded camelCase
+aliases; source-document primitive/semantic classification; generic
+dimension-valued modifier artifacts; number output; public/internal artifact
+metadata and LSP discovery filtering; the shared `product` axis, legacy
+resolver fallback, OS context, and non-default-only token handling; removal of
+the inactive responsive root-font policy; exact `lineHeightDimension`
+inheritance and CSS emission; Site 84px/96px display scope; and preservation of
+Site 14px/20px secondary text. Independently check that no spacing IDs landed,
+all resolver documents reach output, every generated `var()` resolves, and
+unscoped root typography remains global rather than Site-specific.
+
+Treat the complete LSP suite's 61 Windows/POSIX path failures as known baseline
+only if they reproduce at `5a7aca3`; flag any changed or additional failure.
+Write a severity-ranked, evidence-cited verdict to
+`docs/cross-repo-token-architecture-pr1-implementation-review.md` and report
+whether the commit is ready to land. Leave this inbox unchanged.
+
 ## Previous release — 0.1.7 / archived Spec 018 follow-up
 
 The optional orange tagged brand, explicit nested chip/status/badge fit,
