@@ -69,16 +69,19 @@ This is the first implementation step in `design-tokens`.
 PR 1 may change generated typography only to eliminate decimal line-height
 drift and implement the approved Site display change. It adds no spacing IDs.
 
-### PR 1 implementation checkpoint — accepted, ready to land
+### PR 1 implementation checkpoint — landed
 
 Implemented in the clean `design-tokens` worktree on
-`feat/exact-typography-token-plumbing`. The accepted range is
+`feat/exact-typography-token-plumbing`. The reviewed range was
 `5a7aca3..6c9914e`: initial implementation `c6d4267`, blocking-review
-corrections `c8e7424`, and final invariant hardening `6c9914e`. Nothing has
-been merged, pushed, published, or released.
-The delivery-compatible Pragma preparation is isolated on
-`feat/exact-typography-adoption` at `67d93d372`, based on `7fa3e67e3`; it has
-likewise not been merged or pushed.
+corrections `c8e7424`, and final invariant hardening `6c9914e`. It was then
+integrated with the concurrently advancing contracts/profile and `$root`
+remedy work and squash-merged as Canonical design-tokens PR
+[#125](https://github.com/canonical/design-tokens/pull/125), producing `main`
+commit `595d50e`. The delivery-compatible Pragma preparation was squash-merged
+independently as Pragma PR
+[#1106](https://github.com/canonical/pragma/pull/1106), producing `main` commit
+`964f6f129`. Nothing has been published or released by this work.
 
 The implementation keeps `global` as the unscoped product default. A builder
 fallback resolves typography that exists only in a non-default product, so the
@@ -118,21 +121,22 @@ family's dependency on `modifiers.theme.css`. N2 belongs to PR 4: the 14px/20px
 exception is a token-layer gate until Pragma binds `text.secondary`, after
 which its required rendered fixture proves the accepted half-phase exit.
 
-Validation at the accepted checkpoint:
+Validation at the final integrated checkpoint:
 
-- plugin build and all 248 plugin tests pass;
-- token build succeeds with 706 resolver tokens and all 122 token tests pass;
+- plugin build and all 263 plugin tests pass;
+- token build succeeds with 706 resolver tokens and all 127 token tests pass;
 - all 42 token-type tests and TypeScript checks pass;
 - all three new LSP visibility/discovery tests pass; and
 - the complete LSP suite retains its existing 61 Windows-host failures caused
-  by POSIX path/URI expectations. Fresh full runs at `5a7aca3` and `6c9914e`
-  have identical sorted full-name arrays. Encoded as UTF-8, joined by LF, with
-  no terminal newline, both produce SHA-256
-  `8eaa5007e899205854ff3017f8bcab20307124860528db3e81f3fb32a2703452`.
+  by POSIX path/URI expectations at the reviewed base. After integrating the
+  newer upstream LSP tests, fresh full runs at `cd54fbf` and the final feature
+  tip each report 64 failures with identical sorted full-name arrays and
+  SHA-256
+  `97c1dda57631868b8f3d0e166549aa67677e0f6ce30e9b0b10add731b54d1814`.
 
-Land the design-token checkpoint before starting the independent PR 2 branch.
-The Pragma preparation may land in its own repository before or after the token
-release because its fallback preserves compatibility with design-tokens 0.8.1.
+Start the independent PR 2 branch from design-tokens `main` at or after
+`595d50e`. Its baseline and spacing contribution remains separately reviewable
+from both the landed plumbing and the later full Pragma migration.
 
 ## PR 2 — baseline and component spacing
 

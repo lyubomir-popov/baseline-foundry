@@ -25,15 +25,14 @@ The final independent sign-off is
 its required corrections are incorporated. The durable execution sequence is
 [`docs/cross-repo-token-architecture-implementation-handoff.md`](docs/cross-repo-token-architecture-implementation-handoff.md).
 
-Implementation is authorised, but merge, push, publication, release, and
-downstream adoption require separate approval. Design-token PR 1 passed its
-final correction review and is ready to land. The accepted range is
-`5a7aca3..6c9914e` on `feat/exact-typography-token-plumbing`. The
-delivery-compatible Pragma
-preparation is `7fa3e67e3..67d93d372` on
-`feat/exact-typography-adoption`. Neither branch has been pushed or merged.
-Land PR 1 before beginning the independent baseline and component-spacing PR 2.
-Do not implement this work on
+PR 1 is landed. Canonical design-tokens PR
+[#125](https://github.com/canonical/design-tokens/pull/125) is on `main` at
+`595d50e`; Pragma PR
+[#1106](https://github.com/canonical/pragma/pull/1106) is on `main` at
+`964f6f129`. Publication, release, and wider downstream adoption remain
+separately gated. The next cross-repository step is the independent
+design-tokens PR 2 for `spacing.baseline` and the component-spacing schema,
+branched from the new design-tokens `main`. Do not implement this work on
 `feat/019-tier-responsive-action-insets`: 020a absorbs 019, and Spec 021 has an
 independent worktree.
 
@@ -50,17 +49,20 @@ measured control-ledger envelope in the governing spec.
 The adversarial
 [`correction review`](docs/cross-repo-token-architecture-pr1-correction-review.md)
 reproduced all four original fixes from generated artifacts and found no
-blockers: design-tokens is ready to land and the Pragma preparation is safe to
-retain independently. Follow-up commit `6c9914e` closes N1/N5 with resolved
+blockers: design-tokens was ready to land and the Pragma preparation safe to
+retain independently. Pre-merge commit `6c9914e` closed N1/N5 with resolved
 legacy/canonical equality coverage and closes N3 by requiring the shared
 property registry at every builder boundary. N4 was already encoded explicitly
 in the delivery-dependency map. N2 remains correctly assigned to PR 4's
 rendered secondary-text fixture; PR 1 proves 14px/20px at the token layer.
 
-Fresh full LSP runs at `5a7aca3` and `6c9914e` each report the same 61
-Windows/POSIX failures and identical sorted full-name arrays. With UTF-8 names
-joined by LF and no terminal newline, both hashes are
-`8eaa5007e899205854ff3017f8bcab20307124860528db3e81f3fb32a2703452`.
+Before landing, PR 1 was merged twice with concurrently advancing
+design-tokens `main`, including the contracts/profile and `$root`-remedy work.
+The final integrated build produced 706 tokens; all 263 plugin, 127 token, and
+42 type tests passed. Fresh full LSP runs at the final base `cd54fbf` and the
+integrated feature tip each reported the same 64 Windows/POSIX failures and
+identical sorted full-name arrays, with SHA-256
+`97c1dda57631868b8f3d0e166549aa67677e0f6ce30e9b0b10add731b54d1814`.
 
 ## Previous release — 0.1.7 / archived Spec 018 follow-up
 
