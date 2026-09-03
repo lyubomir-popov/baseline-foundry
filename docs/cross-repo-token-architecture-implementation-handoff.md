@@ -64,6 +64,32 @@ This is the first implementation step in `design-tokens`.
 PR 1 may change generated typography only to eliminate decimal line-height
 drift and implement the approved Site display change. It adds no spacing IDs.
 
+### PR 1 implementation checkpoint — ready for review
+
+Implemented in the clean `design-tokens` worktree on
+`feat/exact-typography-token-plumbing` at commit `c6d4267`. Nothing has been
+merged, pushed, published, released, or adopted downstream.
+
+The implementation keeps `global` as the unscoped product default. A builder
+fallback resolves typography that exists only in a non-default product, so the
+84px/96px display role is emitted under `.site` without leaking into `:root`.
+The mode-invariant semantic builder also emits the previously unreachable
+`typography.fontFamily.default` and `.code` aliases. Generated-output gates now
+prove all 40 resolver source documents are represented and all generated
+`var()` references resolve.
+
+Validation at the checkpoint:
+
+- plugin build and all 239 plugin tests pass;
+- token build succeeds with 706 resolver tokens and all 121 token tests pass;
+- all 42 token-type tests and TypeScript checks pass;
+- all three new LSP visibility/discovery tests pass; and
+- the complete LSP suite retains its existing 61 Windows-host failures caused
+  by POSIX path/URI expectations. The failures reproduce outside the changed
+  visibility paths and are not part of this token-plumbing branch.
+
+Review and land this checkpoint before starting the independent PR 2 branch.
+
 ## PR 2 — baseline and component spacing
 
 - Add all twelve v1 tokens and exact CSS names from the governing spec.

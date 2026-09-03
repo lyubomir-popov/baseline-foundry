@@ -26,9 +26,10 @@ its required corrections are incorporated. The durable execution sequence is
 [`docs/cross-repo-token-architecture-implementation-handoff.md`](docs/cross-repo-token-architecture-implementation-handoff.md).
 
 Implementation is authorised, but merge, push, publication, release, and
-downstream adoption require separate approval. Begin in the clean
-`design-tokens` repository with exact typography/plumbing, then baseline and
-component-spacing tokens. Do not implement this work on
+downstream adoption require separate approval. Design-token PR 1 is ready for
+review on `feat/exact-typography-token-plumbing` at `c6d4267`; it has not been
+pushed or merged. Review and land it before beginning the independent baseline
+and component-spacing PR 2. Do not implement this work on
 `feat/019-tier-responsive-action-insets`: 020a absorbs 019, and Spec 021 has an
 independent worktree.
 

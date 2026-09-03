@@ -537,8 +537,11 @@ The contribution is not acceptable unless tests prove:
     than enlarging Pragma's painted text box.
 13. Density inheritance covers approved providers/subscribers, nested reset,
     non-subscriber immunity, and portal re-provision.
-14. Every CSS property is lowercase kebab-case, collision-free, fully resolved,
-    and correctly classified public or internal.
+14. Every canonical CSS property is lowercase kebab-case, collision-free,
+    fully resolved, and correctly classified public or internal. A bounded
+    legacy camelCase compatibility alias may retain its old spelling only when
+    it directly references the corresponding canonical property; it is not a
+    second canonical name.
 15. `dimension.size.height.baseline` no longer exists on the breakpoint axis;
     `spacing.baseline` is the only baseline token.
 16. Optional BF root scaling preserves rem invariants and is separately checked
