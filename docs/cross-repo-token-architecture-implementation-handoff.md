@@ -54,7 +54,8 @@ This is the first implementation step in `design-tokens`.
 - Add a Canonical exact-line-height extension at
   `$extensions.com.canonical.typography.$value.lineHeightDimension`.
   DTCG's numeric `lineHeight` remains an interoperability projection; the
-  Canonical CSS builder and lattice validator use the exact rem dimension.
+  Canonical CSS builder emits the exact rem dimension as the parallel
+  `-line-height-dimension` property and the lattice validator uses it.
 - Give every governed typography root an exact dimension and make derived
   variants inherit it.
 - Add `dimension.1200 = 6rem`; Site display remains 84px and binds to 96px
@@ -64,31 +65,59 @@ This is the first implementation step in `design-tokens`.
 PR 1 may change generated typography only to eliminate decimal line-height
 drift and implement the approved Site display change. It adds no spacing IDs.
 
-### PR 1 implementation checkpoint — ready for review
+### PR 1 implementation checkpoint — corrected, awaiting final review
 
 Implemented in the clean `design-tokens` worktree on
-`feat/exact-typography-token-plumbing` at commit `c6d4267`. Nothing has been
-merged, pushed, published, released, or adopted downstream.
+`feat/exact-typography-token-plumbing`. The full review range is
+`5a7aca3..c8e7424`: initial implementation `c6d4267`, followed by review
+corrections `c8e7424`. Nothing has been merged, pushed, published, or released.
+The delivery-compatible Pragma preparation is isolated on
+`feat/exact-typography-adoption` at `67d93d372`, based on `7fa3e67e3`; it has
+likewise not been merged or pushed.
 
 The implementation keeps `global` as the unscoped product default. A builder
 fallback resolves typography that exists only in a non-default product, so the
 84px/96px display role is emitted under `.site` without leaking into `:root`.
-The mode-invariant semantic builder also emits the previously unreachable
-`typography.fontFamily.default` and `.code` aliases. Generated-output gates now
-prove all 40 resolver source documents are represented and all generated
-`var()` references resolve.
+Product blocks identical to the default are omitted, so `.os` cannot reset a
+nested Site or Docs region at equal specificity. Semantic font-family aliases
+are emitted in `modifiers.typography.css`, the file that consumes them, while
+the generic semantic set retains the baseline token only. Generated-output
+gates prove all 40 resolver source documents are represented, every generated
+`var()` resolves bundle-wide, and each output resolves against only its stated
+delivery dependencies.
+
+The standard `-line-height` property remains the DTCG unitless projection and
+the exact value is emitted beside it as `-line-height-dimension`. This preserves
+independent release order. A small preparatory Pragma branch prefers the exact
+property and retains its existing rounded calculation only as a fallback for
+design-tokens 0.8.1; PR 4 removes that fallback with the full engine migration.
+Primitive and semantic source artifacts are explicitly public during the
+compatibility window. Generated modifier, state, surface, and delta channels
+are explicitly internal. CamelCase aliases copy the resolved value rather than
+pointing back to the canonical property, avoiding cycles with Pragma's temporary
+reverse shims.
+
+Release note: the plugin accepts a legacy resolver that exposes only the former
+`typography` axis, but the new resolver JSON does not alias that axis. Tools that
+call `resolver.apply({ typography: "site" })` directly must migrate to
+`resolver.apply({ product: "site" })`; otherwise they silently receive the
+default product set.
 
 Validation at the checkpoint:
 
-- plugin build and all 239 plugin tests pass;
-- token build succeeds with 706 resolver tokens and all 121 token tests pass;
+- plugin build and all 247 plugin tests pass;
+- token build succeeds with 706 resolver tokens and all 122 token tests pass;
 - all 42 token-type tests and TypeScript checks pass;
 - all three new LSP visibility/discovery tests pass; and
 - the complete LSP suite retains its existing 61 Windows-host failures caused
-  by POSIX path/URI expectations. The failures reproduce outside the changed
-  visibility paths and are not part of this token-plumbing branch.
+  by POSIX path/URI expectations. The sorted failing-test names at `5a7aca3`
+  and on the feature branch have the identical SHA-256 digest
+  `8d5da958b91278b5266d2a359222d6a3065af5894f4f65335ae2db9f1bb866ad`.
 
-Review and land this checkpoint before starting the independent PR 2 branch.
+Obtain final adversarial review and land the design-token checkpoint before
+starting the independent PR 2 branch. The Pragma preparation may land in its
+own repository before or after the token release because its fallback preserves
+compatibility with design-tokens 0.8.1.
 
 ## PR 2 — baseline and component spacing
 
@@ -126,6 +155,9 @@ remove duplicate page-margin/grid-gutter ownership in `src/css-grid.ts`.
 ## Pragma adoption
 
 Pragma's current output is migration evidence, not a compatibility target.
+Before the full migration, its mapper may prefer the new exact
+`-line-height-dimension` property with the 0.8.1 calculation as a fallback;
+this is delivery compatibility, not acceptance of runtime snapping.
 The adoption PR must remove the density cell, target baseline, target/fixed
 control sizes, runtime line-height rounding, secondary computed-line-height
 path, legacy comfortable/dense aliases, baseline-derived inline padding,

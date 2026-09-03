@@ -26,10 +26,14 @@ its required corrections are incorporated. The durable execution sequence is
 [`docs/cross-repo-token-architecture-implementation-handoff.md`](docs/cross-repo-token-architecture-implementation-handoff.md).
 
 Implementation is authorised, but merge, push, publication, release, and
-downstream adoption require separate approval. Design-token PR 1 is ready for
-review on `feat/exact-typography-token-plumbing` at `c6d4267`; it has not been
-pushed or merged. Review and land it before beginning the independent baseline
-and component-spacing PR 2. Do not implement this work on
+downstream adoption require separate approval. Design-token PR 1 has been
+corrected after its first implementation review. Review the full range
+`5a7aca3..c8e7424` on `feat/exact-typography-token-plumbing`; the focused
+correction range is `c6d4267..c8e7424`. The delivery-compatible Pragma
+preparation is `7fa3e67e3..67d93d372` on
+`feat/exact-typography-adoption`. Neither branch has been pushed or merged.
+Review and land PR 1 before beginning the independent baseline and
+component-spacing PR 2. Do not implement this work on
 `feat/019-tier-responsive-action-insets`: 020a absorbs 019, and Spec 021 has an
 independent worktree.
 
@@ -41,29 +45,54 @@ semantic half-step family and knowingly exits on the half-phase; controls are
 intrinsic with no target height; and Pragma may retain `1cap` only under the
 measured control-ledger envelope in the governing spec.
 
-### Opus implementation review request
+### Opus final PR 1 correction review request
 
-Adversarially review `design-tokens` commit `c6d4267` on
-`feat/exact-typography-token-plumbing` against PR 1 in the governing spec. Diff
-it from `5a7aca3`. Do not edit, commit, push, merge, publish, or release.
+Adversarially review the complete `design-tokens` range
+`5a7aca3..c8e7424` on `feat/exact-typography-token-plumbing` against PR 1 of
+the governing spec and the findings in
+`docs/cross-repo-token-architecture-pr1-implementation-review.md`. Focus the
+regression review on `c6d4267..c8e7424`. Also review the bounded Pragma delivery
+change `7fa3e67e3..67d93d372` on `feat/exact-typography-adoption`. Do not change
+implementation files, commit, push, merge, publish, or release.
 
-Verify the implementation rather than trusting its snapshots: lowercase-kebab
-naming and collision failure (including context-only IDs); bounded camelCase
-aliases; source-document primitive/semantic classification; generic
-dimension-valued modifier artifacts; number output; public/internal artifact
-metadata and LSP discovery filtering; the shared `product` axis, legacy
-resolver fallback, OS context, and non-default-only token handling; removal of
-the inactive responsive root-font policy; exact `lineHeightDimension`
-inheritance and CSS emission; Site 84px/96px display scope; and preservation of
-Site 14px/20px secondary text. Independently check that no spacing IDs landed,
-all resolver documents reach output, every generated `var()` resolves, and
-unscoped root typography remains global rather than Site-specific.
+Reproduce rather than infer the four original corrections:
 
-Treat the complete LSP suite's 61 Windows/POSIX path failures as known baseline
-only if they reproduce at `5a7aca3`; flag any changed or additional failure.
+- identical product typography blocks are omitted, so `.os` cannot reset a
+  nested `.site`, `.docs`, or `.app` context at equal specificity;
+- `modifiers.typography.css` is self-contained with only its declared primitive
+  dependency and therefore delivers the semantic font-family properties that
+  it consumes;
+- bounded camelCase primitive/semantic aliases preserve the old consumer names
+  without forming cycles with Pragma's temporary reverse shims; and
+- every source token has explicit public visibility while every generated
+  modifier, surface, state, and delta artifact is explicitly internal and is
+  filtered correctly by the LSP.
+
+Then check the additional hardening: one shared emitted-property registry
+covers every builder and rejects different source owners that normalize to one
+CSS property; legacy resolvers do not invent an undeclared OS context; every
+output resolves against only its declared delivery dependencies; and every
+authored and emitted numeric line-height projection remains within 0.01 CSS px
+of its exact dimension. Confirm that the exact value is emitted on the parallel
+`-line-height-dimension` property while the standard `-line-height` property
+remains numeric, so Pragma's 0.8.1 fallback never evaluates length times length.
+In the Pragma range, verify each governed heading/body/code role prefers the
+exact property and falls back to the previous rounded calculation when the new
+token is absent.
+
+Retain all original PR 1 acceptance checks: no spacing IDs; inactive
+`rootFontSize` absent; global unscoped typography; shared `product` axis and
+bounded legacy resolver support; all resolver documents reachable; Site
+display 84px/96px including bold; and Site secondary 14px/20px. The complete
+LSP suite has the same 61 Windows/POSIX failures at base and feature, with an
+identical sorted-name SHA-256 of
+`8d5da958b91278b5266d2a359222d6a3065af5894f4f65335ae2db9f1bb866ad`;
+flag any failure-name drift rather than accepting only the count.
+
 Write a severity-ranked, evidence-cited verdict to
-`docs/cross-repo-token-architecture-pr1-implementation-review.md` and report
-whether the commit is ready to land. Leave this inbox unchanged.
+`docs/cross-repo-token-architecture-pr1-correction-review.md` and state whether
+the design-token PR is ready to land and whether the Pragma preparation is safe
+to retain independently. Leave this inbox unchanged.
 
 ## Previous release — 0.1.7 / archived Spec 018 follow-up
 

@@ -103,10 +103,16 @@ in finite decimal notation. Canonical therefore keeps the standard number as
 an interoperability projection and adds the normative exact length at
 `$extensions.com.canonical.typography.$value.lineHeightDimension`. Root roles
 reference an exact rem dimension there, derived variants reference the root
-extension, and Canonical's CSS builder emits that length. The lattice validator
-uses the exact dimension and compares integer or half-integer baseline counts
-without epsilon. The approximate DTCG number must remain consistent within a
-separate compatibility check, but it does not govern Canonical geometry.
+extension, and Canonical's CSS builder emits that length as the adjacent
+`--typography-<role>-line-height-dimension` property. It continues to emit the
+standard numeric projection as `--typography-<role>-line-height`; reusing that
+property for a length would make an existing consumer that multiplies it by
+font size produce invalid length-times-length CSS. Consumers prefer the exact
+dimension and may retain the projection calculation only as a bounded fallback
+until their token dependency advances. The lattice validator uses the exact
+dimension and compares integer or half-integer baseline counts without epsilon.
+The approximate DTCG number must remain consistent within a separate 0.01 CSS
+pixel compatibility check, but it does not govern Canonical geometry.
 
 ### Permitted Site scale and accepted secondary-text exception
 
@@ -421,9 +427,10 @@ Plumbing lands before the token contribution:
    iterates `app`, `docs`, and `site`; and
 10. add the exact `lineHeightDimension` Canonical typography extension,
     dimension primitives for every governed line height, extension inheritance,
-    exact CSS emission, and an exact lattice comparator with no epsilon. The
-    DTCG number remains an interoperability projection because DTCG 2025.10
-    requires a numeric typography `lineHeight`.
+    parallel `-line-height-dimension` CSS emission, and an exact lattice
+    comparator with no epsilon. The existing `-line-height` property remains the
+    DTCG numeric interoperability projection because DTCG 2025.10 requires a
+    numeric typography `lineHeight`.
 
 New token IDs use lowercase single-word segments even before the transformer is
 fixed.
@@ -437,6 +444,10 @@ explicitly mapped naming corrections, elimination of decimal line-height drift,
 and the owner-approved Site display change. Add `dimension.1200 = 6rem`, bind
 Site display to the exact 96px extension, and make every governed typography
 root expose an exact line-height dimension before the lattice gate exists.
+The exact dimension uses a parallel CSS property in this PR so an independently
+released token package cannot turn Pragma's temporary multiplication into an
+invalid length-times-length expression. Pragma may prefer that property with
+its current calculation as a fallback before the larger PR 4 adoption.
 
 ### PR 2 — baseline and component-spacing tokens
 
@@ -488,7 +499,7 @@ temporary output differs. It must:
 - consolidate the four 4px `--baseline-height` fallback owners to one product-
   aware owner and fail loudly when the product context is missing;
 - remove `--computed-line-height` multiplication from all alignment engines as
-  well as the mapper's runtime `round()` path; and
+  well as the mapper's bounded runtime `round()` fallback path; and
 - remove the legacy comfortable/dense line-height and inline-padding aliases;
 - add `.os` to Pragma's product/density context family; and
 - move free-text end compensation from padding to BF's trailing-margin ledger,
