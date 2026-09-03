@@ -1,8 +1,18 @@
 import { assert } from "../validation-assert.ts";
 import { assertNoDuplicateClassAttributes } from "./html-contract-helpers.ts";
 
+function assertTabItemsArePresentational(pageName: string, html: string): void {
+  const items = (html.match(/<li\b[^>]*>/g) ?? []).filter((item) => (
+    /\bclass\s*=\s*(["'])[^"']*\bbf-tabs-item\b[^"']*\1/.test(item)
+  ));
+  for (const item of items) {
+    assert(/\brole\s*=\s*(["'])presentation\1/.test(item), `Expected every bf-tabs-item in ${pageName} to be presentational so the tablist directly owns its tabs.`);
+  }
+}
+
 function validateBfOnlyDemoPage(pageName: string, html: string): void {
   assertNoDuplicateClassAttributes(`demo/components/${pageName}`, html);
+  assertTabItemsArePresentational(`demo/components/${pageName}`, html);
   assert(html.includes('<body class="bf-theme is-dark"'), `Expected ${pageName} to dogfood the bf-theme root.`);
   assert(html.includes("data-component-capture"), `Expected ${pageName} to expose a data-component-capture root for screenshot and baseline tooling.`);
   assert(!/class="[^"]*\bhas-[a-z][a-z0-9_-]*\b/.test(html), `Expected ${pageName} to avoid deprecated has-* helper classes and stay fully bf-* / is-* dogfooded.`);
@@ -12,6 +22,7 @@ function validateBfOnlyDemoPage(pageName: string, html: string): void {
 
 export function validateAppTierDemoPage(pageName: string, html: string): void {
   assertNoDuplicateClassAttributes(`demo/components/${pageName}`, html);
+  assertTabItemsArePresentational(`demo/components/${pageName}`, html);
   assert(html.includes('../../dist/tiers/editorial/styles.css'), `Expected ${pageName} to bootstrap from the shared tier stylesheet instead of a preset-specific bundle.`);
   assert(html.includes('<body class="bf-theme bf-tier-app is-light"'), `Expected ${pageName} to dogfood the bf-theme + bf-tier-app root.`);
   assert(html.includes("data-component-capture"), `Expected ${pageName} to expose a data-component-capture root for screenshot and baseline tooling.`);
@@ -62,6 +73,7 @@ export function validateLivingSpecHome(html: string): void {
 }
 
 export function validateLivingSpecControls(html: string, css: string): void {
+  assertTabItemsArePresentational("demo/controls.html", html);
   assert(html.includes('data-page-tier-options="editorial,documentation,app,os"'), "Expected demo/controls.html to declare the supported shared-bar tiers.");
   assert(html.includes('../dist/tiers/app/styles.css'), "Expected demo/controls.html to default to the app tier output.");
   assert(html.includes('<main class="bf-page is-fill" id="controls-grid-target">'), "Expected demo/controls.html to use the shared fill-height bf-page container.");
@@ -344,6 +356,9 @@ export function validateGridSpecPage(gridSpecHtml: string, specShellCss: string)
 }
 
 export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAuditHtml: string, verticalAuditHtml: string, specShellCss: string): void {
+  assertTabItemsArePresentational("demo/spec/spacing.html", spacingSpecHtml);
+  assertTabItemsArePresentational("demo/spec/spacing-horizontal.html", horizontalAuditHtml);
+  assertTabItemsArePresentational("demo/spec/spacing-vertical.html", verticalAuditHtml);
   assert(spacingSpecHtml.includes('<main class="bf-page is-fill" id="spec-grid-target">'), "Expected spacing.html to remain a full-width spacing overview.");
   assert((spacingSpecHtml.match(/class="bf-basic-section is-shallow"/g) ?? []).length === 2 && spacingSpecHtml.includes('class="bf-basic-section-header bf-stack is-dense"') && spacingSpecHtml.includes('class="bf-basic-section-content bf-stack is-dense"'), "Expected the spacing overview copy to use the shipped heading-left/content-right basic-section composition.");
   assert(spacingSpecHtml.includes('data-spacing-audit-tabs') && spacingSpecHtml.includes('role="tablist"') && spacingSpecHtml.includes('data-spacing-audit-panel="horizontal"') && spacingSpecHtml.includes('data-spacing-audit-panel="vertical"'), "Expected the spacing overview to switch between axis audits with in-page tabs.");
