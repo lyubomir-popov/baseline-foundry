@@ -25,16 +25,22 @@ The final independent sign-off is
 its required corrections are incorporated. The durable execution sequence is
 [`docs/cross-repo-token-architecture-implementation-handoff.md`](docs/cross-repo-token-architecture-implementation-handoff.md).
 
-PR 1 is landed. Canonical design-tokens PR
-[#125](https://github.com/canonical/design-tokens/pull/125) is on `main` at
-`595d50e`; Pragma PR
-[#1106](https://github.com/canonical/pragma/pull/1106) is on `main` at
-`964f6f129`. Publication, release, and wider downstream adoption remain
-separately gated. The next cross-repository step is the independent
-design-tokens PR 2 for `spacing.baseline` and the component-spacing schema,
-branched from the new design-tokens `main`. Do not implement this work on
-`feat/019-tier-responsive-action-insets`: 020a absorbs 019, while Spec 021 is
-complete and archived on BF `main`.
+PRs 1 and 2 are landed. Canonical design-tokens PR
+[#125](https://github.com/canonical/design-tokens/pull/125) landed at `595d50e`;
+the baseline/component-spacing schema is on design-tokens `main` at
+`18f57b95b1aa1dfe85a45746016b055c807d6628`; and the retained Pragma plumbing
+checkpoint is `964f6f129`. Publication, release, and wider downstream adoption
+remain separately gated.
+
+BF PR 3 is implemented locally on `feat/dtcg-spacing-format-adapter` from
+`08db5ab`. Implementation commit `48e13b2` consumes the four-product resolved
+DTCG spacing artifact while preserving current geometry through the exactly
+seven-point, 020a-bounded overlay. Its evidence is in
+[`docs/cross-repo-token-architecture-pr3-implementation-review.md`](docs/cross-repo-token-architecture-pr3-implementation-review.md),
+and the independent review request is
+[`prompts/opus-token-architecture-pr3-adversarial-review.md`](prompts/opus-token-architecture-pr3-adversarial-review.md).
+Do not push or merge it without explicit approval. Do not begin Pragma
+adoption, 020a values, density, grid/page work, publication, or release.
 
 Settled policy: `spacing.baseline` resolves to 0.5rem for Site and 0.25rem for
 Docs/App/OS; exact line heights are typography-owned dimensions carried by a
