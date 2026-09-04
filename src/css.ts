@@ -3,6 +3,7 @@ import { componentsCss } from "./css-components.js";
 import { appTierPresetCss } from "./css-app-tier.js";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "./baseline-grid-theme.js";
 import { generateBaselineGridOverlayCss, generateBaselineGridThemeOverrideCss } from "./baseline-grid-overlay.js";
+import { bfSpacingCompatibilityAliases, dtcgSpacingCssProperty, dtcgSpacingTokenIds, dtcgSpacingValue, type ResolvedDtcgSpacing } from "./dtcg-spacing.js";
 import { foundryThemeRootColorVars, vanillaThemeColorVars } from "./vanilla-theme-colors.js";
 import type { BuiltInThemeName } from "./presets.js";
 import type { ThemeFontFile, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
@@ -113,10 +114,45 @@ function roleVarDeclarations(roleName: string, token: TypographyToken, baselineU
   return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-baseline-compensation: ${compensation};\n  --bf-${roleName}-margin-bottom: ${compensation};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${compensation};\n`;
 }
 
+function spacingVarDeclarations(spacing: ResolvedDtcgSpacing): string {
+  const canonical = dtcgSpacingTokenIds
+    .map(id => `  ${dtcgSpacingCssProperty(id)}: ${dtcgSpacingValue(spacing[id])};`)
+    .join("\n");
+  const aliases = dtcgSpacingTokenIds
+    .map(id => `  ${bfSpacingCompatibilityAliases[id]}: var(${dtcgSpacingCssProperty(id)});`)
+    .join("\n");
+
+  return `  /* Resolved Canonical DTCG spacing. */
+${canonical}
+  /* Temporary BF aliases: one bounded deprecation window, removable only
+     after BF 020a and downstream migration adopt the canonical names. */
+${aliases}
+`;
+}
+
 function themeSurfaceRule(selector: string, tokens: ThemeTokens): string {
   const body = tokens.roles.body;
   const smallFontFallback = body?.fontSize ?? tokens.roles.h6?.fontSize ?? "1rem";
-  return `${selector} {\n  --bf-baseline: ${tokens.baselineUnit};\n  --bf-space-0: 0rem;\n  --bf-space-half: calc(var(--bf-baseline) / 2);\n  --bf-space-1: var(--bf-baseline);\n  --bf-space-2: calc(var(--bf-baseline) * 2);\n  --bf-space-3: calc(var(--bf-baseline) * 3);\n  --bf-space-4: calc(var(--bf-baseline) * 4);\n  --bf-space-6: calc(var(--bf-baseline) * 6);\n  --bf-space-8: calc(var(--bf-baseline) * 8);\n  --bf-space-12: calc(var(--bf-baseline) * 12);\n  --bf-space-16: calc(var(--bf-baseline) * 16);\n  --bf-content-max-width: ${tokens.layout.contentMaxWidth};\n  --bf-content-padding-inline: ${tokens.layout.contentPaddingInline};\n  --bf-measure: ${tokens.layout.measure};\n  --bf-section-space: ${tokens.layout.sectionSpace};\n  --bf-section-space-shallow: ${tokens.layout.sectionSpaceShallow};\n  --bf-section-space-deep: ${tokens.layout.sectionSpaceDeep};\n  --bf-strip-space: ${tokens.layout.stripSpace};\n  --bf-grid-gap-inline: ${tokens.layout.gridGapInline};\n  --bf-grid-gap-block: ${tokens.layout.gridGapBlock};\n  --bf-page-margin: ${tokens.layout.pageMargin};\n${Object.entries(tokens.roles).map(([roleName, token]) => roleVarDeclarations(roleName, token, tokens.baselineUnit)).join("")}  --bf-font-size-small: var(--bf-body-font-size, ${smallFontFallback});\n }\n`;
+  return `${selector} {
+${spacingVarDeclarations(tokens.spacing)}  --bf-space-0: 0rem;
+  --bf-space-half: calc(var(--bf-baseline) / 2);
+  --bf-space-1: var(--bf-baseline);
+  --bf-space-2: calc(var(--bf-baseline) * 2);
+  --bf-space-3: calc(var(--bf-baseline) * 3);
+  --bf-space-4: calc(var(--bf-baseline) * 4);
+  --bf-space-6: calc(var(--bf-baseline) * 6);
+  --bf-space-8: calc(var(--bf-baseline) * 8);
+  --bf-space-12: calc(var(--bf-baseline) * 12);
+  --bf-space-16: calc(var(--bf-baseline) * 16);
+  --bf-content-max-width: ${tokens.layout.contentMaxWidth};
+  --bf-content-padding-inline: ${tokens.layout.contentPaddingInline};
+  --bf-measure: ${tokens.layout.measure};
+  --bf-grid-gap-inline: ${tokens.layout.gridGapInline};
+  --bf-grid-gap-block: ${tokens.layout.gridGapBlock};
+  --bf-page-margin: ${tokens.layout.pageMargin};
+${Object.entries(tokens.roles).map(([roleName, token]) => roleVarDeclarations(roleName, token, tokens.baselineUnit)).join("")}  --bf-font-size-small: var(--bf-body-font-size, ${smallFontFallback});
+ }
+`;
 }
 
 function collectFontFiles(tokens: ThemeTokens, themeSurfaces: ThemeSurface[]): ThemeFontFile[] {

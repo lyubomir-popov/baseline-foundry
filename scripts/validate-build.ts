@@ -7,6 +7,7 @@ import { componentPages } from "./component-demo-shared.ts";
 import { assert, getCheckCount } from "./validation-assert.ts";
 import { parseCss, assertRuleHasDecl, assertRuleMissingDecl } from "./css-ast-helpers.ts";
 import { validateRenewalComponentContracts } from "./validation/renewal-component-contracts.ts";
+import { validateDtcgSpacingContracts } from "./validation/dtcg-spacing-contracts.ts";
 import { assertNoDuplicateClassAttributes } from "./validation/html-contract-helpers.ts";
 import {
   validateAppTierDemoPage,
@@ -237,6 +238,21 @@ const COMPONENT_TOKEN_PROPERTIES: Record<string, string> = {
   panelPaddingBlock: "--bf-panel-padding-block"
 };
 
+const CANONICAL_SPACING_BY_BF_ALIAS: Record<string, string> = {
+  "--bf-baseline": "--spacing-baseline",
+  "--bf-field-gap": "--spacing-gap-field-block",
+  "--bf-leading-mark-gap": "--spacing-gap-mark-inline",
+  "--bf-section-space-shallow": "--spacing-gap-group-block",
+  "--bf-section-space": "--spacing-gap-pattern-block",
+  "--bf-section-space-deep": "--spacing-gap-region-block",
+  "--bf-component-inline-inset-field": "--spacing-inset-field-inline",
+  "--bf-component-inline-inset-action": "--spacing-inset-action-inline",
+  "--bf-component-inline-inset-continuation": "--spacing-inset-continuation-inline",
+  "--bf-panel-padding-inline": "--spacing-inset-surface-inline",
+  "--bf-panel-padding-block": "--spacing-inset-surface-block",
+  "--bf-strip-space": "--spacing-inset-strip-block"
+};
+
 function expectedTierProperties(tokens: Record<string, unknown>): Map<string, string> {
   const expected = new Map<string, string>();
   const layout = (tokens.layout ?? {}) as Record<string, unknown>;
@@ -272,8 +288,10 @@ function validateTierSurfaceParity(
     const scopedProperties = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`);
 
     for (const [propertyName, value] of expected) {
-      assert(directProperties.get(propertyName) === value, `Expected ${tierName} direct CSS ${propertyName} to equal token value ${value}, got ${directProperties.get(propertyName)}.`);
-      assert(scopedProperties.get(propertyName) === value, `Expected ${tierName} class-switched CSS ${propertyName} to equal direct/token value ${value}, got ${scopedProperties.get(propertyName)}.`);
+      const canonicalProperty = CANONICAL_SPACING_BY_BF_ALIAS[propertyName];
+      const expectedCssValue = canonicalProperty ? `var(${canonicalProperty})` : value;
+      assert(directProperties.get(propertyName) === expectedCssValue, `Expected ${tierName} direct CSS ${propertyName} to equal ${expectedCssValue}, got ${directProperties.get(propertyName)}.`);
+      assert(scopedProperties.get(propertyName) === expectedCssValue, `Expected ${tierName} class-switched CSS ${propertyName} to equal direct value ${expectedCssValue}, got ${scopedProperties.get(propertyName)}.`);
     }
 
     const baselineUnit = parseRemValue(artifact.tokens.baselineUnit);
@@ -340,8 +358,8 @@ function validateTierPanelPaddingProgression(
     const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`);
 
     assert(components.panelPaddingInline === expected && components.panelPaddingBlock === expected, `Expected ${tierName} panel padding tokens to resolve to ${expected}; inline=${components.panelPaddingInline}, block=${components.panelPaddingBlock}.`);
-    assert(direct.get("--bf-panel-padding-inline") === expected && direct.get("--bf-panel-padding-block") === expected, `Expected direct ${tierName} panel fallback padding properties to resolve to ${expected}.`);
-    assert(scoped.get("--bf-panel-padding-inline") === expected && scoped.get("--bf-panel-padding-block") === expected, `Expected scoped ${tierName} panel fallback padding properties to resolve to ${expected}.`);
+    assert(direct.get("--bf-panel-padding-inline") === "var(--spacing-inset-surface-inline)" && direct.get("--bf-panel-padding-block") === "var(--spacing-inset-surface-block)", `Expected direct ${tierName} panel fallback padding properties to alias the canonical surface insets.`);
+    assert(scoped.get("--bf-panel-padding-inline") === "var(--spacing-inset-surface-inline)" && scoped.get("--bf-panel-padding-block") === "var(--spacing-inset-surface-block)", `Expected scoped ${tierName} panel fallback padding properties to alias the canonical surface insets.`);
     resolvedInline.push(parseRemValue(components.panelPaddingInline));
     resolvedBlock.push(parseRemValue(components.panelPaddingBlock));
   }
@@ -371,7 +389,7 @@ function validateTierStripSpaceProgression(
     const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`).get("--bf-strip-space");
 
     assert(layout.stripSpace === expected, `Expected ${tierName} strip spacing token to resolve to ${expected}, got ${layout.stripSpace}.`);
-    assert(direct === expected && scoped === expected, `Expected ${tierName} direct/scoped strip spacing to both resolve to ${expected}; direct=${direct}, scoped=${scoped}.`);
+    assert(direct === "var(--spacing-inset-strip-block)" && scoped === "var(--spacing-inset-strip-block)", `Expected ${tierName} direct/scoped strip spacing to alias the canonical strip inset; direct=${direct}, scoped=${scoped}.`);
     resolved.push(parseRemValue(layout.stripSpace));
   }
 
@@ -771,7 +789,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-field.is-checkbox) :where(.bf-control) {\n  gap: 0;"), "Expected checkbox field controls to avoid downstream gap overrides.");
   assert(css.includes("--bf-slider-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place the slider track metrically within the shared interface row.");
   assert(css.includes("--bf-interface-row-visual-offset: calc(var(--bf-interface-row-content-offset-block-start)") && css.includes("--bf-switch-track-offset: var(--bf-interface-row-visual-offset);") && css.includes("--bf-tick-box-offset: var(--bf-interface-row-visual-offset);") && css.includes("--bf-leading-icon-offset: var(--bf-interface-row-visual-offset);"), "Expected switch, tick, and leading-icon geometry to share one body-line visual offset.");
-  assert(css.includes("--bf-leading-mark-gap: var(--bf-field-gap);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the shared mark gap rather than an unrelated inset.");
+  assert(css.includes("--bf-leading-mark-gap: var(--spacing-gap-mark-inline);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the canonical shared mark gap rather than an unrelated inset.");
   assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);") && css.includes("inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));"), "Expected the enlarged radio dot to remain concentric with its outer circle inside the shared row geometry.");
   assert(css.includes("--bf-interface-row-padding-block:") && css.includes("--bf-interface-row-compensation-block-end:") && css.includes("--bf-interface-row-visual-offset:"), "Expected generated CSS to expose one border-aware occupied-block contract for body-sized single-line UI.");
   for (const retiredVariable of [
@@ -1978,6 +1996,12 @@ async function main(): Promise<void> {
     app: appTier,
     os: osTier
   }));
+  await runInvariantAsync("Canonical DTCG spacing adapter", () => validateDtcgSpacingContracts({
+    editorial: editorialTier,
+    documentation: documentationTier,
+    app: appTier,
+    os: osTier
+  }, defaultTheme.css));
   runInvariant("Tier content-cap progression", () => validateTierContentCaps(defaultTheme.css, {
     editorial: editorialTier,
     documentation: documentationTier,

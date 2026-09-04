@@ -49,5 +49,6 @@ export type {
 	TypographyToken
 } from "./types.js";
 export type { BuiltInThemeName, PresetName, TierName } from "./tier-registry.js";
+export type { CanonicalProduct, DtcgSpacingTokenId, ResolvedDtcgDimensionToken, ResolvedDtcgSpacing } from "./dtcg-spacing.js";
 export type { TabsInitOptions } from "./tabs.js";
 export type { TooltipInitOptions } from "./tooltip.js";

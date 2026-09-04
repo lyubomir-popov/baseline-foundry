@@ -93,12 +93,28 @@ The full runtime token set that produced the bundle's CSS.
 | Field | Type | Notes |
 |-------|------|-------|
 | `baselineUnit` | `string` (CSS length) | The half-baseline grid unit, e.g. `"0.5rem"`. Doubled for the visible grid. |
+| `spacing` | `Record<spacing.*, ResolvedDtcgDimensionToken>` | The twelve resolved Canonical spacing tokens in DTCG dimension shape. Built-in tiers consume this record; the older scalar fields remain compatibility projections. |
 | `fontFiles` | `ThemeFontFile[]` | See [Font asset contract](#font-asset-contract). |
 | `fontStacks` | `Record<string, string>` | Font-family CSS stack per declared family. |
 | `roles` | `Record<string, TypographyToken>` | Semantic role tokens (`body`, `h1` … `h6`). The values components actually consume. |
 | `elements` | `Record<string, TypographyToken>` | Element-keyed mirror of the same data, keyed by the source element identifier. |
 | `layout` | `LayoutTokens` | Container widths, gutters, gaps, and section rhythm. |
 | `components` | `ComponentTokens` | Shared component density tokens (control padding, panel padding, border width, radius, etc.). |
+
+The canonical property mapping, temporary BF aliases, seven-point value
+overlay, and OS scope boundary are documented in
+[`spacing-token-adapter.md`](spacing-token-adapter.md).
+
+### Resolved DTCG spacing token
+
+```jsonc
+{
+  "spacing.baseline": {
+    "$type": "dimension",
+    "$value": { "value": 0.5, "unit": "rem" }
+  }
+}
+```
 
 ### `TypographyToken`
 

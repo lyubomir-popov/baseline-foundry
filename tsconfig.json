@@ -19,6 +19,7 @@
     "src/build.ts",
     "src/css-grid.ts",
     "src/css.ts",
+    "src/dtcg-spacing.ts",
     "src/index.ts",
     "src/presets.ts",
     "src/types.ts"

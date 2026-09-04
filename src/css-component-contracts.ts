@@ -4,14 +4,8 @@ function componentInputDeclarations(components: ComponentTokens): string {
   return `  --bf-border-width: ${components.borderWidth};
   --bf-bar-thickness: ${components.barThickness};
   --bf-radius: ${components.radius};
-  --bf-component-inline-inset-field: ${components.inlineInsetField};
-  --bf-component-inline-inset-action: ${components.inlineInsetAction};
-  --bf-component-inline-inset-continuation: ${components.inlineInsetContinuation};
   --bf-component-inline-inset-action-bordered: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
   --bf-control-visual-size: ${components.controlVisualSize};
-  --bf-field-gap: ${components.fieldGap};
-  --bf-panel-padding-inline: ${components.panelPaddingInline};
-  --bf-panel-padding-block: ${components.panelPaddingBlock};
 `;
 }
 
@@ -63,7 +57,6 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
   /* Leading marks are positioned backwards from the continuation copy inset;
      a mark never creates a fourth content inset. */
   --bf-leading-mark-size: var(--bf-control-visual-size);
-  --bf-leading-mark-gap: var(--bf-field-gap);
   --bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));
   --bf-leading-mark-group-inset: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-offset));
   --bf-tick-label-offset: var(--bf-leading-mark-offset);

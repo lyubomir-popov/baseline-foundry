@@ -291,6 +291,7 @@ Independent surface contract:
 - tier choice is a top-level class on any `.bf-theme` container: `.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`, `.bf-tier-os`
 - multiple containers can coexist side by side under the same stylesheet
 - `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface — see [docs/surfaces-manifest.md](docs/surfaces-manifest.md) for the full schema, stability guarantees, and consumer recipes
+- built-in spacing is sourced from the resolved Canonical DTCG artifact and emitted under the twelve `--spacing-*` properties; existing `--bf-*` names remain temporary aliases during the bounded adapter window documented in [docs/spacing-token-adapter.md](docs/spacing-token-adapter.md)
 - the published manifest omits local build-machine config/baseline file paths, so the shipped JSON stays portable
 - every tier keeps metric-derived runtime alignment while nested stacks own semantic spacing
 

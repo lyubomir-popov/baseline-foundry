@@ -1,6 +1,15 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { generateFoundryCss } from "./css.js";
+import {
+  assertSpacingSetsEqual,
+  canonicalProductForBuiltInTheme,
+  dtcgSpacingValue,
+  legacyThemeConfigSpacing,
+  readCanonicalSpacingProduct,
+  type DtcgSpacingTokenId,
+  type ResolvedDtcgSpacing
+} from "./dtcg-spacing.js";
 import type { BuiltInThemeName, PresetName, TierName } from "./presets.js";
 import { normalizeBuiltInThemeName, presetNames, resolveBuiltInThemePath, resolvePresetPath, resolveTierPath, tierNames } from "./presets.js";
 import type {
@@ -286,24 +295,39 @@ function toTypographyToken(identifier: string, token: BaselineGeneratorElementTo
   };
 }
 
-function buildComponentTokens(config: ThemeConfig): ComponentTokens {
+function spacingRem(spacing: ResolvedDtcgSpacing, id: DtcgSpacingTokenId): string {
+  return dtcgSpacingValue(spacing[id]);
+}
+
+function buildComponentTokens(config: ThemeConfig, spacing: ResolvedDtcgSpacing): ComponentTokens {
   return {
     borderWidth: toRem(config.components.borderWidthRem),
     // Vanilla's shared $bar-thickness is represented as 0.1875rem so emphasis
     // bars and thin borders both scale with root text sizing.
     barThickness: toRem(3 / 16),
     radius: toRem(config.components.radiusRem),
-    inlineInsetField: toRem(config.components.inlineInsetFieldRem),
-    inlineInsetAction: toRem(config.components.inlineInsetActionRem),
-    inlineInsetContinuation: toRem(config.components.inlineInsetContinuationRem),
+    inlineInsetField: spacingRem(spacing, "spacing.inset.field.inline"),
+    inlineInsetAction: spacingRem(spacing, "spacing.inset.action.inline"),
+    inlineInsetContinuation: spacingRem(spacing, "spacing.inset.continuation.inline"),
     controlVisualSize: toRem(config.components.controlVisualSizeRem),
-    fieldGap: toRem(config.components.fieldGapBaselineUnits * config.baselineUnit),
-    panelPaddingInline: toRem(config.components.panelPaddingInlineBaselineUnits * config.baselineUnit),
-    panelPaddingBlock: toRem(config.components.panelPaddingBlockBaselineUnits * config.baselineUnit)
+    fieldGap: spacingRem(spacing, "spacing.gap.field.block"),
+    panelPaddingInline: spacingRem(spacing, "spacing.inset.surface.inline"),
+    panelPaddingBlock: spacingRem(spacing, "spacing.inset.surface.block")
   };
 }
 
-function buildThemeTokens(config: ThemeConfig, baselineTokens: BaselineGeneratorTokens): ThemeTokens {
+function buildThemeTokens(
+  config: ThemeConfig,
+  baselineTokens: BaselineGeneratorTokens,
+  spacing: ResolvedDtcgSpacing
+): ThemeTokens {
+  const spacingBaseline = spacingRem(spacing, "spacing.baseline");
+  if (parseRem(baselineTokens.baselineUnit) !== parseRem(spacingBaseline)) {
+    throw new Error(
+      `Generated typography baseline ${baselineTokens.baselineUnit} does not match resolved spacing baseline ${spacingBaseline}.`
+    );
+  }
+
   const elements = Object.fromEntries(
     Object.entries(baselineTokens.elements).map(([identifier, token]) => [identifier, toTypographyToken(identifier, token, config)])
   );
@@ -342,15 +366,16 @@ function buildThemeTokens(config: ThemeConfig, baselineTokens: BaselineGenerator
   }
 
   const leadingMarkNeed = config.components.controlVisualSizeRem +
-    (config.components.fieldGapBaselineUnits * config.baselineUnit);
-  if (config.components.inlineInsetContinuationRem < leadingMarkNeed) {
+    spacing["spacing.gap.mark.inline"].$value.value;
+  if (spacing["spacing.inset.continuation.inline"].$value.value < leadingMarkNeed) {
     throw new Error(
-      `Continuation inset ${toRem(config.components.inlineInsetContinuationRem)} cannot contain the leading mark and gap ${toRem(leadingMarkNeed)}.`
+      `Continuation inset ${spacingRem(spacing, "spacing.inset.continuation.inline")} cannot contain the leading mark and gap ${toRem(leadingMarkNeed)}.`
     );
   }
 
   return {
-    baselineUnit: baselineTokens.baselineUnit,
+    baselineUnit: spacingRem(spacing, "spacing.baseline"),
+    spacing,
     fontFiles: config.fontFiles,
     fontStacks: config.fontStacks,
     roles,
@@ -359,15 +384,15 @@ function buildThemeTokens(config: ThemeConfig, baselineTokens: BaselineGenerator
       contentMaxWidth: toRem(config.layout.contentMaxWidthRem),
       contentPaddingInline: toRem(config.layout.contentPaddingInlineRem),
       measure: toRem(config.layout.measureRem),
-      sectionSpace: toRem(config.layout.sectionSpaceBaselineUnits * config.baselineUnit),
-      sectionSpaceShallow: toRem(config.layout.sectionSpaceShallowBaselineUnits * config.baselineUnit),
-      sectionSpaceDeep: toRem(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
-      stripSpace: toRem(config.layout.stripSpaceBaselineUnits * config.baselineUnit),
+      sectionSpace: spacingRem(spacing, "spacing.gap.pattern.block"),
+      sectionSpaceShallow: spacingRem(spacing, "spacing.gap.group.block"),
+      sectionSpaceDeep: spacingRem(spacing, "spacing.gap.region.block"),
+      stripSpace: spacingRem(spacing, "spacing.inset.strip.block"),
       gridGapInline: toRem(config.layout.gridGapInlineBaselineUnits * config.baselineUnit),
       gridGapBlock: toRem(config.layout.gridGapBlockBaselineUnits * config.baselineUnit),
       pageMargin: toRem(config.layout.pageMarginBaselineUnits * config.baselineUnit)
     },
-    components: buildComponentTokens(config)
+    components: buildComponentTokens(config, spacing)
   };
 }
 
@@ -446,6 +471,24 @@ async function buildThemeSurface(
   } = {}
 ): Promise<ThemeSurface> {
   const config = await readThemeConfig(resolvedConfigPath);
+  const builtInName = inferBuiltInPresetName(resolvedConfigPath);
+  const legacySpacing = legacyThemeConfigSpacing(config);
+  const spacing = builtInName
+    ? await readCanonicalSpacingProduct(canonicalProductForBuiltInTheme(builtInName))
+    : legacySpacing;
+
+  if (builtInName) {
+    assertSpacingSetsEqual(
+      spacing,
+      legacySpacing,
+      `Canonical spacing adapter for ${builtInName}`
+    );
+  }
+
+  const effectiveConfig: ThemeConfig = {
+    ...config,
+    baselineUnit: spacing["spacing.baseline"].$value.value
+  };
   const resolvedBaselineDir = path.resolve(baselineDir);
   const resolvedOutputDir = path.resolve(outputDir);
 
@@ -454,12 +497,12 @@ async function buildThemeSurface(
   const baselineConfigFileName = `${path.parse(resolvedConfigPath).name}.baseline.json`;
   const baselineConfigPath = path.join(resolvedBaselineDir, baselineConfigFileName);
 
-  await writeJsonFileAtomic(baselineConfigPath, createBaselineConfig(config, resolvedConfigPath, baselineConfigPath));
+  await writeJsonFileAtomic(baselineConfigPath, createBaselineConfig(effectiveConfig, resolvedConfigPath, baselineConfigPath));
 
   const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
   const runtimeConfig: ThemeConfig = {
-    ...config,
-    fontFiles: createRuntimeFontFiles(config, resolvedConfigPath, resolvedOutputDir)
+    ...effectiveConfig,
+    fontFiles: createRuntimeFontFiles(effectiveConfig, resolvedConfigPath, resolvedOutputDir)
   };
 
   return {
@@ -470,7 +513,7 @@ async function buildThemeSurface(
     configPath: resolvedConfigPath,
     baselineConfigPath,
     baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
-    tokens: buildThemeTokens(runtimeConfig, baselineTokens),
+    tokens: buildThemeTokens(runtimeConfig, baselineTokens, spacing),
     metrics: runtimeMetricsTokens(baselineTokens, runtimeConfig.fontFiles)
   };
 }

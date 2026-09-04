@@ -4507,6 +4507,92 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   }
 }
 
+async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
+  const expected = {
+    editorial: [0.5, 0.5, 0.5, 1.5, 4, 8, 0.5, 1, 2, 1, 1, 4],
+    documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 1, 2, 1, 1, 3],
+    app: [0.25, 0.5, 0.5, 0.5, 1, 2, 0.25, 1, 2, 0.75, 0.75, 3],
+    os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 1, 2, 0.5, 0.5, 2]
+  } as const;
+  const canonicalProperties = [
+    "--spacing-baseline",
+    "--spacing-gap-field-block",
+    "--spacing-gap-mark-inline",
+    "--spacing-gap-group-block",
+    "--spacing-gap-pattern-block",
+    "--spacing-gap-region-block",
+    "--spacing-inset-field-inline",
+    "--spacing-inset-action-inline",
+    "--spacing-inset-continuation-inline",
+    "--spacing-inset-surface-inline",
+    "--spacing-inset-surface-block",
+    "--spacing-inset-strip-block"
+  ] as const;
+  const aliases = [
+    "--bf-baseline",
+    "--bf-field-gap",
+    "--bf-leading-mark-gap",
+    "--bf-section-space-shallow",
+    "--bf-section-space",
+    "--bf-section-space-deep",
+    "--bf-component-inline-inset-field",
+    "--bf-component-inline-inset-action",
+    "--bf-component-inline-inset-continuation",
+    "--bf-panel-padding-inline",
+    "--bf-panel-padding-block",
+    "--bf-strip-space"
+  ] as const;
+  const tiers = Object.keys(expected) as Array<keyof typeof expected>;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 800, height: 600 } });
+    const readValues = async (stylesheet: string, bodyClass: string) => {
+      await page.setContent(`<!doctype html>
+        <link rel="stylesheet" href="${origin}${stylesheet}">
+        <body class="bf-theme ${bodyClass}"></body>`);
+      await page.waitForFunction(expectedHref => Array.from(document.styleSheets).some(sheet => sheet.href?.includes(expectedHref)), stylesheet);
+      return page.evaluate(({ canonicalProperties, aliases }) => {
+        const canonical: number[] = [];
+        const aliasValues: number[] = [];
+        for (const property of canonicalProperties) {
+          const probe = document.createElement("i");
+          probe.style.cssText = `display:block;inline-size:var(${property});position:fixed;visibility:hidden`;
+          document.body.appendChild(probe);
+          canonical.push(probe.getBoundingClientRect().width);
+          probe.remove();
+        }
+        for (const property of aliases) {
+          const probe = document.createElement("i");
+          probe.style.cssText = `display:block;inline-size:var(${property});position:fixed;visibility:hidden`;
+          document.body.appendChild(probe);
+          aliasValues.push(probe.getBoundingClientRect().width);
+          probe.remove();
+        }
+        return {
+          rootFontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+          canonical,
+          aliases: aliasValues
+        };
+      }, { canonicalProperties: [...canonicalProperties], aliases: [...aliases] });
+    };
+
+    for (const tier of tiers) {
+      const direct = await readValues(`/dist/tiers/${tier}/styles.css`, "");
+      const classSwitched = await readValues("/dist/tiers/editorial/styles.css", `bf-tier-${tier}`);
+      for (const [index, property] of canonicalProperties.entries()) {
+        const expectedPx = expected[tier][index] * direct.rootFontSize;
+        assert(Math.abs(direct.canonical[index] - expectedPx) <= 0.05, `Expected direct ${tier} ${property} to preserve ${expectedPx}px before 020a, got ${direct.canonical[index]}px.`);
+        assert(Math.abs(classSwitched.canonical[index] - expectedPx) <= 0.05, `Expected class-switched ${tier} ${property} to preserve ${expectedPx}px before 020a, got ${classSwitched.canonical[index]}px.`);
+        assert(Math.abs(direct.aliases[index] - direct.canonical[index]) <= 0.05, `Expected direct ${tier} ${aliases[index]} to resolve through ${property}.`);
+        assert(Math.abs(classSwitched.aliases[index] - classSwitched.canonical[index]) <= 0.05, `Expected class-switched ${tier} ${aliases[index]} to resolve through ${property}.`);
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyNarrowTierSwitchRangeGeometry(origin: string): Promise<void> {
   const browser = await openBrowser();
 
@@ -4937,6 +5023,7 @@ async function main(): Promise<void> {
     await verifyRenewalCompositionContracts(origin);
     await verifyAdversarialResponsiveGeometry(origin);
     await verifyDirectAndClassSurfaceGeometry(origin);
+    await verifyDtcgSpacingMatrix(origin);
     await verifyNarrowTierSwitchRangeGeometry(origin);
     await verifyNestedGridScoping(origin);
     await verifySkipLink(origin);
