@@ -87,8 +87,8 @@ Answer each explicitly and cite exact source or generated-artifact evidence.
 11. Did the diff touch generated outputs or leak into 020a values, density,
     grid/page work, control height, root scaling, Pragma, publication, or
     release behavior?
-12. Is this branch ready to push for PR review? Separate blockers from
-    non-blocking improvements and later approved work.
+12. Is this branch ready for a direct fast-forward into BF `main`? Separate
+    blockers from non-blocking improvements and later approved work.
 
 ## Adversarial probes
 
@@ -119,5 +119,6 @@ Use this structure:
 5. **Scope audit and OS-asymmetry audit.**
 6. **Validation gaps and non-blocking follow-ups.**
 
-End by stating whether the branch may be pushed for PR review. Do not authorize
-merge, publication, release, Pragma adoption, or 020a value adoption.
+End by stating whether the branch is ready for its owner-approved direct
+fast-forward into BF `main`. Do not perform the merge or authorize publication,
+release, Pragma adoption, or 020a value adoption.

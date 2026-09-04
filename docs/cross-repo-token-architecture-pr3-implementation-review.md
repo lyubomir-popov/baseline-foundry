@@ -3,7 +3,7 @@
 Date: 2026-09-04
 
 Status: required adversarial corrections implemented locally; correction
-review pending; not pushed or merged
+review pending; not merged
 
 Branch: `feat/dtcg-spacing-format-adapter`
 
@@ -166,4 +166,5 @@ reject the correction if any Canonical name carries a compatibility value, if
 any of the 48 records can mutate past production integrity validation, if a
 custom theme claims Canonical names, if mixed aligned scopes are order
 dependent, or if any density/grid/Pragma scope leak exists. No push or merge is
-authorized before that review and explicit owner approval.
+authorized before that review. The owner-approved landing path is a direct
+fast-forward into BF `main`, not a GitHub PR or feature-branch push.
