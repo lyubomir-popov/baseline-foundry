@@ -100,6 +100,7 @@ ${bodyCaseTypeStyles}  color: inherit;
 
 :where(.bf-theme) :where(.bf-article-pagination-direction > .bf-icon) {
   --bf-icon-size: var(--bf-icon-size-default);
+  margin-block-start: 0;
 }
 
 :where(.bf-theme) .bf-article-pagination:dir(rtl) .bf-article-pagination-link.is-previous .bf-icon {

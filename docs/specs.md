@@ -7,7 +7,15 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| None | — | No active numbered package. |
+| 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](../specs/021-block-derived-inline-geometry/) | Opus accepted the N1–N6 geometry on `feat/021-block-derived-inline-geometry`, and its final record corrections are implemented: chips use the Action inset without an inert block-derived alias; icon targets carry portable inline clearance; wrapping `.bf-actions` and `.bf-cluster` unconditionally own a row-gap floor; direct icon targets in `.bf-actions.is-nowrap` own block containment without changing text-only strips; the unused opt-in API is removed; plain and middot inline lists share a provisional half-rem inline space and baseline-align; bordered nested icon-only buttons remain excluded; and default inline icons use cap-height alignment. Final local gates are green at 19,513 static checks plus fresh component QA; owner acceptance is pending. |
+
+## Preserved drafts
+
+Specs 019 and 020 remain preserved on
+`feat/019-tier-responsive-action-insets`; they are deliberately absent from
+this branch so completing Spec 021 cannot merge an unimplemented draft.
+The owner accepted Spec 020's supersession of Spec 019. Promote Spec 020 from
+a fresh branch only after Spec 021 is accepted.
 
 ## Archive
 

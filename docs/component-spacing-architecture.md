@@ -26,7 +26,9 @@ The config keys are `inlineInsetFieldRem`, `inlineInsetActionRem`, and
 
 Page margins, grid gutters, navigation depth, and structural surface padding
 are not component insets. A border, icon, or mark may be compensated inside a
-component, but it must resolve the first glyph to one of the three insets.
+component, but author-visible text must resolve its first glyph to one of the
+three insets. Content with no meaningful text advance may instead use the
+reviewed block-derived minimum described below.
 
 ## Product-tier inputs
 
@@ -111,14 +113,15 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 |---|---|---|---|
 | Text, number, select, search, password, email, URL, telephone | Field | Regular; framed nested when explicitly hosted | Real borders; select and number share one trailing `1rem` chevron canvas |
 | Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
-| Chip and status label | Field | Regular; zero-footprint nested | Chip nested border is inset paint; status removes transparent block borders |
-| Button, segmented action, pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
+| Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
+| Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
+| Chip | Action | Regular; zero-footprint nested | The Action inset frames chip commands; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. The former block-derived floor never governed supported, non-empty chip content, so chips are not alias members. One-character chips are stadiums in every tier; use a badge for a circular counter. |
+| Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
 | Checkbox, radio, prose/list marks, validation | Continuation copy | Regular; framed nested for selection controls | Mark position is calculated backward from the continuation copy inset |
 | Accordion, list tree, side-navigation copy, table of contents, notification | Continuation | Regular | Icon canvas and gap do not create another inset; TOC nesting adds only structural depth after the root inset |
 | Reduced top navigation | Action | Regular in-box | Each command absorbs the complete occupied-row compensation; dropdown placement derives from that occupied row |
 | Panel component content and tagged primary-navigation brand | Continuation | Region-owned | Panel exposes a local content-padding property; the tagged brand and navigation copy share the same start |
-| Badge | Centred exception | Regular text or zero-footprint nested | Symmetric counter geometry has no first-glyph inset |
 | Switch | Reviewed exception | Regular | Its wider track prevents reuse of the common mark canvas |
 | Fieldset, modal regions, drawer chrome | Structural surface padding | Region-owned | Uses `--bf-panel-padding-inline`, not a component inset |
 | Page, grid, navigation nesting | Structural layout | Layout-owned | Never folded into component padding |
@@ -157,6 +160,15 @@ off the active baseline phase. A single-line group heading reserves four
 baselines through a minimum block size; longer headings may still wrap and
 grow, while the common case cannot accumulate fractional font-box drift.
 
+Plain and middot inline lists share one fixed `0.5rem` inline-composition space.
+The middot modifier uses a wrapping flex row so HTML source whitespace cannot
+become a third, font-dependent spacing owner; items contribute no trailing
+margin. The dot's logical start margin and the row's logical column gap mirror
+one another, while `align-items: baseline` preserves mixed-height text
+alignment. The half-rem value is a provisional component-local horizontal fact
+recorded for replacement by Spec 020's canonical spacing vocabulary.
+the same contract in RTL.
+
 ## Ownership and cascade
 
 `src/css-component-contracts.ts` is the single owner of component input
@@ -182,15 +194,68 @@ formulas.
 For a new component:
 
 1. choose Field, Action, or Continuation for every author-visible first glyph;
-2. classify its block behavior as regular, regular in-box, or explicitly
+2. use block-derived inline geometry only for reviewed content with no
+   meaningful text advance, and map the member's own painted block rather than
+   a shared occupied-block ledger;
+3. classify its block behavior as regular, regular in-box, or explicitly
    nested;
-3. account for every painted border exactly once;
-4. keep structural layout offsets outside the component inset;
-5. add a computed browser assertion if the component introduces a new host or
+4. account for every painted border exactly once;
+5. keep structural layout offsets outside the component inset;
+6. add a computed browser assertion if the component introduces a new host or
    border composition.
 
 A new shared inset, density scale, target height, or tier-owned leaf override
 requires an architecture decision. Numeric resemblance is not sufficient.
+
+Inline `.bf-icon` paint aligns to the font's cap-height centre, not the line-box
+bottom. `--bf-inline-icon-baseline-shift` derives the default placement from
+`1cap`, the default icon size, and half the scalable border as an optical lift;
+size modifiers add the difference between their active size and that default.
+The default icon trims one scalable border from its block-start layout margin
+so a raster edge cannot grow the compact body line, while larger icons reserve
+their full painted block. Sortable-table chevrons reuse the default metric and
+trim. Flex, grid, and positioned component owners explicitly neutralize the
+inline trim and retain their own cross-axis placement. Absolutely positioned
+leading marks keep their separate `--bf-leading-icon-offset` row contract.
+
+Icon-only buttons extend their pointer target, not their paint, to at least
+24-by-24 CSS pixels with an out-of-flow pseudo-element. The `24px` value is the
+normative unit used by WCAG 2.2 success criterion 2.5.8, not a design-system
+spacing token. It does not change the control's block size, occupied geometry,
+or token-derived painted square.
+
+An out-of-flow target still needs layout clearance. Each supported icon-only
+button derives its own per-edge overflow from the same normative minimum and
+reserves that space with `margin-inline`. The allowance therefore travels with
+the target through `.bf-actions`, `.bf-cluster`, and other non-clipping
+compositions without itself mutating a container gap token, and no container
+infers geometry through `:has()`; the separate wrapping floor below can still
+win in computed layout.
+
+The built-in wrapping primitives, `.bf-actions` and `.bf-cluster`,
+automatically apply a baseline-rounded `row-gap` floor. This prevents adjacent
+target extensions from touching or overlapping without moving child paint or
+changing a single-row footprint. It is unconditional behavior of containers
+that already declare wrapping, not a consumer-selectable modifier and not
+geometry inferred through `:has()`. Supporting engines round the exact
+shortfall up to the active baseline; the conservative fallback uses one
+baseline. Because the rule is deliberately descendant-agnostic, the floor can
+exceed the authored gap in a wrapped container with no icon target; the current
+demo impact is two multi-row OS form-atlas clusters whose row gap rises from
+8px to 12px.
+
+`.bf-actions.is-nowrap` declares its own horizontal scrollport. A direct
+icon-only target inside it therefore owns symmetric, baseline-rounded
+`margin-block` clearance; its existing `margin-inline` supplies the logical-edge
+scroll extent. Text-only nowrap strips receive no padding, retain their leading
+keyline, and keep their original block size. Supporting engines resolve the
+per-edge block allowance to zero in Editorial and one complete baseline in
+Documentation, App, and OS; the fallback uses one safe baseline in every tier.
+Exact rounding is deliberately uncapped for custom configurations. No public
+wrap or scrollport opt-in class is exposed. `.bf-cluster.is-nowrap` is neither
+a clipping scrollport nor covered by the block-margin rule; any future clipping
+owner outside `.bf-actions.is-nowrap` must provide and verify its own block
+containment.
 
 ## Removed contracts
 
@@ -225,6 +290,8 @@ and non-100% browser zoom. The browser checks compare:
 - number/select trailing artwork and truncation; and
 - tagged brand, navigation, panel, disclosure, mark, and notification starts;
 - rejected nested input and link-button cases; and
+- circles, stadium overflow, square icon actions, and bare numbered pagination
+  against each member's painted block; and
 - a non-100% Chromium page-scale context in addition to root-font scaling.
 
 The horizontal and vertical spacing demos are inspection surfaces. Their local

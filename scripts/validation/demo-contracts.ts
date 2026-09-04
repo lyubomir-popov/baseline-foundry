@@ -254,6 +254,15 @@ export function validateButtonDemo(buttonHtml: string): void {
   validateBfOnlyDemoPage("button.html", buttonHtml);
   assert(buttonHtml.includes('data-baseline-label="icon-only button stacked 1"'), "Expected button.html to include an icon-only button specimen for dense-surface verification.");
   assert(buttonHtml.includes('data-baseline-label="icon-only button stacked 2"'), "Expected button.html to include a second icon-only button specimen so both neutral and negative icon-only states stay visible in QA.");
+  assert(buttonHtml.includes('display:grid;gap:var(--bf-space-2)" data-baseline-check="box" data-baseline-label="icon button stack"'), "Expected the icon-button specimen stack to keep adjacent transparent targets separate in every tier.");
+}
+
+export function validateActionsDemo(actionsHtml: string): void {
+  validateBfOnlyDemoPage("actions.html", actionsHtml);
+  assert((actionsHtml.match(/data-icon-target-wrap-specimen=/g) ?? []).length === 2, "Expected actions.html to expose both Action and Cluster wrapping icon-target specimens.");
+  assert(actionsHtml.includes('class="bf-actions" style="inline-size:1.5rem" data-icon-target-wrap-specimen="actions"'), "Expected actions.html to exercise the real wrapping Action selector without an opt-in class.");
+  assert(actionsHtml.includes('class="bf-cluster is-dense" style="inline-size:1.5rem" data-icon-target-wrap-specimen="cluster"'), "Expected actions.html to exercise the real wrapping Cluster selector without an opt-in class.");
+  assert((actionsHtml.match(/class="bf-button is-link is-icon"/g) ?? []).length === 4, "Expected both wrapping specimens to contain two directly reviewable icon-only targets.");
 }
 
 export function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
@@ -356,10 +365,17 @@ export function validateSpacingSpecPage(spacingSpecHtml: string, horizontalAudit
   }
   assert((horizontalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length >= 5, "Expected compact H6-styled headings throughout the horizontal audit.");
   assert((verticalAuditHtml.match(/<h2 class="bf-h6"/g) ?? []).length === 3, "Expected the vertical audit to present only the shared interface, unboxed text, and real nested-context families.");
+  assert(verticalAuditHtml.includes("data-block-derived-interactive-nested-chip"), "Expected the vertical audit to retain the table-hosted interactive nested chip used for target-size evidence.");
   assert(horizontalAuditHtml.includes('Horizontal — field and cell content inset') && horizontalAuditHtml.includes('Horizontal — command inset') && horizontalAuditHtml.includes('Horizontal — leading-mark offset') && horizontalAuditHtml.includes('Horizontal — icon-led and navigation label offset'), "Expected the horizontal audit to present the concise measured inset groups.");
   assert(!horizontalAuditHtml.includes('<code>--bf-') && !verticalAuditHtml.includes('<code>--bf-'), "Expected audit headings to omit implementation-variable labels.");
   const fieldBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-fields"'), horizontalAuditHtml.indexOf('id="horizontal-actions"'));
-  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell') && fieldBucket.includes('bf-chip') && fieldBucket.includes('is-borderless') && fieldBucket.includes('bf-status-label'), "Expected number, select, table-cell, regular/borderless chip, and status-label insets to remain directly comparable in the field bucket.");
+  assert(fieldBucket.includes('type="number"') && fieldBucket.includes('<select') && fieldBucket.includes('Table cell') && fieldBucket.includes('bf-status-label') && !fieldBucket.includes('bf-chip'), "Expected number, select, table-cell, and status-label insets to remain directly comparable in the field bucket, with chips owned by Action.");
+  const actionBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-actions"'), horizontalAuditHtml.indexOf('id="horizontal-block-derived"'));
+  assert(actionBucket.includes('bf-button') && actionBucket.includes('bf-chip') && actionBucket.includes('is-borderless') && actionBucket.includes('bf-segmented-control') && actionBucket.includes('bf-tabs-link') && actionBucket.includes('bf-pagination-link'), "Expected buttons, regular/borderless chips, segmented controls, tabs, and labelled pagination to share the command-inset bucket.");
+  const blockDerivedBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-block-derived"'), horizontalAuditHtml.indexOf('id="horizontal-marks"'));
+  for (const component of ["bf-badge", "bf-button is-icon", "bf-pagination-link"]) {
+    assert(blockDerivedBucket.includes(component), `Expected the block-derived bucket to include ${component}.`);
+  }
   const markBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-marks"'), horizontalAuditHtml.indexOf('id="horizontal-icon-navigation"'));
   assert(markBucket.includes('<ul>') && markBucket.includes('<ol>') && markBucket.includes('is-ticked') && markBucket.includes('is-crossed') && markBucket.includes('bf-checkbox') && markBucket.includes('bf-radio') && markBucket.includes('bf-validation-message'), "Expected the leading-mark bucket to cover prose bullets/numbers, state-list marks, checkbox, radio, and validation copy.");
   const iconNavigationBucket = horizontalAuditHtml.slice(horizontalAuditHtml.indexOf('id="horizontal-icon-navigation"'), horizontalAuditHtml.indexOf('id="horizontal-surfaces"'));

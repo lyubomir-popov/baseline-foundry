@@ -56,9 +56,10 @@ export function interactiveTablesCss(): string {
   content: "";
   display: inline-block;
   inline-size: var(--bf-icon-size-default);
+  margin-block-start: var(--bf-inline-icon-line-box-trim);
   margin-inline-start: var(--bf-space-half);
   opacity: 0;
-  vertical-align: calc((1cap - var(--bf-icon-size-default)) / 2);
+  vertical-align: var(--bf-inline-icon-baseline-shift);
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'], .bf-table.is-sortable th[aria-sort='descending'])::after {

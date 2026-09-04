@@ -88,6 +88,8 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-inline-list) {
+  --bf-inline-list-space: 0.5rem;
+
   margin: 0;
   padding: 0;
 }
@@ -95,7 +97,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 :where(.bf-theme) :where(.bf-inline-list-item) {
 ${bodyTypeStyles}  display: inline-block;
   list-style: none;
-  margin-inline-end: calc(var(--bf-baseline) * 1.5);
+  margin-inline-end: var(--bf-inline-list-space);
   padding-block-end: var(--bf-body-nudge-end);
   padding-block-start: var(--bf-body-nudge-start);
 }
@@ -105,17 +107,20 @@ ${bodyTypeStyles}  display: inline-block;
 }
 
 :where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item) {
-  margin-inline-end: calc(var(--bf-baseline) * 1);
+  margin-inline-end: 0;
   position: relative;
 }
 
-:where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item)::after {
-  content: "\\2022";
-  display: inline;
-  margin-inline-start: calc(var(--bf-baseline) * 0.25);
+:where(.bf-theme) :where(.bf-inline-list.is-middot) {
+  align-items: baseline;
+  column-gap: var(--bf-inline-list-space);
+  display: flex;
+  flex-wrap: wrap;
 }
 
-:where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item:last-of-type)::after {
-  content: "";
+:where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item:not(:last-of-type))::after {
+  content: "\\2022";
+  display: inline;
+  margin-inline-start: var(--bf-inline-list-space);
 }`;
 }

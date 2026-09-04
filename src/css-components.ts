@@ -844,7 +844,6 @@ ${tableCss({
 
 ${chipBadgeStatusCss({
   bodyCaseTypeStyles: typeStyles(body),
-  bodyLineHeight,
   bodyTypeStyles,
 })}
 
@@ -1116,7 +1115,6 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 }
 
 :where(.bf-theme) :where(nav.bf-pagination) {
-  --bf-pagination-slot-inline-size: var(--bf-interface-row-occupied-block-size);
   display: block;
 }
 
@@ -1159,11 +1157,15 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   gap: calc(var(--bf-baseline) * 0.5);
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
-  min-inline-size: var(--bf-pagination-slot-inline-size);
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-action-bordered);
   text-align: center;
   text-decoration: none;
+}
+
+:where(.bf-theme) :where(.bf-pagination-link:not(.is-previous):not(.is-next)) {
+  min-inline-size: var(--bf-square-block-size);
+  padding-inline: 0;
 }
 
 :where(.bf-theme) :where(.bf-pagination-link:hover, .bf-pagination-link.is-previous:hover, .bf-pagination-link.is-next:hover) {

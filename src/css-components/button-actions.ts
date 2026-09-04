@@ -153,14 +153,35 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
 /* An icon-only flex button has no text line box to preserve the occupied
  * control rhythm. A zero-width metric strut restores the active body line
  * without imposing a target block size or changing icon/label spacing. */
-:where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label))) {
+:where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+  --bf-action-target-overflow: max(0rem, calc((24px - var(--bf-square-block-size)) / 2));
+
   column-gap: 0;
+  justify-self: start;
+  margin-inline: var(--bf-action-target-overflow);
+  min-inline-size: var(--bf-square-block-size);
+  padding-inline: 0;
+  position: relative;
 }
 
-:where(.bf-theme) :where(.bf-button.is-icon:not(:has(.bf-button-label)))::before {
+:where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::before {
   block-size: var(--bf-body-line-height);
   content: "";
   inline-size: 0;
+}
+
+/* WCAG 2.2 SC 2.5.8 defines its minimum in CSS pixels. This transparent,
+ * out-of-flow box extends only the pointer target; it does not change the
+ * control's paint or occupied block geometry. */
+:where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::after {
+  block-size: max(100%, 24px);
+  content: "";
+  inline-size: max(100%, 24px);
+  left: 50%;
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  translate: -50% -50%;
 }
 
 :where(.bf-theme) :where(.bf-button-label) {
@@ -168,11 +189,26 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
 }
 
 :where(.bf-theme) :where(.bf-actions) {
+  --bf-action-target-row-gap-floor: var(--bf-baseline);
+
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
   min-inline-size: 0;
+}
+
+/* Row-gap has no single-line cost and cannot move a flex item's paint. BF's
+ * wrapping primitives therefore own a positive block-axis target separation
+ * without inspecting their descendants through :has(). */
+:where(.bf-theme) :where(.bf-actions:not(.is-nowrap)) {
+  row-gap: max(var(--bf-field-gap), var(--bf-action-target-row-gap-floor));
+}
+
+:where(.bf-theme) :where(.bf-cluster:not(.is-nowrap)) {
+  --bf-action-target-row-gap-floor: var(--bf-baseline);
+
+  row-gap: max(var(--bf-cluster-space), var(--bf-action-target-row-gap-floor));
 }
 
 :where(.bf-theme) :where(.bf-actions.is-end) {
@@ -183,6 +219,34 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   flex-wrap: nowrap;
   overflow-x: auto;
   scrollbar-width: thin;
+}
+
+/* A nowrap row becomes a clipping scrollport. Only direct icon-only targets
+ * reserve their own block overflow, so text-only strips keep their original
+ * block size and leading keyline. Existing target-owned inline margins supply
+ * the corresponding logical-edge scroll extent. */
+:where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+  --bf-action-target-block-clearance: var(--bf-baseline);
+
+  margin-block-end: calc(var(--bf-action-target-block-clearance) + ${buttonMarginBottom});
+  margin-block-start: var(--bf-action-target-block-clearance);
+}
+
+:where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+  margin-block-end: var(--bf-action-target-block-clearance);
+}
+
+/* Modern CSS rounds the exact inter-row and per-edge scrollport shortfalls up
+ * to the active baseline. The one-baseline fallback is safe for built-in tiers
+ * and remains on phase in older engines. */
+@supports (row-gap: round(up, 0.0625rem, 0.0625rem)) {
+  :where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap)) {
+    --bf-action-target-row-gap-floor: round(up, max(0rem, calc(24px - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline));
+  }
+
+  :where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+    --bf-action-target-block-clearance: round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
+  }
 }
 
 :where(.bf-theme) :where(.bf-actions.is-nowrap) > * {

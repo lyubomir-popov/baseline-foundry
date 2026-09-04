@@ -1,20 +1,23 @@
 # Agent inbox
 
-## Active package
+## Owner acceptance requested — Spec 021
 
-None. Spec 018 is accepted, merged, and archived. Do not promote a candidate
-without its catalogued evidence trigger.
+Opus accepted the remediated Spec 021 geometry with no blocking defect. Its
+verdict is recorded in
+[`review.md`](specs/021-block-derived-inline-geometry/review.md#opus-n1n6-verdict),
+and the four requested record corrections are documented at
+[`review.md`](specs/021-block-derived-inline-geometry/review.md#opus-final-record-corrections).
 
-## Active follow-up
+The governing records now state that the wrapping row-gap floor is
+descendant-agnostic, disclose its measured no-target impact, route QA through
+the affected OS form-atlas case, and define `.bf-cluster.is-nowrap` as outside
+automatic block containment. These corrections change no CSS or runtime
+behavior.
 
-Branch `fix/table-row-control-fit` compares a plain table row with a row of
-explicitly nested text/number inputs, button, checkbox, and radio controls. The
-controls use the same opt-in host-owned density model as nested chips while the
-ordinary table cells retain their inset and separator. Do not publish to npm or
-create a release unless the user explicitly asks. `npm test` passes with 7,054
-static contracts plus component and behavior checks; `npm run qa:components`
-also passes. Live browser review confirms the compact row, centered selection
-marks, visible input focus paint, shared page chrome, and a clean console.
+Final evidence remains green: `npm test` at 19,513 static checks with all
+component-baseline and behavior families passing, followed by a fresh
+`npm run qa:components`. The documentation-sensitive `npm run test:build` was
+rerun after the final corrections and remains green at 19,513 checks.
 
 ## Cross-repository token architecture
 
