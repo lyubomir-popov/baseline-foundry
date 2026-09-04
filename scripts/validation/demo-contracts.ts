@@ -257,6 +257,14 @@ export function validateButtonDemo(buttonHtml: string): void {
   assert(buttonHtml.includes('display:grid;gap:var(--bf-space-2)" data-baseline-check="box" data-baseline-label="icon button stack"'), "Expected the icon-button specimen stack to keep adjacent transparent targets separate in every tier.");
 }
 
+export function validateActionsDemo(actionsHtml: string): void {
+  validateBfOnlyDemoPage("actions.html", actionsHtml);
+  assert((actionsHtml.match(/data-icon-target-wrap-specimen=/g) ?? []).length === 2, "Expected actions.html to expose both Action and Cluster wrapping icon-target specimens.");
+  assert(actionsHtml.includes('class="bf-actions" style="inline-size:1.5rem" data-icon-target-wrap-specimen="actions"'), "Expected actions.html to exercise the real wrapping Action selector without an opt-in class.");
+  assert(actionsHtml.includes('class="bf-cluster is-dense" style="inline-size:1.5rem" data-icon-target-wrap-specimen="cluster"'), "Expected actions.html to exercise the real wrapping Cluster selector without an opt-in class.");
+  assert((actionsHtml.match(/class="bf-button is-link is-icon"/g) ?? []).length === 4, "Expected both wrapping specimens to contain two directly reviewable icon-only targets.");
+}
+
 export function validateBfOnlyDemoFamily(demoPages: Record<string, string>): void {
   validateBfOnlyDemoPage("tabs.html", demoPages.tabs);
   assert(demoPages.tabs.includes('class="bf-badge is-negative is-nested"'), "Expected tabs.html to exercise an explicitly nested badge beside a plain comparison tab.");

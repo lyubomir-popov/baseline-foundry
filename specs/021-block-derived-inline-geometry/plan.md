@@ -45,10 +45,10 @@ nothing overrides intrinsic sizing.
 
 The owner moved chips to the Action inset on 2026-09-02. A regular chip uses
 `Action − real border`; a nested chip uses the full Action inset because its
-border is inset paint rather than box geometry. The block-derived minimum still
-prevents every chip from becoming narrower than its painted row, while the
-Action-framed intrinsic width makes one-character chips stadiums in all tiers.
-Badges own exact circular counters.
+border is inset paint rather than box geometry. That Action-framed intrinsic
+width exceeds the painted row for every supported, non-empty chip, so chips do
+not consume the block-derived minimum. One-character chips are stadiums in all
+tiers, and badges own exact circular counters.
 
 For icon-only buttons the action inset is removed rather than retained, because
 there is no label for it to frame; the icon centres inside the minimum through
@@ -60,23 +60,28 @@ The square paint remains naturally dense. An absolutely positioned transparent
 `::after` extends the pointer target to `max(100%, 24px)` on both axes without
 entering flow or occupied-block measurement. WCAG 2.2 success criterion 2.5.8
 defines the minimum in CSS pixels, so this is one normative constant reused by
-both target axes, the per-target inline allowance, the wrapping-row block
-allowance, and the explicit scrollport allowance; it is not a painted size or
+both target axes, the per-target inline allowance, the wrapping-row block gap
+floor, and the target-owned nowrap block allowance; it is not a painted size or
 BF spacing token.
 
 Browser hit testing showed that two generated targets which overlap can route
 part of one control's target to its sibling, and that a scrollport clips
 positioned descendants. Each supported icon-only button therefore reserves its
 own inline overflow with margin; this follows the target through actions,
-clusters, and other ordinary containers while their gap tokens stay unchanged.
-Wrapping containers opt in with `is-icon-target-wrap`, which reserves
-baseline-rounded block clearance on each direct target so adjacent rows cannot
-overlap. Clipping containers independently opt in with
-`is-icon-target-scrollport`, which reserves symmetric baseline-rounded edge
-containment. Supporting engines round the exact shortfall, including zero in
-Editorial and more than one baseline for sufficiently dense custom configs;
-the safe fallback reserves one baseline. No container geometry depends on
-contextual `:has()`.
+clusters, and other ordinary containers without changing stored gap-token
+values.
+The built-in wrapping primitives, `.bf-actions` and `.bf-cluster`,
+automatically apply a baseline-rounded row-gap floor so adjacent targets on
+different rows cannot touch or overlap. Row gap moves no child paint and costs
+nothing on a single line, but the unconditional floor can exceed the authored
+gap on a wrapping container that has no target. A direct icon target in
+`.bf-actions.is-nowrap` owns
+symmetric baseline-rounded block margins because the row declares a clipping
+scrollport; its inline margins already supply the scroll extent. Text-only
+nowrap rows receive no padding. Supporting engines round the exact shortfalls,
+including zero in Editorial and more than one baseline for sufficiently dense
+custom configs; the safe fallback reserves one baseline. No container geometry
+depends on contextual `:has()`, and no public opt-in modifier is required.
 
 ### Badge cleanup
 
@@ -127,9 +132,9 @@ they are not to be adjusted to accommodate this package.
 - **Accessible behavior**: Pass. The paint remains naturally dense while the
   icon-only pointer target is directly extended to 24-by-24 CSS pixels in every
   tier. Target-owned inline margins preserve separation in ordinary
-  compositions, while explicit wrap and scrollport modifiers preserve row and
-  edge clearance where those contexts need it. Other changed interactive
-  members retain measured direct or spacing dispositions.
+  compositions, while the built-in wrapping primitives and nowrap action
+  scrollport own the row and edge clearance their behavior requires. Other
+  changed interactive members retain measured direct or spacing dispositions.
 - **Generated-source ownership**: Pass.
 - **Spec-owned state**: Pass on promotion.
 
@@ -140,8 +145,9 @@ The accessibility risk was real. An OS icon-only button moves from roughly
 composition-dependent. The accepted disposition squares the paint and extends
 the pointer target with a transparent out-of-flow 24 CSS-pixel square. This
 preserves control density and makes the target direct in every tier; supported
-targets own their inline clearance, and clipping containers explicitly opt into
-baseline-rounded edge containment.
+targets own their inline clearance, while BF's wrapping and scrolling
+primitives automatically own their required block clearance and edge
+containment.
 
 The reviewed alternatives were:
 
@@ -158,6 +164,6 @@ T005 measured before the disposition was selected; the final browser contract
 now checks the extension itself and edge hit testing.
 
 The second risk was that "single character" is not a state CSS can select on.
-That is closed: the minimum applies universally to badges and chips, and the
-use Action padding, so one-character chips are stadiums in every tier and
-consumers use a badge when the semantic need is a circular counter.
+That is closed: the minimum applies universally to badges, while chips use
+Action padding. One-character chips are stadiums in every tier, and consumers
+use a badge when the semantic need is a circular counter.

@@ -151,6 +151,7 @@ ${bodyCaseTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-in-page-navigation-toggle > .bf-icon) {
   --bf-icon-size: var(--bf-icon-size-default);
+  margin-block-start: 0;
 }
 
 @container bf-in-page-navigation (width < 40rem) {

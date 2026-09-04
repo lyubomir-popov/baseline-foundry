@@ -115,6 +115,7 @@ export function interactiveFeedbackCss(): string {
   background-image: none;
   inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-h6-nudge-start) - var(--bf-border-width));
   inset-inline-start: calc(var(--bf-component-inline-inset-continuation) - var(--bf-bar-thickness) - var(--bf-icon-size-default) - var(--bf-space-1));
+  margin-block-start: 0;
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-.75 5.25h1.5v5h-1.5v-5zM8 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z'/%3E%3C/svg%3E");
   mask-position: center;
   mask-repeat: no-repeat;

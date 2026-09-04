@@ -164,20 +164,6 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   position: relative;
 }
 
-/* Wrapping target rows reserve their block clearance explicitly. The modifier
- * is container-agnostic: bf-actions, bf-cluster, and consumer flex/grid rows
- * can all opt in without inferring geometry from their descendants. */
-:where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
-  --bf-action-target-block-clearance: var(--bf-baseline);
-
-  margin-block-end: calc(var(--bf-action-target-block-clearance) + ${buttonMarginBottom});
-  margin-block-start: var(--bf-action-target-block-clearance);
-}
-
-:where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
-  margin-block-end: var(--bf-action-target-block-clearance);
-}
-
 :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::before {
   block-size: var(--bf-body-line-height);
   content: "";
@@ -203,11 +189,26 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
 }
 
 :where(.bf-theme) :where(.bf-actions) {
+  --bf-action-target-row-gap-floor: var(--bf-baseline);
+
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
   min-inline-size: 0;
+}
+
+/* Row-gap has no single-line cost and cannot move a flex item's paint. BF's
+ * wrapping primitives therefore own a positive block-axis target separation
+ * without inspecting their descendants through :has(). */
+:where(.bf-theme) :where(.bf-actions:not(.is-nowrap)) {
+  row-gap: max(var(--bf-field-gap), var(--bf-action-target-row-gap-floor));
+}
+
+:where(.bf-theme) :where(.bf-cluster:not(.is-nowrap)) {
+  --bf-action-target-row-gap-floor: var(--bf-baseline);
+
+  row-gap: max(var(--bf-cluster-space), var(--bf-action-target-row-gap-floor));
 }
 
 :where(.bf-theme) :where(.bf-actions.is-end) {
@@ -220,26 +221,31 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   scrollbar-width: thin;
 }
 
-/* Overflow containers clip out-of-flow pointer extensions on the block axis.
- * Opt in explicitly when an icon target sits in a scrollport. Like the wrap
- * modifier, this contract is container-agnostic and never inferred through
- * contextual :has(). */
-:where(.bf-theme) :where(.is-icon-target-scrollport) {
-  --bf-icon-target-scrollport-padding: var(--bf-baseline);
+/* A nowrap row becomes a clipping scrollport. Only direct icon-only targets
+ * reserve their own block overflow, so text-only strips keep their original
+ * block size and leading keyline. Existing target-owned inline margins supply
+ * the corresponding logical-edge scroll extent. */
+:where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+  --bf-action-target-block-clearance: var(--bf-baseline);
 
-  padding-block: var(--bf-icon-target-scrollport-padding);
-  padding-inline: var(--bf-icon-target-scrollport-padding);
+  margin-block-end: calc(var(--bf-action-target-block-clearance) + ${buttonMarginBottom});
+  margin-block-start: var(--bf-action-target-block-clearance);
 }
 
-/* Modern CSS can round the exact per-edge shortfall up to the active baseline.
- * The one-baseline fallback stays safe and on phase in older engines. */
-@supports (margin-block-start: round(up, 0.0625rem, 0.0625rem)) {
-  :where(.bf-theme) :where(.is-icon-target-wrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
-    --bf-action-target-block-clearance: round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
+:where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+  margin-block-end: var(--bf-action-target-block-clearance);
+}
+
+/* Modern CSS rounds the exact inter-row and per-edge scrollport shortfalls up
+ * to the active baseline. The one-baseline fallback is safe for built-in tiers
+ * and remains on phase in older engines. */
+@supports (row-gap: round(up, 0.0625rem, 0.0625rem)) {
+  :where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap)) {
+    --bf-action-target-row-gap-floor: round(up, max(0rem, calc(24px - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline));
   }
 
-  :where(.bf-theme) :where(.is-icon-target-scrollport) {
-    --bf-icon-target-scrollport-padding: round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
+  :where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+    --bf-action-target-block-clearance: round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
   }
 }
 

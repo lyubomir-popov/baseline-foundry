@@ -2,10 +2,11 @@
 
 **Feature Branch**: `feat/021-block-derived-inline-geometry`
 **Date**: 2026-09-01
-**Status**: S1–S4 follow-up and the owner-directed Action-inset chip migration
-are implemented. Final local gates and the independent adversarial pass are
-green; a fresh Opus adversarial re-review is requested. Acceptance and merge
-remain separate owner decisions.
+**Status**: Opus accepted the remediated F1–F5 and N1–N6 geometry. Its final
+contract-disclosure corrections are implemented, including unconditional
+row-gap ownership, the no-target trade, a QA route, and the nowrap-cluster
+boundary. Final gates are green; acceptance and merge remain separate owner
+decisions.
 
 ## Problem
 
@@ -95,11 +96,12 @@ outcome without a mechanism.
 - One named contract exposes each member's own painted block as an inline
   minimum, re-pointed by the cascade per member and state so a nested consumer
   cannot pick up a standalone value.
-- The minimum applies universally to badges and chips. Content whose intrinsic
-  padded width fits inside it renders as a circle; wider content renders as a
-  stadium at the same painted block. Chips use the Action text inset, so
-  one-character chips are stadiums in every tier; badges own the exact circular
-  counter case. No content-length modifier is introduced.
+- The minimum applies universally to badges. Content whose intrinsic padded
+  width fits inside it renders as a circle; wider content renders as a stadium
+  at the same painted block. Chips use the Action text inset and need no
+  block-derived floor because it does not govern supported, non-empty chip
+  content. One-character chips are stadiums in every tier; badges own
+  the exact circular counter case. No content-length modifier is introduced.
 - A regular or link-style icon-only action is square in all four tiers, with
   its width equal to the grid-aligned height it already paints. Bordered nested
   icon-only buttons remain unsupported because their icon canvas cannot fit
@@ -107,10 +109,11 @@ outcome without a mechanism.
 - Icon-only actions expose a direct 24-by-24 CSS-pixel pointer target through
   an out-of-flow transparent extension without changing control paint, block
   geometry, or occupied size. Target-owned margins prevent adjacent extensions
-  from overlapping in actions, clusters, and other ordinary containers. A
-  wrapping container opts in with `is-icon-target-wrap` to prevent cross-row
-  overlap; a clipping container opts in with `is-icon-target-scrollport` so
-  overflow cannot clip the target.
+  from overlapping in actions, clusters, and other ordinary containers.
+  Built-in wrapping `.bf-actions` and `.bf-cluster` rows automatically apply a
+  baseline-rounded row-gap floor, and direct icon targets in
+  `.bf-actions.is-nowrap` automatically reserve their own symmetric block
+  clearance so overflow cannot clip them without padding text-only strips.
 - Numbered pagination slots stop using the occupied block and stop carrying an
   action inset around a bare digit.
 - No component gains a target block size, an authored width, a transform or an
@@ -145,6 +148,9 @@ outcome without a mechanism.
   literal, pixel value, magic multiplier or per-tier override may be introduced
   to make an icon look centred. The sole pixel exception is the normative 24
   CSS-pixel pointer-target minimum from WCAG 2.2 success criterion 2.5.8.
+- `.bf-cluster.is-nowrap` is not a clipping scrollport and receives no automatic
+  block-axis target allowance. If it or another ancestor gains clipping
+  overflow, that owner must provide and verify its own containment.
 - Publication, release, merge and archive require separate owner direction.
 
 ## Acceptance
@@ -156,9 +162,9 @@ outcome without a mechanism.
    without adding its row fails the build.
 2. A `.bf-badge` whose intrinsic content fits the minimum renders with equal
    painted inline and block extents in all four tiers, standalone and nested,
-   in light and dark. Chips retain the block-derived floor but use the Action
-   inset, so one-character regular, borderless, and nested chips render as
-   centred stadiums in all four tiers. Measured in the browser, within one
+   in light and dark. Chips use the Action inset without the inert
+   block-derived floor, so one-character regular, borderless, and nested chips
+   render as centred stadiums in all four tiers. Measured in the browser, within one
    rasterised border width where equality is required.
 3. Wider chip and badge content renders as a stadium with the same painted
    block extent, and never clips at two, three, four or five characters.
@@ -172,8 +178,8 @@ outcome without a mechanism.
    resolves from an existing variable. A static assertion rejects an authored
    rem or pixel paint length, a magic multiplier or a per-tier override. It
    permits exactly five uses of the same normative `24px` constant: the two
-   pointer-target axes, the per-target inline overflow derivation, the explicit
-   wrapping-row block-clearance derivation, and the explicit scrollport
+   pointer-target axes, the per-target inline overflow derivation, the built-in
+   wrapping-row gap-floor derivation, and the target-owned nowrap block
    allowance.
 7. Target size for changed interactive members is recorded per tier and
    resolved against WCAG 2.2 success criterion 2.5.8 by one of the four
@@ -196,8 +202,9 @@ outcome without a mechanism.
 Both former open questions were answered by the owner on 2026-09-01.
 
 **Single-character selection.** Resolved by removing the question. The minimum
-applies universally to badges and chips; the circle is the case where intrinsic
-content fits inside it. No modifier, no content-length selection.
+applies universally to badges; the circle is the case where intrinsic content
+fits inside it. Action-framed chips use intrinsic padded width and are stadiums
+from one character onward. No modifier, no content-length selection.
 
 **Radius scope.** Chips and badges only. Recorded as a boundary above.
 
@@ -215,19 +222,20 @@ transparent 24 CSS-pixel square. This is a direct target, not a spacing
 exception, and does not reopen the no-target-block-size rule. Every supported
 target carries its own inline overflow allowance as margin, so adjacent targets
 remain distinct in `.bf-actions`, `.bf-cluster`, and other ordinary
-compositions without contextual `:has()` geometry. A wrapping container adds
-`is-icon-target-wrap` so direct targets reserve baseline-rounded block
-clearance between rows. A clipping container adds
-`is-icon-target-scrollport`; supporting engines resolve its symmetric
-allowance to zero in Editorial and one complete baseline in Documentation,
-App, and OS, while the conservative fallback uses one baseline in every tier.
-Both formulas round the exact shortfall without a one-baseline cap for custom
-configurations.
+compositions without contextual `:has()` geometry. The two built-in wrapping
+primitives automatically apply a baseline-rounded row-gap floor, regardless of
+their descendants. Direct icon targets in `.bf-actions.is-nowrap`
+reserve symmetric block margins inside the scrollport; supporting engines
+resolve that per-edge allowance to zero in Editorial and one complete baseline in
+Documentation, App, and OS, while the conservative fallback uses one baseline
+in every tier. Both formulas round their exact shortfalls without a one-baseline
+cap for custom configurations. The unused opt-in modifiers are removed.
 
 **R4 chip keyline ownership, superseded by owner direction on 2026-09-02.**
-Chips use the Action inset and retain the block-derived minimum as an inline
-floor. Regular chips subtract their real border; nested chips use the complete
-Action inset because their border is inset paint. One-character chips are
+Chips use the Action inset. Regular chips subtract their real border; nested
+chips use the complete Action inset because their border is inset paint. That
+intrinsic geometry already exceeds the painted block for supported, non-empty
+content, so chips do not consume the block-derived alias. One-character chips are
 stadiums in all four tiers, while badges own exact circular counters.
 
 ## Relationship to Spec 020
@@ -236,11 +244,13 @@ Independent, and cheaper. Spec 020 changes what the text insets are; Spec 021
 changes which components should not be using a text inset at all. Neither
 depends on the other's values.
 
-The 24 CSS-pixel target, its derived per-target margins, and the explicit
-scrollport allowance are accessibility geometry rather than authored spacing
+The 24 CSS-pixel target, its derived per-target margins, and the built-in
+wrapping-row floor are accessibility geometry rather than authored spacing
 facts and must be exempted from Spec 020's spacing quantisation audit. The
-former OS-only 9px action gap no longer exists; ordinary container gaps remain
-on their existing tokens.
+fixed `--bf-inline-list-space: 0.5rem` is a provisional horizontal-composition
+fact that Spec 020 must replace with the canonical token it defines. The former
+OS-only 9px action gap no longer exists; ordinary column gaps remain on their
+existing tokens.
 
 Sequencing 021 first is preferable: it is smaller, it answers a live
 stakeholder report, and it removes several components from the inset audit that

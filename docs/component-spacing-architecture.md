@@ -115,8 +115,8 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
 | Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
 | Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
-| Chip | Action plus block-derived minimum | Regular; zero-footprint nested | The Action inset frames chip commands; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. `--bf-square-block-size` prevents a short chip becoming narrower than its own painted block. One-character chips are stadiums in every tier; use a badge for a circular counter. |
-| Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to chips and badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
+| Chip | Action | Regular; zero-footprint nested | The Action inset frames chip commands; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. The former block-derived floor never governed supported, non-empty chip content, so chips are not alias members. One-character chips are stadiums in every tier; use a badge for a circular counter. |
+| Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
 | Checkbox, radio, prose/list marks, validation | Continuation copy | Regular; framed nested for selection controls | Mark position is calculated backward from the continuation copy inset |
 | Accordion, list tree, side-navigation copy, table of contents, notification | Continuation | Regular | Icon canvas and gap do not create another inset; TOC nesting adds only structural depth after the root inset |
@@ -160,6 +160,15 @@ off the active baseline phase. A single-line group heading reserves four
 baselines through a minimum block size; longer headings may still wrap and
 grow, while the common case cannot accumulate fractional font-box drift.
 
+Plain and middot inline lists share one fixed `0.5rem` inline-composition space.
+The middot modifier uses a wrapping flex row so HTML source whitespace cannot
+become a third, font-dependent spacing owner; items contribute no trailing
+margin. The dot's logical start margin and the row's logical column gap mirror
+one another, while `align-items: baseline` preserves mixed-height text
+alignment. The half-rem value is a provisional component-local horizontal fact
+recorded for replacement by Spec 020's canonical spacing vocabulary.
+the same contract in RTL.
+
 ## Ownership and cascade
 
 `src/css-component-contracts.ts` is the single owner of component input
@@ -198,6 +207,17 @@ For a new component:
 A new shared inset, density scale, target height, or tier-owned leaf override
 requires an architecture decision. Numeric resemblance is not sufficient.
 
+Inline `.bf-icon` paint aligns to the font's cap-height centre, not the line-box
+bottom. `--bf-inline-icon-baseline-shift` derives the default placement from
+`1cap`, the default icon size, and half the scalable border as an optical lift;
+size modifiers add the difference between their active size and that default.
+The default icon trims one scalable border from its block-start layout margin
+so a raster edge cannot grow the compact body line, while larger icons reserve
+their full painted block. Sortable-table chevrons reuse the default metric and
+trim. Flex, grid, and positioned component owners explicitly neutralize the
+inline trim and retain their own cross-axis placement. Absolutely positioned
+leading marks keep their separate `--bf-leading-icon-offset` row contract.
+
 Icon-only buttons extend their pointer target, not their paint, to at least
 24-by-24 CSS pixels with an out-of-flow pseudo-element. The `24px` value is the
 normative unit used by WCAG 2.2 success criterion 2.5.8, not a design-system
@@ -208,25 +228,34 @@ An out-of-flow target still needs layout clearance. Each supported icon-only
 button derives its own per-edge overflow from the same normative minimum and
 reserves that space with `margin-inline`. The allowance therefore travels with
 the target through `.bf-actions`, `.bf-cluster`, and other non-clipping
-compositions; ordinary container gap tokens remain unchanged and no container
-infers geometry through `:has()`.
+compositions without itself mutating a container gap token, and no container
+infers geometry through `:has()`; the separate wrapping floor below can still
+win in computed layout.
 
-When such a composition can wrap, its author adds `is-icon-target-wrap` to the
-wrapping container. The modifier puts baseline-rounded block clearance on each
-direct icon-only target, preventing targets on adjacent flex or grid rows from
-overlapping without changing standalone control geometry. Supporting engines
-round the exact shortfall up to the active baseline; the conservative fallback
-uses one baseline. The modifier is generic rather than tied to one primitive.
+The built-in wrapping primitives, `.bf-actions` and `.bf-cluster`,
+automatically apply a baseline-rounded `row-gap` floor. This prevents adjacent
+target extensions from touching or overlapping without moving child paint or
+changing a single-row footprint. It is unconditional behavior of containers
+that already declare wrapping, not a consumer-selectable modifier and not
+geometry inferred through `:has()`. Supporting engines round the exact
+shortfall up to the active baseline; the conservative fallback uses one
+baseline. Because the rule is deliberately descendant-agnostic, the floor can
+exceed the authored gap in a wrapped container with no icon target; the current
+demo impact is two multi-row OS form-atlas clusters whose row gap rises from
+8px to 12px.
 
-A scrolling overflow container can still clip positioned descendants at its
-edges. Such a container opts in explicitly with
-`is-icon-target-scrollport`. The modifier reserves a symmetric,
-baseline-rounded allowance. Supporting engines resolve that allowance to zero
-in Editorial and one complete baseline in Documentation, App, and OS; the
-fallback uses one safe baseline in every tier. Exact rounding is deliberately
-uncapped, so custom configurations with a larger target shortfall can reserve
-more than one baseline. This explicit modifier is part of the target
-composition contract, not a target block size or a change to control paint.
+`.bf-actions.is-nowrap` declares its own horizontal scrollport. A direct
+icon-only target inside it therefore owns symmetric, baseline-rounded
+`margin-block` clearance; its existing `margin-inline` supplies the logical-edge
+scroll extent. Text-only nowrap strips receive no padding, retain their leading
+keyline, and keep their original block size. Supporting engines resolve the
+per-edge block allowance to zero in Editorial and one complete baseline in
+Documentation, App, and OS; the fallback uses one safe baseline in every tier.
+Exact rounding is deliberately uncapped for custom configurations. No public
+wrap or scrollport opt-in class is exposed. `.bf-cluster.is-nowrap` is neither
+a clipping scrollport nor covered by the block-margin rule; any future clipping
+owner outside `.bf-actions.is-nowrap` must provide and verify its own block
+containment.
 
 ## Removed contracts
 

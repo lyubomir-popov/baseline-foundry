@@ -35,10 +35,9 @@ ${bodyTypeStyles}  align-items: baseline;
   justify-self: start;
   margin: 0 var(--bf-component-inline-inset-field) var(--bf-interface-row-compensation-block-end) 0;
   max-inline-size: 100%;
-  min-inline-size: var(--bf-square-block-size);
   padding-block: var(--bf-interface-row-padding-block);
-  /* Chips use the Action text keyline; the block-derived minimum prevents a
-     short chip from becoming narrower than its painted row. */
+  /* Chips use the Action text keyline. The former block-derived floor never
+     governs supported, non-empty chip content and was therefore inert. */
   padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
   position: relative;
   text-decoration: none;

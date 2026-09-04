@@ -8,20 +8,25 @@ in `docs/specs.md`; per-spec tasks live in the package.
 Spec 021 is active on `feat/021-block-derived-inline-geometry`. Its
 member-specific painted-block implementation and four-tier rendered checks are
 in re-review follow-up. The latest resolution moves chips to the Action inset,
-makes icon-target clearance travel with each button, replaces contextual
-container geometry with explicit baseline-rounded wrap and scrollport
-modifiers, and keeps unsupported bordered nested icon membership excluded.
-Final local gates and the independent adversarial pass are green at 19,048
-static checks plus fresh component QA. A fresh Opus adversarial re-review and
-owner acceptance remain. Do not merge, publish, release, or begin Spec 020
-without separate closeout direction.
+makes inline icon-target clearance travel with each button, gives the built-in
+wrapping `.bf-actions` and `.bf-cluster` primitives a baseline-rounded row-gap
+floor, and makes direct icon targets inside `.bf-actions.is-nowrap` own only
+their required block margins. Text-only nowrap strips therefore keep their
+original footprint and keyline. The unused public opt-in classes are removed,
+plain and middot inline lists share one fixed half-rem space and baseline-align,
+and unsupported bordered nested icon membership remains excluded. Final local
+gates are green at 19,513 static checks plus fresh component QA. Opus accepted
+the geometry; its final contract-disclosure corrections are implemented, so
+only owner acceptance remains. Do not merge, publish, release, or begin Spec
+020 without separate closeout direction.
 
 After Spec 021 is accepted, promote Spec 020 on a fresh branch. Spec 020
 supersedes unimplemented Spec 019 and owns the approved horizontal matrix. Its
 quantisation audit must classify the WCAG-derived icon-target margins and
-`is-icon-target-wrap` and `is-icon-target-scrollport` allowances as
-accessibility geometry, not authored spacing. No OS 9px action-gap exemption is
-needed; that contextual gap was removed in Spec 021.
+the built-in wrapping-row floor as accessibility geometry, not authored
+spacing, and must replace the provisional `--bf-inline-list-space: 0.5rem`
+horizontal-composition fact with the canonical token it defines. No OS 9px
+action-gap exemption is needed; that contextual gap was removed in Spec 021.
 
 ## Candidate order after Spec 001
 

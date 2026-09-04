@@ -73,10 +73,6 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
   --bf-square-block-size: var(--bf-interface-row-line-height);
 }
 
-:where(.bf-theme) :where(.bf-chip.is-nested) {
-  --bf-square-block-size: var(--bf-nested-row-painted-block-size);
-}
-
 :where(.bf-theme) :where(.bf-badge.is-nested) {
   --bf-square-block-size: var(--bf-nested-row-line-height);
 }

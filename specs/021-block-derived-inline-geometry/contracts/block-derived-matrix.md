@@ -28,8 +28,6 @@ differs.
 |---|---|---|---|---|
 | `.bf-badge` | body line | `0` | none | body line |
 | `.bf-badge.is-nested` | nested row line | `0` | none | nested row line |
-| `.bf-chip` | body line | interface row padding | 2 real | interface row painted |
-| `.bf-chip.is-nested` | nested row line | nested row padding | inset paint, no box border | nested row painted |
 | `.bf-button.is-icon` no label | body line via strut | interface row padding | 2 real | interface row painted |
 | `.bf-button.is-link.is-icon` no label | body line via strut | none | none | body line |
 | `.bf-notification-close` | icon canvas | one `--bf-space-1` on each block edge | none | `2 * space-1 + icon canvas` |
@@ -88,8 +86,6 @@ exists to prevent.
 Block-derived inline geometry applies to:
 
 - `.bf-badge` — counter, standalone and nested.
-- `.bf-chip` — universally as an inline floor, while using its Action inset;
-  it is not selected only when its content is one character.
 - `.bf-button.is-icon` with no `.bf-button-label` — standalone, link-style, and
   specialized borderless notification-close states. Bordered nested icon-only
   buttons are unsupported because the OS icon canvas already fills the host
@@ -114,15 +110,16 @@ It does not apply to:
 
 ## Circles, stadiums and the radius boundary
 
-The minimum applies universally to badges and chips. The *circle* is what
-happens when the component's intrinsic, padded content fits inside the minimum;
-wider content produces a stadium at the same painted block. Neither case is
-selected on content length, so no content-length modifier is introduced.
-Chips use the Action inset. A regular chip subtracts its real border from that
-inset; a nested chip keeps the full inset because its border is inset paint and
-contributes no box geometry. One-character chips therefore exceed the minimum
-and are correctly stadiums in every tier; a one-character circular counter is
-a badge.
+The minimum applies universally to badges. The *circle* is what happens when
+the component's intrinsic, padded content fits inside the minimum; wider
+content produces a stadium at the same painted block. Neither case is selected
+on content length, so no content-length modifier is introduced. Chips use the
+Action inset instead. A regular chip subtracts its real border from that inset;
+a nested chip keeps the full inset because its border is inset paint and
+contributes no box geometry. All supported, non-empty chip content exceeds the
+painted row, so a block-derived floor would be inert and chips are not alias members.
+One-character chips remain stadiums in every tier; a one-character circular
+counter is a badge.
 
 **Radius changes are permitted for exactly two components: `.bf-chip` and
 `.bf-badge`.** No other component may gain, lose or alter a border radius in
@@ -136,7 +133,7 @@ the shape outcome, so the implementation changes no radius declaration.
 | Member | Shape source | Radius |
 |---|---|---|
 | Badge | block-derived minimum | at or above half the painted block; may change |
-| Chip | block-derived minimum | existing pill radius; may change |
+| Chip | Action-framed intrinsic width | existing pill radius; may change |
 | Icon-only button | block-derived minimum | `--bf-radius`, unchanged |
 | Pagination slot | block-derived minimum | `--bf-radius`, unchanged |
 | Status label | not a member | none, unchanged |
@@ -180,19 +177,21 @@ The extension is direct only when it is not clipped or claimed by an adjacent
 target. Each supported icon-only button therefore derives its per-edge overflow
 from the same 24px constant and reserves that overflow with `margin-inline`.
 The allowance travels with the target in `.bf-actions`, `.bf-cluster`, and any
-other ordinary non-clipping composition; container gaps remain token-owned.
+other ordinary non-clipping composition without mutating a container gap token.
 
-A clipping overflow container opts in explicitly with
-`is-icon-target-scrollport`. A wrapping container independently opts in with
-`is-icon-target-wrap`, which puts block-axis clearance on each direct icon-only
-target so adjacent rows cannot claim each other's extension. Both modifiers
-round the exact target shortfall up to the active baseline in supporting
-engines, without a one-baseline cap; their conservative fallback reserves one
-baseline. The scrollport allowance is symmetric on all four edges, while the
-wrap allowance is target-owned. These explicit modifiers prevent clipping,
-cross-row overlap, and half-baseline phase shifts without contextual `:has()`
-inference. A consumer composition that omits the relevant modifier does not
-claim to support that extended-target case.
+The built-in wrapping primitives, `.bf-actions` and `.bf-cluster`, put a
+baseline-rounded row-gap floor between rows automatically so adjacent rows
+cannot claim each other's extension. This floor is descendant-agnostic and can
+exceed the authored row gap even when the wrapping container has no target. A
+direct icon target in
+`.bf-actions.is-nowrap` owns the symmetric block allowance required by the
+scrollport, while its existing inline margins provide logical-edge extent.
+Both contracts round the exact target shortfall up to the active baseline in
+supporting engines, without a one-baseline cap; their conservative fallback
+reserves one baseline. Text-only nowrap strips receive no padding. These
+production defaults prevent clipping, cross-row overlap, child paint movement,
+and half-baseline phase shifts without contextual `:has()` inference or an
+unadopted public opt-in API.
 
 The permitted dispositions are:
 
@@ -219,10 +218,13 @@ Assumption is not one of the options.
   from a custom property so the cascade can re-point it.
 - No component outside `.bf-chip` and `.bf-badge` changes its border radius.
 - Target geometry is never inferred by a container through `:has()`. Inline
-  clearance is target-owned; wrapping and clipping containers that support
-  extended targets explicitly use `is-icon-target-wrap` and
-  `is-icon-target-scrollport`, respectively. The button selector may still use
-  `:not(:has(.bf-button-label))` to identify its own label state.
+  and nowrap block clearance are target-owned; `.bf-actions` and `.bf-cluster`
+  own their wrapping row-gap floor. The button
+  selector may still use `:not(:has(.bf-button-label))` to identify its own
+  label state.
+- `.bf-cluster.is-nowrap` is non-wrapping, declares no clipping overflow, and
+  receives neither the row-gap floor nor nowrap target block margins. A future
+  clipping owner outside `.bf-actions.is-nowrap` owns that containment.
 - Every changed interactive target is measured in every tier. Icon-only
   actions must expose a directly hittable 24 CSS-pixel square at cardinal edges
   and corners in LTR and RTL, including adjacent `.bf-actions` and

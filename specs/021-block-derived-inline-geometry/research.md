@@ -138,12 +138,13 @@ mechanism. The member/state table is what prevents recurrence.
 ## Closed: single-character selection and chip keyline
 
 CSS cannot select on content length. The block-derived minimum therefore
-applies universally to badges and chips, and the circle is the case where
-intrinsic padded content fits inside it. The owner moved chips to the Action
-inset on 2026-09-02: regular chips subtract their real border and nested chips
-keep the full inset because their border is inset paint. One-character chips
-are therefore stadiums in every tier; badges own the exact circular-counter
-case.
+applies universally to badges, and the circle is the case where intrinsic
+padded content fits inside it. The owner moved chips to the Action inset on
+2026-09-02: regular chips subtract their real border and nested chips keep the
+full inset because their border is inset paint. All supported, non-empty
+Action-framed chip content exceeds the painted row, making the former minimum inert; chips are
+therefore not alias members. One-character chips remain stadiums in every tier,
+and badges own the exact circular-counter case.
 
 No content-length modifier is introduced.
 
@@ -162,12 +163,14 @@ rely on arbitrary consumer spacing: a transparent absolutely positioned
 `::after` extends the pointer target to at least 24-by-24 CSS pixels without
 entering flow or changing paint. Each supported target derives its inline
 margin from the same minimum, so non-overlap follows the button through actions,
-clusters, and other ordinary containers. Wrapping containers opt in with
-`is-icon-target-wrap` so direct targets reserve block clearance between rows;
-clipping containers opt in with `is-icon-target-scrollport`. Supporting engines
-round each exact shortfall up to the active baseline without a one-baseline
-cap, while the safe fallback reserves one baseline. No container geometry
-depends on contextual `:has()`.
+clusters, and other ordinary containers. Built-in wrapping `.bf-actions` and
+`.bf-cluster` containers automatically apply a block-axis row-gap floor; it has
+no single-row cost and does not move a target relative to its siblings. Direct
+icon targets in `.bf-actions.is-nowrap` own their symmetric block margins
+inside the scrollport, while text-only strips retain zero padding. Supporting
+engines round each exact shortfall up to the active baseline without a
+one-baseline cap, while the safe fallback reserves one baseline. No container
+geometry depends on contextual `:has()` or a consumer-authored opt-in.
 The 24px value remains a CSS-pixel constant because WCAG 2.2 success criterion
 2.5.8 defines the requirement in CSS pixels; it is not a BF spacing token.
 Interactive chips and numbered pagination retain their measured direct or

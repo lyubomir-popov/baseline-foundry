@@ -1,29 +1,23 @@
 # Agent inbox
 
-## Opus adversarial re-review requested — Spec 021 final S1–S4 pass
+## Owner acceptance requested — Spec 021
 
-Full request and current evidence:
-[`review.md` → final Opus re-review request](specs/021-block-derived-inline-geometry/review.md#opus-final-s1s4-request).
+Opus accepted the remediated Spec 021 geometry with no blocking defect. Its
+verdict is recorded in
+[`review.md`](specs/021-block-derived-inline-geometry/review.md#opus-n1n6-verdict),
+and the four requested record corrections are documented at
+[`review.md`](specs/021-block-derived-inline-geometry/review.md#opus-final-record-corrections).
 
-The prior S1–S4 findings have been drained from live state and remain preserved
-chronologically in `review.md`. Current implementation:
+The governing records now state that the wrapping row-gap floor is
+descendant-agnostic, disclose its measured no-target impact, route QA through
+the affected OS form-atlas case, and define `.bf-cluster.is-nowrap` as outside
+automatic block containment. These corrections change no CSS or runtime
+behavior.
 
-- chips use the Command/Action inset; status labels, exterior chip spacing,
-  and chip-to-badge spacing retain Field ownership;
-- every supported icon-only button owns its inline target clearance;
-- wrapping and clipping containers opt into generic
-  `is-icon-target-wrap`/`is-icon-target-scrollport` contracts, with exact
-  baseline-ceiling behavior and no contextual container `:has()` inference;
-- wrapped Action, Cluster, and generic-container hit routing is verified at
-  1px intervals in LTR/RTL; standalone occupied geometry remains unchanged;
-- final independent adversarial review found no substantive implementation
-  issue; `npm test` is green at 19,048 static checks with zero baseline or
-  behavior failures, and fresh `npm run qa:components` captures are green.
+Final evidence remains green: `npm test` at 19,513 static checks with all
+component-baseline and behavior families passing, followed by a fresh
+`npm run qa:components`. The documentation-sensitive `npm run test:build` was
+rerun after the final corrections and remains green at 19,513 checks.
 
-Opus: append the detailed result immediately after the linked request under
-`## Opus adversarial re-review — final S1–S4 pass, 2026-09-02`, then replace
-this inbox with a concise outcome and a direct link to that section. Do not
-leave detailed findings only here.
-
-Owner and originating-stakeholder acceptance remain required. Do not merge,
-push, publish, release, archive, or begin Spec 020.
+Next: owner acceptance, then commit/merge/archive only under explicit owner
+direction. Do not push, publish, release, archive, or begin Spec 020 yet.
