@@ -4508,7 +4508,13 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 }
 
 async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
-  const expected = {
+  const canonicalExpected = {
+    editorial: [0.5, 0.5, 0.5, 1.5, 4, 8, 0.5, 1, 2, 1, 1, 4],
+    documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 0.75, 1.5, 1, 1, 3],
+    app: [0.25, 0.5, 0.25, 0.5, 1, 2, 0.25, 0.75, 1.5, 0.75, 0.75, 3],
+    os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 0.5, 1.25, 0.5, 0.5, 2]
+  } as const;
+  const compatibilityExpected = {
     editorial: [0.5, 0.5, 0.5, 1.5, 4, 8, 0.5, 1, 2, 1, 1, 4],
     documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 1, 2, 1, 1, 3],
     app: [0.25, 0.5, 0.5, 0.5, 1, 2, 0.25, 1, 2, 0.75, 0.75, 3],
@@ -4542,30 +4548,75 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     "--bf-panel-padding-block",
     "--bf-strip-space"
   ] as const;
-  const tiers = Object.keys(expected) as Array<keyof typeof expected>;
+  const tiers = Object.keys(canonicalExpected) as Array<keyof typeof canonicalExpected>;
+  const canonicalClass = {
+    editorial: "site",
+    documentation: "docs",
+    app: "app",
+    os: "os"
+  } as const;
+  const dimensionProperty = new Map<number, string>([
+    [0.25, "--dimension-050"],
+    [0.5, "--dimension-100"],
+    [0.75, "--dimension-150"],
+    [1, "--dimension-200"],
+    [1.25, "--dimension-250"],
+    [1.5, "--dimension-300"],
+    [2, "--dimension-400"],
+    [3, "--dimension-600"],
+    [4, "--dimension-800"],
+    [6, "--dimension-1200"],
+    [8, "--dimension-1600"]
+  ]);
+  const providerSelectorOrder = ["editorial", "app", "documentation", "editorial", "os"] as const;
+  const providerSelectors = [":root", ".app", ".docs", ".site", ".os"] as const;
+  const primitiveDeclarations = [...dimensionProperty.entries()]
+    .map(([value, property]) => `${property}:${value}rem`)
+    .join(";");
+  const providerRules = providerSelectors.map((selector, ruleIndex) => {
+    const tier = providerSelectorOrder[ruleIndex];
+    const declarations = canonicalProperties.map((property, tokenIndex) => {
+      const primitive = dimensionProperty.get(canonicalExpected[tier][tokenIndex]);
+      assert(primitive, `Expected a provider primitive for ${tier} ${property}.`);
+      return `${property}:var(${primitive})`;
+    }).join(";");
+    return `${selector}{${declarations}}`;
+  }).join("");
+  // This mirrors the generated design-tokens modifiers.spacing.css contract:
+  // primitive references, ds.modifiers layer, and exact selector order.
+  const canonicalProviderCss = `:root{${primitiveDeclarations}}@layer ds.modifiers{${providerRules}}`;
   const browser = await openBrowser();
 
   try {
     const page = await browser.newPage({ viewport: { width: 800, height: 600 } });
-    const readValues = async (stylesheet: string, bodyClass: string) => {
+    const readValues = async (
+      stylesheet: string,
+      bodyClass: string,
+      options: { providerOrder?: "before" | "after"; targetSelector?: string; nestedMarkup?: string; } = {}
+    ) => {
+      const providerStyle = options.providerOrder ? `<style>${canonicalProviderCss}</style>` : "";
+      const link = `<link rel="stylesheet" href="${origin}${stylesheet}">`;
+      const stylesheets = options.providerOrder === "before" ? `${providerStyle}${link}` : `${link}${providerStyle}`;
       await page.setContent(`<!doctype html>
-        <link rel="stylesheet" href="${origin}${stylesheet}">
-        <body class="bf-theme ${bodyClass}"></body>`);
+        ${stylesheets}
+        <body class="bf-theme ${bodyClass}">${options.nestedMarkup ?? ""}</body>`);
       await page.waitForFunction(expectedHref => Array.from(document.styleSheets).some(sheet => sheet.href?.includes(expectedHref)), stylesheet);
-      return page.evaluate(({ canonicalProperties, aliases }) => {
+      return page.evaluate(({ canonicalProperties, aliases, targetSelector }) => {
+        const target = targetSelector ? document.querySelector(targetSelector) : document.body;
+        if (!(target instanceof HTMLElement)) throw new Error(`Missing spacing measurement target ${targetSelector ?? "body"}.`);
         const canonical: number[] = [];
         const aliasValues: number[] = [];
         for (const property of canonicalProperties) {
           const probe = document.createElement("i");
           probe.style.cssText = `display:block;inline-size:var(${property});position:fixed;visibility:hidden`;
-          document.body.appendChild(probe);
+          target.appendChild(probe);
           canonical.push(probe.getBoundingClientRect().width);
           probe.remove();
         }
         for (const property of aliases) {
           const probe = document.createElement("i");
           probe.style.cssText = `display:block;inline-size:var(${property});position:fixed;visibility:hidden`;
-          document.body.appendChild(probe);
+          target.appendChild(probe);
           aliasValues.push(probe.getBoundingClientRect().width);
           probe.remove();
         }
@@ -4574,18 +4625,48 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
           canonical,
           aliases: aliasValues
         };
-      }, { canonicalProperties: [...canonicalProperties], aliases: [...aliases] });
+      }, { canonicalProperties: [...canonicalProperties], aliases: [...aliases], targetSelector: options.targetSelector });
+    };
+
+    const assertMatrix = (
+      label: string,
+      tier: keyof typeof canonicalExpected,
+      measured: { rootFontSize: number; canonical: number[]; aliases: number[]; }
+    ) => {
+      for (const [index, property] of canonicalProperties.entries()) {
+        const canonicalPx = canonicalExpected[tier][index] * measured.rootFontSize;
+        const compatibilityPx = compatibilityExpected[tier][index] * measured.rootFontSize;
+        assert(Math.abs(measured.canonical[index] - canonicalPx) <= 0.05, `Expected ${label} ${property} to retain the final Canonical ${canonicalPx}px, got ${measured.canonical[index]}px.`);
+        assert(Math.abs(measured.aliases[index] - compatibilityPx) <= 0.05, `Expected ${label} ${aliases[index]} to preserve the pre-020a BF ${compatibilityPx}px, got ${measured.aliases[index]}px.`);
+      }
     };
 
     for (const tier of tiers) {
       const direct = await readValues(`/dist/tiers/${tier}/styles.css`, "");
       const classSwitched = await readValues("/dist/tiers/editorial/styles.css", `bf-tier-${tier}`);
-      for (const [index, property] of canonicalProperties.entries()) {
-        const expectedPx = expected[tier][index] * direct.rootFontSize;
-        assert(Math.abs(direct.canonical[index] - expectedPx) <= 0.05, `Expected direct ${tier} ${property} to preserve ${expectedPx}px before 020a, got ${direct.canonical[index]}px.`);
-        assert(Math.abs(classSwitched.canonical[index] - expectedPx) <= 0.05, `Expected class-switched ${tier} ${property} to preserve ${expectedPx}px before 020a, got ${classSwitched.canonical[index]}px.`);
-        assert(Math.abs(direct.aliases[index] - direct.canonical[index]) <= 0.05, `Expected direct ${tier} ${aliases[index]} to resolve through ${property}.`);
-        assert(Math.abs(classSwitched.aliases[index] - classSwitched.canonical[index]) <= 0.05, `Expected class-switched ${tier} ${aliases[index]} to resolve through ${property}.`);
+      assertMatrix(`direct ${tier}`, tier, direct);
+      assertMatrix(`class-switched ${tier}`, tier, classSwitched);
+    }
+
+    const nestedMarkup = tiers.slice(1).map(tier =>
+      `<section id="spacing-${tier}" class="bf-theme bf-tier-${tier} ${canonicalClass[tier]}"></section>`
+    ).join("");
+    for (const providerOrder of ["before", "after"] as const) {
+      for (const tier of tiers) {
+        const directMixed = await readValues(
+          "/dist/tiers/editorial/styles.css",
+          `bf-tier-${tier} ${canonicalClass[tier]}`,
+          { providerOrder }
+        );
+        assertMatrix(`${providerOrder}-BF mixed direct ${tier}`, tier, directMixed);
+      }
+      for (const tier of tiers.slice(1)) {
+        const nestedMixed = await readValues(
+          "/dist/tiers/editorial/styles.css",
+          "bf-tier-editorial site",
+          { providerOrder, targetSelector: `#spacing-${tier}`, nestedMarkup }
+        );
+        assertMatrix(`${providerOrder}-BF mixed nested ${tier}`, tier, nestedMixed);
       }
     }
   } finally {

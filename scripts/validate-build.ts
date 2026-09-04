@@ -253,6 +253,22 @@ const CANONICAL_SPACING_BY_BF_ALIAS: Record<string, string> = {
   "--bf-strip-space": "--spacing-inset-strip-block"
 };
 
+const DEFERRED_BF_SPACING_VALUES: Partial<Record<string, Record<string, string>>> = {
+  documentation: {
+    "--bf-component-inline-inset-action": "1rem",
+    "--bf-component-inline-inset-continuation": "2rem"
+  },
+  app: {
+    "--bf-leading-mark-gap": "0.5rem",
+    "--bf-component-inline-inset-action": "1rem",
+    "--bf-component-inline-inset-continuation": "2rem"
+  },
+  os: {
+    "--bf-component-inline-inset-action": "1rem",
+    "--bf-component-inline-inset-continuation": "2rem"
+  }
+};
+
 function expectedTierProperties(tokens: Record<string, unknown>): Map<string, string> {
   const expected = new Map<string, string>();
   const layout = (tokens.layout ?? {}) as Record<string, unknown>;
@@ -289,7 +305,8 @@ function validateTierSurfaceParity(
 
     for (const [propertyName, value] of expected) {
       const canonicalProperty = CANONICAL_SPACING_BY_BF_ALIAS[propertyName];
-      const expectedCssValue = canonicalProperty ? `var(${canonicalProperty})` : value;
+      const expectedCssValue = DEFERRED_BF_SPACING_VALUES[tierName]?.[propertyName]
+        ?? (canonicalProperty ? `var(${canonicalProperty})` : value);
       assert(directProperties.get(propertyName) === expectedCssValue, `Expected ${tierName} direct CSS ${propertyName} to equal ${expectedCssValue}, got ${directProperties.get(propertyName)}.`);
       assert(scopedProperties.get(propertyName) === expectedCssValue, `Expected ${tierName} class-switched CSS ${propertyName} to equal direct value ${expectedCssValue}, got ${scopedProperties.get(propertyName)}.`);
     }
@@ -2001,7 +2018,7 @@ async function main(): Promise<void> {
     documentation: documentationTier,
     app: appTier,
     os: osTier
-  }, defaultTheme.css));
+  }, defaultTheme.css, ibmPlexEngineSmoke));
   runInvariant("Tier content-cap progression", () => validateTierContentCaps(defaultTheme.css, {
     editorial: editorialTier,
     documentation: documentationTier,

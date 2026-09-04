@@ -114,19 +114,33 @@ function roleVarDeclarations(roleName: string, token: TypographyToken, baselineU
   return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-baseline-compensation: ${compensation};\n  --bf-${roleName}-margin-bottom: ${compensation};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${compensation};\n`;
 }
 
-function spacingVarDeclarations(spacing: ResolvedDtcgSpacing): string {
+function spacingVarDeclarations(tokens: ThemeTokens): string {
+  if (!tokens.canonicalSpacing) {
+    const bfValues = dtcgSpacingTokenIds
+      .map(id => `  ${bfSpacingCompatibilityAliases[id]}: ${dtcgSpacingValue(tokens.spacing[id])};`)
+      .join("\n");
+    return `  /* Theme-config spacing remains in BF's namespace; it does not claim Canonical provenance. */
+${bfValues}
+`;
+  }
+
   const canonical = dtcgSpacingTokenIds
-    .map(id => `  ${dtcgSpacingCssProperty(id)}: ${dtcgSpacingValue(spacing[id])};`)
+    .map(id => `  ${dtcgSpacingCssProperty(id)}: ${dtcgSpacingValue(tokens.canonicalSpacing?.[id] ?? tokens.spacing[id])};`)
     .join("\n");
-  const aliases = dtcgSpacingTokenIds
-    .map(id => `  ${bfSpacingCompatibilityAliases[id]}: var(${dtcgSpacingCssProperty(id)});`)
+  const compatibility = dtcgSpacingTokenIds
+    .map(id => {
+      const property = dtcgSpacingCssProperty(id);
+      const value = dtcgSpacingValue(tokens.spacing[id]);
+      const canonicalValue = dtcgSpacingValue(tokens.canonicalSpacing?.[id] ?? tokens.spacing[id]);
+      return `  ${bfSpacingCompatibilityAliases[id]}: ${value === canonicalValue ? `var(${property})` : value};`;
+    })
     .join("\n");
 
-  return `  /* Resolved Canonical DTCG spacing. */
+  return `  /* Resolved Canonical DTCG spacing; these names always retain the pinned final matrix. */
 ${canonical}
-  /* Temporary BF aliases: one bounded deprecation window, removable only
-     after BF 020a and downstream migration adopt the canonical names. */
-${aliases}
+  /* Temporary BF compatibility properties. Seven retained literals preserve
+     current geometry until BF 020a; equal points alias Canonical directly. */
+${compatibility}
 `;
 }
 
@@ -134,7 +148,7 @@ function themeSurfaceRule(selector: string, tokens: ThemeTokens): string {
   const body = tokens.roles.body;
   const smallFontFallback = body?.fontSize ?? tokens.roles.h6?.fontSize ?? "1rem";
   return `${selector} {
-${spacingVarDeclarations(tokens.spacing)}  --bf-space-0: 0rem;
+${spacingVarDeclarations(tokens)}  --bf-space-0: 0rem;
   --bf-space-half: calc(var(--bf-baseline) / 2);
   --bf-space-1: var(--bf-baseline);
   --bf-space-2: calc(var(--bf-baseline) * 2);

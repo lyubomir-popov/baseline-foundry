@@ -1,5 +1,9 @@
 {
   "format": "canonical-resolver-apply-spacing-v1",
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalProducts": "97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571"
+  },
   "source": {
     "package": "@canonical/design-tokens",
     "repository": "https://github.com/canonical/design-tokens",

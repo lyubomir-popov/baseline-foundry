@@ -93,7 +93,8 @@ The full runtime token set that produced the bundle's CSS.
 | Field | Type | Notes |
 |-------|------|-------|
 | `baselineUnit` | `string` (CSS length) | The half-baseline grid unit, e.g. `"0.5rem"`. Doubled for the visible grid. |
-| `spacing` | `Record<spacing.*, ResolvedDtcgDimensionToken>` | The twelve resolved Canonical spacing tokens in DTCG dimension shape. Built-in tiers consume this record; the older scalar fields remain compatibility projections. |
+| `canonicalSpacing` | `Record<spacing.*, ResolvedDtcgDimensionToken>?` | The twelve final, unoverlaid Canonical records. Present only on built-in tiers; omitted for BF-owned custom themes. |
+| `spacing` | `Record<spacing.*, ResolvedDtcgDimensionToken>` | BF's effective DTCG-shaped spacing record. Built-ins apply the bounded seven-point compatibility overlay; custom themes derive it from their config. The older scalar fields are projections of this record. |
 | `fontFiles` | `ThemeFontFile[]` | See [Font asset contract](#font-asset-contract). |
 | `fontStacks` | `Record<string, string>` | Font-family CSS stack per declared family. |
 | `roles` | `Record<string, TypographyToken>` | Semantic role tokens (`body`, `h1` … `h6`). The values components actually consume. |
@@ -101,8 +102,9 @@ The full runtime token set that produced the bundle's CSS.
 | `layout` | `LayoutTokens` | Container widths, gutters, gaps, and section rhythm. |
 | `components` | `ComponentTokens` | Shared component density tokens (control padding, panel padding, border width, radius, etc.). |
 
-The canonical property mapping, temporary BF aliases, seven-point value
-overlay, and OS scope boundary are documented in
+The Canonical/effective record split, property mapping, temporary BF
+compatibility properties, seven-point value overlay, custom-theme namespace,
+and OS scope boundary are documented in
 [`spacing-token-adapter.md`](spacing-token-adapter.md).
 
 ### Resolved DTCG spacing token

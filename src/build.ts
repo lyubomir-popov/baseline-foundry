@@ -319,15 +319,9 @@ function buildComponentTokens(config: ThemeConfig, spacing: ResolvedDtcgSpacing)
 function buildThemeTokens(
   config: ThemeConfig,
   baselineTokens: BaselineGeneratorTokens,
-  spacing: ResolvedDtcgSpacing
+  spacing: ResolvedDtcgSpacing,
+  canonicalSpacing?: ResolvedDtcgSpacing
 ): ThemeTokens {
-  const spacingBaseline = spacingRem(spacing, "spacing.baseline");
-  if (parseRem(baselineTokens.baselineUnit) !== parseRem(spacingBaseline)) {
-    throw new Error(
-      `Generated typography baseline ${baselineTokens.baselineUnit} does not match resolved spacing baseline ${spacingBaseline}.`
-    );
-  }
-
   const elements = Object.fromEntries(
     Object.entries(baselineTokens.elements).map(([identifier, token]) => [identifier, toTypographyToken(identifier, token, config)])
   );
@@ -375,6 +369,7 @@ function buildThemeTokens(
 
   return {
     baselineUnit: spacingRem(spacing, "spacing.baseline"),
+    canonicalSpacing,
     spacing,
     fontFiles: config.fontFiles,
     fontStacks: config.fontStacks,
@@ -473,6 +468,9 @@ async function buildThemeSurface(
   const config = await readThemeConfig(resolvedConfigPath);
   const builtInName = inferBuiltInPresetName(resolvedConfigPath);
   const legacySpacing = legacyThemeConfigSpacing(config);
+  const canonicalSpacing = builtInName
+    ? await readCanonicalSpacingProduct(canonicalProductForBuiltInTheme(builtInName), { applyCompatibilityOverlay: false })
+    : undefined;
   const spacing = builtInName
     ? await readCanonicalSpacingProduct(canonicalProductForBuiltInTheme(builtInName))
     : legacySpacing;
@@ -481,14 +479,10 @@ async function buildThemeSurface(
     assertSpacingSetsEqual(
       spacing,
       legacySpacing,
-      `Canonical spacing adapter for ${builtInName}`
+      `Built-in ${builtInName} spacing compatibility assertion (update the pinned Canonical artifact and bounded overlay contract, not config/tiers)`
     );
   }
 
-  const effectiveConfig: ThemeConfig = {
-    ...config,
-    baselineUnit: spacing["spacing.baseline"].$value.value
-  };
   const resolvedBaselineDir = path.resolve(baselineDir);
   const resolvedOutputDir = path.resolve(outputDir);
 
@@ -497,12 +491,12 @@ async function buildThemeSurface(
   const baselineConfigFileName = `${path.parse(resolvedConfigPath).name}.baseline.json`;
   const baselineConfigPath = path.join(resolvedBaselineDir, baselineConfigFileName);
 
-  await writeJsonFileAtomic(baselineConfigPath, createBaselineConfig(effectiveConfig, resolvedConfigPath, baselineConfigPath));
+  await writeJsonFileAtomic(baselineConfigPath, createBaselineConfig(config, resolvedConfigPath, baselineConfigPath));
 
   const baselineTokens = await generateBaselineTokens(baselineConfigPath, resolvedBaselineDir);
   const runtimeConfig: ThemeConfig = {
-    ...effectiveConfig,
-    fontFiles: createRuntimeFontFiles(effectiveConfig, resolvedConfigPath, resolvedOutputDir)
+    ...config,
+    fontFiles: createRuntimeFontFiles(config, resolvedConfigPath, resolvedOutputDir)
   };
 
   return {
@@ -513,7 +507,7 @@ async function buildThemeSurface(
     configPath: resolvedConfigPath,
     baselineConfigPath,
     baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
-    tokens: buildThemeTokens(runtimeConfig, baselineTokens, spacing),
+    tokens: buildThemeTokens(runtimeConfig, baselineTokens, spacing, canonicalSpacing),
     metrics: runtimeMetricsTokens(baselineTokens, runtimeConfig.fontFiles)
   };
 }

@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { canonicalSpacingProductsSha256, validateCanonicalSpacingArtifact } from "../../src/dtcg-spacing.ts";
 import { parseCss } from "../css-ast-helpers.ts";
 import { assert } from "../validation-assert.ts";
 
@@ -182,15 +183,22 @@ function legacyConfigValues(config: Record<string, unknown>): Record<TokenId, nu
 
 export async function validateDtcgSpacingContracts(
   tierArtifacts: Record<Tier, { tokens: Record<string, unknown>; css: string; }>,
-  sharedEditorialCss: string
+  sharedEditorialCss: string,
+  customThemeArtifact: { tokens: Record<string, unknown>; css: string; }
 ): Promise<void> {
   const artifact = JSON.parse(await fs.readFile(path.resolve("config/canonical-spacing.resolved.json"), "utf8")) as Record<string, unknown>;
   const overlay = JSON.parse(await fs.readFile(path.resolve("config/canonical-spacing.compatibility-overlay.json"), "utf8")) as Record<string, unknown>;
   const source = artifact.source as Record<string, unknown>;
+  const integrity = artifact.integrity as Record<string, unknown>;
   const products = artifact.products as Record<Product, Record<string, unknown>>;
   const overlayProducts = overlay.products as Partial<Record<Product, Record<string, unknown>>>;
 
   assert(artifact.format === "canonical-resolver-apply-spacing-v1", "Expected BF to consume the bounded resolved Canonical spacing artifact shape.");
+  assert(
+    integrity.algorithm === "sha256" && integrity.canonicalProducts === canonicalSpacingProductsSha256,
+    "Expected the resolved artifact to carry the production-pinned digest of all 48 Canonical product values."
+  );
+  validateCanonicalSpacingArtifact(artifact);
   assert(
     source.package === "@canonical/design-tokens" &&
       source.repository === "https://github.com/canonical/design-tokens" &&
@@ -207,6 +215,21 @@ export async function validateDtcgSpacingContracts(
   ).sort();
   assert(JSON.stringify(actualOverlayPoints) === JSON.stringify(DEFERRED_POINTS), "Expected the BF-local compatibility overlay to contain exactly the seven deferred 020a points.");
 
+  for (const [product, productTokens] of Object.entries(products) as Array<[Product, Record<string, unknown>]>) {
+    for (const id of TOKEN_IDS) {
+      const mutated = structuredClone(artifact);
+      const mutatedProducts = mutated.products as Record<Product, Record<string, { $value: { value: number; }; }>>;
+      mutatedProducts[product][id].$value.value += 0.125;
+      let rejected = false;
+      try {
+        validateCanonicalSpacingArtifact(mutated);
+      } catch {
+        rejected = true;
+      }
+      assert(rejected, `Expected production validation to reject Canonical value drift at ${product}:${id}, including overlaid points.`);
+    }
+  }
+
   for (const [tier, product] of Object.entries(PRODUCT_BY_TIER) as Array<[Tier, Product]>) {
     const productTokens = products[product];
     assert(JSON.stringify(Object.keys(productTokens).sort()) === JSON.stringify([...TOKEN_IDS].sort()), `Expected ${product} to contain exactly the twelve approved v1 spacing IDs.`);
@@ -214,6 +237,7 @@ export async function validateDtcgSpacingContracts(
     const config = JSON.parse(await fs.readFile(path.resolve("config/tiers", `${tier}.json`), "utf8")) as Record<string, unknown>;
     const before = legacyConfigValues(config);
     const adapted = tierArtifacts[tier].tokens.spacing as Record<string, unknown>;
+    const builtCanonical = tierArtifacts[tier].tokens.canonicalSpacing as Record<string, unknown>;
     const directDeclarations = declarationsForSelector(tierArtifacts[tier].css, ":where(.bf-theme)");
     const classSelector = tier === "editorial" ? ":where(.bf-theme)" : `:where(.bf-theme.bf-tier-${tier})`;
     const classDeclarations = declarationsForSelector(sharedEditorialCss, classSelector);
@@ -226,14 +250,27 @@ export async function validateDtcgSpacingContracts(
       assert(before[id] === expectedCurrent, `Expected pre-adapter ${tier}:${id} to equal ${expectedCurrent}rem, got ${before[id]}rem.`);
       assert((overlayValue ? tokenMagnitude(overlayValue, `overlay ${product}:${id}`) : canonicalValue) === expectedCurrent, `Expected overlaid ${product}:${id} to preserve ${expectedCurrent}rem.`);
       assert(tokenMagnitude(adapted[id], `built ${tier}:${id}`) === expectedCurrent, `Expected post-adapter ${tier}:${id} to preserve ${expectedCurrent}rem.`);
+      assert(tokenMagnitude(builtCanonical[id], `built canonical ${tier}:${id}`) === FINAL_MATRIX[product][id], `Expected built Canonical ${tier}:${id} to retain the final matrix independently of BF compatibility.`);
 
       const property = cssProperty(id);
-      const expectedLiteral = `${expectedCurrent}rem`;
-      assert(JSON.stringify(directDeclarations.get(property)) === JSON.stringify([expectedLiteral]), `Expected direct ${tier} ${property} to have one ${expectedLiteral} owner.`);
-      assert(JSON.stringify(directDeclarations.get(BF_ALIASES[id])) === JSON.stringify([`var(${property})`]), `Expected direct ${tier} ${BF_ALIASES[id]} to be only a compatibility alias to ${property}.`);
-      assert(JSON.stringify(classDeclarations.get(property)) === JSON.stringify([expectedLiteral]), `Expected class-switched ${tier} ${property} to have one ${expectedLiteral} owner.`);
-      assert(JSON.stringify(classDeclarations.get(BF_ALIASES[id])) === JSON.stringify([`var(${property})`]), `Expected class-switched ${tier} ${BF_ALIASES[id]} to alias ${property}.`);
+      const canonicalLiteral = `${FINAL_MATRIX[product][id]}rem`;
+      const compatibilityValue = FINAL_MATRIX[product][id] === expectedCurrent ? `var(${property})` : `${expectedCurrent}rem`;
+      assert(JSON.stringify(directDeclarations.get(property)) === JSON.stringify([canonicalLiteral]), `Expected direct ${tier} ${property} to have one final-matrix ${canonicalLiteral} owner.`);
+      assert(JSON.stringify(directDeclarations.get(BF_ALIASES[id])) === JSON.stringify([compatibilityValue]), `Expected direct ${tier} ${BF_ALIASES[id]} to preserve BF geometry without changing ${property}.`);
+      assert(JSON.stringify(classDeclarations.get(property)) === JSON.stringify([canonicalLiteral]), `Expected class-switched ${tier} ${property} to have one final-matrix ${canonicalLiteral} owner.`);
+      assert(JSON.stringify(classDeclarations.get(BF_ALIASES[id])) === JSON.stringify([compatibilityValue]), `Expected class-switched ${tier} ${BF_ALIASES[id]} to preserve BF geometry without changing ${property}.`);
     }
+  }
+
+  assert(!Object.hasOwn(customThemeArtifact.tokens, "canonicalSpacing"), "Expected a BF-local custom theme not to claim a Canonical spacing record.");
+  const customDeclarations = declarationsForSelector(customThemeArtifact.css, ":where(.bf-theme)");
+  const customSpacing = customThemeArtifact.tokens.spacing as Record<string, unknown>;
+  for (const id of TOKEN_IDS) {
+    assert(!customDeclarations.has(cssProperty(id)), `Expected custom themes not to publish unnamespaced Canonical property ${cssProperty(id)}.`);
+    assert(
+      JSON.stringify(customDeclarations.get(BF_ALIASES[id])) === JSON.stringify([`${tokenMagnitude(customSpacing[id], `custom ${id}`)}rem`]),
+      `Expected custom themes to retain ${BF_ALIASES[id]} as a BF-owned literal.`
+    );
   }
 
   const canonicalDifferences = (Object.entries(PRODUCT_BY_TIER) as Array<[Tier, Product]>).flatMap(([, product]) =>

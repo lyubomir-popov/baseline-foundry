@@ -4,7 +4,11 @@ BF's four built-in tiers consume the resolved DTCG dimension records in
 `config/canonical-spacing.resolved.json`. That artifact is pinned to
 `canonical/design-tokens` commit
 `18f57b95b1aa1dfe85a45746016b055c807d6628` and contains exactly the twelve
-approved `spacing.*` IDs for Site, Docs, App, and OS.
+approved `spacing.*` IDs for Site, Docs, App, and OS. Production validation
+also pins SHA-256
+`97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571`
+over the ordered 4 × 12 DTCG records. A value change at any point, including
+an overlaid point, fails before the overlay is applied.
 
 This adapter is a format migration, not the 020a value migration. The
 BF-local `config/canonical-spacing.compatibility-overlay.json` therefore keeps
@@ -22,8 +26,11 @@ root-scaling, or Pragma behavior.
 
 ## CSS compatibility window
 
-Canonical properties are the source declarations. Existing BF properties are
-temporary aliases so current consumers retain identical computed geometry:
+Built-in CSS emits every Canonical property with the final Canonical value.
+Existing BF properties remain the compatibility surface that components use
+during the bounded window. At the 41 equal points they alias the Canonical
+property; at the seven deferred points they carry the retained BF value as a
+literal. A Canonical name never carries a compatibility value.
 
 | Canonical property | Temporary BF alias |
 |---|---|
@@ -40,9 +47,32 @@ temporary aliases so current consumers retain identical computed geometry:
 | `--spacing-inset-surface-block` | `--bf-panel-padding-block` |
 | `--spacing-inset-strip-block` | `--bf-strip-space` |
 
-The built token and surface manifests retain BF's existing `baselineUnit`,
-`layout`, and `components` projections for compatibility and add the resolved
-DTCG `spacing` record that owns those values.
+The built token and surface manifests expose two deliberately different
+records for built-in tiers:
+
+- `canonicalSpacing` is the final, unoverlaid Canonical 4 × 12 matrix;
+- `spacing` is BF's effective pre-020a matrix after the seven-point overlay.
+
+The existing `baselineUnit`, `layout`, and `components` fields are projections
+of effective `spacing`. The corresponding fields in `config/tiers/*.json` are
+temporary compatibility assertions, not a second built-in source of truth.
+Do not edit those fields in isolation: update the pinned provider artifact and
+bounded overlay contract in the appropriate approved migration. A mismatch
+fails with that guidance in the build error.
+
+Custom themes are BF-owned. They expose only effective `spacing`, omit
+`canonicalSpacing`, and emit only `--bf-*` spacing properties. They do not
+claim the unnamespaced Canonical `--spacing-*` surface.
+
+## Co-loading Canonical CSS
+
+BF's built-in Canonical declarations deliberately mirror the provider's final
+values. Consumers may load Canonical `modifiers.spacing.css` before or after
+BF without changing either matrix, provided each scope carries matching
+product classes (`site`/`docs`/`app`/`os` with the corresponding
+`bf-tier-*`). Browser contracts cover both orders and nested Docs/App/OS
+scopes inside Site. A mismatched pair of product classes is invalid consumer
+configuration; BF does not guess which product was intended.
 
 ## OS scope boundary
 

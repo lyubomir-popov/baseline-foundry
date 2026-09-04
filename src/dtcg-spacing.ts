@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,6 +35,10 @@ export type ResolvedDtcgSpacing = Record<DtcgSpacingTokenId, ResolvedDtcgDimensi
 
 interface ResolvedDtcgSpacingArtifact {
   format: "canonical-resolver-apply-spacing-v1";
+  integrity: {
+    algorithm: "sha256";
+    canonicalProducts: string;
+  };
   source: {
     package: "@canonical/design-tokens";
     repository: string;
@@ -50,8 +55,10 @@ interface CompatibilityOverlay {
 }
 
 export const canonicalSpacingSourceCommit = "18f57b95b1aa1dfe85a45746016b055c807d6628";
+export const canonicalSpacingProductsSha256 = "97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571";
 const canonicalSpacingSourceRepository = "https://github.com/canonical/design-tokens";
 const canonicalSpacingResolver = "tokens/canonical/canonical.resolver.json";
+const canonicalProductOrder: CanonicalProduct[] = ["site", "docs", "app", "os"];
 
 export const bfSpacingCompatibilityAliases: Record<DtcgSpacingTokenId, string> = {
   "spacing.baseline": "--bf-baseline",
@@ -120,9 +127,34 @@ function validateTokenSet(value: unknown, location: string): asserts value is Re
   }
 }
 
-function validateArtifact(value: unknown): asserts value is ResolvedDtcgSpacingArtifact {
-  if (!isRecord(value) || value.format !== "canonical-resolver-apply-spacing-v1" || !isRecord(value.source) || !isRecord(value.products)) {
+function canonicalProductsDigest(products: Record<CanonicalProduct, ResolvedDtcgSpacing>): string {
+  const payload = JSON.stringify(canonicalProductOrder.map(product => [
+    product,
+    dtcgSpacingTokenIds.map(id => [
+      id,
+      products[product][id].$type,
+      products[product][id].$value.value,
+      products[product][id].$value.unit
+    ])
+  ]));
+  return createHash("sha256").update(payload).digest("hex");
+}
+
+export function validateCanonicalSpacingArtifact(value: unknown): asserts value is ResolvedDtcgSpacingArtifact {
+  if (
+    !isRecord(value) ||
+    value.format !== "canonical-resolver-apply-spacing-v1" ||
+    !isRecord(value.integrity) ||
+    !isRecord(value.source) ||
+    !isRecord(value.products)
+  ) {
     throw new Error("Canonical spacing artifact has an unsupported shape.");
+  }
+  if (
+    value.integrity.algorithm !== "sha256" ||
+    value.integrity.canonicalProducts !== canonicalSpacingProductsSha256
+  ) {
+    throw new Error(`Canonical spacing artifact must declare product digest ${canonicalSpacingProductsSha256}.`);
   }
   if (
     value.source.package !== "@canonical/design-tokens" ||
@@ -141,6 +173,11 @@ function validateArtifact(value: unknown): asserts value is ResolvedDtcgSpacingA
 
   for (const product of expectedProducts as CanonicalProduct[]) {
     validateTokenSet(value.products[product], product);
+  }
+
+  const actualDigest = canonicalProductsDigest(value.products as Record<CanonicalProduct, ResolvedDtcgSpacing>);
+  if (actualDigest !== canonicalSpacingProductsSha256) {
+    throw new Error(`Canonical spacing artifact product digest changed: expected ${canonicalSpacingProductsSha256}, received ${actualDigest}.`);
   }
 }
 
@@ -222,7 +259,7 @@ export async function readCanonicalSpacingProduct(
   options: { artifactPath?: string; overlayPath?: string; applyCompatibilityOverlay?: boolean; } = {}
 ): Promise<ResolvedDtcgSpacing> {
   const artifact = await readJson(options.artifactPath ?? defaultArtifactPath);
-  validateArtifact(artifact);
+  validateCanonicalSpacingArtifact(artifact);
   const canonical = structuredClone(artifact.products[product]);
 
   if (options.applyCompatibilityOverlay === false) {

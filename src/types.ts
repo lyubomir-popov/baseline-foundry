@@ -113,6 +113,7 @@ export interface ComponentTokens {
 
 export interface ThemeTokens {
   baselineUnit: string;
+  canonicalSpacing?: ResolvedDtcgSpacing;
   spacing: ResolvedDtcgSpacing;
   fontFiles: ThemeFontFile[];
   fontStacks: Record<string, string>;
