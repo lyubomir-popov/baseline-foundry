@@ -2,11 +2,9 @@
 
 **Feature Branch**: `feat/021-block-derived-inline-geometry`
 **Date**: 2026-09-01
-**Status**: Opus accepted the remediated F1–F5 and N1–N6 geometry. Its final
-contract-disclosure corrections are implemented, including unconditional
-row-gap ownership, the no-target trade, a QA route, and the nowrap-cluster
-boundary. Final gates are green; acceptance and merge remain separate owner
-decisions.
+**Status**: Complete. The owner accepted the remediated F1–F5 and N1–N6
+geometry, and it merged into `main` at `17805b6` on 2026-09-04. The package is
+archived; publication and release remain separate decisions.
 
 ## Problem
 

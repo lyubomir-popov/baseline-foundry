@@ -5,28 +5,19 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-Spec 021 is active on `feat/021-block-derived-inline-geometry`. Its
-member-specific painted-block implementation and four-tier rendered checks are
-in re-review follow-up. The latest resolution moves chips to the Action inset,
-makes inline icon-target clearance travel with each button, gives the built-in
-wrapping `.bf-actions` and `.bf-cluster` primitives a baseline-rounded row-gap
-floor, and makes direct icon targets inside `.bf-actions.is-nowrap` own only
-their required block margins. Text-only nowrap strips therefore keep their
-original footprint and keyline. The unused public opt-in classes are removed,
-plain and middot inline lists share one fixed half-rem space and baseline-align,
-and unsupported bordered nested icon membership remains excluded. Final local
-gates are green at 19,513 static checks plus fresh component QA. Opus accepted
-the geometry; its final contract-disclosure corrections are implemented, so
-only owner acceptance remains. Do not merge, publish, release, or begin Spec
-020 without separate closeout direction.
+No numbered BF package is active. Spec 021 is accepted, merged into `main` at
+`17805b6`, and archived. The integrated tree passes 19,500 static checks, every
+component-baseline and behavior family, and fresh full component screenshot QA.
+No publication or release was performed.
 
-After Spec 021 is accepted, promote Spec 020 on a fresh branch. Spec 020
-supersedes unimplemented Spec 019 and owns the approved horizontal matrix. Its
-quantisation audit must classify the WCAG-derived icon-target margins and
-the built-in wrapping-row floor as accessibility geometry, not authored
-spacing, and must replace the provisional `--bf-inline-list-space: 0.5rem`
-horizontal-composition fact with the canonical token it defines. No OS 9px
-action-gap exemption is needed; that contextual gap was removed in Spec 021.
+The next cross-repository step is design-tokens PR 2 from design-tokens `main`
+at or after `595d50e`: add the twelve approved v1 baseline/component-spacing
+tokens, product resolver, exact line-height lattice gate, and retirement of the
+breakpoint-owned baseline. After it lands, BF adoption starts on a fresh 020a
+branch with a geometry-neutral DTCG adapter before the seven separately
+approved value changes. Do not merge
+`feat/019-tier-responsive-action-insets` wholesale; it is preserved source
+material for the superseded 019/020 drafts.
 
 ## Candidate order after Spec 001
 

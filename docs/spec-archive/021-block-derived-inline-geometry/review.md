@@ -1801,3 +1801,7 @@ The count differs from the feature-only 19,513 because the intervening mainline
 work changed the audit cardinality; no assertion or behavior failure remains.
 `npm run qa:components` also passes after a fresh complete screenshot capture.
 No publication or release was performed.
+
+The accepted package was then moved to
+`docs/spec-archive/021-block-derived-inline-geometry/` in the post-merge
+closeout. The active catalog now has no numbered BF package.

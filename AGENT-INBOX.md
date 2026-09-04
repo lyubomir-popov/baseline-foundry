@@ -1,12 +1,10 @@
 # Agent inbox
 
-## Owner acceptance requested — Spec 021
+## Active package
 
-Opus accepted the remediated Spec 021 geometry with no blocking defect. Its
-verdict is recorded in
-[`review.md`](specs/021-block-derived-inline-geometry/review.md#opus-n1n6-verdict),
-and the four requested record corrections are documented at
-[`review.md`](specs/021-block-derived-inline-geometry/review.md#opus-final-record-corrections).
+None. Spec 021 was owner-accepted, merged into `main` at `17805b6`, and
+archived. Its final Opus verdict and record corrections are preserved in
+[`review.md`](docs/spec-archive/021-block-derived-inline-geometry/review.md#opus-n1n6-verdict).
 
 The governing records now state that the wrapping row-gap floor is
 descendant-agnostic, disclose its measured no-target impact, route QA through
@@ -14,10 +12,9 @@ the affected OS form-atlas case, and define `.bf-cluster.is-nowrap` as outside
 automatic block containment. These corrections change no CSS or runtime
 behavior.
 
-Final evidence remains green: `npm test` at 19,513 static checks with all
-component-baseline and behavior families passing, followed by a fresh
-`npm run qa:components`. The documentation-sensitive `npm run test:build` was
-rerun after the final corrections and remains green at 19,513 checks.
+The integrated mainline evidence is green: `npm test` at 19,500 static checks
+with every component-baseline and behavior family passing, followed by a fresh
+`npm run qa:components`. No publication or release was performed.
 
 ## Cross-repository token architecture
 
@@ -36,8 +33,8 @@ PR 1 is landed. Canonical design-tokens PR
 separately gated. The next cross-repository step is the independent
 design-tokens PR 2 for `spacing.baseline` and the component-spacing schema,
 branched from the new design-tokens `main`. Do not implement this work on
-`feat/019-tier-responsive-action-insets`: 020a absorbs 019, and Spec 021 has an
-independent worktree.
+`feat/019-tier-responsive-action-insets`: 020a absorbs 019, while Spec 021 is
+complete and archived on BF `main`.
 
 Settled policy: `spacing.baseline` resolves to 0.5rem for Site and 0.25rem for
 Docs/App/OS; exact line heights are typography-owned dimensions carried by a

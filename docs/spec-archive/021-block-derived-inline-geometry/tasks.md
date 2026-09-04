@@ -86,5 +86,5 @@ former single-character and radius questions are closed; do not reopen them.
 - [x] T020 Correct the final Opus record findings: state unconditional row-gap
   ownership and its no-target effect, add the form-atlas QA route, and record
   `.bf-cluster.is-nowrap` as outside automatic block containment.
-- [ ] T021 Merge and archive only after acceptance. Do not publish or release
+- [x] T021 Merge and archive only after acceptance. Do not publish or release
   without a separate explicit request.

@@ -7,15 +7,15 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](../specs/021-block-derived-inline-geometry/) | Opus accepted the N1–N6 geometry on `feat/021-block-derived-inline-geometry`, and its final record corrections are implemented: chips use the Action inset without an inert block-derived alias; icon targets carry portable inline clearance; wrapping `.bf-actions` and `.bf-cluster` unconditionally own a row-gap floor; direct icon targets in `.bf-actions.is-nowrap` own block containment without changing text-only strips; the unused opt-in API is removed; plain and middot inline lists share a provisional half-rem inline space and baseline-align; bordered nested icon-only buttons remain excluded; and default inline icons use cap-height alignment. Final local gates are green at 19,513 static checks plus fresh component QA; owner acceptance is pending. |
+| None | — | No active numbered BF package. |
 
 ## Preserved drafts
 
 Specs 019 and 020 remain preserved on
-`feat/019-tier-responsive-action-insets`; they are deliberately absent from
-this branch so completing Spec 021 cannot merge an unimplemented draft.
-The owner accepted Spec 020's supersession of Spec 019. Promote Spec 020 from
-a fresh branch only after Spec 021 is accepted.
+`feat/019-tier-responsive-action-insets`; do not merge that branch wholesale.
+The owner accepted Spec 020's supersession of Spec 019. Carry the approved 020a
+scope onto a fresh branch from then-current `main` only after design-tokens PR 2
+lands and the BF format-adapter boundary is ready.
 
 ## Archive
 
@@ -23,6 +23,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 
 | Spec | Package | Disposition |
 |---|---|---|
+| 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](spec-archive/021-block-derived-inline-geometry/) | Accepted and merged into `main` at `17805b6` on 2026-09-04 after repeated Opus review, exact four-tier pointer-routing and shape checks, 19,500 integrated static checks, all component-baseline and behavior families, and fresh full component screenshot QA passed. No publication or release was performed. |
 | 018 Nested density audit | [`018-nested-density-audit/`](spec-archive/018-nested-density-audit/) | Released as 0.1.6 from `fdc1af7`, then patched as 0.1.7 from `77ffcfe` on 2026-08-31 after the initial active-tab state and table-hosted nested chip/badge fit passed 6,956 static contracts, browser behavior, full component screenshot QA, registry verification, and release-asset reconciliation. |
 | 017 Spacing system audit | [`017-spacing-system-audit/`](spec-archive/017-spacing-system-audit/) | Released as 0.1.5 from `2d1099c` on 2026-08-31 after the three-keyline and occupied-block audits, downstream tagged-brand proof, four-tier light/dark browser review, 6,739 static contracts, full behavior, component screenshot QA, OIDC publication, and registry/tarball/checksum reconciliation passed. |
 | 016 Component and pattern consistency | [`016-component-pattern-consistency/`](spec-archive/016-component-pattern-consistency/) | Accepted and merged to `main` from implementation commit `3956294` on 2026-08-29; all four implementation/adversarial passes, 6,052 static checks, browser behavior, baseline captures, and component screenshot QA passed. |
