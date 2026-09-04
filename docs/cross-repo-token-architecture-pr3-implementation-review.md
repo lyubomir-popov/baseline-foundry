@@ -13,8 +13,7 @@ Initial implementation: `48e13b2`
 
 Initial evidence: `f64febb`
 
-Correction implementation: recorded in the next evidence commit after full
-validation
+Correction implementation: `9866115`
 
 ## Outcome
 
@@ -120,26 +119,31 @@ All commands ran in the isolated BF worktree.
 | Check | Result |
 |---|---|
 | `npm run check:types` | pass |
-| `npm test` | correction rerun pending |
-| `npm run qa:components` | pass; fresh capture and baseline verification |
+| `npm test` | pass; build validation `20,345` checks; every component-baseline family at zero failures; behavior verification pass |
+| `npm run qa:components` | pass; fresh capture and baseline verification, 332 records across 85 pages, 5,410 checks, zero failures, 220 overflow checks, and 86 PNGs |
 | `git diff --check` | pass |
-| provider resolver reproduction | `48/48` values match |
+| provider resolver reproduction | design-tokens at exact `18f57b9`; targeted spacing suite `8/8`, including all `48/48` product/token values |
 
 The fresh QA report contains 332 surface/page records across 85 pages, 5,410
-baseline checks, zero failures, and 86 PNG captures. Its surfaces include all
-four built-in tiers plus the IBM Plex and Ubuntu engine smoke states.
+baseline checks, zero failures, 220 overflow checks with zero failures, and 86
+PNG captures. Its surfaces include all four built-in tiers plus the IBM Plex
+and Ubuntu engine smoke states.
 
 ## Browser review
 
-The rebuilt demo was reviewed in the in-app Chromium browser after the fresh
-QA capture:
+The rebuilt demo was reviewed in Chromium through the Browser skill after the
+fresh QA capture:
 
 - component atlas: captures loaded and the catalog remained visually intact;
-- form atlas: Editorial at desktop width and OS at `720 × 900`, including
-  fields, action insets, continuation alignment, tables, and responsive chrome;
-- actions page: Documentation at desktop width after switching tier and tone
-  controls;
-- all four action-page tier selections: no document-level horizontal overflow;
+- form atlas: OS at `720 × 900`, including fields, action insets,
+  continuation alignment, tables, and responsive chrome; Canonical
+  action/continuation measured `0.5rem`/`1.25rem` while BF compatibility
+  remained `1rem`/`2rem`;
+- actions page: Documentation at desktop width; Canonical
+  action/continuation measured `0.75rem`/`1.5rem` while BF compatibility
+  remained `1rem`/`2rem`;
+- the reviewed form and actions states had no document-level horizontal
+  overflow;
 - console: zero warnings or errors.
 
 The constrained OS form state remained readable without clipped controls or

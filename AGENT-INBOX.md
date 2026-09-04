@@ -33,14 +33,27 @@ checkpoint is `964f6f129`. Publication, release, and wider downstream adoption
 remain separately gated.
 
 BF PR 3 is implemented locally on `feat/dtcg-spacing-format-adapter` from
-`08db5ab`. Implementation commit `48e13b2` consumes the four-product resolved
-DTCG spacing artifact while preserving current geometry through the exactly
-seven-point, 020a-bounded overlay. Its evidence is in
+`08db5ab`. Initial commits `48e13b2` and `f64febb` consumed the four-product
+resolved DTCG spacing artifact while preserving current geometry through the
+exactly seven-point, 020a-bounded overlay. The independent review returned
+**accept with required corrections**. Correction commit `9866115` closes F0–F6:
+production authenticates all 48 records with a pinned SHA-256 digest;
+Canonical names always carry the final matrix; the seven retained values live
+only on BF compatibility properties; custom themes remain BF-namespaced; and
+provider-CSS import orders plus nested scopes have browser contracts. Its
+evidence is in
 [`docs/cross-repo-token-architecture-pr3-implementation-review.md`](docs/cross-repo-token-architecture-pr3-implementation-review.md),
-and the independent review request is
+the first review is preserved in
+[`docs/cross-repo-token-architecture-pr3-adversarial-review.md`](docs/cross-repo-token-architecture-pr3-adversarial-review.md),
+and the correction-review request is
 [`prompts/opus-token-architecture-pr3-adversarial-review.md`](prompts/opus-token-architecture-pr3-adversarial-review.md).
-Do not push or merge it without explicit approval. Do not begin Pragma
-adoption, 020a values, density, grid/page work, publication, or release.
+The corrected branch passes `npm test` with 20,345 static checks, all
+component-baseline families, and behavior verification; fresh
+`npm run qa:components` produced 5,410 checks and 220 overflow checks with zero
+failures. Design-tokens at exact `18f57b9` passes its targeted spacing suite
+`8/8`. Do not push or merge without explicit approval or correction review.
+Do not begin Pragma adoption, 020a values, density, grid/page work,
+publication, or release.
 
 Settled policy: `spacing.baseline` resolves to 0.5rem for Site and 0.25rem for
 Docs/App/OS; exact line heights are typography-owned dimensions carried by a
