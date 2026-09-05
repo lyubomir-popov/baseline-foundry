@@ -2,25 +2,24 @@
 
 ## Active package
 
-Spec 020a is active on `feat/020a-horizontal-token-adoption`; its package is
-[`specs/020a-horizontal-token-adoption/`](specs/020a-horizontal-token-adoption/).
-It is BF-only: remove the seven-value compatibility overlay, adopt the final
-Canonical component matrix and separate component/panel inline spacing from
-the vertical baseline. Page/grid work is deferred to 020b. Pragma adoption is
-postponed by owner direction. No publication or release.
+No feature package is active. Spec 020a is accepted, merged and archived at
+[`docs/spec-archive/020a-horizontal-token-adoption/`](docs/spec-archive/020a-horizontal-token-adoption/).
+Its implementation and review corrections landed directly on `main` at
+`299f182` on 2026-09-05. The seven-value compatibility overlay is gone, all
+built-in component spacing uses the final authenticated Canonical matrix, and
+component/panel inline spacing is separated from the vertical baseline.
 
 The independent review returned **merge** with no P0/P1. All seven P2 record
 and hardening findings are corrected, including complete shorthand/physical
 horizontal-axis coverage, the fixed-disclosure continuation guard, a
 container-safe chip floor, explicit custom-theme migration guidance, and the
-1px Docs notification accent/mark overlap. `npm test` passes with 24,029 build
-checks plus every component-baseline and browser-behavior family;
+1px Docs notification accent/mark overlap. Final validation passed `npm test`
+with 24,029 build checks and every component-baseline/browser-behavior family;
 `npm run qa:components` rebuilt the package, captured 86 screenshots, and
-re-ran the component suite with zero failures. The focused four-tier visual
-review is clean. Exact evidence and the verdict are in
-[`review.md`](specs/020a-horizontal-token-adoption/review.md). The owner has
-authorized BF's direct fast-forward landing and push. No publication or
-release.
+re-ran the component suite with zero failures. Exact evidence is in the
+archived [`review.md`](docs/spec-archive/020a-horizontal-token-adoption/review.md).
+Page/grid work remains deferred to 020b, and Pragma adoption is postponed by
+owner direction. No publication or release occurred.
 
 ## Cross-repository token architecture
 

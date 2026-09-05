@@ -4,7 +4,7 @@
 
 **Date**: 2026-09-05
 
-**Status**: Accepted for direct landing
+**Status**: Accepted and merged at `299f182`
 
 ## Problem
 

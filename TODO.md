@@ -5,11 +5,11 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-Spec 020a is active on `feat/020a-horizontal-token-adoption`. It removes the
-BF-local seven-point overlay, adopts the final Canonical component matrix and
-moves component/panel horizontal spacing off the vertical baseline. Page
-margin, grid gutter and content padding remain 020b work. Pragma adoption is
-postponed by owner direction. Do not publish or release.
+No package is active. Spec 020a is merged and archived: the BF-local seven-point
+overlay is removed, the final Canonical component matrix is adopted, and
+component/panel horizontal spacing is separated from the vertical baseline.
+The next bounded BF token contribution is 020b page/grid adoption. Do not begin
+it, Pragma adoption, publication or release without separate owner direction.
 
 ## Candidate order after Spec 001
 

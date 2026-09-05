@@ -5,9 +5,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-| Spec | Package | Status |
-|---|---|---|
-| 020a Horizontal token adoption | [`020a-horizontal-token-adoption/`](../specs/020a-horizontal-token-adoption/) | Accepted for direct landing from `feat/020a-horizontal-token-adoption` after an independent `merge` verdict and full green validation. BF-only: final Canonical component values and horizontal-axis separation; page/grid and Pragma are excluded. |
+No package is active.
 
 ## Preserved drafts
 
@@ -24,6 +22,7 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 
 | Spec | Package | Disposition |
 |---|---|---|
+| 020a Horizontal token adoption | [`020a-horizontal-token-adoption/`](spec-archive/020a-horizontal-token-adoption/) | Accepted and merged directly into `main` at `299f182` on 2026-09-05 after an independent `merge` verdict, 24,029 static checks, all component-baseline/browser-behavior families, and an 86-image component QA pass. The final Canonical component matrix and horizontal-axis separation are landed; page/grid and Pragma remain excluded. No publication or release was performed. |
 | 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](spec-archive/021-block-derived-inline-geometry/) | Accepted and merged into `main` at `17805b6` on 2026-09-04 after repeated Opus review, exact four-tier pointer-routing and shape checks, 19,500 integrated static checks, all component-baseline and behavior families, and fresh full component screenshot QA passed. No publication or release was performed. |
 | 018 Nested density audit | [`018-nested-density-audit/`](spec-archive/018-nested-density-audit/) | Released as 0.1.6 from `fdc1af7`, then patched as 0.1.7 from `77ffcfe` on 2026-08-31 after the initial active-tab state and table-hosted nested chip/badge fit passed 6,956 static contracts, browser behavior, full component screenshot QA, registry verification, and release-asset reconciliation. |
 | 017 Spacing system audit | [`017-spacing-system-audit/`](spec-archive/017-spacing-system-audit/) | Released as 0.1.5 from `2d1099c` on 2026-08-31 after the three-keyline and occupied-block audits, downstream tagged-brand proof, four-tier light/dark browser review, 6,739 static contracts, full behavior, component screenshot QA, OIDC publication, and registry/tarball/checksum reconciliation passed. |

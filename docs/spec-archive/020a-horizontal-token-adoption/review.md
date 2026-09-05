@@ -2,7 +2,8 @@
 
 Date: 2026-09-05
 
-Status: independent verdict `merge`; P2 record/hardening corrections applied.
+Status: independent verdict `merge`; P2 corrections applied and landed at
+`299f182`.
 
 Review range: `890c35372c9d85067bdc491825ce0d823d8a887e..HEAD` on
 `feat/020a-horizontal-token-adoption`
