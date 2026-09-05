@@ -29,7 +29,7 @@ export function logoMediaCss(): string {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  column-gap: var(--bf-space-4);
+  column-gap: var(--bf-component-inline-inset-continuation);
   min-inline-size: 0;
   padding-block: var(--bf-space-1);
 }
@@ -202,7 +202,7 @@ export function logoMediaCss(): string {
 
 :where(.bf-theme) :where(.bf-media-object-meta) {
   align-items: start;
-  column-gap: var(--bf-space-1);
+  column-gap: var(--bf-leading-mark-gap);
   display: grid;
   grid-template-columns: var(--bf-icon-size-default) minmax(0, 1fr);
   min-inline-size: 0;

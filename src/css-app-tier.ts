@@ -28,7 +28,7 @@ ${scoped(" :where(.bf-navigation-bar) :where(.bf-panel-header)")} {
 }
 
 ${scoped(" :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand)")} {
-  gap: calc(var(--bf-baseline) * 2);
+  gap: var(--bf-leading-mark-gap);
   padding-block: 0;
 }
 

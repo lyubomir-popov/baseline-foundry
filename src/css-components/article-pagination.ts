@@ -28,9 +28,9 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
   box-sizing: border-box;
   color: var(--bf-color-text-default);
   display: grid;
-  column-gap: var(--bf-space-2);
+  column-gap: var(--bf-leading-mark-gap);
   grid-template-rows: auto auto;
-  inline-size: calc((100cqi - var(--bf-space-2)) / 2);
+  inline-size: calc((100cqi - var(--bf-leading-mark-gap)) / 2);
   min-inline-size: 0;
   padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));
   position: relative;
@@ -55,7 +55,7 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
 :where(.bf-theme) :where(.bf-article-pagination-link.is-previous) {
   grid-column: 1;
   grid-template-columns: var(--bf-icon-size-default) minmax(0, 1fr);
-  padding-inline: var(--bf-space-1) var(--bf-space-2);
+  padding-inline: var(--bf-leading-mark-gap) var(--bf-component-inline-inset-action);
   text-align: start;
 }
 
@@ -63,7 +63,7 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
   grid-column: 2;
   grid-template-columns: minmax(0, 1fr) var(--bf-icon-size-default);
   justify-self: end;
-  padding-inline: var(--bf-space-2) var(--bf-space-1);
+  padding-inline: var(--bf-component-inline-inset-action) var(--bf-leading-mark-gap);
   text-align: end;
 }
 
@@ -133,7 +133,7 @@ ${titleTypeStyles}  color: inherit;
   :where(.bf-theme) :where(.bf-article-pagination-link.is-previous:not(:only-child)) {
     grid-template-columns: var(--bf-icon-size-default);
     inline-size: calc(var(--bf-space-6) + var(--bf-space-1));
-    padding-inline: var(--bf-space-1);
+    padding-inline: var(--bf-leading-mark-gap);
   }
 
   :where(.bf-theme) :where(.bf-article-pagination-link.is-next:not(:only-child)) {

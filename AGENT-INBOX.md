@@ -2,19 +2,21 @@
 
 ## Active package
 
-None. Spec 021 was owner-accepted, merged into `main` at `17805b6`, and
-archived. Its final Opus verdict and record corrections are preserved in
-[`review.md`](docs/spec-archive/021-block-derived-inline-geometry/review.md#opus-n1n6-verdict).
+Spec 020a is active on `feat/020a-horizontal-token-adoption`; its package is
+[`specs/020a-horizontal-token-adoption/`](specs/020a-horizontal-token-adoption/).
+It is BF-only: remove the seven-value compatibility overlay, adopt the final
+Canonical component matrix and separate component/panel inline spacing from
+the vertical baseline. Page/grid work is deferred to 020b. Pragma adoption is
+postponed by owner direction. No publication or release.
 
-The governing records now state that the wrapping row-gap floor is
-descendant-agnostic, disclose its measured no-target impact, route QA through
-the affected OS form-atlas case, and define `.bf-cluster.is-nowrap` as outside
-automatic block containment. These corrections change no CSS or runtime
-behavior.
-
-The integrated mainline evidence is green: `npm test` at 19,500 static checks
-with every component-baseline and behavior family passing, followed by a fresh
-`npm run qa:components`. No publication or release was performed.
+The implementation is ready for independent review. `npm test` passes with
+22,133 build checks plus every component-baseline and browser-behavior family;
+`npm run qa:components` rebuilt the package, captured 86 screenshots, and
+re-ran the component suite with zero failures. The focused four-tier visual
+review is clean. The adversarial request and the review-sensitive chip,
+notification, responsive-layout and pre-existing screenshot facts are in
+[`review.md`](specs/020a-horizontal-token-adoption/review.md). Do not land until
+that review resolves the explicit gates. No publication or release.
 
 ## Cross-repository token architecture
 
@@ -64,9 +66,9 @@ failures. Design-tokens at exact `18f57b9` passes its targeted spacing suite
 landing rather than a GitHub PR, and subsequently authorized committing and
 pushing the completed feature branch. The push preserves the reviewable state.
 With correction-review C1 addressed, the owner-approved direct landing is
-complete. No publication or release was performed. Do not begin Pragma
-adoption, 020a values, density, or grid/page work without its separately
-approved contribution.
+complete. No publication or release was performed. Spec 020a is now the active
+BF-only successor described above. Do not begin Pragma adoption, density, or
+020b grid/page work without its separately approved contribution.
 
 Settled policy: `spacing.baseline` resolves to 0.5rem for Site and 0.25rem for
 Docs/App/OS; exact line heights are typography-owned dimensions carried by a

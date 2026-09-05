@@ -57,7 +57,7 @@ export function interactiveTablesCss(): string {
   display: inline-block;
   inline-size: var(--bf-icon-size-default);
   margin-block-start: var(--bf-inline-icon-line-box-trim);
-  margin-inline-start: var(--bf-space-half);
+  margin-inline-start: calc(var(--bf-leading-mark-gap) / 2);
   opacity: 0;
   vertical-align: var(--bf-inline-icon-baseline-shift);
 }
@@ -112,7 +112,7 @@ export function interactiveTablesCss(): string {
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody) {
     display: grid;
-    gap: 0 var(--bf-space-3);
+    gap: 0 var(--bf-component-inline-inset-continuation);
     grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
     inline-size: 100%;
   }
@@ -122,7 +122,7 @@ export function interactiveTablesCss(): string {
     display: block;
     margin-block-end: calc(var(--bf-space-3) - (var(--bf-border-width) * 2));
     min-inline-size: 0;
-    padding-inline: var(--bf-space-2);
+    padding-inline: var(--bf-panel-padding-inline);
   }
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr > :where(th, td)) {

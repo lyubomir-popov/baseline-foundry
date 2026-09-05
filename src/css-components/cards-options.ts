@@ -121,7 +121,7 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 
 :where(.bf-theme) :where(.bf-option-grid) {
   display: grid;
-  gap: calc(var(--bf-baseline) * 2.5);
+  gap: var(--bf-component-inline-inset-action);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
 }
 

@@ -11,7 +11,7 @@ export function ctaFigureAspectCss(): string {
 
 :where(.bf-theme) :where(.bf-cta-block) {
   align-items: baseline;
-  column-gap: var(--bf-space-2);
+  column-gap: var(--bf-component-inline-inset-action);
   display: flex;
   flex-wrap: wrap;
   margin-block-end: 0;
@@ -48,7 +48,7 @@ export function ctaFigureAspectCss(): string {
 :where(.bf-theme) :where(.bf-figure.is-light-inset) > :where(img, picture, video, canvas, svg, .bf-aspect) {
   background: #fff;
   box-sizing: border-box;
-  padding: var(--bf-space-2);
+  padding: var(--bf-space-2) var(--bf-panel-padding-inline);
 }
 
 :where(.bf-theme) :where(.bf-figure-caption) {

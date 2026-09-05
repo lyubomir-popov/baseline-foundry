@@ -291,7 +291,7 @@ Independent surface contract:
 - tier choice is a top-level class on any `.bf-theme` container: `.bf-tier-editorial`, `.bf-tier-documentation`, `.bf-tier-app`, `.bf-tier-os`
 - multiple containers can coexist side by side under the same stylesheet
 - `dist/surfaces.json` stores the runtime tokens and the font-metric artifact that produced each shipped surface — see [docs/surfaces-manifest.md](docs/surfaces-manifest.md) for the full schema, stability guarantees, and consumer recipes
-- built-in spacing is sourced from the integrity-pinned Canonical DTCG artifact; the twelve `--spacing-*` properties always carry final Canonical values, while `--bf-*` keeps the seven deferred compatibility values until 020a; custom themes stay BF-namespaced as documented in [docs/spacing-token-adapter.md](docs/spacing-token-adapter.md)
+- built-in spacing is sourced from the integrity-pinned Canonical DTCG artifact; the twelve `--spacing-*` properties carry final Canonical values and the temporary `--bf-*` aliases resolve directly to them during the bounded deprecation window; custom themes stay BF-namespaced as documented in [docs/spacing-token-adapter.md](docs/spacing-token-adapter.md)
 - the published manifest omits local build-machine config/baseline file paths, so the shipped JSON stays portable
 - every tier keeps metric-derived runtime alignment while nested stacks own semantic spacing
 
@@ -445,6 +445,7 @@ The font files are resolved relative to that config file, so a downstream repo c
 At minimum, define:
 
 - `baselineUnit`
+- `inlineUnitRem`
 - `fontFiles`
 - `fontStacks`
 - `elements`
@@ -470,6 +471,7 @@ Example sketch for a downstream Ubuntu Sans theme:
 	"fontStacks": {
 		"ubuntu-sans": "\"Ubuntu Sans\", \"Ubuntu\", system-ui, sans-serif"
 	},
+	"inlineUnitRem": 0.25,
 	"elements": [
 		{
 			"identifier": "body",
@@ -498,12 +500,13 @@ Example sketch for a downstream Ubuntu Sans theme:
 	"components": {
 		"borderWidthRem": 0.0625,
 		"radiusRem": 0,
-		"inlineInsetFieldRem": 0.5,
-		"inlineInsetActionRem": 1,
-		"inlineInsetContinuationRem": 2,
+		"inlineInsetFieldUnits": 2,
+		"inlineInsetActionUnits": 4,
+		"inlineInsetContinuationUnits": 8,
+		"markGapInlineUnits": 2,
 		"controlVisualSizeRem": 0.75,
 		"fieldGapBaselineUnits": 1,
-		"panelPaddingInlineBaselineUnits": 2,
+		"panelPaddingInlineUnits": 4,
 		"panelPaddingBlockBaselineUnits": 2
 	}
 }

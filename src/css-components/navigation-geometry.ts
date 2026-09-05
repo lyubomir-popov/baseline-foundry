@@ -4,12 +4,13 @@
  */
 export function navigationGeometryCss(): string {
   return `:where(.bf-theme) {
-  --bf-disclosure-gap: 1rem;
+  --bf-disclosure-gap: var(--bf-leading-mark-gap);
   --bf-disclosure-icon-inline-size: 1rem;
+  --bf-disclosure-group-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));
   --bf-icon-label-optical-offset-block: 0.1875rem;
   --bf-disclosure-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
   --bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
-  --bf-side-navigation-icon-gap: 0.625rem;
+  --bf-side-navigation-icon-gap: var(--bf-leading-mark-gap);
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
   --bf-top-navigation-link-padding-inline: var(--bf-component-inline-inset-action);
   --bf-top-navigation-end-slot-inline-size: calc(1rem + var(--bf-component-inline-inset-field));

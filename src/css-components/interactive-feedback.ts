@@ -11,7 +11,7 @@ export function interactiveFeedbackCss(): string {
 :where(.bf-theme) :where(.bf-credential-header) {
   align-items: flex-start;
   display: flex;
-  gap: var(--bf-space-2);
+  gap: var(--bf-component-inline-inset-action);
   justify-content: space-between;
   min-inline-size: 0;
 }
@@ -84,7 +84,7 @@ export function interactiveFeedbackCss(): string {
   overflow-wrap: anywhere;
   padding-block-end: max(0rem, calc(var(--bf-space-half) - var(--bf-border-width)));
   padding-block-start: 0;
-  padding-inline: calc(var(--bf-component-inline-inset-continuation) - var(--bf-bar-thickness)) var(--bf-space-1);
+  padding-inline: calc(var(--bf-component-inline-inset-continuation) - var(--bf-bar-thickness)) var(--bf-component-inline-inset-action);
   position: relative;
 }
 
@@ -107,14 +107,15 @@ export function interactiveFeedbackCss(): string {
 :where(.bf-theme) :where(.bf-notification.is-borderless) {
   border: 0;
   padding-block: 0;
-  padding-inline: calc(var(--bf-icon-size-default) + var(--bf-space-1)) 0;
+  padding-inline: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap)) 0;
 }
 
 :where(.bf-theme) :where(.bf-notification-icon) {
+  --bf-icon-size: var(--bf-leading-mark-size);
   background-color: var(--bf-notification-accent);
   background-image: none;
-  inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-h6-nudge-start) - var(--bf-border-width));
-  inset-inline-start: calc(var(--bf-component-inline-inset-continuation) - var(--bf-bar-thickness) - var(--bf-icon-size-default) - var(--bf-space-1));
+  inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-h6-nudge-start) - var(--bf-border-width));
+  inset-inline-start: calc(var(--bf-component-inline-inset-continuation) - var(--bf-bar-thickness) - var(--bf-leading-mark-size) - var(--bf-leading-mark-gap));
   margin-block-start: 0;
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-.75 5.25h1.5v5h-1.5v-5zM8 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z'/%3E%3C/svg%3E");
   mask-position: center;
@@ -136,12 +137,12 @@ export function interactiveFeedbackCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-notification.is-borderless > .bf-notification-icon) {
-  inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-h6-nudge-start));
+  inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-h6-nudge-start));
   inset-inline-start: 0;
 }
 
 :where(.bf-theme) :where(.bf-notification.is-inline > .bf-notification-icon) {
-  inset-block-start: calc(((var(--bf-body-line-height) - var(--bf-icon-size-default)) / 2) + var(--bf-body-nudge-start) - var(--bf-border-width));
+  inset-block-start: calc(((var(--bf-body-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-body-nudge-start) - var(--bf-border-width));
 }
 
 :where(.bf-theme) :where(.bf-notification-content, .bf-notification-meta) {
@@ -217,11 +218,11 @@ export function interactiveFeedbackCss(): string {
   border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--bf-space-1) var(--bf-space-2);
+  gap: var(--bf-space-1) var(--bf-component-inline-inset-action);
   justify-content: space-between;
   margin-block-end: 0;
   padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));
-  padding-inline-end: var(--bf-space-2);
+  padding-inline-end: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(.bf-notification.is-inline .bf-notification-meta) {
@@ -240,7 +241,7 @@ export function interactiveFeedbackCss(): string {
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--bf-space-1) var(--bf-space-2);
+  gap: var(--bf-space-1) var(--bf-component-inline-inset-action);
   margin-inline-start: auto;
   min-inline-size: 0;
 }

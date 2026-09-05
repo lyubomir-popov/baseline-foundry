@@ -197,7 +197,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-field.is-range) {
   align-items: start;
-  column-gap: calc(var(--bf-baseline) * 2);
+  column-gap: var(--bf-component-inline-inset-field);
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
   row-gap: var(--bf-field-gap);
@@ -247,7 +247,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(fieldset, .bf-fieldset) > :where(legend, .bf-legend) {
   margin-bottom: 0;
-  padding-inline: calc(var(--bf-baseline) * 0.5);
+  padding-inline: var(--bf-inline-unit);
 }
 
 :where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
@@ -830,7 +830,7 @@ ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-backgrou
   outline: 0.125rem solid var(--bf-color-focus);
   outline-offset: 0;
   padding-block: calc(var(--bf-baseline) * 1.5);
-  padding-inline: calc(var(--bf-baseline) * 1.5);
+  padding-inline: var(--bf-component-inline-inset-action);
   position: fixed;
   top: calc(var(--bf-baseline) * 0.5);
   z-index: 999999;
@@ -1143,7 +1143,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   border-block: var(--bf-border-width) solid transparent;
   margin-block-end: var(--bf-interface-row-compensation-block-end);
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: calc(var(--bf-baseline) * 0.5);
+  padding-inline: var(--bf-inline-unit);
 }
 
 :where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) {
@@ -1154,7 +1154,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-flex;
-  gap: calc(var(--bf-baseline) * 0.5);
+  gap: var(--bf-leading-mark-gap);
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
   padding-block: var(--bf-interface-row-padding-block);
@@ -1261,7 +1261,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   justify-content: flex-start;
   margin-block-end: var(--bf-interface-row-compensation-block-end);
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: 0;
+  padding-inline: var(--bf-disclosure-group-inset) 0;
   text-align: left;
 }
 
@@ -1322,7 +1322,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-modal.is-workflow) {
-  --bf-modal-workflow-viewport-gap: calc(var(--bf-baseline) * 4);
+  --bf-modal-workflow-viewport-gap: var(--bf-component-inline-inset-continuation);
   --bf-modal-workflow-max-inline-size: 42rem;
   --bf-modal-workflow-min-inline-size: 32rem;
   --bf-modal-workflow-max-block-size: 40rem;
@@ -1517,7 +1517,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon) {
   cursor: copy;
-  padding-inline-start: calc(var(--bf-component-inline-inset-continuation) + (var(--bf-baseline) * 3));
+  padding-inline-start: calc(var(--bf-component-inline-inset-continuation) + var(--bf-leading-mark-gap));
   position: relative;
 }
 
@@ -1616,7 +1616,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
  * visible and exposed at a time. */
 :where(.bf-theme) :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand) {
   align-items: start;
-  column-gap: calc(var(--bf-baseline) * 2);
+  column-gap: var(--bf-leading-mark-gap);
   padding-inline-end: var(--bf-panel-content-padding-inline);
 }
 
@@ -1710,7 +1710,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-link, .bf-side-navigation-text) {
   align-items: center;
   justify-content: center;
-  padding-inline: calc(var(--bf-baseline) * 1.25);
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-list)::after {
@@ -1718,7 +1718,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-item.is-title > .bf-side-navigation-link, .bf-side-navigation-item.is-title > .bf-side-navigation-text) {
-  padding-inline: calc(var(--bf-baseline) * 1.25);
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(.bf-application:has(> .bf-aside.is-pinned:not(.is-collapsed))) {
@@ -1845,7 +1845,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   cursor: ew-resize;
   display: none;
   inset-block: 0;
-  inset-inline-start: calc(var(--bf-baseline) * -3);
+  inset-inline-start: calc(var(--bf-inline-unit) * -3);
   outline: none;
   position: absolute;
   touch-action: none;

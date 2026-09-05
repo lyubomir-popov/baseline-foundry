@@ -20,7 +20,7 @@ export function editorialContentCss(options: EditorialContentCssOptions): string
   margin: 0;
   max-inline-size: 100%;
   padding-block: var(--bf-space-2);
-  padding-inline: var(--bf-space-2);
+  padding-inline: var(--bf-panel-padding-inline);
 }
 
 :where(.bf-theme) :where(.bf-notice.is-information) {

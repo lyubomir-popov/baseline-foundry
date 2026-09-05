@@ -100,8 +100,13 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         return host.left + mark.left + (mark.width / 2);
       };
       const page = box("main.bf-page");
+      const actionProbe = document.createElement("i");
+      actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);position:absolute;visibility:hidden";
+      document.body.append(actionProbe);
+      const actionInset = actionProbe.getBoundingClientRect().width;
+      actionProbe.remove();
       const brandIcon = document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-icon');
-      const red = document.querySelector("[data-spacing-keyline='one-rem-inset']");
+      const red = document.querySelector("[data-spacing-keyline='action-inset']");
       const green = document.querySelector("[data-spacing-keyline='field-text-start']");
       const blue = document.querySelector("[data-spacing-keyline='disclosure-label-start']");
       if (!red || !green || !blue) throw new Error("Missing a spacing debug keyline.");
@@ -136,20 +141,20 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         redStart: red.getBoundingClientRect().left,
         greenStart: green.getBoundingClientRect().left,
         blueStart: blue.getBoundingClientRect().left,
-        expectedRedStart: page.left + page.paddingLeft + Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+        expectedRedStart: page.left + page.paddingLeft + actionInset
       };
     })()`);
     assert(Math.max(...alignmentGeometry.leadingMarkCenters) - Math.min(...alignmentGeometry.leadingMarkCenters) < 0.51, "Expected prose-list, state-list, checkbox, and radio marks to share one leading-mark centre.");
     assert(Math.abs(alignmentGeometry.radioDotCenterX - alignmentGeometry.radioCenter) < 0.01 && Math.abs(alignmentGeometry.radioDotCenterY - alignmentGeometry.radioCenterY) < 0.01, "Expected the radio inner dot to be concentric with the outer circle.");
     assert(Math.abs(alignmentGeometry.radioDotWidth - alignmentGeometry.expectedRadioDotWidth) < 0.01, "Expected the radio inner dot to be one scalable border unit wider than its previous proportional size.");
     assert(Math.abs(alignmentGeometry.checkboxCenterY - alignmentGeometry.checkboxCheckCenterY) <= alignmentGeometry.borderWidth * 0.5, "Expected the checkbox check to sit optically within half a scalable border unit of the outer-box centre.");
-    assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), "Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline.");
+    assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), `Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline: ${JSON.stringify({ starts: alignmentGeometry.markedTextStarts, blue: alignmentGeometry.blueStart })}.`);
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell and status-label text to share the green field-inset keyline.");
-    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, chip, segmented-control, tab, and pagination text to share the red one-rem Action keyline.");
+    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, chip, segmented-control, tab, and pagination text to share the red Action keyline.");
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
     const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
     assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, plain/disclosure side-navigation, table of contents, notification, and panel copy to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
-    assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent a literal one-rem page inset.");
+    assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent the active tier Action inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
     const toneToggle = page.locator("[data-page-chrome-tone-toggle]");
     for (const tone of ["light", "dark"] as const) {
@@ -203,7 +208,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
               textStart(".bf-panel-content p")
             ],
             field: [".bf-table td", ".bf-status-label"].map(textStart),
-            keylines: { action: line("one-rem-inset"), field: line("field-text-start"), continuation: line("disclosure-label-start") },
+            keylines: { action: line("action-inset"), field: line("field-text-start"), continuation: line("disclosure-label-start") },
             markCenters: [".bf-prose ul > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label"].map(markCenter),
             numberSelect: {
               positionEqual: numberStyle.backgroundPosition === selectStyle.backgroundPosition,
@@ -271,7 +276,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       const numberField = document.querySelector<HTMLInputElement>('input[type="number"]');
       const selectField = document.querySelector<HTMLSelectElement>("select");
       const radioLabel = document.querySelector<HTMLElement>(".bf-radio-label");
-      const red = document.querySelector<HTMLElement>("[data-spacing-keyline='one-rem-inset']");
+      const red = document.querySelector<HTMLElement>("[data-spacing-keyline='action-inset']");
       const pageElement = document.querySelector<HTMLElement>("main.bf-page");
       if (!numberField || !selectField || !radioLabel || !red || !pageElement) throw new Error("Missing enlarged-root spacing specimen.");
       const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -279,6 +284,11 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       const radioDot = getComputedStyle(radioLabel, "::after");
       const numberStyle = getComputedStyle(numberField);
       const selectStyle = getComputedStyle(selectField);
+      const actionProbe = document.createElement("i");
+      actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);position:absolute;visibility:hidden";
+      pageElement.append(actionProbe);
+      const actionInset = actionProbe.getBoundingClientRect().width;
+      actionProbe.remove();
       return {
         rootSize,
         borderWidth: Number.parseFloat(radioOuter.borderInlineStartWidth),
@@ -286,7 +296,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         lineAuthoredWidth: red.style.width,
         lineAuthoredLeft: red.style.left,
         redStart: red.getBoundingClientRect().left,
-        expectedRedStart: pageElement.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(pageElement).paddingInlineStart) + rootSize,
+        expectedRedStart: pageElement.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(pageElement).paddingInlineStart) + actionInset,
         radioOuterWidth: Number.parseFloat(radioOuter.width),
         radioDotWidth: Number.parseFloat(radioDot.width),
         radioOuterLeft: Number.parseFloat(radioOuter.left),
@@ -299,7 +309,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(Math.abs(enlargedGeometry.rootSize - 32) < 0.01, `Expected the enlarged-root audit to resolve to twice the default root size; got ${enlargedGeometry.rootSize}.`);
     assert(Math.abs(enlargedGeometry.borderWidth - 2) < 0.01 && Math.abs(enlargedGeometry.lineWidth - 2) < 0.01, `Expected borders and overlay keylines to scale together from their 0.0625rem source length; got ${JSON.stringify(enlargedGeometry)}.`);
     assert(enlargedGeometry.lineAuthoredWidth === "0.0625rem" && enlargedGeometry.lineAuthoredLeft.endsWith("rem"), "Expected the enlarged overlay to retain rem-authored width and position values.");
-    assert(Math.abs(enlargedGeometry.redStart - enlargedGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to retain its literal one-rem inset after root enlargement.");
+    assert(Math.abs(enlargedGeometry.redStart - enlargedGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to retain the active Action inset after root enlargement.");
     const enlargedRadioCenterShift = (enlargedGeometry.radioOuterLeft + (enlargedGeometry.radioOuterWidth / 2)) - (enlargedGeometry.radioDotLeft + (enlargedGeometry.radioDotWidth / 2));
     assert(Math.abs(enlargedGeometry.radioDotWidth - ((enlargedGeometry.radioOuterWidth * 0.375) + enlargedGeometry.borderWidth)) < 0.02 && Math.abs(enlargedRadioCenterShift) < 0.02, `Expected the radio inner-dot growth to scale by the rem-based border unit while remaining concentric; got ${JSON.stringify(enlargedGeometry)}.`);
     assert(enlargedGeometry.numberCanvas === enlargedGeometry.selectCanvas && enlargedGeometry.numberCanvas === "32px 32px", "Expected number and select chevron canvases to scale together at the enlarged root size.");
@@ -1072,7 +1082,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     for (const boundary of [
       { width: 640, persistent: false, columns: 1, label: "at a narrow pattern allocation" },
       { width: 767, persistent: false, columns: 2, label: "below 48rem after the drawer releases space" },
-      { width: 768, persistent: true, columns: 1, label: "at 48rem with the rail consuming the pattern allocation" }
+      { width: 768, persistent: true, columns: 2, label: "at 48rem with the Canonical continuation inset keeping the main allocation above its intrinsic split threshold" }
     ] as const) {
       await page.setViewportSize({ width: boundary.width, height: 960 });
       await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -1399,6 +1409,12 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const baselineProbe = document.createElement("span");
       baselineProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-baseline);block-size:0;visibility:hidden";
       content.append(baselineProbe);
+      const iconGapProbe = document.createElement("span");
+      iconGapProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-leading-mark-gap);block-size:0;visibility:hidden";
+      content.append(iconGapProbe);
+      const depthProbe = document.createElement("span");
+      depthProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-side-navigation-depth-step);block-size:0;visibility:hidden";
+      topLevelLink.append(depthProbe);
 
       const contentRect = content.getBoundingClientRect();
       const activeRect = activeLink.getBoundingClientRect();
@@ -1408,7 +1424,11 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const topLevelStyles = getComputedStyle(topLevelLink);
       const defaultContentStyles = getComputedStyle(defaultContent);
       const baselinePx = baselineProbe.getBoundingClientRect().width;
+      const expectedIconGap = iconGapProbe.getBoundingClientRect().width;
+      const expectedDepthStep = depthProbe.getBoundingClientRect().width;
       baselineProbe.remove();
+      iconGapProbe.remove();
+      depthProbe.remove();
 
       return {
         activeBackground: activeStyles.backgroundColor,
@@ -1424,6 +1444,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         defaultPaddingInlineStart: defaultContentStyles.paddingInlineStart,
         headingTextInset: heading.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(heading).paddingInlineStart) - contentRect.left,
         iconGap: iconLabel.getBoundingClientRect().left - icon.getBoundingClientRect().right,
+        expectedIconGap,
+        expectedDepthStep,
         iconLabelInset: iconLabel.getBoundingClientRect().left - contentRect.left,
         labelInset: activeLabelRect.left - contentRect.left,
         nestedPaddingInlineStart: Number.parseFloat(activeStyles.paddingInlineStart),
@@ -1440,9 +1462,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(navigationCompositionState.activeBackground !== "rgba(0, 0, 0, 0)", `Expected active navigation row to retain a visible background. Got ${navigationCompositionState.activeBackground}.`);
     assert(navigationCompositionState.activeBoxShadow !== "none", "Expected active navigation row to retain its inset edge highlight.");
     assert(navigationCompositionState.labelInset > 0, `Expected active navigation label to retain component-owned indentation. Got ${navigationCompositionState.labelInset}px.`);
-    assert(Math.abs(navigationCompositionState.iconGap - 10) <= 1, `Expected icon-navigation labels to use the shared 10px gap. Got ${navigationCompositionState.iconGap}px.`);
+    assert(Math.abs(navigationCompositionState.iconGap - navigationCompositionState.expectedIconGap) <= 1, `Expected icon-navigation labels to use the shared Canonical mark gap. Got ${navigationCompositionState.iconGap}px versus ${navigationCompositionState.expectedIconGap}px.`);
     assert(Math.abs(navigationCompositionState.headingTextInset - navigationCompositionState.iconLabelInset) <= 1, `Expected icon-navigation headings and labels to share an inline start. Got heading=${navigationCompositionState.headingTextInset}px, label=${navigationCompositionState.iconLabelInset}px.`);
-    assert(Math.abs((navigationCompositionState.nestedPaddingInlineStart - navigationCompositionState.topLevelPaddingInlineStart) - (navigationCompositionState.baselinePx * 2)) <= 1, `Expected nested navigation padding to add two baseline units. Got nested=${navigationCompositionState.nestedPaddingInlineStart}px, top-level=${navigationCompositionState.topLevelPaddingInlineStart}px, baseline=${navigationCompositionState.baselinePx}px.`);
+    assert(Math.abs((navigationCompositionState.nestedPaddingInlineStart - navigationCompositionState.topLevelPaddingInlineStart) - navigationCompositionState.expectedDepthStep) <= 1, `Expected nested navigation padding to add one horizontal depth step. Got nested=${navigationCompositionState.nestedPaddingInlineStart}px, top-level=${navigationCompositionState.topLevelPaddingInlineStart}px, step=${navigationCompositionState.expectedDepthStep}px.`);
     assert(Number.parseFloat(navigationCompositionState.defaultPaddingInlineStart) > 0, `Expected ordinary panel content to remain padded. Got ${navigationCompositionState.defaultPaddingInlineStart}.`);
 
     await pinToggle.evaluate(element => {
@@ -2165,7 +2187,7 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
             const tabText = Array.from(tabRange.getClientRects()).at(-1);
             const paragraphText = Array.from(paragraphRange.getClientRects()).at(0);
             const probe = document.createElement("span");
-            probe.style.cssText = "position:absolute;visibility:hidden;inline-size:calc(var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));block-size:1px";
+            probe.style.cssText = "position:absolute;visibility:hidden;inline-size:calc(var(--bf-disclosure-group-inset) + var(--bf-disclosure-icon-inline-size) + var(--bf-disclosure-gap));block-size:1px";
             document.body.appendChild(probe);
             const disclosureOffset = probe.getBoundingClientRect().width;
             probe.remove();
@@ -3905,8 +3927,11 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
         const rtlLabelRect = rtlLabel.getBoundingClientRect();
         const iconStyles = getComputedStyle(icon);
         const linkStyles = getComputedStyle(link);
-        const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const baselinePx = Number.parseFloat(linkStyles.getPropertyValue("--bf-baseline")) * rootFontSize;
+        const gapProbe = document.createElement("i");
+        gapProbe.style.cssText = "inline-size:var(--bf-leading-mark-gap);position:absolute;visibility:hidden";
+        link.append(gapProbe);
+        const expectedMarkGap = gapProbe.getBoundingClientRect().width;
+        gapProbe.remove();
         return {
           tier: document.body.dataset.bfTier,
           iconHeight: iconRect.height,
@@ -3915,7 +3940,7 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
           iconLabelCentreDelta: Math.abs((iconRect.top + (iconRect.height / 2)) - (labelRect.top + (labelRect.height / 2))),
           iconSize: iconStyles.getPropertyValue("--bf-icon-size").trim(),
           iconDefaultSize: iconStyles.getPropertyValue("--bf-icon-size-default").trim(),
-          expectedMediumGap: baselinePx * 2,
+          expectedMarkGap,
           textEdgeDelta: Math.abs(labelRect.left - titleRect.left),
           titleFontSize: getComputedStyle(title).fontSize,
           h5FontSize: getComputedStyle(h5Reference).fontSize,
@@ -3928,7 +3953,7 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
       assert(paginationIcon, `Expected article-pagination icon fixture for ${tier}.`);
       assert(paginationIcon.tier === tier, `Expected article-pagination fixture to use ${tier}, got ${paginationIcon.tier}.`);
       assert(paginationIcon.iconSize === paginationIcon.iconDefaultSize, `Expected ${tier} article-pagination to resolve to the public default icon size.`);
-      assert(Math.abs(paginationIcon.iconToLabelGap - paginationIcon.expectedMediumGap) <= 0.1, `Expected ${tier} article-pagination icon/copy separation to map Vanilla medium spacing, got ${paginationIcon.iconToLabelGap}px.`);
+      assert(Math.abs(paginationIcon.iconToLabelGap - paginationIcon.expectedMarkGap) <= 0.1, `Expected ${tier} article-pagination icon/copy separation to use the Canonical mark/icon gap, got ${paginationIcon.iconToLabelGap}px versus ${paginationIcon.expectedMarkGap}px.`);
       assert(paginationIcon.textEdgeDelta <= 0.1, `Expected ${tier} article-pagination direction and title text edges to align, got ${paginationIcon.textEdgeDelta}px.`);
       assert(paginationIcon.titleFontSize === paginationIcon.h5FontSize, `Expected ${tier} article-pagination title to use the BF h5 role.`);
       assert(paginationIcon.focused && paginationIcon.outlineStyle === "solid", `Expected ${tier} article-pagination focus to remain visible.`);
@@ -4163,6 +4188,11 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
         if (!nav) return null;
         const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
         const baselinePx = Number.parseFloat(getComputedStyle(nav).getPropertyValue("--bf-baseline")) * rootFontSize;
+        const gapProbe = document.createElement("i");
+        gapProbe.style.cssText = "inline-size:var(--bf-leading-mark-gap);position:absolute;visibility:hidden";
+        nav.append(gapProbe);
+        const markGapPx = gapProbe.getBoundingClientRect().width;
+        gapProbe.remove();
         const boundaryNavs = Array.from(document.querySelectorAll<HTMLElement>("[aria-label='First documentation page'], [aria-label='Last documentation page']"));
 
         const widthsMeasured = widths.map(width => {
@@ -4203,7 +4233,7 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
               const remainder = rect.height % baselinePx;
               return Math.min(remainder, baselinePx - remainder);
             }),
-            expectedGap: width < 28.75 ? 0 : baselinePx * 2,
+            expectedGap: width < 28.75 ? 0 : markGapPx,
             visibleTextEdgeDeltas,
             boundaries,
             overflow: Math.max(0, nav.scrollWidth - nav.clientWidth)
@@ -4385,7 +4415,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
   const expectedPanelPaddingPx = { editorial: 16, documentation: 16, app: 12, os: 8 } as const;
-  const expectedPanelInlinePx = { editorial: 32, documentation: 32, app: 32, os: 32 } as const;
+  const expectedPanelInlinePx = { editorial: 32, documentation: 24, app: 24, os: 20 } as const;
   const browser = await openBrowser();
 
   try {
@@ -4487,7 +4517,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       assert(Math.abs(direct.fixedWidth - expectedCapPx[tier]) <= 1, `Expected direct ${tier} bf-fixed-width to resolve to ${expectedCapPx[tier]}px, got ${direct.fixedWidth}px.`);
       assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
       assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel headers to use ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
-      assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelInlinePx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px block-end padding and the ${expectedPanelInlinePx[tier]}px active grid gutter inline, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
+      assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelInlinePx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px block-end padding and the ${expectedPanelInlinePx[tier]}px Canonical continuation inset, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
       assert(Math.abs(direct.regularPainted + direct.regularCompensation - direct.regularOccupied) <= 0.05, `Expected direct ${tier} painted row plus compensation to equal its occupied row: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.inputHeight + direct.inputMarginBottom - direct.regularOccupied) <= 0.05 && Math.abs(direct.buttonHeight + direct.buttonMarginBottom - direct.regularOccupied) <= 0.05, `Expected direct ${tier} fields and buttons to consume one complete regular occupied row: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.bodyLine + direct.inBoxPaddingStart + direct.inBoxPaddingEnd - direct.regularOccupied) <= 0.05, `Expected direct ${tier} in-box start, body line, and end compensation to equal the occupied row: ${JSON.stringify(direct)}.`);
@@ -4513,12 +4543,6 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 0.75, 1.5, 1, 1, 3],
     app: [0.25, 0.5, 0.25, 0.5, 1, 2, 0.25, 0.75, 1.5, 0.75, 0.75, 3],
     os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 0.5, 1.25, 0.5, 0.5, 2]
-  } as const;
-  const compatibilityExpected = {
-    editorial: [0.5, 0.5, 0.5, 1.5, 4, 8, 0.5, 1, 2, 1, 1, 4],
-    documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 1, 2, 1, 1, 3],
-    app: [0.25, 0.5, 0.5, 0.5, 1, 2, 0.25, 1, 2, 0.75, 0.75, 3],
-    os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 1, 2, 0.5, 0.5, 2]
   } as const;
   const canonicalProperties = [
     "--spacing-baseline",
@@ -4637,9 +4661,8 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     ) => {
       for (const [index, property] of canonicalProperties.entries()) {
         const canonicalPx = canonicalExpected[tier][index] * measured.rootFontSize;
-        const compatibilityPx = compatibilityExpected[tier][index] * measured.rootFontSize;
         assert(Math.abs(measured.canonical[index] - canonicalPx) <= 0.05, `Expected ${label} ${property} to retain the final Canonical ${canonicalPx}px, got ${measured.canonical[index]}px.`);
-        assert(Math.abs(measured.aliases[index] - compatibilityPx) <= 0.05, `Expected ${label} ${aliases[index]} to preserve the pre-020a BF ${compatibilityPx}px, got ${measured.aliases[index]}px.`);
+        assert(Math.abs(measured.aliases[index] - canonicalPx) <= 0.05, `Expected ${label} ${aliases[index]} to alias the effective Canonical ${canonicalPx}px, got ${measured.aliases[index]}px.`);
       }
     };
 
@@ -4947,9 +4970,9 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         const notifications = Array.from(document.querySelectorAll<HTMLElement>(".bf-notification:not([hidden])"));
         const borderedNotifications = notifications.filter(notification => !notification.classList.contains("is-borderless"));
         const spaceProbe = document.createElement("span");
-        spaceProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-1);block-size:1px";
+        spaceProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-leading-mark-gap);block-size:1px";
         document.body.appendChild(spaceProbe);
-        const spaceOne = spaceProbe.getBoundingClientRect().width;
+        const markGap = spaceProbe.getBoundingClientRect().width;
         spaceProbe.style.inlineSize = "var(--bf-component-inline-inset-continuation)";
         const continuationInset = spaceProbe.getBoundingClientRect().width;
         spaceProbe.remove();
@@ -5045,8 +5068,8 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           metricFlushPairs,
           closeClearances,
           rtlGeometry,
-          expectedLeadingIconGap: continuationInset - referenceIconSize - spaceOne - referenceBarWidth,
-          expectedIconToTextGap: spaceOne,
+          expectedLeadingIconGap: continuationInset - referenceIconSize - markGap - referenceBarWidth,
+          expectedIconToTextGap: markGap,
           heights: notifications.map(notification => notification.getBoundingClientRect().height),
           overflow: notifications.map(notification => notification.scrollWidth - notification.clientWidth)
         };
@@ -5055,7 +5078,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       assert(geometry.barThicknessToken === "0.1875rem" && geometry.accentWidths.every(width => width === 3), `Expected ${tier} notification accents to use the shared 3px/0.1875rem emphasis bar; got ${geometry.accentWidths.join(", ")}px/${geometry.barThicknessToken}.`);
       assert(geometry.paddingBlockStarts.every(padding => padding === 0), `Expected ${tier} notification roots to have no top padding; got ${geometry.paddingBlockStarts.join(", ")}px.`);
       assert(geometry.leadingIconGaps.every(gap => Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification icons to preserve the shared label continuation while retaining the compact icon-to-text gap (${geometry.expectedLeadingIconGap}px after the bar); got ${geometry.leadingIconGaps.join(", ")}px.`);
-      assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal the compact space-1 token (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
+      assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal the shared Canonical mark gap (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
       assert(geometry.iconFirstLineCentreDeltas.every(delta => delta <= 0.05), `Expected ${tier} notification severity icons to align to the first title/body line; centre deltas=${geometry.iconFirstLineCentreDeltas.join(", ")}px.`);
       assert(geometry.metricFlushPairs.length === 4 && geometry.metricFlushPairs.every(pair => pair.marginEnd === 0 && pair.paddingStart === 0 && pair.stackGap === 0 && pair.glyphGap <= geometry.baseline + 1), `Expected ${tier} separate notification roles to use the metric-flush relationship; got ${JSON.stringify(geometry.metricFlushPairs)} at ${geometry.baseline}px baseline.`);
       assert(geometry.closeClearances.every(clearance => clearance.reserved >= clearance.required), `Expected ${tier} notification copy to clear the close control; got ${JSON.stringify(geometry.closeClearances)}.`);

@@ -5,19 +5,11 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No numbered BF package is active. Spec 021 is accepted, merged into `main` at
-`17805b6`, and archived. The integrated tree passes 19,500 static checks, every
-component-baseline and behavior family, and fresh full component screenshot QA.
-No publication or release was performed.
-
-The next cross-repository step is design-tokens PR 2 from design-tokens `main`
-at or after `595d50e`: add the twelve approved v1 baseline/component-spacing
-tokens, product resolver, exact line-height lattice gate, and retirement of the
-breakpoint-owned baseline. After it lands, BF adoption starts on a fresh 020a
-branch with a geometry-neutral DTCG adapter before the seven separately
-approved value changes. Do not merge
-`feat/019-tier-responsive-action-insets` wholesale; it is preserved source
-material for the superseded 019/020 drafts.
+Spec 020a is active on `feat/020a-horizontal-token-adoption`. It removes the
+BF-local seven-point overlay, adopts the final Canonical component matrix and
+moves component/panel horizontal spacing off the vertical baseline. Page
+margin, grid gutter and content padding remain 020b work. Pragma adoption is
+postponed by owner direction. Do not publish or release.
 
 ## Candidate order after Spec 001
 

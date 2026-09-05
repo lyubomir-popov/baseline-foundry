@@ -160,7 +160,7 @@ export function contentCardCss(): string {
   grid-template-rows: minmax(0, 1fr);
   min-inline-size: 0;
   overflow: hidden;
-  padding-inline: var(--bf-space-2);
+  padding-inline: var(--bf-panel-padding-inline);
 }
 
 :where(.bf-theme) :where(.bf-content-card-primary, .bf-content-card-description-panel) {
@@ -265,7 +265,7 @@ export function contentCardCss(): string {
   color: var(--bf-color-text-muted);
   display: flex;
   flex-wrap: wrap;
-  gap: 0 var(--bf-space-half);
+  gap: 0 var(--bf-leading-mark-gap);
   min-inline-size: 0;
   padding-block-end: var(--bf-space-1);
 }
@@ -317,7 +317,7 @@ export function contentCardCss(): string {
 :where(.bf-theme) :where(.bf-content-card-footer-inner) {
   align-items: center;
   display: flex;
-  gap: var(--bf-space-1);
+  gap: var(--bf-leading-mark-gap);
   inline-size: 100%;
   mask-image: linear-gradient(to right, #000 85%, transparent 100%);
   min-block-size: var(--bf-space-4);
@@ -325,7 +325,7 @@ export function contentCardCss(): string {
   overflow-x: auto;
   padding-block-end: var(--bf-space-1);
   padding-block-start: calc(0.5rem - var(--bf-border-width));
-  padding-inline: var(--bf-space-2);
+  padding-inline: var(--bf-panel-padding-inline);
   position: relative;
   scrollbar-width: none;
   z-index: 2;
@@ -348,7 +348,7 @@ export function contentCardCss(): string {
 :where(.bf-theme) :where(.bf-content-card-resource) {
   align-items: center;
   display: inline-flex;
-  gap: var(--bf-space-half);
+  gap: var(--bf-leading-mark-gap);
 }
 
 :where(.bf-theme) :where(.bf-content-card-resource > *) {
@@ -357,7 +357,7 @@ export function contentCardCss(): string {
 
 :where(.bf-theme) :where(.bf-content-card-footer .bf-chip) {
   margin: 0;
-  margin-inline-end: var(--bf-space-3);
+  margin-inline-end: var(--bf-component-inline-inset-continuation);
 }
 
 /* Internal geometry responds to the card's allocated width. The card root is
@@ -376,10 +376,10 @@ export function contentCardCss(): string {
 
 @container bf-content-card (width >= 28.75rem) {
   :where(.bf-theme) :where(.bf-content-card:is(.is-cols-4, .is-cols-6)) :where(.bf-content-card-frame) {
-    column-gap: var(--bf-space-2);
+    column-gap: var(--bf-panel-padding-inline);
     flex-direction: row;
     min-block-size: calc((var(--bf-space-12) * 2) - (var(--bf-border-width) * 2));
-    padding: var(--bf-space-2) var(--bf-space-2) 0;
+    padding: var(--bf-space-2) var(--bf-panel-padding-inline) 0;
   }
 
   :where(.bf-theme) :where(.bf-content-card:is(.is-cols-4, .is-cols-6):not(.is-image)) :where(.bf-content-card-frame) {
@@ -425,7 +425,7 @@ export function contentCardCss(): string {
   }
 
   :where(.bf-theme) :where(.bf-content-card.is-image-top:is(.is-cols-4, .is-cols-6)) :where(.bf-content-card-body, .bf-content-card-footer-inner) {
-    padding-inline: var(--bf-space-2);
+    padding-inline: var(--bf-panel-padding-inline);
   }
 }
 

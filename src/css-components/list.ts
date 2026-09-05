@@ -64,7 +64,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 :where(.bf-theme) :where(ol.bf-list.is-divided) > :where(.bf-list-item) {
   counter-increment: bf-list-counter;
   list-style: none;
-  padding-inline-start: calc(var(--bf-baseline) * 4);
+  padding-inline-start: var(--bf-component-inline-inset-continuation);
   position: relative;
 }
 
@@ -79,7 +79,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-list-item) > :where(.bf-list) {
-  margin-inline-start: calc(var(--bf-baseline) * 3);
+  margin-inline-start: var(--bf-component-inline-inset-action);
   padding-block-start: var(--bf-body-nudge-end);
 }
 

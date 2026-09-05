@@ -16,7 +16,7 @@ function installHorizontalKeylineDebug() {
   overlay.dataset.spacingKeylineUpdateCount = "0";
   overlay.style.cssText = "inset:0;pointer-events:none;position:fixed;z-index:9999;";
   const lines = [
-    ["one-rem-inset", "red"],
+    ["action-inset", "red"],
     ["field-text-start", "green"],
     ["disclosure-label-start", "blue"]
   ].map(([keyline, color]) => {
@@ -45,7 +45,12 @@ function installHorizontalKeylineDebug() {
     const disclosure = auditRoot.querySelector(".bf-accordion-tab, .bf-list-tree-toggle, .bf-side-navigation-accordion-button");
     if (page) {
       const pageStyle = getComputedStyle(page);
-      setLineLeft(lines[0], page.getBoundingClientRect().left + Number.parseFloat(pageStyle.paddingInlineStart) + rootRem);
+      const actionProbe = document.createElement("i");
+      actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);position:absolute;visibility:hidden";
+      page.append(actionProbe);
+      const actionInset = actionProbe.getBoundingClientRect().width;
+      actionProbe.remove();
+      setLineLeft(lines[0], page.getBoundingClientRect().left + Number.parseFloat(pageStyle.paddingInlineStart) + actionInset);
     }
     if (field) setLineLeft(lines[1], field.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(field).paddingInlineStart));
     if (disclosure) {

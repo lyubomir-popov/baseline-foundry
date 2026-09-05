@@ -17,11 +17,12 @@ The three component inline insets are:
 | Inset | Public variable | Editorial | Documentation | App | OS |
 |---|---|---:|---:|---:|---:|
 | Field | `--bf-component-inline-inset-field` | `0.5rem` | `0.5rem` | `0.25rem` | `0.25rem` |
-| Action | `--bf-component-inline-inset-action` | `1rem` | `1rem` | `1rem` | `1rem` |
-| Continuation | `--bf-component-inline-inset-continuation` | `2rem` | `2rem` | `2rem` | `2rem` |
+| Action | `--bf-component-inline-inset-action` | `1rem` | `0.75rem` | `0.75rem` | `0.5rem` |
+| Continuation | `--bf-component-inline-inset-continuation` | `2rem` | `1.5rem` | `1.5rem` | `1.25rem` |
 
-The config keys are `inlineInsetFieldRem`, `inlineInsetActionRem`, and
-`inlineInsetContinuationRem`. Generated token JSON exposes
+Every tier authors `inlineUnitRem: 0.25` plus whole counts in
+`inlineInsetFieldUnits`, `inlineInsetActionUnits`, and
+`inlineInsetContinuationUnits`. Generated token JSON exposes
 `inlineInsetField`, `inlineInsetAction`, and `inlineInsetContinuation`.
 
 Page margins, grid gutters, navigation depth, and structural surface padding
@@ -46,6 +47,13 @@ reviewed block-derived minimum described below.
 All authored lengths are scalable `rem` values. Runtime pixel measurements
 exist only in browser assertions because layout engines report computed
 geometry in CSS pixels.
+
+Horizontal component facts are independent of the vertical baseline. Each
+built-in tier uses a `0.25rem` inline unit; surface padding, the three insets,
+and mark/icon gaps are whole counts of it. `--bf-leading-mark-gap` is the
+single icon/mark-to-label gap owner at `0.5rem`, `0.5rem`, `0.25rem`, and
+`0.25rem`. `--bf-space-*` remains the vertical rhythm scale and is not used by
+explicit inline padding, inline margins, inline offsets, or column gaps.
 
 ## Regular block contract
 
@@ -115,7 +123,7 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
 | Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
 | Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
-| Chip | Action | Regular; zero-footprint nested | The Action inset frames chip commands; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. The former block-derived floor never governed supported, non-empty chip content, so chips are not alias members. One-character chips are stadiums in every tier; use a badge for a circular counter. |
+| Chip | Action | Regular; zero-footprint nested | The Action inset frames chip commands; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. A paint-derived inline minimum is active only when dense Action padding would otherwise make very short content circular; it changes no block geometry. One-character chips are stadiums in every tier; use a badge for a circular counter. |
 | Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
 | Checkbox, radio, prose/list marks, validation | Continuation copy | Regular; framed nested for selection controls | Mark position is calculated backward from the continuation copy inset |

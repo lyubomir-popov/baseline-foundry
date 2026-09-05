@@ -35,9 +35,10 @@ ${bodyTypeStyles}  align-items: baseline;
   justify-self: start;
   margin: 0 var(--bf-component-inline-inset-field) var(--bf-interface-row-compensation-block-end) 0;
   max-inline-size: 100%;
+  min-inline-size: calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2));
   padding-block: var(--bf-interface-row-padding-block);
-  /* Chips use the Action text keyline. The former block-derived floor never
-     governs supported, non-empty chip content and was therefore inert. */
+  /* Chips use the Action text keyline. The paint-derived floor only governs
+     very short dense labels, keeping them stadium-shaped rather than circular. */
   padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
   position: relative;
   text-decoration: none;
@@ -205,6 +206,7 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
 :where(.bf-theme) :where(.bf-chip.is-nested) {
   border: 0;
   box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);
+  min-inline-size: calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2));
   /* The nested border is inset paint rather than box geometry, so the glyph
      needs the complete Action inset instead of subtracting a real border. */
   padding-inline: var(--bf-ui-chip-padding-inline);

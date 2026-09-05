@@ -93,8 +93,9 @@ The full runtime token set that produced the bundle's CSS.
 | Field | Type | Notes |
 |-------|------|-------|
 | `baselineUnit` | `string` (CSS length) | The half-baseline grid unit, e.g. `"0.5rem"`. Doubled for the visible grid. |
-| `canonicalSpacing` | `Record<spacing.*, ResolvedDtcgDimensionToken>?` | The twelve final, unoverlaid Canonical records. Present only on built-in tiers; omitted for BF-owned custom themes. |
-| `spacing` | `Record<spacing.*, ResolvedDtcgDimensionToken>` | BF's effective DTCG-shaped spacing record. Built-ins apply the bounded seven-point compatibility overlay; custom themes derive it from their config. The older scalar fields are projections of this record. |
+| `inlineUnit` | `string` (CSS length) | The independently authored horizontal quantisation unit. All built-in tiers currently expose `"0.25rem"`. |
+| `canonicalSpacing` | `Record<spacing.*, ResolvedDtcgDimensionToken>?` | The twelve authenticated Canonical records. Present only on built-in tiers; omitted for BF-owned custom themes. |
+| `spacing` | `Record<spacing.*, ResolvedDtcgDimensionToken>` | The effective DTCG-shaped spacing record. After 020a it is identical to `canonicalSpacing` for built-ins; custom themes derive it from their own config. The older scalar fields are projections of this record. |
 | `fontFiles` | `ThemeFontFile[]` | See [Font asset contract](#font-asset-contract). |
 | `fontStacks` | `Record<string, string>` | Font-family CSS stack per declared family. |
 | `roles` | `Record<string, TypographyToken>` | Semantic role tokens (`body`, `h1` … `h6`). The values components actually consume. |
@@ -102,9 +103,8 @@ The full runtime token set that produced the bundle's CSS.
 | `layout` | `LayoutTokens` | Container widths, gutters, gaps, and section rhythm. |
 | `components` | `ComponentTokens` | Shared component density tokens (control padding, panel padding, border width, radius, etc.). |
 
-The Canonical/effective record split, property mapping, temporary BF
-compatibility properties, seven-point value overlay, custom-theme namespace,
-and OS scope boundary are documented in
+The Canonical property mapping, temporary BF-name deprecation aliases,
+custom-theme namespace, and OS scope boundary are documented in
 [`spacing-token-adapter.md`](spacing-token-adapter.md).
 
 ### Resolved DTCG spacing token

@@ -241,24 +241,24 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
       await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
 
       for (const width of ["19.99rem", "20rem"] as const) {
-        const expectedSpace = width === "19.99rem" ? "var(--bf-space-1)" : "var(--bf-space-2)";
+        const expectedSpace = width === "19.99rem" ? "var(--bf-leading-mark-gap)" : "var(--bf-component-inline-inset-action)";
         const state = await page.locator(".bf-table-of-contents").first().evaluate((root, widthValue) => {
           root.style.inlineSize = widthValue;
           const nested = root.querySelector<HTMLElement>(".bf-table-of-contents-list .bf-table-of-contents-list");
           const parentItem = nested?.parentElement;
           const parentLink = parentItem?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-link");
           const current = root.querySelector<HTMLElement>(".bf-table-of-contents-link[aria-current]");
-          const spaceOneProbe = document.createElement("span");
-          const spaceTwoProbe = document.createElement("span");
+          const narrowIndentProbe = document.createElement("span");
+          const regularIndentProbe = document.createElement("span");
           const sectionSpaceProbe = document.createElement("span");
           const textProbe = document.createElement("span");
           const rowPaddingProbe = document.createElement("span");
-          spaceOneProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-1)";
-          spaceTwoProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-space-2)";
+          narrowIndentProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-leading-mark-gap)";
+          regularIndentProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-component-inline-inset-action)";
           sectionSpaceProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
           textProbe.style.cssText = "position:absolute;visibility:hidden;color:var(--bf-color-text-default)";
           rowPaddingProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-interface-row-padding-block)";
-          root.append(spaceOneProbe, spaceTwoProbe, sectionSpaceProbe, textProbe, rowPaddingProbe);
+          root.append(narrowIndentProbe, regularIndentProbe, sectionSpaceProbe, textProbe, rowPaddingProbe);
           const direction = getComputedStyle(root).direction;
           const nestedRect = nested?.getBoundingClientRect();
           const parentRect = parentLink?.getBoundingClientRect();
@@ -285,8 +285,8 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
             listGaps: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-list")).map(list => Number.parseFloat(getComputedStyle(list).rowGap)),
             itemGaps: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-item")).map(item => Number.parseFloat(getComputedStyle(item).rowGap)),
             expectedRowPadding: rowPaddingProbe.getBoundingClientRect().height,
-            expectedSpaceOne: spaceOneProbe.getBoundingClientRect().width,
-            expectedSpaceTwo: spaceTwoProbe.getBoundingClientRect().width,
+            expectedNarrowIndent: narrowIndentProbe.getBoundingClientRect().width,
+            expectedRegularIndent: regularIndentProbe.getBoundingClientRect().width,
             logicalIndent: direction === "rtl" ? parentRect.right - nestedRect.right : nestedRect.left - parentRect.left,
             currentState: current.getAttribute("aria-current"),
             currentWeight: getComputedStyle(current).fontWeight,
@@ -294,15 +294,15 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
             defaultTextColor: getComputedStyle(textProbe).color,
             rootOverflow: root.scrollWidth - root.clientWidth
           } : null;
-          spaceOneProbe.remove();
-          spaceTwoProbe.remove();
+          narrowIndentProbe.remove();
+          regularIndentProbe.remove();
           sectionSpaceProbe.remove();
           textProbe.remove();
           rowPaddingProbe.remove();
           return result;
         }, width);
         assert(state, `Expected ${tier} table-of-contents state at ${width}.`);
-        const expectedIndent = expectedSpace === "var(--bf-space-1)" ? state.expectedSpaceOne : state.expectedSpaceTwo;
+        const expectedIndent = expectedSpace === "var(--bf-leading-mark-gap)" ? state.expectedNarrowIndent : state.expectedRegularIndent;
         assert(Math.abs(state.nestedMargin - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} at ${width}; margin=${state.nestedMargin}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
         assert(Math.abs(state.sectionGap - state.expectedSectionGap) <= 0.1 && state.sectionPadding.every(([start, end]) => start === 0 && end === 0), `Expected ${tier} table-of-contents sections to receive their shallow separation from the parent stack without item padding at ${width}.`);
         assert(state.linkPadding.every(([start, end]) => Math.abs(start - state.expectedRowPadding) <= 0.1 && Math.abs(end - state.expectedRowPadding) <= 0.1), `Expected ${tier} table-of-contents links to share symmetric single-line row padding at ${width}; expected ${state.expectedRowPadding}, got ${JSON.stringify(state.linkPadding)}.`);

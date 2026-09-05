@@ -48,12 +48,6 @@ interface ResolvedDtcgSpacingArtifact {
   products: Record<CanonicalProduct, ResolvedDtcgSpacing>;
 }
 
-interface CompatibilityOverlay {
-  removeAfter: string;
-  reason: string;
-  products: Partial<Record<CanonicalProduct, Partial<ResolvedDtcgSpacing>>>;
-}
-
 export const canonicalSpacingSourceCommit = "18f57b95b1aa1dfe85a45746016b055c807d6628";
 export const canonicalSpacingProductsSha256 = "97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571";
 const canonicalSpacingSourceRepository = "https://github.com/canonical/design-tokens";
@@ -82,19 +76,8 @@ const productByTier: Record<TierName, CanonicalProduct> = {
   os: "os"
 };
 
-const expectedOverlayPoints = new Set([
-  "docs:spacing.inset.action.inline",
-  "docs:spacing.inset.continuation.inline",
-  "app:spacing.gap.mark.inline",
-  "app:spacing.inset.action.inline",
-  "app:spacing.inset.continuation.inline",
-  "os:spacing.inset.action.inline",
-  "os:spacing.inset.continuation.inline"
-]);
-
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultArtifactPath = path.resolve(moduleDir, "..", "config", "canonical-spacing.resolved.json");
-const defaultOverlayPath = path.resolve(moduleDir, "..", "config", "canonical-spacing.compatibility-overlay.json");
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -181,39 +164,6 @@ export function validateCanonicalSpacingArtifact(value: unknown): asserts value 
   }
 }
 
-function validateOverlay(value: unknown): asserts value is CompatibilityOverlay {
-  if (!isRecord(value) || typeof value.removeAfter !== "string" || typeof value.reason !== "string" || !isRecord(value.products)) {
-    throw new Error("BF spacing compatibility overlay has an unsupported shape.");
-  }
-  if (value.removeAfter !== "BF 020a spacing-value adoption" || value.reason.trim() === "") {
-    throw new Error("BF spacing compatibility overlay must retain its bounded 020a removal condition.");
-  }
-
-  const actualProducts = Object.keys(value.products).sort();
-  const expectedProducts = ["app", "docs", "os"];
-  if (JSON.stringify(actualProducts) !== JSON.stringify(expectedProducts)) {
-    throw new Error("BF spacing compatibility overlay must contain exactly the docs, app, and os products with deferred values.");
-  }
-
-  const actualPoints = new Set<string>();
-  for (const [product, tokens] of Object.entries(value.products)) {
-    if (!(product === "site" || product === "docs" || product === "app" || product === "os") || !isRecord(tokens)) {
-      throw new Error(`BF spacing compatibility overlay contains an unsupported product "${product}".`);
-    }
-    for (const [id, token] of Object.entries(tokens)) {
-      if (!dtcgSpacingTokenIds.includes(id as DtcgSpacingTokenId)) {
-        throw new Error(`BF spacing compatibility overlay contains an unsupported token "${id}".`);
-      }
-      validateDimensionToken(token, `${product}:${id}`);
-      actualPoints.add(`${product}:${id}`);
-    }
-  }
-
-  if (actualPoints.size !== expectedOverlayPoints.size || [...actualPoints].some(point => !expectedOverlayPoints.has(point))) {
-    throw new Error("BF spacing compatibility overlay must contain exactly the seven approved deferred 020a points.");
-  }
-}
-
 async function readJson(filePath: string): Promise<unknown> {
   return JSON.parse(await fs.readFile(filePath, "utf8")) as unknown;
 }
@@ -241,14 +191,14 @@ export function legacyThemeConfigSpacing(config: ThemeConfig): ResolvedDtcgSpaci
   return {
     "spacing.baseline": value(config.baselineUnit),
     "spacing.gap.field.block": value(config.components.fieldGapBaselineUnits * config.baselineUnit),
-    "spacing.gap.mark.inline": value(config.components.fieldGapBaselineUnits * config.baselineUnit),
+    "spacing.gap.mark.inline": value(config.components.markGapInlineUnits * config.inlineUnitRem),
     "spacing.gap.group.block": value(config.layout.sectionSpaceShallowBaselineUnits * config.baselineUnit),
     "spacing.gap.pattern.block": value(config.layout.sectionSpaceBaselineUnits * config.baselineUnit),
     "spacing.gap.region.block": value(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
-    "spacing.inset.field.inline": value(config.components.inlineInsetFieldRem),
-    "spacing.inset.action.inline": value(config.components.inlineInsetActionRem),
-    "spacing.inset.continuation.inline": value(config.components.inlineInsetContinuationRem),
-    "spacing.inset.surface.inline": value(config.components.panelPaddingInlineBaselineUnits * config.baselineUnit),
+    "spacing.inset.field.inline": value(config.components.inlineInsetFieldUnits * config.inlineUnitRem),
+    "spacing.inset.action.inline": value(config.components.inlineInsetActionUnits * config.inlineUnitRem),
+    "spacing.inset.continuation.inline": value(config.components.inlineInsetContinuationUnits * config.inlineUnitRem),
+    "spacing.inset.surface.inline": value(config.components.panelPaddingInlineUnits * config.inlineUnitRem),
     "spacing.inset.surface.block": value(config.components.panelPaddingBlockBaselineUnits * config.baselineUnit),
     "spacing.inset.strip.block": value(config.layout.stripSpaceBaselineUnits * config.baselineUnit)
   };
@@ -256,22 +206,11 @@ export function legacyThemeConfigSpacing(config: ThemeConfig): ResolvedDtcgSpaci
 
 export async function readCanonicalSpacingProduct(
   product: CanonicalProduct,
-  options: { artifactPath?: string; overlayPath?: string; applyCompatibilityOverlay?: boolean; } = {}
+  options: { artifactPath?: string; } = {}
 ): Promise<ResolvedDtcgSpacing> {
   const artifact = await readJson(options.artifactPath ?? defaultArtifactPath);
   validateCanonicalSpacingArtifact(artifact);
-  const canonical = structuredClone(artifact.products[product]);
-
-  if (options.applyCompatibilityOverlay === false) {
-    return canonical;
-  }
-
-  const overlay = await readJson(options.overlayPath ?? defaultOverlayPath);
-  validateOverlay(overlay);
-  return {
-    ...canonical,
-    ...(overlay.products[product] ?? {})
-  };
+  return structuredClone(artifact.products[product]);
 }
 
 export function assertSpacingSetsEqual(

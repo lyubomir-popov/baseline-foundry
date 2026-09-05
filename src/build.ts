@@ -102,12 +102,13 @@ const REQUIRED_LAYOUT_FIELDS = [
 const REQUIRED_COMPONENT_FIELDS = [
   "borderWidthRem",
   "radiusRem",
-  "inlineInsetFieldRem",
-  "inlineInsetActionRem",
-  "inlineInsetContinuationRem",
+  "inlineInsetFieldUnits",
+  "inlineInsetActionUnits",
+  "inlineInsetContinuationUnits",
+  "markGapInlineUnits",
   "controlVisualSizeRem",
   "fieldGapBaselineUnits",
-  "panelPaddingInlineBaselineUnits",
+  "panelPaddingInlineUnits",
   "panelPaddingBlockBaselineUnits"
 ] as const satisfies readonly (keyof ThemeConfig["components"])[];
 
@@ -127,7 +128,7 @@ function assertNoDuplicateRoleKeys(raw: string, configPath: string): void {
   }
 }
 
-function validateConfig(config: ThemeConfig): void {
+export function validateThemeConfig(config: ThemeConfig): void {
   if (!config.fontFiles.length) {
     throw new Error("Theme config requires at least one font file.");
   }
@@ -152,6 +153,10 @@ function validateConfig(config: ThemeConfig): void {
   if (config.baselineUnit <= 0) {
     throw new Error('Theme config field "baselineUnit" must be greater than zero.');
   }
+  assertFiniteNumberConfigField(config.inlineUnitRem, "inlineUnitRem");
+  if (config.inlineUnitRem <= 0) {
+    throw new Error('Theme config field "inlineUnitRem" must be greater than zero.');
+  }
 
   for (const field of REQUIRED_LAYOUT_FIELDS) {
     assertFiniteNumberConfigField(config.layout[field], `layout.${field}`);
@@ -167,18 +172,42 @@ function validateConfig(config: ThemeConfig): void {
 
   if (
     config.components.radiusRem < 0 ||
-    config.components.inlineInsetFieldRem < 0 ||
-    config.components.inlineInsetActionRem < 0 ||
-    config.components.inlineInsetContinuationRem < 0 ||
+    config.components.inlineInsetFieldUnits < 0 ||
+    config.components.inlineInsetActionUnits < 0 ||
+    config.components.inlineInsetContinuationUnits < 0 ||
+    config.components.markGapInlineUnits < 0 ||
     config.components.fieldGapBaselineUnits < 0 ||
-    config.components.panelPaddingInlineBaselineUnits < 0 ||
+    config.components.panelPaddingInlineUnits < 0 ||
     config.components.panelPaddingBlockBaselineUnits < 0
   ) {
     throw new Error("Component radius, inline insets, gaps, and surface padding must be non-negative.");
   }
 
-  if (config.components.inlineInsetActionRem < config.components.borderWidthRem) {
+  for (const field of [
+    "inlineInsetFieldUnits",
+    "inlineInsetActionUnits",
+    "inlineInsetContinuationUnits",
+    "markGapInlineUnits",
+    "panelPaddingInlineUnits"
+  ] as const) {
+    if (!Number.isInteger(config.components[field])) {
+      throw new Error(`Theme config field "components.${field}" must be a whole inline-unit count.`);
+    }
+  }
+
+  if (config.components.inlineInsetActionUnits * config.inlineUnitRem < config.components.borderWidthRem) {
     throw new Error("Component action inset must contain its bordered action edge.");
+  }
+  if (
+    config.components.inlineInsetFieldUnits > config.components.inlineInsetActionUnits ||
+    config.components.inlineInsetActionUnits > config.components.inlineInsetContinuationUnits
+  ) {
+    throw new Error("Component inline inset counts must be ordered field <= action <= continuation.");
+  }
+  const authoredContinuation = config.components.inlineInsetContinuationUnits * config.inlineUnitRem;
+  const authoredMarkNeed = config.components.controlVisualSizeRem + (config.components.markGapInlineUnits * config.inlineUnitRem);
+  if (authoredContinuation < authoredMarkNeed) {
+    throw new Error(`Component continuation inset ${toRem(authoredContinuation)} cannot contain its visual and mark gap ${toRem(authoredMarkNeed)}.`);
   }
 
   const elementIdentifiers = new Set<string>();
@@ -212,7 +241,7 @@ export async function readThemeConfig(configPath: string): Promise<ThemeConfig> 
   const raw = await fs.readFile(configPath, "utf8");
   assertNoDuplicateRoleKeys(raw, configPath);
   const config = JSON.parse(raw) as ThemeConfig;
-  validateConfig(config);
+  validateThemeConfig(config);
   return config;
 }
 
@@ -369,6 +398,7 @@ function buildThemeTokens(
 
   return {
     baselineUnit: spacingRem(spacing, "spacing.baseline"),
+    inlineUnit: toRem(config.inlineUnitRem),
     canonicalSpacing,
     spacing,
     fontFiles: config.fontFiles,
@@ -469,17 +499,15 @@ async function buildThemeSurface(
   const builtInName = inferBuiltInPresetName(resolvedConfigPath);
   const legacySpacing = legacyThemeConfigSpacing(config);
   const canonicalSpacing = builtInName
-    ? await readCanonicalSpacingProduct(canonicalProductForBuiltInTheme(builtInName), { applyCompatibilityOverlay: false })
-    : undefined;
-  const spacing = builtInName
     ? await readCanonicalSpacingProduct(canonicalProductForBuiltInTheme(builtInName))
-    : legacySpacing;
+    : undefined;
+  const spacing = canonicalSpacing ? structuredClone(canonicalSpacing) : legacySpacing;
 
   if (builtInName) {
     assertSpacingSetsEqual(
       spacing,
       legacySpacing,
-      `Built-in ${builtInName} spacing compatibility assertion (update the pinned Canonical artifact and bounded overlay contract, not config/tiers)`
+      `Built-in ${builtInName} spacing authoring assertion (update the pinned Canonical artifact and matching tier counts together)`
     );
   }
 

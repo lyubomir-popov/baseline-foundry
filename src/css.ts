@@ -128,18 +128,13 @@ ${bfValues}
     .map(id => `  ${dtcgSpacingCssProperty(id)}: ${dtcgSpacingValue(tokens.canonicalSpacing?.[id] ?? tokens.spacing[id])};`)
     .join("\n");
   const compatibility = dtcgSpacingTokenIds
-    .map(id => {
-      const property = dtcgSpacingCssProperty(id);
-      const value = dtcgSpacingValue(tokens.spacing[id]);
-      const canonicalValue = dtcgSpacingValue(tokens.canonicalSpacing?.[id] ?? tokens.spacing[id]);
-      return `  ${bfSpacingCompatibilityAliases[id]}: ${value === canonicalValue ? `var(${property})` : value};`;
-    })
+    .map(id => `  ${bfSpacingCompatibilityAliases[id]}: var(${dtcgSpacingCssProperty(id)});`)
     .join("\n");
 
   return `  /* Resolved Canonical DTCG spacing; these names always retain the pinned final matrix. */
 ${canonical}
-  /* Temporary BF compatibility properties. Seven retained literals preserve
-     current geometry until BF 020a; equal points alias Canonical directly. */
+  /* Temporary BF compatibility properties alias Canonical directly during
+     the bounded public-name deprecation window. */
 ${compatibility}
 `;
 }
@@ -149,6 +144,7 @@ function themeSurfaceRule(selector: string, tokens: ThemeTokens): string {
   const smallFontFallback = body?.fontSize ?? tokens.roles.h6?.fontSize ?? "1rem";
   return `${selector} {
 ${spacingVarDeclarations(tokens)}  --bf-space-0: 0rem;
+  --bf-inline-unit: ${tokens.inlineUnit};
   --bf-space-half: calc(var(--bf-baseline) / 2);
   --bf-space-1: var(--bf-baseline);
   --bf-space-2: calc(var(--bf-baseline) * 2);

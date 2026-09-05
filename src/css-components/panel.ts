@@ -114,7 +114,7 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-flex;
-  gap: calc(var(--bf-baseline) * 0.5);
+  gap: var(--bf-leading-mark-gap);
   justify-content: flex-start;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
   min-inline-size: 0;

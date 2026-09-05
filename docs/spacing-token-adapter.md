@@ -7,30 +7,28 @@ BF's four built-in tiers consume the resolved DTCG dimension records in
 approved `spacing.*` IDs for Site, Docs, App, and OS. Production validation
 also pins SHA-256
 `97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571`
-over the ordered 4 × 12 DTCG records. A value change at any point, including
-an overlaid point, fails before the overlay is applied.
+over the ordered 4 × 12 DTCG records. A value change at any point fails before
+generation.
 
-This adapter is a format migration, not the 020a value migration. The
-BF-local `config/canonical-spacing.compatibility-overlay.json` therefore keeps
-seven current values until 020a:
+Contribution 3 introduced the format adapter and temporarily retained seven
+values. Spec 020a has adopted the provider matrix and removed that local
+overlay. The seven adopted values are:
 
-| Product | Temporarily retained BF values |
+| Product | Adopted Canonical values |
 |---|---|
-| Docs | action `1rem`; continuation `2rem` |
-| App | mark gap `0.5rem`; action `1rem`; continuation `2rem` |
-| OS | action `1rem`; continuation `2rem` |
+| Docs | action `0.75rem`; continuation `1.5rem` |
+| App | mark gap `0.25rem`; action `0.75rem`; continuation `1.5rem` |
+| OS | action `0.5rem`; continuation `1.25rem` |
 
-The overlay has one removal condition: `BF 020a spacing-value adoption`.
-Neither the adapter nor the overlay creates density, page/grid, control-height,
-root-scaling, or Pragma behavior.
+The adapter creates no density, page/grid, control-height, root-scaling, or
+Pragma behavior.
 
 ## CSS compatibility window
 
-Built-in CSS emits every Canonical property with the final Canonical value.
-Existing BF properties remain the compatibility surface that components use
-during the bounded window. At the 41 equal points they alias the Canonical
-property; at the seven deferred points they carry the retained BF value as a
-literal. A Canonical name never carries a compatibility value.
+Built-in CSS emits every Canonical property with the authenticated Canonical
+value. Existing BF properties remain temporary compatibility names during the
+bounded deprecation window; all twelve alias Canonical directly. A Canonical
+name never carries a compatibility value.
 
 | Canonical property | Temporary BF alias |
 |---|---|
@@ -47,18 +45,16 @@ literal. A Canonical name never carries a compatibility value.
 | `--spacing-inset-surface-block` | `--bf-panel-padding-block` |
 | `--spacing-inset-strip-block` | `--bf-strip-space` |
 
-The built token and surface manifests expose two deliberately different
+The built token and surface manifests expose the same values through two
 records for built-in tiers:
 
-- `canonicalSpacing` is the final, unoverlaid Canonical 4 × 12 matrix;
-- `spacing` is BF's effective pre-020a matrix after the seven-point overlay.
+- `canonicalSpacing` is the authenticated Canonical 4 × 12 matrix;
+- `spacing` is the effective record and equals `canonicalSpacing` point-wise.
 
 The existing `baselineUnit`, `layout`, and `components` fields are projections
-of effective `spacing`. The corresponding fields in `config/tiers/*.json` are
-temporary compatibility assertions, not a second built-in source of truth.
-Do not edit those fields in isolation: update the pinned provider artifact and
-bounded overlay contract in the appropriate approved migration. A mismatch
-fails with that guidance in the build error.
+of effective `spacing`. The corresponding whole-count fields in
+`config/tiers/*.json` are executable assertions of the same design decisions,
+not a second provider source. A mismatch fails the build.
 
 Custom themes are BF-owned. They expose only effective `spacing`, omit
 `canonicalSpacing`, and emit only `--bf-*` spacing properties. They do not
@@ -81,10 +77,9 @@ Those synthetic scopes are not a claim about current provider output. In that
 future shape, consumers must pair each Canonical product class with the
 corresponding `bf-tier-*` class. If a future provider emitted those product
 rules unlayered and a consumer mismatched the classes, the provider selector
-would outrank BF's zero-specificity `:where(...)` selector: up to six of the 41
-aliased BF properties could follow the wrong product, while the seven retained
-BF literals would remain immune. BF treats that pair as invalid configuration
-and does not guess which product was intended.
+would outrank BF's zero-specificity `:where(...)` selector, so aliased BF
+properties could follow the wrong product. BF treats that pair as invalid
+configuration and does not guess which product was intended.
 
 ## OS scope boundary
 

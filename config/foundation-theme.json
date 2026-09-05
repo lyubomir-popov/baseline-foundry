@@ -1,5 +1,6 @@
 {
   "baselineUnit": 0.5,
+  "inlineUnitRem": 0.25,
   "fontFiles": [
     {
       "family": "ubuntu-sans",
@@ -105,12 +106,13 @@
   "components": {
     "borderWidthRem": 0.0625,
     "radiusRem": 0,
-    "inlineInsetFieldRem": 0.5,
-    "inlineInsetActionRem": 1,
-    "inlineInsetContinuationRem": 2,
+    "inlineInsetFieldUnits": 2,
+    "inlineInsetActionUnits": 4,
+    "inlineInsetContinuationUnits": 8,
+    "markGapInlineUnits": 2,
     "controlVisualSizeRem": 1,
     "fieldGapBaselineUnits": 1,
-    "panelPaddingInlineBaselineUnits": 2,
+    "panelPaddingInlineUnits": 4,
     "panelPaddingBlockBaselineUnits": 2
   }
 }

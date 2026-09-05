@@ -47,7 +47,7 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-muted);
   cursor: pointer;
   display: flex;
-  gap: calc(var(--bf-baseline) * 0.5);
+  gap: var(--bf-leading-mark-gap);
   justify-content: center;
   margin-bottom: 0;
   padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));
@@ -94,7 +94,7 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list) {
   display: grid;
-  gap: calc(var(--bf-baseline) * 2);
+  gap: var(--bf-component-inline-inset-action);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--bf-ui-tabs-equal-min)), 1fr));
   overflow: visible;
   white-space: normal;
@@ -124,7 +124,7 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: grid;
-  gap: calc(var(--bf-baseline) * 0.75);
+  gap: var(--bf-leading-mark-gap);
   grid-template-columns: auto minmax(0, 1fr) auto;
   margin: 0 0 ${buttonMarginBottom};
   min-inline-size: 0;
@@ -190,7 +190,7 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-inline-options-options) {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--bf-baseline) * 3);
+  gap: var(--bf-component-inline-inset-continuation);
 }
 
 :where(.bf-theme) :where(.bf-inline-options-option) {
@@ -288,7 +288,7 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 1.25);
+  gap: calc(var(--bf-baseline) * 0.5) var(--bf-leading-mark-gap);
   list-style: none;
   margin: 0;
   min-inline-size: 0;
@@ -306,7 +306,7 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-breadcrumbs-item) + :where(.bf-breadcrumbs-item)::before {
   color: var(--bf-color-text-muted);
   content: "/";
-  margin-inline-end: calc(var(--bf-baseline) * 0.75);
+  margin-inline-end: var(--bf-leading-mark-gap);
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) a {

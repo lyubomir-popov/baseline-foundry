@@ -68,7 +68,7 @@ export function sitesEditorialPortsCss(): string {
 
 /* Current Vanilla scopes a one-spacing-unit icon/value gap to the hero. */
 :where(.bf-theme) :where(.bf-hero-chip.bf-chip) {
-  column-gap: var(--bf-space-1);
+  column-gap: var(--bf-leading-mark-gap);
 }
 
 :where(.bf-theme) :where(.bf-hero-media > :where(img, picture, video, canvas, svg), .bf-hero-signpost > :where(img, picture, video, canvas, svg)) {

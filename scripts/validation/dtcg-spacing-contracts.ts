@@ -1,6 +1,9 @@
+import { existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { canonicalSpacingProductsSha256, validateCanonicalSpacingArtifact } from "../../src/dtcg-spacing.ts";
+import { validateThemeConfig } from "../../src/build.ts";
+import type { ThemeConfig } from "../../src/types.ts";
 import { parseCss } from "../css-ast-helpers.ts";
 import { assert } from "../validation-assert.ts";
 
@@ -90,26 +93,6 @@ const FINAL_MATRIX: Matrix = {
   }
 };
 
-const CURRENT_MATRIX: Matrix = {
-  ...FINAL_MATRIX,
-  docs: {
-    ...FINAL_MATRIX.docs,
-    "spacing.inset.action.inline": 1,
-    "spacing.inset.continuation.inline": 2
-  },
-  app: {
-    ...FINAL_MATRIX.app,
-    "spacing.gap.mark.inline": 0.5,
-    "spacing.inset.action.inline": 1,
-    "spacing.inset.continuation.inline": 2
-  },
-  os: {
-    ...FINAL_MATRIX.os,
-    "spacing.inset.action.inline": 1,
-    "spacing.inset.continuation.inline": 2
-  }
-};
-
 const BF_ALIASES: Record<TokenId, string> = {
   "spacing.baseline": "--bf-baseline",
   "spacing.gap.field.block": "--bf-field-gap",
@@ -124,16 +107,6 @@ const BF_ALIASES: Record<TokenId, string> = {
   "spacing.inset.surface.block": "--bf-panel-padding-block",
   "spacing.inset.strip.block": "--bf-strip-space"
 };
-
-const DEFERRED_POINTS = [
-  "docs:spacing.inset.action.inline",
-  "docs:spacing.inset.continuation.inline",
-  "app:spacing.gap.mark.inline",
-  "app:spacing.inset.action.inline",
-  "app:spacing.inset.continuation.inline",
-  "os:spacing.inset.action.inline",
-  "os:spacing.inset.continuation.inline"
-].sort();
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -163,19 +136,20 @@ function declarationsForSelector(css: string, selector: string): Map<string, str
 
 function legacyConfigValues(config: Record<string, unknown>): Record<TokenId, number> {
   const baseline = config.baselineUnit as number;
+  const inlineUnit = config.inlineUnitRem as number;
   const layout = config.layout as Record<string, number>;
   const components = config.components as Record<string, number>;
   return {
     "spacing.baseline": baseline,
     "spacing.gap.field.block": components.fieldGapBaselineUnits * baseline,
-    "spacing.gap.mark.inline": components.fieldGapBaselineUnits * baseline,
+    "spacing.gap.mark.inline": components.markGapInlineUnits * inlineUnit,
     "spacing.gap.group.block": layout.sectionSpaceShallowBaselineUnits * baseline,
     "spacing.gap.pattern.block": layout.sectionSpaceBaselineUnits * baseline,
     "spacing.gap.region.block": layout.sectionSpaceDeepBaselineUnits * baseline,
-    "spacing.inset.field.inline": components.inlineInsetFieldRem,
-    "spacing.inset.action.inline": components.inlineInsetActionRem,
-    "spacing.inset.continuation.inline": components.inlineInsetContinuationRem,
-    "spacing.inset.surface.inline": components.panelPaddingInlineBaselineUnits * baseline,
+    "spacing.inset.field.inline": components.inlineInsetFieldUnits * inlineUnit,
+    "spacing.inset.action.inline": components.inlineInsetActionUnits * inlineUnit,
+    "spacing.inset.continuation.inline": components.inlineInsetContinuationUnits * inlineUnit,
+    "spacing.inset.surface.inline": components.panelPaddingInlineUnits * inlineUnit,
     "spacing.inset.surface.block": components.panelPaddingBlockBaselineUnits * baseline,
     "spacing.inset.strip.block": layout.stripSpaceBaselineUnits * baseline
   };
@@ -187,11 +161,9 @@ export async function validateDtcgSpacingContracts(
   customThemeArtifact: { tokens: Record<string, unknown>; css: string; }
 ): Promise<void> {
   const artifact = JSON.parse(await fs.readFile(path.resolve("config/canonical-spacing.resolved.json"), "utf8")) as Record<string, unknown>;
-  const overlay = JSON.parse(await fs.readFile(path.resolve("config/canonical-spacing.compatibility-overlay.json"), "utf8")) as Record<string, unknown>;
   const source = artifact.source as Record<string, unknown>;
   const integrity = artifact.integrity as Record<string, unknown>;
   const products = artifact.products as Record<Product, Record<string, unknown>>;
-  const overlayProducts = overlay.products as Partial<Record<Product, Record<string, unknown>>>;
 
   assert(artifact.format === "canonical-resolver-apply-spacing-v1", "Expected BF to consume the bounded resolved Canonical spacing artifact shape.");
   assert(
@@ -207,13 +179,7 @@ export async function validateDtcgSpacingContracts(
     `Expected the resolved spacing artifact to pin the exact design-tokens ${SOURCE_COMMIT} provider and resolver.`
   );
   assert(JSON.stringify(Object.keys(products).sort()) === JSON.stringify(["app", "docs", "os", "site"]), "Expected the resolved spacing artifact to contain exactly four products.");
-  assert(overlay.removeAfter === "BF 020a spacing-value adoption", "Expected the temporary BF compatibility overlay to retain its explicit 020a removal bound.");
-  assert(JSON.stringify(Object.keys(overlayProducts).sort()) === JSON.stringify(["app", "docs", "os"]), "Expected the temporary BF compatibility overlay to contain only products with deferred values.");
-
-  const actualOverlayPoints = Object.entries(overlayProducts).flatMap(([product, tokens]) =>
-    Object.keys(tokens ?? {}).map(id => `${product}:${id}`)
-  ).sort();
-  assert(JSON.stringify(actualOverlayPoints) === JSON.stringify(DEFERRED_POINTS), "Expected the BF-local compatibility overlay to contain exactly the seven deferred 020a points.");
+  assert(!existsSync(path.resolve("config/canonical-spacing.compatibility-overlay.json")), "Expected 020a to remove the temporary BF compatibility overlay file.");
 
   for (const [product, productTokens] of Object.entries(products) as Array<[Product, Record<string, unknown>]>) {
     for (const id of TOKEN_IDS) {
@@ -235,6 +201,12 @@ export async function validateDtcgSpacingContracts(
     assert(JSON.stringify(Object.keys(productTokens).sort()) === JSON.stringify([...TOKEN_IDS].sort()), `Expected ${product} to contain exactly the twelve approved v1 spacing IDs.`);
 
     const config = JSON.parse(await fs.readFile(path.resolve("config/tiers", `${tier}.json`), "utf8")) as Record<string, unknown>;
+    assert(config.inlineUnitRem === 0.25, `Expected ${tier} to author the shared 0.25rem inline unit.`);
+    const configComponents = config.components as Record<string, unknown>;
+    for (const field of ["inlineInsetFieldUnits", "inlineInsetActionUnits", "inlineInsetContinuationUnits", "markGapInlineUnits", "panelPaddingInlineUnits"]) {
+      assert(Number.isInteger(configComponents[field]) && (configComponents[field] as number) >= 0, `Expected ${tier} components.${field} to be a non-negative whole inline-unit count.`);
+    }
+    assert(!Object.hasOwn(configComponents, "inlineInsetFieldRem") && !Object.hasOwn(configComponents, "panelPaddingInlineBaselineUnits"), `Expected ${tier} not to retain pre-020a horizontal authoring fields.`);
     const before = legacyConfigValues(config);
     const adapted = tierArtifacts[tier].tokens.spacing as Record<string, unknown>;
     const builtCanonical = tierArtifacts[tier].tokens.canonicalSpacing as Record<string, unknown>;
@@ -244,22 +216,40 @@ export async function validateDtcgSpacingContracts(
 
     for (const id of TOKEN_IDS) {
       const canonicalValue = tokenMagnitude(productTokens[id], `Canonical ${product}:${id}`);
-      const overlayValue = overlayProducts[product]?.[id];
-      const expectedCurrent = CURRENT_MATRIX[product][id];
       assert(canonicalValue === FINAL_MATRIX[product][id], `Expected Canonical ${product}:${id} to retain the approved final matrix value.`);
-      assert(before[id] === expectedCurrent, `Expected pre-adapter ${tier}:${id} to equal ${expectedCurrent}rem, got ${before[id]}rem.`);
-      assert((overlayValue ? tokenMagnitude(overlayValue, `overlay ${product}:${id}`) : canonicalValue) === expectedCurrent, `Expected overlaid ${product}:${id} to preserve ${expectedCurrent}rem.`);
-      assert(tokenMagnitude(adapted[id], `built ${tier}:${id}`) === expectedCurrent, `Expected post-adapter ${tier}:${id} to preserve ${expectedCurrent}rem.`);
-      assert(tokenMagnitude(builtCanonical[id], `built canonical ${tier}:${id}`) === FINAL_MATRIX[product][id], `Expected built Canonical ${tier}:${id} to retain the final matrix independently of BF compatibility.`);
+      assert(before[id] === canonicalValue, `Expected authored ${tier}:${id} to equal Canonical ${canonicalValue}rem, got ${before[id]}rem.`);
+      assert(tokenMagnitude(adapted[id], `built ${tier}:${id}`) === canonicalValue, `Expected effective ${tier}:${id} to equal Canonical ${canonicalValue}rem.`);
+      assert(tokenMagnitude(builtCanonical[id], `built canonical ${tier}:${id}`) === canonicalValue, `Expected built Canonical ${tier}:${id} to equal effective spacing.`);
 
       const property = cssProperty(id);
       const canonicalLiteral = `${FINAL_MATRIX[product][id]}rem`;
-      const compatibilityValue = FINAL_MATRIX[product][id] === expectedCurrent ? `var(${property})` : `${expectedCurrent}rem`;
       assert(JSON.stringify(directDeclarations.get(property)) === JSON.stringify([canonicalLiteral]), `Expected direct ${tier} ${property} to have one final-matrix ${canonicalLiteral} owner.`);
-      assert(JSON.stringify(directDeclarations.get(BF_ALIASES[id])) === JSON.stringify([compatibilityValue]), `Expected direct ${tier} ${BF_ALIASES[id]} to preserve BF geometry without changing ${property}.`);
+      assert(JSON.stringify(directDeclarations.get(BF_ALIASES[id])) === JSON.stringify([`var(${property})`]), `Expected direct ${tier} ${BF_ALIASES[id]} to alias Canonical after 020a.`);
       assert(JSON.stringify(classDeclarations.get(property)) === JSON.stringify([canonicalLiteral]), `Expected class-switched ${tier} ${property} to have one final-matrix ${canonicalLiteral} owner.`);
-      assert(JSON.stringify(classDeclarations.get(BF_ALIASES[id])) === JSON.stringify([compatibilityValue]), `Expected class-switched ${tier} ${BF_ALIASES[id]} to preserve BF geometry without changing ${property}.`);
+      assert(JSON.stringify(classDeclarations.get(BF_ALIASES[id])) === JSON.stringify([`var(${property})`]), `Expected class-switched ${tier} ${BF_ALIASES[id]} to alias Canonical after 020a.`);
     }
+    assert(JSON.stringify(adapted) === JSON.stringify(builtCanonical), `Expected effective and canonical spacing records to be identical after 020a for ${tier}.`);
+  }
+
+  const validConfig = JSON.parse(await fs.readFile(path.resolve("config/tiers/editorial.json"), "utf8")) as ThemeConfig;
+  const invalidCases: Array<[string, (config: ThemeConfig) => void]> = [
+    ["missing inline unit", config => { delete (config as Partial<ThemeConfig>).inlineUnitRem; }],
+    ["non-finite inline unit", config => { config.inlineUnitRem = Number.NaN; }],
+    ["negative inline count", config => { config.components.markGapInlineUnits = -1; }],
+    ["fractional inline count", config => { config.components.inlineInsetActionUnits = 3.5; }],
+    ["misordered inline insets", config => { config.components.inlineInsetFieldUnits = config.components.inlineInsetActionUnits + 1; }],
+    ["continuation fit", config => { config.components.inlineInsetContinuationUnits = 5; }]
+  ];
+  for (const [label, mutate] of invalidCases) {
+    const invalid = structuredClone(validConfig);
+    mutate(invalid);
+    let rejected = false;
+    try {
+      validateThemeConfig(invalid);
+    } catch {
+      rejected = true;
+    }
+    assert(rejected, `Expected config validation to reject ${label}.`);
   }
 
   assert(!Object.hasOwn(customThemeArtifact.tokens, "canonicalSpacing"), "Expected a BF-local custom theme not to claim a Canonical spacing record.");
@@ -272,11 +262,6 @@ export async function validateDtcgSpacingContracts(
       `Expected custom themes to retain ${BF_ALIASES[id]} as a BF-owned literal.`
     );
   }
-
-  const canonicalDifferences = (Object.entries(PRODUCT_BY_TIER) as Array<[Tier, Product]>).flatMap(([, product]) =>
-    TOKEN_IDS.filter(id => FINAL_MATRIX[product][id] !== CURRENT_MATRIX[product][id]).map(id => `${product}:${id}`)
-  ).sort();
-  assert(JSON.stringify(canonicalDifferences) === JSON.stringify(DEFERRED_POINTS), "Expected exactly seven Canonical/BF value differences before 020a.");
 
   const osTokens = products.os;
   assert(Object.keys(osTokens).every(id => id.startsWith("spacing.")), "Expected the OS adapter input to remain spacing-only and not assume a Canonical .os typography reset.");

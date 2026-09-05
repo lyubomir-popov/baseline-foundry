@@ -23,8 +23,8 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
      disclosure/icon slot or not. The mark canvas is derived backwards from
      that inset, so iconless rows never introduce a fourth text start. */
   --bf-side-navigation-content-inset: var(--bf-component-inline-inset-continuation);
-  --bf-side-navigation-disclosure-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));
-  --bf-side-navigation-depth-step: var(--bf-space-2);
+  --bf-side-navigation-disclosure-inset: var(--bf-disclosure-group-inset);
+  --bf-side-navigation-depth-step: var(--bf-component-inline-inset-action);
   --bf-side-navigation-group-gap: 1.5rem;
   --bf-side-navigation-heading-list-gap: 0.5rem;
   color: var(--bf-color-text-inactive);
@@ -126,7 +126,7 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-flex;
-  gap: calc(var(--bf-baseline) * 0.5);
+  gap: var(--bf-leading-mark-gap);
   justify-content: center;
   margin: 0 0 ${buttonMarginBottom};
 ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordered);
@@ -201,7 +201,7 @@ ${bodyTypeStyles}  align-items: center;
   border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-color-text-inactive);
   display: flex;
-  gap: calc(var(--bf-baseline) * 0.5);
+  gap: var(--bf-leading-mark-gap);
   inline-size: 100%;
   justify-content: flex-start;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -320,7 +320,7 @@ ${bodyTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-top-navigation-logo) > :where(.bf-top-navigation-link) {
 ${bodyMediumTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
-  column-gap: calc(var(--bf-baseline) * 1.5);
+  column-gap: var(--bf-leading-mark-gap);
   display: inline-flex;
   inline-size: auto;
   justify-content: flex-start;
@@ -407,7 +407,7 @@ ${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-flex;
-  gap: calc(var(--bf-baseline) * 1);
+  gap: var(--bf-leading-mark-gap);
   inline-size: 100%;
   justify-content: flex-start;
   margin: 0;
@@ -499,12 +499,12 @@ ${bodyTypeStyles}  align-items: center;
 ${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
   display: flex;
-  gap: calc(var(--bf-baseline) * 2);
+  gap: var(--bf-component-inline-inset-action);
   inline-size: 100%;
   justify-content: space-between;
   min-inline-size: 0;
   padding-block: var(--bf-top-navigation-link-padding-block);
-  padding-inline: calc(var(--bf-top-navigation-link-padding-inline) + (var(--bf-baseline) * 2)) var(--bf-top-navigation-link-padding-inline);
+  padding-inline: calc(var(--bf-top-navigation-link-padding-inline) + var(--bf-component-inline-inset-action)) var(--bf-top-navigation-link-padding-inline);
   text-align: left;
   text-decoration: none;
   white-space: nowrap;
@@ -609,7 +609,7 @@ ${bodyTypeStyles}  align-items: center;
   :where(.bf-theme) :where(.bf-top-navigation-row) {
     align-items: stretch;
     flex-direction: row;
-    gap: calc(var(--bf-baseline) * 2);
+    gap: var(--bf-component-inline-inset-action);
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-banner) {
@@ -742,7 +742,7 @@ ${bodyTypeStyles}  background: transparent;
   inset-block-start: 0;
   margin: 0;
   min-block-size: var(--bf-interface-row-occupied-block-size);
-  padding-inline: calc(var(--bf-baseline) * 0.5);
+  padding-inline: var(--bf-inline-unit);
   position: absolute;
   right: 0;
 }
@@ -780,8 +780,8 @@ ${bodyTypeStyles}  background: transparent;
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-icon) {
   align-items: center;
   display: inline-flex;
-  flex: 0 0 1rem;
-  inline-size: 1rem;
+  flex: 0 0 var(--bf-disclosure-icon-inline-size);
+  inline-size: var(--bf-disclosure-icon-inline-size);
   justify-content: center;
   transform: translateY(var(--bf-side-navigation-icon-optical-offset-block));
 }
@@ -791,7 +791,7 @@ ${bodyTypeStyles}  background: transparent;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  --bf-side-navigation-row-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - 1rem - var(--bf-side-navigation-icon-gap)));
+  --bf-side-navigation-row-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-side-navigation-icon-gap)));
   align-items: baseline;
   column-gap: var(--bf-side-navigation-icon-gap);
 }
@@ -800,8 +800,8 @@ ${bodyTypeStyles}  background: transparent;
    icon without collapsing the shared icon track and pulling their copy left. */
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text):not(:has(> .bf-side-navigation-icon))::before {
   content: "";
-  flex: 0 0 1rem;
-  inline-size: 1rem;
+  flex: 0 0 var(--bf-disclosure-icon-inline-size);
+  inline-size: var(--bf-disclosure-icon-inline-size);
 }
 
 /* A collapsed icon rail cannot communicate an iconless destination. Remove

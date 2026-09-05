@@ -7,15 +7,16 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| None | — | No active numbered BF package. |
+| 020a Horizontal token adoption | [`020a-horizontal-token-adoption/`](../specs/020a-horizontal-token-adoption/) | Active on `feat/020a-horizontal-token-adoption`. BF-only: final Canonical component values and horizontal-axis separation; page/grid and Pragma are excluded. |
 
 ## Preserved drafts
 
 Specs 019 and 020 remain preserved on
 `feat/019-tier-responsive-action-insets`; do not merge that branch wholesale.
-The owner accepted Spec 020's supersession of Spec 019. Carry the approved 020a
-scope onto a fresh branch from then-current `main` only after design-tokens PR 2
-lands and the BF format-adapter boundary is ready.
+The owner accepted Spec 020's supersession of Spec 019. Its approved, later
+bounded 020a scope is now promoted on a fresh branch after design-tokens PR 2
+and the BF format adapter landed. The preserved drafts are source material,
+not active packages.
 
 ## Archive
 

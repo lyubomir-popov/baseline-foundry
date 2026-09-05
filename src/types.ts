@@ -41,17 +41,19 @@ export interface ThemeLayoutConfig {
 export interface ThemeComponentsConfig {
   borderWidthRem: number;
   radiusRem: number;
-  inlineInsetFieldRem: number;
-  inlineInsetActionRem: number;
-  inlineInsetContinuationRem: number;
+  inlineInsetFieldUnits: number;
+  inlineInsetActionUnits: number;
+  inlineInsetContinuationUnits: number;
+  markGapInlineUnits: number;
   controlVisualSizeRem: number;
   fieldGapBaselineUnits: number;
-  panelPaddingInlineBaselineUnits: number;
+  panelPaddingInlineUnits: number;
   panelPaddingBlockBaselineUnits: number;
 }
 
 export interface ThemeConfig {
   baselineUnit: number;
+  inlineUnitRem: number;
   fontFiles: ThemeFontFile[];
   fontStacks: Record<string, string>;
   elements: ThemeElementConfig[];
@@ -113,6 +115,7 @@ export interface ComponentTokens {
 
 export interface ThemeTokens {
   baselineUnit: string;
+  inlineUnit: string;
   canonicalSpacing?: ResolvedDtcgSpacing;
   spacing: ResolvedDtcgSpacing;
   fontFiles: ThemeFontFile[];

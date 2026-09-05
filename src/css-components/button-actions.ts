@@ -145,7 +145,7 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
 
 :where(.bf-theme) :where(.bf-button.is-icon) {
   align-items: center;
-  column-gap: var(--bf-space-1);
+  column-gap: var(--bf-leading-mark-gap);
   display: inline-flex;
   justify-content: center;
 }
