@@ -9,14 +9,18 @@ Canonical component matrix and separate component/panel inline spacing from
 the vertical baseline. Page/grid work is deferred to 020b. Pragma adoption is
 postponed by owner direction. No publication or release.
 
-The implementation is ready for independent review. `npm test` passes with
-22,133 build checks plus every component-baseline and browser-behavior family;
+The independent review returned **merge** with no P0/P1. All seven P2 record
+and hardening findings are corrected, including complete shorthand/physical
+horizontal-axis coverage, the fixed-disclosure continuation guard, a
+container-safe chip floor, explicit custom-theme migration guidance, and the
+1px Docs notification accent/mark overlap. `npm test` passes with 24,029 build
+checks plus every component-baseline and browser-behavior family;
 `npm run qa:components` rebuilt the package, captured 86 screenshots, and
 re-ran the component suite with zero failures. The focused four-tier visual
-review is clean. The adversarial request and the review-sensitive chip,
-notification, responsive-layout and pre-existing screenshot facts are in
-[`review.md`](specs/020a-horizontal-token-adoption/review.md). Do not land until
-that review resolves the explicit gates. No publication or release.
+review is clean. Exact evidence and the verdict are in
+[`review.md`](specs/020a-horizontal-token-adoption/review.md). The owner has
+authorized BF's direct fast-forward landing and push. No publication or
+release.
 
 ## Cross-repository token architecture
 

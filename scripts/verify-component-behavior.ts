@@ -1082,7 +1082,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     for (const boundary of [
       { width: 640, persistent: false, columns: 1, label: "at a narrow pattern allocation" },
       { width: 767, persistent: false, columns: 2, label: "below 48rem after the drawer releases space" },
-      { width: 768, persistent: true, columns: 2, label: "at 48rem with the Canonical continuation inset keeping the main allocation above its intrinsic split threshold" }
+      { width: 768, persistent: true, columns: 2, label: "at the start of the 768–779px App band where the Canonical continuation inset crosses the intrinsic split threshold" },
+      { width: 779, persistent: true, columns: 2, label: "at the end of the 768–779px App band where the previous continuation inset still left the composition below its intrinsic split threshold" }
     ] as const) {
       await page.setViewportSize({ width: boundary.width, height: 960 });
       await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -2876,6 +2877,21 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         assertNoClip(chips[3], `${tier}/${tone} four-character chip`);
         assertNoClip(chips[4], `${tier}/${tone} five-character chip`);
         await assertTargetSizeOrSpacing("button[data-block-derived-chip]:not(.is-nested)", `${tier}/${tone} interactive standalone chip`);
+        if (tier === "os") {
+          const constrainedFloor = await page.evaluate(() => {
+            const host = document.createElement("div");
+            host.style.cssText = "display:block;inline-size:calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2) - 2px);position:fixed;visibility:hidden";
+            const chip = document.createElement("span");
+            chip.className = "bf-chip";
+            host.append(chip);
+            document.body.append(host);
+            const hostWidth = host.getBoundingClientRect().width;
+            const chipWidth = chip.getBoundingClientRect().width;
+            host.remove();
+            return { hostWidth, chipWidth };
+          });
+          assert(constrainedFloor.chipWidth <= constrainedFloor.hostWidth + shapeTolerance, `Expected the ${tier}/${tone} chip floor to yield to a containing block narrower than the paint-derived minimum; got ${JSON.stringify(constrainedFloor)}.`);
+        }
       }
     }
 
@@ -3328,7 +3344,7 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
           borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth)
         };
       });
-      assert(chip.width > chip.height + shapeTolerance, `Expected the forced-scale ${tier} Action-framed chip to remain an intrinsic stadium without a block-derived floor; got ${JSON.stringify(chip)}.`);
+      assert(chip.width > chip.height + shapeTolerance, `Expected the forced-scale ${tier} Action-framed chip to remain a stadium with its bounded paint-derived floor; got ${JSON.stringify(chip)}.`);
       if ([chip.borderBlockStartWidth, chip.borderBlockEndWidth].some(width => width > 0.65 && width < 0.68)) {
         sawFractionalBorder = true;
       }
@@ -4979,8 +4995,10 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         const leadingIconGaps = borderedNotifications.map(notification => {
           const notificationRect = notification.getBoundingClientRect();
           const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
-          const barWidth = Number.parseFloat(getComputedStyle(notification).borderInlineStartWidth);
-          return iconRect.left - notificationRect.left - barWidth;
+          const notificationStyle = getComputedStyle(notification);
+          const accentStyle = getComputedStyle(notification, "::before");
+          const accentEnd = notificationRect.left + Number.parseFloat(notificationStyle.borderInlineStartWidth) + Number.parseFloat(accentStyle.insetInlineStart) + Number.parseFloat(accentStyle.inlineSize);
+          return iconRect.left - accentEnd;
         });
         const iconToTextGaps = notifications.map(notification => {
           const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
@@ -4990,7 +5008,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         const referenceIcon = borderedNotifications[0]?.querySelector<HTMLElement>(".bf-notification-icon");
         const referenceIconSize = referenceIcon?.getBoundingClientRect().width ?? 0;
         const referenceBarWidth = borderedNotifications[0]
-          ? Number.parseFloat(getComputedStyle(borderedNotifications[0]).borderInlineStartWidth)
+          ? Number.parseFloat(getComputedStyle(borderedNotifications[0], "::before").inlineSize)
           : 0;
         const iconFirstLineCentreDeltas = notifications.map(notification => {
           const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
@@ -5036,12 +5054,15 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         const rtlNotificationRect = rtlNotification.getBoundingClientRect();
         const rtlIconRect = (rtlNotification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
         const rtlContentRect = (rtlNotification.querySelector(".bf-notification-content") as HTMLElement).getBoundingClientRect();
-        const rtlBarWidth = Number.parseFloat(getComputedStyle(rtlNotification).borderInlineStartWidth);
+        const rtlNotificationStyle = getComputedStyle(rtlNotification);
+        const rtlAccentStyle = getComputedStyle(rtlNotification, "::before");
+        const rtlBarWidth = Number.parseFloat(rtlAccentStyle.inlineSize);
+        const rtlAccentStart = rtlNotificationRect.right - Number.parseFloat(rtlNotificationStyle.borderInlineStartWidth) - Number.parseFloat(rtlAccentStyle.insetInlineStart) - rtlBarWidth;
         const rtlClose = document.querySelector<HTMLElement>(".bf-notification-close");
         const rtlCloseRootRect = (rtlClose?.closest(".bf-notification") as HTMLElement).getBoundingClientRect();
         const rtlCloseRect = rtlClose?.getBoundingClientRect();
         const rtlGeometry = {
-          leadingIconGap: rtlNotificationRect.right - rtlIconRect.right - rtlBarWidth,
+          leadingIconGap: rtlAccentStart - rtlIconRect.right,
           iconToTextGap: rtlIconRect.left - rtlContentRect.right,
           closeAtInlineEnd: Boolean(rtlCloseRect && rtlCloseRect.left < rtlCloseRootRect.left + (rtlCloseRootRect.width / 2))
         };
@@ -5060,7 +5081,8 @@ async function verifyParityInteractions(origin: string): Promise<void> {
             const message = notification.querySelector(".bf-notification-message");
             return !notification.querySelector(".bf-notification-title") && message?.children.length === 1 && message.firstElementChild?.tagName === "STRONG";
           }),
-          accentWidths: borderedNotifications.map(notification => Number.parseFloat(getComputedStyle(notification).borderInlineStartWidth)),
+          accentWidths: borderedNotifications.map(notification => Number.parseFloat(getComputedStyle(notification, "::before").inlineSize)),
+          rootLeadingBorders: borderedNotifications.map(notification => Number.parseFloat(getComputedStyle(notification).borderInlineStartWidth)),
           paddingBlockStarts: notifications.map(notification => Number.parseFloat(getComputedStyle(notification).paddingBlockStart)),
           leadingIconGaps,
           iconToTextGaps,
@@ -5068,7 +5090,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           metricFlushPairs,
           closeClearances,
           rtlGeometry,
-          expectedLeadingIconGap: continuationInset - referenceIconSize - markGap - referenceBarWidth,
+          expectedLeadingIconGap: Math.max(0, continuationInset - referenceIconSize - markGap - referenceBarWidth),
           expectedIconToTextGap: markGap,
           heights: notifications.map(notification => notification.getBoundingClientRect().height),
           overflow: notifications.map(notification => notification.scrollWidth - notification.clientWidth)
@@ -5076,8 +5098,9 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       });
       assert(geometry.baseline > 0, `Expected ${tier} notification fixture to resolve a positive baseline.`);
       assert(geometry.barThicknessToken === "0.1875rem" && geometry.accentWidths.every(width => width === 3), `Expected ${tier} notification accents to use the shared 3px/0.1875rem emphasis bar; got ${geometry.accentWidths.join(", ")}px/${geometry.barThicknessToken}.`);
+      assert(geometry.rootLeadingBorders.every(width => width === 1), `Expected ${tier} notification accent paint not to consume the continuation rail; root borders=${geometry.rootLeadingBorders.join(", ")}px.`);
       assert(geometry.paddingBlockStarts.every(padding => padding === 0), `Expected ${tier} notification roots to have no top padding; got ${geometry.paddingBlockStarts.join(", ")}px.`);
-      assert(geometry.leadingIconGaps.every(gap => Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification icons to preserve the shared label continuation while retaining the compact icon-to-text gap (${geometry.expectedLeadingIconGap}px after the bar); got ${geometry.leadingIconGaps.join(", ")}px.`);
+      assert(geometry.leadingIconGaps.every(gap => gap >= -0.05 && Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification accent paint not to overlap the leading icon while preserving the shared continuation (${geometry.expectedLeadingIconGap}px after the bar); got ${geometry.leadingIconGaps.join(", ")}px.`);
       assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal the shared Canonical mark gap (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
       assert(geometry.iconFirstLineCentreDeltas.every(delta => delta <= 0.05), `Expected ${tier} notification severity icons to align to the first title/body line; centre deltas=${geometry.iconFirstLineCentreDeltas.join(", ")}px.`);
       assert(geometry.metricFlushPairs.length === 4 && geometry.metricFlushPairs.every(pair => pair.marginEnd === 0 && pair.paddingStart === 0 && pair.stackGap === 0 && pair.glyphGap <= geometry.baseline + 1), `Expected ${tier} separate notification roles to use the metric-flush relationship; got ${JSON.stringify(geometry.metricFlushPairs)} at ${geometry.baseline}px baseline.`);

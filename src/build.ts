@@ -26,6 +26,8 @@ import type {
   TypographyToken
 } from "./types.js";
 
+const DISCLOSURE_ICON_INLINE_SIZE_REM = 1;
+
 export interface AdditionalThemeSurfaceBuildConfig {
   name: string;
   configPath: string;
@@ -205,9 +207,9 @@ export function validateThemeConfig(config: ThemeConfig): void {
     throw new Error("Component inline inset counts must be ordered field <= action <= continuation.");
   }
   const authoredContinuation = config.components.inlineInsetContinuationUnits * config.inlineUnitRem;
-  const authoredMarkNeed = config.components.controlVisualSizeRem + (config.components.markGapInlineUnits * config.inlineUnitRem);
-  if (authoredContinuation < authoredMarkNeed) {
-    throw new Error(`Component continuation inset ${toRem(authoredContinuation)} cannot contain its visual and mark gap ${toRem(authoredMarkNeed)}.`);
+  const authoredDisclosureNeed = DISCLOSURE_ICON_INLINE_SIZE_REM + (config.components.markGapInlineUnits * config.inlineUnitRem);
+  if (authoredContinuation < authoredDisclosureNeed) {
+    throw new Error(`Component continuation inset ${toRem(authoredContinuation)} cannot contain its fixed disclosure canvas and mark gap ${toRem(authoredDisclosureNeed)}.`);
   }
 
   const elementIdentifiers = new Set<string>();

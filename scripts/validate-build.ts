@@ -278,25 +278,70 @@ function expectedTierProperties(tokens: Record<string, unknown>): Map<string, st
 }
 
 function validateHorizontalAxisSeparation(css: string, label: string): void {
-  const horizontalProperties = new Set([
+  const horizontalLonghands = new Set([
     "padding-inline",
     "padding-inline-start",
     "padding-inline-end",
+    "padding-left",
+    "padding-right",
     "margin-inline",
     "margin-inline-start",
     "margin-inline-end",
+    "margin-left",
+    "margin-right",
     "column-gap",
     "inset-inline",
     "inset-inline-start",
-    "inset-inline-end"
+    "inset-inline-end",
+    "left",
+    "right"
   ]);
+  const horizontalShorthands = new Set(["padding", "margin", "inset"]);
+  const verticalSpacingReference = /var\(--bf-(?:baseline|space-)/;
+  const splitTopLevelWhitespace = (value: string): string[] => {
+    const parts: string[] = [];
+    let current = "";
+    let depth = 0;
+    for (const character of value.trim()) {
+      if (character === "(") depth += 1;
+      else if (character === ")") depth -= 1;
+      if (/\s/.test(character) && depth === 0) {
+        if (current) {
+          parts.push(current);
+          current = "";
+        }
+      } else {
+        current += character;
+      }
+    }
+    if (current) parts.push(current);
+    return parts;
+  };
+  const shorthandInlineValues = (value: string): string[] => {
+    const parts = splitTopLevelWhitespace(value);
+    if (parts.length === 1) return parts;
+    if (parts.length === 2 || parts.length === 3) return [parts[1]];
+    return [parts[1], parts[3]];
+  };
+  const inlineValuesForDeclaration = (property: string, value: string): string[] | undefined => horizontalLonghands.has(property)
+    ? [value]
+    : horizontalShorthands.has(property)
+      ? shorthandInlineValues(value)
+      : undefined;
+  if (label === "default") {
+    assert(inlineValuesForDeclaration("padding", "0 calc(var(--bf-baseline) * 2)")?.some(value => verticalSpacingReference.test(value)), "Expected the axis audit to detect vertical baseline provenance in padding shorthand inline operands.");
+    assert(inlineValuesForDeclaration("padding-left", "calc(var(--bf-baseline) * 2)")?.some(value => verticalSpacingReference.test(value)), "Expected the axis audit to detect vertical baseline provenance in physical padding longhands.");
+    assert(inlineValuesForDeclaration("margin", "var(--bf-space-1) var(--bf-component-inline-inset-action)")?.every(value => !verticalSpacingReference.test(value)), "Expected the axis audit to allow vertical spacing in a shorthand block operand when the inline operand has an inline owner.");
+    assert(inlineValuesForDeclaration("inset", "var(--bf-space-1) var(--bf-inline-unit) 0 var(--bf-component-inline-inset-field)")?.every(value => !verticalSpacingReference.test(value)), "Expected the axis audit to inspect both inline operands of a four-value shorthand independently.");
+  }
   let declarations = 0;
   parseCss(css).walkDecls(declaration => {
-    if (!horizontalProperties.has(declaration.prop)) return;
+    const values = inlineValuesForDeclaration(declaration.prop, declaration.value);
+    if (!values) return;
     declarations += 1;
     assert(
-      !declaration.value.includes("var(--bf-baseline)") && !declaration.value.includes("var(--bf-space-"),
-      `Expected ${label} ${declaration.prop} to avoid vertical-baseline spacing provenance, got ${declaration.value}.`
+      values.every(value => !verticalSpacingReference.test(value)),
+      `Expected ${label} ${declaration.prop} inline value(s) to avoid vertical-baseline spacing provenance, got ${declaration.value}.`
     );
   });
   assert(declarations > 0, `Expected ${label} axis audit to inspect horizontal spacing declarations.`);
@@ -1026,10 +1071,13 @@ function validateCommonCss(css: string): void {
   }, "chips keep the canonical neutral token defaults and inline chip layout");
   assertRuleHasDecl(ast, ":where(.bf-theme)", {
     "--bf-ui-chip-padding-inline": "var(--bf-component-inline-inset-action)"
-  }, "chips use the shared Action inset without an inert block-derived minimum");
+  }, "chips use the shared Action inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
-    "min-inline-size": "calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2))"
-  }, "short Action-framed chips retain a stadium silhouette under the dense Canonical inset without changing block geometry");
+    "min-inline-size": "min(100%, calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2)))"
+  }, "short Action-framed chips retain a container-safe stadium silhouette under the dense Canonical inset without changing block geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested)", {
+    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)))"
+  }, "short nested chips retain the same container-safe stadium contract");
   assert(css.includes("--bf-ui-chip-radius: 999rem;") && css.includes("border-radius: var(--bf-ui-chip-radius);"), "Expected standalone and nested chips to use the shared rem-based pill radius.");
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");

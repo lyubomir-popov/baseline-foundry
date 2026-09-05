@@ -134,6 +134,14 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Fieldset, modal regions, drawer chrome | Structural surface padding | Region-owned | Uses `--bf-panel-padding-inline`, not a component inset |
 | Page, grid, navigation nesting | Structural layout | Layout-owned | Never folded into component padding |
 
+The continuation-fit build guard uses the fixed `1rem` disclosure canvas plus
+the active Canonical mark gap, not the smaller tier control visual. Docs and OS
+sit exactly on that boundary, so a tighter continuation value fails before CSS
+generation instead of silently reaching the `max(0rem, …)` placement clamp.
+Notifications retain the tier leading-mark size and Canonical gap. Their 3px
+accent is non-consuming paint; if that paint would oversubscribe the rail, only
+the paint protrudes by the exact shortfall so it cannot overlap the icon.
+
 ## Reviewed compositions
 
 Side-navigation lists preserve the same natural link paint and trailing

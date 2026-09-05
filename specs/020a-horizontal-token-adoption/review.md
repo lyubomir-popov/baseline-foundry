@@ -1,8 +1,8 @@
-# Adversarial review request: Horizontal token adoption
+# Review: Horizontal token adoption
 
 Date: 2026-09-05
 
-Status: ready for independent review; do not merge on this document alone.
+Status: independent verdict `merge`; P2 record/hardening corrections applied.
 
 Review range: `890c35372c9d85067bdc491825ce0d823d8a887e..HEAD` on
 `feat/020a-horizontal-token-adoption`
@@ -13,11 +13,13 @@ Provider: design-tokens
 Provider matrix SHA-256:
 `97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571`
 
-## Requested verdict
+## Independent verdict
 
-Return one of `merge`, `accept with required corrections`, or `do not merge`.
-List P0/P1 blockers first. Please derive evidence from the branch rather than
-trusting this request or the implementation's own assertions.
+**Merge. No P0/P1 blockers.** The reviewer independently authenticated the
+provider and all 48 effective values, exercised digest laundering and authored
+count drift, checked aliases/custom themes/page-grid isolation and measured the
+chip and notification edge cases. The implementation was accepted; seven P2
+record/hardening findings are captured below and corrected where in scope.
 
 ## Intended result
 
@@ -53,15 +55,16 @@ scope. Pragma is explicitly postponed and untouched.
   mark-gap and surface-inline inputs. All built-ins use `0.25rem`; block inputs
   remain baseline-unit counts.
 - Rejects missing, fractional, negative and non-finite inline inputs, unordered
-  inset counts, and continuation rails smaller than the tier's leading visual
-  plus Canonical mark gap.
+  inset counts, and continuation rails smaller than the fixed 1rem disclosure
+  canvas plus Canonical mark gap.
 - Reassigns component/panel horizontal spacing to field, action,
   continuation, mark-gap, surface-inline or the quarter-rem inline unit.
   Explicit page/grid owners remain untouched.
-- Adds a generated-CSS AST check for explicit `padding-inline*`,
-  `margin-inline*`, `column-gap` and `inset-inline*` declarations. It runs 225
-  assertions over each of eight emitted bundles and rejects `--bf-baseline` or
-  `--bf-space-*` provenance in that bounded class.
+- Adds a generated-CSS AST check for logical and physical padding, margin and
+  inset longhands, `left`/`right`, `column-gap`, and the `padding`/`margin`/
+  `inset` shorthands. Shorthand operands are interpreted by axis. The audit
+  rejects `--bf-baseline` or `--bf-space-*` provenance in inline operands and
+  includes direct adversarial probes for shorthand and physical spellings.
 
 ## Deliberate and review-sensitive consequences
 
@@ -70,22 +73,23 @@ These are not hidden as "geometry unchanged":
 1. The final Docs/App/OS component values visibly narrow the approved command
    and continuation rails. This is the purpose of 020a.
 2. A one-character OS chip became narrower than its painted block and therefore
-   circular. The implementation adds a paint-derived inline minimum to regular
-   and nested chips so short text-bearing chips remain stadiums. It changes no
-   block size, but it does reactivate block-derived inline geometry for this
-   bounded case. Decide whether that is a valid invariant-preserving consequence
-   or violates the 020a boundary.
-3. Notification severity icons now use `--bf-leading-mark-size` and the shared
-   Canonical mark gap rather than a fixed 1rem icon plus vertical `space-1`.
-   This makes the visual and gap fit the authenticated continuation rail;
-   verify that the smaller Docs/OS glyph is acceptable and that the 3px accent
-   bar interaction is sound in LTR and RTL.
-4. At the existing 768px App fixture, the narrower final rail leaves enough
-   intrinsic width for the basic-section composition to remain two columns;
-   the old matrix produced one. No breakpoint or grid/page token changed.
+   circular. The accepted paint-derived inline minimum keeps short text-bearing
+   chips stadium-shaped without changing block size, and is capped with
+   `min(100%, …)` so a container narrower than the floor cannot be overflowed.
+3. Notification severity icons use `--bf-leading-mark-size` and the shared
+   Canonical mark gap. The review found a 1px Docs overlap between the 3px
+   accent and 14px mark. The accent is now non-consuming paint that protrudes
+   by the exact rail shortfall, preserving mark size, gap and text keyline with
+   no overlap in LTR or RTL.
+4. Across the roughly 768–779px App viewport band, the narrower final rail
+   leaves enough intrinsic width for the basic-section composition to remain
+   two columns; the old matrix produced one. At 768px the allocation changes
+   from 608px to 624px against the unchanged 620px container threshold. No
+   breakpoint or grid/page token changed.
 5. The standard side-navigation QA screenshot contains overlapping demo states.
    The landed-main screenshot from 2026-09-04 shows the same overlap, so it is
-   recorded as pre-existing rather than repaired in this token contribution.
+   recorded in `TODO.md` as a separate pre-existing demo-capture defect rather
+   than repaired inside token adoption.
 
 Fixed/content/block-derived `inline-size` uses remain explicit exemptions; so
 do single-column or first-value vertical `gap` uses. The breadcrumb two-value
@@ -96,9 +100,11 @@ gap is asserted as vertical row gap plus horizontal Canonical mark gap.
 From the isolated worktree on this branch:
 
 - `npm test` — pass.
-  - Build validation: 22,133 checks.
+  - Build validation: 24,029 checks.
   - Canonical adapter invariant: 818 checks.
-  - Horizontal-axis invariant: 225 checks in each of eight bundles (1,800).
+  - Horizontal-axis invariant: 462 checks in the default bundle (including four
+    direct adversarial parser probes) and 458 in each of the other seven
+    bundles, 3,668 total.
   - Four-tier CSS/token parity: 516 checks.
   - Full component baseline suite: all named fixtures/tier probes passed.
   - Full browser behavior verification: passed.
@@ -111,7 +117,8 @@ From the isolated worktree on this branch:
   - `demo/components/notification.html` in Docs.
   - Field/action/continuation keylines remained aligned; no new overlap or
     clipping was observed.
-- `git diff --check` — pass.
+- `git diff 890c353 --check` — pass after removing the original Markdown
+  trailing-space/EOF defects.
 
 The browser behavior suite also exercises all four tiers, LTR/RTL, changed
 responsive widths, 1.25 root-font scaling, and the existing non-100% browser
@@ -132,13 +139,15 @@ alignment, overflow, target/paint preservation and duplicate ownership.
 5. Try missing, zero, negative, fractional, `NaN` and infinite inline units and
    counts. Also try field > action, action > continuation, and visual + mark gap
    > continuation. Does production fail before output?
-6. Search generated CSS semantically, not just textually. Are any explicit
-   horizontal spacing declarations still baseline/`--bf-space-*` derived, and
-   are the documented exemptions genuinely dimensions or block-axis gaps?
+6. Search generated CSS semantically, including logical and physical
+   padding/margin/inset longhands, `left`/`right`, `column-gap`, and the inline
+   operands of `padding`/`margin`/`inset` shorthands. Fixed/content-derived
+   inline sizes and unused column operands on proven single-column grids are
+   the bounded dimension/block-axis exemptions.
 7. Measure the seven affected values in all four tiers, direct/class scopes,
    LTR/RTL, 1.25 root scaling and non-100% zoom. Are keylines exact and is there
    any horizontal overflow?
-8. Red/green the new 1,800 horizontal-axis assertions by restoring representative
+8. Red/green the horizontal-axis assertions by restoring representative
    baseline/space dependencies. Do they reject real regressions without merely
    asserting CSS initial values?
 9. Attack the chip floor with empty, one-character, nested, bordered and
@@ -149,14 +158,31 @@ alignment, overflow, target/paint preservation and duplicate ownership.
     clearance in every tier and direction. Is the shared leading-mark sizing the
     correct contract, or is it an impermissible component repair?
 11. Confirm page/grid/content-padding declarations and computed values are
-    unchanged from `890c353`, and that the 768px two-column App consequence is
-    intrinsic rather than a hidden 020b change.
+    unchanged from `890c353`, and that the 768–779px two-column App consequence
+    is intrinsic rather than a hidden 020b change.
 12. Confirm typography selectors—including the documented pre-existing `.os`
     reset asymmetry—are unchanged, and audit the diff for density, Pragma,
     release, publication or unrelated work.
 
+## P2 findings and disposition
+
+1. Audit missed shorthands/physical properties: fixed; the four shipped cases
+   were migrated to inline owners and adversarial syntax probes were added.
+2. Continuation guard modeled the control visual: fixed; it now models the
+   actual fixed 1rem disclosure canvas, with an OS case that the old guard
+   accepted and the new guard rejects.
+3. Chip floor could beat `max-inline-size`: fixed with `min(100%, …)`.
+4. Public config break was not called out: fixed in README and publishing docs;
+   the first release containing 020a must be `0.2.0` or later. No release is
+   authorized here.
+5. `git diff --check` claim was false: Markdown whitespace/EOF defects fixed and
+   the range-aware command recorded.
+6. App consequence described one pixel: corrected to the measured 768–779px
+   band and its 608/624/620px arithmetic.
+7. Side-navigation capture overlap: confirmed pre-existing and placed in the
+   unnumbered backlog as separate demo-fixture work.
+
 ## Landing gate
 
-Do not merge until an independent reviewer returns no P0/P1 and resolves the
-chip-floor and notification questions explicitly. No release or publication is
-authorized by this package.
+Satisfied by the independent `merge` verdict and the recorded P2 corrections.
+No release or publication is authorized by this package.

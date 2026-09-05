@@ -19,4 +19,3 @@ The implementation is split into reviewable stages: remove the overlay and
 adopt final values; introduce/configure the inline axis; migrate component
 horizontal consumers; then add rendered evidence. Page/grid inputs and
 `src/css-grid.ts` are deliberately excluded for 020b.
-

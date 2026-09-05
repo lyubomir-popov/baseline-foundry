@@ -450,7 +450,8 @@ export function contentCardCss(): string {
     block-size: 100%;
     grid-column: 2;
     grid-row: 1;
-    padding: var(--bf-space-1) var(--bf-space-1) 0;
+    padding-block: var(--bf-space-1) 0;
+    padding-inline: var(--bf-component-inline-inset-field);
   }
 
   :where(.bf-theme) :where(.bf-content-card.is-cols-8) :where(.bf-content-card-image) {

@@ -1,8 +1,10 @@
 # Spec 020a: Horizontal token adoption
 
-**Feature branch**: `feat/020a-horizontal-token-adoption`  
-**Date**: 2026-09-05  
-**Status**: Active
+**Feature branch**: `feat/020a-horizontal-token-adoption`
+
+**Date**: 2026-09-05
+
+**Status**: Accepted for direct landing
 
 ## Problem
 
@@ -48,7 +50,7 @@ effective built-in source and keep the horizontal and vertical axes coupled.
    [the contract](contracts/component-horizontal-matrix.md).
 3. Built-in config validation rejects missing, fractional, negative or
    non-finite inline units/counts and rejects a continuation inset that cannot
-   contain its visual plus mark gap.
+   contain the fixed 1rem disclosure canvas plus mark gap.
 4. Component inset, surface-inline and shared mark/icon-gap values are not
    derived from `baselineUnit`, `...BaselineUnits`, `--bf-baseline` or
    `--bf-space-*`.
@@ -61,4 +63,3 @@ effective built-in source and keep the horizontal and vertical axes coupled.
    reducing checkbox/radio target or painted size.
 8. `npm test` and `npm run qa:components` pass. An adversarial review request
    records exact evidence before landing.
-

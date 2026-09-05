@@ -66,6 +66,12 @@ durable release evidence; documentation must not claim public provenance.
 
 ## Compatibility
 
+The first release containing Spec 020a must use `0.2.0` or later, not a
+`0.1.x` patch: its exported custom-theme configuration shape is intentionally
+breaking. The required field-by-field migration is documented in the README's
+"What the downstream config needs" section. This requirement does not
+authorize a version bump, publication, tag, or release during 020a landing.
+
 Keeping the package name means normal consumers do not change imports:
 
 ```js

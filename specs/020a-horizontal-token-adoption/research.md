@@ -28,4 +28,3 @@ dimensions and the twelve Canonical identifiers remain unchanged.
 The shared mark gap is the owner for icon-to-label spacing where the visual
 relationship is the same. A component may keep a different named horizontal
 contract only when its geometry is demonstrably not that relationship.
-

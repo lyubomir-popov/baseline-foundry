@@ -29,6 +29,10 @@ matching feature branch only when its catalogued evidence trigger is met.
 
 ## Unnumbered backlog
 
+- Repair the pre-existing side-navigation screenshot fixture: its captured
+  expanded/collapsed demo states overlap in both `main` and 020a even though
+  the measured component geometry is green. Keep this separate from token
+  adoption.
 - Switch versus slider track language.
 - Downstream-generated authoring chroma surface; never a built-in tier by
   default.

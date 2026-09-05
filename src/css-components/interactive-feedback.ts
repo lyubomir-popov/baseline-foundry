@@ -74,9 +74,9 @@ export function interactiveFeedbackCss(): string {
 :where(.bf-theme) :where(.bf-notification, .bf-notification.is-information, .bf-notification.is-positive, .bf-notification.is-caution, .bf-notification.is-negative) {
   --bf-notification-accent: var(--bf-color-border-information);
   --bf-notification-close-painted-block-size: calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default));
+  --bf-notification-rail-shortfall: max(0rem, calc(var(--bf-bar-thickness) + var(--bf-leading-mark-size) + var(--bf-leading-mark-gap) - var(--bf-component-inline-inset-continuation)));
   background: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-default);
-  border-inline-start: var(--bf-bar-thickness) solid var(--bf-notification-accent);
   color: var(--bf-color-text-default);
   margin-block: 0;
   max-inline-size: 100%;
@@ -84,8 +84,18 @@ export function interactiveFeedbackCss(): string {
   overflow-wrap: anywhere;
   padding-block-end: max(0rem, calc(var(--bf-space-half) - var(--bf-border-width)));
   padding-block-start: 0;
-  padding-inline: calc(var(--bf-component-inline-inset-continuation) - var(--bf-bar-thickness)) var(--bf-component-inline-inset-action);
+  padding-inline: calc(var(--bf-component-inline-inset-continuation) - var(--bf-border-width)) var(--bf-component-inline-inset-action);
   position: relative;
+}
+
+:where(.bf-theme) :where(.bf-notification:not(.is-borderless))::before {
+  background: var(--bf-notification-accent);
+  content: "";
+  inline-size: var(--bf-bar-thickness);
+  inset-block: calc(var(--bf-border-width) * -1);
+  inset-inline-start: calc((var(--bf-border-width) + var(--bf-notification-rail-shortfall)) * -1);
+  pointer-events: none;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-notification.is-positive) {
@@ -115,7 +125,7 @@ export function interactiveFeedbackCss(): string {
   background-color: var(--bf-notification-accent);
   background-image: none;
   inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-h6-nudge-start) - var(--bf-border-width));
-  inset-inline-start: calc(var(--bf-component-inline-inset-continuation) - var(--bf-bar-thickness) - var(--bf-leading-mark-size) - var(--bf-leading-mark-gap));
+  inset-inline-start: calc(var(--bf-component-inline-inset-continuation) - var(--bf-border-width) - var(--bf-leading-mark-size) - var(--bf-leading-mark-gap));
   margin-block-start: 0;
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-.75 5.25h1.5v5h-1.5v-5zM8 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z'/%3E%3C/svg%3E");
   mask-position: center;

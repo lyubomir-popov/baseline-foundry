@@ -814,8 +814,8 @@ ${listCss({ bodyTypeStyles })}
 ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-background-alt);
   color: var(--bf-color-link-default);
   display: block;
-  left: -62.4375rem;
-  max-inline-size: calc(100vw - var(--bf-baseline));
+  inset-inline-start: -62.4375rem;
+  max-inline-size: calc(100vw - (var(--bf-inline-unit) * 2));
   position: absolute;
   text-decoration: none;
   top: -62.4375rem;
@@ -826,7 +826,7 @@ ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-backgrou
 }
 
 :where(.bf-theme) :where(.bf-skip-link:focus, .bf-skip-link:focus-visible) {
-  left: calc(var(--bf-baseline) * 0.5);
+  inset-inline-start: var(--bf-inline-unit);
   outline: 0.125rem solid var(--bf-color-focus);
   outline-offset: 0;
   padding-block: calc(var(--bf-baseline) * 1.5);
@@ -999,6 +999,8 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 }
 
 :where(.bf-theme) :where(.bf-tooltip) {
+  --bf-tooltip-arrow-size: calc(var(--bf-baseline) * 0.5);
+  --bf-tooltip-arrow-offset-inline: calc(var(--bf-tooltip-arrow-size) * 1.5);
   display: inline-flex;
   position: relative;
   text-decoration: inherit;
@@ -1015,7 +1017,7 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
   box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default), 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
   color: var(--bf-color-text-default);
   inline-size: max-content;
-  left: 0;
+  inset-inline-start: 0;
   margin: 0;
   max-inline-size: min(20rem, calc(100vw - (var(--bf-baseline) * 4)));
   opacity: 0;
@@ -1039,17 +1041,17 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 
 :where(.bf-theme) :where(.bf-tooltip-message)::before {
   block-size: 0;
-  border-bottom: calc(var(--bf-baseline) * 0.5) solid var(--bf-color-background-alt);
-  border-inline: calc(var(--bf-baseline) * 0.5) solid transparent;
+  border-bottom: var(--bf-tooltip-arrow-size) solid var(--bf-color-background-alt);
+  border-inline: var(--bf-tooltip-arrow-size) solid transparent;
   bottom: 100%;
   content: "";
   inline-size: 0;
-  left: calc(var(--bf-baseline) * 0.75);
+  inset-inline-start: var(--bf-tooltip-arrow-offset-inline);
   position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-detached) > :where(.bf-tooltip-message) {
-  left: auto;
+  inset-inline-start: auto;
   pointer-events: auto;
   position: static;
   top: auto;
@@ -1061,23 +1063,23 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-btm-center) > :where(.bf-tooltip-message) {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translate(-50%, calc(var(--bf-baseline) - var(--bf-border-width)));
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-btm-center) > :where(.bf-tooltip-message)::before {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%);
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-btm-right) > :where(.bf-tooltip-message) {
-  left: auto;
-  right: 0;
+  inset-inline-end: 0;
+  inset-inline-start: auto;
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-btm-right) > :where(.bf-tooltip-message)::before {
-  left: auto;
-  right: calc(var(--bf-baseline) * 0.75);
+  inset-inline-end: var(--bf-tooltip-arrow-offset-inline);
+  inset-inline-start: auto;
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-top-left, .bf-tooltip.is-top-center, .bf-tooltip.is-top-right) > :where(.bf-tooltip-message) {
@@ -1088,30 +1090,30 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 
 :where(.bf-theme) :where(.bf-tooltip.is-top-left, .bf-tooltip.is-top-center, .bf-tooltip.is-top-right) > :where(.bf-tooltip-message)::before {
   border-bottom: 0;
-  border-inline: calc(var(--bf-baseline) * 0.5) solid transparent;
-  border-top: calc(var(--bf-baseline) * 0.5) solid var(--bf-color-background-alt);
+  border-inline: var(--bf-tooltip-arrow-size) solid transparent;
+  border-top: var(--bf-tooltip-arrow-size) solid var(--bf-color-background-alt);
   bottom: auto;
   top: 100%;
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-top-center) > :where(.bf-tooltip-message) {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translate(-50%, calc(var(--bf-baseline) * -1));
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-top-center) > :where(.bf-tooltip-message)::before {
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translateX(-50%);
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-top-right) > :where(.bf-tooltip-message) {
-  left: auto;
-  right: 0;
+  inset-inline-end: 0;
+  inset-inline-start: auto;
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-top-right) > :where(.bf-tooltip-message)::before {
-  left: auto;
-  right: calc(var(--bf-baseline) * 0.75);
+  inset-inline-end: var(--bf-tooltip-arrow-offset-inline);
+  inset-inline-start: auto;
 }
 
 :where(.bf-theme) :where(nav.bf-pagination) {

@@ -453,6 +453,18 @@ At minimum, define:
 - `layout`
 - `components`
 
+> **Unreleased custom-theme migration:** 020a changes the exported
+> `ThemeConfig`/`ThemeComponentsConfig` shape and therefore also changes what
+> `readThemeConfig` accepts. Existing custom themes must add
+> `inlineUnitRem` (the built-in value is `0.25`) and replace
+> `inlineInsetFieldRem`, `inlineInsetActionRem`, and
+> `inlineInsetContinuationRem` with whole-unit `inlineInset*Units` counts. Add
+> `markGapInlineUnits`, and replace `panelPaddingInlineBaselineUnits` with
+> `panelPaddingInlineUnits`. Convert a previous rem value with
+> `rem / inlineUnitRem`; convert the previous panel baseline count with
+> `(oldCount * baselineUnit) / inlineUnitRem`. Old config files fail fast after
+> this change. No release containing this API change has been published.
+
 Example sketch for a downstream Ubuntu Sans theme:
 
 ```json

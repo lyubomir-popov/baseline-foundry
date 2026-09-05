@@ -231,14 +231,14 @@ export async function validateDtcgSpacingContracts(
     assert(JSON.stringify(adapted) === JSON.stringify(builtCanonical), `Expected effective and canonical spacing records to be identical after 020a for ${tier}.`);
   }
 
-  const validConfig = JSON.parse(await fs.readFile(path.resolve("config/tiers/editorial.json"), "utf8")) as ThemeConfig;
+  const validConfig = JSON.parse(await fs.readFile(path.resolve("config/tiers/os.json"), "utf8")) as ThemeConfig;
   const invalidCases: Array<[string, (config: ThemeConfig) => void]> = [
     ["missing inline unit", config => { delete (config as Partial<ThemeConfig>).inlineUnitRem; }],
     ["non-finite inline unit", config => { config.inlineUnitRem = Number.NaN; }],
     ["negative inline count", config => { config.components.markGapInlineUnits = -1; }],
     ["fractional inline count", config => { config.components.inlineInsetActionUnits = 3.5; }],
     ["misordered inline insets", config => { config.components.inlineInsetFieldUnits = config.components.inlineInsetActionUnits + 1; }],
-    ["continuation fit", config => { config.components.inlineInsetContinuationUnits = 5; }]
+    ["fixed disclosure continuation fit", config => { config.components.inlineInsetContinuationUnits = 4; }]
   ];
   for (const [label, mutate] of invalidCases) {
     const invalid = structuredClone(validConfig);

@@ -20,10 +20,12 @@ export function interactiveTablesCss(): string {
   cursor: inherit;
   display: inline-block;
   font: inherit;
-  margin: -0.125rem calc(var(--bf-space-half) * -1);
+  margin-block: -0.125rem;
+  margin-inline: calc((var(--bf-component-inline-inset-field) / 2) * -1);
   max-inline-size: 100%;
   overflow: hidden;
-  padding: 0.125rem var(--bf-space-half);
+  padding-block: 0.125rem;
+  padding-inline: calc(var(--bf-component-inline-inset-field) / 2);
   text-align: inherit;
   text-decoration: inherit;
   text-overflow: inherit;

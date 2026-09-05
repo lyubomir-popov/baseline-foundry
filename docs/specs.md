@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 020a Horizontal token adoption | [`020a-horizontal-token-adoption/`](../specs/020a-horizontal-token-adoption/) | Active on `feat/020a-horizontal-token-adoption`. BF-only: final Canonical component values and horizontal-axis separation; page/grid and Pragma are excluded. |
+| 020a Horizontal token adoption | [`020a-horizontal-token-adoption/`](../specs/020a-horizontal-token-adoption/) | Accepted for direct landing from `feat/020a-horizontal-token-adoption` after an independent `merge` verdict and full green validation. BF-only: final Canonical component values and horizontal-axis separation; page/grid and Pragma are excluded. |
 
 ## Preserved drafts
 
