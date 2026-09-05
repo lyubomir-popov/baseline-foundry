@@ -167,4 +167,6 @@ any of the 48 records can mutate past production integrity validation, if a
 custom theme claims Canonical names, if mixed aligned scopes are order
 dependent, or if any density/grid/Pragma scope leak exists. No push or merge is
 authorized before that review. The owner-approved landing path is a direct
-fast-forward into BF `main`, not a GitHub PR or feature-branch push.
+fast-forward into BF `main`, not a GitHub PR. The owner separately authorized
+pushing the completed feature branch so the exact correction state is retained
+for review.

@@ -52,9 +52,11 @@ component-baseline families, and behavior verification; fresh
 `npm run qa:components` produced 5,410 checks and 220 overflow checks with zero
 failures. Design-tokens at exact `18f57b9` passes its targeted spacing suite
 `8/8`. The owner clarified on 2026-09-05 that BF uses a direct fast-forward
-landing rather than a GitHub PR; merge into `main` once the correction review
-is complete and ready, without pushing a feature branch. Do not begin Pragma
-adoption, 020a values, density, grid/page work, publication, or release.
+landing rather than a GitHub PR, and subsequently authorized committing and
+pushing the completed feature branch. The push preserves the reviewable state;
+merge into `main` only once the correction review is complete and ready. Do not
+begin Pragma adoption, 020a values, density, grid/page work, publication, or
+release.
 
 Settled policy: `spacing.baseline` resolves to 0.5rem for Site and 0.25rem for
 Docs/App/OS; exact line heights are typography-owned dimensions carried by a
