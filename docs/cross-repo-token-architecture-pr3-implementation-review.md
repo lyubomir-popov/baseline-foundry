@@ -3,7 +3,7 @@
 Date: 2026-09-04
 
 Status: correction review accepted after required documentation correction C1;
-ready for the owner-approved direct fast-forward; not yet merged
+fast-forwarded directly into BF `main` at `2289a55` on 2026-09-05
 
 Branch: `feat/dtcg-spacing-format-adapter`
 

@@ -32,8 +32,9 @@ the baseline/component-spacing schema is on design-tokens `main` at
 checkpoint is `964f6f129`. Publication, release, and wider downstream adoption
 remain separately gated.
 
-BF PR 3 is implemented locally on `feat/dtcg-spacing-format-adapter` from
-`08db5ab`. Initial commits `48e13b2` and `f64febb` consumed the four-product
+BF contribution 3 was fast-forwarded directly into `main` at `2289a55` on
+2026-09-05 from `feat/dtcg-spacing-format-adapter`. Initial commits `48e13b2`
+and `f64febb` consumed the four-product
 resolved DTCG spacing artifact while preserving current geometry through the
 exactly seven-point, 020a-bounded overlay. The independent review returned
 **accept with required corrections**. Correction commit `9866115` closes F0–F6:
@@ -62,10 +63,10 @@ failures. Design-tokens at exact `18f57b9` passes its targeted spacing suite
 `8/8`. The owner clarified on 2026-09-05 that BF uses a direct fast-forward
 landing rather than a GitHub PR, and subsequently authorized committing and
 pushing the completed feature branch. The push preserves the reviewable state.
-With correction-review C1 addressed, this contribution is ready for the
-owner-approved direct fast-forward into `main`. Do not begin Pragma adoption,
-020a values, density, grid/page work, publication, or release as part of this
-landing.
+With correction-review C1 addressed, the owner-approved direct landing is
+complete. No publication or release was performed. Do not begin Pragma
+adoption, 020a values, density, or grid/page work without its separately
+approved contribution.
 
 Settled policy: `spacing.baseline` resolves to 0.5rem for Site and 0.25rem for
 Docs/App/OS; exact line heights are typography-owned dimensions carried by a
