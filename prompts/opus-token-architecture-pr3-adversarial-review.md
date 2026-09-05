@@ -73,8 +73,9 @@ Answer each explicitly and cite exact source or generated-artifact evidence.
 7. Does the OS path consume explicit product spacing despite Canonical's
    intentionally omitted identical `.os` typography reset, without inventing
    or depending on that reset?
-8. Load the provider's generated `modifiers.spacing.css` with BF in both
-   orders and exercise aligned direct and nested product scopes. Are both
+8. Load the provider's actual generated `sets.primitive.css` and
+   `sets.semantic.css` with BF in both orders. Separately exercise direct and
+   nested product scopes as a hypothetical future-provider case. Are both
    matrices stable, or does the unnamespaced surface introduce an order,
    layer, specificity, or inheritance defect? State the behavior for
    mismatched Canonical/BF product classes.

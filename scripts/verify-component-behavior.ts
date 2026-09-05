@@ -4582,9 +4582,11 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     }).join(";");
     return `${selector}{${declarations}}`;
   }).join("");
-  // This mirrors the generated design-tokens modifiers.spacing.css contract:
-  // primitive references, ds.modifiers layer, and exact selector order.
-  const canonicalProviderCss = `:root{${primitiveDeclarations}}@layer ds.modifiers{${providerRules}}`;
+  // Primitive references and ds.tokens match the current generated
+  // sets.primitive.css + sets.semantic.css output. The product selectors are a
+  // synthetic forward-compatibility guard for Canonical's documented future
+  // shape; the pinned provider currently emits only :root spacing declarations.
+  const canonicalProviderCss = `:root{${primitiveDeclarations}}@layer ds.tokens{${providerRules}}`;
   const browser = await openBrowser();
 
   try {

@@ -2,8 +2,8 @@
 
 Date: 2026-09-04
 
-Status: required adversarial corrections implemented locally; correction
-review pending; not merged
+Status: correction review accepted after required documentation correction C1;
+ready for the owner-approved direct fast-forward; not yet merged
 
 Branch: `feat/dtcg-spacing-format-adapter`
 
@@ -78,10 +78,13 @@ individual product/token value and proves all 48 failures use that production
 validator, including the seven overlaid points.
 
 Browser behavior tests separately assert the final Canonical matrix and BF's
-effective matrix. They use the generated design-tokens spacing CSS shape
-(`ds.modifiers`, primitive references, and provider selector order), load it
-both before and after BF, and cover direct aligned product scopes plus nested
-Docs/App/OS scopes inside Site.
+effective matrix. Primitive references and `ds.tokens` mirror the generated
+`sets.primitive.css` and `sets.semantic.css` output at the pinned commit. The
+product selectors are explicitly synthetic: they exercise Canonical's
+documented future product-scoped shape before and after BF, including direct
+aligned scopes and nested Docs/App/OS scopes inside Site. The independent
+correction review also co-loaded the provider's real root-only CSS in both
+orders and measured no drift.
 
 ## OS typography-reset asymmetry
 
@@ -158,15 +161,20 @@ Its verdict was **accept with required corrections**. F0/F1 required value
 integrity and truthful Canonical names; F3/F4 required an explicit mixed-CSS
 contract and a BF-only custom-theme namespace; F5/F6 required evidence and
 edit-guidance corrections. All six are represented in the corrected code,
-tests, and documentation; a fresh correction review remains required.
+tests, and documentation and were independently reproduced by the correction
+review.
+
+The correction review accepted all six fixes and required only C1: correct
+the inherited claim that the provider emits `modifiers.spacing.css` with
+product scopes. BF now documents the actual root-only `sets.semantic.css`
+output and labels its product-scoped test fixture as a synthetic future guard.
+The completed review is
+[`cross-repo-token-architecture-pr3-correction-review.md`](cross-repo-token-architecture-pr3-correction-review.md).
 
 The prepared adversarial request is
-`prompts/opus-token-architecture-pr3-adversarial-review.md`. A reviewer should
-reject the correction if any Canonical name carries a compatibility value, if
-any of the 48 records can mutate past production integrity validation, if a
-custom theme claims Canonical names, if mixed aligned scopes are order
-dependent, or if any density/grid/Pragma scope leak exists. No push or merge is
-authorized before that review. The owner-approved landing path is a direct
-fast-forward into BF `main`, not a GitHub PR. The owner separately authorized
-pushing the completed feature branch so the exact correction state is retained
-for review.
+`prompts/opus-token-architecture-pr3-adversarial-review.md`; it was used for
+the completed correction review. That review independently closed F0–F6
+and found only documentation correction C1, now addressed. The owner-approved
+landing path is a direct fast-forward into BF `main`, not a GitHub PR. The
+owner separately authorized pushing the completed feature branch so the exact
+correction state is retained for review.

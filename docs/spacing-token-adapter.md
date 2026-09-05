@@ -66,13 +66,25 @@ claim the unnamespaced Canonical `--spacing-*` surface.
 
 ## Co-loading Canonical CSS
 
-BF's built-in Canonical declarations deliberately mirror the provider's final
-values. Consumers may load Canonical `modifiers.spacing.css` before or after
-BF without changing either matrix, provided each scope carries matching
-product classes (`site`/`docs`/`app`/`os` with the corresponding
-`bf-tier-*`). Browser contracts cover both orders and nested Docs/App/OS
-scopes inside Site. A mismatched pair of product classes is invalid consumer
-configuration; BF does not guess which product was intended.
+At the pinned provider commit, spacing custom properties are emitted by
+`sets.semantic.css`, reference primitives from `sets.primitive.css`, and sit
+under `:root` in `@layer ds.tokens`. There is no
+`modifiers.spacing.css`, and the generated CSS has no product-scoped
+`.site`/`.docs`/`.app`/`.os` spacing blocks. Co-loading those two real provider
+files before or after BF is stable: BF's unlayered, host-local built-in
+declarations carry the selected product matrix.
+
+BF also tests a synthetic forward-compatibility case based on Canonical's
+documented future product-scoped shape. It loads `.site`/`.docs`/`.app`/`.os`
+rules in `@layer ds.tokens` before and after BF and exercises nested scopes.
+Those synthetic scopes are not a claim about current provider output. In that
+future shape, consumers must pair each Canonical product class with the
+corresponding `bf-tier-*` class. If a future provider emitted those product
+rules unlayered and a consumer mismatched the classes, the provider selector
+would outrank BF's zero-specificity `:where(...)` selector: up to six of the 41
+aliased BF properties could follow the wrong product, while the seven retained
+BF literals would remain immune. BF treats that pair as invalid configuration
+and does not guess which product was intended.
 
 ## OS scope boundary
 

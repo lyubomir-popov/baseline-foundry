@@ -40,23 +40,32 @@ exactly seven-point, 020a-bounded overlay. The independent review returned
 production authenticates all 48 records with a pinned SHA-256 digest;
 Canonical names always carry the final matrix; the seven retained values live
 only on BF compatibility properties; custom themes remain BF-namespaced; and
-provider-CSS import orders plus nested scopes have browser contracts. Its
+real provider-CSS import orders plus synthetic future nested scopes have
+browser evidence. Its
 evidence is in
 [`docs/cross-repo-token-architecture-pr3-implementation-review.md`](docs/cross-repo-token-architecture-pr3-implementation-review.md),
 the first review is preserved in
 [`docs/cross-repo-token-architecture-pr3-adversarial-review.md`](docs/cross-repo-token-architecture-pr3-adversarial-review.md),
 and the correction-review request is
 [`prompts/opus-token-architecture-pr3-adversarial-review.md`](prompts/opus-token-architecture-pr3-adversarial-review.md).
+The completed correction review is
+[`docs/cross-repo-token-architecture-pr3-correction-review.md`](docs/cross-repo-token-architecture-pr3-correction-review.md).
+It independently closed F0–F6 and returned **accept with required
+corrections** for one documentation-only issue, C1. C1 is now corrected: BF
+names the provider's actual root-only `sets.semantic.css` output in
+`@layer ds.tokens` and labels its product-scoped browser fixture as a
+synthetic future guard. Focused `test:build` and `test:behavior` reruns pass.
 The corrected branch passes `npm test` with 20,345 static checks, all
 component-baseline families, and behavior verification; fresh
 `npm run qa:components` produced 5,410 checks and 220 overflow checks with zero
 failures. Design-tokens at exact `18f57b9` passes its targeted spacing suite
 `8/8`. The owner clarified on 2026-09-05 that BF uses a direct fast-forward
 landing rather than a GitHub PR, and subsequently authorized committing and
-pushing the completed feature branch. The push preserves the reviewable state;
-merge into `main` only once the correction review is complete and ready. Do not
-begin Pragma adoption, 020a values, density, grid/page work, publication, or
-release.
+pushing the completed feature branch. The push preserves the reviewable state.
+With correction-review C1 addressed, this contribution is ready for the
+owner-approved direct fast-forward into `main`. Do not begin Pragma adoption,
+020a values, density, grid/page work, publication, or release as part of this
+landing.
 
 Settled policy: `spacing.baseline` resolves to 0.5rem for Site and 0.25rem for
 Docs/App/OS; exact line heights are typography-owned dimensions carried by a
