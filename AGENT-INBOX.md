@@ -131,18 +131,6 @@ containers own semantic spacing.
 
 ## Deferred candidates
 
-- **OS side-navigation accordion track defect (Diagram Generator, 2026-09-06):**
-  an expanded nested `.bf-side-navigation-list` does not enlarge its parent row.
-  The shared list rule fixes every implicit grid row to
-  `--bf-single-line-row-block-size`, including root rows whose `<li>` contains an
-  expanded child list. Following root items therefore paint over the expanded
-  content. Wrapped labels have the same failure inside nested lists because
-  their text can exceed the fixed track. BF's own side-navigation demo contains
-  this expanded-list-plus-following-sibling structure. Define and browser-test
-  the component-owned variable-height accordion track contract, including long
-  labels, zoom, and collapse/expand transitions. Diagram Generator applies only
-  a navigation-composition-scoped sizing guard; it does not patch vendored BF.
-
 - **Downstream OS number-input defect (Diagram Generator, 2026-09-06):** the
   released 0.1.7 `input[type='number']` contract can paint its stepper over a
   right-aligned value. Diagram Generator reproduces this in Chromium with a
@@ -170,10 +158,14 @@ containers own semantic spacing.
 
 ## Last-known-green state
 
-The released 0.1.7 implementation passes `npm test` with 6,956 static
+The post-0.1.7 main implementation passes `npm test` with 24,120 static
 contracts, zero component-baseline failures, and clean browser behavior. It
 also passes `npm run qa:components` after a fresh full-catalog screenshot
-capture. The shared demo remains running at `http://127.0.0.1:4173`; the
+capture. Side-navigation rows now expand for nested accordions and wrapped
+labels at 16px and 32px roots in LTR and RTL, disclosure chevrons use their own
+zero optical offset, and the pinned-aside resize target paints its 2px rule only
+while active so it does not double the idle divider. The shared demo remains
+running at `http://127.0.0.1:4173`; the
 persistent chrome, optional orange tagged brand, active thick-bar tab, and
 corrected vertical audit were visibly present in the final live refresh. A
 post-publication clean install verified 30 root exports and 21 asset entry

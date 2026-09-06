@@ -1864,7 +1864,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-application-aside-resize-handle)::after {
-  background: var(--bf-color-border-default);
+  background: transparent;
   border-radius: 62.4375rem;
   content: "";
   inset-block: var(--bf-panel-padding-block);

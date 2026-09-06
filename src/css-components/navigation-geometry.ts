@@ -8,7 +8,7 @@ export function navigationGeometryCss(): string {
   --bf-disclosure-icon-inline-size: 1rem;
   --bf-disclosure-group-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-disclosure-gap)));
   --bf-icon-label-optical-offset-block: 0.1875rem;
-  --bf-disclosure-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
+  --bf-disclosure-icon-optical-offset-block: 0rem;
   --bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
   --bf-side-navigation-icon-gap: var(--bf-leading-mark-gap);
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);

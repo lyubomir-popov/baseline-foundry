@@ -181,7 +181,7 @@ ${bodySemiboldTypeStyles}  display: block;
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {
   display: grid;
-  grid-auto-rows: var(--bf-interface-row-occupied-block-size);
+  grid-auto-rows: minmax(var(--bf-interface-row-occupied-block-size), auto);
   list-style: none;
   margin: 0;
   padding: 0;

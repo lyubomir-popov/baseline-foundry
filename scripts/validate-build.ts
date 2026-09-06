@@ -811,7 +811,11 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-groups) {\n  align-content: start;\n  display: grid;\n  gap: var(--bf-side-navigation-group-gap);") && css.includes("--bf-side-navigation-group-gap: 1.5rem;"), "Expected side-navigation heading/list groups to own the fixed 1.5rem separation.");
   assert(css.includes("--bf-side-navigation-heading-list-gap: 0.5rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group) {\n  display: grid;\n  gap: var(--bf-side-navigation-heading-list-gap);"), "Expected each side-navigation group to own the fixed half-rem transition from its header to its list.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) {\n  display: grid;\n  gap: 0rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {\n  inline-size: auto;\n  margin-inline: var(--bf-side-navigation-content-inset) 0;") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected real compensated rules and headings to share a tight header, with each rule running from the continuation text inset to the navigation edge.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  display: grid;\n  grid-auto-rows: var(--bf-interface-row-occupied-block-size);") && css.includes("align-self: start;"), "Expected repeated side-navigation rows to use the shared interface-row track while preserving their natural control paint at the track start.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  display: grid;\n  grid-auto-rows: minmax(var(--bf-interface-row-occupied-block-size), auto);") && css.includes("align-self: start;"), "Expected side-navigation rows to preserve the shared single-line minimum while allowing expanded accordion content to grow its track.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-label)", {
+    "overflow": "hidden",
+    "text-overflow": "ellipsis"
+  }, "side-navigation labels retain overflow containment while their row can grow for wrapped copy");
   assert(css.includes("min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-margin-bottom));"), "Expected single-line side-navigation group headings to reserve a four-baseline occupied block without counting metric compensation twice.");
   assert(css.includes("min-block-size: calc(var(--bf-interface-row-occupied-block-size) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to combine the regular interface row with their structural end padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
@@ -1335,7 +1339,7 @@ function validateCommonCss(css: string): void {
   }, "search-and-filter inputs reserve their trailing affordance space from the field padding token");
   assert(css.includes("--bf-disclosure-gap: var(--bf-leading-mark-gap);"), "Expected disclosures to share the Canonical mark/icon text-gap owner.");
   assert(css.includes("--bf-disclosure-icon-inline-size: 1rem;"), "Expected generated CSS to define the shared disclosure icon-size token.");
-  assert(css.includes("--bf-disclosure-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);"), "Expected disclosure chevrons to share the icon-and-label optical offset family.");
+  assert(css.includes("--bf-disclosure-icon-optical-offset-block: 0rem;"), "Expected disclosure chevrons to remain centred on their text line without the leading-icon optical offset.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-accordion-button)", {
     "gap": "var(--bf-disclosure-gap)"
   }, "side-navigation accordion buttons use the shared disclosure gap instead of the generic compact row gap");
@@ -1566,6 +1570,13 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".bf-aside.is-overlay.is-narrow"), "Expected generated CSS to omit the old narrow overlay modifier.");
   assert(!css.includes(".bf-aside.is-overlay.is-wide"), "Expected generated CSS to omit the old wide overlay modifier.");
   assert(css.includes(":where(.bf-application-aside-resize-handle)"), "Expected generated CSS to include the pinned-aside resize handle selector.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application-aside-resize-handle)::after", {
+    "background": "transparent",
+    "width": "0.125rem"
+  }, "idle pinned-aside resize handles leave the single-pixel aside border as the only seam");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application-aside-resize-handle):hover::after,\n:where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible::after,\n:where(.bf-theme) :where(.bf-application.is-resizing-aside) :where(.bf-application-aside-resize-handle)::after", {
+    "background": "var(--bf-application-resize-handle-active)"
+  }, "pinned-aside resize handles reveal the thicker interaction rail only while active");
   assert(css.includes(":where(.bf-theme) :where(.bf-application-aside-resize-handle):focus-visible {\n  outline: 0.125rem solid var(--bf-application-resize-handle-focus-ring);"), "Expected the pinned-aside resize handle to expose the shared authoring focus-ring token.");
   assert(css.includes("background: var(--bf-application-resize-handle-active);"), "Expected the pinned-aside resize handle active state to use its theme-owned component color.");
   assert(css.includes("cursor: ew-resize;"), "Expected generated CSS to make the resize handle advertise horizontal resizing.");

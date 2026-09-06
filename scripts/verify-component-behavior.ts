@@ -605,6 +605,99 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
   }
 }
 
+async function verifySideNavigationAccordionGeometry(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 900 }
+    });
+    await page.goto(`${origin}/demo/components/side-navigation.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+
+    const button = page.locator("#component-side-navigation-aside .bf-side-navigation-accordion-button").first();
+    const nestedList = page.locator("#side-navigation-app-machines");
+    await button.waitFor({ state: "visible" });
+
+    for (const tier of ["bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os"] as const) {
+      await page.evaluate(activeTier => {
+        document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os");
+        document.body.classList.add(activeTier);
+        const navigation = document.querySelector<HTMLElement>("#component-side-navigation-aside .bf-side-navigation");
+        if (navigation) navigation.style.inlineSize = "12rem";
+        const labels = document.querySelectorAll<HTMLElement>("#component-side-navigation-aside .bf-side-navigation-label");
+        const finalLabel = labels.item(labels.length - 1);
+        finalLabel.textContent = "A deliberately long navigation destination that must wrap inside its owning row";
+      }, tier);
+
+      for (const rootFontSize of [16, 32]) {
+        for (const direction of ["ltr", "rtl"] as const) {
+        await page.evaluate(({ fontSize, dir }) => {
+          document.documentElement.style.fontSize = `${fontSize}px`;
+          document.documentElement.dir = dir;
+        }, { fontSize: rootFontSize, dir: direction });
+        if (await button.getAttribute("aria-expanded") !== "true") await button.click();
+
+        const expanded = await page.evaluate(() => {
+          const disclosure = document.querySelector<HTMLElement>("#component-side-navigation-aside .bf-side-navigation-accordion-button");
+          const nested = document.querySelector<HTMLElement>("#side-navigation-app-machines");
+          const parent = disclosure?.closest<HTMLElement>(".bf-side-navigation-item");
+          const rootList = parent?.parentElement;
+          const following = parent?.nextElementSibling as HTMLElement | null;
+          const longLabel = Array.from(document.querySelectorAll<HTMLElement>("#component-side-navigation-aside .bf-side-navigation-label")).at(-1);
+          if (!disclosure || !nested || !parent || !rootList || !following || !longLabel) return null;
+          const rootItems = Array.from(rootList.children)
+            .filter((item): item is HTMLElement => item instanceof HTMLElement)
+            .map(item => item.getBoundingClientRect());
+          const transform = getComputedStyle(disclosure, "::before").transform;
+          const matrix = new DOMMatrix(transform);
+          return {
+            ordered: rootItems.every((rect, index) => index === 0 || rootItems[index - 1]!.bottom <= rect.top + 0.5),
+            parentContainsNested: parent.getBoundingClientRect().bottom >= nested.getBoundingClientRect().bottom - 0.5,
+            nestedClearsFollowing: nested.getBoundingClientRect().bottom <= following.getBoundingClientRect().top + 0.5,
+            rootTracks: getComputedStyle(rootList).gridAutoRows,
+            labelWrapped: longLabel.getBoundingClientRect().height > Number.parseFloat(getComputedStyle(longLabel).lineHeight) * 1.5,
+            labelContained: longLabel.scrollWidth <= longLabel.clientWidth + 1,
+            labelOverflow: getComputedStyle(longLabel).overflow,
+            labelTextOverflow: getComputedStyle(longLabel).textOverflow,
+            labelWhiteSpace: getComputedStyle(longLabel).whiteSpace,
+            disclosureTransform: transform,
+            disclosureTranslateX: matrix.m41,
+            disclosureTranslateY: matrix.m42
+          };
+        });
+        assert(expanded, `Expected ${tier} side-navigation accordion geometry at ${rootFontSize}px root size in ${direction}.`);
+        assert(expanded.ordered && expanded.parentContainsNested && expanded.nestedClearsFollowing, `Expected ${tier} expanded navigation content to reserve its full row at ${rootFontSize}px root size in ${direction}; got ${JSON.stringify(expanded)}.`);
+        assert(expanded.rootTracks.includes("minmax(") && expanded.rootTracks.includes("auto"), `Expected ${tier} navigation rows to retain a minimum and grow automatically; got ${expanded.rootTracks}.`);
+        assert(expanded.labelWrapped && expanded.labelContained && expanded.labelOverflow === "hidden" && expanded.labelTextOverflow === "ellipsis" && expanded.labelWhiteSpace === "normal", `Expected ${tier} long navigation labels to wrap inside an automatically growing row; got ${JSON.stringify(expanded)}.`);
+        assert(Math.abs(expanded.disclosureTranslateX) <= 0.01 && Math.abs(expanded.disclosureTranslateY) <= 0.01, `Expected ${tier} centred accordion chevron not to receive a downward translation; got ${expanded.disclosureTransform}.`);
+
+        await button.click();
+        const collapsed = await page.evaluate(() => {
+          const disclosure = document.querySelector<HTMLElement>("#component-side-navigation-aside .bf-side-navigation-accordion-button");
+          const nested = document.querySelector<HTMLElement>("#side-navigation-app-machines");
+          const parent = disclosure?.closest<HTMLElement>(".bf-side-navigation-item");
+          const following = parent?.nextElementSibling as HTMLElement | null;
+          if (!disclosure || !nested || !parent || !following) return null;
+          const matrix = new DOMMatrix(getComputedStyle(disclosure, "::before").transform);
+          return {
+            nestedBlockSize: nested.getBoundingClientRect().height,
+            parentClearsFollowing: parent.getBoundingClientRect().bottom <= following.getBoundingClientRect().top + 0.5,
+            translateX: matrix.m41,
+            translateY: matrix.m42
+          };
+        });
+        assert(collapsed?.nestedBlockSize === 0 && collapsed.parentClearsFollowing, `Expected ${tier} collapsed navigation to release nested content at ${rootFontSize}px root size in ${direction}; got ${JSON.stringify(collapsed)}.`);
+        assert(Math.abs(collapsed.translateX) <= 0.01 && Math.abs(collapsed.translateY) <= 0.01, `Expected ${tier} centred collapsed chevron to rotate without sinking; got ${JSON.stringify(collapsed)}.`);
+        }
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const browser = await openBrowser();
@@ -892,6 +985,32 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
     await handle.waitFor({ state: "visible" });
     await aside.waitFor({ state: "visible" });
     await handle.scrollIntoViewIfNeeded();
+
+    const idleDivider = await page.evaluate(() => {
+      const panel = document.querySelector<HTMLElement>(".bf-aside.is-pinned");
+      const handle = panel?.querySelector<HTMLElement>(".bf-application-aside-resize-handle");
+      if (!panel || !handle) return null;
+      const handleRect = handle.getBoundingClientRect();
+      const panelStyle = getComputedStyle(panel);
+      const dividerStyle = getComputedStyle(handle, "::after");
+      const dividerWidth = Number.parseFloat(dividerStyle.width);
+      return {
+        background: dividerStyle.backgroundColor,
+        borderWidth: Number.parseFloat(panelStyle.borderInlineStartWidth),
+        dividerWidth,
+        handleWidth: handleRect.width
+      };
+    });
+    assert(idleDivider, "Expected the pinned-aside divider to be measurable.");
+    assert(idleDivider.background === "rgba(0, 0, 0, 0)" && idleDivider.borderWidth === 1 && idleDivider.dividerWidth === 2 && idleDivider.handleWidth >= 24, `Expected the idle resize affordance to preserve its hit target without double-painting the aside border; got ${JSON.stringify(idleDivider)}.`);
+
+    await handle.hover();
+    await page.waitForTimeout(160);
+    const activeDivider = await handle.evaluate(element => {
+      const style = getComputedStyle(element, "::after");
+      return { background: style.backgroundColor, width: Number.parseFloat(style.width) };
+    });
+    assert(activeDivider.background !== "rgba(0, 0, 0, 0)" && activeDivider.width === 2, `Expected the active resize affordance to reveal its two-pixel interaction rail only on hover; got ${JSON.stringify(activeDivider)}.`);
 
     const initialWidth = await readAsideWidth(page);
     const ariaValueNow = Number.parseFloat(await handle.getAttribute("aria-valuenow") ?? "");
@@ -5131,6 +5250,7 @@ async function main(): Promise<void> {
 
   try {
     await verifyNumberStepperChevron(origin);
+    await verifySideNavigationAccordionGeometry(origin);
     await verifyPageChromeNavigationScroll(origin);
     await verifyPageChromeHierarchyAndKeylines(origin);
     await verifyExamplePreferencesBeforePaint(origin);
