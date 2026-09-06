@@ -131,6 +131,18 @@ containers own semantic spacing.
 
 ## Deferred candidates
 
+- **Downstream OS number-input defect (Diagram Generator, 2026-09-06):** the
+  released 0.1.7 `input[type='number']` contract can paint its stepper over a
+  right-aligned value. Diagram Generator reproduces this in Chromium with a
+  full-width `bf-input` in the ELK Layering panel (for example `7` and `40`).
+  The OS tier sets `--bf-component-inline-inset-field` to `0.25rem`; the number
+  control paints a `1rem` stepper at `right 0.25rem` but reserves only
+  `calc(var(--bf-component-inline-inset-field) * 2.5)` (`0.625rem`) as end
+  padding. The 1.25rem painted region is therefore wider than the reserved
+  text region. Fix and verify this in BF across all four tiers, right-aligned
+  values, selection, zoom, and RTL. The downstream consumer deliberately did
+  not patch or override BF.
+
 - The public `bf-slider` range control has no discrete notch/tick presentation.
   Consider a small opt-in integer `min`/`max`/`step` contract only after the
   current spacing and navigation work. It must preserve native keyboard
