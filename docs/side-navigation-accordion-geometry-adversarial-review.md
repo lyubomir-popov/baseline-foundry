@@ -27,6 +27,13 @@ merge after the full repository and component QA gates pass.
 - A pinned aside painted both its one-pixel boundary and a two-pixel resize rail
   over the middle of that boundary. The resize rail is now transparent while
   idle and appears only on hover, keyboard focus, or active resizing.
+- The first downstream re-review found a separate inline-pressure failure:
+  nested grid lists and items retained their intrinsic minimum width. Both BF
+  owners now opt into `min-inline-size: 0`, while navigation rows contain their
+  own intrinsic text width inside a 160px rail.
+- Navigation rows are the focus owners. A link, button, or static text row may
+  contain labels and status marks; nested interactive controls belong in a
+  following panel or list item so their focus indicators are not clipped.
 
 ## Adversarial coverage
 
@@ -34,7 +41,8 @@ Browser coverage exercises the existing expanded-list/following-sibling demo
 across all four tiers, LTR and RTL, and 16px/32px root font sizes. It verifies
 parent containment, ordered siblings, wrapped-label containment, collapse and
 reopen behavior, and zero block-axis translation on disclosure chevrons. The
-pinned-aside test verifies a single idle seam, the preserved 24px pointer target,
+same matrix constrains the rail to 160px with an unbreakable nested row and rejects
+horizontal overflow. The pinned-aside test verifies a single idle seam, the preserved 24px pointer target,
 the active two-pixel rail, keyboard behavior, drag persistence, and reset.
 
 The minmax sizing change is direction-safe. Existing physical-direction

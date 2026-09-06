@@ -30,6 +30,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   color: var(--bf-color-text-inactive);
   display: block;
   inline-size: 100%;
+  min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-groups) {
@@ -184,12 +185,14 @@ ${bodySemiboldTypeStyles}  display: block;
   grid-auto-rows: minmax(var(--bf-interface-row-occupied-block-size), auto);
   list-style: none;
   margin: 0;
+  min-inline-size: 0;
   padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title) {
   display: grid;
   margin: 0;
+  min-inline-size: 0;
   position: relative;
 }
 
@@ -205,6 +208,10 @@ ${bodyTypeStyles}  align-items: center;
   inline-size: 100%;
   justify-content: flex-start;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
+  min-inline-size: 0;
+  /* A navigation row is the focus owner. Put nested interactive controls in a
+     following panel/list item rather than inside the clipped row itself. */
+  overflow: hidden;
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-side-navigation-content-inset);
   --bf-side-navigation-row-inset: var(--bf-side-navigation-content-inset);

@@ -193,6 +193,12 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
           };
           const numberStyle = getComputedStyle(document.querySelector('input[type="number"]'));
           const selectStyle = getComputedStyle(document.querySelector("select"));
+          const disclosureTranslation = selector => {
+            const element = document.querySelector(selector);
+            if (!element) throw new Error("Missing spacing matrix disclosure: " + selector + ".");
+            const matrix = new DOMMatrixReadOnly(getComputedStyle(element, "::before").transform);
+            return { x: matrix.m41, y: matrix.m42 };
+          };
           return {
             action: [".bf-button", ".bf-chip", ".bf-chip.is-borderless", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
             continuation: [
@@ -214,7 +220,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
               positionEqual: numberStyle.backgroundPosition === selectStyle.backgroundPosition,
               sizeEqual: numberStyle.backgroundSize === selectStyle.backgroundSize,
               paddingEqual: numberStyle.paddingInlineEnd === selectStyle.paddingInlineEnd
-            }
+            },
+            disclosureTranslations: [".bf-accordion-tab", ".bf-list-tree-toggle"].map(disclosureTranslation)
           };
         })()`);
         assert(matrix.action.every(start => Math.abs(start - matrix.keylines.action) < 0.51), `Expected ${tier}/${tone} action copy to share the action inset: ${JSON.stringify(matrix)}.`);
@@ -222,6 +229,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, notification, and panel copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
         assert(Math.max(...matrix.markCenters) - Math.min(...matrix.markCenters) < 0.51, `Expected ${tier}/${tone} leading marks to share one centre: ${JSON.stringify(matrix.markCenters)}.`);
         assert(matrix.numberSelect.positionEqual && matrix.numberSelect.sizeEqual && matrix.numberSelect.paddingEqual, `Expected ${tier}/${tone} number and select trailing artwork to remain identical: ${JSON.stringify(matrix.numberSelect)}.`);
+        assert(matrix.disclosureTranslations.every(({ x, y }) => Math.abs(x) <= 0.01 && Math.abs(y) <= 0.01), `Expected ${tier}/${tone} accordion and list-tree chevrons not to inherit an optical translation: ${JSON.stringify(matrix.disclosureTranslations)}.`);
       }
     }
     const initialTier = await tierSelect.inputValue();
@@ -625,7 +633,22 @@ async function verifySideNavigationAccordionGeometry(origin: string): Promise<vo
         document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os");
         document.body.classList.add(activeTier);
         const navigation = document.querySelector<HTMLElement>("#component-side-navigation-aside .bf-side-navigation");
-        if (navigation) navigation.style.inlineSize = "12rem";
+        if (navigation) navigation.style.inlineSize = "160px";
+        const nested = document.querySelector<HTMLElement>("#side-navigation-app-machines");
+        if (nested && !nested.querySelector("[data-bf-inline-pressure-probe]")) {
+          const item = document.createElement("li");
+          item.className = "bf-side-navigation-item";
+          item.dataset.bfInlinePressureProbe = "";
+          const row = document.createElement("span");
+          row.className = "bf-side-navigation-text";
+          const label = document.createElement("span");
+          label.className = "bf-side-navigation-label";
+          label.style.whiteSpace = "nowrap";
+          label.textContent = "IntrinsicWidthNavigationDestinationThatCannotBreak";
+          row.append(label);
+          item.append(row);
+          nested.append(item);
+        }
         const labels = document.querySelectorAll<HTMLElement>("#component-side-navigation-aside .bf-side-navigation-label");
         const finalLabel = labels.item(labels.length - 1);
         finalLabel.textContent = "A deliberately long navigation destination that must wrap inside its owning row";
@@ -652,25 +675,50 @@ async function verifySideNavigationAccordionGeometry(origin: string): Promise<vo
             .map(item => item.getBoundingClientRect());
           const transform = getComputedStyle(disclosure, "::before").transform;
           const matrix = new DOMMatrix(transform);
+          const navigation = rootList.closest<HTMLElement>(".bf-side-navigation");
+          const probe = nested.querySelector<HTMLElement>("[data-bf-inline-pressure-probe]");
+          const probeRow = probe?.querySelector<HTMLElement>(".bf-side-navigation-text");
+          const labelRow = longLabel.closest<HTMLElement>(".bf-side-navigation-link, .bf-side-navigation-text");
+          const labelRect = longLabel.getBoundingClientRect();
+          const labelRowRect = labelRow?.getBoundingClientRect();
+          const navigationRect = navigation?.getBoundingClientRect();
+          const containedRects = [rootList, nested, probe, probeRow]
+            .map(element => element?.getBoundingClientRect());
           return {
             ordered: rootItems.every((rect, index) => index === 0 || rootItems[index - 1]!.bottom <= rect.top + 0.5),
             parentContainsNested: parent.getBoundingClientRect().bottom >= nested.getBoundingClientRect().bottom - 0.5,
             nestedClearsFollowing: nested.getBoundingClientRect().bottom <= following.getBoundingClientRect().top + 0.5,
             rootTracks: getComputedStyle(rootList).gridAutoRows,
             labelWrapped: longLabel.getBoundingClientRect().height > Number.parseFloat(getComputedStyle(longLabel).lineHeight) * 1.5,
-            labelContained: longLabel.scrollWidth <= longLabel.clientWidth + 1,
+            labelContained: Boolean(labelRowRect)
+              && labelRect.left >= labelRowRect!.left - 0.5
+              && labelRect.right <= labelRowRect!.right + 0.5,
             labelOverflow: getComputedStyle(longLabel).overflow,
             labelTextOverflow: getComputedStyle(longLabel).textOverflow,
             labelWhiteSpace: getComputedStyle(longLabel).whiteSpace,
             disclosureTransform: transform,
             disclosureTranslateX: matrix.m41,
-            disclosureTranslateY: matrix.m42
+            disclosureTranslateY: matrix.m42,
+            navigationInlineContained: Boolean(navigation)
+              && navigation!.scrollWidth <= navigation!.clientWidth + 1
+              && rootList.scrollWidth <= rootList.clientWidth + 1
+              && nested.scrollWidth <= nested.clientWidth + 1
+              && containedRects.every(rect => Boolean(rect)
+                && rect!.left >= navigationRect!.left - 0.5
+                && rect!.right <= navigationRect!.right + 0.5),
+            inlineMetrics: {
+              navigation: navigation && { client: navigation.clientWidth, scroll: navigation.scrollWidth },
+              rootList: { client: rootList.clientWidth, scroll: rootList.scrollWidth },
+              nested: { client: nested.clientWidth, scroll: nested.scrollWidth },
+              probe: probe && { client: probe.clientWidth, scroll: probe.scrollWidth }
+            }
           };
         });
         assert(expanded, `Expected ${tier} side-navigation accordion geometry at ${rootFontSize}px root size in ${direction}.`);
         assert(expanded.ordered && expanded.parentContainsNested && expanded.nestedClearsFollowing, `Expected ${tier} expanded navigation content to reserve its full row at ${rootFontSize}px root size in ${direction}; got ${JSON.stringify(expanded)}.`);
         assert(expanded.rootTracks.includes("minmax(") && expanded.rootTracks.includes("auto"), `Expected ${tier} navigation rows to retain a minimum and grow automatically; got ${expanded.rootTracks}.`);
         assert(expanded.labelWrapped && expanded.labelContained && expanded.labelOverflow === "hidden" && expanded.labelTextOverflow === "ellipsis" && expanded.labelWhiteSpace === "normal", `Expected ${tier} long navigation labels to wrap inside an automatically growing row; got ${JSON.stringify(expanded)}.`);
+        assert(expanded.navigationInlineContained, `Expected ${tier} nested accordion and unbreakable navigation row to remain within the 160px navigation rail at ${rootFontSize}px root size in ${direction}; got ${JSON.stringify(expanded)}.`);
         assert(Math.abs(expanded.disclosureTranslateX) <= 0.01 && Math.abs(expanded.disclosureTranslateY) <= 0.01, `Expected ${tier} centred accordion chevron not to receive a downward translation; got ${expanded.disclosureTransform}.`);
 
         await button.click();

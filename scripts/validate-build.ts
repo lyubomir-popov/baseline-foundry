@@ -810,8 +810,21 @@ function validateCommonCss(css: string): void {
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-groups) {\n  align-content: start;\n  display: grid;\n  gap: var(--bf-side-navigation-group-gap);") && css.includes("--bf-side-navigation-group-gap: 1.5rem;"), "Expected side-navigation heading/list groups to own the fixed 1.5rem separation.");
   assert(css.includes("--bf-side-navigation-heading-list-gap: 0.5rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group) {\n  display: grid;\n  gap: var(--bf-side-navigation-heading-list-gap);"), "Expected each side-navigation group to own the fixed half-rem transition from its header to its list.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html)", {
+    "min-inline-size": "0"
+  }, "side navigation yields intrinsic inline width when placed in a narrow grid or flex rail");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) {\n  display: grid;\n  gap: 0rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {\n  inline-size: auto;\n  margin-inline: var(--bf-side-navigation-content-inset) 0;") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected real compensated rules and headings to share a tight header, with each rule running from the continuation text inset to the navigation edge.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  display: grid;\n  grid-auto-rows: minmax(var(--bf-interface-row-occupied-block-size), auto);") && css.includes("align-self: start;"), "Expected side-navigation rows to preserve the shared single-line minimum while allowing expanded accordion content to grow its track.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-list)", {
+    "min-inline-size": "0"
+  }, "side-navigation lists yield intrinsic inline width inside narrow application rails");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)", {
+    "min-inline-size": "0"
+  }, "side-navigation grid items allow nested accordion content to shrink without widening the rail");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button)", {
+    "min-inline-size": "0",
+    "overflow": "hidden"
+  }, "side-navigation rows contain intrinsic-width descendants inside narrow application rails");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-label)", {
     "overflow": "hidden",
     "text-overflow": "ellipsis"
