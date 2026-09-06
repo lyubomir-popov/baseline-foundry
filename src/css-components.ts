@@ -361,7 +361,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   background-repeat: no-repeat;
   background-size: 1rem 1rem;
   overflow: hidden;
-  padding-inline-end: calc(var(--bf-component-inline-inset-field) * 2.5);
+  padding-inline-end: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -371,15 +371,20 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 /* Number fields retain their native input semantics and keyboard stepping,
-   while one field-owned background paints the compact pair. Sharing select's
-   1rem canvas and end position avoids a second browser-reserved spin slot. */
+   while one field-owned background paints the compact pair. The trailing
+   reservation contains the 1rem canvas plus one field inset on either side,
+   so right-aligned values cannot enter the painted region. */
 :where(.bf-theme) :where(input[type='number']) {
   appearance: textfield;
   background-image: var(--bf-ui-icon-number-stepper);
   background-position: right var(--bf-component-inline-inset-field) center;
   background-repeat: no-repeat;
   background-size: 1rem 1rem;
-  padding-inline-end: calc(var(--bf-component-inline-inset-field) * 2.5);
+  padding-inline-end: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
+}
+
+:where(.bf-theme) :where(select:dir(rtl), input[type='number']:dir(rtl)) {
+  background-position: left var(--bf-component-inline-inset-field) center;
 }
 
 :where(.bf-theme) :where(.bf-slider-input) {

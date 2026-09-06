@@ -157,6 +157,12 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent the active tier Action inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
     const toneToggle = page.locator("[data-page-chrome-tone-toggle]");
+    const number = page.locator('input[type="number"]').first();
+    const select = page.locator("select").first();
+    await number.evaluate(element => {
+      element.style.textAlign = "right";
+      element.value = "123456789";
+    });
     for (const tone of ["light", "dark"] as const) {
       const wantsDark = tone === "dark";
       if (await toneToggle.isChecked() !== wantsDark) {
@@ -193,6 +199,9 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
           };
           const numberStyle = getComputedStyle(document.querySelector('input[type="number"]'));
           const selectStyle = getComputedStyle(document.querySelector("select"));
+          const numberField = document.querySelector('input[type="number"]');
+          const numberInset = Number.parseFloat(numberStyle.paddingInlineStart);
+          const numberCanvas = Number.parseFloat(numberStyle.backgroundSize);
           const disclosureTranslation = selector => {
             const element = document.querySelector(selector);
             if (!element) throw new Error("Missing spacing matrix disclosure: " + selector + ".");
@@ -219,7 +228,11 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
             numberSelect: {
               positionEqual: numberStyle.backgroundPosition === selectStyle.backgroundPosition,
               sizeEqual: numberStyle.backgroundSize === selectStyle.backgroundSize,
-              paddingEqual: numberStyle.paddingInlineEnd === selectStyle.paddingInlineEnd
+              paddingEqual: numberStyle.paddingInlineEnd === selectStyle.paddingInlineEnd,
+              rightAligned: numberStyle.textAlign === "right",
+              trailingReservation: Number.parseFloat(numberStyle.paddingInlineEnd),
+              requiredReservation: numberCanvas + (numberInset * 2),
+              value: numberField.value
             },
             disclosureTranslations: [".bf-accordion-tab", ".bf-list-tree-toggle"].map(disclosureTranslation)
           };
@@ -229,6 +242,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, notification, and panel copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
         assert(Math.max(...matrix.markCenters) - Math.min(...matrix.markCenters) < 0.51, `Expected ${tier}/${tone} leading marks to share one centre: ${JSON.stringify(matrix.markCenters)}.`);
         assert(matrix.numberSelect.positionEqual && matrix.numberSelect.sizeEqual && matrix.numberSelect.paddingEqual, `Expected ${tier}/${tone} number and select trailing artwork to remain identical: ${JSON.stringify(matrix.numberSelect)}.`);
+        assert(matrix.numberSelect.rightAligned && matrix.numberSelect.value === "123456789" && matrix.numberSelect.trailingReservation >= matrix.numberSelect.requiredReservation - 0.01, `Expected ${tier}/${tone} right-aligned number copy to stop before the paired-chevron canvas: ${JSON.stringify(matrix.numberSelect)}.`);
         assert(matrix.disclosureTranslations.every(({ x, y }) => Math.abs(x) <= 0.01 && Math.abs(y) <= 0.01), `Expected ${tier}/${tone} accordion and list-tree chevrons not to inherit an optical translation: ${JSON.stringify(matrix.disclosureTranslations)}.`);
       }
     }
@@ -245,8 +259,6 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     const resizedKeylines = await keylines.evaluateAll(lines => lines.map(line => ({ authored: (line as HTMLElement).style.left, computed: getComputedStyle(line).left })));
     const resizedUpdateCount = Number(await overlay.getAttribute("data-spacing-keyline-update-count"));
     assert(resizedUpdateCount > tierUpdateCount && resizedKeylines.every(left => left.authored.endsWith("rem") && left.computed.endsWith("px")), "Expected rem-authored spacing keylines to refresh after a viewport resize.");
-    const number = page.locator('input[type="number"]').first();
-    const select = page.locator("select").first();
     const box = await number.boundingBox();
     assert(box, "Expected the horizontal spacing audit to expose a measurable numeric field.");
     const [numberGeometry, selectGeometry] = await Promise.all([
@@ -278,6 +290,44 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(numberGeometry.backgroundSize === selectGeometry.backgroundSize, "Expected number and select chevrons to share the same 16px canvas.");
     assert(numberGeometry.paddingInlineEnd === selectGeometry.paddingInlineEnd, "Expected number and select to reserve the same trailing canvas space.");
     assert(["hidden", "clip"].includes(selectGeometry.overflow) && selectGeometry.textOverflow === "ellipsis" && selectGeometry.whiteSpace === "nowrap", `Expected constrained selects to truncate before their trailing chevron; got ${JSON.stringify(selectGeometry)}.`);
+    const rtlTrailingGeometry = await page.evaluate(() => {
+      const fields = [
+        document.querySelector<HTMLInputElement>('input[type="number"]'),
+        document.querySelector<HTMLSelectElement>("select")
+      ];
+      if (fields.some(field => !field)) throw new Error("Missing RTL trailing-artwork specimens.");
+      return fields.map(field => {
+        field!.parentElement!.dir = "rtl";
+        const style = getComputedStyle(field!);
+        return {
+          backgroundPosition: style.backgroundPosition,
+          paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
+          paddingLeft: Number.parseFloat(style.paddingLeft),
+          paddingRight: Number.parseFloat(style.paddingRight)
+        };
+      });
+    });
+    assert(rtlTrailingGeometry.every(field => field.backgroundPosition.startsWith(`${field.paddingRight}px `) && Math.abs(field.paddingInlineEnd - field.paddingLeft) < 0.01 && field.paddingInlineEnd > field.paddingRight), `Expected number and select artwork plus its reserved canvas to follow logical inline-end in RTL: ${JSON.stringify(rtlTrailingGeometry)}.`);
+    const nestedLtrTrailingGeometry = await page.evaluate(() => {
+      const fields = Array.from(document.querySelectorAll<HTMLElement>('input[type="number"], select'));
+      return fields.map(field => {
+        field.dir = "ltr";
+        const style = getComputedStyle(field);
+        return {
+          backgroundPosition: style.backgroundPosition,
+          paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
+          paddingLeft: Number.parseFloat(style.paddingLeft),
+          paddingRight: Number.parseFloat(style.paddingRight)
+        };
+      });
+    });
+    assert(nestedLtrTrailingGeometry.every(field => field.backgroundPosition.startsWith("calc(100%") && Math.abs(field.paddingInlineEnd - field.paddingRight) < 0.01 && field.paddingInlineEnd > field.paddingLeft), `Expected an explicit LTR field inside RTL to restore physical-right trailing artwork: ${JSON.stringify(nestedLtrTrailingGeometry)}.`);
+    await page.evaluate(() => {
+      document.querySelectorAll<HTMLElement>('input[type="number"], select').forEach(field => {
+        field.removeAttribute("dir");
+        field.parentElement?.removeAttribute("dir");
+      });
+    });
     const enlargedGeometry = await page.evaluate(() => {
       document.documentElement.style.fontSize = "200%";
       window.dispatchEvent(new Event("resize"));
@@ -310,6 +360,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         radioOuterLeft: Number.parseFloat(radioOuter.left),
         radioDotLeft: Number.parseFloat(radioDot.left),
         numberCanvas: numberStyle.backgroundSize,
+        numberReservation: Number.parseFloat(numberStyle.paddingInlineEnd),
+        requiredNumberReservation: Number.parseFloat(numberStyle.backgroundSize) + (Number.parseFloat(numberStyle.paddingInlineStart) * 2),
         selectCanvas: selectStyle.backgroundSize,
         chromePresent: Boolean(document.querySelector(".pc-nav") && document.querySelector(".pc-header") && document.querySelector(".pc-footer"))
       };
@@ -321,6 +373,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     const enlargedRadioCenterShift = (enlargedGeometry.radioOuterLeft + (enlargedGeometry.radioOuterWidth / 2)) - (enlargedGeometry.radioDotLeft + (enlargedGeometry.radioDotWidth / 2));
     assert(Math.abs(enlargedGeometry.radioDotWidth - ((enlargedGeometry.radioOuterWidth * 0.375) + enlargedGeometry.borderWidth)) < 0.02 && Math.abs(enlargedRadioCenterShift) < 0.02, `Expected the radio inner-dot growth to scale by the rem-based border unit while remaining concentric; got ${JSON.stringify(enlargedGeometry)}.`);
     assert(enlargedGeometry.numberCanvas === enlargedGeometry.selectCanvas && enlargedGeometry.numberCanvas === "32px 32px", "Expected number and select chevron canvases to scale together at the enlarged root size.");
+    assert(enlargedGeometry.numberReservation >= enlargedGeometry.requiredNumberReservation - 0.01, `Expected the number field to retain one scaled field inset between value and stepper at a 32px root: ${JSON.stringify(enlargedGeometry)}.`);
     assert(enlargedGeometry.chromePresent, "Expected shared page chrome to remain present after root enlargement.");
     await page.evaluate(() => {
       document.documentElement.style.fontSize = "";
@@ -333,7 +386,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       const continuationLine = document.querySelector<HTMLElement>("[data-spacing-keyline='disclosure-label-start']");
       const field = document.querySelector<HTMLElement>(".bf-status-label");
       const continuation = document.querySelector<HTMLElement>(".bf-panel-content p");
-      if (!fieldLine || !continuationLine || !field || !continuation) throw new Error("Missing zoom keylines or specimens.");
+      const numberField = document.querySelector<HTMLInputElement>('input[type="number"]');
+      if (!fieldLine || !continuationLine || !field || !continuation || !numberField) throw new Error("Missing zoom keylines or specimens.");
       const fieldRange = document.createRange();
       fieldRange.selectNodeContents(field);
       const continuationRange = document.createRange();
@@ -341,13 +395,19 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       return {
         continuationDelta: Math.abs(continuationRange.getBoundingClientRect().left - continuationLine.getBoundingClientRect().left),
         fieldDelta: Math.abs(fieldRange.getBoundingClientRect().left - fieldLine.getBoundingClientRect().left),
-        scale: window.visualViewport?.scale ?? 1
+        scale: window.visualViewport?.scale ?? 1,
+        numberReservation: Number.parseFloat(getComputedStyle(numberField).paddingInlineEnd),
+        requiredNumberReservation: Number.parseFloat(getComputedStyle(numberField).backgroundSize) + (Number.parseFloat(getComputedStyle(numberField).paddingInlineStart) * 2)
       };
     });
-    assert(Math.abs(zoomGeometry.scale - 1.25) < 0.01 && zoomGeometry.fieldDelta < 0.51 && zoomGeometry.continuationDelta < 0.51, `Expected inset alignment to survive a non-100% Chromium page scale; got ${JSON.stringify(zoomGeometry)}.`);
+    assert(Math.abs(zoomGeometry.scale - 1.25) < 0.01 && zoomGeometry.fieldDelta < 0.51 && zoomGeometry.continuationDelta < 0.51 && zoomGeometry.numberReservation >= zoomGeometry.requiredNumberReservation - 0.01, `Expected inset alignment and number-stepper clearance to survive a non-100% Chromium page scale; got ${JSON.stringify(zoomGeometry)}.`);
     await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
     const originalValue = await number.inputValue();
     await number.focus();
+    await number.press("Control+A");
+    await number.pressSequentially("73");
+    assert(await number.inputValue() === "73", "Expected the right-aligned numeric field to retain native keyboard selection and replacement.");
+    await number.fill(originalValue);
     await number.press("ArrowUp");
     assert(await number.inputValue() === String(Number(originalValue) + 1), "Expected the numeric field to retain native keyboard increment behaviour.");
     await number.press("ArrowDown");

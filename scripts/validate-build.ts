@@ -1278,15 +1278,19 @@ function validateCommonCss(css: string): void {
     "appearance": "textfield",
     "background-position": "right var(--bf-component-inline-inset-field) center",
     "background-size": "1rem 1rem",
-    "padding-inline-end": "calc(var(--bf-component-inline-inset-field) * 2.5)"
+    "padding-inline-end": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))"
   }, "number inputs use one field-owned paired-chevron canvas aligned with select");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(select)", {
     "background-position": "right var(--bf-component-inline-inset-field) center",
     "background-size": "1rem 1rem",
     "overflow": "hidden",
     "text-overflow": "ellipsis",
-    "white-space": "nowrap"
+    "white-space": "nowrap",
+    "padding-inline-end": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))"
   }, "selects reserve one trailing chevron canvas and truncate long selected values");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(select:dir(rtl), input[type='number']:dir(rtl))", {
+    "background-position": "left var(--bf-component-inline-inset-field) center"
+  }, "select and number artwork follows logical inline-end in RTL");
   assert(css.includes("input[type='number'])::-webkit-inner-spin-button,\n:where(.bf-theme) :where(input[type='number'])::-webkit-outer-spin-button {\n  appearance: none;\n  margin: 0;"), "Expected Chromium number inputs to remove the duplicate browser-reserved spin slot.");
   assert(css.includes("--bf-ui-badge-padding-inline: var(--bf-border-width);") && !css.includes("--bf-ui-badge-padding-inline: calc("), "Expected badge overflow padding to stay token-derived without reconstructing a block size from typography.");
   assert(!css.includes("min-width: calc(var(--bf-body-line-height") && !css.includes("min-inline-size: calc(var(--bf-body-line-height"), "Expected badge inline floors to resolve through the cascade-repointed square contract rather than a build-time body-line interpolation.");
