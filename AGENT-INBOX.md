@@ -131,6 +131,18 @@ containers own semantic spacing.
 
 ## Deferred candidates
 
+- **OS side-navigation accordion track defect (Diagram Generator, 2026-09-06):**
+  an expanded nested `.bf-side-navigation-list` does not enlarge its parent row.
+  The shared list rule fixes every implicit grid row to
+  `--bf-single-line-row-block-size`, including root rows whose `<li>` contains an
+  expanded child list. Following root items therefore paint over the expanded
+  content. Wrapped labels have the same failure inside nested lists because
+  their text can exceed the fixed track. BF's own side-navigation demo contains
+  this expanded-list-plus-following-sibling structure. Define and browser-test
+  the component-owned variable-height accordion track contract, including long
+  labels, zoom, and collapse/expand transitions. Diagram Generator applies only
+  a navigation-composition-scoped sizing guard; it does not patch vendored BF.
+
 - **Downstream OS number-input defect (Diagram Generator, 2026-09-06):** the
   released 0.1.7 `input[type='number']` contract can paint its stepper over a
   right-aligned value. Diagram Generator reproduces this in Chromium with a
