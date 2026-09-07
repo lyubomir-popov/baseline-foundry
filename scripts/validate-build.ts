@@ -412,6 +412,22 @@ function validateTierContentCaps(
   assert(sharedCss.includes(":where(.bf-theme.bf-tier-app) :where(.bf-page) {\n  max-inline-size: none;"), "Expected shared App class switching to preserve fluid bf-page geometry despite its 60rem fixed-width token.");
 }
 
+function validateBuiltInSquareCorners(
+  sharedCss: string,
+  tierArtifacts: Record<string, { tokens: Record<string, unknown>; css: string; }>
+): void {
+  for (const tierName of tierNames) {
+    const artifact = tierArtifacts[tierName];
+    assert(artifact, `Expected generated artifacts for tier "${tierName}" while validating square corners.`);
+    const components = (artifact.tokens.components ?? {}) as Record<string, unknown>;
+    const direct = customPropertiesForSelector(artifact.css, ":where(.bf-theme)").get("--bf-radius");
+    const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`).get("--bf-radius");
+
+    assert(components.radius === "0rem", `Expected ${tierName} to publish a zero component radius, got ${components.radius}.`);
+    assert(direct === "0rem" && scoped === "0rem", `Expected ${tierName} direct/scoped CSS radii to both resolve to 0rem; direct=${direct}, scoped=${scoped}.`);
+  }
+}
+
 function validateTierPanelPaddingProgression(
   sharedCss: string,
   tierArtifacts: Record<string, { tokens: Record<string, unknown>; css: string; }>
@@ -2115,6 +2131,12 @@ async function main(): Promise<void> {
     os: osTier
   }, defaultTheme.css, ibmPlexEngineSmoke));
   runInvariant("Tier content-cap progression", () => validateTierContentCaps(defaultTheme.css, {
+    editorial: editorialTier,
+    documentation: documentationTier,
+    app: appTier,
+    os: osTier
+  }));
+  runInvariant("Built-in square corners", () => validateBuiltInSquareCorners(defaultTheme.css, {
     editorial: editorialTier,
     documentation: documentationTier,
     app: appTier,

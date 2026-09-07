@@ -106,7 +106,7 @@
   },
   "components": {
     "borderWidthRem": 0.0625,
-    "radiusRem": 0.125,
+    "radiusRem": 0,
     "inlineInsetFieldUnits": 1,
     "inlineInsetActionUnits": 3,
     "inlineInsetContinuationUnits": 6,
