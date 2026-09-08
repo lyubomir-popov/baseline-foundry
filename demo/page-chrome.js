@@ -1,4 +1,4 @@
-import { findPageByPath, normalizePagePath, pageCatalogSections } from "./page-catalog.js";
+import { findPageByPath, normalizePagePath, pageCatalogSections, pageUrl } from "./page-catalog.js";
 
 let chromeId = 0;
 const navigationScrollStorageKey = "bf-demo-page-navigation-scroll-top";
@@ -93,7 +93,7 @@ function renderSequenceLink(page, direction) {
 
   const label = direction === "previous" ? "Previous" : "Next";
   const icon = direction === "previous" ? "is-chevron-left" : "is-chevron-right";
-  return `<a class="bf-button is-base is-icon pc-sequence-link is-${direction}" href="${page.href}" rel="${direction === "previous" ? "prev" : "next"}" aria-label="${label}: ${escapeHtml(page.title)}" title="${escapeHtml(page.title)}"><span class="bf-icon ${icon}" aria-hidden="true"></span></a>`;
+  return `<a class="bf-button is-base is-icon pc-sequence-link is-${direction}" href="${pageUrl(page.href)}" rel="${direction === "previous" ? "prev" : "next"}" aria-label="${label}: ${escapeHtml(page.title)}" title="${escapeHtml(page.title)}"><span class="bf-icon ${icon}" aria-hidden="true"></span></a>`;
 }
 
 function renderSequenceNavigation(currentPath) {
@@ -124,9 +124,9 @@ function renderNavigationBrand() {
   return `
     <div class="bf-panel-header is-sticky is-navigation-brand">
       <div class="bf-top-navigation-logo is-canonical-tagged">
-        <a class="bf-top-navigation-link" href="/demo/" aria-label="Baseline Foundry home">
+        <a class="bf-top-navigation-link" href="${pageUrl("/demo/")}" aria-label="Baseline Foundry home">
           <span class="bf-top-navigation-logo-tag" aria-hidden="true">
-            <img class="bf-top-navigation-logo-icon" src="/demo/assets/canonical-mark.svg" alt="">
+            <img class="bf-top-navigation-logo-icon" src="${pageUrl("/demo/assets/canonical-mark.svg")}" alt="">
           </span>
           <span class="bf-top-navigation-logo-title">Baseline Foundry</span>
         </a>
@@ -143,7 +143,7 @@ function renderDrawerSections(currentPath) {
           const currentAttr = isCurrent ? ' aria-current="page"' : "";
           return `
             <li class="bf-side-navigation-item">
-              <a class="bf-side-navigation-link" href="${item.href}"${currentAttr}>
+              <a class="bf-side-navigation-link" href="${pageUrl(item.href)}"${currentAttr}>
                 <span class="bf-side-navigation-label">${escapeHtml(item.title)}</span>
               </a>
             </li>`;

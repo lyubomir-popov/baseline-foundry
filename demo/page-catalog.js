@@ -179,9 +179,24 @@ export const pageCatalogSections = [
   { heading: "Grid examples", items: gridExamplePages }
 ];
 
+const catalogModulePath = new URL(import.meta.url).pathname;
+const catalogRootPath = catalogModulePath.slice(0, catalogModulePath.lastIndexOf("/demo/") + 1);
+
+export function pageUrl(pathname) {
+  return `${catalogRootPath}${pathname.replace(/^\/+/, "")}`;
+}
+
 export function normalizePagePath(pathname) {
   if (!pathname) {
     return "/";
+  }
+
+  if (catalogRootPath !== "/") {
+    const rootWithoutTrailingSlash = catalogRootPath.slice(0, -1);
+
+    if (pathname === rootWithoutTrailingSlash || pathname.startsWith(catalogRootPath)) {
+      pathname = `/${pathname.slice(catalogRootPath.length)}`;
+    }
   }
 
   if (pathname === "/" || pathname === "/index.html") {
