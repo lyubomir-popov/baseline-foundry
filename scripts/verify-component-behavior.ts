@@ -17,7 +17,7 @@ async function readAsideWidth(page: import("playwright").Page): Promise<number> 
   return page.locator(".bf-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
 }
 
-async function verifyNumberStepperChevron(origin: string): Promise<void> {
+async function verifyNativeNumberStepper(origin: string): Promise<void> {
   const browser = await openBrowser();
 
   try {
@@ -198,10 +198,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
             return host.left + Number.parseFloat(mark.left) + (Number.parseFloat(mark.width) / 2);
           };
           const numberStyle = getComputedStyle(document.querySelector('input[type="number"]'));
-          const selectStyle = getComputedStyle(document.querySelector("select"));
           const numberField = document.querySelector('input[type="number"]');
-          const numberInset = Number.parseFloat(numberStyle.paddingInlineStart);
-          const numberCanvas = Number.parseFloat(numberStyle.backgroundSize);
           const disclosureTranslation = selector => {
             const element = document.querySelector(selector);
             if (!element) throw new Error("Missing spacing matrix disclosure: " + selector + ".");
@@ -225,13 +222,10 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
             field: [".bf-table td", ".bf-status-label"].map(textStart),
             keylines: { action: line("action-inset"), field: line("field-text-start"), continuation: line("disclosure-label-start") },
             markCenters: [".bf-prose ul > li", ".bf-list-item.is-ticked", ".bf-list-item.is-crossed", ".bf-checkbox-label", ".bf-radio-label"].map(markCenter),
-            numberSelect: {
-              positionEqual: numberStyle.backgroundPosition === selectStyle.backgroundPosition,
-              sizeEqual: numberStyle.backgroundSize === selectStyle.backgroundSize,
-              paddingEqual: numberStyle.paddingInlineEnd === selectStyle.paddingInlineEnd,
+            numberInput: {
+              appearance: numberStyle.appearance,
+              backgroundImage: numberStyle.backgroundImage,
               rightAligned: numberStyle.textAlign === "right",
-              trailingReservation: Number.parseFloat(numberStyle.paddingInlineEnd),
-              requiredReservation: numberCanvas + (numberInset * 2),
               value: numberField.value
             },
             disclosureTranslations: [".bf-accordion-tab", ".bf-list-tree-toggle"].map(disclosureTranslation)
@@ -241,8 +235,8 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         assert(matrix.field.every(start => Math.abs(start - matrix.keylines.field) < 0.51), `Expected ${tier}/${tone} field copy to share the field inset: ${JSON.stringify(matrix)}.`);
         assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, notification, and panel copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
         assert(Math.max(...matrix.markCenters) - Math.min(...matrix.markCenters) < 0.51, `Expected ${tier}/${tone} leading marks to share one centre: ${JSON.stringify(matrix.markCenters)}.`);
-        assert(matrix.numberSelect.positionEqual && matrix.numberSelect.sizeEqual && matrix.numberSelect.paddingEqual, `Expected ${tier}/${tone} number and select trailing artwork to remain identical: ${JSON.stringify(matrix.numberSelect)}.`);
-        assert(matrix.numberSelect.rightAligned && matrix.numberSelect.value === "123456789" && matrix.numberSelect.trailingReservation >= matrix.numberSelect.requiredReservation - 0.01, `Expected ${tier}/${tone} right-aligned number copy to stop before the paired-chevron canvas: ${JSON.stringify(matrix.numberSelect)}.`);
+        assert(matrix.numberInput.appearance === "auto" && matrix.numberInput.backgroundImage === "none", `Expected ${tier}/${tone} number input to retain its native pointer-accessible spinner: ${JSON.stringify(matrix.numberInput)}.`);
+        assert(matrix.numberInput.rightAligned && matrix.numberInput.value === "123456789", `Expected ${tier}/${tone} number input to retain right-aligned numeric copy: ${JSON.stringify(matrix.numberInput)}.`);
         assert(matrix.disclosureTranslations.every(({ x, y }) => Math.abs(x) <= 0.01 && Math.abs(y) <= 0.01), `Expected ${tier}/${tone} accordion and list-tree chevrons not to inherit an optical translation: ${JSON.stringify(matrix.disclosureTranslations)}.`);
       }
     }
@@ -262,16 +256,10 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     const box = await number.boundingBox();
     assert(box, "Expected the horizontal spacing audit to expose a measurable numeric field.");
     const [numberGeometry, selectGeometry] = await Promise.all([
-      number.evaluate(element => {
-        const style = getComputedStyle(element);
-        return {
-          appearance: style.appearance,
-          backgroundImage: style.backgroundImage,
-          backgroundPosition: style.backgroundPosition,
-          backgroundSize: style.backgroundSize,
-          paddingInlineEnd: style.paddingInlineEnd
-        };
-      }),
+      number.evaluate(element => ({
+        appearance: getComputedStyle(element).appearance,
+        backgroundImage: getComputedStyle(element).backgroundImage
+      })),
       select.evaluate(element => {
         const style = getComputedStyle(element);
         return {
@@ -284,64 +272,56 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         };
       })
     ]);
-    assert(numberGeometry.appearance === "textfield", "Expected the number field to remove the duplicate browser spin slot.");
-    assert(numberGeometry.backgroundImage.includes("svg+xml"), "Expected the number field to paint one paired-chevron asset.");
-    assert(numberGeometry.backgroundPosition === selectGeometry.backgroundPosition, "Expected number and select chevrons to share the same trailing position.");
-    assert(numberGeometry.backgroundSize === selectGeometry.backgroundSize, "Expected number and select chevrons to share the same 16px canvas.");
-    assert(numberGeometry.paddingInlineEnd === selectGeometry.paddingInlineEnd, "Expected number and select to reserve the same trailing canvas space.");
+    assert(numberGeometry.appearance === "auto" && numberGeometry.backgroundImage === "none", `Expected the number field to expose the browser-owned spinner without inert replacement artwork; got ${JSON.stringify(numberGeometry)}.`);
     assert(["hidden", "clip"].includes(selectGeometry.overflow) && selectGeometry.textOverflow === "ellipsis" && selectGeometry.whiteSpace === "nowrap", `Expected constrained selects to truncate before their trailing chevron; got ${JSON.stringify(selectGeometry)}.`);
     const rtlTrailingGeometry = await page.evaluate(() => {
-      const fields = [
-        document.querySelector<HTMLInputElement>('input[type="number"]'),
-        document.querySelector<HTMLSelectElement>("select")
-      ];
-      if (fields.some(field => !field)) throw new Error("Missing RTL trailing-artwork specimens.");
-      return fields.map(field => {
-        field!.parentElement!.dir = "rtl";
-        const style = getComputedStyle(field!);
-        return {
-          backgroundPosition: style.backgroundPosition,
-          paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
-          paddingLeft: Number.parseFloat(style.paddingLeft),
-          paddingRight: Number.parseFloat(style.paddingRight)
-        };
-      });
+      const field = document.querySelector<HTMLSelectElement>("select");
+      if (!field) throw new Error("Missing RTL select artwork specimen.");
+      field.parentElement!.dir = "rtl";
+      const style = getComputedStyle(field);
+      return {
+        backgroundPosition: style.backgroundPosition,
+        paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
+        paddingLeft: Number.parseFloat(style.paddingLeft),
+        paddingRight: Number.parseFloat(style.paddingRight)
+      };
     });
-    assert(rtlTrailingGeometry.every(field => field.backgroundPosition.startsWith(`${field.paddingRight}px `) && Math.abs(field.paddingInlineEnd - field.paddingLeft) < 0.01 && field.paddingInlineEnd > field.paddingRight), `Expected number and select artwork plus its reserved canvas to follow logical inline-end in RTL: ${JSON.stringify(rtlTrailingGeometry)}.`);
+    assert(rtlTrailingGeometry.backgroundPosition.startsWith(`${rtlTrailingGeometry.paddingRight}px `) && Math.abs(rtlTrailingGeometry.paddingInlineEnd - rtlTrailingGeometry.paddingLeft) < 0.01 && rtlTrailingGeometry.paddingInlineEnd > rtlTrailingGeometry.paddingRight, `Expected select artwork plus its reserved canvas to follow logical inline-end in RTL: ${JSON.stringify(rtlTrailingGeometry)}.`);
     const nestedLtrTrailingGeometry = await page.evaluate(() => {
-      const fields = Array.from(document.querySelectorAll<HTMLElement>('input[type="number"], select'));
-      return fields.map(field => {
-        field.dir = "ltr";
-        const style = getComputedStyle(field);
-        return {
-          backgroundPosition: style.backgroundPosition,
-          paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
-          paddingLeft: Number.parseFloat(style.paddingLeft),
-          paddingRight: Number.parseFloat(style.paddingRight)
-        };
-      });
+      const field = document.querySelector<HTMLSelectElement>("select");
+      if (!field) throw new Error("Missing nested LTR select artwork specimen.");
+      field.dir = "ltr";
+      const style = getComputedStyle(field);
+      return {
+        backgroundPosition: style.backgroundPosition,
+        paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
+        paddingLeft: Number.parseFloat(style.paddingLeft),
+        paddingRight: Number.parseFloat(style.paddingRight)
+      };
     });
-    assert(nestedLtrTrailingGeometry.every(field => field.backgroundPosition.startsWith("calc(100%") && Math.abs(field.paddingInlineEnd - field.paddingRight) < 0.01 && field.paddingInlineEnd > field.paddingLeft), `Expected an explicit LTR field inside RTL to restore physical-right trailing artwork: ${JSON.stringify(nestedLtrTrailingGeometry)}.`);
+    assert(nestedLtrTrailingGeometry.backgroundPosition.startsWith("calc(100%") && Math.abs(nestedLtrTrailingGeometry.paddingInlineEnd - nestedLtrTrailingGeometry.paddingRight) < 0.01 && nestedLtrTrailingGeometry.paddingInlineEnd > nestedLtrTrailingGeometry.paddingLeft, `Expected an explicit LTR select inside RTL to restore physical-right trailing artwork: ${JSON.stringify(nestedLtrTrailingGeometry)}.`);
     await page.evaluate(() => {
-      document.querySelectorAll<HTMLElement>('input[type="number"], select').forEach(field => {
-        field.removeAttribute("dir");
-        field.parentElement?.removeAttribute("dir");
-      });
+      const selectField = document.querySelector<HTMLElement>("select");
+      selectField?.removeAttribute("dir");
+      selectField?.parentElement?.removeAttribute("dir");
     });
+    const originalValue = await number.inputValue();
+    const pointerBox = await number.boundingBox();
+    assert(pointerBox, "Expected a measurable number input for pointer-stepper verification.");
+    await page.mouse.click(pointerBox.x + pointerBox.width - 14, pointerBox.y + (pointerBox.height * 0.25));
+    assert(await number.inputValue() === String(Number(originalValue) + 1), "Expected the visible upper number-stepper target to increment the field by pointer.");
+    await page.mouse.click(pointerBox.x + pointerBox.width - 14, pointerBox.y + (pointerBox.height * 0.75));
+    assert(await number.inputValue() === originalValue, "Expected the visible lower number-stepper target to decrement the field by pointer.");
     const enlargedGeometry = await page.evaluate(() => {
       document.documentElement.style.fontSize = "200%";
       window.dispatchEvent(new Event("resize"));
-      const numberField = document.querySelector<HTMLInputElement>('input[type="number"]');
-      const selectField = document.querySelector<HTMLSelectElement>("select");
       const radioLabel = document.querySelector<HTMLElement>(".bf-radio-label");
       const red = document.querySelector<HTMLElement>("[data-spacing-keyline='action-inset']");
       const pageElement = document.querySelector<HTMLElement>("main.bf-page");
-      if (!numberField || !selectField || !radioLabel || !red || !pageElement) throw new Error("Missing enlarged-root spacing specimen.");
+      if (!radioLabel || !red || !pageElement) throw new Error("Missing enlarged-root spacing specimen.");
       const rootSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
       const radioOuter = getComputedStyle(radioLabel, "::before");
       const radioDot = getComputedStyle(radioLabel, "::after");
-      const numberStyle = getComputedStyle(numberField);
-      const selectStyle = getComputedStyle(selectField);
       const actionProbe = document.createElement("i");
       actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);position:absolute;visibility:hidden";
       pageElement.append(actionProbe);
@@ -359,10 +339,6 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
         radioDotWidth: Number.parseFloat(radioDot.width),
         radioOuterLeft: Number.parseFloat(radioOuter.left),
         radioDotLeft: Number.parseFloat(radioDot.left),
-        numberCanvas: numberStyle.backgroundSize,
-        numberReservation: Number.parseFloat(numberStyle.paddingInlineEnd),
-        requiredNumberReservation: Number.parseFloat(numberStyle.backgroundSize) + (Number.parseFloat(numberStyle.paddingInlineStart) * 2),
-        selectCanvas: selectStyle.backgroundSize,
         chromePresent: Boolean(document.querySelector(".pc-nav") && document.querySelector(".pc-header") && document.querySelector(".pc-footer"))
       };
     });
@@ -372,8 +348,6 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
     assert(Math.abs(enlargedGeometry.redStart - enlargedGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to retain the active Action inset after root enlargement.");
     const enlargedRadioCenterShift = (enlargedGeometry.radioOuterLeft + (enlargedGeometry.radioOuterWidth / 2)) - (enlargedGeometry.radioDotLeft + (enlargedGeometry.radioDotWidth / 2));
     assert(Math.abs(enlargedGeometry.radioDotWidth - ((enlargedGeometry.radioOuterWidth * 0.375) + enlargedGeometry.borderWidth)) < 0.02 && Math.abs(enlargedRadioCenterShift) < 0.02, `Expected the radio inner-dot growth to scale by the rem-based border unit while remaining concentric; got ${JSON.stringify(enlargedGeometry)}.`);
-    assert(enlargedGeometry.numberCanvas === enlargedGeometry.selectCanvas && enlargedGeometry.numberCanvas === "32px 32px", "Expected number and select chevron canvases to scale together at the enlarged root size.");
-    assert(enlargedGeometry.numberReservation >= enlargedGeometry.requiredNumberReservation - 0.01, `Expected the number field to retain one scaled field inset between value and stepper at a 32px root: ${JSON.stringify(enlargedGeometry)}.`);
     assert(enlargedGeometry.chromePresent, "Expected shared page chrome to remain present after root enlargement.");
     await page.evaluate(() => {
       document.documentElement.style.fontSize = "";
@@ -386,8 +360,7 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       const continuationLine = document.querySelector<HTMLElement>("[data-spacing-keyline='disclosure-label-start']");
       const field = document.querySelector<HTMLElement>(".bf-status-label");
       const continuation = document.querySelector<HTMLElement>(".bf-panel-content p");
-      const numberField = document.querySelector<HTMLInputElement>('input[type="number"]');
-      if (!fieldLine || !continuationLine || !field || !continuation || !numberField) throw new Error("Missing zoom keylines or specimens.");
+      if (!fieldLine || !continuationLine || !field || !continuation) throw new Error("Missing zoom keylines or specimens.");
       const fieldRange = document.createRange();
       fieldRange.selectNodeContents(field);
       const continuationRange = document.createRange();
@@ -395,14 +368,11 @@ async function verifyNumberStepperChevron(origin: string): Promise<void> {
       return {
         continuationDelta: Math.abs(continuationRange.getBoundingClientRect().left - continuationLine.getBoundingClientRect().left),
         fieldDelta: Math.abs(fieldRange.getBoundingClientRect().left - fieldLine.getBoundingClientRect().left),
-        scale: window.visualViewport?.scale ?? 1,
-        numberReservation: Number.parseFloat(getComputedStyle(numberField).paddingInlineEnd),
-        requiredNumberReservation: Number.parseFloat(getComputedStyle(numberField).backgroundSize) + (Number.parseFloat(getComputedStyle(numberField).paddingInlineStart) * 2)
+        scale: window.visualViewport?.scale ?? 1
       };
     });
-    assert(Math.abs(zoomGeometry.scale - 1.25) < 0.01 && zoomGeometry.fieldDelta < 0.51 && zoomGeometry.continuationDelta < 0.51 && zoomGeometry.numberReservation >= zoomGeometry.requiredNumberReservation - 0.01, `Expected inset alignment and number-stepper clearance to survive a non-100% Chromium page scale; got ${JSON.stringify(zoomGeometry)}.`);
+    assert(Math.abs(zoomGeometry.scale - 1.25) < 0.01 && zoomGeometry.fieldDelta < 0.51 && zoomGeometry.continuationDelta < 0.51, `Expected inset alignment to survive a non-100% Chromium page scale; got ${JSON.stringify(zoomGeometry)}.`);
     await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
-    const originalValue = await number.inputValue();
     await number.focus();
     await number.press("Control+A");
     await number.pressSequentially("73");
@@ -5357,7 +5327,7 @@ async function main(): Promise<void> {
   const { server, origin } = await createStaticServer(rootDir);
 
   try {
-    await verifyNumberStepperChevron(origin);
+    await verifyNativeNumberStepper(origin);
     await verifySideNavigationAccordionGeometry(origin);
     await verifyPageChromeNavigationScroll(origin);
     await verifyPageChromeHierarchyAndKeylines(origin);

@@ -1289,13 +1289,9 @@ function validateCommonCss(css: string): void {
     "vertical-align": "middle"
   }, "nested badges fit and centre within a host-owned body line");
   assert(css.includes(".bf-button.is-nested"), "Expected bordered action targets to expose only the explicit nested composition modifier.");
-  assert(css.includes("--bf-ui-icon-number-stepper: url(\"data:image/svg+xml,"), "Expected number inputs to reuse the compact paired-chevron asset.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(input[type='number'])", {
-    "appearance": "textfield",
-    "background-position": "right var(--bf-component-inline-inset-field) center",
-    "background-size": "1rem 1rem",
-    "padding-inline-end": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))"
-  }, "number inputs use one field-owned paired-chevron canvas aligned with select");
+    "appearance": "auto"
+  }, "number inputs retain the browser-owned pointer-accessible stepper");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(select)", {
     "background-position": "right var(--bf-component-inline-inset-field) center",
     "background-size": "1rem 1rem",
@@ -1304,10 +1300,10 @@ function validateCommonCss(css: string): void {
     "white-space": "nowrap",
     "padding-inline-end": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))"
   }, "selects reserve one trailing chevron canvas and truncate long selected values");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(select:dir(rtl), input[type='number']:dir(rtl))", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(select:dir(rtl))", {
     "background-position": "left var(--bf-component-inline-inset-field) center"
-  }, "select and number artwork follows logical inline-end in RTL");
-  assert(css.includes("input[type='number'])::-webkit-inner-spin-button,\n:where(.bf-theme) :where(input[type='number'])::-webkit-outer-spin-button {\n  appearance: none;\n  margin: 0;"), "Expected Chromium number inputs to remove the duplicate browser-reserved spin slot.");
+  }, "select artwork follows logical inline-end in RTL");
+  assert(!css.includes("--bf-ui-icon-number-stepper") && !css.includes("::-webkit-inner-spin-button") && !css.includes("::-webkit-outer-spin-button"), "Expected number inputs not to paint inert replacement arrows or disable native spin buttons.");
   assert(css.includes("--bf-ui-badge-padding-inline: var(--bf-border-width);") && !css.includes("--bf-ui-badge-padding-inline: calc("), "Expected badge overflow padding to stay token-derived without reconstructing a block size from typography.");
   assert(!css.includes("min-width: calc(var(--bf-body-line-height") && !css.includes("min-inline-size: calc(var(--bf-body-line-height"), "Expected badge inline floors to resolve through the cascade-repointed square contract rather than a build-time body-line interpolation.");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before", "chip value separators");
