@@ -23,3 +23,10 @@ At 1440px, toggle `is-navigation-drawer-forced` on the specimen's
 `bf-application`. It must immediately return to fixed drawer/overlay geometry;
 opening must move focus into the drawer, Escape must close it, and removing the
 modifier must restore persistent geometry and accessibility state.
+
+Open both an application navigation drawer and a panel drawer from a toggle
+inside a contextual-menu-like container, with each toggle declaring
+`data-bf-focus-return` for a persistent button. Hide the toggle container after
+activation. Escape, explicit Close, and overlay dismissal must each restore the
+persistent button; removing the attribute or using an unresolved ID must retain
+the trigger fallback.

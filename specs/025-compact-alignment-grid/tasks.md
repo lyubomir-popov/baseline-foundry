@@ -13,6 +13,9 @@
 - [x] T005C Add the generic `is-navigation-drawer-forced` modifier and dynamic
   runtime synchronization, with wide-viewport CSS, ARIA, focus, Escape, and
   restoration coverage.
+- [x] T005D Add the shared `data-bf-focus-return` IDREF contract to application
+  and panel drawers, with hidden-trigger Escape/Close/overlay coverage and
+  fallback behavior.
 - [x] T006 Run focused checks, `npm test`, and `npm run qa:components`.
 - [x] T007 Complete browser visual review and record the clean commit SHA in
   the delivery handoff.

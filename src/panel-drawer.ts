@@ -1,3 +1,5 @@
+import { resolveFocusReturnTarget } from "./focus-return.js";
+
 export interface PanelDrawerInitOptions {
   root?: ParentNode;
 }
@@ -10,7 +12,7 @@ const OVERLAY_SELECTOR = ".bf-application-overlay";
 const APPLICATION_OPEN_CLASS = "is-drawer-expanded";
 const DRAWER_OPEN_CLASS = "is-open";
 
-const lastTriggerByDrawer = new WeakMap<HTMLElement, HTMLElement>();
+const focusReturnByDrawer = new WeakMap<HTMLElement, HTMLElement>();
 
 function queryAllWithinRoot<T extends Element>(root: ParentNode, selector: string): T[] {
   const elements = Array.from(root.querySelectorAll<T>(selector));
@@ -116,7 +118,7 @@ function openDrawer(drawer: HTMLElement, root: ParentNode, trigger?: HTMLElement
   }
 
   if (trigger) {
-    lastTriggerByDrawer.set(drawer, trigger);
+    focusReturnByDrawer.set(drawer, resolveFocusReturnTarget(trigger, root));
   }
 
   focusDrawer(drawer);
@@ -133,7 +135,7 @@ function closeDrawer(drawer: HTMLElement, root: ParentNode, restoreFocus: boolea
   }
 
   if (restoreFocus) {
-    lastTriggerByDrawer.get(drawer)?.focus();
+    focusReturnByDrawer.get(drawer)?.focus();
   }
 }
 

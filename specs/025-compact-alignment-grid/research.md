@@ -55,6 +55,16 @@ class changes so ARIA, drawer focus, and Escape semantics change with the CSS
 without reinitialization. Consumers retain ownership of the pressure policy;
 BF owns only the resulting shell state.
 
+A drawer toggle can be rendered inside a transient contextual menu. Returning
+focus to that menu item after the menu closes leaves focus hidden or lost, even
+though BF correctly owns drawer dismissal. The generic
+`data-bf-focus-return="id"` IDREF lets either application-layout or panel-drawer
+runtime record a persistent control instead. Resolution happens inside the
+configured root when the drawer opens, preventing cross-root capture and
+preserving the trigger as the backward-compatible fallback for absent or
+unresolved values. Escape, explicit Close, and overlay dismissal continue to
+flow exclusively through BF's existing close paths.
+
 The right application aside also loads as a drawer below that boundary. Resize
 listeners must be discovered from the stable public handle rather than the
 transient `is-pinned` class; actual pointer and keyboard input remains gated by

@@ -12,7 +12,7 @@
 
 ## Automated evidence
 
-- `npx --yes npm@11.19.0 test`: pass. The static build suite reports 24,413
+- `npx --yes npm@11.19.0 test`: pass. The static build suite reports 24,417
   checks; all component baseline checks and the real-Chromium behavior suite
   pass.
 - `npx --yes npm@11.19.0 run qa:components`: pass. The affected demo is
@@ -34,6 +34,16 @@
   ARIA without reinitialization, moves focus into the opened drawer, closes and
   restores focus on Escape, then restores persistent CSS/runtime state when
   removed.
+- Chromium focus-return coverage opens application navigation and panel drawers
+  from contextual-menu-like triggers that become hidden, then proves
+  `data-bf-focus-return` restores each persistent target through Escape,
+  explicit Close, and overlay dismissal. Missing and unresolved IDREFs retain
+  the trigger fallback, and the suite reports no browser runtime errors.
+- The `implement-component` live Pragma standards pull and independent
+  `standards-review` lookup were unavailable because this environment has no
+  `pragma` executable. The BF repository instructions, active Spec 025, static
+  build contract, full component baselines, and Chromium behavior suite were
+  used as the fallback quality gate.
 
 ## Visual review
 

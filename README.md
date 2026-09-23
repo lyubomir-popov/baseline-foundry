@@ -373,6 +373,14 @@ overlay ARIA state; drawer focus and Escape behavior continue to apply while it
 is present. Removing the modifier restores the application's configured
 persistent boundary.
 
+Application-layout and panel-drawer toggles may declare
+`data-bf-focus-return="persistent-control-id"` when the toggle itself is
+transient, such as an item in a contextual menu that closes after activation.
+The value is one element ID resolved inside the runtime's configured `root` at
+open time. BF restores focus to that element after Escape, an explicit close,
+or overlay dismissal. An absent value or an ID that does not resolve in the
+same root preserves the default behavior of returning focus to the toggle.
+
 Node/build exports:
 
 - `buildThemeFromConfig`

@@ -561,6 +561,18 @@ function validateWideWorkspaceApplication(css: string, html: string, componentDe
   assert(componentDemoJs.includes('{ largeBreakpoint: "(min-width: 75rem)" }'), "Expected the modified application-layout specimen to synchronize its runtime breakpoint with BF CSS.");
 }
 
+function validateDrawerFocusReturn(
+  focusReturnJs: string,
+  applicationLayoutJs: string,
+  panelDrawerJs: string,
+  readmeMd: string
+): void {
+  assert(focusReturnJs.includes('data-bf-focus-return'), "Expected the built runtime to publish the generic focus-return IDREF attribute contract.");
+  assert(applicationLayoutJs.includes("resolveFocusReturnTarget(trigger, root)"), "Expected application-layout opening to resolve the shared focus-return target.");
+  assert(panelDrawerJs.includes("resolveFocusReturnTarget(trigger, root)"), "Expected panel-drawer opening to resolve the shared focus-return target.");
+  assert(readmeMd.includes('`data-bf-focus-return="persistent-control-id"`'), "Expected README.md to document the public focus-return IDREF contract.");
+}
+
 function assertSelectorUsesBodyTypography(css: string, selector: string, label: string): void {
   const fontSizePattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?font-size: var\\(--bf-body-font-size,`);
   const lineHeightPattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?line-height: var\\(--bf-body-line-height,`);
@@ -2041,6 +2053,11 @@ async function main(): Promise<void> {
   };
   const indexDts = await readTextArtifact(path.resolve("dist/index.d.ts"));
   const applicationLayoutDts = await readTextArtifact(path.resolve("dist/application-layout.d.ts"));
+  const [focusReturnJs, applicationLayoutJs, panelDrawerJs] = await Promise.all([
+    readTextArtifact(path.resolve("dist/focus-return.js")),
+    readTextArtifact(path.resolve("dist/application-layout.js")),
+    readTextArtifact(path.resolve("dist/panel-drawer.js"))
+  ]);
   const renewalComponentPages = Object.fromEntries(await Promise.all([
     "article-pagination",
     "accordion",
@@ -2141,6 +2158,7 @@ async function main(): Promise<void> {
   runInvariant("Common CSS (app preset)", () => validateCommonCss(appTierPreset.css));
   runInvariant("Alignment grid", () => validateAlignmentGrid(defaultTheme.css, alignmentGridHtml, componentDemoJs, pageCatalogJs, indexDts));
   runInvariant("Wide-workspace application", () => validateWideWorkspaceApplication(defaultTheme.css, applicationLayoutHtml, componentDemoJs));
+  runInvariant("Drawer focus return", () => validateDrawerFocusReturn(focusReturnJs, applicationLayoutJs, panelDrawerJs, readmeMd));
   runInvariant("BF variable reference detector", () => {
     assert(findUndeclaredBfVariableReferences(":root { color: var(--bf-missing); }").includes("--bf-missing"), "Expected the BF variable reference detector to reject a fallback-free dangling reference.");
     assert(findUndeclaredBfVariableReferences(":root { color: var(--bf-optional, currentColor); }").length === 0, "Expected the BF variable reference detector to allow an optional reference with a fallback.");

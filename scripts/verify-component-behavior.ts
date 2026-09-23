@@ -2117,6 +2117,184 @@ async function verifyResponsiveRuntimeOptions(origin: string): Promise<void> {
   }
 }
 
+async function verifyDrawerFocusReturn(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1440, height: 720 }
+    });
+    const runtimeErrors: string[] = [];
+    page.on("pageerror", error => runtimeErrors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") runtimeErrors.push(message.text());
+    });
+    await page.goto(`${origin}/dist/index.js`, { waitUntil: "networkidle" });
+
+    const state = await page.evaluate(async () => {
+      document.body.innerHTML = `
+        <div id="focus-return-root">
+          <section class="bf-application is-navigation-drawer-forced">
+            <button id="application-focus-return" type="button">Persistent application control</button>
+            <div id="application-contextual-menu">
+              <button
+                id="application-transient-trigger"
+                type="button"
+                aria-controls="focus-return-navigation"
+                data-application-layout-toggle
+                data-bf-focus-return="application-focus-return"
+              >Open navigation</button>
+            </div>
+            <div id="focus-return-navigation" class="bf-navigation is-collapsed">
+              <button class="bf-navigation-overlay" type="button">Close navigation overlay</button>
+              <div class="bf-navigation-drawer">
+                <button type="button" data-application-layout-close aria-controls="focus-return-navigation">Close navigation</button>
+              </div>
+            </div>
+          </section>
+          <section class="bf-application">
+            <button id="panel-focus-return" type="button">Persistent panel control</button>
+            <div id="panel-contextual-menu">
+              <button
+                id="panel-transient-trigger"
+                type="button"
+                aria-controls="focus-return-panel"
+                data-panel-drawer-toggle
+                data-bf-focus-return="panel-focus-return"
+              >Open panel</button>
+            </div>
+            <button class="bf-application-overlay" type="button">Close panel overlay</button>
+            <aside id="focus-return-panel" class="bf-aside is-drawer">
+              <button type="button" data-panel-drawer-close aria-controls="focus-return-panel">Close panel</button>
+            </aside>
+          </section>
+        </div>
+      `;
+
+      const { initApplicationLayouts, initPanelDrawers } = await import("/dist/index.js");
+      const root = document.querySelector<HTMLElement>("#focus-return-root")!;
+      const disposeApplication = initApplicationLayouts({ root });
+      const disposePanel = initPanelDrawers({ root });
+
+      const applicationReturn = root.querySelector<HTMLButtonElement>("#application-focus-return")!;
+      const applicationMenu = root.querySelector<HTMLElement>("#application-contextual-menu")!;
+      const applicationTrigger = root.querySelector<HTMLButtonElement>("#application-transient-trigger")!;
+      const navigation = root.querySelector<HTMLElement>("#focus-return-navigation")!;
+      const navigationDrawer = navigation.querySelector<HTMLElement>(".bf-navigation-drawer")!;
+      const navigationClose = navigation.querySelector<HTMLButtonElement>("[data-application-layout-close]")!;
+      const navigationOverlay = navigation.querySelector<HTMLButtonElement>(".bf-navigation-overlay")!;
+
+      applicationMenu.hidden = false;
+      applicationTrigger.focus();
+      applicationTrigger.click();
+      applicationMenu.hidden = true;
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const applicationFocusOnOpen = [navigationDrawer.contains(document.activeElement)];
+      root.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Escape" }));
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const applicationEscape = document.activeElement === applicationReturn && navigation.classList.contains("is-collapsed");
+      applicationMenu.hidden = false;
+      applicationTrigger.focus();
+      applicationTrigger.click();
+      applicationMenu.hidden = true;
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      applicationFocusOnOpen.push(navigationDrawer.contains(document.activeElement));
+      navigationClose.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const applicationClose = document.activeElement === applicationReturn && navigation.classList.contains("is-collapsed");
+      applicationMenu.hidden = false;
+      applicationTrigger.focus();
+      applicationTrigger.click();
+      applicationMenu.hidden = true;
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      applicationFocusOnOpen.push(navigationDrawer.contains(document.activeElement));
+      navigationOverlay.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const applicationOverlay = document.activeElement === applicationReturn && navigation.classList.contains("is-collapsed");
+
+      applicationMenu.hidden = false;
+      applicationTrigger.setAttribute("data-bf-focus-return", "missing-application-return");
+      applicationTrigger.focus();
+      applicationTrigger.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      navigationClose.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const applicationInvalidFallback = document.activeElement === applicationTrigger;
+
+      const panelReturn = root.querySelector<HTMLButtonElement>("#panel-focus-return")!;
+      const panelMenu = root.querySelector<HTMLElement>("#panel-contextual-menu")!;
+      const panelTrigger = root.querySelector<HTMLButtonElement>("#panel-transient-trigger")!;
+      const panel = root.querySelector<HTMLElement>("#focus-return-panel")!;
+      const panelClose = panel.querySelector<HTMLButtonElement>("[data-panel-drawer-close]")!;
+      const panelOverlay = root.querySelector<HTMLButtonElement>(".bf-application-overlay")!;
+
+      panelMenu.hidden = false;
+      panelTrigger.focus();
+      panelTrigger.click();
+      panelMenu.hidden = true;
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const panelFocusOnOpen = [panel.contains(document.activeElement)];
+      root.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Escape" }));
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const panelEscape = document.activeElement === panelReturn && !panel.classList.contains("is-open");
+      panelMenu.hidden = false;
+      panelTrigger.focus();
+      panelTrigger.click();
+      panelMenu.hidden = true;
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      panelFocusOnOpen.push(panel.contains(document.activeElement));
+      panelClose.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const panelCloseState = document.activeElement === panelReturn && !panel.classList.contains("is-open");
+      panelMenu.hidden = false;
+      panelTrigger.focus();
+      panelTrigger.click();
+      panelMenu.hidden = true;
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      panelFocusOnOpen.push(panel.contains(document.activeElement));
+      panelOverlay.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const panelOverlayState = document.activeElement === panelReturn && !panel.classList.contains("is-open");
+
+      panelMenu.hidden = false;
+      panelTrigger.removeAttribute("data-bf-focus-return");
+      panelTrigger.focus();
+      panelTrigger.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      panelClose.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const panelAbsentFallback = document.activeElement === panelTrigger;
+
+      disposeApplication();
+      disposePanel();
+
+      return {
+        application: {
+          close: applicationClose,
+          escape: applicationEscape,
+          focusOnOpen: applicationFocusOnOpen.every(Boolean),
+          invalidFallback: applicationInvalidFallback,
+          overlay: applicationOverlay
+        },
+        panel: {
+          absentFallback: panelAbsentFallback,
+          close: panelCloseState,
+          escape: panelEscape,
+          focusOnOpen: panelFocusOnOpen.every(Boolean),
+          overlay: panelOverlayState
+        }
+      };
+    });
+
+    assert(Object.values(state.application).every(Boolean), `Expected application-layout drawers to restore focus through the shared IDREF contract with trigger fallback; got ${JSON.stringify(state.application)}.`);
+    assert(Object.values(state.panel).every(Boolean), `Expected panel drawers to restore focus through the shared IDREF contract with trigger fallback; got ${JSON.stringify(state.panel)}.`);
+    assert(runtimeErrors.length === 0, `Expected focus-return behavior without browser runtime errors, got ${runtimeErrors.join(" | ")}.`);
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyTopNavigation(origin: string): Promise<void> {
   const route = "/demo/components/top-navigation.html";
   const browser = await openBrowser();
@@ -5654,6 +5832,7 @@ async function main(): Promise<void> {
     await verifyDrawerOverlay(origin);
     await verifyApplicationLayout(origin);
     await verifyResponsiveRuntimeOptions(origin);
+    await verifyDrawerFocusReturn(origin);
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
     await verifyInlineIconMetricAlignment(origin);

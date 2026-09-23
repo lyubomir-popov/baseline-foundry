@@ -1,3 +1,5 @@
+import { resolveFocusReturnTarget } from "./focus-return.js";
+
 export interface ApplicationLayoutInitOptions {
   largeBreakpoint?: string;
   root?: ParentNode;
@@ -15,7 +17,7 @@ const PINNED_CLASS = "is-pinned";
 const FORCED_DRAWER_CLASS = "is-navigation-drawer-forced";
 const LARGE_BREAKPOINT = "(min-width: 48rem)";
 
-const lastTriggerByNavigation = new WeakMap<HTMLElement, HTMLElement>();
+const focusReturnByNavigation = new WeakMap<HTMLElement, HTMLElement>();
 
 function queryAllWithinRoot<T extends Element>(root: ParentNode, selector: string): T[] {
   const elements = Array.from(root.querySelectorAll<T>(selector));
@@ -114,7 +116,7 @@ function openNavigation(navigation: HTMLElement, root: ParentNode, largeBreakpoi
   updateA11y(root, navigation, largeBreakpoint);
 
   if (trigger) {
-    lastTriggerByNavigation.set(navigation, trigger);
+    focusReturnByNavigation.set(navigation, resolveFocusReturnTarget(trigger, root));
   }
 
   if (!isLargeViewport(navigation, largeBreakpoint)) {
@@ -127,7 +129,7 @@ function closeNavigation(navigation: HTMLElement, root: ParentNode, largeBreakpo
   updateA11y(root, navigation, largeBreakpoint);
 
   if (restoreFocus) {
-    lastTriggerByNavigation.get(navigation)?.focus();
+    focusReturnByNavigation.get(navigation)?.focus();
   }
 }
 
