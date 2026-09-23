@@ -361,7 +361,9 @@ Package root exports:
 
 `initApplicationLayouts({ largeBreakpoint })` accepts a media-query string when
 an application shell becomes persistent at a boundary other than the default
-`(min-width: 48rem)`.
+`(min-width: 48rem)`. Pair `{ largeBreakpoint: "(min-width: 75rem)" }` with
+`.bf-application.is-wide-workspace-breakpoint` to keep BF's CSS geometry and
+runtime accessibility state synchronized for wide authoring workspaces.
 
 Node/build exports:
 

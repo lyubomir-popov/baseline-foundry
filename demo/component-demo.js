@@ -311,7 +311,9 @@ async function main() {
     });
   }
 
-  initApplicationLayouts();
+  initApplicationLayouts(document.querySelector(".bf-application.is-wide-workspace-breakpoint")
+    ? { largeBreakpoint: "(min-width: 75rem)" }
+    : undefined);
   initAlignmentGrids();
   initCodeSnippets();
   initContextualMenus();

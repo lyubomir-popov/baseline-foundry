@@ -14,3 +14,7 @@ npx --yes npm@11.19.0 run qa:components
 Review `/demo/components/alignment-grid.html` in light/dark and all four tier
 options. Confirm 58px intrinsic geometry at the default root, clear hover,
 pressed, and keyboard-focus states, LTR/RTL Arrow behavior, and no overflow.
+
+Review `/demo/components/application-layout.html` at 1024px and 1200px. The
+wide-workspace specimen must use fixed drawer/overlay geometry at 1024px and
+persistent navigation at the 75rem boundary, with matching aria state.

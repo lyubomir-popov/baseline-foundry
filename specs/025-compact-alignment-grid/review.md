@@ -12,7 +12,7 @@
 
 ## Automated evidence
 
-- `npx --yes npm@11.19.0 test`: pass. The static build suite reports 24,337
+- `npx --yes npm@11.19.0 test`: pass. The static build suite reports 24,412
   checks; all component baseline checks and the real-Chromium behavior suite
   pass.
 - `npx --yes npm@11.19.0 run qa:components`: pass. The affected demo is
@@ -25,6 +25,10 @@
 - Responsive runtime coverage proves a custom 75rem application breakpoint at
   1024px and 1216px, plus drawer-first aside binding that remains inert until
   the aside becomes pinned and then accepts keyboard resize input.
+- Follow-up CSS coverage proves the paired
+  `is-wide-workspace-breakpoint` modifier remains a drawer with overlay at
+  1024px and becomes persistent at exactly 1200px, while an unmodified
+  application remains persistent from the default 768px boundary.
 
 ## Visual review
 

@@ -1353,9 +1353,11 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     for (const boundary of [
       { width: 640, persistent: false, columns: 1, label: "at a narrow pattern allocation" },
-      { width: 767, persistent: false, columns: 2, label: "below 48rem after the drawer releases space" },
-      { width: 768, persistent: true, columns: 2, label: "at the start of the 768–779px App band where the Canonical continuation inset crosses the intrinsic split threshold" },
-      { width: 779, persistent: true, columns: 2, label: "at the end of the 768–779px App band where the previous continuation inset still left the composition below its intrinsic split threshold" }
+      { width: 767, persistent: false, columns: 2, label: "below the default 48rem shell boundary" },
+      { width: 768, persistent: false, columns: 2, label: "at the default boundary while the wide-workspace modifier still owns drawer geometry" },
+      { width: 1024, persistent: false, columns: 2, label: "at a common desktop viewport below the wide-workspace boundary" },
+      { width: 1199, persistent: false, columns: 2, label: "immediately below the wide-workspace boundary" },
+      { width: 1200, persistent: true, columns: 2, label: "at the 75rem wide-workspace boundary" }
     ] as const) {
       await page.setViewportSize({ width: boundary.width, height: 960 });
       await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -1386,9 +1388,16 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         content.append(fixture);
         const basicLayout = fixture.querySelector<HTMLElement>(".bf-basic-section-layout");
         const tieredHeader = fixture.querySelector<HTMLElement>(".bf-tiered-list-header");
+        const defaultApplication = document.createElement("div");
+        defaultApplication.className = "bf-application";
+        defaultApplication.innerHTML = '<div class="bf-navigation"></div><main class="bf-main"></main>';
+        content.append(defaultApplication);
+        const defaultApplicationAreas = getComputedStyle(defaultApplication).gridTemplateAreas;
+        defaultApplication.remove();
         return {
           areas: getComputedStyle(application).gridTemplateAreas,
           basicColumns: basicLayout ? getComputedStyle(basicLayout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
+          defaultPersistent: defaultApplicationAreas.includes('"navigation main"'),
           drawerHidden: drawer.getAttribute("aria-hidden"),
           drawerPosition: getComputedStyle(drawer).position,
           overlayDisplay: getComputedStyle(overlay).display,
@@ -1396,6 +1405,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         };
       });
       assert(state, `Expected application navigation state ${boundary.label}.`);
+      assert(state.defaultPersistent === (boundary.width >= 768), `Expected the unmodified application contract to remain persistent from 48rem while reviewing ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.areas.includes('"navigation main') === boundary.persistent, `Expected application navigation persistence to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.drawerHidden === (boundary.persistent ? "false" : "true"), `Expected application navigation accessibility state to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.drawerPosition === (boundary.persistent ? "static" : "fixed"), `Expected application navigation drawer positioning to switch ${boundary.label}; got ${JSON.stringify(state)}.`);

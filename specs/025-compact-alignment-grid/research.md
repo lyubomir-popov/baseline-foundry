@@ -41,9 +41,10 @@ Design Foundry cannot use BF's historical 48rem application-shell boundary:
 its navigation remains a drawer until a 32rem Stage can coexist with the left
 rail, currently represented by `(min-width: 75rem)`. CSS class changes alone
 are insufficient because the BF runtime also owns `aria-hidden`, overlay,
-Escape, and focus behavior. A `largeBreakpoint` initializer option therefore
-keeps 48rem as the backward-compatible default while letting the consumer
-supply its normative query.
+Escape, and focus behavior. A paired `is-wide-workspace-breakpoint` CSS
+modifier and `largeBreakpoint` initializer option therefore keep 48rem as the
+backward-compatible default while exposing one BF-owned 75rem contract for
+wide authoring workspaces.
 
 The right application aside also loads as a drawer below that boundary. Resize
 listeners must be discovered from the stable public handle rather than the
