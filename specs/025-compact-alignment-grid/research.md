@@ -46,6 +46,15 @@ modifier and `largeBreakpoint` initializer option therefore keep 48rem as the
 backward-compatible default while exposing one BF-owned 75rem contract for
 wide authoring workspaces.
 
+A viewport breakpoint alone cannot represent every application allocation: a
+wide viewport can still leave too little main workspace after persistent rails
+are restored. The generic `is-navigation-drawer-forced` application modifier
+therefore suppresses either persistent CSS contract at any viewport. The
+application-layout runtime treats the modifier as drawer mode and observes
+class changes so ARIA, drawer focus, and Escape semantics change with the CSS
+without reinitialization. Consumers retain ownership of the pressure policy;
+BF owns only the resulting shell state.
+
 The right application aside also loads as a drawer below that boundary. Resize
 listeners must be discovered from the stable public handle rather than the
 transient `is-pinned` class; actual pointer and keyboard input remains gated by

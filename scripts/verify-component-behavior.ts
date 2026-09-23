@@ -1419,6 +1419,86 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     await waitForFonts(page);
     await disableDemoChromeHitTesting(page);
 
+    const forcedCollapsedState = await page.evaluate(async () => {
+      const application = document.querySelector<HTMLElement>(".bf-application");
+      const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const drawer = navigation?.querySelector<HTMLElement>(".bf-navigation-drawer");
+      const overlay = navigation?.querySelector<HTMLElement>(".bf-navigation-overlay");
+      if (!application || !navigation || !drawer || !overlay) return null;
+
+      application.classList.add("is-navigation-drawer-forced");
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      return {
+        areas: getComputedStyle(application).gridTemplateAreas,
+        drawerHidden: drawer.getAttribute("aria-hidden"),
+        drawerPosition: getComputedStyle(drawer).position,
+        overlayDisplay: getComputedStyle(overlay).display,
+        overlayHidden: overlay.getAttribute("aria-hidden")
+      };
+    });
+
+    assert(forcedCollapsedState, "Expected the forced application drawer state to be measurable.");
+    assert(!forcedCollapsedState.areas.includes('"navigation main'), `Expected the forced modifier to suppress persistent application columns above 75rem; got ${JSON.stringify(forcedCollapsedState)}.`);
+    assert(forcedCollapsedState.drawerPosition === "fixed" && forcedCollapsedState.overlayDisplay !== "none", `Expected the forced modifier to restore drawer and overlay geometry above 75rem; got ${JSON.stringify(forcedCollapsedState)}.`);
+    assert(forcedCollapsedState.drawerHidden === "true" && forcedCollapsedState.overlayHidden === "true", `Expected runtime ARIA to synchronize after forcing collapsed drawer presentation; got ${JSON.stringify(forcedCollapsedState)}.`);
+
+    const forcedMenuToggle = page.locator("[data-application-layout-toggle]").first();
+    await forcedMenuToggle.click({ force: true });
+    await page.waitForTimeout(180);
+    const forcedOpenState = await page.evaluate(() => {
+      const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const drawer = navigation?.querySelector<HTMLElement>(".bf-navigation-drawer");
+      const overlay = navigation?.querySelector<HTMLElement>(".bf-navigation-overlay");
+      return navigation && drawer && overlay ? {
+        collapsed: navigation.classList.contains("is-collapsed"),
+        drawerHidden: drawer.getAttribute("aria-hidden"),
+        focusInsideDrawer: drawer.contains(document.activeElement),
+        overlayHidden: overlay.getAttribute("aria-hidden")
+      } : null;
+    });
+    assert(forcedOpenState, "Expected the open forced application drawer state to be measurable.");
+    assert(!forcedOpenState.collapsed && forcedOpenState.drawerHidden === "false" && forcedOpenState.overlayHidden === "false", `Expected forced drawer opening to expose both drawer and overlay; got ${JSON.stringify(forcedOpenState)}.`);
+    assert(forcedOpenState.focusInsideDrawer, "Expected forced drawer opening above 75rem to move focus into the drawer.");
+
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(180);
+    const forcedClosedState = await page.evaluate(() => {
+      const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const drawer = navigation?.querySelector<HTMLElement>(".bf-navigation-drawer");
+      const overlay = navigation?.querySelector<HTMLElement>(".bf-navigation-overlay");
+      const application = document.querySelector<HTMLElement>(".bf-application");
+      if (!application || !navigation || !drawer || !overlay) return null;
+      return {
+        collapsed: navigation.classList.contains("is-collapsed"),
+        drawerHidden: drawer.getAttribute("aria-hidden"),
+        focusRestored: document.activeElement === document.querySelector("[data-application-layout-toggle]"),
+        overlayHidden: overlay.getAttribute("aria-hidden")
+      };
+    });
+    assert(forcedClosedState, "Expected the closed forced application drawer state to be measurable.");
+    assert(forcedClosedState.collapsed && forcedClosedState.drawerHidden === "true" && forcedClosedState.overlayHidden === "true", `Expected Escape to close a forced drawer above 75rem; got ${JSON.stringify(forcedClosedState)}.`);
+    assert(forcedClosedState.focusRestored, "Expected Escape from a forced drawer to restore focus to its trigger.");
+
+    const restoredPersistentState = await page.evaluate(async () => {
+      const application = document.querySelector<HTMLElement>(".bf-application");
+      const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
+      const drawer = navigation?.querySelector<HTMLElement>(".bf-navigation-drawer");
+      const overlay = navigation?.querySelector<HTMLElement>(".bf-navigation-overlay");
+      if (!application || !navigation || !drawer || !overlay) return null;
+      application.classList.remove("is-navigation-drawer-forced");
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      return {
+        areas: getComputedStyle(application).gridTemplateAreas,
+        drawerHidden: drawer.getAttribute("aria-hidden"),
+        drawerPosition: getComputedStyle(drawer).position,
+        overlayDisplay: getComputedStyle(overlay).display,
+        overlayHidden: overlay.getAttribute("aria-hidden")
+      };
+    });
+    assert(restoredPersistentState, "Expected restored persistent application state to be measurable.");
+    assert(restoredPersistentState.areas.includes('"navigation main') && restoredPersistentState.drawerPosition === "static" && restoredPersistentState.overlayDisplay === "none", `Expected removing the forced modifier to restore persistent geometry above 75rem; got ${JSON.stringify(restoredPersistentState)}.`);
+    assert(restoredPersistentState.drawerHidden === "false" && restoredPersistentState.overlayHidden === "true", `Expected removing the forced modifier to restore persistent runtime ARIA; got ${JSON.stringify(restoredPersistentState)}.`);
+
     const viewportFillState = await page.evaluate(() => {
       const application = document.querySelector<HTMLElement>(".bf-application");
       if (!(application instanceof HTMLElement)) {

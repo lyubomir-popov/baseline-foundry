@@ -10,6 +10,9 @@
 - [x] T005B Add the paired `is-wide-workspace-breakpoint` CSS modifier while
   preserving the default 48rem contract, and test synchronized geometry and
   runtime state at 1024px and 1200px.
+- [x] T005C Add the generic `is-navigation-drawer-forced` modifier and dynamic
+  runtime synchronization, with wide-viewport CSS, ARIA, focus, Escape, and
+  restoration coverage.
 - [x] T006 Run focused checks, `npm test`, and `npm run qa:components`.
 - [x] T007 Complete browser visual review and record the clean commit SHA in
   the delivery handoff.

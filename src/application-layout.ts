@@ -12,6 +12,7 @@ const CLOSE_SELECTOR = "[data-application-layout-close]";
 const PIN_SELECTOR = "[data-application-layout-pin]";
 const COLLAPSED_CLASS = "is-collapsed";
 const PINNED_CLASS = "is-pinned";
+const FORCED_DRAWER_CLASS = "is-navigation-drawer-forced";
 const LARGE_BREAKPOINT = "(min-width: 48rem)";
 
 const lastTriggerByNavigation = new WeakMap<HTMLElement, HTMLElement>();
@@ -66,6 +67,10 @@ function getOverlay(navigation: HTMLElement): HTMLElement | null {
 }
 
 function isLargeViewport(navigation: HTMLElement, largeBreakpoint: string): boolean {
+  if (navigation.closest<HTMLElement>(APPLICATION_SELECTOR)?.classList.contains(FORCED_DRAWER_CLASS)) {
+    return false;
+  }
+
   return navigation.ownerDocument.defaultView?.matchMedia(largeBreakpoint).matches ?? false;
 }
 
@@ -218,13 +223,30 @@ export function initApplicationLayouts(options: ApplicationLayoutInitOptions = {
     syncInitialState(root, largeBreakpoint);
   };
 
+  const MutationObserverConstructor = (
+    rootWindow as (Window & { MutationObserver: typeof MutationObserver }) | null
+  )?.MutationObserver;
+  const applicationStateObserver = MutationObserverConstructor
+    ? new MutationObserverConstructor(records => {
+      if (records.some(record => (record.target as Element).matches?.(APPLICATION_SELECTOR))) {
+        syncInitialState(root, largeBreakpoint);
+      }
+    })
+    : null;
+
   root.addEventListener("click", onClick);
   root.addEventListener("keydown", onKeyDown);
   rootWindow?.addEventListener("resize", onResize);
+  applicationStateObserver?.observe(root as Node, {
+    attributeFilter: ["class"],
+    attributes: true,
+    subtree: true
+  });
 
   return () => {
     root.removeEventListener("click", onClick);
     root.removeEventListener("keydown", onKeyDown);
     rootWindow?.removeEventListener("resize", onResize);
+    applicationStateObserver?.disconnect();
   };
 }

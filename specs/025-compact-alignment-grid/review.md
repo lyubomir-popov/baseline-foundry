@@ -12,7 +12,7 @@
 
 ## Automated evidence
 
-- `npx --yes npm@11.19.0 test`: pass. The static build suite reports 24,412
+- `npx --yes npm@11.19.0 test`: pass. The static build suite reports 24,413
   checks; all component baseline checks and the real-Chromium behavior suite
   pass.
 - `npx --yes npm@11.19.0 run qa:components`: pass. The affected demo is
@@ -29,6 +29,11 @@
   `is-wide-workspace-breakpoint` modifier remains a drawer with overlay at
   1024px and becomes persistent at exactly 1200px, while an unmodified
   application remains persistent from the default 768px boundary.
+- Wide-viewport Chromium coverage proves `is-navigation-drawer-forced`
+  suppresses persistent geometry at 1440px, synchronizes drawer and overlay
+  ARIA without reinitialization, moves focus into the opened drawer, closes and
+  restores focus on Escape, then restores persistent CSS/runtime state when
+  removed.
 
 ## Visual review
 

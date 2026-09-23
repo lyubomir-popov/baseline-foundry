@@ -1879,10 +1879,12 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 /* Application navigation becomes persistent at 48rem by default. The explicit
- * wide-workspace modifier defers the same shell contract to 75rem. Standalone
- * top and document navigation keep their own large-screen contracts. */
+ * wide-workspace modifier defers the same shell contract to 75rem. The forced
+ * drawer modifier suppresses either persistent contract so consumers can
+ * respond to allocated workspace pressure. Standalone top and document
+ * navigation keep their own large-screen contracts. */
 @media (min-width: 48rem) {
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):has(> .bf-navigation)) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced):has(> .bf-navigation)) {
     grid-template-areas:
       "navigation-bar navigation-bar"
       "navigation main";
@@ -1890,14 +1892,14 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     grid-template-rows: min-content minmax(0, 1fr);
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed)) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced):has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed)) {
     grid-template-areas:
       "navigation-bar navigation-bar navigation-bar"
       "navigation main aside";
     grid-template-columns: minmax(0, var(--bf-application-navigation-width)) minmax(0, 1fr) minmax(0, var(--bf-application-aside-width));
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced):has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive) {
     block-size: 0;
     border: 0;
     min-block-size: 0;
@@ -1907,29 +1909,29 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     visibility: hidden;
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):has(> .bf-navigation.is-collapsed)) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced):has(> .bf-navigation.is-collapsed)) {
     --bf-application-navigation-width: var(--bf-application-navigation-width-collapsed);
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint)) :where(.bf-navigation.is-collapsed) :where(.bf-navigation-drawer > .bf-panel > .bf-panel-header) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced)) :where(.bf-navigation.is-collapsed) :where(.bf-navigation-drawer > .bf-panel > .bf-panel-header) {
     display: none;
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint)) :where(.bf-navigation) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced)) :where(.bf-navigation) {
     grid-area: navigation;
     pointer-events: auto;
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint)) :where(.bf-navigation-overlay) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced)) :where(.bf-navigation-overlay) {
     display: none;
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint)) :where(.bf-side-navigation-toggle) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced)) :where(.bf-side-navigation-toggle) {
     display: none;
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint)) :where(.bf-navigation-drawer),
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint)) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced)) :where(.bf-navigation-drawer),
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced)) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {
     block-size: 100%;
     box-shadow: none;
     inline-size: 100%;
@@ -1939,14 +1941,14 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     visibility: visible;
   }
 
-  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint)) :where(.bf-navigation.is-pinned) {
+  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced)) :where(.bf-navigation.is-pinned) {
     position: sticky;
     top: 0;
   }
 }
 
 @media (min-width: 75rem) {
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:has(> .bf-navigation)) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced):has(> .bf-navigation)) {
     grid-template-areas:
       "navigation-bar navigation-bar"
       "navigation main";
@@ -1954,14 +1956,14 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     grid-template-rows: min-content minmax(0, 1fr);
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed)) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced):has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed)) {
     grid-template-areas:
       "navigation-bar navigation-bar navigation-bar"
       "navigation main aside";
     grid-template-columns: minmax(0, var(--bf-application-navigation-width)) minmax(0, 1fr) minmax(0, var(--bf-application-aside-width));
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced):has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive) {
     block-size: 0;
     border: 0;
     min-block-size: 0;
@@ -1971,29 +1973,29 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     visibility: hidden;
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:has(> .bf-navigation.is-collapsed)) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced):has(> .bf-navigation.is-collapsed)) {
     --bf-application-navigation-width: var(--bf-application-navigation-width-collapsed);
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint) :where(.bf-navigation.is-collapsed) :where(.bf-navigation-drawer > .bf-panel > .bf-panel-header) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced)) :where(.bf-navigation.is-collapsed) :where(.bf-navigation-drawer > .bf-panel > .bf-panel-header) {
     display: none;
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint) :where(.bf-navigation) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced)) :where(.bf-navigation) {
     grid-area: navigation;
     pointer-events: auto;
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint) :where(.bf-navigation-overlay) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced)) :where(.bf-navigation-overlay) {
     display: none;
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint) :where(.bf-side-navigation-toggle) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced)) :where(.bf-side-navigation-toggle) {
     display: none;
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint) :where(.bf-navigation-drawer),
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced)) :where(.bf-navigation-drawer),
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced)) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {
     block-size: 100%;
     box-shadow: none;
     inline-size: 100%;
@@ -2003,7 +2005,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     visibility: visible;
   }
 
-  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint) :where(.bf-navigation.is-pinned) {
+  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced)) :where(.bf-navigation.is-pinned) {
     position: sticky;
     top: 0;
   }

@@ -365,6 +365,14 @@ an application shell becomes persistent at a boundary other than the default
 `.bf-application.is-wide-workspace-breakpoint` to keep BF's CSS geometry and
 runtime accessibility state synchronized for wide authoring workspaces.
 
+Toggle `.bf-application.is-navigation-drawer-forced` when the space allocated
+to an application requires drawer presentation regardless of viewport width.
+The modifier overrides both persistent-navigation boundaries. An initialized
+application-layout runtime observes the modifier and synchronizes drawer and
+overlay ARIA state; drawer focus and Escape behavior continue to apply while it
+is present. Removing the modifier restores the application's configured
+persistent boundary.
+
 Node/build exports:
 
 - `buildThemeFromConfig`

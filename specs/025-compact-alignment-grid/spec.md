@@ -38,6 +38,9 @@ behavior, while Baseline Foundry has no public owner for the repeated pattern.
 - `.bf-application.is-wide-workspace-breakpoint` preserves drawer geometry and
   overlay behavior below 75rem, then applies the same persistent-navigation
   contract at 75rem; unmodified applications remain persistent from 48rem.
+- `.bf-application.is-navigation-drawer-forced` keeps drawer geometry and
+  synchronized runtime accessibility behavior at any viewport, overriding
+  either persistent boundary until the modifier is removed.
 - `initResizableAsides` binds an application aside that owns the public resize
   handle even when it initializes in drawer mode, then enables input only when
   that same aside becomes pinned.
@@ -52,3 +55,5 @@ behavior, while Baseline Foundry has no public owner for the repeated pattern.
 - Design Foundry will pair the wide-workspace modifier with
   `{ largeBreakpoint: "(min-width: 75rem)" }`; BF does not own that product's
   32rem Stage-fit calculation.
+- Consumers own the allocated-space decision that toggles the generic forced
+  drawer modifier; BF owns its presentation and interaction semantics.

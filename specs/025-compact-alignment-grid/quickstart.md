@@ -18,3 +18,8 @@ pressed, and keyboard-focus states, LTR/RTL Arrow behavior, and no overflow.
 Review `/demo/components/application-layout.html` at 1024px and 1200px. The
 wide-workspace specimen must use fixed drawer/overlay geometry at 1024px and
 persistent navigation at the 75rem boundary, with matching aria state.
+
+At 1440px, toggle `is-navigation-drawer-forced` on the specimen's
+`bf-application`. It must immediately return to fixed drawer/overlay geometry;
+opening must move focus into the drawer, Escape must close it, and removing the
+modifier must restore persistent geometry and accessibility state.

@@ -553,9 +553,10 @@ function validateAlignmentGrid(
 }
 
 function validateWideWorkspaceApplication(css: string, html: string, componentDemoJs: string): void {
-  assert(css.includes("@media (min-width: 48rem) {\n  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):has(> .bf-navigation))"), "Expected unmodified BF applications to retain the 48rem persistent-navigation contract.");
-  assert(css.includes("@media (min-width: 75rem) {\n  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:has(> .bf-navigation))"), "Expected the wide-workspace application modifier to defer persistent navigation to 75rem.");
-  assert(css.includes(":where(.bf-application.is-wide-workspace-breakpoint) :where(.bf-navigation-overlay) {\n    display: none;"), "Expected wide-workspace navigation overlays to leave layout only at the modifier's persistent boundary.");
+  assert(css.includes("@media (min-width: 48rem) {\n  :where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced):has(> .bf-navigation))"), "Expected unmodified BF applications to retain the 48rem persistent-navigation contract unless drawer presentation is forced.");
+  assert(css.includes("@media (min-width: 75rem) {\n  :where(.bf-theme) :where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced):has(> .bf-navigation))"), "Expected the wide-workspace application modifier to defer persistent navigation to 75rem unless drawer presentation is forced.");
+  assert(css.includes(":where(.bf-application.is-wide-workspace-breakpoint:not(.is-navigation-drawer-forced)) :where(.bf-navigation-overlay) {\n    display: none;"), "Expected wide-workspace navigation overlays to leave layout only at the modifier's persistent boundary.");
+  assert(css.includes(":not(.is-navigation-drawer-forced)") && !css.includes(".is-navigation-drawer-forced) :where(.bf-navigation-overlay) {\n    display: none;"), "Expected the forced-drawer modifier to suppress persistent navigation and overlay rules.");
   assert(html.includes('class="bf-application is-wide-workspace-breakpoint"'), "Expected the application-layout specimen to dogfood the public wide-workspace modifier.");
   assert(componentDemoJs.includes('{ largeBreakpoint: "(min-width: 75rem)" }'), "Expected the modified application-layout specimen to synchronize its runtime breakpoint with BF CSS.");
 }
@@ -1391,7 +1392,7 @@ function validateCommonCss(css: string): void {
     "grid-template-areas": "\"navigation-bar navigation-bar\"\n    \"main aside\"",
     "grid-template-rows": "min-content minmax(0, 1fr)"
   }, "responsive application bars retain the first row when a pinned aside is present");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive)", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced):has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive)", {
     "block-size": "0",
     "position": "absolute",
     "visibility": "hidden"
