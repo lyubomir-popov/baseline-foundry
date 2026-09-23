@@ -6,7 +6,8 @@
 4. Extend static build contracts and real-Chromium behavior checks.
 5. Add the downstream-enabling application-layout breakpoint option and make
    resizable-aside discovery survive drawer-first initialization. Pair the
-   runtime option with a BF-owned wide-workspace CSS modifier.
+   runtime option with a BF-owned wide-workspace CSS modifier, then extend the
+   shared focus-return IDREF across open- and explicit-close origins.
 6. Run the focused checks, full repository gates, screenshot QA, and visual
    review; record the clean commit for downstream pinning.
 

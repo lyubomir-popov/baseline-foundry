@@ -65,6 +65,13 @@ preserving the trigger as the backward-compatible fallback for absent or
 unresolved values. Escape, explicit Close, and overlay dismissal continue to
 flow exclusively through BF's existing close paths.
 
+The same IDREF can be placed on an explicit Close control when dismissal
+origin, rather than open origin, owns the next focus destination. The runtime
+resolves that value inside its configured root for that close call without
+replacing the stored opener. An absent, empty, unresolved, or out-of-root close
+value falls back to the stored opener, so Escape, overlay, and subsequent opens
+retain their established behavior.
+
 The right application aside also loads as a drawer below that boundary. Resize
 listeners must be discovered from the stable public handle rather than the
 transient `is-pinned` class; actual pointer and keyboard input remains gated by

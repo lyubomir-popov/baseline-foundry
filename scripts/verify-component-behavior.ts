@@ -2189,6 +2189,7 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
         <div id="focus-return-root">
           <section class="bf-application is-navigation-drawer-forced">
             <button id="application-focus-return" type="button">Persistent application control</button>
+            <button id="application-close-focus-return" type="button">Persistent application close control</button>
             <div id="application-contextual-menu">
               <button
                 id="application-transient-trigger"
@@ -2207,6 +2208,7 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
           </section>
           <section class="bf-application">
             <button id="panel-focus-return" type="button">Persistent panel control</button>
+            <button id="panel-close-focus-return" type="button">Persistent panel close control</button>
             <div id="panel-contextual-menu">
               <button
                 id="panel-transient-trigger"
@@ -2222,6 +2224,7 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
             </aside>
           </section>
         </div>
+        <button id="outside-focus-return" type="button">Outside runtime root</button>
       `;
 
       const { initApplicationLayouts, initPanelDrawers } = await import("/dist/index.js");
@@ -2230,6 +2233,7 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
       const disposePanel = initPanelDrawers({ root });
 
       const applicationReturn = root.querySelector<HTMLButtonElement>("#application-focus-return")!;
+      const applicationCloseReturn = root.querySelector<HTMLButtonElement>("#application-close-focus-return")!;
       const applicationMenu = root.querySelector<HTMLElement>("#application-contextual-menu")!;
       const applicationTrigger = root.querySelector<HTMLButtonElement>("#application-transient-trigger")!;
       const navigation = root.querySelector<HTMLElement>("#focus-return-navigation")!;
@@ -2259,11 +2263,31 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
       applicationTrigger.focus();
       applicationTrigger.click();
       applicationMenu.hidden = true;
+      navigationClose.setAttribute("data-bf-focus-return", "application-close-focus-return");
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      navigationClose.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const applicationCloseOverride = document.activeElement === applicationCloseReturn && navigation.classList.contains("is-collapsed");
+      navigationClose.removeAttribute("data-bf-focus-return");
+      applicationMenu.hidden = false;
+      applicationTrigger.focus();
+      applicationTrigger.click();
+      applicationMenu.hidden = true;
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
       applicationFocusOnOpen.push(navigationDrawer.contains(document.activeElement));
       navigationOverlay.click();
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
       const applicationOverlay = document.activeElement === applicationReturn && navigation.classList.contains("is-collapsed");
+
+      applicationMenu.hidden = false;
+      applicationTrigger.focus();
+      applicationTrigger.click();
+      navigationClose.setAttribute("data-bf-focus-return", "outside-focus-return");
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      navigationClose.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const applicationCloseOutsideFallback = document.activeElement === applicationReturn && navigation.classList.contains("is-collapsed");
+      navigationClose.removeAttribute("data-bf-focus-return");
 
       applicationMenu.hidden = false;
       applicationTrigger.setAttribute("data-bf-focus-return", "missing-application-return");
@@ -2275,6 +2299,7 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
       const applicationInvalidFallback = document.activeElement === applicationTrigger;
 
       const panelReturn = root.querySelector<HTMLButtonElement>("#panel-focus-return")!;
+      const panelCloseReturn = root.querySelector<HTMLButtonElement>("#panel-close-focus-return")!;
       const panelMenu = root.querySelector<HTMLElement>("#panel-contextual-menu")!;
       const panelTrigger = root.querySelector<HTMLButtonElement>("#panel-transient-trigger")!;
       const panel = root.querySelector<HTMLElement>("#focus-return-panel")!;
@@ -2303,11 +2328,31 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
       panelTrigger.focus();
       panelTrigger.click();
       panelMenu.hidden = true;
+      panelClose.setAttribute("data-bf-focus-return", "panel-close-focus-return");
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      panelClose.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const panelCloseOverride = document.activeElement === panelCloseReturn && !panel.classList.contains("is-open");
+      panelClose.removeAttribute("data-bf-focus-return");
+      panelMenu.hidden = false;
+      panelTrigger.focus();
+      panelTrigger.click();
+      panelMenu.hidden = true;
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
       panelFocusOnOpen.push(panel.contains(document.activeElement));
       panelOverlay.click();
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
       const panelOverlayState = document.activeElement === panelReturn && !panel.classList.contains("is-open");
+
+      panelMenu.hidden = false;
+      panelTrigger.focus();
+      panelTrigger.click();
+      panelClose.setAttribute("data-bf-focus-return", "outside-focus-return");
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      panelClose.click();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      const panelCloseOutsideFallback = document.activeElement === panelReturn && !panel.classList.contains("is-open");
+      panelClose.removeAttribute("data-bf-focus-return");
 
       panelMenu.hidden = false;
       panelTrigger.removeAttribute("data-bf-focus-return");
@@ -2324,6 +2369,8 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
       return {
         application: {
           close: applicationClose,
+          closeOutsideFallback: applicationCloseOutsideFallback,
+          closeOverride: applicationCloseOverride,
           escape: applicationEscape,
           focusOnOpen: applicationFocusOnOpen.every(Boolean),
           invalidFallback: applicationInvalidFallback,
@@ -2332,6 +2379,8 @@ async function verifyDrawerFocusReturn(origin: string): Promise<void> {
         panel: {
           absentFallback: panelAbsentFallback,
           close: panelCloseState,
+          closeOutsideFallback: panelCloseOutsideFallback,
+          closeOverride: panelCloseOverride,
           escape: panelEscape,
           focusOnOpen: panelFocusOnOpen.every(Boolean),
           overlay: panelOverlayState

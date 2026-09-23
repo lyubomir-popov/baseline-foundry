@@ -45,6 +45,10 @@ behavior, while Baseline Foundry has no public owner for the repeated pattern.
   `data-bf-focus-return="id"` IDREF contract. BF resolves the target within the
   configured runtime root when opening and restores it after Escape, Close, or
   overlay dismissal; missing or unresolved values fall back to the trigger.
+- An explicit application-layout or panel-drawer Close control carrying
+  `data-bf-focus-return="id"` overrides the stored opener target for that close
+  only. Missing, unresolved, or out-of-root close values preserve the stored
+  opener; Escape and overlay dismissal remain opener-owned.
 - `initResizableAsides` binds an application aside that owns the public resize
   handle even when it initializes in drawer mode, then enables input only when
   that same aside becomes pinned.

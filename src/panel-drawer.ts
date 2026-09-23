@@ -1,4 +1,4 @@
-import { resolveFocusReturnTarget } from "./focus-return.js";
+import { resolveFocusReturnOverride, resolveFocusReturnTarget } from "./focus-return.js";
 
 export interface PanelDrawerInitOptions {
   root?: ParentNode;
@@ -124,7 +124,12 @@ function openDrawer(drawer: HTMLElement, root: ParentNode, trigger?: HTMLElement
   focusDrawer(drawer);
 }
 
-function closeDrawer(drawer: HTMLElement, root: ParentNode, restoreFocus: boolean): void {
+function closeDrawer(
+  drawer: HTMLElement,
+  root: ParentNode,
+  restoreFocus: boolean,
+  closeControl?: HTMLElement
+): void {
   drawer.classList.remove(DRAWER_OPEN_CLASS);
   drawer.setAttribute("aria-hidden", "true");
   updateToggles(root, drawer, false);
@@ -135,7 +140,9 @@ function closeDrawer(drawer: HTMLElement, root: ParentNode, restoreFocus: boolea
   }
 
   if (restoreFocus) {
-    focusReturnByDrawer.get(drawer)?.focus();
+    const storedTarget = focusReturnByDrawer.get(drawer);
+    const overrideTarget = closeControl ? resolveFocusReturnOverride(closeControl, root) : null;
+    (overrideTarget ?? storedTarget)?.focus();
   }
 }
 
@@ -185,7 +192,7 @@ export function initPanelDrawers(options: PanelDrawerInitOptions = {}): () => vo
         ?? closeControl.closest<HTMLElement>(DRAWER_SELECTOR);
 
       if (drawer) {
-        closeDrawer(drawer, root, true);
+        closeDrawer(drawer, root, true, closeControl);
       }
 
       event.preventDefault();

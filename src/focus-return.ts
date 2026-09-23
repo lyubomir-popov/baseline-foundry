@@ -16,3 +16,12 @@ export function resolveFocusReturnTarget(trigger: HTMLElement, root: ParentNode)
 
   return getElementByIdWithinRoot(root, targetId) ?? trigger;
 }
+
+export function resolveFocusReturnOverride(control: HTMLElement, root: ParentNode): HTMLElement | null {
+  const targetId = control.getAttribute(FOCUS_RETURN_ATTRIBUTE)?.trim();
+  if (!targetId) {
+    return null;
+  }
+
+  return getElementByIdWithinRoot(root, targetId);
+}

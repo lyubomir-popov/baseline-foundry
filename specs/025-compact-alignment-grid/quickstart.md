@@ -31,6 +31,13 @@ activation. Escape, explicit Close, and overlay dismissal must each restore the
 persistent button; removing the attribute or using an unresolved ID must retain
 the trigger fallback.
 
+For both runtimes, open from a control whose focus-return target is a persistent
+Stage command, then activate an explicit Close control carrying
+`data-bf-focus-return` for a persistent View command. Focus must move to View
+for that close only. Remove the Close attribute and repeat Escape, overlay, and
+explicit Close to confirm Stage remains the stored target; an out-of-root Close
+ID must also fall back to Stage.
+
 At a desktop viewport, force application navigation into drawer mode and add
 `is-collapsed` to a pinned application aside while the shell has fixed viewport
 height. The aside must compute to `display: none` with a zero rect, the main

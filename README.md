@@ -380,6 +380,11 @@ The value is one element ID resolved inside the runtime's configured `root` at
 open time. BF restores focus to that element after Escape, an explicit close,
 or overlay dismissal. An absent value or an ID that does not resolve in the
 same root preserves the default behavior of returning focus to the toggle.
+An explicit application-layout or panel-drawer Close control may carry the same
+attribute to override the stored open-time target for that dismissal only. The
+close value is resolved inside the same configured `root`; an absent, empty,
+unresolved, or out-of-root value preserves the stored opener target. Escape and
+overlay dismissal continue to restore the open-time target.
 
 Node/build exports:
 

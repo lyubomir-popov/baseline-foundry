@@ -12,7 +12,7 @@
 
 ## Automated evidence
 
-- `npx --yes npm@11.19.0 test`: pass. The static build suite reports 24,459
+- `npx --yes npm@11.19.0 test`: pass. The static build suite reports 24,463
   checks; all component baseline checks and the real-Chromium behavior suite
   pass.
 - `npx --yes npm@11.19.0 run qa:components`: pass. The affected demo is
@@ -39,6 +39,11 @@
   `data-bf-focus-return` restores each persistent target through Escape,
   explicit Close, and overlay dismissal. Missing and unresolved IDREFs retain
   the trigger fallback, and the suite reports no browser runtime errors.
+- Both drawer runtimes also open with a persistent Stage return target and
+  honor a View target declared on the explicit Close control for that close
+  only. An absent Close attribute retains the Stage opener, and a Close ID that
+  resolves only outside the configured root falls back to Stage rather than
+  the disappearing Close control; Escape and overlay behavior remain intact.
 - Chromium collapsed-rail coverage proves a pinned application aside carrying
   `is-collapsed` computes to `display: none` with a zero-sized rectangle, while
   the main region retains positive height. `elementsFromPoint` includes the

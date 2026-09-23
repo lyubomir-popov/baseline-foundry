@@ -568,9 +568,13 @@ function validateDrawerFocusReturn(
   readmeMd: string
 ): void {
   assert(focusReturnJs.includes('data-bf-focus-return'), "Expected the built runtime to publish the generic focus-return IDREF attribute contract.");
+  assert(focusReturnJs.includes("resolveFocusReturnOverride"), "Expected the built runtime to resolve explicit close-control focus-return overrides.");
   assert(applicationLayoutJs.includes("resolveFocusReturnTarget(trigger, root)"), "Expected application-layout opening to resolve the shared focus-return target.");
+  assert(applicationLayoutJs.includes("resolveFocusReturnOverride(closeControl, root)"), "Expected application-layout closing to resolve a close-control focus-return override.");
   assert(panelDrawerJs.includes("resolveFocusReturnTarget(trigger, root)"), "Expected panel-drawer opening to resolve the shared focus-return target.");
+  assert(panelDrawerJs.includes("resolveFocusReturnOverride(closeControl, root)"), "Expected panel-drawer closing to resolve a close-control focus-return override.");
   assert(readmeMd.includes('`data-bf-focus-return="persistent-control-id"`'), "Expected README.md to document the public focus-return IDREF contract.");
+  assert(readmeMd.includes("Close control may carry the same attribute"), "Expected README.md to document the explicit close-control focus-return override.");
 }
 
 function assertSelectorUsesBodyTypography(css: string, selector: string, label: string): void {

@@ -1,4 +1,4 @@
-import { resolveFocusReturnTarget } from "./focus-return.js";
+import { resolveFocusReturnOverride, resolveFocusReturnTarget } from "./focus-return.js";
 
 export interface ApplicationLayoutInitOptions {
   largeBreakpoint?: string;
@@ -124,12 +124,20 @@ function openNavigation(navigation: HTMLElement, root: ParentNode, largeBreakpoi
   }
 }
 
-function closeNavigation(navigation: HTMLElement, root: ParentNode, largeBreakpoint: string, restoreFocus: boolean): void {
+function closeNavigation(
+  navigation: HTMLElement,
+  root: ParentNode,
+  largeBreakpoint: string,
+  restoreFocus: boolean,
+  closeControl?: HTMLElement
+): void {
   navigation.classList.add(COLLAPSED_CLASS);
   updateA11y(root, navigation, largeBreakpoint);
 
   if (restoreFocus) {
-    focusReturnByNavigation.get(navigation)?.focus();
+    const storedTarget = focusReturnByNavigation.get(navigation);
+    const overrideTarget = closeControl ? resolveFocusReturnOverride(closeControl, root) : null;
+    (overrideTarget ?? storedTarget)?.focus();
   }
 }
 
@@ -190,7 +198,7 @@ export function initApplicationLayouts(options: ApplicationLayoutInitOptions = {
       const navigation = resolveNavigation(closeButton, root);
       if (navigation) {
         event.preventDefault();
-        closeNavigation(navigation, root, largeBreakpoint, true);
+        closeNavigation(navigation, root, largeBreakpoint, true, closeButton);
       }
       return;
     }

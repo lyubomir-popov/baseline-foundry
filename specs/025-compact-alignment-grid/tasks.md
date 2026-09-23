@@ -18,6 +18,8 @@
   fallback behavior.
 - [x] T005E Make collapsed state authoritative over pinned-aside display and add
   fixed-height `elementsFromPoint` plus real-pointer command coverage.
+- [x] T005F Let an explicit application-layout or panel-drawer Close control
+  override focus return for one close, with root-scoped fallback coverage.
 - [x] T006 Run focused checks, `npm test`, and `npm run qa:components`.
 - [x] T007 Complete browser visual review and record the clean commit SHA in
   the delivery handoff.
