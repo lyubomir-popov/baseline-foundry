@@ -70,6 +70,7 @@ export const componentPages: ComponentPage[] = [
   { name: "code-snippet", route: "/demo/components/code-snippet.html" },
   { name: "list-tree", route: "/demo/components/list-tree.html" },
   { name: "tabs", route: "/demo/components/tabs.html" },
+  { name: "alignment-grid", route: "/demo/components/alignment-grid.html" },
   { name: "panel-tabs", route: "/demo/components/panel-tabs.html" },
   { name: "accordion", route: "/demo/components/accordion.html" },
   { name: "side-navigation", route: "/demo/components/side-navigation.html", captureProfile: "wide" },

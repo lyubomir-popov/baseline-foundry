@@ -330,6 +330,7 @@ Package root exports:
 
 - `initAccordions`
 - `toggleAccordionButton`
+- `initAlignmentGrids`
 - `initApplicationLayouts`
 - `initBaselineGridToggles`
 - `setupBaselineGridToggle`
@@ -357,6 +358,10 @@ Package root exports:
 - `initTooltips`
 - `tierNames`, `tierDescriptions`, and `isTierName`
 - `TierName`, `BuiltInThemeName`, `ThemeSurfaceManifest`, and related public types
+
+`initApplicationLayouts({ largeBreakpoint })` accepts a media-query string when
+an application shell becomes persistent at a boundary other than the default
+`(min-width: 48rem)`.
 
 Node/build exports:
 

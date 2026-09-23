@@ -2,7 +2,14 @@
 
 ## Active package
 
-No feature package is active. Spec 020a is accepted, merged and archived at
+Spec 025 compact alignment grid is active on
+`feat/025-compact-alignment-grid` by direct user authorization. It is a bounded
+shared component contribution for Design Foundry and Diagram Generator: public
+intrinsic 3 by 3 CSS, `initAlignmentGrids`, catalog/demo coverage, and clean
+validation evidence. It must not absorb Spec 022/020b work, publish, merge, or
+modify either consumer repository.
+
+Spec 020a is accepted, merged and archived at
 [`docs/spec-archive/020a-horizontal-token-adoption/`](docs/spec-archive/020a-horizontal-token-adoption/).
 Its implementation and review corrections landed directly on `main` at
 `299f182` on 2026-09-05. The seven-value compatibility overlay is gone, all

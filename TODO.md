@@ -5,7 +5,11 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No package is active. Spec 020a is merged and archived: the BF-local seven-point
+Spec 025 compact alignment grid is active by direct user authorization. Finish
+its component/runtime validation and produce a clean full commit for downstream
+pinning without publication or merge.
+
+Spec 020a is merged and archived: the BF-local seven-point
 overlay is removed, the final Canonical component matrix is adopted, and
 component/panel horizontal spacing is separated from the vertical baseline.
 The next bounded BF token contribution is 020b page/grid adoption. Do not begin

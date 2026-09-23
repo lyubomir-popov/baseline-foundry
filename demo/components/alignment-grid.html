@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alignment grid demo</title>
+    <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../component-shell.css" />
+  </head>
+  <body class="bf-theme is-dark" data-component-capture>
+    <section class="bf-stack">
+      <p class="bf-body" data-baseline-check="flow" data-baseline-label="alignment grid summary">
+        Choose one of nine fixed anchor positions without stretching the control to its container.
+      </p>
+      <div class="bf-alignment-grid" role="group" aria-label="Object alignment" data-baseline-check="box" data-baseline-ignore="true" data-baseline-label="fixed spatial alignment grid">
+        <button class="bf-alignment-grid-button" type="button" aria-label="Top left" aria-pressed="false" tabindex="-1" data-alignment="top-left"></button>
+        <button class="bf-alignment-grid-button" type="button" aria-label="Top center" aria-pressed="false" tabindex="-1" data-alignment="top-center"></button>
+        <button class="bf-alignment-grid-button" type="button" aria-label="Top right" aria-pressed="false" tabindex="-1" data-alignment="top-right"></button>
+        <button class="bf-alignment-grid-button" type="button" aria-label="Center left" aria-pressed="false" tabindex="-1" data-alignment="center-left"></button>
+        <button class="bf-alignment-grid-button" type="button" aria-label="Center" aria-pressed="true" tabindex="0" data-alignment="center"></button>
+        <button class="bf-alignment-grid-button" type="button" aria-label="Center right" aria-pressed="false" tabindex="-1" data-alignment="center-right"></button>
+        <button class="bf-alignment-grid-button" type="button" aria-label="Bottom left" aria-pressed="false" tabindex="-1" data-alignment="bottom-left"></button>
+        <button class="bf-alignment-grid-button" type="button" aria-label="Bottom center" aria-pressed="false" tabindex="-1" data-alignment="bottom-center"></button>
+        <button class="bf-alignment-grid-button" type="button" aria-label="Bottom right" aria-pressed="false" tabindex="-1" data-alignment="bottom-right"></button>
+      </div>
+    </section>
+    <script type="module" src="../component-demo.js"></script>
+  </body>
+</html>

@@ -3,7 +3,7 @@ export interface ResizableAsideInitOptions {
 }
 
 const APPLICATION_SELECTOR = ".bf-application";
-const PINNED_ASIDE_SELECTOR = ".bf-aside.is-pinned";
+const ASIDE_SELECTOR = ".bf-aside";
 const HANDLE_SELECTOR = ".bf-application-aside-resize-handle";
 const DEFAULT_STEP_PX = 16;
 const DEFAULT_STORAGE_PREFIX = "baseline-foundry-aside-width";
@@ -60,10 +60,10 @@ function resolveNumericDatasetValue(...values: Array<string | undefined>): numbe
   return null;
 }
 
-function getPinnedAside(application: HTMLElement): HTMLElement | null {
-  return Array.from(application.children).find((child): child is HTMLElement => {
-    return child instanceof HTMLElement && child.matches(PINNED_ASIDE_SELECTOR);
-  }) ?? application.querySelector<HTMLElement>(PINNED_ASIDE_SELECTOR);
+function getResizableAside(application: HTMLElement): HTMLElement | null {
+  return Array.from(application.querySelectorAll<HTMLElement>(ASIDE_SELECTOR)).find(aside => {
+    return aside.querySelector(HANDLE_SELECTOR) !== null;
+  }) ?? null;
 }
 
 function getResizeHandle(application: HTMLElement, aside: HTMLElement | null): HTMLElement | null {
@@ -270,7 +270,7 @@ function syncHandleToRenderedWidth(application: HTMLElement, aside: HTMLElement,
 }
 
 function setupApplication(application: HTMLElement): () => void {
-  const aside = getPinnedAside(application);
+  const aside = getResizableAside(application);
   const handle = getResizeHandle(application, aside);
   if (!aside || !handle) {
     return () => {};

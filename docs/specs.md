@@ -5,7 +5,11 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 ## Current package
 
-No package is active.
+Spec 025, [`../specs/025-compact-alignment-grid/`](../specs/025-compact-alignment-grid/),
+is active by direct user authorization. It promotes the repeated nine-position
+authoring control shared by Design Foundry and Diagram Generator into intrinsic
+BF CSS and a public keyboard runtime. It does not reopen token, Pragma, shell,
+or publication work.
 
 ## Preserved drafts
 

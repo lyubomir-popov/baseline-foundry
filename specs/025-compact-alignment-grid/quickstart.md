@@ -1,0 +1,16 @@
+# Quickstart
+
+Use the package-declared npm release:
+
+```powershell
+npx --yes npm@11.19.0 run setup:demo-font
+npx --yes npm@11.19.0 run build
+npx --yes npm@11.19.0 run test:build
+npx --yes npm@11.19.0 run test:behavior
+npx --yes npm@11.19.0 run test:components
+npx --yes npm@11.19.0 run qa:components
+```
+
+Review `/demo/components/alignment-grid.html` in light/dark and all four tier
+options. Confirm 58px intrinsic geometry at the default root, clear hover,
+pressed, and keyboard-focus states, LTR/RTL Arrow behavior, and no overflow.

@@ -1,4 +1,5 @@
 export { initAccordions, toggleAccordionButton } from "./accordion.js";
+export { initAlignmentGrids } from "./alignment-grid.js";
 export { initApplicationLayouts } from "./application-layout.js";
 export { initBaselineGridToggles, setupBaselineGridToggle } from "./baseline-grid.js";
 export { generateBaselineGridOverlayCss, generateBaselineGridThemeOverrideCss } from "./baseline-grid-overlay.js";
@@ -17,6 +18,7 @@ export { initTabs } from "./tabs.js";
 export { initTooltips } from "./tooltip.js";
 export { isTierName, tierDescriptions, tierNames } from "./tier-registry.js";
 export type { AccordionInitOptions } from "./accordion.js";
+export type { AlignmentGridInitOptions } from "./alignment-grid.js";
 export type { ApplicationLayoutInitOptions } from "./application-layout.js";
 export type { BaselineGridInitOptions } from "./baseline-grid.js";
 export type { BaselineGridOverlayOptions } from "./baseline-grid-overlay.js";

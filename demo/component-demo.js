@@ -1,4 +1,4 @@
-import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initInPageNavigations, initInteractiveFeedback, initInteractiveTables, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
+import { initAccordions, initAlignmentGrids, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initInPageNavigations, initInteractiveFeedback, initInteractiveTables, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
@@ -312,6 +312,7 @@ async function main() {
   }
 
   initApplicationLayouts();
+  initAlignmentGrids();
   initCodeSnippets();
   initContextualMenus();
   initInPageNavigations();
@@ -329,4 +330,3 @@ async function main() {
 }
 
 void main();
-

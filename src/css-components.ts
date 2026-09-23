@@ -1,4 +1,5 @@
 import { buttonActionsCss } from "./css-components/button-actions.js";
+import { alignmentGridCss } from "./css-components/alignment-grid.js";
 import { articlePaginationCss } from "./css-components/article-pagination.js";
 import { applicationGeometryCss } from "./css-components/application-geometry.js";
 import { cardsOptionsCss } from "./css-components/cards-options.js";
@@ -748,6 +749,7 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
 ${iconCss()}
 
 ${buttonActionsCss({ bodyTypeStyles, buttonMarginBottom, buttonPadding })}
+${alignmentGridCss()}
 
 ${nestedControlsCss()}
 

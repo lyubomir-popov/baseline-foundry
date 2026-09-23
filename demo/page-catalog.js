@@ -74,6 +74,7 @@ export const componentSections = [
     heading: "Navigation and disclosure",
     items: [
       { title: "Tabs", href: "/demo/components/tabs.html" },
+      { title: "Alignment grid", href: "/demo/components/alignment-grid.html" },
       { title: "Panel tabs", href: "/demo/components/panel-tabs.html" },
       { title: "Accordion", href: "/demo/components/accordion.html" },
       { title: "Side navigation", href: "/demo/components/side-navigation.html" },

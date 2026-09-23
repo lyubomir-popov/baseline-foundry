@@ -579,6 +579,81 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
   }
 }
 
+async function verifyAlignmentGrid(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 720 } });
+    const runtimeErrors: string[] = [];
+    page.on("pageerror", error => runtimeErrors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") runtimeErrors.push(message.text());
+    });
+    await page.goto(`${origin}/demo/components/alignment-grid.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+
+    const tierSelect = page.getByLabel("Tier", { exact: true });
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const geometry = await page.locator(".bf-alignment-grid").evaluate(grid => {
+        const root = grid.getBoundingClientRect();
+        const buttons = Array.from(grid.querySelectorAll<HTMLElement>(".bf-alignment-grid-button"));
+        const marker = getComputedStyle(buttons[0], "::before");
+        const style = getComputedStyle(grid);
+        return {
+          width: root.width,
+          height: root.height,
+          gap: Number.parseFloat(style.gap),
+          padding: Number.parseFloat(style.paddingInlineStart),
+          border: Number.parseFloat(style.borderInlineStartWidth),
+          buttonSizes: buttons.map(button => {
+            const rect = button.getBoundingClientRect();
+            return [rect.width, rect.height];
+          }),
+          marker: [Number.parseFloat(marker.width), Number.parseFloat(marker.height)],
+          overflow: [grid.scrollWidth - grid.clientWidth, grid.scrollHeight - grid.clientHeight]
+        };
+      });
+      assert(geometry.width === 58 && geometry.height === 58, `Expected ${tier} alignment grid to occupy 58px including its BF border; got ${geometry.width}x${geometry.height}.`);
+      assert(geometry.gap === 2 && geometry.padding === 2 && geometry.border === 1, `Expected ${tier} alignment grid to resolve 2px gap/padding and a 1px BF border; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.buttonSizes.length === 9 && geometry.buttonSizes.every(([width, height]) => width === 16 && height === 16), `Expected ${tier} alignment grid to keep nine 16px targets; got ${JSON.stringify(geometry.buttonSizes)}.`);
+      assert(geometry.marker[0] === 6 && geometry.marker[1] === 6, `Expected ${tier} alignment-grid marker dots to resolve to 6px; got ${geometry.marker.join("x")}.`);
+      assert(geometry.overflow.every(delta => delta === 0), `Expected ${tier} alignment grid to avoid overflow; got ${geometry.overflow.join(", ")}.`);
+    }
+
+    const grid = page.locator(".bf-alignment-grid");
+    const buttons = grid.locator(".bf-alignment-grid-button");
+    const selectedIndex = async () => buttons.evaluateAll(items => items.findIndex(item => item.getAttribute("aria-pressed") === "true"));
+    const tabbableIndex = async () => buttons.evaluateAll(items => items.findIndex(item => item.getAttribute("tabindex") === "0"));
+    const focusedIndex = async () => buttons.evaluateAll(items => items.findIndex(item => item === document.activeElement));
+    assert(await buttons.evaluateAll(items => items.length === 9 && items.every(item => !(item as HTMLButtonElement).disabled && item.getAttribute("aria-disabled") !== "true")), "Expected the fixed alignment-grid contract to contain exactly nine enabled targets.");
+
+    assert(await selectedIndex() === 4 && await tabbableIndex() === 4, "Expected the alignment-grid runtime to preserve the one authored center selection and roving tab stop.");
+    await buttons.nth(8).click();
+    assert(await selectedIndex() === 8 && await tabbableIndex() === 8, "Expected pointer selection to produce one pressed and one tabbable alignment target.");
+
+    await buttons.nth(4).focus();
+    await buttons.nth(4).press("ArrowRight");
+    assert(await selectedIndex() === 5 && await focusedIndex() === 5, "Expected ArrowRight to move and select one LTR alignment target.");
+    await buttons.nth(5).press("ArrowDown");
+    assert(await selectedIndex() === 8 && await focusedIndex() === 8, "Expected ArrowDown to retain the column and move one row.");
+    await buttons.nth(8).press("Home");
+    assert(await selectedIndex() === 0 && await focusedIndex() === 0, "Expected Home to select and focus the first alignment target.");
+    await buttons.nth(0).press("End");
+    assert(await selectedIndex() === 8 && await focusedIndex() === 8, "Expected End to select and focus the final alignment target.");
+
+    await grid.evaluate(element => element.setAttribute("dir", "rtl"));
+    await buttons.nth(4).focus();
+    await buttons.nth(4).press("ArrowRight");
+    assert(await selectedIndex() === 3 && await focusedIndex() === 3, "Expected ArrowRight to follow inline direction in RTL.");
+    await buttons.nth(3).press("ArrowLeft");
+    assert(await selectedIndex() === 4 && await focusedIndex() === 4, "Expected ArrowLeft to follow inline direction in RTL.");
+    assert(runtimeErrors.length === 0, `Expected alignment-grid behavior without runtime errors; got ${runtimeErrors.join(" | ")}.`);
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
   const browser = await openBrowser();
 
@@ -1796,6 +1871,157 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(mobileClosedState.compactBrandVisible && !mobileClosedState.drawerBrandVisible && mobileClosedState.visibleHomeLinks === 1, `Expected Escape to restore exactly one compact application brand. Got ${JSON.stringify(mobileClosedState)}.`);
 
     await mobilePage.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyResponsiveRuntimeOptions(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({
+      deviceScaleFactor: 1,
+      viewport: { width: 1024, height: 720 }
+    });
+    await page.goto(`${origin}/demo/components/application-shell.html`, { waitUntil: "networkidle" });
+
+    const initial = await page.evaluate(async () => {
+      const { initApplicationLayouts, initResizableAsides } = await import("/dist/index.js");
+      const layoutRoot = document.createDocumentFragment();
+      const layoutFixture = document.createElement("div");
+      layoutFixture.innerHTML = `
+        <div class="bf-application">
+          <button type="button" data-application-layout-toggle aria-controls="custom-breakpoint-navigation">Open</button>
+          <div id="custom-breakpoint-navigation" class="bf-navigation is-collapsed">
+            <button class="bf-navigation-overlay" type="button"></button>
+            <div class="bf-navigation-drawer">
+              <button type="button" data-application-layout-close aria-controls="custom-breakpoint-navigation">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+      layoutRoot.append(layoutFixture);
+      const disposeLayout = initApplicationLayouts({ root: layoutRoot, largeBreakpoint: "(min-width: 75rem)" });
+      const navigation = layoutRoot.querySelector<HTMLElement>(".bf-navigation")!;
+      const drawer = layoutRoot.querySelector<HTMLElement>(".bf-navigation-drawer")!;
+      const overlay = layoutRoot.querySelector<HTMLElement>(".bf-navigation-overlay")!;
+      const toggle = layoutRoot.querySelector<HTMLButtonElement>("[data-application-layout-toggle]")!;
+      const collapsed = {
+        collapsed: navigation.classList.contains("is-collapsed"),
+        drawerHidden: drawer.getAttribute("aria-hidden"),
+        overlayHidden: overlay.getAttribute("aria-hidden")
+      };
+      toggle.click();
+      const opened = {
+        collapsed: navigation.classList.contains("is-collapsed"),
+        drawerHidden: drawer.getAttribute("aria-hidden"),
+        overlayHidden: overlay.getAttribute("aria-hidden")
+      };
+      layoutRoot.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Escape" }));
+      const escaped = {
+        collapsed: navigation.classList.contains("is-collapsed"),
+        drawerHidden: drawer.getAttribute("aria-hidden"),
+        overlayHidden: overlay.getAttribute("aria-hidden")
+      };
+
+      const resizeFixture = document.createElement("div");
+      resizeFixture.className = "bf-application";
+      resizeFixture.style.inlineSize = "56rem";
+      resizeFixture.innerHTML = `
+        <aside id="responsive-resize-aside" class="bf-aside is-drawer">
+          <div class="bf-application-aside-resize-handle" aria-label="Resize responsive panel"></div>
+        </aside>
+      `;
+      document.body.append(resizeFixture);
+      const disposeResize = initResizableAsides({ root: resizeFixture });
+      const resizeAside = resizeFixture.querySelector<HTMLElement>(".bf-aside")!;
+      const resizeHandle = resizeFixture.querySelector<HTMLElement>(".bf-application-aside-resize-handle")!;
+      const drawerFirst = {
+        ariaDisabled: resizeHandle.getAttribute("aria-disabled"),
+        tabIndex: resizeHandle.tabIndex
+      };
+
+      const fixtureWindow = window as Window & {
+        __bfResponsiveRuntimeFixture?: {
+          disposeLayout: () => void;
+          disposeResize: () => void;
+          drawer: HTMLElement;
+          layoutFixture: HTMLElement;
+          layoutRoot: DocumentFragment;
+          navigation: HTMLElement;
+          overlay: HTMLElement;
+          resizeAside: HTMLElement;
+          resizeFixture: HTMLElement;
+          resizeHandle: HTMLElement;
+        };
+      };
+      fixtureWindow.__bfResponsiveRuntimeFixture = {
+        disposeLayout,
+        disposeResize,
+        drawer,
+        layoutFixture,
+        layoutRoot,
+        navigation,
+        overlay,
+        resizeAside,
+        resizeFixture,
+        resizeHandle
+      };
+
+      return { collapsed, drawerFirst, escaped, opened };
+    });
+
+    assert(initial.collapsed.collapsed && initial.collapsed.drawerHidden === "true" && initial.collapsed.overlayHidden === "true", `Expected the custom 75rem application breakpoint to treat 1024px as a collapsed drawer; got ${JSON.stringify(initial.collapsed)}.`);
+    assert(!initial.opened.collapsed && initial.opened.drawerHidden === "false" && initial.opened.overlayHidden === "false", `Expected custom-breakpoint drawer opening to expose the drawer and overlay; got ${JSON.stringify(initial.opened)}.`);
+    assert(initial.escaped.collapsed && initial.escaped.drawerHidden === "true" && initial.escaped.overlayHidden === "true", `Expected Escape to restore custom-breakpoint drawer semantics; got ${JSON.stringify(initial.escaped)}.`);
+    assert(initial.drawerFirst.ariaDisabled === "true" && initial.drawerFirst.tabIndex === -1, `Expected a drawer-first resize handle to bind but remain non-interactive; got ${JSON.stringify(initial.drawerFirst)}.`);
+
+    await page.setViewportSize({ width: 1216, height: 720 });
+    const transitioned = await page.evaluate(() => {
+      const fixtureWindow = window as Window & {
+        __bfResponsiveRuntimeFixture?: {
+          disposeLayout: () => void;
+          disposeResize: () => void;
+          drawer: HTMLElement;
+          layoutFixture: HTMLElement;
+          navigation: HTMLElement;
+          overlay: HTMLElement;
+          resizeAside: HTMLElement;
+          resizeFixture: HTMLElement;
+          resizeHandle: HTMLElement;
+        };
+      };
+      const fixture = fixtureWindow.__bfResponsiveRuntimeFixture;
+      if (!fixture) return null;
+      fixture.resizeAside.classList.remove("is-drawer");
+      fixture.resizeAside.classList.add("is-pinned");
+      window.dispatchEvent(new Event("resize"));
+      const keyboardEvent = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowLeft" });
+      fixture.resizeHandle.dispatchEvent(keyboardEvent);
+      const result = {
+        customBreakpoint: {
+          collapsed: fixture.navigation.classList.contains("is-collapsed"),
+          drawerHidden: fixture.drawer.getAttribute("aria-hidden"),
+          overlayHidden: fixture.overlay.getAttribute("aria-hidden")
+        },
+        pinnedResize: {
+          ariaDisabled: fixture.resizeHandle.getAttribute("aria-disabled"),
+          authoredWidth: fixture.resizeFixture.style.getPropertyValue("--bf-app-aside-width"),
+          prevented: keyboardEvent.defaultPrevented,
+          tabIndex: fixture.resizeHandle.tabIndex
+        }
+      };
+      fixture.disposeLayout();
+      fixture.disposeResize();
+      fixture.resizeFixture.remove();
+      delete fixtureWindow.__bfResponsiveRuntimeFixture;
+      return result;
+    });
+
+    assert(transitioned, "Expected responsive runtime fixtures to survive the narrow-to-wide transition.");
+    assert(transitioned.customBreakpoint.collapsed && transitioned.customBreakpoint.drawerHidden === "false" && transitioned.customBreakpoint.overlayHidden === "true", `Expected the custom 75rem breakpoint to enter persistent mode above 1200px; got ${JSON.stringify(transitioned.customBreakpoint)}.`);
+    assert(transitioned.pinnedResize.ariaDisabled === "false" && transitioned.pinnedResize.tabIndex === 0 && transitioned.pinnedResize.prevented && transitioned.pinnedResize.authoredWidth !== "", `Expected a drawer-first resize handle to become keyboard-operable only after pinning; got ${JSON.stringify(transitioned.pinnedResize)}.`);
   } finally {
     await browser.close();
   }
@@ -5328,6 +5554,7 @@ async function main(): Promise<void> {
 
   try {
     await verifyNativeNumberStepper(origin);
+    await verifyAlignmentGrid(origin);
     await verifySideNavigationAccordionGeometry(origin);
     await verifyPageChromeNavigationScroll(origin);
     await verifyPageChromeHierarchyAndKeylines(origin);
@@ -5336,6 +5563,7 @@ async function main(): Promise<void> {
     await verifyPinnedAsideResize(origin);
     await verifyDrawerOverlay(origin);
     await verifyApplicationLayout(origin);
+    await verifyResponsiveRuntimeOptions(origin);
     await verifyTopNavigation(origin);
     await verifyBodySizedUiTypography(origin);
     await verifyInlineIconMetricAlignment(origin);

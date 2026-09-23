@@ -488,7 +488,7 @@ function validateTierStripSpaceProgression(
   assert(resolved.every((space, index) => index === 0 || space <= resolved[index - 1]), `Expected strip spacing not to increase across editorial/documentation/app/os, got ${resolved.join(" >= ")}rem.`);
 }
 
-async function validatePublicRuntimeAndTypes(indexDts: string, readmeMd: string): Promise<void> {
+async function validatePublicRuntimeAndTypes(indexDts: string, applicationLayoutDts: string, readmeMd: string): Promise<void> {
   const publicApi = await import("../dist/index.js");
   assert(Array.isArray(publicApi.tierNames), "Expected the package root runtime to export tierNames.");
   assert(JSON.stringify(publicApi.tierNames) === JSON.stringify(tierNames), "Expected public tierNames to expose the complete built-in registry.");
@@ -496,6 +496,7 @@ async function validatePublicRuntimeAndTypes(indexDts: string, readmeMd: string)
   for (const typeName of ["TierName", "BuiltInThemeName", "ThemeSurface", "ThemeSurfaceManifest", "ThemeSurfaceManifestEntry"]) {
     assert(indexDts.includes(typeName), `Expected dist/index.d.ts to export public type ${typeName}.`);
   }
+  assert(applicationLayoutDts.includes("largeBreakpoint?: string"), "Expected ApplicationLayoutInitOptions to expose the backward-compatible configurable large breakpoint.");
 
   const publicApiSection = readmeMd.match(/## Public API([\s\S]*?)(?=\n## |$)/)?.[1] ?? "";
   for (const [exportName, exportValue] of Object.entries(publicApi)) {
@@ -506,6 +507,49 @@ async function validatePublicRuntimeAndTypes(indexDts: string, readmeMd: string)
 
   const screenshotOnlyPages = componentPages.filter(page => page.verification === "screenshot-only");
   assert(screenshotOnlyPages.length === 1 && screenshotOnlyPages[0]?.name === "engine-illustration", "Expected only the static engine illustration to opt out of baseline verification explicitly.");
+}
+
+function validateAlignmentGrid(
+  css: string,
+  html: string,
+  componentDemoJs: string,
+  pageCatalogJs: string,
+  indexDts: string
+): void {
+  const ast = parseCss(css);
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-alignment-grid)", {
+    "border": "var(--bf-border-width) solid var(--bf-color-border-default)",
+    "display": "inline-grid",
+    "gap": "0.125rem",
+    "grid-template-columns": "repeat(3, 1rem)",
+    "grid-template-rows": "repeat(3, 1rem)",
+    "justify-self": "start",
+    "padding": "0.125rem"
+  }, "alignment grids expose fixed three-by-three geometry through the public BF component");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-alignment-grid-button)", {
+    "block-size": "1rem",
+    "inline-size": "1rem",
+    "min-block-size": "0",
+    "min-inline-size": "0",
+    "padding": "0"
+  }, "alignment-grid targets stay fixed rather than stretching with their container");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-alignment-grid-button)::before", {
+    "block-size": "0.375rem",
+    "inline-size": "0.375rem"
+  }, "alignment-grid targets paint six-pixel marker dots at the default root size");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-alignment-grid-button)[aria-pressed='true']", {
+    "background": "var(--bf-color-background-active)",
+    "color": "var(--bf-color-text-default)"
+  }, "alignment-grid selection uses BF active and text tokens");
+
+  const buttons = html.match(/class="bf-alignment-grid-button"/g) ?? [];
+  const pressed = html.match(/aria-pressed="true"/g) ?? [];
+  const labels = html.match(/aria-label="(?:Top|Center|Bottom)[^"]*"/g) ?? [];
+  assert(buttons.length === 9 && pressed.length === 1 && labels.length === 9, "Expected the alignment-grid specimen to expose nine named choices and one selected anchor.");
+  assert(html.includes('class="bf-alignment-grid" role="group" aria-label="Object alignment"'), "Expected the alignment-grid specimen to expose one named group.");
+  assert(componentDemoJs.includes("initAlignmentGrids();"), "Expected component demos to initialize the public alignment-grid runtime.");
+  assert(pageCatalogJs.includes('/demo/components/alignment-grid.html'), "Expected the component catalog to publish the alignment-grid specimen.");
+  assert(indexDts.includes("initAlignmentGrids") && indexDts.includes("AlignmentGridInitOptions"), "Expected the package root types to export the alignment-grid runtime and options.");
 }
 
 function assertSelectorUsesBodyTypography(css: string, selector: string, label: string): void {
@@ -1222,6 +1266,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)"
   ]);
   const expectedUnaffectedRadii = [
+    ":where(.bf-theme) :where(.bf-alignment-grid-button)::before => 50%",
     ":where(.bf-theme) :where(.bf-application-aside-resize-handle)::after => 62.4375rem",
     ":where(.bf-theme) :where(.bf-button, .bf-button.is-base) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-button.is-link) => 0",
@@ -1986,6 +2031,7 @@ async function main(): Promise<void> {
     "ibm-plex-engine-smoke": ibmPlexEngineSmoke.css
   };
   const indexDts = await readTextArtifact(path.resolve("dist/index.d.ts"));
+  const applicationLayoutDts = await readTextArtifact(path.resolve("dist/application-layout.d.ts"));
   const renewalComponentPages = Object.fromEntries(await Promise.all([
     "article-pagination",
     "accordion",
@@ -2074,6 +2120,7 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/spec-runtime.js")),
     readTextArtifact(path.resolve("demo/example-page.js"))
   ]);
+  const alignmentGridHtml = await readTextArtifact(path.resolve("demo/components/alignment-grid.html"));
 
   await runInvariantAsync("Scalable authored lengths", validateScalableAuthoredLengths);
   runInvariant("Common CSS (default)", () => validateCommonCss(defaultTheme.css));
@@ -2083,6 +2130,7 @@ async function main(): Promise<void> {
   runInvariant("Common CSS (OS)", () => validateCommonCss(osTier.css));
   runInvariant("Common CSS (prose preset)", () => validateCommonCss(prosePreset.css));
   runInvariant("Common CSS (app preset)", () => validateCommonCss(appTierPreset.css));
+  runInvariant("Alignment grid", () => validateAlignmentGrid(defaultTheme.css, alignmentGridHtml, componentDemoJs, pageCatalogJs, indexDts));
   runInvariant("BF variable reference detector", () => {
     assert(findUndeclaredBfVariableReferences(":root { color: var(--bf-missing); }").includes("--bf-missing"), "Expected the BF variable reference detector to reject a fallback-free dangling reference.");
     assert(findUndeclaredBfVariableReferences(":root { color: var(--bf-optional, currentColor); }").length === 0, "Expected the BF variable reference detector to allow an optional reference with a fallback.");
@@ -2151,7 +2199,7 @@ async function main(): Promise<void> {
     os: osTier
   }));
   runInvariant("Published package exports", () => validatePackageExports(packageJson));
-  await runInvariantAsync("Public runtime and types", () => validatePublicRuntimeAndTypes(indexDts, readmeMd));
+  await runInvariantAsync("Public runtime and types", () => validatePublicRuntimeAndTypes(indexDts, applicationLayoutDts, readmeMd));
   runInvariant("Surfaces manifest docs", () => validateSurfacesManifestDocs(surfacesManifestDoc, readmeMd));
   runInvariant("Theme config watcher", () => validateThemeConfigWatcher(viteConfigTs));
   await runInvariantAsync("Legacy panel preset removed", () => validateLegacyPanelPresetRemoval());

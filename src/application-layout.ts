@@ -1,4 +1,5 @@
 export interface ApplicationLayoutInitOptions {
+  largeBreakpoint?: string;
   root?: ParentNode;
 }
 
@@ -64,17 +65,17 @@ function getOverlay(navigation: HTMLElement): HTMLElement | null {
   return navigation.querySelector<HTMLElement>(OVERLAY_SELECTOR);
 }
 
-function isLargeViewport(navigation: HTMLElement): boolean {
-  return navigation.ownerDocument.defaultView?.matchMedia(LARGE_BREAKPOINT).matches ?? false;
+function isLargeViewport(navigation: HTMLElement, largeBreakpoint: string): boolean {
+  return navigation.ownerDocument.defaultView?.matchMedia(largeBreakpoint).matches ?? false;
 }
 
 function isExpanded(navigation: HTMLElement): boolean {
   return !navigation.classList.contains(COLLAPSED_CLASS);
 }
 
-function updateA11y(root: ParentNode, navigation: HTMLElement): void {
+function updateA11y(root: ParentNode, navigation: HTMLElement, largeBreakpoint: string): void {
   const expanded = isExpanded(navigation);
-  const largeViewport = isLargeViewport(navigation);
+  const largeViewport = isLargeViewport(navigation, largeBreakpoint);
 
   for (const toggle of getAssociatedControls(root, navigation, TOGGLE_SELECTOR)) {
     toggle.setAttribute("aria-expanded", String(expanded));
@@ -103,52 +104,53 @@ function focusNavigation(navigation: HTMLElement): void {
   }
 }
 
-function openNavigation(navigation: HTMLElement, root: ParentNode, trigger?: HTMLElement): void {
+function openNavigation(navigation: HTMLElement, root: ParentNode, largeBreakpoint: string, trigger?: HTMLElement): void {
   navigation.classList.remove(COLLAPSED_CLASS);
-  updateA11y(root, navigation);
+  updateA11y(root, navigation, largeBreakpoint);
 
   if (trigger) {
     lastTriggerByNavigation.set(navigation, trigger);
   }
 
-  if (!isLargeViewport(navigation)) {
+  if (!isLargeViewport(navigation, largeBreakpoint)) {
     focusNavigation(navigation);
   }
 }
 
-function closeNavigation(navigation: HTMLElement, root: ParentNode, restoreFocus: boolean): void {
+function closeNavigation(navigation: HTMLElement, root: ParentNode, largeBreakpoint: string, restoreFocus: boolean): void {
   navigation.classList.add(COLLAPSED_CLASS);
-  updateA11y(root, navigation);
+  updateA11y(root, navigation, largeBreakpoint);
 
   if (restoreFocus) {
     lastTriggerByNavigation.get(navigation)?.focus();
   }
 }
 
-function togglePin(navigation: HTMLElement, root: ParentNode): void {
+function togglePin(navigation: HTMLElement, root: ParentNode, largeBreakpoint: string): void {
   const pinned = navigation.classList.toggle(PINNED_CLASS);
   if (pinned) {
     navigation.classList.remove(COLLAPSED_CLASS);
   }
 
-  updateA11y(root, navigation);
+  updateA11y(root, navigation, largeBreakpoint);
 }
 
-function syncInitialState(root: ParentNode): void {
+function syncInitialState(root: ParentNode, largeBreakpoint: string): void {
   for (const navigation of getNavigations(root)) {
     if (navigation.classList.contains(PINNED_CLASS)) {
       navigation.classList.remove(COLLAPSED_CLASS);
     }
 
-    updateA11y(root, navigation);
+    updateA11y(root, navigation, largeBreakpoint);
   }
 }
 
 export function initApplicationLayouts(options: ApplicationLayoutInitOptions = {}): () => void {
   const root = options.root ?? document;
   const rootWindow = getRootWindow(root);
+  const largeBreakpoint = options.largeBreakpoint ?? LARGE_BREAKPOINT;
 
-  syncInitialState(root);
+  syncInitialState(root, largeBreakpoint);
 
   const onClick = (event: Event): void => {
     const target = event.target;
@@ -161,7 +163,7 @@ export function initApplicationLayouts(options: ApplicationLayoutInitOptions = {
       const navigation = overlay.closest<HTMLElement>(NAVIGATION_SELECTOR);
       if (navigation && isExpanded(navigation)) {
         event.preventDefault();
-        closeNavigation(navigation, root, true);
+        closeNavigation(navigation, root, largeBreakpoint, true);
       }
       return;
     }
@@ -171,7 +173,7 @@ export function initApplicationLayouts(options: ApplicationLayoutInitOptions = {
       const navigation = resolveNavigation(pinButton, root);
       if (navigation) {
         event.preventDefault();
-        togglePin(navigation, root);
+        togglePin(navigation, root, largeBreakpoint);
       }
       return;
     }
@@ -181,7 +183,7 @@ export function initApplicationLayouts(options: ApplicationLayoutInitOptions = {
       const navigation = resolveNavigation(closeButton, root);
       if (navigation) {
         event.preventDefault();
-        closeNavigation(navigation, root, true);
+        closeNavigation(navigation, root, largeBreakpoint, true);
       }
       return;
     }
@@ -192,9 +194,9 @@ export function initApplicationLayouts(options: ApplicationLayoutInitOptions = {
       if (navigation) {
         event.preventDefault();
         if (isExpanded(navigation)) {
-          closeNavigation(navigation, root, false);
+          closeNavigation(navigation, root, largeBreakpoint, false);
         } else {
-          openNavigation(navigation, root, toggle);
+          openNavigation(navigation, root, largeBreakpoint, toggle);
         }
       }
     }
@@ -206,14 +208,14 @@ export function initApplicationLayouts(options: ApplicationLayoutInitOptions = {
     }
 
     for (const navigation of getNavigations(root)) {
-      if (!isLargeViewport(navigation) && isExpanded(navigation)) {
-        closeNavigation(navigation, root, true);
+      if (!isLargeViewport(navigation, largeBreakpoint) && isExpanded(navigation)) {
+        closeNavigation(navigation, root, largeBreakpoint, true);
       }
     }
   };
 
   const onResize = (): void => {
-    syncInitialState(root);
+    syncInitialState(root, largeBreakpoint);
   };
 
   root.addEventListener("click", onClick);
