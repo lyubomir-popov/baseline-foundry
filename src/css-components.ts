@@ -1825,7 +1825,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   display: none;
 }
 
-:where(.bf-theme) :where(.bf-aside.is-pinned) {
+:where(.bf-theme) :where(.bf-aside.is-pinned:not(.is-collapsed)) {
   display: block;
 }
 

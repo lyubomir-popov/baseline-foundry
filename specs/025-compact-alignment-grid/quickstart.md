@@ -30,3 +30,9 @@ inside a contextual-menu-like container, with each toggle declaring
 activation. Escape, explicit Close, and overlay dismissal must each restore the
 persistent button; removing the attribute or using an unresolved ID must retain
 the trigger fallback.
+
+At a desktop viewport, force application navigation into drawer mode and add
+`is-collapsed` to a pinned application aside while the shell has fixed viewport
+height. The aside must compute to `display: none` with a zero rect, the main
+surface must retain positive height, `elementsFromPoint()` at a main command
+must include that command, and a real pointer click must open its BF drawer.

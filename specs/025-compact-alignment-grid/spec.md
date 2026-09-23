@@ -48,6 +48,9 @@ behavior, while Baseline Foundry has no public owner for the repeated pattern.
 - `initResizableAsides` binds an application aside that owns the public resize
   handle even when it initializes in drawer mode, then enables input only when
   that same aside becomes pinned.
+- `.bf-aside.is-pinned.is-collapsed` remains out of layout: collapsed state
+  wins over pinned presentation so the main surface keeps positive geometry
+  and its commands remain pointer reachable when persistent rails are hidden.
 
 ## Boundaries
 

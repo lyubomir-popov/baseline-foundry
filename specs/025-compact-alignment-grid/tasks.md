@@ -16,6 +16,8 @@
 - [x] T005D Add the shared `data-bf-focus-return` IDREF contract to application
   and panel drawers, with hidden-trigger Escape/Close/overlay coverage and
   fallback behavior.
+- [x] T005E Make collapsed state authoritative over pinned-aside display and add
+  fixed-height `elementsFromPoint` plus real-pointer command coverage.
 - [x] T006 Run focused checks, `npm test`, and `npm run qa:components`.
 - [x] T007 Complete browser visual review and record the clean commit SHA in
   the delivery handoff.

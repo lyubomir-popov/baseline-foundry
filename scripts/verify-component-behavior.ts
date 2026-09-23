@@ -1499,6 +1499,58 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(restoredPersistentState.areas.includes('"navigation main') && restoredPersistentState.drawerPosition === "static" && restoredPersistentState.overlayDisplay === "none", `Expected removing the forced modifier to restore persistent geometry above 75rem; got ${JSON.stringify(restoredPersistentState)}.`);
     assert(restoredPersistentState.drawerHidden === "false" && restoredPersistentState.overlayHidden === "true", `Expected removing the forced modifier to restore persistent runtime ARIA; got ${JSON.stringify(restoredPersistentState)}.`);
 
+    const collapsedPinnedRailState = await page.evaluate(async () => {
+      const application = document.querySelector<HTMLElement>(".bf-application");
+      const main = application?.querySelector<HTMLElement>(".bf-main");
+      const aside = application?.querySelector<HTMLElement>(":scope > .bf-aside.is-pinned");
+      const command = main?.querySelector<HTMLElement>("[data-panel-drawer-toggle]");
+      if (!application || !main || !aside || !command) return null;
+
+      application.classList.add("is-fill", "is-navigation-drawer-forced");
+      aside.classList.add("is-collapsed");
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      command.scrollIntoView({ block: "center", inline: "center" });
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+      const asideRect = aside.getBoundingClientRect();
+      const commandRect = command.getBoundingClientRect();
+      const mainRect = main.getBoundingClientRect();
+      const commandCenter = {
+        x: commandRect.left + (commandRect.width / 2),
+        y: commandRect.top + (commandRect.height / 2)
+      };
+      const hitStack = document.elementsFromPoint(commandCenter.x, commandCenter.y);
+
+      return {
+        asideDisplay: getComputedStyle(aside).display,
+        asideHeight: asideRect.height,
+        asideWidth: asideRect.width,
+        commandCenter,
+        commandHeight: commandRect.height,
+        commandHit: hitStack.includes(command) || hitStack.some(element => command.contains(element)),
+        mainHeight: mainRect.height
+      };
+    });
+
+    assert(collapsedPinnedRailState, "Expected collapsed pinned-rail application state to be measurable.");
+    assert(collapsedPinnedRailState.asideDisplay === "none" && collapsedPinnedRailState.asideWidth === 0 && collapsedPinnedRailState.asideHeight === 0, `Expected a collapsed pinned aside to leave layout completely; got ${JSON.stringify(collapsedPinnedRailState)}.`);
+    assert(collapsedPinnedRailState.mainHeight > collapsedPinnedRailState.commandHeight && collapsedPinnedRailState.commandHeight > 0, `Expected the main surface and its command to retain positive pointer geometry after both rails leave persistent layout; got ${JSON.stringify(collapsedPinnedRailState)}.`);
+    assert(collapsedPinnedRailState.commandHit, `Expected elementsFromPoint to reach the main command after both rails leave persistent layout; got ${JSON.stringify(collapsedPinnedRailState)}.`);
+
+    await page.mouse.click(collapsedPinnedRailState.commandCenter.x, collapsedPinnedRailState.commandCenter.y);
+    await page.waitForTimeout(180);
+    const pointerOpenedDrawer = await page.locator("#application-layout-drawer").evaluate(drawer => {
+      return drawer.classList.contains("is-open") && drawer.getAttribute("aria-hidden") === "false";
+    });
+    assert(pointerOpenedDrawer, "Expected a real pointer click on the reachable main command to open its BF panel drawer.");
+    await page.locator("#application-layout-drawer [data-panel-drawer-close]").click({ force: true });
+    await page.evaluate(() => {
+      const application = document.querySelector<HTMLElement>(".bf-application");
+      const aside = application?.querySelector<HTMLElement>(":scope > .bf-aside.is-pinned.is-collapsed");
+      application?.classList.remove("is-fill", "is-navigation-drawer-forced");
+      aside?.classList.remove("is-collapsed");
+    });
+
     const viewportFillState = await page.evaluate(() => {
       const application = document.querySelector<HTMLElement>(".bf-application");
       if (!(application instanceof HTMLElement)) {

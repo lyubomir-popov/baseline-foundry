@@ -70,3 +70,14 @@ listeners must be discovered from the stable public handle rather than the
 transient `is-pinned` class; actual pointer and keyboard input remains gated by
 `isPinnedResizableAside`. This preserves one initialization across narrow to
 wide transitions without making drawer asides resizable.
+
+## Collapsed pinned-aside precedence
+
+The application grid already includes only pinned asides that are not
+collapsed, but a later `.bf-aside.is-pinned { display: block }` rule could
+revive an element hidden by `.is-collapsed`. That rendered element then created
+an implicit aside track outside the declared grid, and under fixed-height rail
+pressure could reduce the main track to zero. Pinned presentation therefore
+applies only to `.is-pinned:not(.is-collapsed)`. This preserves every visible
+pinned-aside contract while making collapsed state authoritative for layout and
+pointer hit testing.

@@ -1404,6 +1404,12 @@ function validateCommonCss(css: string): void {
     "grid-template-areas": "\"navigation-bar navigation-bar\"\n    \"main aside\"",
     "grid-template-rows": "min-content minmax(0, 1fr)"
   }, "responsive application bars retain the first row when a pinned aside is present");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-aside.is-collapsed)", {
+    "display": "none"
+  }, "collapsed application asides leave layout");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-aside.is-pinned:not(.is-collapsed))", {
+    "display": "block"
+  }, "only visible pinned application asides enter layout");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application:not(.is-wide-workspace-breakpoint):not(.is-navigation-drawer-forced):has(> .bf-navigation:not(.is-collapsed))) > :where(.bf-navigation-bar.is-responsive)", {
     "block-size": "0",
     "position": "absolute",
