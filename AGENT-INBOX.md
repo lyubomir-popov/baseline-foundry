@@ -2,7 +2,115 @@
 
 ## Active package
 
-No feature package is active. Spec 020a is accepted, merged and archived at
+Spec 024 is the active draft:
+[`specs/024-semantic-spacing-token-schema/README.md`](specs/024-semantic-spacing-token-schema/README.md).
+It defines the semantic spacing-token schema implied by the Pragma audit,
+including governed contextual density. It does not alter primitives, implement
+tokens, publish Jira or author planning material in Pragma. Read its README
+first, use its `recut-handoff.md` for the audited `feat/pragma-*` recovery, and
+stop at the recorded planning, CP1 and CP2 review checkpoints.
+
+### Implementing? Read the handover first
+
+[`specs/024-semantic-spacing-token-schema/implementation-handover.md`](specs/024-semantic-spacing-token-schema/implementation-handover.md)
+is the entry point for implementation work. Short version: the recut is **not**
+ready — CP1 and CP2 are unpassed and no provider artifact exists — but a bounded
+piece of model work is, and it is what unblocks CP1. It runs in the
+snapshot-derived `feat/bf-inside-out-geometry` worktree as a spike: no
+production branch, no PR, no push. Read
+[`opus-pre-cp1-execution-review.md`](specs/024-semantic-spacing-token-schema/opus-pre-cp1-execution-review.md)
+and
+[`opus-pre-t004d2-scope-review.md`](specs/024-semantic-spacing-token-schema/opus-pre-t004d2-scope-review.md)
+before the handover. The first corrects the worktree, carrier and deferral
+boundaries; the second authorises the typography application file, records the
+type-scale exceptions, dispositions the expanded T004g sweep and selects the
+initial port-6106 capture lane. The later execution-junction review expands
+that evidence contract to the existing 6106 and 6107 lanes.
+
+T004c completed 2026-09-22. Three dirty Pragma worktrees and this spec package
+now have full working-tree snapshot commits under the recovery names in
+`recut-handoff.md`; a distinct ref preserves the staged index tree in
+`fix/root-gates`, and a later child ref preserves the Spec 022 execution
+amendment required by the Opus review. The source branches, working trees and
+pre-existing staged state were preserved. Confirm every exact commit, tree and
+ancestry identity against `recut-handoff.md` before any operation that could
+discard a captured worktree; ref existence alone is not sufficient.
+
+### Current execution junction — Opus review dispositioned
+
+On 2026-09-23 a test-only T004d1a candidate changed the Button, Chip, Form and
+Select Playwright files. Focused Chromium DPR 1/2 runs were observed green at
+12/12 and 8/8, but two independent adversarial reviews rejected completion.
+The attempt is preserved, not accepted, at
+`refs/recovery/spec-024/pragma/t004d1a-candidate-20260923`, commit
+`d41000e69a7f2b096b7855b272e95ccb8909696e`, tree
+`be76d8d52c05032248633f98c2cec973f1b95548`, parent
+`313ee82c13a126b779b9bd75902da5af13c28505`.
+
+The combined Opus review is complete in
+`opus-t004g-scope-clarification-review.md`. T004d1a remains open against the
+bounded four-member denominator, dual 6106/6107 capture lanes, persisted JSON
+and full six-project engine/DPR matrix recorded in the handover. The mechanical
+`text-alignment.test.ts` correction and T004d2 may proceed independently of
+T004d1a. T004g may not begin: CP1 must first choose whether Section collapses
+to two inset magnitudes or earns a new Section inset role and fifth spike
+channel. Its remaining writable slice is fully recorded. T004h remains the
+next independent review gate after the executable work completes.
+
+### Planning and execution-readiness reviews complete
+
+The recut plan has been reviewed: Claude Opus 5, 2026-09-21,
+[`specs/024-semantic-spacing-token-schema/opus-recut-plan-review.md`](specs/024-semantic-spacing-token-schema/opus-recut-plan-review.md).
+Branch topology was independently reproduced against Pragma `origin/main`
+`1530f3156` and donor tip `9b3c9c41f`, and the donor-only conclusion holds. Its
+two P0 findings were dispositioned as follows:
+
+- **Unprotected evidence.** `fix/root-gates` shares its tip with
+  `feat/pragma-navigation`, so preserving the ten donor tips preserves none of
+  the CP1 evidence — 81 untracked files over 48 tracked modifications — and the
+  measurement reference `feat-bf-shared-alignment` has 104 uncommitted changes.
+  This Spec 024 package is untracked too, on a tip dated 2026-09-09 shared with
+  `feat/023-tiered-list-title-alignment`. T004c now protects all of it under
+  named recovery refs; do not delete or repoint those refs while the programme
+  depends on the snapshots.
+- **Upstream landed a different block model, and it splits cleanly.** Six of the
+  seven upstream token migrations (Breadcrumbs, Checkbox, Radio, TextInput,
+  NumberInput, ButtonPrimitive) contain **zero** control-seat references — keep
+  them whole, re-derive nothing. The box-on-grid seat is confined to
+  `362b612d4` and five files, and it assigns the density cell minus two
+  baselines directly to `line-height`, so a Site Button label gets a 28px line
+  box where the same text is 20px elsewhere. It already needs a floor hack in
+  its own dense cell. The taxonomy supersedes that block rule only; T004b
+  records the scoped decision and blocks CP1.
+
+Five P1 findings are incorporated as `spec.md` FR-033 to FR-038 — the complete
+pinned-alias invariant, the `--spacing-*` namespace rule, the separation of the
+live public density API from the governed schema, non-React denominator scope,
+and the rule against reversing a shipped upstream contract by implication. The
+`--ds-*` prefix is confirmed as existing house style (`--ds-color-*`,
+`--ds-transition-*`, `--ds-typography-*` on main); only the spacing nouns are
+new, and they stand as a thin alias layer over provider names. Owner acceptance
+of the corrected plan is still outstanding; the review replaces neither CP1 nor
+CP2.
+
+The later Claude Opus 5 execution-readiness review dated 2026-09-22 governs
+all work before CP1. It requires a new `feat/bf-inside-out-geometry` worktree
+based on exact recovery snapshot
+`313ee82c13a126b779b9bd75902da5af13c28505`, keeps both evidence worktrees
+read-only, confines provisional values to `_spike-geometry.css`, records OS
+values as `null`, and stops at independent review T004h. Read
+`opus-pre-cp1-execution-review.md` before acting.
+
+The follow-up Claude Opus 5 scope review dated 2026-09-22 is also complete.
+T004d0, T004d1b and T004d are accepted and recoverable at
+`refs/recovery/spec-024/pragma/bf-inside-out-geometry-20260922`. Its phase proof
+applies to eight qualifying product/heading combinations; ten combinations are
+recorded type-scale exceptions for CP1. The later T004d1a attempt exposed the
+hard stop recorded above, so no cold-start agent may rely on the older review's
+resume answer until the combined junction review is returned and dispositioned.
+T004h remains mandatory.
+
+Spec 020a is accepted, merged and archived at
 [`docs/spec-archive/020a-horizontal-token-adoption/`](docs/spec-archive/020a-horizontal-token-adoption/).
 Its implementation and review corrections landed directly on `main` at
 `299f182` on 2026-09-05. The seven-value compatibility overlay is gone, all

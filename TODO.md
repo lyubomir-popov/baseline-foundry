@@ -5,11 +5,28 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No package is active. Spec 020a is merged and archived: the BF-local seven-point
-overlay is removed, the final Canonical component matrix is adopted, and
-component/panel horizontal spacing is separated from the vertical baseline.
-The next bounded BF token contribution is 020b page/grid adoption. Do not begin
-it, Pragma adoption, publication or release without separate owner direction.
+Spec 024 is the active design package. It defines the new evidence-derived
+semantic spacing-token schema and governed density contract. Its order is:
+complete the bounded isolated-worktree pre-CP1 spike through its independent
+T004h review, close the Pragma denominator against current main, pass CP1
+taxonomy review, select and pass CP2 on the density source representation,
+then cut design-tokens and rebuild the Pragma sequence under
+`specs/024-semantic-spacing-token-schema/recut-handoff.md`. The planning,
+pre-CP1 execution, pre-T004d2/T004g scope and 2026-09-23 execution-junction
+reviews by Claude Opus 5 are complete; owner acceptance is still outstanding.
+T004d1a remains open against its bounded four-member, dual-lane evidence
+contract. The mechanical typography-test correction and T004d2 may proceed
+independently. T004g is blocked only on CP1 choosing the Section inset mapping;
+its complete writable activation slice is recorded. No
+production recut, Jira mutation, token publication, release, PR or push is
+authorised. The isolated evidence spike described by
+`implementation-handover.md` is the only implementation exception.
+
+Spec 020a is merged and archived: the BF-local seven-point overlay is removed,
+the final Canonical component matrix is adopted, and component/panel horizontal
+spacing is separated from the vertical baseline. The next bounded BF runtime
+token contribution remains 020b page/grid adoption, which is independent of
+Spec 024 and still requires separate owner direction.
 
 ## Candidate order after Spec 001
 

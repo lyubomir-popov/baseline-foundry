@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://canonical.com/schemas/density-contract.schema.json",
+  "title": "Canonical governed spacing-density contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "publicControl",
+    "providers",
+    "subscribers",
+    "resets",
+    "portals"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "publicControl": { "const": false },
+    "providers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/provider" }
+    },
+    "subscribers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/subscriber" }
+    },
+    "resets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reset" }
+    },
+    "portals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/portal" }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._/-]*$"
+    },
+    "role": {
+      "type": "string",
+      "pattern": "^spacing\\.(gap|inset)\\.[a-z0-9-]+\\.(inline|block)$"
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "mode"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "mode": { "const": "dense" }
+      }
+    },
+    "subscriber": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "roles"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/role" }
+        }
+      }
+    },
+    "reset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "mode", "roles", "reason"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "mode": { "const": "comfortable" },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/role" }
+        },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "portal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sourceProvider",
+        "targetRoot",
+        "mode",
+        "subscribers",
+        "roles",
+        "reason"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "sourceProvider": { "$ref": "#/$defs/identifier" },
+        "targetRoot": { "$ref": "#/$defs/identifier" },
+        "mode": { "enum": ["comfortable", "dense"] },
+        "subscribers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/role" }
+        },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
