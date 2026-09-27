@@ -267,8 +267,8 @@ NOT be restored as a pre-CP1 gate. Do not run T004d1a before T004d2 completes.
 The reset T004d1a re-execution edits remain dropped. When the task resumes,
 reconstruct only the runner output-path fix and the correction that measures
 the border on the composite wrapper while measuring padding on its input. Check
-first whether `.storybook/form-spacing-contract.css` was edited outside
-`apply_patch`; the session log may not contain that change.
+`.storybook/form-spacing-contract.css` independently before reconstruction;
+the reset edits may not be fully recoverable.
 
 The rejected candidate is recoverable at
 `refs/recovery/spec-024/pragma/t004d1a-candidate-20260923`, commit
@@ -276,8 +276,9 @@ The rejected candidate is recoverable at
 `be76d8d52c05032248633f98c2cec973f1b95548`, parent
 `313ee82c13a126b779b9bd75902da5af13c28505`. This is custody, not acceptance.
 T004d1a stays open until the owner-amended contract is executed and captured.
-T004d2 may proceed independently. T004g remains blocked only on the CP1 Section
-choice.
+T004d2 implementation may proceed independently, but its output is held from
+CP1 pending the owner whitespace ruling below. T004g remains blocked on the CP1
+Section choice and carries the margin-closure risk below.
 
 ### 7. T004d2 — the two rhythm terms
 
@@ -339,6 +340,24 @@ emits a public property.
 lines aligning beside body copy for Site H1/H2/H5/H6, Docs H1/H2 and App H5/H6.
 Record the ten non-qualifying combinations in §7a as type-scale exceptions for
 CP1. Do not alter typography tokens to chase an impossible result.
+
+**Adversarial follow-up, 2026-09-27:** the formulas stand, but T004d2 MUST NOT
+feed CP1 until the owner rules on the resulting whitespace. At a 16px root,
+body and code phase both resolve to Site/Docs/App = 0/4/4px. Closing to the body
+line step adds 16px to every text element's occupied contribution; measured
+one-line examples are Site paragraph 32→48, Docs/App paragraph 24→40 and Site
+H1 56→72. The comparison story therefore includes, for every product, the
+previous nudge/complement ledger beside the current phase/closure ledger for a
+stacked heading, two paragraphs and a list. One Chromium DPR 1 rendered check
+must prove `round(up, …)` resolves and that one qualifying heading per product
+closes to a whole step.
+
+Carry two risks to CP1/T004g: qualifying heading baselines retain a 0.24–0.35px
+residual against body copy because metric authority is deliberately unchanged;
+and closure is a margin, so it collapses with neighbouring margins and can be
+replaced by a component-owned `margin-block-end`. The evidence-only
+`Spec 024 · T004d2` marker in the story must be removed during the post-CP2
+recut.
 
 ### 8. Remeasure
 
@@ -500,7 +519,8 @@ an agent that ignores them.
 ## Then hand back
 
 The combined Opus execution-junction review is complete and dispositioned.
-T004d2 and the mechanical text-alignment correction may proceed independently;
+T004d2 and the mechanical text-alignment correction were implemented
+independently, but T004d2 is held from CP1 pending the owner whitespace ruling.
 T004d1a remains open under its bounded four-member, dual-lane acceptance.
 T004g remains stopped only on CP1's Section mapping choice. After the released
 tasks eventually complete, stop at T004h for its independent adversarial review.
@@ -573,7 +593,7 @@ tests rather than moving the model, stop and hand back.
 | Isolated spike T004c0 | Complete at exact snapshot `313ee82c…`. |
 | Isolated spike T004d0 / T004d1b | Complete in the isolated worktree; independently accepted after the carrier-path test correction. |
 | Isolated spike T004d | Complete; per-edge formula and corrected rendered-border proof independently accepted. |
-| Isolated spike T004d1a–T004h | T004d1a remains open under its four-member dual-lane acceptance. T004d2 may proceed independently. T004g is blocked only on CP1's Section mapping choice. Stop again at independent review T004h after eventual release and completion. |
+| Isolated spike T004d1a–T004h | T004d1a remains open under its four-member dual-lane acceptance. T004d2 is implemented but held from CP1 pending the owner whitespace ruling. T004g is blocked on CP1's Section mapping choice and carries the margin-closure risk. Stop again at independent review T004h after eventual release and completion. |
 | CP1 taxonomy | Not started. Denominator open. |
 | CP2 schema | Not started. |
 | Token implementation | Not started. No provider artifact exists. |

@@ -130,8 +130,8 @@
   Leave the reset re-execution edits dropped until this task resumes. At that
   point reconstruct only the runner output-path fix and the correction that
   measures the border on the composite wrapper while measuring padding on its
-  input. First verify whether `.storybook/form-spacing-contract.css` was edited
-  outside `apply_patch`, because that change may not exist in the session log.
+  input. The reset edits may not be fully recoverable; verify
+  `.storybook/form-spacing-contract.css` independently before reconstruction.
   **Attempt history:** the four-file candidate produced diagnostic Chromium DPR
   1/2 results of 12/12 and 8/8 but did not satisfy this acceptance. Preserve it at
   `refs/recovery/spec-024/pragma/t004d1a-candidate-20260923`, commit
@@ -162,6 +162,18 @@
   phase/closure-alias assertions. Its nudge mappings, padding-block-end zero,
   inline-code exclusions, tier publication and export-boundary assertions stay
   unchanged, as do the three external gates named above.
+  **Adversarial follow-up, 2026-09-27:** T004d2 does not feed CP1 until the owner
+  rules on its text-stack geometry. At a 16px root, body and code phase are
+  Site/Docs/App = 0/4/4px. Rhythm-step closure adds 16px to every text element's
+  occupied contribution: measured one-line examples are Site paragraph 32→48,
+  Docs/App paragraph 24→40 and Site H1 56→72. Keep the model unchanged and show
+  the previous ledger beside the new one for a heading, two paragraphs and a
+  list in each product. Retain one Chromium DPR 1 computed-value proof for
+  `round(up, …)`. Carry to CP1 the 0.24–0.35px heading/body baseline residual as
+  metric-authority debt. Before T004g, disposition the fact that closure is a
+  margin and therefore collapses with neighbouring margins or can be replaced
+  by a component-owned `margin-block-end`. Strip the evidence-only
+  `Spec 024 · T004d2` story marker during the post-CP2 recut.
 - [x] **T004e — dispositioned, deferred to Spec 020b.** Do not author grid
   values in this programme. During T004g, delete the reference's
   `--grid-gutter` and `--grid-margin` redirects so they no longer bind to a

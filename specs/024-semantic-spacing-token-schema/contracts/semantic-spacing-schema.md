@@ -398,10 +398,11 @@ zero. A proved case checks nonzero bordered preconditions, zero computed edges,
 target-preserving occupied geometry, exact padding growth per removed edge and
 restored bordered geometry.
 
-Completion covers the six existing Chromium/Firefox/WebKit × DPR 1/2 projects,
-both root sizes, all three products and all four members. Chromium is authority
-at 1/32px; Firefox/WebKit are recorded at 0.5px and excess rounding is carried
-to CP1. Button/Chip evidence comes from the existing port-6106 ds-global lane;
+By owner ruling on 2026-09-27, pre-CP1 completion covers Chromium DPR 1 only,
+both root sizes, all three products and all four members. The six-engine/DPR
+matrix is deferred to CP2 under FR-046b and MUST NOT be reimposed on this
+exploratory capture. Chromium remains authoritative at 1/32px. Button/Chip
+evidence comes from the existing port-6106 ds-global lane;
 composite/native evidence comes from the existing port-6107 form lane. Each
 measurement JSON is written through `testInfo.outputPath`, attached by path and
 hashed in the external root manifest. An unpersisted green run is diagnostic.
@@ -456,7 +457,9 @@ nudge contract remains unchanged:
 Therefore `nudge-block-start + phase-block-start` equals §7a's total phase
 lift. The rhythm step MUST be asserted as a whole multiple of
 `--spacing-baseline`; it is 24px = 3 × 8px for Site and 20px = 5 × 4px for Docs
-and App. Body and code phase resolve to zero in every product.
+and App. Under the retained cap-metric estimate, body and code phase both
+resolve to zero on Site and one baseline on Docs and App — 0/4/4px at a 16px
+root. The earlier all-zero claim was false; the formula is unchanged.
 
 `elements.css` applies the result through two private selected-role aliases in
 every selector block that already maps the nudge pair: h1–h6, the prose/list
@@ -516,8 +519,10 @@ coarser section break that absorbs a remainder without reading as an error.
 
 The snapshot contains no existing `round()` use. Capability in the supported
 engines is evidenced by the live `mod()` expressions in `alignment.css`, from
-the same CSS Values 4 stepped-value family; the spike still needs focused
-rendered proof for `round(up, …)`.
+the same CSS Values 4 stepped-value family. The spike MUST retain one Chromium
+DPR 1 rendered check that resolves body/code phase, proves non-zero heading
+phase and closure, and closes one qualifying heading per product to a whole
+rhythm step.
 
 Rules:
 
