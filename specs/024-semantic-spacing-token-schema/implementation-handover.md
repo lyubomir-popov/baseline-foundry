@@ -257,13 +257,27 @@ Select borderless waivers; composite-chrome proof through documented per-side
 fixture hooks or a recorded waiver; persisted path attachments; bound 6106 and
 6107 lanes; rem-scaled 40/32 to 45/36 targets; and all six engine/DPR projects.
 
+**Owner ruling, 2026-09-27, superseding that final run-scope requirement:**
+T004d1a uses Chromium DPR 1 only, across the same four members, Site/Docs/App
+and roots 16/18. It retains direct per-edge measurements, persisted JSON, the
+hashed manifest, the comparison sheet and the static product-Button-fork
+assertion. The six-engine/DPR matrix is deferred to CP2 under FR-046b and MUST
+NOT be restored as a pre-CP1 gate. Do not run T004d1a before T004d2 completes.
+
+The reset T004d1a re-execution edits remain dropped. When the task resumes,
+reconstruct only the runner output-path fix and the correction that measures
+the border on the composite wrapper while measuring padding on its input. Check
+first whether `.storybook/form-spacing-contract.css` was edited outside
+`apply_patch`; the session log may not contain that change.
+
 The rejected candidate is recoverable at
 `refs/recovery/spec-024/pragma/t004d1a-candidate-20260923`, commit
 `d41000e69a7f2b096b7855b272e95ccb8909696e`, tree
 `be76d8d52c05032248633f98c2cec973f1b95548`, parent
 `313ee82c13a126b779b9bd75902da5af13c28505`. This is custody, not acceptance.
-T004d1a stays open until that exact contract is executed and captured. T004d2
-may proceed independently. T004g remains blocked only on the CP1 Section choice.
+T004d1a stays open until the owner-amended contract is executed and captured.
+T004d2 may proceed independently. T004g remains blocked only on the CP1 Section
+choice.
 
 ### 7. T004d2 — the two rhythm terms
 
@@ -329,7 +343,9 @@ CP1. Do not alter typography tokens to chase an impossible result.
 ### 8. Remeasure
 
 Produce separate comparison captures from the isolated spike after steps 3 to
-7. Do not overwrite or reinterpret the Spec 022 reference snapshot. Reuse the
+7. Do not overwrite or reinterpret the Spec 022 reference snapshot. T004d1a
+uses Chromium DPR 1 only; cross-engine and DPR 2 coverage is deferred to CP2.
+Reuse the
 two existing configs: ds-global on port 6106 for Button/Chip and ds-global-form
 on port 6107 for composite chrome/native Select. From the spike root, set:
 

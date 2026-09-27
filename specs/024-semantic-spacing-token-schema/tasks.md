@@ -119,11 +119,19 @@
   existing `.storybook` fixture, with bordered precondition and restoration
   measurements, or record a waiver if those hooks cannot produce a true zero
   edge; do not mutate the internal base-width property inline.
-  Capture all six Chromium/Firefox/WebKit × DPR 1/2 projects at roots 16/18 and
-  all products. Targets are 40/32/32 then 45/36/36. Chromium retains 1/32px
-  authority; Firefox/WebKit record at 0.5px and carry excess rounding to CP1.
+  **Owner ruling, 2026-09-27:** the exploratory acceptance is Chromium DPR 1
+  only, across the four members, Site/Docs/App and roots 16/18. Targets are
+  40/32/32 then 45/36/36. Persist the required per-edge measurements and hashed
+  manifest, add the comparison sheet, and retain the static product-Button-fork
+  assertion. The six-engine/DPR matrix from the Opus junction review is
+  explicitly deferred to CP2 under FR-046b and MUST NOT be reimposed here.
   Use the bound 6106 Button/Chip and 6107 Form/Select lanes. Write JSON with
   `testInfo.outputPath`, attach by path and hash every record in the manifest.
+  Leave the reset re-execution edits dropped until this task resumes. At that
+  point reconstruct only the runner output-path fix and the correction that
+  measures the border on the composite wrapper while measuring padding on its
+  input. First verify whether `.storybook/form-spacing-contract.css` was edited
+  outside `apply_patch`, because that change may not exist in the session log.
   **Attempt history:** the four-file candidate produced diagnostic Chromium DPR
   1/2 results of 12/12 and 8/8 but did not satisfy this acceptance. Preserve it at
   `refs/recovery/spec-024/pragma/t004d1a-candidate-20260923`, commit
