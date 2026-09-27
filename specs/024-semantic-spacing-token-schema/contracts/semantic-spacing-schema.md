@@ -434,14 +434,15 @@ The review heading's “14 of 18” count is an arithmetic typo; its explicit ta
 and approved qualifying list both yield eight passes and ten failures. T004d2 MUST
 NOT change typography tokens to hide them. Its exact private role outputs are:
 
-The eight arithmetic passes are not eight independent visual claims. Site H5/H6
-share Site body's 24px line height, and App H5/H6 share App body's 20px line
-height, so placing those headings beside body copy is tautological for line
-alignment. Retain them as whole-multiple and phase/closure formula controls.
-Only Site H1/H2 and Docs H1/H2, whose 48px and 40px line heights differ from
-their body lines, are cross-size visual evidence. The current App scale has no
-qualifying different-size heading; evidence MUST state that limitation rather
-than presenting App H5/H6 as equivalent proof.
+The whole-multiple predicate governs continuation after the first line, not the
+first baseline. Phase lifting aligns a one-line heading in all 18
+product/heading combinations. This is cross-size visual evidence wherever the
+heading size differs from body: Site H1–H4, Docs H1–H6 and App H1–H4. Wrapped
+alignment holds only for the eight arithmetic passes: Site H1/H2/H5/H6, Docs
+H1/H2 and App H5/H6. The ten failures in the table are therefore CP1 type-scale
+exceptions for wrapped headings only. Site and App H5/H6 share their product's
+body line height and remain useful whole-multiple and phase/closure formula
+controls, but are not independent cross-size evidence.
 
 ```text
 --_typography-<role>-rhythm-step
@@ -530,9 +531,11 @@ The snapshot contains no existing `round()` use. Capability in the supported
 engines is evidenced by the live `mod()` expressions in `alignment.css`, from
 the same CSS Values 4 stepped-value family. The spike MUST retain one Chromium
 DPR 1 rendered check that resolves body/code phase, proves non-zero heading
-phase and closure through a formula control in each product, and proves the
-natural occupied height of the cross-size Site and Docs pairs closes to whole
-body-line steps. Formula controls are not visual alignment claims.
+phase and closure through a formula control in each product, and proves every
+one-line product/heading combination aligns to a body baseline within 0.5px and
+closes to whole body-line steps. It MUST also prove that the explicit wrapped
+exceptions Site H3, Docs H3 and App H1 do not close to a whole body-line step.
+Formula controls are not visual alignment claims.
 
 Rules:
 

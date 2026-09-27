@@ -336,12 +336,14 @@ Both round up only. Both read a rhythm step named for context — `bU` for
 controls, the body line advance for editorial text. Neither is a token, neither
 emits a public property.
 
-**Done when**: assert the whole-multiple predicate for all eight arithmetic
-passes, but show cross-size alignment beside body copy only for Site H1/H2 and
-Docs H1/H2. Site H5/H6 and App H5/H6 share their product's body line height and
-remain formula controls, not visual evidence. Record both the ten
-non-qualifying combinations and the absence of a qualifying different-size App
-heading for CP1. Do not alter typography tokens to chase an impossible result.
+**Done when**: show that phase lifting aligns one-line headings for all 18
+product/heading combinations. Treat Site H1–H4, Docs H1–H6 and App H1–H4 as
+cross-size evidence. Assert 2/3-line alignment only for the eight
+whole-multiple combinations; record the other ten as CP1 type-scale exceptions
+for wrapped headings only and show Site H3, Docs H3 and App H1 as explicit
+wrapped failures. Site H5/H6 and App H5/H6 share their product's body line
+height and remain formula controls, not independent cross-size evidence. Do not
+alter typography tokens to chase the wrapped exceptions.
 
 **Adversarial follow-up, 2026-09-27:** the formulas stand, but T004d2 MUST NOT
 feed CP1 until the owner rules on the resulting whitespace. At a 16px root,
@@ -352,11 +354,12 @@ H1 56→72. The comparison story therefore includes, for every product, the
 previous nudge/complement ledger beside the current phase/closure ledger for a
 stacked heading, two paragraphs and a list. One Chromium DPR 1 rendered check
 must prove `round(up, …)` resolves through one formula control per product, and
-must prove the natural occupied height of the cross-size Site and Docs pairs
-closes to whole body-line steps. Do not present the same-line-height controls
-as cross-size alignment evidence.
+must prove all 18 one-line combinations align to a body baseline within 0.5px
+and close to whole body-line steps. It must also prove the explicit wrapped
+exceptions Site H3, Docs H3 and App H1 do not close to a whole body-line step.
+Do not present the same-line-height controls as cross-size alignment evidence.
 
-Carry two risks to CP1/T004g: qualifying heading baselines retain a 0.24–0.35px
+Carry two risks to CP1/T004g: one-line heading baselines retain a 0.05–0.34px
 residual against body copy because metric authority is deliberately unchanged;
 and closure is a margin, so it collapses with neighbouring margins and can be
 replaced by a component-owned `margin-block-end`. The evidence-only

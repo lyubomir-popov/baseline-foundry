@@ -151,13 +151,14 @@
   phase/closure-alias expectations, because its old declaration assertions
   cannot remain green after the authorised `elements.css` change. Assert
   `mod(line-height, rhythm-step) = 0` per role/product.
-  Confirm cross-size alignment on a comparison sheet only for Site H1/H2 and
-  Docs H1/H2. Retain Site H5/H6 and App H5/H6 only as arithmetic formula
-  controls: they share their product's body line height and therefore provide
-  no independent visual evidence. App currently has no qualifying
-  different-size heading; record that limitation alongside the ten
-  non-qualifying combinations carried to CP1, and do not patch typography to
-  make them pass. The
+  Confirm one-line alignment for all 18 product/heading combinations. Treat
+  Site H1–H4, Docs H1–H6 and App H1–H4 as cross-size evidence because their
+  heading size differs from body. Confirm 2/3-line alignment only for the eight
+  whole-multiple combinations; the ten non-qualifying combinations are CP1
+  type-scale exceptions for wrapped headings only. Show Site H3, Docs H3 and
+  App H1 as explicit wrapped failures, and do not patch typography to make them
+  pass. Retain same-line-height Site H5/H6 and App H5/H6 as arithmetic formula
+  controls rather than independent cross-size evidence. The
   `test/spacing-model.test.ts`, `scripts/check-css-contract.test.ts` and
   `packages/svelte/ds-app-launchpad/scripts/check-packed-export.ts` must stay
   green unmodified.
@@ -173,10 +174,10 @@
   Docs/App paragraph 24→40 and Site H1 56→72. Keep the model unchanged and show
   the previous ledger beside the new one for a heading, two paragraphs and a
   list in each product. Retain one Chromium DPR 1 computed-value proof for
-  `round(up, …)`. Carry to CP1 the 0.24–0.35px heading/body baseline residual as
-  metric-authority debt. Before T004g, disposition the fact that closure is a
-  margin and therefore collapses with neighbouring margins or can be replaced
-  by a component-owned `margin-block-end`. Strip the evidence-only
+  `round(up, …)`. Carry to CP1 the 0.05–0.34px one-line heading/body baseline
+  residual as metric-authority debt. Before T004g, disposition the fact that
+  closure is a margin and therefore collapses with neighbouring margins or can
+  be replaced by a component-owned `margin-block-end`. Strip the evidence-only
   `Spec 024 · T004d2` story marker during the post-CP2 recut.
   **Owner ruling still required:** closure also double-spaces ordinary stacked
   prose and lists. A one-line list item occupies 48px in Site rather than 32px,
