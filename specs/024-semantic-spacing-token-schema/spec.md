@@ -356,11 +356,12 @@ local paths as the justification.
   show its padding grow by exactly the removed border; bordered preconditions
   and restored geometry MUST be measured.
 - **FR-039g**: The T004d1a target is rem-scaled: Site/Docs/App are 40/32/32 at a
-  16px root and 45/36/36 at an 18px root. Completion runs all six existing
-  Chromium, Firefox and WebKit × DPR 1/2 projects, both roots, all three products
-  and all four members. Chromium is authoritative at 1/32px. Firefox and WebKit
-  MUST be recorded at 0.5px; excess engine rounding is carried to CP1 rather
-  than hidden by loosening Chromium.
+  16px root and 45/36/36 at an 18px root. Exploratory completion runs Chromium
+  DPR 1, both roots, all three products and all four members; Chromium is
+  authoritative at 1/32px. The six existing Chromium, Firefox and WebKit × DPR
+  1/2 projects are deferred to CP2 under FR-046b and MUST NOT be reimposed as a
+  pre-CP1 T004d1a gate. At CP2, Firefox and WebKit are recorded at 0.5px;
+  excess engine rounding is carried rather than hidden by loosening Chromium.
 - **FR-040**: Where a grid-token authority exists, this programme MUST NOT
   author a competing grid value. Pragma MUST remove any local redirect that
   binds grid gutter or margin to a component inset and leave replacement values
@@ -521,7 +522,7 @@ local paths as the justification.
 - **FR-052**: The Spec 024 capture MUST reuse both pre-existing configurations:
   `packages/react/ds-global/playwright.spacing.config.ts` on port 6106 for
   Button/Chip, with `PRAGMA_BUTTON_SPACING_OUTPUT` set to external subdirectory
-  `H:\WSL_dev_projects\temp\spec-024-inside-out-evidence-20260922\ds-global-6106`,
+  `H:\WSL_dev_projects\temp\spec-024-t004d1a-evidence-20260927-final2\ds-global-6106`,
   and `packages/react/ds-global-form/playwright.spacing.config.ts` on port 6107
   for composite chrome/native Select, with `PRAGMA_FORM_SPACING_OUTPUT` set to
   sibling `form-6107`. No new collector, config or port is allowed; port 6114

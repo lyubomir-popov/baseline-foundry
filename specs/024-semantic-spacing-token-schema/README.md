@@ -35,15 +35,16 @@ Read in this order:
 
 ## Current status
 
-- **Status**: Owner acceptance remains outstanding. T004d0, T004d1b and T004d
-  are complete. The 2026-09-23 execution-junction Opus review is complete and
-  dispositioned. T004d1a remains open against its bounded four-member matrix,
-  dual 6106/6107 evidence lanes and recoverable-JSON requirements. The
-  mechanical `text-alignment.test.ts` correction and T004d2 may proceed
-  independently of T004d1a. The complete T004g writable list is now recorded;
-  T004g remains blocked only on CP1 choosing the Section inset mapping. The
-  preserved rejected candidate and its diagnostic 12/12 and 8/8 Chromium DPR
-  1/2 runs remain custody evidence, not completion evidence.
+- **Status**: Owner acceptance remains outstanding. T004d0, T004d1b, T004d and
+  T004d1a are complete. T004d1a's owner-amended Chromium DPR 1 evidence is in
+  local Pragma commit `99ce3fa36`; its dual 6106/6107 packet and hashed
+  manifest are recorded in `tasks.md` and `implementation-handover.md`. No
+  independent review is claimed. The mechanical `text-alignment.test.ts`
+  correction and T004d2 are implemented, but T004d2 remains held from CP1
+  pending the owner whitespace ruling. The complete T004g writable list is
+  recorded; T004g remains blocked only on CP1 choosing the Section inset
+  mapping. The preserved rejected candidate remains custody evidence, not
+  completion evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed
   density contract”. It has not been created.

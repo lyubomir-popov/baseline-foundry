@@ -24,11 +24,12 @@ Everything below happens in the isolated `feat/bf-inside-out-geometry` worktree,
 branched from exact recovery snapshot `313ee82c13a126b779b9bd75902da5af13c28505`.
 The evidence reference stays read-only. **No production branch, no PR, no push.**
 
-**Execution junction resolved, 2026-09-23:** the combined Opus review keeps
-T004d1a open under a bounded four-member evidence contract, approves the
-mechanical typography-test correction and T004d2 independently, and keeps only
-T004g blocked on the CP1 Section inset decision. Follow the task-specific gates
-below; the earlier blanket stop no longer applies.
+**Execution junction resolved, 2026-09-23; T004d1a executed 2026-09-27:** the
+combined Opus review bounded T004d1a to four members. That amended evidence
+contract is now complete in local Pragma commit `99ce3fa36`. The mechanical
+typography-test correction and T004d2 remain implemented independently, while
+T004g stays blocked on the CP1 Section inset decision. Follow the task-specific
+gates below; the earlier blanket stop no longer applies.
 
 ## Read first, in this order
 
@@ -275,7 +276,15 @@ The rejected candidate is recoverable at
 `d41000e69a7f2b096b7855b272e95ccb8909696e`, tree
 `be76d8d52c05032248633f98c2cec973f1b95548`, parent
 `313ee82c13a126b779b9bd75902da5af13c28505`. This is custody, not acceptance.
-T004d1a stays open until the owner-amended contract is executed and captured.
+The owner-amended contract was executed and captured on 2026-09-27 in local
+Pragma commit `99ce3fa36`. Focused Chromium DPR 1 runs passed 5/5 on the 6106
+Button/Chip lane and 4/4 on the 6107 Form/Select lane. The evidence root is
+`H:\WSL_dev_projects\temp\spec-024-t004d1a-evidence-20260927-final2`; its
+`manifest.json` SHA-256 is
+`0d43b3f717f0beef0184fa7f14652f36133567015b128814f9b223eb5d2ba21c`.
+The manifest validates all 19 source hashes, 16 persisted/path-attached JSON
+files and 14 comparison artifacts. This records task completion, not an
+independent review.
 T004d2 implementation may proceed independently, but its output is held from
 CP1 pending the owner whitespace ruling below. T004g remains blocked on the CP1
 Section choice and carries the margin-closure risk below.
@@ -383,20 +392,13 @@ implies body-line alignment.
 
 ### 8. Remeasure
 
-Produce separate comparison captures from the isolated spike after steps 3 to
-7. Do not overwrite or reinterpret the Spec 022 reference snapshot. T004d1a
-uses Chromium DPR 1 only; cross-engine and DPR 2 coverage is deferred to CP2.
-Reuse the
-two existing configs: ds-global on port 6106 for Button/Chip and ds-global-form
-on port 6107 for composite chrome/native Select. From the spike root, set:
-
-```powershell
-$env:PRAGMA_BUTTON_SPACING_OUTPUT = 'H:\WSL_dev_projects\temp\spec-024-inside-out-evidence-20260922\ds-global-6106'
-$env:PRAGMA_FORM_SPACING_OUTPUT = 'H:\WSL_dev_projects\temp\spec-024-inside-out-evidence-20260922\form-6107'
-bun --cwd packages/react/ds-global run test:spacing -- Button.spacing.pw.ts Chip.spacing.pw.ts
-bun --cwd packages/react/ds-global-form run test:spacing -- Form.spacing.pw.ts Select.spacing.pw.ts -g "T004d1a control occupied targets"
-bun --cwd packages/react/ds-global run test:spacing -- SharedContracts.spacing.pw.ts -g "editorial rhythm"
-```
+The separate comparison capture was produced from the isolated spike without
+touching the Spec 022 reference snapshot. T004d1a used Chromium DPR 1 only;
+cross-engine and DPR 2 coverage remains deferred to CP2. The two existing
+configs ran on their bound lanes: ds-global on port 6106 for Button/Chip and
+ds-global-form on port 6107 for composite chrome/native Select. The completed
+output is
+`H:\WSL_dev_projects\temp\spec-024-t004d1a-evidence-20260927-final2`.
 
 Each T004d1a test writes JSON with `node:fs/promises` to
 `testInfo.outputPath(...)` and attaches it by `path`, never by in-memory body.
@@ -543,7 +545,7 @@ an agent that ignores them.
 The combined Opus execution-junction review is complete and dispositioned.
 T004d2 and the mechanical text-alignment correction were implemented
 independently, but T004d2 is held from CP1 pending the owner whitespace ruling.
-T004d1a remains open under its bounded four-member, dual-lane acceptance.
+T004d1a is complete under its bounded four-member, dual-lane evidence contract.
 T004g remains stopped only on CP1's Section mapping choice. After the released
 tasks eventually complete, stop at T004h for its independent adversarial review.
 After that review is dispositioned, the next implementation phase is T005 /
@@ -615,7 +617,7 @@ tests rather than moving the model, stop and hand back.
 | Isolated spike T004c0 | Complete at exact snapshot `313ee82c…`. |
 | Isolated spike T004d0 / T004d1b | Complete in the isolated worktree; independently accepted after the carrier-path test correction. |
 | Isolated spike T004d | Complete; per-edge formula and corrected rendered-border proof independently accepted. |
-| Isolated spike T004d1a–T004h | T004d1a remains open under its four-member dual-lane acceptance. T004d2 is implemented but held from CP1 pending the owner whitespace ruling. T004g is blocked on CP1's Section mapping choice and carries the margin-closure risk. Stop again at independent review T004h after eventual release and completion. |
+| Isolated spike T004d1a–T004h | T004d1a is complete in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract; no independent review is claimed. T004d2 is implemented but held from CP1 pending the owner whitespace ruling. T004g is blocked on CP1's Section mapping choice and carries the margin-closure risk. Stop again at independent review T004h after eventual release and completion. |
 | CP1 taxonomy | Not started. Denominator open. |
 | CP2 schema | Not started. |
 | Token implementation | Not started. No provider artifact exists. |

@@ -96,7 +96,7 @@
   `517db44c9334827fd78d5fabc4b40a274e653bf2` and source tip
   `c97ae4fca21ee1e87d23b208951abe3ed61a223f` were verified and recorded in
   `recut-handoff.md` on 2026-09-23. No T004d2 spike edit preceded this stop.
-- [ ] **T004d1a** Establish the block-inset value for every control by
+- [x] **T004d1a** Establish the block-inset value for every control by
   measurement, per §7a: set the inset, render, confirm the occupied size lands
   on the target in that product, then fix the value. A predictive rule may
   propose a starting value and check the result for sanity, but the measurement
@@ -138,6 +138,18 @@
   `d41000e69a7f2b096b7855b272e95ccb8909696e`, tree
   `be76d8d52c05032248633f98c2cec973f1b95548`, parent
   `313ee82c13a126b779b9bd75902da5af13c28505`; it is custody, not acceptance.
+  **Completed 2026-09-27:** Pragma commit `99ce3fa36` executes the bounded
+  Chromium DPR 1 contract on ports 6106 and 6107. The focused runs passed 5/5
+  and 4/4, covering all four members, three products and roots 16/18. Evidence
+  is at
+  `H:\WSL_dev_projects\temp\spec-024-t004d1a-evidence-20260927-final2`;
+  `manifest.json` SHA-256 is
+  `0d43b3f717f0beef0184fa7f14652f36133567015b128814f9b223eb5d2ba21c`.
+  It hashes 19 source files, all 16 persisted/path-attached JSON files and 14
+  comparison artifacts. The eight unique measurement payloads contain 24
+  product records with OS `null`; the path attachments duplicate those
+  payloads by design. This completes the task evidence, not an independent
+  review of it.
 - [ ] **T004d2** Implement the two computed rhythm terms per §7a — a phase term
   at block-start that lifts the first baseline onto the rhythm step, and a
   block-end closer whose sum includes it. Round up only, context-named rhythm

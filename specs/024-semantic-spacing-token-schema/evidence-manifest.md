@@ -57,16 +57,16 @@ tests. It is a recovery record for an attempted implementation, not accepted
 T004d1a evidence: two independent adversarial reviews rejected completion.
 
 The candidate's focused Chromium DPR 1/2 runs were observed green at 12/12 and
-8/8. No recoverable successful-run JSON packet was produced. The completed Opus
-junction review converts those findings into the bounded four-member, resolved-
-inset, dual-lane, path-attachment and six-project acceptance contract recorded
-in `tasks.md`; the old console counts remain diagnostic only.
+8/8. No recoverable successful-run JSON packet was produced. The later owner
+ruling converted those findings into the bounded four-member, resolved-inset,
+dual-lane, path-attachment and Chromium DPR 1 acceptance contract recorded in
+`tasks.md`; the old console counts remain diagnostic only.
 
-Spec 024 spike capture reuses the existing ds-global configuration on port 6106
+Spec 024 spike capture reused the existing ds-global configuration on port 6106
 for Button/Chip and ds-global-form configuration on port 6107 for composite
-chrome/native Select. They write under external siblings `ds-global-6106` and
-`form-6107` beneath
-`H:\WSL_dev_projects\temp\spec-024-inside-out-evidence-20260922`.
+chrome/native Select. The completed packet is under external siblings
+`ds-global-6106` and `form-6107` beneath
+`H:\WSL_dev_projects\temp\spec-024-t004d1a-evidence-20260927-final2`.
 Each measurement is written through `testInfo.outputPath` and attached by path.
 Root `manifest.json` records branch, base HEAD, full porcelain status, SHA-256
 for every changed source/test/fixture and measurement JSON, plus each record's
@@ -75,15 +75,10 @@ original five T004d-modified files plus carrier remain the baseline set; later
 T004d1a/T004d2/T004g changes are added rather than omitted. Port 6114 remains
 reserved to the read-only Spec 022 reference.
 
-Run the focused capture from the spike root:
-
-```powershell
-$env:PRAGMA_BUTTON_SPACING_OUTPUT = 'H:\WSL_dev_projects\temp\spec-024-inside-out-evidence-20260922\ds-global-6106'
-$env:PRAGMA_FORM_SPACING_OUTPUT = 'H:\WSL_dev_projects\temp\spec-024-inside-out-evidence-20260922\form-6107'
-bun --cwd packages/react/ds-global run test:spacing -- Button.spacing.pw.ts Chip.spacing.pw.ts
-bun --cwd packages/react/ds-global-form run test:spacing -- Form.spacing.pw.ts Select.spacing.pw.ts -g "T004d1a control occupied targets"
-bun --cwd packages/react/ds-global run test:spacing -- SharedContracts.spacing.pw.ts -g "editorial rhythm"
-```
+The bounded Chromium DPR 1 runs passed 5/5 and 4/4. Manifest SHA-256 is
+`0d43b3f717f0beef0184fa7f14652f36133567015b128814f9b223eb5d2ba21c`.
+The six-engine/DPR matrix remains deferred to CP2; do not rerun it as T004d1a
+evidence.
 
 ## Authoritative inventory
 
