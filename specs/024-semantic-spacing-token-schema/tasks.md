@@ -174,6 +174,17 @@
   margin and therefore collapses with neighbouring margins or can be replaced
   by a component-owned `margin-block-end`. Strip the evidence-only
   `Spec 024 · T004d2` story marker during the post-CP2 recut.
+  **Owner ruling still required:** closure also double-spaces ordinary stacked
+  prose and lists. A one-line list item occupies 48px in Site rather than 32px,
+  and 40px in Docs/App rather than 24px; paragraphs show the same added blank
+  body line. Do not count T004d2 toward CP1 until the owner accepts or rejects
+  that result. Carry separately to CP1 and T004g that the proposed gap scale is
+  baseline-unit aligned but not body-line aligned: Site element/group/pattern
+  gaps are 8/24/64px against a 24px body line, while Docs/App gaps are
+  4/16/32px against a 20px body line. A gap between blocks can therefore move
+  following text out of rhythm with an adjacent column even when both blocks
+  begin on the baseline-unit grid; T004g must not silently treat those two
+  alignment claims as equivalent.
 - [x] **T004e — dispositioned, deferred to Spec 020b.** Do not author grid
   values in this programme. During T004g, delete the reference's
   `--grid-gutter` and `--grid-margin` redirects so they no longer bind to a

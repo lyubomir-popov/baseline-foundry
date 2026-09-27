@@ -359,6 +359,21 @@ replaced by a component-owned `margin-block-end`. The evidence-only
 `Spec 024 · T004d2` marker in the story must be removed during the post-CP2
 recut.
 
+The owner whitespace ruling must explicitly cover stacked prose and lists, not
+only isolated headings. Closure makes a one-line list item occupy 48px in Site
+instead of 32px and 40px in Docs/App instead of 24px; paragraphs likewise gain
+one blank body line. This remains an unresolved acceptance decision, so T004d2
+does not yet count toward CP1.
+
+Carry a separate rhythm risk into CP1 and T004g: the proposed gap tokens are
+whole baseline units but not whole body lines. Site's 8/24/64px
+element/group/pattern gaps are measured against a 24px body line; Docs/App's
+4/16/32px gaps are measured against a 20px body line. In adjacent text columns,
+inserting such a gap can preserve the baseline-unit grid while shifting all
+following text away from the neighbouring column's body-line rhythm. T004g
+must disposition that distinction rather than assuming baseline-unit alignment
+implies body-line alignment.
+
 ### 8. Remeasure
 
 Produce separate comparison captures from the isolated spike after steps 3 to
