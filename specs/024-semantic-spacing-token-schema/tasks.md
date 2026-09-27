@@ -151,9 +151,13 @@
   phase/closure-alias expectations, because its old declaration assertions
   cannot remain green after the authorised `elements.css` change. Assert
   `mod(line-height, rhythm-step) = 0` per role/product.
-  Confirm the heading's own lines on a comparison sheet only for Site H1/H2/H5/H6,
-  Docs H1/H2 and App H5/H6. Record the ten other combinations as type-scale
-  exceptions carried to CP1; do not patch typography to make them pass. The
+  Confirm cross-size alignment on a comparison sheet only for Site H1/H2 and
+  Docs H1/H2. Retain Site H5/H6 and App H5/H6 only as arithmetic formula
+  controls: they share their product's body line height and therefore provide
+  no independent visual evidence. App currently has no qualifying
+  different-size heading; record that limitation alongside the ten
+  non-qualifying combinations carried to CP1, and do not patch typography to
+  make them pass. The
   `test/spacing-model.test.ts`, `scripts/check-css-contract.test.ts` and
   `packages/svelte/ds-app-launchpad/scripts/check-packed-export.ts` must stay
   green unmodified.

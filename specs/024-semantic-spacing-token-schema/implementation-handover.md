@@ -336,10 +336,12 @@ Both round up only. Both read a rhythm step named for context — `bU` for
 controls, the body line advance for editorial text. Neither is a token, neither
 emits a public property.
 
-**Done when**: assert the whole-multiple predicate and show the heading's own
-lines aligning beside body copy for Site H1/H2/H5/H6, Docs H1/H2 and App H5/H6.
-Record the ten non-qualifying combinations in §7a as type-scale exceptions for
-CP1. Do not alter typography tokens to chase an impossible result.
+**Done when**: assert the whole-multiple predicate for all eight arithmetic
+passes, but show cross-size alignment beside body copy only for Site H1/H2 and
+Docs H1/H2. Site H5/H6 and App H5/H6 share their product's body line height and
+remain formula controls, not visual evidence. Record both the ten
+non-qualifying combinations and the absence of a qualifying different-size App
+heading for CP1. Do not alter typography tokens to chase an impossible result.
 
 **Adversarial follow-up, 2026-09-27:** the formulas stand, but T004d2 MUST NOT
 feed CP1 until the owner rules on the resulting whitespace. At a 16px root,
@@ -349,8 +351,10 @@ one-line examples are Site paragraph 32→48, Docs/App paragraph 24→40 and Sit
 H1 56→72. The comparison story therefore includes, for every product, the
 previous nudge/complement ledger beside the current phase/closure ledger for a
 stacked heading, two paragraphs and a list. One Chromium DPR 1 rendered check
-must prove `round(up, …)` resolves and that one qualifying heading per product
-closes to a whole step.
+must prove `round(up, …)` resolves through one formula control per product, and
+must prove the natural occupied height of the cross-size Site and Docs pairs
+closes to whole body-line steps. Do not present the same-line-height controls
+as cross-size alignment evidence.
 
 Carry two risks to CP1/T004g: qualifying heading baselines retain a 0.24–0.35px
 residual against body copy because metric authority is deliberately unchanged;

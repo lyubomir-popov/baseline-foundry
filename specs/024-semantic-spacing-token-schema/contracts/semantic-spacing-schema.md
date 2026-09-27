@@ -434,6 +434,15 @@ The review heading's “14 of 18” count is an arithmetic typo; its explicit ta
 and approved qualifying list both yield eight passes and ten failures. T004d2 MUST
 NOT change typography tokens to hide them. Its exact private role outputs are:
 
+The eight arithmetic passes are not eight independent visual claims. Site H5/H6
+share Site body's 24px line height, and App H5/H6 share App body's 20px line
+height, so placing those headings beside body copy is tautological for line
+alignment. Retain them as whole-multiple and phase/closure formula controls.
+Only Site H1/H2 and Docs H1/H2, whose 48px and 40px line heights differ from
+their body lines, are cross-size visual evidence. The current App scale has no
+qualifying different-size heading; evidence MUST state that limitation rather
+than presenting App H5/H6 as equivalent proof.
+
 ```text
 --_typography-<role>-rhythm-step
 --_typography-<role>-phase-block-start
@@ -521,8 +530,9 @@ The snapshot contains no existing `round()` use. Capability in the supported
 engines is evidenced by the live `mod()` expressions in `alignment.css`, from
 the same CSS Values 4 stepped-value family. The spike MUST retain one Chromium
 DPR 1 rendered check that resolves body/code phase, proves non-zero heading
-phase and closure, and closes one qualifying heading per product to a whole
-rhythm step.
+phase and closure through a formula control in each product, and proves the
+natural occupied height of the cross-size Site and Docs pairs closes to whole
+body-line steps. Formula controls are not visual alignment claims.
 
 Rules:
 
