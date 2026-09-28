@@ -311,6 +311,15 @@
   assertion belongs to the later foundation cut, and full completeness remains
   T007. The reviewer must not be the agent that did the work (FR-048). Do not
   prepare the CP1 packet until the findings are dispositioned.
+  **Review packet prepared 2026-09-28:** request
+  `prompts/opus-t004h-review-request.md`; evidence root
+  `H:\WSL_dev_projects\temp\spec-024-t004h-review-20260928`; top-level
+  `manifest.json` SHA-256
+  `fc725551630c54ba53a6c84e513949bf579ed95cdeaeb951a9374342c960b032`.
+  The validated manifest hashes 40 changed source/test/fixture files, 16
+  persisted/path-attached measurement JSON files, 16 comparison artifacts and
+  3 supporting files at Pragma HEAD `b10c4d541`. T004h remains open pending an
+  independent Opus disposition; T005 has not started.
 
 ## Phase 2 — Pragma denominator closure
 

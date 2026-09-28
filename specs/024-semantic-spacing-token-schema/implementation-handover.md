@@ -579,6 +579,17 @@ time. This is not the FR-033 foundation-cut
 assertion or the FR-045a/T007 full-denominator sweep; those remain downstream.
 Do not prepare the CP1 packet until the review is dispositioned.
 
+**Packet prepared 2026-09-28:** use
+`prompts/opus-t004h-review-request.md`. The evidence root is
+`H:\WSL_dev_projects\temp\spec-024-t004h-review-20260928`; its top-level
+`manifest.json` SHA-256 is
+`fc725551630c54ba53a6c84e513949bf579ed95cdeaeb951a9374342c960b032`.
+The manifest was independently revalidated against clean Pragma HEAD
+`b10c4d541`: 40 source/test/fixture paths, 16 persisted/path-attached
+measurement JSON paths, 16 comparison artifacts and 3 supporting files all
+exist and match their recorded hashes. This packages the request only; it is
+not an independent review or permission to begin T005.
+
 The reviewer must not be the agent that did the work. If no independent reviewer
 is available, say so and stop — do not self-review, and do not describe the
 model you are as a different one (FR-048).
