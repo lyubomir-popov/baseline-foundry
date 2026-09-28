@@ -454,6 +454,20 @@ and `:158` so they inherit the framed-box surface inset. Repoint
 `--form-group-gap-default` only to DS element gap and
 `--form-field-block-gap-default` to DS group gap; both remain gaps.
 
+The required pre-edit T004g gap-owner record was made on 2026-09-28. Repoint
+the field/element gap fallbacks in exactly these files to
+`--ds-gap-element-block`:
+
+- `packages/react/ds-global/src/lib/component/Card/common/Content/styles.css`;
+- `packages/react/ds-global/src/lib/component/Card/common/Footer/styles.css`;
+- `packages/react/ds-global/src/lib/component/Tile/common/Header/styles.css`;
+- `packages/react/ds-global/src/lib/component/Tile/common/Content/styles.css`;
+- `packages/react/ds-global/src/lib/component/Tooltip/styles.css`.
+
+Card Header is excluded because its genuine gap intentionally reads the surface
+inline inset. Padding declarations in these owners are not gap declarations and
+do not move under this allowance.
+
 The exact boundaries are:
 
 - `packages/summon/application/src/application/react/templates/src/styles/app.css:14,18`

@@ -235,6 +235,17 @@
   field block default to DS group, explicitly recording the latter magnitude
   correction. Repoint genuine gap declarations in the named Card, Tile and
   Tooltip owners only after listing their exact files in the T004g record.
+  **T004g gap-owner record, before implementation (2026-09-28):** repoint the
+  field/element gap fallbacks in exactly these files to
+  `--ds-gap-element-block`:
+  `packages/react/ds-global/src/lib/component/Card/common/Content/styles.css`,
+  `packages/react/ds-global/src/lib/component/Card/common/Footer/styles.css`,
+  `packages/react/ds-global/src/lib/component/Tile/common/Header/styles.css`,
+  `packages/react/ds-global/src/lib/component/Tile/common/Content/styles.css`,
+  and `packages/react/ds-global/src/lib/component/Tooltip/styles.css`. Card
+  Header is excluded because its genuine gap intentionally reads the surface
+  inline inset, not a provider gap. Padding declarations in these owners are
+  not gap declarations and do not move under this allowance.
   Delete both ColorInput `--ds-box-inset-block` call-site overrides so they
   inherit the framed-box surface inset; do not redefine form-group gap as an
   inset. Every other direct provider-gap consumer, RichChoicesField and form
