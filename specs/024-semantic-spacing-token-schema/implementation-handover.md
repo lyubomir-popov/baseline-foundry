@@ -30,8 +30,10 @@ contract is now complete in local Pragma commit `99ce3fa36`. The mechanical
 typography-test correction and T004d2 remain implemented independently. The
 2026-09-28 owner rulings accept full body-line closure and map Section variants
 to the existing surface/strip insets. T004g is complete in local Pragma commit
-`b10c4d541`; stop at T004h for independent review. Follow the task-specific
-gates below; the earlier blanket stop no longer applies.
+`b10c4d541`. T004h was accepted after its bounded correction and the final F1
+list-boundary fix in local Pragma commit `1c2c6ba73`; T005/T005a/T005b are now
+the next phase. Follow the task-specific gates below; the earlier blanket stop
+no longer applies.
 
 ## Read first, in this order
 
@@ -49,8 +51,11 @@ gates below; the earlier blanket stop no longer applies.
 7. [`contracts/semantic-spacing-schema.md`](contracts/semantic-spacing-schema.md)
    **§7a** — the block-geometry model. This is the specification for the work.
 8. [`spec.md`](spec.md) FR-037 to FR-053b — the rules that constrain it.
-9. [`tasks.md`](tasks.md) — T004c0 to T004h are yours; nothing beyond.
-10. `canonical-spacing-spec/specs/spacing/draft.md` §2.8 — the ownership model
+9. [`opus-t004h-review.md`](opus-t004h-review.md) and
+   [`opus-t004h-rereview.md`](opus-t004h-rereview.md) — the rejected first
+   packet, bounded corrections and conditional acceptance.
+10. [`tasks.md`](tasks.md) — T005/T005a/T005b are next; stop before T006.
+11. `canonical-spacing-spec/specs/spacing/draft.md` §2.8 — the ownership model
    and the glossary terms used here.
 
 ## What is already decided — do not reopen
@@ -616,6 +621,29 @@ correction measurements and new captures. The real-probe residual above
 `0.5px` is explicitly presented for independent disposition. Do not start
 T005 until that limited verdict returns and is recorded.
 
+**Limited re-review accepted 2026-09-28, conditional item closed:** the
+independent review is `opus-t004h-rereview.md`. F1 is fixed in local Pragma
+commit `1c2c6ba73`: the `ul`/`ol` reset now shares the list-item exclusion for
+`.ds` component subtrees. Typography is 21/21 and HeadingRhythm is 3/3. The
+review probe returns bare-list margins `0/0`; inside `.ds`, it restores the UA
+`1em` margins and `1em` last-item-to-paragraph gap. Those values compute to
+`14px` in Docs because Docs body text is 14px, rather than the review's nominal
+`16px`; this is the pre-correction behaviour, so no fixed 16px override was
+added. T004h is complete and T005 may start without another review round.
+
+Carry the non-blocking re-review findings forward:
+
+- CP1 must record Chromium's cumulative `-1/64px` advance per closed text
+  element and decide whether rhythm terms must be exact in layout units.
+- T006 must record the ColorInput popover separator-row exception and prefer
+  actual per-edge box-border subtraction at recut.
+- CP1 must choose the one-line heading/body acceptance bound (`<=0.5px` with
+  metric-authority work, or a device-pixel criterion such as `<=1px` at DPR 1)
+  and decide whether metric authority belongs to CP1 or the CP2 engine matrix.
+- The packet must mention the unrelated ds-global-form
+  `ReactPilotCatalogFilter` matcher failure and tie ColorInput's `0.032px`
+  occupied-size tolerance to the `1/64px` rounding finding.
+
 The reviewer must not be the agent that did the work. If no independent reviewer
 is available, say so and stop — do not self-review, and do not describe the
 model you are as a different one (FR-048).
@@ -640,12 +668,10 @@ The combined Opus execution-junction review is complete and dispositioned.
 T004d2 and the mechanical text-alignment correction were implemented
 independently, and full body-line closure is accepted for CP1.
 T004d1a is complete under its bounded four-member, dual-lane evidence contract.
-T004g is complete in local Pragma commit `b10c4d541`. Stop now at T004h for its
-independent adversarial review.
-After that review is dispositioned, the next implementation phase is T005 /
+T004g is complete in local Pragma commit `b10c4d541`. T004h is accepted after
+the F1 list-boundary fix in `1c2c6ba73`. The next implementation phase is T005 /
 T005a / T005b — freezing the denominator and reconciling it against current
-`origin/main`, including non-React consumers. That belongs to CP1 preparation,
-not to this handover.
+`origin/main`, including non-React consumers. That belongs to CP1 preparation.
 
 ## How to verify, and how much
 
@@ -710,7 +736,7 @@ tests rather than moving the model, stop and hand back.
 | Isolated spike T004c0 | Complete at exact snapshot `313ee82c…`. |
 | Isolated spike T004d0 / T004d1b | Complete in the isolated worktree; independently accepted after the carrier-path test correction. |
 | Isolated spike T004d | Complete; per-edge formula and corrected rendered-border proof independently accepted. |
-| Isolated spike T004d1a–T004h | T004d1a is complete in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract; no independent review is claimed. T004d2 is accepted with full body-line closure. T004g is complete in local Pragma commit `b10c4d541` with the Section surface/strip mapping and recorded gap-rhythm risk. T004h independent review is now required. |
+| Isolated spike T004d1a–T004h | Complete. T004d1a is in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract. T004d2 is accepted with full body-line closure. T004g is in `b10c4d541`; the T004h correction is in `4325f1597`; its conditional F1 is closed in `1c2c6ba73`. Independent review accepted the result; F2–F4 carry to CP1/T006. |
 | CP1 taxonomy | Not started. Denominator open. |
 | CP2 schema | Not started. |
 | Token implementation | Not started. No provider artifact exists. |

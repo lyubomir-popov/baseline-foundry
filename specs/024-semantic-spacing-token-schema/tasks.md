@@ -301,7 +301,7 @@
   12px marker while the earlier shared marker-canvas implementation renders
   16px. T004g does not rewrite that assertion opportunistically. No independent
   review is claimed.
-- [ ] **T004h** Stop for an independent adversarial review of the pre-CP1
+- [x] **T004h** Stop for an independent adversarial review of the pre-CP1
   geometry work (FR-049): the block inset, the phase and closure terms, the gap
   scale and the inset/gap separation. Package the comparison sheets, the
   measured control values, the no-movement result for T004d1b, the affected-scope
@@ -349,6 +349,16 @@
   comparison artifacts and 3 supporting paths at a clean capture HEAD. The
   limited re-review must disposition the corrected rendered residual above
   `0.5px`; T004h remains open and T005 has not started.
+  **Limited re-review accepted 2026-09-28, conditional item closed:** see
+  `opus-t004h-rereview.md`. F1 is fixed in local Pragma commit `1c2c6ba73` by
+  scoping the list-container reset to the same non-`.ds` boundary as list-item
+  closure. Typography remains 21/21 and HeadingRhythm remains 3/3. The stated
+  probe restores bare-list margins to `0/0`; inside `.ds`, it restores the
+  browser-default `1em` margins and the same `1em` last-item-to-paragraph gap.
+  In the Docs context that is `14px`, not the review's nominal `16px`, because
+  Docs body text is 14px; the result matches the pre-correction behaviour and
+  no new fixed margin was introduced. The review's remaining findings are
+  downstream records, not T004h blockers. T005 may start.
 
 ## Phase 2 — Pragma denominator closure
 
@@ -374,6 +384,11 @@ fixture items are not a prerequisite.
 - [ ] **T006** For each part, apply the model in
   `contracts/semantic-spacing-schema.md` §7a and record its role assignments per
   axis and edge. Parts that own no spacing get an explicit boundary line.
+  Record ColorInput's popover separator row as an exception: it has a start
+  border but no end border while inheriting symmetric host row padding. At
+  recut, prefer routing it through its own per-edge box borders rather than
+  nominal host-border subtraction. ColorInput is outside T004d1a's four-member
+  denominator.
 - [ ] **T007** Build the completeness sweep required by FR-045a: a check that
   reports every hardcoded length remaining in a migrated package's CSS. A
   package is complete when the report holds no undispositioned literal.
@@ -406,6 +421,15 @@ fixture items are not a prerequisite.
 - [ ] **T011** Prepare a cold-start review packet containing the frozen
   denominator, proposed inline/block roles, all memberships, merge attempts,
   breakers, unresolved exceptions and proposed final count.
+  Include the T004h re-review findings: Chromium loses `1/64px` per closed text
+  element because fractional phase padding and closure margin are rounded
+  separately; ColorInput's `0.032px` tolerance sits just above `1/32px` and
+  must remain tied to that finding rather than widened; and the focused
+  ds-global-form suite has an unrelated `ReactPilotCatalogFilter` text-matcher
+  failure. Ask the owner to choose both (a) a `<=0.5px` metric-authority bound
+  or a device-pixel bound such as `<=1px` at DPR 1, and (b) whether metric
+  authority belongs in CP1 or the deferred CP2 engine matrix. The `1px`
+  regression guard is not acceptance evidence.
 - [ ] **T012** Request an independent Opus adversarial review. Do not proceed
   while the denominator is open, assignments are null or the App gap ordering
   remains contradictory.
