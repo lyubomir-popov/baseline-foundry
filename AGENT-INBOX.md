@@ -36,26 +36,19 @@ pre-existing staged state were preserved. Confirm every exact commit, tree and
 ancestry identity against `recut-handoff.md` before any operation that could
 discard a captured worktree; ref existence alone is not sufficient.
 
-### Current execution junction — Opus review dispositioned
+### Current execution junction — pre-CP1 review accepted; denominator frozen
 
-On 2026-09-23 a test-only T004d1a candidate changed the Button, Chip, Form and
-Select Playwright files. Focused Chromium DPR 1/2 runs were observed green at
-12/12 and 8/8, but two independent adversarial reviews rejected completion.
-The attempt is preserved, not accepted, at
-`refs/recovery/spec-024/pragma/t004d1a-candidate-20260923`, commit
-`d41000e69a7f2b096b7855b272e95ccb8909696e`, tree
-`be76d8d52c05032248633f98c2cec973f1b95548`, parent
-`313ee82c13a126b779b9bd75902da5af13c28505`.
+T004d1a, T004d2 and T004g are complete under the amended contracts in the
+implementation handover. The independent T004h review rejected the first
+packet, accepted the bounded correction, and then accepted the result
+conditional on one list-boundary fix. That fix is local Pragma commit
+`1c2c6ba73`; T004h is complete with F2-F4 carried to CP1/T006.
 
-The combined Opus review is complete in
-`opus-t004g-scope-clarification-review.md`. T004d1a remains open against the
-bounded four-member denominator, dual 6106/6107 capture lanes, persisted JSON
-and full six-project engine/DPR matrix recorded in the handover. The mechanical
-`text-alignment.test.ts` correction and T004d2 may proceed independently of
-T004d1a. T004g may not begin: CP1 must first choose whether Section collapses
-to two inset magnitudes or earns a new Section inset role and fifth spike
-channel. Its remaining writable slice is fully recorded. T004h remains the
-next independent review gate after the executable work completes.
+T005/T005a/T005b are complete against fetched Pragma `origin/main`
+`3706f5ea3`. The exact denominator is
+`specs/024-semantic-spacing-token-schema/component-inventory.json`: 153 React
+parts and 11 non-React shared-channel/FR-036 rows. T006 is next. No production
+recut, PR, push, merge or publication is authorised.
 
 ### Planning and execution-readiness reviews complete
 
@@ -108,7 +101,8 @@ applies to eight qualifying product/heading combinations; ten combinations are
 recorded type-scale exceptions for CP1. The later T004d1a attempt exposed the
 hard stop recorded above, so no cold-start agent may rely on the older review's
 resume answer until the combined junction review is returned and dispositioned.
-T004h remains mandatory.
+That junction and T004h are now complete; use the current handover and frozen
+component inventory rather than the superseded resume answer.
 
 Spec 020a is accepted, merged and archived at
 [`docs/spec-archive/020a-horizontal-token-adoption/`](docs/spec-archive/020a-horizontal-token-adoption/).

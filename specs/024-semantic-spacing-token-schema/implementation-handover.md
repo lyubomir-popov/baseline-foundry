@@ -31,9 +31,10 @@ typography-test correction and T004d2 remain implemented independently. The
 2026-09-28 owner rulings accept full body-line closure and map Section variants
 to the existing surface/strip insets. T004g is complete in local Pragma commit
 `b10c4d541`. T004h was accepted after its bounded correction and the final F1
-list-boundary fix in local Pragma commit `1c2c6ba73`; T005/T005a/T005b are now
-the next phase. Follow the task-specific gates below; the earlier blanket stop
-no longer applies.
+list-boundary fix in local Pragma commit `1c2c6ba73`. T005/T005a/T005b are
+complete against current Pragma `origin/main` `3706f5ea3`; T006 is next.
+Follow the task-specific gates below; the earlier blanket stop no longer
+applies.
 
 ## Read first, in this order
 
@@ -54,8 +55,11 @@ no longer applies.
 9. [`opus-t004h-review.md`](opus-t004h-review.md) and
    [`opus-t004h-rereview.md`](opus-t004h-rereview.md) — the rejected first
    packet, bounded corrections and conditional acceptance.
-10. [`tasks.md`](tasks.md) — T005/T005a/T005b are next; stop before T006.
-11. `canonical-spacing-spec/specs/spacing/draft.md` §2.8 — the ownership model
+10. [`component-inventory.md`](component-inventory.md) and
+    [`component-inventory.json`](component-inventory.json) — the frozen
+    current-main denominator and exact source identities.
+11. [`tasks.md`](tasks.md) — T006 is next.
+12. `canonical-spacing-spec/specs/spacing/draft.md` §2.8 — the ownership model
    and the glossary terms used here.
 
 ## What is already decided — do not reopen
@@ -669,9 +673,10 @@ T004d2 and the mechanical text-alignment correction were implemented
 independently, and full body-line closure is accepted for CP1.
 T004d1a is complete under its bounded four-member, dual-lane evidence contract.
 T004g is complete in local Pragma commit `b10c4d541`. T004h is accepted after
-the F1 list-boundary fix in `1c2c6ba73`. The next implementation phase is T005 /
-T005a / T005b — freezing the denominator and reconciling it against current
-`origin/main`, including non-React consumers. That belongs to CP1 preparation.
+the F1 list-boundary fix in `1c2c6ba73`. T005/T005a/T005b then froze 153 React
+parts and 11 non-React rows against current `origin/main` `3706f5ea3`, including
+Modal and the expanded SideNavigation. T006 is next: assign each row per axis
+and edge or record an explicit boundary. That belongs to CP1 preparation.
 
 ## How to verify, and how much
 
@@ -737,7 +742,7 @@ tests rather than moving the model, stop and hand back.
 | Isolated spike T004d0 / T004d1b | Complete in the isolated worktree; independently accepted after the carrier-path test correction. |
 | Isolated spike T004d | Complete; per-edge formula and corrected rendered-border proof independently accepted. |
 | Isolated spike T004d1a–T004h | Complete. T004d1a is in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract. T004d2 is accepted with full body-line closure. T004g is in `b10c4d541`; the T004h correction is in `4325f1597`; its conditional F1 is closed in `1c2c6ba73`. Independent review accepted the result; F2–F4 carry to CP1/T006. |
-| CP1 taxonomy | Not started. Denominator open. |
+| CP1 taxonomy | Preparation active. T005/T005a/T005b denominator closed at 153 React plus 11 non-React rows; T006 assignments are open. |
 | CP2 schema | Not started. |
 | Token implementation | Not started. No provider artifact exists. |
 | Pragma recut | Not started. Cuts 5, 6, 8 and 15 split into keep and replace halves. |

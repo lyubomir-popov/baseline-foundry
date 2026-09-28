@@ -13,11 +13,10 @@ taxonomy review, select and pass CP2 on the density source representation,
 then cut design-tokens and rebuild the Pragma sequence under
 `specs/024-semantic-spacing-token-schema/recut-handoff.md`. The planning,
 pre-CP1 execution, pre-T004d2/T004g scope and 2026-09-23 execution-junction
-reviews by Claude Opus 5 are complete; owner acceptance is still outstanding.
-T004d1a remains open against its bounded four-member, dual-lane evidence
-contract. The mechanical typography-test correction and T004d2 may proceed
-independently. T004g is blocked only on CP1 choosing the Section inset mapping;
-its complete writable activation slice is recorded. No
+reviews by Claude Opus 5 are complete. T004h is accepted after its bounded
+correction and final list-boundary fix. T005/T005a/T005b freeze 153 React parts
+and 11 non-React rows against current Pragma `origin/main` `3706f5ea3`; T006
+role/boundary assignment is next. No
 production recut, Jira mutation, token publication, release, PR or push is
 authorised. The isolated evidence spike described by
 `implementation-handover.md` is the only implementation exception.

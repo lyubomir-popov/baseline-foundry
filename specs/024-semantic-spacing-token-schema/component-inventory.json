@@ -1,0 +1,2916 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-28T14:22:46-06:00",
+  "source": {
+    "repository": "canonical/pragma",
+    "ref": "origin/main",
+    "commit": "3706f5ea3b45af0fe43c2308a0e39d81a4cd99a2",
+    "committedAt": "2026-09-28T14:22:46-06:00",
+    "legacyInventorySha256": "86a2c1a977e70f32773440680e58b1dce84d893c276246902dd280f4751fd92c",
+    "legacySourceManifestSha256": "3d5f44dd052a04a9e3c31c984d9812f41640b2b2e97c8f584f54444e471a3f2e"
+  },
+  "boundary": {
+    "unit": "exported React render part plus each internal or compound render part already known to own or bound spacing; named non-React shared-channel consumers are separate rows",
+    "semanticAssignmentsDeferredTo": "T006",
+    "excluded": "stories, tests, docs chrome, application fixtures, hooks and context-only modules unless an existing row records a spacing boundary"
+  },
+  "counts": {
+    "legacyProductionRows": 142,
+    "legacyStoryOnlyRows": 3,
+    "currentReactRows": 153,
+    "addedCurrentMainReactRows": 11,
+    "changedLegacyReactRenderSources": 44,
+    "unchangedLegacyReactRenderSources": 98,
+    "nonReactRows": 11,
+    "changedRecordedCss": 94,
+    "removedRecordedCss": 2,
+    "addedCurrentMainCss": 11
+  },
+  "excludedEvidenceRows": [
+    {
+      "id": "tokens/Tokens",
+      "storySource": "packages/react/tokens/src/lib/Tokens.stories.tsx",
+      "reason": "story-only evidence, not a production component denominator member"
+    },
+    {
+      "id": "tokens/Typography",
+      "storySource": "packages/react/tokens/src/lib/Typography.stories.tsx",
+      "reason": "story-only evidence, not a production component denominator member"
+    },
+    {
+      "id": "ds-global/component/Heading/Heading",
+      "storySource": "packages/react/ds-global/src/lib/component/Heading/Heading.stories.tsx",
+      "reason": "story-only evidence, not a production component denominator member"
+    }
+  ],
+  "react": [
+    {
+      "id": "ds-app-anbox/Button/Button",
+      "package": "@canonical/react-ds-app-anbox",
+      "source": "packages/react/ds-app-anbox/src/lib/Button/Button.tsx",
+      "sourceBlob": "af2095793f614ba03cc626b1aa78cca2375b9d47",
+      "sourceSha256": "67156797a91261f460e98437e39101dbc76e6572dcaedcc242069aa02c36a923",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-anbox/src/lib/Button/styles.css",
+          "blob": "c7bb4cb1cb5fd6e91f9f4efdcfb91e7ba316ed84",
+          "sha256": "60cdb128c26304c5f3d209b24dac48377218e8aa7d1002ae9aa2f4622501ad5c"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-landscape/Button/Button",
+      "package": "@canonical/react-ds-app-landscape",
+      "source": "packages/react/ds-app-landscape/src/lib/Button/Button.tsx",
+      "sourceBlob": "af2095793f614ba03cc626b1aa78cca2375b9d47",
+      "sourceSha256": "67156797a91261f460e98437e39101dbc76e6572dcaedcc242069aa02c36a923",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-landscape/src/lib/Button/styles.css",
+          "blob": "62a2ff4ca7824cb8544753c96308f093e77a2291",
+          "sha256": "74de5762db6ad2a1fdaa02c37242efcbf49b518cadf97cfe65ed65bfd9ef7898"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/DiffChangeMarker/common/DetailedChangeMarker/DetailedChangeMarker",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/DetailedChangeMarker/DetailedChangeMarker.tsx",
+      "sourceBlob": "8f04ae3491934a47d1f9a9e2c4a04f1a105e7c54",
+      "sourceSha256": "3315cd969106fcb2c89e641cac1295a7775076db9f6e37eb504386325179749e",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/DetailedChangeMarker/styles.css",
+          "blob": "debfd16a77076f43c12a62073ac9107c32745298",
+          "sha256": "097b64c21bdc49e9e134971042e5f158ba344104e1890598feba9a8e431c09c7"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/DiffChangeMarker/common/SimpleChangeMarker/SimpleChangeMarker",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/SimpleChangeMarker/SimpleChangeMarker.tsx",
+      "sourceBlob": "48a438186aefb96acb93c852e5dc890c5ae87116",
+      "sourceSha256": "c1ccd6870eee0b0919a5d50557be3ae66d76c7e6ccdb99c06660819d127ce30c",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/SimpleChangeMarker/styles.css",
+          "blob": "ded7952ae77c081a42079824f3095c5552c857f3",
+          "sha256": "cd203b70c9c2fb52cecbc0e75e549c8f6d6d18c8e1c1178ae5af280e038f23bc"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/DiffChangeMarker/DiffChangeMarker",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/DiffChangeMarker.tsx",
+      "sourceBlob": "ece8f2e3ce2f7a75a65c5c28e43d080d535b203a",
+      "sourceSha256": "5dfd88fdaec1782052e9c48ebe9bfe91c7bb9f1bf28818bda17d2afae4bebbee",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/styles.css",
+          "blob": "6d73db75a7d63104fdad33894f1822d43885f22b",
+          "sha256": "a9263668dccbb0529bf783d10f3a0d4c4fede79bb6d03cc363eb7b794a426484"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/EditableBlock/EditableBlock",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/EditableBlock/EditableBlock.tsx",
+      "sourceBlob": "6b1338e149f7132ae12b679aa467ef7b9ad4a424",
+      "sourceSha256": "166b268e304199c048bcafdd503c5cd580ecc6e278af921eebf1adc2b20f2039",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/EditableBlock/styles.css",
+          "blob": "db825b75cd6a25e6bfa14af019696803892a4920",
+          "sha256": "20cb91a06f8c9f866731f60db00a6bec3cde360860b88292d306ae1369ee54cf"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/FileTree/common/File/File",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/File/File.tsx",
+      "sourceBlob": "a8ef2ad571fd77bac2846db319a81ae9cc9e7415",
+      "sourceSha256": "bcede5e1d18ffd6ba053d4f70f4dc967695195f932d05921b6623db313189b94",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/File/styles.css",
+          "blob": "b54e4e6a3d20eef705489dc0452ad7ca6ef3bf8b",
+          "sha256": "4a6339e4945a3efd3ccf1e3a041bf759fb6adff29f7590abe9db873b246fe9d6"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/FileTree/common/Folder/Folder",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Folder/Folder.tsx",
+      "sourceBlob": "f95d32de016799a0ce32224d07655afe27757692",
+      "sourceSha256": "61996e782f8b07ef51ff35020b07975877665d8eb3dc594f521b4979993e7b7c",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Folder/styles.css",
+          "blob": "5075f300c30b3bd01b93a474f9272760b3d5fbf0",
+          "sha256": "f92980955aa2a2b2af943083ee37d3a6b70b5ad0ffe15093b2da80291dbbff75"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/FileTree/common/IndentationBlock/IndentationBlock",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/IndentationBlock/IndentationBlock.tsx",
+      "sourceBlob": "9c5a3354098f9ffbcc3ae0987a865a7e0e156cc7",
+      "sourceSha256": "2c73a27bf3ca8d218c31d34774425c74e78dc4308d319ddcb714e53e07ea657f",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/IndentationBlock/styles.css",
+          "blob": "b5d9f8433fdc1b558d118e6de127e37b981a5e07",
+          "sha256": "c1430f0df9a60473ec2dddaf8460d212e901d0a376915ae3a53c9a57d12035ca"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/FileTree/common/Node/Provider",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Node/Provider.tsx",
+      "sourceBlob": "fad32846bd1b5edad978a31c5f30bfacad2d1247",
+      "sourceSha256": "cfa888897b2fb84f00660974604a704db08dac6c71ac542ab5e5ade71084835c",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Node/styles.css",
+          "blob": "eeead75f1ab223eabc98c406db5c03b526824237",
+          "sha256": "e4167d153a5c5ba814339bc02e3a0846f24da70f8f71a5cec8cdf378f3e98c2f"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/FileTree/common/SearchBox/SearchBox",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/SearchBox/SearchBox.tsx",
+      "sourceBlob": "6451efce62cb980f0867d63390c6f8057fef386a",
+      "sourceSha256": "6d50a36b57e6ff986d65cb375ac95fc9d3df26e5e7b292a68dd422fe3f810850",
+      "currentMainState": "changed",
+      "exposure": "compound",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/SearchBox/styles.css",
+          "blob": "d47b441015ebdc97befcf763bf7bb2fb7a58a1ff",
+          "sha256": "e1a2e7c26b8cbd9b56a9759952b7bbe2b43e86a97a399ecca821f69af2913231"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/FileTree/common/TreeView/TreeView",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/TreeView/TreeView.tsx",
+      "sourceBlob": "336f898e3790a42903e71f7129cb32d068e2da6f",
+      "sourceSha256": "981040a709fa2c91a307934283ee56eabf5725e8902e1bd2696909632041fade",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/FileTree/Provider",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/FileTree/Provider.tsx",
+      "sourceBlob": "a0ee850841b6a31cbb6d72920103b71aa89881fd",
+      "sourceSha256": "742462688e9e9bdc646857f6c849a3e2318d3d06c33688cb7b0fa5bce627eb16",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/FileTree/styles.css",
+          "blob": "f56cc491ea657e6665d53c46ae3bc0ca00495248",
+          "sha256": "48a7a18286b454e0e6e1c6f6bc247d624da6af4a77f253aaa91dba38ce3102c4"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/GitDiffViewer/common/CodeDiffViewer/CodeDiffViewer",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/CodeDiffViewer.tsx",
+      "sourceBlob": "3ba671f456ba0846fc4cdf673f6d02a22c633f94",
+      "sourceSha256": "30150d0b9db6d5f1372b651041cc3dcc6af582dbbe735d2039e378ffcffbb605",
+      "currentMainState": "changed",
+      "exposure": "compound",
+      "compositionClue": "attached-edge-row-cell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/HighlighTheme.css",
+          "blob": "67a907281a8ef96c59964d8d0d912ed63137af35",
+          "sha256": "7f5356fc0bc1b8577cb5792599bd0467975995cf694159862bd297e3a961b093"
+        },
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/styles.css",
+          "blob": "095057db51a40b1a301029ba067e6a408eaf9124",
+          "sha256": "fe98a3b5194933cb772b439b4267cbb3da99b88bcb741b47b835ffe1f9f2330c"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/AnnotatedDiffLine",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/AnnotatedDiffLine.tsx",
+      "sourceBlob": "51e80d30d7a3781c524f360665e7faff49c9aec3",
+      "sourceSha256": "03ea89f206e580b1c5b395a96c5d358b30863e95334c76dafd6f885eb2945469",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "attached-edge-row-cell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/styles.css",
+          "blob": "322be1074030eaa30c335280f44f66f73f64be72",
+          "sha256": "0f11deaadac12009681eb96f56ba117b8db2a2340c5b7f78816fa16f55691663"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/DiffLine",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/DiffLine.tsx",
+      "sourceBlob": "6626dd5600d631d093ba8c89eb17e89a2db13b0f",
+      "sourceSha256": "f045619edf57884ab7acdf26eee41451f2142a78d1532618c2baea5b3014d6b3",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "attached-edge-row-cell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/styles.css",
+          "blob": "4cddd4bdad2e0873e07ae58c2804e7b20070d2a5",
+          "sha256": "4dbb98d0fee67be1cc481c08e43216f0f236f89aab1cde36d5f8f276e4c76c3d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/GitDiffViewer/common/FileHeader/FileHeader",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/FileHeader/FileHeader.tsx",
+      "sourceBlob": "cc2b7d2b310d464d7eb3f8a1a73c698729dc01fe",
+      "sourceSha256": "2f68223874c9edc453d68e020fdc09722e3af3e7805fe72330303647582a4474",
+      "currentMainState": "changed",
+      "exposure": "compound",
+      "compositionClue": "attached-edge-row-cell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/FileHeader/styles.css",
+          "blob": "af494e9660c9bccd1563fa09180da769f775b773",
+          "sha256": "7284b3e22927aff66693103230938113f129cb992fe281c3c8e5f68088cec46d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/GitDiffViewer/Provider",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/Provider.tsx",
+      "sourceBlob": "8bc6318f2431a568aa94a4d3ce13177e54529202",
+      "sourceSha256": "c69325a279142b8426d1a79a26b19daf0fb8e316848d7e577817cc33fca10e70",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/styles.css",
+          "blob": "03c20ea87e68b51041b2404a73a724008dc5f91e",
+          "sha256": "7bc8044a3d35ef42c1a83f2f29a0617bc6681069612b0588ad2472fdc2973565"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/MarkdownEditor/common/Toolbar/common/Button/Button",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Button/Button.tsx",
+      "sourceBlob": "a265c6580f9b6e18c082643cd05de4ea62b5e9fc",
+      "sourceSha256": "b83794643662a700abc8372e5bb467659eb1a48db227e520e61ddabd087b2176",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Button/styles.css",
+          "blob": "f491e353166261179a9f6f5e2d56fca0046102c4",
+          "sha256": "0c0e725d21c68d4bf9b8f6e8e166a3487526c4ec34fda3dcbc94a25365a3dfdc"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/MarkdownEditor/common/Toolbar/common/Group/Group",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Group/Group.tsx",
+      "sourceBlob": "0f0cc0e5e330e20abca2fabe3a6a63d2041e97b5",
+      "sourceSha256": "a39ed38f56b519e7e225d59c50ac4217a794b71b71784f2c88118d5479bbdf14",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Group/styles.css",
+          "blob": "be703e43445b3c1679fb6411abd31b52dec20950",
+          "sha256": "c64d54b0d3d479bf3153adf2a1d3dcb732ac5127f40d1b7d3f75c681ce2ec447"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/MarkdownEditor/common/Toolbar/common/Separator/Separator",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Separator/Separator.tsx",
+      "sourceBlob": "ead55cbbcd0243259ffa75408692ae8c04b10d49",
+      "sourceSha256": "908d24495e20154d09c60adad4534867cd4c664e7f3817fbea4c4d931a26fd1a",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Separator/styles.css",
+          "blob": "d51b84c9b512e72a99bc8fcfe14b5e12add395c9",
+          "sha256": "41bb80ea299525cad9d01c6e954df72ea24ca8508d683c5c8e4db92e77285643"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/MarkdownEditor/common/Toolbar/Toolbar",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/Toolbar.tsx",
+      "sourceBlob": "02f0eb4e1325194d1374cfc05b88c20944cdd9b3",
+      "sourceSha256": "cb5a8802a92539e6b23ea117eaccdfa0fb85ecebf6b59d87dbc67528d1aed264",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/styles.css",
+          "blob": "62c2ae4aad2a3aaa699203d0bbc022dd34a182e0",
+          "sha256": "e919d1404f32c6c7c249884343ed3ccd9d7142cb7ca967b03679d9c47f0fba0d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/MarkdownEditor/common/ViewModeTabs/ViewModeTabs",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/ViewModeTabs/ViewModeTabs.tsx",
+      "sourceBlob": "f061d19bb9ea8a6a32619b83e0ffdcc93920583e",
+      "sourceSha256": "89bd3f6807a3d4355ea0aeb039ab635156e2349e716ff2280bbe8ce11a7ce47d",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "attached-edge-row-cell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/ViewModeTabs/styles.css",
+          "blob": "e0fd0d3412d6742b69cbe6d2279f9329ccf16bfe",
+          "sha256": "966fd074580c0b5b6163358487207cbf1e8b1adb0473423d5e2b4459bfe1745f"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/MarkdownEditor/MarkdownEditor",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/MarkdownEditor.tsx",
+      "sourceBlob": "62cc7399cc9c7330f3c14dcaac79c0be57fd502b",
+      "sourceSha256": "a35e2da6be722be3cf6575d634bdb41676e7e5f84a41c1f5dddfe4e5ff9ccc45",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css",
+          "blob": "304ab0a0951e5d8cb1ed07e0af0ffb3cb458c2dd",
+          "sha256": "f4f4549650b2aa0907044056c10135d8553577b199ba4e59b8e637783f03f63b"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-launchpad/RelativeTime/RelativeTime",
+      "package": "@canonical/react-ds-app-launchpad",
+      "source": "packages/react/ds-app-launchpad/src/lib/RelativeTime/RelativeTime.tsx",
+      "sourceBlob": "751a399c38b1fbb0800d95e97b8f148f7d311837",
+      "sourceSha256": "80a0df756bef3b7aa094de2f293ebee3c340bf7807bbf32318c08963ffaf31e7",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "ordinary-text",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-lxd/Button/Button",
+      "package": "@canonical/react-ds-app-lxd",
+      "source": "packages/react/ds-app-lxd/src/lib/Button/Button.tsx",
+      "sourceBlob": "af2095793f614ba03cc626b1aa78cca2375b9d47",
+      "sourceSha256": "67156797a91261f460e98437e39101dbc76e6572dcaedcc242069aa02c36a923",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-lxd/src/lib/Button/styles.css",
+          "blob": "a8b69ef0da7669b17c7e7065669b7e270d55bede",
+          "sha256": "6f1da1708ded6c4b80225423f6fe8fead82aabc601b2309341db835b28b77132"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app-portal/Button/Button",
+      "package": "@canonical/react-ds-app-portal",
+      "source": "packages/react/ds-app-portal/src/lib/Button/Button.tsx",
+      "sourceBlob": "af2095793f614ba03cc626b1aa78cca2375b9d47",
+      "sourceSha256": "67156797a91261f460e98437e39101dbc76e6572dcaedcc242069aa02c36a923",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app-portal/src/lib/Button/styles.css",
+          "blob": "4ab2310ce2fa2611963cf4dad346b923a4d8c497",
+          "sha256": "ee8e2b37f6ee140bc37c2f809b07362d8c2ed5e858b320d48665e2025c29d9e1"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/ApplicationLayout/ApplicationLayout",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/ApplicationLayout/ApplicationLayout.tsx",
+      "sourceBlob": "428227fce43f99f091768747622f6f5e26c74378",
+      "sourceSha256": "2a15bb92dd2f88405f43194088fa3c985835d3ae1ec5f3e56ef680c2bcd1df48",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/ApplicationLayout/styles.css",
+          "blob": "cbc8713f5cf1d74955b634694607af3ffc9e130e",
+          "sha256": "82fb3babc76f925141021a5d99500ac2c2194aa004e488afd48bdf55d92c8a16"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/ContentLayout/ContentLayout",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/ContentLayout/ContentLayout.tsx",
+      "sourceBlob": "6168cfffbcf8707e072ef463f7aede1345093a3a",
+      "sourceSha256": "2d78252a6dabab54f1b68e0bfa532b0a1f56a2e4070180fdc977545a6b3fceaf",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/ContentLayout/styles.css",
+          "blob": "df9eb57c298fbe47559cc13312f21b8cdc3aaccf",
+          "sha256": "6e8a74f43814a052b78643a08816d7ea7156b2caaa65f57a4f4c3f2e1812efe7"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/CollapseToggle/CollapseToggle",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/CollapseToggle/CollapseToggle.tsx",
+      "sourceBlob": "88177dd118692e1009a803aa0cf0f94909862daa",
+      "sourceSha256": "c64b20a74bb7a6f54157b9d87c0c9752e40d9dd14995a05c8d3f1735ad0f3c00",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/CollapseToggle/styles.css",
+          "blob": "e4f60623e4275fdedbd47f4c084a0333d2d0778f",
+          "sha256": "f74d15c04f98a8b3de64c7330fea551a11a8d444b3f9bda9046ad243ecb53a87"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/Content/Content",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/Content/Content.tsx",
+      "sourceBlob": "a5e6689b712abcba5836297d10254981a135a517",
+      "sourceSha256": "abd6dc9bd8d474f4827b5d835b43ec11c0f6ef438c346d786466d8250e10a555",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/Content/styles.css",
+          "blob": "d70f540ab87c17936dc3414cf73188775bb8e7ff",
+          "sha256": "cdf6edd657c34583f434025f93dccbcf4f7f123e9b59d329f07d50fa726b4888"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/ContextSwitcher/ContextSwitcher",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/ContextSwitcher/ContextSwitcher.tsx",
+      "sourceBlob": "ce3c953949b63a5b5abf5da602dfd175abbe9349",
+      "sourceSha256": "520e944524bb2a547c9e3c157dd52864818e0cb7c130283c1731bb936acd9865",
+      "currentMainState": "added",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/ContextSwitcher/styles.css",
+          "blob": "2800a2661d52e647fef8bfd22dab4da65f1fe43d",
+          "sha256": "5ddbad39b9fc3f354d2a93408e741ab3210db7cdebef371483ec3f727acb0614"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/Footer/Footer",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/Footer/Footer.tsx",
+      "sourceBlob": "bb71ceb23897f728210eba965a7c35004bcb9542",
+      "sourceSha256": "1912ffd75ed0e279219f7e488e3e12fa6dd352b3a565212c626757392fbb374b",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/Footer/styles.css",
+          "blob": "ce30b3ad16bc4885d0a2e19c005b0d65a3941563",
+          "sha256": "c1d49b28043a55caf3694e39dc22504ae0a1fe119414bfcd3497377dcde1b1cc"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/Group/Group",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/Group/Group.tsx",
+      "sourceBlob": "0c3d8c81ec736ee3bd15f6c0092e3591a8825bf4",
+      "sourceSha256": "bd728f2a9f02994c369af5853125ab653d6a4521bee8422340c5d083687d5188",
+      "currentMainState": "added",
+      "exposure": "internal",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/Group/styles.css",
+          "blob": "e38204b10720bbef3602151b8d0f718cbd3b3815",
+          "sha256": "e7882b0f505c457a90caf6e53a0b4585084fc91723274a848b2acc5f09f481af"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/GroupHeader/GroupHeader",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/GroupHeader/GroupHeader.tsx",
+      "sourceBlob": "48279d0a42eff5a80c5fd4752238224e725341da",
+      "sourceSha256": "9ce902f59758a9798784c017c713a4d0af45b8ce15da242a5fa746695dda0fe4",
+      "currentMainState": "added",
+      "exposure": "internal",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/GroupHeader/styles.css",
+          "blob": "0f7aa2c859637abd7e824c036ff9d53af2278e92",
+          "sha256": "cc7fcbdf78b0a9287423ec9be8bf797443f116d7619f8264e443432371ffe6a4"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/Header/Header",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/Header/Header.tsx",
+      "sourceBlob": "0096b8dc4564fec9d1586b0455356a06d5f42a18",
+      "sourceSha256": "2fcb85d54c9e95ca3659fff9adc08ff53bd6a1199fbcd747465740f218dd0b52",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/Header/styles.css",
+          "blob": "96d86edb891a1e3136fa1c9c42f596ee91a92287",
+          "sha256": "c2566e03037840f866043e740ea04518c6a0079ec270a944103d8b4681da9878"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/Item/Item",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/Item/Item.tsx",
+      "sourceBlob": "f0d32a212dcea330be4a1b623aa1302b82e50c04",
+      "sourceSha256": "92484a1cbf6d173d866f8fc1c50a905490b5325896058931c8306f866c337010",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/Item/styles.css",
+          "blob": "430d4e99cbd8a9186a5931bf00ca2553f8ffaf36",
+          "sha256": "ca8678ff53dadcea2e7ad5ebb0f08fc92e01c053f2eff5d10ac07a8c8ccd47a3"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/ItemButton/ItemButton",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/ItemButton/ItemButton.tsx",
+      "sourceBlob": "88d9d2cb1df46fe69fd23e9cfc6e857abb35af37",
+      "sourceSha256": "886c1165acd7a2c9313312d500892249e751254fce36d1f98a5add6f513a271c",
+      "currentMainState": "added",
+      "exposure": "internal",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/ItemButton/styles.css",
+          "blob": "f69aa1ef5d7bab7015cf1746d09952febd615705",
+          "sha256": "2640d4b23f889dd1fb89ef1cda33d6535d75d952987518e8e1718136f70173a8"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/ItemExpandable/ItemExpandable",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/ItemExpandable/ItemExpandable.tsx",
+      "sourceBlob": "a077c90855597780def72084ce2e1b057502261e",
+      "sourceSha256": "21fd06cc086c3e8ec1b70dcf25cfbf90b8212f2be4126ed89f346bc16f700422",
+      "currentMainState": "added",
+      "exposure": "internal",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/ItemExpandable/styles.css",
+          "blob": "d771d7f0d734aa24ba2b231532ba7c1ebfff887c",
+          "sha256": "ea9e15cee931b86e0d3498165949e646310fdadaa3103e6ee485467c9b3e2911"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/common/NavTree/NavTree",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/NavTree.tsx",
+      "sourceBlob": "caa8d8a22cc6b4cfe7474d118b1daba219cba187",
+      "sourceSha256": "a5331cef51108bae72880b9f634647fa535d51e38c21287e805f6a4e5bd36487",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/styles.css",
+          "blob": "3ae17d0614623512988be0d08132d941d2ad3f7f",
+          "sha256": "9e4d6b505f0aa386294dd7b5eebc9803af1e60c17dd442cc7a6d90d4773e1a9e"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/SideNavigation/SideNavigation",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SideNavigation/SideNavigation.tsx",
+      "sourceBlob": "b68d01000b0d6f3223b5249c5cd21ed7310f25ad",
+      "sourceSha256": "75f279e1e9edce9e520e64408b242e46ff21b46a6412df15154b0b7adbc90332",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SideNavigation/styles.css",
+          "blob": "0ae71a9cbc4c9c151e18cd38b87cc5b2fdee3b55",
+          "sha256": "cc3b6497d31e91cf242cd34c83af833fff949c64ef350ad7e1b1f2d87474fc4a"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-app/ViewLayout/ViewLayout",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/ViewLayout/ViewLayout.tsx",
+      "sourceBlob": "82b9bf26b9c456e089f29e7a91c1b40814565b67",
+      "sourceSha256": "dfd544c7683aa1203e9bc0218c6aea9a767f904244eb99a0c4832a199e6d337b",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/ViewLayout/styles.css",
+          "blob": "e5a55909f6e39cf640b241199f910eaeb41af0c2",
+          "sha256": "000d1c5b3cb4a47e288ecab0d3a8b237c98cec2f5e00e29c9e7e3990a83c19c1"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/common/Wrapper/InvisibleWrapper",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/common/Wrapper/InvisibleWrapper.tsx",
+      "sourceBlob": "d85d4d3367579d6c992c1cd68c0284246b4e38fc",
+      "sourceSha256": "699dbacd03d579d48399ccfd05013e3cff3bda0b59879f7d53aff0cb3249284b",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
+          "blob": "b251b5f6ef24e9af093c6ed9830d0fe0b1792b13",
+          "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/common/Wrapper/ToggleWrapper",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/common/Wrapper/ToggleWrapper.tsx",
+      "sourceBlob": "b0fb39c20906f622906a00c31183442dd83f4e8d",
+      "sourceSha256": "25532a4877ead8e4dd497e17fac47d5a81c065c233a136962813cdca42c91fe9",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/common/Wrapper/ToggleWrapper.css",
+          "blob": "02d1d0b1dd091ece00c6e7665398f2430fba2411",
+          "sha256": "dc7442856a03740848fcbc60bc2b62c6cd7a36f948c406fdce94597279669c8b"
+        },
+        {
+          "path": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
+          "blob": "b251b5f6ef24e9af093c6ed9830d0fe0b1792b13",
+          "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/common/Wrapper/withToggleWrapper",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/common/Wrapper/withToggleWrapper.tsx",
+      "sourceBlob": "45f0fb50b464e10e86fb7964adc7f1d57e599443",
+      "sourceSha256": "4919020f1a5ee90f8e65f777152e6ba81be5009a230a3d308444b467c625e362",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "nonvisual-composer",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
+          "blob": "b251b5f6ef24e9af093c6ed9830d0fe0b1792b13",
+          "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/common/Wrapper/Wrapper",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/common/Wrapper/Wrapper.tsx",
+      "sourceBlob": "60d5e926764241a08dab8d17c1086e212dc05d1f",
+      "sourceSha256": "4cc8f8a9b81584cd1fcae1a255ecd5da79bf39d5621a839906ff1b500d65cef7",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
+          "blob": "b251b5f6ef24e9af093c6ed9830d0fe0b1792b13",
+          "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/CheckboxField/CheckboxField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/CheckboxField/CheckboxField.tsx",
+      "sourceBlob": "f154fc9ac9e5ab67cb9143327d299c7f3c072ca9",
+      "sourceSha256": "d1fc15ede6d10a1e5ebb4beaa444e8cc9743256432facec17c08164d9c2d485e",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/ChoicesField/Choices",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/ChoicesField/Choices.tsx",
+      "sourceBlob": "0501ecd88ce33bc3dc65bf8dde38132ab55f73e5",
+      "sourceSha256": "e661dbc932bfaae4e05c5e2c93cb4c5f60782eff4b24ca344de78d6b91ffb0eb",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bare-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/component/ChoicesField/styles.css",
+          "blob": "19264601393683e4452f20ef5af87b888d4eec18",
+          "sha256": "75549a738580e41f3e4ff4562c700afdaf603beb01b3294296a276919d9348a9"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/ChoicesField/ChoicesField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/ChoicesField/ChoicesField.tsx",
+      "sourceBlob": "71d46856b0c7cbc99acfb919288e1b11d8d91195",
+      "sourceSha256": "f08f6d0af0b2335ac7bbc3c297af7772ce355969d65a178446c593a389575b75",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/component/ChoicesField/styles.css",
+          "blob": "19264601393683e4452f20ef5af87b888d4eec18",
+          "sha256": "75549a738580e41f3e4ff4562c700afdaf603beb01b3294296a276919d9348a9"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/ChoicesField/common/Option/Option",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/ChoicesField/common/Option/Option.tsx",
+      "sourceBlob": "9fde2384e69c2ea133da49b98aedf6006f8eafe9",
+      "sourceSha256": "8bc682c00e9836dcf1f54def2956f2005515b6e7af1c865f129c6ae034459a60",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "bare-marker-led",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/ColorField/ColorField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/ColorField/ColorField.tsx",
+      "sourceBlob": "d13153e5adad2182c4881356c9a8252018430f30",
+      "sourceSha256": "2d7bf1d63145f8ecdef150aea2f28e5670418b6df71e4bc010ab21b2dfdd60c4",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/ComboboxField/ComboboxField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/ComboboxField/ComboboxField.tsx",
+      "sourceBlob": "25003ed8044b3d3ec4775912aff68bb9076554d2",
+      "sourceSha256": "3285869bd0cf930fe658d6f0ec31a6a9ac55fb14ec15ad9897d3f9df2d8d1405",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/DateField/DateField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/DateField/DateField.tsx",
+      "sourceBlob": "780cbc1125e897939aad15ebffdd02b1e5f567d2",
+      "sourceSha256": "cce03881a19d92b2827e7cf5afc84429cd66b665562b5ab9d04b03c5ba35f413",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/DateTimeField/DateTimeField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/DateTimeField/DateTimeField.tsx",
+      "sourceBlob": "ec1f838c2a0a0a5ab62e1da21fdbd394248fd6e2",
+      "sourceSha256": "df42e0cb710000675a937a5a2ce52d42f8c1de452ca115a158463f6e403b5b18",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/FileUploadField/FileUploadField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/FileUploadField/FileUploadField.tsx",
+      "sourceBlob": "f2f37ecf9866d41e9ba0c072e5b7e6e197879f8d",
+      "sourceSha256": "d5c67f969cf40c91fabd2ad3cc984ff4afa255f486f018138fd1fb31227c5d2a",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/HiddenField/HiddenField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/HiddenField/HiddenField.tsx",
+      "sourceBlob": "c886a8d725eaff2de1ee6adfd7c9ede0cbf0d290",
+      "sourceSha256": "827aa56429aa3656f65f6ee7f4cd117b5321f81abc24de3e5781a3c998e4a026",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "nonvisual-composer",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/NumberField/NumberField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/NumberField/NumberField.tsx",
+      "sourceBlob": "c8f453a9123134a32cc8c1374e99a50006780ac2",
+      "sourceSha256": "c873d5c5014d87c27d0e87943a8ea1de9ba6f6252eb53d5287f9f50bb8a62c53",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/PasswordField/PasswordField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/PasswordField/PasswordField.tsx",
+      "sourceBlob": "d68e5ebd5389e98fd73375b49a02568e7c262b4b",
+      "sourceSha256": "14c4ca321d444a44f58f117bb4979b4765fab847f20e1339d302159261398c6e",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/PhoneField/PhoneField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/PhoneField/PhoneField.tsx",
+      "sourceBlob": "2016a073eb3e940d273a8e634aa3da2a3c02ef39",
+      "sourceSha256": "ccc7402f4cbd2574df325a6e9f7706695cb7a04c522c8cadc623c2036477e666",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/RangeField/common/RangeControl/RangeControl",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/RangeField/common/RangeControl/RangeControl.tsx",
+      "sourceBlob": "92afbff142aab855f5f88a08d7e23fac7d0df885",
+      "sourceSha256": "5f23dafb4ebbdf573ff20f246f035a442564fc6ec726049d0a1ed0006b9a5733",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "native-track-control",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/component/RangeField/common/RangeControl/styles.css",
+          "blob": "6590cf067e516fcea4e159fe72319b56cc025c59",
+          "sha256": "a2affcccb8f7356f1216271fa58deef2b42a2bfe68cac68c02e710e06d6f28e2"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/RangeField/RangeField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/RangeField/RangeField.tsx",
+      "sourceBlob": "fef65a4994a9659c7477af27e1c16945611a4651",
+      "sourceSha256": "5caf72ac6c28785222e28f5650133d23f51e5f1db84c91b2ed0fb11e2b9a5000",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/RatingField/RatingField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/RatingField/RatingField.tsx",
+      "sourceBlob": "bc4adcde8de949fbd4e4a0f407a5168d5ea67dbe",
+      "sourceSha256": "df02e6860adf140e6f0dceeb1a65792c3e3028b0ca13ea292a34037b014b4303",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/RichChoicesField/common/Option/Option",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/RichChoicesField/common/Option/Option.tsx",
+      "sourceBlob": "4f2d5b66cff668f324b9a0608617d8484053cb7b",
+      "sourceSha256": "38c5dfcfccb04cac5368d4bf1a9bb1b4f4350b9e565cde8b5d57c60bdb6c4eba",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "uniform-framed-card",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/RichChoicesField/RichChoices",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/RichChoicesField/RichChoices.tsx",
+      "sourceBlob": "b20445485863c7b2e9dec332381aaa5cb133fe9e",
+      "sourceSha256": "ef2f414db06d89a59a685f27d080ec229dad19dfe1aeaee749bb9951f84d4d49",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "uniform-framed-card",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css",
+          "blob": "1db15d26de1c4c948e221b6398124070ec3e6274",
+          "sha256": "aa8d620e7bd10315a41845628f5d6e501df94c461ca566519118b4dbb693b5ab"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/RichChoicesField/RichChoicesField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/RichChoicesField/RichChoicesField.tsx",
+      "sourceBlob": "385d4e7fb887a8d26ea3c5f408555be40ecece39",
+      "sourceSha256": "76b47ebf946cb17041795d92f0797cb7f57049338210df738ad6f96924f43522",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css",
+          "blob": "1db15d26de1c4c948e221b6398124070ec3e6274",
+          "sha256": "aa8d620e7bd10315a41845628f5d6e501df94c461ca566519118b4dbb693b5ab"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/SelectField/SelectField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/SelectField/SelectField.tsx",
+      "sourceBlob": "181776003f3b2d2bd5069243060b81f7b89fa2d2",
+      "sourceSha256": "d77b7183725b76dcbe499e69297652ca05c7c659e4b8d082c8e0990b3aaa4d4d",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/SwitchField/SwitchField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/SwitchField/SwitchField.tsx",
+      "sourceBlob": "504498836783e410ebc5076a1daefe1f1abafac0",
+      "sourceSha256": "08babe7a504fe9a7dcfcf843f1065107d0d05e924e38b226189d5cbbf64bf470",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/TextareaField/TextareaField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/TextareaField/TextareaField.tsx",
+      "sourceBlob": "edcd8137b5df0026b65735f3cfd430ac11c6a4f5",
+      "sourceSha256": "021e8f10452aecdcac379d0a7cf9926770f2ae8ab94f47d8d9735bcf30940411",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/TextField/TextField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/TextField/TextField.tsx",
+      "sourceBlob": "875a2b8c7d3f21b7535a500a21bf990bd147b2e6",
+      "sourceSha256": "281820c7fb569b29989ca8a28c5f5eaedccac0a59c38ff317e61931033d37866",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/component/TimeField/TimeField",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/component/TimeField/TimeField.tsx",
+      "sourceBlob": "7aceb0663cee7522b89a14396274b043eb5840eb",
+      "sourceSha256": "519daa0d95e3c8265d9f987b4b18cd288cad2589bdefb3700eba54bc26bb501f",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/pattern/Field/Field",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/pattern/Field/Field.tsx",
+      "sourceBlob": "3f3845fffb3fbd2c2ec9dfcd06b30586bc1b15c2",
+      "sourceSha256": "39ab60669caa4c986a8275033537ebf979b0eeca05c122285bc3ca4cd2d4e271",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "nonvisual-composer",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/pattern/Form/Form",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/pattern/Form/Form.tsx",
+      "sourceBlob": "c291b8b7674cd9bc9c1818a5a56285a9fbb89ef6",
+      "sourceSha256": "8427f0e4726286c6c2347047ed1baa64aa61823f7957fdda28027c6828b97101",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "field-stack",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/CheckboxInput/CheckboxInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/CheckboxInput/CheckboxInput.tsx",
+      "sourceBlob": "9dccf923294c4b445ec3ba81173874d8c4472d55",
+      "sourceSha256": "c0bc80d62536d44fa13d976e88003fc94bddae0a2041feffd7dd25262553c7f1",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bare-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/CheckboxInput/styles.css",
+          "blob": "da1c5dd38b065452fc8323b90f7c18924f84594a",
+          "sha256": "38958c5fbbcd7d36b96d1f05ccadd44e3c9ed54cfd370f1cec4d9f0ab1fc6252"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/ColorInput/ColorInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/ColorInput.tsx",
+      "sourceBlob": "9d42fe192571aae7e4a9ff4b3faa8d4e527217ac",
+      "sourceSha256": "26620b49234f128a80bb9d747b8aa2e1a5133c1ac0595493254136c22944d7f5",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css",
+          "blob": "ce0a5f4468fa97214e388c8605fe0e0a47a386e6",
+          "sha256": "ce4249c9988cb3477d0b8ef6ece670ebe2854a5645a03b57a6ab7f16238b3fe0"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/ComboboxInput/ComboboxInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/ComboboxInput.tsx",
+      "sourceBlob": "bee334b8b19afb97189dc5521a25a49ba36e4a33",
+      "sourceSha256": "c3414f8731e9255faa3353c042b54d89ea0d2d67d803cd375d69d732e546c56f",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
+          "blob": "49b4f0fc11860980d18248b9ed5360bd27a93b0e",
+          "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/ComboboxInput/common/List/List",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/List/List.tsx",
+      "sourceBlob": "f1494a3eed20757f1b1db0389b3e6ac05816df6f",
+      "sourceSha256": "925e08fa088977a318f72cb7d4ef46561fa29055b8aa75ef7a78626601a46749",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/List/styles.css",
+          "blob": "adcea5d3a4de9fdcdfa0f6e966a82910273200e0",
+          "sha256": "dc8d5c1b20591732b53491e5afa14d5ba1fce6f54efd81307b09ab52c63c6166"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/ComboboxInput/common/ResetButton/ResetButton",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/ResetButton/ResetButton.tsx",
+      "sourceBlob": "057f6dcfba369a8e9dda92326e88919c41307d43",
+      "sourceSha256": "43782b8d1a7129755bfd00a93495f065ab3ce55de2e10c743e524191c8f91e1d",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/ResetButton/styles.css",
+          "blob": "fd44e5b2ccba7c792adbc9760c1fde5408947f24",
+          "sha256": "56c09664f65a511686c086f6df80f2677595d2b92ba33eac90aaf9788102e8ea"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/ComboboxInput/MultipleCombobox",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/MultipleCombobox.tsx",
+      "sourceBlob": "84f564928fa6248914d57e8f46a294ca37494159",
+      "sourceSha256": "099a18f348227f0c147e6f860a4758372ef934fbbee45cb60ecee6f1e8945634",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
+          "blob": "49b4f0fc11860980d18248b9ed5360bd27a93b0e",
+          "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/ComboboxInput/SingleCombobox",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/SingleCombobox.tsx",
+      "sourceBlob": "5adc8d7b97bdb0b91c8f7a86ddd53e8a9a8675c1",
+      "sourceSha256": "a3659628ba716491b9992c8fe291988e93bf655ef12fa692867ac1681778fbfa",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
+          "blob": "49b4f0fc11860980d18248b9ed5360bd27a93b0e",
+          "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/DateInput/DateInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/DateInput/DateInput.tsx",
+      "sourceBlob": "fd1d95a671232e112dc79007a91709859f23aa81",
+      "sourceSha256": "d79ec39164c047df9e2980f6e0b428643ada0becce9c65a06b916b19c745207e",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/DateInput/styles.css",
+          "blob": "937db89f947bbe6127ef76eae41e8297ff0b95ac",
+          "sha256": "4322d79441a5ba77a667324e6eff337b13217d822abbbf7cdf396b17ec6c151a"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/DateTimeInput/DateTimeInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/DateTimeInput/DateTimeInput.tsx",
+      "sourceBlob": "9a9397d77e195c4216d089a7a099357ee5e51008",
+      "sourceSha256": "f8125305bcefa6c9e63800c2c343552b6476356fe5efdd84a8e07d2a64570c02",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/DateTimeInput/styles.css",
+          "blob": "d140337faed3842f7aee07a1e13df1550c7a1148",
+          "sha256": "863f5eea5d36ac9ae69bdc4b14a3cfdb694a9bfdce8c8336109a5fe4a4ac097c"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/Field/Description/Description",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/Field/Description/Description.tsx",
+      "sourceBlob": "e6198388660fdcdd4b76ed3b0ea4f36f99daf720",
+      "sourceSha256": "eadb002008c530b2ad1aababa5d5c9a734d804df99bb592aa083c9272c3f0eaa",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/Field/Description/styles.css",
+          "blob": "cc2281c9fbf16e379fc70ad90dd8071adb823284",
+          "sha256": "62a9d638af5be4bbd24f603035ca53db9f15827d7b9d36d0deec8bc6bec02803"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/Field/Error/Error",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/Field/Error/Error.tsx",
+      "sourceBlob": "2a5d3e51364b28c8bf80b43256d2d3a3fd2ab3ea",
+      "sourceSha256": "2e0d1b0e4917855cb1b77f2e5082fa5688233b786697e1b3f813df8a5c783770",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/Field/Error/styles.css",
+          "blob": "c9b4de74ef8499bdb2343eb7e2dee8697897f069",
+          "sha256": "ee585ea690b1d7f27b9dbe3d6880407257d925bbcb9a1bda11bf60c44951e576"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/Field/Label/Label",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/Field/Label/Label.tsx",
+      "sourceBlob": "df15d0b9e6874c8532791576d8bffa9b6dfb8fca",
+      "sourceSha256": "fbbd15fe62681c0510e16f6fc0d16b9a1451bdbbd0cdd79651582f37c95f5813",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/Field/Label/styles.css",
+          "blob": "5cc199676cf2f8442ee772ee4441d36450e8688c",
+          "sha256": "c574fa764838d98040bbbe7f2030a9a28c4600518a3407bfb80bcdcc39d5a477"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/FileUploadInput/FileUploadInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/FileUploadInput.tsx",
+      "sourceBlob": "051cf93e3334675bfda6cc5683dde9f440cdb58b",
+      "sourceSha256": "160f32d61beee01ac74ea004f8403e420510daf96bb71c37f7ffe10ab580f390",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css",
+          "blob": "5806d296bc0d714c93e52ee048f02a0f534853e6",
+          "sha256": "2e2782d7103e637a0e47125b351a000fed8ab56a2985c6141a2f5d7247c0fb10"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/HiddenInput/HiddenInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/HiddenInput/HiddenInput.tsx",
+      "sourceBlob": "79c75647f01f78fb30f9cd1ec3f014f4f847d7f1",
+      "sourceSha256": "1e5b6c2a46fb17ae0a6a24e9537dd5086767399000e28681420466dc3cd6dd27",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "nonvisual-composer",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/NumberInput/NumberInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/NumberInput/NumberInput.tsx",
+      "sourceBlob": "95108499cc2aa1661f719d39f531ffe611106fa0",
+      "sourceSha256": "341d01d02267a767912f4ddff7e630c84a35a10935c12553a9cdc1fb766f4875",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/NumberInput/styles.css",
+          "blob": "625a13c83e2ca68fe5b5d14ba325db657a96cd54",
+          "sha256": "8332a61385ef11b08bc7c3f38845e9e19e328fbeb4aeed442c1a853ce0164c7d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/PasswordInput/PasswordInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/PasswordInput/PasswordInput.tsx",
+      "sourceBlob": "ac238d9c4f028def60b6fa4a1f02fe2952a68713",
+      "sourceSha256": "048c14f4d63c5f91a93e00ddfc770ba39dab14a1268252a1397cfe31fa4b28a9",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/PasswordInput/styles.css",
+          "blob": "b43e0536c346e63c60dfbf4846df96f376e32514",
+          "sha256": "61fac5b8d6fc4d597121d3da33a78b49360f28ebba9520d4bfeeb02be8edcd2b"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/PhoneInput/PhoneInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/PhoneInput/PhoneInput.tsx",
+      "sourceBlob": "8d436b77c81bac39388229746d70a1333893120f",
+      "sourceSha256": "d00881db577a9cbf0b886d2ef8170f02515040258f27c23a51f7fe8d024fe906",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/PhoneInput/styles.css",
+          "blob": "f5340d2d0ea190aaf9439d4a4fd9fc56da44620d",
+          "sha256": "cc8547a9c777c032d17dcf44d38c401e3f79097607f5817d9bb0ba365586000b"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/RadioInput/RadioInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/RadioInput/RadioInput.tsx",
+      "sourceBlob": "1057396b1e8c9d398b80ba9b33f727a0aba08b81",
+      "sourceSha256": "5e35a047e7149f8cda9c5e755afdc3c310f121f44c786c2629f0713d66c60036",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bare-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/RadioInput/styles.css",
+          "blob": "7397e6e8800bab97a822747f03896ed506de9d45",
+          "sha256": "f8cd3903c297176e5d3f543a1c675fd9e0c3967bc08aa50e704270bc0b84c039"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/RangeInput/RangeInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/RangeInput/RangeInput.tsx",
+      "sourceBlob": "73f3eb895a49778100508b99c2a7c19354fcb32d",
+      "sourceSha256": "f45d167e580078866ee88b941cf2b88ea39beb39f8ccdb24d683f6926603c551",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "native-track-control",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/RangeInput/styles.css",
+          "blob": "2806051ef93b8ef7e56f4d8a4cc0490da0f7cf4b",
+          "sha256": "284b1e3c0bd39a8f6aafdf6203ddee2b5e59653c47991dbad4de6520aa57f186"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/RatingInput/RatingInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/RatingInput/RatingInput.tsx",
+      "sourceBlob": "fbfa4d7d73f16b9c786e923bdb752d53d0864a7c",
+      "sourceSha256": "0e6c0c629df3ad616b7989b38a83cd8f8ed24e3e56e0f904f2fc415be7cc74a8",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "glyph-cluster",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/RatingInput/styles.css",
+          "blob": "b0d02b42a3cc96504f8435577ad9c4c67761a881",
+          "sha256": "a520b9097a8db407cca126ec389958277749aa18e774c6f319fa0ff8fb2b1b2d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/SelectInput/SelectInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/SelectInput/SelectInput.tsx",
+      "sourceBlob": "964ea3f84987e5dfc5b645b1d00b03c55d9139ba",
+      "sourceSha256": "39dff2a143623f9d5999cf4fd5789bf8619a9279e51b2bc553ba7387f3cf0272",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/SelectInput/styles.css",
+          "blob": "0e1f03a53b08c92154677f8f3de8d91ebc401839",
+          "sha256": "146419942163ed16295663c90cf9727840b0041bb4c88b8160e17afcf2afe9ab"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/SwitchInput/SwitchInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/SwitchInput/SwitchInput.tsx",
+      "sourceBlob": "a06c8f521adf171e47d2cc1771dfef9b4cd02f0b",
+      "sourceSha256": "9f2b7ddbadf397712cb94dc0f9b4fea611ab6c687bfbd7b5f6790c333524247d",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bare-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/SwitchInput/styles.css",
+          "blob": "20a16b8936f5253ae026284d8132555a9c8e299b",
+          "sha256": "38a9de7d2cf583948cf4acf47a2ece721c96e218ff9ae699a7d4ced501a31ae6"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/TextareaInput/TextareaInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/TextareaInput/TextareaInput.tsx",
+      "sourceBlob": "51ee1e94c0a47327b429617571c57dfef4888367",
+      "sourceSha256": "55a6ef3c0bbb942e5087708279456644c7f9732bbd464e9c1c20f26f9d41d903",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/TextareaInput/styles.css",
+          "blob": "699f3150fa6179eaa83229eb1433564b3f338528",
+          "sha256": "271f31fd18c8ef61691dbfa825901ce7154c9eb05713a57d9b573fa86b4df454"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/TextInput/TextInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/TextInput/TextInput.tsx",
+      "sourceBlob": "f11a6a9f90c17948b5a590dde41cba5016c4caa2",
+      "sourceSha256": "b8e7f5be91ffe6f42d2eb387911f5bb33d1c49cf3761416c13ee716475e46481",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/TextInput/styles.css",
+          "blob": "582732ef95d8dc18818ce6ee7a78e7e4c10f63e2",
+          "sha256": "c9565a564202eea220ae501239a38c711fa31c0eb7c1b2e98667fa37112362e0"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global-form/subcomponent/TimeInput/TimeInput",
+      "package": "@canonical/react-ds-global-form",
+      "source": "packages/react/ds-global-form/src/lib/subcomponent/TimeInput/TimeInput.tsx",
+      "sourceBlob": "17f54b2249ddd4f80c97da8f5d636e5de9252c89",
+      "sourceSha256": "9702d2d1a869d7d6b6656785149a9561e3d71321eb82766ae99fc0bca297bcf1",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "bordered-field-trailing-artwork",
+      "styles": [
+        {
+          "path": "packages/react/ds-global-form/src/lib/subcomponent/TimeInput/styles.css",
+          "blob": "7fb066af2ab17cc66fb6f2d3f3c254d67dfc9183",
+          "sha256": "dfb96f9cff52f2a43f309e82db5ee48e19eb7d213e7afe9517e3c8082cfae5b5"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/Announcement/Announcement",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/Announcement/Announcement.tsx",
+      "sourceBlob": "d09c6a21c19be233113f9e0f83e2d43a4cd4fec7",
+      "sourceSha256": "fba998a5a593fabfb77d82ecb053ea366102778be0bcc9ae7684fcfb15268ad8",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/Announcement/styles.css",
+          "blob": "cc4dae566c62a8c92c7fa2865107fcea026681ad",
+          "sha256": "077f008b51acb879674682213c2d59493cda6d2d8f0e97611f61216850690dc9"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/CategoriesSection/CategoriesSection",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/CategoriesSection.tsx",
+      "sourceBlob": "e05364540bcfe620fde7fef3a80f3cbc4a36a085",
+      "sourceSha256": "ed9383735c8f7aa07c9b9de2701f35599a3cbbcb470e2ca6c12fb73a6dc915ae",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/styles.css",
+          "blob": "8f9b11faf4866637b9123f5ed47c549bd43a20a7",
+          "sha256": "a7994bff22aa9a9ab73d522a44541b1db976509bd6577236f56cf1a8271700a4"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/CategoriesSection/common/Category/Category",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/common/Category/Category.tsx",
+      "sourceBlob": "94c8a9826c38165337031e5422d76fe0708ad5f9",
+      "sourceSha256": "9aa0f5105953b4879d2ded0f0e018c707189f7838b215b1b6791f09abf2f3050",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/common/Category/styles.css",
+          "blob": "9aeb180f4f68c809a6a0920931ccdd7de5add457",
+          "sha256": "006ab7f0af7f5671f51722025347a51ed3a8b395239406ad87b712e5cec9c37a"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/ChatSection/ChatSection",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/ChatSection/ChatSection.tsx",
+      "sourceBlob": "4cf554a92b1de27678529c0daab5bb26b208d1a4",
+      "sourceSha256": "5ea6be3ce6711ed166e0be3f53cb15479193345e8f3f69a244581219b466f047",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/ChatSection/styles.css",
+          "blob": "43a242948e28ccac9e93ba47646fe7bf88e8efcf",
+          "sha256": "dd5c1d2d9f5f16da14c12ece87e6e9c1f3d83aedde7bd3ee5f6490ab9af43925"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/DescriptionSection/DescriptionSection",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/DescriptionSection/DescriptionSection.tsx",
+      "sourceBlob": "044de08b5345453e9b126932e0263c1c2a16002b",
+      "sourceSha256": "d5f48325f86b8dd9a38e360eb965a1c909ab2b3c0004580a367ffc6e08282393",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/DescriptionSection/styles.css",
+          "blob": "48e1ad6a31ddea801df8cf035395439ae15f8dd0",
+          "sha256": "57d3bcb2a0a189adaac0d856bc5571a68ebcd6de7dd868854af336bd20f6333a"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/grid/ApplicationLayout/ApplicationLayout",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/grid/ApplicationLayout/ApplicationLayout.tsx",
+      "sourceBlob": "f3bd53b0458c11d3e1129841656c22ac829a1347",
+      "sourceSha256": "7fff563a527a769ea596dd57108bf916b5660caa238b8104688420a0b9e1a14b",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/grid/ApplicationLayout/styles.css",
+          "blob": "1c8f9354edbb8f26294f424fcfb0883cc1f1ea2d",
+          "sha256": "c511346e14c6a0bce7f901a3c92058241122169005a9563c27d921e80f21a746"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/grid/GridCard/GridCard",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/grid/GridCard/GridCard.tsx",
+      "sourceBlob": "0db48c88e091730a0bb9f941cb25d8322a1078ba",
+      "sourceSha256": "039a0dbd9cd9bdc86786308d36941a400351865a15d1c0af5fc44b12debcbca2",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "uniform-framed-card",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/grid/GridCard/styles.css",
+          "blob": "09cf216d2b75c555ee3fe4746b1dab44f3574267",
+          "sha256": "eed00605df5a7079394e162170d0272975ac9cf674e237e92467201389d3f78d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/grid/InnerGridDemo/InnerGridDemo",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/grid/InnerGridDemo/InnerGridDemo.tsx",
+      "sourceBlob": "9cecd3a29b28c946cd8fea8bd87812280caea5d7",
+      "sourceSha256": "337f18aa7605ff0789ded2769ad211a45eb41c820995cfc87c9dd4530c3f09b2",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/grid/InnerGridDemo/styles.css",
+          "blob": "f3554eeb67d164561f3c6fb37f3482294d5c567b",
+          "sha256": "0ecc4a7500514ec2dad20ad789d72a55d289cc1a3272c75128c49e373e6ebed9"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/grid/SettingsView/SettingsView",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/grid/SettingsView/SettingsView.tsx",
+      "sourceBlob": "a50c3156b3f8526026c383614384976d180ca588",
+      "sourceSha256": "ef941e599d72a45008df223821aa64cb93f6693b60db39ea067c2df82be4645c",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/grid/SettingsView/styles.css",
+          "blob": "ef45721eeaf368d1435f9d74888fe53299830983",
+          "sha256": "9df5383516766030f72f505448394ac3981d9d2029a316862d3d7cf11fc8b7fc"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/IconSection/IconSection",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/IconSection/IconSection.tsx",
+      "sourceBlob": "c3fba0fe2b70e74b70076dcf517753d694954ab0",
+      "sourceSha256": "83aa50eda5e6024e8cdf6d760be5ddd6c34339507c89be6a6f6de7e0674aa7f7",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/IconSection/styles.css",
+          "blob": "d58ea9ceba40f94bacf0fcc91718a456e3e50c94",
+          "sha256": "994db2e680d7129e4fee214e2c0e1ea39d2d1d19c8ecd59732b6d1e32565fd9b"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/Label/Label",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/Label/Label.tsx",
+      "sourceBlob": "7d43c1c29aa69631ce5087f0f50c354f16c1656b",
+      "sourceSha256": "4677172dce3853f7eec7abb458c2a733926066127a3d51a233b7134420a068bb",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/Label/styles.css",
+          "blob": "91e5dd3e9e2471340bdc0784444f00f637421861",
+          "sha256": "8534c8635c281cea7f66d4b5f6ef968c99ccbc648abd092c2806540b34204fa8"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/Link/Link",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/Link/Link.tsx",
+      "sourceBlob": "a630fd4d6782818c35cf504b288eb56309b2914d",
+      "sourceSha256": "edcba8672fab9f5ad2363a777a3e2cbe1495fb2a280581e4483e23f16d5f2233",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/Link/styles.css",
+          "blob": "409edfe7785f59983a3b94363cc3503878840e18",
+          "sha256": "b313e8c7dd2cd86ab88b64130f1f83c5dec8ab116689f7b400cfb1a6592df95d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/Rule/Rule",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/Rule/Rule.tsx",
+      "sourceBlob": "7f90029e0b18eada8cb357d3c31ddb7305bde4c1",
+      "sourceSha256": "6b8a2fd788b87c5a2359c48c7d076670b32f64d061861d75d641d8829882aa89",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/Rule/styles.css",
+          "blob": "2c9cba0685b62eb077810cf8b01632ed9f97a86f",
+          "sha256": "8fd387ea38dada049da40571ae97c5f1cccc9b821a01d54a578a97b442d1cf2d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/Section/Section",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/Section/Section.tsx",
+      "sourceBlob": "bc43be86d86f65c47ea711acbc36619ed8b2abca",
+      "sourceSha256": "ca1403435d4171e312e442adb1137a6d336fc0a40d15486b0c3df0126e7a143f",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+          "blob": "b41a21ea0de481c135027a82c6c63f910a63e5db",
+          "sha256": "cf7008e817cc1abe6b20c9934bd5d5d6ec18b45eaa4fbd1a66788745b1e90e3b"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/SkipLink/SkipLink",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/SkipLink/SkipLink.tsx",
+      "sourceBlob": "0cd11ab31a3694f0ee5a64717b05c39bc06838f6",
+      "sourceSha256": "106f4f955dda553ca47877447dde5f52b8e728fdc8a51a0651ca26be4ed5c08e",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/SkipLink/styles.css",
+          "blob": "ecb3b276883b52cbbd603c2967571227df7d85e3",
+          "sha256": "7ad7c7c2ad32ecaa319d750d0eb7b86680aac3a3d89b4e494bd46d24ee700f6e"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/_work_in_progress/TSection/TSection",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/_work_in_progress/TSection/TSection.tsx",
+      "sourceBlob": "b99879328f8cd3c84db339ceca81c8fc5b22a703",
+      "sourceSha256": "28599d5a0c8595e900bff7e1fd1f9adba358df9b76d67d33f1ba0c9e990b724b",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/_work_in_progress/TSection/styles.css",
+          "blob": "fa8159abea859e861e7f318adc567a32ea133220",
+          "sha256": "b87d84d6d8596ebad7083cf839885176651bb1950414386d58be2d98ed53be85"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Accordion/Accordion",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Accordion/Accordion.tsx",
+      "sourceBlob": "1c955809b829a94801dcfb5d5e8125017c5e5913",
+      "sourceSha256": "b73efe8d5a1fed862e3232114eabfc7722c4d8ae0f47daa6d5e27f818b180c5e",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Accordion/styles.css",
+          "blob": "e7a20b704d079671c2739120fa3d3b7df491abef",
+          "sha256": "1afae34bedfb52bb7ab9ac966e11f5a7565086e4e2468832e129884c4299e2df"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Accordion/common/Item/Item",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Accordion/common/Item/Item.tsx",
+      "sourceBlob": "1b6ad97cf7a97511b90e838647e1e761a454079e",
+      "sourceSha256": "d9fb8b40cd9bd9c36fdce7290a54c71733c1f6007f5d4ae90288afd9557db0ce",
+      "currentMainState": "changed",
+      "exposure": "compound",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Accordion/common/Item/styles.css",
+          "blob": "65c60ec062f0ecdf1887f54846b7615aa466da3f",
+          "sha256": "b3562e8e7a22d5e83cebc36d3fd825ae18f2164c35b8264001ef9362b8ce3bff"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Badge/Badge",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Badge/Badge.tsx",
+      "sourceBlob": "438da9885dae39997faec94f2741b588661f14b1",
+      "sourceSha256": "0e5e530ea1d587265f90689afb99b1a9670ba61b5003d86091d1c13771428937",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Badge/styles.css",
+          "blob": "6a32992c5529beff3fb9a25bf605b5f6952ce81d",
+          "sha256": "8d86126b6c6307d756654029135911619f08bb2b36d8de21efa75e2a1f5c680d"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Breadcrumbs/Breadcrumbs",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Breadcrumbs/Breadcrumbs.tsx",
+      "sourceBlob": "6e4227a9e4f1cd5b67b8079c7835e2cf452042c4",
+      "sourceSha256": "eadb94565929c84a0ea22792a97e1fcb81e1112ed3abb027651ef13c122615ca",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Breadcrumbs/styles.css",
+          "blob": "ff87c38b7954d5d301bbce8cb7a5d1e3aaf98aa8",
+          "sha256": "d3ff4304ff0f4c9dda5ab06a941a43a7acb2fb41b0d3ed8027ff95badc7f6cc1"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Breadcrumbs/common/Item/Item",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Breadcrumbs/common/Item/Item.tsx",
+      "sourceBlob": "bcc18367c6369c9787d19c69f5e098b28659dc8f",
+      "sourceSha256": "a71f0d137df83187be29bcb6891b8aabbfafadd9f4931a94492d9c923c7e8012",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Breadcrumbs/common/Item/styles.css",
+          "blob": "de79f5f7f3ad4f00ab06ada7b1a3dc2c9dae0493",
+          "sha256": "2ff1b538aab88a3bf4f857158bee0a0351b5bd7fda8d3eca5ffa1620ecfa65d6"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Button/Button",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Button/Button.tsx",
+      "sourceBlob": "f6b10315ff1620fc368412d31d5084c11c9f35b4",
+      "sourceSha256": "0a529664b4f6318976d67c97898b10e19827d0c37b805cb161f5695d92e4d6ef",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Button/styles.css",
+          "blob": "35c1902197f30e46505b946c673759480b36ccc1",
+          "sha256": "2eace7957ce0366cdfbacea0985b65da328679acc5cdad6738e30234525d1b03"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Card/Card",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Card/Card.tsx",
+      "sourceBlob": "18e2e9036272b72ee013ea5ab8fea9452ef2aa58",
+      "sourceSha256": "621c6da49c206da87d6430a47cd898b9f7b03609babbd50d58d95dd7b4e78e58",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Card/styles.css",
+          "blob": "4ca670113a44c244d04b16859ec4473532e3391f",
+          "sha256": "02072f97e10571ddd213e0eed9b4b17a1a79813af8392e5c4997eddb58b58e40"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Card/common/Content/Content",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Card/common/Content/Content.tsx",
+      "sourceBlob": "c58c9f1ec13b0d9cba5e9f77a0f137b07eb531fc",
+      "sourceSha256": "de2fed8ab59c59de9cd6b86dae87d23f07c3cf3474f304f9fe9aae50582331d2",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Card/common/Content/styles.css",
+          "blob": "21ed30f6f6a3821cb2ab9e38c62890481ed65c52",
+          "sha256": "e3538e001dac089a069e1965293cd2008064793912f5c7551e429a14ee98d985"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Card/common/Footer/Footer",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Card/common/Footer/Footer.tsx",
+      "sourceBlob": "cdb1d0332f1517ec94f3391035ba807cca313cc0",
+      "sourceSha256": "3903fbb280bf6a278fb58b114368cfd449463324515e8082cfde8dbeeab1ccc1",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Card/common/Footer/styles.css",
+          "blob": "d55cfadae7fb6d309f9389763320da4c5e88b552",
+          "sha256": "991678abd9c8fa89926298f267c2c95247f90272e4144ce2da13bec576990521"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Card/common/Header/Header",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Card/common/Header/Header.tsx",
+      "sourceBlob": "642ab0d84137d75c03ea808524fb228edb9e86bd",
+      "sourceSha256": "07d2f6459368a2c71255a7a2efe3c15bece817fb606dc6f1f355323dfea9d2ce",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Card/common/Header/styles.css",
+          "blob": "12d23de5922610373b2f63375d449f0ffa21579e",
+          "sha256": "67bbc6b36b422b0bb57a2faeabc7b796e1b14a0af8ae538ba43860f9fa8b209f"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Card/common/Image/Image",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Card/common/Image/Image.tsx",
+      "sourceBlob": "78e68fd5ded4f7f47d78409d2e5cd7be4ac658e1",
+      "sourceSha256": "c342502e079ee5d42ec2c0e72cc08510f0f98b92f8237abb1ea43645ac4dfebe",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Card/common/Image/styles.css",
+          "blob": "a7582e6ce8c0c4e1df3a197c2cc6cc59440892e9",
+          "sha256": "9b73ee8c923db48f2e8768e8aeadfc7434aa88e913fc4cc908f138f8bf772746"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Chip/Chip",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Chip/Chip.tsx",
+      "sourceBlob": "0922c422ea1107753290f7abf9292088912f52e9",
+      "sourceSha256": "d8026ad9d147268878f10ed6252f5cb475de4c8addc879121a268fa772c08b87",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Chip/styles.css",
+          "blob": "286cb3fd9a96bafae5ede09b4ee1b25880615253",
+          "sha256": "96a2583e8be6c014c20f3477c337a92ebd7b7c64f38ab9715d38d45a9e11177f"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/ContextualMenu/common/Item/Item",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/ContextualMenu/common/Item/Item.tsx",
+      "sourceBlob": "6dc4e84f27ffedcedeb58c8e55368ddea863fd65",
+      "sourceSha256": "dc3deeb4e3a83e5b69965fce28f9b172ed9855d7f70846778e352b8f02854be7",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/ContextualMenu/common/Item/styles.css",
+          "blob": "6bb9d3b4c27dbe6eed7d4730b92ac47b80283784",
+          "sha256": "0a38e98b91a5d65314d7d38e7ed701e89437a2e92cf0b34550c112a5a8280569"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/ContextualMenu/common/SubMenu/SubMenu",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/ContextualMenu/common/SubMenu/SubMenu.tsx",
+      "sourceBlob": "111d34bf52642cdcd21041a9c04a2f41bf9ac81b",
+      "sourceSha256": "2ce524a9e8763de8f0e0c10db3b61ada993c2a2420cdfb63394ea5f2ac93b8f6",
+      "currentMainState": "changed",
+      "exposure": "internal",
+      "compositionClue": "nonvisual-composer",
+      "styles": [],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/ContextualMenu/ContextualMenu",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/ContextualMenu/ContextualMenu.tsx",
+      "sourceBlob": "2e512bf9129077a65ae68cf54fc8ccc04177d1fa",
+      "sourceSha256": "b90288a1e34a6dee96bbf3df4e66d76308f1dbad0e82de50f64814f4513d0bf3",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/ContextualMenu/styles.css",
+          "blob": "1b449dafe27ec2433fae5a6fd91b1ce6997f085e",
+          "sha256": "561b9e12be7676b403e3702b0a1a754f10912fad422c698025ce743a01919154"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Icon/Icon",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Icon/Icon.tsx",
+      "sourceBlob": "60e4c4631cbe32115a5687ac1d094850dd191bb6",
+      "sourceSha256": "67325f94ad3aff78553f80ad01369e74b1c09e91f951c54cd4e905d0561915e9",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Icon/styles.css",
+          "blob": "ac8c5b402b08a83a5e7ba5b1f7154f8f8a8d7dc2",
+          "sha256": "52dd941f92e1544e1612c261c1d391b316b792cab6ab7a058e5ea38b6d7ec5a3"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/InlineCode/InlineCode",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/InlineCode/InlineCode.tsx",
+      "sourceBlob": "50308cc3095b5c02410bcbd72020159852467a8c",
+      "sourceSha256": "d48d97600297d2b6a9d27db4a5ba6de753ddcf13c9887ce3cd3e67eac95c7fa4",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/InlineCode/styles.css",
+          "blob": "1d3781ea7227011acea8c2f867a233cf11a6d174",
+          "sha256": "8fdc69dfe7fb39f0f76e713858234801306320557d0a61a2fe0f826bb1d35ebe"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/KeyboardKey/KeyboardKey",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/KeyboardKey/KeyboardKey.tsx",
+      "sourceBlob": "33f660e88eb9116860b8a9d4c24e55463088abd7",
+      "sourceSha256": "4c607e48a6bc4c5b44a228c165bf096b1114f96e991978cc36918f8faf937c53",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "uniform-framed-card",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/KeyboardKey/styles.css",
+          "blob": "f9226b3ba35e0b2be5cbe142feca041040b0fadd",
+          "sha256": "aad75b0f8f6590a76888a6b62320055cc4a3767343569ad102ea579708b48839"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Popover/Popover",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Popover/Popover.tsx",
+      "sourceBlob": "839fb78f6178b7647643b44ab1d58a0c98387170",
+      "sourceSha256": "a4d1482f6ac6bd76c852aa9c1bd2fcae4521011209ad6cb98061e5246b8807f0",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Popover/styles.css",
+          "blob": "80fd6a93aae9eaa910283b4687ac751fd68c5053",
+          "sha256": "4d92986cebc4f5d56d5d9b9afe14a102ef4f428225142f0d896ae890d3ed4de2"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Tabs/common/Item/Item",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Tabs/common/Item/Item.tsx",
+      "sourceBlob": "ead25f42c804e4c71c3fb7a416ec4b64c26594b3",
+      "sourceSha256": "1e1c0b523e357f12fd1a250592a1986b77d1b32b022cf7f0b6dcd77be11bdb08",
+      "currentMainState": "unchanged",
+      "exposure": "internal",
+      "compositionClue": "attached-edge-row-cell",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Tabs/common/Item/styles.css",
+          "blob": "bda5497c6b339d2ac77cd582e3531901b1cdd5b4",
+          "sha256": "53a85c8b989f70a692b6accbfb60cede90afa06e14189b8b366f6363875bb853"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Tabs/Tabs",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Tabs/Tabs.tsx",
+      "sourceBlob": "4f104679cacb333b3eaa173bda3f0155d10a0399",
+      "sourceSha256": "db57dfdeae9f2424c28249985d27b7e16bcc0222463e58f2fe50e75b057cd136",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "attached-edge-row-cell",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Tabs/styles.css",
+          "blob": "91ef56122e1471672fd9382d1221fbf47e9fb1a2",
+          "sha256": "c77f3ecca0da29855b8373c388c26703d4aa74a9bbd892217cf8ad06c21efaca"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Tile/common/Content/Content",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Tile/common/Content/Content.tsx",
+      "sourceBlob": "9cf88da840d2b8e750c5a0e4982013c7425f45d8",
+      "sourceSha256": "3a571f38142f7315d1f619752bddd9e482f82c2e4b8839080fc33042873e506b",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Tile/common/Content/styles.css",
+          "blob": "badfd98f72bfcc7d3747d94b394822d38eb8b825",
+          "sha256": "43d66be91dff204d35a19145a34bdc125c1b3e90f2fbc6ab48f4a5aebe46e502"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Tile/common/Header/Header",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Tile/common/Header/Header.tsx",
+      "sourceBlob": "38a0b74c4c13bc320f91073402e3a375d5aa63df",
+      "sourceSha256": "f1e84d49e14b43011c1199c98ff36cafbe4ee16bbc5d698672676f9c270cb2c8",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Tile/common/Header/styles.css",
+          "blob": "61a44aec851df1010d332909b939aa027a94a50b",
+          "sha256": "627aa6fd63922d99e37dbac25693c64d27a1df91744a38212924ff1dc85c8378"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Tile/Tile",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Tile/Tile.tsx",
+      "sourceBlob": "f6f20dbef3fafb7f8829f57a298eb711d702ceb7",
+      "sourceSha256": "b4ff0f3b5576e3a59351a22953257c8937c1421e0b5b68cb11fb93554c198e7c",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Tile/styles.css",
+          "blob": "7793d5d6868d579e7c0c7156581eabf0d90c8705",
+          "sha256": "cd3c06a475ce59ba280fe8fd93976645206c530c05aaf913fa83bb5543479c17"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Tooltip/Tooltip",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Tooltip/Tooltip.tsx",
+      "sourceBlob": "41af844e9ba14b034e862c6cd5cfdbe3978eea41",
+      "sourceSha256": "020c5497074c9db0d422b6007daee3549cc857bae8c686d315a965d00fe31d4f",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+          "blob": "4f83e0c49d632e5825918c3130151bc8fe64abc0",
+          "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Tooltip/TooltipEngine",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Tooltip/TooltipEngine.tsx",
+      "sourceBlob": "6a9376b07f30e9b42df4f704fc7e98bee6c27f2d",
+      "sourceSha256": "61c1bde83a6add71d777c28850a9cde5a05aaf557fc2e50e265ca9454607ac0a",
+      "currentMainState": "added",
+      "exposure": "public",
+      "compositionClue": "nonvisual-composer",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+          "blob": "4f83e0c49d632e5825918c3130151bc8fe64abc0",
+          "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/component/Tooltip/withTooltip",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/component/Tooltip/withTooltip.tsx",
+      "sourceBlob": "627e67dd73fc540dcadad6302242ebdb78ba4480",
+      "sourceSha256": "e657aade331834736caebccf9629efa255374a27b85b578e74eae85c1da7bfdd",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "nonvisual-composer",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+          "blob": "4f83e0c49d632e5825918c3130151bc8fe64abc0",
+          "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/group/Cards/Cards",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/group/Cards/Cards.tsx",
+      "sourceBlob": "dfe185fb2cf38603be5ce6a4ba7ce38dfe0ec5fc",
+      "sourceSha256": "195310766b5e080e6b77138eea261219506bb54e6b2e61d4deb6b30007a875d9",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/group/Cards/styles.css",
+          "blob": "45328683ae71967bb3c5af43ebb98c3553c69e98",
+          "sha256": "3cc9be7ce71c12fa44adfa1fb19ad9aa12fe0b0089ca656ba15593bcee562ff6"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/group/KeyboardKeys/KeyboardKeys",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/group/KeyboardKeys/KeyboardKeys.tsx",
+      "sourceBlob": "726a4151c2a0c802cfa9e7986d47ed0a1f0fbaf7",
+      "sourceSha256": "95d4a1829c3f7f96adfbbdb1a58794f8e26ecba6795be13b79a5bff51e67116e",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "ordinary-text",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/group/KeyboardKeys/styles.css",
+          "blob": "daa0d6849efeabaaf061c1296808bcc847ef4b23",
+          "sha256": "6df2ff17fdd4e5f26ac2b3ca78a67a915f1cb22dace012c4cb17679efba9a8a7"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/pattern/Modal/common/Content/Content",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/pattern/Modal/common/Content/Content.tsx",
+      "sourceBlob": "0d7505110c3b67963d5171f1012c0fd7fd4ea3fd",
+      "sourceSha256": "9e2d576dbe7e5f0eacadc3e52c535a01eeca700d1afedee895e85b9e9261256d",
+      "currentMainState": "added",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/pattern/Modal/common/Content/styles.css",
+          "blob": "d05e95143225db1e35ac383610c4493596da81d5",
+          "sha256": "2fb1b9d0e2d0897132b13fee77eca213ca121263360ef57a8e767e5685135241"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/pattern/Modal/common/Footer/Footer",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/pattern/Modal/common/Footer/Footer.tsx",
+      "sourceBlob": "9f4d68e2c1fcbe7de79c9b048874d46b6ac46ddf",
+      "sourceSha256": "5edf2278f9a76b7e77e2c30279dd664ba41c578e2b36ed73febe8e895ab1208f",
+      "currentMainState": "added",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/pattern/Modal/common/Footer/styles.css",
+          "blob": "70d583ff376a469c24c4e09b0c9f8c80d78e7065",
+          "sha256": "0f77d4f8d7a9e8422dc5db7b5e3f26ecc424d68ca8b817eba60eff7d39928eea"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/pattern/Modal/common/Header/Header",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/pattern/Modal/common/Header/Header.tsx",
+      "sourceBlob": "55c3b8c8f93a60ac463c31f1402f75f16a536bed",
+      "sourceSha256": "d8662a2945a7ab567d054cd114b548d8b7b1c6eb588b4dd48a168b7d19d85c92",
+      "currentMainState": "added",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/pattern/Modal/common/Header/styles.css",
+          "blob": "983cdd7c08618bc188b39fec26a522c42cd1e06d",
+          "sha256": "c33a202c50b433faab70c957550b35c643fee949896b689ec782b7ae6b1328d8"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/pattern/Modal/Modal",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/pattern/Modal/Provider.tsx",
+      "sourceBlob": "10a8b379cd83ad3081753dc21518cc3a0dc7c5de",
+      "sourceSha256": "840fa088afe3e1961d7dc9ee883e52d4fe257474f9d397c893640ada3caef694",
+      "currentMainState": "added",
+      "exposure": "public",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/pattern/Modal/styles.css",
+          "blob": "42d26145d1de5ac20c27c5d906c90405bcf36db9",
+          "sha256": "78655a5b16b5d736ef2bc5562875e03170e285af910fae3fc7dc0f2d75b1f672"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/pattern/Modal/withModal",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/pattern/Modal/withModal.tsx",
+      "sourceBlob": "136a2a980b6591b9022f39ccbd6b18c29f89206e",
+      "sourceSha256": "8625fa33ab20b4cc9d335328792529593cfc05e28fa45f8abf48b79884a69776",
+      "currentMainState": "added",
+      "exposure": "public",
+      "compositionClue": "nonvisual-composer",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/pattern/Modal/styles.css",
+          "blob": "42d26145d1de5ac20c27c5d906c90405bcf36db9",
+          "sha256": "78655a5b16b5d736ef2bc5562875e03170e285af910fae3fc7dc0f2d75b1f672"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/pattern/Timeline/common/Content/Content",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/pattern/Timeline/common/Content/Content.tsx",
+      "sourceBlob": "3e4466312241c184c0177fdffe2f5a83b4fa5166",
+      "sourceSha256": "e2690e965fd00bf9b04461d6aefde79e96970b1f466ddf047d522e5f662b318e",
+      "currentMainState": "unchanged",
+      "exposure": "compound",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/pattern/Timeline/common/Content/styles.css",
+          "blob": "88259c803c86b2e52f94d711cb679421a734637a",
+          "sha256": "f8b967be821877c3703cae35387b6eda4e2096a547296c2bd5e7f130db13d43a"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/pattern/Timeline/common/Event/Event",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/Event.tsx",
+      "sourceBlob": "fd7605f86a74cf9362ad4477c295608e6cbea0d1",
+      "sourceSha256": "9a18bfd3db9eb157c87f58b63cdfcf6783bb45277996e56505c12067cc69bc6a",
+      "currentMainState": "changed",
+      "exposure": "compound",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/styles.css",
+          "blob": "a2873989a2a2e4faa77fb9081c7fc7a1eb9aa0c5",
+          "sha256": "29626df16c1ba4fb9cde7fc974886d0ea76680a1ab715dbf5cd80b6d2da781f7"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/pattern/Timeline/Timeline",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/pattern/Timeline/Timeline.tsx",
+      "sourceBlob": "c6fe33b9cbc39ff689e9830a0f4edc644fcf45bf",
+      "sourceSha256": "3c7d43125c8c8312a3500c183de05eb41291c883d2531b57bb4c7f0888e438c3",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "painted-marker-led",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/pattern/Timeline/styles.css",
+          "blob": "09b65899d2a8f8450b64bfa6a607ce9ebeeb2f59",
+          "sha256": "f37345f9bc2360a5f56ed08e42a0c7f37784262eb276b8a67c13e089d2145753"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "ds-global/subcomponent/Spinner/Spinner",
+      "package": "@canonical/react-ds-global",
+      "source": "packages/react/ds-global/src/lib/subcomponent/Spinner/Spinner.tsx",
+      "sourceBlob": "1a9eb7c0c09f20890e022f5d0cf7fb17245b9493",
+      "sourceSha256": "3b8110240a2b61cc9299c7c5226390d3d88c97dcb42cbbd54ff8b4db5a62fe4a",
+      "currentMainState": "unchanged",
+      "exposure": "public",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/ds-global/src/lib/subcomponent/Spinner/styles.css",
+          "blob": "27eb55e25794a07755eedb96a87118739aa429a6",
+          "sha256": "2abcf27341d0e986ed7007e36de7fbf8eb7b56213cfd0ab5dfd4b6d2791a7865"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "tokens/TokenTable/common/TokenSwatch/TokenSwatch",
+      "package": "@canonical/react-tokens",
+      "source": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/TokenSwatch.tsx",
+      "sourceBlob": "38979c0132cd2c2ace0d8573b6b6d4ccc7ca39d2",
+      "sourceSha256": "dd724568e7fa88653549095d14c81623ac42aa0291b5285e751623a2f5c0b2c5",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "paint-canvas",
+      "styles": [
+        {
+          "path": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css",
+          "blob": "4af27f486783d482875797484766e4b734186ab0",
+          "sha256": "48663ae95bdc54789e1561a7566439bd6b01cd6b4378edef7ccd7bb4430bc68a"
+        }
+      ],
+      "t006Disposition": null
+    },
+    {
+      "id": "tokens/TokenTable/TokenTable",
+      "package": "@canonical/react-tokens",
+      "source": "packages/react/tokens/src/lib/TokenTable/TokenTable.tsx",
+      "sourceBlob": "81031bde1ecf2bf2ba558d87812e4a875cfc63a8",
+      "sourceSha256": "ab864d04c57b35d1d4c2efa7903bc73303aac73dacacdaa8debd0495c2b40b59",
+      "currentMainState": "changed",
+      "exposure": "public",
+      "compositionClue": "attached-edge-row-cell",
+      "styles": [
+        {
+          "path": "packages/react/tokens/src/lib/TokenTable/styles.css",
+          "blob": "eca60c001386c1c0db7b0d7cc46ed100184b161b",
+          "sha256": "51edb9400a51c89275380345dcacb351a05280f69fdb0652f90ecacee9e2b2aa"
+        }
+      ],
+      "t006Disposition": null
+    }
+  ],
+  "nonReact": [
+    {
+      "id": "svelte-ds-app-launchpad/Button",
+      "source": "packages/svelte/ds-app-launchpad/src/lib/components/Button/Button.svelte",
+      "styles": "packages/svelte/ds-app-launchpad/src/lib/components/Button/styles.css",
+      "reason": "reads density line-height and inline-padding channels",
+      "sourceBlob": "86da1e16d0507da8ac9957769a178bf15851ed30",
+      "sourceSha256": "295287971fdd7b0718f9fa87efe143d1543c49e4e6ffa278bc76ca84b5fe0471",
+      "stylesBlob": "e364c2fd80235a869405662c9f2570d00b5fe3be",
+      "stylesSha256": "efcb4a9e54010d673c027f8b3fb42bd3f26770cc6eb14b8658ab8cff478908f4",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-launchpad/NumberInput",
+      "source": "packages/svelte/ds-app-launchpad/src/lib/components/NumberInput/NumberInput.svelte",
+      "styles": "packages/svelte/ds-app-launchpad/src/lib/components/NumberInput/styles.css",
+      "reason": "reads the shared density block-padding channel",
+      "sourceBlob": "754bd969c03eb490a6b0f0439ad49956e08de26e",
+      "sourceSha256": "802946cb06930bebe6ddc9f35084e53720a7ab4a1a57f41c32ce0d7c9b446dc9",
+      "stylesBlob": "2f6ac9f36bb5dc059322a27206c0b40d6dea1463",
+      "stylesSha256": "e0fb14387a81a5e8871409552e606fb143acdf64690227544cce6c6794b57de8",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-launchpad/TextInput",
+      "source": "packages/svelte/ds-app-launchpad/src/lib/components/TextInput/TextInput.svelte",
+      "styles": "packages/svelte/ds-app-launchpad/src/lib/components/TextInput/styles.css",
+      "reason": "reads the shared density block-padding channel",
+      "sourceBlob": "d355ff71136a854ee93115f30caffc3650d8c97b",
+      "sourceSha256": "b9b7e661756d0bf57622d1ab223f3b8cd884d6b53dd08c0828ea5e4f19220744",
+      "stylesBlob": "49a5e499e9723993e986ab2d07b1c4979a74b39b",
+      "stylesSha256": "42d3c5b0a9972f4875813479dfdcbda4dfdc96e28b7248b6c0eb060bc91d1d8d",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-launchpad/Chip",
+      "source": "packages/svelte/ds-app-launchpad/src/lib/components/Chip/Chip.svelte",
+      "styles": "packages/svelte/ds-app-launchpad/src/lib/components/Chip/styles.css",
+      "reason": "named FR-036 spacing fork; no shared density channel on current main",
+      "sourceBlob": "337627319d76f634aeafd683b3f5011169d1c931",
+      "sourceSha256": "30095e8184c22737561710dfd27a5593696cea8b20c9fdc9e352eb4f69c68c77",
+      "stylesBlob": "51cb345dbc4b5a06aa7d66e62f66b937de44adaa",
+      "stylesSha256": "e4e132816423c7f41eb1989e543006e85530f83c4cee3446fd751f46fb061d0b",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-launchpad/Select",
+      "source": "packages/svelte/ds-app-launchpad/src/lib/components/Select/Select.svelte",
+      "styles": "packages/svelte/ds-app-launchpad/src/lib/components/Select/styles.css",
+      "reason": "named FR-036 spacing fork; uses Launchpad-local inset channels",
+      "sourceBlob": "1f403a35065bb0ac3062a3a3b8aa64d941191988",
+      "sourceSha256": "b70609e7a0808c1ab225531f6c1f1814744da607f1df71d8d16d9a1a5f1040bd",
+      "stylesBlob": "bc9b6abe47f681c807e60f7cd58eddafbcbf6173",
+      "stylesSha256": "2122dbada7dd021f4388de685754581aabc7c1c070c726bb87afea28643568b2",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-launchpad/InputPrimitive",
+      "source": "packages/svelte/ds-app-launchpad/src/lib/components/common/InputPrimitive/InputPrimitive.svelte",
+      "styles": "packages/svelte/ds-app-launchpad/src/lib/components/common/InputPrimitive/styles.css",
+      "reason": "named FR-036 internal spacing owner composed by field controls",
+      "sourceBlob": "f9f303f307d7bed314fbcc1f9860bdad136d89a7",
+      "sourceSha256": "d4ddec95fd52a94716ed20f4532d857dacbdc543d5773446df815c75bce061cf",
+      "stylesBlob": "f679f8e6496b8b4cb4c7e49a8760a7f97aab9a6d",
+      "stylesSha256": "472e717a64f0d4f604936c47dc601c3ee88e990e1a9c1b758924df021fca6f2f",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-launchpad/density-shim",
+      "source": "packages/svelte/ds-app-launchpad/src/lib/styles/ds-shim.css",
+      "styles": "packages/svelte/ds-app-launchpad/src/lib/styles/ds-shim.css",
+      "reason": "defines the package-local comfortable/dense block-padding channel",
+      "sourceBlob": "584dde57625d7a102d8e8f661de8c876c1c07b89",
+      "sourceSha256": "7f9fb098490c27ad31497dc69e7e3f44eefe6a13407cd210551253c52f89d132",
+      "stylesBlob": "584dde57625d7a102d8e8f661de8c876c1c07b89",
+      "stylesSha256": "7f9fb098490c27ad31497dc69e7e3f44eefe6a13407cd210551253c52f89d132",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-wpe/Button",
+      "source": "packages/svelte/ds-app-wpe/src/lib/components/Button/Button.svelte",
+      "styles": "packages/svelte/ds-app-wpe/src/lib/components/Button/styles.css",
+      "reason": "reads control-seat and density channels directly",
+      "sourceBlob": "d6075ccd776fdca024028a941cea806c5b464e43",
+      "sourceSha256": "22dba206e2686f26c29e3cdf2309043b306df870af594a94f587fdc42321a748",
+      "stylesBlob": "cffc6af899e84278b6cb81c175074e4f01d8ca48",
+      "stylesSha256": "b9a47a519972a48db1b1a2c5fea8be8f15f3e5fed50cf27dea56fd98961a5b90",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-wpe/Rule",
+      "source": "packages/svelte/ds-app-wpe/src/lib/_work_in_progress/Rule/Rule.svelte",
+      "styles": "packages/svelte/ds-app-wpe/src/lib/_work_in_progress/Rule/styles.css",
+      "reason": "reads the legacy shared vertical-spacing channel",
+      "sourceBlob": "4694b0aff839abcb69420fbfe7ca5c00759637bc",
+      "sourceSha256": "9e3f1dfe280d5c54e3f8b9fc534f166f72f56b97ee049891163c476206666a55",
+      "stylesBlob": "b06b1b05439018314dadedbb7a9399ccc6718735",
+      "stylesSha256": "8b86e51409114c869397323dd431f950785a6801910d68338c0cf5377bacbcc1",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app-wpe/Cards",
+      "source": "packages/svelte/ds-app-wpe/src/lib/group/Cards/Cards.svelte",
+      "styles": "packages/svelte/ds-app-wpe/src/lib/group/Cards/styles.css",
+      "reason": "reads shared grid row/column gap channels",
+      "sourceBlob": "a3546ba36bf86e2804a29cc9ec9971517628f78b",
+      "sourceSha256": "f89a94f9874abfa395c4d76e242a7a4b51a2016e43374ada9379e2f6ade0447d",
+      "stylesBlob": "cdc4c300bbf64f34a1aed02737af70a341b16472",
+      "stylesSha256": "fd6f966a2d30d6a06427eb2b625ce7e82b81efdf34a8ec9bf180cb0b463b0ddf",
+      "t006Disposition": null
+    },
+    {
+      "id": "svelte-ds-app/ContentLayout",
+      "source": "packages/svelte/ds-app/src/lib/layout/ContentLayout/ContentLayout.svelte",
+      "styles": "packages/svelte/ds-app/src/lib/layout/ContentLayout/styles.css",
+      "reason": "consumes the shared grid gutter contract",
+      "sourceBlob": "cef7aad4397e55616cca4427f1c450beb9e5c6e1",
+      "sourceSha256": "30d9ed3ea4e184809968b50718cde5bd31f02e4d7346a1e7253257cc03804002",
+      "stylesBlob": "154b1fa50679c35a86bce5a44785e520599321d9",
+      "stylesSha256": "c727c434584d6d57e547b757967908e087a8ef2ddcf7b4be9e8083705c9b2e7e",
+      "t006Disposition": null
+    }
+  ],
+  "currentMainReconciliation": {
+    "changedRecordedCss": [
+      "packages/react/ds-app-anbox/src/lib/Button/styles.css",
+      "packages/react/ds-app-landscape/src/lib/Button/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/FileTree/common/IndentationBlock/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/FileTree/common/Node/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/FileTree/common/SearchBox/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/FileTree/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/HighlighTheme.css",
+      "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/FileHeader/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Button/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/ViewModeTabs/styles.css",
+      "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css",
+      "packages/react/ds-app-lxd/src/lib/Button/styles.css",
+      "packages/react/ds-app-portal/src/lib/Button/styles.css",
+      "packages/react/ds-app/src/lib/ContentLayout/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/CollapseToggle/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/Content/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/Footer/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/Header/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/Item/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/styles.css",
+      "packages/react/ds-app/src/storybook/navigation/CanonicalLogo/styles.css",
+      "packages/react/ds-global-form/src/density.css",
+      "packages/react/ds-global-form/src/docs/examples/density-examples.css",
+      "packages/react/ds-global-form/src/index.css",
+      "packages/react/ds-global-form/src/lib/common/Wrapper/ToggleWrapper.css",
+      "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
+      "packages/react/ds-global-form/src/lib/component/ChoicesField/styles.css",
+      "packages/react/ds-global-form/src/lib/component/RangeField/common/RangeControl/styles.css",
+      "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/CheckboxInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/List/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/ResetButton/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/DateInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/DateTimeInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/Field/Label/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/NumberInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/PasswordInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/PhoneInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/RadioInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/RangeInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/RatingInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/SelectInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/SwitchInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/TextInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/TextareaInput/styles.css",
+      "packages/react/ds-global-form/src/lib/subcomponent/TimeInput/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/Announcement/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/common/Category/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/IconSection/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/Label/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/SkipLink/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/TSection/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/grid/ApplicationLayout/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/grid/InnerGridDemo/styles.css",
+      "packages/react/ds-global/src/lib/_work_in_progress/grid/SettingsView/styles.css",
+      "packages/react/ds-global/src/lib/component/Accordion/common/Item/styles.css",
+      "packages/react/ds-global/src/lib/component/Accordion/styles.css",
+      "packages/react/ds-global/src/lib/component/Badge/styles.css",
+      "packages/react/ds-global/src/lib/component/Breadcrumbs/common/Item/styles.css",
+      "packages/react/ds-global/src/lib/component/Breadcrumbs/styles.css",
+      "packages/react/ds-global/src/lib/component/Button/styles.css",
+      "packages/react/ds-global/src/lib/component/Card/common/Content/styles.css",
+      "packages/react/ds-global/src/lib/component/Card/common/Footer/styles.css",
+      "packages/react/ds-global/src/lib/component/Card/common/Header/styles.css",
+      "packages/react/ds-global/src/lib/component/Card/styles.css",
+      "packages/react/ds-global/src/lib/component/Chip/styles.css",
+      "packages/react/ds-global/src/lib/component/ContextualMenu/common/Item/styles.css",
+      "packages/react/ds-global/src/lib/component/ContextualMenu/styles.css",
+      "packages/react/ds-global/src/lib/component/Icon/styles.css",
+      "packages/react/ds-global/src/lib/component/InlineCode/styles.css",
+      "packages/react/ds-global/src/lib/component/KeyboardKey/styles.css",
+      "packages/react/ds-global/src/lib/component/Popover/styles.css",
+      "packages/react/ds-global/src/lib/component/Tabs/common/Item/styles.css",
+      "packages/react/ds-global/src/lib/component/Tabs/styles.css",
+      "packages/react/ds-global/src/lib/component/Tile/common/Content/styles.css",
+      "packages/react/ds-global/src/lib/component/Tile/common/Header/styles.css",
+      "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+      "packages/react/ds-global/src/lib/group/Cards/styles.css",
+      "packages/react/ds-global/src/lib/group/KeyboardKeys/styles.css",
+      "packages/react/ds-global/src/lib/index.css",
+      "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/styles.css",
+      "packages/react/ds-global/src/lib/subcomponent/Spinner/styles.css",
+      "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css",
+      "packages/react/tokens/src/lib/TokenTable/styles.css"
+    ],
+    "removedRecordedCss": [
+      "packages/react/ds-global-form/src/docs/examples/react-pilot-catalog.css",
+      "packages/react/ds-global-form/src/docs/examples/spacing-audit.css"
+    ],
+    "addedCurrentMainCss": [
+      "packages/react/ds-app/src/lib/SideNavigation/common/ContextSwitcher/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/Group/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/GroupHeader/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/ItemButton/styles.css",
+      "packages/react/ds-app/src/lib/SideNavigation/common/ItemExpandable/styles.css",
+      "packages/react/ds-global-form/src/lib/_work_in_progress/DensityTestbed/baseline-system.css",
+      "packages/react/ds-global-form/src/lib/_work_in_progress/DensityTestbed/density.testbed.css",
+      "packages/react/ds-global/src/lib/pattern/Modal/common/Content/styles.css",
+      "packages/react/ds-global/src/lib/pattern/Modal/common/Footer/styles.css",
+      "packages/react/ds-global/src/lib/pattern/Modal/common/Header/styles.css",
+      "packages/react/ds-global/src/lib/pattern/Modal/styles.css"
+    ],
+    "exclusions": [
+      {
+        "paths": [
+          "packages/react/ds-global-form/src/lib/_work_in_progress/DensityTestbed/baseline-system.css",
+          "packages/react/ds-global-form/src/lib/_work_in_progress/DensityTestbed/density.testbed.css"
+        ],
+        "reason": "unexported work-in-progress Storybook testbed, not a reusable component"
+      },
+      {
+        "paths": [
+          "packages/react/ds-global-form/src/docs/examples/react-pilot-catalog.css",
+          "packages/react/ds-global-form/src/docs/examples/spacing-audit.css"
+        ],
+        "reason": "removed Storybook evidence chrome, not production owners"
+      }
+    ]
+  }
+}

@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 024 Semantic spacing-token schema | [`../specs/024-semantic-spacing-token-schema/`](../specs/024-semantic-spacing-token-schema/) | Planning, pre-CP1 execution, pre-T004d2/T004g scope and execution-junction reviews by Claude Opus 5 complete; owner acceptance remains outstanding. T004d1a remains open on its bounded four-member dual-lane proof; T004d2 may proceed independently; T004g is blocked only on CP1 choosing the Section inset mapping, with its writable slice recorded. Defines the evidence-derived semantic taxonomy, product resolution, governed density policy, generated public/private contract and recovery of the stale cumulative Pragma cuts. No production recut, Jira mutation, publication, PR or push is authorised. |
+| 024 Semantic spacing-token schema | [`../specs/024-semantic-spacing-token-schema/`](../specs/024-semantic-spacing-token-schema/) | Pre-CP1 geometry through T004h is independently accepted after the bounded F1 correction. T005/T005a/T005b freeze 153 React parts and 11 non-React rows against Pragma `origin/main` `3706f5ea3`; T006 role/boundary assignment is next. Defines the evidence-derived semantic taxonomy, product resolution, governed density policy, generated public/private contract and recovery of the stale cumulative Pragma cuts. No production recut, Jira mutation, publication, PR or push is authorised. |
 
 ## Preserved drafts
 

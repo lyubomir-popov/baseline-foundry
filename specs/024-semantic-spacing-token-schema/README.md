@@ -29,23 +29,23 @@ Read in this order:
    T004d2 independently and leaves only the CP1 Section choice blocking T004g.
 12. [`prompts/opus-t004g-scope-clarification.md`](prompts/opus-t004g-scope-clarification.md)
    — the request that produced the execution-junction review.
-13. [`implementation-handover.md`](implementation-handover.md) — **start here if
+13. [`opus-t004h-review.md`](opus-t004h-review.md) and
+    [`opus-t004h-rereview.md`](opus-t004h-rereview.md) — the rejected first
+    packet, bounded correction and conditional acceptance.
+14. [`component-inventory.md`](component-inventory.md) — the T005/T005a/T005b
+    current-main denominator; use the adjacent JSON for exact identities.
+15. [`implementation-handover.md`](implementation-handover.md) — **start here if
    you are implementing.** The bounded work that is ready, in order, and the
    hard stops.
 
 ## Current status
 
-- **Status**: Owner acceptance remains outstanding. T004d0, T004d1b, T004d and
-  T004d1a are complete. T004d1a's owner-amended Chromium DPR 1 evidence is in
-  local Pragma commit `99ce3fa36`; its dual 6106/6107 packet and hashed
-  manifest are recorded in `tasks.md` and `implementation-handover.md`. No
-  independent review is claimed. The mechanical `text-alignment.test.ts`
-  correction and T004d2 are implemented; the 2026-09-28 owner ruling accepts
-  full body-line closure for CP1. T004g is complete in local Pragma commit
-  `b10c4d541`, with shallow Section mapped to surface and default/hero/deep
-  mapped to strip. Work is stopped at T004h for independent adversarial review.
-  The preserved rejected candidate remains custody evidence, not completion
-  evidence.
+- **Status**: Pre-CP1 geometry through T004h is complete and independently
+  accepted after the bounded correction and F1 list-boundary fix. The current
+  Pragma spike tip is local commit `1c2c6ba73`. T005/T005a/T005b freeze 153
+  React parts and 11 non-React rows against fetched Pragma `origin/main`
+  `3706f5ea3`; T006 assignments are next. The preserved rejected candidate
+  remains custody evidence, not completion evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed
   density contract”. It has not been created.

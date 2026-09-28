@@ -369,18 +369,31 @@ evidence stays as the record of what the implementation does today and as the
 argument for the taxonomy — it is no longer the work queue, and its 95 open
 fixture items are not a prerequisite.
 
-- [ ] **T005** Freeze the denominator as the **component inventory**: every
+- [x] **T005** Freeze the denominator as the **component inventory**: every
   exported part and its spacing-owning subcomponents, per package. This is
   enumerable from the package exports, unlike a ledger of observed
   relationships.
-- [ ] **T005a** Reconcile that inventory against current Pragma `origin/main`,
+  **Completed 2026-09-28:** `component-inventory.json` freezes 153 React rows
+  with Git blob IDs and SHA-256 hashes; `component-inventory.md` records the
+  boundary and package counts. All 142 prior production rows remain present;
+  three story-only evidence rows are excluded from the denominator.
+- [x] **T005a** Reconcile that inventory against current Pragma `origin/main`,
   including Modal and the components migrated upstream. A part added upstream
   since the audit is in the denominator regardless of whether it was ever
   measured.
-- [ ] **T005b** Extend the inventory to non-React packages that consume shared
+  **Completed against fetched `origin/main` `3706f5ea3`:** 11 React rows were
+  added for Modal, TooltipEngine and the expanded SideNavigation. The artifact
+  records 44 changed prior render sources, 94 changed recorded CSS files and
+  every added/removed CSS path; prior rendered evidence is historical rather
+  than current-main certification.
+- [x] **T005b** Extend the inventory to non-React packages that consume shared
   spacing or control-seat channels, starting with
   `packages/svelte/ds-app-wpe/src/lib/components/Button/styles.css`. Add a slice
   or record an explicit boundary.
+  **Completed:** 11 Svelte rows cover the direct density/control-seat/grid
+  consumers plus the named Launchpad Button, Chip, Select and InputPrimitive
+  forks. They authorise no Svelte edits; each awaits a T006 assignment or
+  explicit boundary.
 - [ ] **T006** For each part, apply the model in
   `contracts/semantic-spacing-schema.md` §7a and record its role assignments per
   axis and edge. Parts that own no spacing get an explicit boundary line.
