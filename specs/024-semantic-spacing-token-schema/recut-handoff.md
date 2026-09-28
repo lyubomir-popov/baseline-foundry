@@ -124,9 +124,10 @@ blocked on the CP1 Section choice recorded in `implementation-handover.md`.
 2. Reuse a legacy branch name only after its old tip is preserved and the
    applicable gate below passes. New slices receive normal
    `type/semantic-description` names.
-3. Land sequentially. Each final branch starts from the then-current
-   `origin/main` after its prerequisite has merged and contains only its own
-   slice. Do not submit the cumulative historical stack as ten PRs.
+3. Land sequentially. After each prerequisite merges, fetch `origin/main`,
+   fast-forward Pragma local `main`, and start the next final branch from that
+   synced local branch. Each branch contains only its own slice. Do not submit
+   the cumulative historical stack as ten PRs.
 4. Copy proven intent, not old patches. Adaptation to approved semantic IDs,
    generated channels, policy identifiers and current component architecture is
    required. A new role, value, provider/subscriber pairing or local spacing
@@ -361,7 +362,8 @@ errors.
 
 ## Validation for every cut
 
-1. Fetch and start from `origin/main` after the prerequisite merges.
+1. After the prerequisite merges, fetch `origin/main`, fast-forward Pragma
+   local `main`, verify both SHAs match, and start the cut from local `main`.
 2. Use an existing worktree only after preserving its historical tip; otherwise
    create a fresh conventionally named worktree.
 3. Run `bun install` when the worktree or dependencies are new. Regenerate

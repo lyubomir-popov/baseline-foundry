@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Package | Status |
 |---|---|---|
-| 024 Semantic spacing-token schema | [`../specs/024-semantic-spacing-token-schema/`](../specs/024-semantic-spacing-token-schema/) | Pre-CP1 geometry through T004h is independently accepted after the bounded F1 correction. T005/T005a/T005b freeze 153 React parts and 11 non-React rows against Pragma `origin/main` `3706f5ea3`; T006 assigns or bounds all 164 rows and T007 is next. Defines the evidence-derived semantic taxonomy, product resolution, governed density policy, generated public/private contract and recovery of the stale cumulative Pragma cuts. No production recut, Jira mutation, publication, PR or push is authorised. |
+| 024 Semantic spacing-token schema | [`../specs/024-semantic-spacing-token-schema/`](../specs/024-semantic-spacing-token-schema/) | Pragma-targeted planning stored in BF. Pre-CP1 geometry through T004h is independently accepted after the bounded F1 correction. T005/T005a/T005b freeze 153 React parts and 11 non-React rows against synced Pragma local `main` `3706f5ea3`, equal to `origin/main` at capture; T006 assigns or bounds all 164 rows and T007 is next. Defines the evidence-derived semantic taxonomy, product resolution, governed density policy, generated public/private contract and recovery of the stale cumulative Pragma cuts. No production recut, Jira mutation, publication, PR or push is authorised. |
 
 ## Preserved drafts
 

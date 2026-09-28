@@ -46,11 +46,20 @@ const pragmaRepo = required("pragma-repo");
 const legacyInventoryPath = required("legacy-inventory");
 const legacyManifestPath = required("legacy-source-manifest");
 const outputPath = required("output");
-const sourceRef = args.get("source-ref") ?? "origin/main";
-const sourceCommit = execFileSync("git", ["rev-parse", sourceRef], {
-  cwd: pragmaRepo,
-  encoding: "utf8",
-}).trim();
+const sourceRef = args.get("source-ref") ?? "main";
+const upstreamRef = args.get("upstream-ref") ?? "origin/main";
+const resolveRef = (ref: string) =>
+  execFileSync("git", ["rev-parse", ref], {
+    cwd: pragmaRepo,
+    encoding: "utf8",
+  }).trim();
+const sourceCommit = resolveRef(sourceRef);
+const upstreamCommit = resolveRef(upstreamRef);
+if (sourceCommit !== upstreamCommit) {
+  throw new Error(
+    `Pragma ${sourceRef} (${sourceCommit}) is not synced with ${upstreamRef} (${upstreamCommit}). Fetch and fast-forward local main before rebuilding the current denominator.`,
+  );
+}
 const sourceCommittedAt = execFileSync(
   "git",
   ["show", "-s", "--format=%cI", sourceCommit],
@@ -357,6 +366,8 @@ const result = {
     repository: "canonical/pragma",
     ref: sourceRef,
     commit: sourceCommit,
+    upstreamRef,
+    upstreamCommit,
     committedAt: sourceCommittedAt,
     legacyInventorySha256: hash(legacyInventoryPath),
     legacySourceManifestSha256: hash(legacyManifestPath),

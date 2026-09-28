@@ -7,15 +7,21 @@ the spec, research, semantic contract, [`recut-handoff.md`](recut-handoff.md),
 [`opus-pre-t004d2-scope-review.md`](opus-pre-t004d2-scope-review.md) and tasks.
 Do not infer current evidence counts or branch readiness from archived reviews.
 
-Before recut planning, refresh Pragma's upstream ref and compare the recorded
-SHA in the handoff. If it moved, update the mainline delta sweep rather than
-silently treating the 2026-09-21 inventory as current:
+Before any source-sensitive Spec 024 batch, refresh Pragma's upstream ref and
+fast-forward the primary local `main`. Source analysis and new implementation
+worktrees use that synced local branch. If upstream moved, update the mainline
+delta sweep rather than silently treating an older inventory as current:
 
 ```powershell
 Set-Location H:\WSL_dev_projects\pragma
 git fetch origin main --prune
-git rev-parse origin/main
+git merge --ff-only origin/main
+git rev-parse main origin/main
 ```
+
+The two printed SHAs must match. The primary checkout stores the baseline; do
+not make feature edits there. Create or reuse a dedicated Pragma worktree for
+implementation after the sync.
 
 ## Evidence worktree
 

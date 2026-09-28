@@ -17,7 +17,10 @@ is the entry point for implementation work. Short version: the recut is **not**
 ready — CP1 and CP2 are unpassed and no provider artifact exists. T004c0–T004h
 ran in the snapshot-derived Pragma `feat/bf-inside-out-geometry` worktree;
 T005–T013 run in this Baseline Foundry
-`feat/024-semantic-spacing-token-schema` worktree. No production branch, PR or
+`feat/024-semantic-spacing-token-schema` worktree because BF stores the plan,
+but Spec 024 targets Pragma. Before each source-sensitive batch, fetch and
+fast-forward Pragma local `main` to `origin/main`; use that synced local commit
+for analysis and new implementation worktrees. No production branch, PR or
 push is authorised. Read
 [`opus-pre-cp1-execution-review.md`](specs/024-semantic-spacing-token-schema/opus-pre-cp1-execution-review.md)
 and
@@ -46,8 +49,8 @@ conditional on one list-boundary fix. That fix is local Pragma commit
 `1c2c6ba73`; T004h is complete. T006 now records the F2–F4 assignments and
 boundaries, which remain subject to CP1.
 
-T005/T005a/T005b are complete against fetched Pragma `origin/main`
-`3706f5ea3`. The exact denominator is
+T005/T005a/T005b are complete against synced Pragma local `main` `3706f5ea3`,
+equal to `origin/main` at capture. The exact denominator is
 `specs/024-semantic-spacing-token-schema/component-inventory.json`: 153 React
 parts and 11 non-React shared-channel/FR-036 rows. T006 now assigns or bounds
 all 164 rows with exact profile coverage and the ColorInput per-edge exception;

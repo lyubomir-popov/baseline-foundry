@@ -24,8 +24,11 @@ Pragma `feat/bf-inside-out-geometry` worktree, branched from exact recovery
 snapshot `313ee82c13a126b779b9bd75902da5af13c28505`. T005–T013 are Spec 024
 taxonomy work and happen in the Baseline Foundry
 `feat/024-semantic-spacing-token-schema` worktree. The primary Pragma checkout
-and the evidence reference stay untouched. **No production branch, no PR, no
-push.**
+stores local `main`: before each source-sensitive batch, fetch `origin/main`
+and fast-forward local `main`, then use that synced commit for source analysis
+and as the base of any new Pragma implementation worktree. Do not make feature
+edits in the primary checkout. The evidence reference stays untouched. **No
+production branch, no PR, no push.**
 
 **Execution junction resolved, 2026-09-23; T004d1a executed 2026-09-27:** the
 combined Opus review bounded T004d1a to four members. That amended evidence
@@ -35,8 +38,8 @@ typography-test correction and T004d2 remain implemented independently. The
 to the existing surface/strip insets. T004g is complete in local Pragma commit
 `b10c4d541`. T004h was accepted after its bounded correction and the final F1
 list-boundary fix in local Pragma commit `1c2c6ba73`. T005/T005a/T005b are
-complete against current Pragma `origin/main` `3706f5ea3`; T006 now assigns or
-bounds all 164 rows and T007 is next.
+complete against synced Pragma local `main` `3706f5ea3`, equal to
+`origin/main`; T006 now assigns or bounds all 164 rows and T007 is next.
 Follow the task-specific gates below; the earlier blanket stop no longer
 applies.
 
@@ -678,7 +681,8 @@ independently, and full body-line closure is accepted for CP1.
 T004d1a is complete under its bounded four-member, dual-lane evidence contract.
 T004g is complete in local Pragma commit `b10c4d541`. T004h is accepted after
 the F1 list-boundary fix in `1c2c6ba73`. T005/T005a/T005b then froze 153 React
-parts and 11 non-React rows against current `origin/main` `3706f5ea3`, including
+parts and 11 non-React rows against synced local `main` `3706f5ea3`, equal to
+`origin/main` at capture, including
 Modal and the expanded SideNavigation. T006 assigns or bounds all 164 rows in
 the schema-version-2 inventory. T007 is next: build the exhaustive hardcoded-
 length sweep without treating the historical audit as the work queue.

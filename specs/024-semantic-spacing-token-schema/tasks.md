@@ -377,11 +377,12 @@ fixture items are not a prerequisite.
   with Git blob IDs and SHA-256 hashes; `component-inventory.md` records the
   boundary and package counts. All 142 prior production rows remain present;
   three story-only evidence rows are excluded from the denominator.
-- [x] **T005a** Reconcile that inventory against current Pragma `origin/main`,
+- [x] **T005a** Reconcile that inventory against synced Pragma local `main`,
   including Modal and the components migrated upstream. A part added upstream
   since the audit is in the denominator regardless of whether it was ever
   measured.
-  **Completed against fetched `origin/main` `3706f5ea3`:** 11 React rows were
+  **Completed against local `main` `3706f5ea3`, equal to fetched
+  `origin/main`:** 11 React rows were
   added for Modal, TooltipEngine and the expanded SideNavigation. The artifact
   records 44 changed prior render sources, 94 changed recorded CSS files and
   every added/removed CSS path; prior rendered evidence is historical rather
@@ -507,8 +508,9 @@ fixture items are not a prerequisite.
 
 ## Phase 5 — Pragma adoption and Jira
 
-- [ ] **T026** Preserve the audited legacy `feat/pragma-*` tips, then rebuild
-  the sequential foundation/component cuts from then-current `origin/main`
+- [ ] **T026** Preserve the audited legacy `feat/pragma-*` tips, then sync
+  Pragma local `main` to `origin/main` and rebuild the sequential
+  foundation/component cuts from that local `main`
   under `recut-handoff.md`; do not rebase the cumulative stack or merge the
   broad reference branch.
 - [ ] **T026a** Complete the owner-to-slice partition and per-cut manifest

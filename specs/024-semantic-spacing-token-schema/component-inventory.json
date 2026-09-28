@@ -3,8 +3,10 @@
   "generatedAt": "2026-09-28T14:22:46-06:00",
   "source": {
     "repository": "canonical/pragma",
-    "ref": "origin/main",
+    "ref": "main",
     "commit": "3706f5ea3b45af0fe43c2308a0e39d81a4cd99a2",
+    "upstreamRef": "origin/main",
+    "upstreamCommit": "3706f5ea3b45af0fe43c2308a0e39d81a4cd99a2",
     "committedAt": "2026-09-28T14:22:46-06:00",
     "legacyInventorySha256": "86a2c1a977e70f32773440680e58b1dce84d893c276246902dd280f4751fd92c",
     "legacySourceManifestSha256": "3d5f44dd052a04a9e3c31c984d9812f41640b2b2e97c8f584f54444e471a3f2e"

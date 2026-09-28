@@ -5,6 +5,11 @@ Pragma component-spacing audit. It does not redefine the primitive dimension
 scale and it does not treat the current 12-token provider as the final
 taxonomy.
 
+This package lives in Baseline Foundry only as the planning store required by
+FR-019. Spec 024 targets Pragma. Its source-sensitive work is based on Pragma's
+local `main` after that branch has been fetched and fast-forwarded to
+`origin/main`; the Baseline Foundry branch base is not the Pragma code base.
+
 Read in this order:
 
 1. [`spec.md`](spec.md) — problem, outcomes, requirements and acceptance.
@@ -43,8 +48,9 @@ Read in this order:
 - **Status**: Pre-CP1 geometry through T004h is complete and independently
   accepted after the bounded correction and F1 list-boundary fix. The current
   Pragma spike tip is local commit `1c2c6ba73`. T005/T005a/T005b freeze 153
-  React parts and 11 non-React rows against fetched Pragma `origin/main`
-  `3706f5ea3`. T006 assigns or bounds all 164 rows; T007 is next. The preserved
+  React parts and 11 non-React rows against synced Pragma local `main`
+  `3706f5ea3`, equal to `origin/main` at capture. T006 assigns or bounds all 164
+  rows; T007 is next. The preserved
   rejected candidate remains custody evidence, not completion evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed
