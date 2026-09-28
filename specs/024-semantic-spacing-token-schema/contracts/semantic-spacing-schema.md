@@ -520,6 +520,13 @@ contribution generalises to every line count only when
 `mod(line-height, rhythm-step) = 0`; the focused test records the ten failures
 from the table rather than emitting a false multi-line claim for them.
 
+**Owner decision, 2026-09-28:** use the product body line as the rhythm step and
+accept full in-phase closure. This deliberately adds a blank body line after an
+ordinary paragraph or list item where the computed closer requires it. Closing
+only to the 8px/4px baseline unit keeps later text on that grid but moves it
+within the shared 24px/20px body-line cycle; preserving the stronger common
+body-line phase governs.
+
 The phase term must not be moved to block-end. A block-end term re-phases only
 what follows the element, leaving the element's own lines where they were — the
 visible symptom being a heading whose lines never align with body copy beside

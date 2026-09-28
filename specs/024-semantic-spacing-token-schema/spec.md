@@ -538,14 +538,16 @@ local paths as the justification.
 - **FR-053**: T004g's affected-scope sweep MUST return no undispositioned hit.
   Each hit is either repointed to an inset role or carries a one-line boundary
   in T010. This is not the full FR-045a/T007 completeness sweep.
-- **FR-053a**: T004g MUST NOT begin until CP1 chooses the Section inset mapping.
-  Three public magnitudes cannot be inferred from the two shipped block-inset
-  roles. CP1 MUST either collapse default/hero/deep onto strip with a written
-  FR-042 merge argument, or mint `spacing.inset.section.block` with product
-  values and an FR-050 fifth-channel amendment. The illegal
-  `--spacing-gap-section-block` declaration and its three tests move with that
-  decision, not before it. The bordered Section override MAY be deleted so it
-  inherits the framed-box surface inset; that does not decide the variants.
+- **FR-053a**: The 2026-09-28 owner decision releases T004g with shallow Section
+  mapped to the surface inset and default/hero/deep Section mapped to the strip
+  inset. Strip and Section share a major page-section inset magnitude because a
+  change to that rhythm should change both; they differ by edge application,
+  not semantic magnitude. Strip applies the value at both block edges, while
+  Section applies it at its relevant section edge. This is the FR-042 merge
+  argument: do not mint `spacing.inset.section.block` or a fifth FR-050 channel.
+  Delete the illegal `--spacing-gap-section-block` declaration and update its
+  three tests with this decision. Delete the bordered Section override so it
+  inherits the framed-box surface inset.
 - **FR-053b**: T004g's writable activation slice is exhaustive. The sole
   `spacing.css` repointing exception is lines 40–42: `--container-gap-tight`,
   `-default` and `-loose` move respectively to `--ds-gap-element-block`,

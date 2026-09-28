@@ -40,11 +40,11 @@ Read in this order:
   local Pragma commit `99ce3fa36`; its dual 6106/6107 packet and hashed
   manifest are recorded in `tasks.md` and `implementation-handover.md`. No
   independent review is claimed. The mechanical `text-alignment.test.ts`
-  correction and T004d2 are implemented, but T004d2 remains held from CP1
-  pending the owner whitespace ruling. The complete T004g writable list is
-  recorded; T004g remains blocked only on CP1 choosing the Section inset
-  mapping. The preserved rejected candidate remains custody evidence, not
-  completion evidence.
+  correction and T004d2 are implemented; the 2026-09-28 owner ruling accepts
+  full body-line closure for CP1. The complete T004g writable list is recorded,
+  and T004g is released with shallow Section mapped to surface and
+  default/hero/deep mapped to strip. The preserved rejected candidate remains
+  custody evidence, not completion evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed
   density contract”. It has not been created.

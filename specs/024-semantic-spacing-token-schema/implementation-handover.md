@@ -27,8 +27,9 @@ The evidence reference stays read-only. **No production branch, no PR, no push.*
 **Execution junction resolved, 2026-09-23; T004d1a executed 2026-09-27:** the
 combined Opus review bounded T004d1a to four members. That amended evidence
 contract is now complete in local Pragma commit `99ce3fa36`. The mechanical
-typography-test correction and T004d2 remain implemented independently, while
-T004g stays blocked on the CP1 Section inset decision. Follow the task-specific
+typography-test correction and T004d2 remain implemented independently. The
+2026-09-28 owner rulings accept full body-line closure and map Section variants
+to the existing surface/strip insets, releasing T004g. Follow the task-specific
 gates below; the earlier blanket stop no longer applies.
 
 ## Read first, in this order
@@ -285,9 +286,9 @@ Button/Chip lane and 4/4 on the 6107 Form/Select lane. The evidence root is
 The manifest validates all 19 source hashes, 16 persisted/path-attached JSON
 files and 14 comparison artifacts. This records task completion, not an
 independent review.
-T004d2 implementation may proceed independently, but its output is held from
-CP1 pending the owner whitespace ruling below. T004g remains blocked on the CP1
-Section choice and carries the margin-closure risk below.
+T004d2 is accepted to feed CP1 under the owner whitespace ruling below. T004g
+is released by the owner Section mapping and carries the recorded gap-rhythm
+risk below.
 
 ### 7. T004d2 — the two rhythm terms
 
@@ -375,11 +376,14 @@ replaced by a component-owned `margin-block-end`. The evidence-only
 `Spec 024 · T004d2` marker in the story must be removed during the post-CP2
 recut.
 
-The owner whitespace ruling must explicitly cover stacked prose and lists, not
-only isolated headings. Closure makes a one-line list item occupy 48px in Site
+**Owner ruling, 2026-09-28:** use full body-line closure and accept the added
+spacing in stacked prose and lists. A one-line list item occupies 48px in Site
 instead of 32px and 40px in Docs/App instead of 24px; paragraphs likewise gain
-one blank body line. This remains an unresolved acceptance decision, so T004d2
-does not yet count toward CP1.
+one blank body line. The rejected baseline-unit closer remains on the 8px/4px
+grid but shifts subsequent text 8px within the 24px/20px body-line cycle. The
+stronger common body-line phase governs, so T004d2 may feed CP1. For the spike,
+margin collapse against zero block-start margins is accepted; component-owned
+`margin-block-end` rules must compose rather than replace the closer.
 
 Carry a separate rhythm risk into CP1 and T004g: the proposed gap tokens are
 whole baseline units but not whole body lines. Site's 8/24/64px
@@ -437,9 +441,12 @@ that has nothing to do with the model.
 
 ### 10. T004g — apply the gap scale
 
-**Blocked before the first edit:** CP1 must choose Section's variant mapping.
-The source-scope question is closed: FR-053b and T004g contain the exhaustive
-writable slice. Do not begin any subset of T004g before the Section choice.
+**Released by the owner, 2026-09-28:** shallow Section maps to the surface inset;
+default/hero/deep Section map to the strip inset. Strip and Section share the
+same major page-section inset magnitude because changing that rhythm should
+change both. Strip applies it at both block edges and Section at its relevant
+section edge; that edge application difference does not justify a fifth token
+or FR-050 channel. FR-053b and T004g contain the exhaustive writable slice.
 
 Once released, delete the two ColorInput inset overrides at
 `packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css:114`
@@ -466,9 +473,9 @@ applications **double** at `group` and `pattern` — this is the largest visible
 change in the handover, so sheet it carefully.
 
 Separate inset from gap per FR-042a. The bordered Section box may delete its
-local block-inset override and inherit the framed-box surface inset. Do not
-delete the Pragma-owned `--spacing-gap-section-block` or update its Section
-variant consumer and three fixtures until CP1 chooses collapse or a new role:
+local block-inset override and inherit the framed-box surface inset. Delete the
+Pragma-owned `--spacing-gap-section-block` and update its Section variant
+consumer and three fixtures for the accepted surface/strip collapse:
 
 - `packages/react/ds-global/src/lib/TransitionClosure.spacing.tests.ts:55`;
 - `packages/react/ds-global/tests/TransitionFacts.spacing.pw.ts:119`;
@@ -544,10 +551,10 @@ an agent that ignores them.
 
 The combined Opus execution-junction review is complete and dispositioned.
 T004d2 and the mechanical text-alignment correction were implemented
-independently, but T004d2 is held from CP1 pending the owner whitespace ruling.
+independently, and full body-line closure is accepted for CP1.
 T004d1a is complete under its bounded four-member, dual-lane evidence contract.
-T004g remains stopped only on CP1's Section mapping choice. After the released
-tasks eventually complete, stop at T004h for its independent adversarial review.
+T004g is released by the owner Section mapping. After it completes, stop at
+T004h for its independent adversarial review.
 After that review is dispositioned, the next implementation phase is T005 /
 T005a / T005b — freezing the denominator and reconciling it against current
 `origin/main`, including non-React consumers. That belongs to CP1 preparation,
@@ -611,13 +618,13 @@ tests rather than moving the model, stop and hand back.
 | Planning review | Complete. Owner acceptance outstanding. |
 | Pre-CP1 execution review | Complete. Its worktree, carrier, metric, deferral and OS decisions govern this handover. |
 | Pre-T004d2/T004g scope review | Complete and dispositioned. |
-| Combined execution-junction review | Complete; T004d1a is bounded to four members and two lanes, T004d2 may proceed independently, and T004g waits only on CP1's Section choice. |
+| Combined execution-junction review | Complete; T004d1a is bounded to four members and two lanes, and T004d2 proceeded independently. The owner accepted full body-line closure and released T004g with the Section surface/strip mapping on 2026-09-28. |
 | Block-geometry decisions | Recorded in FR-037b, FR-039 to FR-043 and FR-050 to FR-053. |
 | Custody (T004c) | Complete — recovery refs and the later Spec 022 execution amendment verified 2026-09-22. T004d is preserved at `f93281e…`; the amended pre-T004d2 disposition is preserved at `8d29b57e…`; the final Opus junction disposition is preserved at `c2df4f0…`. |
 | Isolated spike T004c0 | Complete at exact snapshot `313ee82c…`. |
 | Isolated spike T004d0 / T004d1b | Complete in the isolated worktree; independently accepted after the carrier-path test correction. |
 | Isolated spike T004d | Complete; per-edge formula and corrected rendered-border proof independently accepted. |
-| Isolated spike T004d1a–T004h | T004d1a is complete in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract; no independent review is claimed. T004d2 is implemented but held from CP1 pending the owner whitespace ruling. T004g is blocked on CP1's Section mapping choice and carries the margin-closure risk. Stop again at independent review T004h after eventual release and completion. |
+| Isolated spike T004d1a–T004h | T004d1a is complete in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract; no independent review is claimed. T004d2 is accepted with full body-line closure. T004g is released with the Section surface/strip mapping and carries the recorded gap-rhythm risk. Stop at independent review T004h after T004g completes. |
 | CP1 taxonomy | Not started. Denominator open. |
 | CP2 schema | Not started. |
 | Token implementation | Not started. No provider artifact exists. |

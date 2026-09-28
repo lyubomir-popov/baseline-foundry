@@ -150,7 +150,7 @@
   product records with OS `null`; the path attachments duplicate those
   payloads by design. This completes the task evidence, not an independent
   review of it.
-- [ ] **T004d2** Implement the two computed rhythm terms per §7a — a phase term
+- [x] **T004d2** Implement the two computed rhythm terms per §7a — a phase term
   at block-start that lifts the first baseline onto the rhythm step, and a
   block-end closer whose sum includes it. Round up only, context-named rhythm
   step, excluded from the token count and from public output. Use the exact
@@ -191,11 +191,16 @@
   closure is a margin and therefore collapses with neighbouring margins or can
   be replaced by a component-owned `margin-block-end`. Strip the evidence-only
   `Spec 024 · T004d2` story marker during the post-CP2 recut.
-  **Owner ruling still required:** closure also double-spaces ordinary stacked
-  prose and lists. A one-line list item occupies 48px in Site rather than 32px,
-  and 40px in Docs/App rather than 24px; paragraphs show the same added blank
-  body line. Do not count T004d2 toward CP1 until the owner accepts or rejects
-  that result. Carry separately to CP1 and T004g that the proposed gap scale is
+  **Owner ruling, 2026-09-28:** accept full body-line closure, including the
+  additional blank body line after ordinary paragraphs and list items. The
+  comparison in local Pragma commit `049e54d2f` contrasts it with closure to
+  the 8px/4px baseline unit: the lighter alternative remains on the baseline
+  grid but moves the following paragraph 8px within the 24px/20px body-line
+  cycle. Preserving the common body-line phase governs, so the added whitespace
+  is intentional and T004d2 may feed CP1. For the spike, margin collapse
+  against zero block-start margins is accepted; component CSS must not replace
+  `margin-block-end` without composing the closure.
+  Carry separately to CP1 and T004g that the proposed gap scale is
   baseline-unit aligned but not body-line aligned: Site element/group/pattern
   gaps are 8/24/64px against a 24px body line, while Docs/App gaps are
   4/16/32px against a 20px body line. A gap between blocks can therefore move
@@ -211,13 +216,16 @@
   live `origin/main` matrix and compatibility aliases as mandatory T017a
   migration inputs instead of recalculating them here.
 
-- [ ] **T004g — BLOCKED only on the CP1 Section choice.** CP1 must either merge
-  default/hero/deep onto strip with a written FR-042 argument or mint a Section
-  inset member and amend FR-050 for a fifth spike channel. Do not guess. Move
-  deletion of `--spacing-gap-section-block` and its three test consumers with
-  that decision. The bordered Section box may separately delete its local
-  block-inset override and inherit the framed-box surface inset.
-  Once the Section decision lands, apply the FR-043 gap scale —
+- [ ] **T004g — RELEASED by the 2026-09-28 owner decision.** Map shallow Section
+  to the surface inset and default/hero/deep Section to the strip inset. Strip
+  and Section express the same major page-section inset magnitude: changing
+  that rhythm should change both. Their difference is edge application, not
+  magnitude — Strip applies the value at both block edges while Section applies
+  it at its relevant section edge. This satisfies FR-042 without a fifth inset
+  member or FR-050 channel. Delete `--spacing-gap-section-block` and update its
+  three test consumers with that decision. The bordered Section box also
+  deletes its local block-inset override and inherits the framed-box surface
+  inset. Apply the FR-043 gap scale —
   element 8/4/4, group 24/16/16, pattern 64/32/32 — and remove `section`. Every
   step changes from what the provider resolves today; applications double at
   `group` and `pattern`.
