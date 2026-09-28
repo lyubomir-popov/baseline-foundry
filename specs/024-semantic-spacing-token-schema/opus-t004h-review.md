@@ -71,3 +71,14 @@ bounded correction:
 
 The reviewer explicitly ruled that the pre-existing Timeline mismatch does not
 block T004h. Re-review may be limited to the P1 dispositions above.
+
+## Correction measurement note
+
+Replacing the circular formula calculation with the requested zero-height
+inline probes corrected another evidence claim. Chromium DPR 1 now measures
+Site `0–0.219px`, Docs `0.531–0.766px` and App `0–0.609px` across the 18
+one-line pairs. The old `0.05–0.34px` range was derived from the same metric
+estimate as the implementation and was not an independent rendered baseline
+measurement. The correction keeps typography unchanged, uses `1px` only as a
+gross-regression guard, records the values for limited re-review and does not
+self-accept the residual above the former `0.5px` threshold.

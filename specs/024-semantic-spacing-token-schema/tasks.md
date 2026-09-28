@@ -186,8 +186,11 @@
   Docs/App paragraph 24→40 and Site H1 56→72. Keep the model unchanged and show
   the previous ledger beside the new one for a heading, two paragraphs and a
   list in each product. Retain one Chromium DPR 1 computed-value proof for
-  `round(up, …)`. Carry to CP1 the 0.05–0.34px one-line heading/body baseline
-  residual as metric-authority debt. Before T004g, disposition the fact that
+  `round(up, …)`. The corrected rendered probes measure Site `0–0.219px`, Docs
+  `0.531–0.766px` and App `0–0.609px`; the previous `0.05–0.34px` record was a
+  formula estimate. Carry the actual residual to T004h/CP1 as metric-authority
+  debt, and do not treat the `1px` regression guard as acceptance. Before
+  T004g, disposition the fact that
   closure is a margin and therefore collapses with neighbouring margins or can
   be replaced by a component-owned `margin-block-end`. Strip the evidence-only
   `Spec 024 · T004d2` story marker during the post-CP2 recut.
@@ -336,6 +339,16 @@
   `f93281eac`, the T004d1b 21/21 no-movement result, persisted T004d2 numbers
   and list-inclusive closure evidence. Re-review is limited to these
   dispositions. Do not begin T005.
+  **Corrections packaged 2026-09-28:** local Pragma commit `4325f1597` closes
+  the five requested implementation/evidence items. Use
+  `prompts/opus-t004h-limited-rereview.md` and evidence root
+  `H:\WSL_dev_projects\temp\spec-024-t004h-rereview-20260928`.
+  Its schema-v2 manifest SHA-256 is
+  `b921f2313a04d5a5563fefe176be50ee407e77c3b0a10b204353fb9c9ffd3d13`;
+  it validates 45 Git blob-backed source paths, 18 measurement paths, 18
+  comparison artifacts and 3 supporting paths at a clean capture HEAD. The
+  limited re-review must disposition the corrected rendered residual above
+  `0.5px`; T004h remains open and T005 has not started.
 
 ## Phase 2 — Pragma denominator closure
 

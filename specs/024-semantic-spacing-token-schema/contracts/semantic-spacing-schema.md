@@ -538,9 +538,15 @@ The snapshot contains no existing `round()` use. Capability in the supported
 engines is evidenced by the live `mod()` expressions in `alignment.css`, from
 the same CSS Values 4 stepped-value family. The spike MUST retain one Chromium
 DPR 1 rendered check that resolves body/code phase, proves non-zero heading
-phase and closure through a formula control in each product, and proves every
-one-line product/heading combination aligns to a body baseline within 0.5px and
-closes to whole body-line steps. It MUST also prove that the explicit wrapped
+  phase and closure through a formula control in each product, measures every
+  one-line product/heading combination against its body sibling with rendered
+  zero-height inline baseline probes, and proves every pair closes to whole
+  body-line steps. The earlier formula-derived `0.5px` bound is not a valid
+  rendered assertion: Chromium DPR 1 probes measure Site `0–0.219px`, Docs
+  `0.531–0.766px` and App `0–0.609px`. Values above `0.5px` remain explicit
+  T004h/CP1 metric-authority debt rather than a reason to alter typography in
+  this spike. A cheap `1px` regression guard may catch gross movement but is
+  not acceptance of the residual. The check MUST also prove that the explicit wrapped
 exceptions Site H3, Docs H3 and App H1 do not close to a whole body-line step.
 Formula controls are not visual alignment claims.
 

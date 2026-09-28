@@ -365,13 +365,19 @@ H1 56→72. The comparison story therefore includes, for every product, the
 previous nudge/complement ledger beside the current phase/closure ledger for a
 stacked heading, two paragraphs and a list. One Chromium DPR 1 rendered check
 must prove `round(up, …)` resolves through one formula control per product, and
-must prove all 18 one-line combinations align to a body baseline within 0.5px
-and close to whole body-line steps. It must also prove the explicit wrapped
+must measure all 18 one-line combinations against the body sibling with real
+inline baseline probes and prove that each pair closes to whole body-line
+steps. The corrected Chromium DPR 1 measurement is Site `0–0.219px`, Docs
+`0.531–0.766px` and App `0–0.609px`; the earlier `0.05–0.34px` record came from
+the metric formula rather than a rendered baseline. The `0.5px` claim is not
+met in Docs/App. Preserve this as a T004h/CP1 metric-authority finding; the
+`1px` automated bound is only a gross-regression guard and does not accept the
+residual. The check must also prove the explicit wrapped
 exceptions Site H3, Docs H3 and App H1 do not close to a whole body-line step.
 Do not present the same-line-height controls as cross-size alignment evidence.
 
-Carry two risks to CP1/T004g: one-line heading baselines retain a 0.05–0.34px
-residual against body copy because metric authority is deliberately unchanged;
+Carry two risks to CP1/T004g: rendered one-line heading/body probes retain up to
+`0.766px` residual because metric authority is deliberately unchanged;
 and closure is a margin, so it collapses with neighbouring margins and can be
 replaced by a component-owned `margin-block-end`. The evidence-only
 `Spec 024 · T004d2` marker in the story must be removed during the post-CP2
@@ -599,6 +605,16 @@ Tooltip and Form-field comparison rows. The tasks entry authorises the exact
 additional files and evidence repair. Downstream P2/CP2/T007/T010 findings stay
 recorded in the review and do not broaden this correction. T004h and T005 remain
 open.
+
+**Corrections complete and packaged 2026-09-28:** Pragma commit `4325f1597`;
+limited request `prompts/opus-t004h-limited-rereview.md`; evidence root
+`H:\WSL_dev_projects\temp\spec-024-t004h-rereview-20260928`; manifest SHA-256
+`b921f2313a04d5a5563fefe176be50ee407e77c3b0a10b204353fb9c9ffd3d13`.
+The manifest uses committed Git blob IDs and hashes rather than checkout bytes,
+and includes the original packet plus the no-movement result, persisted
+correction measurements and new captures. The real-probe residual above
+`0.5px` is explicitly presented for independent disposition. Do not start
+T005 until that limited verdict returns and is recorded.
 
 The reviewer must not be the agent that did the work. If no independent reviewer
 is available, say so and stop — do not self-review, and do not describe the
