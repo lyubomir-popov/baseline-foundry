@@ -29,7 +29,8 @@ combined Opus review bounded T004d1a to four members. That amended evidence
 contract is now complete in local Pragma commit `99ce3fa36`. The mechanical
 typography-test correction and T004d2 remain implemented independently. The
 2026-09-28 owner rulings accept full body-line closure and map Section variants
-to the existing surface/strip insets, releasing T004g. Follow the task-specific
+to the existing surface/strip insets. T004g is complete in local Pragma commit
+`b10c4d541`; stop at T004h for independent review. Follow the task-specific
 gates below; the earlier blanket stop no longer applies.
 
 ## Read first, in this order
@@ -540,6 +541,26 @@ full completeness sweep.
 clear hierarchy, every in-scope padding owner reads an inset, and every other
 sweep hit has its approved one-line boundary.
 
+**Completed 2026-09-28** in local Pragma commit `b10c4d541`. The comparison
+story is
+`http://localhost:6106/?path=/story/work-in-progress-component-section--gap-scale-comparison`.
+It renders the three computed gap steps and the actual shallow/default Section
+insets for Site, Docs and App. The 1600px Chromium DPR 1 capture is
+`H:\WSL_dev_projects\temp\spec-024-t004g-evidence-20260928\gap-scale-comparison-1600.png`
+(SHA-256
+`d217549171a293d1de0439361321e47bb2c919e9203dbf7cdeab24dd4e1a3198`).
+The exact affected-scope sweep returns the six approved boundaries and no
+others. Private gap-channel declarations occur only in `_spike-geometry.css`,
+and the diff adds no `--spacing-*` declaration. Focused TypeScript, Biome,
+static contract and Chromium DPR 1 Section/gap checks pass.
+
+The complete `TransitionClosure.spacing.tests.ts` and
+`TransitionFacts.spacing.pw.ts` runs retain one pre-existing out-of-scope
+Timeline mismatch: their assertions pin a 12px marker while the earlier shared
+marker-canvas implementation uses and renders 16px. The focused T004g checks
+are green; this task does not rewrite the Timeline assertion opportunistically.
+No independent review is claimed.
+
 ## Review gate — this handover ends at one
 
 The work above sits **before CP1**, where the spec's first mandatory independent
@@ -582,8 +603,8 @@ The combined Opus execution-junction review is complete and dispositioned.
 T004d2 and the mechanical text-alignment correction were implemented
 independently, and full body-line closure is accepted for CP1.
 T004d1a is complete under its bounded four-member, dual-lane evidence contract.
-T004g is released by the owner Section mapping. After it completes, stop at
-T004h for its independent adversarial review.
+T004g is complete in local Pragma commit `b10c4d541`. Stop now at T004h for its
+independent adversarial review.
 After that review is dispositioned, the next implementation phase is T005 /
 T005a / T005b — freezing the denominator and reconciling it against current
 `origin/main`, including non-React consumers. That belongs to CP1 preparation,
@@ -633,12 +654,11 @@ tests rather than moving the model, stop and hand back.
   prepare step fails in pre-existing `@canonical/lit-ds-prototype` CSS default
   imports. Record that separately from focused spike checks; do not treat the
   historical build failure as caused by the spike.
-- **Broad consumer geometry is intentionally red after T004d and before
-  T004d1a/T004g.** Partial runs recorded the expected new inset deltas in
-  Accordion (4px/4.5px by root size), Card composition (8px), ColorInput
-  (~3.99px) and TextField (4px/4.5px), plus T004g-deferred transition facts.
-  Do not repair consumers opportunistically; measure and disposition them in
-  the ordered tasks.
+- **Broad consumer geometry was intentionally red after T004d and before
+  T004d1a/T004g.** T004g closes its named owners and focused transition facts.
+  The remaining known transition-test failure is the out-of-scope Timeline
+  12px assertion against the earlier 16px shared marker canvas; do not repair
+  unrelated consumers opportunistically.
 
 ## Status summary
 
@@ -647,13 +667,13 @@ tests rather than moving the model, stop and hand back.
 | Planning review | Complete. Owner acceptance outstanding. |
 | Pre-CP1 execution review | Complete. Its worktree, carrier, metric, deferral and OS decisions govern this handover. |
 | Pre-T004d2/T004g scope review | Complete and dispositioned. |
-| Combined execution-junction review | Complete; T004d1a is bounded to four members and two lanes, and T004d2 proceeded independently. The owner accepted full body-line closure and released T004g with the Section surface/strip mapping on 2026-09-28. |
+| Combined execution-junction review | Complete; T004d1a is bounded to four members and two lanes, and T004d2 proceeded independently. The owner accepted full body-line closure and released T004g with the Section surface/strip mapping on 2026-09-28; T004g is now complete. |
 | Block-geometry decisions | Recorded in FR-037b, FR-039 to FR-043 and FR-050 to FR-053. |
 | Custody (T004c) | Complete — recovery refs and the later Spec 022 execution amendment verified 2026-09-22. T004d is preserved at `f93281e…`; the amended pre-T004d2 disposition is preserved at `8d29b57e…`; the final Opus junction disposition is preserved at `c2df4f0…`. |
 | Isolated spike T004c0 | Complete at exact snapshot `313ee82c…`. |
 | Isolated spike T004d0 / T004d1b | Complete in the isolated worktree; independently accepted after the carrier-path test correction. |
 | Isolated spike T004d | Complete; per-edge formula and corrected rendered-border proof independently accepted. |
-| Isolated spike T004d1a–T004h | T004d1a is complete in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract; no independent review is claimed. T004d2 is accepted with full body-line closure. T004g is released with the Section surface/strip mapping and carries the recorded gap-rhythm risk. Stop at independent review T004h after T004g completes. |
+| Isolated spike T004d1a–T004h | T004d1a is complete in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract; no independent review is claimed. T004d2 is accepted with full body-line closure. T004g is complete in local Pragma commit `b10c4d541` with the Section surface/strip mapping and recorded gap-rhythm risk. T004h independent review is now required. |
 | CP1 taxonomy | Not started. Denominator open. |
 | CP2 schema | Not started. |
 | Token implementation | Not started. No provider artifact exists. |

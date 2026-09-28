@@ -216,7 +216,7 @@
   live `origin/main` matrix and compatibility aliases as mandatory T017a
   migration inputs instead of recalculating them here.
 
-- [ ] **T004g — RELEASED by the 2026-09-28 owner decision.** Map shallow Section
+- [x] **T004g — RELEASED by the 2026-09-28 owner decision.** Map shallow Section
   to the surface inset and default/hero/deep Section to the strip inset. Strip
   and Section express the same major page-section inset magnitude: changing
   that rhythm should change both. Their difference is edge application, not
@@ -284,6 +284,20 @@
   hits: two in the Summon template, two in the React boilerplate and two in the
   ds-app side-navigation Storybook contract. Any other hit blocks completion;
   full completeness remains T007. Confirm on a comparison sheet, not a matrix.
+  **Completed 2026-09-28** in local Pragma commit `b10c4d541`. The comparison
+  story is `work-in-progress-component-section--gap-scale-comparison` on the
+  existing 6106 lane. Its 1600px Chromium DPR 1 capture is
+  `H:\WSL_dev_projects\temp\spec-024-t004g-evidence-20260928\gap-scale-comparison-1600.png`
+  (SHA-256
+  `d217549171a293d1de0439361321e47bb2c919e9203dbf7cdeab24dd4e1a3198`).
+  The exact sweep returns the six approved boundary hits and no others; private
+  gap-channel declarations occur only in `_spike-geometry.css`; the diff adds no
+  `--spacing-*` declaration. Focused TypeScript, Biome, static contract and
+  Chromium DPR 1 Section/gap checks pass. The complete transition test files
+  retain one pre-existing, out-of-scope Timeline mismatch: the assertions pin a
+  12px marker while the earlier shared marker-canvas implementation renders
+  16px. T004g does not rewrite that assertion opportunistically. No independent
+  review is claimed.
 - [ ] **T004h** Stop for an independent adversarial review of the pre-CP1
   geometry work (FR-049): the block inset, the phase and closure terms, the gap
   scale and the inset/gap separation. Package the comparison sheets, the

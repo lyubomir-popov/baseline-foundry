@@ -41,10 +41,11 @@ Read in this order:
   manifest are recorded in `tasks.md` and `implementation-handover.md`. No
   independent review is claimed. The mechanical `text-alignment.test.ts`
   correction and T004d2 are implemented; the 2026-09-28 owner ruling accepts
-  full body-line closure for CP1. The complete T004g writable list is recorded,
-  and T004g is released with shallow Section mapped to surface and
-  default/hero/deep mapped to strip. The preserved rejected candidate remains
-  custody evidence, not completion evidence.
+  full body-line closure for CP1. T004g is complete in local Pragma commit
+  `b10c4d541`, with shallow Section mapped to surface and default/hero/deep
+  mapped to strip. Work is stopped at T004h for independent adversarial review.
+  The preserved rejected candidate remains custody evidence, not completion
+  evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed
   density contract”. It has not been created.
