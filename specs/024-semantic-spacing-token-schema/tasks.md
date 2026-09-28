@@ -244,8 +244,18 @@
   `packages/react/ds-global/src/lib/component/Tile/common/Content/styles.css`,
   and `packages/react/ds-global/src/lib/component/Tooltip/styles.css`. Card
   Header is excluded because its genuine gap intentionally reads the surface
-  inline inset, not a provider gap. Padding declarations in these owners are
-  not gap declarations and do not move under this allowance.
+  inline inset, not a provider gap.
+  **T004g inset-owner record, before implementation (2026-09-28):** under the
+  separate FR-042a padding-owner authorization, repoint every block-padding
+  fallback found by the affected-scope sweep to
+  `--spacing-inset-surface-block`. The exact files are Accordion
+  `common/Item/styles.css`; Card `common/Header/styles.css`,
+  `common/Content/styles.css` and `common/Footer/styles.css`; Tile
+  `common/Header/styles.css` and `common/Content/styles.css`; Tooltip
+  `styles.css`; Popover `styles.css`; and Announcement `styles.css`. These are
+  the seven known component cases named in the reviewed plan, expanded to their
+  nine exact owning files. This authorization is distinct from the bounded gap
+  activation above; no other direct provider-gap consumer moves.
   Delete both ColorInput `--ds-box-inset-block` call-site overrides so they
   inherit the framed-box surface inset; do not redefine form-group gap as an
   inset. Every other direct provider-gap consumer, RichChoicesField and form

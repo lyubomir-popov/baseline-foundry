@@ -465,8 +465,23 @@ the field/element gap fallbacks in exactly these files to
 - `packages/react/ds-global/src/lib/component/Tooltip/styles.css`.
 
 Card Header is excluded because its genuine gap intentionally reads the surface
-inline inset. Padding declarations in these owners are not gap declarations and
-do not move under this allowance.
+inline inset.
+
+The separate FR-042a inset-owner record was also made before implementation on
+2026-09-28. Repoint every block-padding fallback found by the affected-scope
+sweep to `--spacing-inset-surface-block` in these exact files:
+
+- Accordion `common/Item/styles.css`;
+- Card `common/Header/styles.css`, `common/Content/styles.css` and
+  `common/Footer/styles.css`;
+- Tile `common/Header/styles.css` and `common/Content/styles.css`;
+- Tooltip `styles.css`;
+- Popover `styles.css`;
+- Announcement `styles.css`.
+
+These are the seven known component cases named in the reviewed plan, expanded
+to their nine exact owning files. This is distinct from the bounded gap
+activation above; no other direct provider-gap consumer moves.
 
 The exact boundaries are:
 
