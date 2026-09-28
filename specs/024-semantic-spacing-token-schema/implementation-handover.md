@@ -590,6 +590,16 @@ measurement JSON paths, 16 comparison artifacts and 3 supporting files all
 exist and match their recorded hashes. This packages the request only; it is
 not an independent review or permission to begin T005.
 
+**T004h review returned reject, 2026-09-28:** the independent Claude Opus 5.5
+review is recorded in `opus-t004h-review.md`. It accepts the formulas and owner
+rulings but requires five bounded corrections before a limited re-review:
+Section's stale SurfaceFrames contracts; ColorInput row geometry; real
+heading/body baseline probes; bare-list reset plus evidence; and actual Card,
+Tooltip and Form-field comparison rows. The tasks entry authorises the exact
+additional files and evidence repair. Downstream P2/CP2/T007/T010 findings stay
+recorded in the review and do not broaden this correction. T004h and T005 remain
+open.
+
 The reviewer must not be the agent that did the work. If no independent reviewer
 is available, say so and stop — do not self-review, and do not describe the
 model you are as a different one (FR-048).

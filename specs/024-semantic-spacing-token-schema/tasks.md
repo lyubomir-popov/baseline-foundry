@@ -320,6 +320,22 @@
   persisted/path-attached measurement JSON files, 16 comparison artifacts and
   3 supporting files at Pragma HEAD `b10c4d541`. T004h remains open pending an
   independent Opus disposition; T005 has not started.
+  **Independent review returned reject, 2026-09-28:** see
+  `opus-t004h-review.md`. The formula and owner rulings are accepted, but T004h
+  remains open for five bounded P1 corrections: update the stale Section
+  `SurfaceFrames` contracts; route ColorInput control chrome through row
+  geometry; replace the circular one-line baseline calculation with rendered
+  heading/body probes; reset and evidence bare-list margins; and replace the
+  synthetic-only T004g evidence with actual Card, Tooltip and Form-field rows.
+  The limited correction may amend only the existing T004d2/T004g story and
+  test files plus `SurfaceFrames.spacing.tests.ts`,
+  `SurfaceFrames.spacing.pw.ts`, form `density.css`, ColorInput styles and its
+  focused rendered test. A 6107 form comparison story and story-only CSS are
+  authorised because `ds-global` must not depend on `ds-global-form`.
+  Repackage with Git blob IDs, carrier isolation from first appearance
+  `f93281eac`, the T004d1b 21/21 no-movement result, persisted T004d2 numbers
+  and list-inclusive closure evidence. Re-review is limited to these
+  dispositions. Do not begin T005.
 
 ## Phase 2 — Pragma denominator closure
 
