@@ -14,10 +14,11 @@ stop at the recorded planning, CP1 and CP2 review checkpoints.
 
 [`specs/024-semantic-spacing-token-schema/implementation-handover.md`](specs/024-semantic-spacing-token-schema/implementation-handover.md)
 is the entry point for implementation work. Short version: the recut is **not**
-ready — CP1 and CP2 are unpassed and no provider artifact exists — but a bounded
-piece of model work is, and it is what unblocks CP1. It runs in the
-snapshot-derived `feat/bf-inside-out-geometry` worktree as a spike: no
-production branch, no PR, no push. Read
+ready — CP1 and CP2 are unpassed and no provider artifact exists. T004c0–T004h
+ran in the snapshot-derived Pragma `feat/bf-inside-out-geometry` worktree;
+T005–T013 run in this Baseline Foundry
+`feat/024-semantic-spacing-token-schema` worktree. No production branch, PR or
+push is authorised. Read
 [`opus-pre-cp1-execution-review.md`](specs/024-semantic-spacing-token-schema/opus-pre-cp1-execution-review.md)
 and
 [`opus-pre-t004d2-scope-review.md`](specs/024-semantic-spacing-token-schema/opus-pre-t004d2-scope-review.md)
@@ -36,19 +37,22 @@ pre-existing staged state were preserved. Confirm every exact commit, tree and
 ancestry identity against `recut-handoff.md` before any operation that could
 discard a captured worktree; ref existence alone is not sufficient.
 
-### Current execution junction — pre-CP1 review accepted; denominator frozen
+### Current execution junction — denominator assigned; T007 next
 
 T004d1a, T004d2 and T004g are complete under the amended contracts in the
 implementation handover. The independent T004h review rejected the first
 packet, accepted the bounded correction, and then accepted the result
 conditional on one list-boundary fix. That fix is local Pragma commit
-`1c2c6ba73`; T004h is complete with F2-F4 carried to CP1/T006.
+`1c2c6ba73`; T004h is complete. T006 now records the F2–F4 assignments and
+boundaries, which remain subject to CP1.
 
 T005/T005a/T005b are complete against fetched Pragma `origin/main`
 `3706f5ea3`. The exact denominator is
 `specs/024-semantic-spacing-token-schema/component-inventory.json`: 153 React
-parts and 11 non-React shared-channel/FR-036 rows. T006 is next. No production
-recut, PR, push, merge or publication is authorised.
+parts and 11 non-React shared-channel/FR-036 rows. T006 now assigns or bounds
+all 164 rows with exact profile coverage and the ColorInput per-edge exception;
+T007 is next. No production recut, PR, push, merge or publication is
+authorised.
 
 ### Planning and execution-readiness reviews complete
 

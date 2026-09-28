@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "generatedAt": "2026-09-28T14:22:46-06:00",
   "source": {
     "repository": "canonical/pragma",
@@ -11,7 +11,19 @@
   },
   "boundary": {
     "unit": "exported React render part plus each internal or compound render part already known to own or bound spacing; named non-React shared-channel consumers are separate rows",
-    "semanticAssignmentsDeferredTo": "T006",
+    "semanticAssignmentsCompletedBy": "T006",
+    "candidateRoles": [
+      "spacing.inset.action.inline",
+      "spacing.inset.continuation.inline",
+      "spacing.inset.control.block",
+      "spacing.inset.field.inline",
+      "spacing.inset.surface.block",
+      "spacing.inset.surface.inline",
+      "spacing.gap.element.block",
+      "spacing.gap.group.block",
+      "spacing.gap.mark.inline",
+      "spacing.gap.pattern.block"
+    ],
     "excluded": "stories, tests, docs chrome, application fixtures, hooks and context-only modules unless an existing row records a spacing boundary"
   },
   "counts": {
@@ -22,6 +34,8 @@
     "changedLegacyReactRenderSources": 44,
     "unchangedLegacyReactRenderSources": 98,
     "nonReactRows": 11,
+    "t006RowsWithAssignments": 86,
+    "t006BoundaryOnlyRows": 78,
     "changedRecordedCss": 94,
     "removedRecordedCss": 2,
     "addedCurrentMainCss": 11
@@ -60,7 +74,40 @@
           "sha256": "60cdb128c26304c5f3d209b24dac48377218e8aa7d1002ae9aa2f4622501ad5c"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
+      }
     },
     {
       "id": "ds-app-landscape/Button/Button",
@@ -78,7 +125,40 @@
           "sha256": "74de5762db6ad2a1fdaa02c37242efcbf49b518cadf97cfe65ed65bfd9ef7898"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
+      }
     },
     {
       "id": "ds-app-launchpad/DiffChangeMarker/common/DetailedChangeMarker/DetailedChangeMarker",
@@ -96,7 +176,18 @@
           "sha256": "097b64c21bdc49e9e134971042e5f158ba344104e1890598feba9a8e431c09c7"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-app-launchpad/DiffChangeMarker/common/SimpleChangeMarker/SimpleChangeMarker",
@@ -114,7 +205,18 @@
           "sha256": "cd203b70c9c2fb52cecbc0e75e549c8f6d6d18c8e1c1178ae5af280e038f23bc"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-app-launchpad/DiffChangeMarker/DiffChangeMarker",
@@ -132,7 +234,18 @@
           "sha256": "a9263668dccbb0529bf783d10f3a0d4c4fede79bb6d03cc363eb7b794a426484"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-app-launchpad/EditableBlock/EditableBlock",
@@ -150,7 +263,18 @@
           "sha256": "20cb91a06f8c9f866731f60db00a6bec3cde360860b88292d306ae1369ee54cf"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-frame",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Root owns paint, overflow or track layout; child parts own content spacing."
+          }
+        ],
+        "rationale": "A frame is not credited with its descendants' insets or gaps."
+      }
     },
     {
       "id": "ds-app-launchpad/FileTree/common/File/File",
@@ -168,7 +292,18 @@
           "sha256": "4a6339e4945a3efd3ccf1e3a041bf759fb6adff29f7590abe9db873b246fe9d6"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-app-launchpad/FileTree/common/Folder/Folder",
@@ -186,7 +321,18 @@
           "sha256": "f92980955aa2a2b2af943083ee37d3a6b70b5ad0ffe15093b2da80291dbbff75"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-app-launchpad/FileTree/common/IndentationBlock/IndentationBlock",
@@ -204,7 +350,18 @@
           "sha256": "c1430f0df9a60473ec2dddaf8460d212e901d0a376915ae3a53c9a57d12035ca"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-app-launchpad/FileTree/common/Node/Provider",
@@ -222,7 +379,35 @@
           "sha256": "e4167d153a5c5ba814339bc02e3a0846f24da70f8f71a5cec8cdf378f3e98c2f"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track."
+      }
     },
     {
       "id": "ds-app-launchpad/FileTree/common/SearchBox/SearchBox",
@@ -240,7 +425,34 @@
           "sha256": "e1a2e7c26b8cbd9b56a9759952b7bbe2b43e86a97a399ecca821f69af2913231"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-app-launchpad/FileTree/common/TreeView/TreeView",
@@ -252,7 +464,18 @@
       "exposure": "compound",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-app-launchpad/FileTree/Provider",
@@ -270,7 +493,18 @@
           "sha256": "48a7a18286b454e0e6e1c6f6bc247d624da6af4a77f253aaa91dba38ce3102c4"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-frame",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Root owns paint, overflow or track layout; child parts own content spacing."
+          }
+        ],
+        "rationale": "A frame is not credited with its descendants' insets or gaps."
+      }
     },
     {
       "id": "ds-app-launchpad/GitDiffViewer/common/CodeDiffViewer/CodeDiffViewer",
@@ -293,7 +527,38 @@
           "sha256": "fe98a3b5194933cb772b439b4267cbb3da99b88bcb741b47b835ffe1f9f2330c"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track.",
+        "exceptions": [
+          "Table border-spacing and browser-used row margin are layout/browsing-model boundaries, not new semantic roles."
+        ]
+      }
     },
     {
       "id": "ds-app-launchpad/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/AnnotatedDiffLine",
@@ -311,7 +576,18 @@
           "sha256": "0f11deaadac12009681eb96f56ba117b8db2a2340c5b7f78816fa16f55691663"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-app-launchpad/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/DiffLine",
@@ -329,7 +605,35 @@
           "sha256": "4dbb98d0fee67be1cc481c08e43216f0f236f89aab1cde36d5f8f276e4c76c3d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track."
+      }
     },
     {
       "id": "ds-app-launchpad/GitDiffViewer/common/FileHeader/FileHeader",
@@ -347,7 +651,35 @@
           "sha256": "7284b3e22927aff66693103230938113f129cb992fe281c3c8e5f68088cec46d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-surface-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box header row with surface keylines and host-owned block geometry."
+      }
     },
     {
       "id": "ds-app-launchpad/GitDiffViewer/Provider",
@@ -365,7 +697,18 @@
           "sha256": "7bc8044a3d35ef42c1a83f2f29a0617bc6681069612b0588ad2472fdc2973565"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-frame",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Root owns paint, overflow or track layout; child parts own content spacing."
+          }
+        ],
+        "rationale": "A frame is not credited with its descendants' insets or gaps."
+      }
     },
     {
       "id": "ds-app-launchpad/MarkdownEditor/common/Toolbar/common/Button/Button",
@@ -383,7 +726,35 @@
           "sha256": "0c0e725d21c68d4bf9b8f6e8e166a3487526c4ec34fda3dcbc94a25365a3dfdc"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-action-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark or caret is present"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box action row; block geometry belongs to its containing row system."
+      }
     },
     {
       "id": "ds-app-launchpad/MarkdownEditor/common/Toolbar/common/Group/Group",
@@ -401,7 +772,18 @@
           "sha256": "c64d54b0d3d479bf3153adf2a1d3dcb732ac5127f40d1b7d3f75c681ce2ec447"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-legacy-magnitude",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Legacy or intrinsic magnitude has no reusable semantic role; retain as reviewed magnitude/boundary."
+          }
+        ],
+        "rationale": "A repeated value alone is insufficient to create or join a semantic role."
+      }
     },
     {
       "id": "ds-app-launchpad/MarkdownEditor/common/Toolbar/common/Separator/Separator",
@@ -419,7 +801,18 @@
           "sha256": "41bb80ea299525cad9d01c6e954df72ea24ca8508d683c5c8e4db92e77285643"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-app-launchpad/MarkdownEditor/common/Toolbar/Toolbar",
@@ -437,7 +830,32 @@
           "sha256": "e919d1404f32c6c7c249884343ed3ccd9d7142cb7ca967b03679d9c47f0fba0d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "element-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "Adjacent children form one logical unit."
+      }
     },
     {
       "id": "ds-app-launchpad/MarkdownEditor/common/ViewModeTabs/ViewModeTabs",
@@ -455,7 +873,35 @@
           "sha256": "966fd074580c0b5b6163358487207cbf1e8b1adb0473423d5e2b4459bfe1745f"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-action-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark or caret is present"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box action row; block geometry belongs to its containing row system."
+      }
     },
     {
       "id": "ds-app-launchpad/MarkdownEditor/MarkdownEditor",
@@ -473,7 +919,43 @@
           "sha256": "f4f4549650b2aa0907044056c10135d8553577b199ba4e59b8e637783f03f63b"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "Toolbar, view tabs and preview content remain separate owners; highlighted-code and task-list offsets require T010 literal dispositions."
+        ]
+      }
     },
     {
       "id": "ds-app-launchpad/RelativeTime/RelativeTime",
@@ -485,7 +967,18 @@
       "exposure": "public",
       "compositionClue": "ordinary-text",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-text",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Typography-owned line box; no authored component inset or gap."
+          }
+        ],
+        "rationale": "Text metrics are governed by typography rather than semantic spacing."
+      }
     },
     {
       "id": "ds-app-lxd/Button/Button",
@@ -503,7 +996,40 @@
           "sha256": "6f1da1708ded6c4b80225423f6fe8fead82aabc601b2309341db835b28b77132"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
+      }
     },
     {
       "id": "ds-app-portal/Button/Button",
@@ -521,7 +1047,40 @@
           "sha256": "ee8e2b37f6ee140bc37c2f809b07362d8c2ed5e858b320d48665e2025c29d9e1"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
+      }
     },
     {
       "id": "ds-app/ApplicationLayout/ApplicationLayout",
@@ -539,7 +1098,18 @@
           "sha256": "82fb3babc76f925141021a5d99500ac2c2194aa004e488afd48bdf55d92c8a16"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-page-grid",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Page/application-shell/grid relationship excluded by FR-021 and FR-022."
+          }
+        ],
+        "rationale": "Its owner is the page/grid taxonomy, not this component taxonomy."
+      }
     },
     {
       "id": "ds-app/ContentLayout/ContentLayout",
@@ -557,7 +1127,18 @@
           "sha256": "6e8a74f43814a052b78643a08816d7ea7156b2caaa65f57a4f4c3f2e1812efe7"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-page-grid",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Page/application-shell/grid relationship excluded by FR-021 and FR-022."
+          }
+        ],
+        "rationale": "Its owner is the page/grid taxonomy, not this component taxonomy."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/CollapseToggle/CollapseToggle",
@@ -575,7 +1156,35 @@
           "sha256": "f74d15c04f98a8b3de64c7330fea551a11a8d444b3f9bda9046ad243ecb53a87"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-action-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark or caret is present"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box action row; block geometry belongs to its containing row system."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/Content/Content",
@@ -593,7 +1202,32 @@
           "sha256": "cdf6edd657c34583f434025f93dccbcf4f7f123e9b59d329f07d50fa726b4888"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "element-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "Adjacent children form one logical unit."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/ContextSwitcher/ContextSwitcher",
@@ -611,7 +1245,35 @@
           "sha256": "5ddbad39b9fc3f354d2a93408e741ab3210db7cdebef371483ec3f727acb0614"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/Footer/Footer",
@@ -629,7 +1291,18 @@
           "sha256": "c1d49b28043a55caf3694e39dc22504ae0a1fe119414bfcd3497377dcde1b1cc"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/Group/Group",
@@ -647,7 +1320,18 @@
           "sha256": "e7882b0f505c457a90caf6e53a0b4585084fc91723274a848b2acc5f09f481af"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/GroupHeader/GroupHeader",
@@ -665,7 +1349,32 @@
           "sha256": "cc7fcbdf78b0a9287423ec9be8bf797443f116d7619f8264e443432371ffe6a4"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-inline-only",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Inline-formatting owner; no component block inset."
+          }
+        ],
+        "rationale": "Inline framed content uses the field inset without becoming a control row.",
+        "exceptions": [
+          "Its inline alignment is inherited from the rail keyline; the row's top padding belongs to the parent group separation contract."
+        ]
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/Header/Header",
@@ -683,7 +1392,35 @@
           "sha256": "c2566e03037840f866043e740ea04518c6a0079ec270a944103d8b4681da9878"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/Item/Item",
@@ -701,7 +1438,35 @@
           "sha256": "ca8678ff53dadcea2e7ad5ebb0f08fc92e01c053f2eff5d10ac07a8c8ccd47a3"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/ItemButton/ItemButton",
@@ -719,7 +1484,35 @@
           "sha256": "2640d4b23f889dd1fb89ef1cda33d6535d75d952987518e8e1718136f70173a8"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/ItemExpandable/ItemExpandable",
@@ -737,7 +1530,35 @@
           "sha256": "ea9e15cee931b86e0d3498165949e646310fdadaa3103e6ee485467c9b3e2911"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track."
+      }
     },
     {
       "id": "ds-app/SideNavigation/common/NavTree/NavTree",
@@ -755,7 +1576,50 @@
           "sha256": "9e4d6b505f0aa386294dd7b5eebc9803af1e60c17dd442cc7a6d90d4773e1a9e"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-field-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when artwork is separated from copy"
+          },
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.continuation.inline",
+            "condition": "for nested group depth"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "between navigation rows/groups at the local level"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box field-like row; the host owns its fixed block track.",
+        "exceptions": [
+          "Depth indentation composes spacing.inset.continuation.inline; fade clearance and fixed row floors remain paint/layout boundaries."
+        ]
+      }
     },
     {
       "id": "ds-app/SideNavigation/SideNavigation",
@@ -773,7 +1637,35 @@
           "sha256": "cc3b6497d31e91cf242cd34c83af833fff949c64ef350ad7e1b1f2d87474fc4a"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "element-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "Adjacent children form one logical unit.",
+        "exceptions": [
+          "Rail padding and section separation are fixed in-box navigation geometry; the element-gap assignment covers owned section separation, not page inset."
+        ]
+      }
     },
     {
       "id": "ds-app/ViewLayout/ViewLayout",
@@ -791,7 +1683,18 @@
           "sha256": "000d1c5b3cb4a47e288ecab0d3a8b237c98cec2f5e00e29c9e7e3990a83c19c1"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-page-grid",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Page/application-shell/grid relationship excluded by FR-021 and FR-022."
+          }
+        ],
+        "rationale": "Its owner is the page/grid taxonomy, not this component taxonomy."
+      }
     },
     {
       "id": "ds-global-form/common/Wrapper/InvisibleWrapper",
@@ -809,7 +1712,18 @@
           "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/common/Wrapper/ToggleWrapper",
@@ -832,7 +1746,44 @@
           "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "marker-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "between field copy and the toggle row"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline-start",
+            "reason": "Outer inline inset is host-owned."
+          },
+          {
+            "scope": "inline-end",
+            "reason": "Outer inline inset is host-owned."
+          }
+        ],
+        "rationale": "A host row owns the mark-to-copy relationship and control-row block inset."
+      }
     },
     {
       "id": "ds-global-form/common/Wrapper/withToggleWrapper",
@@ -850,7 +1801,18 @@
           "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
+      }
     },
     {
       "id": "ds-global-form/common/Wrapper/Wrapper",
@@ -868,7 +1830,32 @@
           "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "element-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "Adjacent children form one logical unit."
+      }
     },
     {
       "id": "ds-global-form/component/CheckboxField/CheckboxField",
@@ -880,7 +1867,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/ChoicesField/Choices",
@@ -898,7 +1896,35 @@
           "sha256": "75549a738580e41f3e4ff4562c700afdaf603beb01b3294296a276919d9348a9"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-inline-only",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.group.block",
+            "condition": "between choice rows"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Inline-formatting owner; no component block inset."
+          }
+        ],
+        "rationale": "Inline framed content uses the field inset without becoming a control row."
+      }
     },
     {
       "id": "ds-global-form/component/ChoicesField/ChoicesField",
@@ -916,7 +1942,18 @@
           "sha256": "75549a738580e41f3e4ff4562c700afdaf603beb01b3294296a276919d9348a9"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/ChoicesField/common/Option/Option",
@@ -928,7 +1965,38 @@
       "exposure": "internal",
       "compositionClue": "bare-marker-led",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "marker-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline-start",
+            "reason": "Outer inline inset is host-owned."
+          },
+          {
+            "scope": "inline-end",
+            "reason": "Outer inline inset is host-owned."
+          }
+        ],
+        "rationale": "A host row owns the mark-to-copy relationship and control-row block inset."
+      }
     },
     {
       "id": "ds-global-form/component/ColorField/ColorField",
@@ -940,7 +2008,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/ComboboxField/ComboboxField",
@@ -952,7 +2031,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/DateField/DateField",
@@ -964,7 +2054,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/DateTimeField/DateTimeField",
@@ -976,7 +2077,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/FileUploadField/FileUploadField",
@@ -988,7 +2100,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/HiddenField/HiddenField",
@@ -1000,7 +2123,18 @@
       "exposure": "internal",
       "compositionClue": "nonvisual-composer",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
+      }
     },
     {
       "id": "ds-global-form/component/NumberField/NumberField",
@@ -1012,7 +2146,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/PasswordField/PasswordField",
@@ -1024,7 +2169,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/PhoneField/PhoneField",
@@ -1036,7 +2192,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/RangeField/common/RangeControl/RangeControl",
@@ -1054,7 +2221,18 @@
           "sha256": "a2affcccb8f7356f1216271fa58deef2b42a2bfe68cac68c02e710e06d6f28e2"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-global-form/component/RangeField/RangeField",
@@ -1066,7 +2244,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/RatingField/RatingField",
@@ -1078,7 +2267,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/RichChoicesField/common/Option/Option",
@@ -1090,7 +2290,40 @@
       "exposure": "internal",
       "compositionClue": "uniform-framed-card",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global-form/component/RichChoicesField/RichChoices",
@@ -1108,7 +2341,40 @@
           "sha256": "aa8d620e7bd10315a41845628f5d6e501df94c461ca566519118b4dbb693b5ab"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global-form/component/RichChoicesField/RichChoicesField",
@@ -1126,7 +2392,18 @@
           "sha256": "aa8d620e7bd10315a41845628f5d6e501df94c461ca566519118b4dbb693b5ab"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/SelectField/SelectField",
@@ -1138,7 +2415,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/SwitchField/SwitchField",
@@ -1150,7 +2438,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/TextareaField/TextareaField",
@@ -1162,7 +2461,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/TextField/TextField",
@@ -1174,7 +2484,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/component/TimeField/TimeField",
@@ -1186,7 +2507,18 @@
       "exposure": "internal",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/pattern/Field/Field",
@@ -1198,7 +2530,18 @@
       "exposure": "public",
       "compositionClue": "nonvisual-composer",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
+      }
     },
     {
       "id": "ds-global-form/pattern/Form/Form",
@@ -1210,7 +2553,32 @@
       "exposure": "public",
       "compositionClue": "field-stack",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "group-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.group.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "The owner separates logical groups inside a pattern."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/CheckboxInput/CheckboxInput",
@@ -1228,7 +2596,18 @@
           "sha256": "38958c5fbbcd7d36b96d1f05ccadd44e3c9ed54cfd370f1cec4d9f0ab1fc6252"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/ColorInput/ColorInput",
@@ -1246,7 +2625,38 @@
           "sha256": "ce4249c9988cb3477d0b8ef6ece670ebe2854a5645a03b57a6ab7f16238b3fe0"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge.",
+        "exceptions": [
+          "The popover separator row has a block-start border and no block-end border while inheriting symmetric host row padding; recut through per-edge actual border subtraction, never nominal host-border subtraction.",
+          "Popover and swatch-grid child relationships compose surface and element-gap roles; they do not mint ColorInput-specific roles."
+        ]
+      }
     },
     {
       "id": "ds-global-form/subcomponent/ComboboxInput/ComboboxInput",
@@ -1264,7 +2674,18 @@
           "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/ComboboxInput/common/List/List",
@@ -1282,7 +2703,40 @@
           "sha256": "dc8d5c1b20591732b53491e5afa14d5ba1fce6f54efd81307b09ab52c63c6166"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/ComboboxInput/common/ResetButton/ResetButton",
@@ -1300,7 +2754,35 @@
           "sha256": "56c09664f65a511686c086f6df80f2677595d2b92ba33eac90aaf9788102e8ea"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-action-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark or caret is present"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box action row; block geometry belongs to its containing row system."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/ComboboxInput/MultipleCombobox",
@@ -1318,7 +2800,34 @@
           "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/ComboboxInput/SingleCombobox",
@@ -1336,7 +2845,34 @@
           "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/DateInput/DateInput",
@@ -1354,7 +2890,34 @@
           "sha256": "4322d79441a5ba77a667324e6eff337b13217d822abbbf7cdf396b17ec6c151a"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/DateTimeInput/DateTimeInput",
@@ -1372,7 +2935,34 @@
           "sha256": "863f5eea5d36ac9ae69bdc4b14a3cfdb694a9bfdce8c8336109a5fe4a4ac097c"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/Field/Description/Description",
@@ -1390,7 +2980,18 @@
           "sha256": "62a9d638af5be4bbd24f603035ca53db9f15827d7b9d36d0deec8bc6bec02803"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-text",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Typography-owned line box; no authored component inset or gap."
+          }
+        ],
+        "rationale": "Text metrics are governed by typography rather than semantic spacing."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/Field/Error/Error",
@@ -1408,7 +3009,18 @@
           "sha256": "ee585ea690b1d7f27b9dbe3d6880407257d925bbcb9a1bda11bf60c44951e576"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-text",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Typography-owned line box; no authored component inset or gap."
+          }
+        ],
+        "rationale": "Text metrics are governed by typography rather than semantic spacing."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/Field/Label/Label",
@@ -1426,7 +3038,32 @@
           "sha256": "c574fa764838d98040bbbe7f2030a9a28c4600518a3407bfb80bcdcc39d5a477"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "mark-gap-only",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline-start",
+            "reason": "No component-owned outer inline inset."
+          },
+          {
+            "scope": "inline-end",
+            "reason": "No component-owned outer inline inset."
+          },
+          {
+            "scope": "block",
+            "reason": "No component-owned block inset."
+          }
+        ],
+        "rationale": "The part owns only separation between a mark and copy."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/FileUploadInput/FileUploadInput",
@@ -1444,7 +3081,43 @@
           "sha256": "2e2782d7103e637a0e47125b351a000fed8ab56a2985c6141a2f5d7247c0fb10"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "The dropzone canvas is intrinsic content and may exceed the control-row target; only its framed section and child gaps consume semantic roles."
+        ]
+      }
     },
     {
       "id": "ds-global-form/subcomponent/HiddenInput/HiddenInput",
@@ -1456,7 +3129,18 @@
       "exposure": "internal",
       "compositionClue": "nonvisual-composer",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/NumberInput/NumberInput",
@@ -1474,7 +3158,34 @@
           "sha256": "8332a61385ef11b08bc7c3f38845e9e19e328fbeb4aeed442c1a853ce0164c7d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/PasswordInput/PasswordInput",
@@ -1492,7 +3203,34 @@
           "sha256": "61fac5b8d6fc4d597121d3da33a78b49360f28ebba9520d4bfeeb02be8edcd2b"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/PhoneInput/PhoneInput",
@@ -1510,7 +3248,34 @@
           "sha256": "cc8547a9c777c032d17dcf44d38c401e3f79097607f5817d9bb0ba365586000b"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/RadioInput/RadioInput",
@@ -1528,7 +3293,18 @@
           "sha256": "f8cd3903c297176e5d3f543a1c675fd9e0c3967bc08aa50e704270bc0b84c039"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/RangeInput/RangeInput",
@@ -1546,7 +3322,18 @@
           "sha256": "284b1e3c0bd39a8f6aafdf6203ddee2b5e59653c47991dbad4de6520aa57f186"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/RatingInput/RatingInput",
@@ -1564,7 +3351,18 @@
           "sha256": "a520b9097a8db407cca126ec389958277749aa18e774c6f319fa0ff8fb2b1b2d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-legacy-magnitude",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Legacy or intrinsic magnitude has no reusable semantic role; retain as reviewed magnitude/boundary."
+          }
+        ],
+        "rationale": "A repeated value alone is insufficient to create or join a semantic role."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/SelectInput/SelectInput",
@@ -1582,7 +3380,34 @@
           "sha256": "146419942163ed16295663c90cf9727840b0041bb4c88b8160e17afcf2afe9ab"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/SwitchInput/SwitchInput",
@@ -1600,7 +3425,18 @@
           "sha256": "38a9de7d2cf583948cf4acf47a2ece721c96e218ff9ae699a7d4ced501a31ae6"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/TextareaInput/TextareaInput",
@@ -1618,7 +3454,34 @@
           "sha256": "271f31fd18c8ef61691dbfa825901ce7154c9eb05713a57d9b573fa86b4df454"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/TextInput/TextInput",
@@ -1636,7 +3499,34 @@
           "sha256": "c9565a564202eea220ae501239a38c711fa31c0eb7c1b2e98667fa37112362e0"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global-form/subcomponent/TimeInput/TimeInput",
@@ -1654,7 +3544,34 @@
           "sha256": "dfb96f9cff52f2a43f309e82db5ee48e19eb7d213e7afe9517e3c8082cfae5b5"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/Announcement/Announcement",
@@ -1672,7 +3589,49 @@
           "sha256": "077f008b51acb879674682213c2d59493cda6d2d8f0e97611f61216850690dc9"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "between the leading marker and copy"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "The leading marker additionally consumes spacing.gap.mark.inline; its canvas remains paint."
+        ]
+      }
     },
     {
       "id": "ds-global/_work_in_progress/CategoriesSection/CategoriesSection",
@@ -1690,7 +3649,40 @@
           "sha256": "a7994bff22aa9a9ab73d522a44541b1db976509bd6577236f56cf1a8271700a4"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/CategoriesSection/common/Category/Category",
@@ -1708,7 +3700,32 @@
           "sha256": "006ab7f0af7f5671f51722025347a51ed3a8b395239406ad87b712e5cec9c37a"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "element-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "Adjacent children form one logical unit."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/ChatSection/ChatSection",
@@ -1726,7 +3743,40 @@
           "sha256": "dd5c1d2d9f5f16da14c12ece87e6e9c1f3d83aedde7bd3ee5f6490ab9af43925"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/DescriptionSection/DescriptionSection",
@@ -1744,7 +3794,18 @@
           "sha256": "57d3bcb2a0a189adaac0d856bc5571a68ebcd6de7dd868854af336bd20f6333a"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-text",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Typography-owned line box; no authored component inset or gap."
+          }
+        ],
+        "rationale": "Text metrics are governed by typography rather than semantic spacing."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/grid/ApplicationLayout/ApplicationLayout",
@@ -1762,7 +3823,18 @@
           "sha256": "c511346e14c6a0bce7f901a3c92058241122169005a9563c27d921e80f21a746"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-page-grid",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Page/application-shell/grid relationship excluded by FR-021 and FR-022."
+          }
+        ],
+        "rationale": "Its owner is the page/grid taxonomy, not this component taxonomy."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/grid/GridCard/GridCard",
@@ -1780,7 +3852,18 @@
           "sha256": "eed00605df5a7079394e162170d0272975ac9cf674e237e92467201389d3f78d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-frame",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Root owns paint, overflow or track layout; child parts own content spacing."
+          }
+        ],
+        "rationale": "A frame is not credited with its descendants' insets or gaps."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/grid/InnerGridDemo/InnerGridDemo",
@@ -1798,7 +3881,18 @@
           "sha256": "0ecc4a7500514ec2dad20ad789d72a55d289cc1a3272c75128c49e373e6ebed9"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-page-grid",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Page/application-shell/grid relationship excluded by FR-021 and FR-022."
+          }
+        ],
+        "rationale": "Its owner is the page/grid taxonomy, not this component taxonomy."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/grid/SettingsView/SettingsView",
@@ -1816,7 +3910,18 @@
           "sha256": "9df5383516766030f72f505448394ac3981d9d2029a316862d3d7cf11fc8b7fc"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-page-grid",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Page/application-shell/grid relationship excluded by FR-021 and FR-022."
+          }
+        ],
+        "rationale": "Its owner is the page/grid taxonomy, not this component taxonomy."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/IconSection/IconSection",
@@ -1834,7 +3939,40 @@
           "sha256": "994db2e680d7129e4fee214e2c0e1ea39d2d1d19c8ecd59732b6d1e32565fd9b"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/Label/Label",
@@ -1852,7 +3990,18 @@
           "sha256": "8534c8635c281cea7f66d4b5f6ef968c99ccbc648abd092c2806540b34204fa8"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-legacy-magnitude",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Legacy or intrinsic magnitude has no reusable semantic role; retain as reviewed magnitude/boundary."
+          }
+        ],
+        "rationale": "A repeated value alone is insufficient to create or join a semantic role."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/Link/Link",
@@ -1870,7 +4019,18 @@
           "sha256": "b313e8c7dd2cd86ab88b64130f1f83c5dec8ab116689f7b400cfb1a6592df95d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-text",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Typography-owned line box; no authored component inset or gap."
+          }
+        ],
+        "rationale": "Text metrics are governed by typography rather than semantic spacing."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/Rule/Rule",
@@ -1888,7 +4048,18 @@
           "sha256": "8fd387ea38dada049da40571ae97c5f1cccc9b821a01d54a578a97b442d1cf2d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-legacy-magnitude",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Legacy or intrinsic magnitude has no reusable semantic role; retain as reviewed magnitude/boundary."
+          }
+        ],
+        "rationale": "A repeated value alone is insufficient to create or join a semantic role."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/Section/Section",
@@ -1906,7 +4077,43 @@
           "sha256": "cf7008e817cc1abe6b20c9934bd5d5d6ec18b45eaa4fbd1a66788745b1e90e3b"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "Shallow framed sections consume spacing.inset.surface.block; default, deep and hero page-section edges consume the existing strip inset and remain outside the component-category count under FR-053a."
+        ]
+      }
     },
     {
       "id": "ds-global/_work_in_progress/SkipLink/SkipLink",
@@ -1924,7 +4131,40 @@
           "sha256": "7ad7c7c2ad32ecaa319d750d0eb7b86680aac3a3d89b4e494bd46d24ee700f6e"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
+      }
     },
     {
       "id": "ds-global/_work_in_progress/TSection/TSection",
@@ -1942,7 +4182,40 @@
           "sha256": "b87d84d6d8596ebad7083cf839885176651bb1950414386d58be2d98ed53be85"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/component/Accordion/Accordion",
@@ -1960,7 +4233,32 @@
           "sha256": "1afae34bedfb52bb7ab9ac966e11f5a7565086e4e2468832e129884c4299e2df"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "element-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "Adjacent children form one logical unit."
+      }
     },
     {
       "id": "ds-global/component/Accordion/common/Item/Item",
@@ -1978,7 +4276,62 @@
           "sha256": "b3562e8e7a22d5e83cebc36d3fd825ae18f2164c35b8264001ef9362b8ce3bff"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "continuation-surface-panel",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.continuation.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "in the summary row"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block",
+            "condition": "in the summary row"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block",
+            "condition": "in the summary row"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Asymmetric panel: continuation keyline at start and surface edge at end.",
+        "exceptions": [
+          "The summary is a marker-control row; the expanded content uses continuation at inline-start and surface at inline-end.",
+          "The Accordion root owns item separation; the Item does not absorb that gap into its padding."
+        ]
+      }
     },
     {
       "id": "ds-global/component/Badge/Badge",
@@ -1996,7 +4349,18 @@
           "sha256": "8d86126b6c6307d756654029135911619f08bb2b36d8de21efa75e2a1f5c680d"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-global/component/Breadcrumbs/Breadcrumbs",
@@ -2014,7 +4378,32 @@
           "sha256": "d3ff4304ff0f4c9dda5ab06a941a43a7acb2fb41b0d3ed8027ff95badc7f6cc1"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "element-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "Adjacent children form one logical unit."
+      }
     },
     {
       "id": "ds-global/component/Breadcrumbs/common/Item/Item",
@@ -2032,7 +4421,32 @@
           "sha256": "2ff1b538aab88a3bf4f857158bee0a0351b5bd7fda8d3eca5ffa1620ecfa65d6"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "mark-gap-only",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline-start",
+            "reason": "No component-owned outer inline inset."
+          },
+          {
+            "scope": "inline-end",
+            "reason": "No component-owned outer inline inset."
+          },
+          {
+            "scope": "block",
+            "reason": "No component-owned block inset."
+          }
+        ],
+        "rationale": "The part owns only separation between a mark and copy."
+      }
     },
     {
       "id": "ds-global/component/Button/Button",
@@ -2050,7 +4464,44 @@
           "sha256": "2eace7957ce0366cdfbacea0985b65da328679acc5cdad6738e30234525d1b03"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional.",
+        "exceptions": [
+          "The icon-and-text variant uses spacing.inset.field.inline at inline-start, spacing.inset.action.inline at inline-end and spacing.gap.mark.inline internally.",
+          "The link variant is an explicit zero-inset boundary and does not consume the control block inset."
+        ]
+      }
     },
     {
       "id": "ds-global/component/Card/Card",
@@ -2068,7 +4519,18 @@
           "sha256": "02072f97e10571ddd213e0eed9b4b17a1a79813af8392e5c4997eddb58b58e40"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global/component/Card/common/Content/Content",
@@ -2086,7 +4548,40 @@
           "sha256": "e3538e001dac089a069e1965293cd2008064793912f5c7551e429a14ee98d985"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/component/Card/common/Footer/Footer",
@@ -2104,7 +4599,40 @@
           "sha256": "991678abd9c8fa89926298f267c2c95247f90272e4144ce2da13bec576990521"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/component/Card/common/Header/Header",
@@ -2122,7 +4650,40 @@
           "sha256": "67bbc6b36b422b0bb57a2faeabc7b796e1b14a0af8ae538ba43860f9fa8b209f"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/component/Card/common/Image/Image",
@@ -2140,7 +4701,18 @@
           "sha256": "9b73ee8c923db48f2e8768e8aeadfc7434aa88e913fc4cc908f138f8bf772746"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-global/component/Chip/Chip",
@@ -2158,7 +4730,43 @@
           "sha256": "96a2583e8be6c014c20f3477c337a92ebd7b7c64f38ab9715d38d45a9e11177f"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional.",
+        "exceptions": [
+          "The nested variant is a host-fit mode, not a new role; approval depends on the density policy and FR-044a."
+        ]
+      }
     },
     {
       "id": "ds-global/component/ContextualMenu/common/Item/Item",
@@ -2176,7 +4784,35 @@
           "sha256": "0a38e98b91a5d65314d7d38e7ed701e89437a2e92cf0b34550c112a5a8280569"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-action-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark or caret is present"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box action row; block geometry belongs to its containing row system."
+      }
     },
     {
       "id": "ds-global/component/ContextualMenu/common/SubMenu/SubMenu",
@@ -2188,7 +4824,18 @@
       "exposure": "internal",
       "compositionClue": "nonvisual-composer",
       "styles": [],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-frame",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Root owns paint, overflow or track layout; child parts own content spacing."
+          }
+        ],
+        "rationale": "A frame is not credited with its descendants' insets or gaps."
+      }
     },
     {
       "id": "ds-global/component/ContextualMenu/ContextualMenu",
@@ -2206,7 +4853,43 @@
           "sha256": "561b9e12be7676b403e3702b0a1a754f10912fad422c698025ce743a01919154"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "The trigger wrapper is a boundary; the portaled surface consumes surface insets and its Item rows own action/control geometry."
+        ]
+      }
     },
     {
       "id": "ds-global/component/Icon/Icon",
@@ -2224,7 +4907,18 @@
           "sha256": "52dd941f92e1544e1612c261c1d391b316b792cab6ab7a058e5ea38b6d7ec5a3"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "ds-global/component/InlineCode/InlineCode",
@@ -2242,7 +4936,29 @@
           "sha256": "8fdc69dfe7fb39f0f76e713858234801306320557d0a61a2fe0f826bb1d35ebe"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-inline-only",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Inline-formatting owner; no component block inset."
+          }
+        ],
+        "rationale": "Inline framed content uses the field inset without becoming a control row."
+      }
     },
     {
       "id": "ds-global/component/KeyboardKey/KeyboardKey",
@@ -2260,7 +4976,29 @@
           "sha256": "aad75b0f8f6590a76888a6b62320055cc4a3767343569ad102ea579708b48839"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-inline-only",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Inline-formatting owner; no component block inset."
+          }
+        ],
+        "rationale": "Inline framed content uses the field inset without becoming a control row."
+      }
     },
     {
       "id": "ds-global/component/Popover/Popover",
@@ -2278,7 +5016,43 @@
           "sha256": "4d92986cebc4f5d56d5d9b9afe14a102ef4f428225142f0d896ae890d3ed4de2"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "The trigger wrapper is a boundary; only the portaled content panel consumes the surface profile."
+        ]
+      }
     },
     {
       "id": "ds-global/component/Tabs/common/Item/Item",
@@ -2296,7 +5070,35 @@
           "sha256": "53a85c8b989f70a692b6accbfb60cede90afa06e14189b8b366f6363875bb853"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "in-box-action-row",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark or caret is present"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "block",
+            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+          }
+        ],
+        "rationale": "In-box action row; block geometry belongs to its containing row system."
+      }
     },
     {
       "id": "ds-global/component/Tabs/Tabs",
@@ -2314,7 +5116,18 @@
           "sha256": "c77f3ecca0da29855b8373c388c26703d4aa74a9bbd892217cf8ad06c21efaca"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global/component/Tile/common/Content/Content",
@@ -2332,7 +5145,40 @@
           "sha256": "43d66be91dff204d35a19145a34bdc125c1b3e90f2fbc6ab48f4a5aebe46e502"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/component/Tile/common/Header/Header",
@@ -2350,7 +5196,40 @@
           "sha256": "627aa6fd63922d99e37dbac25693c64d27a1df91744a38212924ff1dc85c8378"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/component/Tile/Tile",
@@ -2368,7 +5247,18 @@
           "sha256": "cd3c06a475ce59ba280fe8fd93976645206c530c05aaf913fa83bb5543479c17"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global/component/Tooltip/Tooltip",
@@ -2386,7 +5276,43 @@
           "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "Caret size and placement are paint; trigger distance is spacing.gap.element.block, not panel inset."
+        ]
+      }
     },
     {
       "id": "ds-global/component/Tooltip/TooltipEngine",
@@ -2404,7 +5330,18 @@
           "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
+      }
     },
     {
       "id": "ds-global/component/Tooltip/withTooltip",
@@ -2422,7 +5359,18 @@
           "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
+      }
     },
     {
       "id": "ds-global/group/Cards/Cards",
@@ -2440,7 +5388,32 @@
           "sha256": "3cc9be7ce71c12fa44adfa1fb19ad9aa12fe0b0089ca656ba15593bcee562ff6"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "group-stack",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.group.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "No component-owned inline inset."
+          },
+          {
+            "scope": "block-start",
+            "reason": "No component-owned outer block inset."
+          },
+          {
+            "scope": "block-end",
+            "reason": "No component-owned outer block inset."
+          }
+        ],
+        "rationale": "The owner separates logical groups inside a pattern."
+      }
     },
     {
       "id": "ds-global/group/KeyboardKeys/KeyboardKeys",
@@ -2458,7 +5431,32 @@
           "sha256": "6df2ff17fdd4e5f26ac2b3ca78a67a915f1cb22dace012c4cb17679efba9a8a7"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "mark-gap-only",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline-start",
+            "reason": "No component-owned outer inline inset."
+          },
+          {
+            "scope": "inline-end",
+            "reason": "No component-owned outer inline inset."
+          },
+          {
+            "scope": "block",
+            "reason": "No component-owned block inset."
+          }
+        ],
+        "rationale": "The part owns only separation between a mark and copy."
+      }
     },
     {
       "id": "ds-global/pattern/Modal/common/Content/Content",
@@ -2476,7 +5474,40 @@
           "sha256": "2fb1b9d0e2d0897132b13fee77eca213ca121263360ef57a8e767e5685135241"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+      }
     },
     {
       "id": "ds-global/pattern/Modal/common/Footer/Footer",
@@ -2494,7 +5525,43 @@
           "sha256": "0f77d4f8d7a9e8422dc5db7b5e3f26ecc424d68ca8b817eba60eff7d39928eea"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "The action row uses spacing.gap.element.block as an axis-specific candidate only after T009 confirms the inline use; until then its inline action separation remains a reviewed magnitude."
+        ]
+      }
     },
     {
       "id": "ds-global/pattern/Modal/common/Header/Header",
@@ -2512,7 +5579,43 @@
           "sha256": "c33a202c50b433faab70c957550b35c643fee949896b689ec782b7ae6b1328d8"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "when the part stacks children"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "exceptions": [
+          "The close action keeps its own action/control contract; the inset divider is paint and does not alter the header edge assignment."
+        ]
+      }
     },
     {
       "id": "ds-global/pattern/Modal/Modal",
@@ -2530,7 +5633,18 @@
           "sha256": "78655a5b16b5d736ef2bc5562875e03170e285af910fae3fc7dc0f2d75b1f672"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-frame",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Root owns paint, overflow or track layout; child parts own content spacing."
+          }
+        ],
+        "rationale": "A frame is not credited with its descendants' insets or gaps."
+      }
     },
     {
       "id": "ds-global/pattern/Modal/withModal",
@@ -2548,7 +5662,18 @@
           "sha256": "78655a5b16b5d736ef2bc5562875e03170e285af910fae3fc7dc0f2d75b1f672"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
+      }
     },
     {
       "id": "ds-global/pattern/Timeline/common/Content/Content",
@@ -2566,7 +5691,18 @@
           "sha256": "f8b967be821877c3703cae35387b6eda4e2096a547296c2bd5e7f130db13d43a"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global/pattern/Timeline/common/Event/Event",
@@ -2584,7 +5720,38 @@
           "sha256": "29626df16c1ba4fb9cde7fc974886d0ea76680a1ab715dbf5cd80b6d2da781f7"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "marker-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline-start",
+            "reason": "Outer inline inset is host-owned."
+          },
+          {
+            "scope": "inline-end",
+            "reason": "Outer inline inset is host-owned."
+          }
+        ],
+        "rationale": "A host row owns the mark-to-copy relationship and control-row block inset."
+      }
     },
     {
       "id": "ds-global/pattern/Timeline/Timeline",
@@ -2602,7 +5769,18 @@
           "sha256": "f37345f9bc2360a5f56ed08e42a0c7f37784262eb276b8a67c13e089d2145753"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
+          }
+        ],
+        "rationale": "The renderer adds no independent spacing relationship."
+      }
     },
     {
       "id": "ds-global/subcomponent/Spinner/Spinner",
@@ -2620,7 +5798,18 @@
           "sha256": "2abcf27341d0e986ed7007e36de7fbf8eb7b56213cfd0ab5dfd4b6d2791a7865"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-paint",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+          }
+        ],
+        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+      }
     },
     {
       "id": "tokens/TokenTable/common/TokenSwatch/TokenSwatch",
@@ -2638,7 +5827,18 @@
           "sha256": "48663ae95bdc54789e1561a7566439bd6b01cd6b4378edef7ccd7bb4430bc68a"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-legacy-magnitude",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Legacy or intrinsic magnitude has no reusable semantic role; retain as reviewed magnitude/boundary."
+          }
+        ],
+        "rationale": "A repeated value alone is insufficient to create or join a semantic role."
+      }
     },
     {
       "id": "tokens/TokenTable/TokenTable",
@@ -2656,7 +5856,47 @@
           "sha256": "51edb9400a51c89275380345dcacb351a05280f69fdb0652f90ecacee9e2b2aa"
         }
       ],
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "token-table-composite",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline",
+            "condition": "for table and control cells"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline",
+            "condition": "for table and control cells"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "inside a control or metadata unit"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.group.block",
+            "condition": "between table/control groups"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Table tracks, border separation, swatch paint and intrinsic visualisation sizes remain non-token boundaries."
+          }
+        ],
+        "rationale": "Composite owner: only the listed cell insets and stack gaps join component semantic roles.",
+        "exceptions": [
+          "Cell edges use spacing.inset.field.inline; control stacks use spacing.gap.element.block and section stacks use spacing.gap.group.block.",
+          "Painted swatches and table/grid mechanics remain explicit boundaries; T007/T010 classify each remaining literal."
+        ]
+      }
     }
   ],
   "nonReact": [
@@ -2669,7 +5909,40 @@
       "sourceSha256": "295287971fdd7b0718f9fa87efe143d1543c49e4e6ffa278bc76ca84b5fe0471",
       "stylesBlob": "e364c2fd80235a869405662c9f2570d00b5fe3be",
       "stylesSha256": "efcb4a9e54010d673c027f8b3fb42bd3f26770cc6eb14b8658ab8cff478908f4",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
+      }
     },
     {
       "id": "svelte-ds-app-launchpad/NumberInput",
@@ -2680,7 +5953,29 @@
       "sourceSha256": "802946cb06930bebe6ddc9f35084e53720a7ab4a1a57f41c32ce0d7c9b446dc9",
       "stylesBlob": "2f6ac9f36bb5dc059322a27206c0b40d6dea1463",
       "stylesSha256": "e0fb14387a81a5e8871409552e606fb143acdf64690227544cce6c6794b57de8",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "control-block-only",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "This denominator row carries no shared inline-role claim."
+          }
+        ],
+        "rationale": "The non-React owner consumes only the shared control block channel."
+      }
     },
     {
       "id": "svelte-ds-app-launchpad/TextInput",
@@ -2691,7 +5986,29 @@
       "sourceSha256": "b9b7e661756d0bf57622d1ab223f3b8cd884d6b53dd08c0828ea5e4f19220744",
       "stylesBlob": "49a5e499e9723993e986ab2d07b1c4979a74b39b",
       "stylesSha256": "42d3c5b0a9972f4875813479dfdcbda4dfdc96e28b7248b6c0eb060bc91d1d8d",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "control-block-only",
+        "assignments": [
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "This denominator row carries no shared inline-role claim."
+          }
+        ],
+        "rationale": "The non-React owner consumes only the shared control block channel."
+      }
     },
     {
       "id": "svelte-ds-app-launchpad/Chip",
@@ -2702,7 +6019,40 @@
       "sourceSha256": "30095e8184c22737561710dfd27a5593696cea8b20c9fdc9e352eb4f69c68c77",
       "stylesBlob": "51cb345dbc4b5a06aa7d66e62f66b937de44adaa",
       "stylesSha256": "e4e132816423c7f41eb1989e543006e85530f83c4cee3446fd751f46fb061d0b",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
+      }
     },
     {
       "id": "svelte-ds-app-launchpad/Select",
@@ -2713,7 +6063,34 @@
       "sourceSha256": "b70609e7a0808c1ab225531f6c1f1814744da607f1df71d8d16d9a1a5f1040bd",
       "stylesBlob": "bc9b6abe47f681c807e60f7cd58eddafbcbf6173",
       "stylesSha256": "2122dbada7dd021f4388de685754581aabc7c1c070c726bb87afea28643568b2",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "svelte-ds-app-launchpad/InputPrimitive",
@@ -2724,7 +6101,34 @@
       "sourceSha256": "d4ddec95fd52a94716ed20f4532d857dacbdc543d5773446df815c75bce061cf",
       "stylesBlob": "f679f8e6496b8b4cb4c7e49a8760a7f97aab9a6d",
       "stylesSha256": "472e717a64f0d4f604936c47dc601c3ee88e990e1a9c1b758924df021fca6f2f",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "field-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.field.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge."
+      }
     },
     {
       "id": "svelte-ds-app-launchpad/density-shim",
@@ -2735,7 +6139,18 @@
       "sourceSha256": "7f9fb098490c27ad31497dc69e7e3f44eefe6a13407cd210551253c52f89d132",
       "stylesBlob": "584dde57625d7a102d8e8f661de8c876c1c07b89",
       "stylesSha256": "7f9fb098490c27ad31497dc69e7e3f44eefe6a13407cd210551253c52f89d132",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
+      }
     },
     {
       "id": "svelte-ds-app-wpe/Button",
@@ -2746,7 +6161,40 @@
       "sourceSha256": "22dba206e2686f26c29e3cdf2309043b306df870af594a94f587fdc42321a748",
       "stylesBlob": "cffc6af899e84278b6cb81c175074e4f01d8ca48",
       "stylesSha256": "b9a47a519972a48db1b1a2c5fea8be8f15f3e5fed50cf27dea56fd98961a5b90",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "action-control",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.action.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "when a mark is present"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
+      }
     },
     {
       "id": "svelte-ds-app-wpe/Rule",
@@ -2757,7 +6205,18 @@
       "sourceSha256": "9e3f1dfe280d5c54e3f8b9fc534f166f72f56b97ee049891163c476206666a55",
       "stylesBlob": "b06b1b05439018314dadedbb7a9399ccc6718735",
       "stylesSha256": "8b86e51409114c869397323dd431f950785a6801910d68338c0cf5377bacbcc1",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-legacy-magnitude",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Legacy or intrinsic magnitude has no reusable semantic role; retain as reviewed magnitude/boundary."
+          }
+        ],
+        "rationale": "A repeated value alone is insufficient to create or join a semantic role."
+      }
     },
     {
       "id": "svelte-ds-app-wpe/Cards",
@@ -2768,7 +6227,18 @@
       "sourceSha256": "f89a94f9874abfa395c4d76e242a7a4b51a2016e43374ada9379e2f6ade0447d",
       "stylesBlob": "cdc4c300bbf64f34a1aed02737af70a341b16472",
       "stylesSha256": "fd6f966a2d30d6a06427eb2b625ce7e82b81efdf34a8ec9bf180cb0b463b0ddf",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-page-grid",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Page/application-shell/grid relationship excluded by FR-021 and FR-022."
+          }
+        ],
+        "rationale": "Its owner is the page/grid taxonomy, not this component taxonomy."
+      }
     },
     {
       "id": "svelte-ds-app/ContentLayout",
@@ -2779,7 +6249,18 @@
       "sourceSha256": "30d9ed3ea4e184809968b50718cde5bd31f02e4d7346a1e7253257cc03804002",
       "stylesBlob": "154b1fa50679c35a86bce5a44785e520599321d9",
       "stylesSha256": "c727c434584d6d57e547b757967908e087a8ef2ddcf7b4be9e8083705c9b2e7e",
-      "t006Disposition": null
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-page-grid",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Page/application-shell/grid relationship excluded by FR-021 and FR-022."
+          }
+        ],
+        "rationale": "Its owner is the page/grid taxonomy, not this component taxonomy."
+      }
     }
   ],
   "currentMainReconciliation": {

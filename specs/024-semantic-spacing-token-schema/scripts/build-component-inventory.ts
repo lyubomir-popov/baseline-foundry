@@ -8,6 +8,11 @@ import {
 } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import {
+  assertT006Coverage,
+  getT006Disposition,
+  t006CandidateRoles,
+} from "./t006-dispositions.js";
 
 type LegacyRow = {
   id: string;
@@ -282,7 +287,7 @@ const allRows = [...productionRows, ...addedRows]
         blob: blobFor(path),
         sha256: hash(join(pragmaSnapshot, path)),
       })),
-      t006Disposition: null,
+      t006Disposition: getT006Disposition(row.id),
     };
   })
   .sort((left, right) => left.id.localeCompare(right.id));
@@ -336,12 +341,17 @@ const nonReact = nonReactRows.map((row) => {
     sourceSha256: hash(source),
     stylesBlob: blobFor(row.styles),
     stylesSha256: hash(styles),
-    t006Disposition: null,
+    t006Disposition: getT006Disposition(row.id),
   };
 });
 
+assertT006Coverage([
+  ...allRows.map(({ id }) => id),
+  ...nonReact.map(({ id }) => id),
+]);
+
 const result = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedAt: sourceCommittedAt,
   source: {
     repository: "canonical/pragma",
@@ -354,7 +364,8 @@ const result = {
   boundary: {
     unit:
       "exported React render part plus each internal or compound render part already known to own or bound spacing; named non-React shared-channel consumers are separate rows",
-    semanticAssignmentsDeferredTo: "T006",
+    semanticAssignmentsCompletedBy: "T006",
+    candidateRoles: t006CandidateRoles,
     excluded:
       "stories, tests, docs chrome, application fixtures, hooks and context-only modules unless an existing row records a spacing boundary",
   },
@@ -370,6 +381,12 @@ const result = {
       ({ currentMainState }) => currentMainState === "unchanged",
     ).length,
     nonReactRows: nonReact.length,
+    t006RowsWithAssignments: [...allRows, ...nonReact].filter(
+      ({ t006Disposition }) => t006Disposition.assignments.length > 0,
+    ).length,
+    t006BoundaryOnlyRows: [...allRows, ...nonReact].filter(
+      ({ t006Disposition }) => t006Disposition.assignments.length === 0,
+    ).length,
     changedRecordedCss: changedCss.length,
     removedRecordedCss: removedCss.length,
     addedCurrentMainCss: addedCss.length,

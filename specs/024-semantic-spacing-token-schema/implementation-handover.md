@@ -13,16 +13,19 @@ conflict.
 
 ## Short answer
 
-**Not ready for the recut. Ready for one bounded piece of work that unblocks it.**
+**Not ready for the recut. Ready for CP1 preparation only.**
 
-CP1 and CP2 are both unpassed, the denominator is open, and no approved provider
-artifact exists — so none of Phase 3, 4 or 5 can start. But the model itself has
-a hole that must be closed before CP1 can mean anything, and that work is local,
-reversible and well specified. That is what this handover covers.
+CP1 and CP2 are both unpassed and no approved provider artifact exists, so none
+of Phase 3, 4 or 5 can start. The denominator and its candidate T006
+assignments are now closed; T007–T011 must prepare the remaining CP1 evidence.
 
-Everything below happens in the isolated `feat/bf-inside-out-geometry` worktree,
-branched from exact recovery snapshot `313ee82c13a126b779b9bd75902da5af13c28505`.
-The evidence reference stays read-only. **No production branch, no PR, no push.**
+Worktree routing is phase-specific. T004c0–T004h happened in the isolated
+Pragma `feat/bf-inside-out-geometry` worktree, branched from exact recovery
+snapshot `313ee82c13a126b779b9bd75902da5af13c28505`. T005–T013 are Spec 024
+taxonomy work and happen in the Baseline Foundry
+`feat/024-semantic-spacing-token-schema` worktree. The primary Pragma checkout
+and the evidence reference stay untouched. **No production branch, no PR, no
+push.**
 
 **Execution junction resolved, 2026-09-23; T004d1a executed 2026-09-27:** the
 combined Opus review bounded T004d1a to four members. That amended evidence
@@ -32,7 +35,8 @@ typography-test correction and T004d2 remain implemented independently. The
 to the existing surface/strip insets. T004g is complete in local Pragma commit
 `b10c4d541`. T004h was accepted after its bounded correction and the final F1
 list-boundary fix in local Pragma commit `1c2c6ba73`. T005/T005a/T005b are
-complete against current Pragma `origin/main` `3706f5ea3`; T006 is next.
+complete against current Pragma `origin/main` `3706f5ea3`; T006 now assigns or
+bounds all 164 rows and T007 is next.
 Follow the task-specific gates below; the earlier blanket stop no longer
 applies.
 
@@ -58,7 +62,7 @@ applies.
 10. [`component-inventory.md`](component-inventory.md) and
     [`component-inventory.json`](component-inventory.json) — the frozen
     current-main denominator and exact source identities.
-11. [`tasks.md`](tasks.md) — T006 is next.
+11. [`tasks.md`](tasks.md) — T007 is next.
 12. `canonical-spacing-spec/specs/spacing/draft.md` §2.8 — the ownership model
    and the glossary terms used here.
 
@@ -675,8 +679,9 @@ T004d1a is complete under its bounded four-member, dual-lane evidence contract.
 T004g is complete in local Pragma commit `b10c4d541`. T004h is accepted after
 the F1 list-boundary fix in `1c2c6ba73`. T005/T005a/T005b then froze 153 React
 parts and 11 non-React rows against current `origin/main` `3706f5ea3`, including
-Modal and the expanded SideNavigation. T006 is next: assign each row per axis
-and edge or record an explicit boundary. That belongs to CP1 preparation.
+Modal and the expanded SideNavigation. T006 assigns or bounds all 164 rows in
+the schema-version-2 inventory. T007 is next: build the exhaustive hardcoded-
+length sweep without treating the historical audit as the work queue.
 
 ## How to verify, and how much
 
@@ -741,8 +746,8 @@ tests rather than moving the model, stop and hand back.
 | Isolated spike T004c0 | Complete at exact snapshot `313ee82c…`. |
 | Isolated spike T004d0 / T004d1b | Complete in the isolated worktree; independently accepted after the carrier-path test correction. |
 | Isolated spike T004d | Complete; per-edge formula and corrected rendered-border proof independently accepted. |
-| Isolated spike T004d1a–T004h | Complete. T004d1a is in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract. T004d2 is accepted with full body-line closure. T004g is in `b10c4d541`; the T004h correction is in `4325f1597`; its conditional F1 is closed in `1c2c6ba73`. Independent review accepted the result; F2–F4 carry to CP1/T006. |
-| CP1 taxonomy | Preparation active. T005/T005a/T005b denominator closed at 153 React plus 11 non-React rows; T006 assignments are open. |
+| Isolated spike T004d1a–T004h | Complete. T004d1a is in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract. T004d2 is accepted with full body-line closure. T004g is in `b10c4d541`; the T004h correction is in `4325f1597`; its conditional F1 is closed in `1c2c6ba73`. Independent review accepted the result; T006 records F2–F4 and they remain subject to CP1. |
+| CP1 taxonomy | Preparation active. T005/T005a/T005b denominator closed at 153 React plus 11 non-React rows; T006 assigns or bounds all 164. T007 is next. |
 | CP2 schema | Not started. |
 | Token implementation | Not started. No provider artifact exists. |
 | Pragma recut | Not started. Cuts 5, 6, 8 and 15 split into keep and replace halves. |

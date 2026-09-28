@@ -16,7 +16,7 @@ pre-CP1 execution, pre-T004d2/T004g scope and 2026-09-23 execution-junction
 reviews by Claude Opus 5 are complete. T004h is accepted after its bounded
 correction and final list-boundary fix. T005/T005a/T005b freeze 153 React parts
 and 11 non-React rows against current Pragma `origin/main` `3706f5ea3`; T006
-role/boundary assignment is next. No
+assigns or bounds all 164 rows and T007 is next. No
 production recut, Jira mutation, token publication, release, PR or push is
 authorised. The isolated evidence spike described by
 `implementation-handover.md` is the only implementation exception.

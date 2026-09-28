@@ -394,7 +394,7 @@ fixture items are not a prerequisite.
   consumers plus the named Launchpad Button, Chip, Select and InputPrimitive
   forks. They authorise no Svelte edits; each awaits a T006 assignment or
   explicit boundary.
-- [ ] **T006** For each part, apply the model in
+- [x] **T006** For each part, apply the model in
   `contracts/semantic-spacing-schema.md` §7a and record its role assignments per
   axis and edge. Parts that own no spacing get an explicit boundary line.
   Record ColorInput's popover separator row as an exception: it has a start
@@ -402,6 +402,13 @@ fixture items are not a prerequisite.
   recut, prefer routing it through its own per-edge box borders rather than
   nominal host-border subtraction. ColorInput is outside T004d1a's four-member
   denominator.
+  **Completed 2026-09-28:** schema-version-2 `component-inventory.json`
+  resolves all 164 rows: 86 have one or more candidate assignments and 78 are
+  boundary-only. Ten candidate roles are carried into CP1; nine have direct
+  component-denominator membership, while `spacing.gap.pattern.block` retains
+  its FR-043 page-section candidature without inventing a component member
+  across the FR-021 boundary. `scripts/t006-dispositions.ts` asserts exact ID
+  coverage and preserves the ColorInput per-edge separator exception.
 - [ ] **T007** Build the completeness sweep required by FR-045a: a check that
   reports every hardcoded length remaining in a migrated package's CSS. A
   package is complete when the report holds no undispositioned literal.
