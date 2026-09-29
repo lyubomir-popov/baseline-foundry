@@ -21,7 +21,7 @@ npm install baseline-foundry
 The attached GitHub release tarball is the fallback:
 
 ```bash
-npm install https://github.com/lyubomir-popov/baseline-foundry/releases/download/v0.2.0/baseline-foundry-0.2.0.tgz
+npm install https://github.com/lyubomir-popov/baseline-foundry/releases/download/v0.2.1/baseline-foundry-0.2.1.tgz
 ```
 
 Do not install the Git tag or GitHub source archive. `dist/` is generated and

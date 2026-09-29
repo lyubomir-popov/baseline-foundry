@@ -189,8 +189,8 @@ export function validateRenewalComponentContracts(
   assert(css.includes(".bf-hero.is-borderless") && css.includes("border-block-start: 0;") && css.includes("padding-block-start: var(--bf-space-2);"), "Expected hero to expose a borderless opt-out without consumer CSS or a rhythm shift.");
   assert(css.includes("padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to retain its wide space-3 entry boundary without border drift.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-hero.is-top-flush)", {
-    "padding-block-start": "0"
-  }, "top-flush hero removes only its own entry inset without a global spacing utility");
+    "padding-block-start": "calc(0.5rem - var(--bf-border-width))"
+  }, "top-flush hero matches native-rule clearance without a global spacing utility");
   assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
   assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && !css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child) {\n  inline-size: 100%;\n  margin-block-end: 0;"), "Expected hero to expose a structural lead without a final-child semantic-margin reset.");
   assert(css.includes("@container bf-hero (width >= 45rem)") && css.includes(".bf-hero.is-split-medium") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero variants and its default split to share the measured 45rem threshold, with a fallback introduction rail.");

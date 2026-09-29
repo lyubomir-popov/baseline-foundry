@@ -117,11 +117,11 @@ export function sitesEditorialPortsCss(): string {
   }
 }
 
-/* A hero can keep its entry rule while placing its content directly against
-   that boundary. Scope this exception to the hero instead of publishing a
-   global padding utility. */
+/* A compact ruled hero keeps the same half-rem clearance as the native rule
+   primitive. The border occupies one pixel of that clearance, just as the
+   rule's compensated trailing margin does. */
 :where(.bf-theme) :where(.bf-hero.is-top-flush) {
-  padding-block-start: 0;
+  padding-block-start: calc(0.5rem - var(--bf-border-width));
 }
 
 @container bf-hero (width >= 45rem) {

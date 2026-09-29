@@ -1087,17 +1087,21 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
 
         const topFlushState = await page.locator(".bf-hero").first().evaluate(root => {
           root.classList.add("is-top-flush");
+          const referenceRule = document.createElement("hr");
+          root.before(referenceRule);
           const state = {
             borderStyle: getComputedStyle(root).borderBlockStartStyle,
             borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
             paddingStart: Number.parseFloat(getComputedStyle(root).paddingBlockStart),
+            ruleClearance: Number.parseFloat(getComputedStyle(referenceRule).marginBlockEnd),
             overflow: root.scrollWidth - root.clientWidth
           };
+          referenceRule.remove();
           root.classList.remove("is-top-flush");
           return state;
         });
         assert(topFlushState.borderStyle === "solid" && topFlushState.borderWidth > 0, `Expected ${tier} top-flush hero to retain its entry rule ${viewport.label}.`);
-        assert(topFlushState.paddingStart === 0, `Expected ${tier} top-flush hero to remove its entry inset ${viewport.label}.`);
+        assert(Math.abs(topFlushState.paddingStart - topFlushState.ruleClearance) <= 0.1, `Expected ${tier} top-flush hero to match native-rule clearance ${viewport.label}.`);
         assert(topFlushState.overflow <= 1, `Expected ${tier} top-flush hero to avoid inline overflow ${viewport.label}.`);
       }
 
