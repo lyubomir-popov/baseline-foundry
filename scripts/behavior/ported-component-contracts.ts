@@ -1084,6 +1084,21 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
         }));
         assert(borderlessState.borderStyle === "none" && borderlessState.borderWidth === 0, `Expected ${tier} borderless hero to remove only its entry rule ${viewport.label}.`);
         assert(borderlessState.overflow <= 1, `Expected ${tier} borderless hero to avoid inline overflow ${viewport.label}.`);
+
+        const topFlushState = await page.locator(".bf-hero").first().evaluate(root => {
+          root.classList.add("is-top-flush");
+          const state = {
+            borderStyle: getComputedStyle(root).borderBlockStartStyle,
+            borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+            paddingStart: Number.parseFloat(getComputedStyle(root).paddingBlockStart),
+            overflow: root.scrollWidth - root.clientWidth
+          };
+          root.classList.remove("is-top-flush");
+          return state;
+        });
+        assert(topFlushState.borderStyle === "solid" && topFlushState.borderWidth > 0, `Expected ${tier} top-flush hero to retain its entry rule ${viewport.label}.`);
+        assert(topFlushState.paddingStart === 0, `Expected ${tier} top-flush hero to remove its entry inset ${viewport.label}.`);
+        assert(topFlushState.overflow <= 1, `Expected ${tier} top-flush hero to avoid inline overflow ${viewport.label}.`);
       }
 
       for (const allocation of [

@@ -117,6 +117,13 @@ export function sitesEditorialPortsCss(): string {
   }
 }
 
+/* A hero can keep its entry rule while placing its content directly against
+   that boundary. Scope this exception to the hero instead of publishing a
+   global padding utility. */
+:where(.bf-theme) :where(.bf-hero.is-top-flush) {
+  padding-block-start: 0;
+}
+
 @container bf-hero (width >= 45rem) {
   :where(.bf-theme) :where(.bf-hero-layout) {
     column-gap: var(--bf-grid-gap-inline);
