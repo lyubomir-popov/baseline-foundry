@@ -139,6 +139,29 @@ const addedRows: readonly AddedRow[] = [
       composition,
     }),
   ),
+  {
+    id: "ds-app/SidePanel/SidePanel",
+    package: "@canonical/react-ds-app",
+    source: "packages/react/ds-app/src/lib/SidePanel/Provider.tsx",
+    exportStatus: "public",
+    composition: "layout-shell",
+  },
+  ...["Header", "Content", "Footer"].map(
+    (name): AddedRow => ({
+      id: `ds-app/SidePanel/common/${name}/${name}`,
+      package: "@canonical/react-ds-app",
+      source: `packages/react/ds-app/src/lib/SidePanel/common/${name}/${name}.tsx`,
+      exportStatus: "compound",
+      composition: "sectioned-card-panel",
+    }),
+  ),
+  {
+    id: "ds-app/SidePanel/withSidePanel",
+    package: "@canonical/react-ds-app",
+    source: "packages/react/ds-app/src/lib/SidePanel/withSidePanel.tsx",
+    exportStatus: "public",
+    composition: "nonvisual-composer",
+  },
 ];
 
 const nonReactRows = [

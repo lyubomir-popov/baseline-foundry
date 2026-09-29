@@ -47,10 +47,11 @@ Read in this order:
 
 - **Status**: Pre-CP1 geometry through T004h is complete and independently
   accepted after the bounded correction and F1 list-boundary fix. The current
-  Pragma spike tip is local commit `1c2c6ba73`. T005/T005a/T005b freeze 153
+  Pragma spike tip is local commit `1c2c6ba73`. T005/T005a/T005b freeze 158
   React parts and 11 non-React rows against synced Pragma local `main`
-  `3706f5ea3`, equal to `origin/main` at capture. T006 assigns or bounds all 164
-  rows; T007 is next. The preserved
+  `90386bfbf`, equal to `origin/main` at capture. T006 assigns or bounds all 169
+  rows; T007, T009 and T010 are complete, and T008 current-main comparison
+  evidence is active. The preserved
   rejected candidate remains custody evidence, not completion evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed

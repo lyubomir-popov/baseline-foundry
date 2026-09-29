@@ -132,6 +132,17 @@ const profiles = {
     boundaries: [],
     rationale: "Framed or sectioned component content; child separation stays a gap, not padding.",
   },
+  "surface-section-no-stack": {
+    assignments: [
+      role("inline", "start", "spacing.inset.surface.inline"),
+      role("inline", "end", "spacing.inset.surface.inline"),
+      role("block", "start", "spacing.inset.surface.block"),
+      role("block", "end", "spacing.inset.surface.block"),
+    ],
+    boundaries: [],
+    rationale:
+      "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately.",
+  },
   "continuation-surface-panel": {
     assignments: [
       role("inline", "start", "spacing.inset.continuation.inline"),
@@ -188,6 +199,27 @@ const profiles = {
       { scope: "block", reason: "No component-owned block inset." },
     ],
     rationale: "The part owns only separation between a mark and copy.",
+  },
+  "range-control-peer-gap": {
+    assignments: [
+      role(
+        "inline",
+        "internal",
+        "spacing.gap.element.inline",
+        "between the peer slider and number control",
+      ),
+    ],
+    boundaries: [
+      {
+        scope: "inline-edges",
+        reason: "The containing field owns the outside keyline; this row owns only peer separation.",
+      },
+      {
+        scope: "block",
+        reason: "Slider track, thumb and control cross-size are intrinsic paint/control geometry.",
+      },
+    ],
+    rationale: "The composite owns one peer-control gap without turning its intrinsic slider paint into semantic spacing.",
   },
   "boundary-nonvisual": {
     assignments: [],
@@ -350,6 +382,12 @@ add("surface-section", [
   "ds-global/pattern/Modal/common/Header/Header",
 ]);
 
+add("surface-section-no-stack", [
+  "ds-app/SidePanel/common/Content/Content",
+  "ds-app/SidePanel/common/Footer/Footer",
+  "ds-app/SidePanel/common/Header/Header",
+]);
+
 add("continuation-surface-panel", [
   "ds-global/component/Accordion/common/Item/Item",
 ]);
@@ -357,12 +395,12 @@ add("continuation-surface-panel", [
 add("element-stack", [
   "ds-app-launchpad/MarkdownEditor/common/Toolbar/Toolbar",
   "ds-app/SideNavigation/common/Content/Content",
-  "ds-app/SideNavigation/SideNavigation",
   "ds-global-form/common/Wrapper/Wrapper",
   "ds-global/component/Breadcrumbs/Breadcrumbs",
 ]);
 
 add("group-stack", [
+  "ds-app/SideNavigation/SideNavigation",
   "ds-global-form/pattern/Form/Form",
   "ds-global/group/Cards/Cards",
 ]);
@@ -383,6 +421,7 @@ add("mark-gap-only", [
 ]);
 
 add("boundary-nonvisual", [
+  "ds-app/SidePanel/withSidePanel",
   "ds-global-form/common/Wrapper/withToggleWrapper",
   "ds-global-form/component/HiddenField/HiddenField",
   "ds-global-form/pattern/Field/Field",
@@ -432,7 +471,6 @@ add("boundary-paint", [
   "ds-app-launchpad/DiffChangeMarker/DiffChangeMarker",
   "ds-app-launchpad/FileTree/common/IndentationBlock/IndentationBlock",
   "ds-app-launchpad/MarkdownEditor/common/Toolbar/common/Separator/Separator",
-  "ds-global-form/component/RangeField/common/RangeControl/RangeControl",
   "ds-global-form/subcomponent/CheckboxInput/CheckboxInput",
   "ds-global-form/subcomponent/RadioInput/RadioInput",
   "ds-global-form/subcomponent/RangeInput/RangeInput",
@@ -441,6 +479,10 @@ add("boundary-paint", [
   "ds-global/component/Card/common/Image/Image",
   "ds-global/component/Icon/Icon",
   "ds-global/subcomponent/Spinner/Spinner",
+]);
+
+add("range-control-peer-gap", [
+  "ds-global-form/component/RangeField/common/RangeControl/RangeControl",
 ]);
 
 add("boundary-text", [
@@ -461,6 +503,7 @@ add("boundary-page-grid", [
 ]);
 
 add("boundary-frame", [
+  "ds-app/SidePanel/SidePanel",
   "ds-app-launchpad/EditableBlock/EditableBlock",
   "ds-app-launchpad/FileTree/Provider",
   "ds-app-launchpad/GitDiffViewer/Provider",
@@ -503,7 +546,8 @@ const exceptions: Record<string, readonly string[]> = {
     "The trigger wrapper is a boundary; only the portaled content panel consumes the surface profile.",
   ],
   "ds-global/component/Tooltip/Tooltip": [
-    "Caret size and placement are paint; trigger distance is spacing.gap.element.block, not panel inset.",
+    "Caret size and placement are paint; trigger distance is a positioning magnitude because placement can use either axis, not a panel inset or block-only gap.",
+    "The optional leading icon uses spacing.gap.mark.inline; peer-to-peer inline separation uses spacing.gap.element.inline elsewhere.",
   ],
   "ds-global/_work_in_progress/Announcement/Announcement": [
     "The leading marker additionally consumes spacing.gap.mark.inline; its canvas remains paint.",
@@ -515,10 +559,10 @@ const exceptions: Record<string, readonly string[]> = {
     "The close action keeps its own action/control contract; the inset divider is paint and does not alter the header edge assignment.",
   ],
   "ds-global/pattern/Modal/common/Footer/Footer": [
-    "The action row uses spacing.gap.element.block as an axis-specific candidate only after T009 confirms the inline use; until then its inline action separation remains a reviewed magnitude.",
+    "The action row uses spacing.gap.element.inline; it must not reuse the block-axis element role or the marker-to-copy role.",
   ],
   "ds-app/SideNavigation/SideNavigation": [
-    "Rail padding and section separation are fixed in-box navigation geometry; the element-gap assignment covers owned section separation, not page inset.",
+    "Rail padding is fixed in-box navigation geometry; spacing.gap.group.block covers separation between navigation sections, not page inset.",
   ],
   "ds-app/SideNavigation/common/NavTree/NavTree": [
     "Depth indentation composes spacing.inset.continuation.inline; fade clearance and fixed row floors remain paint/layout boundaries.",
@@ -532,6 +576,15 @@ const exceptions: Record<string, readonly string[]> = {
   "ds-app-launchpad/MarkdownEditor/MarkdownEditor": [
     "Toolbar, view tabs and preview content remain separate owners; highlighted-code and task-list offsets require T010 literal dispositions.",
   ],
+  "ds-app/SidePanel/SidePanel": [
+    "Fixed viewport placement, width, shadow, z-index and transition are application-shell/panel-frame boundaries; child sections own semantic insets.",
+  ],
+  "ds-app/SidePanel/common/Header/Header": [
+    "Title typography and the temporary icon-only close-button baseline workaround remain typography/control boundaries; the section owns surface insets and peer separation.",
+  ],
+  "ds-app/SidePanel/common/Footer/Footer": [
+    "The inset divider is paint; its inline margin applies the surface keyline while the footer's actions use peer separation.",
+  ],
   "tokens/TokenTable/TokenTable": [
     "Cell edges use spacing.inset.field.inline; control stacks use spacing.gap.element.block and section stacks use spacing.gap.group.block.",
     "Painted swatches and table/grid mechanics remain explicit boundaries; T007/T010 classify each remaining literal.",
@@ -543,7 +596,26 @@ const additionalAssignments: Record<string, readonly Assignment[]> = {
     role("block", "internal", "spacing.gap.element.block", "between field copy and the toggle row"),
   ],
   "ds-global-form/component/ChoicesField/Choices": [
-    role("block", "internal", "spacing.gap.group.block", "between choice rows"),
+    role("block", "internal", "spacing.gap.element.block", "between adjacent choices in one field"),
+    role("inline", "internal", "spacing.gap.element.inline", "between adjacent choice columns"),
+  ],
+  "ds-global/component/Card/common/Footer/Footer": [
+    role("inline", "internal", "spacing.gap.element.inline", "between peer footer items"),
+  ],
+  "ds-global/component/Tile/common/Header/Header": [
+    role("inline", "internal", "spacing.gap.mark.inline", "between header artwork and copy"),
+  ],
+  "ds-global/component/Tooltip/Tooltip": [
+    role("inline", "internal", "spacing.gap.mark.inline", "between the optional leading icon and copy"),
+  ],
+  "ds-global/pattern/Modal/common/Footer/Footer": [
+    role("inline", "internal", "spacing.gap.element.inline", "between peer footer actions"),
+  ],
+  "ds-app/SidePanel/common/Header/Header": [
+    role("inline", "internal", "spacing.gap.element.inline", "between the title and close action"),
+  ],
+  "ds-app/SidePanel/common/Footer/Footer": [
+    role("inline", "internal", "spacing.gap.element.inline", "between peer footer actions"),
   ],
   "ds-global/_work_in_progress/Announcement/Announcement": [
     role("inline", "internal", "spacing.gap.mark.inline", "between the leading marker and copy"),
@@ -597,6 +669,7 @@ export const t006CandidateRoles = [
   "spacing.inset.surface.block",
   "spacing.inset.surface.inline",
   "spacing.gap.element.block",
+  "spacing.gap.element.inline",
   "spacing.gap.group.block",
   "spacing.gap.mark.inline",
   "spacing.gap.pattern.block",

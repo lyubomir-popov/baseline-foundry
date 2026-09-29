@@ -373,7 +373,7 @@ fixture items are not a prerequisite.
   exported part and its spacing-owning subcomponents, per package. This is
   enumerable from the package exports, unlike a ledger of observed
   relationships.
-  **Completed 2026-09-28:** `component-inventory.json` freezes 153 React rows
+  **Completed 2026-09-29:** `component-inventory.json` freezes 158 React rows
   with Git blob IDs and SHA-256 hashes; `component-inventory.md` records the
   boundary and package counts. All 142 prior production rows remain present;
   three story-only evidence rows are excluded from the denominator.
@@ -381,9 +381,9 @@ fixture items are not a prerequisite.
   including Modal and the components migrated upstream. A part added upstream
   since the audit is in the denominator regardless of whether it was ever
   measured.
-  **Completed against local `main` `3706f5ea3`, equal to fetched
-  `origin/main`:** 11 React rows were
-  added for Modal, TooltipEngine and the expanded SideNavigation. The artifact
+  **Completed against local `main` `90386bfbf`, equal to fetched
+  `origin/main`:** 16 React rows were added for Modal, TooltipEngine, the
+  expanded SideNavigation and SidePanel. The artifact
   records 44 changed prior render sources, 94 changed recorded CSS files and
   every added/removed CSS path; prior rendered evidence is historical rather
   than current-main certification.
@@ -403,16 +403,20 @@ fixture items are not a prerequisite.
   recut, prefer routing it through its own per-edge box borders rather than
   nominal host-border subtraction. ColorInput is outside T004d1a's four-member
   denominator.
-  **Completed 2026-09-28:** schema-version-2 `component-inventory.json`
-  resolves all 164 rows: 86 have one or more candidate assignments and 78 are
-  boundary-only. Ten candidate roles are carried into CP1; nine have direct
+  **Completed 2026-09-29:** schema-version-2 `component-inventory.json`
+  resolves all 169 rows: 90 have one or more candidate assignments and 79 are
+  boundary-only. Eleven candidates are carried into CP1; ten have direct
   component-denominator membership, while `spacing.gap.pattern.block` retains
   its FR-043 page-section candidature without inventing a component member
   across the FR-021 boundary. `scripts/t006-dispositions.ts` asserts exact ID
   coverage and preserves the ColorInput per-edge separator exception.
-- [ ] **T007** Build the completeness sweep required by FR-045a: a check that
+- [x] **T007** Build the completeness sweep required by FR-045a: a check that
   reports every hardcoded length remaining in a migrated package's CSS. A
   package is complete when the report holds no undispositioned literal.
+  **Completed 2026-09-29:** the deterministic report covers 239 CSS files and
+  all tracked TS/TSX/Svelte source in thirteen package roots at synced Pragma
+  `main` `90386bfbf`: 1,833 syntax occurrences, 28 semantic findings, and zero
+  undispositioned records.
 - [ ] **T008** Confirm the re-derived geometry on comparison sheets (FR-046),
   one per product: rows led by their reference — Button for boxed text,
   paragraph for unboxed, Card for panels — with the guides overlaid. Read that
@@ -420,12 +424,17 @@ fixture items are not a prerequisite.
   spaced. Keep the mechanical alias assertion (FR-033) and the unmigrated
   sentinel check, which no sheet can show. Defer exhaustive state, variant and
   product matrices to CP2.
-- [ ] **T009** Record the merge attempts and breakers that justify the role set,
+- [x] **T009** Record the merge attempts and breakers that justify the role set,
   under FR-042 — a merge requires that changing one role *should* change the
   other, not that their values coincide.
-- [ ] **T010** Disposition the legacy literal backlog surfaced by T007:
+  **Completed 2026-09-29:** `taxonomy-merge-ledger.md` records rejected and
+  accepted collapses, 210 direct memberships, and the remaining owner choices.
+- [x] **T010** Disposition the legacy literal backlog surfaced by T007:
   normalise to a role, record a bounded exception with an owner and a reason, or
   assign an explicit boundary. No literal may remain unclassified.
+  **Completed 2026-09-29:** all syntax occurrences and semantic findings have
+  exactly one role, boundary or owned-exception disposition. Classification is
+  complete; CP1 approval of the visible exceptions remains open.
 
   Pre-record these T004g boundaries now; T010 carries them forward rather than
   rediscovering them:

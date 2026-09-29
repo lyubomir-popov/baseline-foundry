@@ -1,13 +1,13 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-28T14:22:46-06:00",
+  "generatedAt": "2026-09-28T19:45:18-06:00",
   "source": {
     "repository": "canonical/pragma",
     "ref": "main",
-    "commit": "3706f5ea3b45af0fe43c2308a0e39d81a4cd99a2",
+    "commit": "90386bfbfb170fbabc1a306e425470cdc41c6494",
     "upstreamRef": "origin/main",
-    "upstreamCommit": "3706f5ea3b45af0fe43c2308a0e39d81a4cd99a2",
-    "committedAt": "2026-09-28T14:22:46-06:00",
+    "upstreamCommit": "90386bfbfb170fbabc1a306e425470cdc41c6494",
+    "committedAt": "2026-09-28T19:45:18-06:00",
     "legacyInventorySha256": "86a2c1a977e70f32773440680e58b1dce84d893c276246902dd280f4751fd92c",
     "legacySourceManifestSha256": "3d5f44dd052a04a9e3c31c984d9812f41640b2b2e97c8f584f54444e471a3f2e"
   },
@@ -22,6 +22,7 @@
       "spacing.inset.surface.block",
       "spacing.inset.surface.inline",
       "spacing.gap.element.block",
+      "spacing.gap.element.inline",
       "spacing.gap.group.block",
       "spacing.gap.mark.inline",
       "spacing.gap.pattern.block"
@@ -31,16 +32,16 @@
   "counts": {
     "legacyProductionRows": 142,
     "legacyStoryOnlyRows": 3,
-    "currentReactRows": 153,
-    "addedCurrentMainReactRows": 11,
+    "currentReactRows": 158,
+    "addedCurrentMainReactRows": 16,
     "changedLegacyReactRenderSources": 44,
     "unchangedLegacyReactRenderSources": 98,
     "nonReactRows": 11,
-    "t006RowsWithAssignments": 86,
-    "t006BoundaryOnlyRows": 78,
+    "t006RowsWithAssignments": 90,
+    "t006BoundaryOnlyRows": 79,
     "changedRecordedCss": 94,
     "removedRecordedCss": 2,
-    "addedCurrentMainCss": 11
+    "addedCurrentMainCss": 15
   },
   "excludedEvidenceRows": [
     {
@@ -1641,12 +1642,12 @@
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "element-stack",
+        "profile": "group-stack",
         "assignments": [
           {
             "axis": "block",
             "edge": "internal",
-            "role": "spacing.gap.element.block"
+            "role": "spacing.gap.group.block"
           }
         ],
         "boundaries": [
@@ -1663,10 +1664,224 @@
             "reason": "No component-owned outer block inset."
           }
         ],
-        "rationale": "Adjacent children form one logical unit.",
+        "rationale": "The owner separates logical groups inside a pattern.",
         "exceptions": [
-          "Rail padding and section separation are fixed in-box navigation geometry; the element-gap assignment covers owned section separation, not page inset."
+          "Rail padding is fixed in-box navigation geometry; spacing.gap.group.block covers separation between navigation sections, not page inset."
         ]
+      }
+    },
+    {
+      "id": "ds-app/SidePanel/common/Content/Content",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SidePanel/common/Content/Content.tsx",
+      "sourceBlob": "43904b6e48c98cad07f7de192cabf7eb78931385",
+      "sourceSha256": "85352d1de036484b58714f424f274bc26889d220d07be6aeafa4a0a2604da7a4",
+      "currentMainState": "added",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SidePanel/common/Content/styles.css",
+          "blob": "86513db018c906cdcb33b8d02b85a9d6f6f33796",
+          "sha256": "4f48b56a1f25ce14ba15e2fba51b291717ab209053db8d7e21c9de95aaf47cfd"
+        }
+      ],
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section-no-stack",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately."
+      }
+    },
+    {
+      "id": "ds-app/SidePanel/common/Footer/Footer",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SidePanel/common/Footer/Footer.tsx",
+      "sourceBlob": "6861c1d61433e5f73792486730c0b52cd7b0b427",
+      "sourceSha256": "9e454f4e34f57edd96d1ad6d31afc5a2f53967f285017f03315c7fc5f7e88b92",
+      "currentMainState": "added",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SidePanel/common/Footer/styles.css",
+          "blob": "1872728463f9985f36d4271b581ec01ebe00da1a",
+          "sha256": "bd67a97f0847bd407fbc2f95b6682a9e67ea075dd137c59f2e0d247c4b0148b8"
+        }
+      ],
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section-no-stack",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.element.inline",
+            "condition": "between peer footer actions"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately.",
+        "exceptions": [
+          "The inset divider is paint; its inline margin applies the surface keyline while the footer's actions use peer separation."
+        ]
+      }
+    },
+    {
+      "id": "ds-app/SidePanel/common/Header/Header",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SidePanel/common/Header/Header.tsx",
+      "sourceBlob": "4fe16ddb776a3230b3901d12aecdd9c0f7e7787c",
+      "sourceSha256": "37e63533be0aa7c9b600a93b47f704f5820407b174c2ce44f70faacc2e4235f8",
+      "currentMainState": "added",
+      "exposure": "compound",
+      "compositionClue": "sectioned-card-panel",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SidePanel/common/Header/styles.css",
+          "blob": "27e26d00a180beb983780f3b73cf08229c277d26",
+          "sha256": "05facc4f88112d045ede0be6a83ff2eabc2c9c84ff57eb239ee97a82216753de"
+        }
+      ],
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "surface-section-no-stack",
+        "assignments": [
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.element.inline",
+            "condition": "between the title and close action"
+          }
+        ],
+        "boundaries": [],
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately.",
+        "exceptions": [
+          "Title typography and the temporary icon-only close-button baseline workaround remain typography/control boundaries; the section owns surface insets and peer separation."
+        ]
+      }
+    },
+    {
+      "id": "ds-app/SidePanel/SidePanel",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SidePanel/Provider.tsx",
+      "sourceBlob": "2b4d337eaef98bf0f355bae690dbfb860958131b",
+      "sourceSha256": "77d929f655f4164e2042312ab6b20a881b118cbf30cfd2a106472521a7d3aac9",
+      "currentMainState": "added",
+      "exposure": "public",
+      "compositionClue": "layout-shell",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SidePanel/styles.css",
+          "blob": "f810822a49a9b2f001296637ec86fb417def51a1",
+          "sha256": "925d3a4e5f25f4f6219bf5b82dcb468f1d3fc16b85da787542fcbb49610576d0"
+        }
+      ],
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-frame",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Root owns paint, overflow or track layout; child parts own content spacing."
+          }
+        ],
+        "rationale": "A frame is not credited with its descendants' insets or gaps.",
+        "exceptions": [
+          "Fixed viewport placement, width, shadow, z-index and transition are application-shell/panel-frame boundaries; child sections own semantic insets."
+        ]
+      }
+    },
+    {
+      "id": "ds-app/SidePanel/withSidePanel",
+      "package": "@canonical/react-ds-app",
+      "source": "packages/react/ds-app/src/lib/SidePanel/withSidePanel.tsx",
+      "sourceBlob": "ef85d18cb10a85d8310b7d1faaf3a82f09aa3ce5",
+      "sourceSha256": "fe164ee69413e1d6aa46b354d0fcea7c9206418df36c459006d021d5d7363681",
+      "currentMainState": "added",
+      "exposure": "public",
+      "compositionClue": "nonvisual-composer",
+      "styles": [
+        {
+          "path": "packages/react/ds-app/src/lib/SidePanel/styles.css",
+          "blob": "f810822a49a9b2f001296637ec86fb417def51a1",
+          "sha256": "925d3a4e5f25f4f6219bf5b82dcb468f1d3fc16b85da787542fcbb49610576d0"
+        }
+      ],
+      "t006Disposition": {
+        "status": "candidate",
+        "profile": "boundary-nonvisual",
+        "assignments": [],
+        "boundaries": [
+          {
+            "scope": "all",
+            "reason": "Nonvisual composer; creates no spacing-owning box."
+          }
+        ],
+        "rationale": "Behavioral composition is outside the spacing taxonomy."
       }
     },
     {
@@ -1915,8 +2130,14 @@
           {
             "axis": "block",
             "edge": "internal",
-            "role": "spacing.gap.group.block",
-            "condition": "between choice rows"
+            "role": "spacing.gap.element.block",
+            "condition": "between adjacent choices in one field"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.element.inline",
+            "condition": "between adjacent choice columns"
           }
         ],
         "boundaries": [
@@ -2225,15 +2446,26 @@
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "boundary-paint",
-        "assignments": [],
-        "boundaries": [
+        "profile": "range-control-peer-gap",
+        "assignments": [
           {
-            "scope": "all",
-            "reason": "Intrinsic paint/canvas/stroke geometry, not semantic spacing."
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.element.inline",
+            "condition": "between the peer slider and number control"
           }
         ],
-        "rationale": "Paint size, border reservation and optical correction do not mint spacing roles."
+        "boundaries": [
+          {
+            "scope": "inline-edges",
+            "reason": "The containing field owns the outside keyline; this row owns only peer separation."
+          },
+          {
+            "scope": "block",
+            "reason": "Slider track, thumb and control cross-size are intrinsic paint/control geometry."
+          }
+        ],
+        "rationale": "The composite owns one peer-control gap without turning its intrinsic slider paint into semantic spacing."
       }
     },
     {
@@ -4630,6 +4862,12 @@
             "edge": "internal",
             "role": "spacing.gap.element.block",
             "condition": "when the part stacks children"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.element.inline",
+            "condition": "between peer footer items"
           }
         ],
         "boundaries": [],
@@ -5227,6 +5465,12 @@
             "edge": "internal",
             "role": "spacing.gap.element.block",
             "condition": "when the part stacks children"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "between header artwork and copy"
           }
         ],
         "boundaries": [],
@@ -5307,12 +5551,19 @@
             "edge": "internal",
             "role": "spacing.gap.element.block",
             "condition": "when the part stacks children"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "between the optional leading icon and copy"
           }
         ],
         "boundaries": [],
         "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
         "exceptions": [
-          "Caret size and placement are paint; trigger distance is spacing.gap.element.block, not panel inset."
+          "Caret size and placement are paint; trigger distance is a positioning magnitude because placement can use either axis, not a panel inset or block-only gap.",
+          "The optional leading icon uses spacing.gap.mark.inline; peer-to-peer inline separation uses spacing.gap.element.inline elsewhere."
         ]
       }
     },
@@ -5556,12 +5807,18 @@
             "edge": "internal",
             "role": "spacing.gap.element.block",
             "condition": "when the part stacks children"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.element.inline",
+            "condition": "between peer footer actions"
           }
         ],
         "boundaries": [],
         "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
         "exceptions": [
-          "The action row uses spacing.gap.element.block as an axis-specific candidate only after T009 confirms the inline use; until then its inline action separation remains a reviewed magnitude."
+          "The action row uses spacing.gap.element.inline; it must not reuse the block-axis element role or the marker-to-copy role."
         ]
       }
     },
@@ -6372,6 +6629,10 @@
       "packages/react/ds-app/src/lib/SideNavigation/common/GroupHeader/styles.css",
       "packages/react/ds-app/src/lib/SideNavigation/common/ItemButton/styles.css",
       "packages/react/ds-app/src/lib/SideNavigation/common/ItemExpandable/styles.css",
+      "packages/react/ds-app/src/lib/SidePanel/common/Content/styles.css",
+      "packages/react/ds-app/src/lib/SidePanel/common/Footer/styles.css",
+      "packages/react/ds-app/src/lib/SidePanel/common/Header/styles.css",
+      "packages/react/ds-app/src/lib/SidePanel/styles.css",
       "packages/react/ds-global-form/src/lib/_work_in_progress/DensityTestbed/baseline-system.css",
       "packages/react/ds-global-form/src/lib/_work_in_progress/DensityTestbed/density.testbed.css",
       "packages/react/ds-global/src/lib/pattern/Modal/common/Content/styles.css",
