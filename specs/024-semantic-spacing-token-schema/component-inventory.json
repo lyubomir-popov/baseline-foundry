@@ -34,11 +34,11 @@
     "legacyStoryOnlyRows": 3,
     "currentReactRows": 158,
     "addedCurrentMainReactRows": 16,
-    "changedLegacyReactRenderSources": 44,
-    "unchangedLegacyReactRenderSources": 98,
+    "changedLegacyReactRenderSources": 43,
+    "unchangedLegacyReactRenderSources": 99,
     "nonReactRows": 11,
-    "t006RowsWithAssignments": 90,
-    "t006BoundaryOnlyRows": 79,
+    "t006RowsWithAssignments": 88,
+    "t006BoundaryOnlyRows": 81,
     "changedRecordedCss": 94,
     "removedRecordedCss": 2,
     "addedCurrentMainCss": 15
@@ -66,7 +66,7 @@
       "package": "@canonical/react-ds-app-anbox",
       "source": "packages/react/ds-app-anbox/src/lib/Button/Button.tsx",
       "sourceBlob": "af2095793f614ba03cc626b1aa78cca2375b9d47",
-      "sourceSha256": "67156797a91261f460e98437e39101dbc76e6572dcaedcc242069aa02c36a923",
+      "sourceSha256": "ae7367a47cb2652fd411440500a3da49fd7fe79c55f0dedfda46033d252e84c5",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "painted-marker-led",
@@ -74,7 +74,7 @@
         {
           "path": "packages/react/ds-app-anbox/src/lib/Button/styles.css",
           "blob": "c7bb4cb1cb5fd6e91f9f4efdcfb91e7ba316ed84",
-          "sha256": "60cdb128c26304c5f3d209b24dac48377218e8aa7d1002ae9aa2f4622501ad5c"
+          "sha256": "65d23bff7c57525327094d97299781b505fd1436776473aa3154967e532d1783"
         }
       ],
       "t006Disposition": {
@@ -117,7 +117,7 @@
       "package": "@canonical/react-ds-app-landscape",
       "source": "packages/react/ds-app-landscape/src/lib/Button/Button.tsx",
       "sourceBlob": "af2095793f614ba03cc626b1aa78cca2375b9d47",
-      "sourceSha256": "67156797a91261f460e98437e39101dbc76e6572dcaedcc242069aa02c36a923",
+      "sourceSha256": "ae7367a47cb2652fd411440500a3da49fd7fe79c55f0dedfda46033d252e84c5",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "painted-marker-led",
@@ -125,7 +125,7 @@
         {
           "path": "packages/react/ds-app-landscape/src/lib/Button/styles.css",
           "blob": "62a2ff4ca7824cb8544753c96308f093e77a2291",
-          "sha256": "74de5762db6ad2a1fdaa02c37242efcbf49b518cadf97cfe65ed65bfd9ef7898"
+          "sha256": "8ad00bee5cf98206b908393c9853e4ae8833ddacf2ffcf9ad401c694f826d760"
         }
       ],
       "t006Disposition": {
@@ -168,7 +168,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/DetailedChangeMarker/DetailedChangeMarker.tsx",
       "sourceBlob": "8f04ae3491934a47d1f9a9e2c4a04f1a105e7c54",
-      "sourceSha256": "3315cd969106fcb2c89e641cac1295a7775076db9f6e37eb504386325179749e",
+      "sourceSha256": "767d1b048df89e32cd44bb38b25db9e14148d5b43ac36bca61eaaa98a411e20e",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "paint-canvas",
@@ -176,7 +176,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/DetailedChangeMarker/styles.css",
           "blob": "debfd16a77076f43c12a62073ac9107c32745298",
-          "sha256": "097b64c21bdc49e9e134971042e5f158ba344104e1890598feba9a8e431c09c7"
+          "sha256": "2b099cb6f037e32039b071a1a3cb4eff028ce9a85bcaebf2b42daf0aa5d9e616"
         }
       ],
       "t006Disposition": {
@@ -197,7 +197,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/SimpleChangeMarker/SimpleChangeMarker.tsx",
       "sourceBlob": "48a438186aefb96acb93c852e5dc890c5ae87116",
-      "sourceSha256": "c1ccd6870eee0b0919a5d50557be3ae66d76c7e6ccdb99c06660819d127ce30c",
+      "sourceSha256": "9e205b845eda21b5513920996ae17d861dbcabf5b50406972a60e82697c921a1",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "paint-canvas",
@@ -205,7 +205,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/SimpleChangeMarker/styles.css",
           "blob": "ded7952ae77c081a42079824f3095c5552c857f3",
-          "sha256": "cd203b70c9c2fb52cecbc0e75e549c8f6d6d18c8e1c1178ae5af280e038f23bc"
+          "sha256": "221fe0896589128e638ab19be7ec68374daab50ef5e85124ebda2f6820db8c0b"
         }
       ],
       "t006Disposition": {
@@ -226,7 +226,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/DiffChangeMarker.tsx",
       "sourceBlob": "ece8f2e3ce2f7a75a65c5c28e43d080d535b203a",
-      "sourceSha256": "5dfd88fdaec1782052e9c48ebe9bfe91c7bb9f1bf28818bda17d2afae4bebbee",
+      "sourceSha256": "e9047c9a4912d72e8dd972bc316aaee36624bfb7aebbed028399f217a0e8372f",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "paint-canvas",
@@ -234,7 +234,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/styles.css",
           "blob": "6d73db75a7d63104fdad33894f1822d43885f22b",
-          "sha256": "a9263668dccbb0529bf783d10f3a0d4c4fede79bb6d03cc363eb7b794a426484"
+          "sha256": "7f40681284136234165e6f28c2c3e34833c0327e5831f7db7432bf099f59d5e5"
         }
       ],
       "t006Disposition": {
@@ -255,7 +255,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/EditableBlock/EditableBlock.tsx",
       "sourceBlob": "6b1338e149f7132ae12b679aa467ef7b9ad4a424",
-      "sourceSha256": "166b268e304199c048bcafdd503c5cd580ecc6e278af921eebf1adc2b20f2039",
+      "sourceSha256": "cd697a810038970eeafa88fcd6023a1cab598ae268842e6ad71e3dae9965dcfe",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -263,7 +263,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/EditableBlock/styles.css",
           "blob": "db825b75cd6a25e6bfa14af019696803892a4920",
-          "sha256": "20cb91a06f8c9f866731f60db00a6bec3cde360860b88292d306ae1369ee54cf"
+          "sha256": "f75aeec0a0fd2e2328b51d54d4dd0f12fbaae3ef8ce54debc0173a75b545b15a"
         }
       ],
       "t006Disposition": {
@@ -284,7 +284,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/File/File.tsx",
       "sourceBlob": "a8ef2ad571fd77bac2846db319a81ae9cc9e7415",
-      "sourceSha256": "bcede5e1d18ffd6ba053d4f70f4dc967695195f932d05921b6623db313189b94",
+      "sourceSha256": "bb2c8d4231473fd00c000e2151de00ceb6ea4b2a6b5a24c476e72f52405d12a6",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "painted-marker-led",
@@ -292,7 +292,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/File/styles.css",
           "blob": "b54e4e6a3d20eef705489dc0452ad7ca6ef3bf8b",
-          "sha256": "4a6339e4945a3efd3ccf1e3a041bf759fb6adff29f7590abe9db873b246fe9d6"
+          "sha256": "310cf3e61bc42a656f0aca933dc08bc029000976f9df3a67af57a89fc69f3169"
         }
       ],
       "t006Disposition": {
@@ -313,7 +313,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Folder/Folder.tsx",
       "sourceBlob": "f95d32de016799a0ce32224d07655afe27757692",
-      "sourceSha256": "61996e782f8b07ef51ff35020b07975877665d8eb3dc594f521b4979993e7b7c",
+      "sourceSha256": "f2798d1f09f241b97b2ac922c59b3a5b70bc8d70381db19e1a5d077adc4f5a18",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "painted-marker-led",
@@ -321,7 +321,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Folder/styles.css",
           "blob": "5075f300c30b3bd01b93a474f9272760b3d5fbf0",
-          "sha256": "f92980955aa2a2b2af943083ee37d3a6b70b5ad0ffe15093b2da80291dbbff75"
+          "sha256": "a60594bfe1d29875905d564e48352c44d1fb0d7e0ae5f73246ce2770a0c5755b"
         }
       ],
       "t006Disposition": {
@@ -342,7 +342,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/IndentationBlock/IndentationBlock.tsx",
       "sourceBlob": "9c5a3354098f9ffbcc3ae0987a865a7e0e156cc7",
-      "sourceSha256": "2c73a27bf3ca8d218c31d34774425c74e78dc4308d319ddcb714e53e07ea657f",
+      "sourceSha256": "c010b56e9169f23c2e0d6a9df0c0a50a4cdcc72f5ccdf8e8f7c9fea93a1a683e",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "paint-canvas",
@@ -350,7 +350,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/IndentationBlock/styles.css",
           "blob": "b5d9f8433fdc1b558d118e6de127e37b981a5e07",
-          "sha256": "c1430f0df9a60473ec2dddaf8460d212e901d0a376915ae3a53c9a57d12035ca"
+          "sha256": "56746833e5cfe79621916cb3bf9f0bf608ddf4cb054968edcdb679fb2ab3d557"
         }
       ],
       "t006Disposition": {
@@ -371,7 +371,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Node/Provider.tsx",
       "sourceBlob": "fad32846bd1b5edad978a31c5f30bfacad2d1247",
-      "sourceSha256": "cfa888897b2fb84f00660974604a704db08dac6c71ac542ab5e5ade71084835c",
+      "sourceSha256": "18beb39ed1b79456b7a1215718875294c6a8a27251ee6279f0e9f8b272af8e3f",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "painted-marker-led",
@@ -379,7 +379,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Node/styles.css",
           "blob": "eeead75f1ab223eabc98c406db5c03b526824237",
-          "sha256": "e4167d153a5c5ba814339bc02e3a0846f24da70f8f71a5cec8cdf378f3e98c2f"
+          "sha256": "bab8b703ff3f19b438e7f99c9ca02db40d7377c62de0183da048cbd57989c740"
         }
       ],
       "t006Disposition": {
@@ -417,7 +417,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/SearchBox/SearchBox.tsx",
       "sourceBlob": "6451efce62cb980f0867d63390c6f8057fef386a",
-      "sourceSha256": "6d50a36b57e6ff986d65cb375ac95fc9d3df26e5e7b292a68dd422fe3f810850",
+      "sourceSha256": "d8acb60c027dee63b0e02b211a221fbb3e3d317bafcb757a6c2a2b5a95d63d68",
       "currentMainState": "changed",
       "exposure": "compound",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -425,7 +425,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/FileTree/common/SearchBox/styles.css",
           "blob": "d47b441015ebdc97befcf763bf7bb2fb7a58a1ff",
-          "sha256": "e1a2e7c26b8cbd9b56a9759952b7bbe2b43e86a97a399ecca821f69af2913231"
+          "sha256": "c8d9297dd36ddf1a2d08072d7855f47d7fb715279b36540859be5a0173157a3b"
         }
       ],
       "t006Disposition": {
@@ -462,7 +462,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/FileTree/common/TreeView/TreeView.tsx",
       "sourceBlob": "336f898e3790a42903e71f7129cb32d068e2da6f",
-      "sourceSha256": "981040a709fa2c91a307934283ee56eabf5725e8902e1bd2696909632041fade",
+      "sourceSha256": "5dfb99ae0dea18ff5f310ad5d8e7478c472174d2647daee3bdfe26ef9802a6b3",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "field-stack",
@@ -485,7 +485,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/FileTree/Provider.tsx",
       "sourceBlob": "a0ee850841b6a31cbb6d72920103b71aa89881fd",
-      "sourceSha256": "742462688e9e9bdc646857f6c849a3e2318d3d06c33688cb7b0fa5bce627eb16",
+      "sourceSha256": "ff6e1633f6f8f8eb30f46dafddf50f2e209b69cf8d3348d50019c4eb511cf082",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -493,7 +493,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/FileTree/styles.css",
           "blob": "f56cc491ea657e6665d53c46ae3bc0ca00495248",
-          "sha256": "48a7a18286b454e0e6e1c6f6bc247d624da6af4a77f253aaa91dba38ce3102c4"
+          "sha256": "f73d55a3572acfcd8caa27487a3668aaa267db6b3c5255996476a891790e112a"
         }
       ],
       "t006Disposition": {
@@ -514,7 +514,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/CodeDiffViewer.tsx",
       "sourceBlob": "3ba671f456ba0846fc4cdf673f6d02a22c633f94",
-      "sourceSha256": "30150d0b9db6d5f1372b651041cc3dcc6af582dbbe735d2039e378ffcffbb605",
+      "sourceSha256": "833d8bd9cf0052aedc8944f643f64392b26c7d14b0f6259593e48d26c77bb445",
       "currentMainState": "changed",
       "exposure": "compound",
       "compositionClue": "attached-edge-row-cell",
@@ -522,12 +522,12 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/HighlighTheme.css",
           "blob": "67a907281a8ef96c59964d8d0d912ed63137af35",
-          "sha256": "7f5356fc0bc1b8577cb5792599bd0467975995cf694159862bd297e3a961b093"
+          "sha256": "3215a4e52a2e29134a3e7929faeb3894ef8a01b8cebfa6191c56391db0374ee7"
         },
         {
           "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/styles.css",
           "blob": "095057db51a40b1a301029ba067e6a408eaf9124",
-          "sha256": "fe98a3b5194933cb772b439b4267cbb3da99b88bcb741b47b835ffe1f9f2330c"
+          "sha256": "1f13877b7e19bc62e008d76386e570c4755f95f478ce23f3c383be3d35084f8e"
         }
       ],
       "t006Disposition": {
@@ -568,7 +568,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/AnnotatedDiffLine.tsx",
       "sourceBlob": "51e80d30d7a3781c524f360665e7faff49c9aec3",
-      "sourceSha256": "03ea89f206e580b1c5b395a96c5d358b30863e95334c76dafd6f885eb2945469",
+      "sourceSha256": "9d32669de4a1bda3609e1535ede0331cd9c6de3266d7228c3d340c78b2991e2b",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "attached-edge-row-cell",
@@ -576,7 +576,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/styles.css",
           "blob": "322be1074030eaa30c335280f44f66f73f64be72",
-          "sha256": "0f11deaadac12009681eb96f56ba117b8db2a2340c5b7f78816fa16f55691663"
+          "sha256": "b0b338db05b88dbe03202841ee31be8094ea378fbd8aa542cb1297578e3aaed5"
         }
       ],
       "t006Disposition": {
@@ -597,15 +597,15 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/DiffLine.tsx",
       "sourceBlob": "6626dd5600d631d093ba8c89eb17e89a2db13b0f",
-      "sourceSha256": "f045619edf57884ab7acdf26eee41451f2142a78d1532618c2baea5b3014d6b3",
-      "currentMainState": "changed",
+      "sourceSha256": "221d7b65a443070e72fb67724b732de2b136536ba1927285f61e6bd000dc8661",
+      "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "attached-edge-row-cell",
       "styles": [
         {
           "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/styles.css",
           "blob": "4cddd4bdad2e0873e07ae58c2804e7b20070d2a5",
-          "sha256": "4dbb98d0fee67be1cc481c08e43216f0f236f89aab1cde36d5f8f276e4c76c3d"
+          "sha256": "b07164f9cae6efe57cfdc213c68c904aa4bd4bb593d0c03fce1c8f6a93f65f1c"
         }
       ],
       "t006Disposition": {
@@ -643,7 +643,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/FileHeader/FileHeader.tsx",
       "sourceBlob": "cc2b7d2b310d464d7eb3f8a1a73c698729dc01fe",
-      "sourceSha256": "2f68223874c9edc453d68e020fdc09722e3af3e7805fe72330303647582a4474",
+      "sourceSha256": "a3e52657f1e9910a5c3635afbfd2db23e84c293f008e8d708900df9a465aab92",
       "currentMainState": "changed",
       "exposure": "compound",
       "compositionClue": "attached-edge-row-cell",
@@ -651,7 +651,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/FileHeader/styles.css",
           "blob": "af494e9660c9bccd1563fa09180da769f775b773",
-          "sha256": "7284b3e22927aff66693103230938113f129cb992fe281c3c8e5f68088cec46d"
+          "sha256": "97e64a7fd72e240080e424b7cd18dfae24ac1a1864c1166f7d48df7c14950a51"
         }
       ],
       "t006Disposition": {
@@ -689,7 +689,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/Provider.tsx",
       "sourceBlob": "8bc6318f2431a568aa94a4d3ce13177e54529202",
-      "sourceSha256": "c69325a279142b8426d1a79a26b19daf0fb8e316848d7e577817cc33fca10e70",
+      "sourceSha256": "bb38ef7612c91e047e3bf24fa628c5c52abcc01f4cb8ff4ac882062ec84de57f",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -697,7 +697,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/styles.css",
           "blob": "03c20ea87e68b51041b2404a73a724008dc5f91e",
-          "sha256": "7bc8044a3d35ef42c1a83f2f29a0617bc6681069612b0588ad2472fdc2973565"
+          "sha256": "19f03967ad80365bd99f742e418442f591b59eceaa7f18c79958f1859493d15b"
         }
       ],
       "t006Disposition": {
@@ -718,7 +718,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Button/Button.tsx",
       "sourceBlob": "a265c6580f9b6e18c082643cd05de4ea62b5e9fc",
-      "sourceSha256": "b83794643662a700abc8372e5bb467659eb1a48db227e520e61ddabd087b2176",
+      "sourceSha256": "f691415ea111e26854d3d006ec803c577036c12d62195e7134486fc331372c4c",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "paint-canvas",
@@ -726,7 +726,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Button/styles.css",
           "blob": "f491e353166261179a9f6f5e2d56fca0046102c4",
-          "sha256": "0c0e725d21c68d4bf9b8f6e8e166a3487526c4ec34fda3dcbc94a25365a3dfdc"
+          "sha256": "88733fd4ece0b126575198b7feb4d2df2e6074a4a1a69076607e88fdc18d1fad"
         }
       ],
       "t006Disposition": {
@@ -764,7 +764,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Group/Group.tsx",
       "sourceBlob": "0f0cc0e5e330e20abca2fabe3a6a63d2041e97b5",
-      "sourceSha256": "a39ed38f56b519e7e225d59c50ac4217a794b71b71784f2c88118d5479bbdf14",
+      "sourceSha256": "c0a2c1694ebc1124e2d57caf08c2890371e72b759d8310d677d843f44858c441",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "painted-marker-led",
@@ -772,7 +772,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Group/styles.css",
           "blob": "be703e43445b3c1679fb6411abd31b52dec20950",
-          "sha256": "c64d54b0d3d479bf3153adf2a1d3dcb732ac5127f40d1b7d3f75c681ce2ec447"
+          "sha256": "860195fab12146b8378af653bd35f815529163cce6d6347e26df2081e489c123"
         }
       ],
       "t006Disposition": {
@@ -793,7 +793,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Separator/Separator.tsx",
       "sourceBlob": "ead55cbbcd0243259ffa75408692ae8c04b10d49",
-      "sourceSha256": "908d24495e20154d09c60adad4534867cd4c664e7f3817fbea4c4d931a26fd1a",
+      "sourceSha256": "efe569bd25ee645a3c80c0ee368d130bc98d43401603b0d9011a2a6767a4b0d9",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "paint-canvas",
@@ -801,7 +801,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Separator/styles.css",
           "blob": "d51b84c9b512e72a99bc8fcfe14b5e12add395c9",
-          "sha256": "41bb80ea299525cad9d01c6e954df72ea24ca8508d683c5c8e4db92e77285643"
+          "sha256": "926aeed6e7eae5a24032a2e5bba0b527255ad3eec35a1d5b9a81ddc1ae7268a0"
         }
       ],
       "t006Disposition": {
@@ -822,7 +822,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/Toolbar.tsx",
       "sourceBlob": "02f0eb4e1325194d1374cfc05b88c20944cdd9b3",
-      "sourceSha256": "cb5a8802a92539e6b23ea117eaccdfa0fb85ecebf6b59d87dbc67528d1aed264",
+      "sourceSha256": "5dcd3d0051f35321699d0ba93763beb7f50662dd203e3a36d0ba51904fc19b4f",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "painted-marker-led",
@@ -830,7 +830,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/styles.css",
           "blob": "62c2ae4aad2a3aaa699203d0bbc022dd34a182e0",
-          "sha256": "e919d1404f32c6c7c249884343ed3ccd9d7142cb7ca967b03679d9c47f0fba0d"
+          "sha256": "6d0efc165029baad68a86d794daaac6034a88e9b4c8f123197258c8d7bb7e133"
         }
       ],
       "t006Disposition": {
@@ -865,7 +865,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/ViewModeTabs/ViewModeTabs.tsx",
       "sourceBlob": "f061d19bb9ea8a6a32619b83e0ffdcc93920583e",
-      "sourceSha256": "89bd3f6807a3d4355ea0aeb039ab635156e2349e716ff2280bbe8ce11a7ce47d",
+      "sourceSha256": "b2c332ad0e774173661bd81bdda5a2f05137a0e67466b56c0b72757b01fe7800",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "attached-edge-row-cell",
@@ -873,7 +873,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/ViewModeTabs/styles.css",
           "blob": "e0fd0d3412d6742b69cbe6d2279f9329ccf16bfe",
-          "sha256": "966fd074580c0b5b6163358487207cbf1e8b1adb0473423d5e2b4459bfe1745f"
+          "sha256": "0db9d40345928bc8c8a46556172775556f4b4edca6ae02d73a081e930bf26788"
         }
       ],
       "t006Disposition": {
@@ -911,7 +911,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/MarkdownEditor.tsx",
       "sourceBlob": "62cc7399cc9c7330f3c14dcaac79c0be57fd502b",
-      "sourceSha256": "a35e2da6be722be3cf6575d634bdb41676e7e5f84a41c1f5dddfe4e5ff9ccc45",
+      "sourceSha256": "efe572f127a6a547e7584ec541d85d458e083f4b91a378b0798f866b20eda011",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -919,7 +919,7 @@
         {
           "path": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css",
           "blob": "304ab0a0951e5d8cb1ed07e0af0ffb3cb458c2dd",
-          "sha256": "f4f4549650b2aa0907044056c10135d8553577b199ba4e59b8e637783f03f63b"
+          "sha256": "d1c2568d2cde42e9372ae5f6207a5858259e129158b3cf5f0babd9f7e8e197b0"
         }
       ],
       "t006Disposition": {
@@ -965,7 +965,7 @@
       "package": "@canonical/react-ds-app-launchpad",
       "source": "packages/react/ds-app-launchpad/src/lib/RelativeTime/RelativeTime.tsx",
       "sourceBlob": "751a399c38b1fbb0800d95e97b8f148f7d311837",
-      "sourceSha256": "80a0df756bef3b7aa094de2f293ebee3c340bf7807bbf32318c08963ffaf31e7",
+      "sourceSha256": "2156924e65f6cf027d59e7497e580db58ce1e5e03951819dd0e35f925ebeb19d",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "ordinary-text",
@@ -988,7 +988,7 @@
       "package": "@canonical/react-ds-app-lxd",
       "source": "packages/react/ds-app-lxd/src/lib/Button/Button.tsx",
       "sourceBlob": "af2095793f614ba03cc626b1aa78cca2375b9d47",
-      "sourceSha256": "67156797a91261f460e98437e39101dbc76e6572dcaedcc242069aa02c36a923",
+      "sourceSha256": "ae7367a47cb2652fd411440500a3da49fd7fe79c55f0dedfda46033d252e84c5",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "painted-marker-led",
@@ -996,7 +996,7 @@
         {
           "path": "packages/react/ds-app-lxd/src/lib/Button/styles.css",
           "blob": "a8b69ef0da7669b17c7e7065669b7e270d55bede",
-          "sha256": "6f1da1708ded6c4b80225423f6fe8fead82aabc601b2309341db835b28b77132"
+          "sha256": "89347e72409abb6cd0a2b791552c542f54edcd2e66d3fa8a0386a1311e8bde50"
         }
       ],
       "t006Disposition": {
@@ -1039,7 +1039,7 @@
       "package": "@canonical/react-ds-app-portal",
       "source": "packages/react/ds-app-portal/src/lib/Button/Button.tsx",
       "sourceBlob": "af2095793f614ba03cc626b1aa78cca2375b9d47",
-      "sourceSha256": "67156797a91261f460e98437e39101dbc76e6572dcaedcc242069aa02c36a923",
+      "sourceSha256": "ae7367a47cb2652fd411440500a3da49fd7fe79c55f0dedfda46033d252e84c5",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "painted-marker-led",
@@ -1047,7 +1047,7 @@
         {
           "path": "packages/react/ds-app-portal/src/lib/Button/styles.css",
           "blob": "4ab2310ce2fa2611963cf4dad346b923a4d8c497",
-          "sha256": "ee8e2b37f6ee140bc37c2f809b07362d8c2ed5e858b320d48665e2025c29d9e1"
+          "sha256": "f0ed55b4eb9c31c3638e4f7474bfe242fbe0f58ea176c8e8755db75b9c08b0f6"
         }
       ],
       "t006Disposition": {
@@ -1090,7 +1090,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/ApplicationLayout/ApplicationLayout.tsx",
       "sourceBlob": "428227fce43f99f091768747622f6f5e26c74378",
-      "sourceSha256": "2a15bb92dd2f88405f43194088fa3c985835d3ae1ec5f3e56ef680c2bcd1df48",
+      "sourceSha256": "406ea6b3f8a6cbf48928aa34f1c15501c32372e861694dc30d10d4bb7f107193",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "layout-shell",
@@ -1098,7 +1098,7 @@
         {
           "path": "packages/react/ds-app/src/lib/ApplicationLayout/styles.css",
           "blob": "cbc8713f5cf1d74955b634694607af3ffc9e130e",
-          "sha256": "82fb3babc76f925141021a5d99500ac2c2194aa004e488afd48bdf55d92c8a16"
+          "sha256": "cd23eccc8dc0bdaf4c8914db357d87fc2fb93e7f9715bb1c9b602b77d8625b5f"
         }
       ],
       "t006Disposition": {
@@ -1119,7 +1119,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/ContentLayout/ContentLayout.tsx",
       "sourceBlob": "6168cfffbcf8707e072ef463f7aede1345093a3a",
-      "sourceSha256": "2d78252a6dabab54f1b68e0bfa532b0a1f56a2e4070180fdc977545a6b3fceaf",
+      "sourceSha256": "b709eb03b3559bb04afa479b3c74fa8d8f90c036b6b99c8951302fe73ab37ef6",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "layout-shell",
@@ -1127,7 +1127,7 @@
         {
           "path": "packages/react/ds-app/src/lib/ContentLayout/styles.css",
           "blob": "df9eb57c298fbe47559cc13312f21b8cdc3aaccf",
-          "sha256": "6e8a74f43814a052b78643a08816d7ea7156b2caaa65f57a4f4c3f2e1812efe7"
+          "sha256": "346c98564f8eb9b10aa041c1492fec4e2f9082862ef65fd5a33c222fb9791c2f"
         }
       ],
       "t006Disposition": {
@@ -1148,7 +1148,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/CollapseToggle/CollapseToggle.tsx",
       "sourceBlob": "88177dd118692e1009a803aa0cf0f94909862daa",
-      "sourceSha256": "c64b20a74bb7a6f54157b9d87c0c9752e40d9dd14995a05c8d3f1735ad0f3c00",
+      "sourceSha256": "171079f53dd32458fa6f0e9a746a64088b478cd6bb78f8ea816c46ee3fa3b047",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "paint-canvas",
@@ -1156,7 +1156,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/CollapseToggle/styles.css",
           "blob": "e4f60623e4275fdedbd47f4c084a0333d2d0778f",
-          "sha256": "f74d15c04f98a8b3de64c7330fea551a11a8d444b3f9bda9046ad243ecb53a87"
+          "sha256": "a609fbb0d7bbd1ccd3c6abfcdc78315c80788175849aae4e8515cfcf65970cfe"
         }
       ],
       "t006Disposition": {
@@ -1194,7 +1194,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/Content/Content.tsx",
       "sourceBlob": "a5e6689b712abcba5836297d10254981a135a517",
-      "sourceSha256": "abd6dc9bd8d474f4827b5d835b43ec11c0f6ef438c346d786466d8250e10a555",
+      "sourceSha256": "5f74512b739eb13a7c2e71730cdc8419dab7dfeb96858df5a0a1f7023b0ff237",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "sectioned-card-panel",
@@ -1202,17 +1202,17 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/Content/styles.css",
           "blob": "d70f540ab87c17936dc3414cf73188775bb8e7ff",
-          "sha256": "cdf6edd657c34583f434025f93dccbcf4f7f123e9b59d329f07d50fa726b4888"
+          "sha256": "8f6a0bdd0a745b1d7ff2720ca2eb164adbe2d701d6a82c80ef91459ebeee55af"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "element-stack",
+        "profile": "group-stack",
         "assignments": [
           {
             "axis": "block",
             "edge": "internal",
-            "role": "spacing.gap.element.block"
+            "role": "spacing.gap.group.block"
           }
         ],
         "boundaries": [
@@ -1229,7 +1229,7 @@
             "reason": "No component-owned outer block inset."
           }
         ],
-        "rationale": "Adjacent children form one logical unit."
+        "rationale": "The owner separates logical groups inside a pattern."
       }
     },
     {
@@ -1237,7 +1237,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/ContextSwitcher/ContextSwitcher.tsx",
       "sourceBlob": "ce3c953949b63a5b5abf5da602dfd175abbe9349",
-      "sourceSha256": "520e944524bb2a547c9e3c157dd52864818e0cb7c130283c1731bb936acd9865",
+      "sourceSha256": "b7b035240e285acd02245ca4665cb002081d235ecc243762d51a0d240b1f3327",
       "currentMainState": "added",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -1245,7 +1245,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/ContextSwitcher/styles.css",
           "blob": "2800a2661d52e647fef8bfd22dab4da65f1fe43d",
-          "sha256": "5ddbad39b9fc3f354d2a93408e741ab3210db7cdebef371483ec3f727acb0614"
+          "sha256": "db32e3387d5e4f4cd38adc864baa7c89d8de1333896d1b54297d6d9c11b337c4"
         }
       ],
       "t006Disposition": {
@@ -1283,7 +1283,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/Footer/Footer.tsx",
       "sourceBlob": "bb71ceb23897f728210eba965a7c35004bcb9542",
-      "sourceSha256": "1912ffd75ed0e279219f7e488e3e12fa6dd352b3a565212c626757392fbb374b",
+      "sourceSha256": "15d23d64c0f179405d58bfca4f7cfd2e423c4b340f4ce319c6b279002be6ec57",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "sectioned-card-panel",
@@ -1291,7 +1291,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/Footer/styles.css",
           "blob": "ce30b3ad16bc4885d0a2e19c005b0d65a3941563",
-          "sha256": "c1d49b28043a55caf3694e39dc22504ae0a1fe119414bfcd3497377dcde1b1cc"
+          "sha256": "c77870c9c87c1aa631e3a0fac8eca018136f394e5b2ded217440dccc5ee41eae"
         }
       ],
       "t006Disposition": {
@@ -1312,7 +1312,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/Group/Group.tsx",
       "sourceBlob": "0c3d8c81ec736ee3bd15f6c0092e3591a8825bf4",
-      "sourceSha256": "bd728f2a9f02994c369af5853125ab653d6a4521bee8422340c5d083687d5188",
+      "sourceSha256": "0d148e7b4b1ba2ee57cf5800a5bc6e0ca50a4b85089f922e9407b10375830890",
       "currentMainState": "added",
       "exposure": "internal",
       "compositionClue": "layout-shell",
@@ -1320,7 +1320,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/Group/styles.css",
           "blob": "e38204b10720bbef3602151b8d0f718cbd3b3815",
-          "sha256": "e7882b0f505c457a90caf6e53a0b4585084fc91723274a848b2acc5f09f481af"
+          "sha256": "152b78dd54394c66ca9ae308042320cf55f78a558d702bc687a27fe01c3b4a2f"
         }
       ],
       "t006Disposition": {
@@ -1341,7 +1341,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/GroupHeader/GroupHeader.tsx",
       "sourceBlob": "48279d0a42eff5a80c5fd4752238224e725341da",
-      "sourceSha256": "9ce902f59758a9798784c017c713a4d0af45b8ce15da242a5fa746695dda0fe4",
+      "sourceSha256": "66118efcaa53cbd8b65445e3b542b1b2a5b19b7354a7b5ffe1d4e4ca58c0b406",
       "currentMainState": "added",
       "exposure": "internal",
       "compositionClue": "ordinary-text",
@@ -1349,7 +1349,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/GroupHeader/styles.css",
           "blob": "0f7aa2c859637abd7e824c036ff9d53af2278e92",
-          "sha256": "cc7fcbdf78b0a9287423ec9be8bf797443f116d7619f8264e443432371ffe6a4"
+          "sha256": "8f36dc09b2d1b41f354b60e69be94b94efe74b6260fcfab7691125271bc71d01"
         }
       ],
       "t006Disposition": {
@@ -1384,7 +1384,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/Header/Header.tsx",
       "sourceBlob": "0096b8dc4564fec9d1586b0455356a06d5f42a18",
-      "sourceSha256": "2fcb85d54c9e95ca3659fff9adc08ff53bd6a1199fbcd747465740f218dd0b52",
+      "sourceSha256": "104888bb8e06d596c0dbb64c03f1bdabe39b3bb4eb057db792778e308d95434b",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "painted-marker-led",
@@ -1392,7 +1392,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/Header/styles.css",
           "blob": "96d86edb891a1e3136fa1c9c42f596ee91a92287",
-          "sha256": "c2566e03037840f866043e740ea04518c6a0079ec270a944103d8b4681da9878"
+          "sha256": "98a668a7d6bd6bdd7d75104e5333785827cc0275bf0efa4d70cbd15c9e893348"
         }
       ],
       "t006Disposition": {
@@ -1430,7 +1430,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/Item/Item.tsx",
       "sourceBlob": "f0d32a212dcea330be4a1b623aa1302b82e50c04",
-      "sourceSha256": "92484a1cbf6d173d866f8fc1c50a905490b5325896058931c8306f866c337010",
+      "sourceSha256": "9e8ba3f08fc0d82e4dc3198954a0f8b1b5ff179e8d510e1b43fbf4fe0f329100",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "painted-marker-led",
@@ -1438,7 +1438,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/Item/styles.css",
           "blob": "430d4e99cbd8a9186a5931bf00ca2553f8ffaf36",
-          "sha256": "ca8678ff53dadcea2e7ad5ebb0f08fc92e01c053f2eff5d10ac07a8c8ccd47a3"
+          "sha256": "53eaf5a8bc26056008fa3e768203084470a36be9909146e1b2379dca918b53af"
         }
       ],
       "t006Disposition": {
@@ -1476,7 +1476,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/ItemButton/ItemButton.tsx",
       "sourceBlob": "88d9d2cb1df46fe69fd23e9cfc6e857abb35af37",
-      "sourceSha256": "886c1165acd7a2c9313312d500892249e751254fce36d1f98a5add6f513a271c",
+      "sourceSha256": "45e5cb41205b182481cc3f9d7ac7fed4ea309d6f29aa58ded18a6ffd5adaa8ef",
       "currentMainState": "added",
       "exposure": "internal",
       "compositionClue": "painted-marker-led",
@@ -1484,7 +1484,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/ItemButton/styles.css",
           "blob": "f69aa1ef5d7bab7015cf1746d09952febd615705",
-          "sha256": "2640d4b23f889dd1fb89ef1cda33d6535d75d952987518e8e1718136f70173a8"
+          "sha256": "cf01ea8c5321f947f1a01efea06b1ef66a2c3f409d7840c60140870f2e5ce4b7"
         }
       ],
       "t006Disposition": {
@@ -1522,7 +1522,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/ItemExpandable/ItemExpandable.tsx",
       "sourceBlob": "a077c90855597780def72084ce2e1b057502261e",
-      "sourceSha256": "21fd06cc086c3e8ec1b70dcf25cfbf90b8212f2be4126ed89f346bc16f700422",
+      "sourceSha256": "74416980581a2a22f34b1d1e34dcf86087e8de9409c0d6b2325bcdf8e18b68ec",
       "currentMainState": "added",
       "exposure": "internal",
       "compositionClue": "painted-marker-led",
@@ -1530,37 +1530,45 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/ItemExpandable/styles.css",
           "blob": "d771d7f0d734aa24ba2b231532ba7c1ebfff887c",
-          "sha256": "ea9e15cee931b86e0d3498165949e646310fdadaa3103e6ee485467c9b3e2911"
+          "sha256": "aa032c05259fea0165998d92cab81a63b3fa645394c329d368cdde0e478fe7f8"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "in-box-field-row",
+        "profile": "item-expandable-composite",
         "assignments": [
           {
             "axis": "inline",
             "edge": "start",
-            "role": "spacing.inset.field.inline"
+            "role": "spacing.inset.field.inline",
+            "condition": "on the expandable summary row"
           },
           {
             "axis": "inline",
             "edge": "end",
-            "role": "spacing.inset.field.inline"
+            "role": "spacing.inset.field.inline",
+            "condition": "on the expandable summary row"
           },
           {
             "axis": "inline",
             "edge": "internal",
             "role": "spacing.gap.mark.inline",
-            "condition": "when artwork is separated from copy"
+            "condition": "between summary-row artwork, copy and caret"
+          },
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.continuation.inline",
+            "condition": "on nested child rows"
           }
         ],
         "boundaries": [
           {
             "scope": "block",
-            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+            "reason": "The fixed summary track and disclosed child layout do not consume external control block insets."
           }
         ],
-        "rationale": "In-box field-like row; the host owns its fixed block track."
+        "rationale": "The summary row owns a field keyline while nested child rows add a separate continuation inset."
       }
     },
     {
@@ -1568,7 +1576,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/NavTree.tsx",
       "sourceBlob": "caa8d8a22cc6b4cfe7474d118b1daba219cba187",
-      "sourceSha256": "a5331cef51108bae72880b9f634647fa535d51e38c21287e805f6a4e5bd36487",
+      "sourceSha256": "df8667f476921b4d6811087cfa25a5ababe15271fa4247c99aa5ffaa511d2ef6",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "painted-marker-led",
@@ -1576,51 +1584,22 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/styles.css",
           "blob": "3ae17d0614623512988be0d08132d941d2ad3f7f",
-          "sha256": "9e4d6b505f0aa386294dd7b5eebc9803af1e60c17dd442cc7a6d90d4773e1a9e"
+          "sha256": "63016846af6558e4e138ffe1acb3a8b1989d5b8bd51fe89cb29e01d56f37d069"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "in-box-field-row",
-        "assignments": [
-          {
-            "axis": "inline",
-            "edge": "start",
-            "role": "spacing.inset.field.inline"
-          },
-          {
-            "axis": "inline",
-            "edge": "end",
-            "role": "spacing.inset.field.inline"
-          },
-          {
-            "axis": "inline",
-            "edge": "internal",
-            "role": "spacing.gap.mark.inline",
-            "condition": "when artwork is separated from copy"
-          },
-          {
-            "axis": "inline",
-            "edge": "start",
-            "role": "spacing.inset.continuation.inline",
-            "condition": "for nested group depth"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "between navigation rows/groups at the local level"
-          }
-        ],
+        "profile": "boundary-delegated",
+        "assignments": [],
         "boundaries": [
           {
-            "scope": "block",
-            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
           }
         ],
-        "rationale": "In-box field-like row; the host owns its fixed block track.",
+        "rationale": "The renderer adds no independent spacing relationship.",
         "exceptions": [
-          "Depth indentation composes spacing.inset.continuation.inline; fade clearance and fixed row floors remain paint/layout boundaries."
+          "This display: contents renderer delegates nested-row continuation inset to ItemExpandable; fade clearance and fixed row floors remain paint/layout boundaries."
         ]
       }
     },
@@ -1629,7 +1608,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SideNavigation/SideNavigation.tsx",
       "sourceBlob": "b68d01000b0d6f3223b5249c5cd21ed7310f25ad",
-      "sourceSha256": "75f279e1e9edce9e520e64408b242e46ff21b46a6412df15154b0b7adbc90332",
+      "sourceSha256": "bf5eff8c1d720ed9139d3ccf29f44540a71293ee5b5075739b916e6b61337f67",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -1637,7 +1616,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SideNavigation/styles.css",
           "blob": "0ae71a9cbc4c9c151e18cd38b87cc5b2fdee3b55",
-          "sha256": "cc3b6497d31e91cf242cd34c83af833fff949c64ef350ad7e1b1f2d87474fc4a"
+          "sha256": "2eef1ffdf6ea1c6d969d605f25a444d1ebb84a255893e3b53e99fcae79a18ece"
         }
       ],
       "t006Disposition": {
@@ -1675,7 +1654,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SidePanel/common/Content/Content.tsx",
       "sourceBlob": "43904b6e48c98cad07f7de192cabf7eb78931385",
-      "sourceSha256": "85352d1de036484b58714f424f274bc26889d220d07be6aeafa4a0a2604da7a4",
+      "sourceSha256": "642c4452c48d7c12b9cba078ca3861f136791ef007aa1b0c316e4412457e3b28",
       "currentMainState": "added",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -1683,7 +1662,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SidePanel/common/Content/styles.css",
           "blob": "86513db018c906cdcb33b8d02b85a9d6f6f33796",
-          "sha256": "4f48b56a1f25ce14ba15e2fba51b291717ab209053db8d7e21c9de95aaf47cfd"
+          "sha256": "3e81e7dad6ad3a65a1a6d9340e2cea8447c75fa8ec4ca720d7bf47992b7a38ba"
         }
       ],
       "t006Disposition": {
@@ -1720,7 +1699,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SidePanel/common/Footer/Footer.tsx",
       "sourceBlob": "6861c1d61433e5f73792486730c0b52cd7b0b427",
-      "sourceSha256": "9e454f4e34f57edd96d1ad6d31afc5a2f53967f285017f03315c7fc5f7e88b92",
+      "sourceSha256": "34ca92c4281eab5c6557b41c48beb931b99c38f49f7ae94ba795aaf0d853f107",
       "currentMainState": "added",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -1728,7 +1707,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SidePanel/common/Footer/styles.css",
           "blob": "1872728463f9985f36d4271b581ec01ebe00da1a",
-          "sha256": "bd67a97f0847bd407fbc2f95b6682a9e67ea075dd137c59f2e0d247c4b0148b8"
+          "sha256": "9d6d2434643976063942e1b86134422ba5b37935053559dd46666d3d78aac5d3"
         }
       ],
       "t006Disposition": {
@@ -1760,6 +1739,12 @@
             "edge": "internal",
             "role": "spacing.gap.element.inline",
             "condition": "between peer footer actions"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "between wrapped action rows"
           }
         ],
         "boundaries": [],
@@ -1774,7 +1759,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SidePanel/common/Header/Header.tsx",
       "sourceBlob": "4fe16ddb776a3230b3901d12aecdd9c0f7e7787c",
-      "sourceSha256": "37e63533be0aa7c9b600a93b47f704f5820407b174c2ce44f70faacc2e4235f8",
+      "sourceSha256": "f58a327908162422081d21bea1a1c19281a539f280c3bfb55d0fa3ac096667ff",
       "currentMainState": "added",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -1782,7 +1767,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SidePanel/common/Header/styles.css",
           "blob": "27e26d00a180beb983780f3b73cf08229c277d26",
-          "sha256": "05facc4f88112d045ede0be6a83ff2eabc2c9c84ff57eb239ee97a82216753de"
+          "sha256": "3e4cd57c76b78e323365b1891cc8e0efee4f80b205cf7b526c8e6b94729baca8"
         }
       ],
       "t006Disposition": {
@@ -1828,7 +1813,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SidePanel/Provider.tsx",
       "sourceBlob": "2b4d337eaef98bf0f355bae690dbfb860958131b",
-      "sourceSha256": "77d929f655f4164e2042312ab6b20a881b118cbf30cfd2a106472521a7d3aac9",
+      "sourceSha256": "5360a2f7f610f45e6ca5e0f13137a821edc983cb66b3d621867972680bb3601b",
       "currentMainState": "added",
       "exposure": "public",
       "compositionClue": "layout-shell",
@@ -1836,7 +1821,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SidePanel/styles.css",
           "blob": "f810822a49a9b2f001296637ec86fb417def51a1",
-          "sha256": "925d3a4e5f25f4f6219bf5b82dcb468f1d3fc16b85da787542fcbb49610576d0"
+          "sha256": "c21ff48664dae8dfe24245813c7c3417e0e99d544acb066cf3ec09f1fb1d85a9"
         }
       ],
       "t006Disposition": {
@@ -1860,7 +1845,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/SidePanel/withSidePanel.tsx",
       "sourceBlob": "ef85d18cb10a85d8310b7d1faaf3a82f09aa3ce5",
-      "sourceSha256": "fe164ee69413e1d6aa46b354d0fcea7c9206418df36c459006d021d5d7363681",
+      "sourceSha256": "b5c510ae7394f3de0fa7d8e5101bfff9880bdce86f7ea36c7eaac56e9d117e88",
       "currentMainState": "added",
       "exposure": "public",
       "compositionClue": "nonvisual-composer",
@@ -1868,7 +1853,7 @@
         {
           "path": "packages/react/ds-app/src/lib/SidePanel/styles.css",
           "blob": "f810822a49a9b2f001296637ec86fb417def51a1",
-          "sha256": "925d3a4e5f25f4f6219bf5b82dcb468f1d3fc16b85da787542fcbb49610576d0"
+          "sha256": "c21ff48664dae8dfe24245813c7c3417e0e99d544acb066cf3ec09f1fb1d85a9"
         }
       ],
       "t006Disposition": {
@@ -1889,7 +1874,7 @@
       "package": "@canonical/react-ds-app",
       "source": "packages/react/ds-app/src/lib/ViewLayout/ViewLayout.tsx",
       "sourceBlob": "82b9bf26b9c456e089f29e7a91c1b40814565b67",
-      "sourceSha256": "dfd544c7683aa1203e9bc0218c6aea9a767f904244eb99a0c4832a199e6d337b",
+      "sourceSha256": "3d74806a36a55b6fc22f9b02cb1f964c324941939d9c2f0152750644d66ad722",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "layout-shell",
@@ -1897,7 +1882,7 @@
         {
           "path": "packages/react/ds-app/src/lib/ViewLayout/styles.css",
           "blob": "e5a55909f6e39cf640b241199f910eaeb41af0c2",
-          "sha256": "000d1c5b3cb4a47e288ecab0d3a8b237c98cec2f5e00e29c9e7e3990a83c19c1"
+          "sha256": "e0292d692e4f7b85c58f4a26d9ac3c3436ac19c5519b48cf23cff63d4bc87ab8"
         }
       ],
       "t006Disposition": {
@@ -1918,7 +1903,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/common/Wrapper/InvisibleWrapper.tsx",
       "sourceBlob": "d85d4d3367579d6c992c1cd68c0284246b4e38fc",
-      "sourceSha256": "699dbacd03d579d48399ccfd05013e3cff3bda0b59879f7d53aff0cb3249284b",
+      "sourceSha256": "f94a5fee890fda57163f7797645517079983818f0c35418aa49b018d751bcef1",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -1926,7 +1911,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
           "blob": "b251b5f6ef24e9af093c6ed9830d0fe0b1792b13",
-          "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
+          "sha256": "1fa25a3be856397ad27210e6ac721eef2cfaaa9f645c5fad8709723f0c9bdc8b"
         }
       ],
       "t006Disposition": {
@@ -1947,7 +1932,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/common/Wrapper/ToggleWrapper.tsx",
       "sourceBlob": "b0fb39c20906f622906a00c31183442dd83f4e8d",
-      "sourceSha256": "25532a4877ead8e4dd497e17fac47d5a81c065c233a136962813cdca42c91fe9",
+      "sourceSha256": "6a2d9fca92130108ace2f084796754a3ed663354a188dd08808cde592dae6f6d",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -1955,12 +1940,12 @@
         {
           "path": "packages/react/ds-global-form/src/lib/common/Wrapper/ToggleWrapper.css",
           "blob": "02d1d0b1dd091ece00c6e7665398f2430fba2411",
-          "sha256": "dc7442856a03740848fcbc60bc2b62c6cd7a36f948c406fdce94597279669c8b"
+          "sha256": "9ad9191d238afc7b95f4aff5ae71be4b10d6a880bd1c5c0adab9b7ca50a7278b"
         },
         {
           "path": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
           "blob": "b251b5f6ef24e9af093c6ed9830d0fe0b1792b13",
-          "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
+          "sha256": "1fa25a3be856397ad27210e6ac721eef2cfaaa9f645c5fad8709723f0c9bdc8b"
         }
       ],
       "t006Disposition": {
@@ -2007,7 +1992,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/common/Wrapper/withToggleWrapper.tsx",
       "sourceBlob": "45f0fb50b464e10e86fb7964adc7f1d57e599443",
-      "sourceSha256": "4919020f1a5ee90f8e65f777152e6ba81be5009a230a3d308444b467c625e362",
+      "sourceSha256": "fa9dc78fc8761db02944bc3b6ed89034e6c2277b62c251c03db9cba2c3b8db70",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "nonvisual-composer",
@@ -2015,7 +2000,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
           "blob": "b251b5f6ef24e9af093c6ed9830d0fe0b1792b13",
-          "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
+          "sha256": "1fa25a3be856397ad27210e6ac721eef2cfaaa9f645c5fad8709723f0c9bdc8b"
         }
       ],
       "t006Disposition": {
@@ -2036,7 +2021,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/common/Wrapper/Wrapper.tsx",
       "sourceBlob": "60d5e926764241a08dab8d17c1086e212dc05d1f",
-      "sourceSha256": "4cc8f8a9b81584cd1fcae1a255ecd5da79bf39d5621a839906ff1b500d65cef7",
+      "sourceSha256": "211f21503feecdcdeac66bdfb72bc865bab241a2535f3cfb84ad40501b2afc07",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2044,7 +2029,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
           "blob": "b251b5f6ef24e9af093c6ed9830d0fe0b1792b13",
-          "sha256": "48e2049166a14c3635f77778e9c2e210d7ca6e157fcd31704222eaa572ed2e5d"
+          "sha256": "1fa25a3be856397ad27210e6ac721eef2cfaaa9f645c5fad8709723f0c9bdc8b"
         }
       ],
       "t006Disposition": {
@@ -2079,7 +2064,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/CheckboxField/CheckboxField.tsx",
       "sourceBlob": "f154fc9ac9e5ab67cb9143327d299c7f3c072ca9",
-      "sourceSha256": "d1fc15ede6d10a1e5ebb4beaa444e8cc9743256432facec17c08164d9c2d485e",
+      "sourceSha256": "21d0490b22737a3a23c875b56b1145a98831bd1a903598ed2b347127dfd6f5cf",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2102,7 +2087,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/ChoicesField/Choices.tsx",
       "sourceBlob": "0501ecd88ce33bc3dc65bf8dde38132ab55f73e5",
-      "sourceSha256": "e661dbc932bfaae4e05c5e2c93cb4c5f60782eff4b24ca344de78d6b91ffb0eb",
+      "sourceSha256": "3d9303b8f684dcd7fd0fcfac731047fdbb4a620728301b1821a58d0f10d205fe",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bare-marker-led",
@@ -2110,12 +2095,12 @@
         {
           "path": "packages/react/ds-global-form/src/lib/component/ChoicesField/styles.css",
           "blob": "19264601393683e4452f20ef5af87b888d4eec18",
-          "sha256": "75549a738580e41f3e4ff4562c700afdaf603beb01b3294296a276919d9348a9"
+          "sha256": "555ace52e516710c39f2fc240e71731b4814b56d0a3ca7d10ff8ead4ab1f662e"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "field-inline-only",
+        "profile": "choices-composite",
         "assignments": [
           {
             "axis": "inline",
@@ -2142,11 +2127,15 @@
         ],
         "boundaries": [
           {
-            "scope": "block",
-            "reason": "Inline-formatting owner; no component block inset."
+            "scope": "block-start",
+            "reason": "The surrounding field owns the outer block-start edge."
+          },
+          {
+            "scope": "block-end",
+            "reason": "The surrounding field owns the outer block-end edge."
           }
         ],
-        "rationale": "Inline framed content uses the field inset without becoming a control row."
+        "rationale": "The choices container owns the field keyline and peer-option gaps, but not outer block edges."
       }
     },
     {
@@ -2154,7 +2143,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/ChoicesField/ChoicesField.tsx",
       "sourceBlob": "71d46856b0c7cbc99acfb919288e1b11d8d91195",
-      "sourceSha256": "f08f6d0af0b2335ac7bbc3c297af7772ce355969d65a178446c593a389575b75",
+      "sourceSha256": "9ebaac608683e7b943e4b7c9a5675299f5677e8b62d7f4204dce91159c0d64df",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2162,7 +2151,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/component/ChoicesField/styles.css",
           "blob": "19264601393683e4452f20ef5af87b888d4eec18",
-          "sha256": "75549a738580e41f3e4ff4562c700afdaf603beb01b3294296a276919d9348a9"
+          "sha256": "555ace52e516710c39f2fc240e71731b4814b56d0a3ca7d10ff8ead4ab1f662e"
         }
       ],
       "t006Disposition": {
@@ -2183,7 +2172,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/ChoicesField/common/Option/Option.tsx",
       "sourceBlob": "9fde2384e69c2ea133da49b98aedf6006f8eafe9",
-      "sourceSha256": "8bc682c00e9836dcf1f54def2956f2005515b6e7af1c865f129c6ae034459a60",
+      "sourceSha256": "4dd6c0da66845a650f9c8d067cc15cf945bd2a01f26102b1272f866ed3095a27",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "bare-marker-led",
@@ -2226,7 +2215,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/ColorField/ColorField.tsx",
       "sourceBlob": "d13153e5adad2182c4881356c9a8252018430f30",
-      "sourceSha256": "2d7bf1d63145f8ecdef150aea2f28e5670418b6df71e4bc010ab21b2dfdd60c4",
+      "sourceSha256": "d9b15a3ba6b498cd431e970ebb1a070d800d37ea2132a2c638c04b21888012bd",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2249,7 +2238,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/ComboboxField/ComboboxField.tsx",
       "sourceBlob": "25003ed8044b3d3ec4775912aff68bb9076554d2",
-      "sourceSha256": "3285869bd0cf930fe658d6f0ec31a6a9ac55fb14ec15ad9897d3f9df2d8d1405",
+      "sourceSha256": "29cd60b65139ead6738b274ec275a2f60e17a9cebcd27f120c43d634dda174e5",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2272,7 +2261,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/DateField/DateField.tsx",
       "sourceBlob": "780cbc1125e897939aad15ebffdd02b1e5f567d2",
-      "sourceSha256": "cce03881a19d92b2827e7cf5afc84429cd66b665562b5ab9d04b03c5ba35f413",
+      "sourceSha256": "d84a06208d9ce4da6aec3afb37cc70c43400e26f66e090f321e7aafdeeb6f457",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2295,7 +2284,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/DateTimeField/DateTimeField.tsx",
       "sourceBlob": "ec1f838c2a0a0a5ab62e1da21fdbd394248fd6e2",
-      "sourceSha256": "df42e0cb710000675a937a5a2ce52d42f8c1de452ca115a158463f6e403b5b18",
+      "sourceSha256": "28edb905fdcb4e2ac3caa7c0308ad02e1b53b94b37539390207a6444bc915362",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2318,7 +2307,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/FileUploadField/FileUploadField.tsx",
       "sourceBlob": "f2f37ecf9866d41e9ba0c072e5b7e6e197879f8d",
-      "sourceSha256": "d5c67f969cf40c91fabd2ad3cc984ff4afa255f486f018138fd1fb31227c5d2a",
+      "sourceSha256": "a68a5d7159a20e36e98b73957aab1fc484b07d3211a7993fe8b10be3e95f3375",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2341,7 +2330,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/HiddenField/HiddenField.tsx",
       "sourceBlob": "c886a8d725eaff2de1ee6adfd7c9ede0cbf0d290",
-      "sourceSha256": "827aa56429aa3656f65f6ee7f4cd117b5321f81abc24de3e5781a3c998e4a026",
+      "sourceSha256": "6b79a98cf72360e1b1c6927f57523eb0b604f79056fe607a6b1dbd9bc35f31fb",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "nonvisual-composer",
@@ -2364,7 +2353,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/NumberField/NumberField.tsx",
       "sourceBlob": "c8f453a9123134a32cc8c1374e99a50006780ac2",
-      "sourceSha256": "c873d5c5014d87c27d0e87943a8ea1de9ba6f6252eb53d5287f9f50bb8a62c53",
+      "sourceSha256": "3df5aeee282386c0e4cffc8c37040933591d4eed8055d64b3c8505bfb5048190",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2387,7 +2376,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/PasswordField/PasswordField.tsx",
       "sourceBlob": "d68e5ebd5389e98fd73375b49a02568e7c262b4b",
-      "sourceSha256": "14c4ca321d444a44f58f117bb4979b4765fab847f20e1339d302159261398c6e",
+      "sourceSha256": "94310be7b3a4922df0925a00a084d7c6fd9da0bc3349a86233d6068bf895c4b0",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2410,7 +2399,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/PhoneField/PhoneField.tsx",
       "sourceBlob": "2016a073eb3e940d273a8e634aa3da2a3c02ef39",
-      "sourceSha256": "ccc7402f4cbd2574df325a6e9f7706695cb7a04c522c8cadc623c2036477e666",
+      "sourceSha256": "aeaf460cbee79dc00536fd228a7cf6c44a63bd643501d390c9867276ef521163",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2433,7 +2422,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/RangeField/common/RangeControl/RangeControl.tsx",
       "sourceBlob": "92afbff142aab855f5f88a08d7e23fac7d0df885",
-      "sourceSha256": "5f23dafb4ebbdf573ff20f246f035a442564fc6ec726049d0a1ed0006b9a5733",
+      "sourceSha256": "ddfb50f75270c99ab63a6906628b646df0b5c9f1c50887a1e76bc59dc1c29740",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "native-track-control",
@@ -2441,7 +2430,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/component/RangeField/common/RangeControl/styles.css",
           "blob": "6590cf067e516fcea4e159fe72319b56cc025c59",
-          "sha256": "a2affcccb8f7356f1216271fa58deef2b42a2bfe68cac68c02e710e06d6f28e2"
+          "sha256": "29c3408af38328073cfcbab091eabc2bef0daaf397532dbd85ef29f43891df0f"
         }
       ],
       "t006Disposition": {
@@ -2457,7 +2446,11 @@
         ],
         "boundaries": [
           {
-            "scope": "inline-edges",
+            "scope": "inline-start",
+            "reason": "The containing field owns the outside keyline; this row owns only peer separation."
+          },
+          {
+            "scope": "inline-end",
             "reason": "The containing field owns the outside keyline; this row owns only peer separation."
           },
           {
@@ -2473,7 +2466,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/RangeField/RangeField.tsx",
       "sourceBlob": "fef65a4994a9659c7477af27e1c16945611a4651",
-      "sourceSha256": "5caf72ac6c28785222e28f5650133d23f51e5f1db84c91b2ed0fb11e2b9a5000",
+      "sourceSha256": "e048ec713c336027b21edfdd046b198232eaf651d054385f0b376aae9d6038f3",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2496,7 +2489,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/RatingField/RatingField.tsx",
       "sourceBlob": "bc4adcde8de949fbd4e4a0f407a5168d5ea67dbe",
-      "sourceSha256": "df02e6860adf140e6f0dceeb1a65792c3e3028b0ca13ea292a34037b014b4303",
+      "sourceSha256": "9e7485f787d821ead1aa03ac329b1488feabb16a8f78f48b559a991353854468",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2519,7 +2512,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/RichChoicesField/common/Option/Option.tsx",
       "sourceBlob": "4f2d5b66cff668f324b9a0608617d8484053cb7b",
-      "sourceSha256": "38c5dfcfccb04cac5368d4bf1a9bb1b4f4350b9e565cde8b5d57c60bdb6c4eba",
+      "sourceSha256": "5cf8b517184f64843835f35c3b318c4a52bb41a9c005cbfa8dde7b4899a8849a",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "uniform-framed-card",
@@ -2564,7 +2557,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/RichChoicesField/RichChoices.tsx",
       "sourceBlob": "b20445485863c7b2e9dec332381aaa5cb133fe9e",
-      "sourceSha256": "ef2f414db06d89a59a685f27d080ec229dad19dfe1aeaee749bb9951f84d4d49",
+      "sourceSha256": "82dffc6533c040e38a2cea4f17f4c968c945e3c006ed21b1f93f50e2282c4a40",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "uniform-framed-card",
@@ -2572,7 +2565,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css",
           "blob": "1db15d26de1c4c948e221b6398124070ec3e6274",
-          "sha256": "aa8d620e7bd10315a41845628f5d6e501df94c461ca566519118b4dbb693b5ab"
+          "sha256": "7eeccac19eada8a869a2df62ac36d3635d24a460829fe38428b8b2a536590557"
         }
       ],
       "t006Disposition": {
@@ -2615,7 +2608,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/RichChoicesField/RichChoicesField.tsx",
       "sourceBlob": "385d4e7fb887a8d26ea3c5f408555be40ecece39",
-      "sourceSha256": "76b47ebf946cb17041795d92f0797cb7f57049338210df738ad6f96924f43522",
+      "sourceSha256": "de520e2a9aba9a9de47b56526cd541e8a393471bbacec5ba020624a5c452658e",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2623,7 +2616,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css",
           "blob": "1db15d26de1c4c948e221b6398124070ec3e6274",
-          "sha256": "aa8d620e7bd10315a41845628f5d6e501df94c461ca566519118b4dbb693b5ab"
+          "sha256": "7eeccac19eada8a869a2df62ac36d3635d24a460829fe38428b8b2a536590557"
         }
       ],
       "t006Disposition": {
@@ -2644,7 +2637,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/SelectField/SelectField.tsx",
       "sourceBlob": "181776003f3b2d2bd5069243060b81f7b89fa2d2",
-      "sourceSha256": "d77b7183725b76dcbe499e69297652ca05c7c659e4b8d082c8e0990b3aaa4d4d",
+      "sourceSha256": "7cb1285462354c074c4dba354854422163b7f534e43bafcd0b4a43be91248382",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2667,7 +2660,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/SwitchField/SwitchField.tsx",
       "sourceBlob": "504498836783e410ebc5076a1daefe1f1abafac0",
-      "sourceSha256": "08babe7a504fe9a7dcfcf843f1065107d0d05e924e38b226189d5cbbf64bf470",
+      "sourceSha256": "a957b898f68c1f83c28cdce7cdfe5c7291189dc1eb2a8340446538ca9d2c3497",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2690,7 +2683,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/TextareaField/TextareaField.tsx",
       "sourceBlob": "edcd8137b5df0026b65735f3cfd430ac11c6a4f5",
-      "sourceSha256": "021e8f10452aecdcac379d0a7cf9926770f2ae8ab94f47d8d9735bcf30940411",
+      "sourceSha256": "44fce0111555f7dc916403472bc5e9dbe456fc4956240cf87463c55cf84fb920",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2713,7 +2706,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/TextField/TextField.tsx",
       "sourceBlob": "875a2b8c7d3f21b7535a500a21bf990bd147b2e6",
-      "sourceSha256": "281820c7fb569b29989ca8a28c5f5eaedccac0a59c38ff317e61931033d37866",
+      "sourceSha256": "1ac243e07f94af6a23a22a3e2e5ca9fa1198b48f7e9862c77680cc21db3c2d91",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2736,7 +2729,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/component/TimeField/TimeField.tsx",
       "sourceBlob": "7aceb0663cee7522b89a14396274b043eb5840eb",
-      "sourceSha256": "519daa0d95e3c8265d9f987b4b18cd288cad2589bdefb3700eba54bc26bb501f",
+      "sourceSha256": "5cc18ea21cb48049ef8e51a468b0370bb7cd7c155ba42b82c1c7cc1d9b64798e",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "field-stack",
@@ -2759,7 +2752,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/pattern/Field/Field.tsx",
       "sourceBlob": "3f3845fffb3fbd2c2ec9dfcd06b30586bc1b15c2",
-      "sourceSha256": "39ab60669caa4c986a8275033537ebf979b0eeca05c122285bc3ca4cd2d4e271",
+      "sourceSha256": "9dd02fbc863badfa4b345c2af3626b290e4944e973a841c986722308f8ff47e9",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "nonvisual-composer",
@@ -2782,7 +2775,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/pattern/Form/Form.tsx",
       "sourceBlob": "c291b8b7674cd9bc9c1818a5a56285a9fbb89ef6",
-      "sourceSha256": "8427f0e4726286c6c2347047ed1baa64aa61823f7957fdda28027c6828b97101",
+      "sourceSha256": "b83793c81a8151f49462d6107fa674da2b2d82cee6ac5fcdd33d386ae3cda0c9",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "field-stack",
@@ -2819,7 +2812,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/CheckboxInput/CheckboxInput.tsx",
       "sourceBlob": "9dccf923294c4b445ec3ba81173874d8c4472d55",
-      "sourceSha256": "c0bc80d62536d44fa13d976e88003fc94bddae0a2041feffd7dd25262553c7f1",
+      "sourceSha256": "01f6989e0cc472aed2c29bf8779e513cd95669f9816109c0acb3cf3904899aaa",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bare-marker-led",
@@ -2827,7 +2820,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/CheckboxInput/styles.css",
           "blob": "da1c5dd38b065452fc8323b90f7c18924f84594a",
-          "sha256": "38958c5fbbcd7d36b96d1f05ccadd44e3c9ed54cfd370f1cec4d9f0ab1fc6252"
+          "sha256": "603bf6a281d0eb88fe6d2618c35eb26766f2a7806906c82e30bb7f3a58fe173a"
         }
       ],
       "t006Disposition": {
@@ -2848,7 +2841,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/ColorInput.tsx",
       "sourceBlob": "9d42fe192571aae7e4a9ff4b3faa8d4e527217ac",
-      "sourceSha256": "26620b49234f128a80bb9d747b8aa2e1a5133c1ac0595493254136c22944d7f5",
+      "sourceSha256": "7b049dc52fa61979ba2930ea701182f3794ad5a2452687684263010ea4a5cfba",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -2856,36 +2849,82 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css",
           "blob": "ce0a5f4468fa97214e388c8605fe0e0a47a386e6",
-          "sha256": "ce4249c9988cb3477d0b8ef6ece670ebe2854a5645a03b57a6ab7f16238b3fe0"
+          "sha256": "00b0ef62155a304571aae823f2682748ec3b02747232b2b56dfd9d7a5eacd55c"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "field-control",
+        "profile": "color-input-composite",
         "assignments": [
           {
             "axis": "inline",
             "edge": "start",
-            "role": "spacing.inset.field.inline"
+            "role": "spacing.inset.field.inline",
+            "condition": "on the trigger or inline hex row"
           },
           {
             "axis": "inline",
             "edge": "end",
-            "role": "spacing.inset.field.inline"
+            "role": "spacing.inset.field.inline",
+            "condition": "on the trigger or inline hex row"
           },
           {
             "axis": "block",
             "edge": "start",
-            "role": "spacing.inset.control.block"
+            "role": "spacing.inset.control.block",
+            "condition": "on the trigger or inline hex row"
           },
           {
             "axis": "block",
             "edge": "end",
-            "role": "spacing.inset.control.block"
+            "role": "spacing.inset.control.block",
+            "condition": "on the trigger or inline hex row"
+          },
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.surface.inline",
+            "condition": "on the popover surface"
+          },
+          {
+            "axis": "inline",
+            "edge": "end",
+            "role": "spacing.inset.surface.inline",
+            "condition": "on the popover surface"
+          },
+          {
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.surface.block",
+            "condition": "on the popover surface"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.surface.block",
+            "condition": "on the popover surface"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "between popover children and between the trigger and popover"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.element.inline",
+            "condition": "between swatches in the popover grid"
+          },
+          {
+            "axis": "inline",
+            "edge": "internal",
+            "role": "spacing.gap.mark.inline",
+            "condition": "between the colour preview mark and trigger copy"
           }
         ],
         "boundaries": [],
-        "rationale": "External field chrome; trailing artwork is intrinsic allocation inside the end edge.",
+        "rationale": "ColorInput composes field/control chrome with a surface and child gaps; conditions keep those boxes distinct.",
         "exceptions": [
           "The popover separator row has a block-start border and no block-end border while inheriting symmetric host row padding; recut through per-edge actual border subtraction, never nominal host-border subtraction.",
           "Popover and swatch-grid child relationships compose surface and element-gap roles; they do not mint ColorInput-specific roles."
@@ -2897,7 +2936,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/ComboboxInput.tsx",
       "sourceBlob": "bee334b8b19afb97189dc5521a25a49ba36e4a33",
-      "sourceSha256": "c3414f8731e9255faa3353c042b54d89ea0d2d67d803cd375d69d732e546c56f",
+      "sourceSha256": "e442ea6ec843496a15a1a074ef469c80134e5e9aaaf37a9675229c6963a56901",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -2905,7 +2944,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
           "blob": "49b4f0fc11860980d18248b9ed5360bd27a93b0e",
-          "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
+          "sha256": "8571697dffb00f4c0938299eaa22e2b6a95ca52554849cc0a66e30d6d4276dff"
         }
       ],
       "t006Disposition": {
@@ -2926,7 +2965,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/List/List.tsx",
       "sourceBlob": "f1494a3eed20757f1b1db0389b3e6ac05816df6f",
-      "sourceSha256": "925e08fa088977a318f72cb7d4ef46561fa29055b8aa75ef7a78626601a46749",
+      "sourceSha256": "04ca561f30655220b6dbfdfe8d006aa6c13b37f73b58c9ba76c4009aabbba94a",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "sectioned-card-panel",
@@ -2934,42 +2973,46 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/List/styles.css",
           "blob": "adcea5d3a4de9fdcdfa0f6e966a82910273200e0",
-          "sha256": "dc8d5c1b20591732b53491e5afa14d5ba1fce6f54efd81307b09ab52c63c6166"
+          "sha256": "4da02f619c8c612d0bfa16d337237c340cc9b4a6f1e2fd74ecc5056743c22582"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "combobox-list-composite",
         "assignments": [
           {
             "axis": "inline",
             "edge": "start",
-            "role": "spacing.inset.surface.inline"
+            "role": "spacing.inset.action.inline",
+            "condition": "on child option rows"
           },
           {
             "axis": "inline",
             "edge": "end",
-            "role": "spacing.inset.surface.inline"
+            "role": "spacing.inset.action.inline",
+            "condition": "on child option rows"
           },
           {
             "axis": "block",
             "edge": "start",
-            "role": "spacing.inset.surface.block"
+            "role": "spacing.inset.control.block",
+            "condition": "on child option rows"
           },
           {
             "axis": "block",
             "edge": "end",
-            "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
+            "role": "spacing.inset.control.block",
+            "condition": "on child option rows"
           }
         ],
-        "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+        "boundaries": [
+          {
+            "scope": "all",
+            "condition": "on the zero-inset outer list frame",
+            "reason": "The full-bleed outer list resets padding; its child option rows own the actionable insets."
+          }
+        ],
+        "rationale": "The outer popover list is a frame while its child option rows own action/control insets."
       }
     },
     {
@@ -2977,7 +3020,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/ResetButton/ResetButton.tsx",
       "sourceBlob": "057f6dcfba369a8e9dda92326e88919c41307d43",
-      "sourceSha256": "43782b8d1a7129755bfd00a93495f065ab3ce55de2e10c743e524191c8f91e1d",
+      "sourceSha256": "2c5527ec7262acdd7232684db18c0ba78944096256ca4fe312046afe32a375ce",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "paint-canvas",
@@ -2985,7 +3028,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/ResetButton/styles.css",
           "blob": "fd44e5b2ccba7c792adbc9760c1fde5408947f24",
-          "sha256": "56c09664f65a511686c086f6df80f2677595d2b92ba33eac90aaf9788102e8ea"
+          "sha256": "3da4f101ef704278f214eb6ebfce2b62ceac5540c12227b3909939fd1b57da3a"
         }
       ],
       "t006Disposition": {
@@ -3023,7 +3066,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/MultipleCombobox.tsx",
       "sourceBlob": "84f564928fa6248914d57e8f46a294ca37494159",
-      "sourceSha256": "099a18f348227f0c147e6f860a4758372ef934fbbee45cb60ecee6f1e8945634",
+      "sourceSha256": "6b4ed7438e08e1605b664e1ab5f7c001b87c4f1eaf6034140bff04769aec7f02",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3031,7 +3074,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
           "blob": "49b4f0fc11860980d18248b9ed5360bd27a93b0e",
-          "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
+          "sha256": "8571697dffb00f4c0938299eaa22e2b6a95ca52554849cc0a66e30d6d4276dff"
         }
       ],
       "t006Disposition": {
@@ -3068,7 +3111,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/SingleCombobox.tsx",
       "sourceBlob": "5adc8d7b97bdb0b91c8f7a86ddd53e8a9a8675c1",
-      "sourceSha256": "a3659628ba716491b9992c8fe291988e93bf655ef12fa692867ac1681778fbfa",
+      "sourceSha256": "0ec0d6d0f7cdb13703ca82d791d05b305ccbe0e827185b61e074c883ace75d51",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3076,7 +3119,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
           "blob": "49b4f0fc11860980d18248b9ed5360bd27a93b0e",
-          "sha256": "c3662f0c34b5987c550971d2c8b97c5aff408a66247e80f95969da5a871ef638"
+          "sha256": "8571697dffb00f4c0938299eaa22e2b6a95ca52554849cc0a66e30d6d4276dff"
         }
       ],
       "t006Disposition": {
@@ -3113,7 +3156,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/DateInput/DateInput.tsx",
       "sourceBlob": "fd1d95a671232e112dc79007a91709859f23aa81",
-      "sourceSha256": "d79ec39164c047df9e2980f6e0b428643ada0becce9c65a06b916b19c745207e",
+      "sourceSha256": "b401c285972439ce511e2cc366c9e75bb23c35465d0db3f7ecc1a332e2a2565b",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3121,7 +3164,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/DateInput/styles.css",
           "blob": "937db89f947bbe6127ef76eae41e8297ff0b95ac",
-          "sha256": "4322d79441a5ba77a667324e6eff337b13217d822abbbf7cdf396b17ec6c151a"
+          "sha256": "185eaee39343c0f411082fa34f5fa87ada36bc3bf665c5e7a6b769a5d17380d3"
         }
       ],
       "t006Disposition": {
@@ -3158,7 +3201,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/DateTimeInput/DateTimeInput.tsx",
       "sourceBlob": "9a9397d77e195c4216d089a7a099357ee5e51008",
-      "sourceSha256": "f8125305bcefa6c9e63800c2c343552b6476356fe5efdd84a8e07d2a64570c02",
+      "sourceSha256": "ce8aa4112eaaf030da9ac3094f34bfd2ccb85b2cc4957ba888916ad8a6b2a892",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3166,7 +3209,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/DateTimeInput/styles.css",
           "blob": "d140337faed3842f7aee07a1e13df1550c7a1148",
-          "sha256": "863f5eea5d36ac9ae69bdc4b14a3cfdb694a9bfdce8c8336109a5fe4a4ac097c"
+          "sha256": "2a197d3089883d60cf64d2dfde4e5b720110cd358829edf0e333c21c889d6c1f"
         }
       ],
       "t006Disposition": {
@@ -3203,7 +3246,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/Field/Description/Description.tsx",
       "sourceBlob": "e6198388660fdcdd4b76ed3b0ea4f36f99daf720",
-      "sourceSha256": "eadb002008c530b2ad1aababa5d5c9a734d804df99bb592aa083c9272c3f0eaa",
+      "sourceSha256": "3bd2cbcd8764b4e4890c713714522e8c807aea5b3c3c151e6df31c9c61a4c0f8",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "ordinary-text",
@@ -3211,7 +3254,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/Field/Description/styles.css",
           "blob": "cc2281c9fbf16e379fc70ad90dd8071adb823284",
-          "sha256": "62a9d638af5be4bbd24f603035ca53db9f15827d7b9d36d0deec8bc6bec02803"
+          "sha256": "b6309c9e60e0cd852b284cefef2c2adb0c4992eeff4810b7128307bdddcd55b8"
         }
       ],
       "t006Disposition": {
@@ -3232,7 +3275,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/Field/Error/Error.tsx",
       "sourceBlob": "2a5d3e51364b28c8bf80b43256d2d3a3fd2ab3ea",
-      "sourceSha256": "2e0d1b0e4917855cb1b77f2e5082fa5688233b786697e1b3f813df8a5c783770",
+      "sourceSha256": "bc43225fba9f2ef1cdeb62e003ebd17b6b0b0afe335395dcb80a6f830520e94e",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "ordinary-text",
@@ -3240,7 +3283,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/Field/Error/styles.css",
           "blob": "c9b4de74ef8499bdb2343eb7e2dee8697897f069",
-          "sha256": "ee585ea690b1d7f27b9dbe3d6880407257d925bbcb9a1bda11bf60c44951e576"
+          "sha256": "4f896526363322d32f56226c9e5607c9c1e505a6563b55ff8446fe68b6ce8147"
         }
       ],
       "t006Disposition": {
@@ -3261,7 +3304,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/Field/Label/Label.tsx",
       "sourceBlob": "df15d0b9e6874c8532791576d8bffa9b6dfb8fca",
-      "sourceSha256": "fbbd15fe62681c0510e16f6fc0d16b9a1451bdbbd0cdd79651582f37c95f5813",
+      "sourceSha256": "e9fa753119e070d9f497409f508ebfead0f72cc2e43bd61e8dba9af52396705b",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "ordinary-text",
@@ -3269,7 +3312,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/Field/Label/styles.css",
           "blob": "5cc199676cf2f8442ee772ee4441d36450e8688c",
-          "sha256": "c574fa764838d98040bbbe7f2030a9a28c4600518a3407bfb80bcdcc39d5a477"
+          "sha256": "0019a8b54aaa8233fcb7f2591589c9316eab7a5488a6346eb65bb7449c7914df"
         }
       ],
       "t006Disposition": {
@@ -3304,7 +3347,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/FileUploadInput.tsx",
       "sourceBlob": "051cf93e3334675bfda6cc5683dde9f440cdb58b",
-      "sourceSha256": "160f32d61beee01ac74ea004f8403e420510daf96bb71c37f7ffe10ab580f390",
+      "sourceSha256": "1041da1ba09e5feaa8041b2b8fafc820f74f7ec3ad3001e128f27c748d203350",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "sectioned-card-panel",
@@ -3312,7 +3355,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css",
           "blob": "5806d296bc0d714c93e52ee048f02a0f534853e6",
-          "sha256": "2e2782d7103e637a0e47125b351a000fed8ab56a2985c6141a2f5d7247c0fb10"
+          "sha256": "7164905fa0f01984bb89a923ece4e6e0f0581829010d7d452dec130b9144c33e"
         }
       ],
       "t006Disposition": {
@@ -3358,7 +3401,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/HiddenInput/HiddenInput.tsx",
       "sourceBlob": "79c75647f01f78fb30f9cd1ec3f014f4f847d7f1",
-      "sourceSha256": "1e5b6c2a46fb17ae0a6a24e9537dd5086767399000e28681420466dc3cd6dd27",
+      "sourceSha256": "ec43b34902af8efe681b9fa85c0de0a8130577610ce49d91dd25235eb1b2f69c",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "nonvisual-composer",
@@ -3381,7 +3424,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/NumberInput/NumberInput.tsx",
       "sourceBlob": "95108499cc2aa1661f719d39f531ffe611106fa0",
-      "sourceSha256": "341d01d02267a767912f4ddff7e630c84a35a10935c12553a9cdc1fb766f4875",
+      "sourceSha256": "082cba702acfeaab590465fcb7f8c6d196605a4798fb34181d9819e860e11bba",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3389,7 +3432,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/NumberInput/styles.css",
           "blob": "625a13c83e2ca68fe5b5d14ba325db657a96cd54",
-          "sha256": "8332a61385ef11b08bc7c3f38845e9e19e328fbeb4aeed442c1a853ce0164c7d"
+          "sha256": "0ced5cac9d543d7846f382f2f20e3929ea0e9bab8ac8affb5c5d336be342ba74"
         }
       ],
       "t006Disposition": {
@@ -3426,7 +3469,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/PasswordInput/PasswordInput.tsx",
       "sourceBlob": "ac238d9c4f028def60b6fa4a1f02fe2952a68713",
-      "sourceSha256": "048c14f4d63c5f91a93e00ddfc770ba39dab14a1268252a1397cfe31fa4b28a9",
+      "sourceSha256": "1cfe6dd418c42d24bbb3cf07e4f2d0fbf85168cc12010310b10b5bd61a0fa32d",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3434,7 +3477,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/PasswordInput/styles.css",
           "blob": "b43e0536c346e63c60dfbf4846df96f376e32514",
-          "sha256": "61fac5b8d6fc4d597121d3da33a78b49360f28ebba9520d4bfeeb02be8edcd2b"
+          "sha256": "e1889f88eacd21710c011045aa3cf8815d8d5b35f91663130308ba0af53fd84c"
         }
       ],
       "t006Disposition": {
@@ -3471,7 +3514,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/PhoneInput/PhoneInput.tsx",
       "sourceBlob": "8d436b77c81bac39388229746d70a1333893120f",
-      "sourceSha256": "d00881db577a9cbf0b886d2ef8170f02515040258f27c23a51f7fe8d024fe906",
+      "sourceSha256": "b869218ff0e8588279885f78a187cdb01ef7de1ef1157f69bda0e3ec1d56d95b",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3479,7 +3522,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/PhoneInput/styles.css",
           "blob": "f5340d2d0ea190aaf9439d4a4fd9fc56da44620d",
-          "sha256": "cc8547a9c777c032d17dcf44d38c401e3f79097607f5817d9bb0ba365586000b"
+          "sha256": "4143672b31b8586e54492aa6ce7a7a4088b8623a81e06acf1d5c74de26975cc2"
         }
       ],
       "t006Disposition": {
@@ -3516,7 +3559,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/RadioInput/RadioInput.tsx",
       "sourceBlob": "1057396b1e8c9d398b80ba9b33f727a0aba08b81",
-      "sourceSha256": "5e35a047e7149f8cda9c5e755afdc3c310f121f44c786c2629f0713d66c60036",
+      "sourceSha256": "da9b7c08d9a0a94d204cb4725e19f3e9f68da2a1cb71b1261de7b48c14201e42",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bare-marker-led",
@@ -3524,7 +3567,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/RadioInput/styles.css",
           "blob": "7397e6e8800bab97a822747f03896ed506de9d45",
-          "sha256": "f8cd3903c297176e5d3f543a1c675fd9e0c3967bc08aa50e704270bc0b84c039"
+          "sha256": "f0a78f29eb7523930fc7c76352e152baa95e372f012d96e01c50b74530ee7074"
         }
       ],
       "t006Disposition": {
@@ -3545,7 +3588,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/RangeInput/RangeInput.tsx",
       "sourceBlob": "73f3eb895a49778100508b99c2a7c19354fcb32d",
-      "sourceSha256": "f45d167e580078866ee88b941cf2b88ea39beb39f8ccdb24d683f6926603c551",
+      "sourceSha256": "92bf49f84d0468d5a5239f178bd38963067f0c7e1bd91a204a9831a0ea03897b",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "native-track-control",
@@ -3553,7 +3596,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/RangeInput/styles.css",
           "blob": "2806051ef93b8ef7e56f4d8a4cc0490da0f7cf4b",
-          "sha256": "284b1e3c0bd39a8f6aafdf6203ddee2b5e59653c47991dbad4de6520aa57f186"
+          "sha256": "775949a7b4309070ad9571d5266791517250a6b05d206daefb7534fcb1de4a01"
         }
       ],
       "t006Disposition": {
@@ -3574,7 +3617,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/RatingInput/RatingInput.tsx",
       "sourceBlob": "fbfa4d7d73f16b9c786e923bdb752d53d0864a7c",
-      "sourceSha256": "0e6c0c629df3ad616b7989b38a83cd8f8ed24e3e56e0f904f2fc415be7cc74a8",
+      "sourceSha256": "8553e1bd30a7d220b26137a7fed3d9e51c69194b40a5b669c43638a3f70d39ac",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "glyph-cluster",
@@ -3582,7 +3625,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/RatingInput/styles.css",
           "blob": "b0d02b42a3cc96504f8435577ad9c4c67761a881",
-          "sha256": "a520b9097a8db407cca126ec389958277749aa18e774c6f319fa0ff8fb2b1b2d"
+          "sha256": "0fb7f53ddc95b81751fffbb1c79fc93bce5d10e706bf4e909fe5149400b0be8c"
         }
       ],
       "t006Disposition": {
@@ -3603,7 +3646,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/SelectInput/SelectInput.tsx",
       "sourceBlob": "964ea3f84987e5dfc5b645b1d00b03c55d9139ba",
-      "sourceSha256": "39dff2a143623f9d5999cf4fd5789bf8619a9279e51b2bc553ba7387f3cf0272",
+      "sourceSha256": "22b69c4c57d9beaf4e3c1d2f08f4174d2dfc6926a98677db7d109d4d87f013c3",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3611,7 +3654,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/SelectInput/styles.css",
           "blob": "0e1f03a53b08c92154677f8f3de8d91ebc401839",
-          "sha256": "146419942163ed16295663c90cf9727840b0041bb4c88b8160e17afcf2afe9ab"
+          "sha256": "bbe623c03d2bd9cb120c6e70bd8a0d2b8f2e5e612d8efb845ab9005a2b400d96"
         }
       ],
       "t006Disposition": {
@@ -3648,7 +3691,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/SwitchInput/SwitchInput.tsx",
       "sourceBlob": "a06c8f521adf171e47d2cc1771dfef9b4cd02f0b",
-      "sourceSha256": "9f2b7ddbadf397712cb94dc0f9b4fea611ab6c687bfbd7b5f6790c333524247d",
+      "sourceSha256": "6b8180588418adf7126aa162839eef4f31850854239fd2438dde5dbfd037a5ed",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bare-marker-led",
@@ -3656,7 +3699,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/SwitchInput/styles.css",
           "blob": "20a16b8936f5253ae026284d8132555a9c8e299b",
-          "sha256": "38a9de7d2cf583948cf4acf47a2ece721c96e218ff9ae699a7d4ced501a31ae6"
+          "sha256": "0198fbd7588014303f2f0aa32e5fa6ec786e5b6a93d6a40d77d2c8fec7ffcc4c"
         }
       ],
       "t006Disposition": {
@@ -3677,7 +3720,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/TextareaInput/TextareaInput.tsx",
       "sourceBlob": "51ee1e94c0a47327b429617571c57dfef4888367",
-      "sourceSha256": "55a6ef3c0bbb942e5087708279456644c7f9732bbd464e9c1c20f26f9d41d903",
+      "sourceSha256": "542e729f82a39b8891edb124ae590514ee6e1b416ef9aea8084231baf475b23d",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3685,7 +3728,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/TextareaInput/styles.css",
           "blob": "699f3150fa6179eaa83229eb1433564b3f338528",
-          "sha256": "271f31fd18c8ef61691dbfa825901ce7154c9eb05713a57d9b573fa86b4df454"
+          "sha256": "7e525c245dfc39fa35645b16efd20dc0945315a7b3311737ad291c729c231e79"
         }
       ],
       "t006Disposition": {
@@ -3722,7 +3765,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/TextInput/TextInput.tsx",
       "sourceBlob": "f11a6a9f90c17948b5a590dde41cba5016c4caa2",
-      "sourceSha256": "b8e7f5be91ffe6f42d2eb387911f5bb33d1c49cf3761416c13ee716475e46481",
+      "sourceSha256": "8b6a57ee60989d02655c249bea5271dbd7295be3985cf005f7a3fc636e933880",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3730,7 +3773,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/TextInput/styles.css",
           "blob": "582732ef95d8dc18818ce6ee7a78e7e4c10f63e2",
-          "sha256": "c9565a564202eea220ae501239a38c711fa31c0eb7c1b2e98667fa37112362e0"
+          "sha256": "a803a52d9d3ba5b778cda551e75652c812770a8ae7fff01a1b3d7f2e4cdd45ae"
         }
       ],
       "t006Disposition": {
@@ -3767,7 +3810,7 @@
       "package": "@canonical/react-ds-global-form",
       "source": "packages/react/ds-global-form/src/lib/subcomponent/TimeInput/TimeInput.tsx",
       "sourceBlob": "17f54b2249ddd4f80c97da8f5d636e5de9252c89",
-      "sourceSha256": "9702d2d1a869d7d6b6656785149a9561e3d71321eb82766ae99fc0bca297bcf1",
+      "sourceSha256": "d51d170b7444be49e73da51e65549d1b8ca451c11e6df2e6d46665458bfa6737",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "bordered-field-trailing-artwork",
@@ -3775,7 +3818,7 @@
         {
           "path": "packages/react/ds-global-form/src/lib/subcomponent/TimeInput/styles.css",
           "blob": "7fb066af2ab17cc66fb6f2d3f3c254d67dfc9183",
-          "sha256": "dfb96f9cff52f2a43f309e82db5ee48e19eb7d213e7afe9517e3c8082cfae5b5"
+          "sha256": "7f8351abde4958d71ba0e9af47c114bcc55b796ff171cc32a2b90d66bd612979"
         }
       ],
       "t006Disposition": {
@@ -3812,7 +3855,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/Announcement/Announcement.tsx",
       "sourceBlob": "d09c6a21c19be233113f9e0f83e2d43a4cd4fec7",
-      "sourceSha256": "fba998a5a593fabfb77d82ecb053ea366102778be0bcc9ae7684fcfb15268ad8",
+      "sourceSha256": "394af37e50d96bc4de9695786793f03cdf95cc5e9b2f83247be53d05afe0919c",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -3820,12 +3863,12 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/Announcement/styles.css",
           "blob": "cc4dae566c62a8c92c7fa2865107fcea026681ad",
-          "sha256": "077f008b51acb879674682213c2d59493cda6d2d8f0e97611f61216850690dc9"
+          "sha256": "eb7510208a24eda9fce59ae761c924adfa4902dd2424b3c1c1587f67c7875617"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -3848,12 +3891,6 @@
             "role": "spacing.inset.surface.block"
           },
           {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
-          },
-          {
             "axis": "inline",
             "edge": "internal",
             "role": "spacing.gap.mark.inline",
@@ -3861,7 +3898,7 @@
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately.",
         "exceptions": [
           "The leading marker additionally consumes spacing.gap.mark.inline; its canvas remains paint."
         ]
@@ -3872,7 +3909,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/CategoriesSection.tsx",
       "sourceBlob": "e05364540bcfe620fde7fef3a80f3cbc4a36a085",
-      "sourceSha256": "ed9383735c8f7aa07c9b9de2701f35599a3cbbcb470e2ca6c12fb73a6dc915ae",
+      "sourceSha256": "67d27600ae0bbfe99e6dd206f4d92bf897fed15f8263dca7b740b0f19dd97ce0",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -3880,7 +3917,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/styles.css",
           "blob": "8f9b11faf4866637b9123f5ed47c549bd43a20a7",
-          "sha256": "a7994bff22aa9a9ab73d522a44541b1db976509bd6577236f56cf1a8271700a4"
+          "sha256": "1d29a329fc8ecf90afebb3dd3cf04c3f3d9998f4696401b15fc0a0526ab90f67"
         }
       ],
       "t006Disposition": {
@@ -3923,7 +3960,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/common/Category/Category.tsx",
       "sourceBlob": "94c8a9826c38165337031e5422d76fe0708ad5f9",
-      "sourceSha256": "9aa0f5105953b4879d2ded0f0e018c707189f7838b215b1b6791f09abf2f3050",
+      "sourceSha256": "e318e8caf7ed55f6837cb57b80ee6ba884544567345ab54dfcb08ebf615f131f",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "sectioned-card-panel",
@@ -3931,7 +3968,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/common/Category/styles.css",
           "blob": "9aeb180f4f68c809a6a0920931ccdd7de5add457",
-          "sha256": "006ab7f0af7f5671f51722025347a51ed3a8b395239406ad87b712e5cec9c37a"
+          "sha256": "85b26ab611f15c0c87f094400a66f105d9e213c9ee35b93ac4b7d421073fd73b"
         }
       ],
       "t006Disposition": {
@@ -3966,7 +4003,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/ChatSection/ChatSection.tsx",
       "sourceBlob": "4cf554a92b1de27678529c0daab5bb26b208d1a4",
-      "sourceSha256": "5ea6be3ce6711ed166e0be3f53cb15479193345e8f3f69a244581219b466f047",
+      "sourceSha256": "e4c0b11a85a82cec55543aa8071c8933e14b06d1186c9114013e064065269931",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -3974,12 +4011,12 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/ChatSection/styles.css",
           "blob": "43a242948e28ccac9e93ba47646fe7bf88e8efcf",
-          "sha256": "dd5c1d2d9f5f16da14c12ece87e6e9c1f3d83aedde7bd3ee5f6490ab9af43925"
+          "sha256": "df67e9c5a1f855ddbd7df6a62db8912ab74b1a49c0e46d47dc93a51a0105b572"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -4000,16 +4037,10 @@
             "axis": "block",
             "edge": "end",
             "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately."
       }
     },
     {
@@ -4017,7 +4048,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/DescriptionSection/DescriptionSection.tsx",
       "sourceBlob": "044de08b5345453e9b126932e0263c1c2a16002b",
-      "sourceSha256": "d5f48325f86b8dd9a38e360eb965a1c909ab2b3c0004580a367ffc6e08282393",
+      "sourceSha256": "d39e1d1353ddd730024336bd25e00ee7d5bd3817ce280a0bb767f480054f0594",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "ordinary-text",
@@ -4025,7 +4056,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/DescriptionSection/styles.css",
           "blob": "48e1ad6a31ddea801df8cf035395439ae15f8dd0",
-          "sha256": "57d3bcb2a0a189adaac0d856bc5571a68ebcd6de7dd868854af336bd20f6333a"
+          "sha256": "b7a73f11431a3060f692794fff7081a62601848f63ba89ada4d9160a0c443b35"
         }
       ],
       "t006Disposition": {
@@ -4046,7 +4077,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/grid/ApplicationLayout/ApplicationLayout.tsx",
       "sourceBlob": "f3bd53b0458c11d3e1129841656c22ac829a1347",
-      "sourceSha256": "7fff563a527a769ea596dd57108bf916b5660caa238b8104688420a0b9e1a14b",
+      "sourceSha256": "4121508de4e16ab690549461b3cccb47576992cfc7605616354f619414719f37",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "layout-shell",
@@ -4054,7 +4085,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/grid/ApplicationLayout/styles.css",
           "blob": "1c8f9354edbb8f26294f424fcfb0883cc1f1ea2d",
-          "sha256": "c511346e14c6a0bce7f901a3c92058241122169005a9563c27d921e80f21a746"
+          "sha256": "651717237ae06faffd8793fc8389ffb1de62a15e57062fcc11d4a8fc6fe2602a"
         }
       ],
       "t006Disposition": {
@@ -4075,7 +4106,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/grid/GridCard/GridCard.tsx",
       "sourceBlob": "0db48c88e091730a0bb9f941cb25d8322a1078ba",
-      "sourceSha256": "039a0dbd9cd9bdc86786308d36941a400351865a15d1c0af5fc44b12debcbca2",
+      "sourceSha256": "8a4efa27919aed4e9f7aff477511d97b9d2aa53f05dcbdaa80d51ba66547710a",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "uniform-framed-card",
@@ -4083,7 +4114,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/grid/GridCard/styles.css",
           "blob": "09cf216d2b75c555ee3fe4746b1dab44f3574267",
-          "sha256": "eed00605df5a7079394e162170d0272975ac9cf674e237e92467201389d3f78d"
+          "sha256": "e5bbff43289d2a1704ba7b270511fc66706d70f276ca94b6e9e7a97107891374"
         }
       ],
       "t006Disposition": {
@@ -4104,7 +4135,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/grid/InnerGridDemo/InnerGridDemo.tsx",
       "sourceBlob": "9cecd3a29b28c946cd8fea8bd87812280caea5d7",
-      "sourceSha256": "337f18aa7605ff0789ded2769ad211a45eb41c820995cfc87c9dd4530c3f09b2",
+      "sourceSha256": "44fe47c3b354d2bff2384d6d178616a34e9026854260e687f544486edce0f858",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "layout-shell",
@@ -4112,7 +4143,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/grid/InnerGridDemo/styles.css",
           "blob": "f3554eeb67d164561f3c6fb37f3482294d5c567b",
-          "sha256": "0ecc4a7500514ec2dad20ad789d72a55d289cc1a3272c75128c49e373e6ebed9"
+          "sha256": "292b03da5c6629faa13290f36699ecfcfb317f479ae32fdef88a442a69e6a342"
         }
       ],
       "t006Disposition": {
@@ -4133,7 +4164,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/grid/SettingsView/SettingsView.tsx",
       "sourceBlob": "a50c3156b3f8526026c383614384976d180ca588",
-      "sourceSha256": "ef941e599d72a45008df223821aa64cb93f6693b60db39ea067c2df82be4645c",
+      "sourceSha256": "5b03a9f6aeaa897dd418eb7152af72fda98384841833744865676a23794a6f3c",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "layout-shell",
@@ -4141,7 +4172,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/grid/SettingsView/styles.css",
           "blob": "ef45721eeaf368d1435f9d74888fe53299830983",
-          "sha256": "9df5383516766030f72f505448394ac3981d9d2029a316862d3d7cf11fc8b7fc"
+          "sha256": "2b141e1abc95127a71c8f6fef12e0cc8978dbb6ac71e4bc07272e35ae70299f5"
         }
       ],
       "t006Disposition": {
@@ -4162,7 +4193,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/IconSection/IconSection.tsx",
       "sourceBlob": "c3fba0fe2b70e74b70076dcf517753d694954ab0",
-      "sourceSha256": "83aa50eda5e6024e8cdf6d760be5ddd6c34339507c89be6a6f6de7e0674aa7f7",
+      "sourceSha256": "c5c0d27b45d379e4044204e588c8f75ecdf8f813fa3034cce7401c6ef1d0ecc5",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -4170,7 +4201,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/IconSection/styles.css",
           "blob": "d58ea9ceba40f94bacf0fcc91718a456e3e50c94",
-          "sha256": "994db2e680d7129e4fee214e2c0e1ea39d2d1d19c8ecd59732b6d1e32565fd9b"
+          "sha256": "c1abe7ccfc427bd838371b2778eb7796bdc39608681179313e53d3c08a4a9489"
         }
       ],
       "t006Disposition": {
@@ -4213,7 +4244,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/Label/Label.tsx",
       "sourceBlob": "7d43c1c29aa69631ce5087f0f50c354f16c1656b",
-      "sourceSha256": "4677172dce3853f7eec7abb458c2a733926066127a3d51a233b7134420a068bb",
+      "sourceSha256": "d9f6b41c810fa7b5b7ac9a0637e38ca66c7bce40d78d6c92e252a16f8fea0271",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "ordinary-text",
@@ -4221,7 +4252,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/Label/styles.css",
           "blob": "91e5dd3e9e2471340bdc0784444f00f637421861",
-          "sha256": "8534c8635c281cea7f66d4b5f6ef968c99ccbc648abd092c2806540b34204fa8"
+          "sha256": "ac1298c6dd53e069a597ccbee1f327b76732c072154a41b223281dbbc29fbd68"
         }
       ],
       "t006Disposition": {
@@ -4242,7 +4273,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/Link/Link.tsx",
       "sourceBlob": "a630fd4d6782818c35cf504b288eb56309b2914d",
-      "sourceSha256": "edcba8672fab9f5ad2363a777a3e2cbe1495fb2a280581e4483e23f16d5f2233",
+      "sourceSha256": "9998865d4691459b2bd0407a55158a5ddde89ddb729d7d0f7ed88f823d217638",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "ordinary-text",
@@ -4250,7 +4281,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/Link/styles.css",
           "blob": "409edfe7785f59983a3b94363cc3503878840e18",
-          "sha256": "b313e8c7dd2cd86ab88b64130f1f83c5dec8ab116689f7b400cfb1a6592df95d"
+          "sha256": "ce54094b4db8311a8c9211e3df6e0f13acb15414e86178d7c990ced051a05ef8"
         }
       ],
       "t006Disposition": {
@@ -4271,7 +4302,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/Rule/Rule.tsx",
       "sourceBlob": "7f90029e0b18eada8cb357d3c31ddb7305bde4c1",
-      "sourceSha256": "6b8a2fd788b87c5a2359c48c7d076670b32f64d061861d75d641d8829882aa89",
+      "sourceSha256": "0f50bde26453659daf8ac25918fa42c0725dbd808f7288c9a97dfb60fab0a87b",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "paint-canvas",
@@ -4279,7 +4310,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/Rule/styles.css",
           "blob": "2c9cba0685b62eb077810cf8b01632ed9f97a86f",
-          "sha256": "8fd387ea38dada049da40571ae97c5f1cccc9b821a01d54a578a97b442d1cf2d"
+          "sha256": "7decc27eb5e2eebdddb552702b33d925e058fef276507bfeb7081c3377268b9b"
         }
       ],
       "t006Disposition": {
@@ -4300,7 +4331,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/Section/Section.tsx",
       "sourceBlob": "bc43be86d86f65c47ea711acbc36619ed8b2abca",
-      "sourceSha256": "ca1403435d4171e312e442adb1137a6d336fc0a40d15486b0c3df0126e7a143f",
+      "sourceSha256": "c61581d65308d6f1ba493ea6bbef81e9b2b193964679daee4cc0564c6726c18e",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -4308,42 +4339,37 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
           "blob": "b41a21ea0de481c135027a82c6c63f910a63e5db",
-          "sha256": "cf7008e817cc1abe6b20c9934bd5d5d6ec18b45eaa4fbd1a66788745b1e90e3b"
+          "sha256": "a539a4ac1f0c2ff196c5edb1eb848a311ede010d161a7c4c420840abaa9d3e81"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "section-conditional",
         "assignments": [
           {
-            "axis": "inline",
-            "edge": "start",
-            "role": "spacing.inset.surface.inline"
-          },
-          {
-            "axis": "inline",
-            "edge": "end",
-            "role": "spacing.inset.surface.inline"
-          },
-          {
             "axis": "block",
             "edge": "start",
-            "role": "spacing.inset.surface.block"
+            "role": "spacing.inset.surface.block",
+            "condition": "on the bordered frame edge"
           },
           {
             "axis": "block",
             "edge": "end",
-            "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
+            "role": "spacing.inset.surface.block",
+            "condition": "on the shallow variant"
           }
         ],
-        "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "boundaries": [
+          {
+            "scope": "inline",
+            "reason": "Section has no inline inset; its inline geometry belongs to the page/grid owner."
+          },
+          {
+            "scope": "block-internal",
+            "reason": "Section does not own a child-stack gap; its spacing prop controls a page-section edge."
+          }
+        ],
+        "rationale": "Only shallow and bordered frame edges consume the component surface inset; default, deep and hero section rhythm stays with the strip/page owner.",
         "exceptions": [
           "Shallow framed sections consume spacing.inset.surface.block; default, deep and hero page-section edges consume the existing strip inset and remain outside the component-category count under FR-053a."
         ]
@@ -4354,7 +4380,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/SkipLink/SkipLink.tsx",
       "sourceBlob": "0cd11ab31a3694f0ee5a64717b05c39bc06838f6",
-      "sourceSha256": "106f4f955dda553ca47877447dde5f52b8e728fdc8a51a0651ca26be4ed5c08e",
+      "sourceSha256": "7f70104ce386e99ceae6c60376592c473045e1a728828cca52dc06443c24c339",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "painted-marker-led",
@@ -4362,7 +4388,7 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/SkipLink/styles.css",
           "blob": "ecb3b276883b52cbbd603c2967571227df7d85e3",
-          "sha256": "7ad7c7c2ad32ecaa319d750d0eb7b86680aac3a3d89b4e494bd46d24ee700f6e"
+          "sha256": "0f8a529462403b41fa8e759ecd767c63fbe4ac7101c05451074bf035fd134f01"
         }
       ],
       "t006Disposition": {
@@ -4405,7 +4431,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/_work_in_progress/TSection/TSection.tsx",
       "sourceBlob": "b99879328f8cd3c84db339ceca81c8fc5b22a703",
-      "sourceSha256": "28599d5a0c8595e900bff7e1fd1f9adba358df9b76d67d33f1ba0c9e990b724b",
+      "sourceSha256": "d72491cdad3b4ce8c461d8c347189e14ba0174561e785a0cb2c0a5a1e53258ae",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -4413,12 +4439,12 @@
         {
           "path": "packages/react/ds-global/src/lib/_work_in_progress/TSection/styles.css",
           "blob": "fa8159abea859e861e7f318adc567a32ea133220",
-          "sha256": "b87d84d6d8596ebad7083cf839885176651bb1950414386d58be2d98ed53be85"
+          "sha256": "79da09dcaba6aadc148b904bf361c4767b9c37d37e35ca5ca2afc959ad2a25da"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -4439,16 +4465,10 @@
             "axis": "block",
             "edge": "end",
             "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately."
       }
     },
     {
@@ -4456,7 +4476,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Accordion/Accordion.tsx",
       "sourceBlob": "1c955809b829a94801dcfb5d5e8125017c5e5913",
-      "sourceSha256": "b73efe8d5a1fed862e3232114eabfc7722c4d8ae0f47daa6d5e27f818b180c5e",
+      "sourceSha256": "79f6568de8315061ac426ca3b8bbebb8247a4b247962bac53e17a290b2b8caa6",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -4464,7 +4484,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Accordion/styles.css",
           "blob": "e7a20b704d079671c2739120fa3d3b7df491abef",
-          "sha256": "1afae34bedfb52bb7ab9ac966e11f5a7565086e4e2468832e129884c4299e2df"
+          "sha256": "25be75b04484c7d46b65c637e0ec60eb1b0deaefc85d118e3f7d407603a40155"
         }
       ],
       "t006Disposition": {
@@ -4499,7 +4519,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Accordion/common/Item/Item.tsx",
       "sourceBlob": "1b6ad97cf7a97511b90e838647e1e761a454079e",
-      "sourceSha256": "d9fb8b40cd9bd9c36fdce7290a54c71733c1f6007f5d4ae90288afd9557db0ce",
+      "sourceSha256": "a84d2af35228afe481d06197495c1678f1c8b6206ed061b8e1de38ef65708160",
       "currentMainState": "changed",
       "exposure": "compound",
       "compositionClue": "painted-marker-led",
@@ -4507,38 +4527,42 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Accordion/common/Item/styles.css",
           "blob": "65c60ec062f0ecdf1887f54846b7615aa466da3f",
-          "sha256": "b3562e8e7a22d5e83cebc36d3fd825ae18f2164c35b8264001ef9362b8ce3bff"
+          "sha256": "54ea1584a09ef31b271527a40eabb373019d5555f1486d84f6d01968229a5ded"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "continuation-surface-panel",
+        "profile": "accordion-item-composite",
         "assignments": [
           {
             "axis": "inline",
             "edge": "start",
-            "role": "spacing.inset.continuation.inline"
+            "role": "spacing.inset.continuation.inline",
+            "condition": "on the expanded content panel"
           },
           {
             "axis": "inline",
             "edge": "end",
-            "role": "spacing.inset.surface.inline"
+            "role": "spacing.inset.surface.inline",
+            "condition": "on the expanded content panel"
           },
           {
             "axis": "block",
             "edge": "start",
-            "role": "spacing.inset.surface.block"
+            "role": "spacing.inset.surface.block",
+            "condition": "on the expanded content panel"
           },
           {
             "axis": "block",
             "edge": "end",
-            "role": "spacing.inset.surface.block"
+            "role": "spacing.inset.surface.block",
+            "condition": "on the expanded content panel"
           },
           {
             "axis": "block",
             "edge": "internal",
             "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
+            "condition": "when the expanded content panel stacks children"
           },
           {
             "axis": "inline",
@@ -4560,7 +4584,7 @@
           }
         ],
         "boundaries": [],
-        "rationale": "Asymmetric panel: continuation keyline at start and surface edge at end.",
+        "rationale": "Composite details element: the summary control and expanded content panel own distinct, conditioned edges.",
         "exceptions": [
           "The summary is a marker-control row; the expanded content uses continuation at inline-start and surface at inline-end.",
           "The Accordion root owns item separation; the Item does not absorb that gap into its padding."
@@ -4572,7 +4596,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Badge/Badge.tsx",
       "sourceBlob": "438da9885dae39997faec94f2741b588661f14b1",
-      "sourceSha256": "0e5e530ea1d587265f90689afb99b1a9670ba61b5003d86091d1c13771428937",
+      "sourceSha256": "b7cd564a8ad3f5d6c560611f2f9fe78ef22c0687236c65a5d3e3388aa10613ba",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "paint-canvas",
@@ -4580,7 +4604,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Badge/styles.css",
           "blob": "6a32992c5529beff3fb9a25bf605b5f6952ce81d",
-          "sha256": "8d86126b6c6307d756654029135911619f08bb2b36d8de21efa75e2a1f5c680d"
+          "sha256": "94ac8ef6088c1c734d684c5efe45b02e23a7b3d9000fd0f6d91bebeee3b7af82"
         }
       ],
       "t006Disposition": {
@@ -4601,7 +4625,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Breadcrumbs/Breadcrumbs.tsx",
       "sourceBlob": "6e4227a9e4f1cd5b67b8079c7835e2cf452042c4",
-      "sourceSha256": "eadb94565929c84a0ea22792a97e1fcb81e1112ed3abb027651ef13c122615ca",
+      "sourceSha256": "bdb64eeddaaf8c2adb65b3d9419adf101f01daa8e1e2b293c3b7689c794c02dc",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "ordinary-text",
@@ -4609,7 +4633,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Breadcrumbs/styles.css",
           "blob": "ff87c38b7954d5d301bbce8cb7a5d1e3aaf98aa8",
-          "sha256": "d3ff4304ff0f4c9dda5ab06a941a43a7acb2fb41b0d3ed8027ff95badc7f6cc1"
+          "sha256": "650a2e8a981d4ed9f632a9c2eff304294eb46be3be7291a01259888b3d998b79"
         }
       ],
       "t006Disposition": {
@@ -4644,7 +4668,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Breadcrumbs/common/Item/Item.tsx",
       "sourceBlob": "bcc18367c6369c9787d19c69f5e098b28659dc8f",
-      "sourceSha256": "a71f0d137df83187be29bcb6891b8aabbfafadd9f4931a94492d9c923c7e8012",
+      "sourceSha256": "b92798353bea5cbee967a370e4a642f2c83fd8aee370c250867c4bbec4569f38",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "ordinary-text",
@@ -4652,7 +4676,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Breadcrumbs/common/Item/styles.css",
           "blob": "de79f5f7f3ad4f00ab06ada7b1a3dc2c9dae0493",
-          "sha256": "2ff1b538aab88a3bf4f857158bee0a0351b5bd7fda8d3eca5ffa1620ecfa65d6"
+          "sha256": "5b6f9881eb6c728ba95fb9bbc99750b4d5a3889989c15fd3f7ab31ac1a0dc76b"
         }
       ],
       "t006Disposition": {
@@ -4687,7 +4711,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Button/Button.tsx",
       "sourceBlob": "f6b10315ff1620fc368412d31d5084c11c9f35b4",
-      "sourceSha256": "0a529664b4f6318976d67c97898b10e19827d0c37b805cb161f5695d92e4d6ef",
+      "sourceSha256": "77973443595544b9e77aae4fe86136b733d7525d12a9f07cb4ede9bd40c545da",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "painted-marker-led",
@@ -4695,42 +4719,73 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Button/styles.css",
           "blob": "35c1902197f30e46505b946c673759480b36ccc1",
-          "sha256": "2eace7957ce0366cdfbacea0985b65da328679acc5cdad6738e30234525d1b03"
+          "sha256": "2a28c1bf77dbf87b3ee1f7e3a69bcfcd6e593b11bd587e23afea946531b898c1"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "action-control",
+        "profile": "button-composite",
         "assignments": [
           {
             "axis": "inline",
             "edge": "start",
-            "role": "spacing.inset.action.inline"
+            "role": "spacing.inset.action.inline",
+            "condition": "on text-only or icon-only non-link variants"
+          },
+          {
+            "axis": "inline",
+            "edge": "start",
+            "role": "spacing.inset.field.inline",
+            "condition": "on the icon-and-text non-link variant"
           },
           {
             "axis": "inline",
             "edge": "end",
-            "role": "spacing.inset.action.inline"
+            "role": "spacing.inset.action.inline",
+            "condition": "on every non-link variant"
           },
           {
             "axis": "inline",
             "edge": "internal",
             "role": "spacing.gap.mark.inline",
-            "condition": "when a mark is present"
+            "condition": "between icon and text"
           },
           {
             "axis": "block",
             "edge": "start",
-            "role": "spacing.inset.control.block"
+            "role": "spacing.inset.control.block",
+            "condition": "on every non-link variant"
           },
           {
             "axis": "block",
             "edge": "end",
-            "role": "spacing.inset.control.block"
+            "role": "spacing.inset.control.block",
+            "condition": "on every non-link variant"
           }
         ],
-        "boundaries": [],
-        "rationale": "External line-owning action row; marker separation is conditional.",
+        "boundaries": [
+          {
+            "scope": "inline-start",
+            "condition": "on the link variant",
+            "reason": "The link variant deliberately has no inline inset."
+          },
+          {
+            "scope": "inline-end",
+            "condition": "on the link variant",
+            "reason": "The link variant deliberately has no inline inset."
+          },
+          {
+            "scope": "block-start",
+            "condition": "on the link variant",
+            "reason": "The link variant deliberately has no control block inset."
+          },
+          {
+            "scope": "block-end",
+            "condition": "on the link variant",
+            "reason": "The link variant deliberately has no control block inset."
+          }
+        ],
+        "rationale": "Button variants condition the leading keyline and zero-inset link boundary without hiding either relationship in prose.",
         "exceptions": [
           "The icon-and-text variant uses spacing.inset.field.inline at inline-start, spacing.inset.action.inline at inline-end and spacing.gap.mark.inline internally.",
           "The link variant is an explicit zero-inset boundary and does not consume the control block inset."
@@ -4742,7 +4797,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Card/Card.tsx",
       "sourceBlob": "18e2e9036272b72ee013ea5ab8fea9452ef2aa58",
-      "sourceSha256": "621c6da49c206da87d6430a47cd898b9f7b03609babbd50d58d95dd7b4e78e58",
+      "sourceSha256": "783a0b7136b5b408e007474d153c7e65f4d23e6f6de55374e1f8e1857241a95e",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -4750,7 +4805,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Card/styles.css",
           "blob": "4ca670113a44c244d04b16859ec4473532e3391f",
-          "sha256": "02072f97e10571ddd213e0eed9b4b17a1a79813af8392e5c4997eddb58b58e40"
+          "sha256": "49ff46efaa5c9035f29b8c791bb12d765637b1e9d85defac3c265fc612b3f5f8"
         }
       ],
       "t006Disposition": {
@@ -4771,7 +4826,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Card/common/Content/Content.tsx",
       "sourceBlob": "c58c9f1ec13b0d9cba5e9f77a0f137b07eb531fc",
-      "sourceSha256": "de2fed8ab59c59de9cd6b86dae87d23f07c3cf3474f304f9fe9aae50582331d2",
+      "sourceSha256": "f82e039f2e7a7c707b603459c26295acb40ff9d09568e79509718af13a2dcd50",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -4779,7 +4834,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Card/common/Content/styles.css",
           "blob": "21ed30f6f6a3821cb2ab9e38c62890481ed65c52",
-          "sha256": "e3538e001dac089a069e1965293cd2008064793912f5c7551e429a14ee98d985"
+          "sha256": "d3cd25f5318952db9326b574ed2de75726a6ceffa2b642ce57dc5948f9391efe"
         }
       ],
       "t006Disposition": {
@@ -4822,7 +4877,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Card/common/Footer/Footer.tsx",
       "sourceBlob": "cdb1d0332f1517ec94f3391035ba807cca313cc0",
-      "sourceSha256": "3903fbb280bf6a278fb58b114368cfd449463324515e8082cfde8dbeeab1ccc1",
+      "sourceSha256": "b66e16ccea2d59969d4a0a814b58e2adb3a843b932483d713f3ae98dc0720515",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -4830,12 +4885,12 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Card/common/Footer/styles.css",
           "blob": "d55cfadae7fb6d309f9389763320da4c5e88b552",
-          "sha256": "991678abd9c8fa89926298f267c2c95247f90272e4144ce2da13bec576990521"
+          "sha256": "e72d00d56492dc1433e24c9e2859e008dd14cbfc0e4c3e2a626db7e3afcd0168"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -4858,20 +4913,20 @@
             "role": "spacing.inset.surface.block"
           },
           {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
-          },
-          {
             "axis": "inline",
             "edge": "internal",
             "role": "spacing.gap.element.inline",
             "condition": "between peer footer items"
+          },
+          {
+            "axis": "block",
+            "edge": "internal",
+            "role": "spacing.gap.element.block",
+            "condition": "between wrapped footer rows"
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately."
       }
     },
     {
@@ -4879,7 +4934,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Card/common/Header/Header.tsx",
       "sourceBlob": "642ab0d84137d75c03ea808524fb228edb9e86bd",
-      "sourceSha256": "07d2f6459368a2c71255a7a2efe3c15bece817fb606dc6f1f355323dfea9d2ce",
+      "sourceSha256": "5ae4cc2d374571b95a30ded7ab5d763e32bdedb9c174540ec942d6c1c5138f1e",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -4887,12 +4942,12 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Card/common/Header/styles.css",
           "blob": "12d23de5922610373b2f63375d449f0ffa21579e",
-          "sha256": "67bbc6b36b422b0bb57a2faeabc7b796e1b14a0af8ae538ba43860f9fa8b209f"
+          "sha256": "38042114edd838e5ba22dddc06c2e684769246a265999fdc18c31a65efc6df61"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -4915,14 +4970,14 @@
             "role": "spacing.inset.surface.block"
           },
           {
-            "axis": "block",
+            "axis": "inline",
             "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
+            "role": "spacing.gap.element.inline",
+            "condition": "between peer header items"
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately."
       }
     },
     {
@@ -4930,7 +4985,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Card/common/Image/Image.tsx",
       "sourceBlob": "78e68fd5ded4f7f47d78409d2e5cd7be4ac658e1",
-      "sourceSha256": "c342502e079ee5d42ec2c0e72cc08510f0f98b92f8237abb1ea43645ac4dfebe",
+      "sourceSha256": "bc05a66864ef6e7d925d50e5a6a888fd1cead7d742a6eadcb3dad2c0c9ac8587",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "paint-canvas",
@@ -4938,7 +4993,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Card/common/Image/styles.css",
           "blob": "a7582e6ce8c0c4e1df3a197c2cc6cc59440892e9",
-          "sha256": "9b73ee8c923db48f2e8768e8aeadfc7434aa88e913fc4cc908f138f8bf772746"
+          "sha256": "66fc878a0140f02b82a397decb012a09a9643c3ed0eaead9999422307bf12300"
         }
       ],
       "t006Disposition": {
@@ -4959,7 +5014,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Chip/Chip.tsx",
       "sourceBlob": "0922c422ea1107753290f7abf9292088912f52e9",
-      "sourceSha256": "d8026ad9d147268878f10ed6252f5cb475de4c8addc879121a268fa772c08b87",
+      "sourceSha256": "6b69747fb0572bf6b0ca6b1c88bee81f23e21c94356fe9b1ec0a4d0e978cbbeb",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "painted-marker-led",
@@ -4967,7 +5022,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Chip/styles.css",
           "blob": "286cb3fd9a96bafae5ede09b4ee1b25880615253",
-          "sha256": "96a2583e8be6c014c20f3477c337a92ebd7b7c64f38ab9715d38d45a9e11177f"
+          "sha256": "24f99e5df8836c38838d7a59ff66c5dfe3a34a43a4df9ad21bb1ddead73f91e8"
         }
       ],
       "t006Disposition": {
@@ -5013,7 +5068,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/ContextualMenu/common/Item/Item.tsx",
       "sourceBlob": "6dc4e84f27ffedcedeb58c8e55368ddea863fd65",
-      "sourceSha256": "dc3deeb4e3a83e5b69965fce28f9b172ed9855d7f70846778e352b8f02854be7",
+      "sourceSha256": "b4e7aebd18455e55ea20ceb75ef30f2951de306a9a81013d82a1b707d6b2d659",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "painted-marker-led",
@@ -5021,12 +5076,12 @@
         {
           "path": "packages/react/ds-global/src/lib/component/ContextualMenu/common/Item/styles.css",
           "blob": "6bb9d3b4c27dbe6eed7d4730b92ac47b80283784",
-          "sha256": "0a38e98b91a5d65314d7d38e7ed701e89437a2e92cf0b34550c112a5a8280569"
+          "sha256": "db7a08e800b230328406245cc6e613763d68d82e9140583718da4c5d216eeec8"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "in-box-action-row",
+        "profile": "action-control",
         "assignments": [
           {
             "axis": "inline",
@@ -5042,16 +5097,21 @@
             "axis": "inline",
             "edge": "internal",
             "role": "spacing.gap.mark.inline",
-            "condition": "when a mark or caret is present"
-          }
-        ],
-        "boundaries": [
+            "condition": "when a mark is present"
+          },
           {
-            "scope": "block",
-            "reason": "Continuous-fill or fixed host row; external occupied-control targets do not apply."
+            "axis": "block",
+            "edge": "start",
+            "role": "spacing.inset.control.block"
+          },
+          {
+            "axis": "block",
+            "edge": "end",
+            "role": "spacing.inset.control.block"
           }
         ],
-        "rationale": "In-box action row; block geometry belongs to its containing row system."
+        "boundaries": [],
+        "rationale": "External line-owning action row; marker separation is conditional."
       }
     },
     {
@@ -5059,7 +5119,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/ContextualMenu/common/SubMenu/SubMenu.tsx",
       "sourceBlob": "111d34bf52642cdcd21041a9c04a2f41bf9ac81b",
-      "sourceSha256": "2ce524a9e8763de8f0e0c10db3b61ada993c2a2420cdfb63394ea5f2ac93b8f6",
+      "sourceSha256": "e417ab638ba20ef7f8bf82d80961f727c81a0ae37a420f41023fc2d18ca28c01",
       "currentMainState": "changed",
       "exposure": "internal",
       "compositionClue": "nonvisual-composer",
@@ -5082,7 +5142,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/ContextualMenu/ContextualMenu.tsx",
       "sourceBlob": "2e512bf9129077a65ae68cf54fc8ccc04177d1fa",
-      "sourceSha256": "b90288a1e34a6dee96bbf3df4e66d76308f1dbad0e82de50f64814f4513d0bf3",
+      "sourceSha256": "3207760a0ebf708d1f7feb304a34b7b1ceec900d379084d3992cffee181cb919",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -5090,44 +5150,22 @@
         {
           "path": "packages/react/ds-global/src/lib/component/ContextualMenu/styles.css",
           "blob": "1b449dafe27ec2433fae5a6fd91b1ce6997f085e",
-          "sha256": "561b9e12be7676b403e3702b0a1a754f10912fad422c698025ce743a01919154"
+          "sha256": "df6bd01e9d8d349fa006f722ec63f34a4a17955fdcabeb390cebba101ab513c3"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
-        "assignments": [
+        "profile": "boundary-delegated",
+        "assignments": [],
+        "boundaries": [
           {
-            "axis": "inline",
-            "edge": "start",
-            "role": "spacing.inset.surface.inline"
-          },
-          {
-            "axis": "inline",
-            "edge": "end",
-            "role": "spacing.inset.surface.inline"
-          },
-          {
-            "axis": "block",
-            "edge": "start",
-            "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "end",
-            "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
+            "scope": "all",
+            "reason": "Delegates visible spacing to named child parts or shared owners."
           }
         ],
-        "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "rationale": "The renderer adds no independent spacing relationship.",
         "exceptions": [
-          "The trigger wrapper is a boundary; the portaled surface consumes surface insets and its Item rows own action/control geometry."
+          "The trigger wrapper and full-bleed portaled frame delegate spacing to named Item rows, which own action/control geometry."
         ]
       }
     },
@@ -5136,7 +5174,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Icon/Icon.tsx",
       "sourceBlob": "60e4c4631cbe32115a5687ac1d094850dd191bb6",
-      "sourceSha256": "67325f94ad3aff78553f80ad01369e74b1c09e91f951c54cd4e905d0561915e9",
+      "sourceSha256": "011522b320f032434b64506edec801c5ec9f0d345510b7c89f7a7fc4185c1b7a",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "paint-canvas",
@@ -5144,7 +5182,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Icon/styles.css",
           "blob": "ac8c5b402b08a83a5e7ba5b1f7154f8f8a8d7dc2",
-          "sha256": "52dd941f92e1544e1612c261c1d391b316b792cab6ab7a058e5ea38b6d7ec5a3"
+          "sha256": "1a80f90b383515516053858f158b5b92bedb2d2b5cd3332b0d8a1e96c70085a2"
         }
       ],
       "t006Disposition": {
@@ -5165,7 +5203,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/InlineCode/InlineCode.tsx",
       "sourceBlob": "50308cc3095b5c02410bcbd72020159852467a8c",
-      "sourceSha256": "d48d97600297d2b6a9d27db4a5ba6de753ddcf13c9887ce3cd3e67eac95c7fa4",
+      "sourceSha256": "a4e957a1b158d684a3e432c57564f64a3f464b96d9c440ea9ebce95ef90958bb",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "ordinary-text",
@@ -5173,7 +5211,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/InlineCode/styles.css",
           "blob": "1d3781ea7227011acea8c2f867a233cf11a6d174",
-          "sha256": "8fdc69dfe7fb39f0f76e713858234801306320557d0a61a2fe0f826bb1d35ebe"
+          "sha256": "ab27569822161c7251d82d243ec92bd56ab7d4b6d52b3001e8cc011a489a3838"
         }
       ],
       "t006Disposition": {
@@ -5205,7 +5243,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/KeyboardKey/KeyboardKey.tsx",
       "sourceBlob": "33f660e88eb9116860b8a9d4c24e55463088abd7",
-      "sourceSha256": "4c607e48a6bc4c5b44a228c165bf096b1114f96e991978cc36918f8faf937c53",
+      "sourceSha256": "2691edbf75b17afa0309294239565f471721cfb190be197a8ed2b570b359dada",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "uniform-framed-card",
@@ -5213,7 +5251,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/KeyboardKey/styles.css",
           "blob": "f9226b3ba35e0b2be5cbe142feca041040b0fadd",
-          "sha256": "aad75b0f8f6590a76888a6b62320055cc4a3767343569ad102ea579708b48839"
+          "sha256": "5be2c2584d7fd315b370cf6e73989fbb368db21dfe2018367b75dbe9583c875e"
         }
       ],
       "t006Disposition": {
@@ -5245,7 +5283,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Popover/Popover.tsx",
       "sourceBlob": "839fb78f6178b7647643b44ab1d58a0c98387170",
-      "sourceSha256": "a4d1482f6ac6bd76c852aa9c1bd2fcae4521011209ad6cb98061e5246b8807f0",
+      "sourceSha256": "6b7540823401a7f4fb0c0bc277284e9ba7ab8aeaa096de5c3769455c8b64d26c",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -5253,42 +5291,46 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Popover/styles.css",
           "blob": "80fd6a93aae9eaa910283b4687ac751fd68c5053",
-          "sha256": "4d92986cebc4f5d56d5d9b9afe14a102ef4f428225142f0d896ae890d3ed4de2"
+          "sha256": "5d110ac8db6f45c7d46470c16dca881ca2e4614739f9ba21f30f67b9ca0bd2c9"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "popover-composite",
         "assignments": [
           {
             "axis": "inline",
             "edge": "start",
-            "role": "spacing.inset.surface.inline"
+            "role": "spacing.inset.surface.inline",
+            "condition": "on the portaled content panel"
           },
           {
             "axis": "inline",
             "edge": "end",
-            "role": "spacing.inset.surface.inline"
+            "role": "spacing.inset.surface.inline",
+            "condition": "on the portaled content panel"
           },
           {
             "axis": "block",
             "edge": "start",
-            "role": "spacing.inset.surface.block"
+            "role": "spacing.inset.surface.block",
+            "condition": "on the portaled content panel"
           },
           {
             "axis": "block",
             "edge": "end",
-            "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
+            "role": "spacing.inset.surface.block",
+            "condition": "on the portaled content panel"
           }
         ],
-        "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "boundaries": [
+          {
+            "scope": "all",
+            "condition": "on the trigger wrapper",
+            "reason": "The trigger wrapper owns placement and interaction, not panel spacing."
+          }
+        ],
+        "rationale": "The trigger wrapper is a boundary and the distinct portaled content box owns surface insets.",
         "exceptions": [
           "The trigger wrapper is a boundary; only the portaled content panel consumes the surface profile."
         ]
@@ -5299,7 +5341,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Tabs/common/Item/Item.tsx",
       "sourceBlob": "ead25f42c804e4c71c3fb7a416ec4b64c26594b3",
-      "sourceSha256": "1e1c0b523e357f12fd1a250592a1986b77d1b32b022cf7f0b6dcd77be11bdb08",
+      "sourceSha256": "23efa50af81cc2382a6f1f80876795688180be2a5c3db82a93648d030c900498",
       "currentMainState": "unchanged",
       "exposure": "internal",
       "compositionClue": "attached-edge-row-cell",
@@ -5307,7 +5349,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Tabs/common/Item/styles.css",
           "blob": "bda5497c6b339d2ac77cd582e3531901b1cdd5b4",
-          "sha256": "53a85c8b989f70a692b6accbfb60cede90afa06e14189b8b366f6363875bb853"
+          "sha256": "05b42ed966718cb0ce8c9e223a8aa5b7d87e43d9acedb47b5b869bd7a35ab8a3"
         }
       ],
       "t006Disposition": {
@@ -5345,7 +5387,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Tabs/Tabs.tsx",
       "sourceBlob": "4f104679cacb333b3eaa173bda3f0155d10a0399",
-      "sourceSha256": "db57dfdeae9f2424c28249985d27b7e16bcc0222463e58f2fe50e75b057cd136",
+      "sourceSha256": "8da9e0f2bfe6b0ed3cd84e8da38eb61d47d513a198df9eba600bf3ee59ffd50a",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "attached-edge-row-cell",
@@ -5353,7 +5395,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Tabs/styles.css",
           "blob": "91ef56122e1471672fd9382d1221fbf47e9fb1a2",
-          "sha256": "c77f3ecca0da29855b8373c388c26703d4aa74a9bbd892217cf8ad06c21efaca"
+          "sha256": "7098e9128bbccf795fbc7cf99bfeb4b11b4dd6afe0b59e65102dd57ff41b6c6b"
         }
       ],
       "t006Disposition": {
@@ -5374,7 +5416,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Tile/common/Content/Content.tsx",
       "sourceBlob": "9cf88da840d2b8e750c5a0e4982013c7425f45d8",
-      "sourceSha256": "3a571f38142f7315d1f619752bddd9e482f82c2e4b8839080fc33042873e506b",
+      "sourceSha256": "f1ac64c5de83940e4b40833e653b08320aa72856262e84ce61a23cb18135781b",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -5382,7 +5424,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Tile/common/Content/styles.css",
           "blob": "badfd98f72bfcc7d3747d94b394822d38eb8b825",
-          "sha256": "43d66be91dff204d35a19145a34bdc125c1b3e90f2fbc6ab48f4a5aebe46e502"
+          "sha256": "f548bbce7693e71218f3e98620cc59c3f8e8ba4377055bd243b58bcc92c66d35"
         }
       ],
       "t006Disposition": {
@@ -5425,7 +5467,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Tile/common/Header/Header.tsx",
       "sourceBlob": "38a0b74c4c13bc320f91073402e3a375d5aa63df",
-      "sourceSha256": "f1e84d49e14b43011c1199c98ff36cafbe4ee16bbc5d698672676f9c270cb2c8",
+      "sourceSha256": "93d52e10eb48d648da1fbb55928efedfff83d6a55dd55a365515c3f31ec8ea29",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -5433,12 +5475,12 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Tile/common/Header/styles.css",
           "blob": "61a44aec851df1010d332909b939aa027a94a50b",
-          "sha256": "627aa6fd63922d99e37dbac25693c64d27a1df91744a38212924ff1dc85c8378"
+          "sha256": "3f1d86b7b45dafbd0b4437fe3a70e8babf1e4a036a20001d70c8c84e957a31fd"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -5461,12 +5503,6 @@
             "role": "spacing.inset.surface.block"
           },
           {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
-          },
-          {
             "axis": "inline",
             "edge": "internal",
             "role": "spacing.gap.mark.inline",
@@ -5474,7 +5510,7 @@
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately."
       }
     },
     {
@@ -5482,7 +5518,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Tile/Tile.tsx",
       "sourceBlob": "f6f20dbef3fafb7f8829f57a298eb711d702ceb7",
-      "sourceSha256": "b4ff0f3b5576e3a59351a22953257c8937c1421e0b5b68cb11fb93554c198e7c",
+      "sourceSha256": "2a0097315eb1fcc1f585b4bcfbe578a317ffdcaaeeb42962591c3e27859c1e4a",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -5490,7 +5526,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Tile/styles.css",
           "blob": "7793d5d6868d579e7c0c7156581eabf0d90c8705",
-          "sha256": "cd3c06a475ce59ba280fe8fd93976645206c530c05aaf913fa83bb5543479c17"
+          "sha256": "15815bac734074c717dce663865791a5d63351e2b1af3bd88623449ba56406a9"
         }
       ],
       "t006Disposition": {
@@ -5511,7 +5547,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Tooltip/Tooltip.tsx",
       "sourceBlob": "41af844e9ba14b034e862c6cd5cfdbe3978eea41",
-      "sourceSha256": "020c5497074c9db0d422b6007daee3549cc857bae8c686d315a965d00fe31d4f",
+      "sourceSha256": "3fa1e8695567c80daabbf747b34c3fdb09fc956533339a96b9d4789b0eb2a108",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -5519,12 +5555,12 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
           "blob": "4f83e0c49d632e5825918c3130151bc8fe64abc0",
-          "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
+          "sha256": "3e2bde7028299fceedab15b3176768ecc678ae5a34f63b2b0e74e103e7550496"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -5547,12 +5583,6 @@
             "role": "spacing.inset.surface.block"
           },
           {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
-          },
-          {
             "axis": "inline",
             "edge": "internal",
             "role": "spacing.gap.mark.inline",
@@ -5560,7 +5590,7 @@
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately.",
         "exceptions": [
           "Caret size and placement are paint; trigger distance is a positioning magnitude because placement can use either axis, not a panel inset or block-only gap.",
           "The optional leading icon uses spacing.gap.mark.inline; peer-to-peer inline separation uses spacing.gap.element.inline elsewhere."
@@ -5572,7 +5602,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Tooltip/TooltipEngine.tsx",
       "sourceBlob": "6a9376b07f30e9b42df4f704fc7e98bee6c27f2d",
-      "sourceSha256": "61c1bde83a6add71d777c28850a9cde5a05aaf557fc2e50e265ca9454607ac0a",
+      "sourceSha256": "74fe3ef75cc10393ebbc0b12ef7e6c3c01f7c4541959731d85c8bdd6bacf4b6a",
       "currentMainState": "added",
       "exposure": "public",
       "compositionClue": "nonvisual-composer",
@@ -5580,7 +5610,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
           "blob": "4f83e0c49d632e5825918c3130151bc8fe64abc0",
-          "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
+          "sha256": "3e2bde7028299fceedab15b3176768ecc678ae5a34f63b2b0e74e103e7550496"
         }
       ],
       "t006Disposition": {
@@ -5601,7 +5631,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/component/Tooltip/withTooltip.tsx",
       "sourceBlob": "627e67dd73fc540dcadad6302242ebdb78ba4480",
-      "sourceSha256": "e657aade331834736caebccf9629efa255374a27b85b578e74eae85c1da7bfdd",
+      "sourceSha256": "be6df02252330ca83be4f249562c8887b9a114ec45bfe7e0260c7104d00bb51d",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "nonvisual-composer",
@@ -5609,7 +5639,7 @@
         {
           "path": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
           "blob": "4f83e0c49d632e5825918c3130151bc8fe64abc0",
-          "sha256": "b59e682f9fe89929628e3a824cb46552be009df9af91fd5fc0183825e277ffd3"
+          "sha256": "3e2bde7028299fceedab15b3176768ecc678ae5a34f63b2b0e74e103e7550496"
         }
       ],
       "t006Disposition": {
@@ -5630,7 +5660,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/group/Cards/Cards.tsx",
       "sourceBlob": "dfe185fb2cf38603be5ce6a4ba7ce38dfe0ec5fc",
-      "sourceSha256": "195310766b5e080e6b77138eea261219506bb54e6b2e61d4deb6b30007a875d9",
+      "sourceSha256": "1d6a73c6987ed315a5eaba004821e07e2028469a42fab77cfd75f31a7d822e93",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "sectioned-card-panel",
@@ -5638,7 +5668,7 @@
         {
           "path": "packages/react/ds-global/src/lib/group/Cards/styles.css",
           "blob": "45328683ae71967bb3c5af43ebb98c3553c69e98",
-          "sha256": "3cc9be7ce71c12fa44adfa1fb19ad9aa12fe0b0089ca656ba15593bcee562ff6"
+          "sha256": "205f0fff8bde9b99bbc4f2a3c1305c22c5233663007c47a01330b9f5d74911ff"
         }
       ],
       "t006Disposition": {
@@ -5673,7 +5703,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/group/KeyboardKeys/KeyboardKeys.tsx",
       "sourceBlob": "726a4151c2a0c802cfa9e7986d47ed0a1f0fbaf7",
-      "sourceSha256": "95d4a1829c3f7f96adfbbdb1a58794f8e26ecba6795be13b79a5bff51e67116e",
+      "sourceSha256": "a683ad691c1e5621a3f9c3b4d4a402d485e5e7c307efa1a77e7496a185f58744",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "ordinary-text",
@@ -5681,7 +5711,7 @@
         {
           "path": "packages/react/ds-global/src/lib/group/KeyboardKeys/styles.css",
           "blob": "daa0d6849efeabaaf061c1296808bcc847ef4b23",
-          "sha256": "6df2ff17fdd4e5f26ac2b3ca78a67a915f1cb22dace012c4cb17679efba9a8a7"
+          "sha256": "fce5b852778a2596288495898088e431ba1e1caa07f136565962a151ddcf3fee"
         }
       ],
       "t006Disposition": {
@@ -5716,7 +5746,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/pattern/Modal/common/Content/Content.tsx",
       "sourceBlob": "0d7505110c3b67963d5171f1012c0fd7fd4ea3fd",
-      "sourceSha256": "9e2d576dbe7e5f0eacadc3e52c535a01eeca700d1afedee895e85b9e9261256d",
+      "sourceSha256": "583746d33d5b59e969cfd999b4c2b1c30ed272ad6e643f1ea2ca31d084b94850",
       "currentMainState": "added",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -5724,12 +5754,12 @@
         {
           "path": "packages/react/ds-global/src/lib/pattern/Modal/common/Content/styles.css",
           "blob": "d05e95143225db1e35ac383610c4493596da81d5",
-          "sha256": "2fb1b9d0e2d0897132b13fee77eca213ca121263360ef57a8e767e5685135241"
+          "sha256": "d0d96e44bbbb9e006069855527d03b7067671d7c641b4829bdb56321d0b60fbf"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -5750,16 +5780,10 @@
             "axis": "block",
             "edge": "end",
             "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding."
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately."
       }
     },
     {
@@ -5767,7 +5791,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/pattern/Modal/common/Footer/Footer.tsx",
       "sourceBlob": "9f4d68e2c1fcbe7de79c9b048874d46b6ac46ddf",
-      "sourceSha256": "5edf2278f9a76b7e77e2c30279dd664ba41c578e2b36ed73febe8e895ab1208f",
+      "sourceSha256": "2416a9dcba47631e44fd75c8a9f2d807b168a8fee2650e9592883abdba8ba24d",
       "currentMainState": "added",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -5775,12 +5799,12 @@
         {
           "path": "packages/react/ds-global/src/lib/pattern/Modal/common/Footer/styles.css",
           "blob": "70d583ff376a469c24c4e09b0c9f8c80d78e7065",
-          "sha256": "0f77d4f8d7a9e8422dc5db7b5e3f26ecc424d68ca8b817eba60eff7d39928eea"
+          "sha256": "2a1bfff81f211f7fb00a5752c9c0da975e3c54af8bfaff81bc81708c8a992810"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -5801,12 +5825,6 @@
             "axis": "block",
             "edge": "end",
             "role": "spacing.inset.surface.block"
-          },
-          {
-            "axis": "block",
-            "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
           },
           {
             "axis": "inline",
@@ -5816,7 +5834,7 @@
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately.",
         "exceptions": [
           "The action row uses spacing.gap.element.inline; it must not reuse the block-axis element role or the marker-to-copy role."
         ]
@@ -5827,7 +5845,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/pattern/Modal/common/Header/Header.tsx",
       "sourceBlob": "55c3b8c8f93a60ac463c31f1402f75f16a536bed",
-      "sourceSha256": "d8662a2945a7ab567d054cd114b548d8b7b1c6eb588b4dd48a168b7d19d85c92",
+      "sourceSha256": "69aca80d9a95e24a158a687a524f490af06a0a3f228ee985a93c986281726452",
       "currentMainState": "added",
       "exposure": "compound",
       "compositionClue": "sectioned-card-panel",
@@ -5835,12 +5853,12 @@
         {
           "path": "packages/react/ds-global/src/lib/pattern/Modal/common/Header/styles.css",
           "blob": "983cdd7c08618bc188b39fec26a522c42cd1e06d",
-          "sha256": "c33a202c50b433faab70c957550b35c643fee949896b689ec782b7ae6b1328d8"
+          "sha256": "f26625a1e9a099b1d10f83daf12b1f03cb9660ef688ea04d77d47d46d2e0cdb6"
         }
       ],
       "t006Disposition": {
         "status": "candidate",
-        "profile": "surface-section",
+        "profile": "surface-section-no-stack",
         "assignments": [
           {
             "axis": "inline",
@@ -5863,14 +5881,14 @@
             "role": "spacing.inset.surface.block"
           },
           {
-            "axis": "block",
+            "axis": "inline",
             "edge": "internal",
-            "role": "spacing.gap.element.block",
-            "condition": "when the part stacks children"
+            "role": "spacing.gap.element.inline",
+            "condition": "between the title and close action"
           }
         ],
         "boundaries": [],
-        "rationale": "Framed or sectioned component content; child separation stays a gap, not padding.",
+        "rationale": "Framed or sectioned component content with no owned block child stack; internal peer gaps are assigned separately.",
         "exceptions": [
           "The close action keeps its own action/control contract; the inset divider is paint and does not alter the header edge assignment."
         ]
@@ -5881,7 +5899,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/pattern/Modal/Provider.tsx",
       "sourceBlob": "10a8b379cd83ad3081753dc21518cc3a0dc7c5de",
-      "sourceSha256": "840fa088afe3e1961d7dc9ee883e52d4fe257474f9d397c893640ada3caef694",
+      "sourceSha256": "8876c6f9564d0282534cf5fe10148550af02f9d393f5b26efc4ef892937a7521",
       "currentMainState": "added",
       "exposure": "public",
       "compositionClue": "layout-shell",
@@ -5889,7 +5907,7 @@
         {
           "path": "packages/react/ds-global/src/lib/pattern/Modal/styles.css",
           "blob": "42d26145d1de5ac20c27c5d906c90405bcf36db9",
-          "sha256": "78655a5b16b5d736ef2bc5562875e03170e285af910fae3fc7dc0f2d75b1f672"
+          "sha256": "fb76b9ea9a622e1f4220c32159a536bd6bd7ce9e408dc5be586aa810bfaa031d"
         }
       ],
       "t006Disposition": {
@@ -5910,7 +5928,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/pattern/Modal/withModal.tsx",
       "sourceBlob": "136a2a980b6591b9022f39ccbd6b18c29f89206e",
-      "sourceSha256": "8625fa33ab20b4cc9d335328792529593cfc05e28fa45f8abf48b79884a69776",
+      "sourceSha256": "384dcbd1062b8e52c41fc655959ce6579f7a063213f1ffab624255dd88c966cb",
       "currentMainState": "added",
       "exposure": "public",
       "compositionClue": "nonvisual-composer",
@@ -5918,7 +5936,7 @@
         {
           "path": "packages/react/ds-global/src/lib/pattern/Modal/styles.css",
           "blob": "42d26145d1de5ac20c27c5d906c90405bcf36db9",
-          "sha256": "78655a5b16b5d736ef2bc5562875e03170e285af910fae3fc7dc0f2d75b1f672"
+          "sha256": "fb76b9ea9a622e1f4220c32159a536bd6bd7ce9e408dc5be586aa810bfaa031d"
         }
       ],
       "t006Disposition": {
@@ -5939,7 +5957,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/pattern/Timeline/common/Content/Content.tsx",
       "sourceBlob": "3e4466312241c184c0177fdffe2f5a83b4fa5166",
-      "sourceSha256": "e2690e965fd00bf9b04461d6aefde79e96970b1f466ddf047d522e5f662b318e",
+      "sourceSha256": "7fe1d2018e1ceabf1d970eeb38df2f866b8eab699da7e87ea7387454cd2b4d09",
       "currentMainState": "unchanged",
       "exposure": "compound",
       "compositionClue": "painted-marker-led",
@@ -5947,7 +5965,7 @@
         {
           "path": "packages/react/ds-global/src/lib/pattern/Timeline/common/Content/styles.css",
           "blob": "88259c803c86b2e52f94d711cb679421a734637a",
-          "sha256": "f8b967be821877c3703cae35387b6eda4e2096a547296c2bd5e7f130db13d43a"
+          "sha256": "360b99ab32739e345e9a4bbe7c28412969b12381c03c0a6063bcb5383407bc6f"
         }
       ],
       "t006Disposition": {
@@ -5968,7 +5986,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/Event.tsx",
       "sourceBlob": "fd7605f86a74cf9362ad4477c295608e6cbea0d1",
-      "sourceSha256": "9a18bfd3db9eb157c87f58b63cdfcf6783bb45277996e56505c12067cc69bc6a",
+      "sourceSha256": "408ebcec809071c064f2118069842a7b66af888e4271807950e89bed4909348b",
       "currentMainState": "changed",
       "exposure": "compound",
       "compositionClue": "painted-marker-led",
@@ -5976,7 +5994,7 @@
         {
           "path": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/styles.css",
           "blob": "a2873989a2a2e4faa77fb9081c7fc7a1eb9aa0c5",
-          "sha256": "29626df16c1ba4fb9cde7fc974886d0ea76680a1ab715dbf5cd80b6d2da781f7"
+          "sha256": "3fef939f92c61bc08f83f097a4a2dd8adda8204e1e5865fc601b792a509ebd01"
         }
       ],
       "t006Disposition": {
@@ -6017,7 +6035,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/pattern/Timeline/Timeline.tsx",
       "sourceBlob": "c6fe33b9cbc39ff689e9830a0f4edc644fcf45bf",
-      "sourceSha256": "3c7d43125c8c8312a3500c183de05eb41291c883d2531b57bb4c7f0888e438c3",
+      "sourceSha256": "870026ed5302844d4643836f359a8503863eb17c968d84a2cffabd93be62569a",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "painted-marker-led",
@@ -6025,7 +6043,7 @@
         {
           "path": "packages/react/ds-global/src/lib/pattern/Timeline/styles.css",
           "blob": "09b65899d2a8f8450b64bfa6a607ce9ebeeb2f59",
-          "sha256": "f37345f9bc2360a5f56ed08e42a0c7f37784262eb276b8a67c13e089d2145753"
+          "sha256": "5eb05a36a30b08e42a2d742bbc0618b128003e07d90dbf8a20db77c382030e10"
         }
       ],
       "t006Disposition": {
@@ -6046,7 +6064,7 @@
       "package": "@canonical/react-ds-global",
       "source": "packages/react/ds-global/src/lib/subcomponent/Spinner/Spinner.tsx",
       "sourceBlob": "1a9eb7c0c09f20890e022f5d0cf7fb17245b9493",
-      "sourceSha256": "3b8110240a2b61cc9299c7c5226390d3d88c97dcb42cbbd54ff8b4db5a62fe4a",
+      "sourceSha256": "6d098e8d19adc6375f06b26058d0772a5622e72e63d539b8147af2ecd7c10ef1",
       "currentMainState": "unchanged",
       "exposure": "public",
       "compositionClue": "paint-canvas",
@@ -6054,7 +6072,7 @@
         {
           "path": "packages/react/ds-global/src/lib/subcomponent/Spinner/styles.css",
           "blob": "27eb55e25794a07755eedb96a87118739aa429a6",
-          "sha256": "2abcf27341d0e986ed7007e36de7fbf8eb7b56213cfd0ab5dfd4b6d2791a7865"
+          "sha256": "a6e5cac702b4c83b751a61b4edf8fa82536bd7d516c2953e858e5ba1977c303d"
         }
       ],
       "t006Disposition": {
@@ -6075,7 +6093,7 @@
       "package": "@canonical/react-tokens",
       "source": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/TokenSwatch.tsx",
       "sourceBlob": "38979c0132cd2c2ace0d8573b6b6d4ccc7ca39d2",
-      "sourceSha256": "dd724568e7fa88653549095d14c81623ac42aa0291b5285e751623a2f5c0b2c5",
+      "sourceSha256": "24549ee8657e51b06a10155302c8c191a72161634e5d6d51686246fea996c02e",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "paint-canvas",
@@ -6083,7 +6101,7 @@
         {
           "path": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css",
           "blob": "4af27f486783d482875797484766e4b734186ab0",
-          "sha256": "48663ae95bdc54789e1561a7566439bd6b01cd6b4378edef7ccd7bb4430bc68a"
+          "sha256": "c03e4c6079225d4d6ae2e83849097f795d849d007232f90830ab40b215315793"
         }
       ],
       "t006Disposition": {
@@ -6104,7 +6122,7 @@
       "package": "@canonical/react-tokens",
       "source": "packages/react/tokens/src/lib/TokenTable/TokenTable.tsx",
       "sourceBlob": "81031bde1ecf2bf2ba558d87812e4a875cfc63a8",
-      "sourceSha256": "ab864d04c57b35d1d4c2efa7903bc73303aac73dacacdaa8debd0495c2b40b59",
+      "sourceSha256": "95f023d4725698fe7a8298c695ae829bdab9c0dc7ffe8d72395351d38e2093b9",
       "currentMainState": "changed",
       "exposure": "public",
       "compositionClue": "attached-edge-row-cell",
@@ -6112,7 +6130,7 @@
         {
           "path": "packages/react/tokens/src/lib/TokenTable/styles.css",
           "blob": "eca60c001386c1c0db7b0d7cc46ed100184b161b",
-          "sha256": "51edb9400a51c89275380345dcacb351a05280f69fdb0652f90ecacee9e2b2aa"
+          "sha256": "b2bddaf0c2b9f6282e54a41d27430109594e40a2544e0efe6062f7835ab5a5b5"
         }
       ],
       "t006Disposition": {
@@ -6146,8 +6164,16 @@
         ],
         "boundaries": [
           {
-            "scope": "all",
-            "reason": "Table tracks, border separation, swatch paint and intrinsic visualisation sizes remain non-token boundaries."
+            "scope": "inline-internal",
+            "reason": "Inline table tracks and intrinsic visualisation layout remain non-token boundaries."
+          },
+          {
+            "scope": "block-start",
+            "reason": "Outer table geometry remains a non-token boundary."
+          },
+          {
+            "scope": "block-end",
+            "reason": "Outer table geometry remains a non-token boundary."
           }
         ],
         "rationale": "Composite owner: only the listed cell insets and stack gaps join component semantic roles.",
@@ -6165,9 +6191,9 @@
       "styles": "packages/svelte/ds-app-launchpad/src/lib/components/Button/styles.css",
       "reason": "reads density line-height and inline-padding channels",
       "sourceBlob": "86da1e16d0507da8ac9957769a178bf15851ed30",
-      "sourceSha256": "295287971fdd7b0718f9fa87efe143d1543c49e4e6ffa278bc76ca84b5fe0471",
+      "sourceSha256": "3b5e216cd7328b31be27fc6b1b768fcc56b99b2135f20b505d30b2a7297a5ed2",
       "stylesBlob": "e364c2fd80235a869405662c9f2570d00b5fe3be",
-      "stylesSha256": "efcb4a9e54010d673c027f8b3fb42bd3f26770cc6eb14b8658ab8cff478908f4",
+      "stylesSha256": "89260ea47fe08cd3d32bb0e7426af72ab045b5630c09fd45c6e7f48441d00504",
       "t006Disposition": {
         "status": "candidate",
         "profile": "action-control",
@@ -6209,9 +6235,9 @@
       "styles": "packages/svelte/ds-app-launchpad/src/lib/components/NumberInput/styles.css",
       "reason": "reads the shared density block-padding channel",
       "sourceBlob": "754bd969c03eb490a6b0f0439ad49956e08de26e",
-      "sourceSha256": "802946cb06930bebe6ddc9f35084e53720a7ab4a1a57f41c32ce0d7c9b446dc9",
+      "sourceSha256": "7214777a1fde5b76a4b13f01063909a15f8f53726f5179cf945e888622b9febb",
       "stylesBlob": "2f6ac9f36bb5dc059322a27206c0b40d6dea1463",
-      "stylesSha256": "e0fb14387a81a5e8871409552e606fb143acdf64690227544cce6c6794b57de8",
+      "stylesSha256": "7408d34b29ee5cab282f9343fb01b7cdb23c6b35d5d3d8de262768885e22ae84",
       "t006Disposition": {
         "status": "candidate",
         "profile": "control-block-only",
@@ -6242,9 +6268,9 @@
       "styles": "packages/svelte/ds-app-launchpad/src/lib/components/TextInput/styles.css",
       "reason": "reads the shared density block-padding channel",
       "sourceBlob": "d355ff71136a854ee93115f30caffc3650d8c97b",
-      "sourceSha256": "b9b7e661756d0bf57622d1ab223f3b8cd884d6b53dd08c0828ea5e4f19220744",
+      "sourceSha256": "147724aa836ba1736bdae34c9bc8c84bf8da55be70965032b214b8e4e48de00b",
       "stylesBlob": "49a5e499e9723993e986ab2d07b1c4979a74b39b",
-      "stylesSha256": "42d3c5b0a9972f4875813479dfdcbda4dfdc96e28b7248b6c0eb060bc91d1d8d",
+      "stylesSha256": "2ab3bcfbe3deda658a5c550f3c3a6823d02152d94c927651668dd6f37d50172a",
       "t006Disposition": {
         "status": "candidate",
         "profile": "control-block-only",
@@ -6275,9 +6301,9 @@
       "styles": "packages/svelte/ds-app-launchpad/src/lib/components/Chip/styles.css",
       "reason": "named FR-036 spacing fork; no shared density channel on current main",
       "sourceBlob": "337627319d76f634aeafd683b3f5011169d1c931",
-      "sourceSha256": "30095e8184c22737561710dfd27a5593696cea8b20c9fdc9e352eb4f69c68c77",
+      "sourceSha256": "5682412db846964e9ecafc68a21c7e9face03ba26e75f9e8043237bf9c46ca53",
       "stylesBlob": "51cb345dbc4b5a06aa7d66e62f66b937de44adaa",
-      "stylesSha256": "e4e132816423c7f41eb1989e543006e85530f83c4cee3446fd751f46fb061d0b",
+      "stylesSha256": "94c6250b34c7a3f49d926f52b527fb128278f716672ed9faf29468e54279915a",
       "t006Disposition": {
         "status": "candidate",
         "profile": "action-control",
@@ -6319,9 +6345,9 @@
       "styles": "packages/svelte/ds-app-launchpad/src/lib/components/Select/styles.css",
       "reason": "named FR-036 spacing fork; uses Launchpad-local inset channels",
       "sourceBlob": "1f403a35065bb0ac3062a3a3b8aa64d941191988",
-      "sourceSha256": "b70609e7a0808c1ab225531f6c1f1814744da607f1df71d8d16d9a1a5f1040bd",
+      "sourceSha256": "08fc6d7a31292441e776f7543ef51b8013f0f690a40050854accda4c5f2135e8",
       "stylesBlob": "bc9b6abe47f681c807e60f7cd58eddafbcbf6173",
-      "stylesSha256": "2122dbada7dd021f4388de685754581aabc7c1c070c726bb87afea28643568b2",
+      "stylesSha256": "3edd4e4543496679687a71f3656669e5c0c64e91c175e04a8f556fd0318bb94c",
       "t006Disposition": {
         "status": "candidate",
         "profile": "field-control",
@@ -6357,9 +6383,9 @@
       "styles": "packages/svelte/ds-app-launchpad/src/lib/components/common/InputPrimitive/styles.css",
       "reason": "named FR-036 internal spacing owner composed by field controls",
       "sourceBlob": "f9f303f307d7bed314fbcc1f9860bdad136d89a7",
-      "sourceSha256": "d4ddec95fd52a94716ed20f4532d857dacbdc543d5773446df815c75bce061cf",
+      "sourceSha256": "55757b1dfc60d1ef308668ffc449f1b792402d0177b59de24e97c9ac93770eb7",
       "stylesBlob": "f679f8e6496b8b4cb4c7e49a8760a7f97aab9a6d",
-      "stylesSha256": "472e717a64f0d4f604936c47dc601c3ee88e990e1a9c1b758924df021fca6f2f",
+      "stylesSha256": "625d5194d076660b2c81157bc72cb05fd12b696dbea347973584d6b2f8f08173",
       "t006Disposition": {
         "status": "candidate",
         "profile": "field-control",
@@ -6395,9 +6421,9 @@
       "styles": "packages/svelte/ds-app-launchpad/src/lib/styles/ds-shim.css",
       "reason": "defines the package-local comfortable/dense block-padding channel",
       "sourceBlob": "584dde57625d7a102d8e8f661de8c876c1c07b89",
-      "sourceSha256": "7f9fb098490c27ad31497dc69e7e3f44eefe6a13407cd210551253c52f89d132",
+      "sourceSha256": "ae77012e8ea048c784c6c5126a0ebf7f12e38177cbebeb8a7e4124ea742e6c16",
       "stylesBlob": "584dde57625d7a102d8e8f661de8c876c1c07b89",
-      "stylesSha256": "7f9fb098490c27ad31497dc69e7e3f44eefe6a13407cd210551253c52f89d132",
+      "stylesSha256": "ae77012e8ea048c784c6c5126a0ebf7f12e38177cbebeb8a7e4124ea742e6c16",
       "t006Disposition": {
         "status": "candidate",
         "profile": "boundary-nonvisual",
@@ -6417,9 +6443,9 @@
       "styles": "packages/svelte/ds-app-wpe/src/lib/components/Button/styles.css",
       "reason": "reads control-seat and density channels directly",
       "sourceBlob": "d6075ccd776fdca024028a941cea806c5b464e43",
-      "sourceSha256": "22dba206e2686f26c29e3cdf2309043b306df870af594a94f587fdc42321a748",
+      "sourceSha256": "c962029ab2fb60915151225f443c04bd048e8d3b4f1d93d17f2652e9aaf98fbb",
       "stylesBlob": "cffc6af899e84278b6cb81c175074e4f01d8ca48",
-      "stylesSha256": "b9a47a519972a48db1b1a2c5fea8be8f15f3e5fed50cf27dea56fd98961a5b90",
+      "stylesSha256": "7ad11d6711980ad7651744d2a93e5b5460023ca9142feb45af0281e86c9b08ec",
       "t006Disposition": {
         "status": "candidate",
         "profile": "action-control",
@@ -6461,9 +6487,9 @@
       "styles": "packages/svelte/ds-app-wpe/src/lib/_work_in_progress/Rule/styles.css",
       "reason": "reads the legacy shared vertical-spacing channel",
       "sourceBlob": "4694b0aff839abcb69420fbfe7ca5c00759637bc",
-      "sourceSha256": "9e3f1dfe280d5c54e3f8b9fc534f166f72f56b97ee049891163c476206666a55",
+      "sourceSha256": "4f32f098054ef9aa04989f174960bf3eb38d3e82f63c9c5202955d607bbe8427",
       "stylesBlob": "b06b1b05439018314dadedbb7a9399ccc6718735",
-      "stylesSha256": "8b86e51409114c869397323dd431f950785a6801910d68338c0cf5377bacbcc1",
+      "stylesSha256": "9dc11218d176d167333fad65bcd2ec6454584163c5928f3949a330f8bcf988cd",
       "t006Disposition": {
         "status": "candidate",
         "profile": "boundary-legacy-magnitude",
@@ -6483,9 +6509,9 @@
       "styles": "packages/svelte/ds-app-wpe/src/lib/group/Cards/styles.css",
       "reason": "reads shared grid row/column gap channels",
       "sourceBlob": "a3546ba36bf86e2804a29cc9ec9971517628f78b",
-      "sourceSha256": "f89a94f9874abfa395c4d76e242a7a4b51a2016e43374ada9379e2f6ade0447d",
+      "sourceSha256": "9fffb884337e7b6c062c999b556f0fba1ec303cfe98a1fb09e0a2583104de10d",
       "stylesBlob": "cdc4c300bbf64f34a1aed02737af70a341b16472",
-      "stylesSha256": "fd6f966a2d30d6a06427eb2b625ce7e82b81efdf34a8ec9bf180cb0b463b0ddf",
+      "stylesSha256": "b02038acca5d3f2c451bf239284bac78870378333bc1d4ab3ba2c1a9bec6ac4d",
       "t006Disposition": {
         "status": "candidate",
         "profile": "boundary-page-grid",
@@ -6505,9 +6531,9 @@
       "styles": "packages/svelte/ds-app/src/lib/layout/ContentLayout/styles.css",
       "reason": "consumes the shared grid gutter contract",
       "sourceBlob": "cef7aad4397e55616cca4427f1c450beb9e5c6e1",
-      "sourceSha256": "30d9ed3ea4e184809968b50718cde5bd31f02e4d7346a1e7253257cc03804002",
+      "sourceSha256": "a512154dce732a91012d1be897604ad5ed7b6cb0498d803a4d1bb1339374171f",
       "stylesBlob": "154b1fa50679c35a86bce5a44785e520599321d9",
-      "stylesSha256": "c727c434584d6d57e547b757967908e087a8ef2ddcf7b4be9e8083705c9b2e7e",
+      "stylesSha256": "05f610e6a5a9dca0f0a1b1509ea34ea723aeebb8137553734cac57a80a905614",
       "t006Disposition": {
         "status": "candidate",
         "profile": "boundary-page-grid",

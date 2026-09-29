@@ -80,6 +80,24 @@ The bounded Chromium DPR 1 runs passed 5/5 and 4/4. Manifest SHA-256 is
 The six-engine/DPR matrix remains deferred to CP2; do not rerun it as T004d1a
 evidence.
 
+## Current-main T008 comparison packet
+
+T008 does not reuse the historical spike as present-day certification. It runs
+from synced Pragma `main` `90386bfbf` on the local evidence-only branch
+`test/spec-024-t008-comparison`, captured clean at `6acc5a29c`. The packet is at
+`H:\WSL_dev_projects\temp\spec-024-t008-current-main-20260929-final2`; its
+archive is the adjacent `.zip`. Manifest SHA-256 is
+`0946c4f00e6c7622595b21ece96a644c58c33d20aa580e91429de277ac8b5fb2` and
+archive SHA-256 is
+`b848067a409fe50ee07397a7d99d010dbc98fc8f9f752ec7d7b0c238941228f7`.
+
+The three heterogeneous product sheets, nineteen-alias before/after proof,
+per-edge control/surface equations, artifact hashes and untouched RangeInput
+selector-containment sentinel are summarized in
+[`t008-current-main-evidence.md`](t008-current-main-evidence.md). The evidence
+branch changes only the comparison story, story-only CSS and collector; it is
+not the production recut and must not be pushed or merged.
+
 ## Authoritative inventory
 
 Read in this order:
@@ -133,15 +151,17 @@ active. The non-overwriting spike lane is defined in
 The collectors use Node intentionally because Bun's Playwright transport hangs
 in the recorded environment. Bun remains the Pragma package runner.
 
-## Known omissions and blockers
+## Historical omissions and current dispositions
 
-- 56 source owners / 95 spacing facts still require isolated visual fixtures
-  or an explicit boundary/supporting-child disposition.
-- 20 stateful targets still require safe activation or a proved nonvisual
-  disposition.
-- Every `categoryAssignment` remains null until the pre-CP1 classification
-  pass. CP1 reviews those proposed assignments; it does not create them from an
-  empty table.
+- The preserved Spec 022 reference ledger still contains 56 source owners / 95
+  spacing facts without isolated visual fixtures and 20 stateful targets without
+  safe activation. Those are properties of that historical ledger, not open
+  denominator rows: T005/T005a/T005b and T006 now assign or explicitly bound all
+  169 current-main rows.
+- Historical `categoryAssignment` fields remain null so custody evidence is not
+  rewritten. The current machine authority is each inventory row's structured
+  `t006Disposition`; CP1 reviews those proposals rather than filling an empty
+  table.
 - Card-header baseline phase, the Accordion root gap and other sequenced owner
   promotions remain open as described in Spec 022.
 - The design-tokens App provider maps Field `8`, Group `8`, Pattern `16` and
@@ -152,11 +172,11 @@ in the recorded environment. Bun remains the Pragma package runner.
   must correct the mapping/value or explicitly revise the intended hierarchy.
 - The broad reference branch is evidence and fixture work, not a mergeable
   production proposal.
-- The evidence snapshot predates current Pragma `origin/main` at `1530f3156` by
-  75 upstream commits. Before CP1, a mainline delta sweep must classify every
-  new or changed reusable owner, including Modal and recently migrated control
-  implementations; a green snapshot verifier does not perform that coverage
-  reconciliation.
+- The historical evidence snapshot predates the earlier audited Pragma
+  `origin/main` at `1530f3156` by 75 commits. The required delta sweep is now
+  complete against synced `main == origin/main == 90386bfbf`, including Modal,
+  expanded SideNavigation, SidePanel and recently migrated controls; the
+  historical green verifier alone is still not evidence of that reconciliation.
 - Those 75 commits include upstream's own design-token and density programme
   (`362b612d4`, `e5f9de6af`, `b135f611f`, `3a88504a2`, `9d4d53315`, `8100cd22c`,
   `1530f3156`, `050550fb3`). None of the `--ds-*` vocabulary this evidence

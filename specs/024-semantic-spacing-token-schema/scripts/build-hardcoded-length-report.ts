@@ -3,12 +3,15 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import postcss, {
+  type AnyNode,
   type AtRule,
   type Declaration,
   type Rule,
 } from "postcss";
 import {
+  getT010AliasUseDisposition,
   getT010LengthDisposition,
+  type AliasUseDisposition,
   type LengthDisposition,
 } from "./t010-length-dispositions.js";
 import { t010SemanticFindings } from "./t010-semantic-backlog.js";
@@ -132,6 +135,39 @@ const blobFor = (path: string) => {
   if (!blob) throw new Error(`Missing Git blob for ${path} at ${sourceRef}`);
   return blob;
 };
+const blobBuffers = new Map<string, Buffer>();
+const loadBlobBuffers = (paths: readonly string[]) => {
+  const blobs = [
+    ...new Set(paths.map(blobFor).filter((blob) => !blobBuffers.has(blob))),
+  ];
+  if (!blobs.length) return;
+  const output = execFileSync("git", ["cat-file", "--batch"], {
+    cwd: pragmaRepo,
+    input: Buffer.from(`${blobs.join("\n")}\n`),
+    maxBuffer: 256 * 1024 * 1024,
+  });
+  let offset = 0;
+  for (const requestedBlob of blobs) {
+    const headerEnd = output.indexOf(0x0a, offset);
+    if (headerEnd < 0) throw new Error(`Missing cat-file header for ${requestedBlob}`);
+    const header = output.subarray(offset, headerEnd).toString("utf8");
+    const match = header.match(/^([0-9a-f]+) blob (\d+)$/);
+    if (!match || match[1] !== requestedBlob) {
+      throw new Error(`Unexpected cat-file header for ${requestedBlob}: ${header}`);
+    }
+    const size = Number(match[2]);
+    const bodyStart = headerEnd + 1;
+    const bodyEnd = bodyStart + size;
+    blobBuffers.set(requestedBlob, output.subarray(bodyStart, bodyEnd));
+    offset = bodyEnd + 1;
+  }
+};
+const blobBufferFor = (path: string) => {
+  const blob = blobFor(path);
+  const cached = blobBuffers.get(blob);
+  if (!cached) throw new Error(`Git blob ${blob} for ${path} was not preloaded`);
+  return cached;
+};
 const semanticIds = new Set<string>();
 const allowedRoles = new Set(inventory.boundary.candidateRoles);
 for (const finding of t010SemanticFindings) {
@@ -154,6 +190,7 @@ const productionCss = treePaths.filter(
     productionPackagePrefixes.some((prefix) => path.startsWith(prefix)),
 );
 const cssPaths = [...new Set(productionCss)].sort();
+loadBlobBuffers(cssPaths);
 
 const rowsByStyle = new Map<string, InventoryRow[]>();
 const rowsBySource = new Map<string, InventoryRow[]>();
@@ -187,10 +224,30 @@ const derivedMultiplier = new RegExp(
   "gi",
 );
 const acceptsLengthZero = (property: string) =>
-  property.startsWith("--") ||
   /(?:padding|margin|gap|inset|top|right|bottom|left|width|height|size|radius|border|outline|shadow|font|line-height|letter-spacing|translate|transform|position|clip|basis|columns|rows|grid)/.test(
     property,
-  );
+  ) ||
+  (/^--/.test(property) &&
+    /(?:padding|margin|gap|inset|offset|position|size|width|height|radius|border|outline|shadow|line-height|letter-spacing|translate|basis|columns|rows|grid)/.test(
+      property,
+    ));
+
+const maskColorFunctions = (value: string) => {
+  const characters = [...value];
+  for (const match of value.matchAll(
+    /(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color-mix)\(/gi,
+  )) {
+    let depth = 1;
+    for (let index = match.index + match[0].length; index < value.length; index += 1) {
+      const character = value[index];
+      if (character === "(") depth += 1;
+      if (character === ")") depth -= 1;
+      characters[index] = " ";
+      if (depth === 0) break;
+    }
+  }
+  return characters.join("");
+};
 
 type SyntaxKind =
   | "length"
@@ -200,7 +257,7 @@ type SyntaxKind =
   | "derived-multiplier";
 
 const tokenMatches = (value: string, property: string) => {
-  const masked = maskQuotedAndUrlContent(value);
+  const masked = maskColorFunctions(maskQuotedAndUrlContent(value));
   const matches: Array<{
     index: number;
     literal: string;
@@ -313,7 +370,7 @@ const packageFor = (path: string) => path.split("/").slice(0, 3).join("/");
 
 const ancestryFor = (node: Declaration | AtRule) => {
   const ancestry: string[] = [];
-  let parent = node.parent;
+  let parent: AnyNode | undefined = node.parent;
   while (parent) {
     if (parent.type === "rule") ancestry.unshift((parent as Rule).selector);
     if (parent.type === "atrule") {
@@ -394,7 +451,7 @@ const occurrences: Array<{
   members: string[];
   candidateRoles: string[];
   boundaries: string[];
-  disposition: LengthDisposition;
+  disposition: LengthDisposition | null;
 }> = [];
 const files: Array<{
   package: string;
@@ -415,13 +472,20 @@ const aliases: Array<{
 const aliasUses: Array<{
   path: string;
   line: number;
+  declarationLine: number;
   selector: string | null;
   property: string;
-  references: string[];
+  value: string;
+  reference: string;
+  members: string[];
+  candidateRoles: string[];
+  boundaries: string[];
+  disposition: AliasUseDisposition | null;
+  chains?: string[][];
 }> = [];
 
 for (const path of cssPaths) {
-  const sourceBuffer = readFileSync(join(pragmaRepo, path));
+  const sourceBuffer = blobBufferFor(path);
   const source = sourceBuffer.toString("utf8");
   const blob = blobFor(path);
   const root = postcss.parse(source, { from: path });
@@ -443,8 +507,6 @@ for (const path of cssPaths) {
     let literalIndex = 0;
     for (const match of tokenMatches(rawValue, property)) {
       const { literal, syntaxKind } = match;
-      const line = node.source?.start?.line;
-      if (!line) throw new Error(`Missing source line for ${path} ${property}`);
       const ancestry = ancestryFor(node);
       const identity = [
         path,
@@ -488,10 +550,13 @@ for (const path of cssPaths) {
       const nodeOffset = node.source?.start?.offset ?? 0;
       const valueOffset = source.indexOf(rawValue, nodeOffset);
       if (valueOffset < 0) {
-        throw new Error(`Cannot locate value for ${path}:${line} ${property}`);
+        throw new Error(
+          `Cannot locate value for ${path}:${node.source?.start?.line ?? "unknown"} ${property}`,
+        );
       }
       const offset = valueOffset + match.index;
       const lineStart = source.lastIndexOf("\n", offset - 1) + 1;
+      const line = source.slice(0, offset).split("\n").length;
       occurrences.push({
         id: `length-${hash(identity).slice(0, 16)}`,
         package: packageFor(path),
@@ -525,24 +590,67 @@ for (const path of cssPaths) {
     inspect(atRule, `@${atRule.name}`, atRule.params, "at-rule"),
   );
   root.walkDecls((declaration) => {
+    const rawDeclarationValue =
+      declaration.raws.value?.raw ?? declaration.value;
+    const referenceMatches = [
+      ...rawDeclarationValue.matchAll(/var\((--[\w-]+)/g),
+    ];
     const references = [
-      ...new Set(
-        [...declaration.value.matchAll(/var\((--[\w-]+)/g)].map(
-          (match) => match[1],
-        ),
-      ),
+      ...new Set(referenceMatches.map((match) => match[1])),
     ].sort();
-    if (references.length) {
-      aliasUses.push({
-        path,
-        line: declaration.source?.start?.line ?? 0,
-        selector:
-          declaration.parent?.type === "rule"
-            ? (declaration.parent as Rule).selector
-            : null,
-        property: declaration.prop,
-        references,
-      });
+    if (referenceMatches.length) {
+      const selector =
+        declaration.parent?.type === "rule"
+          ? (declaration.parent as Rule).selector
+          : null;
+      const rows = pathRows;
+      const members = rows.map(({ id }) => id).sort();
+      const candidateRoles = [
+        ...new Set(
+          rows.flatMap(({ t006Disposition }) =>
+            t006Disposition.assignments.map(({ role }) => role),
+          ),
+        ),
+      ].sort();
+      const boundaries = [
+        ...new Set(
+          rows.flatMap(({ t006Disposition }) =>
+            t006Disposition.boundaries.map(({ reason }) => reason),
+          ),
+        ),
+      ].sort();
+      const nodeOffset = declaration.source?.start?.offset ?? 0;
+      const valueOffset = source.indexOf(rawDeclarationValue, nodeOffset);
+      if (valueOffset < 0) {
+        throw new Error(
+          `Cannot locate alias value for ${path}:${declaration.source?.start?.line ?? "unknown"} ${declaration.prop}`,
+        );
+      }
+      for (const match of referenceMatches) {
+        const reference = match[1];
+        const offset = valueOffset + match.index;
+        aliasUses.push({
+          path,
+          line: source.slice(0, offset).split("\n").length,
+          declarationLine: declaration.source?.start?.line ?? 0,
+          selector,
+          property: declaration.prop,
+          value: declaration.value,
+          reference,
+          members,
+          candidateRoles,
+          boundaries,
+          disposition: getT010AliasUseDisposition({
+            path,
+            property: declaration.prop,
+            value: declaration.value,
+            selector,
+            reference,
+            candidateRoles,
+            boundaries,
+          }),
+        });
+      }
     }
     if (!declaration.prop.startsWith("--")) return;
     aliases.push({
@@ -567,11 +675,141 @@ for (const path of cssPaths) {
   });
 }
 
+const aliasDefinitionsByName = new Map<string, typeof aliases>();
+for (const definition of aliases) {
+  const definitions = aliasDefinitionsByName.get(definition.property) ?? [];
+  definitions.push(definition);
+  aliasDefinitionsByName.set(definition.property, definitions);
+}
+const aliasChainsFor = (
+  property: string,
+  trail: readonly string[] = [],
+): string[][] => {
+  if (trail.includes(property)) return [[...trail, property, "<cycle>"]];
+  if (trail.length >= 32) return [[...trail, property, "<depth-limit>"]];
+  const nextTrail = [...trail, property];
+  const definitions = aliasDefinitionsByName.get(property) ?? [];
+  const references = [
+    ...new Set(definitions.flatMap((definition) => definition.references)),
+  ].sort();
+  if (!references.length) return [nextTrail];
+  return references.flatMap((reference) => aliasChainsFor(reference, nextTrail));
+};
+for (const use of aliasUses) use.chains = aliasChainsFor(use.reference);
+for (const use of aliasUses) {
+  if (use.disposition?.kind !== "role") continue;
+  for (const role of use.disposition.roles) {
+    if (!allowedRoles.has(role)) {
+      throw new Error(
+        `Unknown alias-use semantic role ${role} on ${use.path}:${use.line} ${use.property}`,
+      );
+    }
+  }
+}
+
+const colorInputAliasUses = aliasUses.filter(
+  ({ path }) =>
+    path ===
+    "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css",
+);
+const requiredColorInputAliasRoles: ReadonlyArray<{
+  property: string;
+  reference: string;
+  selector?: string;
+  roles: readonly string[];
+}> = [
+  {
+    property: "margin-block-start",
+    reference: "--form-group-gap",
+    roles: ["spacing.gap.element.block"],
+  },
+  {
+    property: "gap",
+    reference: "--form-field-inline-gap",
+    selector: "> .color-popover",
+    roles: ["spacing.gap.element.block"],
+  },
+  {
+    property: "gap",
+    reference: "--form-group-gap",
+    selector: "> .swatch-grid",
+    roles: ["spacing.gap.element.block", "spacing.gap.element.inline"],
+  },
+];
+for (const requiredUse of requiredColorInputAliasRoles) {
+  const match = colorInputAliasUses.find(
+    (use) =>
+      use.property === requiredUse.property &&
+      use.reference === requiredUse.reference &&
+      (!requiredUse.selector || use.selector?.includes(requiredUse.selector)),
+  );
+  if (!match || match.disposition?.kind !== "role") {
+    throw new Error(
+      `Missing explicit ColorInput alias-use role for ${requiredUse.property} ${requiredUse.reference} ${requiredUse.selector ?? ""}`.trim(),
+    );
+  }
+  const actualRoles = [...match.disposition.roles].sort();
+  const expectedRoles = [...requiredUse.roles].sort();
+  if (JSON.stringify(actualRoles) !== JSON.stringify(expectedRoles)) {
+    throw new Error(
+      `Wrong ColorInput alias-use roles for ${requiredUse.property} ${requiredUse.reference}: ${actualRoles.join(", ")}`,
+    );
+  }
+}
+
 const embeddedSourcePaths = treePaths.filter(
   (path) =>
     /\.(?:ts|tsx|svelte)$/.test(path) &&
     productionPackagePrefixes.some((prefix) => path.startsWith(prefix)),
 );
+loadBlobBuffers(embeddedSourcePaths);
+const maskJavaScriptComments = (source: string) => {
+  const characters = [...source];
+  let quote: "\"" | "'" | "`" | null = null;
+  let escaped = false;
+  for (let index = 0; index < characters.length; index += 1) {
+    const character = source[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (quote) {
+      if (character === "\\") escaped = true;
+      else if (character === quote) quote = null;
+      continue;
+    }
+    if (character === "\"" || character === "'" || character === "`") {
+      quote = character;
+      continue;
+    }
+    if (character === "/" && source[index + 1] === "/") {
+      while (index < characters.length && source[index] !== "\n") {
+        characters[index] = " ";
+        index += 1;
+      }
+      continue;
+    }
+    if (character === "/" && source[index + 1] === "*") {
+      characters[index] = " ";
+      characters[index + 1] = " ";
+      index += 2;
+      while (
+        index < characters.length &&
+        !(source[index] === "*" && source[index + 1] === "/")
+      ) {
+        if (source[index] !== "\n" && source[index] !== "\r") {
+          characters[index] = " ";
+        }
+        index += 1;
+      }
+      if (index < characters.length) {
+        characters[index] = " ";
+        characters[index + 1] = " ";
+      }
+    }
+  }
+  return characters.join("");
+};
 const embeddedFiles: Array<{
   package: string;
   path: string;
@@ -580,10 +818,10 @@ const embeddedFiles: Array<{
   occurrenceCount: number;
 }> = [];
 for (const path of embeddedSourcePaths) {
-  const sourceBuffer = readFileSync(join(pragmaRepo, path));
+  const sourceBuffer = blobBufferFor(path);
   const source = sourceBuffer.toString("utf8");
   cssLength.lastIndex = 0;
-  const matches = [...source.matchAll(cssLength)];
+  const matches = [...maskJavaScriptComments(source).matchAll(cssLength)];
   if (!matches.length) continue;
   const blob = blobFor(path);
   const rows = rowsBySource.get(path) ?? [];
@@ -615,7 +853,7 @@ for (const path of embeddedSourcePaths) {
       /(?:\.stories\.|\.test\.|\.spec\.|\/docs\/|\/\.storybook\/|\/storybook\/|\/fixtures?\/|\/__fixtures__\/)/.test(
         path,
       );
-    const disposition: LengthDisposition = evidenceOnly
+    const disposition: LengthDisposition | null = evidenceOnly
       ? {
           kind: "boundary",
           owner: `${packageFor(path)} story/test owner`,
@@ -671,11 +909,21 @@ for (const path of embeddedSourcePaths) {
 const packages = [...new Set(cssPaths.map(packageFor))].sort();
 const sourceCommittedAt = git(["show", "-s", "--format=%cI", sourceCommit]);
 const definedAliasNames = new Set(aliases.map(({ property }) => property));
-const referencedAliasNames = new Set(
-  aliasUses.flatMap(({ references }) => references),
+const referencedAliasNames = new Set(aliasUses.map(({ reference }) => reference));
+const undispositionedOccurrences = occurrences.filter(
+  ({ disposition }) => disposition === null,
 );
+const undispositionedAliasUses = aliasUses.filter(
+  ({ disposition }) => disposition === null,
+);
+const aliasDeclarationUseCount = new Set(
+  aliasUses.map(
+    ({ path, declarationLine, selector, property, value }) =>
+      `${path}:${declarationLine}:${selector ?? ""}:${property}:${value}`,
+  ),
+).size;
 const result = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedAt: sourceCommittedAt,
   source: {
     repository: "canonical/pragma",
@@ -704,12 +952,12 @@ const result = {
   },
   counts: {
     occurrences: occurrences.length,
-    dispositioned: occurrences.length,
-    undispositioned: 0,
+    dispositioned: occurrences.length - undispositionedOccurrences.length,
+    undispositioned: undispositionedOccurrences.length,
     byDisposition: Object.fromEntries(
       ["role", "boundary", "exception"].map((kind) => [
         kind,
-        occurrences.filter(({ disposition }) => disposition.kind === kind)
+        occurrences.filter(({ disposition }) => disposition?.kind === kind)
           .length,
       ]),
     ),
@@ -742,10 +990,16 @@ const result = {
     definitions: aliases,
     uses: aliasUses,
     definitionCount: aliases.length,
-    useCount: aliasUses.length,
-    referenceCount: aliasUses.reduce(
-      (count, use) => count + use.references.length,
-      0,
+    useCount: aliasDeclarationUseCount,
+    referenceCount: aliasUses.length,
+    dispositionedUseCount:
+      aliasUses.length - undispositionedAliasUses.length,
+    undispositionedUseCount: undispositionedAliasUses.length,
+    byDisposition: Object.fromEntries(
+      ["role", "boundary", "exception"].map((kind) => [
+        kind,
+        aliasUses.filter(({ disposition }) => disposition?.kind === kind).length,
+      ]),
     ),
     unresolvedNames: [...referencedAliasNames]
       .filter((name) => !definedAliasNames.has(name))
@@ -774,3 +1028,8 @@ const result = {
 
 writeFileSync(outputPath, `${JSON.stringify(result, null, 2)}\n`);
 console.log(JSON.stringify(result.counts, null, 2));
+if (undispositionedOccurrences.length || undispositionedAliasUses.length) {
+  throw new Error(
+    `Completeness gate failed: ${undispositionedOccurrences.length} hardcoded syntax occurrences and ${undispositionedAliasUses.length} alias uses are undispositioned.`,
+  );
+}

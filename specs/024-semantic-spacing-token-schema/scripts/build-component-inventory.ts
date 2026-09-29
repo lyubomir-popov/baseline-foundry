@@ -3,7 +3,6 @@ import { execFileSync } from "node:child_process";
 import {
   existsSync,
   readFileSync,
-  readdirSync,
   writeFileSync,
 } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
@@ -45,6 +44,7 @@ const pragmaSnapshot = required("pragma-snapshot");
 const pragmaRepo = required("pragma-repo");
 const legacyInventoryPath = required("legacy-inventory");
 const legacyManifestPath = required("legacy-source-manifest");
+const legacyRepo = resolve(dirname(legacyInventoryPath), "..");
 const outputPath = required("output");
 const sourceRef = args.get("source-ref") ?? "main";
 const upstreamRef = args.get("upstream-ref") ?? "origin/main";
@@ -251,13 +251,26 @@ const nonReactRows = [
 ] as const;
 
 const slash = (path: string) => path.replaceAll("\\", "/");
-const hash = (path: string) =>
+const hashFile = (path: string) =>
   createHash("sha256").update(readFileSync(path)).digest("hex");
-const walk = (directory: string): string[] =>
-  readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-    const path = join(directory, entry.name);
-    return entry.isDirectory() ? walk(path) : [path];
-  });
+const hashBuffer = (value: Buffer) =>
+  createHash("sha256").update(value).digest("hex");
+const normalizeText = (value: Buffer) =>
+  value.toString("utf8").replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+const verifiedLegacyText = (path: string, expectedHash: string) => {
+  const absolute = join(legacyRepo, path);
+  if (!existsSync(absolute)) {
+    throw new Error(`Missing legacy source ${path} below ${legacyRepo}`);
+  }
+  const value = readFileSync(absolute);
+  const actualHash = hashBuffer(value);
+  if (actualHash !== expectedHash) {
+    throw new Error(
+      `Legacy source ${path} has SHA-256 ${actualHash}, expected manifest hash ${expectedHash}.`,
+    );
+  }
+  return normalizeText(value);
+};
 
 const blobByPath = new Map<string, string>();
 for (const line of execFileSync("git", ["ls-tree", "-r", sourceRef], {
@@ -289,15 +302,39 @@ const blobFor = (path: string) => {
   if (!blob) throw new Error(`Missing Git blob for ${path} at ${sourceCommit}`);
   return blob;
 };
+const blobBuffers = new Map<string, Buffer>();
+const blobBufferFor = (path: string) => {
+  const blob = blobFor(path);
+  const cached = blobBuffers.get(blob);
+  if (cached) return cached;
+  const value = execFileSync("git", ["cat-file", "blob", blob], {
+    cwd: pragmaRepo,
+    maxBuffer: 32 * 1024 * 1024,
+  });
+  blobBuffers.set(blob, value);
+  return value;
+};
+const verifiedSnapshotBuffer = (path: string) => {
+  const absolute = join(pragmaSnapshot, path);
+  if (!existsSync(absolute)) throw new Error(`Missing current source ${path}`);
+  const snapshot = readFileSync(absolute);
+  const blob = blobBufferFor(path);
+  if (normalizeText(snapshot) !== normalizeText(blob)) {
+    throw new Error(
+      `Snapshot content for ${path} does not match Git blob ${blobFor(path)} at ${sourceCommit}.`,
+    );
+  }
+  return snapshot;
+};
+const blobSha256 = (path: string) => hashBuffer(blobBufferFor(path));
 
 const productionRows = legacyRows.filter(
   (row): row is LegacyRow & { source: string } => row.source !== null,
 );
 const allRows = [...productionRows, ...addedRows]
   .map((row) => {
-    const absolute = join(pragmaSnapshot, row.source);
-    if (!existsSync(absolute)) throw new Error(`Missing current source ${row.source}`);
-    const currentHash = hash(absolute);
+    verifiedSnapshotBuffer(row.source);
+    const currentHash = blobSha256(row.source);
     const legacyHash = legacyHashes.get(row.source) ?? null;
     const styles = stylesForSource(row.source);
     return {
@@ -309,16 +346,20 @@ const allRows = [...productionRows, ...addedRows]
       currentMainState:
         legacyHash === null
           ? "added"
-          : legacyHash === currentHash
+          : verifiedLegacyText(row.source, legacyHash) ===
+              normalizeText(blobBufferFor(row.source))
             ? "unchanged"
             : "changed",
       exposure: row.exportStatus,
       compositionClue: row.composition,
-      styles: styles.map((path) => ({
-        path,
-        blob: blobFor(path),
-        sha256: hash(join(pragmaSnapshot, path)),
-      })),
+      styles: styles.map((path) => {
+        verifiedSnapshotBuffer(path);
+        return {
+          path,
+          blob: blobFor(path),
+          sha256: blobSha256(path),
+        };
+      }),
       t006Disposition: getT006Disposition(row.id),
     };
   })
@@ -340,21 +381,23 @@ const inReactScope = (path: string) =>
 const recordedCss = legacyManifest.filter(
   ({ path }) => inReactScope(path) && path.includes("/src/") && path.endsWith(".css"),
 );
-const currentCss = walk(join(pragmaSnapshot, "packages/react"))
-  .map((path) => slash(relative(pragmaSnapshot, path)))
+const currentCss = [...blobByPath.keys()]
   .filter(
     (path) => inReactScope(path) && path.includes("/src/") && path.endsWith(".css"),
   );
 const recordedCssPaths = new Set(recordedCss.map(({ path }) => path));
 const changedCss = recordedCss
   .filter(({ path, sha256 }) => {
-    const absolute = join(pragmaSnapshot, path);
-    return existsSync(absolute) && hash(absolute) !== sha256;
+    if (!blobByPath.has(path)) return false;
+    verifiedSnapshotBuffer(path);
+    return (
+      verifiedLegacyText(path, sha256) !== normalizeText(blobBufferFor(path))
+    );
   })
   .map(({ path }) => path)
   .sort();
 const removedCss = recordedCss
-  .filter(({ path }) => !existsSync(join(pragmaSnapshot, path)))
+  .filter(({ path }) => !blobByPath.has(path))
   .map(({ path }) => path)
   .sort();
 const addedCss = currentCss
@@ -362,17 +405,14 @@ const addedCss = currentCss
   .sort();
 
 const nonReact = nonReactRows.map((row) => {
-  const source = join(pragmaSnapshot, row.source);
-  const styles = join(pragmaSnapshot, row.styles);
-  if (!existsSync(source) || !existsSync(styles)) {
-    throw new Error(`Missing non-React source for ${row.id}`);
-  }
+  verifiedSnapshotBuffer(row.source);
+  verifiedSnapshotBuffer(row.styles);
   return {
     ...row,
     sourceBlob: blobFor(row.source),
-    sourceSha256: hash(source),
+    sourceSha256: blobSha256(row.source),
     stylesBlob: blobFor(row.styles),
-    stylesSha256: hash(styles),
+    stylesSha256: blobSha256(row.styles),
     t006Disposition: getT006Disposition(row.id),
   };
 });
@@ -392,8 +432,8 @@ const result = {
     upstreamRef,
     upstreamCommit,
     committedAt: sourceCommittedAt,
-    legacyInventorySha256: hash(legacyInventoryPath),
-    legacySourceManifestSha256: hash(legacyManifestPath),
+    legacyInventorySha256: hashFile(legacyInventoryPath),
+    legacySourceManifestSha256: hashFile(legacyManifestPath),
   },
   boundary: {
     unit:

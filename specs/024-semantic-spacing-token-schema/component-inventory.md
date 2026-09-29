@@ -38,8 +38,8 @@ part-specific exception. T007 remains the exhaustive declaration sweep.
 | **Current React denominator** | **158** |
 | Non-React shared-channel / FR-036 rows | 11 |
 | Story-only prior rows excluded | 3 |
-| Rows with one or more candidate assignments | 90 |
-| Boundary-only rows | 79 |
+| Rows with one or more candidate assignments | 88 |
+| Boundary-only rows | 81 |
 
 ## T006 candidate assignments
 
@@ -59,7 +59,8 @@ mark-to-copy gap. Boundaries state why an unassigned edge, axis or whole part
 does not create a component semantic role. The source of these profiles and
 the exact 169-ID coverage assertion is
 [`scripts/t006-dispositions.ts`](scripts/t006-dispositions.ts); regeneration
-fails on a missing, duplicate or stale ID.
+fails on a missing, duplicate or stale ID, an unconditional double assignment
+to one edge, or an assignment that overlaps an explicit boundary.
 
 Ten candidates have direct membership in this frozen component denominator.
 `spacing.gap.pattern.block` has no component-row member: its retained candidate
@@ -69,11 +70,18 @@ that external ownership explicitly or remove it from the component count; T006
 does not fabricate a component member to make the count look closed.
 
 `spacing.gap.element.inline` is the T009 correction for separation between peer
-items or controls (Card/Modal footer items, Range slider/number, and choice
-columns). It is distinct from `spacing.gap.mark.inline`, whose breaker is a
+items or controls (Card/Modal/SidePanel footer items, Range slider/number, and
+choice columns). It is distinct from `spacing.gap.mark.inline`, whose breaker is a
 marker/icon/caret and its copy. T009 also corrects Choices rows to
 `element.block` and SideNavigation section separation to `group.block`; neither
 change is value-driven.
+
+`SideNavigation.NavTree` renders `display: contents` and therefore delegates
+all visible spacing to its child rows; it is boundary-only. Composite profiles
+for Button, Accordion Item, Choices, ColorInput, TokenTable,
+SideNavigation.ItemExpandable, Combobox List and Popover condition or separate
+their variant or sub-box relationships so one row never claims two
+unconditional roles on the same edge.
 
 The ColorInput row records the required exception: its popover separator row
 has a block-start border and no block-end border while inheriting symmetric
@@ -122,8 +130,9 @@ React rows per package:
 ## Current-main reconciliation
 
 All 142 production source paths in the prior inventory still exist. Their
-current Git blob IDs and SHA-256 hashes are frozen in the JSON. Of those render
-sources, 98 are byte-identical to the captured Spec 022 source and 44 changed.
+current Git blob IDs and SHA-256 hashes are frozen in the JSON. After canonical
+newline comparison with the manifest-verified Spec 022 files, 99 render sources
+are unchanged and 43 changed.
 
 The stylesheet reconciliation is deliberately source-level, not a claim of
 semantic completion:
@@ -178,4 +187,7 @@ npx tsx specs/024-semantic-spacing-token-schema/scripts/build-component-inventor
 
 The output is deterministic for the same source commit and legacy inputs. It
 fails if local `main` is not equal to `origin/main`, or if a denominator source
-or Git blob cannot be resolved.
+or Git blob cannot be resolved. Recorded source hashes are computed from raw Git
+blob bytes. Every consumed snapshot file is compared with that blob after only
+CRLF/CR newline normalization, so checkout line-ending policy cannot change the
+authority or conceal stale snapshot content.

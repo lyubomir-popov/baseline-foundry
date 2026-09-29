@@ -41,15 +41,17 @@ check also reports syntax that a length-only regular expression would hide:
 
 | Lane | Occurrences |
 |---|---:|
-| CSS and embedded-source `<length>` dimensions | 975 (667 CSS + 308 embedded) |
-| Percentages | 302 |
+| CSS and embedded-source `<length>` dimensions | 933 (667 CSS + 266 embedded) |
+| Percentages | 160 |
 | Flex fractions | 52 |
-| Unitless zero in a property/custom-property that can carry length geometry | 397 |
+| Unitless zero in a property/custom-property that can carry length geometry | 345 |
 | Unitless multipliers deriving geometry from a custom property | 107 |
-| **All reported occurrences** | **1,833** |
+| **All reported occurrences** | **1,597** |
 
 The embedded lane scans raw `<length>` dimensions in tracked TypeScript, TSX
-and Svelte source under the same roots. It finds 308 occurrences in 86 files.
+and Svelte source under the same roots. It finds 266 occurrences in 80 files;
+comments and JSDoc are masked before scanning, so prose examples do not become
+false production hits.
 Story/test/docs/fixture dimensions remain evidence boundaries and production
 dimensions remain owned recut exceptions. The JSON records every source blob,
 SHA-256, offset, line/column, rule ancestry, complete value, syntax kind,
@@ -57,9 +59,15 @@ function path, shorthand slot where it can be derived, frozen members and
 candidate roles.
 
 The alias lane records 1,001 custom-property definitions, 2,196 declaration
-uses and 2,534 references. Names unresolved inside these package roots are
-reported rather than treated as failures because many are intentionally
-provided by `@canonical/design-tokens` or another package. The twenty-eight
+uses and 2,575 references. Each reference has a transitive alias chain and an
+independent role, boundary or owned-exception disposition; all 2,575 are
+classified (5 role uses, 2,003 boundaries and 567 exceptions). This prevents a
+hardcoded foundation value from being treated as classified merely because its
+consumer uses a custom property. ColorInput's trigger-to-popover gap, column
+popover gap and two-axis swatch-grid gap have explicit selector/property
+assertions rather than being inferred from alias names. Names unresolved inside
+these package roots are reported rather than treated as failures because many
+are intentionally provided by `@canonical/design-tokens` or another package. The twenty-eight
 pre-seeded semantic findings cover relationships a lexical scan cannot recover
 reliably, including inline uses reached through block-gap aliases, the Card
 section seam, Section variant equivalence, App ordering, ColorInput's per-edge
@@ -67,11 +75,17 @@ border exception and the T004h metric drift.
 
 ## T010 dispositions
 
-Every one of the 1,833 syntax occurrences has exactly one disposition:
+Every one of the 1,597 syntax occurrences has exactly one disposition:
 
-- 90 role assignments;
-- 1,412 explicit boundaries; and
-- 331 owned exceptions.
+- 0 inferred role assignments;
+- 1,326 explicit boundaries; and
+- 271 owned exceptions.
+
+Direct literals are deliberately not promoted to roles from a frozen row's
+candidate list alone. Role evidence lives in explicit selector/property alias
+records and in the semantic findings; ambiguous direct whitespace remains an
+owned recut exception. Negative overlap/offset values and typed zeroes are
+boundaries, not semantic magnitudes.
 
 All twenty-eight semantic findings are also dispositioned: 12 roles, 8 boundaries and
 8 exceptions. One carried-forward Storybook fixture path is absent from current
@@ -80,7 +94,8 @@ T004g boundary from being presented as current source.
 
 The report therefore has **zero undispositioned occurrences** and **zero
 undispositioned semantic findings**. “Complete” means classified, not approved:
-the 331 syntax exceptions and eight semantic exceptions remain visible in the
+the 271 syntax exceptions, 567 alias-use exceptions and eight semantic
+exceptions remain visible in the
 CP1 packet. Broad ignores are not used, and an ambiguous shorthand/shared sheet
 is recorded as an exception rather than assigned to a convenient role.
 
@@ -96,7 +111,13 @@ is recorded as an exception rather than assigned to a convenient role.
   --output specs/024-semantic-spacing-token-schema/hardcoded-length-report.json
 
 npm run check:types
+npx tsc --ignoreConfig --noEmit --strict --skipLibCheck `
+  --target ES2022 --module NodeNext --moduleResolution NodeNext --types node `
+  specs/024-semantic-spacing-token-schema/scripts/build-component-inventory.ts `
+  specs/024-semantic-spacing-token-schema/scripts/build-hardcoded-length-report.ts
 ```
 
 Regeneration is deterministic for the same component inventory and Pragma
-commit. The JSON timestamp comes from the source commit, not wall-clock time.
+commit. CSS and embedded-source parsing and SHA-256 records both use raw Git
+blob bytes, not checkout-transformed files. The JSON timestamp comes from the
+source commit, not wall-clock time.

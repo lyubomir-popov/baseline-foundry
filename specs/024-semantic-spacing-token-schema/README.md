@@ -39,7 +39,11 @@ Read in this order:
     packet, bounded correction and conditional acceptance.
 14. [`component-inventory.md`](component-inventory.md) — the T005/T005a/T005b
     current-main denominator; use the adjacent JSON for exact identities.
-15. [`implementation-handover.md`](implementation-handover.md) — **start here if
+15. [`t008-current-main-evidence.md`](t008-current-main-evidence.md) — the
+    current-main comparison sheets, alias proof and unmigrated sentinel.
+16. [`cp1-review-packet.md`](cp1-review-packet.md) — the cold-start T011 packet
+    and owner decision checklist.
+17. [`implementation-handover.md`](implementation-handover.md) — **start here if
    you are implementing.** The bounded work that is ready, in order, and the
    hard stops.
 
@@ -50,8 +54,8 @@ Read in this order:
   Pragma spike tip is local commit `1c2c6ba73`. T005/T005a/T005b freeze 158
   React parts and 11 non-React rows against synced Pragma local `main`
   `90386bfbf`, equal to `origin/main` at capture. T006 assigns or bounds all 169
-  rows; T007, T009 and T010 are complete, and T008 current-main comparison
-  evidence is active. The preserved
+  rows; T007–T011 are complete. The cold-start packet is ready for the mandatory
+  independent T012 CP1 review. The preserved
   rejected candidate remains custody evidence, not completion evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed

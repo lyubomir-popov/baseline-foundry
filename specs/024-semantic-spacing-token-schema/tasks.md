@@ -384,7 +384,7 @@ fixture items are not a prerequisite.
   **Completed against local `main` `90386bfbf`, equal to fetched
   `origin/main`:** 16 React rows were added for Modal, TooltipEngine, the
   expanded SideNavigation and SidePanel. The artifact
-  records 44 changed prior render sources, 94 changed recorded CSS files and
+  records 43 changed prior render sources, 94 changed recorded CSS files and
   every added/removed CSS path; prior rendered evidence is historical rather
   than current-main certification.
 - [x] **T005b** Extend the inventory to non-React packages that consume shared
@@ -404,7 +404,7 @@ fixture items are not a prerequisite.
   nominal host-border subtraction. ColorInput is outside T004d1a's four-member
   denominator.
   **Completed 2026-09-29:** schema-version-2 `component-inventory.json`
-  resolves all 169 rows: 90 have one or more candidate assignments and 79 are
+  resolves all 169 rows: 88 have one or more candidate assignments and 81 are
   boundary-only. Eleven candidates are carried into CP1; ten have direct
   component-denominator membership, while `spacing.gap.pattern.block` retains
   its FR-043 page-section candidature without inventing a component member
@@ -415,20 +415,26 @@ fixture items are not a prerequisite.
   package is complete when the report holds no undispositioned literal.
   **Completed 2026-09-29:** the deterministic report covers 239 CSS files and
   all tracked TS/TSX/Svelte source in thirteen package roots at synced Pragma
-  `main` `90386bfbf`: 1,833 syntax occurrences, 28 semantic findings, and zero
-  undispositioned records.
-- [ ] **T008** Confirm the re-derived geometry on comparison sheets (FR-046),
+  `main` `90386bfbf`: 1,597 syntax occurrences, 2,575 individual alias
+  references, 28 semantic findings, and zero undispositioned records in every
+  lane. Direct literals are never promoted from candidate membership alone.
+- [x] **T008** Confirm the re-derived geometry on comparison sheets (FR-046),
   one per product: rows led by their reference — Button for boxed text,
   paragraph for unboxed, Card for panels — with the guides overlaid. Read that
   text sits on a shared baseline across each row and the guides are equally
   spaced. Keep the mechanical alias assertion (FR-033) and the unmigrated
   sentinel check, which no sheet can show. Defer exhaustive state, variant and
   product matrices to CP2.
+  **Completed 2026-09-29:** the clean current-main-derived capture at Pragma
+  `6acc5a29c` compares three heterogeneous owners in each product row, records
+  0px spread in all nine groups, proves external-row and per-edge surface
+  equations, pins all nineteen FR-033 aliases and hashes all artifacts. An
+  independent adversarial rereview accepted the corrected packet with no P1.
 - [x] **T009** Record the merge attempts and breakers that justify the role set,
   under FR-042 — a merge requires that changing one role *should* change the
   other, not that their values coincide.
   **Completed 2026-09-29:** `taxonomy-merge-ledger.md` records rejected and
-  accepted collapses, 210 direct memberships, and the remaining owner choices.
+  accepted collapses, 201 direct memberships, and the remaining owner choices.
 - [x] **T010** Disposition the legacy literal backlog surfaced by T007:
   normalise to a role, record a bounded exception with an owner and a reason, or
   assign an explicit boundary. No literal may remain unclassified.
@@ -448,7 +454,7 @@ fixture items are not a prerequisite.
 
 ## CP1 — taxonomy checkpoint
 
-- [ ] **T011** Prepare a cold-start review packet containing the frozen
+- [x] **T011** Prepare a cold-start review packet containing the frozen
   denominator, proposed inline/block roles, all memberships, merge attempts,
   breakers, unresolved exceptions and proposed final count.
   Include the T004h re-review findings: Chromium loses `1/64px` per closed text
@@ -460,6 +466,11 @@ fixture items are not a prerequisite.
   or a device-pixel bound such as `<=1px` at DPR 1, and (b) whether metric
   authority belongs in CP1 or the deferred CP2 engine matrix. The `1px`
   regression guard is not acceptance evidence.
+  **Completed 2026-09-29:** `cp1-review-packet.md` is reproducible from the
+  synced source and names the denominator, all memberships and breakers, the
+  rendered T008 proof, and all remaining exception classes. It asks CP1 to
+  approve those classes as bounded recut work or identify exact blocking
+  records; it does not treat classification as approval.
 - [ ] **T012** Request an independent Opus adversarial review. Do not proceed
   while the denominator is open, assignments are null or the App gap ordering
   remains contradictory.

@@ -519,6 +519,13 @@ local paths as the justification.
   it.” The branch MUST never be
   pushed, PR'd, merged, published or used as a production base; every other
   AGENTS.md rule remains active.
+- **FR-051a**: Owner direction, 2026-09-29, supersedes FR-051 only for T008.
+  Current-main comparison evidence MAY use the local Pragma branch
+  `test/spec-024-t008-comparison`, based on synced local `main == origin/main`.
+  It MUST contain only evidence fixtures and collectors, MUST identify its exact
+  base and capture HEAD, and MUST never be pushed, PR'd, merged, published or
+  used as a production base. The earlier recovery-snapshot spike remains the
+  historical T004 source; it is not rebased or presented as current-main proof.
 - **FR-052**: The Spec 024 capture MUST reuse both pre-existing configurations:
   `packages/react/ds-global/playwright.spacing.config.ts` on port 6106 for
   Button/Chip, with `PRAGMA_BUTTON_SPACING_OUTPUT` set to external subdirectory

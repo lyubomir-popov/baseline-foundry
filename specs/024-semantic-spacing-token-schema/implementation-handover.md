@@ -13,12 +13,12 @@ conflict.
 
 ## Short answer
 
-**Not ready for the recut. Ready for CP1 preparation only.**
+**Not ready for the recut. Ready for the independent CP1 review only.**
 
 CP1 and CP2 are both unpassed and no approved provider artifact exists, so none
 of Phase 3, 4 or 5 can start. The denominator and its candidate T006
-assignments are now closed. T007, T009 and T010 are complete; T008 and T011
-must prepare the remaining CP1 evidence.
+assignments are now closed. T007–T011 are complete; T012 is the next and only
+authorised step.
 
 Worktree routing is phase-specific. T004c0–T004h happened in the isolated
 Pragma `feat/bf-inside-out-geometry` worktree, branched from exact recovery
@@ -44,7 +44,8 @@ to the existing surface/strip insets. T004g is complete in local Pragma commit
 list-boundary fix in local Pragma commit `1c2c6ba73`. T005/T005a/T005b are
 complete against synced Pragma local `main` `90386bfbf`, equal to
 `origin/main`; T006 assigns or bounds all 169 rows, and T007/T009/T010 are
-complete. T008 is active.
+complete. T008 evidence and the T011 cold-start packet are complete; T012 is
+next.
 Follow the task-specific gates below; the earlier blanket stop no longer
 applies.
 
@@ -70,7 +71,7 @@ applies.
 10. [`component-inventory.md`](component-inventory.md) and
     [`component-inventory.json`](component-inventory.json) — the frozen
     current-main denominator and exact source identities.
-11. [`tasks.md`](tasks.md) — T008 is active; T011 follows it.
+11. [`tasks.md`](tasks.md) — T008 and T011 are complete; T012 is next.
 12. `canonical-spacing-spec/specs/spacing/draft.md` §2.8 — the ownership model
    and the glossary terms used here.
 
@@ -689,8 +690,8 @@ the F1 list-boundary fix in `1c2c6ba73`. T005/T005a/T005b then froze 158 React
 parts and 11 non-React rows against synced local `main` `90386bfbf`, equal to
 `origin/main` at capture, including Modal, the expanded SideNavigation and
 SidePanel. T006 assigns or bounds all 169 rows in the schema-version-2
-inventory. T007/T009/T010 are complete; T008 current-main comparison evidence
-is active in its isolated local Pragma worktree.
+inventory. T007–T011 are complete; T008 current-main comparison evidence is
+preserved in its isolated local Pragma worktree and T012 is next.
 
 ## How to verify, and how much
 
@@ -756,7 +757,7 @@ tests rather than moving the model, stop and hand back.
 | Isolated spike T004d0 / T004d1b | Complete in the isolated worktree; independently accepted after the carrier-path test correction. |
 | Isolated spike T004d | Complete; per-edge formula and corrected rendered-border proof independently accepted. |
 | Isolated spike T004d1a–T004h | Complete. T004d1a is in local Pragma commit `99ce3fa36` under its four-member dual-lane evidence contract. T004d2 is accepted with full body-line closure. T004g is in `b10c4d541`; the T004h correction is in `4325f1597`; its conditional F1 is closed in `1c2c6ba73`. Independent review accepted the result; T006 records F2–F4 and they remain subject to CP1. |
-| CP1 taxonomy | Preparation active. T005/T005a/T005b denominator closed at 158 React plus 11 non-React rows; T006 assigns or bounds all 169. T007/T009/T010 are complete; T008 is active. |
+| CP1 taxonomy | Cold-start packet ready. T005/T005a/T005b denominator closed at 158 React plus 11 non-React rows; T006 assigns or bounds all 169, and T007–T011 are complete. T012 independent review is next. |
 | CP2 schema | Not started. |
 | Token implementation | Not started. No provider artifact exists. |
 | Pragma recut | Not started. Cuts 5, 6, 8 and 15 split into keep and replace halves. |

@@ -9,8 +9,9 @@ type Assignment = {
 };
 
 type Boundary = {
-  scope: "all" | Axis | `${Axis}-${Exclude<Edge, "internal">}`;
+  scope: "all" | Axis | `${Axis}-${Edge}`;
   reason: string;
+  condition?: string;
 };
 
 type Profile = {
@@ -36,6 +37,70 @@ const role = (axis: Axis, edge: Edge, semanticRole: string, condition?: string) 
 });
 
 const profiles = {
+  "button-composite": {
+    assignments: [
+      role(
+        "inline",
+        "start",
+        "spacing.inset.action.inline",
+        "on text-only or icon-only non-link variants",
+      ),
+      role(
+        "inline",
+        "start",
+        "spacing.inset.field.inline",
+        "on the icon-and-text non-link variant",
+      ),
+      role(
+        "inline",
+        "end",
+        "spacing.inset.action.inline",
+        "on every non-link variant",
+      ),
+      role(
+        "inline",
+        "internal",
+        "spacing.gap.mark.inline",
+        "between icon and text",
+      ),
+      role(
+        "block",
+        "start",
+        "spacing.inset.control.block",
+        "on every non-link variant",
+      ),
+      role(
+        "block",
+        "end",
+        "spacing.inset.control.block",
+        "on every non-link variant",
+      ),
+    ],
+    boundaries: [
+      {
+        scope: "inline-start",
+        condition: "on the link variant",
+        reason: "The link variant deliberately has no inline inset.",
+      },
+      {
+        scope: "inline-end",
+        condition: "on the link variant",
+        reason: "The link variant deliberately has no inline inset.",
+      },
+      {
+        scope: "block-start",
+        condition: "on the link variant",
+        reason: "The link variant deliberately has no control block inset.",
+      },
+      {
+        scope: "block-end",
+        condition: "on the link variant",
+        reason: "The link variant deliberately has no control block inset.",
+      },
+    ],
+    rationale:
+      "Button variants condition the leading keyline and zero-inset link boundary without hiding either relationship in prose.",
+  },
   "action-control": {
     assignments: [
       role("inline", "start", "spacing.inset.action.inline"),
@@ -97,6 +162,79 @@ const profiles = {
     ],
     rationale: "In-box field-like row; the host owns its fixed block track.",
   },
+  "item-expandable-composite": {
+    assignments: [
+      role(
+        "inline",
+        "start",
+        "spacing.inset.field.inline",
+        "on the expandable summary row",
+      ),
+      role(
+        "inline",
+        "end",
+        "spacing.inset.field.inline",
+        "on the expandable summary row",
+      ),
+      role(
+        "inline",
+        "internal",
+        "spacing.gap.mark.inline",
+        "between summary-row artwork, copy and caret",
+      ),
+      role(
+        "inline",
+        "start",
+        "spacing.inset.continuation.inline",
+        "on nested child rows",
+      ),
+    ],
+    boundaries: [
+      {
+        scope: "block",
+        reason:
+          "The fixed summary track and disclosed child layout do not consume external control block insets.",
+      },
+    ],
+    rationale:
+      "The summary row owns a field keyline while nested child rows add a separate continuation inset.",
+  },
+  "combobox-list-composite": {
+    assignments: [
+      role("inline", "start", "spacing.inset.action.inline", "on child option rows"),
+      role("inline", "end", "spacing.inset.action.inline", "on child option rows"),
+      role("block", "start", "spacing.inset.control.block", "on child option rows"),
+      role("block", "end", "spacing.inset.control.block", "on child option rows"),
+    ],
+    boundaries: [
+      {
+        scope: "all",
+        condition: "on the zero-inset outer list frame",
+        reason:
+          "The full-bleed outer list resets padding; its child option rows own the actionable insets.",
+      },
+    ],
+    rationale:
+      "The outer popover list is a frame while its child option rows own action/control insets.",
+  },
+  "popover-composite": {
+    assignments: [
+      role("inline", "start", "spacing.inset.surface.inline", "on the portaled content panel"),
+      role("inline", "end", "spacing.inset.surface.inline", "on the portaled content panel"),
+      role("block", "start", "spacing.inset.surface.block", "on the portaled content panel"),
+      role("block", "end", "spacing.inset.surface.block", "on the portaled content panel"),
+    ],
+    boundaries: [
+      {
+        scope: "all",
+        condition: "on the trigger wrapper",
+        reason:
+          "The trigger wrapper owns placement and interaction, not panel spacing.",
+      },
+    ],
+    rationale:
+      "The trigger wrapper is a boundary and the distinct portaled content box owns surface insets.",
+  },
   "in-box-surface-row": {
     assignments: [
       role("inline", "start", "spacing.inset.surface.inline"),
@@ -153,6 +291,188 @@ const profiles = {
     ],
     boundaries: [],
     rationale: "Asymmetric panel: continuation keyline at start and surface edge at end.",
+  },
+  "accordion-item-composite": {
+    assignments: [
+      role(
+        "inline",
+        "start",
+        "spacing.inset.continuation.inline",
+        "on the expanded content panel",
+      ),
+      role(
+        "inline",
+        "end",
+        "spacing.inset.surface.inline",
+        "on the expanded content panel",
+      ),
+      role(
+        "block",
+        "start",
+        "spacing.inset.surface.block",
+        "on the expanded content panel",
+      ),
+      role(
+        "block",
+        "end",
+        "spacing.inset.surface.block",
+        "on the expanded content panel",
+      ),
+      role(
+        "block",
+        "internal",
+        "spacing.gap.element.block",
+        "when the expanded content panel stacks children",
+      ),
+      role(
+        "inline",
+        "internal",
+        "spacing.gap.mark.inline",
+        "in the summary row",
+      ),
+      role(
+        "block",
+        "start",
+        "spacing.inset.control.block",
+        "in the summary row",
+      ),
+      role(
+        "block",
+        "end",
+        "spacing.inset.control.block",
+        "in the summary row",
+      ),
+    ],
+    boundaries: [],
+    rationale:
+      "Composite details element: the summary control and expanded content panel own distinct, conditioned edges.",
+  },
+  "choices-composite": {
+    assignments: [
+      role("inline", "start", "spacing.inset.field.inline"),
+      role("inline", "end", "spacing.inset.field.inline"),
+      role(
+        "block",
+        "internal",
+        "spacing.gap.element.block",
+        "between adjacent choices in one field",
+      ),
+      role(
+        "inline",
+        "internal",
+        "spacing.gap.element.inline",
+        "between adjacent choice columns",
+      ),
+    ],
+    boundaries: [
+      { scope: "block-start", reason: "The surrounding field owns the outer block-start edge." },
+      { scope: "block-end", reason: "The surrounding field owns the outer block-end edge." },
+    ],
+    rationale:
+      "The choices container owns the field keyline and peer-option gaps, but not outer block edges.",
+  },
+  "color-input-composite": {
+    assignments: [
+      role(
+        "inline",
+        "start",
+        "spacing.inset.field.inline",
+        "on the trigger or inline hex row",
+      ),
+      role(
+        "inline",
+        "end",
+        "spacing.inset.field.inline",
+        "on the trigger or inline hex row",
+      ),
+      role(
+        "block",
+        "start",
+        "spacing.inset.control.block",
+        "on the trigger or inline hex row",
+      ),
+      role(
+        "block",
+        "end",
+        "spacing.inset.control.block",
+        "on the trigger or inline hex row",
+      ),
+      role(
+        "inline",
+        "start",
+        "spacing.inset.surface.inline",
+        "on the popover surface",
+      ),
+      role(
+        "inline",
+        "end",
+        "spacing.inset.surface.inline",
+        "on the popover surface",
+      ),
+      role(
+        "block",
+        "start",
+        "spacing.inset.surface.block",
+        "on the popover surface",
+      ),
+      role(
+        "block",
+        "end",
+        "spacing.inset.surface.block",
+        "on the popover surface",
+      ),
+      role(
+        "block",
+        "internal",
+        "spacing.gap.element.block",
+        "between popover children and between the trigger and popover",
+      ),
+      role(
+        "inline",
+        "internal",
+        "spacing.gap.element.inline",
+        "between swatches in the popover grid",
+      ),
+      role(
+        "inline",
+        "internal",
+        "spacing.gap.mark.inline",
+        "between the colour preview mark and trigger copy",
+      ),
+    ],
+    boundaries: [],
+    rationale:
+      "ColorInput composes field/control chrome with a surface and child gaps; conditions keep those boxes distinct.",
+  },
+  "section-conditional": {
+    assignments: [
+      role(
+        "block",
+        "start",
+        "spacing.inset.surface.block",
+        "on the bordered frame edge",
+      ),
+      role(
+        "block",
+        "end",
+        "spacing.inset.surface.block",
+        "on the shallow variant",
+      ),
+    ],
+    boundaries: [
+      {
+        scope: "inline",
+        reason:
+          "Section has no inline inset; its inline geometry belongs to the page/grid owner.",
+      },
+      {
+        scope: "block-internal",
+        reason:
+          "Section does not own a child-stack gap; its spacing prop controls a page-section edge.",
+      },
+    ],
+    rationale:
+      "Only shallow and bordered frame edges consume the component surface inset; default, deep and hero section rhythm stays with the strip/page owner.",
   },
   "element-stack": {
     assignments: [role("block", "internal", "spacing.gap.element.block")],
@@ -211,7 +531,11 @@ const profiles = {
     ],
     boundaries: [
       {
-        scope: "inline-edges",
+        scope: "inline-start",
+        reason: "The containing field owns the outside keyline; this row owns only peer separation.",
+      },
+      {
+        scope: "inline-end",
         reason: "The containing field owns the outside keyline; this row owns only peer separation.",
       },
       {
@@ -286,8 +610,16 @@ const profiles = {
     ],
     boundaries: [
       {
-        scope: "all",
-        reason: "Table tracks, border separation, swatch paint and intrinsic visualisation sizes remain non-token boundaries.",
+        scope: "inline-internal",
+        reason: "Inline table tracks and intrinsic visualisation layout remain non-token boundaries.",
+      },
+      {
+        scope: "block-start",
+        reason: "Outer table geometry remains a non-token boundary.",
+      },
+      {
+        scope: "block-end",
+        reason: "Outer table geometry remains a non-token boundary.",
       },
     ],
     rationale: "Composite owner: only the listed cell insets and stack gaps join component semantic roles.",
@@ -308,13 +640,12 @@ add("action-control", [
   "ds-app-lxd/Button/Button",
   "ds-app-portal/Button/Button",
   "ds-global/_work_in_progress/SkipLink/SkipLink",
-  "ds-global/component/Button/Button",
   "ds-global/component/Chip/Chip",
+  "ds-global/component/ContextualMenu/common/Item/Item",
 ]);
 
 add("field-control", [
   "ds-app-launchpad/FileTree/common/SearchBox/SearchBox",
-  "ds-global-form/subcomponent/ColorInput/ColorInput",
   "ds-global-form/subcomponent/ComboboxInput/MultipleCombobox",
   "ds-global-form/subcomponent/ComboboxInput/SingleCombobox",
   "ds-global-form/subcomponent/DateInput/DateInput",
@@ -339,7 +670,6 @@ add("in-box-action-row", [
   "ds-app-launchpad/MarkdownEditor/common/ViewModeTabs/ViewModeTabs",
   "ds-app/SideNavigation/common/CollapseToggle/CollapseToggle",
   "ds-global-form/subcomponent/ComboboxInput/common/ResetButton/ResetButton",
-  "ds-global/component/ContextualMenu/common/Item/Item",
   "ds-global/component/Tabs/common/Item/Item",
 ]);
 
@@ -351,8 +681,6 @@ add("in-box-field-row", [
   "ds-app/SideNavigation/common/Header/Header",
   "ds-app/SideNavigation/common/Item/Item",
   "ds-app/SideNavigation/common/ItemButton/ItemButton",
-  "ds-app/SideNavigation/common/ItemExpandable/ItemExpandable",
-  "ds-app/SideNavigation/common/NavTree/NavTree",
 ]);
 
 add("in-box-surface-row", [
@@ -363,18 +691,21 @@ add("surface-section", [
   "ds-app-launchpad/MarkdownEditor/MarkdownEditor",
   "ds-global-form/component/RichChoicesField/common/Option/Option",
   "ds-global-form/component/RichChoicesField/RichChoices",
-  "ds-global-form/subcomponent/ComboboxInput/common/List/List",
   "ds-global-form/subcomponent/FileUploadInput/FileUploadInput",
+  "ds-global/_work_in_progress/IconSection/IconSection",
+  "ds-global/component/Card/common/Content/Content",
+  "ds-global/component/Tile/common/Content/Content",
+]);
+
+add("surface-section-no-stack", [
+  "ds-app/SidePanel/common/Content/Content",
+  "ds-app/SidePanel/common/Footer/Footer",
+  "ds-app/SidePanel/common/Header/Header",
   "ds-global/_work_in_progress/Announcement/Announcement",
   "ds-global/_work_in_progress/ChatSection/ChatSection",
-  "ds-global/_work_in_progress/IconSection/IconSection",
   "ds-global/_work_in_progress/TSection/TSection",
-  "ds-global/component/Card/common/Content/Content",
   "ds-global/component/Card/common/Footer/Footer",
   "ds-global/component/Card/common/Header/Header",
-  "ds-global/component/ContextualMenu/ContextualMenu",
-  "ds-global/component/Popover/Popover",
-  "ds-global/component/Tile/common/Content/Content",
   "ds-global/component/Tile/common/Header/Header",
   "ds-global/component/Tooltip/Tooltip",
   "ds-global/pattern/Modal/common/Content/Content",
@@ -382,24 +713,14 @@ add("surface-section", [
   "ds-global/pattern/Modal/common/Header/Header",
 ]);
 
-add("surface-section-no-stack", [
-  "ds-app/SidePanel/common/Content/Content",
-  "ds-app/SidePanel/common/Footer/Footer",
-  "ds-app/SidePanel/common/Header/Header",
-]);
-
-add("continuation-surface-panel", [
-  "ds-global/component/Accordion/common/Item/Item",
-]);
-
 add("element-stack", [
   "ds-app-launchpad/MarkdownEditor/common/Toolbar/Toolbar",
-  "ds-app/SideNavigation/common/Content/Content",
   "ds-global-form/common/Wrapper/Wrapper",
   "ds-global/component/Breadcrumbs/Breadcrumbs",
 ]);
 
 add("group-stack", [
+  "ds-app/SideNavigation/common/Content/Content",
   "ds-app/SideNavigation/SideNavigation",
   "ds-global-form/pattern/Form/Form",
   "ds-global/group/Cards/Cards",
@@ -409,7 +730,6 @@ add("pattern-stack", []);
 
 add("field-inline-only", [
   "ds-app/SideNavigation/common/GroupHeader/GroupHeader",
-  "ds-global-form/component/ChoicesField/Choices",
   "ds-global/component/InlineCode/InlineCode",
   "ds-global/component/KeyboardKey/KeyboardKey",
 ]);
@@ -438,6 +758,7 @@ add("boundary-delegated", [
   "ds-app-launchpad/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/AnnotatedDiffLine",
   "ds-app/SideNavigation/common/Footer/Footer",
   "ds-app/SideNavigation/common/Group/Group",
+  "ds-app/SideNavigation/common/NavTree/NavTree",
   "ds-global-form/common/Wrapper/InvisibleWrapper",
   "ds-global-form/component/CheckboxField/CheckboxField",
   "ds-global-form/component/ChoicesField/ChoicesField",
@@ -540,7 +861,7 @@ const exceptions: Record<string, readonly string[]> = {
     "The Accordion root owns item separation; the Item does not absorb that gap into its padding.",
   ],
   "ds-global/component/ContextualMenu/ContextualMenu": [
-    "The trigger wrapper is a boundary; the portaled surface consumes surface insets and its Item rows own action/control geometry.",
+    "The trigger wrapper and full-bleed portaled frame delegate spacing to named Item rows, which own action/control geometry.",
   ],
   "ds-global/component/Popover/Popover": [
     "The trigger wrapper is a boundary; only the portaled content panel consumes the surface profile.",
@@ -565,7 +886,7 @@ const exceptions: Record<string, readonly string[]> = {
     "Rail padding is fixed in-box navigation geometry; spacing.gap.group.block covers separation between navigation sections, not page inset.",
   ],
   "ds-app/SideNavigation/common/NavTree/NavTree": [
-    "Depth indentation composes spacing.inset.continuation.inline; fade clearance and fixed row floors remain paint/layout boundaries.",
+    "This display: contents renderer delegates nested-row continuation inset to ItemExpandable; fade clearance and fixed row floors remain paint/layout boundaries.",
   ],
   "ds-app/SideNavigation/common/GroupHeader/GroupHeader": [
     "Its inline alignment is inherited from the rail keyline; the row's top padding belongs to the parent group separation contract.",
@@ -591,16 +912,106 @@ const exceptions: Record<string, readonly string[]> = {
   ],
 };
 
+const structuredExceptionChecks: Record<
+  string,
+  {
+    requiredRoles?: readonly string[];
+    forbiddenRoles?: readonly string[];
+    requiredBoundaryCondition?: string;
+  }
+> = {
+  "ds-global/component/Button/Button": {
+    requiredRoles: [
+      "spacing.inset.action.inline",
+      "spacing.inset.field.inline",
+      "spacing.gap.mark.inline",
+      "spacing.inset.control.block",
+    ],
+    requiredBoundaryCondition: "on the link variant",
+  },
+  "ds-app/SideNavigation/common/NavTree/NavTree": {
+    forbiddenRoles: [
+      "spacing.inset.continuation.inline",
+      "spacing.gap.element.block",
+    ],
+  },
+  "ds-app/SideNavigation/common/ItemExpandable/ItemExpandable": {
+    requiredRoles: ["spacing.inset.continuation.inline"],
+  },
+  "ds-global-form/subcomponent/ComboboxInput/common/List/List": {
+    requiredRoles: [
+      "spacing.inset.action.inline",
+      "spacing.inset.control.block",
+    ],
+    forbiddenRoles: [
+      "spacing.inset.surface.inline",
+      "spacing.inset.surface.block",
+    ],
+    requiredBoundaryCondition: "on the zero-inset outer list frame",
+  },
+  "ds-global/component/ContextualMenu/ContextualMenu": {
+    forbiddenRoles: [
+      "spacing.inset.surface.inline",
+      "spacing.inset.surface.block",
+    ],
+  },
+  "ds-global/component/ContextualMenu/common/Item/Item": {
+    requiredRoles: [
+      "spacing.inset.action.inline",
+      "spacing.inset.control.block",
+    ],
+  },
+  "ds-global/component/Popover/Popover": {
+    requiredRoles: [
+      "spacing.inset.surface.inline",
+      "spacing.inset.surface.block",
+    ],
+    requiredBoundaryCondition: "on the trigger wrapper",
+  },
+  "ds-global/_work_in_progress/Section/Section": {
+    requiredRoles: ["spacing.inset.surface.block"],
+    forbiddenRoles: [
+      "spacing.inset.surface.inline",
+      "spacing.gap.element.block",
+    ],
+  },
+  "ds-global/pattern/Modal/common/Footer/Footer": {
+    requiredRoles: ["spacing.gap.element.inline"],
+    forbiddenRoles: [
+      "spacing.gap.element.block",
+      "spacing.gap.mark.inline",
+    ],
+  },
+  "ds-global/component/Card/common/Header/Header": {
+    requiredRoles: ["spacing.gap.element.inline"],
+    forbiddenRoles: ["spacing.gap.element.block"],
+  },
+  "ds-global/component/Tile/common/Header/Header": {
+    requiredRoles: ["spacing.gap.mark.inline"],
+    forbiddenRoles: ["spacing.gap.element.block"],
+  },
+  "ds-global/component/Tooltip/Tooltip": {
+    requiredRoles: ["spacing.gap.mark.inline"],
+    forbiddenRoles: ["spacing.gap.element.block"],
+  },
+  "ds-app/SidePanel/common/Footer/Footer": {
+    requiredRoles: [
+      "spacing.gap.element.inline",
+      "spacing.gap.element.block",
+    ],
+  },
+};
+
 const additionalAssignments: Record<string, readonly Assignment[]> = {
   "ds-global-form/common/Wrapper/ToggleWrapper": [
     role("block", "internal", "spacing.gap.element.block", "between field copy and the toggle row"),
   ],
-  "ds-global-form/component/ChoicesField/Choices": [
-    role("block", "internal", "spacing.gap.element.block", "between adjacent choices in one field"),
-    role("inline", "internal", "spacing.gap.element.inline", "between adjacent choice columns"),
-  ],
   "ds-global/component/Card/common/Footer/Footer": [
     role("inline", "internal", "spacing.gap.element.inline", "between peer footer items"),
+    role("block", "internal", "spacing.gap.element.block", "between wrapped footer rows"),
+  ],
+  "ds-global/component/Card/common/Header/Header": [
+    role("inline", "internal", "spacing.gap.element.inline", "between peer header items"),
   ],
   "ds-global/component/Tile/common/Header/Header": [
     role("inline", "internal", "spacing.gap.mark.inline", "between header artwork and copy"),
@@ -611,36 +1022,41 @@ const additionalAssignments: Record<string, readonly Assignment[]> = {
   "ds-global/pattern/Modal/common/Footer/Footer": [
     role("inline", "internal", "spacing.gap.element.inline", "between peer footer actions"),
   ],
+  "ds-global/pattern/Modal/common/Header/Header": [
+    role("inline", "internal", "spacing.gap.element.inline", "between the title and close action"),
+  ],
   "ds-app/SidePanel/common/Header/Header": [
     role("inline", "internal", "spacing.gap.element.inline", "between the title and close action"),
   ],
   "ds-app/SidePanel/common/Footer/Footer": [
     role("inline", "internal", "spacing.gap.element.inline", "between peer footer actions"),
+    role("block", "internal", "spacing.gap.element.block", "between wrapped action rows"),
   ],
   "ds-global/_work_in_progress/Announcement/Announcement": [
     role("inline", "internal", "spacing.gap.mark.inline", "between the leading marker and copy"),
   ],
-  "ds-global/component/Accordion/common/Item/Item": [
-    role("inline", "internal", "spacing.gap.mark.inline", "in the summary row"),
-    role("block", "start", "spacing.inset.control.block", "in the summary row"),
-    role("block", "end", "spacing.inset.control.block", "in the summary row"),
-  ],
-  "ds-app/SideNavigation/common/NavTree/NavTree": [
-    role("inline", "start", "spacing.inset.continuation.inline", "for nested group depth"),
-    role("block", "internal", "spacing.gap.element.block", "between navigation rows/groups at the local level"),
-  ],
 };
 
 // Rows whose profile is deliberately special enough to keep out of the broad lists.
-add("surface-section", [
-  "ds-global/_work_in_progress/CategoriesSection/CategoriesSection",
-  "ds-global/_work_in_progress/Section/Section",
-]);
+add("surface-section", ["ds-global/_work_in_progress/CategoriesSection/CategoriesSection"]);
+add("section-conditional", ["ds-global/_work_in_progress/Section/Section"]);
 add("element-stack", [
   "ds-global/_work_in_progress/CategoriesSection/common/Category/Category",
   "ds-global/component/Accordion/Accordion",
 ]);
 add("token-table-composite", ["tokens/TokenTable/TokenTable"]);
+add("accordion-item-composite", ["ds-global/component/Accordion/common/Item/Item"]);
+add("choices-composite", ["ds-global-form/component/ChoicesField/Choices"]);
+add("color-input-composite", ["ds-global-form/subcomponent/ColorInput/ColorInput"]);
+add("button-composite", ["ds-global/component/Button/Button"]);
+add("item-expandable-composite", [
+  "ds-app/SideNavigation/common/ItemExpandable/ItemExpandable",
+]);
+add("combobox-list-composite", [
+  "ds-global-form/subcomponent/ComboboxInput/common/List/List",
+]);
+add("popover-composite", ["ds-global/component/Popover/Popover"]);
+add("boundary-delegated", ["ds-global/component/ContextualMenu/ContextualMenu"]);
 
 const nonReactProfiles: Record<string, keyof typeof profiles> = {
   "svelte-ds-app-launchpad/Button": "action-control",
@@ -708,7 +1124,37 @@ export const assertT006Coverage = (ids: readonly string[]) => {
     if (!disposition.assignments.length && !disposition.boundaries.length) {
       throw new Error(`T006 disposition has no assignment or boundary: ${id}`);
     }
+    const structuredCheck = structuredExceptionChecks[id];
+    if (structuredCheck) {
+      const roles = new Set(disposition.assignments.map(({ role }) => role));
+      for (const requiredRole of structuredCheck.requiredRoles ?? []) {
+        if (!roles.has(requiredRole)) {
+          throw new Error(
+            `T006 structured exception check requires ${requiredRole} on ${id}`,
+          );
+        }
+      }
+      for (const forbiddenRole of structuredCheck.forbiddenRoles ?? []) {
+        if (roles.has(forbiddenRole)) {
+          throw new Error(
+            `T006 structured exception check forbids ${forbiddenRole} on ${id}`,
+          );
+        }
+      }
+      if (
+        structuredCheck.requiredBoundaryCondition &&
+        !disposition.boundaries.some(
+          ({ condition }) =>
+            condition === structuredCheck.requiredBoundaryCondition,
+        )
+      ) {
+        throw new Error(
+          `T006 structured exception check requires boundary condition "${structuredCheck.requiredBoundaryCondition}" on ${id}`,
+        );
+      }
+    }
     const seen = new Set<string>();
+    const assignmentsByEdge = new Map<string, Assignment[]>();
     for (const assignment of disposition.assignments) {
       if (!allowedRoles.has(assignment.role)) {
         throw new Error(`Unknown T006 candidate role ${assignment.role} on ${id}`);
@@ -721,6 +1167,39 @@ export const assertT006Coverage = (ids: readonly string[]) => {
       const key = JSON.stringify(assignment);
       if (seen.has(key)) throw new Error(`Duplicate T006 assignment on ${id}: ${key}`);
       seen.add(key);
+      const edgeKey = `${assignment.axis}-${assignment.edge}`;
+      const edgeAssignments = assignmentsByEdge.get(edgeKey) ?? [];
+      edgeAssignments.push(assignment);
+      assignmentsByEdge.set(edgeKey, edgeAssignments);
+    }
+    for (const [edgeKey, edgeAssignments] of assignmentsByEdge) {
+      if (
+        edgeAssignments.length > 1 &&
+        edgeAssignments.some(({ condition }) => !condition)
+      ) {
+        throw new Error(
+          `Contradictory unconditional T006 assignments on ${id} ${edgeKey}: ${edgeAssignments
+            .map(({ role: semanticRole, condition }) =>
+              condition ? `${semanticRole} (${condition})` : semanticRole,
+            )
+            .join(", ")}`,
+        );
+      }
+    }
+    for (const boundary of disposition.boundaries) {
+      for (const assignment of disposition.assignments) {
+        const assignmentScope = `${assignment.axis}-${assignment.edge}`;
+        if (
+          (boundary.scope === "all" ||
+            boundary.scope === assignment.axis ||
+            boundary.scope === assignmentScope) &&
+          (!boundary.condition || !assignment.condition)
+        ) {
+          throw new Error(
+            `Contradictory T006 assignment/boundary on ${id}: ${assignment.role} at ${assignmentScope} conflicts with ${boundary.scope}.`,
+          );
+        }
+      }
     }
   }
 };

@@ -9,16 +9,16 @@ T009 corrections.
 
 | Candidate | Rows with direct membership | Count status |
 |---|---:|---|
-| `spacing.inset.action.inline` | 16 | Component-supported |
+| `spacing.inset.action.inline` | 17 | Component-supported |
 | `spacing.inset.field.inline` | 29 | Component-supported |
 | `spacing.inset.continuation.inline` | 2 | Component-supported |
-| `spacing.inset.surface.inline` | 27 | Component-supported |
+| `spacing.inset.surface.inline` | 25 | Component-supported |
 | `spacing.gap.mark.inline` | 36 | Component-supported |
-| `spacing.gap.element.inline` | 6 | Component-supported; added by T009 |
-| `spacing.inset.control.block` | 31 | Component-supported |
-| `spacing.inset.surface.block` | 26 | Component-supported |
-| `spacing.gap.element.block` | 33 | Component-supported |
-| `spacing.gap.group.block` | 4 | Component-supported |
+| `spacing.gap.element.inline` | 9 | Component-supported; added by T009 |
+| `spacing.inset.control.block` | 33 | Component-supported |
+| `spacing.inset.surface.block` | 25 | Component-supported |
+| `spacing.gap.element.block` | 20 | Component-supported |
+| `spacing.gap.group.block` | 5 | Component-supported |
 | `spacing.gap.pattern.block` | 0 | External page-section candidate |
 
 The proposed count is therefore **10 component-supported roles plus one
@@ -31,8 +31,9 @@ while FR-021 correctly keeps its owner outside the component denominator.
 | Attempt | Disposition | Breaker |
 |---|---|---|
 | Action inset ↔ field inset | Reject | Icon+text Button composes field start, action end and mark internally. A field keyline change must not resize action breathing. |
+| Action inset ↔ continuation inset | Reject | Button/Chip breathing is intrinsic to an action, while Accordion and SideNavigation ItemExpandable continuation inset tracks disclosure depth and may accumulate. Changing tree depth must not resize actions. |
 | Action/field inset ↔ surface inset | Reject | Panels and sections need content breathing independent of controls and fields. Docs also currently breaks numerical equality, but semantics is decisive. |
-| Continuation inset ↔ field/surface inset | Reject | Accordion content composes continuation at inline-start with surface at inline-end; NavTree depth adds continuation to its row keyline. |
+| Continuation inset ↔ field/surface inset | Reject | Accordion content composes continuation at inline-start with surface at inline-end; SideNavigation ItemExpandable adds continuation to nested child rows while its summary keeps the field keyline. |
 | Field inset ↔ mark gap | Reject | Field/mark values may coincide, but changing icon-to-label whitespace must not move a field's outside keyline. |
 | Mark gap ↔ inline element gap | Reject | A marker/icon/caret and its copy are not peer actions/items. Card/Modal footer children and Range slider/number are the breaker set. |
 | Control block inset ↔ surface block inset | Reject | A metric-seated control row and a panel edge solve different occupied-box constraints; ColorInput composes both. |
@@ -44,8 +45,9 @@ while FR-021 correctly keeps its owner outside the component denominator.
 
 ## Accepted collapses
 
-- Card, Tile, Modal, Tooltip, ContextualMenu and similar framed owners share the
-  surface roles. Their component names do not justify per-component tokens.
+- Card, Tile, Modal, Tooltip, Popover content panels and similar inset-bearing
+  framed owners share the surface roles. Their component names do not justify
+  per-component tokens; full-bleed ContextualMenu frames are explicitly excluded.
 - Button, Chip, Tabs and menu actions share action/control relationships where
   the same purpose is present. A zero edge or joined seam is a variant boundary,
   not another token.
@@ -65,8 +67,12 @@ while FR-021 correctly keeps its owner outside the component denominator.
 - Added `spacing.gap.mark.inline` to Tile Header and Tooltip icon/copy.
 - Reclassified Choices rows from group to `element.block`: choices are adjacent
   elements inside one field unit.
-- Reclassified SideNavigation root section separation from element to
-  `group.block`; NavTree retains local `element.block` row separation.
+- Reclassified SideNavigation root and Content section separation from element
+  to `group.block`; the `display: contents` NavTree delegates row separation
+  and nested continuation to its rendered child owners.
+- Kept full-bleed Combobox List and ContextualMenu frames out of surface-inset
+  membership: Combobox option rows carry action/control insets, while named
+  ContextualMenu Item rows remain their existing owners.
 - Recast Tooltip trigger distance as a placement magnitude/boundary because a
   tooltip can be positioned on either axis.
 - Added SidePanel Header, Content and Footer to the surface roles without
@@ -76,8 +82,8 @@ while FR-021 correctly keeps its owner outside the component denominator.
   and recorded title closure, section seams and the repeated compact icon-only
   close action as explicit owner decisions.
 
-The machine inventory regenerates with 90 assigned rows, 79 boundary-only
-rows, 210 distinct part-by-role memberships, no null disposition and exact
+The machine inventory regenerates with 88 assigned rows, 81 boundary-only
+rows, 201 distinct part-by-role memberships, no null disposition and exact
 169-ID coverage.
 
 ## Still owner-facing at CP1
