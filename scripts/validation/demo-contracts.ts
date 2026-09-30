@@ -336,6 +336,50 @@ export function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml:
   assert(!specimenHtml.includes('bf-card'), "Expected typographic-specimen.html to avoid decorative card wrappers.");
 }
 
+/** Spec 026 T014: the body-line comparison route dogfoods BF and keeps its candidate rules page-local. */
+export function validateBodyLineRhythmDemo(pageCatalogJs: string, html: string, css: string, js: string): void {
+  const pageName = "demo/spec/body-line-rhythm.html";
+  assertNoDuplicateClassAttributes(pageName, html);
+  assert(pageCatalogJs.includes('{ title: "Body-line rhythm", href: "/demo/spec/body-line-rhythm.html" }'), "Expected the page catalog to list the body-line rhythm route with the spec chapters.");
+  assert(/<body\s+class="bf-theme bf-tier-editorial"\s+data-page-tier-options="editorial,documentation,app,os"\s*>/.test(html), `Expected ${pageName} to boot as a four-tier spec page.`);
+  assert(html.includes('<main class="bf-page is-fill" id="spec-grid-target">'), `Expected ${pageName} to use the shared fill-height bf-page container.`);
+  for (const asset of ['href="../spec-shell.css"', 'href="../body-line-rhythm.css"', 'src="../spec-shell.js"', 'src="../body-line-rhythm.js"']) {
+    assert(html.includes(asset), `Expected ${pageName} to load ${asset}.`);
+  }
+  assert(!/\bstyle\s*=/.test(html) && !/<style\b/.test(html), `Expected ${pageName} to keep specimen CSS in its page-local stylesheet.`);
+  assert(!/class="[^"]*\b(?:has|p|vr|ui)-[a-z]/.test(html), `Expected ${pageName} to use only bf-* primitives, is-* modifiers and page-local body-line-* specimen classes.`);
+
+  const roots = Array.from(html.matchAll(/<div\s+class="([^"]*)"\s+data-body-line-root="([^"]+)"/g), match => ({ classes: match[1].split(/\s+/), variant: match[2] }));
+  assert(roots.length > 0 && roots.every(root => root.classes.includes("bf-theme") && root.classes.includes("bf-tier-editorial")), `Expected every ${pageName} comparison root to be a tier-classed .bf-theme.`);
+  for (const root of roots) {
+    const isOpted = root.classes.includes("is-body-line-rhythm");
+    assert(isOpted === (root.variant === "opted" || root.variant === "nested-host"), `Expected ${pageName} ${root.variant} roots ${root.variant === "opted" || root.variant === "nested-host" ? "to carry" : "not to carry"} the opt-in modifier.`);
+  }
+  assert(/data-body-line-root="nested-host"\s*>\s*<div\s+class="bf-theme bf-tier-editorial"\s+data-body-line-root="nested"/.test(html), `Expected ${pageName} to nest a non-opted theme directly inside an opted root.`);
+  for (const [flowName, count] of [["ledger", 2], ["matrix", 3], ["wrapped", 2], ["tight", 2], ["loose", 2], ["nested-list", 2], ["flush", 2], ["rule", 2], ["quote", 2]] as const) {
+    assert((html.match(new RegExp(`data-body-line-flow="${flowName}"`, "g")) ?? []).length === count, `Expected ${pageName} to render ${count} ${flowName} fixtures.`);
+  }
+  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 19, `Expected every ${pageName} fixture flow to use the zero-gap specimen and the body-line ruling.`);
+  assert((html.match(/class="bf-prose bf-stack is-metric-flush body-line-flow"/g) ?? []).length === 2, `Expected ${pageName} metric-flush pairs to sit in .bf-prose.bf-stack.is-metric-flush.`);
+  for (const option of ["a", "b", "c", "d"]) {
+    assert(html.includes(`data-body-line-gap="${option}"`) && html.includes(`(${option}) `), `Expected ${pageName} to show labelled D4 option (${option}).`);
+  }
+  assert(html.includes("not public API") && css.includes("not public API") && css.includes("None of these classes is Baseline Foundry public API"), `Expected ${pageName} and its stylesheet to label the D4 candidates as not public API.`);
+  for (const rule of [
+    ".body-line-gap-b.bf-stack {\n  gap: round(up, var(--bf-stack-space), var(--bf-body-rhythm-step));",
+    ".body-line-gap-b .bf-prose {\n  gap: round(up, var(--bf-section-space-shallow), var(--bf-body-rhythm-step));",
+    ".body-line-gap-c .bf-prose {\n  gap: 0;",
+    ".body-line-gap-d.bf-stack {\n  gap: round(down, var(--bf-stack-space), var(--bf-body-rhythm-step));",
+    ".body-line-gap-d .bf-prose {\n  gap: round(down, var(--bf-section-space-shallow), var(--bf-body-rhythm-step));",
+    ".body-line-flow {\n  gap: 0;"
+  ]) {
+    assert(css.includes(rule), `Expected demo/body-line-rhythm.css to contain the specimen rule ${rule.split("\n")[0]}.`);
+  }
+  const selectors = Array.from(css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{/g), match => match[1].trim());
+  assert(selectors.length > 0 && selectors.every(selector => selector.startsWith(".body-line-")), `Expected demo/body-line-rhythm.css to scope every rule to a page-local body-line-* specimen class; got ${selectors.join(" | ")}.`);
+  assert(js.includes('"bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os"') && js.includes('"is-dark", "is-light"'), "Expected demo/body-line-rhythm.js to mirror the page tier and tone onto nested comparison roots.");
+}
+
 export function validateGridSpecPage(gridSpecHtml: string, specShellCss: string): void {
   assert(gridSpecHtml.includes('<body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os">'), "Expected grid.html to boot as a shared tier-switching spec page.");
   assert(gridSpecHtml.includes('class="bf-stack bf-grid-scope specimen-grid-scope is-grid-4"'), "Expected grid.html to expose the 4-column breakpoint specimen through an explicit specimen class.");

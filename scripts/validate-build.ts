@@ -21,6 +21,7 @@ import {
   validateActionsDemo,
   validateApplicationShellDemo,
   validateBfOnlyDemoFamily,
+  validateBodyLineRhythmDemo,
   validateButtonDemo,
   validateComponentAtlasPage,
   validateDemoContracts,
@@ -2083,10 +2084,13 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/spec/spacing-vertical.html")),
     readTextArtifact(path.resolve("demo/panel.html"))
   ]);
-  const [pageChromeJs, specRuntimeJs, examplePageJs] = await Promise.all([
+  const [pageChromeJs, specRuntimeJs, examplePageJs, bodyLineRhythmHtml, bodyLineRhythmCss, bodyLineRhythmJs] = await Promise.all([
     readTextArtifact(path.resolve("demo/page-chrome.js")),
     readTextArtifact(path.resolve("demo/spec-runtime.js")),
-    readTextArtifact(path.resolve("demo/example-page.js"))
+    readTextArtifact(path.resolve("demo/example-page.js")),
+    readTextArtifact(path.resolve("demo/spec/body-line-rhythm.html")),
+    readTextArtifact(path.resolve("demo/body-line-rhythm.css")),
+    readTextArtifact(path.resolve("demo/body-line-rhythm.js"))
   ]);
 
   await runInvariantAsync("Scalable authored lengths", validateScalableAuthoredLengths);
@@ -2198,7 +2202,8 @@ async function main(): Promise<void> {
     "demo/component-shell.css": componentShellCss,
     "demo/spec-shell.css": specShellCss,
     "demo/page-chrome.css": pageChromeCss,
-    "demo/controls-shell.css": controlsShellCss
+    "demo/controls-shell.css": controlsShellCss,
+    "demo/body-line-rhythm.css": bodyLineRhythmCss
   }));
   await runInvariantAsync("Example dogfooding", () => validateExampleDogfooding());
   runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, componentShellCss, specShellCss, pageChromeCss, pageChromeJs, componentDemoJs, specRuntimeJs, examplePageJs));
@@ -2218,6 +2223,7 @@ async function main(): Promise<void> {
   runInvariant("Top navigation demo", () => validateTopNavigationDemo(topNavigationHtml));
   runInvariant("Renewal component contracts", () => validateRenewalComponentContracts(defaultTheme.css, pageCatalogJs, componentAtlasHtml, patternAtlasHtml, componentDemoJs, renewalComponentPages, indexDts));
   runInvariant("Typographic specimen", () => validateTypographicSpecimen(pageCatalogJs, typographicSpecimenHtml));
+  runInvariant("Body-line rhythm demo", () => validateBodyLineRhythmDemo(pageCatalogJs, bodyLineRhythmHtml, bodyLineRhythmCss, bodyLineRhythmJs));
   runInvariant("Grid spec page", () => validateGridSpecPage(gridSpecHtml, specShellCss));
   runInvariant("Spacing spec page", () => validateSpacingSpecPage(spacingSpecHtml, spacingHorizontalAuditHtml, spacingVerticalAuditHtml, specShellCss));
   runInvariant("OS tier page", () => validateOsTierPage(pageCatalogJs, panelHtml));

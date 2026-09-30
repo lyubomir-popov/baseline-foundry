@@ -9,7 +9,8 @@ export const specChapterPages = [
   { title: "Typography chapter", href: "/demo/spec/typography.html" },
   { title: "Spacing chapter", href: "/demo/spec/spacing.html" },
   { title: "Grid chapter", href: "/demo/spec/grid.html" },
-  { title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" }
+  { title: "Typographic specimen", href: "/demo/spec/typographic-specimen.html" },
+  { title: "Body-line rhythm", href: "/demo/spec/body-line-rhythm.html" }
 ];
 
 export const tierPages = [

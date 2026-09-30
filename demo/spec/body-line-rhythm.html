@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en" data-spec-root="../..">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baseline Foundry Body-Line Rhythm</title>
+    <link
+      id="spec-tier-stylesheet"
+      rel="stylesheet"
+      href="../../dist/tiers/editorial/styles.css"
+    />
+    <link rel="stylesheet" href="../spec-shell.css" />
+    <link rel="stylesheet" href="../body-line-rhythm.css" />
+  </head>
+  <body
+    class="bf-theme bf-tier-editorial"
+    data-page-tier-options="editorial,documentation,app,os"
+  >
+    <main class="bf-page is-fill" id="spec-grid-target">
+      <div class="bf-stack is-section">
+        <header class="bf-stack is-dense">
+          <h1>Body-line rhythm</h1>
+          <p>
+            Provisional opt-in (Spec 026, Phase A). Adding
+            <code>is-body-line-rhythm</code> to a <code>.bf-theme</code> root
+            gives prose-flow paragraphs, headings and list items a phase inset
+            after their measured nudge and a closure to whole body lines.
+            Each comparison shows the current baseline-unit ledger beside the
+            opt-in ledger for the active tier; the ruling marks every body
+            line.
+          </p>
+        </header>
+
+        <section class="bf-stack" aria-labelledby="body-line-ledgers">
+          <header class="bf-stack is-dense">
+            <h2 id="body-line-ledgers">Ledgers</h2>
+            <p>
+              A stacked heading, two paragraphs and a list in a zero-gap prose
+              flow, so only the text terms move the content.
+            </p>
+          </header>
+          <div class="bf-grid-scope">
+            <div class="bf-grid">
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-ledger-current"
+              >
+                <h3 class="bf-h6" id="body-line-ledger-current">
+                  Current – baseline-unit ledger
+                </h3>
+                <div
+                  class="bf-theme bf-tier-editorial"
+                  data-body-line-root="current"
+                >
+                  <div
+                    class="bf-prose body-line-flow body-line-ruling"
+                    data-body-line-flow="ledger"
+                  >
+                    <h2>Stacked heading</h2>
+                    <p>The first paragraph follows the heading closure.</p>
+                    <p>The second paragraph keeps the same phase.</p>
+                    <ul>
+                      <li>First list item</li>
+                      <li>Second list item</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="bf-table-scroll" tabindex="0">
+                  <table
+                    class="bf-table"
+                    aria-label="Current ledger terms"
+                    data-body-line-ledger="current"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Element</th>
+                        <th>Nudge</th>
+                        <th>Phase</th>
+                        <th>To bU</th>
+                        <th>Occupied</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </section>
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-ledger-opted"
+              >
+                <h3 class="bf-h6" id="body-line-ledger-opted">
+                  Opt-in – body-line ledger
+                </h3>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div
+                    class="bf-prose body-line-flow body-line-ruling"
+                    data-body-line-flow="ledger"
+                  >
+                    <h2>Stacked heading</h2>
+                    <p>The first paragraph follows the heading closure.</p>
+                    <p>The second paragraph keeps the same phase.</p>
+                    <ul>
+                      <li>First list item</li>
+                      <li>Second list item</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="bf-table-scroll" tabindex="0">
+                  <table
+                    class="bf-table"
+                    aria-label="Opt-in ledger terms"
+                    data-body-line-ledger="opted"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Element</th>
+                        <th>Nudge</th>
+                        <th>Phase</th>
+                        <th>Closure</th>
+                        <th>Occupied</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="bf-stack" aria-labelledby="body-line-gaps">
+          <header class="bf-stack is-dense">
+            <h2 id="body-line-gaps">Container gaps – D4 candidates</h2>
+            <p>
+              Every option runs under the opt-in with default prose and stack
+              gaps as authored. Options (b), (c) and (d) are page-local
+              candidate rules for the owner's gap ruling, not public API.
+            </p>
+          </header>
+          <div class="bf-grid-scope">
+            <div class="bf-grid">
+              <section
+                class="bf-span-2 bf-stack is-dense"
+                aria-labelledby="body-line-gap-a"
+              >
+                <h3 class="bf-h6" id="body-line-gap-a">(a) Unchanged gaps</h3>
+                <p data-body-line-gap-readout>Default gaps.</p>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div
+                    class="bf-stack body-line-ruling"
+                    data-body-line-gap="a"
+                  >
+                    <div class="bf-prose">
+                      <h2>Heading</h2>
+                      <p>First paragraph.</p>
+                      <p>Second paragraph.</p>
+                    </div>
+                    <div class="bf-prose">
+                      <ul>
+                        <li>List item</li>
+                        <li>List item</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-2 bf-stack is-dense"
+                aria-labelledby="body-line-gap-b-title"
+              >
+                <h3 class="bf-h6" id="body-line-gap-b-title">
+                  (b) Candidate – round up
+                </h3>
+                <p data-body-line-gap-readout>
+                  <code>round(up, gap, step)</code> on stack and prose.
+                </p>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div
+                    class="bf-stack body-line-ruling body-line-gap-b"
+                    data-body-line-gap="b"
+                  >
+                    <div class="bf-prose">
+                      <h2>Heading</h2>
+                      <p>First paragraph.</p>
+                      <p>Second paragraph.</p>
+                    </div>
+                    <div class="bf-prose">
+                      <ul>
+                        <li>List item</li>
+                        <li>List item</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-2 bf-stack is-dense"
+                aria-labelledby="body-line-gap-c-title"
+              >
+                <h3 class="bf-h6" id="body-line-gap-c-title">
+                  (c) Candidate – zero prose gap
+                </h3>
+                <p data-body-line-gap-readout>
+                  Prose gap 0; the stack keeps its gap.
+                </p>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div
+                    class="bf-stack body-line-ruling body-line-gap-c"
+                    data-body-line-gap="c"
+                  >
+                    <div class="bf-prose">
+                      <h2>Heading</h2>
+                      <p>First paragraph.</p>
+                      <p>Second paragraph.</p>
+                    </div>
+                    <div class="bf-prose">
+                      <ul>
+                        <li>List item</li>
+                        <li>List item</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-2 bf-stack is-dense"
+                aria-labelledby="body-line-gap-d-title"
+              >
+                <h3 class="bf-h6" id="body-line-gap-d-title">
+                  (d) Candidate – round down
+                </h3>
+                <p data-body-line-gap-readout>
+                  <code>round(down, gap, step)</code> on stack and prose.
+                </p>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div
+                    class="bf-stack body-line-ruling body-line-gap-d"
+                    data-body-line-gap="d"
+                  >
+                    <div class="bf-prose">
+                      <h2>Heading</h2>
+                      <p>First paragraph.</p>
+                      <p>Second paragraph.</p>
+                    </div>
+                    <div class="bf-prose">
+                      <ul>
+                        <li>List item</li>
+                        <li>List item</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="bf-stack" aria-labelledby="body-line-matrix">
+          <header class="bf-stack is-dense">
+            <h2 id="body-line-matrix">One-line heading matrix</h2>
+            <p>
+              Body and h1–h6 in a zero-gap prose flow. Under the opt-in every
+              element top is a whole body line from the previous one; a
+              nested theme without the modifier falls back to the current
+              ledger.
+            </p>
+          </header>
+          <div class="bf-grid-scope">
+            <div class="bf-grid">
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-matrix-current"
+              >
+                <h3 class="bf-h6" id="body-line-matrix-current">Current</h3>
+                <div
+                  class="bf-theme bf-tier-editorial"
+                  data-body-line-root="current"
+                >
+                  <div
+                    class="bf-prose body-line-flow body-line-ruling"
+                    data-body-line-flow="matrix"
+                  >
+                    <p>Body one line</p>
+                    <h1>Heading 1</h1>
+                    <h2>Heading 2</h2>
+                    <h3>Heading 3</h3>
+                    <p class="bf-h3">Classed h3</p>
+                    <h4>Heading 4</h4>
+                    <h5>Heading 5</h5>
+                    <h6>Heading 6</h6>
+                    <p>Body after headings</p>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-matrix-opted"
+              >
+                <h3 class="bf-h6" id="body-line-matrix-opted">Opt-in</h3>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div
+                    class="bf-prose body-line-flow body-line-ruling"
+                    data-body-line-flow="matrix"
+                  >
+                    <p>Body one line</p>
+                    <h1>Heading 1</h1>
+                    <h2>Heading 2</h2>
+                    <h3>Heading 3</h3>
+                    <p class="bf-h3">Classed h3</p>
+                    <h4>Heading 4</h4>
+                    <h5>Heading 5</h5>
+                    <h6>Heading 6</h6>
+                    <p>Body after headings</p>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-matrix-nested"
+              >
+                <h3 class="bf-h6" id="body-line-matrix-nested">
+                  Nested theme without the modifier, inside the opt-in
+                </h3>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="nested-host"
+                >
+                  <div
+                    class="bf-theme bf-tier-editorial"
+                    data-body-line-root="nested"
+                  >
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="matrix"
+                    >
+                      <p>Body one line</p>
+                      <h1>Heading 1</h1>
+                      <h2>Heading 2</h2>
+                      <h3>Heading 3</h3>
+                      <p class="bf-h3">Classed h3</p>
+                      <h4>Heading 4</h4>
+                      <h5>Heading 5</h5>
+                      <h6>Heading 6</h6>
+                      <p>Body after headings</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="bf-stack" aria-labelledby="body-line-wrapped">
+          <header class="bf-stack is-dense">
+            <h2 id="body-line-wrapped">Wrapped headings</h2>
+            <p>
+              Forced two- and three-line headings. Line 1 is always in phase;
+              later lines and the following paragraph stay in phase only when
+              the heading line height is a whole body line. The others are
+              recorded type-scale exceptions.
+            </p>
+          </header>
+          <div class="bf-grid-scope">
+            <div class="bf-grid">
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-wrapped-current"
+              >
+                <h3 class="bf-h6" id="body-line-wrapped-current">Current</h3>
+                <div
+                  class="bf-theme bf-tier-editorial"
+                  data-body-line-root="current"
+                >
+                  <div
+                    class="bf-prose body-line-flow body-line-ruling"
+                    data-body-line-flow="wrapped"
+                  >
+                    <h1>Heading 1<br />line two</h1>
+                    <p>Following paragraph</p>
+                    <h1>Heading 1<br />line two<br />line three</h1>
+                    <p>Following paragraph</p>
+                    <h2>Heading 2<br />line two</h2>
+                    <p>Following paragraph</p>
+                    <h2>Heading 2<br />line two<br />line three</h2>
+                    <p>Following paragraph</p>
+                    <h3>Heading 3<br />line two</h3>
+                    <p>Following paragraph</p>
+                    <h3>Heading 3<br />line two<br />line three</h3>
+                    <p>Following paragraph</p>
+                    <h4>Heading 4<br />line two</h4>
+                    <p>Following paragraph</p>
+                    <h4>Heading 4<br />line two<br />line three</h4>
+                    <p>Following paragraph</p>
+                    <h5>Heading 5<br />line two</h5>
+                    <p>Following paragraph</p>
+                    <h5>Heading 5<br />line two<br />line three</h5>
+                    <p>Following paragraph</p>
+                    <h6>Heading 6<br />line two</h6>
+                    <p>Following paragraph</p>
+                    <h6>Heading 6<br />line two<br />line three</h6>
+                    <p>Following paragraph</p>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-wrapped-opted"
+              >
+                <h3 class="bf-h6" id="body-line-wrapped-opted">Opt-in</h3>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div
+                    class="bf-prose body-line-flow body-line-ruling"
+                    data-body-line-flow="wrapped"
+                  >
+                    <h1>Heading 1<br />line two</h1>
+                    <p>Following paragraph</p>
+                    <h1>Heading 1<br />line two<br />line three</h1>
+                    <p>Following paragraph</p>
+                    <h2>Heading 2<br />line two</h2>
+                    <p>Following paragraph</p>
+                    <h2>Heading 2<br />line two<br />line three</h2>
+                    <p>Following paragraph</p>
+                    <h3>Heading 3<br />line two</h3>
+                    <p>Following paragraph</p>
+                    <h3>Heading 3<br />line two<br />line three</h3>
+                    <p>Following paragraph</p>
+                    <h4>Heading 4<br />line two</h4>
+                    <p>Following paragraph</p>
+                    <h4>Heading 4<br />line two<br />line three</h4>
+                    <p>Following paragraph</p>
+                    <h5>Heading 5<br />line two</h5>
+                    <p>Following paragraph</p>
+                    <h5>Heading 5<br />line two<br />line three</h5>
+                    <p>Following paragraph</p>
+                    <h6>Heading 6<br />line two</h6>
+                    <p>Following paragraph</p>
+                    <h6>Heading 6<br />line two<br />line three</h6>
+                    <p>Following paragraph</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="bf-stack" aria-labelledby="body-line-lists">
+          <header class="bf-stack is-dense">
+            <h2 id="body-line-lists">Lists</h2>
+            <p>
+              Tight and loose items share one text position and dot. A nested
+              list is a recorded exception: the outer item's closure lands
+              after the nested list, so nested items are off phase.
+            </p>
+          </header>
+          <div class="bf-grid-scope">
+            <div class="bf-grid">
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-lists-current"
+              >
+                <h3 class="bf-h6" id="body-line-lists-current">Current</h3>
+                <div
+                  class="bf-theme bf-tier-editorial bf-stack"
+                  data-body-line-root="current"
+                >
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Tight items</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="tight"
+                    >
+                      <ul>
+                        <li>Tight item one</li>
+                        <li>Tight item two</li>
+                        <li>Tight item three</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Loose items</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="loose"
+                    >
+                      <ul>
+                        <li><p>Loose item one</p></li>
+                        <li><p>Loose item two</p></li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Nested list</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="nested-list"
+                    >
+                      <ul>
+                        <li>
+                          Outer item
+                          <ul>
+                            <li>Nested item one</li>
+                            <li>Nested item two</li>
+                          </ul>
+                        </li>
+                        <li>Outer item after</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-lists-opted"
+              >
+                <h3 class="bf-h6" id="body-line-lists-opted">Opt-in</h3>
+                <div
+                  class="bf-theme bf-tier-editorial bf-stack is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Tight items</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="tight"
+                    >
+                      <ul>
+                        <li>Tight item one</li>
+                        <li>Tight item two</li>
+                        <li>Tight item three</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Loose items</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="loose"
+                    >
+                      <ul>
+                        <li><p>Loose item one</p></li>
+                        <li><p>Loose item two</p></li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Nested list</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="nested-list"
+                    >
+                      <ul>
+                        <li>
+                          Outer item
+                          <ul>
+                            <li>Nested item one</li>
+                            <li>Nested item two</li>
+                          </ul>
+                        </li>
+                        <li>Outer item after</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="bf-stack" aria-labelledby="body-line-exceptions">
+          <header class="bf-stack is-dense">
+            <h2 id="body-line-exceptions">Recorded exceptions</h2>
+            <p>
+              A metric-flush pair keeps its internal baseline distance, but
+              content after it is off phase. A rule and a quotation stay on
+              the baseline-unit ledger and move the following paragraph off
+              phase.
+            </p>
+          </header>
+          <div class="bf-grid-scope">
+            <div class="bf-grid">
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-exceptions-current"
+              >
+                <h3 class="bf-h6" id="body-line-exceptions-current">
+                  Current
+                </h3>
+                <div
+                  class="bf-theme bf-tier-editorial bf-stack"
+                  data-body-line-root="current"
+                >
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Metric-flush pair</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="flush"
+                    >
+                      <div
+                        class="bf-prose bf-stack is-metric-flush body-line-flow"
+                      >
+                        <h2>Flush heading</h2>
+                        <p>Flush paragraph</p>
+                      </div>
+                      <p>Following paragraph</p>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Rule</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="rule"
+                    >
+                      <p>Before the rule</p>
+                      <hr />
+                      <p>After the rule</p>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Quotation</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="quote"
+                    >
+                      <p>Before the quotation</p>
+                      <blockquote>Quoted line</blockquote>
+                      <p>After the quotation</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-exceptions-opted"
+              >
+                <h3 class="bf-h6" id="body-line-exceptions-opted">Opt-in</h3>
+                <div
+                  class="bf-theme bf-tier-editorial bf-stack is-body-line-rhythm"
+                  data-body-line-root="opted"
+                >
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Metric-flush pair</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="flush"
+                    >
+                      <div
+                        class="bf-prose bf-stack is-metric-flush body-line-flow"
+                      >
+                        <h2>Flush heading</h2>
+                        <p>Flush paragraph</p>
+                      </div>
+                      <p>Following paragraph</p>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Rule</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="rule"
+                    >
+                      <p>Before the rule</p>
+                      <hr />
+                      <p>After the rule</p>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Quotation</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="quote"
+                    >
+                      <p>Before the quotation</p>
+                      <blockquote>Quoted line</blockquote>
+                      <p>After the quotation</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="../spec-shell.js"></script>
+    <script type="module" src="../body-line-rhythm.js"></script>
+  </body>
+</html>
