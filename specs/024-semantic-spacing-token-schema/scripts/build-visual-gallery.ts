@@ -315,7 +315,14 @@ async function removeWorktree(
       true,
     );
   } catch (error) {
+    // git refuses to delete a tree it cannot fully empty; delete it and prune the registration.
     console.warn(`Worktree cleanup warning: ${String(error)}`);
+    try {
+      await rm(worktreePath, { force: true, recursive: true, maxRetries: 3 });
+      await run("git", ["worktree", "prune"], pragmaRepo, true);
+    } catch (fallbackError) {
+      console.warn(`Worktree fallback cleanup failed: ${String(fallbackError)}`);
+    }
   }
 }
 
@@ -407,7 +414,17 @@ async function captureStory(
       timeout: 45_000,
       waitUntil: "load",
     });
-    await page.waitForSelector("#storybook-root", { timeout: 30_000 });
+    // Portalled stories (SidePanel, Modal) leave the root zero-sized, so wait for content, not visibility.
+    await page.waitForSelector("#storybook-root", {
+      state: "attached",
+      timeout: 30_000,
+    });
+    await page.waitForFunction(
+      () =>
+        (document.querySelector("#storybook-root")?.childElementCount ?? 0) > 0,
+      undefined,
+      { timeout: 30_000 },
+    );
     await page.evaluate(async () => {
       document.documentElement.style.fontSize = "16px";
       await document.fonts.ready;
