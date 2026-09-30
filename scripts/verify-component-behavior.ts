@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { closeServer, createStaticServer, waitForFonts } from "./component-demo-shared.ts";
 import { assert, disableDemoChromeHitTesting, openBrowser } from "./behavior/browser-helpers.ts";
+import { formatBodyLineRhythmRecords, verifyBodyLineRhythm } from "./behavior/body-line-rhythm-contracts.ts";
 import {
   verifyContentCardGeometry,
   verifyInteractiveTables,
@@ -5408,6 +5409,7 @@ async function main(): Promise<void> {
     await verifyContentCardGeometry(origin);
     await verifyLinkedLogoAndStickyFooterGeometry(origin);
     await verifySiteShellPrimitiveGeometry(origin);
+    console.log(formatBodyLineRhythmRecords(await verifyBodyLineRhythm(origin)));
 
     console.log("Component behavior verification passed.");
   } finally {
