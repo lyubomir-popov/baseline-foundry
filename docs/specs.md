@@ -7,6 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
+| 027 Tabs item no-shrink | `feat/027-tabs-item-no-shrink` worktree | Verified; owner authorized merge into `main` on 2026-09-30 |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |
 
