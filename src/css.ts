@@ -230,7 +230,7 @@ export const BODY_LINE_RHYTHM_SECTION_END = "/* End body-line rhythm opt-in (Spe
 function bodyLineRhythmDeclarations(rhythm: Record<string, BodyLineRhythmRole>): string {
   return Object.entries(rhythm)
     .map(([roleName, role]) => `  --bf-${roleName}-rhythm-step: ${role.rhythmStep};\n  --bf-${roleName}-phase-start: ${role.phaseStart};\n  --bf-${roleName}-closure-end: ${role.closureEnd};\n`)
-    .join("");
+    .join("") + "  --bf-body-loose-item-start: 0rem;\n  --bf-body-loose-item-end: 0rem;\n";
 }
 
 function bodyLineRhythmApplicationRule(roleName: string): string {
@@ -252,7 +252,7 @@ function bodyLineRhythmCss(rhythm: Record<string, BodyLineRhythmRole> | undefine
   const roleNames = Object.keys(rhythm);
   const nestedReset = roleNames
     .map(roleName => `  --bf-${roleName}-rhythm-step: var(--bf-baseline);\n  --bf-${roleName}-phase-start: 0rem;\n  --bf-${roleName}-closure-end: var(--bf-${roleName}-margin-bottom);\n`)
-    .join("");
+    .join("") + "  --bf-body-loose-item-start: var(--bf-body-nudge-start);\n  --bf-body-loose-item-end: var(--bf-body-margin-bottom);\n";
   const blocks = [
     `${BODY_LINE_RHYTHM_ROOT} {\n${bodyLineRhythmDeclarations(rhythm)}}\n`,
     ...classSurfaces.map(surface => `:where(.bf-theme.${surface.className}.is-body-line-rhythm) {\n${bodyLineRhythmDeclarations(surface.bodyLineRhythm ?? {})}}\n`),
@@ -260,7 +260,7 @@ function bodyLineRhythmCss(rhythm: Record<string, BodyLineRhythmRole> | undefine
     ...roleNames.map(bodyLineRhythmApplicationRule),
     `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose li)${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-closure-end);\n  padding-block-start: calc(var(--bf-body-nudge-start) + var(--bf-body-phase-start));\n}\n`,
     `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose ul > li)${NOT_CAP_ENGINE}::before {\n  inset-block-start: calc(var(--bf-tick-box-offset) + var(--bf-body-phase-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));\n}\n`,
-    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose li:has(> :where(p, .bf-body)))${NOT_CAP_ENGINE} {\n  margin-bottom: 0rem;\n  padding-block-start: 0rem;\n}\n`
+    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose li:has(> :where(p, .bf-body)))${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-loose-item-end);\n  padding-block-start: var(--bf-body-loose-item-start);\n}\n`
   ];
 
   // No separator outside the comments, so stripping the section restores the default output byte for byte.

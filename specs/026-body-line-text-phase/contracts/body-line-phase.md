@@ -86,6 +86,8 @@ One contiguous section, emitted after the `.bf-prose li` and
   --bf-body-phase-start: <phase>;
   --bf-body-closure-end: <closure>;
   /* …h1–h6 in role order… */
+  --bf-body-loose-item-start: 0rem;
+  --bf-body-loose-item-end: 0rem;
 }
 
 /* 2. One block per class-scoped surface, in existing surface order. */
@@ -96,6 +98,8 @@ One contiguous section, emitted after the `.bf-prose li` and
   --bf-<role>-rhythm-step: var(--bf-baseline);
   --bf-<role>-phase-start: 0rem;
   --bf-<role>-closure-end: var(--bf-<role>-margin-bottom);
+  --bf-body-loose-item-start: var(--bf-body-nudge-start);
+  --bf-body-loose-item-end: var(--bf-body-margin-bottom);
 }
 
 /* 4. Application, per in-scope role; body adds the prose li > p shapes. */
@@ -117,8 +121,8 @@ One contiguous section, emitted after the `.bf-prose li` and
 
 /* 6. Loose items: child paragraphs carry the terms. */
 :where(.bf-theme.is-body-line-rhythm) :where(.bf-prose li:has(> :where(p, .bf-body))):not(:where(.bf-engine-cap, .bf-engine-cap *)) {
-  margin-bottom: 0rem;
-  padding-block-start: 0rem;
+  margin-bottom: var(--bf-body-loose-item-end);
+  padding-block-start: var(--bf-body-loose-item-start);
 }
 
 /* End body-line rhythm opt-in (Spec 026). */
@@ -133,6 +137,11 @@ Rules:
 - No `data-*`, `!important`, `ui-*` or BEM selector.
 - `.bf-stack.is-metric-flush` rules (specificity 0,2,0) keep precedence.
 - Rule 6 follows rule 5 so it wins at equal specificity.
+- Rule 6 reads `--bf-body-loose-item-start` and `--bf-body-loose-item-end`
+  rather than literals: the opted blocks set them to `0rem` and the nested
+  reset restores the body nudge and margin, so a non-opted theme nested in an
+  opted root keeps the current loose-item ledger. Like the other terms, they
+  are section-private and not public tokens.
 - Removing the section, opening to closing comment inclusive, yields the
   output generated without rhythm data, byte for byte.
 
@@ -204,11 +213,12 @@ reaches 0.906px at 16px and 1.813px at 32px (research R2 cross-check).
   `line 2 − line 1` to the nearest whole step equals the research R3
   prediction and is at least one bU in px.
 - **Edges (AC-7)**: a nested non-opted `.bf-theme` matches the non-opted
-  reference for `probe − elementTop` and element-to-previous tops;
-  baseline-to-baseline distance inside a metric-flush pair equals the
-  non-opted pair; the `.bf-prose ul` dot centre minus the first probe equals
-  the non-opted value; a loose item's `probe − itemTop` equals a tight
-  item's under the modifier.
+  reference for `probe − elementTop` and element-to-previous tops, in the
+  one-line matrix and in tight and loose prose lists (text offset, dot offset
+  and item advance); baseline-to-baseline distance inside a metric-flush pair
+  equals the non-opted pair; the `.bf-prose ul` dot centre minus the first
+  probe equals the non-opted value; a loose item's `probe − itemTop` and dot
+  offset from the item top equal a tight item's under the modifier.
 - **Recorded, not asserted**: absolute ε per tier, role and root, and the
   offsets in [Recorded exceptions](#recorded-exceptions).
 - Outside the modifier the existing browser contracts run unmodified.

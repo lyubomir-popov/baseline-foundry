@@ -470,7 +470,8 @@
             <p>
               Tight and loose items share one text position and dot. A nested
               list is a recorded exception: the outer item's closure lands
-              after the nested list, so nested items are off phase.
+              after the nested list, so nested items are off phase. A nested
+              theme without the modifier keeps the current list ledger.
             </p>
           </header>
           <div class="bf-grid-scope">
@@ -579,6 +580,51 @@
                         </li>
                         <li>Outer item after</li>
                       </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-lists-nested"
+              >
+                <h3 class="bf-h6" id="body-line-lists-nested">
+                  Nested theme without the modifier, inside the opt-in
+                </h3>
+                <div
+                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
+                  data-body-line-root="nested-host"
+                >
+                  <div
+                    class="bf-theme bf-tier-editorial"
+                    data-body-line-root="nested"
+                  >
+                    <div class="bf-stack">
+                      <div class="bf-stack is-dense">
+                        <h4 class="bf-h6">Tight items</h4>
+                        <div
+                          class="bf-prose body-line-flow body-line-ruling"
+                          data-body-line-flow="tight"
+                        >
+                          <ul>
+                            <li>Tight item one</li>
+                            <li>Tight item two</li>
+                            <li>Tight item three</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="bf-stack is-dense">
+                        <h4 class="bf-h6">Loose items</h4>
+                        <div
+                          class="bf-prose body-line-flow body-line-ruling"
+                          data-body-line-flow="loose"
+                        >
+                          <ul>
+                            <li><p>Loose item one</p></li>
+                            <li><p>Loose item two</p></li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

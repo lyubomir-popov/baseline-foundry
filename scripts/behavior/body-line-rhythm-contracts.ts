@@ -297,8 +297,28 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
           const looseOffset = paragraph.probes[0] - item.top;
           const tightOffset = offset(tightOpted[index]);
           assert(Math.abs(looseOffset - tightOffset) <= TOLERANCE_PX, `Expected ${label} opted loose item text to sit where a tight item's does; loose ${looseOffset}px, tight ${tightOffset}px.`);
+          const tightDot = tightOpted[index].dot;
+          assert(item.dot !== null && tightDot !== null && Math.abs((item.dot - item.top) - (tightDot - tightOpted[index].top)) <= TOLERANCE_PX, `Expected ${label} opted loose item dot to sit where a tight item's does; loose ${item.dot === null ? "none" : item.dot - item.top}px, tight ${tightDot === null ? "none" : tightDot - tightOpted[index].top}px.`);
           if (index > 0) assert(offStep(item.top - looseOpted[index - 1].top, stepPx) <= TOLERANCE_PX, `Expected ${label} opted loose items to advance by whole body lines; got ${item.top - looseOpted[index - 1].top}px.`);
         });
+
+        // AC-7 nested non-opted theme keeps the current tight and loose list ledger.
+        const listGeometry = (list: TreeNode[]) => list.map((item, index) => {
+          const text = item.probes.length ? item : item.children.find(child => child.tag === "p");
+          assert(text && text.probes.length === 1 && item.dot !== null, `Expected ${label} list item ${index + 1} to hold one probed line and a dot.`);
+          return { text: text.probes[0] - item.top, dot: item.dot - item.top, advance: index > 0 ? item.top - list[index - 1].top : 0 };
+        });
+        for (const kind of ["tight", "loose"] as const) {
+          const nestedItems = listGeometry(items(flow("nested", kind).children));
+          const currentItems = listGeometry(items(flow("current", kind).children));
+          assert(nestedItems.length === currentItems.length, `Expected ${label} nested non-opted ${kind} list to mirror the current list.`);
+          nestedItems.forEach((item, index) => {
+            const reference = currentItems[index];
+            for (const key of ["text", "dot", "advance"] as const) {
+              assert(Math.abs(item[key] - reference[key]) <= TOLERANCE_PX, `Expected ${label} nested non-opted ${kind} item ${index + 1} ${key} to equal the current column; nested ${item[key]}px, current ${reference[key]}px.`);
+            }
+          });
+        }
 
         // AC-7 metric-flush pair keeps its internal baseline distance.
         const flushDistance = (variant: string) => {

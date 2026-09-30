@@ -314,11 +314,15 @@ function assertDeclarations(rule: Rule | undefined, expected: Record<string, str
 }
 
 function rhythmDeclarations(rhythm: RhythmRecord): Record<string, string> {
-  return Object.fromEntries(Object.entries(rhythm).flatMap(([roleName, role]) => [
-    [`--bf-${roleName}-rhythm-step`, role.rhythmStep],
-    [`--bf-${roleName}-phase-start`, role.phaseStart],
-    [`--bf-${roleName}-closure-end`, role.closureEnd]
-  ]));
+  return Object.fromEntries([
+    ...Object.entries(rhythm).flatMap(([roleName, role]) => [
+      [`--bf-${roleName}-rhythm-step`, role.rhythmStep],
+      [`--bf-${roleName}-phase-start`, role.phaseStart],
+      [`--bf-${roleName}-closure-end`, role.closureEnd]
+    ]),
+    ["--bf-body-loose-item-start", "0rem"],
+    ["--bf-body-loose-item-end", "0rem"]
+  ]);
 }
 
 /** AC-2/AC-3 for one bundle; returns its root and class-block literals by selector for AC-4 parity. */
@@ -372,11 +376,15 @@ export async function validateBodyLineRhythmBundle(
 
   const resetRule = rules[blockSelectors.length];
   assert(resetRule?.selector === `${ROOT} :where(.bf-theme:not(.is-body-line-rhythm))`, `Expected ${label} nested non-opted theme reset after the surface blocks.`);
-  assertDeclarations(resetRule, Object.fromEntries(roleNames.flatMap(roleName => [
-    [`--bf-${roleName}-rhythm-step`, "var(--bf-baseline)"],
-    [`--bf-${roleName}-phase-start`, "0rem"],
-    [`--bf-${roleName}-closure-end`, `var(--bf-${roleName}-margin-bottom)`]
-  ])), `${label} nested reset`);
+  assertDeclarations(resetRule, Object.fromEntries([
+    ...roleNames.flatMap(roleName => [
+      [`--bf-${roleName}-rhythm-step`, "var(--bf-baseline)"],
+      [`--bf-${roleName}-phase-start`, "0rem"],
+      [`--bf-${roleName}-closure-end`, `var(--bf-${roleName}-margin-bottom)`]
+    ]),
+    ["--bf-body-loose-item-start", "var(--bf-body-nudge-start)"],
+    ["--bf-body-loose-item-end", "var(--bf-body-margin-bottom)"]
+  ]), `${label} nested reset`);
 
   const applicationRules = rules.slice(blockSelectors.length + 1);
   roleNames.forEach((roleName, index) => {
@@ -404,7 +412,10 @@ export async function validateBodyLineRhythmBundle(
     "inset-block-start": "calc(var(--bf-tick-box-offset) + var(--bf-body-phase-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5))"
   }, `${label} prose marker`);
   assert(looseRule?.selector === `${ROOT} :where(.bf-prose li:has(> :where(p, .bf-body)))${NOT_CAP_ENGINE}`, `Expected ${label} loose-item rule to follow the li rule.`);
-  assertDeclarations(looseRule, { "margin-bottom": "0rem", "padding-block-start": "0rem" }, `${label} loose item`);
+  assertDeclarations(looseRule, {
+    "margin-bottom": "var(--bf-body-loose-item-end)",
+    "padding-block-start": "var(--bf-body-loose-item-start)"
+  }, `${label} loose item`);
 
   const metricFlushSelectors: string[] = [];
   parseCss(css).walkRules(rule => {

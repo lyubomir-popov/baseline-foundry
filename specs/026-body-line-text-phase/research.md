@@ -480,7 +480,9 @@ holds everywhere else.”
   (R2 cross-check). Element-to-previous measurement avoids Chromium's
   −1/64px per-element layout drift (tops measured 31.984, 87.969, 127.953).
 - **T6** – a prose `li` with a direct `p`/`.bf-body` child zeroes its
-  block-start padding and closure; its paragraphs carry the terms (R6).
+  block-start padding and closure; its paragraphs carry the terms (R6). The
+  zeroes are carried by `--bf-body-loose-item-start`/`-end`, which the nested
+  non-opted reset restores to the body nudge and margin.
 - **T7** – metrics are read with `readFontMetrics` per role `fontFamily`,
   from the source config's non-`runtimeOnly` font files, with paths resolved
   relative to the source config (as `src/build.ts` already does for the

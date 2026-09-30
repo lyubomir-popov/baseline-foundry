@@ -355,11 +355,11 @@ export function validateBodyLineRhythmDemo(pageCatalogJs: string, html: string, 
     const isOpted = root.classes.includes("is-body-line-rhythm");
     assert(isOpted === (root.variant === "opted" || root.variant === "nested-host"), `Expected ${pageName} ${root.variant} roots ${root.variant === "opted" || root.variant === "nested-host" ? "to carry" : "not to carry"} the opt-in modifier.`);
   }
-  assert(/data-body-line-root="nested-host"\s*>\s*<div\s+class="bf-theme bf-tier-editorial"\s+data-body-line-root="nested"/.test(html), `Expected ${pageName} to nest a non-opted theme directly inside an opted root.`);
-  for (const [flowName, count] of [["ledger", 2], ["matrix", 3], ["wrapped", 2], ["tight", 2], ["loose", 2], ["nested-list", 2], ["flush", 2], ["rule", 2], ["quote", 2]] as const) {
+  assert((html.match(/data-body-line-root="nested-host"\s*>\s*<div\s+class="bf-theme bf-tier-editorial"\s+data-body-line-root="nested"/g) ?? []).length === 2, `Expected ${pageName} to nest a non-opted theme directly inside an opted root for the matrix and the lists.`);
+  for (const [flowName, count] of [["ledger", 2], ["matrix", 3], ["wrapped", 2], ["tight", 3], ["loose", 3], ["nested-list", 2], ["flush", 2], ["rule", 2], ["quote", 2]] as const) {
     assert((html.match(new RegExp(`data-body-line-flow="${flowName}"`, "g")) ?? []).length === count, `Expected ${pageName} to render ${count} ${flowName} fixtures.`);
   }
-  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 19, `Expected every ${pageName} fixture flow to use the zero-gap specimen and the body-line ruling.`);
+  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 21, `Expected every ${pageName} fixture flow to use the zero-gap specimen and the body-line ruling.`);
   assert((html.match(/class="bf-prose bf-stack is-metric-flush body-line-flow"/g) ?? []).length === 2, `Expected ${pageName} metric-flush pairs to sit in .bf-prose.bf-stack.is-metric-flush.`);
   for (const option of ["a", "b", "c", "d"]) {
     assert(html.includes(`data-body-line-gap="${option}"`) && html.includes(`(${option}) `), `Expected ${pageName} to show labelled D4 option (${option}).`);
