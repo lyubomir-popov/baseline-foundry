@@ -8,10 +8,13 @@
 
 ## Phase 1 – Setup
 
-- [ ] T001 Confirm the worktree is on `feat/026-body-line-text-phase`,
+- [x] T001 Confirm the worktree is on `feat/026-body-line-text-phase`,
   register the package in `docs/specs.md` and `AGENT-INBOX.md`, and rebase
   onto `main` (including Spec 025 if it has landed) before T002. Any later
   rebase re-runs T002 before T010.
+  *Evidence 2026-09-30*: branch confirmed; registered in both files. Rebase
+  skipped: the branch already sits on `main` (`6c43f99`, equal to
+  `origin/main`) and Spec 025 has not landed, so `main` is the base.
 - [ ] T002 After T001 and before any source edit, run
   `npm run setup:demo-font` (the gitignored IBM Plex font is otherwise missing
   and the experiment build throws before `build:lib`), then `npm run build`;

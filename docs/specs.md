@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
-| 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Body-line rhythm is the default for prose text, with `.is-baseline-rhythm` as the opt-out; container-owned lists and `hgroup` join. Gates green; owner browser review and the D4 container-gap ruling pending |
+| 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Phase A opt-in (`.bf-theme.is-body-line-rhythm`), owner-approved for BF 2026-09-30. Compute, opt-in CSS section and static contracts (T001–T010) in progress; demo, rendered proof and CP-A pending. Phase B default flip needs a separate owner ruling |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |
 
@@ -34,7 +34,6 @@ Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 
 | Spec | Package | Disposition |
 |---|---|---|
-| 027 Tabs item no-shrink | [`027-tabs-item-no-shrink/`](spec-archive/027-tabs-item-no-shrink/) | Contributed by Diagram Registry; merged into `main` by fast-forward on 2026-09-30 on owner direction. `flex: 0 0 auto` keeps tab items at content width so long lists scroll; reproduced red on main's output in all four tiers, green after, with static and 390px rendered coverage. 24,266 static checks, 5,442 component checks, behavior and 86-image QA passed. |
 | 022 Pragma spacing adoption | [`022-pragma-spacing-adoption/`](spec-archive/022-pragma-spacing-adoption/) | Superseded by Spec 024 on 2026-09-30. The inside-out React restyle produced a branch too large to review or merge; 024 recuts it. Archived from the untracked Pragma-worktree copy, including measurement evidence. No Pragma source is stored in BF. |
 | 020a Horizontal token adoption | [`020a-horizontal-token-adoption/`](spec-archive/020a-horizontal-token-adoption/) | Accepted and merged directly into `main` at `299f182` on 2026-09-05 after an independent `merge` verdict, 24,029 static checks, all component-baseline/browser-behavior families, and an 86-image component QA pass. The final Canonical component matrix and horizontal-axis separation are landed; page/grid and Pragma remain excluded. No publication or release was performed. |
 | 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](spec-archive/021-block-derived-inline-geometry/) | Accepted and merged into `main` at `17805b6` on 2026-09-04 after repeated Opus review, exact four-tier pointer-routing and shape checks, 19,500 integrated static checks, all component-baseline and behavior families, and fresh full component screenshot QA passed. No publication or release was performed. |
