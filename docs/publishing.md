@@ -72,6 +72,14 @@ breaking. The required field-by-field migration is documented in the README's
 "What the downstream config needs" section. This requirement does not
 authorize a version bump, publication, tag, or release during 020a landing.
 
+The first release containing Spec 026 must use `0.3.0` or later: flow text
+changes its visible vertical spacing by default. The README's "Body-line
+rhythm" section carries the migration note (`is-baseline-rhythm` on every
+`.bf-theme` root keeps the previous spacing). Diagram Registry vendors
+generated CSS and picks the change up on its next refresh. This requirement
+does not authorize a version bump, publication, tag, or release during 026
+landing.
+
 Keeping the package name means normal consumers do not change imports:
 
 ```js

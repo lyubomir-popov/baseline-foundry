@@ -6,7 +6,9 @@
 
 **Status**: Phase A opt-in implemented and reviewed; CP-B default flip
 implemented 2026-09-30 under rulings R1–R5; scope widened to all flow text
-and D4 closed as option (c) under rulings R6–R7 the same day.
+and D4 closed as option (c) under rulings R6–R7 the same day. Adversarial
+review findings F1–F11 fixed under orchestrator rulings the same day, pending
+owner confirmation.
 
 **Input**: Port the owner-approved Pragma rule that keeps headings and
 paragraphs in one body-line phase (Pragma Spec 024, T004d2; owner decision
@@ -82,6 +84,9 @@ and R4 from prose flows to all flow text.
   Text-to-component adjacency keeps the stack gap. Recorded exception: text
   following a non-text sibling starts at a bU-quantized offset, so body-line
   phase after a component is not guaranteed; the demo shows it.
+  *Interpreted by orchestrator ruling F1: “gap 0” means zero gap between two
+  adjacent text blocks, not a zero prose gap; F4 limits the cancel to
+  pattern-internal stacks.*
 - **R7 – default everywhere.** Body-line rhythm (phase inset, whole-body-line
   closure, container-owned list block, hgroup join, R6 gap cancel) applies by
   default to flow text anywhere under `.bf-theme` – `p`/`.bf-body`,
@@ -101,7 +106,59 @@ and R4 from prose flows to all flow text.
   `.is-baseline-rhythm` rendered geometry equals main exactly, including text
   in a `bf-stack` and bare in a section.
 
-## Problem
+## Orchestrator rulings, 2026-09-30 (adversarial review F1–F11)
+
+Orchestrator decisions on the R6/R7 adversarial review, **pending owner
+confirmation**. They refine R6 and R7; where they differ, they win until the
+owner rules otherwise.
+
+- **F1 – R6 is text-to-text only.** R6 means zero gap between two adjacent
+  text blocks, not a zero prose gap. `.bf-prose` keeps its
+  `--bf-section-space-shallow` gap and cancels it between two adjacent text
+  blocks with the same mechanism as stacks. Non-text children (`pre`,
+  `table`, `figure`, components, `hr`, `blockquote`) keep the gap; the
+  clearance after each equals main in every tier.
+- **F2 – hidden neighbours.** The preceding compound excludes `[hidden]`, so
+  a hidden first text block never pulls the next one above the container.
+- **F3 – control rows.** `.bf-cluster > *` is a bU ledger root: text in a
+  row aligns to its controls. The vertical-audit assertions return to main.
+- **F4 – section boundaries keep their gap.** Only pattern-internal stacks
+  (default, `is-extra-dense`, `is-dense`, `is-loose`) cancel; section stacks
+  (`is-section-shallow`, `is-section`, `is-section-deep`) are boundaries
+  between complete sections or patterns (AGENTS invariant). Every cancelled
+  gap must leave a non-negative margin box and a whole-line advance.
+- **F5 – element-styled containers.** `blockquote`, `table` and `fieldset`
+  join the reset roots inside `:where()`; the markup scan covers
+  element-styled components.
+- **F6 – root neighbours.** The join's preceding and following compounds
+  exclude every reset root, generated from the same list, at zero
+  specificity.
+- **F7 – token per modifier.** The cancel reads the parent's modifier token,
+  so a child's own `--bf-stack-space` never matters. A child `.bf-prose` or
+  non-`hgroup` `.bf-stack` is not a text block and keeps the gap (simplest
+  correct rule). `hgroup` children take the join and no stack gap.
+  `display: contents` wrappers keep the gap (recorded exception).
+- **F8 – release.** README carries an “Unreleased” migration note; the first
+  release containing Spec 026 must be `0.3.0` or later
+  (`docs/publishing.md`). No version change here.
+- **F9 – behaviour script hygiene.** One statement per line; the injected
+  chrome suspension is always removed.
+- **F10 – AGENTS wording.** One short bullet; detail in
+  `docs/architecture.md`.
+- **F11 – component panels.** Panels keep the bU ledger; recorded as an open
+  owner question.
+
+## Open owner questions
+
+- **Q1 (F4).** Body-line phase after a section boundary is not guaranteed,
+  because section gaps are baseline-unit tokens (for example Documentation
+  `is-section` 48px against a 20px body line). Accept, or quantize section
+  gaps to whole body lines?
+- **Q2 (F11).** Component panels – `bf-panel`, `bf-panel-content`,
+  `bf-tabs-panel`, `bf-accordion-panel`, `bf-modal-body`, `bf-aside` – are
+  reset roots, so app-tier prose inside them keeps the bU ledger and differs
+  from page prose. Keep, or let panels host body-line flow text?
+- **Q3 (F1–F7).** Confirm the orchestrator rulings above.
 
 BF closes every metric-aligned text element to the baseline unit (bU). The
 element owns its measured top nudge and a bottom margin of `bU − nudge`, so a
@@ -127,12 +184,14 @@ so it computes both terms exactly rather than through the
   block-start phase inset and a block-end body-line closure by default, in
   all four tiers, in direct tier bundles, in the preset bundles and in
   class-scoped tier surfaces.
-- Text blocks space themselves (R6): `.bf-prose` has no gap, and a
-  `bf-stack` cancels its gap between two adjacent text blocks, so two
-  one-line paragraphs are exactly two body lines apart in every tier.
-- Component internals keep the baseline-unit ledger (R7): every class the
-  component, grid and preset CSS styles, except flow containers and page
-  shells, shares the opt-out block.
+- Text blocks join on their closure (R6, F1, F4): `.bf-prose` and
+  pattern-internal stacks cancel their gap between two adjacent visible text
+  blocks, so two one-line paragraphs are exactly two body lines apart in
+  every tier; section stacks and non-text neighbours keep their gap.
+- Component internals keep the baseline-unit ledger (R7, F3, F5): every
+  class the component, grid and preset CSS styles, except flow containers
+  and page shells, every `bf-cluster` child and `blockquote`, `fieldset` and
+  `table` share the opt-out block.
 - A prose `ul`/`ol` is one container-owned block: the body nudge and phase
   once at the top, the closure once at the end; tight items, nested items at
   any depth and the next outer item each advance one body line; loose items
@@ -161,9 +220,10 @@ so it computes both terms exactly rather than through the
 - No type-scale token changes to chase wrapped exceptions.
 - Neither term is a spacing token. No public spacing property, no DTCG
   spacing entry and no `--bf-space-*` change. No negative-margin utility.
-- Container gaps change only as ruled in R6: prose gap 0 and stack gaps
-  cancelled between adjacent text blocks. `bf-grid` row gaps, `bf-cluster`
-  and `bf-stage-shell` gaps are unchanged.
+- Container gaps change only as ruled in R6 with F1 and F4: prose and
+  pattern-internal stack gaps are cancelled between adjacent text blocks.
+  Section-stack, `bf-grid` row, `bf-cluster` and `bf-stage-shell` gaps are
+  unchanged.
 - No `1cap` anywhere (R2). No Pragma source, publication or release.
 - T031 (serializing the terms into tokens and manifests) remains open; the
   terms stay CSS-private.
@@ -266,18 +326,26 @@ candidates and the recorded exceptions.
   component, grid and preset CSS styles, minus flow containers and page
   shells; a static markup scan proves every component class in the component
   and pattern demos and README examples is covered (AC-3).
-- Text after a component or any other non-text stack child keeps the stack
+- Text after a component or any other non-text child keeps the container
   gap, so it starts on a bU-quantized offset and its body-line phase is not
-  guaranteed (R6). Recorded exception, shown in the demo.
-- A text block that is itself a `bf-stack` never takes the stack gap
-  cancel: it would read its own `--bf-stack-space`, not the parent's. That
-  pair keeps the parent gap. A `.bf-prose.bf-stack` already has no gap and
-  takes no cancel.
-- Stack gaps larger than the occupied block of the following text (section
-  and section-deep stacks holding bare paragraphs in Editorial,
-  Documentation and OS) are not fully cancelled after the second text block:
-  a grid track cannot be negative, so the third block lands one full gap
-  after the second. Recorded risk (review.md).
+  guaranteed (R6, F1). Recorded exception, shown in the demo.
+- A child `.bf-prose` or non-`hgroup` `.bf-stack` is not a text block (F7):
+  text before and after it keeps the parent gap, so body-line phase inside
+  and after it is not guaranteed (Documentation `h1 + .bf-prose`: gap
+  24px). An `hgroup.bf-stack` is a text block: it joins its neighbours with
+  the parent's token, and its own gap resolves to 0 under the default ledger.
+- A hidden or `display: contents` sibling between two text blocks leaves
+  the gap in place (F2, F7). Under-cancelling is safe; recorded exception.
+- Section stacks keep their gap (F4), so body-line phase after a section
+  boundary is not guaranteed (open question Q1).
+- Every cancelled pattern-internal gap is at most the shallow section space
+  (1.5rem; App 0.5rem) and every one-line text block occupies at least two
+  body lines (2rem or more), so the margin box never goes negative and the
+  grid track never clamps (static proof per tier, rendered proof per
+  modifier).
+- A page-local override of a flow container's `gap` under a text-to-text
+  join over-cancels, because the join reads the token; BF's own stacks never
+  override it outside component roots.
 - Consumer overrides of role font size or line height invalidate the
   precomputed literals, as they already invalidate the nudge.
 - A custom surface without computable rhythm data emits no section; its text
@@ -305,9 +373,10 @@ candidates and the recorded exceptions.
   are direct children of such an `li`. Plain and role-classed equivalents
   occupy the same box. Inside a component root every term resolves to the bU
   ledger (FR-023).
-- **FR-004** (amended by R7): out-of-scope text (meta/`figcaption`,
+- **FR-004** (amended by R7, F5): out-of-scope text (meta/`figcaption`,
   `blockquote`, `hr`, `pre`/`code`, `a.bf-text-link`, controls) keeps its
-  current declarations. Every application selector excludes the cap-engine
+  current declarations, and text inside `blockquote`, `table` and `fieldset`
+  keeps the bU ledger. Every application selector excludes the cap-engine
   demo with `:not(:where(.bf-engine-cap, .bf-engine-cap *))`.
 - **FR-005** (amended by R1): per in-scope role and surface,
   `--bf-<role>-rhythm-step`, `--bf-<role>-phase-start` and
@@ -343,11 +412,17 @@ candidates and the recorded exceptions.
 - **FR-014** (amended by R3): the `.bf-prose ul` dot keeps main's offset from
   the first baseline at every nesting depth, for tight and loose items, and
   under both ledgers.
-- **FR-015** (replaced by R6): `.bf-prose` gap is
-  `calc(var(--bf-section-space-shallow) * var(--bf-text-gap-scale))`, and in
-  a non-prose `bf-stack` a text block that directly follows a text block and
-  is not itself a `bf-stack` takes
-  `margin-block-start: calc(var(--bf-stack-space) * (var(--bf-text-gap-scale) - 1))`.
+- **FR-015** (replaced by R6, amended by F1, F2, F4, F6, F7): `.bf-prose`
+  keeps main's gap. Every child of a stack or prose block declares
+  `--bf-text-join-gap` from its parent's modifier token, in main's modifier
+  order: default `--bf-section-space-shallow`, `is-flush` `0rem`,
+  `is-extra-dense` `--bf-space-half`, `is-dense` `--bf-space-1`, `is-loose`
+  `--bf-space-2`, any section modifier `0rem`, and `.bf-prose`
+  `--bf-section-space-shallow` last. In a prose block or stack that is not
+  an `hgroup` or `is-metric-flush`, a text block that directly follows a
+  visible (`:not([hidden])`) text block, where neither is a reset root, takes
+  `margin-block-start: calc(var(--bf-text-join-gap) * (var(--bf-text-gap-scale) - 1))`.
+  An `hgroup.bf-stack` takes `gap: calc(var(--bf-stack-space) * var(--bf-text-gap-scale))`.
   `--bf-text-gap-scale` is `0` in every surface block and `1` in the bU
   ledger block. Text blocks are body, h1–h6 (semantic and classed), `hgroup`
   and prose lists.
@@ -356,12 +431,13 @@ candidates and the recorded exceptions.
   minimal local specimen CSS.
 - **FR-017**: wrapped-heading exceptions are recorded, not fixed through type
   tokens.
-- **FR-018** (amended by R1, R7): README and architecture document the
-  default and the `.is-baseline-rhythm` opt-out. The `AGENTS.md`,
-  `docs/architecture.md` and `docs/agent-index.md` invariant wording states
-  that flow text defaults to body-line phase and spaces itself through its
-  closure, that component internals and `.is-baseline-rhythm` keep the bU
-  ledger, and that BF stays metrics-only.
+- **FR-018** (amended by R1, R7, F10): README and architecture document the
+  default and the `.is-baseline-rhythm` opt-out. The `AGENTS.md` invariant is
+  one bullet of at most five lines: containers own semantic gaps, flow text
+  closes to whole body lines and containers cancel only pattern-internal gaps
+  between adjacent text blocks, and component internals and
+  `.is-baseline-rhythm` keep the bU ledger; `docs/architecture.md` and
+  `docs/agent-index.md` hold the detail. BF stays metrics-only.
 - **FR-019** (replaced by R3, widened by R7): an outermost prose list
   (`.bf-prose :is(ul, ol)` not inside a prose `li`) carries `padding-block-start: nudge + phase` and
   `margin-bottom: roundUp(nudge + phase, step) − (nudge + phase)` of the body
@@ -381,16 +457,23 @@ candidates and the recorded exceptions.
   text in a `bf-stack` and text bare in a section.
 - **FR-022** (R7): `hgroup` join and limited-pair rules select every
   `hgroup` under `.bf-theme`, not only prose ones.
-- **FR-023** (R7): the bU ledger block's selector is
-  `:where(.bf-theme.is-baseline-rhythm, .<root>, …)`, where the roots are
+- **FR-023** (R7, F3, F5): the bU ledger block's selector is
+  `:where(.bf-theme.is-baseline-rhythm, .bf-cluster > *, blockquote, fieldset, table, .<root>, …)`,
+  where the roots are
   every `bf-*` class in the component, grid and preset CSS emitted after the
   section, minus `BODY_LINE_FLOW_CLASS` (theme, tier and surface roots, text
   roles, `bf-text-link`, the engine markers, layout primitives, `bf-token-row`
   and the page shells `bf-page-shell`, `bf-application`, `bf-main`,
-  `bf-site-main`, `bf-docs-layout`, `bf-docs-layout-content`).
+  `bf-site-main`, `bf-docs-layout`, `bf-docs-layout-content`). Every element
+  selector styled after the section is a control, `hr`, a table part or an
+  element root.
 - **FR-024** (R7): component geometry is byte-for-byte unaffected:
   `npm run test:components` passes with `scripts/verify-component-baselines.ts`
   unchanged since CP-B.
+- **FR-025** (F8): README carries an “Unreleased” migration note for the
+  visible spacing change (`is-baseline-rhythm` on `.bf-theme` roots keeps the
+  old spacing), and the first release containing Spec 026 must be `0.3.0` or
+  later per `docs/publishing.md`. `package.json` is not changed here.
 
 ### Key entities
 
@@ -427,7 +510,11 @@ candidates and the recorded exceptions.
    loose-item properties and prose-only scope are absent; the existing
    `marginBottom = bU − nudgeTop` contract still passes; a markup scan of
    `demo/components`, `demo/patterns` and README examples finds every
-   component class and every component text element inside a reset root.
+   component class and every component text element inside a reset root
+   (class, cluster child or element root, F3/F5); the text-join gaps mirror
+   main's stack modifier tokens in order with section stacks at 0 (F4, F7);
+   every one-line text block and one-item list absorbs every cancelled
+   pattern-internal gap in every tier (F4).
 4. **Direct/class parity** – each tier's literals are equal in its direct
    bundle and in every class-scoped surface; the preset bundles pass AC-1 for
    their own surfaces.
@@ -471,18 +558,34 @@ candidates and the recorded exceptions.
     occupied bottom minus one step, the h1 → h2 baseline distance equals the
     R4 prediction, the group occupies whole steps and the following paragraph
     stays in phase.
-14. **Self-spacing text** (R6, R7) – in a default `.bf-prose`, a `bf-stack`
-    and bare in a `bf-section`, h2 → p advances by the h2's occupied block
-    (whole steps) and one-line p → p first baselines are exactly two steps
-    apart; every first baseline sits within `root / 16` of a whole step from
-    the flow top; prose has no gap by default and the group gap under the
-    opt-out; text ↔ component keeps the stack gap both ways; the offset of
+14. **Self-spacing text** (R6, R7, F1) – in a default `.bf-prose`, a
+    `bf-stack` and bare in a `bf-section`, h2 → p advances by the h2's
+    occupied block (whole steps) and one-line p → p first baselines are
+    exactly two steps apart; every first baseline sits within `root / 16` of
+    a whole step from the flow top; prose keeps its group gap in both
+    ledgers; text ↔ component keeps the stack gap both ways; the offset of
     text after a component is recorded, not asserted. The opt-out equals main
     for all four fixtures.
 15. **Component geometry unchanged** (R7) – `npm run test:components`
     passes with no change to `scripts/verify-component-baselines.ts` in this
     wave; changed page-text behaviour assertions are listed in `review.md`
     with before and after.
+16. **Adjacency** (F1–F7) – Chromium DPR 1, 16px root, all four tiers,
+    against main's CSS (the bundle with the section stripped), each fixture in
+    a whole-pixel slot, within 0.1px: the clearance after `pre`, `table`,
+    `figure`, `.bf-card`, a component list, `hr` and `blockquote` in prose and
+    in a stack equals main, and each keeps the gap before it; `stack > p[hidden]
+    + p + p` starts at the stack top; a cluster row of `p`, `.bf-button` and
+    `.bf-status-label` equals main and shares one baseline; default,
+    `is-extra-dense`, `is-dense` and `is-loose` stacks advance p → p by
+    exactly two body lines with a non-negative margin box; section stacks
+    keep their gap; `blockquote > p`, `td > p` and `fieldset > p` equal main;
+    `p.bf-form-help + p` and `p + p.bf-form-help` keep the gap, the first
+    with main's clearance; `p + hgroup.bf-stack + p` joins on closures in a
+    dense and a default stack whatever the hgroup's own modifier, and its
+    children take only the one-step join; a child stack or prose block keeps
+    the parent gap; hidden-middle and `display: contents` offsets are
+    recorded. Every fixture under `.is-baseline-rhythm` equals main.
 
 ## Assumptions
 

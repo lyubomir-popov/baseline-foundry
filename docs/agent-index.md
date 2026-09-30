@@ -70,9 +70,12 @@ tagging and GitHub release assets.
 - Do not restore broad direct-child resets that erase baseline compensation.
   BF containers own semantic gaps, while metric-aligned text keeps its top
   nudge and bottom-margin compensation; flow text adds its body-line phase
-  and closure and cancels stack gaps between adjacent text blocks, and a
-  prose list owns them once for all its items. Component roots keep the bU
-  ledger. Test text changes under both the default and `.is-baseline-rhythm`.
+  and closure, and prose and pattern-internal stacks (not section stacks)
+  cancel their gap between adjacent visible text blocks; a prose list owns
+  phase and closure once for all its items. Component roots, cluster children,
+  `blockquote`, `fieldset` and `table` keep the bU ledger. Test text changes
+  under both the default and `.is-baseline-rhythm`, and never override a
+  flow container's gap under text-to-text joins: the cancel reads the token.
 - Do not add arbitrary grid spans to solve a composed documentation layout.
 - Article pagination is not numbered pagination and must not inherit disabled
   page-control behavior.

@@ -56,11 +56,19 @@ All four tiers use one ownership model:
   owner rulings 2026-09-30): `p`/`.bf-body` and `h1`–`h6`/`.bf-h1`–`.bf-h6`
   own their measured `padding-block-start` plus a build-time phase inset, and
   a `margin-block-end` closure to whole body lines;
-- text blocks space themselves: the closure supplies one blank body line, so
-  `.bf-prose` has no gap and a `bf-stack` cancels its gap between two adjacent
-  text blocks (paragraphs, headings, `hgroup`, prose lists); text next to any
-  other child keeps the stack gap, so body-line phase after a component is not
-  guaranteed;
+- text blocks join on their closure: containers own semantic gaps, and the
+  closure already supplies one blank body line, so `.bf-prose` and
+  pattern-internal stacks (default, `is-extra-dense`, `is-dense`, `is-loose`)
+  cancel their gap only between two adjacent visible text blocks
+  (paragraphs, headings, `hgroup`, prose lists) that are not reset roots. The
+  cancel reads the parent's modifier token, never the child's own
+  `--bf-stack-space`, and an `hgroup.bf-stack` has no gap of its own under
+  the default ledger. Section stacks (`is-section-shallow`, `is-section`,
+  `is-section-deep`) keep their gap between complete sections or patterns,
+  and text next to any non-text child (a component, `hr`, `pre`, `table`,
+  `figure`, `blockquote`, a nested stack or prose block, a hidden or
+  `display: contents` sibling) keeps the gap, so body-line phase after those
+  is not guaranteed;
 - a prose `ul`/`ol` is a container-owned block: the outermost list carries the
   body nudge and phase once as `padding-block-start` and the closure once as
   `margin-block-end`, and its items and nested lists carry no block padding or
@@ -70,15 +78,20 @@ All four tiers use one ownership model:
   line, except pairs whose static cap-height-plus-descender proof fails, which
   stay unjoined;
 - component internals keep the baseline-unit ledger: every class styled by
-  the component, grid and preset CSS (except flow containers and page shells)
-  shares the `.bf-theme.is-baseline-rhythm` block, which redeclares every term
-  to its bU equivalent; the nearest theme or component root wins through
-  inherited private properties;
+  the component, grid and preset CSS (except flow containers and page shells),
+  every `bf-cluster` child (row text aligns to controls) and the
+  element-styled `blockquote`, `fieldset` and `table` share the
+  `.bf-theme.is-baseline-rhythm` block, which redeclares every term to its bU
+  equivalent; the nearest theme or component root wins through inherited
+  private properties. Component panels (`bf-panel*`, tab and accordion
+  panels, the modal body, `bf-aside`) are roots too, so prose inside them
+  keeps the bU ledger – an open owner question in Spec 026;
 - baseline-unit-ledger text owns its measured `padding-block-start`
   and only the complementary, non-semantic `margin-block-end` required to
   complete a baseline unit;
 - production text uses no bottom-padding compensation and role space-after
-  does not contribute to layout;
+  does not contribute to layout; the body-line closure is a metric term, not
+  a role space-after;
 - layout containers and patterns own semantic spacing between direct children;
 - nested `bf-stack` containers express different densities, including the
   larger boundary between complete patterns or sections;

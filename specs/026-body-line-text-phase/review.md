@@ -434,6 +434,10 @@ classes are unstyled hooks (for example `.bf-notification-title`,
 
 ### Changed behaviour assertions
 
+*The `spacing-vertical.html` rows are reverted to main by F3, and the
+pointer-target row is reworked by F9; see “Behaviour assertions still
+differing from main” below.*
+
 All in `scripts/verify-component-behavior.ts`, each with a one-line reason
 comment. Tolerances unchanged.
 
@@ -477,6 +481,9 @@ and hgroup distances equal the CP-B values. The −0.02px on whole-line values
 is Chromium's −1/64px layout drift.
 
 ### Risk: stack gaps larger than a text block
+
+*Superseded by F4: section stacks no longer cancel (see “Adversarial review
+F1–F11”).*
 
 `tmp/026-r7/gap-clamp.ts` (not committed), three bare one-line paragraphs per
 stack, p1 → p2 / p2 → p3 top advance at 16px:
@@ -527,3 +534,92 @@ chrome appears mid-page in full-page captures.
 - Page shells are flow classes by judgement (research T16); if the owner
   wants application shells on bU, add them to the reset list.
 - Dark-tone review (T022), T023, T031 serialization and the rest of T032.
+
+## Adversarial review F1–F11 – fixes (2026-09-30)
+
+Orchestrator rulings (spec, research D9), pending owner confirmation.
+“Before” is the reviewer's measurement at `f175ca3` (`tmp/r67/`); “after” is
+`verifyBodyLineRhythmAdjacency` and `tmp/026-fix/measure.mjs` at `4fe0ddd`,
+Chromium DPR 1, 16px root, main = the same bundle with the section stripped
+(AC-2 identity), each fixture in a whole-pixel slot.
+
+| Finding | Fix | Commit |
+|---|---|---|
+| F1 prose gap 0 removed space after non-text children | Prose keeps main's gap; prose and stacks cancel it only between two text blocks | `4fe0ddd` |
+| F2 hidden first text block pulled the next one above the stack | `:not([hidden])` on the preceding compound | `4fe0ddd` |
+| F3 row text out of line with controls; masked by an assertion rewrite | `.bf-cluster > *` is a bU ledger root; main's vertical-audit assertions and demo copy restored | `4fe0ddd` |
+| F4 section-stack gaps clamped | Section stacks keep their gap; static `occupied − gap ≥ 0` and rendered two-line advance per pattern modifier | `4fe0ddd` |
+| F5 `blockquote`, `table`, `fieldset` text on body lines | Element roots in the bU ledger block; markup scan and element-selector check | `4fe0ddd` |
+| F6 component text followed by page text lost the gap | Join excludes reset roots on both sides, from the same list | `4fe0ddd` |
+| F7 prose/stack/hgroup children, `display: contents` | Per-modifier `--bf-text-join-gap` on children; `hgroup.bf-stack` gap scaled by the ledger; child containers and `display: contents` recorded | `4fe0ddd` |
+| F8 no release or migration note | README “Unreleased” note; `0.3.0` floor in `docs/publishing.md`, spec FR-025 and plan | docs commit |
+| F9 behaviour script hygiene | Chrome suspension via `addStyleTag`, removed in `finally`; one statement per line | `4fe0ddd` |
+| F10 AGENTS bullet | Five lines; detail in `docs/architecture.md` and `docs/agent-index.md` | docs commit |
+| F11 panels keep the bU ledger | README, architecture and spec open question Q2 | docs commit |
+
+### Before and after (px, @16px)
+
+| Case | Tier | Before | After | Main |
+|---|---|---|---|---|
+| Clearance after `pre`, `table`, `figure`, `.bf-card` in prose | all | 0.00 | 24.00 (App 8.00) | 24.00 (App 8.00) |
+| Clearance after `hr` in prose | ed / doc / app / os | 7.00 | 31.00 / 31.00 / 15.00 / 31.00 | same |
+| Clearance after `blockquote` in prose | ed / doc / app / os | 1.43 / 2.75 / 2.75 / 0.07 | 25.44 / 26.75 / 10.75 / 24.08 | same |
+| Clearance after `nav.bf-breadcrumbs`, `ul.bf-list` in prose | all | 0.00 / 0.01 | 24.00 (App 8.00) | same |
+| `stack > p[hidden] + p + p`, first visible top | ed / doc / os / app | −24 / −24 / −24 / −8 | 0 | 0 |
+| Cluster row baselines `p` / `.bf-button` / `.bf-status-label` | doc, app | 19.23 / 15.23 / 15.23 | 15.23 / 15.23 / 15.23 | 15.23 all |
+| Pattern stack p → p advance (default, extra-dense, dense, loose) | ed / doc / app / os | 47.98 / 39.98 / 39.98 / 31.98 | same, now asserted per modifier | – |
+| `is-section` p → p clearance after the closure | ed / doc / app / os | clamped (p2 → p3 advance 64 / 48 / – / 48) | 64.00 / 47.99 / 15.99 / 48.00 (the gap) | same gap |
+| `is-section-deep` p → p clearance | ed / doc / app / os | clamped (128 / 96 / – / 96) | 128.00 / 95.99 / 31.99 / 96.00 | same gap |
+| `blockquote > p` occupied (ed), `td > p`, `fieldset > p` | all | body-line closure (54.53 / 63.97 / 103.98) | equals main | – |
+| `p.bf-form-help + p` clearance | ed / doc / app / os | 1.43 / 2.75 / 2.75 / 0.07 | 25.43 / 26.75 / 10.75 / 24.07 | same |
+| `hgroup.bf-stack.is-dense` h2 → p top advance | ed / doc / app / os | 55.99 / 44.00 / – / – | 47.99 / 39.99 / 39.99 / 31.99 (two lines) | – |
+| `p + hgroup.bf-stack` in a dense stack | all | gap kept | joined on the closure (clearance 0) | – |
+| `h1 + .bf-prose` in a stack (recorded) | ed / doc / app / os | 24 (doc 38.75 incl. closure) | 23.99 / 23.99 / 7.99 / 23.99 gap kept | – |
+| Hidden or `display: contents` sibling between text blocks (recorded) | ed / doc / app / os | gap kept | 24.00 / 23.99 / 7.99 / 24.00 | – |
+
+Every adjacency fixture under `.is-baseline-rhythm` equals main (0.1px) in
+all four tiers. The demo route family is unchanged: max |opt-out − main|
+0.0000px; max |default − opt-out − phase| 0.0000px; first baselines within
+0.938px (16px root) and 1.844px (32px root) of a whole body line; recorded
+exceptions as before (text after a component 8.05 / 8.03 / 0.03 / 7.95).
+
+### Behaviour assertions still differing from main
+
+`scripts/verify-component-behavior.ts` against `main`:
+
+| Family | Difference | Reason |
+|---|---|---|
+| `verifyNativeNumberStepper` (`spacing-vertical.html`) | none | F3 restored main's five assertions and dropped the added `bodyLine`/`bodyPhase` fields |
+| `verifyBlockDerivedInlineGeometry`, `assertExtendedPointerTarget` | page chrome `pointer-events` suspended with `page.addStyleTag` while sampling, removed in `finally`; assertion unchanged | taller page text leaves the last `button.html` icon button under the fixed footer even at maximum scroll (top 879.6px of a 960px viewport, scroll 88px), so scrolling to the centre is not enough |
+| `verifySemanticRoleClassPrecedence`, direct-child prose `ul`/`ol` boundary | `margin-bottom` equals the list closure instead of `0px` | R3: the prose list is a container-owned block that carries the closure once |
+| `verifyContainerOwnedSpacing`, bare `p + p` in a default stack | `firstToSecond` equals the closure instead of gap + margin-bottom | R6: the default stack is pattern-internal and cancels its gap between text blocks |
+| same, occupied block | nudge + phase + line + closure is whole body lines instead of nudge + margin-bottom = one bU | R7: page text closes to whole body lines |
+| `main()` | also runs `verifyBodyLineRhythm` and `verifyBodyLineRhythmAdjacency` | new families |
+
+`scripts/verify-component-baselines.ts` is unchanged since `f175ca3`.
+
+### Demo
+
+The ledger, matrix, hgroup and wrapped fixtures run on BF's own prose gap,
+because a page-local `gap: 0` under a text-to-text join over-cancels; the
+list, rule, quote and metric-flush fixtures keep the zero-gap specimen.
+Screenshots in `tmp/026-fix/shots/` (light, four tiers): the default column
+joins text blocks on their closures, the opt-out column shows main's gaps,
+and the console is clean.
+
+### Gates (after the fixes)
+
+- `npm run build`: green.
+- `npm test`: green. `test:build` 29,142 checks (body-line formulas 745;
+  section 478 per built-in bundle, 369 for the experiment; parity 70; demo
+  57; markup scope 3); `test:components` 332 surfaces, 5,442 checks,
+  0 failures; `test:behavior` passed, including the adjacency family.
+- `npm run qa:components`: green. 86 pages captured, 332 surfaces, 5,442
+  checks, 0 failures.
+
+### Open owner questions
+
+- Q1 – body-line phase after a section boundary is not guaranteed, because
+  section gaps are baseline-unit tokens.
+- Q2 – component panels keep the bU ledger.
+- Q3 – confirm orchestrator rulings F1–F11.

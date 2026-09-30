@@ -422,6 +422,77 @@ glyphs do not overlap. The h1 → h2 distances match the ruling's prediction.
 
 ## Decisions
 
+### D9 – Orchestrator rulings on the R6/R7 adversarial review (F1–F11), pending owner confirmation
+
+Orchestrator decisions, 2026-09-30, full text in the spec. They supersede
+T13, T14 and T18 below and refine T15–T17; the owner has not yet confirmed
+them (spec, open question Q3).
+
+- **T19 – prose keeps its gap (F1).** The section no longer declares a prose
+  gap, so main's `.bf-prose { gap: var(--bf-section-space-shallow) }` rule is
+  the only one. Prose joins text blocks with the same rule as stacks, so
+  `pre`, `table`, `figure`, `hr`, `blockquote` and components in prose keep
+  main's clearance.
+- **T20 – the join reads the parent's token (F4, F7).** Every child of a
+  stack or prose block declares `--bf-text-join-gap` through
+  `:where(<container> > *)`, one rule per modifier in main's order: default
+  shallow, `is-flush` 0, `is-extra-dense` half, `is-dense` 1 bU, `is-loose`
+  2 bU, all three section modifiers 0 in one rule, and `.bf-prose` shallow
+  last because main's prose gap wins over any stack gap on the same element.
+  The property is declared on the child by its parent's modifier, so a child
+  that is itself a stack never sees its own `--bf-stack-space`, and seven
+  short rules replace per-modifier copies of the long join selector. A
+  static check derives the expected table from main's stack rules. A
+  consumer override of `--bf-stack-space` or `gap` on a flow stack is not
+  tracked; BF only overrides them on component roots, where the scale is 1.
+- **T21 – one join rule.**
+  `:where(:is(.bf-stack, .bf-prose):not(hgroup, .is-metric-flush) > T:not([hidden]):not(:where(<roots>)) + T:not(:where(<roots>)))`
+  takes `margin-block-start: calc(var(--bf-text-join-gap) * (var(--bf-text-gap-scale) - 1))`.
+  `<roots>` is the bU ledger list itself, so it can never drift (F6). The
+  following root is also excluded by its own scale of 1; the explicit
+  exclusion follows the ruling literally at a cost of about 9KB per bundle
+  (dist/styles.css 391,541 → 409,333 bytes, both lists included). A hidden
+  preceding block never closes to body lines, so the next visible one keeps
+  the gap (F2). `is-metric-flush` parents are excluded so FR-013 keeps
+  precedence trivially; the follower no longer excludes `.bf-stack`.
+- **T22 – what counts as text (F7).** Text blocks stay a closed list of
+  elements: body, h1–h6 (semantic and classed), `hgroup` and prose lists. A
+  child `.bf-prose` or non-`hgroup` `.bf-stack` is never a text block, even
+  when its first or last child is text, so the parent gap stays on both
+  sides. This is the simplest correct rule: looking inside a container would
+  need `:has()` on first and last in-flow children and would still miss
+  hidden and `display: contents` children. An `hgroup.bf-stack` is a text
+  block; its own gap is `calc(var(--bf-stack-space) * var(--bf-text-gap-scale))`,
+  so its children take only the one-step join under the default ledger and
+  main's gap under the bU ledger. `display: contents` wrappers keep the gap
+  (recorded exception).
+- **T23 – structural and element roots (F3, F5).** `BODY_LINE_ELEMENT_ROOTS`
+  – `.bf-cluster > *`, `blockquote`, `fieldset`, `table` – follow
+  `.bf-theme.is-baseline-rhythm` in the bU ledger block, inside `:where()`.
+  Cluster children make control-row text align to controls, so main's
+  vertical-audit assertions pass unmodified. The markup scan treats element
+  roots and cluster children as reset, and a static check requires every
+  element selector styled after the section to be a control, `hr`, a table
+  part or an element root.
+- **T24 – no clamped track (F4).** With section stacks excluded, the largest
+  cancelled gap is the shallow section space: 1.5rem in Editorial,
+  Documentation and OS, 0.5rem in App. The smallest one-line text block
+  occupies two body lines (2rem in OS, 2.5rem in Documentation and App, 3rem
+  in Editorial) and a one-item list the same, so every margin box stays
+  non-negative. The static formulas check asserts `occupied − gap ≥ 0` for
+  every role, the one-item list and every pattern gap per tier; the
+  rendered adjacency check asserts a two-line p → p advance in every
+  pattern stack and tier.
+- **T25 – demo zero gap.** Page-local `gap: 0` over a text-to-text join
+  over-cancels, because the join reads the token. The ledger, matrix, hgroup
+  and wrapped fixtures now run on BF's own prose gap; list, rule, quote and
+  flush fixtures keep the zero-gap specimen because BF cancels nothing there.
+- **T26 – test hygiene (F9).** The pointer-target check adds the chrome
+  suspension with `page.addStyleTag` and removes it in the evaluation
+  promise's `finally`. Scrolling the sample to the viewport centre is not
+  enough: the last `button.html` icon button stays under the fixed footer at
+  maximum scroll (top 879.6px of 960px, scroll 88px).
+
 ### D8 – Owner rulings, 2026-09-30 (R6–R7)
 
 The owner ruled, close to verbatim (full text in the spec):

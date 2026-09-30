@@ -30,18 +30,11 @@ Read in this order:
 - Baseline Foundry is design-led internal tooling. Explicit owner decisions and
   local active specs govern it; a Pragma or Canonical official-design-system
   compromise is not automatically a BF requirement.
-- Semantic vertical spacing is container-owned in every built-in tier:
-  editorial, documentation, app, and OS. Flow text anywhere under `.bf-theme`
-  defaults to body-line phase and spaces itself (Spec 026, owner rulings
-  2026-09-30): paragraphs, headings, `hgroup` and prose lists keep their
-  measured nudge, add a metric-derived phase inset and close to whole body
-  lines, so `.bf-prose` has no gap and a `bf-stack` cancels its gap between
-  two adjacent text blocks. Component internals and `.is-baseline-rhythm`
-  subtrees keep the baseline-unit ledger: measured top nudge plus
-  complementary bottom-margin compensation. BF stays metrics-only; role
-  space-after does not drive layout. Nested `bf-stack` containers own direct
-  child gaps, and plain and visual-role-classed equivalents must occupy the
-  same baseline-aligned box.
+- Semantic vertical spacing is container-owned in all four tiers; nested
+  `bf-stack` containers own direct child gaps. Flow text (Spec 026) closes to
+  whole body lines and containers cancel only pattern-internal gaps between
+  adjacent text blocks; component internals and `.is-baseline-rhythm` keep the
+  bU ledger. Plain and role-classed text share one box. See `docs/architecture.md`.
 - Baseline compensation comes from real font metrics. The cap engine is a demo
   comparison, not a production surface.
 - OS is the fourth first-class built-in tier. Density differences are

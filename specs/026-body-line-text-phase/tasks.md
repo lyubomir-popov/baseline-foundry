@@ -301,6 +301,45 @@ Owner rulings R6–R7, 2026-09-30 (spec, research D8).
 
 **R6–R7**: done. T022 dark review, T023, T031 and the rest of T032 remain
 open; the section-stack gap clamp (research T18) needs an owner decision.
+*Superseded by F4: section stacks no longer cancel.*
+
+## F1–F11 – Adversarial review fixes
+
+Orchestrator rulings, 2026-09-30, pending owner confirmation (spec, research
+D9).
+
+- [x] T042 (F1, F4, F6, F7) Prose keeps its gap; per-modifier
+  `--bf-text-join-gap` declared on stack and prose children in main's order,
+  section stacks and `is-flush` at 0; one join rule for prose and stacks
+  excluding `hgroup` and `is-metric-flush` parents, hidden preceding blocks
+  and reset roots on both sides; `hgroup.bf-stack` gap scaled by the ledger
+  (`src/css.ts`).
+  *Evidence*: commit `4fe0ddd`.
+- [x] T043 (F2) `:not([hidden])` on the preceding compound.
+  *Evidence*: commit `4fe0ddd`; adjacency `hidden-first`.
+- [x] T044 (F3, F5) `.bf-cluster > *`, `blockquote`, `fieldset`, `table`
+  join the bU ledger roots; markup scan covers element roots and cluster
+  children; element selectors after the section are checked.
+  *Evidence*: commit `4fe0ddd`.
+- [x] T045 (F3) Restore main's vertical-audit assertions and demo copy.
+  *Evidence*: commit `4fe0ddd`; `scripts/verify-component-behavior.ts`
+  lines 453–516 equal main.
+- [x] T046 (F1–F7) Rendered adjacency contracts against main in every tier;
+  static join-table, element-root and `occupied − gap ≥ 0` proofs.
+  *Evidence*: `verifyBodyLineRhythmAdjacency`,
+  `validateBodyLineRhythmFormulas`, commit `4fe0ddd`.
+- [x] T047 Demo: text-to-text fixtures on BF's own prose gap; wording for
+  F1/F4.
+  *Evidence*: commit `4fe0ddd`.
+- [x] T048 (F9) Pointer-target chrome suspension scoped with `finally`; one
+  statement per line.
+  *Evidence*: commit `4fe0ddd`.
+- [x] T049 (F8, F10, F11) README migration note and scope, release floor in
+  `docs/publishing.md`, trimmed `AGENTS.md` bullet, architecture and agent
+  index detail, spec, plan, research, contract and review.
+  *Evidence*: docs commit after `4fe0ddd`.
+
+**F1–F11**: done. Open owner questions Q1–Q3 (spec).
 
 ## Dependencies
 

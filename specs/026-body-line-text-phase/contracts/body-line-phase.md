@@ -86,8 +86,9 @@ Values are formatted with the existing rem helper (five decimals).
 | Target | Selectors |
 |---|---|
 | body, h1–h6 | `:where(<tag>)` and `.bf-<role>` |
-| prose gap | `:where(.bf-prose)` |
-| stack text join | `:where(.bf-stack:not(.bf-prose) > <text> + <text>:not(.bf-stack))`, `<text>` = `:is(p, h1…h6, hgroup, .bf-body, .bf-h1….bf-h6, .bf-prose ul, .bf-prose ol)` |
+| text-join gap | `:where(<container> > *)` for `.bf-stack`, `.bf-stack.is-flush`, `.bf-stack.is-extra-dense`, `.bf-stack.is-dense`, `.bf-stack.is-loose`, `.bf-stack:is(.is-section-shallow, .is-section, .is-section-deep)`, `.bf-prose`, in that order |
+| text join | `:where(:is(.bf-stack, .bf-prose):not(hgroup, .is-metric-flush) > <text>:not([hidden])<not-root> + <text><not-root>)`, `<text>` = `:is(p, h1…h6, hgroup, .bf-body, .bf-h1….bf-h6, .bf-prose ul, .bf-prose ol)`, `<not-root>` = `:not(:where(<block 3 selector list>))` |
+| hgroup stack gap | `:where(hgroup.bf-stack)` |
 | hgroup join | `:where(hgroup > * + *)`; limited pairs `:where(hgroup > :is(<P>, .bf-<P>) + :is(<N>, .bf-<N>))` |
 | list block | `:where(.bf-prose :is(ul, ol):not(.bf-prose li *))` |
 | list items | `:where(.bf-prose li)` |
@@ -101,8 +102,8 @@ specificity. Only roles present in the surface are emitted.
 
 Not selected: meta, lead, `figcaption`, `blockquote`, `hr`, `pre`/`code`,
 `a.bf-text-link`, controls and anything under `.bf-engine-cap`. Text inside
-a component root is selected but resolves every term to the bU ledger
-(block 3).
+a component root, a `bf-cluster` child, `blockquote`, `fieldset` or `table`
+is selected but resolves every term to the bU ledger (block 3).
 
 ## Generated CSS shape
 
@@ -135,8 +136,8 @@ One contiguous section, emitted after the `.bf-prose li` and
 /* 2. One block per class-scoped surface, in existing surface order. */
 :where(.bf-theme.bf-tier-<tier>) { /* same shape */ }
 
-/* 3. Opt-out and every component root: every term to main's baseline-unit ledger. */
-:where(.bf-theme.is-baseline-rhythm, .bf-accordion, …, .bf-validation-message) {
+/* 3. Opt-out, structural and element roots, and every component root: every term to main's baseline-unit ledger. */
+:where(.bf-theme.is-baseline-rhythm, .bf-cluster > *, blockquote, fieldset, table, .bf-accordion, …, .bf-validation-message) {
   --bf-<role>-rhythm-step: var(--bf-baseline);
   --bf-<role>-phase-start: 0rem;
   --bf-<role>-closure-end: var(--bf-<role>-margin-bottom);
@@ -159,12 +160,19 @@ One contiguous section, emitted after the `.bf-prose li` and
   padding-block-start: calc(var(--bf-h3-nudge-start) + var(--bf-h3-phase-start));
 }
 
-/* 5. Self-spacing text blocks (R6). */
-:where(.bf-theme) :where(.bf-prose):not(…) {
-  gap: calc(var(--bf-section-space-shallow) * var(--bf-text-gap-scale));
+/* 5. Text blocks join on their closure (R6, orchestrator rulings F1–F7). Prose keeps main's gap. */
+:where(.bf-theme) :where(.bf-stack > *):not(…) { --bf-text-join-gap: var(--bf-section-space-shallow); }
+:where(.bf-theme) :where(.bf-stack.is-flush > *):not(…) { --bf-text-join-gap: 0rem; }
+:where(.bf-theme) :where(.bf-stack.is-extra-dense > *):not(…) { --bf-text-join-gap: var(--bf-space-half); }
+:where(.bf-theme) :where(.bf-stack.is-dense > *):not(…) { --bf-text-join-gap: var(--bf-space-1); }
+:where(.bf-theme) :where(.bf-stack.is-loose > *):not(…) { --bf-text-join-gap: var(--bf-space-2); }
+:where(.bf-theme) :where(.bf-stack:is(.is-section-shallow, .is-section, .is-section-deep) > *):not(…) { --bf-text-join-gap: 0rem; }
+:where(.bf-theme) :where(.bf-prose > *):not(…) { --bf-text-join-gap: var(--bf-section-space-shallow); }
+:where(.bf-theme) :where(:is(.bf-stack, .bf-prose):not(hgroup, .is-metric-flush) > <text>:not([hidden])<not-root> + <text><not-root>):not(…) {
+  margin-block-start: calc(var(--bf-text-join-gap) * (var(--bf-text-gap-scale) - 1));
 }
-:where(.bf-theme) :where(.bf-stack:not(.bf-prose) > <text> + <text>:not(.bf-stack)):not(…) {
-  margin-block-start: calc(var(--bf-stack-space) * (var(--bf-text-gap-scale) - 1));
+:where(.bf-theme) :where(hgroup.bf-stack):not(…) {
+  gap: calc(var(--bf-stack-space) * var(--bf-text-gap-scale));
 }
 
 /* 6. Heading-group join, then one rule per limited pair. */
@@ -208,7 +216,8 @@ Rules:
   is needed. Block 3 follows every surface block so
   `.bf-theme.bf-tier-<tier>.is-baseline-rhythm`, and a `.bf-theme` that is
   also a component root, resolve the bU ledger.
-- Block 3's roots are every `bf-*` class in the component, grid and preset
+- Block 3's roots are `.bf-cluster > *`, `blockquote`, `fieldset`, `table`
+  (F3, F5) and every `bf-*` class in the component, grid and preset
   CSS emitted after the section, minus flow classes (theme, tier and surface
   roots, text roles, `bf-text-link`, engine markers, `bf-page`, `bf-grid`,
   `bf-grid-item`, `bf-grid-scope`, `bf-span-*`, `bf-stack`, `bf-cluster`,
@@ -216,6 +225,10 @@ Rules:
   `bf-inline-size`, `bf-stage-shell`, `bf-token-row` and the page shells
   `bf-page-shell`, `bf-application`, `bf-main`, `bf-site-main`,
   `bf-docs-layout`, `bf-docs-layout-content`), sorted.
+- The text-join gap is declared on the child by its parent's modifier, in
+  main's modifier order, so a child's own `--bf-stack-space` never matters;
+  `.bf-prose` comes last because main's prose gap wins on a
+  `.bf-prose.bf-stack`. Section stacks and `is-flush` join at 0.
 - The opt-out's `var()` values resolve on the opted-out root against its own
   role properties, so every tier gets its own bU ledger.
 - Application declarations have no `var()` fallback; the section is emitted
@@ -272,9 +285,10 @@ Measured and recorded in `review.md`, not asserted. Sizes at a 16px root.
 | `hr` (0.5rem occupied) | Off by 0.5rem | 8px | 8px | 8px | 8px |
 | `blockquote` (body `lh + bU`) | Off by `(lh + bU) mod step` | 8px | 4px | 4px | 4px |
 | `bf-grid` row gap | Unchanged gap | 1rem | 1.5rem | 1.5rem | – |
-| Text after a component or other non-text stack child | Starts one stack gap after a bU-quantized block; measured | 8.05px | 8.03px | 0.03px | 7.95px |
-| Text block that is itself a `bf-stack`, after text | Keeps the parent stack gap | – | – | – | – |
-| Stack gap larger than a text block's occupied height | Grid track clamps at 0; the next text block lands one full gap later | section, section-deep | section, section-deep | – | section, section-deep |
+| Text after a component or other non-text child | Starts one gap after a bU-quantized block; measured | 8.05px | 8.03px | 0.03px | 7.95px |
+| Child `.bf-prose` or non-`hgroup` `.bf-stack` after text (F7) | Keeps the parent gap | 24px | 24px | 8px | 24px |
+| Hidden or `display: contents` sibling between text blocks (F2, F7) | Keeps the gap | 24px | 24px | 8px | 24px |
+| Text in a section stack (F4) | Keeps the section gap; phase after it not guaranteed (open question Q1) | section tokens | section tokens | section tokens | section tokens |
 | Several paragraphs in one loose item | Not separated | – | – | – | – |
 
 Nested lists are no longer an exception (R3).
@@ -291,8 +305,9 @@ reaches 0.906px at 16px and 1.813px at 32px (research R2 cross-check).
 - Probe: a zero-height `inline-block` element on the baseline at the start of
   each line. `elementTop` is the element's border-box top.
 - Fixtures: the same markup in a default column and an `.is-baseline-rhythm`
-  column, each in a zero-gap `.bf-prose` flow (demo-local `gap: 0` specimen
-  rule), plus a default theme nested in an opted-out host.
+  column; text-to-text flows run on BF's own prose gap, and flows where BF
+  cancels nothing (lists, rule, quote, metric-flush pair) use a demo-local
+  `gap: 0` specimen; plus a default theme nested in an opted-out host.
 - **Opt-out equals main (R1)**: the route is rendered a second time with the
   section stripped from the requested tier bundle, which is main's CSS. Every
   `.is-baseline-rhythm` fixture box (top from its flow, height, margin-bottom,
@@ -320,10 +335,19 @@ reaches 0.906px at 16px and 1.813px at 32px (research R2 cross-check).
   `bf-stack` and a bare `bf-section`, each h2, p, p: the p top equals the
   h2's occupied bottom and is whole steps after the h2 top; one-line p → p
   first baselines are exactly two steps apart; every first baseline sits
-  within `root / 16` of a whole step from the flow top; the default prose gap
-  is 0 and the opt-out's is positive; the opt-out stack keeps main's gap;
+  within `root / 16` of a whole step from the flow top; prose keeps its
+  group gap in both ledgers; the opt-out stack keeps main's gap;
   text → component and component → text are separated by exactly the stack
   gap. The four fixtures are included in the opt-out-equals-main check.
+- **Adjacency (F1–F7, AC-16)**: `verifyBodyLineRhythmAdjacency` renders the
+  review fixtures in whole-pixel slots at a 16px root in every tier, against
+  main's CSS: clearance after non-text children equals main; a hidden first
+  block starts at the stack top; cluster rows, `blockquote > p`, `td > p`
+  and `fieldset > p` equal main; pattern stacks advance p → p by exactly two
+  body lines with a non-negative margin box; section stacks keep their gap;
+  component-root neighbours keep the gap; `hgroup.bf-stack` joins on the
+  parent's token and its children take only the hgroup join; child
+  containers keep the parent gap. Every fixture's opt-out equals main.
 - **Nested default**: a default theme in an opted-out host matches the
   default column for `probe − elementTop` and element advance.
 - **Direct bundles**: `dist/tiers/{documentation,app,os}/styles.css` at a 16px

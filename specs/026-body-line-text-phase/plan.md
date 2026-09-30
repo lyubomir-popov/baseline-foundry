@@ -5,6 +5,16 @@
 
 ## Summary
 
+**Adversarial-review update, 2026-09-30.** Orchestrator rulings F1–F11
+(spec, pending owner confirmation) narrow R6: prose keeps its gap, and prose
+and pattern-internal stacks cancel it only between two adjacent visible
+text blocks, reading the parent's modifier token (research D9). Section
+stacks keep their gap; cluster children, `blockquote`, `fieldset` and
+`table` join the bU ledger roots. **Release floor:** the first release
+containing Spec 026 must be `0.3.0` or later (`docs/publishing.md`
+“Compatibility”), with the README “Unreleased” migration note; this package
+does not change `package.json`.
+
 **CP-B update, 2026-09-30.** The owner rulings R1–R5 (spec “Owner
 rulings”) flip the default: body-line rhythm applies to prose text without a
 class, `.bf-theme.is-baseline-rhythm` restores main's bU ledger, and
@@ -133,3 +143,6 @@ captured route carries the modifier; any diff is a defect.
 | Custom themes failing to build | Only built-in surfaces throw; custom surfaces no-op (research T4) |
 | Spec 025 overlap in `src/css.ts` and the behaviour suite | Rebase before the capture; any later rebase repeats it |
 | Chromium `round()` support for the demo candidates | Library text terms use literals; only the demo candidates and a later (b)/(d) ruling need `round()` |
+| Visible spacing change for existing consumers (F8) | README “Unreleased” migration note; `is-baseline-rhythm` restores the old spacing; first release ≥ `0.3.0` |
+| Cancelled gap clamping a grid track (F4) | Section stacks never cancel; static `occupied − gap ≥ 0` proof per tier, role and pattern gap; rendered whole-line advance per modifier |
+| Page-local gap overrides over-cancelling | The join reads the token; documented in `docs/agent-index.md`; the demo keeps its zero-gap specimen only where BF cancels nothing |

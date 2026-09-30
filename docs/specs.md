@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
-| 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Owner rulings R1–R7 (2026-09-30): flow text anywhere under `.bf-theme` defaults to body-line phase and spaces itself (D4 closed as (c)); container-owned list blocks and the hgroup join; component roots and `.bf-theme.is-baseline-rhythm` keep the bU ledger. Open: dark-tone review, T031 serialization, rest of T032, section-stack gap clamp |
+| 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Owner rulings R1–R7 and orchestrator rulings F1–F11 (2026-09-30, pending owner confirmation): flow text anywhere under `.bf-theme` defaults to body-line phase; prose and pattern-internal stacks cancel their gap between adjacent text blocks, section stacks keep theirs; container-owned list blocks and the hgroup join; component roots, cluster children, element roots and `.bf-theme.is-baseline-rhythm` keep the bU ledger. Gates green. Open: owner questions Q1–Q3, dark-tone review, T031 serialization, rest of T032 |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |
 

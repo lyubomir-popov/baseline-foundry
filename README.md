@@ -339,11 +339,14 @@ reach the previous descender. The terms are computed at build time from the
 same font metrics as the nudge and behave identically in all four tiers, in
 direct and class-scoped bundles.
 
-Text blocks space themselves: the closure already supplies one blank body
-line, so `.bf-prose` has no gap and a `bf-stack` cancels its gap between two
-adjacent text blocks. Text next to a component, or any other non-text child,
-keeps the stack gap, so text after a component starts on the baseline-unit
-grid and its body-line phase is not guaranteed.
+Text blocks join on their closure: the closure already supplies one blank
+body line, so `.bf-prose` and pattern-internal stacks (default,
+`is-extra-dense`, `is-dense`, `is-loose`) cancel their gap between two
+adjacent visible text blocks. Section stacks (`is-section-shallow`,
+`is-section`, `is-section-deep`) keep their gap between complete sections.
+Text next to a component, a nested stack or prose block, `hr`, `pre`,
+`table`, `figure`, `blockquote` or any other non-text child keeps the gap, so
+its body-line phase is not guaranteed.
 
 ```html
 <article class="bf-theme bf-tier-documentation bf-stack">
@@ -362,9 +365,15 @@ grid and its body-line phase is not guaranteed.
 </article>
 ```
 
-Component internals keep the baseline-unit ledger: every BF component root
-redeclares the rhythm terms to their baseline-unit equivalents, so text inside
-cards, panels, navigation and other components renders exactly as before.
+Component internals keep the baseline-unit ledger: every BF component root,
+every `bf-cluster` child (so text in a control row aligns to its controls)
+and the element-styled `blockquote`, `fieldset` and `table` redeclare the
+rhythm terms to their baseline-unit equivalents, so text inside them renders
+exactly as before. Component panels – `bf-panel*`, tab and accordion panels,
+the modal body and `bf-aside` – are component roots too, so prose inside them
+keeps the baseline-unit ledger; whether they should host body-line flow text
+is an open owner question.
+
 Add `is-baseline-rhythm` to a `.bf-theme` root to restore the baseline-unit
 ledger – nudge plus one-baseline-unit compensation per element and per list
 item, and the authored prose and stack gaps – for its whole subtree; the
@@ -375,6 +384,19 @@ line and metric-flush pairs are recorded exceptions. A custom theme built with
 `buildThemeFromConfig` gets body-line rhythm when its terms can be computed;
 otherwise its text keeps the baseline-unit ledger. Compare both ledgers per
 tier at `demo/spec/body-line-rhythm.html`.
+
+> **Unreleased spacing change (Spec 026):** flow text changes its visible
+> vertical spacing by default. Paragraphs and headings under `.bf-theme` take
+> a phase inset and close to whole body lines instead of one baseline unit;
+> adjacent text blocks in `.bf-prose` and pattern-internal stacks lose the gap
+> between them; a prose list carries one block start and one closure instead
+> of per-item compensation; `hgroup` children are pulled together by one body
+> line and an `hgroup.bf-stack` loses its own gap. Component internals,
+> section-stack gaps and gaps next to non-text children are unchanged. To keep
+> the previous spacing, add `is-baseline-rhythm` to every `.bf-theme` root,
+> for example `<body class="bf-theme bf-tier-documentation is-baseline-rhythm">`.
+> The first release containing this change must be `0.3.0` or later. No
+> release containing it has been published.
 
 See `config/tiers/` for the four canonical source configs. Compatibility preset names resolve to those same owners rather than duplicate JSON files.
 
