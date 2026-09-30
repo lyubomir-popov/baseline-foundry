@@ -72,7 +72,8 @@ function renderGapReadouts(rootSize) {
     const stackGap = Number.parseFloat(getComputedStyle(stack).rowGap);
     const firstStyles = getComputedStyle(first);
     const between = second.getBoundingClientRect().top - first.getBoundingClientRect().bottom - Number.parseFloat(firstStyles.marginBottom);
-    readout.textContent = `Prose gap ${rem(proseGap, rootSize)}; stack gap ${rem(stackGap, rootSize)}, ${rem(Math.max(0, between), rootSize)} between two paragraphs.`;
+    // Two decimals absorb Chromium's -1/64px layout drift in the measured distance.
+    readout.textContent = `Prose gap ${rem(proseGap, rootSize)}; stack gap ${rem(stackGap, rootSize)}, ${rem(Math.max(0, between), rootSize, 2)} between two paragraphs.`;
   }
 }
 
