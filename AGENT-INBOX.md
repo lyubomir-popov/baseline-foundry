@@ -8,6 +8,7 @@ active package. Keep this file short; move anything settled to its owner.
 | Worktree | Branch | State |
 |---|---|---|
 | `baseline-foundry` (this checkout) | `main` | Clean, equal to `origin/main` at `v0.2.1` |
+| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Pushed. Body-line rhythm default; awaiting owner browser review and D4 gap ruling |
 | `../baseline-foundry-worktrees/feat-025-compact-alignment-grid` | `feat/025-compact-alignment-grid` | All tasks done; closeout edits uncommitted; 6 behind `main` |
 | `../baseline-foundry-worktrees/feat-024-semantic-spacing-token-schema` | `feat/024-semantic-spacing-token-schema` | Pragma-targeted planning store run by a separate agent. Do not edit it from BF work |
 | `../baseline-foundry-worktrees/wip-bf-typography-cap-metric` | `wip/bf-typography-cap-metric` | Parked, unvalidated BF work recovered from the old 022 checkout |
