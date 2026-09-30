@@ -13,6 +13,25 @@ conflict.
 
 ## Short answer
 
+**2026-09-30 evening: CP1 reviewed; foundation, Commands, Fields and Markers
+cuts built locally; owner decisions and visual sign-offs outstanding.**
+
+The CP1 review (`opus-cp1-review.md`) accepts the taxonomy as a working
+hypothesis with bounded corrections; its six owner decisions – above all
+closure versus gap rhythm – gate the next families (field copy, surfaces,
+Card sections), because those consume the gap scale. Four local, unpushed
+Pragma branches stack on origin/main `9249fb300`:
+`feat/spacing-inside-out-foundation` (`9dcd0619e`) →
+`feat/spacing-commands` (`5c18d5583`) → `feat/spacing-fields`
+(`9cbf5e7c3`) → `feat/spacing-markers` (`5d6f7f110`). Each has a gallery in
+`H:\WSL_dev_projects\temp\spec-024-<gate>-gallery-20260930`, and
+`spec-024-stack-gallery-20260930` shows main against the whole stack. Next:
+owner sign-off per cut and the CP1 decisions, then draft PRs for the lead
+engineer only on owner instruction. T026b/T026c in `tasks.md` record the
+deviations and open points.
+
+The earlier plan text follows for reference.
+
 **Ready for the CP1 gallery, then the independent CP1 review. After CP1, build
 and visually approve the Pragma component families before schema and tokens.**
 

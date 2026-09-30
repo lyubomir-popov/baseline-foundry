@@ -490,10 +490,17 @@ fixture items are not a prerequisite.
   [manifest](file:///H:/WSL_dev_projects/temp/spec-024-cp1-gallery-20260930/manifest.json)
   SHA-256 is
   `eb701f7fccd160bac4612e4fd81f22cde7ab83f6b7846b49235e404a0bb94bbe`.
-- [ ] **T012** Request an independent Opus adversarial review. Do not proceed
+- [x] **T012** Request an independent Opus adversarial review. Do not proceed
   while the denominator is open, assignments are null or the App gap ordering
   remains contradictory. The request MUST include the T011a gallery, and every
   finding with a visible effect MUST cite its gallery entry (FR-054c).
+  **Reviewed 2026-09-30:** `opus-cp1-review.md`, Claude Opus 5.5 subagent of
+  the orchestrating session; it did not produce the packet. Verdict: accept
+  with bounded corrections. P1-1: paragraph closure and the proposed gap
+  values contradict each other (gaps knock text off the body-line rhythm);
+  P1-2: the gallery shows the spike's wiring, including six inline gaps still
+  rendered from block roles. Eight P2s and six owner decisions are listed
+  there.
 - [ ] **T013** Incorporate findings and obtain owner approval of the minimum
   taxonomy, including the FR-054d owner visual sign-off of the T011a gallery.
   If findings change any value, regenerate the gallery before sign-off.
@@ -524,6 +531,21 @@ no new tests while the design is open. Before any push, run Pragma's root
   `--_spike-*` name and leave all evidence stories and component-specific
   changes behind. Build the before/after gallery for ds-global,
   ds-global-form and ds-app, then stop for FR-054d owner sign-off.
+  **Built 2026-09-30, owner sign-off outstanding:** local Pragma branch
+  `feat/spacing-inside-out-foundation`, tip `9dcd0619e`, on origin/main
+  `9249fb300`. Prose outside `.ds` takes the ledger; text inside `.ds` keeps
+  main's cap engine, so components are unchanged until their family adopts
+  the row. `.editorial` composes its space-after on top of the closure. Bare
+  `li` now takes the body text role (Docs/App 16px to 14px). Deliberate
+  deviation: the container-gap mapping stays out of this cut, because FR-033
+  forbids a foundation cut from moving the pinned alias block; it moves with
+  the first family that consumes the gaps. The last commit snaps row paddings
+  and each role's nudge and phase to 1/64px, which removes the cumulative
+  drift (0 at 100 paragraphs, controls exactly 40/32/32). All 52 pinned alias
+  values compare equal to main per product. Gallery:
+  `H:\WSL_dev_projects\temp\spec-024-foundation-gallery-20260930` (built
+  before the snapping commit; the snapping moves no term by more than
+  1/64px).
 - [ ] **T026c — family cuts** After the foundation sign-off, implement one
   family, build its parent→tip gallery and obtain owner sign-off before starting
   the next. Follow `recut-handoff.md` order: Commands; Field geometry; Select
@@ -533,6 +555,29 @@ no new tests while the design is open. Before any push, run Pragma's root
   in that family's task entry. Replace the historical density-retirement work
   with governed host/subscriber integration, but do not pre-empt the later
   T017a compatibility disposition.
+  **Built back to back 2026-09-30 on owner direction to use the session; each
+  owner sign-off is still outstanding, and a rejection restacks the later
+  cuts.** All local, unpushed, stacked on the foundation:
+  - Commands `feat/spacing-commands` tip `5c18d5583`: Button, Chip and Tabs
+    on the row. Main renders them at 36/36/32 (Button) and 25 (Chip, whose
+    tokens were unresolved); now 40/32/32 occupied with the label on the
+    body baseline. Gallery `spec-024-commands-gallery-20260930`.
+  - Fields `feat/spacing-fields` tip `9cbf5e7c3`: single-line field chrome
+    and ColorInput on the row; main renders 36/36/32. ColorInput controls
+    subtract their own per-edge borders. Gallery
+    `spec-024-fields-gallery-20260930`.
+  - Markers `feat/spacing-markers` tip `5d6f7f110`: checkbox, radio,
+    switch and choice rows on the row; markers centre on the first line.
+    Gallery `spec-024-markers-gallery-20260930`.
+  Record for the owner and the lead before any push: controls now drop the
+  density seat, so `.dense` no longer shrinks Button or fields; Button and
+  field labels follow the product body size (Docs/App 14px); the marker cut
+  stops reading two theming hooks (`--form-field-inline-gap` on the toggle
+  row, `--form-input-padding-inline` on the choices group); Button's
+  icon-leading edge still reads the field inset (CP1 P2-2). The root gate on
+  an LF checkout of `5d6f7f110` adds no failure absent on origin/main. The
+  whole-stack gallery (main → markers tip) is
+  `spec-024-stack-gallery-20260930`.
 - [ ] **T027** Demonstrate automatic Chip density in table, tabs and side
   navigation, standalone default geometry, non-subscriber immunity, reset
   behavior and portal behavior through the family galleries and existing
