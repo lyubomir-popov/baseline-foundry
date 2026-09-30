@@ -532,7 +532,7 @@ no new tests while the design is open. Before any push, run Pragma's root
   changes behind. Build the before/after gallery for ds-global,
   ds-global-form and ds-app, then stop for FR-054d owner sign-off.
   **Built 2026-09-30, owner sign-off outstanding:** local Pragma branch
-  `feat/spacing-inside-out-foundation`, tip `9dcd0619e`, on origin/main
+  `feat/spacing-inside-out-foundation`, tip `97cfdf585`, on origin/main
   `9249fb300`. Prose outside `.ds` takes the ledger; text inside `.ds` keeps
   main's cap engine, so components are unchanged until their family adopts
   the row. `.editorial` composes its space-after on top of the closure. Bare
@@ -558,15 +558,15 @@ no new tests while the design is open. Before any push, run Pragma's root
   **Built back to back 2026-09-30 on owner direction to use the session; each
   owner sign-off is still outstanding, and a rejection restacks the later
   cuts.** All local, unpushed, stacked on the foundation:
-  - Commands `feat/spacing-commands` tip `5c18d5583`: Button, Chip and Tabs
+  - Commands `feat/spacing-commands` tip `f1fb14ca4`: Button, Chip and Tabs
     on the row. Main renders them at 36/36/32 (Button) and 25 (Chip, whose
     tokens were unresolved); now 40/32/32 occupied with the label on the
     body baseline. Gallery `spec-024-commands-gallery-20260930`.
-  - Fields `feat/spacing-fields` tip `9cbf5e7c3`: single-line field chrome
+  - Fields `feat/spacing-fields` tip `0348bb37f`: single-line field chrome
     and ColorInput on the row; main renders 36/36/32. ColorInput controls
     subtract their own per-edge borders. Gallery
     `spec-024-fields-gallery-20260930`.
-  - Markers `feat/spacing-markers` tip `5d6f7f110`: checkbox, radio,
+  - Markers `feat/spacing-markers` tip `08bbae60e`: checkbox, radio,
     switch and choice rows on the row; markers centre on the first line.
     Gallery `spec-024-markers-gallery-20260930`.
   Record for the owner and the lead before any push: controls now drop the
@@ -577,7 +577,20 @@ no new tests while the design is open. Before any push, run Pragma's root
   icon-leading edge still reads the field inset (CP1 P2-2). The root gate on
   an LF checkout of `5d6f7f110` adds no failure absent on origin/main. The
   whole-stack gallery (main → markers tip) is
-  `spec-024-stack-gallery-20260930`.
+  `spec-024-stack-gallery-20260930`, built at `5d6f7f110`, before two small
+  fixes from the stack code review (loose-list paragraphs no longer double-pad;
+  Tabs rail visible in forced colours).
+  **Stack code review 2026-09-30** (`H:\WSL_dev_projects\temp\review\stack-code-review.md`):
+  its P1 – list items that contain any `.ds` element keep inherited type and
+  the old margins – is kept as designed: removing the guard pushes the item's
+  inherited font into components nested in it, and the vanilla-adapter island
+  boundary test fails. It is a design question for the owner (should
+  components reset their own font), not a bug fix. P2s to raise in the draft
+  PRs or fix before them: stale density docs and stories, the half-applied
+  `.dense` class, hooks moved from `:root` to the component and removed
+  tokens, about 25 `--ds-*` names without readers, unused
+  `--typography-*-nudge-block-end` outputs, and squashing the in-stack
+  `fix(styles)` commit into the commits it corrects.
 - [ ] **T027** Demonstrate automatic Chip density in table, tabs and side
   navigation, standalone default geometry, non-subscriber immunity, reset
   behavior and portal behavior through the family galleries and existing
