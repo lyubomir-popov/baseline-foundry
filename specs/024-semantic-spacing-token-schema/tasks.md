@@ -532,7 +532,7 @@ no new tests while the design is open. Before any push, run Pragma's root
   changes behind. Build the before/after gallery for ds-global,
   ds-global-form and ds-app, then stop for FR-054d owner sign-off.
   **Built 2026-09-30, owner sign-off outstanding:** local Pragma branch
-  `feat/spacing-inside-out-foundation`, tip `97cfdf585`, on origin/main
+  `feat/spacing-inside-out-foundation`, tip `e1b4323db`, on origin/main
   `9249fb300`. Prose outside `.ds` takes the ledger; text inside `.ds` keeps
   main's cap engine, so components are unchanged until their family adopts
   the row. `.editorial` composes its space-after on top of the closure. Bare
@@ -558,15 +558,15 @@ no new tests while the design is open. Before any push, run Pragma's root
   **Built back to back 2026-09-30 on owner direction to use the session; each
   owner sign-off is still outstanding, and a rejection restacks the later
   cuts.** All local, unpushed, stacked on the foundation:
-  - Commands `feat/spacing-commands` tip `f1fb14ca4`: Button, Chip and Tabs
+  - Commands `feat/spacing-commands` tip `15c6d9e89`: Button, Chip and Tabs
     on the row. Main renders them at 36/36/32 (Button) and 25 (Chip, whose
     tokens were unresolved); now 40/32/32 occupied with the label on the
     body baseline. Gallery `spec-024-commands-gallery-20260930`.
-  - Fields `feat/spacing-fields` tip `0348bb37f`: single-line field chrome
+  - Fields `feat/spacing-fields` tip `dfbf7b643`: single-line field chrome
     and ColorInput on the row; main renders 36/36/32. ColorInput controls
     subtract their own per-edge borders. Gallery
     `spec-024-fields-gallery-20260930`.
-  - Markers `feat/spacing-markers` tip `08bbae60e`: checkbox, radio,
+  - Markers `feat/spacing-markers` tip `30fe15c51`: checkbox, radio,
     switch and choice rows on the row; markers centre on the first line.
     Gallery `spec-024-markers-gallery-20260930`.
   Record for the owner and the lead before any push: controls now drop the

@@ -21,9 +21,9 @@ hypothesis with bounded corrections; its six owner decisions – above all
 closure versus gap rhythm – gate the next families (field copy, surfaces,
 Card sections), because those consume the gap scale. Four local, unpushed
 Pragma branches stack on origin/main `9249fb300`:
-`feat/spacing-inside-out-foundation` (`97cfdf585`) →
-`feat/spacing-commands` (`f1fb14ca4`) → `feat/spacing-fields`
-(`0348bb37f`) → `feat/spacing-markers` (`08bbae60e`). Each has a gallery in
+`feat/spacing-inside-out-foundation` (`e1b4323db`) →
+`feat/spacing-commands` (`15c6d9e89`) → `feat/spacing-fields`
+(`dfbf7b643`) → `feat/spacing-markers` (`30fe15c51`). Each has a gallery in
 `H:\WSL_dev_projects\temp\spec-024-<gate>-gallery-20260930`, and
 `spec-024-stack-gallery-20260930` shows main against the whole stack. Next:
 owner sign-off per cut and the CP1 decisions, then draft PRs for the lead

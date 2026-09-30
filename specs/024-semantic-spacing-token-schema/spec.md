@@ -447,6 +447,27 @@ change is wanted, without reading code, measurements or chat history.
   1 / 4 / 8 on documentation and applications. `element` and `pattern` are a
   uniform count of baseline units across tiers; `group` is not. CP1 confirms
   that asymmetry or corrects it.
+- **FR-043c**: Owner direction, 2026-09-30, superseding the FR-043 values for
+  `group` and `pattern` and resolving FR-043b. Headings and body text close
+  on whole body lines by default, with no opt-in class on any parent. Gaps
+  between blocks snap to the nearest whole body line:
+  - `group` is one body line: Site 24px, Docs 20px, App 20px;
+  - `pattern` is Site 72px (three lines) and Docs/App 40px (two lines).
+
+  `element` stays on the baseline unit (8 / 4 / 4). It separates items inside
+  one unit, such as toolbar controls, where body rhythm is deliberately not
+  tracked. The system does not force body rhythm on arbitrary stacks inside
+  components. A snap that would move a value by more than a quarter of its
+  previous size MUST be flagged for owner review rather than applied. No
+  current step exceeds that threshold: 16→20, 32→40 and 64→72 are all at or
+  under a quarter.
+- **FR-043d**: Owner direction, 2026-09-30: a one-line heading/body baseline
+  residual under 1px is accepted. The alignment formula should be as exact as
+  the font's own metrics allow. The browser's whole-pixel rounding of font
+  ascent, descent and half-leading is not emulated or compensated. The
+  distinction from FR-039's 1/64px snapping is deliberate: a bounded
+  per-element error is accepted, while an error that accumulates across
+  elements is not.
 - **FR-044**: Governed density exists to satisfy one constraint: **nesting an
   enrolled child inside an approved host MUST NOT change the host's occupied
   size**. A table row whose cells are otherwise plain text must not grow because
