@@ -715,7 +715,8 @@ async function buildTheme(
   const surfaceManifest = buildSurfaceManifest(defaultSurfaceName, surfaces);
   const css = generateFoundryCss(defaultSurface.tokens, {
     presetName: builtInName,
-    themeSurfaces: surfaces.filter(surface => surface.className)
+    themeSurfaces: surfaces.filter(surface => surface.className),
+    bodyLineRhythm: defaultSurface.bodyLineRhythm
   });
 
   const tokensPath = path.join(resolvedDistDir, "tokens.json");

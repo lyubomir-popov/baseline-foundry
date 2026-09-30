@@ -6,7 +6,7 @@ import { generateBaselineGridOverlayCss, generateBaselineGridThemeOverrideCss } 
 import { bfSpacingCompatibilityAliases, dtcgSpacingCssProperty, dtcgSpacingTokenIds, dtcgSpacingValue, type ResolvedDtcgSpacing } from "./dtcg-spacing.js";
 import { foundryThemeRootColorVars, vanillaThemeColorVars } from "./vanilla-theme-colors.js";
 import type { BuiltInThemeName } from "./presets.js";
-import type { ThemeFontFile, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
+import type { BodyLineRhythmRole, ThemeFontFile, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
 
 function parseRemValue(rem: string): number {
   return Number.parseFloat(rem.replace("rem", ""));
@@ -222,7 +222,52 @@ function selectorsForRole(roleName: string): string[] {
   return [...semanticSelectors, `:where(.bf-theme) .bf-${roleName}`];
 }
 
-export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: BuiltInThemeName; themeSurfaces?: ThemeSurface[]; } = {}): string {
+const BODY_LINE_RHYTHM_ROOT = ":where(.bf-theme.is-body-line-rhythm)";
+const NOT_CAP_ENGINE = ":not(:where(.bf-engine-cap, .bf-engine-cap *))";
+export const BODY_LINE_RHYTHM_SECTION_START = "/* Body-line rhythm opt-in (Spec 026). */";
+export const BODY_LINE_RHYTHM_SECTION_END = "/* End body-line rhythm opt-in (Spec 026). */";
+
+function bodyLineRhythmDeclarations(rhythm: Record<string, BodyLineRhythmRole>): string {
+  return Object.entries(rhythm)
+    .map(([roleName, role]) => `  --bf-${roleName}-rhythm-step: ${role.rhythmStep};\n  --bf-${roleName}-phase-start: ${role.phaseStart};\n  --bf-${roleName}-closure-end: ${role.closureEnd};\n`)
+    .join("");
+}
+
+function bodyLineRhythmApplicationRule(roleName: string): string {
+  const tag = roleName === "body" ? "p" : roleName;
+  const parents = roleName === "body" ? [":where(.bf-prose)", ":where(.bf-prose li)"] : [":where(.bf-prose)"];
+  const selectors = parents.flatMap(parent => [
+    `${BODY_LINE_RHYTHM_ROOT} ${parent} > :where(${tag})${NOT_CAP_ENGINE}`,
+    `${BODY_LINE_RHYTHM_ROOT} ${parent} > .bf-${roleName}${NOT_CAP_ENGINE}`
+  ]);
+  return `${selectors.join(",\n")} {\n  margin-bottom: var(--bf-${roleName}-closure-end);\n  padding-block-start: calc(var(--bf-${roleName}-nudge-start) + var(--bf-${roleName}-phase-start));\n}\n`;
+}
+
+// Empty unless the root and every class surface carry rhythm data (Spec 026 T4).
+function bodyLineRhythmCss(rhythm: Record<string, BodyLineRhythmRole> | undefined, classSurfaces: ThemeSurface[]): string {
+  if (!rhythm?.body || classSurfaces.some(surface => !surface.bodyLineRhythm?.body)) {
+    return "";
+  }
+
+  const roleNames = Object.keys(rhythm);
+  const nestedReset = roleNames
+    .map(roleName => `  --bf-${roleName}-rhythm-step: var(--bf-baseline);\n  --bf-${roleName}-phase-start: 0rem;\n  --bf-${roleName}-closure-end: var(--bf-${roleName}-margin-bottom);\n`)
+    .join("");
+  const blocks = [
+    `${BODY_LINE_RHYTHM_ROOT} {\n${bodyLineRhythmDeclarations(rhythm)}}\n`,
+    ...classSurfaces.map(surface => `:where(.bf-theme.${surface.className}.is-body-line-rhythm) {\n${bodyLineRhythmDeclarations(surface.bodyLineRhythm ?? {})}}\n`),
+    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-theme:not(.is-body-line-rhythm)) {\n${nestedReset}}\n`,
+    ...roleNames.map(bodyLineRhythmApplicationRule),
+    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose li)${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-closure-end);\n  padding-block-start: calc(var(--bf-body-nudge-start) + var(--bf-body-phase-start));\n}\n`,
+    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose ul > li)${NOT_CAP_ENGINE}::before {\n  inset-block-start: calc(var(--bf-tick-box-offset) + var(--bf-body-phase-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));\n}\n`,
+    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose li:has(> :where(p, .bf-body)))${NOT_CAP_ENGINE} {\n  margin-bottom: 0rem;\n  padding-block-start: 0rem;\n}\n`
+  ];
+
+  // No separator outside the comments, so stripping the section restores the default output byte for byte.
+  return `${BODY_LINE_RHYTHM_SECTION_START}\n\n${blocks.join("\n")}\n${BODY_LINE_RHYTHM_SECTION_END}`;
+}
+
+export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: BuiltInThemeName; themeSurfaces?: ThemeSurface[]; bodyLineRhythm?: Record<string, BodyLineRhythmRole>; } = {}): string {
   const body = tokens.roles.body;
   const baselineUnit = tokens.baselineUnit;
   const themeSurfaces = options.themeSurfaces ?? [];
@@ -558,7 +603,7 @@ ${capEngineDemo}
   padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
 }
-
+${bodyLineRhythmCss(options.bodyLineRhythm, themeSurfaces.filter(surface => surface.className))}
 :where(.bf-theme) :where(hr) {
   background: var(--bf-color-rule);
   block-size: 0.0625rem;
