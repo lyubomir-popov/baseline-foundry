@@ -326,12 +326,14 @@ Engine choice remains separate: `.bf-engine-metrics` is the default production p
 
 Add `is-body-line-rhythm` to a `.bf-theme` root to put its prose flows on the
 body-line grid (Spec 026, Phase A). Paragraphs and headings that are direct
-children of `.bf-prose`, prose list items and the paragraphs inside them keep
+children of `.bf-prose`, prose list items and their direct paragraphs keep
 their measured nudge, add a phase inset that lands the first baseline on a
 whole body line, and close their occupied block to whole body lines instead of
 one baseline unit. The terms are computed at build time from the same font
 metrics as the nudge and behave identically in all four tiers, in direct and
-class-scoped bundles.
+class-scoped bundles. A custom theme built with `buildThemeFromConfig` gets
+the section when its terms can be computed; otherwise the modifier is a
+no-op.
 
 ```html
 <article class="bf-theme bf-tier-documentation is-body-line-rhythm">
