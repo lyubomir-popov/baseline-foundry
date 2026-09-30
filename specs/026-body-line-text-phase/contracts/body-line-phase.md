@@ -1,7 +1,8 @@
 # Contract: Body-line phase
 
-Normative for Spec 026 after the CP-B owner rulings of 2026-09-30 (spec
-“Owner rulings”). Rationale lives in [research.md](../research.md).
+Normative for Spec 026 after the owner rulings of 2026-09-30: R1–R5 (CP-B)
+and R6–R7 (flow text everywhere, self-spacing text blocks). Rationale lives
+in [research.md](../research.md).
 
 ## Symbols
 
@@ -84,22 +85,24 @@ Values are formatted with the existing rem helper (five decimals).
 
 | Target | Selectors |
 |---|---|
-| body, h1–h6 | `:where(.bf-prose, .bf-prose > hgroup) > :where(<tag>)` and `… > .bf-<role>` |
-| hgroup join | `:where(.bf-prose > hgroup > * + *)`; limited pairs `:where(.bf-prose > hgroup > :is(<P>, .bf-<P>) + :is(<N>, .bf-<N>))` |
-| list block | `:where(.bf-prose) > :where(ul, ol)` |
-| list items | `:where(.bf-prose > :is(ul, ol) li)` |
-| list dot | `:where(.bf-prose > ul > li, .bf-prose > :is(ul, ol) ul > li)::before` |
-| loose text | `:where(.bf-prose > :is(ul, ol) li) > :where(p)` and `… > .bf-body` |
-| loose gap | `:where(.bf-prose > :is(ul, ol) li:has(> :where(p, .bf-body)) + li:has(> :where(p, .bf-body)))` |
+| body, h1–h6 | `:where(<tag>)` and `.bf-<role>` |
+| prose gap | `:where(.bf-prose)` |
+| stack text join | `:where(.bf-stack:not(.bf-prose) > <text> + <text>:not(.bf-stack))`, `<text>` = `:is(p, h1…h6, hgroup, .bf-body, .bf-h1….bf-h6, .bf-prose ul, .bf-prose ol)` |
+| hgroup join | `:where(hgroup > * + *)`; limited pairs `:where(hgroup > :is(<P>, .bf-<P>) + :is(<N>, .bf-<N>))` |
+| list block | `:where(.bf-prose :is(ul, ol):not(.bf-prose li *))` |
+| list items | `:where(.bf-prose li)` |
+| list dot | `:where(.bf-prose ul > li)::before` |
+| loose text | `:where(.bf-prose li) > :where(p)` and `… > .bf-body` |
+| loose gap | `:where(.bf-prose li:has(> :where(p, .bf-body)) + li:has(> :where(p, .bf-body)))` |
 
 Every selector is prefixed by `:where(.bf-theme)` and ends its subject
 compound with `:not(:where(.bf-engine-cap, .bf-engine-cap *))`, which adds no
 specificity. Only roles present in the surface are emitted.
 
-Not selected: text in `bf-stack`, `bf-section` and component flows, prose
-lists that are not direct children of `.bf-prose`, meta, lead,
-`figcaption`, `blockquote`, `hr`, `pre`/`code`, `a.bf-text-link`, component
-rules, controls and anything under `.bf-engine-cap`.
+Not selected: meta, lead, `figcaption`, `blockquote`, `hr`, `pre`/`code`,
+`a.bf-text-link`, controls and anything under `.bf-engine-cap`. Text inside
+a component root is selected but resolves every term to the bU ledger
+(block 3).
 
 ## Generated CSS shape
 
@@ -125,14 +128,15 @@ One contiguous section, emitted after the `.bf-prose li` and
   --bf-body-loose-text-start: 0rem;
   --bf-body-loose-text-end: 0rem;
   --bf-hgroup-join: calc(-1 * var(--bf-body-rhythm-step));
+  --bf-text-gap-scale: 0;
   --bf-hgroup-join-<P>-<N>: var(--bf-hgroup-join) | 0rem;  /* per limited pair in the bundle */
 }
 
 /* 2. One block per class-scoped surface, in existing surface order. */
 :where(.bf-theme.bf-tier-<tier>) { /* same shape */ }
 
-/* 3. Opt-out: every term to main's baseline-unit ledger. */
-:where(.bf-theme.is-baseline-rhythm) {
+/* 3. Opt-out and every component root: every term to main's baseline-unit ledger. */
+:where(.bf-theme.is-baseline-rhythm, .bf-accordion, …, .bf-validation-message) {
   --bf-<role>-rhythm-step: var(--bf-baseline);
   --bf-<role>-phase-start: 0rem;
   --bf-<role>-closure-end: var(--bf-<role>-margin-bottom);
@@ -144,42 +148,51 @@ One contiguous section, emitted after the `.bf-prose li` and
   --bf-body-loose-text-start: var(--bf-body-nudge-start);
   --bf-body-loose-text-end: var(--bf-body-margin-bottom);
   --bf-hgroup-join: 0rem;
+  --bf-text-gap-scale: 1;
   --bf-hgroup-join-<P>-<N>: 0rem;
 }
 
-/* 4. Role application, prose and hgroup parents. */
-:where(.bf-theme) :where(.bf-prose, .bf-prose > hgroup) > :where(h3):not(:where(.bf-engine-cap, .bf-engine-cap *)),
-:where(.bf-theme) :where(.bf-prose, .bf-prose > hgroup) > .bf-h3:not(:where(.bf-engine-cap, .bf-engine-cap *)) {
+/* 4. Role application, everywhere under the theme. */
+:where(.bf-theme) :where(h3):not(:where(.bf-engine-cap, .bf-engine-cap *)),
+:where(.bf-theme) .bf-h3:not(:where(.bf-engine-cap, .bf-engine-cap *)) {
   margin-bottom: var(--bf-h3-closure-end);
   padding-block-start: calc(var(--bf-h3-nudge-start) + var(--bf-h3-phase-start));
 }
 
-/* 5. Heading-group join, then one rule per limited pair. */
-:where(.bf-theme) :where(.bf-prose > hgroup > * + *):not(…) {
+/* 5. Self-spacing text blocks (R6). */
+:where(.bf-theme) :where(.bf-prose):not(…) {
+  gap: calc(var(--bf-section-space-shallow) * var(--bf-text-gap-scale));
+}
+:where(.bf-theme) :where(.bf-stack:not(.bf-prose) > <text> + <text>:not(.bf-stack)):not(…) {
+  margin-block-start: calc(var(--bf-stack-space) * (var(--bf-text-gap-scale) - 1));
+}
+
+/* 6. Heading-group join, then one rule per limited pair. */
+:where(.bf-theme) :where(hgroup > * + *):not(…) {
   margin-block-start: var(--bf-hgroup-join);
 }
-:where(.bf-theme) :where(.bf-prose > hgroup > :is(h1, .bf-h1) + :is(h5, .bf-h5)):not(…) {
+:where(.bf-theme) :where(hgroup > :is(h1, .bf-h1) + :is(h5, .bf-h5)):not(…) {
   margin-block-start: var(--bf-hgroup-join-h1-h5);
 }
 
-/* 6. Container-owned prose list block, items, dot, loose text and gap. */
-:where(.bf-theme) :where(.bf-prose) > :where(ul, ol):not(…) {
+/* 7. Container-owned prose list block, items, dot, loose text and gap. */
+:where(.bf-theme) :where(.bf-prose :is(ul, ol):not(.bf-prose li *)):not(…) {
   margin-bottom: var(--bf-body-list-block-end);
   padding-block-start: var(--bf-body-list-block-start);
 }
-:where(.bf-theme) :where(.bf-prose > :is(ul, ol) li):not(…) {
+:where(.bf-theme) :where(.bf-prose li):not(…) {
   margin-bottom: var(--bf-body-list-item-end);
   padding-block-start: var(--bf-body-list-item-start);
 }
-:where(.bf-theme) :where(.bf-prose > ul > li, .bf-prose > :is(ul, ol) ul > li):not(…)::before {
+:where(.bf-theme) :where(.bf-prose ul > li):not(…)::before {
   inset-block-start: calc(var(--bf-tick-box-offset) - var(--bf-body-nudge-start) + var(--bf-body-list-item-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));
 }
-:where(.bf-theme) :where(.bf-prose > :is(ul, ol) li) > :where(p):not(…),
-:where(.bf-theme) :where(.bf-prose > :is(ul, ol) li) > .bf-body:not(…) {
+:where(.bf-theme) :where(.bf-prose li) > :where(p):not(…),
+:where(.bf-theme) :where(.bf-prose li) > .bf-body:not(…) {
   margin-bottom: var(--bf-body-loose-text-end);
   padding-block-start: var(--bf-body-loose-text-start);
 }
-:where(.bf-theme) :where(.bf-prose > :is(ul, ol) li:has(> :where(p, .bf-body)) + li:has(> :where(p, .bf-body))):not(…) {
+:where(.bf-theme) :where(.bf-prose li:has(> :where(p, .bf-body)) + li:has(> :where(p, .bf-body))):not(…) {
   margin-block-start: var(--bf-body-list-loose-gap);
 }
 
@@ -188,11 +201,21 @@ One contiguous section, emitted after the `.bf-prose li` and
 
 Rules:
 
-- Custom properties inherit, so the nearest `.bf-theme` root wins: a default
-  root nested in an opted-out one redeclares the body-line literals, and an
-  opted-out root nested in a default one redeclares the bU ledger. No nested
-  reset rule is needed. The opt-out block follows every surface block so
-  `.bf-theme.bf-tier-<tier>.is-baseline-rhythm` resolves the bU ledger.
+- Custom properties inherit, so the nearest `.bf-theme` or component root
+  wins: a default root nested in an opted-out one or in a component
+  redeclares the body-line literals, and an opted-out root or a component
+  root nested in a default one redeclares the bU ledger. No nested reset rule
+  is needed. Block 3 follows every surface block so
+  `.bf-theme.bf-tier-<tier>.is-baseline-rhythm`, and a `.bf-theme` that is
+  also a component root, resolve the bU ledger.
+- Block 3's roots are every `bf-*` class in the component, grid and preset
+  CSS emitted after the section, minus flow classes (theme, tier and surface
+  roots, text roles, `bf-text-link`, engine markers, `bf-page`, `bf-grid`,
+  `bf-grid-item`, `bf-grid-scope`, `bf-span-*`, `bf-stack`, `bf-cluster`,
+  `bf-section`, `bf-prose`, `bf-strip`, `bf-measure`, `bf-fixed-width`,
+  `bf-inline-size`, `bf-stage-shell`, `bf-token-row` and the page shells
+  `bf-page-shell`, `bf-application`, `bf-main`, `bf-site-main`,
+  `bf-docs-layout`, `bf-docs-layout-content`), sorted.
 - The opt-out's `var()` values resolve on the opted-out root against its own
   role properties, so every tier gets its own bU ledger.
 - Application declarations have no `var()` fallback; the section is emitted
@@ -249,6 +272,9 @@ Measured and recorded in `review.md`, not asserted. Sizes at a 16px root.
 | `hr` (0.5rem occupied) | Off by 0.5rem | 8px | 8px | 8px | 8px |
 | `blockquote` (body `lh + bU`) | Off by `(lh + bU) mod step` | 8px | 4px | 4px | 4px |
 | `bf-grid` row gap | Unchanged gap | 1rem | 1.5rem | 1.5rem | – |
+| Text after a component or other non-text stack child | Starts one stack gap after a bU-quantized block; measured | 8.05px | 8.03px | 0.03px | 7.95px |
+| Text block that is itself a `bf-stack`, after text | Keeps the parent stack gap | – | – | – | – |
+| Stack gap larger than a text block's occupied height | Grid track clamps at 0; the next text block lands one full gap later | section, section-deep | section, section-deep | – | section, section-deep |
 | Several paragraphs in one loose item | Not separated | – | – | – | – |
 
 Nested lists are no longer an exception (R3).
@@ -290,12 +316,22 @@ reaches 0.906px at 16px and 1.813px at 32px (research R2 cross-check).
   second child's top equals the first child's occupied bottom minus one step;
   h1 → h2 baseline distance equals the R4 prediction; the group occupies whole
   steps and the following paragraph stays in phase.
+- **Self-spacing text (R6, R7)**: default `.bf-prose` (no specimen gap), a
+  `bf-stack` and a bare `bf-section`, each h2, p, p: the p top equals the
+  h2's occupied bottom and is whole steps after the h2 top; one-line p → p
+  first baselines are exactly two steps apart; every first baseline sits
+  within `root / 16` of a whole step from the flow top; the default prose gap
+  is 0 and the opt-out's is positive; the opt-out stack keeps main's gap;
+  text → component and component → text are separated by exactly the stack
+  gap. The four fixtures are included in the opt-out-equals-main check.
 - **Nested default**: a default theme in an opted-out host matches the
   default column for `probe − elementTop` and element advance.
 - **Direct bundles**: `dist/tiers/{documentation,app,os}/styles.css` at a 16px
   root give a default prose `h1` `nudge + phase` padding and the closure, an
   `h1` to `p` advance of whole body lines, and an `.is-baseline-rhythm` `h1`
   the nudge and `bU − nudge`.
+- **Component geometry (R7)**: `npm run test:components` passes with
+  `scripts/verify-component-baselines.ts` unchanged since CP-B.
 - **Recorded, not asserted**: absolute ε per tier, role and root; the offsets
-  in [Recorded exceptions](#recorded-exceptions); measured list and hgroup
-  distances.
+  in [Recorded exceptions](#recorded-exceptions); measured list, hgroup, p → p,
+  h2 → p and text ↔ component distances.

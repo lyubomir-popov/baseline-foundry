@@ -17,6 +17,10 @@
   the default with `.is-baseline-rhythm` as the opt-out, container-owned list
   blocks, the hgroup join, metrics only, D4 still open. Recorded in
   [D7](#d7--owner-rulings-2026-09-30-cp-b) and the spec.
+- Owner rulings R6–R7, 2026-09-30: D4 closed as option (c) – text blocks
+  space themselves – and body-line rhythm applies to flow text anywhere
+  under `.bf-theme`, with component roots keeping the bU ledger. Recorded in
+  [D8](#d8--owner-rulings-2026-09-30-r6r7) and the spec.
 - Adversarial review of this package, 2026-09-30: independent numbers in
   [R2](#independent-cross-check) and the corrections applied throughout.
 - BF metric model: `@lyubomir-popov/baseline-nudge-generator` 1.5.1,
@@ -418,6 +422,83 @@ glyphs do not overlap. The h1 → h2 distances match the ruling's prediction.
 
 ## Decisions
 
+### D8 – Owner rulings, 2026-09-30 (R6–R7)
+
+The owner ruled, close to verbatim (full text in the spec):
+
+- **R6** – D4 = option (c). Text blocks space themselves: the closure already
+  supplies one blank body line, so the gap between two adjacent in-scope
+  text blocks is zero. `.bf-prose` gap 0 by default, its shallow gap under
+  `.is-baseline-rhythm`; `.bf-stack` (and any other gap-separated flow
+  container) cancels its gap exactly and only between two adjacent text
+  blocks, driven by custom properties so the opt-out and component roots
+  restore current behaviour; the cancel must read the parent stack's
+  `--bf-stack-space`; text ↔ component keeps the gap; text after a non-text
+  sibling is a recorded phase exception.
+- **R7** – default everywhere: phase, closure, list block, hgroup join and
+  the R6 cancel apply to flow text anywhere under `.bf-theme`. Component
+  roots redeclare the rhythm properties to their bU equivalents exactly as
+  `.is-baseline-rhythm` does, in one shared selector list built from source,
+  with a static markup coverage check. Component baselines must pass with no
+  change to their checker; opt-out geometry must equal main.
+
+Implementation decisions under the rulings:
+
+- **T13 – one scale property for both gap rules.** `--bf-text-gap-scale` is
+  `0` in every surface block and `1` in the bU ledger block. Prose reads
+  `gap: calc(var(--bf-section-space-shallow) * var(--bf-text-gap-scale))` and
+  the stack cancel reads
+  `margin-block-start: calc(var(--bf-stack-space) * (var(--bf-text-gap-scale) - 1))`.
+  A multiplier rather than a redeclared length keeps both rules reading the
+  gap on the element itself, so a component that redeclares a spacing
+  property below its root still resolves main's value. The prose gap rule
+  lives in the section; main's `.bf-prose` rule outside it is untouched
+  (FR-011).
+- **T14 – the stack cancel never reads a child's own stack space.** A child
+  that is itself a `bf-stack` redeclares `--bf-stack-space`, and CSS cannot
+  read an ancestor's value of a property the element overrides, so the
+  follower selector ends `:not(.bf-stack)`: that pair keeps the parent gap.
+  `.bf-prose` never sets `--bf-stack-space`, so a prose follower reads the
+  parent's value; prose is not a text block, though, so it keeps the gap. A
+  `.bf-prose.bf-stack` parent is excluded (`.bf-stack:not(.bf-prose)`) because
+  its gap is already 0. Text blocks: body and h1–h6, semantic and classed,
+  `hgroup`, and prose lists (`.bf-prose ul`, `.bf-prose ol`); bare lists
+  outside prose are unstyled and have no closure.
+- **T15 – flow-container audit.** Of the containers that separate children
+  with `gap`, only `bf-prose` and `bf-stack` stack text blocks vertically.
+  `bf-section` has no gap (block flow; margins collapse, so the closure alone
+  separates text). `bf-grid` row gaps separate columns' rows, `bf-cluster` is
+  an inline flex row and `bf-stage-shell` centres specimens; all three keep
+  their gaps.
+- **T16 – component roots from source.** `bodyLineComponentRootClasses`
+  extracts every `.bf-*` class from the component, grid and preset CSS that
+  `generateFoundryCss` emits after the section and removes
+  `BODY_LINE_FLOW_CLASS`. Parts are kept with roots: redeclaring the same
+  terms on a part is idempotent and covers parts used without their root.
+  Page shells that host page flow (`bf-page-shell`, `bf-application`,
+  `bf-main`, `bf-site-main`, `bf-docs-layout`, `bf-docs-layout-content`) are
+  flow classes, so documentation and site content in a BF shell takes the
+  default rhythm; their component children (navigation, panels, footers)
+  are reset. The list has 356 classes in every tier bundle and is shared
+  with `.bf-theme.is-baseline-rhythm` in one `:where()` block (zero
+  specificity) emitted after every surface block, so a `.bf-theme` that is
+  also a component root resolves the bU ledger, and a default theme nested
+  in a component re-declares the body-line literals.
+- **T17 – coverage check.** The static markup scan reads the root list from
+  the built bundle and requires every element that carries a non-flow `bf-*`
+  class, and every text element inside one, to have itself or an ancestor in
+  the list. Unstyled hook classes (for example `.bf-notification-title`) are
+  allowed only inside a reset root.
+- **T18 – grid tracks cannot be negative.** The cancel is a negative
+  `margin-block-start` on a grid item. It is exact while the text block's
+  occupied height is at least the gap, which holds for every default,
+  dense, extra-dense and loose stack and for App section stacks. In a
+  section or section-deep stack holding bare one-line paragraphs in
+  Editorial, Documentation or OS the item's outer size would be negative,
+  its track clamps to zero, and the next text block lands one full gap later
+  (measured in review.md). Recorded as a risk: the ruled formula is kept
+  verbatim.
+
 ### D7 – Owner rulings, 2026-09-30 (CP-B)
 
 The owner approved the in-scope text as the default and ruled, close to
@@ -480,6 +561,9 @@ Implementation decisions under the rulings:
 
 ### D1 – Scope: prose flows
 
+*Superseded by R7 (D8): the scope is all flow text under `.bf-theme`, and
+component roots, not the prose-only selector, keep component text on bU.*
+
 In scope: `p`/`.bf-body` and `h1`–`h6`/`.bf-h1`–`.bf-h6` that are direct
 children of `.bf-prose`; `.bf-prose li`; and `p`/`.bf-body` that are direct
 children of a prose `li`. Text in `bf-stack`, `bf-section` and component
@@ -531,7 +615,12 @@ TypeScript from real metrics. `--bf-<role>-nudge-start`, `-nudge-end`,
 `round()` for text and keep the value auditable against the metric model.
 Declaring them only under the modifier is what keeps default output unchanged.
 
-### D4 – Container gaps – open owner decision
+### D4 – Container gaps – closed: option (c)
+
+**Ruled 2026-09-30 (R6, D8): option (c), extended to stacks as an exact
+gap cancel between adjacent text blocks.** No new modifier was needed: the
+cancel is scoped by adjacency, and the bU ledger block restores the gaps.
+The analysis that informed the ruling follows.
 
 Options, per R7. Each acts only under the modifier and uses the one step
 property, `--bf-body-rhythm-step`.

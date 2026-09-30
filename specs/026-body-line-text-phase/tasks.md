@@ -195,15 +195,21 @@ offsets recorded.
 
 ## Owner decision – container gaps
 
-- [ ] T024 BLOCKED on owner: rule on D4 option (a), (b), (c) or (d) from the
-  demo; record the ruling and date in `research.md` D4.
-- [ ] T025 Implement the ruled gap behaviour for the default body-line ledger
+- [x] T024 Owner rules on D4 option (a), (b), (c) or (d) from the demo;
+  record the ruling and date in `research.md` D4.
+  *Evidence*: ruling R6, 2026-09-30 – option (c), extended to stacks as an
+  exact gap cancel between adjacent text blocks; research D4 closed, D8.
+- [x] T025 Implement the ruled gap behaviour for the default body-line ledger
   (leaving `.is-baseline-rhythm` on main's gaps) in `src/css.ts`, remove the
-  demo candidate rules, and extend static and
-  rendered checks to prove phase after the affected containers. Scope any
-  stack rule to stacks that hold prose; if (c) is extended to stacks, add the
-  modifier the ruling names and amend FR-001 (depends on T024).
-- [ ] T026 Re-run `npm test` and `npm run qa:components`; update `review.md`.
+  demo candidate rules, and extend static and rendered checks to prove phase
+  after the affected containers.
+  *Evidence*: `--bf-text-gap-scale` drives the prose gap and the stack text
+  join (research T13–T15); no modifier needed. Candidates removed from the
+  demo and its stylesheet; one ruled (c) specimen with prose, stack, section
+  and text → component → text fixtures. Static and rendered contracts in
+  review.md “R6–R7”.
+- [x] T026 Re-run `npm test` and `npm run qa:components`; update `review.md`.
+  *Evidence*: review.md “R6–R7 gates”.
 
 **Checkpoint**: gap ruling implemented; Phase A closeable.
 
@@ -245,7 +251,8 @@ hgroup join (R4).
 - [ ] T032 Resolve the T003 inventory and whether `bf-stack`/`bf-section`
   text joins the scope, and the `blockquote`, `hr`, `pre`/`code`,
   metric-flush downstream and `a.bf-text-link` exceptions. *Partly done*: the
-  nested-list exception is resolved by R3; the rest stays open.
+  nested-list exception is resolved by R3 and the stack/section scope by R7;
+  the rest stays open.
 - [x] T033 Full gates, screenshot review and closeout in `review.md`.
   *Evidence*: review.md “CP-B default flip”. Browser review is the four-tier
   light capture set in `tmp/026-review/flip/`; dark-tone review remains with
@@ -266,8 +273,34 @@ hgroup join (R4).
   tier bundle.
 
 **CP-B**: default flipped; bU text ledger available as the
-`.is-baseline-rhythm` opt-out. D4 (T024–T026), T022 dark review, T023, T031
-and the rest of T032 remain open.
+`.is-baseline-rhythm` opt-out.
+
+## R6–R7 – Flow text everywhere, self-spacing text blocks
+
+Owner rulings R6–R7, 2026-09-30 (spec, research D8).
+
+- [x] T037 (R7) Unscope the role, hgroup and list rules from `.bf-prose`;
+  derive the component-root list from the CSS after the section and share
+  the `.is-baseline-rhythm` block with it (`src/css.ts`).
+  *Evidence*: commit `1cf47ce`; 356 roots per tier bundle.
+- [x] T038 (R6) Prose gap and stack text join through `--bf-text-gap-scale`;
+  the join never uses a child stack's own space and never applies in a
+  `.bf-prose.bf-stack`.
+  *Evidence*: commit `1cf47ce`.
+- [x] T039 Static contracts: unscoped selectors, root-list derivation and
+  equality, gap rules and opt-out restore, markup coverage of every
+  component class and component text element.
+  *Evidence*: `scripts/validation/body-line-rhythm-contracts.ts`, commit
+  `1cf47ce`.
+- [x] T040 Rendered contracts and page-text behaviour updates; component
+  baselines unchanged.
+  *Evidence*: commit `6be0fa9`; review.md “Changed behaviour assertions”.
+- [x] T041 Demo: ruled (c) specimen, stack, section and text → component →
+  text fixtures; docs and invariants.
+  *Evidence*: commits `47c97cd`, `56fa1e4`.
+
+**R6–R7**: done. T022 dark review, T023, T031 and the rest of T032 remain
+open; the section-stack gap clamp (research T18) needs an owner decision.
 
 ## Dependencies
 
