@@ -57,7 +57,16 @@ type Cli = {
   after: string;
   before: string;
   gate: string;
+  look?: string;
   packages: PackageName[];
+};
+
+type LookEntry = {
+  label: string;
+  note: string;
+  product: Product;
+  story: string;
+  variant?: string;
 };
 
 const require = createRequire(import.meta.url);
@@ -113,7 +122,7 @@ function parseCli(argv: string[]): Cli {
     const value = argv[index + 1];
     if (!flag?.startsWith("--") || !value) {
       throw new Error(
-        "Usage: --gate <name> --before <sha> --after <sha> --packages <comma-list>",
+        "Usage: --gate <name> --before <sha> --after <sha> --packages <comma-list> [--look <json>]",
       );
     }
     values.set(flag.slice(2), value);
@@ -139,8 +148,37 @@ function parseCli(argv: string[]): Cli {
     gate,
     before,
     after,
+    look: values.get("look"),
     packages: [...new Set(selected)] as PackageName[],
   };
+}
+
+// Validated before any build so a bad list fails in seconds, not after capture.
+async function readLook(file: string): Promise<LookEntry[]> {
+  const parsed = JSON.parse(await readFile(file, "utf8")) as unknown;
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error(`--look must be a non-empty JSON array: ${file}`);
+  }
+  return parsed.map((entry, index) => {
+    const { label, note, product, story, variant } = (entry ?? {}) as Record<
+      string,
+      unknown
+    >;
+    if (
+      typeof label !== "string" ||
+      typeof note !== "string" ||
+      typeof story !== "string" ||
+      !products.includes(product as Product) ||
+      (variant !== undefined && typeof variant !== "string")
+    ) {
+      throw new Error(
+        `--look entry ${index} needs label, story, product (site|docs|app), note and an optional variant`,
+      );
+    }
+    new RegExp(story, "i");
+    if (variant !== undefined) new RegExp(variant, "i");
+    return { label, note, product: product as Product, story, variant };
+  });
 }
 
 async function run(
@@ -674,6 +712,7 @@ function renderGallery(
   beforeCommit: string,
   afterCommit: string,
   results: StoryResult[],
+  look?: LookEntry[],
 ): string {
   const normal = results.filter((result) => !result.evidenceOnly);
   const evidence = results.filter((result) => result.evidenceOnly);
@@ -700,7 +739,16 @@ function renderGallery(
     const found = findPair(results, matcher, product, preference);
     return `<li><a href="#${pairId(found.result, found.pair.product)}">${escapeHtml(label)}</a> — ${escapeHtml(detail)}</li>`;
   };
-  const whereToLook = [
+  const custom = look?.map((entry) =>
+    lookup(
+      entry.label,
+      new RegExp(entry.story, "i"),
+      entry.product,
+      entry.note,
+      entry.variant === undefined ? undefined : new RegExp(entry.variant, "i"),
+    ),
+  );
+  const whereToLook = (custom ?? [
     lookup(
       "Paragraph and list continuation · Site",
       /text continuation|heading.*comparison/i,
@@ -728,7 +776,7 @@ function renderGallery(
     lookup("Popover padding", /component\/popover/i, "site", "Check the open popover surface inset.", /open/i),
     lookup("Section", /component\/section/i, "site", "Compare shallow, bordered and gap-scale section geometry.", /gap scale comparison|spacing/i),
     lookup("ColorInput", /subcomponent\/colorinput/i, "docs", "Check the one-sided separator and inherited surface inset.", /field contract/i),
-  ].join("\n");
+  ]).join("\n");
 
   const changedPairs = normal
     .flatMap((result) =>
@@ -813,6 +861,7 @@ async function hashEvidenceFiles(
 
 async function main(): Promise<void> {
   const cli = parseCli(process.argv.slice(2));
+  const look = cli.look ? await readLook(cli.look) : undefined;
   const pragmaRepo = path.resolve(
     process.env.PRAGMA_REPO ?? "H:\\WSL_dev_projects\\pragma",
   );
@@ -892,7 +941,7 @@ async function main(): Promise<void> {
     const indexPath = path.join(outputRoot, "index.html");
     await writeFile(
       indexPath,
-      renderGallery(cli, beforeCommit, afterCommit, results),
+      renderGallery(cli, beforeCommit, afterCommit, results, look),
       "utf8",
     );
     const files = await hashEvidenceFiles(outputRoot, indexPath, results);
