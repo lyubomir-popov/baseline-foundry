@@ -552,10 +552,10 @@ Chromium DPR 1, 16px root, main = the same bundle with the section stripped
 | F5 `blockquote`, `table`, `fieldset` text on body lines | Element roots in the bU ledger block; markup scan and element-selector check | `4fe0ddd` |
 | F6 component text followed by page text lost the gap | Join excludes reset roots on both sides, from the same list | `4fe0ddd` |
 | F7 prose/stack/hgroup children, `display: contents` | Per-modifier `--bf-text-join-gap` on children; `hgroup.bf-stack` gap scaled by the ledger; child containers and `display: contents` recorded | `4fe0ddd` |
-| F8 no release or migration note | README “Unreleased” note; `0.3.0` floor in `docs/publishing.md`, spec FR-025 and plan | docs commit |
+| F8 no release or migration note | README “Unreleased” note; `0.3.0` floor in `docs/publishing.md`, spec FR-025 and plan | `c2bafea` |
 | F9 behaviour script hygiene | Chrome suspension via `addStyleTag`, removed in `finally`; one statement per line | `4fe0ddd` |
-| F10 AGENTS bullet | Five lines; detail in `docs/architecture.md` and `docs/agent-index.md` | docs commit |
-| F11 panels keep the bU ledger | README, architecture and spec open question Q2 | docs commit |
+| F10 AGENTS bullet | Five lines; detail in `docs/architecture.md` and `docs/agent-index.md` | `c2bafea` |
+| F11 panels keep the bU ledger | README, architecture and spec open question Q2 | `c2bafea` |
 
 ### Before and after (px, @16px)
 

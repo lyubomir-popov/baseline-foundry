@@ -337,7 +337,7 @@ D9).
 - [x] T049 (F8, F10, F11) README migration note and scope, release floor in
   `docs/publishing.md`, trimmed `AGENTS.md` bullet, architecture and agent
   index detail, spec, plan, research, contract and review.
-  *Evidence*: docs commit after `4fe0ddd`.
+  *Evidence*: commit `c2bafea`.
 
 **F1–F11**: done. Open owner questions Q1–Q3 (spec).
 
