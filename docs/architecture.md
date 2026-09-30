@@ -52,23 +52,29 @@ a fourth inset.
 
 All four tiers use one ownership model:
 
-- prose text defaults to body-line phase (Spec 026, owner ruling
-  2026-09-30): paragraphs and headings that are direct children of
-  `.bf-prose` or of a prose `hgroup` own their measured
-  `padding-block-start` plus a build-time phase inset, and a
-  `margin-block-end` closure to whole body lines;
-- a prose `ul`/`ol` is a container-owned block: the list carries the body
-  nudge and phase once as `padding-block-start` and the closure once as
+- flow text anywhere under `.bf-theme` defaults to body-line phase (Spec 026,
+  owner rulings 2026-09-30): `p`/`.bf-body` and `h1`–`h6`/`.bf-h1`–`.bf-h6`
+  own their measured `padding-block-start` plus a build-time phase inset, and
+  a `margin-block-end` closure to whole body lines;
+- text blocks space themselves: the closure supplies one blank body line, so
+  `.bf-prose` has no gap and a `bf-stack` cancels its gap between two adjacent
+  text blocks (paragraphs, headings, `hgroup`, prose lists); text next to any
+  other child keeps the stack gap, so body-line phase after a component is not
+  guaranteed;
+- a prose `ul`/`ol` is a container-owned block: the outermost list carries the
+  body nudge and phase once as `padding-block-start` and the closure once as
   `margin-block-end`, and its items and nested lists carry no block padding or
   margin, so every item line advances one body line; loose items are one body
   line apart;
-- each child of a prose `hgroup` after the first is pulled up one whole body
+- each child of an `hgroup` after the first is pulled up one whole body
   line, except pairs whose static cap-height-plus-descender proof fails, which
   stay unjoined;
-- `.bf-theme.is-baseline-rhythm` restores the baseline-unit ledger below for
-  its subtree; the nearest theme root wins through inherited private
-  properties;
-- all other metric-aligned text owns its measured `padding-block-start`
+- component internals keep the baseline-unit ledger: every class styled by
+  the component, grid and preset CSS (except flow containers and page shells)
+  shares the `.bf-theme.is-baseline-rhythm` block, which redeclares every term
+  to its bU equivalent; the nearest theme or component root wins through
+  inherited private properties;
+- baseline-unit-ledger text owns its measured `padding-block-start`
   and only the complementary, non-semantic `margin-block-end` required to
   complete a baseline unit;
 - production text uses no bottom-padding compensation and role space-after
@@ -79,8 +85,9 @@ All four tiers use one ownership model:
 - flow boundaries preserve compensation and therefore do not need semantic
   last-child margin trimming.
 
-Nudge and compensation properties keep their meaning under both ledgers, and
-container gaps are unchanged until the owner rules on Spec 026 D4.
+Nudge and compensation properties keep their meaning under both ledgers.
+Under `.is-baseline-rhythm` every prose and stack gap is the authored one and
+rendered text geometry equals the pre-Spec 026 output exactly.
 
 This owner decision aligns BF with the current container-owned direction in the
 Canonical spacing reference while preserving BF's independent tier values and

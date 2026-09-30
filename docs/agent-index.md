@@ -69,9 +69,10 @@ tagging and GitHub release assets.
 - Test occupied control blocks, not raw border-box heights.
 - Do not restore broad direct-child resets that erase baseline compensation.
   BF containers own semantic gaps, while metric-aligned text keeps its top
-  nudge and bottom-margin compensation; prose text adds its body-line phase
-  and closure, and a prose list owns them once for all its items. Test prose
-  changes under both the default and `.is-baseline-rhythm`.
+  nudge and bottom-margin compensation; flow text adds its body-line phase
+  and closure and cancels stack gaps between adjacent text blocks, and a
+  prose list owns them once for all its items. Component roots keep the bU
+  ledger. Test text changes under both the default and `.is-baseline-rhythm`.
 - Do not add arbitrary grid spans to solve a composed documentation layout.
 - Article pagination is not numbered pagination and must not inherit disabled
   page-control behavior.

@@ -31,18 +31,17 @@ Read in this order:
   local active specs govern it; a Pragma or Canonical official-design-system
   compromise is not automatically a BF requirement.
 - Semantic vertical spacing is container-owned in every built-in tier:
-  editorial, documentation, app, and OS. Prose text defaults to body-line
-  phase (Spec 026, owner ruling 2026-09-30): paragraphs and headings that are
-  direct children of `.bf-prose` or of a prose `hgroup` keep their measured
-  top nudge, add a metric-derived phase inset and close to whole body lines;
-  prose lists are container-owned blocks that carry the body nudge, phase and
-  closure once, so every item line advances one body line.
-  `.bf-theme.is-baseline-rhythm` restores the baseline-unit ledger for its
-  subtree. All other metric-aligned text retains only its measured top nudge
-  and complementary bottom-margin compensation; role space-after does not
-  drive layout. Nested `bf-stack` containers own direct child gaps, and plain
-  and visual-role-classed equivalents must occupy the same baseline-aligned
-  box.
+  editorial, documentation, app, and OS. Flow text anywhere under `.bf-theme`
+  defaults to body-line phase and spaces itself (Spec 026, owner rulings
+  2026-09-30): paragraphs, headings, `hgroup` and prose lists keep their
+  measured nudge, add a metric-derived phase inset and close to whole body
+  lines, so `.bf-prose` has no gap and a `bf-stack` cancels its gap between
+  two adjacent text blocks. Component internals and `.is-baseline-rhythm`
+  subtrees keep the baseline-unit ledger: measured top nudge plus
+  complementary bottom-margin compensation. BF stays metrics-only; role
+  space-after does not drive layout. Nested `bf-stack` containers own direct
+  child gaps, and plain and visual-role-classed equivalents must occupy the
+  same baseline-aligned box.
 - Baseline compensation comes from real font metrics. The cap engine is a demo
   comparison, not a production surface.
 - OS is the fourth first-class built-in tier. Density differences are
