@@ -2162,7 +2162,7 @@ async function main(): Promise<void> {
   }
   runInvariant("Body-line rhythm direct/class parity", () => validateBodyLineRhythmParity(bodyLineRhythmLiterals));
   runInvariant("Body-line rhythm no-op without data", () => validateBodyLineRhythmNoOp(defaultTheme, bodyLineRhythmLiterals.default));
-  await runInvariantAsync("Body-line rhythm markup scope", () => validateBodyLineRhythmMarkupScope(readmeMd));
+  await runInvariantAsync("Body-line rhythm markup scope", () => validateBodyLineRhythmMarkupScope(readmeMd, defaultTheme.css));
   await runInvariantAsync("Canonical DTCG spacing adapter", () => validateDtcgSpacingContracts({
     editorial: editorialTier,
     documentation: documentationTier,

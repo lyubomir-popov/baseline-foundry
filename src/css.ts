@@ -223,11 +223,24 @@ function selectorsForRole(roleName: string): string[] {
 }
 
 const THEME = ":where(.bf-theme)";
-const BASELINE_RHYTHM_ROOT = ":where(.bf-theme.is-baseline-rhythm)";
+const BASELINE_RHYTHM_ROOT = ".bf-theme.is-baseline-rhythm";
 const NOT_CAP_ENGINE = ":not(:where(.bf-engine-cap, .bf-engine-cap *))";
-const PROSE_LIST_ITEM = ".bf-prose > :is(ul, ol) li";
+const PROSE_LIST_ITEM = ".bf-prose li";
 export const BODY_LINE_RHYTHM_SECTION_START = "/* Body-line rhythm (Spec 026). */";
 export const BODY_LINE_RHYTHM_SECTION_END = "/* End body-line rhythm (Spec 026). */";
+
+/**
+ * Spec 026 R7: classes that are not component roots. Theme, tier and surface
+ * roots, text roles, layout primitives and the page-content shells host flow
+ * text; every other bf-* class in the component CSS keeps the bU ledger.
+ */
+export const BODY_LINE_FLOW_CLASS = /^bf-(?:theme|tier-[a-z]+|surface-[a-z0-9-]+|body|h[1-6]|lead|meta|text-link|engine-cap|engine-metrics|page|grid|grid-item|grid-scope|span-(?:\d+|full)|stack|cluster|section|prose|strip|measure|fixed-width|inline-size|stage-shell|token-row|page-shell|application|main|site-main|docs-layout|docs-layout-content)$/;
+
+/** Spec 026 R7: every bf-* class the component, grid and preset CSS style, minus flow classes, sorted. */
+export function bodyLineComponentRootClasses(componentCss: string): string[] {
+  const classes = new Set(Array.from(componentCss.matchAll(/\.(bf-[a-z0-9-]*[a-z0-9])/g), match => match[1]));
+  return [...classes].filter(className => !BODY_LINE_FLOW_CLASS.test(className)).sort();
+}
 
 function hgroupPairKey(pair: BodyLineRhythmHgroupPair): string {
   return `${pair.previous}-${pair.following}`;
@@ -245,10 +258,11 @@ function bodyLineRhythmDeclarations(rhythm: BodyLineRhythm, unjoinedKeys: string
   --bf-body-loose-text-start: 0rem;
   --bf-body-loose-text-end: 0rem;
   --bf-hgroup-join: calc(-1 * var(--bf-body-rhythm-step));
+  --bf-text-gap-scale: 0;
 ` + unjoinedKeys.map(key => `  --bf-hgroup-join-${key}: ${surfaceUnjoined.has(key) ? "0rem" : "var(--bf-hgroup-join)"};\n`).join("");
 }
 
-// .is-baseline-rhythm resolves every term to main's baseline-unit ledger for the nearest theme root.
+// .is-baseline-rhythm and every component root resolve every term to main's baseline-unit ledger for their subtree.
 function baselineRhythmDeclarations(roleNames: string[], unjoinedKeys: string[]): string {
   return roleNames
     .map(roleName => `  --bf-${roleName}-rhythm-step: var(--bf-baseline);\n  --bf-${roleName}-phase-start: 0rem;\n  --bf-${roleName}-closure-end: var(--bf-${roleName}-margin-bottom);\n`)
@@ -260,6 +274,7 @@ function baselineRhythmDeclarations(roleNames: string[], unjoinedKeys: string[])
   --bf-body-loose-text-start: var(--bf-body-nudge-start);
   --bf-body-loose-text-end: var(--bf-body-margin-bottom);
   --bf-hgroup-join: 0rem;
+  --bf-text-gap-scale: 1;
 ` + unjoinedKeys.map(key => `  --bf-hgroup-join-${key}: 0rem;\n`).join("");
 }
 
@@ -269,22 +284,28 @@ function roleCompound(roleName: string): string {
 
 function bodyLineRhythmRoleRule(roleName: string): string {
   const tag = roleName === "body" ? "p" : roleName;
-  const parent = ":where(.bf-prose, .bf-prose > hgroup)";
   const selectors = [
-    `${THEME} ${parent} > :where(${tag})${NOT_CAP_ENGINE}`,
-    `${THEME} ${parent} > .bf-${roleName}${NOT_CAP_ENGINE}`
+    `${THEME} :where(${tag})${NOT_CAP_ENGINE}`,
+    `${THEME} .bf-${roleName}${NOT_CAP_ENGINE}`
   ];
   return `${selectors.join(",\n")} {\n  margin-bottom: var(--bf-${roleName}-closure-end);\n  padding-block-start: calc(var(--bf-${roleName}-nudge-start) + var(--bf-${roleName}-phase-start));\n}\n`;
 }
 
+/** Spec 026 R6: a text block that closes to whole body lines; two adjacent ones need no container gap. */
+export function bodyLineTextBlock(roleNames: string[]): string {
+  const tags = roleNames.map(roleName => roleName === "body" ? "p" : roleName);
+  return `:is(${[...tags, "hgroup", ...roleNames.map(roleName => `.bf-${roleName}`), ".bf-prose ul", ".bf-prose ol"].join(", ")})`;
+}
+
 // Empty unless the root and every class surface carry rhythm data (Spec 026 T4).
-function bodyLineRhythmCss(rhythm: BodyLineRhythm | undefined, classSurfaces: ThemeSurface[]): string {
+function bodyLineRhythmCss(rhythm: BodyLineRhythm | undefined, classSurfaces: ThemeSurface[], componentRootClasses: string[]): string {
   if (!rhythm?.roles.body || classSurfaces.some(surface => !surface.bodyLineRhythm?.roles.body)) {
     return "";
   }
 
   const looseItem = `li:has(> :where(p, .bf-body))`;
   const roleOrder = Object.keys(rhythm.roles);
+  const textBlock = bodyLineTextBlock(roleOrder);
   const unjoinedPairs = new Map<string, BodyLineRhythmHgroupPair>();
   for (const pair of [rhythm, ...classSurfaces.map(surface => surface.bodyLineRhythm as BodyLineRhythm)].flatMap(surfaceRhythm => surfaceRhythm.hgroupUnjoined)) {
     unjoinedPairs.set(hgroupPairKey(pair), pair);
@@ -292,19 +313,23 @@ function bodyLineRhythmCss(rhythm: BodyLineRhythm | undefined, classSurfaces: Th
   const unjoined = [...unjoinedPairs.values()].sort((a, b) =>
     roleOrder.indexOf(a.previous) - roleOrder.indexOf(b.previous) || roleOrder.indexOf(a.following) - roleOrder.indexOf(b.following));
   const unjoinedKeys = unjoined.map(hgroupPairKey);
+  const baselineLedgerRoots = [BASELINE_RHYTHM_ROOT, ...componentRootClasses.map(className => `.${className}`)];
   const blocks = [
     `${THEME} {\n${bodyLineRhythmDeclarations(rhythm, unjoinedKeys)}}\n`,
     ...classSurfaces.map(surface => `:where(.bf-theme.${surface.className}) {\n${bodyLineRhythmDeclarations(surface.bodyLineRhythm as BodyLineRhythm, unjoinedKeys)}}\n`),
-    `${BASELINE_RHYTHM_ROOT} {\n${baselineRhythmDeclarations(Object.keys(rhythm.roles), unjoinedKeys)}}\n`,
+    `:where(${baselineLedgerRoots.join(", ")}) {\n${baselineRhythmDeclarations(Object.keys(rhythm.roles), unjoinedKeys)}}\n`,
     ...Object.keys(rhythm.roles).map(bodyLineRhythmRoleRule),
-    `${THEME} :where(.bf-prose > hgroup > * + *)${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-hgroup-join);\n}\n`,
+    `${THEME} :where(.bf-prose)${NOT_CAP_ENGINE} {\n  gap: calc(var(--bf-section-space-shallow) * var(--bf-text-gap-scale));\n}\n`,
+    // A following stack cannot read its parent's --bf-stack-space, and a prose stack already has no gap.
+    `${THEME} :where(.bf-stack:not(.bf-prose) > ${textBlock} + ${textBlock}:not(.bf-stack))${NOT_CAP_ENGINE} {\n  margin-block-start: calc(var(--bf-stack-space) * (var(--bf-text-gap-scale) - 1));\n}\n`,
+    `${THEME} :where(hgroup > * + *)${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-hgroup-join);\n}\n`,
     // A surface that would bring caps into the previous descender does not pull that pair; the gap stays whole steps.
-    ...unjoined.map(pair => `${THEME} :where(.bf-prose > hgroup > ${roleCompound(pair.previous)} + ${roleCompound(pair.following)})${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-hgroup-join-${hgroupPairKey(pair)});\n}\n`),
-    `${THEME} :where(.bf-prose) > :where(ul, ol)${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-list-block-end);\n  padding-block-start: var(--bf-body-list-block-start);\n}\n`,
+    ...unjoined.map(pair => `${THEME} :where(hgroup > ${roleCompound(pair.previous)} + ${roleCompound(pair.following)})${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-hgroup-join-${hgroupPairKey(pair)});\n}\n`),
+    `${THEME} :where(.bf-prose :is(ul, ol):not(.bf-prose li *))${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-list-block-end);\n  padding-block-start: var(--bf-body-list-block-start);\n}\n`,
     `${THEME} :where(${PROSE_LIST_ITEM})${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-list-item-end);\n  padding-block-start: var(--bf-body-list-item-start);\n}\n`,
-    `${THEME} :where(.bf-prose > ul > li, .bf-prose > :is(ul, ol) ul > li)${NOT_CAP_ENGINE}::before {\n  inset-block-start: calc(var(--bf-tick-box-offset) - var(--bf-body-nudge-start) + var(--bf-body-list-item-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));\n}\n`,
+    `${THEME} :where(.bf-prose ul > li)${NOT_CAP_ENGINE}::before {\n  inset-block-start: calc(var(--bf-tick-box-offset) - var(--bf-body-nudge-start) + var(--bf-body-list-item-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));\n}\n`,
     `${THEME} :where(${PROSE_LIST_ITEM}) > :where(p)${NOT_CAP_ENGINE},\n${THEME} :where(${PROSE_LIST_ITEM}) > .bf-body${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-loose-text-end);\n  padding-block-start: var(--bf-body-loose-text-start);\n}\n`,
-    `${THEME} :where(.bf-prose > :is(ul, ol) ${looseItem} + ${looseItem})${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-body-list-loose-gap);\n}\n`
+    `${THEME} :where(.bf-prose ${looseItem} + ${looseItem})${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-body-list-loose-gap);\n}\n`
   ];
 
   // No separator outside the comments, so stripping the section restores main's baseline-unit output byte for byte.
@@ -350,6 +375,8 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
     ...(hasAppClassSurface ? [":where(.bf-theme.bf-tier-app)"] : [])
   ];
   const presetCss = includesAppSurface ? `\n${appTierPresetCss(appScopes)}` : "";
+  const componentCss = componentsCss(tokens, themeSurfaces);
+  const layoutCss = `${gridCss(appScopes)}${presetCss}`;
 
   if (!body) {
     throw new Error("Theme tokens require a body role.");
@@ -647,7 +674,7 @@ ${capEngineDemo}
   padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
 }
-${bodyLineRhythmCss(options.bodyLineRhythm, themeSurfaces.filter(surface => surface.className))}
+${bodyLineRhythmCss(options.bodyLineRhythm, themeSurfaces.filter(surface => surface.className), bodyLineComponentRootClasses(`${componentCss}\n${layoutCss}`))}
 :where(.bf-theme) :where(hr) {
   background: var(--bf-color-rule);
   block-size: 0.0625rem;
@@ -677,8 +704,8 @@ ${bodyLineRhythmCss(options.bodyLineRhythm, themeSurfaces.filter(surface => surf
   padding-top: 0;
 }
 
-${componentsCss(tokens, themeSurfaces)}
+${componentCss}
 
-${gridCss(appScopes)}${presetCss}
+${layoutCss}
 `;
 }
