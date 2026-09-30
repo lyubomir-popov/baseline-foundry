@@ -219,3 +219,240 @@ export function matchesProseFlowScope(elements: MarkupElement[], index: number):
 export function componentRootFor(elements: MarkupElement[], index: number): MarkupElement | undefined {
   return [elements[index], ...ancestors(elements, index)].find(isComponentRoot);
 }
+
+/** AC-3 markup scan: no prose-flow application selector reaches text inside a component root. */
+export async function validateBodyLineRhythmMarkupScope(readmeMd: string): Promise<void> {
+  const sources: Array<[string, string]> = [["README.md", readmeHtmlExamples(readmeMd)]];
+  for (const dir of ["demo/components", "demo/patterns"]) {
+    for (const fileName of (await fs.readdir(dir)).filter(name => name.endsWith(".html"))) {
+      sources.push([`${dir}/${fileName}`, await fs.readFile(path.join(dir, fileName), "utf8")]);
+    }
+  }
+
+  let matches = 0;
+  for (const [file, html] of sources) {
+    const elements = parseMarkup(html);
+    elements.forEach((element, index) => {
+      if (!matchesProseFlowScope(elements, index)) return;
+      matches += 1;
+      const root = componentRootFor(elements, index);
+      assert(!root, `Expected ${file}:${element.line} <${element.tag}> to stay outside the body-line prose-flow scope inside component root .${root?.classes.join(".")}.`);
+    });
+  }
+
+  assert(sources.length > 80 && matches > 0, `Expected the markup scan to cover the component, pattern and README sources and find prose-flow text, got ${sources.length} sources and ${matches} matches.`);
+}
+
+function manifestSurfaces(bundle: BodyLineRhythmBundle): Array<[string, ManifestSurface]> {
+  return Object.entries((bundle.surfaces.surfaces ?? {}) as Record<string, ManifestSurface>);
+}
+
+function defaultManifestSurface(label: string, bundle: BodyLineRhythmBundle): ManifestSurface {
+  const surface = manifestSurfaces(bundle).find(([name]) => name === bundle.surfaces.defaultSurface)?.[1];
+  assert(surface, `Expected ${label} surfaces.json to include its default surface.`);
+  return surface;
+}
+
+function asThemeSurface(name: string, surface: ManifestSurface, bodyLineRhythm?: RhythmRecord): ThemeSurface {
+  return {
+    name,
+    className: surface.className,
+    engine: "metrics-compensated",
+    configPath: "",
+    baselineConfigPath: "",
+    baselineTokensPath: "",
+    tokens: surface.tokens,
+    metrics: { baselineUnit: surface.tokens.baselineUnit, fontFiles: surface.metrics.fontFiles, elements: {} },
+    bodyLineRhythm
+  };
+}
+
+async function surfaceRhythm(label: string, bundleDir: string, surface: ManifestSurface): Promise<RhythmRecord> {
+  const metricsByFamily = await metricsForFonts(surface.metrics.fontFiles, bundleDir);
+  const result = computeBodyLineRhythm(metricsByFamily, parseRem(surface.tokens.baselineUnit), surface.tokens.roles);
+  assert(result.failures.length === 0, `Expected ${label} surfaces to pass the body-line rhythm checks, got: ${result.failures.join(" ")}`);
+  return result.roles;
+}
+
+function stripSection(css: string): string {
+  const start = css.indexOf(BODY_LINE_RHYTHM_SECTION_START);
+  const end = css.indexOf(BODY_LINE_RHYTHM_SECTION_END) + BODY_LINE_RHYTHM_SECTION_END.length;
+  return css.slice(0, start) + css.slice(end);
+}
+
+function specificity(selector: string): number {
+  let stripped = selector;
+  let previous: string;
+  do {
+    previous = stripped;
+    stripped = stripped
+      .replace(/:where\((?:[^()]|\([^()]*\))*\)/g, "")
+      .replace(/:(?:not|has|is)\(\s*[+>~]?\s*\)/g, "");
+  } while (stripped !== previous);
+
+  const ids = (stripped.match(/#[\w-]+/g) ?? []).length;
+  const classes = (stripped.match(/\.[\w-]+|\[[^\]]*\]|(?<!:):[\w-]+/g) ?? []).length;
+  const types = (stripped.match(/(?:^|[\s>+~])[a-zA-Z][\w-]*|::[\w-]+/g) ?? []).length;
+  return ids * 10000 + classes * 100 + types;
+}
+
+function declarations(rule: Rule): Map<string, string> {
+  const values = new Map<string, string>();
+  rule.walkDecls(declaration => {
+    values.set(declaration.prop, declaration.value);
+  });
+  return values;
+}
+
+function assertDeclarations(rule: Rule | undefined, expected: Record<string, string>, label: string): void {
+  assert(rule, `Expected ${label} rule.`);
+  const values = declarations(rule);
+  assert(values.size === Object.keys(expected).length, `Expected ${label} to declare only ${Object.keys(expected).join(", ")}, got ${[...values.keys()].join(", ")}.`);
+  for (const [property, value] of Object.entries(expected)) {
+    assert(values.get(property) === value, `Expected ${label} ${property}: ${value}, got ${values.get(property)}.`);
+  }
+}
+
+function rhythmDeclarations(rhythm: RhythmRecord): Record<string, string> {
+  return Object.fromEntries(Object.entries(rhythm).flatMap(([roleName, role]) => [
+    [`--bf-${roleName}-rhythm-step`, role.rhythmStep],
+    [`--bf-${roleName}-phase-start`, role.phaseStart],
+    [`--bf-${roleName}-closure-end`, role.closureEnd]
+  ]));
+}
+
+/** AC-2/AC-3 for one bundle; returns its root and class-block literals by selector for AC-4 parity. */
+export async function validateBodyLineRhythmBundle(
+  label: string,
+  bundleDir: string,
+  bundle: BodyLineRhythmBundle,
+  presetName: BuiltInThemeName | undefined
+): Promise<Map<string, RhythmRecord>> {
+  const { css } = bundle;
+  const defaultSurface = defaultManifestSurface(label, bundle);
+  const classSurfaces = manifestSurfaces(bundle).filter(([, surface]) => surface.className);
+
+  assert(css.split(BODY_LINE_RHYTHM_SECTION_START).length === 2 && css.split(BODY_LINE_RHYTHM_SECTION_END).length === 2, `Expected ${label} to emit exactly one body-line rhythm section.`);
+  const sectionStart = css.indexOf(BODY_LINE_RHYTHM_SECTION_START);
+  const sectionEnd = css.indexOf(BODY_LINE_RHYTHM_SECTION_END) + BODY_LINE_RHYTHM_SECTION_END.length;
+  const section = css.slice(sectionStart, sectionEnd);
+  const plainCss = generateFoundryCss(defaultSurface.tokens, {
+    presetName,
+    themeSurfaces: classSurfaces.map(([name, surface]) => asThemeSurface(name, surface))
+  });
+  assert(stripSection(css) === plainCss, `Expected ${label} CSS minus the body-line rhythm section to equal generation without rhythm data byte for byte.`);
+
+  assert(css.lastIndexOf(":where(.bf-theme) :where(.bf-prose li) {", sectionStart) >= 0, `Expected ${label} section to follow the .bf-prose li base rule.`);
+  assert(css.lastIndexOf(":where(.bf-theme) :where(.bf-prose blockquote) {", sectionStart) >= 0, `Expected ${label} section to follow the .bf-prose blockquote rule.`);
+  assert(css.indexOf(":where(.bf-theme) :where(hr) {") > sectionEnd, `Expected ${label} section to precede the hr rule.`);
+  assert(!/data-/.test(section) && !section.includes("!important"), `Expected ${label} section to avoid data-* selectors and !important.`);
+
+  const rootRhythm = await surfaceRhythm(label, bundleDir, defaultSurface);
+  const roleNames = Object.keys(rootRhythm);
+  assert(roleNames.join() === BODY_LINE_RHYTHM_ROLES.join(), `Expected ${label} rhythm terms for body and h1-h6 in role order, got ${roleNames.join(", ")}.`);
+
+  const rules: Rule[] = [];
+  parseCss(section).each(node => {
+    if (node.type === "rule") rules.push(node);
+  });
+  const expectedRules = 1 + classSurfaces.length + 1 + roleNames.length + 3;
+  assert(rules.length === expectedRules, `Expected ${label} section to hold ${expectedRules} rules, got ${rules.length}.`);
+
+  const literals = new Map<string, RhythmRecord>([[ROOT, rootRhythm]]);
+  const blockSelectors = [ROOT, ...classSurfaces.map(([, surface]) => `:where(.bf-theme.${surface.className}.is-body-line-rhythm)`)];
+  const blockRhythms = [rootRhythm];
+  for (const [, surface] of classSurfaces) {
+    blockRhythms.push(await surfaceRhythm(label, bundleDir, surface));
+  }
+  blockSelectors.forEach((selector, index) => {
+    assert(rules[index]?.selector === selector, `Expected ${label} rhythm block ${index + 1} to be ${selector}, got ${rules[index]?.selector}.`);
+    assertDeclarations(rules[index], rhythmDeclarations(blockRhythms[index]), `${label} ${selector}`);
+    literals.set(selector, blockRhythms[index]);
+  });
+
+  const resetRule = rules[blockSelectors.length];
+  assert(resetRule?.selector === `${ROOT} :where(.bf-theme:not(.is-body-line-rhythm))`, `Expected ${label} nested non-opted theme reset after the surface blocks.`);
+  assertDeclarations(resetRule, Object.fromEntries(roleNames.flatMap(roleName => [
+    [`--bf-${roleName}-rhythm-step`, "var(--bf-baseline)"],
+    [`--bf-${roleName}-phase-start`, "0rem"],
+    [`--bf-${roleName}-closure-end`, `var(--bf-${roleName}-margin-bottom)`]
+  ])), `${label} nested reset`);
+
+  const applicationRules = rules.slice(blockSelectors.length + 1);
+  roleNames.forEach((roleName, index) => {
+    const tag = roleName === "body" ? "p" : roleName;
+    const parents = roleName === "body" ? [":where(.bf-prose)", ":where(.bf-prose li)"] : [":where(.bf-prose)"];
+    const expectedSelectors = parents.flatMap(parent => [
+      `${ROOT} ${parent} > :where(${tag})${NOT_CAP_ENGINE}`,
+      `${ROOT} ${parent} > .bf-${roleName}${NOT_CAP_ENGINE}`
+    ]);
+    assert(applicationRules[index]?.selectors.join("\n") === expectedSelectors.join("\n"), `Expected ${label} ${roleName} rule to select its semantic and class prose-flow shapes, got ${applicationRules[index]?.selector}.`);
+    assertDeclarations(applicationRules[index], {
+      "margin-bottom": `var(--bf-${roleName}-closure-end)`,
+      "padding-block-start": `calc(var(--bf-${roleName}-nudge-start) + var(--bf-${roleName}-phase-start))`
+    }, `${label} ${roleName} application`);
+  });
+
+  const [liRule, markerRule, looseRule] = applicationRules.slice(roleNames.length);
+  assert(liRule?.selector === `${ROOT} :where(.bf-prose li)${NOT_CAP_ENGINE}`, `Expected ${label} prose li rule after the role rules.`);
+  assertDeclarations(liRule, {
+    "margin-bottom": "var(--bf-body-closure-end)",
+    "padding-block-start": "calc(var(--bf-body-nudge-start) + var(--bf-body-phase-start))"
+  }, `${label} prose li`);
+  assert(markerRule?.selector === `${ROOT} :where(.bf-prose ul > li)${NOT_CAP_ENGINE}::before`, `Expected ${label} prose marker shift after the li rule.`);
+  assertDeclarations(markerRule, {
+    "inset-block-start": "calc(var(--bf-tick-box-offset) + var(--bf-body-phase-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5))"
+  }, `${label} prose marker`);
+  assert(looseRule?.selector === `${ROOT} :where(.bf-prose li:has(> :where(p, .bf-body)))${NOT_CAP_ENGINE}`, `Expected ${label} loose-item rule to follow the li rule.`);
+  assertDeclarations(looseRule, { "margin-bottom": "0rem", "padding-block-start": "0rem" }, `${label} loose item`);
+
+  const metricFlushSelectors: string[] = [];
+  parseCss(css).walkRules(rule => {
+    metricFlushSelectors.push(...rule.selectors.filter(selector => selector.startsWith(":where(.bf-theme) .bf-stack.is-metric-flush >")));
+  });
+  assert(metricFlushSelectors.length >= 2, `Expected ${label} to keep its metric-flush text rules.`);
+  const weakestFlush = Math.min(...metricFlushSelectors.map(specificity));
+  for (const selector of applicationRules.flatMap(rule => rule.selectors)) {
+    const subject = selector.replace(/::before$/, "");
+    assert(subject.endsWith(NOT_CAP_ENGINE), `Expected ${label} application selector to exclude the cap engine demo: ${selector}.`);
+    assert(specificity(subject) <= 100 && specificity(subject) < weakestFlush, `Expected ${label} ${selector} to keep base-rule specificity below the metric-flush rules.`);
+  }
+
+  return literals;
+}
+
+/** AC-4: each tier resolves its contract literals in its direct bundle and in every class-scoped surface. */
+export function validateBodyLineRhythmParity(bundleLiterals: Record<string, Map<string, RhythmRecord>>): void {
+  for (const tierName of tierNames) {
+    const direct = bundleLiterals[tierName]?.get(ROOT);
+    assert(direct, `Expected the direct ${tierName} bundle to declare root rhythm literals.`);
+    for (const [roleName, [, step, phase, closure]] of Object.entries(EXPECTED[tierName])) {
+      const role = direct[roleName];
+      assert(role && parseRem(role.rhythmStep) === step && parseRem(role.phaseStart) === phase && parseRem(role.closureEnd) === closure, `Expected direct ${tierName}/${roleName} literals to equal the contract table.`);
+    }
+
+    const classSelector = `:where(.bf-theme.bf-tier-${tierName}.is-body-line-rhythm)`;
+    const scopedBundles = Object.entries(bundleLiterals).filter(([, literals]) => literals.has(classSelector));
+    assert(scopedBundles.length === 7, `Expected ${tierName} class-scoped rhythm blocks in the default, four tier and two preset bundles, found ${scopedBundles.length}.`);
+    for (const [bundleName, literals] of scopedBundles) {
+      assert(JSON.stringify(literals.get(classSelector)) === JSON.stringify(direct), `Expected ${bundleName} ${classSelector} literals to equal the direct ${tierName} bundle.`);
+    }
+  }
+
+  assert(JSON.stringify(bundleLiterals.prose?.get(ROOT)) === JSON.stringify(bundleLiterals.editorial?.get(ROOT)), "Expected the prose preset root to resolve the editorial rhythm literals.");
+  assert(JSON.stringify(bundleLiterals["app-tier"]?.get(ROOT)) === JSON.stringify(bundleLiterals.app?.get(ROOT)), "Expected the app-tier preset root to resolve the app rhythm literals.");
+}
+
+/** Research T4: without complete rhythm data the section is not emitted and the modifier is a no-op. */
+export function validateBodyLineRhythmNoOp(bundle: BodyLineRhythmBundle, literals: Map<string, RhythmRecord> | undefined): void {
+  const rhythm = literals?.get(ROOT);
+  assert(rhythm, "Expected default bundle root rhythm literals.");
+  const defaultSurface = defaultManifestSurface("default", bundle);
+  const classSurfaces = manifestSurfaces(bundle).filter(([, surface]) => surface.className);
+  const complete = classSurfaces.map(([name, surface]) => asThemeSurface(name, surface, rhythm));
+  const oneMissing = classSurfaces.map(([name, surface], index) => asThemeSurface(name, surface, index === 0 ? undefined : rhythm));
+
+  assert(generateFoundryCss(defaultSurface.tokens, { themeSurfaces: complete, bodyLineRhythm: rhythm }).includes(BODY_LINE_RHYTHM_SECTION_START), "Expected complete rhythm data to emit the section.");
+  assert(!generateFoundryCss(defaultSurface.tokens, { themeSurfaces: complete }).includes(BODY_LINE_RHYTHM_SECTION_START), "Expected a root without rhythm data to emit no section.");
+  assert(!generateFoundryCss(defaultSurface.tokens, { themeSurfaces: oneMissing, bodyLineRhythm: rhythm }).includes(BODY_LINE_RHYTHM_SECTION_START), "Expected a class surface without rhythm data to suppress the section.");
+}

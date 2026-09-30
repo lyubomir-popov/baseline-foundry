@@ -8,7 +8,13 @@ import { assert, getCheckCount } from "./validation-assert.ts";
 import { parseCss, assertRuleHasDecl, assertRuleMissingDecl } from "./css-ast-helpers.ts";
 import { validateRenewalComponentContracts } from "./validation/renewal-component-contracts.ts";
 import { validateDtcgSpacingContracts } from "./validation/dtcg-spacing-contracts.ts";
-import { validateBodyLineRhythmFormulas } from "./validation/body-line-rhythm-contracts.ts";
+import {
+  validateBodyLineRhythmBundle,
+  validateBodyLineRhythmFormulas,
+  validateBodyLineRhythmMarkupScope,
+  validateBodyLineRhythmNoOp,
+  validateBodyLineRhythmParity
+} from "./validation/body-line-rhythm-contracts.ts";
 import { assertNoDuplicateClassAttributes } from "./validation/html-contract-helpers.ts";
 import {
   validateAppTierDemoPage,
@@ -2134,6 +2140,25 @@ async function main(): Promise<void> {
     app: appTier.tokens,
     os: osTier.tokens
   }));
+  const bodyLineRhythmBundles = [
+    ["default", "dist", defaultTheme, "editorial"],
+    ["editorial", "dist/tiers/editorial", editorialTier, "editorial"],
+    ["documentation", "dist/tiers/documentation", documentationTier, "documentation"],
+    ["app", "dist/tiers/app", appTier, "app"],
+    ["os", "dist/tiers/os", osTier, "os"],
+    ["prose", "dist/presets/prose", prosePreset, "editorial"],
+    ["app-tier", "dist/presets/app-tier", appTierPreset, "app"],
+    ["ibm-plex-engine-smoke", "dist/experiments/ibm-plex-engine-smoke", ibmPlexEngineSmoke, undefined]
+  ] as const;
+  const bodyLineRhythmLiterals: Parameters<typeof validateBodyLineRhythmParity>[0] = {};
+  for (const [bundleName, bundleDir, artifacts, presetName] of bodyLineRhythmBundles) {
+    await runInvariantAsync(`Body-line rhythm section (${bundleName})`, async () => {
+      bodyLineRhythmLiterals[bundleName] = await validateBodyLineRhythmBundle(bundleName, path.resolve(bundleDir), artifacts, presetName);
+    });
+  }
+  runInvariant("Body-line rhythm direct/class parity", () => validateBodyLineRhythmParity(bodyLineRhythmLiterals));
+  runInvariant("Body-line rhythm no-op without data", () => validateBodyLineRhythmNoOp(defaultTheme, bodyLineRhythmLiterals.default));
+  await runInvariantAsync("Body-line rhythm markup scope", () => validateBodyLineRhythmMarkupScope(readmeMd));
   await runInvariantAsync("Canonical DTCG spacing adapter", () => validateDtcgSpacingContracts({
     editorial: editorialTier,
     documentation: documentationTier,
