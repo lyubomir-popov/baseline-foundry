@@ -6,7 +6,7 @@ import { generateBaselineGridOverlayCss, generateBaselineGridThemeOverrideCss } 
 import { bfSpacingCompatibilityAliases, dtcgSpacingCssProperty, dtcgSpacingTokenIds, dtcgSpacingValue, type ResolvedDtcgSpacing } from "./dtcg-spacing.js";
 import { foundryThemeRootColorVars, vanillaThemeColorVars } from "./vanilla-theme-colors.js";
 import type { BuiltInThemeName } from "./presets.js";
-import type { BodyLineRhythmRole, ThemeFontFile, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
+import type { BodyLineRhythm, BodyLineRhythmHgroupPair, ThemeFontFile, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
 
 function parseRemValue(rem: string): number {
   return Number.parseFloat(rem.replace("rem", ""));
@@ -222,52 +222,96 @@ function selectorsForRole(roleName: string): string[] {
   return [...semanticSelectors, `:where(.bf-theme) .bf-${roleName}`];
 }
 
-const BODY_LINE_RHYTHM_ROOT = ":where(.bf-theme.is-body-line-rhythm)";
+const THEME = ":where(.bf-theme)";
+const BASELINE_RHYTHM_ROOT = ":where(.bf-theme.is-baseline-rhythm)";
 const NOT_CAP_ENGINE = ":not(:where(.bf-engine-cap, .bf-engine-cap *))";
-export const BODY_LINE_RHYTHM_SECTION_START = "/* Body-line rhythm opt-in (Spec 026). */";
-export const BODY_LINE_RHYTHM_SECTION_END = "/* End body-line rhythm opt-in (Spec 026). */";
+const PROSE_LIST_ITEM = ".bf-prose > :is(ul, ol) li";
+export const BODY_LINE_RHYTHM_SECTION_START = "/* Body-line rhythm (Spec 026). */";
+export const BODY_LINE_RHYTHM_SECTION_END = "/* End body-line rhythm (Spec 026). */";
 
-function bodyLineRhythmDeclarations(rhythm: Record<string, BodyLineRhythmRole>): string {
-  return Object.entries(rhythm)
-    .map(([roleName, role]) => `  --bf-${roleName}-rhythm-step: ${role.rhythmStep};\n  --bf-${roleName}-phase-start: ${role.phaseStart};\n  --bf-${roleName}-closure-end: ${role.closureEnd};\n`)
-    .join("") + "  --bf-body-loose-item-start: 0rem;\n  --bf-body-loose-item-end: 0rem;\n";
+function hgroupPairKey(pair: BodyLineRhythmHgroupPair): string {
+  return `${pair.previous}-${pair.following}`;
 }
 
-function bodyLineRhythmApplicationRule(roleName: string): string {
+function bodyLineRhythmDeclarations(rhythm: BodyLineRhythm, unjoinedKeys: string[]): string {
+  const surfaceUnjoined = new Set(rhythm.hgroupUnjoined.map(hgroupPairKey));
+  return Object.entries(rhythm.roles)
+    .map(([roleName, role]) => `  --bf-${roleName}-rhythm-step: ${role.rhythmStep};\n  --bf-${roleName}-phase-start: ${role.phaseStart};\n  --bf-${roleName}-closure-end: ${role.closureEnd};\n`)
+    .join("") + `  --bf-body-list-block-start: ${rhythm.list.blockStart};
+  --bf-body-list-block-end: ${rhythm.list.closureEnd};
+  --bf-body-list-item-start: 0rem;
+  --bf-body-list-item-end: 0rem;
+  --bf-body-list-loose-gap: var(--bf-body-rhythm-step);
+  --bf-body-loose-text-start: 0rem;
+  --bf-body-loose-text-end: 0rem;
+  --bf-hgroup-join: calc(-1 * var(--bf-body-rhythm-step));
+` + unjoinedKeys.map(key => `  --bf-hgroup-join-${key}: ${surfaceUnjoined.has(key) ? "0rem" : "var(--bf-hgroup-join)"};\n`).join("");
+}
+
+// .is-baseline-rhythm resolves every term to main's baseline-unit ledger for the nearest theme root.
+function baselineRhythmDeclarations(roleNames: string[], unjoinedKeys: string[]): string {
+  return roleNames
+    .map(roleName => `  --bf-${roleName}-rhythm-step: var(--bf-baseline);\n  --bf-${roleName}-phase-start: 0rem;\n  --bf-${roleName}-closure-end: var(--bf-${roleName}-margin-bottom);\n`)
+    .join("") + `  --bf-body-list-block-start: 0rem;
+  --bf-body-list-block-end: 0rem;
+  --bf-body-list-item-start: var(--bf-body-nudge-start);
+  --bf-body-list-item-end: var(--bf-body-margin-bottom);
+  --bf-body-list-loose-gap: 0rem;
+  --bf-body-loose-text-start: var(--bf-body-nudge-start);
+  --bf-body-loose-text-end: var(--bf-body-margin-bottom);
+  --bf-hgroup-join: 0rem;
+` + unjoinedKeys.map(key => `  --bf-hgroup-join-${key}: 0rem;\n`).join("");
+}
+
+function roleCompound(roleName: string): string {
+  return `:is(${roleName === "body" ? "p" : roleName}, .bf-${roleName})`;
+}
+
+function bodyLineRhythmRoleRule(roleName: string): string {
   const tag = roleName === "body" ? "p" : roleName;
-  const parents = roleName === "body" ? [":where(.bf-prose)", ":where(.bf-prose li)"] : [":where(.bf-prose)"];
-  const selectors = parents.flatMap(parent => [
-    `${BODY_LINE_RHYTHM_ROOT} ${parent} > :where(${tag})${NOT_CAP_ENGINE}`,
-    `${BODY_LINE_RHYTHM_ROOT} ${parent} > .bf-${roleName}${NOT_CAP_ENGINE}`
-  ]);
+  const parent = ":where(.bf-prose, .bf-prose > hgroup)";
+  const selectors = [
+    `${THEME} ${parent} > :where(${tag})${NOT_CAP_ENGINE}`,
+    `${THEME} ${parent} > .bf-${roleName}${NOT_CAP_ENGINE}`
+  ];
   return `${selectors.join(",\n")} {\n  margin-bottom: var(--bf-${roleName}-closure-end);\n  padding-block-start: calc(var(--bf-${roleName}-nudge-start) + var(--bf-${roleName}-phase-start));\n}\n`;
 }
 
 // Empty unless the root and every class surface carry rhythm data (Spec 026 T4).
-function bodyLineRhythmCss(rhythm: Record<string, BodyLineRhythmRole> | undefined, classSurfaces: ThemeSurface[]): string {
-  if (!rhythm?.body || classSurfaces.some(surface => !surface.bodyLineRhythm?.body)) {
+function bodyLineRhythmCss(rhythm: BodyLineRhythm | undefined, classSurfaces: ThemeSurface[]): string {
+  if (!rhythm?.roles.body || classSurfaces.some(surface => !surface.bodyLineRhythm?.roles.body)) {
     return "";
   }
 
-  const roleNames = Object.keys(rhythm);
-  const nestedReset = roleNames
-    .map(roleName => `  --bf-${roleName}-rhythm-step: var(--bf-baseline);\n  --bf-${roleName}-phase-start: 0rem;\n  --bf-${roleName}-closure-end: var(--bf-${roleName}-margin-bottom);\n`)
-    .join("") + "  --bf-body-loose-item-start: var(--bf-body-nudge-start);\n  --bf-body-loose-item-end: var(--bf-body-margin-bottom);\n";
+  const looseItem = `li:has(> :where(p, .bf-body))`;
+  const roleOrder = Object.keys(rhythm.roles);
+  const unjoinedPairs = new Map<string, BodyLineRhythmHgroupPair>();
+  for (const pair of [rhythm, ...classSurfaces.map(surface => surface.bodyLineRhythm as BodyLineRhythm)].flatMap(surfaceRhythm => surfaceRhythm.hgroupUnjoined)) {
+    unjoinedPairs.set(hgroupPairKey(pair), pair);
+  }
+  const unjoined = [...unjoinedPairs.values()].sort((a, b) =>
+    roleOrder.indexOf(a.previous) - roleOrder.indexOf(b.previous) || roleOrder.indexOf(a.following) - roleOrder.indexOf(b.following));
+  const unjoinedKeys = unjoined.map(hgroupPairKey);
   const blocks = [
-    `${BODY_LINE_RHYTHM_ROOT} {\n${bodyLineRhythmDeclarations(rhythm)}}\n`,
-    ...classSurfaces.map(surface => `:where(.bf-theme.${surface.className}.is-body-line-rhythm) {\n${bodyLineRhythmDeclarations(surface.bodyLineRhythm ?? {})}}\n`),
-    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-theme:not(.is-body-line-rhythm)) {\n${nestedReset}}\n`,
-    ...roleNames.map(bodyLineRhythmApplicationRule),
-    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose li)${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-closure-end);\n  padding-block-start: calc(var(--bf-body-nudge-start) + var(--bf-body-phase-start));\n}\n`,
-    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose ul > li)${NOT_CAP_ENGINE}::before {\n  inset-block-start: calc(var(--bf-tick-box-offset) + var(--bf-body-phase-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));\n}\n`,
-    `${BODY_LINE_RHYTHM_ROOT} :where(.bf-prose li:has(> :where(p, .bf-body)))${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-loose-item-end);\n  padding-block-start: var(--bf-body-loose-item-start);\n}\n`
+    `${THEME} {\n${bodyLineRhythmDeclarations(rhythm, unjoinedKeys)}}\n`,
+    ...classSurfaces.map(surface => `:where(.bf-theme.${surface.className}) {\n${bodyLineRhythmDeclarations(surface.bodyLineRhythm as BodyLineRhythm, unjoinedKeys)}}\n`),
+    `${BASELINE_RHYTHM_ROOT} {\n${baselineRhythmDeclarations(Object.keys(rhythm.roles), unjoinedKeys)}}\n`,
+    ...Object.keys(rhythm.roles).map(bodyLineRhythmRoleRule),
+    `${THEME} :where(.bf-prose > hgroup > * + *)${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-hgroup-join);\n}\n`,
+    // A surface that would bring caps into the previous descender does not pull that pair; the gap stays whole steps.
+    ...unjoined.map(pair => `${THEME} :where(.bf-prose > hgroup > ${roleCompound(pair.previous)} + ${roleCompound(pair.following)})${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-hgroup-join-${hgroupPairKey(pair)});\n}\n`),
+    `${THEME} :where(.bf-prose) > :where(ul, ol)${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-list-block-end);\n  padding-block-start: var(--bf-body-list-block-start);\n}\n`,
+    `${THEME} :where(${PROSE_LIST_ITEM})${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-list-item-end);\n  padding-block-start: var(--bf-body-list-item-start);\n}\n`,
+    `${THEME} :where(.bf-prose > ul > li, .bf-prose > :is(ul, ol) ul > li)${NOT_CAP_ENGINE}::before {\n  inset-block-start: calc(var(--bf-tick-box-offset) - var(--bf-body-nudge-start) + var(--bf-body-list-item-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));\n}\n`,
+    `${THEME} :where(${PROSE_LIST_ITEM}) > :where(p)${NOT_CAP_ENGINE},\n${THEME} :where(${PROSE_LIST_ITEM}) > .bf-body${NOT_CAP_ENGINE} {\n  margin-bottom: var(--bf-body-loose-text-end);\n  padding-block-start: var(--bf-body-loose-text-start);\n}\n`,
+    `${THEME} :where(.bf-prose > :is(ul, ol) ${looseItem} + ${looseItem})${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-body-list-loose-gap);\n}\n`
   ];
 
-  // No separator outside the comments, so stripping the section restores the default output byte for byte.
+  // No separator outside the comments, so stripping the section restores main's baseline-unit output byte for byte.
   return `${BODY_LINE_RHYTHM_SECTION_START}\n\n${blocks.join("\n")}\n${BODY_LINE_RHYTHM_SECTION_END}`;
 }
 
-export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: BuiltInThemeName; themeSurfaces?: ThemeSurface[]; bodyLineRhythm?: Record<string, BodyLineRhythmRole>; } = {}): string {
+export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: BuiltInThemeName; themeSurfaces?: ThemeSurface[]; bodyLineRhythm?: BodyLineRhythm; } = {}): string {
   const body = tokens.roles.body;
   const baselineUnit = tokens.baselineUnit;
   const themeSurfaces = options.themeSurfaces ?? [];

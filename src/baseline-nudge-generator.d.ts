@@ -4,6 +4,7 @@ declare module "@lyubomir-popov/baseline-nudge-generator" {
     descent: number;
     lineGap: number;
     unitsPerEm: number;
+    capHeight?: number;
   }
 
   export function generateFromConfig(configPath: string, outputDir?: string): Promise<unknown>;

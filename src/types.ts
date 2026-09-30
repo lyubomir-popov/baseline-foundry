@@ -133,6 +133,24 @@ export interface BodyLineRhythmRole {
   closureEnd: string;
 }
 
+/** Container-owned prose list block: body nudge plus phase once at the start, closure once at the end. */
+export interface BodyLineRhythmList {
+  blockStart: string;
+  closureEnd: string;
+}
+
+/** A prose hgroup child pair whose one-step pull would bring caps within the previous descender, so it is not joined. */
+export interface BodyLineRhythmHgroupPair {
+  previous: string;
+  following: string;
+}
+
+export interface BodyLineRhythm {
+  roles: Record<string, BodyLineRhythmRole>;
+  list: BodyLineRhythmList;
+  hgroupUnjoined: BodyLineRhythmHgroupPair[];
+}
+
 export interface ThemeSurface {
   name: string;
   label?: string;
@@ -143,7 +161,7 @@ export interface ThemeSurface {
   baselineTokensPath: string;
   tokens: ThemeTokens;
   metrics: BaselineGeneratorTokens;
-  bodyLineRhythm?: Record<string, BodyLineRhythmRole>;
+  bodyLineRhythm?: BodyLineRhythm;
 }
 
 export interface ThemeSurfaceManifestEntry {

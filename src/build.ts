@@ -17,7 +17,7 @@ import { normalizeBuiltInThemeName, presetNames, resolveBuiltInThemePath, resolv
 import type {
   BaselineGeneratorElementToken,
   BaselineGeneratorTokens,
-  BodyLineRhythmRole,
+  BodyLineRhythm,
   BuildThemeResult,
   ComponentTokens,
   DeriveBaselineTokensResult,
@@ -499,7 +499,7 @@ async function resolveBodyLineRhythm(
   sourceConfigPath: string,
   tokens: ThemeTokens,
   required: boolean
-): Promise<Record<string, BodyLineRhythmRole> | undefined> {
+): Promise<BodyLineRhythm | undefined> {
   let result: BodyLineRhythmResult;
 
   try {
@@ -510,8 +510,8 @@ async function resolveBodyLineRhythm(
     result = { roles: {}, failures: [error instanceof Error ? error.message : String(error)] };
   }
 
-  if (!result.failures.length) {
-    return result.roles;
+  if (!result.failures.length && result.list && result.hgroupUnjoined) {
+    return { roles: result.roles, list: result.list, hgroupUnjoined: result.hgroupUnjoined };
   }
 
   if (required) {
