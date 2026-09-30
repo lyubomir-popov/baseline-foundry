@@ -56,9 +56,13 @@ Read in this order:
   `90386bfbf`, equal to `origin/main` at capture. T006 assigns or bounds all 169
   rows; T007–T011 are complete. The cold-start packet is ready; T011a builds
   the CP1 visual gallery before the mandatory independent T012 CP1 review.
-  From CP1 onward every gate needs the owner's visual sign-off of a
-  before/after gallery of the real stories (FR-054). The preserved
-  rejected candidate remains custody evidence, not completion evidence.
+  After CP1, the Pragma foundation and component families are implemented and
+  visually approved in `recut-handoff.md` order before T014–T025 transcribe the
+  approved `spacing-roles.css` values into the schema and design-tokens source
+  (FR-055). From CP1 onward every gate needs the owner's visual sign-off of a
+  before/after gallery of the real stories (FR-054), and no new design-locking
+  tests are added while the design remains open. The preserved rejected
+  candidate remains custody evidence, not completion evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed
   density contract”. It has not been created.

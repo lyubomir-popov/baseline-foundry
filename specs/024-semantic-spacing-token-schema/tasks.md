@@ -489,62 +489,14 @@ fixture items are not a prerequisite.
   taxonomy, including the FR-054d owner visual sign-off of the T011a gallery.
   If findings change any value, regenerate the gallery before sign-off.
 
-## Phase 3 — semantic schema representation
+## Phase 3 — Pragma foundation and component families
 
-- [ ] **T014** In an isolated design-tokens worktree, compare resolver
-  cross-product, product-owned private pairs and Canonical-extension density
-  representations against the R6 criteria.
-- [ ] **T015** Update `contracts/semantic-spacing-schema.md` to the selected
-  source representation and CP1-approved IDs without changing primitive names.
-- [ ] **T016** Replace policy placeholders with exact provider, subscriber,
-  reset and portal identifiers derived from the implementation inventory;
-  bind each to rendered DOM ancestry or an explicit framework portal adapter.
-- [ ] **T017** Define source, resolved, generated and public/private validation
-  cases for every product and governed role, including product → host,
-  host → nested-product, same-element product/provider and reset → provider
-  ordering, plus portal targets inside and outside an approved target-side host.
-- [ ] **T017a** Produce a migration disposition for every existing spacing ID
-  and public density selector/property/export/documented control, covering
-  retention, aliases, deprecations, removals, React and non-React consumers,
-  prerequisites and release impact. The live inputs are the
-  `.app`/`.site`/`.docs` × `.comfortable`/`.dense` classes in
-  current Pragma `origin/main`'s
-  `packages/styles/main/src/modifiers.density.css`, its twelve `--density-*`
-  channels per context, its ten pre-namespace back-compat aliases, and the
-  `Density.mdx`, `BaselineGrid.mdx` and `SeatingByElement.mdx` guides. Resolve
-  the FR-013 / FR-028 tension recorded in FR-035 here.
-
-## CP2 — schema checkpoint
-
-- [ ] **T018** Request an ordinary schema adversarial review covering DTCG
-  validity, completeness, collision behavior, private-channel leakage and
-  runtime cascade semantics. Attach a gallery under FR-054: if CP2 changes no
-  value from CP1, attach the signed-off T011a gallery by manifest SHA-256 and
-  say so; otherwise regenerate it with the spike carrier set to the CP2 values.
-- [ ] **T019** Request Opus review if the selected representation introduces a
-  new modifier/builder architecture, public API or cross-repository migration
-  premise, with the same gallery as T018.
-- [ ] **T020** Incorporate findings and obtain owner approval before token
-  implementation, including the FR-054d owner visual sign-off.
-
-## Phase 4 — design-tokens contribution
-
-- [ ] **T021** Implement the approved semantic source, density policy, builder
-  and validation in a dedicated design-tokens branch.
-- [ ] **T022** Prove complete product × governed-role × density resolution and
-  stable public CSS output.
-- [ ] **T023** Prove no public density selector or private property appears in
-  public metadata/LSP artifacts.
-- [ ] **T024** Generate review artifacts from source and run the design-tokens
-  repository gates.
-- [ ] **T025** Obtain adversarial implementation review before merge or
-  publication. Attach a gallery under FR-054: before is synced Pragma `main`
-  with its current token package; after is the same commit locally linked to
-  the candidate design-tokens build, with no Pragma edit. Tokens alone should
-  move nothing except what the T017a migration disposition names; every other
-  changed pair is a finding. Record the FR-054d owner sign-off.
-
-## Phase 5 — Pragma adoption and Jira
+Owner direction, 2026-09-30 (FR-055): components come before tokens. Values
+live only in `packages/styles/main/src/spacing-roles.css`, bound to `--ds-*`
+properties and annotated with intended token IDs plus Site / Docs / App / OS
+values. Do not declare `--spacing-*`. The gallery is the design evidence; add
+no new tests while the design is open. Before any push, run Pragma's root
+`bun run check` and `bun run test` gates.
 
 - [ ] **T026** Preserve the audited legacy `feat/pragma-*` tips, then sync
   Pragma local `main` to `origin/main` and rebuild the sequential
@@ -557,17 +509,25 @@ fixture items are not a prerequisite.
   and provider identities at start, then its gates/size/review state at
   closeout; never invent future SHAs or results. Record activated owners and
   unmigrated sentinel consumers for every sequential merge.
-- [ ] **T026b** Review the foundation cuts and then the Commands first-family
-  cut at their mandatory handoff boundaries before later families. **Every**
-  cut, not only these, ships a gallery whose before is the cut's parent and
-  whose after is the cut's tip. Record the FR-054d owner sign-off before the
-  next cut starts; foundation cuts must show no changed pair except those they
-  declare.
-- [ ] **T026c** Replace the historical density-retirement task with governed
-  host/subscriber integration and the CP2-approved compatibility disposition.
-- [ ] **T027** Prove automatic Chip density in table, tabs and side navigation,
-  standalone default geometry, non-subscriber immunity, reset behavior and
-  portal behavior.
+- [ ] **T026b — foundation cut** Re-derive the row contract, typography phase
+  and closure, `.ds`-scoped list reset, gap scale and container-gap mapping on
+  current Pragma `main`. Add `spacing-roles.css`; remove every production
+  `--_spike-*` name and leave all evidence stories and component-specific
+  changes behind. Build the before/after gallery for ds-global,
+  ds-global-form and ds-app, then stop for FR-054d owner sign-off.
+- [ ] **T026c — family cuts** After the foundation sign-off, implement one
+  family, build its parent→tip gallery and obtain owner sign-off before starting
+  the next. Follow `recut-handoff.md` order: Commands; Field geometry; Select
+  artwork if still required; Marker controls; Field copy; Accordion spacing;
+  Attached rows; Card sections; Rich-choice card; Surfaces; Navigation;
+  Launchpad; Product buttons; Density governance. Record any taxonomy change
+  in that family's task entry. Replace the historical density-retirement work
+  with governed host/subscriber integration, but do not pre-empt the later
+  T017a compatibility disposition.
+- [ ] **T027** Demonstrate automatic Chip density in table, tabs and side
+  navigation, standalone default geometry, non-subscriber immunity, reset
+  behavior and portal behavior through the family galleries and existing
+  runtime checks. Add no new design-locking tests before family approval.
 - [ ] **T028** Run root `bun run check` and `bun run test` for every Pragma
   contribution after final rebase and before push; run root `bun run build`
   when artifacts or publishable packages change.
@@ -576,6 +536,68 @@ fixture items are not a prerequisite.
   gallery whose before is `main` at the start of the recut and whose after is
   the final integration tip, plus the per-cut sign-off record. Incorporate all
   findings and record the FR-054d owner sign-off before human handoff.
+
+## Phase 4 — semantic schema representation
+
+- [ ] **T014** After the last family is visually approved, compare resolver
+  cross-product, product-owned private pairs and Canonical-extension density
+  representations against the R6 criteria in an isolated design-tokens
+  worktree.
+- [ ] **T015** Update `contracts/semantic-spacing-schema.md` to the selected
+  source representation by transcribing the intended IDs and exact product
+  values from Pragma's approved `spacing-roles.css`, without changing primitive
+  names. OS remains `null` where Pragma has no surface.
+- [ ] **T016** Replace policy placeholders with exact provider, subscriber,
+  reset and portal identifiers derived from the implemented family inventory;
+  bind each to rendered DOM ancestry or an explicit framework portal adapter.
+- [ ] **T017** Define source, resolved, generated and public/private validation
+  cases for every product and governed role, including product → host,
+  host → nested-product, same-element product/provider and reset → provider
+  ordering, plus portal targets inside and outside an approved target-side host.
+  Add the transcription check that fails when a value in `spacing-roles.css`
+  lacks its intended token ID; this check is authored now, not during the open
+  component-design phase.
+- [ ] **T017a** Produce a migration disposition for every existing spacing ID
+  and public density selector/property/export/documented control, covering
+  retention, aliases, deprecations, removals, React and non-React consumers,
+  prerequisites and release impact. The live inputs are the
+  `.app`/`.site`/`.docs` × `.comfortable`/`.dense` classes in current Pragma,
+  its density channels and back-compat aliases, the approved family cuts, and
+  the `Density.mdx`, `BaselineGrid.mdx` and `SeatingByElement.mdx` guides.
+  Resolve the FR-013 / FR-028 tension recorded in FR-035 here.
+
+## CP2 — schema checkpoint
+
+- [ ] **T018** Request an ordinary schema adversarial review covering faithful
+  transcription, DTCG validity, completeness, collision behavior,
+  private-channel leakage and runtime cascade semantics. Attach the signed-off
+  final component gallery and its manifest SHA-256 under FR-054.
+- [ ] **T019** Request Opus review if the selected representation introduces a
+  new modifier/builder architecture, public API or cross-repository migration
+  premise, with the same gallery as T018.
+- [ ] **T020** Incorporate findings and obtain owner approval before token
+  implementation. If a finding changes a value, return to the owning family
+  cut and regenerate its gallery before changing the transcription.
+
+## Phase 5 — design-tokens contribution
+
+- [ ] **T021** Implement the approved transcribed semantic source, density
+  policy, builder and validation in a dedicated design-tokens branch.
+- [ ] **T022** Prove complete product × governed-role × density resolution,
+  stable public CSS output and exact equality with the approved
+  `spacing-roles.css` record.
+- [ ] **T023** Prove no public density selector or private property appears in
+  public metadata/LSP artifacts.
+- [ ] **T024** Generate review artifacts from source and run the design-tokens
+  repository gates.
+- [ ] **T025** Obtain adversarial implementation review before merge or
+  publication. Attach a gallery under FR-054: before is the approved Pragma tip
+  using `spacing-roles.css`; after is the same commit locally linked to the
+  transcribed design-tokens build. The pair must be visually unchanged unless
+  T017a explicitly names a migration effect; every other change is a finding.
+
+## Phase 6 — Jira
+
 - [ ] **T029** Refresh WD-36041 and child metadata through jira-project-bridge;
   reconcile the proposed child against live Jira.
 - [ ] **T030** Prepare and dry-run the Jira plan, obtain explicit owner approval,

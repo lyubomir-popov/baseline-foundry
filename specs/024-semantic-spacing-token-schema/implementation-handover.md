@@ -13,14 +13,18 @@ conflict.
 
 ## Short answer
 
-**Not ready for the recut. Ready for the CP1 gallery, then the independent CP1
-review.**
+**Ready for the CP1 gallery, then the independent CP1 review. After CP1, build
+and visually approve the Pragma component families before schema and tokens.**
 
-CP1 and CP2 are both unpassed and no approved provider artifact exists, so none
-of Phase 3, 4 or 5 can start. The denominator and its candidate T006
-assignments are now closed. T007–T011 are complete. T011a – the visual gallery
-generator and the CP1 gallery (FR-054) – is next; T012 follows with the gallery
-attached. No gate from CP1 onward passes without the owner's visual sign-off.
+The denominator and its candidate T006 assignments are closed. T007–T011 are
+complete. T011a – the visual gallery generator and the CP1 gallery (FR-054) –
+is next; T012 follows with the gallery attached. CP1 treats the taxonomy as a
+working hypothesis. Once it passes, the foundation cut and family cuts proceed
+in `recut-handoff.md` order, with candidate values held only in Pragma's
+`spacing-roles.css`. T014–T025 follow the last approved family and transcribe
+that file into the schema and design-tokens source (FR-055). No gate from CP1
+onward passes without the owner's visual sign-off, and no new design-locking
+tests are written while the design is open.
 
 Worktree routing is phase-specific. T004c0–T004h happened in the isolated
 Pragma `feat/bf-inside-out-geometry` worktree, branched from exact recovery

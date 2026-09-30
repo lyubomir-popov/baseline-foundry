@@ -645,6 +645,24 @@ change is wanted, without reading code, measurements or chat history.
   or bind ports 6114 or 6115. Output goes to an external evidence root
   `H:\WSL_dev_projects\temp\spec-024-<gate>-gallery-<yyyymmdd>\` with a
   `manifest.json` hashing every image and the page.
+- **FR-055**: Owner direction, 2026-09-30: implement and visually approve the
+  Pragma component families before authoring the semantic schema or token file
+  in design-tokens. During that work, all candidate values MUST live in the
+  single Pragma file `packages/styles/main/src/spacing-roles.css`, which binds
+  only `--ds-*` properties. Every value MUST carry a comment naming its
+  intended semantic token ID and its Site / Docs / App values, with OS recorded
+  as `null`. Pragma MUST NOT declare a `--spacing-*` property (FR-034), and the
+  evidence spike remains governed by FR-050 and FR-051: it is evidence only and
+  never a production base. CP1 still reviews the taxonomy as a working
+  hypothesis; if a family cut changes it, that cut's task entry MUST record the
+  change. After the last family is visually approved, T014–T025 MUST transcribe
+  `spacing-roles.css` into the schema and design-tokens source and add the
+  transcription check then, not before. While the design remains open, the
+  verification contract is the FR-054 gallery plus Pragma's root gate before a
+  push; no new test or test suite may be added. Existing assertions that pin
+  superseded geometry MAY be updated to the new value, or deleted when the new
+  model removes what they assert, with the disposition recorded in one line in
+  the commit body.
 
 ### Key entities
 
