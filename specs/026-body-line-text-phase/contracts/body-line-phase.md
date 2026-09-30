@@ -48,8 +48,10 @@ Failure handling:
   and `app-tier` presets and the experiment surfaces) fails the build when
   any check fails or rhythm data cannot be computed.
 - A custom surface built through the public `buildThemeFromConfig` export
-  gets no rhythm data. Its bundle emits no section and the modifier is a
-  no-op.
+  gets rhythm data when it can be computed and the checks pass. Otherwise it
+  gets none, its bundle emits no section and the modifier is a no-op. The
+  build script's strict mode is an internal option, stripped from the
+  published declarations.
 
 Values are formatted with the existing rem helper (five decimals).
 

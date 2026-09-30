@@ -472,8 +472,10 @@ holds everywhere else.”
 - **T4** – the opt-in section is emitted only when every surface in the
   bundle has rhythm data. Surfaces built by `scripts/build-theme.ts` (tiers,
   presets, experiments) fail the build on any failed check. Custom surfaces
-  built through the public `buildThemeFromConfig` export get no rhythm data
-  and no section; the modifier is a no-op there.
+  built through the public `buildThemeFromConfig` export get rhythm data when
+  it can be computed; otherwise they get none, emit no section, and the
+  modifier is a no-op there. The strict switch the build script uses is
+  `@internal` and stripped from `dist/build.d.ts`.
 - **T5** – rendered checks are differential with a 0.1px tolerance: with vs
   without the modifier, element-to-previous tops, line-to-line distances and
   `line 2 − line 1` for exceptions. Absolute ε is recorded, never asserted

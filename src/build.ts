@@ -43,7 +43,7 @@ export interface BuildThemeFromConfigOptions {
   baselineDir?: string;
   surfaceLabel?: string;
   additionalSurfaces?: AdditionalThemeSurfaceBuildConfig[];
-  /** Fail the build when body-line rhythm data cannot be computed; built-in tier and preset configs always do. */
+  /** @internal Build-script only: fail when body-line rhythm data cannot be computed. */
   requireBodyLineRhythm?: boolean;
 }
 
