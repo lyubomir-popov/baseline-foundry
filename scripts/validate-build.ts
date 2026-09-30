@@ -1500,6 +1500,13 @@ function validateCommonCss(css: string): void {
     "box-shadow": "inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default)",
     "margin": "0"
   }, "tab lists paint their boundary without changing layout and do not leak trailing margin");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
+    "overflow-x": "auto",
+    "white-space": "nowrap"
+  }, "long tab lists scroll inline instead of overflowing their container");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-item)", {
+    "flex": "0 0 auto"
+  }, "tab items keep their content width so long lists scroll instead of overlapping");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-link)", {
     "padding-block-end": "calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end))"
   }, "tab links retain the shared occupied height independently of the painted list boundary");

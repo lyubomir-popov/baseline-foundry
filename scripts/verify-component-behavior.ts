@@ -4357,6 +4357,51 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
       });
       assert(tabRule !== null && tabRule.gap <= 1.1, `Expected ${tier} active tab rule to meet the list boundary, got ${tabRule?.gap}px.`);
       assert(tabRule.boxShadow.includes("-3px") && tabRule.boxShadow.includes("inset") && tabRule.token === "0.1875rem", `Expected ${tier} active tab rule to paint the shared inset 3px/0.1875rem emphasis bar; got ${tabRule.boxShadow}/${tabRule.token}.`);
+
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      await page.setViewportSize({ width: 390, height: 800 });
+      const longListSelector = ".bf-tabs-list[aria-label='Project sections']";
+      const measureLongTabs = () => page.evaluate(selector => {
+        const list = document.querySelector<HTMLElement>(selector);
+        const tabs = list?.closest<HTMLElement>(".bf-tabs");
+        const parent = tabs?.parentElement;
+        if (!list || !tabs || !parent) return null;
+        const listRect = list.getBoundingClientRect();
+        const items = Array.from(list.querySelectorAll<HTMLElement>(".bf-tabs-item"));
+        const links = Array.from(list.querySelectorAll<HTMLElement>(".bf-tabs-link"));
+        const linkRects = links.map(link => link.getBoundingClientRect());
+        const active = list.querySelector<HTMLElement>(".bf-tabs-link[aria-selected='true']");
+        const activeRect = active?.getBoundingClientRect();
+        return {
+          activeIndex: active ? links.indexOf(active) : -1,
+          activeBarGap: activeRect ? Math.abs(listRect.bottom - activeRect.bottom) : null,
+          activeBoxShadow: active ? getComputedStyle(active).boxShadow : "",
+          activeVisible: activeRect ? activeRect.left >= listRect.left - 1 && activeRect.right <= listRect.right + 1 : false,
+          clipped: [...items, ...links].filter(element => element.scrollWidth > element.clientWidth).map(element => element.textContent?.trim()),
+          componentOverflow: tabs.getBoundingClientRect().right - parent.getBoundingClientRect().right,
+          focusIndex: links.indexOf(document.activeElement as HTMLElement),
+          listClient: list.clientWidth,
+          listScroll: list.scrollWidth,
+          maxOverlap: Math.max(0, ...linkRects.slice(1).map((rect, index) => linkRects[index].right - rect.left)),
+          overflowX: getComputedStyle(list).overflowX,
+          scrollLeft: list.scrollLeft,
+          tabCount: links.length
+        };
+      }, longListSelector);
+      const narrowTabs = await measureLongTabs();
+      assert(narrowTabs !== null && narrowTabs.tabCount === 6, `Expected the ${tier} long tab-list specimen to render six tabs.`);
+      assert(narrowTabs.overflowX === "auto" && narrowTabs.listScroll > narrowTabs.listClient + 1 && narrowTabs.componentOverflow <= 1, `Expected the ${tier} long tab list to scroll inside its own box at 390px rather than overflow its container: ${JSON.stringify(narrowTabs)}.`);
+      assert(narrowTabs.maxOverlap <= 0.5 && narrowTabs.clipped.length === 0, `Expected ${tier} tab items to keep their content width at 390px with no overlap or clipped labels: ${JSON.stringify(narrowTabs)}.`);
+
+      await page.locator(`${longListSelector} .bf-tabs-link`).first().focus();
+      await page.keyboard.press("End");
+      const endTabs = await measureLongTabs();
+      assert(endTabs !== null && endTabs.activeIndex === 5 && endTabs.focusIndex === 5 && endTabs.activeVisible && endTabs.scrollLeft > 0, `Expected End to select, focus and scroll the last ${tier} tab into view: ${JSON.stringify(endTabs)}.`);
+      assert(endTabs.activeBarGap !== null && endTabs.activeBarGap <= 1.1 && endTabs.activeBoxShadow.includes("-3px"), `Expected the scrolled ${tier} active tab to keep its thick bar on the list boundary: ${JSON.stringify(endTabs)}.`);
+      await page.keyboard.press("Home");
+      const homeTabs = await measureLongTabs();
+      assert(homeTabs !== null && homeTabs.activeIndex === 0 && homeTabs.focusIndex === 0 && homeTabs.activeVisible, `Expected Home to return the ${tier} long tab list to its first tab: ${JSON.stringify(homeTabs)}.`);
+      await page.setViewportSize({ width: 820, height: 800 });
     }
 
     await page.goto(`${origin}/demo/components/notice.html`, { waitUntil: "networkidle" });
