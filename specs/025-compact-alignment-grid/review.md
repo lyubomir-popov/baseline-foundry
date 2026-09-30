@@ -61,3 +61,24 @@ intrinsic rather than stretched, its selected centre target is unambiguous,
 all nine dots remain centred, the BF border and active tokens are visible, and
 the specimen has no clipping or inline overflow. Automated computed-style
 review covers the same geometry across all four tier stylesheets.
+
+## Resumed verification — 2026-09-26
+
+- Recreated the branch in a clean local worktree from remote tip `b2b13e7`.
+- The first fresh `npm test` run stopped because the static contract required a
+  README phrase to occur on one physical line. The README already documented
+  the close-control focus-return override across a normal Markdown line wrap.
+  The assertion now accepts whitespace between the documented words instead of
+  coupling the public contract to source formatting.
+- The focused static suite passes all 24,463 checks after the correction.
+- Fresh full `npm test` passes the build, complete four-tier component-baseline
+  matrix, and real-Chromium behavior suite.
+- Fresh `npm run qa:components` captures and verifies the complete component
+  catalog with zero baseline failures. The new `alignment-grid.png` capture was
+  inspected again and retains the intended intrinsic geometry and selected
+  centre state without clipping or stretch.
+- A source-and-test adversarial pass found no additional functional defect in
+  alignment selection/navigation, responsive application state, focus-return
+  scoping/fallback, resize activation, or collapsed-aside precedence.
+- This resumed pass is not independent review. Independent review and owner
+  acceptance remain delivery gates before merge or archival.

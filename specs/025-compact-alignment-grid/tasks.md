@@ -23,3 +23,5 @@
 - [x] T006 Run focused checks, `npm test`, and `npm run qa:components`.
 - [x] T007 Complete browser visual review and record the clean commit SHA in
   the delivery handoff.
+- [x] T008 Reproduce the full gate from a fresh worktree and make the public
+  focus-return documentation assertion insensitive to Markdown line wrapping.
