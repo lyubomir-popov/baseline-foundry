@@ -71,7 +71,8 @@ export function computeBodyLineRhythm(
     const contentArea = (metrics.ascent + Math.abs(metrics.descent) + metrics.lineGap) * scale;
     const baseline = (lineHeight - contentArea) / 2 + metrics.ascent * scale + (metrics.lineGap * scale) / 2;
     const generatorNudge = new BaselineNudgeGenerator(metrics).calculateNudgeRem(fontSize, lineHeight / baselineUnit, baselineUnit);
-    const firstBaseline = baselineUnit * Math.round((baseline + nudge) / baselineUnit);
+    // The generator seats the nudge on ceil(b / bU); rounding b + nudge could pick the line below when drift exceeds bU / 2.
+    const firstBaseline = roundUp(baseline, baselineUnit);
     const phase = roundRem(roundUp(firstBaseline, step) - firstBaseline);
     const occupied = nudge + phase + lineHeight;
     const closure = roundRem(roundUp(occupied, step) - occupied);

@@ -55,14 +55,17 @@ grid line itself. The drift is 0 at 1rem and below, 0.00694rem at 1.125rem,
 **Technical decision T1 – phase is measured from the grid target.** Define
 
 ```text
-F* = bU · round((b + nudge) / bU)
+F* = bU · ceil(b / bU − 1e-9)
 ```
 
-the bU grid line the existing nudge is designed to seat the first baseline
-on. Drift is always below 0.0625rem, which is under half of the smallest
-built-in bU (0.25rem), so the rounding is unambiguous. Round-to-nearest and
-round-up give the same F* for every built-in role; round-down would make the
-phase one bU too large for every role with drift compensation.
+the bU grid line the generator's nudge is designed to seat the first
+baseline on (`calculateNudgeRem` targets `ceil(b / bU)` before subtracting
+the drift compensation). Drift is always below 0.0625rem, so for every
+built-in role this equals `bU · round((b + nudge) / bU)`, the rule first
+used here; the ceil form stays correct when drift exceeds half a bU (a bU
+below 0.125rem with type above 2rem), where rounding would pick the line
+below and make the phase one bU off. Round-down would make the phase one bU
+too large for every role with drift compensation.
 
 Why F* rather than raw `b + nudge`: F* and `step` are both whole bU
 multiples, so every phase is a whole bU multiple too. The opt-in then

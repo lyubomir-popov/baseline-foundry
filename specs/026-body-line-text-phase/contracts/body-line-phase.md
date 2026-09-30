@@ -11,7 +11,7 @@ Normative for Phase A. Rationale lives in [research.md](../research.md).
 | `fs`, `lh` | Role font size and line height, rem |
 | `b` | First-baseline offset from the line-box top, from hhea metrics (generator formula) |
 | `nudge` | Existing `nudgeTop` / `--bf-<role>-nudge-start`, unchanged |
-| `F*` | `bU · round((b + nudge) / bU)` – the grid line the nudge targets |
+| `F*` | `bU · ceil(b / bU − 1e-9)` – the grid line the generator's nudge targets |
 | `roundUp(x, s)` | Smallest whole multiple of `s` that is `≥ x` (tolerance 1e-9) |
 | `ε` | Rendered first baseline minus F*, px. Recorded, never asserted |
 
@@ -37,7 +37,8 @@ the source config. For every in-scope role:
 1. `step / bU` is a whole number (±1e-9).
 2. The recomputed generator nudge (`calculateNudgeRem`, line height passed as
    a bU count) equals `nudgeTop` within 0.00001rem.
-3. `|b + nudge − F*| < 0.0625rem`.
+3. `|b + nudge − F*| < 0.0625rem`. This also fails loudly when the generator
+   moved a negative compensated nudge to the next grid line.
 4. `0 ≤ phase < step` and `0 ≤ closure < step`.
 5. `(F* + phase) mod step` and `(nudge + phase + lh + closure) mod step` are 0
    within 0.00001rem.
