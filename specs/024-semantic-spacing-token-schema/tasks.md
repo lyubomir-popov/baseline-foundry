@@ -471,7 +471,7 @@ fixture items are not a prerequisite.
   rendered T008 proof, and all remaining exception classes. It asks CP1 to
   approve those classes as bounded recut work or identify exact blocking
   records; it does not treat classification as approval.
-- [ ] **T011a** Build `scripts/build-visual-gallery.ts` under FR-054f and
+- [x] **T011a** Build `scripts/build-visual-gallery.ts` under FR-054f and
   produce the CP1 gallery under FR-054a–c. Before is the spike base
   `313ee82c13a126b779b9bd75902da5af13c28505`; after is the accepted spike tip
   `1c2c6ba73`. Cover every story in the ds-global and ds-global-form
@@ -481,6 +481,15 @@ fixture items are not a prerequisite.
   list items, the Docs/App form gap changes, the Card, Tile, Tooltip and
   Popover padding changes, Section, and ColorInput. Link the gallery and its
   manifest SHA-256 from `cp1-review-packet.md`.
+  **Completed 2026-09-30:** the local
+  [CP1 visual gallery](file:///H:/WSL_dev_projects/temp/spec-024-cp1-gallery-20260930/index.html)
+  compares the pinned base and tip at Site, Docs and App contexts for 149
+  `ds-global` and 210 `ds-global-form` story entries. It reports zero render
+  failures, separates two evidence-only stories from coverage, and hashes all
+  2,788 images plus `index.html`. The
+  [manifest](file:///H:/WSL_dev_projects/temp/spec-024-cp1-gallery-20260930/manifest.json)
+  SHA-256 is
+  `eb701f7fccd160bac4612e4fd81f22cde7ab83f6b7846b49235e404a0bb94bbe`.
 - [ ] **T012** Request an independent Opus adversarial review. Do not proceed
   while the denominator is open, assignments are null or the App gap ordering
   remains contradictory. The request MUST include the T011a gallery, and every

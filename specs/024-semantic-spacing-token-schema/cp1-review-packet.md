@@ -13,6 +13,21 @@ Review the proposed Spec 024 component-spacing taxonomy and return one of:
 Do not review implementation readiness beyond CP1. No provider artifact,
 production recut, push, PR, merge or publication is authorised.
 
+## CP1 visual gallery
+
+Open the local [CP1 visual gallery](file:///H:/WSL_dev_projects/temp/spec-024-cp1-gallery-20260930/index.html)
+before reviewing the written taxonomy. Its
+[manifest](file:///H:/WSL_dev_projects/temp/spec-024-cp1-gallery-20260930/manifest.json)
+SHA-256 is
+`eb701f7fccd160bac4612e4fd81f22cde7ab83f6b7846b49235e404a0bb94bbe`.
+The capture compares spike base `313ee82c13a126b779b9bd75902da5af13c28505`
+with accepted spike tip `1c2c6ba733b0f80c41b09e89c0f9a70de0a888c9`
+in Chromium at DPR 1, a 16px root, and a 1280x900 viewport. It covers 149
+`ds-global` and 210 `ds-global-form` story entries at Site, Docs and App
+contexts with zero render failures. The gallery separates two evidence-only
+stories from coverage and provides before, after and pixel-diff views for each
+changed pair.
+
 ## Exact source and denominator
 
 Pragma source-sensitive work is frozen at synced local
