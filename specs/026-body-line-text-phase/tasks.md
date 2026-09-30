@@ -50,8 +50,9 @@
   T005).
   *Evidence*: built-in tier/preset configs always require the record;
   `scripts/build-theme.ts` passes `requireBodyLineRhythm: true` for the
-  default and experiment builds. A custom surface whose record cannot be
-  computed gets none.
+  default and experiment builds. A custom surface gets a record when it can be
+  computed and none otherwise (contract and research T4 amended). The option
+  is `@internal` and stripped from `dist/build.d.ts` (`be239ef`).
 - [x] T007 In `scripts/validate-build.ts`, import `src/body-line-rhythm.ts`
   directly (records are not written to `dist/`) and assert the 28 tier/role
   records against the contract table and formulas (AC-1). The recomputed
@@ -77,7 +78,9 @@
   exclusion on every application selector. Emit nothing unless every surface
   has rhythm data (depends on T003, T006).
   *Evidence*: section emitted in all 8 bundles; T020 (`AGENTS.md` note) is
-  deliberately left for the T011+ pass and must land before merge.
+  deliberately left for the T011+ pass and must land before merge. Review
+  correction `57d158d`: the loose-item rule reads
+  `--bf-body-loose-item-start`/`-end`, restored by the nested reset.
 - [x] T009 [US1] In `scripts/validate-build.ts`, add identity (section
   stripped from opening to closing comment equals no-rhythm generation, per
   direct, preset and experiment bundle), cascade/order/specificity, a static
@@ -125,7 +128,8 @@
   tight, loose (`li > p`) and nested; `hr` and `blockquote` between
   paragraphs. Probes are JS/test hooks only.
   *Evidence*: probes are injected by the behaviour test; the matrix also
-  carries a `p.bf-h3` beside `h3` for the one-box check.
+  carries a `p.bf-h3` beside `h3` for the one-box check. Review correction
+  `57d158d` adds tight and loose lists inside a nested non-opted theme.
 - [x] T014 [P] Register the route in `demo/page-catalog.js` with the spec
   chapter pages and extend the BF-only demo markup checks in
   `scripts/validate-build.ts`.
@@ -141,7 +145,10 @@
   0.1px (AC-5). Write absolute ε per tier, role and root to `review.md`
   without asserting it.
   *Evidence*: family in `scripts/behavior/body-line-rhythm-contracts.ts`,
-  run from `main()`; max phase residual 0.0000px; ε in review.md.
+  run from `main()`; max phase residual 0.0000px; ε in review.md. Review
+  correction `900f8c8` adds a whole-step check independent of
+  `computeBodyLineRhythm` (max 0.938px @16px, 1.844px @32px) and a direct
+  documentation/app/os bundle spot check.
 - [x] T016 [US2] Add the wrapped family: line-to-line distance equals `lh`
   within 0.1px; qualifying roles' following sibling on whole steps; editorial
   h3, documentation h3, app h1 and os h1 at two lines have `line 2 − line 1`
@@ -154,7 +161,8 @@
   contract's exception offsets (metric-flush downstream, nested list, `hr`,
   `blockquote`) without asserting them.
   *Evidence*: all edge checks pass; offsets match the contract table within
-  0.03px (review.md).
+  0.03px (review.md). Review correction `57d158d` adds nested non-opted
+  tight/loose list equality and the loose-item dot check.
 - [x] T018 [US2] Run `npm run test:behavior` with the existing families
   unmodified, including the bU page-wide phase contract (AC-8).
   *Evidence*: existing families untouched; the new family is appended to
@@ -175,7 +183,8 @@ offsets recorded.
   *Evidence*: landed on the feature branch before merge (commit
   `729395d`), not in the T008 commit itself.
 - [x] T021 Run `npm test` and `npm run qa:components` (AC-10).
-  *Evidence*: both green; counts in review.md.
+  *Evidence*: both green; counts in review.md. Re-run green after the review
+  corrections at `d73ad36` (review.md “Review corrections”).
 - [ ] T022 Review the demo in editorial, documentation, app and os, light and
   dark, plus a 32px-root spot check, and the regression routes in
   [quickstart.md](quickstart.md); record findings in `review.md` (AC-9).

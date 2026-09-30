@@ -1,7 +1,8 @@
 # Review: Body-line text phase
 
-Closeout evidence for Spec 026. Phase A tasks T001–T021 are recorded here;
-T022 (browser review) and T023 (owner review request) are still open.
+Closeout evidence for Spec 026. Phase A tasks T001–T021 are recorded here,
+with the implementation-review corrections at the end; T022 (browser review)
+and T023 (owner review request) are still open.
 
 ## T002 – baseline capture
 
@@ -313,3 +314,59 @@ Run 2026-09-30 at `729395d`:
 Review screenshots for T022 (light, full page, 1440 px wide, DPR 1):
 `tmp/026-review/body-line-rhythm-{editorial,documentation,app,os}-light.png`.
 The fixed page chrome appears mid-page in full-page captures.
+
+## Review corrections
+
+Implementation review verdict: ready with corrections (1 × P1, 3 × P2,
+5 × P3). All nine findings are resolved.
+
+| Finding | Resolution | Commit |
+|---|---|---|
+| 1 (P1) loose-item rule broke nested non-opted themes | Rule 6 reads `--bf-body-loose-item-start`/`-end`; the opted root and class blocks set `0rem`, the nested reset restores `var(--bf-body-nudge-start)` and `var(--bf-body-margin-bottom)`. Nested tight and loose lists added inside a non-opted theme in an opted host; text offset, dot offset and item advance equal the current column. Contract rule 6 and the static assertion updated | `57d158d` |
+| 2 (P2) `requireBodyLineRhythm` public | `@internal` plus `stripInternal`; `dist/build.d.ts` no longer declares it and is the only changed declaration file. Contract failure handling, research T4 and plan amended: custom surfaces get rhythm data when computable, otherwise no section | `be239ef` |
+| 3 (P2) rendered checks shared the formula under test | Opted matrix `probe − flowTop` and wrapped line 1 `probe − elementTop` must sit within `root / 16` of a whole step read from computed `line-height` | `900f8c8` |
+| 4 (P2) ledger showed 1.999rem | Occupied column rounded to 2 decimals; every tier now reads whole values (for example OS opt-in `p` 2rem, Documentation opt-in `h2` 3.75rem, current 2.75rem, OS current body 1.25rem) | `d73ad36` |
+| 5 (P3) live-state docs stale | `AGENT-INBOX.md` (this worktree) and `docs/specs.md`: “T001–T021 done; T022–T023 open (owner review)” | `834648c` |
+| 6 (P3) README wording | “their direct paragraphs”, plus one line on custom themes | `834648c` |
+| 7 (P3) direct bundles unrendered | Spot check through `dist/tiers/{documentation,app,os}/styles.css`: `h1` padding equals nudge + phase, margin equals closure, `h1` to `p` advance is whole rendered body lines | `900f8c8` |
+| 8 (P3) F* rounding | `F* = bU · ceil(b / bU − 1e-9)`, the line `calculateNudgeRem` targets; contract and research T1 updated. All 24 CSS/JSON artifacts byte-identical before and after | `3800560` |
+| 9 (P3) loose dot unasserted | Opted loose-item dot offset from the item top equals the tight item's | `57d158d` |
+
+The new nested-list check was run against the pre-fix `dist/` before the
+rebuild and failed as expected: “editorial at a 16px root nested non-opted
+loose item 1 text to equal the current column; nested 23.546875px, current
+30.09375px”.
+
+### Finding 3 mutation evidence
+
+A temporary edit to `src/body-line-rhythm.ts` moved F* one bU down for `h3`
+(drift check bypassed for `h3`), so phase gained one bU mod step and the
+closure was recomputed; `computeBodyLineRhythm` fed both the build and the
+test expectations. `npm run build:theme` then emitted Documentation
+`--bf-h3-phase-start: 1rem` and `--bf-h3-closure-end: 0.53083rem`
+(correct: 0.75rem and 0.78083rem).
+
+- New rendered family: failed with “Expected editorial at a 16px root opted
+  matrix h3 (h3), from the flow top, first baseline within 1px of a whole
+  24px body line; off by 7.453125px.”
+- Rendered family at `5898bae` (before the corrections), same build: passed.
+
+The edit was reverted (no diff in `src/`), the theme rebuilt, Documentation
+`h3` read 0.75rem and 0.78083rem again, and the family passed. Scratch
+runners are in `tmp/026-fix/` (not committed).
+
+### Gates after the corrections
+
+Run at `d73ad36`:
+
+- `npm run build`: green.
+- `npm test`: green. `test:build` 26,833 checks (body-line section 258 per
+  built-in bundle and 177 for the experiment; demo 54; markup scope 61);
+  `test:components` 332 verifications, 5,410 checks, 0 failures;
+  `test:behavior` passed. Max phase residual 0.0000px; max first-baseline
+  distance from a whole rendered body line 0.938px at 16px (bound 1px) and
+  1.844px at 32px (bound 2px).
+- `npm run qa:components`: green. 86 pages captured, 332 verifications,
+  5,410 checks, 0 failures.
+
+`test:build` re-run at `834648c` (docs only): 26,833 checks.
