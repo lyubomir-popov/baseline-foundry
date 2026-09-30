@@ -236,6 +236,27 @@ export const BODY_LINE_RHYTHM_SECTION_END = "/* End body-line rhythm (Spec 026).
  */
 export const BODY_LINE_FLOW_CLASS = /^bf-(?:theme|tier-[a-z]+|surface-[a-z0-9-]+|body|h[1-6]|lead|meta|text-link|engine-cap|engine-metrics|page|grid|grid-item|grid-scope|span-(?:\d+|full)|stack|cluster|section|prose|strip|measure|fixed-width|inline-size|stage-shell|token-row|page-shell|application|main|site-main|docs-layout|docs-layout-content)$/;
 
+/**
+ * Spec 026 F3/F5: structural roots that keep the bU ledger besides the component classes – every cluster child
+ * (control rows align to controls) and the element-styled containers.
+ */
+export const BODY_LINE_ELEMENT_ROOTS = [".bf-cluster > *", "blockquote", "fieldset", "table"] as const;
+
+/**
+ * Spec 026 F4/F7: the gap a text block's parent sets, read from the modifier token so the child's own
+ * --bf-stack-space never matters. Main's modifier order; section stacks and is-flush cancel nothing; the
+ * prose gap wins over any stack gap on the same element, as in main.
+ */
+export const BODY_LINE_TEXT_JOIN_GAPS: ReadonlyArray<readonly [string, string]> = [
+  [".bf-stack", "var(--bf-section-space-shallow)"],
+  [".bf-stack.is-flush", "0rem"],
+  [".bf-stack.is-extra-dense", "var(--bf-space-half)"],
+  [".bf-stack.is-dense", "var(--bf-space-1)"],
+  [".bf-stack.is-loose", "var(--bf-space-2)"],
+  [".bf-stack:is(.is-section-shallow, .is-section, .is-section-deep)", "0rem"],
+  [".bf-prose", "var(--bf-section-space-shallow)"]
+];
+
 /** Spec 026 R7: every bf-* class the component, grid and preset CSS style, minus flow classes, sorted. */
 export function bodyLineComponentRootClasses(componentCss: string): string[] {
   const classes = new Set(Array.from(componentCss.matchAll(/\.(bf-[a-z0-9-]*[a-z0-9])/g), match => match[1]));
@@ -313,15 +334,17 @@ function bodyLineRhythmCss(rhythm: BodyLineRhythm | undefined, classSurfaces: Th
   const unjoined = [...unjoinedPairs.values()].sort((a, b) =>
     roleOrder.indexOf(a.previous) - roleOrder.indexOf(b.previous) || roleOrder.indexOf(a.following) - roleOrder.indexOf(b.following));
   const unjoinedKeys = unjoined.map(hgroupPairKey);
-  const baselineLedgerRoots = [BASELINE_RHYTHM_ROOT, ...componentRootClasses.map(className => `.${className}`)];
+  const baselineLedgerRoots = [BASELINE_RHYTHM_ROOT, ...BODY_LINE_ELEMENT_ROOTS, ...componentRootClasses.map(className => `.${className}`)];
+  const notRoot = `:not(:where(${baselineLedgerRoots.join(", ")}))`;
   const blocks = [
     `${THEME} {\n${bodyLineRhythmDeclarations(rhythm, unjoinedKeys)}}\n`,
     ...classSurfaces.map(surface => `:where(.bf-theme.${surface.className}) {\n${bodyLineRhythmDeclarations(surface.bodyLineRhythm as BodyLineRhythm, unjoinedKeys)}}\n`),
     `:where(${baselineLedgerRoots.join(", ")}) {\n${baselineRhythmDeclarations(Object.keys(rhythm.roles), unjoinedKeys)}}\n`,
     ...Object.keys(rhythm.roles).map(bodyLineRhythmRoleRule),
-    `${THEME} :where(.bf-prose)${NOT_CAP_ENGINE} {\n  gap: calc(var(--bf-section-space-shallow) * var(--bf-text-gap-scale));\n}\n`,
-    // A following stack cannot read its parent's --bf-stack-space, and a prose stack already has no gap.
-    `${THEME} :where(.bf-stack:not(.bf-prose) > ${textBlock} + ${textBlock}:not(.bf-stack))${NOT_CAP_ENGINE} {\n  margin-block-start: calc(var(--bf-stack-space) * (var(--bf-text-gap-scale) - 1));\n}\n`,
+    ...BODY_LINE_TEXT_JOIN_GAPS.map(([container, gap]) => `${THEME} :where(${container} > *)${NOT_CAP_ENGINE} {\n  --bf-text-join-gap: ${gap};\n}\n`),
+    // A hidden or component-root text block does not close to body lines, so the gap after it stays.
+    `${THEME} :where(:is(.bf-stack, .bf-prose):not(hgroup, .is-metric-flush) > ${textBlock}:not([hidden])${notRoot} + ${textBlock}${notRoot})${NOT_CAP_ENGINE} {\n  margin-block-start: calc(var(--bf-text-join-gap) * (var(--bf-text-gap-scale) - 1));\n}\n`,
+    `${THEME} :where(hgroup.bf-stack)${NOT_CAP_ENGINE} {\n  gap: calc(var(--bf-stack-space) * var(--bf-text-gap-scale));\n}\n`,
     `${THEME} :where(hgroup > * + *)${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-hgroup-join);\n}\n`,
     // A surface that would bring caps into the previous descender does not pull that pair; the gap stays whole steps.
     ...unjoined.map(pair => `${THEME} :where(hgroup > ${roleCompound(pair.previous)} + ${roleCompound(pair.following)})${NOT_CAP_ENGINE} {\n  margin-block-start: var(--bf-hgroup-join-${hgroupPairKey(pair)});\n}\n`),

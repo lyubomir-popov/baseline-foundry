@@ -444,7 +444,8 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
           record.measured[`${name} h2 to p top advance`] = headingToFirst;
           record.measured[`${name} p to p baseline advance`] = paragraphDelta;
         }
-        assert(flow("body-line", "prose-gap").gap === 0 && flow("baseline", "prose-gap").gap > 0, `Expected ${label} prose to have no gap by default and the group gap under the opt-out.`);
+        // Orchestrator ruling F1: prose keeps main's gap in both ledgers; the default cancels it only between text blocks (above).
+        assert(flow("body-line", "prose-gap").gap > 0 && Math.abs(flow("body-line", "prose-gap").gap - flow("baseline", "prose-gap").gap) <= TOLERANCE_PX, `Expected ${label} prose to keep the group gap by default and under the opt-out.`);
         const optOutStack = flow("baseline", "stack");
         assert(optOutStack.gap > 0 && Math.abs(optOutStack.children[2].top - occupiedBottom(optOutStack.children[1]) - optOutStack.gap) <= TOLERANCE_PX, `Expected ${label} opt-out stack text to keep main's stack gap.`);
         record.measured["opt-out stack p to p baseline advance"] = optOutStack.children[2].probes[0] - optOutStack.children[1].probes[0];
@@ -500,7 +501,7 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
       const url = `${origin}/__body-line-direct-${tier}.html`;
       await direct.route(url, route => route.fulfill({
         contentType: "text/html",
-        body: `<!doctype html><html><head><link rel="stylesheet" href="/dist/tiers/${tier}/styles.css"></head><body class="bf-theme"><div class="bf-prose" style="gap:0"><h1>Heading</h1><p>Body</p></div><div class="bf-theme is-baseline-rhythm"><div class="bf-prose" style="gap:0"><h1>Heading</h1><p>Body</p></div></div></body></html>`
+        body: `<!doctype html><html><head><link rel="stylesheet" href="/dist/tiers/${tier}/styles.css"></head><body class="bf-theme"><div class="bf-prose"><h1>Heading</h1><p>Body</p></div><div class="bf-theme is-baseline-rhythm"><div class="bf-prose"><h1>Heading</h1><p>Body</p></div></div></body></html>`
       }));
       await direct.goto(url, { waitUntil: "load" });
       const [h1, p, optOutH1] = await direct.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>(".bf-prose > *")).map(element => {
@@ -521,6 +522,252 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
   }
 
   return records;
+}
+
+// Adversarial-review fixtures (tmp/r67), rendered in every tier against main's CSS (the bundle with the section stripped).
+const ADJACENCY_FIXTURES: Record<string, string> = {
+  "stack-default": `<div class="bf-stack"><p>A</p><p>B</p><p>C</p></div>`,
+  "stack-extra-dense": `<div class="bf-stack is-extra-dense"><p>A</p><p>B</p><p>C</p></div>`,
+  "stack-dense": `<div class="bf-stack is-dense"><p>A</p><p>B</p><p>C</p></div>`,
+  "stack-loose": `<div class="bf-stack is-loose"><p>A</p><p>B</p><p>C</p></div>`,
+  "stack-h2pp": `<div class="bf-stack"><h2>H</h2><p>A</p><p>B</p></div>`,
+  "stack-section-shallow": `<div class="bf-stack is-section-shallow"><p>A</p><p>B</p><p>C</p></div>`,
+  "stack-section": `<div class="bf-stack is-section"><p>A</p><p>B</p><p>C</p></div>`,
+  "stack-section-deep": `<div class="bf-stack is-section-deep"><p>A</p><p>B</p><p>C</p></div>`,
+  "stack-section-h2pp": `<div class="bf-stack is-section"><h2>H</h2><p>A</p><p>B</p></div>`,
+  "hidden-first": `<div class="bf-stack"><p hidden>X</p><p>A</p><p>B</p></div>`,
+  "hidden-mid": `<div class="bf-stack"><p>A</p><p hidden>X</p><p>B</p></div>`,
+  "contents": `<div class="bf-stack"><p>A</p><div style="display: contents"><p>B</p></div></div>`,
+  "component-then-flow": `<div class="bf-stack"><p class="bf-form-help">A</p><p>B</p></div>`,
+  "flow-then-component": `<div class="bf-stack"><p>A</p><p class="bf-form-help">B</p></div>`,
+  "stack-nontext": `<div class="bf-stack"><p>A</p><hr><p>B</p><blockquote>Q</blockquote><p>C</p><pre>code</pre><p>D</p><figure><div style="block-size: 2.5rem"></div></figure><p>E</p><table><tr><td>cell</td></tr></table><p>F</p><div class="bf-card">Card</div><p>G</p></div>`,
+  "prose-nontext": `<div class="bf-prose"><p>A</p><hr><p>B</p><blockquote>Q</blockquote><p>C</p><pre>code</pre><p>D</p><figure><div style="block-size: 2.5rem"></div></figure><p>E</p><table><tr><td>cell</td></tr></table><p>F</p><div class="bf-card">Card</div><p>G</p></div>`,
+  "prose-component-list": `<div class="bf-prose"><p>A</p><nav class="bf-breadcrumbs"><ol class="bf-breadcrumbs-items"><li class="bf-breadcrumbs-item"><a href="#">One</a></li><li class="bf-breadcrumbs-item"><a href="#">Two</a></li></ol></nav><ul class="bf-list"><li class="bf-list-item">L1</li><li class="bf-list-item">L2</li></ul><p>B</p></div>`,
+  "prose-text": `<div class="bf-prose"><h2>H</h2><p>A</p><p>B</p><ul><li>One</li><li>Two</li></ul><p>C</p></div>`,
+  "blockquote-p": `<div class="bf-prose"><blockquote><p>Quoted paragraph</p></blockquote></div>`,
+  "table-p": `<div><table><tr><td><p>Cell paragraph</p></td></tr></table></div>`,
+  "fieldset-p": `<div><fieldset><legend>Legend</legend><p>Help paragraph</p></fieldset></div>`,
+  "cluster-row": `<div class="bf-cluster"><p>Label</p><button class="bf-button" type="button">Action</button><span class="bf-status-label">Status</span></div>`,
+  "nested-stack": `<div class="bf-stack is-dense"><p>A</p><div class="bf-stack"><p>B1</p><p>B2</p></div><p>C</p></div>`,
+  "prose-in-stack": `<div class="bf-stack"><h1>A</h1><div class="bf-prose"><p>B</p><p>C</p></div></div>`,
+  "hgroup-stack-dense": `<div class="bf-stack is-dense"><p>A</p><hgroup class="bf-stack"><h2>H</h2><p>S</p></hgroup><p>C</p></div>`,
+  "hgroup-stack": `<div class="bf-stack"><p>A</p><hgroup class="bf-stack is-dense"><h2>H</h2><p>S</p></hgroup><p>C</p></div>`
+};
+const PATTERN_STACKS = ["stack-default", "stack-extra-dense", "stack-dense", "stack-loose"];
+const SECTION_STACKS = ["stack-section-shallow", "stack-section", "stack-section-deep", "stack-section-h2pp"];
+const NON_TEXT = /^(?:hr|blockquote|pre|figure|table|nav|ul\.bf-list|div\.bf-card)$/;
+
+interface AdjacencyBox {
+  key: string;
+  depth: number;
+  visible: boolean;
+  top: number;
+  bottom: number;
+  height: number;
+  marginTop: number;
+  marginBottom: number;
+  baseline: number | null;
+}
+
+interface AdjacencyFixture {
+  gap: number;
+  boxes: AdjacencyBox[];
+}
+
+async function readAdjacency(page: Page, tier: Tier, optOut: boolean): Promise<Record<string, AdjacencyFixture>> {
+  return page.evaluate(({ fixtures, tier, optOut }) => {
+    const host = document.getElementById("host");
+    if (!host) throw new Error("Missing adjacency host.");
+    // Fixed-height, overflow-clipped slots start every fixture on a whole pixel, so text snapping cannot differ from main.
+    host.innerHTML = `<div class="bf-theme bf-tier-${tier}${optOut ? " is-baseline-rhythm" : ""}">${Object.entries(fixtures)
+      .map(([name, html]) => `<div data-adjacency="${name}" style="block-size: 75rem; overflow: hidden">${html}</div>`)
+      .join("")}</div>`;
+    for (const text of host.querySelectorAll("p, h1, h2, li, button, .bf-status-label, legend")) {
+      const probe = document.createElement("span");
+      probe.dataset.adjacencyProbe = "";
+      probe.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;vertical-align:baseline";
+      text.append(probe);
+    }
+    const result: Record<string, { gap: number; boxes: Array<Record<string, unknown>> }> = {};
+    for (const slot of host.querySelectorAll<HTMLElement>("[data-adjacency]")) {
+      const container = slot.firstElementChild as HTMLElement;
+      const origin = container.getBoundingClientRect().top;
+      const elements = Array.from(container.querySelectorAll<HTMLElement>("*")).filter(element => !element.hasAttribute("data-adjacency-probe"));
+      result[slot.dataset.adjacency ?? ""] = {
+        gap: Number.parseFloat(getComputedStyle(container).rowGap) || 0,
+        boxes: elements.map(element => {
+          const rect = element.getBoundingClientRect();
+          const styles = getComputedStyle(element);
+          const probe = element.querySelector(":scope > [data-adjacency-probe]");
+          let depth = 0;
+          for (let parent = element.parentElement; parent && parent !== container; parent = parent.parentElement) depth += 1;
+          const bfClass = Array.from(element.classList).find(name => /^bf-(?:card|list)$/.test(name));
+          return {
+            key: `${element.tagName.toLowerCase()}${bfClass ? `.${bfClass}` : ""}`,
+            depth,
+            visible: styles.display !== "none" && rect.height > 0,
+            top: rect.top - origin,
+            bottom: rect.bottom - origin,
+            height: rect.height,
+            marginTop: Number.parseFloat(styles.marginTop),
+            marginBottom: Number.parseFloat(styles.marginBottom),
+            baseline: probe ? probe.getBoundingClientRect().bottom - origin : null
+          };
+        })
+      };
+    }
+    return result;
+  }, { fixtures: ADJACENCY_FIXTURES, tier, optOut }) as Promise<Record<string, AdjacencyFixture>>;
+}
+
+/**
+ * Spec 026 orchestrator rulings F1–F7 on R6/R7: text-to-text joins cancel only pattern-internal gaps and only between
+ * visible flow-text blocks; non-text, hidden, component-root, cluster-child and element-root neighbours keep main's
+ * geometry; the opt-out equals main everywhere.
+ */
+export async function verifyBodyLineRhythmAdjacency(origin: string): Promise<string> {
+  const browser = await openBrowser();
+  const lines = ["Body-line rhythm adjacency (px, @16px; default clearance / main clearance):", "| Tier | Case | Default | Main |", "|---|---|---:|---:|"];
+  try {
+    const url = `${origin}/__body-line-adjacency.html`;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/dist/styles.css"><link rel="stylesheet" href="/demo/demo-fonts.css"><style>body{margin:0}</style></head><body><div id="host"></div></body></html>`;
+    const page = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 1280, height: 900 } });
+    const mainPage = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 1280, height: 900 } });
+    for (const target of [page, mainPage]) {
+      await target.route(url, route => route.fulfill({ contentType: "text/html", body: html }));
+    }
+    await mainPage.route("**/dist/styles.css", async route => {
+      const response = await route.fetch();
+      await route.fulfill({ response, body: stripSection(await response.text()) });
+    });
+    for (const target of [page, mainPage]) {
+      await target.goto(url, { waitUntil: "networkidle" });
+      await waitForFonts(target);
+    }
+
+    for (const tier of TIERS) {
+      const current = await readAdjacency(page, tier, false);
+      const main = await readAdjacency(mainPage, tier, false);
+      const optOut = await readAdjacency(page, tier, true);
+      const mainOptOut = await readAdjacency(mainPage, tier, true);
+      const topLevel = (fixture: AdjacencyFixture) => fixture.boxes.filter(box => box.depth === 0 && box.visible);
+      const occupiedBottom = (box: AdjacencyBox) => box.bottom + box.marginBottom;
+      const stepPx = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.querySelector("[data-adjacency] p") as HTMLElement).lineHeight));
+      const assertSameBoxes = (actual: AdjacencyFixture, expected: AdjacencyFixture, what: string) => {
+        assert(actual.boxes.length === expected.boxes.length, `Expected ${tier} ${what} to mirror main's element count.`);
+        actual.boxes.forEach((box, index) => {
+          const reference = expected.boxes[index];
+          for (const field of ["top", "height", "marginTop", "marginBottom"] as const) {
+            assert(Math.abs(box[field] - reference[field]) <= TOLERANCE_PX, `Expected ${tier} ${what} ${box.key} ${index} ${field} to equal main; got ${box[field]}px, main ${reference[field]}px.`);
+          }
+          assert((box.baseline === null) === (reference.baseline === null) && Math.abs((box.baseline ?? 0) - (reference.baseline ?? 0)) <= TOLERANCE_PX, `Expected ${tier} ${what} ${box.key} ${index} baseline to equal main; got ${box.baseline}px, main ${reference.baseline}px.`);
+        });
+      };
+
+      // R1: the opt-out equals main for every fixture.
+      for (const name of Object.keys(ADJACENCY_FIXTURES)) {
+        assertSameBoxes(optOut[name], mainOptOut[name], `opt-out ${name}`);
+      }
+
+      // F1: prose and stacks keep their gap next to non-text children; the clearance after a non-text child equals main.
+      for (const name of ["stack-nontext", "prose-nontext", "prose-component-list"]) {
+        const boxes = topLevel(current[name]);
+        const mainBoxes = topLevel(main[name]);
+        assert(current[name].gap > 0 && Math.abs(current[name].gap - main[name].gap) <= TOLERANCE_PX, `Expected ${tier} ${name} to keep main's ${main[name].gap}px gap; got ${current[name].gap}px.`);
+        boxes.forEach((box, index) => {
+          if (index === 0) return;
+          const previous = boxes[index - 1];
+          if (NON_TEXT.test(previous.key)) {
+            const clearance = box.top - previous.bottom;
+            const mainClearance = mainBoxes[index].top - mainBoxes[index - 1].bottom;
+            assert(Math.abs(clearance - mainClearance) <= TOLERANCE_PX, `Expected ${tier} ${name} clearance after ${previous.key} to equal main; got ${clearance}px, main ${mainClearance}px.`);
+            lines.push(`| ${tier} | ${name} after ${previous.key} | ${clearance.toFixed(2)} | ${mainClearance.toFixed(2)} |`);
+          }
+          if (NON_TEXT.test(box.key)) {
+            const clearance = box.top - occupiedBottom(previous);
+            assert(Math.abs(clearance - current[name].gap) <= TOLERANCE_PX, `Expected ${tier} ${name} ${box.key} to keep the ${current[name].gap}px gap after ${previous.key}; got ${clearance}px.`);
+          }
+        });
+      }
+
+      // R6 with F1: text blocks in prose join on their closure, so every advance is whole body lines.
+      const proseText = topLevel(current["prose-text"]);
+      proseText.slice(1).forEach((box, index) => {
+        const previous = proseText[index];
+        assert(Math.abs(box.top - occupiedBottom(previous)) <= TOLERANCE_PX && offStep(box.top - previous.top, stepPx) <= TOLERANCE_PX, `Expected ${tier} prose ${box.key} to follow ${previous.key} on whole body lines with the prose gap cancelled; advance ${box.top - previous.top}px.`);
+      });
+
+      // F2: a hidden first text block does not pull the next one above the stack.
+      const [firstVisible, secondVisible] = topLevel(current["hidden-first"]);
+      assert(Math.abs(firstVisible.top) <= TOLERANCE_PX && Math.abs(firstVisible.marginTop) <= TOLERANCE_PX, `Expected ${tier} the first visible p after a hidden one to start at the stack top; got ${firstVisible.top}px, margin ${firstVisible.marginTop}px.`);
+      assert(Math.abs(secondVisible.top - occupiedBottom(firstVisible)) <= TOLERANCE_PX, `Expected ${tier} the next visible p to join the first on its closure.`);
+
+      // F3: text in a cluster row aligns with the controls, as in main.
+      assertSameBoxes(current["cluster-row"], main["cluster-row"], "cluster row");
+      const rowBaselines = current["cluster-row"].boxes.filter(box => box.depth === 0).map(box => box.baseline ?? Number.NaN);
+      assert(Math.max(...rowBaselines) - Math.min(...rowBaselines) <= TOLERANCE_PX, `Expected ${tier} cluster row text and controls to share one baseline; got ${rowBaselines.join(", ")}.`);
+      lines.push(`| ${tier} | cluster row baselines (p, button, status) | ${rowBaselines.map(value => value.toFixed(2)).join(" / ")} | ${main["cluster-row"].boxes.filter(box => box.depth === 0).map(box => (box.baseline ?? Number.NaN).toFixed(2)).join(" / ")} |`);
+
+      // F4: pattern-internal stacks cancel exactly (whole body lines, no clamped track); section stacks keep their gap.
+      for (const name of PATTERN_STACKS) {
+        const boxes = topLevel(current[name]);
+        boxes.slice(1).forEach((box, index) => {
+          const advance = box.top - boxes[index].top;
+          assert(Math.abs(advance - 2 * stepPx) <= TOLERANCE_PX && box.height + box.marginTop + box.marginBottom >= 0, `Expected ${tier} ${name} p ${index + 2} to advance two ${stepPx}px body lines with a non-negative margin box; advance ${advance}px, margin-top ${box.marginTop}px.`);
+        });
+        lines.push(`| ${tier} | ${name} p to p advance | ${(boxes[1].top - boxes[0].top).toFixed(2)} | ${(topLevel(main[name])[1].top - topLevel(main[name])[0].top).toFixed(2)} |`);
+      }
+      const stackH2 = topLevel(current["stack-h2pp"]);
+      assert(Math.abs(stackH2[1].top - occupiedBottom(stackH2[0])) <= TOLERANCE_PX && offStep(stackH2[1].top - stackH2[0].top, stepPx) <= TOLERANCE_PX, `Expected ${tier} default stack h2 to p to advance whole body lines.`);
+      for (const name of SECTION_STACKS) {
+        const boxes = topLevel(current[name]);
+        assert(current[name].gap > 0, `Expected ${tier} ${name} to own a gap.`);
+        boxes.slice(1).forEach((box, index) => {
+          const clearance = box.top - occupiedBottom(boxes[index]);
+          assert(Math.abs(clearance - current[name].gap) <= TOLERANCE_PX && Math.abs(box.marginTop) <= TOLERANCE_PX, `Expected ${tier} ${name} to keep its ${current[name].gap}px gap between complete blocks; got ${clearance}px.`);
+        });
+        lines.push(`| ${tier} | ${name} p to p clearance | ${(boxes.at(-1)!.top - occupiedBottom(boxes.at(-2)!)).toFixed(2)} | ${(topLevel(main[name]).at(-1)!.top - topLevel(main[name]).at(-2)!.bottom - topLevel(main[name]).at(-2)!.marginBottom).toFixed(2)} |`);
+      }
+
+      // F5: element-styled containers keep the bU ledger for their text.
+      for (const name of ["blockquote-p", "table-p", "fieldset-p"]) {
+        assertSameBoxes(current[name], main[name], name);
+      }
+
+      // F6: text after component-root text keeps the gap; text before it keeps the gap.
+      for (const name of ["component-then-flow", "flow-then-component"]) {
+        const [first, second] = topLevel(current[name]);
+        const clearance = second.top - occupiedBottom(first);
+        assert(Math.abs(clearance - current[name].gap) <= TOLERANCE_PX && Math.abs(second.marginTop) <= TOLERANCE_PX, `Expected ${tier} ${name} to keep the ${current[name].gap}px stack gap; got ${clearance}px.`);
+      }
+      const [helpText, afterHelp] = topLevel(current["component-then-flow"]);
+      const [mainHelp, mainAfterHelp] = topLevel(main["component-then-flow"]);
+      assert(Math.abs((afterHelp.top - helpText.bottom) - (mainAfterHelp.top - mainHelp.bottom)) <= TOLERANCE_PX, `Expected ${tier} text after component-root text to keep main's clearance.`);
+
+      // F7: joins read the parent's token, never the child's own stack space; hgroup children take the join and no stack gap.
+      for (const name of ["hgroup-stack-dense", "hgroup-stack"]) {
+        const [before, group, after] = topLevel(current[name]);
+        const [heading, subtitle] = current[name].boxes.filter(box => box.depth === 1);
+        assert(Math.abs(group.top - occupiedBottom(before)) <= TOLERANCE_PX && Math.abs(after.top - occupiedBottom(group)) <= TOLERANCE_PX, `Expected ${tier} ${name} p, hgroup, p to join on their closures with the parent's gap cancelled; got ${group.top - occupiedBottom(before)}px and ${after.top - occupiedBottom(group)}px.`);
+        assert(Math.abs(subtitle.top - (occupiedBottom(heading) - stepPx)) <= TOLERANCE_PX && offStep(after.top - before.top, stepPx) <= TOLERANCE_PX, `Expected ${tier} ${name} hgroup children to take the one-step join and no stack gap; subtitle ${subtitle.top - occupiedBottom(heading)}px after the heading closure.`);
+      }
+      for (const name of ["nested-stack", "prose-in-stack"]) {
+        const [before, container] = topLevel(current[name]);
+        const clearance = container.top - occupiedBottom(before);
+        assert(Math.abs(clearance - current[name].gap) <= TOLERANCE_PX, `Expected ${tier} ${name} to keep the parent's ${current[name].gap}px gap before a child container; got ${clearance}px.`);
+        lines.push(`| ${tier} | ${name} text to container clearance (recorded exception) | ${clearance.toFixed(2)} | – |`);
+      }
+      for (const name of ["hidden-mid", "contents"]) {
+        const visible = current[name].boxes.filter(box => box.visible && box.key === "p");
+        lines.push(`| ${tier} | ${name} p to p clearance (recorded exception) | ${(visible[1].top - occupiedBottom(visible[0])).toFixed(2)} | – |`);
+      }
+    }
+    await page.close();
+    await mainPage.close();
+  } finally {
+    await browser.close();
+  }
+  return lines.join("\n");
 }
 
 export function formatBodyLineRhythmRecords(records: BodyLineRhythmRecord[]): string {

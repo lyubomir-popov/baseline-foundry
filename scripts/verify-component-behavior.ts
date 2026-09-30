@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { closeServer, createStaticServer, waitForFonts } from "./component-demo-shared.ts";
 import { assert, disableDemoChromeHitTesting, openBrowser } from "./behavior/browser-helpers.ts";
-import { formatBodyLineRhythmRecords, verifyBodyLineRhythm } from "./behavior/body-line-rhythm-contracts.ts";
+import { formatBodyLineRhythmRecords, verifyBodyLineRhythm, verifyBodyLineRhythmAdjacency } from "./behavior/body-line-rhythm-contracts.ts";
 import {
   verifyContentCardGeometry,
   verifyInteractiveTables,
@@ -454,8 +454,6 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         rejectedLinkButton.remove();
         return {
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * rootSize,
-          bodyLine: Number.parseFloat(getComputedStyle(document.body).lineHeight),
-          bodyPhase: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-body-phase-start")) * rootSize,
           borderWidth: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-border-width")) * rootSize,
           rootSize,
           nestedApi,
@@ -500,14 +498,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
       assertSharedHeight("single-line interface", interfaceComponents);
-      // Spec 026 R7: the reference is a bare page p, body-line phased; components keep the bU ledger one body phase above it.
-      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - (interfaceReference.textTop - occupiedBlockGeometry.bodyPhase)) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline less its ${occupiedBlockGeometry.bodyPhase}px body phase; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
-      // Spec 026 R7: page paragraphs and the prose list are body-line flow text; the other text runs keep the bU ledger.
-      const bodyLineRunLabels = ["Baseline reference", "Paragraph", "Prose list"];
-      assertSharedHeight("text-run", occupiedBlockGeometry.textRuns.filter(sample => !bodyLineRunLabels.includes(sample.label)));
-      // Spec 026 R3/R7: a one-line paragraph and a one-item prose list close to two body lines in every tier.
-      const bodyLineRuns = occupiedBlockGeometry.textRuns.filter(sample => bodyLineRunLabels.includes(sample.label));
-      assert(bodyLineRuns.length === 3 && bodyLineRuns.every(sample => Math.abs(sample.height - 2 * occupiedBlockGeometry.bodyLine) <= renderedBorderTolerance), `Expected ${tier} one-line paragraph and one-item prose list specimens to occupy two ${occupiedBlockGeometry.bodyLine}px body lines; got ${JSON.stringify(bodyLineRuns)}.`);
+      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - interfaceReference.textTop) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
+      assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
       const nestedReference = occupiedBlockGeometry.nested[0];
       const nestedHosts = occupiedBlockGeometry.nested.slice(1);
       assertSharedHeight("nested host", nestedHosts);
@@ -519,12 +511,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         const delta = Math.abs(phase - interfaceReferencePhase);
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
       }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
-      // Spec 026: body-line text sits one body phase lower than the bU ledger, so compare every run at its bU-ledger baseline.
-      const runTextTop = (sample: { label: string; textTop: number | null }) => sample.textTop === null ? null : sample.textTop - (bodyLineRunLabels.includes(sample.label) ? occupiedBlockGeometry.bodyPhase : 0);
-      const referenceRunTop = runTextTop(occupiedBlockGeometry.textRuns[0]);
-      assert(Number.isFinite(occupiedBlockGeometry.bodyPhase) && occupiedBlockGeometry.textRuns.every(sample => runTextTop(sample) === null || referenceRunTop === null || Math.abs((runTextTop(sample) ?? 0) - referenceRunTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline, body-line text one ${occupiedBlockGeometry.bodyPhase}px body phase lower; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
-      // Spec 026 R7: the nested reference is a bare page p, body-line phased; nested hosts keep the bU ledger.
-      assert(nestedHosts.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || Math.abs(sample.textTop - (nestedReference.textTop - occupiedBlockGeometry.bodyPhase)) <= renderedBorderTolerance), `Expected ${tier} nested host text to retain the page baseline less the ${occupiedBlockGeometry.bodyPhase}px body phase while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
+      assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
+      assert(occupiedBlockGeometry.nested.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || Math.abs(sample.textTop - nestedReference.textTop) <= renderedBorderTolerance), `Expected ${tier} nested host text to retain the page baseline while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
       assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
       for (const label of ["Chip", "Tab action", "Color input", "Range control"] as const) {
@@ -3010,12 +2998,10 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
   };
 
   const assertExtendedPointerTarget = async (selector: string, label: string): Promise<void> => {
-    const targets = await page.locator(selector).evaluateAll(elements => {
-      // Spec 026 R7: taller body-line page text moves fixtures under the fixed demo footer, which must not intercept these samples.
-      const suspendChrome = document.createElement("style");
-      suspendChrome.textContent = "[data-page-chrome], [data-page-chrome] * { pointer-events: none !important; }";
-      document.head.append(suspendChrome);
-      const measured = elements.map(element => {      const target = element as HTMLElement;
+    // Spec 026: taller page text leaves the last button.html samples under the fixed demo footer even at maximum scroll.
+    const suspendChrome = await page.addStyleTag({ content: "[data-page-chrome], [data-page-chrome] * { pointer-events: none !important; }" });
+    const targets = await page.locator(selector).evaluateAll(elements => elements.map(element => {
+      const target = element as HTMLElement;
       const rect = target.getBoundingClientRect();
       const extension = getComputedStyle(target, "::after");
       const extensionWidth = Number.parseFloat(extension.width);
@@ -3061,10 +3047,7 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         interiorMisses,
         interiorSamples
       };
-      });
-      suspendChrome.remove();
-      return measured;
-    });
+    })).finally(() => suspendChrome.evaluate(style => style.remove()));
 
     for (const target of targets) {
       assert(
@@ -5436,6 +5419,7 @@ async function main(): Promise<void> {
     await verifyLinkedLogoAndStickyFooterGeometry(origin);
     await verifySiteShellPrimitiveGeometry(origin);
     console.log(formatBodyLineRhythmRecords(await verifyBodyLineRhythm(origin)));
+    console.log(await verifyBodyLineRhythmAdjacency(origin));
 
     console.log("Component behavior verification passed.");
   } finally {

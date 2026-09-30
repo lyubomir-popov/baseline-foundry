@@ -361,7 +361,9 @@ export function validateBodyLineRhythmDemo(pageCatalogJs: string, html: string, 
   for (const [flowName, count] of [["ledger", 2], ["prose-gap", 2], ["stack", 2], ["section", 2], ["component", 2], ["matrix", 3], ["hgroup", 2], ["wrapped", 2], ["tight", 3], ["loose", 3], ["nested-list", 3], ["ordered", 2], ["flush", 2], ["rule", 2], ["quote", 2]] as const) {
     assert((html.match(new RegExp(`data-body-line-flow="${flowName}"`, "g")) ?? []).length === count, `Expected ${pageName} to render ${count} ${flowName} fixtures.`);
   }
-  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 26, `Expected every ${pageName} zero-gap fixture flow to use the zero-gap specimen and the body-line ruling.`);
+  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 17, `Expected every ${pageName} fixture flow without two adjacent text blocks to use the zero-gap specimen and the body-line ruling.`);
+  // Orchestrator ruling F1: BF cancels the prose gap between text blocks from the token, so text-to-text fixtures run on BF's own gap.
+  assert((html.match(/class="bf-prose body-line-ruling"\s+data-body-line-flow="(?:ledger|matrix|hgroup|wrapped)"/g) ?? []).length === 9, `Expected ${pageName} ledger, matrix, hgroup and wrapped fixtures to run on BF's prose gap, never a zero-gap override.`);
   // Owner ruling R6: the container-gap fixtures run on BF's own gaps, with no specimen gap override.
   assert((html.match(/class="bf-prose body-line-ruling"\s+data-body-line-flow="prose-gap"/g) ?? []).length === 2
     && (html.match(/class="bf-stack body-line-ruling"\s+data-body-line-flow="(?:stack|component)"/g) ?? []).length === 4

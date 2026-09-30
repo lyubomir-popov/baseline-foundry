@@ -2,7 +2,9 @@
  * None of these classes is Baseline Foundry public API. */
 
 /* Zero-gap fixture: isolates the text ledger from container gaps in both
- * columns, including the opt-out, whose prose keeps the group gap. */
+ * columns. Only on flows where BF cancels no gap (no two adjacent text
+ * blocks, or a metric-flush pair): the cancel reads the gap token, so a zero
+ * gap between text blocks would overlap them. */
 .body-line-flow {
   gap: 0;
 }

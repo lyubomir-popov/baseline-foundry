@@ -37,8 +37,9 @@
           <header class="bf-stack is-dense">
             <h2 id="body-line-ledgers">Ledgers</h2>
             <p>
-              A stacked heading, two paragraphs and a list in a zero-gap prose
-              flow, so only the text terms move the content.
+              A stacked heading, two paragraphs and a list in a prose flow.
+              By default the prose gap is cancelled between text blocks, so
+              only the text terms move the content; the opt-out keeps it.
             </p>
           </header>
           <div class="bf-grid-scope">
@@ -55,7 +56,7 @@
                   data-body-line-root="body-line"
                 >
                   <div
-                    class="bf-prose body-line-flow body-line-ruling"
+                    class="bf-prose body-line-ruling"
                     data-body-line-flow="ledger"
                   >
                     <h2>Stacked heading</h2>
@@ -98,7 +99,7 @@
                   data-body-line-root="baseline"
                 >
                   <div
-                    class="bf-prose body-line-flow body-line-ruling"
+                    class="bf-prose body-line-ruling"
                     data-body-line-flow="ledger"
                   >
                     <h2>Stacked heading</h2>
@@ -138,10 +139,11 @@
             <h2 id="body-line-gaps">Container gaps – ruled (c)</h2>
             <p>
               Text blocks space themselves: the closure already supplies one
-              blank body line, so prose has no gap and a stack cancels its gap
-              between two adjacent text blocks. Text next to a component keeps
-              the stack gap, so text after a component starts on the
-              baseline-unit grid and its body-line phase is not guaranteed.
+              blank body line, so prose and pattern-internal stacks cancel
+              their gap between two adjacent text blocks. Section stacks keep
+              their gap. Text next to a component keeps the gap, so text after
+              a component starts on the baseline-unit grid and its body-line
+              phase is not guaranteed.
             </p>
           </header>
           <div class="bf-grid-scope">
@@ -157,7 +159,7 @@
                   data-body-line-root="body-line"
                 >
                   <div class="bf-stack is-dense">
-                    <h4 class="bf-h6">Prose – no gap</h4>
+                    <h4 class="bf-h6">Prose – gap cancelled between text</h4>
                     <div
                       class="bf-prose body-line-ruling"
                       data-body-line-flow="prose-gap"
@@ -272,7 +274,7 @@
           <header class="bf-stack is-dense">
             <h2 id="body-line-matrix">One-line heading matrix</h2>
             <p>
-              Body and h1–h6 in a zero-gap prose flow. By default every
+              Body and h1–h6 in a prose flow. By default every
               element top is a whole body line from the previous one; a
               default theme nested inside an opted-out root keeps the body-line
               ledger.
@@ -290,7 +292,7 @@
                   data-body-line-root="body-line"
                 >
                   <div
-                    class="bf-prose body-line-flow body-line-ruling"
+                    class="bf-prose body-line-ruling"
                     data-body-line-flow="matrix"
                   >
                     <p>Body one line</p>
@@ -317,7 +319,7 @@
                   data-body-line-root="baseline"
                 >
                   <div
-                    class="bf-prose body-line-flow body-line-ruling"
+                    class="bf-prose body-line-ruling"
                     data-body-line-flow="matrix"
                   >
                     <p>Body one line</p>
@@ -348,7 +350,7 @@
                     data-body-line-root="nested-default"
                   >
                     <div
-                      class="bf-prose body-line-flow body-line-ruling"
+                      class="bf-prose body-line-ruling"
                       data-body-line-flow="matrix"
                     >
                       <p>Body one line</p>
@@ -390,7 +392,7 @@
                   data-body-line-root="body-line"
                 >
                   <div
-                    class="bf-prose body-line-flow body-line-ruling"
+                    class="bf-prose body-line-ruling"
                     data-body-line-flow="hgroup"
                   >
                     <hgroup>
@@ -416,7 +418,7 @@
                   data-body-line-root="baseline"
                 >
                   <div
-                    class="bf-prose body-line-flow body-line-ruling"
+                    class="bf-prose body-line-ruling"
                     data-body-line-flow="hgroup"
                   >
                     <hgroup>
@@ -458,7 +460,7 @@
                   data-body-line-root="body-line"
                 >
                   <div
-                    class="bf-prose body-line-flow body-line-ruling"
+                    class="bf-prose body-line-ruling"
                     data-body-line-flow="wrapped"
                   >
                     <h1>Heading 1<br />line two</h1>
@@ -498,7 +500,7 @@
                   data-body-line-root="baseline"
                 >
                   <div
-                    class="bf-prose body-line-flow body-line-ruling"
+                    class="bf-prose body-line-ruling"
                     data-body-line-flow="wrapped"
                   >
                     <h1>Heading 1<br />line two</h1>

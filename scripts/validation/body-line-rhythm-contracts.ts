@@ -3,7 +3,16 @@ import path from "node:path";
 import { BaselineNudgeGenerator, readFontMetrics, type FontMetrics } from "@lyubomir-popov/baseline-nudge-generator";
 import type { Rule } from "postcss";
 import { BODY_LINE_RHYTHM_ROLES, computeBodyLineRhythm, hgroupJoinClearances, type BodyLineRhythmRoleInput } from "../../src/body-line-rhythm.ts";
-import { BODY_LINE_FLOW_CLASS, BODY_LINE_RHYTHM_SECTION_END, BODY_LINE_RHYTHM_SECTION_START, bodyLineComponentRootClasses, bodyLineTextBlock, generateFoundryCss } from "../../src/css.ts";
+import {
+  BODY_LINE_ELEMENT_ROOTS,
+  BODY_LINE_FLOW_CLASS,
+  BODY_LINE_RHYTHM_SECTION_END,
+  BODY_LINE_RHYTHM_SECTION_START,
+  BODY_LINE_TEXT_JOIN_GAPS,
+  bodyLineComponentRootClasses,
+  bodyLineTextBlock,
+  generateFoundryCss
+} from "../../src/css.ts";
 import { resolveTierPath, tierNames, type BuiltInThemeName, type TierName } from "../../src/presets.ts";
 import type { BodyLineRhythm, ThemeFontFile, ThemeSurface, ThemeTokens } from "../../src/types.ts";
 import { parseCss } from "../css-ast-helpers.ts";
@@ -159,6 +168,21 @@ export async function validateBodyLineRhythmFormulas(tierTokens: Record<string, 
     }
     const h1h2 = clearances.find(clearance => clearance.previous === "h1" && clearance.following === "h2");
     assert(h1h2 && Math.abs(h1h2.distance - EXPECTED_HGROUP_H1_H2[tierName]) <= TOLERANCE, `Expected ${tierName} hgroup h1 + h2 baseline distance ${EXPECTED_HGROUP_H1_H2[tierName]}rem, got ${h1h2?.distance}rem.`);
+
+    // Orchestrator ruling F4: a cancelled pattern-internal gap never exceeds a one-line text block, so the grid track never clamps.
+    const layout = tokens.layout as Record<string, unknown> | undefined;
+    const shallow = parseRem(layout?.sectionSpaceShallow);
+    const patternGaps: Record<string, number> = { default: shallow, "is-extra-dense": baselineUnit / 2, "is-dense": baselineUnit, "is-loose": 2 * baselineUnit, prose: shallow };
+    const occupied = [
+      ...BODY_LINE_RHYTHM_ROLES.map(roleName => [roleName, parseRem(roles[roleName].nudgeTop) + parseRem(result.roles[roleName].phaseStart) + parseRem(roles[roleName].lineHeight) + parseRem(result.roles[roleName].closureEnd)] as const),
+      ["one-item list", blockStart + step + listClosure] as const
+    ];
+    assert(Number.isFinite(shallow) && shallow > 0, `Expected ${tierName} tokens to carry layout.sectionSpaceShallow, got ${String(layout?.sectionSpaceShallow)}.`);
+    for (const [modifier, gap] of Object.entries(patternGaps)) {
+      for (const [block, height] of occupied) {
+        assert(height - gap >= -TOLERANCE && offStep(height, step) <= TOLERANCE, `Expected ${tierName} ${block} (${height}rem, whole steps) to absorb the cancelled ${modifier} gap ${gap}rem without a negative margin box.`);
+      }
+    }
   }
 
   assert(records === 28, `Expected 28 tier/role rhythm records, got ${records}.`);
@@ -241,10 +265,17 @@ function isFlowText(element: MarkupElement): boolean {
 export function baselineLedgerRootClasses(css: string): string[] {
   const start = css.indexOf(BODY_LINE_RHYTHM_SECTION_START);
   const section = css.slice(start, css.indexOf(BODY_LINE_RHYTHM_SECTION_END));
-  const selector = section.match(/:where\(\.bf-theme\.is-baseline-rhythm((?:, \.bf-[a-z0-9-]+)*)\) \{/);
-  assert(start >= 0 && selector, "Expected the body-line rhythm section to open its bU ledger block with .bf-theme.is-baseline-rhythm and the component roots.");
+  const prefix = `:where(.bf-theme.is-baseline-rhythm, ${BODY_LINE_ELEMENT_ROOTS.join(", ")}`;
+  const opening = section.indexOf(prefix);
+  const selector = opening >= 0 ? section.slice(opening + prefix.length).match(/^((?:, \.bf-[a-z0-9-]+)*)\) \{/) : null;
+  assert(start >= 0 && selector, "Expected the body-line rhythm section to open its bU ledger block with .bf-theme.is-baseline-rhythm, the element roots and the component roots.");
   return selector[1].split(", ").filter(Boolean).map(className => className.slice(1));
 }
+
+// Orchestrator ruling F5: element-styled containers that keep the bU ledger; their cells count as inside the table root.
+const ELEMENT_ROOT_TAGS = new Set(BODY_LINE_ELEMENT_ROOTS.filter(root => /^[a-z]+$/.test(root)));
+// Element selectors BF styles after the section that cannot host flow text, or are table parts inside the table root.
+const ELEMENT_STYLED_NON_HOSTS = /^(?:hr|button|input|select|textarea|th|td|thead|tbody|tfoot|tr)$/;
 
 /**
  * Spec 026 R7 markup coverage: every bf-* class in component, pattern and README markup is a flow class or a
@@ -261,22 +292,29 @@ export async function validateBodyLineRhythmMarkupScope(readmeMd: string, css: s
 
   const uncovered = new Map<string, string>();
   let componentText = 0;
+  let elementRootText = 0;
+  let clusterText = 0;
   let flowText = 0;
   let unstyledHooks = 0;
   for (const [file, html] of sources) {
     const elements = parseMarkup(html);
+    const isClusterChild = (candidate: MarkupElement) => candidate.parent >= 0 && elements[candidate.parent].classes.includes("bf-cluster");
     elements.forEach((element, index) => {
       const chain = [element, ...ancestors(elements, index)];
+      const inElementRoot = chain.some(candidate => ELEMENT_ROOT_TAGS.has(candidate.tag));
+      const inCluster = chain.some(isClusterChild);
       // An unstyled hook class (for example .bf-notification-title) is not a root; its nearest styled root must be reset.
-      const covered = chain.some(candidate => candidate.classes.some(name => resetClasses.has(name)));
+      const covered = inElementRoot || inCluster || chain.some(candidate => candidate.classes.some(name => resetClasses.has(name)));
       for (const className of element.classes.filter(name => name.startsWith("bf-") && !BODY_LINE_FLOW_CLASS.test(name) && !resetClasses.has(name))) {
         unstyledHooks += 1;
         if (!covered) uncovered.set(className, `${file}:${element.line}`);
       }
       if (!isFlowText(element) || chain.some(candidate => candidate.classes.includes("bf-engine-cap"))) return;
-      const inComponent = chain.some(candidate => candidate.classes.some(name => name.startsWith("bf-") && !BODY_LINE_FLOW_CLASS.test(name)));
+      const inComponent = inElementRoot || inCluster || chain.some(candidate => candidate.classes.some(name => name.startsWith("bf-") && !BODY_LINE_FLOW_CLASS.test(name)));
       if (inComponent) {
         componentText += 1;
+        if (inElementRoot) elementRootText += 1;
+        if (inCluster) clusterText += 1;
         if (!covered) uncovered.set(`<${element.tag}>`, `${file}:${element.line}`);
       } else {
         flowText += 1;
@@ -284,8 +322,8 @@ export async function validateBodyLineRhythmMarkupScope(readmeMd: string, css: s
     });
   }
 
-  assert(uncovered.size === 0, `Expected every bf-* class and component text element in component, pattern and README markup to be a flow class or sit in a reset component root; uncovered: ${[...uncovered].map(([name, at]) => `${name} (${at})`).join(", ")}.`);
-  assert(sources.length > 80 && componentText > 400 && flowText > 0 && unstyledHooks > 0, `Expected the markup scan to cover the component, pattern and README sources, got ${sources.length} sources, ${componentText} component text, ${flowText} flow text and ${unstyledHooks} unstyled hook classes.`);
+  assert(uncovered.size === 0, `Expected every bf-* class and component text element in component, pattern and README markup to be a flow class or sit in a reset component, element or cluster-child root; uncovered: ${[...uncovered].map(([name, at]) => `${name} (${at})`).join(", ")}.`);
+  assert(sources.length > 80 && componentText > 400 && elementRootText > 0 && clusterText > 0 && flowText > 0 && unstyledHooks > 0, `Expected the markup scan to cover the component, pattern and README sources, got ${sources.length} sources, ${componentText} component text (${elementRootText} in element roots, ${clusterText} in cluster children), ${flowText} flow text and ${unstyledHooks} unstyled hook classes.`);
 }
 
 function manifestSurfaces(bundle: BodyLineRhythmBundle): Array<[string, ManifestSurface]> {
@@ -428,7 +466,7 @@ export async function validateBodyLineRhythmBundle(
   if (classSurfaces.length >= 4) {
     assert(unjoinedKeys.join() === [...EXPECTED_HGROUP_UNJOINED.documentation, ...EXPECTED_HGROUP_UNJOINED.os].sort().join(), `Expected ${label} to limit the documentation and OS hgroup pairs, got ${unjoinedKeys.join(", ")}.`);
   }
-  const expectedRules = 1 + classSurfaces.length + 1 + roleNames.length + 2 + 1 + unjoinedKeys.length + 5;
+  const expectedRules = 1 + classSurfaces.length + 1 + roleNames.length + BODY_LINE_TEXT_JOIN_GAPS.length + 3 + unjoinedKeys.length + 5;
   assert(rules.length === expectedRules, `Expected ${label} section to hold ${expectedRules} rules, got ${rules.length}.`);
 
   const literals = new Map<string, RhythmRecord>();
@@ -445,8 +483,20 @@ export async function validateBodyLineRhythmBundle(
   assert(JSON.stringify(componentRoots) === JSON.stringify(sourceRoots) && componentRoots.length > 300, `Expected ${label} to derive its component roots from the component, grid and preset CSS after the section; got ${componentRoots.length} from dist and ${sourceRoots.length} from source.`);
   assert(componentRoots.every(className => !BODY_LINE_FLOW_CLASS.test(className)) && !componentRoots.includes("bf-engine-cap"), `Expected ${label} component roots to exclude flow classes and the cap engine.`);
   const baselineRule = rules[blockSelectors.length];
-  assert(baselineRule?.selector === `:where(${[BASELINE_ROOT, ...componentRoots.map(className => `.${className}`)].join(", ")})`, `Expected ${label} .is-baseline-rhythm and component-root block after the surface blocks, got ${baselineRule?.selector.slice(0, 120)}.`);
+  const ledgerRoots = [BASELINE_ROOT, ...BODY_LINE_ELEMENT_ROOTS, ...componentRoots.map(className => `.${className}`)];
+  assert(baselineRule?.selector === `:where(${ledgerRoots.join(", ")})`, `Expected ${label} .is-baseline-rhythm, element-root and component-root block after the surface blocks, got ${baselineRule?.selector.slice(0, 160)}.`);
   assert(JSON.stringify(baselineLedgerRootClasses(css)) === JSON.stringify(componentRoots), `Expected ${label} bU ledger block to list exactly the derived component roots.`);
+  // Orchestrator ruling F5: every element BF styles after the section either cannot host flow text or sits in an element root.
+  const elementSubjects = new Set<string>();
+  parseCss(trailingCss).walkRules(rule => {
+    for (const selector of rule.selectors) {
+      const withoutTheme = selector.replace(/:where\(\.bf-theme(?:\.[a-z-]+)*\)/g, "");
+      if (/\.bf-|^\s*(?:from|to|\d+%)\s*$/.test(withoutTheme)) continue;
+      for (const match of withoutTheme.matchAll(/(?:^|[\s(,>+~])([a-z][a-z0-9]*)(?=[\s.:[\]),>+~]|$)/g)) elementSubjects.add(match[1]);
+    }
+  });
+  const hostSubjects = [...elementSubjects].filter(tag => !ELEMENT_STYLED_NON_HOSTS.test(tag) && !ELEMENT_ROOT_TAGS.has(tag) && !/^(?:dir|rtl|ltr|not|is|where|has|hover|active|focus|disabled)$/.test(tag));
+  assert(elementSubjects.size > 0 && hostSubjects.length === 0, `Expected ${label} element-styled selectors after the section to be controls, rules, table parts or element roots; unexpected ${hostSubjects.join(", ")}.`);
   assertDeclarations(baselineRule, Object.fromEntries([
     ...roleNames.flatMap(roleName => [
       [`--bf-${roleName}-rhythm-step`, "var(--bf-baseline)"],
@@ -479,14 +529,38 @@ export async function validateBodyLineRhythmBundle(
     }, `${label} ${roleName} application`);
   });
 
-  // Owner ruling R6 (D4 option (c)): prose has no gap and a stack cancels its gap between two adjacent text blocks; the bU ledger restores both.
-  const [proseGapRule, stackJoinRule, joinRule, ...rest] = applicationRules.slice(roleNames.length);
-  assert(proseGapRule?.selector === `${ROOT} :where(.bf-prose)${NOT_CAP_ENGINE}`, `Expected ${label} prose gap rule after the role rules, got ${proseGapRule?.selector}.`);
-  assertDeclarations(proseGapRule, { gap: "calc(var(--bf-section-space-shallow) * var(--bf-text-gap-scale))" }, `${label} prose gap`);
+  // Orchestrator rulings F1, F4, F6, F7 on R6: prose keeps its gap; prose and pattern-internal stacks cancel it only between
+  // two adjacent visible flow-text blocks, reading the parent's modifier token; section stacks, component roots and the bU ledger keep it.
+  const joinGapRules = applicationRules.slice(roleNames.length, roleNames.length + BODY_LINE_TEXT_JOIN_GAPS.length);
+  const [stackJoinRule, hgroupStackRule, joinRule, ...rest] = applicationRules.slice(roleNames.length + BODY_LINE_TEXT_JOIN_GAPS.length);
+  assert(!rules.some(rule => rule.selector === `${ROOT} :where(.bf-prose)${NOT_CAP_ENGINE}`), `Expected ${label} to keep main's prose gap: no prose gap rule in the section.`);
+  const mainStackSpaces: Array<[string, string]> = [];
+  parseCss(plainCss).walkRules(rule => {
+    const container = rule.selector.match(/^:where\(\.bf-theme\) :where\((\.bf-stack(?:\.is-[a-z-]+)?)\)$/)?.[1];
+    rule.walkDecls("--bf-stack-space", declaration => {
+      if (container) mainStackSpaces.push([container, declaration.value]);
+    });
+  });
+  const expectedJoinGaps = mainStackSpaces
+    .filter(([container]) => container !== ".bf-stack.is-metric-flush" && !container.includes(".is-section"))
+    .map(([container, value]) => [container, container === ".bf-stack.is-flush" ? "0rem" : value]);
+  assert(JSON.stringify(mainStackSpaces.map(([container]) => container)) === JSON.stringify([".bf-stack", ".bf-stack.is-flush", ".bf-stack.is-metric-flush", ".bf-stack.is-extra-dense", ".bf-stack.is-dense", ".bf-stack.is-loose", ".bf-stack.is-section-shallow", ".bf-stack.is-section", ".bf-stack.is-section-deep"]), `Expected ${label} main stack modifiers in their known order, got ${mainStackSpaces.map(([container]) => container).join(", ")}.`);
+  assert(JSON.stringify(BODY_LINE_TEXT_JOIN_GAPS) === JSON.stringify([
+    ...expectedJoinGaps,
+    [".bf-stack:is(.is-section-shallow, .is-section, .is-section-deep)", "0rem"],
+    [".bf-prose", "var(--bf-section-space-shallow)"]
+  ]), `Expected ${label} text-join gaps to mirror main's stack modifier tokens in order, section stacks at 0 and prose last; got ${JSON.stringify(BODY_LINE_TEXT_JOIN_GAPS)}.`);
+  BODY_LINE_TEXT_JOIN_GAPS.forEach(([container, gap], index) => {
+    assert(joinGapRules[index]?.selector === `${ROOT} :where(${container} > *)${NOT_CAP_ENGINE}`, `Expected ${label} text-join gap rule ${index + 1} for ${container} children, got ${joinGapRules[index]?.selector}.`);
+    assertDeclarations(joinGapRules[index], { "--bf-text-join-gap": gap }, `${label} ${container} text-join gap`);
+  });
   const textBlock = bodyLineTextBlock(roleNames);
   assert(textBlock === ":is(p, h1, h2, h3, h4, h5, h6, hgroup, .bf-body, .bf-h1, .bf-h2, .bf-h3, .bf-h4, .bf-h5, .bf-h6, .bf-prose ul, .bf-prose ol)", `Expected ${label} text blocks to be body and h1-h6 (semantic and classed), hgroup and prose lists, got ${textBlock}.`);
-  assert(stackJoinRule?.selector === `${ROOT} :where(.bf-stack:not(.bf-prose) > ${textBlock} + ${textBlock}:not(.bf-stack))${NOT_CAP_ENGINE}`, `Expected ${label} stack text-join rule to select only a text block after a text block in a non-prose stack, never a nested stack, got ${stackJoinRule?.selector}.`);
-  assertDeclarations(stackJoinRule, { "margin-block-start": "calc(var(--bf-stack-space) * (var(--bf-text-gap-scale) - 1))" }, `${label} stack text join`);
+  const notRoot = `:not(:where(${ledgerRoots.join(", ")}))`;
+  assert(stackJoinRule?.selector === `${ROOT} :where(:is(.bf-stack, .bf-prose):not(hgroup, .is-metric-flush) > ${textBlock}:not([hidden])${notRoot} + ${textBlock}${notRoot})${NOT_CAP_ENGINE}`, `Expected ${label} text-join rule to select a visible, non-root text block after another in prose or a stack, got ${stackJoinRule?.selector.slice(0, 200)}.`);
+  assertDeclarations(stackJoinRule, { "margin-block-start": "calc(var(--bf-text-join-gap) * (var(--bf-text-gap-scale) - 1))" }, `${label} text join`);
+  assert(hgroupStackRule?.selector === `${ROOT} :where(hgroup.bf-stack)${NOT_CAP_ENGINE}`, `Expected ${label} hgroup stack gap rule after the text join, got ${hgroupStackRule?.selector}.`);
+  assertDeclarations(hgroupStackRule, { gap: "calc(var(--bf-stack-space) * var(--bf-text-gap-scale))" }, `${label} hgroup stack gap`);
   assert(joinRule?.selector === `${ROOT} :where(hgroup > * + *)${NOT_CAP_ENGINE}`, `Expected ${label} hgroup join rule after the gap rules.`);
   assertDeclarations(joinRule, { "margin-block-start": "var(--bf-hgroup-join)" }, `${label} hgroup join`);
   const pairRules = rest.slice(0, unjoinedKeys.length);
