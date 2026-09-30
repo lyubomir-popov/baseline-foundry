@@ -322,6 +322,33 @@ Example:
 
 Engine choice remains separate: `.bf-engine-metrics` is the default production path, `.bf-engine-cap` is demo-only.
 
+### Body-line rhythm (provisional opt-in)
+
+Add `is-body-line-rhythm` to a `.bf-theme` root to put its prose flows on the
+body-line grid (Spec 026, Phase A). Paragraphs and headings that are direct
+children of `.bf-prose`, prose list items and the paragraphs inside them keep
+their measured nudge, add a phase inset that lands the first baseline on a
+whole body line, and close their occupied block to whole body lines instead of
+one baseline unit. The terms are computed at build time from the same font
+metrics as the nudge and behave identically in all four tiers, in direct and
+class-scoped bundles.
+
+```html
+<article class="bf-theme bf-tier-documentation is-body-line-rhythm">
+	<div class="bf-prose">
+		<h2>Body-line heading</h2>
+		<p>Paragraphs and headings share one body-line phase.</p>
+	</div>
+</article>
+```
+
+Text outside `.bf-prose`, component text, controls, `blockquote`, `hr` and
+code stay on the baseline-unit ledger, and container gaps are unchanged until
+the owner rules on them. Wrapped headings whose line height is not a whole
+body line, nested lists and metric-flush pairs are recorded exceptions. The
+modifier is provisional: it may be retired if body-line rhythm becomes the
+default. Compare both ledgers per tier at `demo/spec/body-line-rhythm.html`.
+
 See `config/tiers/` for the four canonical source configs. Compatibility preset names resolve to those same owners rather than duplicate JSON files.
 
 ## Public API

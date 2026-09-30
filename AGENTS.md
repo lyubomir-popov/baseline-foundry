@@ -36,6 +36,10 @@ Read in this order:
   space-after does not drive layout. Nested `bf-stack` containers own direct
   child gaps, and plain and visual-role-classed equivalents must occupy the
   same baseline-aligned box.
+- Scoped exception: under the opt-in `.bf-theme.is-body-line-rhythm` (Spec 026
+  Phase A, owner-approved for BF on 2026-09-30), prose-flow text adds a
+  body-line phase inset and closes to whole body lines. The text invariant
+  holds everywhere else.
 - Baseline compensation comes from real font metrics. The cap engine is a demo
   comparison, not a production surface.
 - OS is the fourth first-class built-in tier. Density differences are

@@ -63,6 +63,14 @@ All four tiers use one ownership model:
 - flow boundaries preserve compensation and therefore do not need semantic
   last-child margin trimming.
 
+Provisional opt-in (Spec 026, Phase A, owner-approved 2026-09-30): under
+`.bf-theme.is-body-line-rhythm`, prose-flow text – paragraphs and headings
+that are direct children of `.bf-prose`, prose list items and their direct
+paragraphs – adds a build-time phase inset after its nudge and closes its
+occupied block to whole body lines instead of one baseline unit. Nudge and
+compensation properties keep their meaning, container gaps are unchanged, and
+everything outside the modifier stays on the baseline-unit ledger above.
+
 This owner decision aligns BF with the current container-owned direction in the
 Canonical spacing reference while preserving BF's independent tier values and
 public API.
