@@ -41,6 +41,18 @@ matching feature branch only when its catalogued evidence trigger is met.
 
 ## Unnumbered backlog
 
+- Diagram Registry upstream requests (Registry Spec 033, 2026-09-30; Registry
+  keeps local fallbacks until BF ships each):
+  - `bf-panel-footer` draws a top border with zero block-start padding, so text
+    touches it; match `bf-rule`'s inset,
+    `calc(var(--bf-space-1) - var(--bf-border-width))`.
+  - Column-span or 25/75 split for `bf-basic-section` content.
+  - Floating/fixed `bf-notification` variant.
+  - Auto-fit card-grid modifier.
+  - Muted-text utility (`is-muted` only applies to cards).
+  - Fixed-layout/equal-columns table modifier.
+  - `[hidden]` override for `bf-cluster`.
+  - Global `prefers-reduced-motion` (BF covers content cards only).
 - Apply the marker composition split: bare markers (checkbox, radio, switch,
   list) and painted hover rows share one marker canvas and marker-to-text gap;
   only the painted wrapper adds Action/group inset before the marker.

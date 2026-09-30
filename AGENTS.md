@@ -67,6 +67,11 @@ Read in this order:
   keep separate goals but implement shared spacing decisions in sync.
 - Pragma-targeted planning packages may live in BF. Pragma source code never
   does. Neither repository's measured values are evidence for the other.
+- Baseline alignment technique is deliberately different. BF uses only
+  metric-based nudges generated from real font files; CSS `1cap` alignment is
+  rejected for BF by owner decision (2026-09-30). Pragma uses `1cap` because its
+  lead engineer prefers it; that choice stays in Pragma and must not be ported
+  back, even when a shared decision (such as body-line phase) is ported.
 
 ## Spec workflow
 
