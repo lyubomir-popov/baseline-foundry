@@ -1,7 +1,7 @@
 # Review: Body-line text phase
 
-Closeout evidence for Spec 026. Phase A tasks T001–T010 are recorded here;
-later sections are added by T015–T023.
+Closeout evidence for Spec 026. Phase A tasks T001–T021 are recorded here;
+T022 (browser review) and T023 (owner review request) are still open.
 
 ## T002 – baseline capture
 
@@ -177,3 +177,139 @@ Rebuilt 2026-09-30 at `223865e`. Against `tmp/026-main-dist/`:
 `npm run test:build` passes with 26,686 checks, 2,336 of them in the
 body-line rhythm invariants (formulas 313; section 246 per built-in bundle
 and 171 for the experiment; parity 66; no-op 5; markup scope 59).
+
+## T011–T014 – comparison demo
+
+`demo/spec/body-line-rhythm.html` (route listed after the typographic
+specimen), `demo/body-line-rhythm.js` and the page-local
+`demo/body-line-rhythm.css`. Every comparison column is a nested `.bf-theme`
+root whose tier and tone classes the script mirrors from the page chrome; the
+opt-in columns add `is-body-line-rhythm`. Sections: ledgers with computed
+nudge, phase, end term and occupied height; the D4 row with (a) default gaps
+and labelled page-local candidates (b), (c) and (d); the one-line matrix
+(current, opt-in, and a non-opted theme nested in an opted root); wrapped
+headings; tight, loose and nested lists; metric-flush, `hr` and `blockquote`.
+Specimen CSS is limited to the zero-gap flow, the body-line ruling and the
+five D4 candidate rules, each scoped to a `body-line-*` class.
+
+Live D4 read-outs (stack gap / prose gap, rem) match research R7:
+
+| Tier | (a) | (b) up | (c) | (d) down |
+|---|---|---|---|---|
+| Editorial | 1.5 / 1.5 | 1.5 / 1.5 | 1.5 / 0 | 1.5 / 1.5 |
+| Documentation | 1.5 / 1.5 | 2.5 / 2.5 | 1.5 / 0 | 1.25 / 1.25 |
+| App | 0.5 / 0.5 | 1.25 / 1.25 | 0.5 / 0 | 0 / 0 |
+| OS | 1.5 / 1.5 | 2 / 2 | 1.5 / 0 | 1 / 1 |
+
+“Body-line rhythm demo” in `npm run test:build` adds 52 checks: catalog
+registration, four-tier boot, assets, no inline styles, opt-in only on the
+opted roots, the nested non-opted root, every fixture flow and its count,
+the metric-flush container shape, labelled (a)–(d), the “not public API”
+labels, the exact candidate formulas, `body-line-*`-only selectors and the
+tier/tone mirror. The stylesheet also joins the demo selector-hygiene check.
+
+## T015–T018 – rendered proof
+
+`scripts/behavior/body-line-rhythm-contracts.ts`, called from the end of
+`main()` in `scripts/verify-component-behavior.ts`; no existing family
+changed. Chromium DPR 1, viewport 1440 × 960, roots 16px and 32px, all four
+tiers. Expected phase, F* and step come from `computeBodyLineRhythm` with each
+tier's `tokens.json` and font files, not from the rendered CSS. The test
+inserts zero-size inline-block probes at the start of each line. Tolerance
+0.1px throughout.
+
+Asserted per tier and root:
+
+- AC-5: for the nine matrix elements (body, h1–h6, `p.bf-h3`, body),
+  `(probe − top)` opted minus current equals the phase; the opted matrix
+  starts at the flow top and every element top is whole body lines after the
+  previous one. `h3` and `p.bf-h3` occupy the same box. The largest phase
+  residual across all 4 × 2 runs is 0.0000px.
+- AC-6: every line of every two- and three-line h1–h6 follows the previous
+  by the role line height in both columns; for the contract's qualifying
+  roles the following paragraph is whole body lines after the heading top.
+  The computed qualifying set equals the contract list in every tier.
+  Editorial h3, documentation h3, app h1 and os h1 at two lines miss the
+  nearest body line by 8.00px at 16px and 16.00px at 32px (R3: 0.5rem, at
+  least one bU).
+- AC-7: the nested non-opted theme matches the current column for
+  `probe − top` and element advance; the metric-flush pair's internal
+  baseline distance is unchanged; the prose dot keeps its offset from the
+  first probe; a loose item's text sits where a tight item's does, and tight
+  and loose items advance by whole body lines; the page console stays clean.
+
+### Measured ε (rendered first baseline − F*, px; data, not asserted)
+
+Measured on the current column; the opt-in column carries the same value
+because the phase residual is 0. Every value equals the research R2
+cross-check.
+
+| Tier | Role | ε @16px | ε @32px |
+|---|---|---:|---:|
+| Editorial | body, h5, h6 | −0.453 | +0.109 |
+| Editorial | h3, h4 | −0.500 | −1.000 |
+| Editorial | h1, h2 | −0.906 | −1.813 |
+| Documentation | body | −0.766 | −0.531 |
+| Documentation | h5, h6 | −0.234 | −0.469 |
+| Documentation | h3, h4 | −0.500 | −1.000 |
+| Documentation | h1, h2 | −0.391 | −1.766 |
+| App | body, h5, h6 | −0.766 | −0.531 |
+| App | h3, h4 | −0.234 | −0.469 |
+| App | h1, h2 | −0.500 | −1.000 |
+| OS | body, h5, h6 | −0.094 | −0.172 |
+| OS | h3, h4 | −0.453 | +0.109 |
+| OS | h1, h2 | −0.500 | −1.000 |
+
+### Recorded exceptions (distance to the nearest body line, px; data)
+
+Measured on the opt-in column as measured / predicted. Predictions come from
+the contract's recorded-exceptions table and research R3; every measurement
+is within 0.03px of its prediction (Chromium's 1/64px layout snapping).
+
+| Case | Editorial @16 / @32 | Documentation @16 / @32 | App @16 / @32 | OS @16 / @32 |
+|---|---|---|---|---|
+| Metric-flush h2 + p, following | 2.53 / 5.06 (2.54 / 5.08) | 3.36 / 6.75 (3.38 / 6.76) | 2.25 / 4.52 (2.27 / 4.53) | 0.42 / 0.84 (0.41 / 0.83) |
+| Nested list child item | 6.55 / 13.11 (6.56 / 13.12) | 5.23 / 10.47 (5.24 / 10.48) | 5.23 / 10.47 (5.24 / 10.48) | 3.91 / 7.83 (3.92 / 7.84) |
+| `hr`, following | 7.98 / 15.98 (8 / 16) | 7.98 / 15.98 (8 / 16) | 7.98 / 15.98 (8 / 16) | 7.98 / 15.98 (8 / 16) |
+| `blockquote`, following | 7.97 / 15.97 (8 / 16) | 3.97 / 7.97 (4 / 8) | 3.97 / 7.97 (4 / 8) | 3.97 / 7.97 (4 / 8) |
+
+Wrapped non-qualifying headings, following paragraph at two / three lines,
+@16px (the @32px values are twice these within 0.04px):
+
+| Tier | Roles | 2 lines | 3 lines |
+|---|---|---:|---:|
+| Editorial | h3, h4 | 7.98 | 8.02 |
+| Documentation | h3, h4 | 8.02 | 3.98 |
+| Documentation | h5, h6 | 3.98 | 7.98 |
+| App | h1, h2 | 8.02 | 3.98 |
+| App | h3, h4 | 3.98 | 7.98 |
+| OS | h1, h2 | 7.98 | 0.02 (back in phase) |
+
+No exception outside the contract table was observed. The full console
+output is kept at `tmp/026-review/body-line-records.md` (not committed).
+
+## T019–T020 – docs
+
+`README.md` gains a “Body-line rhythm (provisional opt-in)” subsection under
+the theme model with an example; `docs/architecture.md` gains an opt-in note
+in the container-owned rhythm section; `AGENTS.md` gains the research D6
+scoped-exception bullet without changing the invariant wording. The note
+lands on the feature branch before merge rather than in the T008 commit.
+
+## T021 – gates
+
+Run 2026-09-30 at `729395d`:
+
+- `npm test`: green. `test:build` 26,741 checks (26,686 before, plus 52
+  demo, 1 selector hygiene and 2 markup-scope matches from the README
+  example); `test:components` 332 surface verifications, 5,410 checks,
+  0 failures; `test:behavior` passed with the new family appended.
+- `npm run qa:components`: green. 86 pages captured to
+  `tmp/screenshots/components/`, then 332 verifications, 5,410 checks,
+  0 failures. The new route is a spec page, not in the component capture
+  catalog (`scripts/component-demo-shared.ts`), so no capture was added and
+  no existing capture was rebaselined.
+
+Review screenshots for T022 (light, full page, 1440 px wide, DPR 1):
+`tmp/026-review/body-line-rhythm-{editorial,documentation,app,os}-light.png`.
+The fixed page chrome appears mid-page in full-page captures.

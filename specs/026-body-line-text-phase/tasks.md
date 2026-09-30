@@ -101,62 +101,81 @@
 
 ## Phase 4 – Demo route (serves US2 and US3)
 
-- [ ] T011 [US3] Create `demo/spec/body-line-rhythm.html` and
+- [x] T011 [US3] Create `demo/spec/body-line-rhythm.html` and
   `demo/body-line-rhythm.js`: page chrome with tier and tone controls; a
   nested opt-in `.bf-theme` column whose tier and tone classes mirror the
   page; current and opt-in ledgers side by side for a stacked h2, two
   paragraphs and a prose list, labelled with computed nudge, phase and closure.
-- [ ] T012 [US3] Add the gap comparison row – (a) default `.bf-prose` and
+  *Evidence*: ledger tables read the computed role properties per tier, for
+  example Documentation opt-in h2 0.03875 / 0.5 / 0.71125rem, 3.75rem
+  occupied. Specimen CSS lives in the page-local `demo/body-line-rhythm.css`.
+- [x] T012 [US3] Add the gap comparison row – (a) default `.bf-prose` and
   `bf-stack` gaps; (b) labelled candidate specimen rules
   `round(up, var(--bf-stack-space), var(--bf-body-rhythm-step))` on the stack
   and `round(up, var(--bf-section-space-shallow), var(--bf-body-rhythm-step))`
   on the prose block; (c) a zero prose gap; (d) the (b) rules with
   `round(down, …)` – and a demo-local body-line ruling.
-- [ ] T013 [US2] Add rendered fixtures to the same page, each in an opted and
+  *Evidence*: live gap read-outs match research R7 – Documentation (b)
+  2.5rem, (d) 1.25rem; App (b) 1.25rem, (d) 0; OS (b) 2rem, (d) 1rem.
+- [x] T013 [US2] Add rendered fixtures to the same page, each in an opted and
   a non-opted column: a one-line h1–h6 plus body matrix in a zero-gap
   `.bf-prose` (demo-local `gap: 0` specimen rule); forced two- and three-line
   headings with `<br>`; a nested non-opted theme; a metric-flush pair in
   `.bf-prose.bf-stack.is-metric-flush` followed by a paragraph; prose `ul`
   tight, loose (`li > p`) and nested; `hr` and `blockquote` between
   paragraphs. Probes are JS/test hooks only.
-- [ ] T014 [P] Register the route in `demo/page-catalog.js` with the spec
+  *Evidence*: probes are injected by the behaviour test; the matrix also
+  carries a `p.bf-h3` beside `h3` for the one-box check.
+- [x] T014 [P] Register the route in `demo/page-catalog.js` with the spec
   chapter pages and extend the BF-only demo markup checks in
   `scripts/validate-build.ts`.
+  *Evidence*: “Body-line rhythm demo” 52 checks; the stylesheet joins
+  “Demo CSS selector hygiene”.
 
 ## Phase 5 – US2 rendered proof (P2)
 
-- [ ] T015 [US2] In `scripts/verify-component-behavior.ts`, add the
+- [x] T015 [US2] In `scripts/verify-component-behavior.ts`, add the
   differential one-line family: Chromium DPR 1, roots 16px and 32px, four
   tiers; `probe − elementTop` opted minus non-opted equals the phase, and each
   element top minus the previous element top is whole steps, both within
   0.1px (AC-5). Write absolute ε per tier, role and root to `review.md`
   without asserting it.
-- [ ] T016 [US2] Add the wrapped family: line-to-line distance equals `lh`
+  *Evidence*: family in `scripts/behavior/body-line-rhythm-contracts.ts`,
+  run from `main()`; max phase residual 0.0000px; ε in review.md.
+- [x] T016 [US2] Add the wrapped family: line-to-line distance equals `lh`
   within 0.1px; qualifying roles' following sibling on whole steps; editorial
   h3, documentation h3, app h1 and os h1 at two lines have `line 2 − line 1`
   off the nearest whole step by the research R3 prediction within 0.1px and
   by at least one bU (AC-6).
-- [ ] T017 [US2] Add differential edge checks within 0.1px: nested reset,
+  *Evidence*: all four proofs measure 8.00px at 16px and 16.00px at 32px.
+- [x] T017 [US2] Add differential edge checks within 0.1px: nested reset,
   metric-flush internal baseline-to-baseline distance, prose dot offset from
   the first probe, loose vs tight item (AC-7). Measure and record the
   contract's exception offsets (metric-flush downstream, nested list, `hr`,
   `blockquote`) without asserting them.
-- [ ] T018 [US2] Run `npm run test:behavior` with the existing families
+  *Evidence*: all edge checks pass; offsets match the contract table within
+  0.03px (review.md).
+- [x] T018 [US2] Run `npm run test:behavior` with the existing families
   unmodified, including the bU page-wide phase contract (AC-8).
+  *Evidence*: existing families untouched; the new family is appended to
+  `main()`; “Component behavior verification passed.”
 
 **Checkpoint**: rendered acceptance AC-5 to AC-8 green; ε and exception
 offsets recorded.
 
 ## Phase 6 – Docs and CP-A
 
-- [ ] T019 [P] Document `.is-body-line-rhythm` as a provisional opt-in
+- [x] T019 [P] Document `.is-body-line-rhythm` as a provisional opt-in
   theme-root modifier for prose flows in `README.md`, and add an opt-in note
   to the container-owned rhythm section of `docs/architecture.md`.
-- [ ] T020 [P] In the same change that ships the modifier, add the scoped
+- [x] T020 [P] In the same change that ships the modifier, add the scoped
   opt-in exception note from research D6 to the product invariants in
   `AGENTS.md`, citing the 2026-09-30 owner approval, without changing the
   invariant wording listed there.
-- [ ] T021 Run `npm test` and `npm run qa:components` (AC-10).
+  *Evidence*: landed on the feature branch before merge (commit
+  `729395d`), not in the T008 commit itself.
+- [x] T021 Run `npm test` and `npm run qa:components` (AC-10).
+  *Evidence*: both green; counts in review.md.
 - [ ] T022 Review the demo in editorial, documentation, app and os, light and
   dark, plus a 32px-root spot check, and the regression routes in
   [quickstart.md](quickstart.md); record findings in `review.md` (AC-9).
