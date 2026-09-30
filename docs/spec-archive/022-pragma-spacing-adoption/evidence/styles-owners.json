@@ -1,0 +1,64 @@
+{
+  "scope": {
+    "catalog": "styles-primitives",
+    "referenceWorktree": "H:/WSL_dev_projects/pragma/.claude/worktrees/feat-bf-shared-alignment",
+    "method": "Source-owned reusable CSS primitives supplement the React renderer denominator. These are extra owners, not new React catalog witness IDs. Source inspection establishes ownership; rendered captures must independently establish values.",
+    "boundary": "Reusable intrinsic grid/flow/list relationships are in scope. Column counts, spans and application shell allocation are external layout boundaries. Story chrome and orphan CSS do not enter the live-owner denominator."
+  },
+  "records": [],
+  "extras": [
+    {
+      "id": "extra-styles-grid-gaps",
+      "selector": ".grid",
+      "specimen": "styles-primitives",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/styles/main/src/grid.css (.grid)",
+      "relationships": [
+        { "axis": "horizontal", "property": "column-gap", "contract": "reusable grid column separation", "sourceExpression": "var(--grid-column-gap, var(--grid-gap, var(--grid-gutter, 1.5rem)))" },
+        { "axis": "vertical", "property": "row-gap", "contract": "reusable grid row separation", "sourceExpression": "var(--grid-row-gap, var(--grid-gap, var(--grid-gutter, 1.5rem)))" }
+      ],
+      "fixtureRequirement": "A real .grid with at least two occupied rows and columns; default gaps plus separately documented per-axis overrides. Do not infer vertical used separation from a single-row grid.",
+      "reason": "The CSS primitive owns sibling gaps independently of a React renderer. Cards and ContentLayout consume related grid mechanisms; their presence does not account for this owner."
+    },
+    {
+      "id": "extra-styles-content-flow-gap",
+      "selector": ".content-flow",
+      "specimen": "styles-primitives",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/styles/main/src/grid.css (.content-flow)",
+      "relationships": [
+        { "axis": "vertical", "property": "row-gap", "contract": "content-flow direct-child separation", "sourceExpression": "gap: var(--content-flow-gap, var(--spacing-gap-group-block))" }
+      ],
+      "fixtureRequirement": "At least two baseline-governed direct children retaining their own metric compensation.",
+      "reason": "The reusable stack owns semantic separation. Its children's typography compensation is a distinct relationship and must not be removed by the specimen."
+    },
+    {
+      "id": "extra-styles-editorial-gap",
+      "selector": ".editorial",
+      "specimen": "styles-primitives",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/styles/main/src/grid.css (.editorial)",
+      "relationships": [
+        { "axis": "vertical", "property": "row-gap", "contract": "editorial direct-child separation", "sourceExpression": "gap: var(--editorial-flow-gap, var(--spacing-gap-field-block))" }
+      ],
+      "fixtureRequirement": "At least two direct text/component children, without story-level margin normalization.",
+      "reason": "Editorial is a live reusable flow primitive, not merely documentation chrome. It reads the shared field gap independently of component insets."
+    },
+    {
+      "id": "extra-styles-native-list-inset",
+      "selector": ":is(ul, ol)",
+      "specimen": "styles-primitives",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/styles/typography/src/elements.css (ul, ol)",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline-start", "contract": "native list marker-lane composition", "sourceExpression": "calc(var(--ds-leading-mark-canvas, 1rem) + var(--ds-leading-mark-gap, 0.5rem))" }
+      ],
+      "fixtureRequirement": "Real unordered and ordered lists outside .ds component-owned list resets. Both must remain visible; do not restyle their inset in the fixture.",
+      "reason": "Bare lists visibly exercise the shared canvas-plus-gap composition. Existing Category and Breadcrumb witnesses reset their native lists and therefore do not measure this rule."
+    }
+  ]
+}

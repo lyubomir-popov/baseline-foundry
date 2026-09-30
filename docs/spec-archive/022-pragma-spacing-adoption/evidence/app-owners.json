@@ -1,0 +1,1935 @@
+{
+  "scope": "React app catalog witnesses from the reference worktree; deduplicated by id across REACT_ALIGNMENT_FAMILIES and both axes.",
+  "referenceWorktree": "H:/WSL_dev_projects/pragma/.claude/worktrees/feat-bf-shared-alignment",
+  "coverage": {
+    "catalogWitnessIds": 58,
+    "dispositioned": 58,
+    "tokenOwner": 37,
+    "supportingEvidence": 8,
+    "nonSpacingBoundary": 13,
+    "extras": 31,
+    "externalLayoutBoundary": "ApplicationLayout, ContentLayout and ViewLayout are deliberately runtime-excluded. Their slot allocation remains an external layout boundary; explicit gap-token dependencies are retained in extra-app-layout-boundary, and ContentLayout delegates to the included reusable grid primitive."
+  },
+  "taxonomyPressure": [
+    "Continuation is a candidate marker-led inline contract: SideNavigation and FileTree own canvas/gap and inset relationships. Test whether the entry inset is an independent semantic bucket or a composition of existing contracts before assigning a category count.",
+    "Editors contain distinct owners: toolbar actions are block-derived square controls and view tabs are bordered rows; bordered editor content has local H8/V6 outside inset, while the borderless textarea retains measured native padding2 on all four edges. Neither is automatically an accepted Surface or zero-inset contract.",
+    "Code rows are not one row token: GitDiff frame is border-only (zero padding); FileHeader is an attached row; gutter/content cells own legacy local offsets; table rows themselves are occupied-block boundaries."
+  ],
+  "records": [
+    {
+      "id": "alignment-file-tree-search",
+      "selector": ".ds.file-tree > .ds.search-box",
+      "specimen": "file-tree",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/FileTree/common/SearchBox/styles.css (.ds.search-box)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "field/control inset, border-aware",
+          "sourceExpression": "var(--ds-box-padding-inline-start) var(--ds-box-padding-inline-end); --ds-box-inset-inline: var(--file-tree-search-box-horizontal-padding)",
+          "ownerSelector": ".ds.search-box"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block + border-block-end",
+          "contract": "field/control row with one real end border",
+          "sourceExpression": "var(--ds-box-padding-block-start) var(--ds-box-padding-block-end); border-block-end: var(--ds-box-border-block-end) solid",
+          "ownerSelector": ".ds.search-box"
+        }
+      ],
+      "reason": "The search-box frame itself sets both insets and its real under-border; the child input is borderless."
+    },
+    {
+      "id": "alignment-git-diff-gutter-cell",
+      "selector": ".ds.git-diff-viewer tr.ds.diff-line:not(.diff-line-hunk) > .diff-gutter",
+      "specimen": "git-diff",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/styles.css (td.diff-gutter)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "border-inline-end",
+          "contract": "code-gutter separation edge",
+          "sourceExpression": "border-inline-end: var(--ds-stroke-thickness) solid var(--git-diff-viewer-border-color-tinted)",
+          "ownerSelector": "td.diff-gutter"
+        }
+      ],
+      "reason": "The gutter cell owns the painted separation edge; it has zero padding and must not be assigned a generic field inset."
+    },
+    {
+      "id": "alignment-git-diff-content-cell",
+      "selector": ".ds.git-diff-viewer tr.ds.diff-line > .diff-content",
+      "specimen": "git-diff",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/styles.css (td.diff-content, pre)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start",
+          "contract": "code-content local offset",
+          "sourceExpression": "td.diff-content { padding: 0 0 0 4px }",
+          "ownerSelector": "td.diff-content"
+        },
+        {
+          "axis": "horizontal",
+          "property": "pre padding-inline",
+          "contract": "code-content local offset",
+          "sourceExpression": "pre { padding: 0 8px }",
+          "ownerSelector": "td.diff-content > pre"
+        }
+      ],
+      "reason": "The code cell and its pre own legacy nested offsets; source shows a code-row-specific owner rather than a shared field token."
+    },
+    {
+      "id": "alignment-token-table-row-cell",
+      "selector": ".ds.token-table tbody td:has(> .token-cell)",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .grid td)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable cell inset",
+          "sourceExpression": "padding: var(--token-table-cell-padding, 0.625rem 0.75rem)",
+          "ownerSelector": ".ds.token-table .grid td"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable cell inset",
+          "sourceExpression": "padding: var(--token-table-cell-padding, 0.625rem 0.75rem)",
+          "ownerSelector": ".ds.token-table .grid td"
+        }
+      ],
+      "reason": "The catalog selector reaches a .grid cell; that cell owns table padding, while its .token-cell child owns the internal stack gap."
+    },
+    {
+      "id": "alignment-token-table-swatch",
+      "selector": ".ds.token-table .ds.token-swatch:has(> .value)",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": "display: inline-flex; gap: 0.375rem",
+          "ownerSelector": ".ds.token-swatch"
+        }
+      ],
+      "reason": "The rendered TokenSwatch root owns its preview-to-value gap; value typography is only supporting leaf evidence."
+    },
+    {
+      "id": "alignment-token-table-swatch-inventory",
+      "selector": ".ds.token-table",
+      "specimen": "tokens",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "TokenTable root section gap",
+          "sourceExpression": "display: flex; flex-direction: column; gap: 0.75rem",
+          "ownerSelector": ".ds.token-table"
+        }
+      ],
+      "reason": "Equivalent supporting observation of the same TokenTable root section gap owned by alignment-token-table-table; it is not a TokenSwatch spacing job."
+    },
+    {
+      "id": "alignment-token-table-swatch-color",
+      "selector": ".ds.token-table .ds.token-swatch.color-group[title^='color ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .color)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "atomic painted color preview",
+          "sourceExpression": ".ds.token-swatch .color { width: 1.5rem }",
+          "ownerSelector": ".ds.token-swatch .color"
+        },
+        {
+          "axis": "vertical",
+          "property": "height",
+          "contract": "atomic painted color preview",
+          "sourceExpression": ".ds.token-swatch .color { height: 1.5rem }",
+          "ownerSelector": ".ds.token-swatch .color"
+        }
+      ],
+      "reason": "The colour leaf is block-derived, but its actual swatch root owns the same intrinsic gap."
+    },
+    {
+      "id": "alignment-token-table-swatch-dimension",
+      "selector": ".ds.token-table .ds.token-swatch.dimension[title^='dimension ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch.dimension; .ds.token-swatch .bar)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "min-width",
+          "contract": "dimension visualization scale",
+          "sourceExpression": ".ds.token-swatch .bar { min-width: 8px }",
+          "ownerSelector": ".ds.token-swatch .bar"
+        },
+        {
+          "axis": "vertical",
+          "property": "height",
+          "contract": "dimension visualization scale",
+          "sourceExpression": ".ds.token-swatch .bar { height: 0.5rem }",
+          "ownerSelector": ".ds.token-swatch .bar"
+        }
+      ],
+      "reason": "The bar is data visualization, while the root's preview/value gap remains a spacing owner. The parent .ds.token-swatch.dimension min-width: 8rem is an intrinsic visualization-scale floor, recorded as a non-spacing sizing boundary rather than attributed to the child or counted as a spacing job."
+    },
+    {
+      "id": "alignment-token-table-swatch-number",
+      "selector": ".ds.token-table .ds.token-swatch.numeric[title^='number ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .chip)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenSwatch numeric-chip inset",
+          "sourceExpression": ".ds.token-swatch .chip { padding: 0 0.3125rem }",
+          "ownerSelector": ".ds.token-swatch .chip"
+        },
+        {
+          "axis": "vertical",
+          "property": "min-height",
+          "contract": "TokenSwatch numeric-chip row",
+          "sourceExpression": ".ds.token-swatch .chip { min-height: 1.125rem }",
+          "ownerSelector": ".ds.token-swatch .chip"
+        }
+      ],
+      "reason": "Numeric swatch root owns its preview/value gap and its child chip owns a local painted-label inset."
+    },
+    {
+      "id": "alignment-token-table-swatch-font-family",
+      "selector": ".ds.token-table .ds.token-swatch.sample[title^='fontFamily ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .sample-text)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "min-width",
+          "contract": "atomic typography sample",
+          "sourceExpression": ".ds.token-swatch .sample-text { min-width: 1.5rem }",
+          "ownerSelector": ".ds.token-swatch .sample-text"
+        },
+        {
+          "axis": "vertical",
+          "property": "line-height",
+          "contract": "atomic typography sample",
+          "sourceExpression": ".ds.token-swatch .sample-text { line-height: 1 }",
+          "ownerSelector": ".ds.token-swatch .sample-text"
+        }
+      ],
+      "reason": "The typography leaf is atomic, but the concrete swatch root owns its preview/value gap."
+    },
+    {
+      "id": "alignment-token-table-swatch-font-weight",
+      "selector": ".ds.token-table .ds.token-swatch.sample[title^='fontWeight ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .sample-text)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "min-width",
+          "contract": "atomic typography sample",
+          "sourceExpression": ".ds.token-swatch .sample-text { min-width: 1.5rem }",
+          "ownerSelector": ".ds.token-swatch .sample-text"
+        },
+        {
+          "axis": "vertical",
+          "property": "line-height",
+          "contract": "atomic typography sample",
+          "sourceExpression": ".ds.token-swatch .sample-text { line-height: 1 }",
+          "ownerSelector": ".ds.token-swatch .sample-text"
+        }
+      ],
+      "reason": "The weight sample has the same source-owned root gap as the family sample."
+    },
+    {
+      "id": "alignment-token-table-swatch-typography",
+      "selector": ".ds.token-table .ds.token-swatch.sample[title^='typography ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .sample-text.typography)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        }
+      ],
+      "reason": "Typography changes leaf font presentation, while its rendered root still owns the preview/value relationship."
+    },
+    {
+      "id": "alignment-token-table-swatch-duration",
+      "selector": ".ds.token-table .ds.token-swatch.numeric[title^='duration ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .chip)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenSwatch chip inset",
+          "sourceExpression": ".ds.token-swatch .chip { padding: 0 0.3125rem }",
+          "ownerSelector": ".ds.token-swatch .chip"
+        }
+      ],
+      "reason": "Duration is a real swatch instance with the root preview/value gap and local chip inset.",
+      "equivalentTo": "alignment-token-table-swatch-number"
+    },
+    {
+      "id": "alignment-token-table-swatch-curve",
+      "selector": ".ds.token-table .ds.token-swatch.curve[title^='cubicBezier ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .curve-preview)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "atomic curve preview",
+          "sourceExpression": ".ds.token-swatch .curve-preview { width: 1.75rem }",
+          "ownerSelector": ".ds.token-swatch .curve-preview"
+        },
+        {
+          "axis": "vertical",
+          "property": "height",
+          "contract": "atomic curve preview",
+          "sourceExpression": ".ds.token-swatch .curve-preview { height: 1.125rem }",
+          "ownerSelector": ".ds.token-swatch .curve-preview"
+        }
+      ],
+      "reason": "The curve leaf is block-derived while the surrounding swatch still owns its child gap."
+    },
+    {
+      "id": "alignment-token-table-swatch-gradient",
+      "selector": ".ds.token-table .ds.token-swatch.sample[title^='gradient ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .mini-box.gradient)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "atomic painted preview",
+          "sourceExpression": ".ds.token-swatch .mini-box { width: 1.75rem }",
+          "ownerSelector": ".ds.token-swatch .mini-box"
+        },
+        {
+          "axis": "vertical",
+          "property": "height",
+          "contract": "atomic painted preview",
+          "sourceExpression": ".ds.token-swatch .mini-box { height: 1.125rem }",
+          "ownerSelector": ".ds.token-swatch .mini-box"
+        }
+      ],
+      "reason": "Gradient paint is atomic but the rendered swatch root owns its preview/value gap."
+    },
+    {
+      "id": "alignment-token-table-swatch-border",
+      "selector": ".ds.token-table .ds.token-swatch.sample[title^='border ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .mini-box)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "atomic painted preview",
+          "sourceExpression": ".ds.token-swatch .mini-box { width: 1.75rem }",
+          "ownerSelector": ".ds.token-swatch .mini-box"
+        },
+        {
+          "axis": "vertical",
+          "property": "height",
+          "contract": "atomic painted preview",
+          "sourceExpression": ".ds.token-swatch .mini-box { height: 1.125rem }",
+          "ownerSelector": ".ds.token-swatch .mini-box"
+        }
+      ],
+      "reason": "Border preview paint is atomic but its swatch root owns the relationship to the value."
+    },
+    {
+      "id": "alignment-token-table-swatch-shadow",
+      "selector": ".ds.token-table .ds.token-swatch.sample[title^='shadow ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .mini-box.shadow)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "atomic painted preview",
+          "sourceExpression": ".ds.token-swatch .mini-box { width: 1.75rem }",
+          "ownerSelector": ".ds.token-swatch .mini-box"
+        },
+        {
+          "axis": "vertical",
+          "property": "height",
+          "contract": "atomic painted preview",
+          "sourceExpression": ".ds.token-swatch .mini-box { height: 1.125rem }",
+          "ownerSelector": ".ds.token-swatch .mini-box"
+        }
+      ],
+      "reason": "Shadow paint is atomic but its swatch root owns the relationship to the value."
+    },
+    {
+      "id": "alignment-token-table-swatch-transition",
+      "selector": ".ds.token-table .ds.token-swatch.numeric[title^='transition ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .chip)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenSwatch chip inset",
+          "sourceExpression": ".ds.token-swatch .chip { padding: 0 0.3125rem }",
+          "ownerSelector": ".ds.token-swatch .chip"
+        }
+      ],
+      "reason": "Transition is a real numeric swatch instance with the root gap and local chip inset.",
+      "equivalentTo": "alignment-token-table-swatch-number"
+    },
+    {
+      "id": "alignment-token-table-swatch-stroke-style",
+      "selector": ".ds.token-table .ds.token-swatch.sample[title^='strokeStyle ·']",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch; .ds.token-swatch .stroke-line)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch preview/value relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "atomic stroke preview",
+          "sourceExpression": ".ds.token-swatch .stroke-line { width: 1.75rem }",
+          "ownerSelector": ".ds.token-swatch .stroke-line"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-top-width",
+          "contract": "atomic stroke preview",
+          "sourceExpression": ".ds.token-swatch .stroke-line { border-top-width: 2px }",
+          "ownerSelector": ".ds.token-swatch .stroke-line"
+        }
+      ],
+      "reason": "The stroke is atomic paint, but its swatch root owns its relation to the value."
+    },
+    {
+      "id": "alignment-token-table-swatch-reference",
+      "selector": ".ds.token-table .ds.token-swatch.reference",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/common/TokenSwatch/styles.css (.ds.token-swatch.reference; .ds.token-swatch .derivation)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenSwatch reference relation",
+          "sourceExpression": ".ds.token-swatch { gap: 0.375rem }",
+          "ownerSelector": ".ds.token-swatch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenSwatch derivation-chip inset",
+          "sourceExpression": ".ds.token-swatch .derivation { padding: 0.0625rem 0.3125rem }",
+          "ownerSelector": ".ds.token-swatch .derivation"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenSwatch derivation-chip inset",
+          "sourceExpression": ".ds.token-swatch .derivation { padding: 0.0625rem 0.3125rem }",
+          "ownerSelector": ".ds.token-swatch .derivation"
+        }
+      ],
+      "reason": "Reference swatch root owns arrow/parent/derivation spacing and the optional derivation leaf owns its inset."
+    },
+    {
+      "id": "alignment-side-navigation-collapse-action",
+      "selector": ".ds.side-navigation .ds.collapse-toggle",
+      "specimen": "app-shell",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/CollapseToggle/styles.css (.ds.collapse-toggle)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "block-derived icon action",
+          "sourceExpression": "padding-inline: 0",
+          "ownerSelector": ".ds.collapse-toggle"
+        },
+        {
+          "axis": "vertical",
+          "property": "row padding + compensation",
+          "contract": "intrinsic row action",
+          "sourceExpression": "padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.collapse-toggle"
+        }
+      ],
+      "reason": "The control owns its intrinsic row geometry; its inline block follows the painted row size rather than a command inset."
+    },
+    {
+      "id": "alignment-markdown-editor-toolbar",
+      "selector": ".ds.markdown-editor .ds.toolbar",
+      "specimen": "markdown-editor",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/styles.css (.ds.toolbar)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "editor toolbar region inset",
+          "sourceExpression": "padding: var(--markdown-editor-toolbar-vert-padding) var(--markdown-editor-toolbar-horizontal-padding)",
+          "ownerSelector": ".ds.toolbar"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "editor toolbar region inset",
+          "sourceExpression": "padding: var(--markdown-editor-toolbar-vert-padding) var(--markdown-editor-toolbar-horizontal-padding)",
+          "ownerSelector": ".ds.toolbar"
+        },
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "toolbar action-group gap",
+          "sourceExpression": "gap: var(--markdown-editor-toolbar-buttons-gap)",
+          "ownerSelector": ".ds.toolbar"
+        }
+      ],
+      "reason": "The toolbar owns its surrounding inset and inter-group gap."
+    },
+    {
+      "id": "alignment-markdown-editor-action-group",
+      "selector": ".ds.markdown-editor .ds.toolbar-group",
+      "specimen": "markdown-editor",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Group/styles.css (.ds.toolbar-group)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "toolbar action-group gap",
+          "sourceExpression": "gap: var(--markdown-editor-toolbar-buttons-gap)",
+          "ownerSelector": ".ds.toolbar-group"
+        }
+      ],
+      "reason": "The group owns the intrinsic gap among toolbar buttons."
+    },
+    {
+      "id": "alignment-markdown-editor-icon-button",
+      "selector": ".ds.markdown-editor .ds.toolbar-button",
+      "specimen": "markdown-editor",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Button/styles.css (.ds.toolbar-button)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "inline-size",
+          "contract": "block-derived square toolbar action",
+          "sourceExpression": "inline-size: var(--ds-row-painted-block-size); padding-inline: 0",
+          "ownerSelector": ".ds.toolbar-button"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block + compensation",
+          "contract": "intrinsic row action",
+          "sourceExpression": "padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.toolbar-button"
+        }
+      ],
+      "reason": "This is an explicit square action derived from the row block; it is not a padded command control."
+    },
+    {
+      "id": "alignment-markdown-editor-separator",
+      "selector": ".ds.markdown-editor .ds.toolbar-separator",
+      "specimen": "markdown-editor",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Separator/styles.css (.ds.toolbar-separator)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "occupied toolbar divider",
+          "sourceExpression": "display: inline-block; width: 1px",
+          "ownerSelector": ".ds.toolbar-separator"
+        }
+      ],
+      "reason": "The divider occupies inline layout width; it is not absolute or zero-layout paint."
+    },
+    {
+      "id": "alignment-editable-block-toggle",
+      "selector": ".ds.editable-block > header > .icon[role='button']",
+      "specimen": "editable-block",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/EditableBlock/styles.css (> header > .icon)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "atomic icon paint",
+          "sourceExpression": "width: var(--editable-block-header-icon-size)",
+          "ownerSelector": ".ds.editable-block > header > .icon"
+        },
+        {
+          "axis": "vertical",
+          "property": "height",
+          "contract": "atomic icon paint",
+          "sourceExpression": "height: var(--editable-block-header-icon-size)",
+          "ownerSelector": ".ds.editable-block > header > .icon"
+        }
+      ],
+      "reason": "The header icon has fixed atomic paint geometry and no component inset."
+    },
+    {
+      "id": "alignment-renderer-ds-app-anbox-button-button",
+      "selector": "[data-product-button='anbox'] > .ds.button",
+      "specimen": "product-buttons",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-anbox/src/lib/Button/styles.css (.ds.button.anbox-button)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline + icon gap",
+          "contract": "bordered product command",
+          "sourceExpression": "padding-inline: var(--ds-inline-inset-action-bordered); gap: var(--ds-leading-mark-gap)",
+          "ownerSelector": ".ds.button.anbox-button"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block + compensation",
+          "contract": "bordered product command row",
+          "sourceExpression": "padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.button.anbox-button"
+        }
+      ],
+      "reason": "Anbox's ownership-class stylesheet independently owns its button geometry; any shared bucket equivalence requires later measurement."
+    },
+    {
+      "id": "alignment-renderer-ds-app-landscape-button-button",
+      "selector": "[data-product-button='landscape'] > .ds.button",
+      "specimen": "product-buttons",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-landscape/src/lib/Button/styles.css (.ds.button.landscape-button)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline + icon gap",
+          "contract": "bordered product command",
+          "sourceExpression": "padding-inline: var(--ds-inline-inset-action-bordered); gap: var(--ds-leading-mark-gap)",
+          "ownerSelector": ".ds.button.landscape-button"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block + compensation",
+          "contract": "bordered product command row",
+          "sourceExpression": "padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.button.landscape-button"
+        }
+      ],
+      "reason": "Landscape owns the same-form command geometry in its independent app stylesheet; equivalence is not assumed."
+    },
+    {
+      "id": "alignment-renderer-ds-app-lxd-button-button",
+      "selector": "[data-product-button='lxd'] > .ds.button",
+      "specimen": "product-buttons",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-lxd/src/lib/Button/styles.css (.ds.button.lxd-button)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline + icon gap",
+          "contract": "bordered product command",
+          "sourceExpression": "padding-inline: var(--ds-inline-inset-action-bordered); gap: var(--ds-leading-mark-gap)",
+          "ownerSelector": ".ds.button.lxd-button"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block + compensation",
+          "contract": "bordered product command row",
+          "sourceExpression": "padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.button.lxd-button"
+        }
+      ],
+      "reason": "LXD owns its button geometry in a separate ownership-class stylesheet; it is not merely fixture evidence."
+    },
+    {
+      "id": "alignment-renderer-ds-app-portal-button-button",
+      "selector": "[data-product-button='portal'] > .ds.button",
+      "specimen": "product-buttons",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-portal/src/lib/Button/styles.css (.ds.button.portal-button)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline + icon gap",
+          "contract": "bordered product command",
+          "sourceExpression": "padding-inline: var(--ds-inline-inset-action-bordered); gap: var(--ds-leading-mark-gap)",
+          "ownerSelector": ".ds.button.portal-button"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block + compensation",
+          "contract": "bordered product command row",
+          "sourceExpression": "padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.button.portal-button"
+        }
+      ],
+      "reason": "Portal owns its button geometry in a separate ownership-class stylesheet; it needs measured comparison before bucket merge."
+    },
+    {
+      "id": "alignment-side-navigation-marker-text",
+      "selector": ".ds.side-navigation .ds.side-navigation-item > .row",
+      "specimen": "app-shell",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/Item/styles.css (.row)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "grid marker canvas + gap",
+          "contract": "Continuation marker rail",
+          "sourceExpression": "grid-template-columns: var(--ds-leading-mark-canvas) minmax(0, 1fr) auto; gap: var(--ds-leading-mark-gap)",
+          "ownerSelector": ".ds.side-navigation-item > .row"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "Continuation start plus field end",
+          "sourceExpression": "padding-inline: var(--ds-leading-mark-group-inset) var(--ds-inline-inset-field)",
+          "ownerSelector": ".ds.side-navigation-item > .row"
+        }
+      ],
+      "reason": "The row explicitly owns the marker column, marker-to-label gap and asymmetric inline edges."
+    },
+    {
+      "id": "alignment-file-tree-node",
+      "selector": ".ds.file-tree .ds.node",
+      "specimen": "file-tree",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Node/styles.css (.ds.node)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "Continuation marker relation",
+          "sourceExpression": "gap: var(--ds-leading-mark-gap)",
+          "ownerSelector": ".ds.node"
+        },
+        {
+          "axis": "horizontal",
+          "property": "marker canvas",
+          "contract": "Continuation marker canvas",
+          "sourceExpression": "> .icon { inline-size: var(--ds-leading-mark-canvas) }",
+          "ownerSelector": ".ds.node > .icon"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "Continuation start/end",
+          "sourceExpression": "padding-inline: var(--ds-leading-mark-group-inset) var(--ds-inline-inset-continuation)",
+          "ownerSelector": ".ds.node"
+        }
+      ],
+      "reason": "The tree node owns its marker canvas/gap and continuation keyline."
+    },
+    {
+      "id": "alignment-file-tree-indent-rail",
+      "selector": ".ds.file-tree .ds.indentation-block > .indent-block:not(.empty)",
+      "specimen": "file-tree",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/FileTree/common/IndentationBlock/styles.css (.indentation-block, .indent-block)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "indent rail width",
+          "contract": "tree indentation rail",
+          "sourceExpression": "width: var(--file-tree-node-indent-width)",
+          "ownerSelector": ".ds.indentation-block > .indent-block"
+        },
+        {
+          "axis": "horizontal",
+          "property": "indent rail gap",
+          "contract": "tree indentation relation",
+          "sourceExpression": ".ds.indentation-block { gap: var(--ds-leading-mark-gap) }",
+          "ownerSelector": ".ds.indentation-block"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "tree rail spans node rhythm",
+          "sourceExpression": "padding: var(--file-tree-node-vertical-padding) 0",
+          "ownerSelector": ".ds.file-tree .ds.indentation-block > .indent-block:not(.empty)"
+        }
+      ],
+      "reason": "The indentation rail is a distinct intrinsic tree relationship, not a generic marker canvas."
+    },
+    {
+      "id": "alignment-markdown-editor-icon-button-marker",
+      "selector": ".ds.markdown-editor .ds.toolbar-button",
+      "specimen": "markdown-editor",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/Toolbar/common/Button/styles.css (.ds.toolbar-button)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "inline-size",
+          "contract": "block-derived square toolbar action",
+          "sourceExpression": "inline-size: var(--ds-row-painted-block-size)",
+          "ownerSelector": ".ds.toolbar-button"
+        }
+      ],
+      "reason": "The SVG is centred inside the already-owned square action; it adds no marker-to-text relationship.",
+      "equivalentTo": "alignment-markdown-editor-icon-button"
+    },
+    {
+      "id": "alignment-renderer-ds-app-launchpad-diffchangemarker-diffchangemarker",
+      "selector": ".ds.diff-change-marker",
+      "specimen": "diff-marker",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/styles.css (.ds.diff-change-marker)",
+      "relationships": [],
+      "reason": "The root only flex-aligns marker variants; detailed and simple leaves carry any geometry."
+    },
+    {
+      "id": "alignment-renderer-ds-app-launchpad-diffchangemarker-common-detailedchangemarker-detailedchangemarker",
+      "selector": ".ds.detailed-change-marker",
+      "specimen": "diff-marker",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/DetailedChangeMarker/styles.css (.detailed-change-marker > span)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "painted detailed change-marker inset",
+          "sourceExpression": "padding: var(--diff-change-marker-detailed-padding)",
+          "ownerSelector": ".ds.detailed-change-marker > span"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "painted detailed change-marker inset",
+          "sourceExpression": "padding: var(--diff-change-marker-detailed-padding)",
+          "ownerSelector": ".ds.detailed-change-marker > span"
+        }
+      ],
+      "reason": "The detailed marker's span owns a local painted-label inset; it is a separate marker paint case."
+    },
+    {
+      "id": "alignment-renderer-ds-app-launchpad-diffchangemarker-common-simplechangemarker-simplechangemarker",
+      "selector": ".ds.simple-change-marker",
+      "specimen": "diff-marker",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/DiffChangeMarker/common/SimpleChangeMarker/styles.css (.ds.simple-change-marker)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "width",
+          "contract": "atomic marker canvas",
+          "sourceExpression": "width: var(--diff-change-marker-simple-size)",
+          "ownerSelector": ".ds.simple-change-marker"
+        },
+        {
+          "axis": "vertical",
+          "property": "height",
+          "contract": "atomic marker canvas",
+          "sourceExpression": "height: var(--diff-change-marker-simple-size)",
+          "ownerSelector": ".ds.simple-change-marker"
+        }
+      ],
+      "reason": "Simple marker geometry is a fixed atomic canvas with no owned inset."
+    },
+    {
+      "id": "alignment-side-navigation-item",
+      "selector": ".ds.side-navigation .ds.side-navigation-item > .row",
+      "specimen": "app-shell",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/Item/styles.css (.row)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "padding-block + compensation",
+          "contract": "intrinsic navigation row",
+          "sourceExpression": "padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.side-navigation-item > .row"
+        }
+      ],
+      "reason": "Same row already owns the Continuation relation; this witness establishes its attached-row block ledger.",
+      "equivalentTo": "alignment-side-navigation-marker-text"
+    },
+    {
+      "id": "alignment-side-navigation-active-edge",
+      "selector": ".ds.side-navigation .ds.side-navigation-item[data-active] > .row",
+      "specimen": "app-shell",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/Item/styles.css (&[data-active] > .row::before)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "inline-size",
+          "contract": "zero-layout active paint",
+          "sourceExpression": "position: absolute; inset-inline-start: 0; inline-size: var(--ds-stroke-thickness-emphasis)",
+          "ownerSelector": ".ds.side-navigation-item[data-active] > .row::before"
+        }
+      ],
+      "reason": "The active edge is explicitly absolute paint and cannot change row geometry."
+    },
+    {
+      "id": "alignment-file-tree-row-content",
+      "selector": ".ds.file-tree .ds.node",
+      "specimen": "file-tree",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Node/styles.css (.ds.node)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "tree node row boundary",
+          "sourceExpression": "padding-block: 0",
+          "ownerSelector": ".ds.node"
+        }
+      ],
+      "reason": "This row witness confirms no node block padding; indentation blocks, not the node, create vertical rail padding.",
+      "equivalentTo": "alignment-file-tree-node"
+    },
+    {
+      "id": "alignment-file-tree-selected-edge",
+      "selector": ".ds.file-tree .ds.node[aria-selected='true']",
+      "specimen": "file-tree",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/FileTree/common/Node/styles.css (.selected::before)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "inline-size",
+          "contract": "zero-layout selected paint",
+          "sourceExpression": "position: absolute; inset-inline-start: 0; inline-size: var(--ds-stroke-thickness-emphasis)",
+          "ownerSelector": ".ds.node.selected::before"
+        }
+      ],
+      "reason": "The observed selected state is a pseudo-element with no layout footprint. Source applies equivalent paint to .selectable:focus::before and .expandable:focus::before; those focus states remain unmeasured."
+    },
+    {
+      "id": "alignment-git-diff-file-header",
+      "selector": ".ds.git-diff-viewer > .ds.file-header",
+      "specimen": "git-diff",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/FileHeader/styles.css (.ds.file-header)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline + gap",
+          "contract": "attached code-file header row",
+          "sourceExpression": "padding-inline: var(--git-diff-file-header-horizontal-padding); gap: var(--git-diff-file-header-items-gap)",
+          "ownerSelector": ".ds.file-header"
+        },
+        {
+          "axis": "vertical",
+          "property": "row padding + real end border",
+          "contract": "attached code-file header row",
+          "sourceExpression": "padding-block: var(--ds-in-box-row-padding-block-start) var(--ds-in-box-row-padding-block-end); border-block-end: var(--ds-row-border-block-end) solid",
+          "ownerSelector": ".ds.file-header"
+        }
+      ],
+      "reason": "Header owns its own asymmetric attached-row frame and contents gap."
+    },
+    {
+      "id": "alignment-git-diff-normal-row",
+      "selector": ".ds.git-diff-viewer tr.ds.diff-line:not(.diff-line-hunk)",
+      "specimen": "git-diff",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/styles.css (.ds.diff-line)",
+      "relationships": [],
+      "reason": "The tr sets display and colour only; its cells/pre own the actual local offsets."
+    },
+    {
+      "id": "alignment-git-diff-hunk-row",
+      "selector": ".ds.git-diff-viewer tr.ds.diff-line.diff-line-hunk",
+      "specimen": "git-diff",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/styles.css (.diff-line-hunk::before/::after)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "border-block-start",
+          "contract": "zero-layout hunk separator paint",
+          "sourceExpression": "position: absolute; border-block-start: var(--ds-stroke-thickness) solid",
+          "ownerSelector": ".ds.diff-line.diff-line-hunk::before"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-start",
+          "contract": "zero-layout hunk separator paint",
+          "sourceExpression": "position: absolute; border-block-start: var(--ds-stroke-thickness) solid",
+          "ownerSelector": ".ds.diff-line.diff-line-hunk::after"
+        }
+      ],
+      "reason": "Hunk separators are absolute pseudo-element paint; rows do not own spacing."
+    },
+    {
+      "id": "alignment-git-diff-annotation",
+      "selector": ".ds.git-diff-viewer tr.ds.annotated-diff-line",
+      "specimen": "git-diff",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/AnnotatedDiffLine/styles.css (.annotated-diff-line)",
+      "relationships": [],
+      "reason": "The witness is an occupied code-row state; no independent row inset is established by its selector."
+    },
+    {
+      "id": "alignment-markdown-editor-view-tabs",
+      "selector": ".ds.markdown-editor .ds.view-mode-tabs > .tab",
+      "specimen": "markdown-editor",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/common/ViewModeTabs/styles.css (.view-mode-tabs > .tab)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "border-aware editor view tab",
+          "sourceExpression": "padding-inline: var(--ds-box-padding-inline-start) var(--ds-box-padding-inline-end); --ds-box-inset-inline: var(--markdown-editor-tabs-horizontal-padding)",
+          "ownerSelector": ".ds.view-mode-tabs > .tab"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block + borders",
+          "contract": "border-aware editor view tab",
+          "sourceExpression": "padding-block: var(--ds-box-padding-block-start) var(--ds-box-padding-block-end); border-block-width: var(--ds-box-border-block-start) var(--ds-box-border-block-end)",
+          "ownerSelector": ".ds.view-mode-tabs > .tab"
+        }
+      ],
+      "reason": "Tabs own a bordered command-like row; selected seam masking is paint and must not collapse this owner."
+    },
+    {
+      "id": "alignment-token-table-table",
+      "selector": ".ds.token-table",
+      "specimen": "tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table; .ds.token-table .grid td)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "TokenTable root section gap",
+          "sourceExpression": ".ds.token-table { display: flex; flex-direction: column; gap: 0.75rem }",
+          "ownerSelector": ".ds.token-table"
+        },
+        {
+          "axis": "horizontal",
+          "property": "cell padding",
+          "contract": "TokenTable cell inset",
+          "sourceExpression": ".ds.token-table .grid th, .ds.token-table .grid td { padding: var(--token-table-cell-padding, 0.625rem 0.75rem) }",
+          "ownerSelector": ".ds.token-table .grid th, .ds.token-table .grid td"
+        },
+        {
+          "axis": "vertical",
+          "property": "cell padding",
+          "contract": "TokenTable cell inset",
+          "sourceExpression": ".ds.token-table .grid th, .ds.token-table .grid td { padding: var(--token-table-cell-padding, 0.625rem 0.75rem) }",
+          "ownerSelector": ".ds.token-table .grid th, .ds.token-table .grid td"
+        }
+      ],
+      "reason": "The exact imported stylesheet makes the root a vertical stack and delegates table content insets to grid cells."
+    },
+    {
+      "id": "alignment-side-navigation-header",
+      "selector": ".ds.side-navigation > .ds.side-navigation-header",
+      "specimen": "app-shell",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/Header/styles.css (.ds.side-navigation-header)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "grid marker canvas + gap + padding-inline",
+          "contract": "Continuation navigation header",
+          "sourceExpression": "grid-template-columns: var(--ds-leading-mark-canvas) minmax(0, 1fr) auto; gap: var(--ds-leading-mark-gap); padding-inline: var(--ds-leading-mark-group-inset) var(--ds-inline-inset-field)",
+          "ownerSelector": ".ds.side-navigation-header"
+        },
+        {
+          "axis": "vertical",
+          "property": "row padding + compensation",
+          "contract": "intrinsic navigation header row",
+          "sourceExpression": "padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.side-navigation-header"
+        }
+      ],
+      "reason": "Header shares row/marker geometry but remains an independently rendered spacing owner."
+    },
+    {
+      "id": "alignment-side-navigation-content",
+      "selector": ".ds.side-navigation > .ds.content",
+      "specimen": "app-shell",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/Content/styles.css (.ds.content)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "padding-block-end",
+          "contract": "scroll-fade clearance",
+          "sourceExpression": ".nav-tree > .group:last-child > .list { padding-block-end: var(--overflow-gradient-height) }",
+          "ownerSelector": ".ds.content .nav-tree > .group:last-child > .list"
+        }
+      ],
+      "reason": "Content is a scrolling host; its only padding reserves space beneath an absolute/sticky fade, not a component inset."
+    },
+    {
+      "id": "alignment-side-navigation-footer",
+      "selector": ".ds.side-navigation > .ds.footer",
+      "specimen": "app-shell",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/Footer/styles.css (.ds.footer)",
+      "relationships": [],
+      "reason": "Footer stylesheet deliberately adds no layout; its NavTree children own their own relationships."
+    },
+    {
+      "id": "alignment-file-tree-panel",
+      "selector": ".ds.file-tree",
+      "specimen": "file-tree",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/FileTree/styles.css (.ds.file-tree)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "border-inline-width",
+          "contract": "border-only tree frame",
+          "sourceExpression": "border-inline-width: var(--ds-box-border-inline-start) var(--ds-box-border-inline-end); --ds-box-inset-inline: var(--ds-stroke-thickness); no padding-inline declaration",
+          "ownerSelector": ".ds.file-tree"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-width",
+          "contract": "border-only tree frame",
+          "sourceExpression": "border-block-width: var(--ds-box-border-block-start) var(--ds-box-border-block-end); --ds-box-inset-block: var(--ds-stroke-thickness); no padding-block declaration",
+          "ownerSelector": ".ds.file-tree"
+        }
+      ],
+      "reason": "Like GitDiff, FileTree declares frame borders but no padding. Its children own the actual content geometry."
+    },
+    {
+      "id": "alignment-git-diff-frame",
+      "selector": ".ds.git-diff-viewer",
+      "specimen": "git-diff",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/styles.css (.ds.git-diff-viewer)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "border-inline-width",
+          "contract": "border-only code frame",
+          "sourceExpression": "border-inline-width: var(--ds-box-border-inline-start) var(--ds-box-border-inline-end); no padding-inline declaration",
+          "ownerSelector": ".ds.git-diff-viewer"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-width",
+          "contract": "border-only code frame",
+          "sourceExpression": "border-block-width: var(--ds-box-border-block-start) var(--ds-box-border-block-end); no padding-block declaration",
+          "ownerSelector": ".ds.git-diff-viewer"
+        }
+      ],
+      "reason": "The root sets a border and box inputs but no padding. It is not a padded Surface owner; FileHeader and cells own the actual content geometry."
+    },
+    {
+      "id": "alignment-markdown-editor-frame",
+      "selector": ".ds.markdown-editor",
+      "specimen": "markdown-editor",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css (.ds.markdown-editor)",
+      "relationships": [],
+      "reason": "The outer editor is a flex composition. Its top bar and editor-content children, not this root, own the relevant geometry."
+    },
+    {
+      "id": "alignment-markdown-editor-content",
+      "selector": ".ds.markdown-editor textarea",
+      "specimen": "markdown-editor",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/MarkdownEditor.tsx (textarea className); packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css (.markdown-editor.bordered > .editor-content)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "border-aware padding-inline",
+          "contract": "bordered textarea editor content",
+          "sourceExpression": "--ds-box-inset-inline: var(--markdown-editor-input-horizontal-padding); padding-inline: var(--ds-box-padding-inline-start) var(--ds-box-padding-inline-end)",
+          "ownerSelector": ".ds.markdown-editor > textarea.ds-framed-box.editor-content"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-aware padding-block",
+          "contract": "bordered textarea editor content",
+          "sourceExpression": "--ds-box-inset-block: var(--markdown-editor-input-vert-padding); padding-block: var(--ds-box-padding-block-start) var(--ds-box-padding-block-end)",
+          "ownerSelector": ".ds.markdown-editor > textarea.ds-framed-box.editor-content"
+        }
+      ],
+      "reason": "The textarea itself carries .editor-content, so the bordered selector applies to the actual witness element, not a parent."
+    },
+    {
+      "id": "alignment-editable-block-header",
+      "selector": ".ds.editable-block > header",
+      "specimen": "editable-block",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/EditableBlock/styles.css (> header)",
+      "relationships": [],
+      "reason": "Header is only a flex alignment composition with no padding, gap or border; its title/icon leaves provide content."
+    },
+    {
+      "id": "alignment-editable-block-content",
+      "selector": ".ds.editable-block > .content",
+      "specimen": "editable-block",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/EditableBlock/styles.css (> .content)",
+      "relationships": [],
+      "reason": "Content has only flex-grow; any button spacing belongs to the composed child."
+    },
+    {
+      "id": "alignment-editable-block-title",
+      "selector": ".ds.editable-block > header",
+      "specimen": "editable-block",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/EditableBlock/styles.css (> header > .title)",
+      "relationships": [],
+      "reason": "Title owns flex and weight, not an edge or intrinsic gap; it confirms the header is an unboxed text composition.",
+      "equivalentTo": "alignment-editable-block-header"
+    },
+    {
+      "id": "alignment-renderer-ds-app-launchpad-relativetime-relativetime",
+      "selector": "time.ds.relative-time",
+      "specimen": "relative-time",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/RelativeTime/RelativeTime.tsx (time root)",
+      "relationships": [],
+      "reason": "RelativeTime renders inline text; there is no component CSS box-spacing owner."
+    }
+  ],
+  "extras": [
+    {
+      "id": "extra-markdown-task-list-checkbox-margins",
+      "selector": ".ds.markdown-editor > div.editor-content ul.contains-task-list input[type='checkbox']",
+      "specimen": "markdown-editor",
+      "activation": "preview containing task-list checkboxes",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css (.editor-content ul.contains-task-list input[type=checkbox])",
+      "relationships": [
+        { "axis": "horizontal", "property": "margin-inline-start", "contract": "legacy task-list marker placement", "sourceExpression": "margin-inline-start: -1.25em" },
+        { "axis": "horizontal", "property": "margin-right", "contract": "legacy task-list marker-to-text separation", "sourceExpression": "margin-right: 0.313em" }
+      ],
+      "fixtureRequirement": "Real Markdown task-list syntax ('- [x] Completed task' and '- [ ] Pending task') rendered through the editor's Preview interaction. Preserve the physical right margin as a separate RTL migration concern.",
+      "reason": "The Markdown renderer creates checkboxes in task-list text. Its local em-based margins are an unnormalized marker relationship, not a new padding family."
+    },
+    {
+      "id": "extra-file-tree-empty-indentation-correction",
+      "selector": ".ds.indentation-block:has(> .indent-block.empty)",
+      "specimen": "file-tree",
+      "activation": "default root-level tree node",
+      "captureVisibility": "zero-inline-size-owner",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/FileTree/common/IndentationBlock/styles.css (.ds.indentation-block:has(> .indent-block.empty))",
+      "relationships": [
+        { "axis": "horizontal", "property": "width", "contract": "zero-depth indentation boundary", "sourceExpression": "width: 0" },
+        { "axis": "horizontal", "property": "margin-inline-start", "contract": "zero-depth marker-gap cancellation", "sourceExpression": "calc(-1 * var(--ds-leading-mark-gap))" }
+      ],
+      "reason": "Depth zero retains an empty indentation part and cancels the otherwise-owned marker gap. The visible layout box intentionally has zero inline size; this capture policy permits that one named case without treating hidden targets as measured. This is a derived mode, not another inset."
+    },
+    {
+      "id": "extra-side-navigation-sticky-fade-compensation",
+      "selector": ".ds.side-navigation > .ds.content",
+      "specimen": "app-shell",
+      "activation": "default",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/Content/styles.css (.ds.content::after)",
+      "relationships": [
+        { "axis": "vertical", "property": "block-size", "ownerSelector": ".ds.side-navigation > .ds.content::after", "contract": "sticky overflow fade reserved canvas", "sourceExpression": "block-size: var(--overflow-gradient-height)" },
+        { "axis": "vertical", "property": "margin-block-start", "ownerSelector": ".ds.side-navigation > .ds.content::after", "contract": "sticky fade canvas cancellation", "sourceExpression": "calc(-1 * var(--overflow-gradient-height))" }
+      ],
+      "reason": "The sticky pseudo-element pulls its canvas back over the separately recorded final-list clearance. Equal positive size and negative margin are a compensation mechanism; they do not establish two vertical gaps."
+    },
+    {
+      "id": "extra-markdown-top-bar-seam",
+      "selector": ".ds.markdown-editor > .top-bar",
+      "specimen": "markdown-editor",
+      "activation": "default",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css (.ds.markdown-editor > .top-bar)",
+      "relationships": [
+        { "axis": "vertical", "property": "margin-bottom", "contract": "legacy editor toolbar/content seam correction", "sourceExpression": "margin-bottom: -1px" }
+      ],
+      "reason": "The top bar overlaps the content seam by one pixel. Treat as border/seam normalization evidence, not an independent negative spacing category."
+    },
+    {
+      "id": "extra-side-navigation-root-gap",
+      "selector": ".ds.side-navigation",
+      "specimen": "app-shell",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/styles.css (.ds.side-navigation)",
+      "relationships": [
+        { "axis": "vertical", "property": "row-gap", "contract": "navigation root region separation", "sourceExpression": "gap: var(--_sidenav-group-gap); --_sidenav-group-gap: var(--sidenav-group-gap, var(--spacing-gap-group-block))" }
+      ],
+      "reason": "The root flex column separates Header, Content and Footer. The already inventoried NavTree and group gaps are different owners and do not cover this relationship."
+    },
+    {
+      "id": "extra-git-diff-table-cell-separation",
+      "selector": ".ds.code-diff-viewer .diff-table",
+      "specimen": "git-diff",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/styles.css (.diff-table)",
+      "relationships": [
+        { "axis": "horizontal", "property": "border-spacing horizontal", "contract": "legacy separated-table cell gap", "sourceExpression": "border-collapse: separate; border-spacing: 1px 0" },
+        { "axis": "vertical", "property": "border-spacing vertical", "contract": "zero vertical table cell separation", "sourceExpression": "border-collapse: separate; border-spacing: 1px 0" }
+      ],
+      "reason": "The table owns cell separation independently of the cell padding and gutter border. Capture borderSpacing and used cell positions before classifying its one-stroke inline separation."
+    },
+    {
+      "id": "extra-git-diff-row-margin-correction",
+      "selector": ".ds.code-diff-viewer .diff-table tr",
+      "specimen": "git-diff",
+      "activation": "default",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/styles.css (.diff-table tr)",
+      "relationships": [
+        { "axis": "horizontal", "property": "margin-left and margin-right", "contract": "authored table-row edge correction; used effect unresolved", "sourceExpression": "margin-left: -1px; margin-right: -1px" }
+      ],
+      "usedValueCaveat": "A computed margin on display:table-row does not establish a used layout effect. Retain the declaration and row/table geometry as supporting evidence until ineffective-legacy versus correction is resolved.",
+      "reason": "The source calls these margins an outer-spacing correction. Do not promote a possibly ineffective table-row margin into a spacing category."
+    },
+    {
+      "id": "extra-markdown-highlighted-code-inset",
+      "selector": ".ds.markdown-editor > div.editor-content pre code.hljs",
+      "specimen": "markdown-editor",
+      "activation": "preview containing fenced code after real syntax highlighting",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/HighlighTheme.css (.hljs); packages/react/ds-app-launchpad/src/lib/MarkdownEditor/MarkdownEditor.tsx",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "legacy highlighted code-block inset", "sourceExpression": ".hljs { display: block; padding: 0.5em; }" },
+        { "axis": "vertical", "property": "padding-block", "contract": "legacy highlighted code-block inset", "sourceExpression": ".hljs { display: block; padding: 0.5em; }" }
+      ],
+      "fixtureRequirement": "Use real MarkdownEditor input with fenced code, switch to preview through its public interaction, and wait for highlightElement to create .hljs. Do not add the class manually.",
+      "reason": "The imported highlight theme creates a second live em-based spacing owner inside Markdown preview. The catalog's prose-only default cannot expose it; missing capture remains open."
+    },
+    {
+      "id": "extra-markdown-editor-borderless-content",
+      "selector": ".ds.markdown-editor:not(.bordered) > textarea.ds-framed-box.editor-content",
+      "specimen": "markdown-editor",
+      "activation": "borderless=true; write mode",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/MarkdownEditor.tsx (textarea className); packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css (.markdown-editor > .editor-content)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "unresolved native textarea inset",
+          "sourceExpression": "computed browser padding-inline: 2px; author CSS supplies --ds-box-inset-inline: var(--ds-stroke-thickness) but no padding-inline outside .bordered",
+          "ownerSelector": "textarea.ds-framed-box.editor-content"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "unresolved native textarea inset",
+          "sourceExpression": "computed browser padding-block: 2px; author CSS supplies --ds-box-inset-block: var(--ds-stroke-thickness) but no padding-block outside .bordered",
+          "ownerSelector": "textarea.ds-framed-box.editor-content"
+        }
+      ],
+      "reason": "Browser measurement finds 2px native padding on both axes. The source does not author that inset, so it remains supporting evidence rather than a component-owned token."
+    },
+    {
+      "id": "extra-markdown-editor-preview-switch",
+      "selector": ".ds.markdown-editor > .top-bar > .preview-switch",
+      "specimen": "markdown-editor",
+      "activation": "previewSwitchMode=checkbox; hidePreview=false",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/MarkdownEditor/styles.css (.markdown-editor > .top-bar > .preview-switch)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "editor top-bar action inset",
+          "sourceExpression": "padding: var(--markdown-editor-toolbar-vert-padding) var(--markdown-editor-toolbar-horizontal-padding)",
+          "ownerSelector": ".ds.markdown-editor > .top-bar > .preview-switch"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "editor top-bar action inset",
+          "sourceExpression": "padding: var(--markdown-editor-toolbar-vert-padding) var(--markdown-editor-toolbar-horizontal-padding)",
+          "ownerSelector": ".ds.markdown-editor > .top-bar > .preview-switch"
+        },
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "preview-switch marker/text relation",
+          "sourceExpression": "gap: 0.25rem",
+          "ownerSelector": ".ds.markdown-editor > .top-bar > .preview-switch"
+        }
+      ],
+      "reason": "A real padded editor action is absent from the catalog witnesses."
+    },
+    {
+      "id": "extra-git-diff-file-header-collapse-button",
+      "selector": ".ds.git-diff-viewer > .ds.file-header > .left-content > .collapse-button",
+      "specimen": "git-diff",
+      "activation": "expanded file header",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/FileHeader/styles.css (.ds.file-header > .left-content > .collapse-button)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "file-header icon action inset",
+          "sourceExpression": "padding: 4px",
+          "ownerSelector": ".ds.git-diff-viewer > .ds.file-header > .left-content > .collapse-button"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "file-header icon action inset",
+          "sourceExpression": "padding: 4px",
+          "ownerSelector": ".ds.git-diff-viewer > .ds.file-header > .left-content > .collapse-button"
+        }
+      ],
+      "reason": "Nested control owns its own local inset and is not represented by the FileHeader row witness."
+    },
+    {
+      "id": "extra-git-diff-comment-icon",
+      "selector": ".ds.git-diff-viewer .ds.diff-line.interactive .diff-gutter .comment-icon",
+      "specimen": "git-diff",
+      "activation": "interactive row hovered or focus-within",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app-launchpad/src/lib/GitDiffViewer/common/CodeDiffViewer/common/DiffLine/styles.css (.ds.diff-line.interactive .diff-gutter .comment-icon)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "interactive code-row icon inset",
+          "sourceExpression": "padding: 0 4px",
+          "ownerSelector": ".ds.git-diff-viewer .ds.diff-line.interactive .diff-gutter .comment-icon"
+        }
+      ],
+      "reason": "Hover-revealed comment icon has local spacing absent from the catalog; visibility changes paint, not its padding."
+    },
+    {
+      "id": "extra-token-table-token-cell-stack",
+      "selector": ".ds.token-table .grid .token-cell",
+      "specimen": "tokens",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .token-cell)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "TokenTable token-cell content stack",
+          "sourceExpression": "gap: 0.375rem",
+          "ownerSelector": ".ds.token-table .grid .token-cell"
+        }
+      ],
+      "reason": "The cell witness records outer padding but not this intrinsic stack relationship."
+    },
+    {
+      "id": "extra-token-table-meta-stack",
+      "selector": ".ds.token-table .grid .token-cell > .meta",
+      "specimen": "tokens",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .meta)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenTable metadata relation",
+          "sourceExpression": "gap: 0.25rem",
+          "ownerSelector": ".ds.token-table .grid .token-cell > .meta"
+        },
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "TokenTable metadata wrap relation",
+          "sourceExpression": "gap: 0.25rem",
+          "ownerSelector": ".ds.token-table .grid .token-cell > .meta"
+        }
+      ],
+      "reason": "The wrapping metadata list owns its child relationship and has no catalog witness."
+    },
+    {
+      "id": "extra-app-layout-boundary",
+      "selector": ".ds.application-layout, .ds.content-layout, .ds.view-layout",
+      "specimen": "app-shell",
+      "activation": "default",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-app/src/lib/ApplicationLayout/styles.css; packages/react/ds-app/src/lib/ContentLayout/styles.css; packages/react/ds-app/src/lib/ContentLayout/ContentLayout.tsx; packages/react/ds-app/src/lib/ViewLayout/styles.css; packages/styles/main/src/grid.css",
+      "capturePolicy": "source-only",
+      "relationships": [
+        { "axis": "horizontal", "property": "column-gap", "ownerSelector": ".ds.application-layout", "contract": "external application-shell slot gap dependency", "sourceExpression": "gap: var(--application-layout-gap, var(--container-gap-default, 1rem))" },
+        { "axis": "horizontal", "property": "column-gap", "ownerSelector": ".ds.view-layout", "contract": "external view-shell slot gap dependency", "sourceExpression": "gap: var(--view-layout-gap, var(--container-gap-default, 1rem))" },
+        { "axis": "horizontal", "property": "column-gap", "ownerSelector": ".ds.content-layout.grid", "contract": "ContentLayout delegates to reusable grid primitive", "sourceExpression": "ContentLayout.tsx adds .grid; column-gap: var(--grid-column-gap, var(--grid-gap, var(--grid-gutter, 1.5rem)))" },
+        { "axis": "vertical", "property": "row-gap", "ownerSelector": ".ds.content-layout.grid", "contract": "ContentLayout delegates to reusable grid primitive", "sourceExpression": "ContentLayout.tsx adds .grid; row-gap: var(--grid-row-gap, var(--grid-gap, var(--grid-gutter, 1.5rem)))" }
+      ],
+      "reason": "These runtime-excluded application shell renderers own external slot allocation, not component insets. Their real semantic-gap dependencies remain recorded; ContentLayout delegates its gaps to the separately included .grid primitive. No assembled application fixture is invented."
+    },
+    {
+      "id": "extra-side-navigation-nav-tree-gap",
+      "selector": ".ds.side-navigation .ds.nav-tree",
+      "specimen": "app-shell",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/styles.css (.ds.nav-tree)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "navigation group separation",
+          "sourceExpression": "display: grid; gap: var(--_sidenav-group-gap)",
+          "ownerSelector": ".ds.nav-tree"
+        }
+      ],
+      "reason": "NavTree, not Content or Footer, owns the gap between navigation groups."
+    },
+    {
+      "id": "extra-side-navigation-nav-group-gap",
+      "selector": ".ds.side-navigation .ds.nav-tree > .group",
+      "specimen": "app-shell",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/styles.css (.ds.nav-tree > .group)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "navigation heading/list separation",
+          "sourceExpression": "display: grid; gap: var(--_sidenav-heading-list-gap)",
+          "ownerSelector": ".ds.nav-tree > .group"
+        }
+      ],
+      "reason": "Each group owns the relationship from its heading to its item list."
+    },
+    {
+      "id": "extra-side-navigation-nav-group-header",
+      "selector": ".ds.side-navigation .ds.nav-tree > .group > .header",
+      "specimen": "app-shell",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/styles.css (.ds.nav-tree > .group > .header)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "bordered continuation navigation header",
+          "sourceExpression": "padding-inline: var(--ds-inline-inset-continuation) var(--ds-inline-inset-field)",
+          "ownerSelector": ".ds.nav-tree > .group > .header"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block + border + compensation",
+          "contract": "bordered navigation header row",
+          "sourceExpression": "border-block: var(--_sidenav-row-border-width) solid transparent; padding-block: var(--ds-row-padding-block-start) var(--ds-row-padding-block-end); margin-block-end: var(--ds-row-compensation-block-end)",
+          "ownerSelector": ".ds.nav-tree > .group > .header"
+        }
+      ],
+      "reason": "This is the actual bordered group header; it is not the outer SideNavigation Header component."
+    },
+    {
+      "id": "extra-side-navigation-nav-group-list-floor",
+      "selector": ".ds.side-navigation .ds.nav-tree > .group > .list",
+      "specimen": "app-shell",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/NavTree/styles.css (.ds.nav-tree > .group > .list)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "grid-auto-rows",
+          "contract": "navigation item occupied-block floor",
+          "sourceExpression": "grid-auto-rows: minmax(var(--ds-row-occupied-block-size), auto)",
+          "ownerSelector": ".ds.nav-tree > .group > .list"
+        }
+      ],
+      "reason": "The list owns the item track floor, preserving the row's occupied block size without assigning a fixed height."
+    },
+    {
+      "id": "extra-side-navigation-content-fade-clearance",
+      "selector": ".ds.side-navigation > .ds.content .ds.nav-tree > .group:last-child > .list",
+      "specimen": "app-shell",
+      "activation": "scrollable content",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-app/src/lib/SideNavigation/common/Content/styles.css (.ds.content .nav-tree > .group:last-child > .list)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "padding-block-end",
+          "contract": "scroll-fade clearance",
+          "sourceExpression": "padding-block-end: var(--overflow-gradient-height)",
+          "ownerSelector": ".ds.content .nav-tree > .group:last-child > .list"
+        }
+      ],
+      "reason": "This specific final list owns clearance for Content's sticky fade; it is an intrinsic scroll-region relationship rather than the Content container inset."
+    },
+    {
+      "id": "extra-token-table-toolbar-gap",
+      "selector": ".ds.token-table > .toolbar",
+      "specimen": "tokens",
+      "activation": "title, caption, searchable, or showCount",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .toolbar)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenTable toolbar relation",
+          "sourceExpression": "display: flex; gap: 0.75rem",
+          "ownerSelector": ".ds.token-table .toolbar"
+        },
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "TokenTable wrapping toolbar relation",
+          "sourceExpression": "display: flex; flex-wrap: wrap; gap: 0.75rem",
+          "ownerSelector": ".ds.token-table .toolbar"
+        }
+      ],
+      "reason": "The conditional toolbar owns its heading/control relationship and wrap gap."
+    },
+    {
+      "id": "extra-token-table-heading-gap",
+      "selector": ".ds.token-table .toolbar > .heading",
+      "specimen": "tokens",
+      "activation": "title or caption",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .heading)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "TokenTable title/caption stack",
+          "sourceExpression": "display: flex; flex-direction: column; gap: 0.25rem",
+          "ownerSelector": ".ds.token-table .heading"
+        }
+      ],
+      "reason": "The heading owns the title-to-caption stack rather than the toolbar root."
+    },
+    {
+      "id": "extra-token-table-controls-gap",
+      "selector": ".ds.token-table .toolbar > .controls",
+      "specimen": "tokens",
+      "activation": "showCount or searchable",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .controls)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "contract": "TokenTable control relation",
+          "sourceExpression": "display: flex; flex-wrap: wrap; gap: 0.5rem",
+          "ownerSelector": ".ds.token-table .controls"
+        },
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "contract": "TokenTable control wrap relation",
+          "sourceExpression": "display: flex; flex-wrap: wrap; gap: 0.5rem",
+          "ownerSelector": ".ds.token-table .controls"
+        }
+      ],
+      "reason": "Controls own their internal relation, independently of the toolbar's heading/control gap."
+    },
+    {
+      "id": "extra-token-table-count-inset",
+      "selector": ".ds.token-table .controls > .count",
+      "specimen": "tokens",
+      "activation": "showCount=true",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .count)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable count pill inset",
+          "sourceExpression": "padding: 0.25rem 0.625rem",
+          "ownerSelector": ".ds.token-table .count"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable count pill inset",
+          "sourceExpression": "padding: 0.25rem 0.625rem",
+          "ownerSelector": ".ds.token-table .count"
+        }
+      ],
+      "reason": "The count pill owns its local text inset."
+    },
+    {
+      "id": "extra-token-table-search-inset",
+      "selector": ".ds.token-table .controls > input.search",
+      "specimen": "tokens",
+      "activation": "searchable=true",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .search)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable search field inset",
+          "sourceExpression": "padding: 0.4375rem 0.75rem",
+          "ownerSelector": ".ds.token-table .search"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable search field inset",
+          "sourceExpression": "padding: 0.4375rem 0.75rem",
+          "ownerSelector": ".ds.token-table .search"
+        }
+      ],
+      "reason": "Search is an independently padded native field within the optional controls."
+    },
+    {
+      "id": "extra-token-table-meta-item-inset",
+      "selector": ".ds.token-table .meta > .meta-item",
+      "specimen": "tokens",
+      "activation": "token metadata present",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .meta-item)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable metadata pill inset",
+          "sourceExpression": "padding: 0.0625rem 0.375rem",
+          "ownerSelector": ".ds.token-table .meta-item"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable metadata pill inset",
+          "sourceExpression": "padding: 0.0625rem 0.375rem",
+          "ownerSelector": ".ds.token-table .meta-item"
+        }
+      ],
+      "reason": "Each metadata pill owns its local text inset."
+    },
+    {
+      "id": "extra-token-table-derivation-inset",
+      "selector": ".ds.token-table .grid .derivation",
+      "specimen": "tokens",
+      "activation": "derived token with derivation column",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .derivation)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable derivation pill inset",
+          "sourceExpression": "padding: 0.0625rem 0.375rem",
+          "ownerSelector": ".ds.token-table .derivation"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable derivation pill inset",
+          "sourceExpression": "padding: 0.0625rem 0.375rem",
+          "ownerSelector": ".ds.token-table .derivation"
+        }
+      ],
+      "reason": "The derivation pill is a separate TokenTable leaf, not a TokenSwatch derivation span."
+    },
+    {
+      "id": "extra-token-table-stability-inset",
+      "selector": ".ds.token-table .grid .stability",
+      "specimen": "tokens",
+      "activation": "stability column enabled",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .stability)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable stability pill inset",
+          "sourceExpression": "padding: 0.0625rem 0.375rem",
+          "ownerSelector": ".ds.token-table .stability"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable stability pill inset",
+          "sourceExpression": "padding: 0.0625rem 0.375rem",
+          "ownerSelector": ".ds.token-table .stability"
+        }
+      ],
+      "reason": "The stability pill owns its local text inset; state classes change paint only."
+    },
+    {
+      "id": "extra-token-table-empty-inset",
+      "selector": ".ds.token-table > .empty",
+      "specimen": "tokens",
+      "activation": "no filtered tokens",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .empty)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable empty-state inset",
+          "sourceExpression": "padding: 1.5rem",
+          "ownerSelector": ".ds.token-table .empty"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable empty-state inset",
+          "sourceExpression": "padding: 1.5rem",
+          "ownerSelector": ".ds.token-table .empty"
+        }
+      ],
+      "reason": "The conditional empty state owns its own bordered content inset."
+    },
+    {
+      "id": "extra-token-table-header-cell-inset",
+      "selector": ".ds.token-table .grid thead th",
+      "specimen": "tokens",
+      "activation": "tokens present",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .grid th; .ds.token-table .grid thead th)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable header-cell inset",
+          "sourceExpression": ".grid th { padding: var(--token-table-cell-padding, 0.625rem 0.75rem) }",
+          "ownerSelector": ".ds.token-table .grid thead th"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable header-cell inset",
+          "sourceExpression": ".grid th { padding: var(--token-table-cell-padding, 0.625rem 0.75rem) }",
+          "ownerSelector": ".ds.token-table .grid thead th"
+        }
+      ],
+      "reason": "Header cells share base cell padding but add sticky/header paint; they are a distinct rendered table part."
+    },
+    {
+      "id": "extra-token-table-group-row-cell-inset",
+      "selector": ".ds.token-table .grid .group-row > th",
+      "specimen": "tokens",
+      "activation": "groupBy defined",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/tokens/src/lib/TokenTable/styles.css (.ds.token-table .grid th; .ds.token-table .group-row th)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "contract": "TokenTable group-row cell inset",
+          "sourceExpression": ".grid th { padding: var(--token-table-cell-padding, 0.625rem 0.75rem) }",
+          "ownerSelector": ".ds.token-table .group-row > th"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "contract": "TokenTable group-row cell inset",
+          "sourceExpression": ".grid th { padding: var(--token-table-cell-padding, 0.625rem 0.75rem) }",
+          "ownerSelector": ".ds.token-table .group-row > th"
+        }
+      ],
+      "reason": "Grouped tables introduce a separately painted group-header cell while retaining the base cell inset."
+    }
+  ]
+}

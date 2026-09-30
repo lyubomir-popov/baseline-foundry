@@ -33,6 +33,10 @@ npm run release:verify -- --pack-current
 npm run demo:serve -- --host 127.0.0.1
 ```
 
+The demo server on `http://127.0.0.1:4173` polls for changes so edits in the
+shared Windows/WSL workspace appear without restarts. Temporary QA servers use
+the browser-safe dynamic port range.
+
 `npm run build:theme` regenerates CSS, tokens, surface manifests, presets, and
 experiments. `npm run build:lib` compiles TypeScript. `npm test` is the full
 non-screenshot gate. `npm run qa:components` captures and verifies component

@@ -5,11 +5,23 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-No package is active. Spec 020a is merged and archived: the BF-local seven-point
-overlay is removed, the final Canonical component matrix is adopted, and
-component/panel horizontal spacing is separated from the vertical baseline.
-The next bounded BF token contribution is 020b page/grid adoption. Do not begin
-it, Pragma adoption, publication or release without separate owner direction.
+1. Close Spec 025 compact alignment grid: commit its pending review/tasks
+   edits, bring the branch up to `main` (v0.2.0/v0.2.1 landed after it), rerun
+   `npm test` and `npm run qa:components`, then land by owner-approved direct
+   fast-forward and archive the package.
+2. Port the Pragma body-line phase and closure decision (Spec 024 contract,
+   owner decision 2026-09-28) to BF as a new numbered package: headings lift
+   their first baseline onto the body-line step, and paragraphs, lists and
+   headings close their occupied block to whole body lines rather than the
+   baseline unit. BF keeps generated real-font metrics. Decide in that package
+   whether the parked `wip/bf-typography-cap-metric` branch (typography
+   discipline, generated cap-height tokens, paint-only icon shift) folds in or
+   lands first.
+3. 020b page/grid adoption stays parked until design-tokens publishes a
+   page/grid provider.
+
+Spec 024 is Pragma-targeted and run separately; it is not BF execution order.
+Publication and release need separate owner direction.
 
 ## Candidate order after Spec 001
 
@@ -29,6 +41,17 @@ matching feature branch only when its catalogued evidence trigger is met.
 
 ## Unnumbered backlog
 
+- Apply the marker composition split: bare markers (checkbox, radio, switch,
+  list) and painted hover rows share one marker canvas and marker-to-text gap;
+  only the painted wrapper adds Action/group inset before the marker.
+- `bf-slider` discrete notch/tick presentation as a small opt-in integer
+  `min`/`max`/`step` contract that keeps native keyboard behavior and exposes
+  value text without a paired number input.
+- Generic split-pane/resizer only when a second consumer proves the same
+  contract; `bf-application-aside-resize-handle` stays scoped to pinned asides.
+- Portfolio imports BF's private `src/build.ts` through a `file:` dependency;
+  add `tsx` locally and migrate it to the public `baseline-foundry/build`
+  export before changing that dependency.
 - Repair the pre-existing side-navigation screenshot fixture: its captured
   expanded/collapsed demo states overlap in both `main` and 020a even though
   the measured component geometry is green. Keep this separate from token

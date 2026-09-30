@@ -1,0 +1,1080 @@
+{
+  "catalog": "global",
+  "denominator": 66,
+  "reference": {
+    "worktree": "H:/WSL_dev_projects/pragma/.claude/worktrees/feat-bf-shared-alignment",
+    "commit": "e26c650c0337b3b2d4277dd5b9092eb63cb42e24",
+    "measurementEvidence": "specs/022-pragma-spacing-adoption/evidence/browser-measurements.json",
+    "method": "REACT_ALIGNMENT_FAMILIES x horizontal/vertical, filtered to catalog=global and deduplicated by id; ownership then checked against the reference CSS and TSX. Relationships name authored expressions, not inferred pixel values."
+  },
+  "dispositionCounts": {
+    "token-owner": 50,
+    "supporting-evidence": 7,
+    "non-spacing-boundary": 9
+  },
+  "records": [
+    {
+      "id": "alignment-heading-root",
+      "selector": ".react-pilot-catalog__headings > h1",
+      "specimen": "heading",
+      "disposition": "token-owner",
+      "ownerSource": "packages/styles/typography/src/elements.css (h1 role and shared text alignment selectors)",
+      "relationships": [
+        { "axis": "vertical", "property": "padding-block-start", "contract": "governed heading metric alignment", "sourceExpression": "var(--_typography-text-nudge-start) -> var(--typography-heading-1-nudge-block-start)" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "zero heading trailing padding boundary", "sourceExpression": "padding-block-end: 0" },
+        { "axis": "vertical", "property": "margin-block-end", "contract": "governed heading trailing compensation", "sourceExpression": "var(--_typography-text-nudge-end) -> var(--typography-heading-1-nudge-block-end)" }
+      ],
+      "reason": "The visible native heading specimen supplies a governed heading-role metric reference. This h1 witness measures its role and does not assert independent h2-h6 capture coverage or create a heading spacing bucket."
+    },
+    {
+      "id": "alignment-chat-section-input",
+      "selector": ".ds.chat-section > .payload > .form > textarea",
+      "specimen": "chat-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/ChatSection/styles.css and ChatSection.tsx",
+      "relationships": [
+        { "axis": "horizontal", "property": "native padding-inline", "contract": "unresolved native control inset", "sourceExpression": "textarea has no authored padding; browser UA supplies the current inset" },
+        { "axis": "vertical", "property": "native padding-block and intrinsic textarea height", "contract": "unresolved native multiline control geometry", "sourceExpression": "textarea { width: 100%; resize: vertical; border: 0; }" }
+      ],
+      "reason": "ChatSection renders a bare native textarea and removes only its border. UA origin explains the measured inset but does not justify excluding an input. Retain as an unresolved owner pending normalization to the shared multiline field contract or a defensible explicit exception."
+    },
+    {
+      "id": "alignment-renderer-ds-global-component-badge-badge",
+      "selector": ".ds.badge",
+      "specimen": "badge",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Badge/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "block-derived badge paint", "sourceExpression": "var(--badge-padding-inline) -> var(--ds-stroke-thickness)" },
+        { "axis": "horizontal", "property": "min-inline-size", "contract": "block-derived badge paint", "sourceExpression": "var(--badge-painted-line)" },
+        { "axis": "vertical", "property": "padding-block", "contract": "zero block-padding boundary", "sourceExpression": "0" },
+        { "axis": "vertical", "property": "painted line", "contract": "block-derived badge paint", "sourceExpression": "var(--badge-painted-line) -> var(--ds-row-line-height)" }
+      ],
+      "reason": "Badge owns a deliberately non-Field inline inset and derives its minimum inline canvas from its painted body line. Its nested form is split into an extra record."
+    },
+    {
+      "id": "alignment-popover-tooltip-trigger",
+      "selector": ".ds.popover > summary.trigger",
+      "specimen": "popover",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Popover/styles.css and Popover.tsx",
+      "relationships": [],
+      "reason": "The summary trigger only removes the native disclosure marker and sets cursor/list styling. It owns no padding, margin or intrinsic gap."
+    },
+    {
+      "id": "alignment-renderer-ds-global-work-in-progress-skiplink-skiplink",
+      "selector": ".ds.skip-link",
+      "specimen": "skip-link",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/SkipLink/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "focused padding-inline", "contract": "legacy skip-link focus inset", "sourceExpression": "var(--skip-link-focus-padding-inline) -> var(--space-200)" },
+        { "axis": "horizontal", "property": "focused inset-inline-start", "contract": "fixed-position viewport boundary", "sourceExpression": "var(--skip-link-focus-inset-inline-start) -> var(--space-100)" },
+        { "axis": "vertical", "property": "focused padding-block", "contract": "legacy skip-link focus inset", "sourceExpression": "var(--skip-link-focus-padding-block) -> var(--space-200)" },
+        { "axis": "vertical", "property": "focused top", "contract": "fixed-position viewport boundary", "sourceExpression": "var(--skip-link-focus-top) -> var(--space-100)" }
+      ],
+      "reason": "The activated focus state owns both its visible box insets and its viewport placement. These legacy space aliases are not the shared action-row contract."
+    },
+    {
+      "id": "alignment-renderer-ds-global-component-button-button",
+      "selector": ".ds.button",
+      "specimen": "button",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Button/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "Action inset, border-aware", "sourceExpression": "var(--ds-inline-inset-action-bordered)" },
+        { "axis": "horizontal", "property": "gap", "contract": "leading-mark gap", "sourceExpression": "var(--ds-leading-mark-gap)" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "regular intrinsic row", "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)" },
+        { "axis": "vertical", "property": "margin-block-end", "contract": "regular row trailing compensation", "sourceExpression": "var(--ds-row-compensation-block-end)" },
+        { "axis": "horizontal", "property": "border-inline widths", "contract": "reserved stateful border", "sourceExpression": "var(--ds-stroke-thickness)" }
+      ],
+      "reason": "The normal, disabled and loading buttons share one border-aware Action row. The aggregate catalog ID also matches the geometry-breaking link variant, which is therefore decomposed as an extra."
+    },
+    {
+      "id": "alignment-renderer-ds-global-component-chip-chip",
+      "selector": ".ds.chip",
+      "specimen": "chip",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Chip/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "Action inset, border-aware", "sourceExpression": "var(--ds-inline-inset-action-bordered)" },
+        { "axis": "horizontal", "property": "margin-inline-end", "contract": "intrinsic chip-to-following-content separation", "sourceExpression": "var(--ds-inline-inset-field)" },
+        { "axis": "horizontal", "property": "min-inline-size", "contract": "stadium paint floor", "sourceExpression": "min(100%, calc(var(--ds-row-painted-block-size) + 2 * var(--ds-row-border-inline)))" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "regular intrinsic row", "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)" },
+        { "axis": "vertical", "property": "margin-block-end", "contract": "regular row trailing compensation", "sourceExpression": "var(--ds-row-compensation-block-end)" }
+      ],
+      "reason": "The default chip owns Action insets, a component-intrinsic trailing separation, a paint floor and regular-row compensation. The host-owned nested form is an extra."
+    },
+    {
+      "id": "alignment-accordion-marker",
+      "selector": ".ds.accordion-item > summary",
+      "specimen": "accordion",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Accordion/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "marker inline-size", "contract": "leading-mark canvas", "sourceExpression": "var(--ds-leading-mark-canvas)", "ownerSelector": ".ds.accordion-item > .header::before" },
+        { "axis": "horizontal", "property": "marker-to-heading gap", "contract": "leading-mark gap", "sourceExpression": "var(--ds-leading-mark-gap)" },
+        { "axis": "horizontal", "property": "padding-inline-start", "contract": "continuation-aligned marker group", "sourceExpression": "var(--ds-leading-mark-group-inset)" },
+        { "axis": "vertical", "property": "marker padding-block", "contract": "square marker canvas", "sourceExpression": "calc(var(--ds-leading-mark-canvas) / 2)", "ownerSelector": ".ds.accordion-item > .header::before" }
+      ],
+      "reason": "The summary owns the disclosure canvas, marker gap and group inset; this is the marker relationship within the same row separately covered by the summary-row witness."
+    },
+    {
+      "id": "alignment-breadcrumbs-separator-marker",
+      "selector": ".ds.breadcrumbs-item:not(:first-of-type)",
+      "specimen": "breadcrumbs",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Breadcrumbs/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "separator margin-inline", "contract": "marker-to-text separation", "sourceExpression": "var(--breadcrumbs-item-separator-margin) -> var(--spacing-gap-mark-inline)", "ownerSelector": ".ds.breadcrumbs-item > .separator" }
+      ],
+      "reason": "Each non-first item owns the separator's two inline margins. The slash glyph is intrinsic paint; only its authored separation is spacing."
+    },
+    {
+      "id": "alignment-contextual-menu-submenu-marker",
+      "selector": ".ds.contextual-menu__surface [aria-haspopup='menu']",
+      "specimen": "contextual-menu",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/ContextualMenu/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "item gap", "contract": "leading-mark gap", "sourceExpression": "var(--ds-leading-mark-gap)" },
+        { "axis": "horizontal", "property": "caret inline-size", "contract": "submenu visual canvas", "sourceExpression": "var(--_contextual-menu-visual-canvas)", "ownerSelector": ".ds.contextual-menu-item > .caret" },
+        { "axis": "horizontal", "property": "caret margin-inline-start", "contract": "trailing artwork alignment", "sourceExpression": "auto", "ownerSelector": ".ds.contextual-menu-item > .caret" }
+      ],
+      "reason": "The submenu row owns a fixed caret canvas, the shared mark gap and automatic trailing placement; those are intrinsic to the command row."
+    },
+    {
+      "id": "alignment-announcement-marker",
+      "selector": ".ds.announcement",
+      "specimen": "announcement",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Announcement/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "icon-to-text gap", "contract": "leading-mark gap", "sourceExpression": "var(--ds-leading-mark-gap)" },
+        { "axis": "horizontal", "property": "icon inline-size", "contract": "leading-mark canvas", "sourceExpression": "var(--ds-leading-mark-canvas)", "ownerSelector": ".ds.announcement > .icon" },
+        { "axis": "vertical", "property": "icon block-size", "contract": "leading-mark canvas", "sourceExpression": "var(--ds-leading-mark-canvas)", "ownerSelector": ".ds.announcement > .icon" }
+      ],
+      "reason": "Announcement owns its icon canvas and icon-to-copy gap independently of the frame insets covered by the frame witness."
+    },
+    {
+      "id": "alignment-button-icon-marker",
+      "selector": ".ds.button:has(> .icon)",
+      "specimen": "button",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Button/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline-start", "contract": "Field inset for leading artwork, border-aware", "sourceExpression": "var(--ds-inline-inset-field-bordered)" },
+        { "axis": "horizontal", "property": "icon-to-label gap", "contract": "leading-mark gap", "sourceExpression": "var(--ds-leading-mark-gap)" },
+        { "axis": "horizontal", "property": "icon width", "contract": "text-relative icon canvas", "sourceExpression": "var(--icon-size, 1em)", "ownerSelector": ".ds.button > .icon" }
+      ],
+      "reason": "The icon variant deliberately changes only the leading outer inset and adds the shared marker relationship; its trailing Action inset and row geometry remain the Button owner."
+    },
+    {
+      "id": "alignment-chip-dismiss-marker",
+      "selector": ".ds.chip:has(> .dismiss)",
+      "specimen": "chip",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Chip/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "dismiss margin-inline-start", "contract": "dismiss-control separation", "sourceExpression": "var(--ds-stroke-thickness)", "ownerSelector": ".ds.chip > .dismiss" },
+        { "axis": "horizontal", "property": "dismiss inline-size", "contract": "dismiss-control canvas", "sourceExpression": "1rem", "ownerSelector": ".ds.chip > .dismiss" },
+        { "axis": "vertical", "property": "dismiss block-size", "contract": "dismiss-control canvas", "sourceExpression": "1rem", "ownerSelector": ".ds.chip > .dismiss" }
+      ],
+      "reason": "The dismiss button owns a fixed square canvas and a one-stroke separation from the value; it is not expressed through the parent flex gap."
+    },
+    {
+      "id": "alignment-timeline-event-row",
+      "selector": ".ds.timeline-event",
+      "specimen": "timeline",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "marker-to-content gap", "contract": "bare leading-mark row", "sourceExpression": "var(--timeline-event-gap, var(--ds-leading-mark-gap))" },
+        { "axis": "vertical", "property": "content padding-block-end", "contract": "timeline event separation", "sourceExpression": "var(--timeline-event-spacing, var(--spacing-large, 1.5rem))", "ownerSelector": ".ds.timeline-event > .content" }
+      ],
+      "reason": "The event composition owns the bare marker gap and its content child owns the event-to-event block separation; together they determine the occupied event row."
+    },
+    {
+      "id": "alignment-timeline-marker-rail",
+      "selector": ".ds.timeline-event",
+      "specimen": "timeline",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "marker width", "contract": "leading-mark canvas with local override", "sourceExpression": "var(--timeline-marker-size, var(--ds-leading-mark-canvas))", "ownerSelector": ".ds.timeline-event > .marker" },
+        { "axis": "vertical", "property": "marker height", "contract": "leading-mark canvas with local override", "sourceExpression": "var(--timeline-marker-size, var(--ds-leading-mark-canvas))", "ownerSelector": ".ds.timeline-event > .marker" },
+        { "axis": "vertical", "property": "marker margin-top", "contract": "timeline optical marker offset", "sourceExpression": "var(--timeline-marker-offset, 0.25rem)", "ownerSelector": ".ds.timeline-event > .marker" },
+        { "axis": "horizontal", "property": "connector inline position and width", "contract": "timeline rail paint", "sourceExpression": "left: calc(var(--timeline-marker-size, var(--ds-leading-mark-canvas)) / 2 - 1px); width: var(--timeline-line-width, 2px)", "ownerSelector": ".ds.timeline-event::before" },
+        { "axis": "vertical", "property": "connector start/end", "contract": "timeline rail paint", "sourceExpression": "top: calc(var(--timeline-marker-size, var(--ds-leading-mark-canvas)) + var(--timeline-marker-offset, 0.25rem)); bottom: calc(-1 * var(--timeline-event-spacing, var(--spacing-large, 1.5rem)))", "ownerSelector": ".ds.timeline-event::before" }
+      ],
+      "reason": "The marker and connecting rail contain several component-local geometry hooks. The connector is positioned paint, but the marker canvas and top margin participate in layout."
+    },
+    {
+      "id": "alignment-tooltip-marker",
+      "selector": ".ds.tooltip > .content",
+      "specimen": "tooltip",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "icon-to-text gap", "contract": "tooltip-local marker gap", "sourceExpression": "var(--tooltip-gap) -> var(--spacing-gap-field-block)" },
+        { "axis": "horizontal", "property": "icon inline-size", "contract": "tooltip icon canvas", "sourceExpression": "var(--dimension-200, 16px)", "ownerSelector": ".ds.tooltip .icon" },
+        { "axis": "vertical", "property": "icon block-size", "contract": "tooltip icon canvas", "sourceExpression": "var(--dimension-200, 16px)", "ownerSelector": ".ds.tooltip .icon > svg" }
+      ],
+      "reason": "The inner content row owns the optional icon relationship. Its gap is Field-block spacing, not the shared leading-mark gap, which is taxonomy pressure."
+    },
+    {
+      "id": "alignment-accordion-summary-row",
+      "selector": ".ds.accordion-item > summary",
+      "specimen": "accordion",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Accordion/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline-start/end", "contract": "continuation-aligned marker row", "sourceExpression": "var(--ds-leading-mark-group-inset) 0" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "regular intrinsic row, border-aware", "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)" },
+        { "axis": "vertical", "property": "margin-block-end", "contract": "regular row trailing compensation", "sourceExpression": "var(--ds-row-compensation-block-end)" },
+        { "axis": "vertical", "property": "transparent border-block", "contract": "reserved row border", "sourceExpression": "var(--ds-stroke-thickness) solid transparent" }
+      ],
+      "reason": "The summary is a regular compensated row with deliberately asymmetric inline edges; marker geometry is decomposed by the marker witness."
+    },
+    {
+      "id": "alignment-contextual-menu-item-row",
+      "selector": ".ds.contextual-menu__surface [role='menuitem']",
+      "specimen": "contextual-menu",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/ContextualMenu/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "Action inset", "sourceExpression": "var(--ds-inline-inset-action)" },
+        { "axis": "horizontal", "property": "gap", "contract": "leading-mark gap", "sourceExpression": "var(--ds-leading-mark-gap)" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "in-box intrinsic row", "sourceExpression": "var(--ds-in-box-row-padding-block-start) var(--ds-in-box-row-padding-block-end)" },
+        { "axis": "vertical", "property": "transparent border-block", "contract": "reserved row border", "sourceExpression": "var(--ds-stroke-thickness) solid transparent" }
+      ],
+      "reason": "Menu items are the canonical continuous-fill in-box Action row: compensation is absorbed into block-end padding rather than exported as margin."
+    },
+    {
+      "id": "alignment-contextual-menu-submenu-row",
+      "selector": ".ds.contextual-menu__surface.submenu [role='menuitem']",
+      "specimen": "contextual-menu",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/ContextualMenu/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "Action inset", "sourceExpression": "var(--ds-inline-inset-action)" },
+        { "axis": "horizontal", "property": "gap", "contract": "leading-mark gap", "sourceExpression": "var(--ds-leading-mark-gap)" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "in-box intrinsic row", "sourceExpression": "var(--ds-in-box-row-padding-block-start) var(--ds-in-box-row-padding-block-end)" },
+        { "axis": "vertical", "property": "transparent border-block", "contract": "reserved row border", "sourceExpression": "var(--ds-stroke-thickness) solid transparent" }
+      ],
+      "reason": "The submenu uses the identical Item renderer and contract as the root menu.",
+      "equivalentTo": "alignment-contextual-menu-item-row"
+    },
+    {
+      "id": "alignment-tabs-list-rail",
+      "selector": ".ds.tabs > .tabs-list",
+      "specimen": "tabs",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tabs/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "gap and padding", "contract": "explicit zero layout boundary", "sourceExpression": "gap: 0; padding: 0" },
+        { "axis": "vertical", "property": "block-end rail", "contract": "zero-layout paint", "sourceExpression": "box-shadow: inset 0 calc(var(--_tabs-border-width) * -1) 0 var(--color-border-muted)" }
+      ],
+      "reason": "The list rail paints with an inset shadow and contributes no border or inset. Child tabs own all occupied row geometry."
+    },
+    {
+      "id": "alignment-tabs-tab-item",
+      "selector": ".ds.tabs .tabs-link",
+      "specimen": "tabs",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tabs/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "Action inset", "sourceExpression": "var(--ds-inline-inset-action)" },
+        { "axis": "horizontal", "property": "gap", "contract": "leading-mark gap", "sourceExpression": "var(--ds-leading-mark-gap)" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "in-box intrinsic row", "sourceExpression": "var(--ds-in-box-row-padding-block-start) var(--ds-in-box-row-padding-block-end)" },
+        { "axis": "vertical", "property": "transparent border-block", "contract": "reserved row border", "sourceExpression": "var(--ds-stroke-thickness) solid transparent" }
+      ],
+      "reason": "A tab is an in-box Action row whose trailing compensation remains inside the block-end edge so the active bar can meet the rail."
+    },
+    {
+      "id": "alignment-tabs-active-edge",
+      "selector": ".ds.tabs .tabs-link[aria-current='page']",
+      "specimen": "tabs",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tabs/common/Item/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "active block-end bar", "contract": "zero-layout state paint", "sourceExpression": "box-shadow: inset 0 calc(var(--_tabs-tab-active-bar-width) * -1) 0 var(--color-border-highlighted)" }
+      ],
+      "reason": "The active selector adds paint only. It supports the invariant that active and inactive tabs keep the same Item-owned geometry.",
+      "equivalentTo": "alignment-tabs-tab-item"
+    },
+    {
+      "id": "alignment-keyboard-keys-group",
+      "selector": ".ds.keyboard-keys",
+      "specimen": "keyboard-keys",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/group/KeyboardKeys/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "gap", "contract": "intrinsic grouped-key separation", "sourceExpression": "var(--keyboard-keys-gap, var(--spacing-gap-mark-inline))" },
+        { "axis": "horizontal", "property": "margin-inline", "contract": "intrinsic grouped-key outer separation", "sourceExpression": "var(--keyboard-keys-margin-inline, var(--ds-inline-inset-field))" }
+      ],
+      "reason": "KeyboardKeys is not a framed box: the group owns its child gap and its own inline separation, while each KeyboardKey owns the painted keycap inset."
+    },
+    {
+      "id": "alignment-accordion-expanded-content",
+      "selector": ".ds.accordion-item[open] > .content",
+      "specimen": "accordion",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Accordion/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline-start", "contract": "header-label continuation keyline", "sourceExpression": "var(--accordion-content-padding-inline-start, var(--ds-inline-inset-continuation))" },
+        { "axis": "horizontal", "property": "padding-inline-end", "contract": "surface-section trailing inset", "sourceExpression": "var(--accordion-content-padding-inline-end, var(--spacing-inset-surface-inline))" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "asymmetric section start", "sourceExpression": "var(--accordion-content-padding-block-start, var(--spacing-gap-field-block))" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "asymmetric section end", "sourceExpression": "var(--accordion-content-padding-block-end, var(--spacing-inset-surface-block))" }
+      ],
+      "reason": "The expanded panel composes a Continuation text-start keyline with a Surface trailing edge and the same asymmetric block edges as Card/Tile content."
+    },
+    {
+      "id": "alignment-accordion-expanded-body",
+      "selector": ".ds.accordion-item[open] > .content",
+      "specimen": "accordion",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Accordion/common/Item/styles.css and packages/styles/typography/src/elements.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "panel-to-body keyline", "contract": "header-label continuation keyline", "sourceExpression": "parent padding-inline-start: var(--ds-inline-inset-continuation)" },
+        { "axis": "vertical", "property": "body text nudge", "contract": "governed body typography", "sourceExpression": "padding-block-start: var(--_typography-text-nudge-start); margin-block-end: var(--_typography-text-nudge-end)", "ownerSelector": ".ds.accordion-item[open] > .content > .p" }
+      ],
+      "reason": "The body is a real text keyline supporting the panel assignment; the component inset belongs to the parent and the paragraph's block adjustment belongs to the shared typography role.",
+      "equivalentTo": "alignment-accordion-expanded-content"
+    },
+    {
+      "id": "alignment-card-image",
+      "selector": ".ds.card-image",
+      "specimen": "card",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Card/common/Image/styles.css and packages/react/ds-global/src/lib/component/Card/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "width", "contract": "intrinsic full-bleed media boundary", "sourceExpression": "width: 100%" },
+        { "axis": "vertical", "property": "height", "contract": "intrinsic media boundary", "sourceExpression": "height: auto" }
+      ],
+      "reason": "Image is full-bleed intrinsic artwork with no padding, margin or gap. Its responsive height deliberately sets a free media phase rather than a spacing bucket."
+    },
+    {
+      "id": "alignment-card-header",
+      "selector": ".ds.card-header",
+      "specimen": "card",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Card/common/Header/styles.css and packages/react/ds-global/src/lib/component/Card/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "surface-section inline inset", "sourceExpression": "var(--card-header-padding-inline, var(--spacing-inset-surface-inline))" },
+        { "axis": "horizontal", "property": "gap", "contract": "arbitrary header-child separation", "sourceExpression": "var(--card-header-gap, var(--spacing-inset-surface-inline))" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "asymmetric section start", "sourceExpression": "var(--card-header-padding-block-start, var(--card-header-padding-block, var(--spacing-gap-field-block)))" },
+        { "axis": "vertical", "property": "padding-block-end when joined to content", "contract": "collapsed header/content seam", "sourceExpression": ".card-header:has(+ .card-content) { padding-block-end: 0; }", "ownerSelector": ".ds.card-header:has(+ .card-content)" }
+      ],
+      "reason": "The joined catalog headers collapse their end inset while the separately witnessed standalone headers retain the base surface end inset. Relationship 4 is scoped to the joined selector so its zero-seam evidence cannot include standalone targets."
+    },
+    {
+      "id": "alignment-card-content",
+      "selector": ".ds.card-content",
+      "specimen": "card",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Card/common/Content/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "surface-section inline inset", "sourceExpression": "var(--card-content-padding-inline, var(--spacing-inset-surface-inline))" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "asymmetric section start", "sourceExpression": "var(--card-content-padding-block-start, var(--spacing-gap-field-block))" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "asymmetric section end", "sourceExpression": "var(--card-content-padding-block-end, var(--spacing-inset-surface-block))" },
+        { "axis": "vertical", "property": "gap", "contract": "section content stack gap", "sourceExpression": "var(--card-content-gap, var(--spacing-gap-field-block))" }
+      ],
+      "reason": "Card.Content is a content-bearing asymmetric section region, not a control row."
+    },
+    {
+      "id": "alignment-card-footer",
+      "selector": ".ds.card-footer",
+      "specimen": "card",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Card/common/Footer/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "surface-section inline inset", "sourceExpression": "var(--card-footer-padding-inline, var(--spacing-inset-surface-inline))" },
+        { "axis": "horizontal", "property": "gap", "contract": "wrapping footer-child gap", "sourceExpression": "var(--card-footer-gap, var(--spacing-gap-field-block))" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "asymmetric section start", "sourceExpression": "var(--card-footer-padding-block-start, var(--card-footer-padding-block, var(--spacing-gap-field-block)))" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "asymmetric section end", "sourceExpression": "var(--card-footer-padding-block-end, var(--card-footer-padding-block, var(--spacing-inset-surface-block)))" }
+      ],
+      "reason": "Card.Footer owns the same section edges as Content plus an intrinsic wrapping child gap."
+    },
+    {
+      "id": "alignment-card-shared-tracks",
+      "selector": ".ds.cards",
+      "specimen": "card",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/group/Cards/styles.css and packages/react/ds-global/src/lib/component/Card/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "column gap", "contract": "layout-owned grid gutter", "sourceExpression": "var(--grid-column-gap, var(--grid-gutter))" },
+        { "axis": "vertical", "property": "row gap", "contract": "layout-owned grid gutter", "sourceExpression": "var(--grid-row-gap, var(--grid-gutter))" }
+      ],
+      "reason": "Cards is a reusable layout group and intrinsically owns its nonzero row/column gutter, so it remains a spacing owner even though its contract is layout-owned rather than a component inset bucket."
+    },
+    {
+      "id": "alignment-contextual-menu-panel",
+      "selector": ".ds.contextual-menu__surface",
+      "specimen": "contextual-menu",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/ContextualMenu/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "reserved zero-layout outline edge", "sourceExpression": "var(--ds-stroke-thickness)" },
+        { "axis": "vertical", "property": "padding-block", "contract": "reserved zero-layout outline edge", "sourceExpression": "var(--ds-stroke-thickness)" },
+        { "axis": "vertical", "property": "max-block-size viewport subtraction", "contract": "floating-surface viewport boundary", "sourceExpression": "calc(100dvh - 2 * var(--ds-floating-surface-viewport-inset))" }
+      ],
+      "reason": "The popup surface reserves one stroke of padding while painting its edge with a negative-offset outline; it also owns its floating viewport constraint."
+    },
+    {
+      "id": "alignment-contextual-menu-submenu-panel",
+      "selector": ".ds.contextual-menu__surface.submenu[role='menu']",
+      "specimen": "contextual-menu",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/ContextualMenu/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "reserved zero-layout outline edge", "sourceExpression": "var(--ds-stroke-thickness)" },
+        { "axis": "vertical", "property": "padding-block", "contract": "reserved zero-layout outline edge", "sourceExpression": "var(--ds-stroke-thickness)" },
+        { "axis": "vertical", "property": "max-block-size viewport subtraction", "contract": "floating-surface viewport boundary", "sourceExpression": "calc(100dvh - 2 * var(--ds-floating-surface-viewport-inset))" }
+      ],
+      "reason": "The submenu is the same surface renderer and owns the same reserved edge and viewport boundary.",
+      "equivalentTo": "alignment-contextual-menu-panel"
+    },
+    {
+      "id": "alignment-tile-header",
+      "selector": ".ds.tile-header",
+      "specimen": "tile",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tile/common/Header/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "surface-section inline inset", "sourceExpression": "var(--tile-header-padding-inline, var(--spacing-inset-surface-inline))" },
+        { "axis": "horizontal", "property": "gap", "contract": "header-child gap", "sourceExpression": "var(--tile-header-gap, var(--spacing-gap-field-block))" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "asymmetric section start", "sourceExpression": "var(--tile-header-padding-block-start, var(--tile-header-padding-block, var(--spacing-gap-field-block)))" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "asymmetric section end", "sourceExpression": "var(--tile-header-padding-block-end, var(--tile-header-padding-block, var(--spacing-inset-surface-block)))" }
+      ],
+      "reason": "Tile.Header is an asymmetric padded region. Unlike Card.Header, it does not collapse its end edge when Content follows."
+    },
+    {
+      "id": "alignment-tile-content",
+      "selector": ".ds.tile-content",
+      "specimen": "tile",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tile/common/Content/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "surface-section inline inset", "sourceExpression": "var(--tile-content-padding-inline) -> var(--spacing-inset-surface-inline)" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "asymmetric section start", "sourceExpression": "var(--tile-content-padding-top) -> var(--spacing-gap-field-block)" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "asymmetric section end", "sourceExpression": "var(--tile-content-padding-bottom) -> var(--spacing-inset-surface-block)" },
+        { "axis": "vertical", "property": "gap", "contract": "section content stack gap", "sourceExpression": "var(--tile-content-gap) -> var(--spacing-gap-field-block)" }
+      ],
+      "reason": "Tile.Content owns the same asymmetric section pattern as Card.Content and the expanded Accordion panel."
+    },
+    {
+      "id": "alignment-announcement-frame",
+      "selector": ".ds.announcement",
+      "specimen": "announcement",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Announcement/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline-start/end", "contract": "Field framed-box inset, per-edge border-aware", "sourceExpression": "var(--ds-box-padding-inline-start) / var(--ds-box-padding-inline-end), from --ds-box-inset-inline: var(--spacing-inset-field-inline)" },
+        { "axis": "horizontal", "property": "border-inline-start", "contract": "real emphasized leading edge", "sourceExpression": "var(--ds-stroke-thickness-emphasis)" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "uniform announcement frame inset", "sourceExpression": "var(--ds-box-padding-block-start) / var(--ds-box-padding-block-end), from --ds-box-inset-block: var(--spacing-gap-field-block)" }
+      ],
+      "reason": "Announcement is a per-edge framed box: the emphasized leading border is subtracted only from its leading Field inset, while block edges are uniform."
+    },
+    {
+      "id": "alignment-categories-section-payload",
+      "selector": ".ds.categories-section",
+      "specimen": "categories-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/styles.css and packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "payload grid column", "contract": "layout-owned subgrid registration", "sourceExpression": "grid-column: 3 / -1", "ownerSelector": ".ds.categories-section > .payload" },
+        { "axis": "horizontal", "property": "payload gap", "contract": "component-internal category-grid gap", "sourceExpression": "var(--container-gap-default)", "ownerSelector": ".ds.categories-section > .payload" },
+        { "axis": "vertical", "property": "section padding-block-end", "contract": "legacy Section default spacing", "sourceExpression": "var(--section-padding-bottom-spacing-default) -> var(--spacing-gap-section-block)" },
+        { "axis": "vertical", "property": "payload gap", "contract": "component-internal category-grid gap", "sourceExpression": "var(--container-gap-default)", "ownerSelector": ".ds.categories-section > .payload" }
+      ],
+      "reason": "The outer section owns legacy Section end spacing and the payload owns an internal grid gap; its column registration remains an explicit layout boundary."
+    },
+    {
+      "id": "alignment-categories-section-list",
+      "selector": ".ds.categories-section .ds.category",
+      "specimen": "categories-section",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/common/Category/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "list padding", "contract": "explicit zero list boundary", "sourceExpression": "padding: 0; margin: 0", "ownerSelector": ".ds.category > ul" },
+        { "axis": "vertical", "property": "list margin and padding", "contract": "explicit zero list boundary", "sourceExpression": "padding: 0; margin: 0", "ownerSelector": ".ds.category > ul" },
+        { "axis": "vertical", "property": "list-item margin and padding", "contract": "explicit zero list boundary", "sourceExpression": "padding: 0; margin: 0", "ownerSelector": ".ds.category > ul > li" }
+      ],
+      "reason": "The list witness targets a deliberately reset list and list items. Category heading spacing is a separate owner and grid-column span is layout, not a component inset."
+    },
+    {
+      "id": "alignment-chat-section-form",
+      "selector": ".ds.chat-section",
+      "specimen": "chat-section",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/ChatSection/styles.css and packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "form grid column", "contract": "layout-owned subgrid registration", "sourceExpression": "grid-column: 3 / span 4", "ownerSelector": ".ds.chat-section > .payload > .form" },
+        { "axis": "vertical", "property": "outer section padding-block-end", "contract": "legacy Section default spacing", "sourceExpression": "var(--section-padding-bottom-spacing-default) -> var(--spacing-gap-section-block)" }
+      ],
+      "reason": "The form wrapper owns no inset or gap. It supports the Section spacing owner while its subgrid placement is an external layout boundary.",
+      "equivalentTo": "alignment-t-section-payload"
+    },
+    {
+      "id": "alignment-icon-section-grid",
+      "selector": ".ds.icon-section",
+      "specimen": "icon-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/IconSection/styles.css and packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "payload grid column", "contract": "layout-owned subgrid registration", "sourceExpression": "grid-column: 3 / -1", "ownerSelector": ".ds.icon-section > .payload" },
+        { "axis": "horizontal", "property": "icon-grid gap", "contract": "component-internal icon-grid gap", "sourceExpression": "var(--container-gap-default)", "ownerSelector": ".ds.icon-section > .payload" },
+        { "axis": "vertical", "property": "icon-grid gap", "contract": "component-internal icon-grid gap", "sourceExpression": "var(--container-gap-default)", "ownerSelector": ".ds.icon-section > .payload" },
+        { "axis": "vertical", "property": "outer section padding-block-end", "contract": "legacy Section default spacing", "sourceExpression": "var(--section-padding-bottom-spacing-default) -> var(--spacing-gap-section-block)" }
+      ],
+      "reason": "IconSection owns its icon grid's intrinsic gap and inherits the shared Section end spacing; subgrid track selection stays layout-owned."
+    },
+    {
+      "id": "alignment-section-content",
+      "selector": ".ds.section.bordered",
+      "specimen": "section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "border-block-start", "contract": "bordered Section edge", "sourceExpression": "var(--section-border-start-width, var(--ds-stroke-thickness))" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "border-aware bordered Section start", "sourceExpression": "calc(var(--section-padding-top-spacing) + var(--section-padding-top-bordered)); bordered part -> var(--ds-box-padding-block-start)" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "legacy Section spacing variant", "sourceExpression": "var(--section-padding-bottom); deep -> var(--spacing-gap-pattern-block)" }
+      ],
+      "reason": "The catalog selector resolves the bordered deep variant. Section is a vertical region contract with independently varying start/border and end spacing, not a row."
+    },
+    {
+      "id": "alignment-t-section-payload",
+      "selector": ".ds.section",
+      "specimen": "t-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/TSection/styles.css and packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "payload grid column", "contract": "layout-owned subgrid registration", "sourceExpression": "grid-column: 1 / -1", "ownerSelector": ".ds.section > .payload" },
+        { "axis": "vertical", "property": "section padding-block-end", "contract": "legacy Section default spacing", "sourceExpression": "var(--section-padding-bottom-spacing-default) -> var(--spacing-gap-section-block)" },
+        { "axis": "vertical", "property": "section padding-block-start", "contract": "legacy Section default zero start", "sourceExpression": "calc(var(--section-padding-top-spacing-default) + var(--section-padding-top-bordered-default))" }
+      ],
+      "reason": "TSection reuses the .ds.section owner. Its payload registration is layout-owned, while the outer region owns default block-end spacing."
+    },
+    {
+      "id": "alignment-tooltip-panel",
+      "selector": ".ds.tooltip",
+      "specimen": "tooltip",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline-start/end", "contract": "floating surface inset, border-aware", "sourceExpression": "var(--ds-box-padding-inline-start/end), from --ds-box-inset-inline: var(--tooltip-padding-horizontal, var(--spacing-inset-surface-inline))" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "floating surface compact block inset, border-aware", "sourceExpression": "var(--ds-box-padding-block-start/end), from --ds-box-inset-block: var(--tooltip-padding-vertical, var(--spacing-gap-field-block))" },
+        { "axis": "horizontal", "property": "margin-inline-end", "contract": "legacy tooltip positioning hook", "sourceExpression": "var(--tooltip-margin-left, 0)" },
+        { "axis": "vertical", "property": "margin-block-end", "contract": "legacy tooltip positioning hook", "sourceExpression": "var(--tooltip-margin-bottom, 0)" }
+      ],
+      "reason": "Tooltip owns a border-aware floating surface with Surface inline inset but the smaller Field-block gap vertically; its optional zero-default margins are positioning hooks."
+    },
+    {
+      "id": "alignment-popover-tooltip-panel",
+      "selector": ".ds.popover > .content.ds-framed-box",
+      "specimen": "popover",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Popover/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline-start/end", "contract": "floating surface inset, border-aware", "sourceExpression": "var(--ds-box-padding-inline-start/end), from --ds-box-inset-inline: var(--popover-padding-horizontal, var(--spacing-inset-surface-inline))" },
+        { "axis": "vertical", "property": "padding-block-start/end", "contract": "floating surface compact block inset, border-aware", "sourceExpression": "var(--ds-box-padding-block-start/end), from --ds-box-inset-block: var(--popover-padding-vertical, var(--spacing-gap-field-block))" },
+        { "axis": "horizontal", "property": "border-inline-start/end", "contract": "real reserved floating-surface border", "sourceExpression": "var(--popover-border-width, var(--ds-stroke-thickness))" },
+        { "axis": "vertical", "property": "border-block-start/end", "contract": "real reserved floating-surface border", "sourceExpression": "var(--popover-border-width, var(--ds-stroke-thickness))" }
+      ],
+      "reason": "Popover uses the same mixed-axis floating-surface insets as Tooltip but reserves a real default border on every edge."
+    },
+    {
+      "id": "alignment-timeline-content",
+      "selector": ".ds.timeline > .ds.timeline-content",
+      "specimen": "timeline",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global/src/lib/pattern/Timeline/common/Content/styles.css and common/Event/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "child padding-block-end", "contract": "child-owned timeline rhythm", "sourceExpression": "var(--timeline-event-spacing, var(--spacing-large, 1.5rem))", "ownerSelector": ".ds.timeline-event > .content" }
+      ],
+      "reason": "Timeline.Content introduces no gap or padding. It proves that the vertical rhythm is owned by each Event content box rather than by the stack container.",
+      "equivalentTo": "alignment-timeline-event-row"
+    },
+    {
+      "id": "alignment-breadcrumbs-list-row",
+      "selector": ".ds.breadcrumbs > .list",
+      "specimen": "breadcrumbs",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Breadcrumbs/styles.css and packages/styles/typography/src/elements.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline and margin-inline", "contract": "explicit zero list edge", "sourceExpression": "padding-inline: 0; margin-inline: 0" },
+        { "axis": "vertical", "property": "row-gap", "contract": "wrapped breadcrumb row gap", "sourceExpression": "var(--spacing-gap-field-block)" },
+        { "axis": "vertical", "property": "list text nudge", "contract": "governed body typography", "sourceExpression": ".p supplies padding-block-start: var(--_typography-text-nudge-start) and margin-block-end: var(--_typography-text-nudge-end)" }
+      ],
+      "reason": "The wrapping list owns its row gap and retains the governed .p vertical text adjustment while explicitly removing native list edges."
+    },
+    {
+      "id": "alignment-breadcrumbs-item-text",
+      "selector": ".ds.breadcrumbs-item",
+      "specimen": "breadcrumbs",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Breadcrumbs/common/Item/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "link keyline", "contract": "unboxed text boundary", "sourceExpression": "item and link have no padding or margin; separator spacing is owned by .separator", "ownerSelector": ".ds.breadcrumbs-item > .separator" }
+      ],
+      "reason": "The item/link is unboxed text. It supports the separator and list assignments but does not create another inset or gap owner.",
+      "equivalentTo": "alignment-breadcrumbs-separator-marker"
+    },
+    {
+      "id": "alignment-announcement-heading",
+      "selector": ".ds.announcement > .text",
+      "specimen": "announcement",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Announcement/styles.css and Announcement.tsx",
+      "relationships": [
+        { "axis": "horizontal", "property": "heading keyline", "contract": "parent-owned announcement frame", "sourceExpression": ".text has no padding; parent .announcement owns frame inset and mark gap", "ownerSelector": ".ds.announcement" },
+        { "axis": "vertical", "property": "text stack gap", "contract": "explicit zero internal text gap", "sourceExpression": ".text { gap: 0; }" }
+      ],
+      "reason": "The strong.heading is an unboxed inline child. It witnesses the parent keyline and the deliberate zero-gap text stack.",
+      "equivalentTo": "alignment-announcement-frame"
+    },
+    {
+      "id": "alignment-announcement-content",
+      "selector": ".ds.announcement > .text",
+      "specimen": "announcement",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Announcement/styles.css and Announcement.tsx",
+      "relationships": [
+        { "axis": "horizontal", "property": "content keyline", "contract": "parent-owned announcement frame", "sourceExpression": ".text has no padding; parent .announcement owns frame inset and mark gap", "ownerSelector": ".ds.announcement" },
+        { "axis": "vertical", "property": "text stack gap", "contract": "explicit zero internal text gap", "sourceExpression": ".text { gap: 0; }" }
+      ],
+      "reason": "The span.content shares the same parent-owned keyline and zero-gap stack as the heading.",
+      "equivalentTo": "alignment-announcement-frame"
+    },
+    {
+      "id": "alignment-categories-section-title",
+      "selector": ".ds.categories-section",
+      "specimen": "categories-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/TSection/styles.css and packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "title grid column", "contract": "layout-owned subgrid registration", "sourceExpression": "grid-column: 1 / span 2", "ownerSelector": ".ds.categories-section > .title" },
+        { "axis": "vertical", "property": "title padding-block-start", "contract": "legacy TSection title spacing", "sourceExpression": "padding-top: var(--space-100)", "ownerSelector": ".ds.categories-section > .title" },
+        { "axis": "vertical", "property": "title margin-block-end", "contract": "legacy TSection title spacing", "sourceExpression": "margin-bottom: var(--space-200)", "ownerSelector": ".ds.categories-section > .title" }
+      ],
+      "reason": "The CategoriesSection title is the TSection h2 spacing owner; its column placement is layout-owned."
+    },
+    {
+      "id": "alignment-categories-section-heading",
+      "selector": ".ds.categories-section .ds.category",
+      "specimen": "categories-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/CategoriesSection/common/Category/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "h3 padding-block-start", "contract": "legacy Category heading spacing", "sourceExpression": "var(--space-100)", "ownerSelector": ".ds.category > h3" },
+        { "axis": "vertical", "property": "h3 margin-block-end", "contract": "legacy Category heading spacing", "sourceExpression": "var(--space-100)", "ownerSelector": ".ds.category > h3" },
+        { "axis": "horizontal", "property": "category grid span", "contract": "layout-owned subgrid registration", "sourceExpression": "grid-column-end: span 2" }
+      ],
+      "reason": "Each Category heading owns legacy physical top padding and bottom margin; the Category's column span is not a spacing bucket."
+    },
+    {
+      "id": "alignment-t-section-title",
+      "selector": ".ds.section",
+      "specimen": "t-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/TSection/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "h2 padding-block-start", "contract": "legacy TSection title spacing", "sourceExpression": "padding-top: var(--space-100)", "ownerSelector": ".ds.section > .title" },
+        { "axis": "vertical", "property": "h2 margin-block-end", "contract": "legacy TSection title spacing", "sourceExpression": "margin-bottom: var(--space-200)", "ownerSelector": ".ds.section > .title" }
+      ],
+      "reason": "TSection's h2 explicitly overrides the shared heading block adjustment with legacy space aliases."
+    },
+    {
+      "id": "alignment-description-section-title",
+      "selector": ".ds.description-section",
+      "specimen": "description-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/TSection/styles.css and packages/react/ds-global/src/lib/_work_in_progress/DescriptionSection/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "h2 padding-block-start", "contract": "legacy TSection title spacing", "sourceExpression": "padding-top: var(--space-100)", "ownerSelector": ".ds.description-section > .title" },
+        { "axis": "vertical", "property": "h2 margin-block-end", "contract": "legacy TSection title spacing", "sourceExpression": "margin-bottom: var(--space-200)", "ownerSelector": ".ds.description-section > .title" },
+        { "axis": "horizontal", "property": "title grid span", "contract": "layout-owned subgrid registration", "sourceExpression": "grid-column: auto / span 4", "ownerSelector": ".ds.description-section > .title" }
+      ],
+      "reason": "DescriptionSection reuses the TSection title spacing and adds only layout-owned column registration.",
+      "equivalentTo": "alignment-t-section-title"
+    },
+    {
+      "id": "alignment-description-section-content",
+      "selector": ".ds.description-section > .payload",
+      "specimen": "description-section",
+      "disposition": "token-owner",
+      "ownerSource": "packages/styles/typography/src/elements.css and packages/react/ds-global/src/lib/_work_in_progress/DescriptionSection/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "paragraph padding-block-start", "contract": "governed body typography", "sourceExpression": "var(--_typography-text-nudge-start) -> var(--typography-text-primary-nudge-block-start)", "ownerSelector": ".ds.description-section > .payload > p" },
+        { "axis": "vertical", "property": "paragraph margin-block-end", "contract": "governed body typography", "sourceExpression": "var(--_typography-text-nudge-end) -> var(--typography-text-primary-nudge-block-end)", "ownerSelector": ".ds.description-section > .payload > p" },
+        { "axis": "horizontal", "property": "payload grid span", "contract": "layout-owned subgrid registration", "sourceExpression": "grid-column: auto / span 4" }
+      ],
+      "reason": "The payload wrapper owns no inset, but the real paragraph witness is itself a shared typography spacing owner; column span remains layout-owned."
+    },
+    {
+      "id": "alignment-keyboard-keys-text",
+      "selector": ".ds.keyboard-key",
+      "specimen": "keyboard-keys",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/KeyboardKey/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "Field inset for inline keycap", "sourceExpression": "var(--keyboard-key-padding-inline, var(--ds-inline-inset-field))" },
+        { "axis": "vertical", "property": "keycap border", "contract": "zero-layout paint", "sourceExpression": "::after { position: absolute; border: var(--keyboard-key-border-width, var(--ds-stroke-thickness)) solid ...; }", "ownerSelector": ".ds.keyboard-key::after" }
+      ],
+      "reason": "KeyboardKey owns a Field inline inset inside the inherited code line. Its border is an absolute paint layer and adds no block spacing."
+    },
+    {
+      "id": "alignment-timeline-actor",
+      "selector": ".ds.timeline-event > .content",
+      "specimen": "timeline",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "content gap", "contract": "timeline inline content gap", "sourceExpression": "var(--timeline-content-gap, var(--spacing-small, 0.5rem))" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "timeline event separation", "sourceExpression": "var(--timeline-event-spacing, var(--spacing-large, 1.5rem))" }
+      ],
+      "reason": "The actor is a keyline witness for the spacing-owning content row; that row owns both its inline child gap and event-end padding."
+    },
+    {
+      "id": "alignment-timeline-datetime",
+      "selector": ".ds.timeline-event > .content",
+      "specimen": "timeline",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "content gap", "contract": "timeline inline content gap", "sourceExpression": "var(--timeline-content-gap, var(--spacing-small, 0.5rem))" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "timeline event separation", "sourceExpression": "var(--timeline-event-spacing, var(--spacing-large, 1.5rem))" }
+      ],
+      "reason": "Datetime observes the same spacing-owning content row as actor.",
+      "equivalentTo": "alignment-timeline-actor"
+    },
+    {
+      "id": "alignment-timeline-body",
+      "selector": ".ds.timeline-event > .content",
+      "specimen": "timeline",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/pattern/Timeline/common/Event/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "content gap", "contract": "timeline inline content gap", "sourceExpression": "var(--timeline-content-gap, var(--spacing-small, 0.5rem))" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "timeline event separation", "sourceExpression": "var(--timeline-event-spacing, var(--spacing-large, 1.5rem))" }
+      ],
+      "reason": "Payload observes the same spacing-owning content row as actor and intentionally wraps with flex-basis rather than a new inset.",
+      "equivalentTo": "alignment-timeline-actor"
+    },
+    {
+      "id": "alignment-tooltip-text",
+      "selector": ".ds.tooltip > .content",
+      "specimen": "tooltip",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "content gap", "contract": "tooltip-local marker gap", "sourceExpression": "var(--tooltip-gap) -> var(--spacing-gap-field-block)" }
+      ],
+      "reason": "The text keyline observes the same icon-capable content row as the marker witness; the text leaf itself has no inset.",
+      "equivalentTo": "alignment-tooltip-marker"
+    },
+    {
+      "id": "alignment-popover-tooltip-caret",
+      "selector": ".ds.tooltip.top",
+      "specimen": "tooltip",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "arrow base and centered position", "contract": "out-of-flow caret paint", "sourceExpression": "border-inline: var(--tooltip-arrow-half-width) solid transparent; left: var(--tooltip-arrow-middle)", "ownerSelector": ".ds.tooltip.top::before" },
+        { "axis": "vertical", "property": "arrow depth and outside edge", "contract": "out-of-flow caret paint", "sourceExpression": "border-top: var(--tooltip-arrow-depth) solid ...; bottom: var(--tooltip-arrow-edge)", "ownerSelector": ".ds.tooltip.top::before" }
+      ],
+      "reason": "The caret is an absolutely positioned zero-size border triangle. It changes paint extent, not the tooltip's layout or spacing ownership."
+    },
+    {
+      "id": "alignment-renderer-ds-global-work-in-progress-grid-gridcard-gridcard",
+      "selector": ".ds.grid-card",
+      "specimen": "grid-card",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/grid/GridCard/styles.css and GridCard.tsx",
+      "relationships": [],
+      "reason": "GridCard has no authored component styles beyond its class and wrapper markup. Any placement comes from the external grid."
+    },
+    {
+      "id": "alignment-renderer-ds-global-work-in-progress-label-label",
+      "selector": ".ds.label",
+      "specimen": "label",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Label/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "legacy label inset", "sourceExpression": "var(--label-padding-inline, var(--spacing-xsmall, 0.25rem))" },
+        { "axis": "vertical", "property": "padding-block", "contract": "legacy label inset", "sourceExpression": "var(--label-padding-block, var(--spacing-xxsmall, 0.125rem))" }
+      ],
+      "reason": "Label owns legacy xsmall/xxsmall padding aliases and does not yet consume the shared row or framed-box contracts."
+    },
+    {
+      "id": "alignment-renderer-ds-global-work-in-progress-link-link",
+      "selector": ".ds.link",
+      "specimen": "link",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Link/styles.css",
+      "relationships": [],
+      "reason": "Normal and soft links change colour/weight only. They own no padding, margin or gap."
+    },
+    {
+      "id": "alignment-renderer-ds-global-work-in-progress-rule-rule",
+      "selector": ".ds.rule",
+      "specimen": "rule",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Rule/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "height", "contract": "legacy rule paint thickness", "sourceExpression": "var(--rule-height)" },
+        { "axis": "vertical", "property": "margin-block-start", "contract": "legacy rule leading separation", "sourceExpression": "var(--rule-margin-top)" },
+        { "axis": "vertical", "property": "margin-block-end", "contract": "legacy rule occupied block", "sourceExpression": "calc(var(--rule-height-with-margin) - var(--rule-height))" }
+      ],
+      "reason": "Despite the catalog's zero-layout-paint oracle, Rule contributes a real height and trailing margin to flow. It is a distinct legacy vertical owner."
+    },
+    {
+      "id": "alignment-renderer-ds-global-component-icon-icon",
+      "selector": ".ds.icon",
+      "specimen": "icon-inline-code",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Icon/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "width", "contract": "atomic icon paint canvas", "sourceExpression": "var(--icon-size, var(--size-icon-default, 1rem))" },
+        { "axis": "vertical", "property": "height", "contract": "intrinsic atomic paint", "sourceExpression": "auto" }
+      ],
+      "reason": "Icon has an intrinsic paint canvas but no padding, margin or owned relationship. The host component owns any icon-to-text gap."
+    },
+    {
+      "id": "alignment-renderer-ds-global-component-inlinecode-inlinecode",
+      "selector": ".ds.inline-code",
+      "specimen": "icon-inline-code",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/InlineCode/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "Field inset for inline paint", "sourceExpression": "var(--inline-code-padding-inline, var(--ds-inline-inset-field))" },
+        { "axis": "vertical", "property": "block spacing", "contract": "inline text boundary", "sourceExpression": "no padding-block or compensation; remains inside the parent line box" }
+      ],
+      "reason": "InlineCode owns only the Field inline inset; the governed code role supplies typography without creating a separate block row."
+    },
+    {
+      "id": "alignment-renderer-ds-global-subcomponent-spinner-spinner",
+      "selector": ".ds.spinner",
+      "specimen": "spinner",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/subcomponent/Spinner/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "width", "contract": "atomic text-relative paint canvas", "sourceExpression": "var(--spinner-size, var(--icon-size, 1em))" },
+        { "axis": "vertical", "property": "height", "contract": "intrinsic atomic paint", "sourceExpression": "auto" }
+      ],
+      "reason": "Spinner is an atomic paint leaf. It has no inset, margin or gap; its host owns placement and separation."
+    }
+  ],
+  "extras": [
+    {
+      "id": "extra-tabs-item-zero-wrapper",
+      "selector": ".ds.tabs-item",
+      "specimen": "tabs",
+      "activation": "default",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tabs/common/Item/styles.css (.ds.tabs-item)",
+      "relationships": [
+        { "axis": "horizontal", "property": "margin-inline and padding-inline", "contract": "zero tab wrapper boundary", "sourceExpression": "margin: 0; padding: 0" },
+        { "axis": "vertical", "property": "margin-block and padding-block", "contract": "zero tab wrapper boundary", "sourceExpression": "margin: 0; padding: 0" }
+      ],
+      "reason": "The Item wrapper explicitly resets both axes. Positive Action inset and in-box row geometry belong to its .tabs-link child, which is already measured."
+    },
+    {
+      "id": "extra-checkbox-atomic-canvas",
+      "selector": ".ds.form-checkbox",
+      "specimen": "checkbox",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/CheckboxInput/styles.css (.ds.form-checkbox)",
+      "relationships": [
+        { "axis": "horizontal", "property": "inline-size", "contract": "fixed atomic marker canvas", "sourceExpression": "var(--ds-leading-mark-canvas)" },
+        { "axis": "vertical", "property": "block-size", "contract": "fixed atomic marker canvas", "sourceExpression": "var(--ds-leading-mark-canvas)" },
+        { "axis": "horizontal", "property": "margin-inline", "contract": "margin-free atomic marker", "sourceExpression": "margin: 0" },
+        { "axis": "vertical", "property": "margin-block", "contract": "margin-free atomic marker", "sourceExpression": "margin: 0" }
+      ],
+      "reason": "Source-attribution supplement to the form ToggleWrapper witness: the actual input owns its canvas and zero margins; ToggleWrapper owns the gap, row geometry and first-line seating. This cross-map extra is not a second checkbox component."
+    },
+    {
+      "id": "extra-global-demo-layout-consumers",
+      "selector": ".ds.application-layout, .ds.grid-demo, .ds.settings-view, .ds.settings-view > .content",
+      "specimen": "external-layout-boundary",
+      "capturePolicy": "source-only",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/grid/ApplicationLayout/styles.css; packages/react/ds-global/src/lib/_work_in_progress/grid/InnerGridDemo/styles.css; packages/react/ds-global/src/lib/_work_in_progress/grid/SettingsView/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "column-gap", "contract": "external demo composition gap dependency", "sourceExpression": "gap: var(--container-gap-default)" },
+        { "axis": "vertical", "property": "row-gap", "contract": "external demo composition gap dependency", "sourceExpression": "gap: var(--container-gap-default)" }
+      ],
+      "reason": "These live WIP exports assemble hard-coded demo content rather than define new foundational spacing. Retain their gap-token dependency for migration; no assembled demo is needed as a component-inset specimen. Column spans are separately dimensionless layout decisions."
+    },
+    {
+      "id": "extra-button-link-variant",
+      "selector": ".ds.button.link",
+      "specimen": "button",
+      "activation": "default",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Button/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline and border-width", "contract": "unboxed link boundary", "sourceExpression": "padding-inline: 0; border-width: 0" },
+        { "axis": "vertical", "property": "padding-block and margin-block-end", "contract": "unboxed link boundary", "sourceExpression": "padding-block: 0; margin-block-end: 0" }
+      ],
+      "reason": "The generated Button witness aggregates link with five Action-row targets. Link explicitly withdraws every row inset, border and compensation, so it cannot share the Button row disposition."
+    },
+    {
+      "id": "extra-badge-nested-variant",
+      "selector": ".ds.badge.is-nested",
+      "specimen": "badge",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Badge/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "line-height", "contract": "host-owned nested badge line", "sourceExpression": "calc(var(--badge-line-height) - var(--spacing-baseline))" },
+        { "axis": "horizontal", "property": "min-inline-size", "contract": "nested block-derived badge paint", "sourceExpression": "var(--badge-painted-line) -> var(--badge-nested-line-height)" }
+      ],
+      "reason": "A declared geometry-changing nested form exists in CSS but the global Badge specimen renders only regular badges."
+    },
+    {
+      "id": "extra-chip-nested-variant",
+      "selector": ".ds.chip.is-nested",
+      "specimen": "chip",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Chip/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "padding-inline", "contract": "nested Action inset without layout border", "sourceExpression": "var(--ds-inline-inset-action)" },
+        { "axis": "horizontal", "property": "min-inline-size", "contract": "nested stadium paint floor", "sourceExpression": "min(100%, calc(var(--ds-row-line-height) + 2 * var(--ds-row-border-inline)))" },
+        { "axis": "vertical", "property": "padding-block and margin-block", "contract": "host-owned nested row", "sourceExpression": "padding-block: 0; margin-block: 0" }
+      ],
+      "reason": "A declared host-owned nested form removes the real border and row compensation, but no catalog target renders .is-nested."
+    },
+    {
+      "id": "extra-chip-badge-overhang",
+      "selector": ".ds.chip .ds.badge",
+      "specimen": "chip",
+      "activation": "default",
+      "disposition": "non-spacing-boundary",
+      "capturePolicy": "source-only",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Chip/styles.css; packages/react/ds-global/src/lib/component/Chip/Chip.tsx; packages/react/ds-global/src/lib/component/Chip/types.ts",
+      "relationships": [
+        { "axis": "horizontal", "property": "margin-inline-start", "contract": "chip-contained badge separation", "sourceExpression": "var(--spacing-inset-field-inline)" },
+        { "axis": "horizontal", "property": "margin-inline-end", "contract": "chip-contained badge overhang", "sourceExpression": "calc(var(--ds-stroke-thickness) * -0.75)" }
+      ],
+      "reason": "Dormant CSS, not a supported rendered Chip part: ChipProps value/lead are strings and omit children; Chip.tsx renders only lead/value/dismiss and no Badge. Do not fabricate nested Badge markup to create a category. Reopen if a supported API begins rendering this relationship."
+    },
+    {
+      "id": "extra-accordion-root-gap",
+      "selector": ".ds.accordion",
+      "specimen": "accordion",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Accordion/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "gap", "contract": "accordion direct-item rhythm", "sourceExpression": "var(--spacing-baseline)" }
+      ],
+      "reason": "The catalog decomposes summary and panel parts but has no witness for the Accordion root's direct-item gap."
+    },
+    {
+      "id": "extra-card-header-standalone",
+      "selector": ".ds.card-header:not(:has(+ .card-content))",
+      "specimen": "card",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Card/common/Header/styles.css and packages/react/ds-global/src/lib/component/Card/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "padding-block-end", "contract": "standalone asymmetric section end", "sourceExpression": "var(--card-header-padding-block-end, var(--card-header-padding-block, var(--spacing-inset-surface-block)))" }
+      ],
+      "reason": "Two joined catalog headers collapse their end padding to zero while two standalone headers retain the Surface block inset. This is the same per-edge section composition, not evidence for a new bucket."
+    },
+    {
+      "id": "extra-cards-text-only-track-collapse",
+      "selector": ".ds.cards:not(:has(> .ds.card > .card-image)) > .ds.card",
+      "specimen": "card",
+      "activation": "default",
+      "disposition": "non-spacing-boundary",
+      "capturePolicy": "source-only",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Card/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "card grid-row span", "contract": "layout-owned text-only card track vocabulary", "sourceExpression": "grid-row: span 3" },
+        { "axis": "vertical", "property": "header grid-row", "contract": "layout-owned text-only card track vocabulary", "sourceExpression": "grid-row: 1", "ownerSelector": ".ds.cards:not(:has(> .ds.card > .card-image)) > .ds.card > .card-header" },
+        { "axis": "vertical", "property": "content grid-row", "contract": "layout-owned text-only card track vocabulary", "sourceExpression": "grid-row: 2", "ownerSelector": ".ds.cards:not(:has(> .ds.card > .card-image)) > .ds.card > .card-content" },
+        { "axis": "vertical", "property": "footer grid-row", "contract": "layout-owned text-only card track vocabulary", "sourceExpression": "grid-row: 3", "ownerSelector": ".ds.cards:not(:has(> .ds.card > .card-image)) > .ds.card > .card-footer" }
+      ],
+      "reason": "The catalog uses a mixed band containing an image, so the text-only-band track collapse is not exercised. It changes layout geometry but not spacing ownership."
+    },
+    {
+      "id": "extra-section-shallow-unbordered",
+      "selector": ".ds.section.shallow:not(.bordered)",
+      "specimen": "section",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "padding-block-end", "contract": "legacy Section shallow spacing", "sourceExpression": "var(--section-padding-bottom-spacing-shallow) -> var(--spacing-gap-group-block)" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "legacy Section shallow zero start", "sourceExpression": "var(--section-padding-top-spacing-shallow)" }
+      ],
+      "reason": "The specimen contains this public variant, but the only Section-specific witness selector is .ds.section.bordered and therefore never measures it."
+    },
+    {
+      "id": "extra-section-hero",
+      "selector": ".ds.section.hero",
+      "specimen": "section",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "padding-block-start", "contract": "legacy Section hero start", "sourceExpression": "var(--section-padding-top-spacing-hero) -> var(--spacing-inset-surface-block)" },
+        { "axis": "vertical", "property": "padding-block-end", "contract": "legacy Section hero end", "sourceExpression": "var(--section-padding-bottom-spacing-hero) -> var(--section-padding-bottom-spacing-default)" }
+      ],
+      "reason": "Hero is a public geometry-changing Section variant declared in CSS but absent from the catalog specimen."
+    },
+    {
+      "id": "extra-section-deep-unbordered",
+      "selector": ".ds.section.deep:not(.bordered)",
+      "specimen": "section",
+      "activation": "default",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global/src/lib/_work_in_progress/Section/styles.css",
+      "relationships": [
+        { "axis": "vertical", "property": "padding-block-end", "contract": "legacy Section deep spacing", "sourceExpression": "var(--section-padding-bottom-spacing-deep) -> var(--spacing-gap-pattern-block)" },
+        { "axis": "vertical", "property": "padding-block-start", "contract": "legacy Section deep zero start", "sourceExpression": "var(--section-padding-top-spacing-deep)" }
+      ],
+      "reason": "The catalog's deep Section is also bordered, so the unbordered deep start-edge behaviour has no independent witness."
+    },
+    {
+      "id": "extra-tooltip-target-margin-reset",
+      "selector": ".ds.tooltip-area .target > *",
+      "specimen": "tooltip",
+      "activation": "default",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tooltip/styles.css and withTooltip.tsx",
+      "relationships": [
+        { "axis": "horizontal", "property": "target child margin-inline", "contract": "tooltip placement boundary", "sourceExpression": "margin: 0 !important" },
+        { "axis": "vertical", "property": "target child margin-block", "contract": "tooltip placement boundary", "sourceExpression": "margin: 0 !important" }
+      ],
+      "reason": "The HOC forcibly removes arbitrary target margins so placement can measure the target exactly. It is a geometry-changing integration boundary, not intrinsic Tooltip spacing, and withTooltip is excluded from the catalog witness denominator."
+    },
+    {
+      "id": "extra-tooltip-caret-other-placements",
+      "selector": ".ds.tooltip:is(.bottom, .left, .right)",
+      "specimen": "tooltip",
+      "activation": "default",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global/src/lib/component/Tooltip/styles.css",
+      "relationships": [
+        { "axis": "horizontal", "property": "caret edge/orientation", "contract": "out-of-flow caret paint", "sourceExpression": ".bottom/.left/.right reposition the zero-size ::before border triangle with --tooltip-arrow-middle and --tooltip-arrow-edge", "ownerSelector": ".ds.tooltip.bottom::before, .ds.tooltip.left::before, .ds.tooltip.right::before" },
+        { "axis": "vertical", "property": "caret edge/orientation", "contract": "out-of-flow caret paint", "sourceExpression": "placement-specific border-bottom/border-left/border-right with --tooltip-arrow-depth", "ownerSelector": ".ds.tooltip.bottom::before, .ds.tooltip.left::before, .ds.tooltip.right::before" }
+      ],
+      "reason": "Only the top placement is catalogued. The other three placement geometries are implemented but remain out-of-flow paint boundaries."
+    }
+  ],
+  "taxonomyPressure": [
+    "GLOBAL exposes compensated rows, in-box compensation placement and asymmetric container edges. These are merge-test inputs, not three established buckets: in-box compensation may be an implementation mode of one row contract, and asymmetric regions may compose compact/broad edges.",
+    "Surface-region source aliases differ: Card/Tile/Accordion use Field-gap start plus Surface end; Tooltip/Popover use Surface inline plus Field-gap block; Announcement uses Field inline plus Field-gap block. These are observed compositions to minimise, not proof of additional buckets.",
+    "Badge is block-derived paint rather than Field/Action padding, while Label remains on unrelated legacy xsmall/xxsmall aliases.",
+    "Marker relationships are not fully uniform in the reference: Tooltip maps its icon gap to spacing-gap-field-block, Chip dismiss uses a one-stroke margin, and Timeline retains local marker offset/border/rail hooks.",
+    "Section, TSection, CategoriesSection and related scaffolded components still mix component spacing with page/subgrid registration. Their grid columns/tracks are explicit layout boundaries and must not become component spacing tokens.",
+    "Rule contradicts its catalog zero-layout-paint oracle because its real height plus computed trailing margin contributes occupied flow geometry.",
+    "The catalog under-decomposes geometry-changing variants: Button link, Badge/Chip nested, standalone Card.Header, text-only Cards tracks, Section shallow/hero/deep-unbordered, and non-top Tooltip caret placements need independent part rows or explicit boundaries."
+  ]
+}

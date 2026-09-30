@@ -3,9 +3,15 @@
 This file owns package status and governing-source relationships. Execution
 order lives in `TODO.md`; per-feature detail lives in the package.
 
-## Current package
+## Current packages
 
-No package is active.
+| Spec | Where | Status |
+|---|---|---|
+| 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
+| 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |
+
+Spec 022, the first inside-out Pragma spacing exploration, is superseded by
+024 and archived (see below).
 
 ## Preserved drafts
 
@@ -16,12 +22,18 @@ bounded 020a scope is now promoted on a fresh branch after design-tokens PR 2
 and the BF format adapter landed. The preserved drafts are source material,
 not active packages.
 
+Also parked, not active: `feat/020b-page-grid-token-adoption` (accepted for
+implementation, blocked on a design-tokens page/grid provider) and
+`wip/bf-typography-cap-metric` (unvalidated typography-discipline and
+generated cap-metric work recovered from the 022 checkout).
+
 ## Archive
 
 Completed and retired packages live under [`docs/spec-archive/`](spec-archive/).
 
 | Spec | Package | Disposition |
 |---|---|---|
+| 022 Pragma spacing adoption | [`022-pragma-spacing-adoption/`](spec-archive/022-pragma-spacing-adoption/) | Superseded by Spec 024 on 2026-09-30. The inside-out React restyle produced a branch too large to review or merge; 024 recuts it. Archived from the untracked Pragma-worktree copy, including measurement evidence. No Pragma source is stored in BF. |
 | 020a Horizontal token adoption | [`020a-horizontal-token-adoption/`](spec-archive/020a-horizontal-token-adoption/) | Accepted and merged directly into `main` at `299f182` on 2026-09-05 after an independent `merge` verdict, 24,029 static checks, all component-baseline/browser-behavior families, and an 86-image component QA pass. The final Canonical component matrix and horizontal-axis separation are landed; page/grid and Pragma remain excluded. No publication or release was performed. |
 | 021 Block-derived inline geometry | [`021-block-derived-inline-geometry/`](spec-archive/021-block-derived-inline-geometry/) | Accepted and merged into `main` at `17805b6` on 2026-09-04 after repeated Opus review, exact four-tier pointer-routing and shape checks, 19,500 integrated static checks, all component-baseline and behavior families, and fresh full component screenshot QA passed. No publication or release was performed. |
 | 018 Nested density audit | [`018-nested-density-audit/`](spec-archive/018-nested-density-audit/) | Released as 0.1.6 from `fdc1af7`, then patched as 0.1.7 from `77ffcfe` on 2026-08-31 after the initial active-tab state and table-hosted nested chip/badge fit passed 6,956 static contracts, browser behavior, full component screenshot QA, registry verification, and release-asset reconciliation. |

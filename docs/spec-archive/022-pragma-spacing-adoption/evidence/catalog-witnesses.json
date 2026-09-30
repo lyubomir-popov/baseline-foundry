@@ -1,0 +1,2412 @@
+[
+  {
+    "id": "alignment-heading-root",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "heading",
+    "outerSelector": ".react-pilot-catalog__headings > h1",
+    "axes": ["horizontal", "vertical"],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-chat-section-input",
+    "family": "field-cell-content",
+    "catalog": "global",
+    "specimen": "chat-section",
+    "outerSelector": ".ds.chat-section > .payload > .form > textarea",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-field-form-text-input",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "text",
+    "outerSelector": ".ds.input.text",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > input",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-field-form-number-input",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "number",
+    "outerSelector": ".ds.input.number",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > input[type='number']",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-field-form-trailing-artwork",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "number",
+    "outerSelector": ".ds.input.number",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > input"
+  },
+  {
+    "id": "alignment-choices-option-content",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "choices",
+    "outerSelector": ".ds.form-choices > .ds.option",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > label",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-color-input-trigger",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "color",
+    "outerSelector": ".ds.input.color > .color-trigger",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .color-preview"
+  },
+  {
+    "id": "alignment-color-input-preview",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "color",
+    "outerSelector": ".ds.input.color > .color-trigger > .color-preview",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope",
+    "contentBoxException": "atomic-painted-leaf"
+  },
+  {
+    "id": "alignment-color-input-value",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "color",
+    "outerSelector": ".ds.input.color > .color-trigger",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .color-value"
+  },
+  {
+    "id": "alignment-color-input-hex-input",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "color",
+    "outerSelector": ".ds.input.color > .color-popover > .hex-input-row > .hex-input",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-color",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-native-field-controls-date",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "date",
+    "outerSelector": ".ds.input.date[type='date']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-native-field-controls-datetime",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "datetime",
+    "outerSelector": ".ds.input.datetime[type='datetime-local']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-native-field-controls-select",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "select",
+    "outerSelector": ".ds.input.select",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-native-field-controls-textarea",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "textarea",
+    "outerSelector": "textarea.ds.input.textarea",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-native-field-controls-time",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "time",
+    "outerSelector": ".ds.input.time[type='time']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-password-input-input",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "password",
+    "outerSelector": ".ds.input.password",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > input",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-phone-input-country-control",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "phone",
+    "outerSelector": ".ds.input.phone > .country-select",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-phone-input-number-control",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "phone",
+    "outerSelector": ".ds.input.phone > .number-input",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-phone-input-country-divider",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "phone",
+    "outerSelector": ".ds.input.phone > .country-select",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "paintEdge": "inline-end"
+  },
+  {
+    "id": "alignment-range-control-number-control",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "range",
+    "outerSelector": ".ds.range-control > .range-number",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > input",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-range-control-slider-track",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "range",
+    "outerSelector": ".ds.range-control > .range-slider",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "nativeRangePaint": "track"
+  },
+  {
+    "id": "alignment-range-control-slider-thumb",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "range",
+    "outerSelector": ".ds.range-control > .range-slider",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "nativeRangePaint": "thumb"
+  },
+  {
+    "id": "alignment-rating-input-star",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "rating",
+    "outerSelector": ".ds.form-rating > .star",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .star-glyph",
+    "minimumTargets": 5
+  },
+  {
+    "id": "alignment-rich-choices-text",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "rich-choices",
+    "outerSelector": ".ds.form-rich-choices > .ds.option",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > label > .p",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-file-upload-filename",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "file",
+    "outerSelector": ".ds.input.file-upload .file-item",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "activation": "select-file",
+    "textSelector": ":scope > .file-name"
+  },
+  {
+    "id": "alignment-file-upload-size",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "file",
+    "outerSelector": ".ds.input.file-upload .file-item",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "activation": "select-file",
+    "textSelector": ":scope > .file-size"
+  },
+  {
+    "id": "alignment-combobox-frame",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "combobox",
+    "outerSelector": ".ds.form-combobox > .ds.input.combobox-input",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > input",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-combobox-multiple-value",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "combobox-multiple",
+    "outerSelector": ".ds.form-combobox > .ds.input.combobox-input",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > input",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-combobox-multiple-chip-text",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "combobox-multiple",
+    "outerSelector": ".ds.form-combobox > .selected-items > .chip",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-file-tree-search",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "file-tree",
+    "outerSelector": ".ds.file-tree > .ds.search-box",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > input.input"
+  },
+  {
+    "id": "alignment-git-diff-gutter-cell",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "git-diff",
+    "outerSelector": ".ds.git-diff-viewer tr.ds.diff-line:not(.diff-line-hunk) > .diff-gutter",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .diff-line-numbers",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-git-diff-content-cell",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "git-diff",
+    "outerSelector": ".ds.git-diff-viewer tr.ds.diff-line > .diff-content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > pre",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-token-table-row-cell",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table tbody td:has(> .token-cell)",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .token-cell",
+    "textSelector": ":scope > .token-cell > .var-name",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-token-table-swatch",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch:has(> .value)",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .value",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-token-table-swatch-inventory",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope .ds.token-swatch",
+    "minimumContentTargets": 14
+  },
+  {
+    "id": "alignment-token-table-swatch-color",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.color-group[title^='color ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .color"
+  },
+  {
+    "id": "alignment-token-table-swatch-dimension",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.dimension[title^='dimension ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .bar"
+  },
+  {
+    "id": "alignment-token-table-swatch-number",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.numeric[title^='number ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .numeric-chip"
+  },
+  {
+    "id": "alignment-token-table-swatch-font-family",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.sample[title^='fontFamily ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .sample-text"
+  },
+  {
+    "id": "alignment-token-table-swatch-font-weight",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.sample[title^='fontWeight ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .sample-text"
+  },
+  {
+    "id": "alignment-token-table-swatch-typography",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.sample[title^='typography ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .sample-text.typography"
+  },
+  {
+    "id": "alignment-token-table-swatch-duration",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.numeric[title^='duration ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .chip"
+  },
+  {
+    "id": "alignment-token-table-swatch-curve",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.curve[title^='cubicBezier ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .curve-preview"
+  },
+  {
+    "id": "alignment-token-table-swatch-gradient",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.sample[title^='gradient ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .mini-box.gradient"
+  },
+  {
+    "id": "alignment-token-table-swatch-border",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.sample[title^='border ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .mini-box:not(.gradient)"
+  },
+  {
+    "id": "alignment-token-table-swatch-shadow",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.sample[title^='shadow ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .mini-box.shadow"
+  },
+  {
+    "id": "alignment-token-table-swatch-transition",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.numeric[title^='transition ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .chip"
+  },
+  {
+    "id": "alignment-token-table-swatch-stroke-style",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.sample[title^='strokeStyle ·']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .stroke-line"
+  },
+  {
+    "id": "alignment-token-table-swatch-reference",
+    "family": "field-cell-content",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table .ds.token-swatch.reference",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .parent"
+  },
+  {
+    "id": "alignment-renderer-ds-global-component-badge-badge",
+    "family": "field-cell-content",
+    "catalog": "global",
+    "specimen": "badge",
+    "outerSelector": ".ds.badge",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "markerSelector": ":scope",
+    "textSelector": ":scope",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-field-form-shell",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "form-shell",
+    "outerSelector": ".react-pilot-form-catalog__form-shell > form.ds.form",
+    "axes": [
+      "vertical"
+    ],
+    "oracle": "occupied-block"
+  },
+  {
+    "id": "alignment-field-form-field-gap",
+    "family": "field-cell-content",
+    "catalog": "form",
+    "specimen": "text",
+    "outerSelector": ".ds.field",
+    "axes": [
+      "vertical"
+    ],
+    "oracle": "occupied-block"
+  },
+  {
+    "id": "alignment-password-input-reveal",
+    "family": "direct-action",
+    "catalog": "form",
+    "specimen": "password",
+    "outerSelector": ".ds.input.password > .reveal-toggle",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .reveal-icon",
+    "contentBoxException": "atomic-painted-leaf"
+  },
+  {
+    "id": "alignment-file-upload-picker",
+    "family": "direct-action",
+    "catalog": "form",
+    "specimen": "file",
+    "outerSelector": ".ds.input.file-upload .drop-zone",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-file-upload-remove-action",
+    "family": "direct-action",
+    "catalog": "form",
+    "specimen": "file",
+    "outerSelector": ".ds.input.file-upload .file-item button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "activation": "select-file",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-combobox-reset-action",
+    "family": "direct-action",
+    "catalog": "form",
+    "specimen": "combobox",
+    "outerSelector": ".ds.combobox-reset-button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-side-navigation-collapse-action",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "app-shell",
+    "outerSelector": ".ds.side-navigation .ds.collapse-toggle",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .ds.icon"
+  },
+  {
+    "id": "alignment-markdown-editor-toolbar",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "markdown-editor",
+    "outerSelector": ".ds.markdown-editor .ds.toolbar",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "occupied-block",
+    "contentSelector": ":scope > .ds.toolbar-group"
+  },
+  {
+    "id": "alignment-markdown-editor-action-group",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "markdown-editor",
+    "outerSelector": ".ds.markdown-editor .ds.toolbar-group",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > .toolbar-button:first-of-type",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-markdown-editor-icon-button",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "markdown-editor",
+    "outerSelector": ".ds.markdown-editor .ds.toolbar-button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope > svg",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-markdown-editor-separator",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "markdown-editor",
+    "outerSelector": ".ds.markdown-editor .ds.toolbar-separator",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint"
+  },
+  {
+    "id": "alignment-editable-block-toggle",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "editable-block",
+    "outerSelector": ".ds.editable-block > header > .icon[role='button']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "contentSelector": ":scope",
+    "contentBoxException": "atomic-painted-leaf"
+  },
+  {
+    "id": "alignment-popover-tooltip-trigger",
+    "family": "direct-action",
+    "catalog": "global",
+    "specimen": "popover",
+    "outerSelector": ".ds.popover > summary.trigger",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-renderer-ds-global-work-in-progress-skiplink-skiplink",
+    "family": "direct-action",
+    "catalog": "global",
+    "specimen": "skip-link",
+    "outerSelector": ".ds.skip-link",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope",
+    "activation": "focus"
+  },
+  {
+    "id": "alignment-renderer-ds-global-component-button-button",
+    "family": "direct-action",
+    "catalog": "global",
+    "specimen": "button",
+    "outerSelector": ".ds.button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope",
+    "minimumTargets": 6
+  },
+  {
+    "id": "alignment-renderer-ds-global-component-chip-chip",
+    "family": "direct-action",
+    "catalog": "global",
+    "specimen": "chip",
+    "outerSelector": ".ds.chip",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope",
+    "minimumTargets": 4
+  },
+  {
+    "id": "alignment-renderer-ds-app-anbox-button-button",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "product-buttons",
+    "outerSelector": "[data-product-button='anbox'] > .ds.button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-renderer-ds-app-landscape-button-button",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "product-buttons",
+    "outerSelector": "[data-product-button='landscape'] > .ds.button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-renderer-ds-app-lxd-button-button",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "product-buttons",
+    "outerSelector": "[data-product-button='lxd'] > .ds.button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-renderer-ds-app-portal-button-button",
+    "family": "direct-action",
+    "catalog": "app",
+    "specimen": "product-buttons",
+    "outerSelector": "[data-product-button='portal'] > .ds.button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-accordion-marker",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "accordion",
+    "outerSelector": ".ds.accordion-item > summary",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .heading",
+    "markerPseudo": "::before",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-breadcrumbs-separator-marker",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "breadcrumbs",
+    "outerSelector": ".ds.breadcrumbs-item:not(:first-of-type)",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .link",
+    "markerSelector": ":scope > .separator",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-contextual-menu-submenu-marker",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "contextual-menu",
+    "outerSelector": ".ds.contextual-menu__surface [aria-haspopup='menu']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "activation": "open-menu",
+    "textSelector": ":scope > .label",
+    "markerSelector": ":scope > .caret > .ds.icon"
+  },
+  {
+    "id": "alignment-announcement-marker",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "announcement",
+    "outerSelector": ".ds.announcement",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .text > .heading",
+    "markerSelector": ":scope > .icon"
+  },
+  {
+    "id": "alignment-button-icon-marker",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "button",
+    "outerSelector": ".ds.button:has(> .icon)",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerSelector": ":scope > .icon"
+  },
+  {
+    "id": "alignment-chip-dismiss-marker",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "chip",
+    "outerSelector": ".ds.chip:has(> .dismiss)",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .value",
+    "markerSelector": ":scope > .dismiss"
+  },
+  {
+    "id": "alignment-timeline-event-row",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "timeline",
+    "outerSelector": ".ds.timeline-event",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "occupied-block",
+    "contentSelector": ":scope > .content",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-timeline-marker-rail",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "timeline",
+    "outerSelector": ".ds.timeline-event",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerSelector": ":scope > .marker",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-form-toggles-checkbox-row",
+    "family": "marker-led",
+    "catalog": "form",
+    "specimen": "checkbox",
+    "outerSelector": ".ds.field-toggle > .ds.field-toggle-control",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .ds.field-label",
+    "markerSelector": ":scope > .ds.form-checkbox"
+  },
+  {
+    "id": "alignment-form-toggles-switch-row",
+    "family": "marker-led",
+    "catalog": "form",
+    "specimen": "switch",
+    "outerSelector": ".ds.field-toggle > .ds.field-toggle-control",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .ds.field-label",
+    "markerSelector": ":scope > .ds.form-switch"
+  },
+  {
+    "id": "alignment-choices-option-marker",
+    "family": "marker-led",
+    "catalog": "form",
+    "specimen": "choices",
+    "outerSelector": ".ds.form-choices > .ds.option",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > label",
+    "markerSelector": ":scope > input",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-rating-input-glyph",
+    "family": "marker-led",
+    "catalog": "form",
+    "specimen": "rating",
+    "outerSelector": ".ds.form-rating > .star",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerSelector": ":scope > .star-glyph",
+    "minimumTargets": 5
+  },
+  {
+    "id": "alignment-file-upload-image-preview",
+    "family": "marker-led",
+    "catalog": "form",
+    "specimen": "file",
+    "outerSelector": ".ds.input.file-upload .file-item.has-preview",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "activation": "select-file",
+    "textSelector": ":scope > .file-name",
+    "markerSelector": ":scope > .file-preview"
+  },
+  {
+    "id": "alignment-combobox-multiple-chip-remove-marker",
+    "family": "marker-led",
+    "catalog": "form",
+    "specimen": "combobox-multiple",
+    "outerSelector": ".ds.form-combobox > .selected-items > .chip",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope",
+    "markerSelector": ":scope > .remove-icon"
+  },
+  {
+    "id": "alignment-side-navigation-marker-text",
+    "family": "marker-led",
+    "catalog": "app",
+    "specimen": "app-shell",
+    "outerSelector": ".ds.side-navigation .ds.side-navigation-item > .row",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .label",
+    "markerSelector": ":scope > .start > .ds.icon",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-file-tree-node",
+    "family": "marker-led",
+    "catalog": "app",
+    "specimen": "file-tree",
+    "outerSelector": ".ds.file-tree .ds.node",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .nodename",
+    "markerSelector": ":scope > .icon",
+    "minimumTargets": 4
+  },
+  {
+    "id": "alignment-file-tree-indent-rail",
+    "family": "marker-led",
+    "catalog": "app",
+    "specimen": "file-tree",
+    "outerSelector": ".ds.file-tree .ds.indentation-block > .indent-block:not(.empty)",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerPseudo": "::before",
+    "markerPseudoGeometry": "centered-indent-rail",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-markdown-editor-icon-button-marker",
+    "family": "marker-led",
+    "catalog": "app",
+    "specimen": "markdown-editor",
+    "outerSelector": ".ds.markdown-editor .ds.toolbar-button",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerSelector": ":scope > svg",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-tooltip-marker",
+    "family": "marker-led",
+    "catalog": "global",
+    "specimen": "tooltip",
+    "outerSelector": ".ds.tooltip > .content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "textSelector": ":scope > .text",
+    "markerSelector": ":scope > .icon"
+  },
+  {
+    "id": "alignment-renderer-ds-global-form-subcomponent-radioinput-radioinput",
+    "family": "marker-led",
+    "catalog": "form",
+    "specimen": "radio-input",
+    "outerSelector": ".ds.form-radio[type='radio']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerSelector": ":scope"
+  },
+  {
+    "id": "alignment-renderer-ds-app-launchpad-diffchangemarker-diffchangemarker",
+    "family": "marker-led",
+    "catalog": "app",
+    "specimen": "diff-marker",
+    "outerSelector": ".ds.diff-change-marker",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerSelector": ":scope",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-renderer-ds-app-launchpad-diffchangemarker-common-detailedchangemarker-detailedchangemarker",
+    "family": "marker-led",
+    "catalog": "app",
+    "specimen": "diff-marker",
+    "outerSelector": ".ds.detailed-change-marker",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerSelector": ":scope"
+  },
+  {
+    "id": "alignment-renderer-ds-app-launchpad-diffchangemarker-common-simplechangemarker-simplechangemarker",
+    "family": "marker-led",
+    "catalog": "app",
+    "specimen": "diff-marker",
+    "outerSelector": ".ds.simple-change-marker",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "marker-center",
+    "markerSelector": ":scope"
+  },
+  {
+    "id": "alignment-accordion-summary-row",
+    "family": "attached-edge-row-cell",
+    "catalog": "global",
+    "specimen": "accordion",
+    "outerSelector": ".ds.accordion-item > summary",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "textSelector": ":scope > .heading",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-contextual-menu-item-row",
+    "family": "attached-edge-row-cell",
+    "catalog": "global",
+    "specimen": "contextual-menu",
+    "outerSelector": ".ds.contextual-menu__surface [role='menuitem']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-menu",
+    "textSelector": ":scope > .label"
+  },
+  {
+    "id": "alignment-contextual-menu-submenu-row",
+    "family": "attached-edge-row-cell",
+    "catalog": "global",
+    "specimen": "contextual-menu",
+    "outerSelector": ".ds.contextual-menu__surface.submenu [role='menuitem']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-submenu",
+    "textSelector": ":scope > .label",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-tabs-list-rail",
+    "family": "attached-edge-row-cell",
+    "catalog": "global",
+    "specimen": "tabs",
+    "outerSelector": ".ds.tabs > .tabs-list",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "paintEdge": "block-end"
+  },
+  {
+    "id": "alignment-tabs-tab-item",
+    "family": "attached-edge-row-cell",
+    "catalog": "global",
+    "specimen": "tabs",
+    "outerSelector": ".ds.tabs .tabs-link",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "textSelector": ":scope",
+    "minimumTargets": 4
+  },
+  {
+    "id": "alignment-tabs-active-edge",
+    "family": "attached-edge-row-cell",
+    "catalog": "global",
+    "specimen": "tabs",
+    "outerSelector": ".ds.tabs .tabs-link[aria-current='page']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "textSelector": ":scope",
+    "stateComparison": "tabs-active-bar",
+    "paintEdge": "block-end"
+  },
+  {
+    "id": "alignment-file-upload-file-row",
+    "family": "attached-edge-row-cell",
+    "catalog": "form",
+    "specimen": "file",
+    "outerSelector": ".ds.input.file-upload .file-item",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "select-file",
+    "contentSelector": ":scope > .file-name"
+  },
+  {
+    "id": "alignment-combobox-option-row",
+    "family": "attached-edge-row-cell",
+    "catalog": "form",
+    "specimen": "combobox",
+    "outerSelector": ".ds.combobox-list [role='option']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-combobox",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-side-navigation-item",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "app-shell",
+    "outerSelector": ".ds.side-navigation .ds.side-navigation-item > .row",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "textSelector": ":scope > .label",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-side-navigation-active-edge",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "app-shell",
+    "outerSelector": ".ds.side-navigation .ds.side-navigation-item[data-active] > .row",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "textSelector": ":scope > .label",
+    "markerPseudo": "::before",
+    "stateComparison": "side-navigation-active-edge",
+    "paintEdge": "inline-start"
+  },
+  {
+    "id": "alignment-file-tree-row-content",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "file-tree",
+    "outerSelector": ".ds.file-tree .ds.node",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .nodename",
+    "textSelector": ":scope > .nodename",
+    "minimumTargets": 4
+  },
+  {
+    "id": "alignment-file-tree-selected-edge",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "file-tree",
+    "outerSelector": ".ds.file-tree .ds.node[aria-selected='true']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "textSelector": ":scope > .nodename",
+    "markerPseudo": "::before",
+    "stateComparison": "file-tree-selected-edge",
+    "paintEdge": "inline-start"
+  },
+  {
+    "id": "alignment-git-diff-file-header",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "git-diff",
+    "outerSelector": ".ds.git-diff-viewer > .ds.file-header",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "textSelector": ":scope .file-name"
+  },
+  {
+    "id": "alignment-git-diff-normal-row",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "git-diff",
+    "outerSelector": ".ds.git-diff-viewer tr.ds.diff-line:not(.diff-line-hunk)",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "occupied-block",
+    "minimumTargets": 27
+  },
+  {
+    "id": "alignment-git-diff-hunk-row",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "git-diff",
+    "outerSelector": ".ds.git-diff-viewer tr.ds.diff-line.diff-line-hunk",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "occupied-block",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-git-diff-annotation",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "git-diff",
+    "outerSelector": ".ds.git-diff-viewer tr.ds.annotated-diff-line",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "occupied-block"
+  },
+  {
+    "id": "alignment-markdown-editor-view-tabs",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "markdown-editor",
+    "outerSelector": ".ds.markdown-editor .ds.view-mode-tabs > .tab",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "textSelector": ":scope",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-token-table-table",
+    "family": "attached-edge-row-cell",
+    "catalog": "app",
+    "specimen": "tokens",
+    "outerSelector": ".ds.token-table",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .scroll > .grid"
+  },
+  {
+    "id": "alignment-keyboard-keys-group",
+    "family": "uniform-framed-box",
+    "catalog": "global",
+    "specimen": "keyboard-keys",
+    "outerSelector": ".ds.keyboard-keys",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .ds.keyboard-key",
+    "minimumContentTargets": 3
+  },
+  {
+    "id": "alignment-color-input-swatch-grid",
+    "family": "uniform-framed-box",
+    "catalog": "form",
+    "specimen": "color",
+    "outerSelector": ".ds.input.color > .color-popover > .swatch-grid",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-color",
+    "contentSelector": ":scope > .swatch",
+    "minimumContentTargets": 10
+  },
+  {
+    "id": "alignment-color-input-selected-focused-swatch",
+    "family": "uniform-framed-box",
+    "catalog": "form",
+    "specimen": "color",
+    "outerSelector": ".ds.input.color > .color-popover .swatch.selected:focus",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "activation": "open-color-focus-selected",
+    "contentSelector": ":scope",
+    "contentBoxException": "atomic-painted-leaf",
+    "stateComparison": "color-swatch-selected-focus"
+  },
+  {
+    "id": "alignment-rich-choices-frame",
+    "family": "uniform-framed-box",
+    "catalog": "form",
+    "specimen": "rich-choices",
+    "outerSelector": ".ds.form-rich-choices > .ds.option > label",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .p",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-rich-choices-selected-focus",
+    "family": "uniform-framed-box",
+    "catalog": "form",
+    "specimen": "rich-choices",
+    "outerSelector": ".ds.form-rich-choices > .ds.option:has(input:checked) > label",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "stateComparison": "rich-choice-selected-focus"
+  },
+  {
+    "id": "alignment-accordion-expanded-content",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "accordion",
+    "outerSelector": ".ds.accordion-item[open] > .content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration"
+  },
+  {
+    "id": "alignment-accordion-expanded-body",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "accordion",
+    "outerSelector": ".ds.accordion-item[open] > .content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .p"
+  },
+  {
+    "id": "alignment-card-image",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "card",
+    "outerSelector": ".ds.card-image",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope",
+    "contentBoxException": "atomic-painted-leaf"
+  },
+  {
+    "id": "alignment-card-header",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "card",
+    "outerSelector": ".ds.card-header:has(+ .card-content)",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "textSelector": ":scope > h4",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-card-content",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "card",
+    "outerSelector": ".ds.card-content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "textSelector": ":scope > .p",
+    "minimumTargets": 2
+  },
+  {
+    "id": "alignment-card-footer",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "card",
+    "outerSelector": ".ds.card-footer",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .ds.chip"
+  },
+  {
+    "id": "alignment-card-shared-tracks",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "card",
+    "outerSelector": ".ds.cards",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .ds.card"
+  },
+  {
+    "id": "alignment-contextual-menu-panel",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "contextual-menu",
+    "outerSelector": ".ds.contextual-menu__surface",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-menu",
+    "contentSelector": ".ds.contextual-menu-item[tabindex='0']"
+  },
+  {
+    "id": "alignment-contextual-menu-submenu-panel",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "contextual-menu",
+    "outerSelector": ".ds.contextual-menu__surface.submenu[role='menu']",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-submenu",
+    "contentSelector": ":scope [role='menuitem']"
+  },
+  {
+    "id": "alignment-tile-header",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "tile",
+    "outerSelector": ".ds.tile-header",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "textSelector": ":scope > h4"
+  },
+  {
+    "id": "alignment-tile-content",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "tile",
+    "outerSelector": ".ds.tile-content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "textSelector": ":scope > .p"
+  },
+  {
+    "id": "alignment-announcement-frame",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "announcement",
+    "outerSelector": ".ds.announcement",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .text"
+  },
+  {
+    "id": "alignment-categories-section-payload",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "categories-section",
+    "outerSelector": ".ds.categories-section",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .payload"
+  },
+  {
+    "id": "alignment-categories-section-list",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "categories-section",
+    "outerSelector": ".ds.categories-section .ds.category",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > ul",
+    "minimumTargets": 7
+  },
+  {
+    "id": "alignment-chat-section-form",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "chat-section",
+    "outerSelector": ".ds.chat-section",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .payload > .form"
+  },
+  {
+    "id": "alignment-icon-section-grid",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "icon-section",
+    "outerSelector": ".ds.icon-section",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .payload > .icon-wrapper",
+    "minimumContentTargets": 2
+  },
+  {
+    "id": "alignment-section-content",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "section",
+    "outerSelector": ".ds.section.bordered",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > p"
+  },
+  {
+    "id": "alignment-t-section-payload",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "t-section",
+    "outerSelector": ".ds.section",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .payload"
+  },
+  {
+    "id": "alignment-color-input-popover",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "form",
+    "specimen": "color",
+    "outerSelector": ".ds.input.color > .color-popover",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-color",
+    "contentSelector": ":scope > .swatch-grid"
+  },
+  {
+    "id": "alignment-color-input-hex-row",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "form",
+    "specimen": "color",
+    "outerSelector": ".ds.input.color > .color-popover > .hex-input-row",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-color",
+    "contentSelector": ":scope > .hex-input"
+  },
+  {
+    "id": "alignment-combobox-list",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "form",
+    "specimen": "combobox",
+    "outerSelector": ".ds.combobox-list",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "activation": "open-combobox",
+    "contentSelector": ":scope > [role='option']"
+  },
+  {
+    "id": "alignment-side-navigation-header",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "app-shell",
+    "outerSelector": ".ds.side-navigation > .ds.side-navigation-header",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .brand"
+  },
+  {
+    "id": "alignment-side-navigation-content",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "app-shell",
+    "outerSelector": ".ds.side-navigation > .ds.content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .ds.nav-tree"
+  },
+  {
+    "id": "alignment-side-navigation-footer",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "app-shell",
+    "outerSelector": ".ds.side-navigation > .ds.footer",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .ds.nav-tree"
+  },
+  {
+    "id": "alignment-file-tree-panel",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "file-tree",
+    "outerSelector": ".ds.file-tree",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > ul[role='tree']"
+  },
+  {
+    "id": "alignment-git-diff-frame",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "git-diff",
+    "outerSelector": ".ds.git-diff-viewer",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .ds.code-diff-viewer"
+  },
+  {
+    "id": "alignment-markdown-editor-frame",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "markdown-editor",
+    "outerSelector": ".ds.markdown-editor",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .editor-content:not([hidden])"
+  },
+  {
+    "id": "alignment-markdown-editor-content",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "markdown-editor",
+    "outerSelector": ".ds.markdown-editor textarea",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope",
+    "contentBoxException": "native-control"
+  },
+  {
+    "id": "alignment-editable-block-header",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "editable-block",
+    "outerSelector": ".ds.editable-block > header",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .title"
+  },
+  {
+    "id": "alignment-editable-block-content",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "app",
+    "specimen": "editable-block",
+    "outerSelector": ".ds.editable-block > .content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > button"
+  },
+  {
+    "id": "alignment-tooltip-panel",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "tooltip",
+    "outerSelector": ".ds.tooltip",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "contentSelector": ":scope > .content"
+  },
+  {
+    "id": "alignment-popover-tooltip-panel",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "popover",
+    "outerSelector": ".ds.popover > .content.ds-framed-box",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "border-aware-inset",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-timeline-content",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "global",
+    "specimen": "timeline",
+    "outerSelector": ".ds.timeline > .ds.timeline-content",
+    "axes": [
+      "vertical"
+    ],
+    "oracle": "section-registration",
+    "contentSelector": ":scope > .ds.timeline-event",
+    "minimumContentTargets": 3
+  },
+  {
+    "id": "alignment-file-upload-field-shell",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "form",
+    "specimen": "file",
+    "outerSelector": ".ds.field:has(.ds.input.file-upload)",
+    "axes": [
+      "vertical"
+    ],
+    "oracle": "occupied-block"
+  },
+  {
+    "id": "alignment-file-upload-input-shell",
+    "family": "sectioned-panel-card-tile",
+    "catalog": "form",
+    "specimen": "file",
+    "outerSelector": ".ds.input.file-upload:has(> .drop-zone)",
+    "axes": [
+      "vertical"
+    ],
+    "oracle": "occupied-block"
+  },
+  {
+    "id": "alignment-breadcrumbs-list-row",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "breadcrumbs",
+    "outerSelector": ".ds.breadcrumbs > .list",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .breadcrumbs-item > .link"
+  },
+  {
+    "id": "alignment-breadcrumbs-item-text",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "breadcrumbs",
+    "outerSelector": ".ds.breadcrumbs-item",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .link",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-announcement-heading",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "announcement",
+    "outerSelector": ".ds.announcement > .text",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .heading"
+  },
+  {
+    "id": "alignment-announcement-content",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "announcement",
+    "outerSelector": ".ds.announcement > .text",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .content"
+  },
+  {
+    "id": "alignment-categories-section-title",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "categories-section",
+    "outerSelector": ".ds.categories-section",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .title"
+  },
+  {
+    "id": "alignment-categories-section-heading",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "categories-section",
+    "outerSelector": ".ds.categories-section .ds.category",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > h3",
+    "minimumTargets": 7
+  },
+  {
+    "id": "alignment-t-section-title",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "t-section",
+    "outerSelector": ".ds.section",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .title"
+  },
+  {
+    "id": "alignment-description-section-title",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "description-section",
+    "outerSelector": ".ds.description-section",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .title"
+  },
+  {
+    "id": "alignment-description-section-content",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "description-section",
+    "outerSelector": ".ds.description-section > .payload",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > p"
+  },
+  {
+    "id": "alignment-keyboard-keys-text",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "keyboard-keys",
+    "outerSelector": ".ds.keyboard-key",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope",
+    "minimumTargets": 4
+  },
+  {
+    "id": "alignment-timeline-actor",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "timeline",
+    "outerSelector": ".ds.timeline-event > .content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .actor",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-timeline-datetime",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "timeline",
+    "outerSelector": ".ds.timeline-event > .content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .datetime",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-timeline-body",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "timeline",
+    "outerSelector": ".ds.timeline-event > .content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .payload",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-field-form-label",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "form",
+    "specimen": "text",
+    "outerSelector": ".ds.field-label",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-field-form-description",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "form",
+    "specimen": "text",
+    "outerSelector": ".ds.field-description",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-field-form-error",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "form",
+    "specimen": "text",
+    "outerSelector": ".ds.field-error",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "activation": "submit-form",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-editable-block-title",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "app",
+    "specimen": "editable-block",
+    "outerSelector": ".ds.editable-block > header",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .title"
+  },
+  {
+    "id": "alignment-tooltip-text",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "tooltip",
+    "outerSelector": ".ds.tooltip > .content",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope > .text"
+  },
+  {
+    "id": "alignment-popover-tooltip-caret",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "tooltip",
+    "outerSelector": ".ds.tooltip.top",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint",
+    "markerPseudo": "::before",
+    "markerPseudoGeometry": "tooltip-caret",
+    "stateComparison": "tooltip-caret"
+  },
+  {
+    "id": "alignment-renderer-ds-global-work-in-progress-grid-gridcard-gridcard",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "grid-card",
+    "outerSelector": ".ds.grid-card",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-renderer-ds-global-work-in-progress-label-label",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "label",
+    "outerSelector": ".ds.label",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-renderer-ds-global-work-in-progress-link-link",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "link",
+    "outerSelector": ".ds.link",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope",
+    "minimumTargets": 3
+  },
+  {
+    "id": "alignment-renderer-ds-global-work-in-progress-rule-rule",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "rule",
+    "outerSelector": ".ds.rule",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint"
+  },
+  {
+    "id": "alignment-renderer-ds-global-component-icon-icon",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "icon-inline-code",
+    "outerSelector": ".ds.icon",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint"
+  },
+  {
+    "id": "alignment-renderer-ds-global-component-inlinecode-inlinecode",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "icon-inline-code",
+    "outerSelector": ".ds.inline-code",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  },
+  {
+    "id": "alignment-renderer-ds-global-subcomponent-spinner-spinner",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "global",
+    "specimen": "spinner",
+    "outerSelector": ".ds.spinner",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "zero-layout-paint"
+  },
+  {
+    "id": "alignment-renderer-ds-app-launchpad-relativetime-relativetime",
+    "family": "unboxed-text-inline-paint",
+    "catalog": "app",
+    "specimen": "relative-time",
+    "outerSelector": "time.ds.relative-time",
+    "axes": [
+      "horizontal",
+      "vertical"
+    ],
+    "oracle": "content-keyline",
+    "textSelector": ":scope"
+  }
+]

@@ -1,0 +1,78 @@
+{
+  "method": "The live axis-page catalog is checked against catalog-witnesses.json plus these explicit aliases to extra source owners. Aliases reconcile page identities to the same owner; they do not duplicate relationship counts or approve semantics.",
+  "referenceModule": "packages/react/ds-global-form/src/docs/examples/ReactAlignmentLab.catalog.ts",
+  "aliases": [
+    {
+      "pageWitnessId": "alignment-markdown-editor-preview-highlight",
+      "catalog": "app",
+      "specimen": "markdown-editor",
+      "pageSelector": ".ds.markdown-editor > div.editor-content pre code.hljs",
+      "ownerId": "extra-markdown-highlighted-code-inset",
+      "ownerSelector": ".ds.markdown-editor > div.editor-content pre code.hljs",
+      "targetTag": "code"
+    },
+    {
+      "pageWitnessId": "alignment-side-navigation-group-header",
+      "catalog": "app",
+      "specimen": "app-shell",
+      "pageSelector": ".ds.side-navigation .ds.nav-tree > .group > .header",
+      "ownerId": "extra-side-navigation-nav-group-header",
+      "ownerSelector": ".ds.side-navigation .ds.nav-tree > .group > .header",
+      "targetTag": "span"
+    },
+    {
+      "pageWitnessId": "alignment-card-header-standalone",
+      "catalog": "global",
+      "specimen": "card",
+      "pageSelector": ".ds.card-header:not(:has(+ .card-content))",
+      "ownerId": "extra-card-header-standalone",
+      "ownerSelector": ".ds.card-header:not(:has(+ .card-content))",
+      "targetTag": "div"
+    },
+    {
+      "pageWitnessId": "alignment-styles-primitives-grid",
+      "catalog": "global",
+      "specimen": "styles-primitives",
+      "pageSelector": ".react-pilot-catalog__styles-primitives > .grid",
+      "ownerId": "extra-styles-grid-gaps",
+      "ownerSelector": ".grid",
+      "targetTag": "div"
+    },
+    {
+      "pageWitnessId": "alignment-styles-primitives-content-flow",
+      "catalog": "global",
+      "specimen": "styles-primitives",
+      "pageSelector": ".react-pilot-catalog__styles-primitives > .content-flow",
+      "ownerId": "extra-styles-content-flow-gap",
+      "ownerSelector": ".content-flow",
+      "targetTag": "div"
+    },
+    {
+      "pageWitnessId": "alignment-styles-primitives-editorial",
+      "catalog": "global",
+      "specimen": "styles-primitives",
+      "pageSelector": ".react-pilot-catalog__styles-primitives > .editorial",
+      "ownerId": "extra-styles-editorial-gap",
+      "ownerSelector": ".editorial",
+      "targetTag": "div"
+    },
+    {
+      "pageWitnessId": "alignment-styles-primitives-native-unordered-list",
+      "catalog": "global",
+      "specimen": "styles-primitives",
+      "pageSelector": ".react-pilot-catalog__styles-primitives > ul",
+      "ownerId": "extra-styles-native-list-inset",
+      "ownerSelector": ":is(ul, ol)",
+      "targetTag": "ul"
+    },
+    {
+      "pageWitnessId": "alignment-styles-primitives-native-ordered-list",
+      "catalog": "global",
+      "specimen": "styles-primitives",
+      "pageSelector": ".react-pilot-catalog__styles-primitives > ol",
+      "ownerId": "extra-styles-native-list-inset",
+      "ownerSelector": ":is(ul, ol)",
+      "targetTag": "ol"
+    }
+  ]
+}

@@ -1,0 +1,1916 @@
+{
+  "scope": {
+    "catalog": "form",
+    "referenceWorktree": "H:/WSL_dev_projects/pragma/.claude/worktrees/feat-bf-shared-alignment",
+    "method": "Deduplicate reactAlignmentPartWitnessesFor(family, axis) by witness id across every REACT_ALIGNMENT_FAMILIES entry, then inspect the reference CSS and TSX owner. Source expressions are recorded verbatim; this artifact contains no browser measurements.",
+    "dispositions": {
+      "token-owner": "The selected rendered part owns an intrinsic inset, gap, compensation, canvas, or border-aware row/box relationship.",
+      "supporting-evidence": "The witness observes a dependent/keyline/state of another recorded owner and does not create a second spacing owner.",
+      "non-spacing-boundary": "The witness is paint, an atomic leaf with no spacing relationship, or layout composition outside the component-spacing taxonomy."
+    },
+    "measurementCaveat": "Exact ownerSelector identifies the element that owns each CSS relationship; it does not license arithmetic from a witness outer box to a descendant text keyline. In the adorned Text specimen, Astra measured Site outer-to-text as 38.406px: wrapper border plus child input padding cannot be summed to claim an 8px outside keyline because prefix/suffix slots intervene."
+  },
+  "records": [
+    {
+      "id": "alignment-field-form-text-input",
+      "selector": ".ds.input.text",
+      "specimen": "text",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/density.css (.ds.input.chrome plus composite input leaf); packages/react/ds-global-form/src/lib/subcomponent/TextInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.text > input",
+          "contract": "field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "border-inline-start/end",
+          "ownerSelector": ".ds.input.text",
+          "contract": "field frame border",
+          "sourceExpression": "var(--ds-row-border-inline-start) var(--ds-row-border-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.text > input",
+          "contract": "regular bordered control row",
+          "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-start/end",
+          "ownerSelector": ".ds.input.text",
+          "contract": "field frame border",
+          "sourceExpression": "var(--ds-row-border-block-start) var(--ds-row-border-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.input.text",
+          "contract": "row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "Primary owner for the shared single-line framed-field contract. The wrapper owns the border and compensation; the text-bearing input owns the inline and block padding.",
+      "measurementCaveat": "This catalog specimen is adorned with both prefix and suffix. The child input owns its padding, but the wrapper-to-text distance also crosses the prefix slot. Astra measured Site outer-to-text as 38.406px; do not derive or report an 8px outside keyline by adding wrapper border and input padding."
+    },
+    {
+      "id": "alignment-field-form-number-input",
+      "selector": ".ds.input.number",
+      "specimen": "number",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/NumberInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.number > input[type='number']",
+          "contract": "shared field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "border-inline-start/end",
+          "ownerSelector": ".ds.input.number",
+          "contract": "shared field frame border",
+          "sourceExpression": "var(--ds-row-border-inline-start) var(--ds-row-border-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.number > input[type='number']",
+          "contract": "shared regular bordered control row",
+          "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-start/end",
+          "ownerSelector": ".ds.input.number",
+          "contract": "shared field frame border",
+          "sourceExpression": "var(--ds-row-border-block-start) var(--ds-row-border-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.input.number",
+          "contract": "shared row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "The Number wrapper and input leaf repeat the shared TextInput frame/padding contract. The catalog specimen is adorned, so prefix/suffix geometry is dispositioned separately by the trailing-artwork witness.",
+      "measurementCaveat": "The Number specimen renders prefix and suffix flex items. The child input's padding is source-owned by the input, but an outer-wrapper-to-text measurement crosses adornment geometry and cannot be treated as border plus input padding.",
+      "equivalentTo": "alignment-field-form-text-input"
+    },
+    {
+      "id": "alignment-field-form-trailing-artwork",
+      "selector": ".ds.input.number",
+      "specimen": "number",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/NumberInput/styles.css (.prefix/.suffix)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "prefix/suffix padding-inline",
+          "ownerSelector": ".ds.input.number > :is(.prefix, .suffix)",
+          "contract": "field adornment gap plus field edge inset",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default)); prefix start and suffix end use var(--ds-form-field-padding-inline-start/end)"
+        }
+      ],
+      "reason": "The adornment slots, not the shared frame, own the intrinsic text-to-artwork gap and restore the field inset at the outside edge. The witness name says trailing artwork, but the same CSS also covers a leading prefix."
+    },
+    {
+      "id": "alignment-choices-option-content",
+      "selector": ".ds.form-choices > .ds.option",
+      "specimen": "choices",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/ChoicesField/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "label keyline after marker",
+          "ownerSelector": ".ds.form-choices > .ds.option",
+          "contract": "bare marker-led row",
+          "sourceExpression": "gap: var(--ds-leading-mark-gap)"
+        },
+        {
+          "axis": "vertical",
+          "property": "row padding and compensation",
+          "ownerSelector": ".ds.form-choices > .ds.option",
+          "contract": "regular marker-led row",
+          "sourceExpression": "var(--ds-row-padding-block-start), var(--ds-row-padding-block-end), var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "The label is the dependent keyline of the option row; it does not own a second inset or nudge.",
+      "equivalentTo": "alignment-choices-option-marker"
+    },
+    {
+      "id": "alignment-color-input-trigger",
+      "selector": ".ds.input.color > .color-trigger",
+      "specimen": "color",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/ColorInput.tsx (.ds-framed-box.ds-field-frame); packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.color > .color-trigger",
+          "contract": "field-framed box inset",
+          "sourceExpression": "var(--ds-box-padding-inline-start) var(--ds-box-padding-inline-end)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "ownerSelector": ".ds.input.color > .color-trigger",
+          "contract": "field child/adornment gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.color > .color-trigger",
+          "contract": "field-framed row inset",
+          "sourceExpression": "var(--ds-box-padding-block-start) var(--ds-box-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.input.color > .color-trigger",
+          "contract": "row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "The real button receives ds-field-frame and owns its border-aware edge insets, child gap, and trailing row compensation."
+    },
+    {
+      "id": "alignment-color-input-preview",
+      "selector": ".ds.input.color > .color-trigger > .color-preview",
+      "specimen": "color",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css (.color-preview)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "preview-to-value gap",
+          "ownerSelector": ".ds.input.color > .color-trigger",
+          "contract": "color-trigger child gap",
+          "sourceExpression": "owned by parent gap: var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        }
+      ],
+      "reason": "The preview is a fixed painted leaf. Its position supports the trigger's gap/inset contract; its own width, height, and border are paint canvas geometry, not another spacing owner.",
+      "equivalentTo": "alignment-color-input-trigger"
+    },
+    {
+      "id": "alignment-color-input-value",
+      "selector": ".ds.input.color > .color-trigger",
+      "specimen": "color",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css (.color-trigger)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "value keyline",
+          "ownerSelector": ".ds.input.color > .color-trigger",
+          "contract": "color-trigger field inset after child gap",
+          "sourceExpression": "parent padding via --ds-box-padding-inline-* and gap via --form-field-inline-gap"
+        }
+      ],
+      "reason": "The value span has no padding or margin; it observes the trigger owner's keyline.",
+      "equivalentTo": "alignment-color-input-trigger"
+    },
+    {
+      "id": "alignment-color-input-hex-input",
+      "selector": ".ds.input.color > .color-popover > .hex-input-row > .hex-input",
+      "specimen": "color",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css (popover .hex-input)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.color > .color-popover > .hex-input-row > .hex-input",
+          "contract": "local framed-field inset",
+          "sourceExpression": "var(--ds-box-padding-inline-start) var(--ds-box-padding-inline-end), with --ds-box-inset-inline: var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.color > .color-popover > .hex-input-row > .hex-input",
+          "contract": "local framed-field inset",
+          "sourceExpression": "var(--ds-box-padding-block-start) var(--ds-box-padding-block-end), with --ds-box-inset-block: var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "This nested input deliberately overrides both framed-box inset axes and owns its own real border-aware padding. It is not equivalent to the regular single-line field row."
+    },
+    {
+      "id": "alignment-native-field-controls-date",
+      "selector": ".ds.input.date[type='date']",
+      "specimen": "date",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/DateInput/styles.css; packages/react/ds-global-form/src/density.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.date[type='date']",
+          "contract": "shared field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block and compensation",
+          "ownerSelector": ".ds.input.date[type='date']",
+          "contract": "shared regular bordered control row",
+          "sourceExpression": "--ds-row-padding-block-start/end plus --ds-row-compensation-block-end"
+        }
+      ],
+      "reason": "The native date control is a direct-chrome consumer of the same field and row owner as TextInput.",
+      "equivalentTo": "alignment-field-form-text-input"
+    },
+    {
+      "id": "alignment-native-field-controls-datetime",
+      "selector": ".ds.input.datetime[type='datetime-local']",
+      "specimen": "datetime",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/DateTimeInput/styles.css; packages/react/ds-global-form/src/density.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.datetime[type='datetime-local']",
+          "contract": "shared field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block and compensation",
+          "ownerSelector": ".ds.input.datetime[type='datetime-local']",
+          "contract": "shared regular bordered control row",
+          "sourceExpression": "--ds-row-padding-block-start/end plus --ds-row-compensation-block-end"
+        }
+      ],
+      "reason": "The native datetime-local control is a direct-chrome consumer of the shared field owner.",
+      "equivalentTo": "alignment-field-form-text-input"
+    },
+    {
+      "id": "alignment-native-field-controls-select",
+      "selector": ".ds.input.select",
+      "specimen": "select",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/SelectInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start",
+          "ownerSelector": ".ds.input.select",
+          "contract": "field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-end",
+          "ownerSelector": ".ds.input.select",
+          "contract": "field inset with trailing artwork canvas",
+          "sourceExpression": "var(--ds-form-field-padding-inline-end-with-artwork) for :not([multiple])"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block and compensation",
+          "ownerSelector": ".ds.input.select",
+          "contract": "regular bordered control row",
+          "sourceExpression": "shared .ds.input.chrome row outputs"
+        }
+      ],
+      "reason": "Single-select is a distinct field variant because it reserves the shared trailing-artwork canvas. The multiple-select no-artwork variant is recorded as an extra."
+    },
+    {
+      "id": "alignment-native-field-controls-textarea",
+      "selector": "textarea.ds.input.textarea",
+      "specimen": "textarea",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/TextareaInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": "textarea.ds.input.textarea",
+          "contract": "field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "ownerSelector": "textarea.ds.input.textarea",
+          "contract": "multiline field surface inset",
+          "sourceExpression": "var(--form-input-padding-block, var(--form-input-padding-block-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": "textarea.ds.input.textarea",
+          "contract": "field trailing compensation",
+          "sourceExpression": "inherited .ds.input.chrome: var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "Textarea owns a multiline content surface and a public block-padding hook, so its vertical behavior cannot be cited as equivalent to the single-line row without measurement."
+    },
+    {
+      "id": "alignment-native-field-controls-time",
+      "selector": ".ds.input.time[type='time']",
+      "specimen": "time",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/TimeInput/styles.css; packages/react/ds-global-form/src/density.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.time[type='time']",
+          "contract": "shared field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block and compensation",
+          "ownerSelector": ".ds.input.time[type='time']",
+          "contract": "shared regular bordered control row",
+          "sourceExpression": "--ds-row-padding-block-start/end plus --ds-row-compensation-block-end"
+        }
+      ],
+      "reason": "The native time control is a direct-chrome consumer of the shared field owner.",
+      "equivalentTo": "alignment-field-form-text-input"
+    },
+    {
+      "id": "alignment-password-input-input",
+      "selector": ".ds.input.password",
+      "specimen": "password",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/PasswordInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.password > input",
+          "contract": "shared field start inset and input-to-reveal gap",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "horizontal",
+          "property": "border-inline-start/end",
+          "ownerSelector": ".ds.input.password",
+          "contract": "shared field frame border",
+          "sourceExpression": "var(--ds-row-border-inline-start) var(--ds-row-border-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.password > input",
+          "contract": "shared regular control row",
+          "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-start/end",
+          "ownerSelector": ".ds.input.password",
+          "contract": "shared field frame border",
+          "sourceExpression": "var(--ds-row-border-block-start) var(--ds-row-border-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.input.password",
+          "contract": "shared row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "The frame and text start reuse the shared field owner; the distinct trailing reveal spacing is owned by the reveal action record.",
+      "measurementCaveat": "Wrapper border/compensation, child-input padding, and reveal-button padding have different owner selectors. End-side outer-to-text geometry must include the intervening reveal action rather than collapsing these relationships into one field inset.",
+      "equivalentTo": "alignment-field-form-text-input"
+    },
+    {
+      "id": "alignment-phone-input-country-control",
+      "selector": ".ds.input.phone > .country-select",
+      "specimen": "phone",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/PhoneInput/styles.css (.country-select)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start",
+          "ownerSelector": ".ds.input.phone > .country-select",
+          "contract": "field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-end",
+          "ownerSelector": ".ds.input.phone > .country-select",
+          "contract": "country-to-divider gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "ownerSelector": ".ds.input.phone > .country-select",
+          "contract": "shared composite field row",
+          "sourceExpression": "shared composite leaf --ds-row-padding-block-start/end"
+        }
+      ],
+      "reason": "The country leaf owns the outer field inset on one side and the intrinsic gap to the internal divider on the other."
+    },
+    {
+      "id": "alignment-phone-input-number-control",
+      "selector": ".ds.input.phone > .number-input",
+      "specimen": "phone",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/PhoneInput/styles.css (.number-input)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start",
+          "ownerSelector": ".ds.input.phone > .number-input",
+          "contract": "divider-to-number gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-end",
+          "ownerSelector": ".ds.input.phone > .number-input",
+          "contract": "field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "ownerSelector": ".ds.input.phone > .number-input",
+          "contract": "shared composite field row",
+          "sourceExpression": "shared composite leaf --ds-row-padding-block-start/end"
+        }
+      ],
+      "reason": "The telephone leaf owns the divider gap and the opposite outside field inset."
+    },
+    {
+      "id": "alignment-phone-input-country-divider",
+      "selector": ".ds.input.phone > .country-select",
+      "specimen": "phone",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/PhoneInput/styles.css (.country-select)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "border-inline-end",
+          "ownerSelector": ".ds.input.phone > .country-select",
+          "contract": "layout-bearing internal divider",
+          "sourceExpression": "var(--form-input-border-width) solid var(--form-input-border-color)"
+        }
+      ],
+      "reason": "Catalog oracle zero-layout-paint is contradicted by source: this is a real border on the country select and participates in its box geometry. It must be accounted with the two adjacent internal gaps."
+    },
+    {
+      "id": "alignment-range-control-number-control",
+      "selector": ".ds.range-control > .range-number",
+      "specimen": "range",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/RangeField/common/RangeControl/styles.css; packages/react/ds-global-form/src/lib/subcomponent/NumberInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.range-control > .range-number > input[type='number']",
+          "contract": "shared field inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.range-control > .range-number > input[type='number']",
+          "contract": "shared regular bordered control row",
+          "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.range-control > .range-number",
+          "contract": "shared row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "The selected node is the fixed-width Range wrapper; its child NumberInput supplies the field geometry. The parent-to-slider gap is a missing owner recorded in extras.",
+      "equivalentTo": "alignment-field-form-number-input"
+    },
+    {
+      "id": "alignment-range-control-slider-track",
+      "selector": ".ds.range-control > .range-slider",
+      "specimen": "range",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/RangeInput/styles.css (native track pseudo-elements)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "track paint block-size",
+          "ownerSelector": ".ds.range-control > .range-slider",
+          "contract": "native zero-layout paint",
+          "sourceExpression": "var(--ds-native-range-track-paint-block-size)"
+        }
+      ],
+      "reason": "The track is pseudo-element paint centered inside the range element's thumb-sized box. It does not define component inset or inter-child spacing."
+    },
+    {
+      "id": "alignment-range-control-slider-thumb",
+      "selector": ".ds.range-control > .range-slider",
+      "specimen": "range",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/RangeInput/styles.css (native thumb pseudo-elements)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "thumb paint size",
+          "ownerSelector": ".ds.range-control > .range-slider",
+          "contract": "native zero-layout paint",
+          "sourceExpression": "var(--ds-native-range-thumb-paint-size)"
+        },
+        {
+          "axis": "vertical",
+          "property": "thumb centering offset",
+          "ownerSelector": ".ds.range-control > .range-slider",
+          "contract": "native zero-layout paint",
+          "sourceExpression": "var(--ds-native-range-thumb-centering-offset-block)"
+        }
+      ],
+      "reason": "Thumb size and centering are native-control paint facts, not padding, gap, margin, or container inset."
+    },
+    {
+      "id": "alignment-rating-input-star",
+      "selector": ".ds.form-rating > .star",
+      "specimen": "rating",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/RatingInput/styles.css (.star)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "paint canvas width",
+          "ownerSelector": ".ds.form-rating > .star",
+          "contract": "atomic rating paint",
+          "sourceExpression": "var(--rating-size)"
+        },
+        {
+          "axis": "vertical",
+          "property": "paint canvas height",
+          "ownerSelector": ".ds.form-rating > .star",
+          "contract": "atomic rating paint",
+          "sourceExpression": "var(--rating-size)"
+        }
+      ],
+      "reason": "A star is an atomic interactive paint canvas. The rating cluster, not each star, owns the spacing between stars; that missing owner is recorded in extras."
+    },
+    {
+      "id": "alignment-rich-choices-text",
+      "selector": ".ds.form-rich-choices > .ds.option",
+      "specimen": "rich-choices",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "text keyline",
+          "ownerSelector": ".ds.form-rich-choices > .ds.option > label",
+          "contract": "rich-choice framed surface inset",
+          "sourceExpression": "label padding uses --ds-box-padding-inline-start/end"
+        },
+        {
+          "axis": "vertical",
+          "property": "text keyline",
+          "ownerSelector": ".ds.form-rich-choices > .ds.option > label",
+          "contract": "rich-choice framed surface inset",
+          "sourceExpression": "label padding uses --ds-box-padding-block-start/end"
+        }
+      ],
+      "reason": "The text is a dependent child of the visible label/card surface and adds no padding or margin.",
+      "equivalentTo": "alignment-rich-choices-frame"
+    },
+    {
+      "id": "alignment-file-upload-filename",
+      "selector": ".ds.input.file-upload .file-item",
+      "specimen": "file",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css (.file-name)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "filename keyline",
+          "ownerSelector": ".ds.input.file-upload .file-item",
+          "contract": "file-row inset and child gap",
+          "sourceExpression": "parent padding --ds-form-field-padding-inline-* and gap --form-field-inline-gap"
+        }
+      ],
+      "reason": "The filename clears inherited paragraph margins/padding and is positioned entirely by the file row owner.",
+      "equivalentTo": "alignment-file-upload-file-row"
+    },
+    {
+      "id": "alignment-file-upload-size",
+      "selector": ".ds.input.file-upload .file-item",
+      "specimen": "file",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css (.file-size)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "size-cell separation",
+          "ownerSelector": ".ds.input.file-upload .file-item",
+          "contract": "file-row child gap",
+          "sourceExpression": "parent gap: var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        }
+      ],
+      "reason": "The size span is margin- and padding-free; the file row owns its separation and outside inset.",
+      "equivalentTo": "alignment-file-upload-file-row"
+    },
+    {
+      "id": "alignment-combobox-frame",
+      "selector": ".ds.form-combobox > .ds.input.combobox-input",
+      "specimen": "combobox",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css; packages/react/ds-global-form/src/density.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input > input",
+          "contract": "shared field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "border-inline-start/end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input",
+          "contract": "shared field frame border",
+          "sourceExpression": "var(--ds-row-border-inline-start) var(--ds-row-border-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input > input",
+          "contract": "shared regular bordered control row",
+          "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-start/end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input",
+          "contract": "shared field frame border",
+          "sourceExpression": "var(--ds-row-border-block-start) var(--ds-row-border-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input",
+          "contract": "shared row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "The combobox input frame is another composite consumer of the shared single-line field contract; its reset action is a separate intrinsic owner.",
+      "measurementCaveat": "The wrapper owns border and compensation, the input child owns row/inline padding, and the reset button owns its action inset. A wrapper-to-text measurement cannot assign all three to the frame.",
+      "equivalentTo": "alignment-field-form-text-input"
+    },
+    {
+      "id": "alignment-combobox-multiple-value",
+      "selector": ".ds.form-combobox > .ds.input.combobox-input",
+      "specimen": "combobox-multiple",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/MultipleCombobox.tsx; packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input > input",
+          "contract": "shared combobox field inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "border-inline-start/end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input",
+          "contract": "shared field frame border",
+          "sourceExpression": "var(--ds-row-border-inline-start) var(--ds-row-border-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input > input",
+          "contract": "shared regular bordered control row",
+          "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-start/end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input",
+          "contract": "shared field frame border",
+          "sourceExpression": "var(--ds-row-border-block-start) var(--ds-row-border-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.form-combobox > .ds.input.combobox-input",
+          "contract": "shared row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "MultipleCombobox mounts the same input frame as SingleCombobox. Its selected-chip strip is a separate owner recorded by chip and extra records.",
+      "measurementCaveat": "The input-frame wrapper and its input child retain split border/compensation versus padding ownership. Selected chips live outside that frame and must not be included in its field-inset arithmetic.",
+      "equivalentTo": "alignment-combobox-frame"
+    },
+    {
+      "id": "alignment-combobox-multiple-chip-text",
+      "selector": ".ds.form-combobox > .selected-items > .chip",
+      "specimen": "combobox-multiple",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css (.selected-items > .chip)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.form-combobox > .selected-items > .chip",
+          "contract": "combobox selected-chip inset",
+          "sourceExpression": "0.5rem"
+        },
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "ownerSelector": ".ds.form-combobox > .selected-items > .chip",
+          "contract": "selected-chip text-to-remove gap",
+          "sourceExpression": "0.25rem"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "ownerSelector": ".ds.form-combobox > .selected-items > .chip",
+          "contract": "combobox selected-chip compact inset",
+          "sourceExpression": "0.125rem"
+        }
+      ],
+      "reason": "This locally styled chip owns bespoke compact padding and an internal remove gap; it does not consume the shared Chip or nested-row contract."
+    },
+    {
+      "id": "alignment-field-form-shell",
+      "selector": ".react-pilot-form-catalog__form-shell > form.ds.form",
+      "specimen": "form-shell",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/index.css (.ds.form)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".react-pilot-form-catalog__form-shell > form.ds.form",
+          "contract": "form field-stack gap",
+          "sourceExpression": "var(--form-field-block-gap, var(--form-field-block-gap-default)); default var(--spacing-gap-pattern-block)"
+        }
+      ],
+      "reason": "The form intrinsically owns vertical separation between fields. Its subgrid columns are external layout and are recorded as a boundary extra."
+    },
+    {
+      "id": "alignment-field-form-field-gap",
+      "selector": ".ds.field",
+      "specimen": "text",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css (.ds.field)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.field",
+          "contract": "field label-to-payload gap",
+          "sourceExpression": "var(--form-field-label-gap, var(--form-field-label-gap-default)); default var(--spacing-gap-field-block)"
+        }
+      ],
+      "reason": "The reusable Field wrapper owns the label-to-payload relationship. Its leading-description variant and payload internal stack are separate relationships recorded in extras."
+    },
+    {
+      "id": "alignment-password-input-reveal",
+      "selector": ".ds.input.password > .reveal-toggle",
+      "specimen": "password",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/PasswordInput/styles.css (.reveal-toggle)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start",
+          "ownerSelector": ".ds.input.password > .reveal-toggle",
+          "contract": "input-to-action gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-end",
+          "ownerSelector": ".ds.input.password > .reveal-toggle",
+          "contract": "field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "stretch/alignment",
+          "ownerSelector": ".ds.input.password > .reveal-toggle",
+          "contract": "host-owned field row",
+          "sourceExpression": "display:flex; align-items:center; wrapper align-items:stretch"
+        }
+      ],
+      "reason": "The reveal button is a nested action inside the already seated field row; it owns only the input-to-icon gap and trailing field edge inset, not another vertical row."
+    },
+    {
+      "id": "alignment-file-upload-picker",
+      "selector": ".ds.input.file-upload .drop-zone",
+      "specimen": "file",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/FileUploadInput.tsx (.ds-field-frame); packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.file-upload .drop-zone",
+          "contract": "field-framed drop-zone inset",
+          "sourceExpression": "var(--ds-box-padding-inline-start) var(--ds-box-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.file-upload .drop-zone",
+          "contract": "field-framed drop-zone inset",
+          "sourceExpression": "var(--ds-box-padding-block-start) var(--ds-box-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.input.file-upload .drop-zone",
+          "contract": "row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "The real dashed button is a ds-field-frame owner. Its family label as a direct action does not change its actual field-framed geometry."
+    },
+    {
+      "id": "alignment-file-upload-remove-action",
+      "selector": ".ds.input.file-upload .file-item button",
+      "specimen": "file",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css (.file-remove)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.input.file-upload .file-item button",
+          "contract": "file-row remove-action inset",
+          "sourceExpression": "0 0.25rem"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "ownerSelector": ".ds.input.file-upload .file-item button",
+          "contract": "host-owned row boundary",
+          "sourceExpression": "0"
+        }
+      ],
+      "reason": "The nested remove button owns a local inline hit-area inset while deliberately adding no block row geometry."
+    },
+    {
+      "id": "alignment-combobox-reset-action",
+      "selector": ".ds.combobox-reset-button",
+      "specimen": "combobox",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/ResetButton/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.combobox-reset-button",
+          "contract": "nested action inset",
+          "sourceExpression": "var(--ds-inline-inset-action)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block and margin-block",
+          "ownerSelector": ".ds.combobox-reset-button",
+          "contract": "host-owned field row boundary",
+          "sourceExpression": "0"
+        }
+      ],
+      "reason": "The reset action consumes the action inset horizontally but explicitly suppresses Button's independent row ledger because the combobox field owns the line."
+    },
+    {
+      "id": "alignment-form-toggles-checkbox-row",
+      "selector": ".ds.field-toggle > .ds.field-toggle-control",
+      "specimen": "checkbox",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/common/Wrapper/ToggleWrapper.css (.field-toggle-control)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "column-gap",
+          "ownerSelector": ".ds.field-toggle > .ds.field-toggle-control",
+          "contract": "marker-to-label gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.field-toggle > .ds.field-toggle-control",
+          "contract": "regular marker-led row",
+          "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.field-toggle > .ds.field-toggle-control",
+          "contract": "row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "marker offset",
+          "ownerSelector": ".ds.field-toggle > .ds.field-toggle-control > :not(.ds.field-label)",
+          "contract": "first-line marker centering",
+          "sourceExpression": "calc((var(--ds-row-line-height) - var(--ds-leading-mark-canvas)) / 2)"
+        }
+      ],
+      "reason": "Primary owner for the shared ToggleWrapper control row. It owns the marker gap, row seating, compensation, and first-line marker offset."
+    },
+    {
+      "id": "alignment-form-toggles-switch-row",
+      "selector": ".ds.field-toggle > .ds.field-toggle-control",
+      "specimen": "switch",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/common/Wrapper/ToggleWrapper.css (.field-toggle-control)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "column-gap",
+          "ownerSelector": ".ds.field-toggle > .ds.field-toggle-control",
+          "contract": "shared ToggleWrapper marker-to-label gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "row padding, compensation, marker offset",
+          "ownerSelector": ".ds.field-toggle > .ds.field-toggle-control",
+          "contract": "shared regular marker-led row",
+          "sourceExpression": "same .field-toggle-control outputs as checkbox"
+        }
+      ],
+      "reason": "The row contract is identical to the checkbox wrapper. The switch's wider track/knob canvas is a distinct geometry variant recorded in extras.",
+      "equivalentTo": "alignment-form-toggles-checkbox-row"
+    },
+    {
+      "id": "alignment-choices-option-marker",
+      "selector": ".ds.form-choices > .ds.option",
+      "specimen": "choices",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/ChoicesField/styles.css (.ds.option and .form-choices)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "ownerSelector": ".ds.form-choices > .ds.option",
+          "contract": "bare marker-to-label gap",
+          "sourceExpression": "var(--ds-leading-mark-gap)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "group padding-inline",
+          "ownerSelector": ".ds.form-choices",
+          "contract": "unresolved bare marker group inset",
+          "sourceExpression": "var(--ds-leading-mark-group-inset-bare)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block and compensation",
+          "ownerSelector": ".ds.form-choices > .ds.option",
+          "contract": "regular marker-led row",
+          "sourceExpression": "--ds-row-padding-block-start/end and --ds-row-compensation-block-end"
+        },
+        {
+          "axis": "vertical",
+          "property": "marker offset",
+          "ownerSelector": ".ds.form-choices > .ds.option > :is(input[type='radio'], input[type='checkbox'])",
+          "contract": "first-line marker centering",
+          "sourceExpression": "calc((var(--ds-row-line-height) - var(--ds-leading-mark-canvas)) / 2)"
+        }
+      ],
+      "reason": "The option row owns its marker relationship. The group inset variable is referenced but is not declared anywhere in the reference worktree, so no resolved inset value or valid group assignment can be claimed from source alone."
+    },
+    {
+      "id": "alignment-rating-input-glyph",
+      "selector": ".ds.form-rating > .star",
+      "specimen": "rating",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/RatingInput/styles.css (.star-glyph and .star::after)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "mask paint",
+          "ownerSelector": ".ds.form-rating > .star",
+          "contract": "atomic rating paint",
+          "sourceExpression": "width:100%; mask ... / contain"
+        },
+        {
+          "axis": "vertical",
+          "property": "mask paint",
+          "ownerSelector": ".ds.form-rating > .star",
+          "contract": "atomic rating paint",
+          "sourceExpression": "height:100%; mask ... / contain"
+        }
+      ],
+      "reason": "The glyph fills the star canvas and adds no inset, gap, or margin. The cluster gap is the spacing owner."
+    },
+    {
+      "id": "alignment-file-upload-image-preview",
+      "selector": ".ds.input.file-upload .file-item.has-preview",
+      "specimen": "file",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css (.file-item.has-preview and .file-preview)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "row content block-size floor",
+          "ownerSelector": ".ds.input.file-upload .file-item.has-preview",
+          "contract": "thumbnail-bearing row variant",
+          "sourceExpression": "max(var(--ds-row-line-height), var(--ds-thumbnail-canvas-block-size))"
+        },
+        {
+          "axis": "horizontal",
+          "property": "preview-to-filename gap",
+          "ownerSelector": ".ds.input.file-upload .file-item.has-preview",
+          "contract": "file-row child gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "horizontal",
+          "property": "preview canvas",
+          "ownerSelector": ".ds.input.file-upload .file-item.has-preview > .file-preview",
+          "contract": "thumbnail canvas",
+          "sourceExpression": "var(--dimension-400)"
+        }
+      ],
+      "reason": "Adding an image changes the row's intrinsic content floor through the shared ledger; this is a real geometry-changing variant, not merely marker paint."
+    },
+    {
+      "id": "alignment-combobox-multiple-chip-remove-marker",
+      "selector": ".ds.form-combobox > .selected-items > .chip",
+      "specimen": "combobox-multiple",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css (.selected-items > .chip)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "text-to-remove gap",
+          "ownerSelector": ".ds.form-combobox > .selected-items > .chip",
+          "contract": "combobox selected-chip internal gap",
+          "sourceExpression": "gap: 0.25rem"
+        }
+      ],
+      "reason": "The remove icon is a dependent inside the same selected-chip owner; it has no independent margin or padding.",
+      "equivalentTo": "alignment-combobox-multiple-chip-text"
+    },
+    {
+      "id": "alignment-renderer-ds-global-form-subcomponent-radioinput-radioinput",
+      "selector": ".ds.form-radio[type='radio']",
+      "specimen": "radio-input",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/RadioInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "inline-size",
+          "ownerSelector": ".ds.form-radio[type='radio']",
+          "contract": "marker canvas",
+          "sourceExpression": "var(--ds-leading-mark-canvas)"
+        },
+        {
+          "axis": "vertical",
+          "property": "block-size",
+          "ownerSelector": ".ds.form-radio[type='radio']",
+          "contract": "marker canvas",
+          "sourceExpression": "var(--ds-leading-mark-canvas)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "margin",
+          "ownerSelector": ".ds.form-radio[type='radio']",
+          "contract": "atomic marker boundary",
+          "sourceExpression": "0"
+        }
+      ],
+      "reason": "The atomic radio consumes the shared marker canvas but intentionally owns no label gap; a named host row must supply that relationship."
+    },
+    {
+      "id": "alignment-file-upload-file-row",
+      "selector": ".ds.input.file-upload .file-item",
+      "specimen": "file",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css (.file-item)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.file-upload .file-item",
+          "contract": "field outside-edge inset",
+          "sourceExpression": "var(--ds-form-field-padding-inline-start) var(--ds-form-field-padding-inline-end)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "ownerSelector": ".ds.input.file-upload .file-item",
+          "contract": "file-row child gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.file-upload .file-item",
+          "contract": "regular bordered row",
+          "sourceExpression": "var(--ds-row-padding-block-start) var(--ds-row-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.input.file-upload .file-item",
+          "contract": "row trailing compensation",
+          "sourceExpression": "var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "The file item is the actual bordered row owner; filename, size, remove action, and optional thumbnail are dependents or variants within it."
+    },
+    {
+      "id": "alignment-combobox-option-row",
+      "selector": ".ds.combobox-list [role='option']",
+      "specimen": "combobox",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/List/styles.css (.ds.combobox-list > li)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.combobox-list [role='option']",
+          "contract": "attached action-row inset",
+          "sourceExpression": "var(--ds-inline-inset-action)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.combobox-list [role='option']",
+          "contract": "in-box regular row",
+          "sourceExpression": "var(--ds-in-box-row-padding-block-start) var(--ds-in-box-row-padding-block-end)"
+        }
+      ],
+      "reason": "Options own edge-to-edge fill-safe content padding; trailing compensation is folded into block-end padding by the in-box row contract."
+    },
+    {
+      "id": "alignment-color-input-swatch-grid",
+      "selector": ".ds.input.color > .color-popover > .swatch-grid",
+      "specimen": "color",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css (.swatch-grid)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "column-gap",
+          "ownerSelector": ".ds.input.color > .color-popover > .swatch-grid",
+          "contract": "swatch collection gap",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.input.color > .color-popover > .swatch-grid",
+          "contract": "swatch collection gap",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "Despite the catalog's border-aware-inset oracle, the grid has no border or padding. It owns only inter-swatch gaps; the popover owns the outside inset."
+    },
+    {
+      "id": "alignment-color-input-selected-focused-swatch",
+      "selector": ".ds.input.color > .color-popover .swatch.selected:focus",
+      "specimen": "color",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css (.swatch.selected and :focus-visible)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "box-shadow",
+          "ownerSelector": ".ds.input.color > .color-popover .swatch.selected:focus-visible",
+          "contract": "zero-layout state paint",
+          "sourceExpression": "0 0 0 1px var(--form-focus-ring-color)"
+        },
+        {
+          "axis": "vertical",
+          "property": "box-shadow",
+          "ownerSelector": ".ds.input.color > .color-popover .swatch.selected:focus-visible",
+          "contract": "zero-layout state paint",
+          "sourceExpression": "0 0 0 1px var(--form-focus-ring-color)"
+        }
+      ],
+      "reason": "Selected/focused state changes border color and adds a shadow without changing border width, padding, or occupied layout."
+    },
+    {
+      "id": "alignment-rich-choices-frame",
+      "selector": ".ds.form-rich-choices > .ds.option > label",
+      "specimen": "rich-choices",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css (visible label surface)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.form-rich-choices > .ds.option > label",
+          "contract": "uniform framed-surface inset",
+          "sourceExpression": "var(--ds-box-padding-inline-start) var(--ds-box-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.form-rich-choices > .ds.option > label",
+          "contract": "uniform framed-surface inset",
+          "sourceExpression": "var(--ds-box-padding-block-start) var(--ds-box-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "ownerSelector": ".ds.form-rich-choices > .ds.option > label",
+          "contract": "rich-choice content-stack gap",
+          "sourceExpression": "var(--form-group-gap, var(--spacing-gap-field-block))"
+        }
+      ],
+      "reason": "The visible label/card is the real border-aware surface owner. It uses the default surface framed-box contract, unlike form floating panels marked ds-field-frame."
+    },
+    {
+      "id": "alignment-rich-choices-selected-focus",
+      "selector": ".ds.form-rich-choices > .ds.option:has(input:checked) > label",
+      "specimen": "rich-choices",
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css (checked/focus label states)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "box-shadow/border-color",
+          "ownerSelector": ".ds.form-rich-choices > .ds.option:has(input:checked) > label",
+          "contract": "zero-layout state paint",
+          "sourceExpression": "0 0 0 1px var(--form-input-border-color-focus); border width unchanged"
+        },
+        {
+          "axis": "vertical",
+          "property": "box-shadow/border-color",
+          "ownerSelector": ".ds.form-rich-choices > .ds.option:has(input:checked) > label",
+          "contract": "zero-layout state paint",
+          "sourceExpression": "0 0 0 1px var(--form-input-border-color-focus); border width unchanged"
+        }
+      ],
+      "reason": "Selection and focus repaint an already reserved border and add shadow only; the frame geometry remains owned by alignment-rich-choices-frame."
+    },
+    {
+      "id": "alignment-color-input-popover",
+      "selector": ".ds.input.color > .color-popover",
+      "specimen": "color",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/ColorInput.tsx (.ds-field-frame); packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end",
+          "ownerSelector": ".ds.input.color > .color-popover",
+          "contract": "field-framed floating-panel inset",
+          "sourceExpression": "var(--ds-box-padding-inline-start) var(--ds-box-padding-inline-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.color > .color-popover",
+          "contract": "field-framed floating-panel inset",
+          "sourceExpression": "var(--ds-box-padding-block-start) var(--ds-box-padding-block-end)"
+        },
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "ownerSelector": ".ds.input.color > .color-popover",
+          "contract": "popover section gap",
+          "sourceExpression": "var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-start",
+          "ownerSelector": ".ds.input.color > .color-popover",
+          "contract": "anchored floating-surface offset",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "The popover is a real box owner, but TSX marks it ds-field-frame, so its actual insets derive from the field outer inset and row nudge rather than the default surface inset. This is taxonomy pressure against assuming its catalog family."
+    },
+    {
+      "id": "alignment-color-input-hex-row",
+      "selector": ".ds.input.color > .color-popover > .hex-input-row",
+      "specimen": "color",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css (popover .hex-input-row)",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "ownerSelector": ".ds.input.color > .color-popover > .hex-input-row",
+          "contract": "hex-row child gap",
+          "sourceExpression": "0.25rem"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start/end",
+          "ownerSelector": ".ds.input.color > .color-popover > .hex-input-row",
+          "contract": "separator-aware section inset",
+          "sourceExpression": "var(--ds-box-padding-block-start) var(--ds-box-padding-block-end), with --ds-box-border-block-start: var(--form-input-border-width) and --ds-box-inset-block: var(--form-group-gap, var(--form-group-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "border-block-start",
+          "ownerSelector": ".ds.input.color > .color-popover > .hex-input-row",
+          "contract": "layout-bearing section separator",
+          "sourceExpression": "var(--form-input-border-width) solid var(--form-input-border-color)"
+        }
+      ],
+      "reason": "The popover hex row owns an asymmetric real top separator and border-aware block inset; it has zero inline surface inset and a local child gap."
+    },
+    {
+      "id": "alignment-combobox-list",
+      "selector": ".ds.combobox-list",
+      "specimen": "combobox",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/List/List.tsx (.ds-field-frame); packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/common/List/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.combobox-list",
+          "contract": "edge-to-edge attached panel boundary",
+          "sourceExpression": "0"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block",
+          "ownerSelector": ".ds.combobox-list",
+          "contract": "edge-to-edge attached panel boundary",
+          "sourceExpression": "0"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-start",
+          "ownerSelector": ".ds.combobox-list",
+          "contract": "anchored list offset",
+          "sourceExpression": "2px"
+        },
+        {
+          "axis": "horizontal",
+          "property": "border-inline widths",
+          "ownerSelector": ".ds.combobox-list",
+          "contract": "real framed-list boundary",
+          "sourceExpression": "ds-field-frame border inputs; padding reset to 0"
+        }
+      ],
+      "reason": "The list owns a real border and anchor offset but deliberately resets framed-box padding so option fills reach the edge. Its content inset belongs to each option row, not the list."
+    },
+    {
+      "id": "alignment-file-upload-field-shell",
+      "selector": ".ds.field:has(.ds.input.file-upload)",
+      "specimen": "file",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css (.ds.field)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.field:has(.ds.input.file-upload)",
+          "contract": "shared field label-to-payload gap",
+          "sourceExpression": "var(--form-field-label-gap, var(--form-field-label-gap-default))"
+        }
+      ],
+      "reason": "FileUpload uses the same reusable Field wrapper as TextField; this selector adds no file-specific spacing rule.",
+      "equivalentTo": "alignment-field-form-field-gap"
+    },
+    {
+      "id": "alignment-file-upload-input-shell",
+      "selector": ".ds.input.file-upload:has(> .drop-zone)",
+      "specimen": "file",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css (.ds.input.file-upload)",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "ownerSelector": ".ds.input.file-upload:has(> .drop-zone)",
+          "contract": "file-upload section gap",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "The input shell intrinsically separates the picker and the file-list region. The file-list's own inter-row gap is a distinct missing owner recorded in extras."
+    },
+    {
+      "id": "alignment-field-form-label",
+      "selector": ".ds.field-label",
+      "specimen": "text",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/density.css (shared field copy); packages/react/ds-global-form/src/lib/subcomponent/Field/Label/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.field-label",
+          "contract": "field-edge text alignment hook",
+          "sourceExpression": "var(--form-label-padding-inline, 0)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block-start",
+          "ownerSelector": ".ds.field-label",
+          "contract": "body-text baseline seating",
+          "sourceExpression": "var(--typography-text-primary-nudge-block-start)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.field-label",
+          "contract": "body-text trailing alignment compensation",
+          "sourceExpression": "var(--typography-text-primary-nudge-block-end)"
+        }
+      ],
+      "reason": "Primary owner for shared unboxed field copy. It owns typography-alignment padding/margin and defaults to the field edge horizontally."
+    },
+    {
+      "id": "alignment-field-form-description",
+      "selector": ".ds.field-description",
+      "specimen": "text",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/density.css; packages/react/ds-global-form/src/lib/subcomponent/Field/Description/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.field-description",
+          "contract": "shared field-edge text alignment hook",
+          "sourceExpression": "var(--form-label-padding-inline, 0)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding/margin block",
+          "ownerSelector": ".ds.field-description",
+          "contract": "shared body-text baseline seating",
+          "sourceExpression": "--typography-text-primary-nudge-block-start/end"
+        }
+      ],
+      "reason": "Description has the same geometry declaration as Label; only color differs.",
+      "equivalentTo": "alignment-field-form-label"
+    },
+    {
+      "id": "alignment-field-form-error",
+      "selector": ".ds.field-error",
+      "specimen": "text",
+      "disposition": "supporting-evidence",
+      "ownerSource": "packages/react/ds-global-form/src/density.css; packages/react/ds-global-form/src/lib/subcomponent/Field/Error/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.field-error",
+          "contract": "shared field-edge text alignment hook",
+          "sourceExpression": "var(--form-label-padding-inline, 0)"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding/margin block",
+          "ownerSelector": ".ds.field-error",
+          "contract": "shared body-text baseline seating",
+          "sourceExpression": "--typography-text-primary-nudge-block-start/end"
+        }
+      ],
+      "reason": "Error copy has the same geometry declaration as Label; validation changes color only.",
+      "equivalentTo": "alignment-field-form-label"
+    }
+  ],
+  "extras": [
+    {
+      "id": "extra-field-required-marker-gap",
+      "selector": ".ds.field-label[data-required]",
+      "specimen": "text",
+      "activation": "default required field",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/Field/Label/styles.css (.ds.field-label[data-required]::before)",
+      "relationships": [
+        { "axis": "horizontal", "property": "margin-inline-end", "ownerSelector": ".ds.field-label[data-required]::before", "contract": "typographic required-marker separation; normalization decision pending", "sourceExpression": "var(--form-required-marker-gap, 0.25ch)" }
+      ],
+      "reason": "The required asterisk is a real pseudo-element with a typographic gap, independently owned from the label and control-row marker lane. Capture its pseudo style; the ch-based fallback is not evidence for a new spacing bucket."
+    },
+    {
+      "id": "extra-text-prefix-suffix-slots",
+      "selector": ".ds.input.text > :is(.prefix, .suffix)",
+      "specimen": "text",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/TextInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline",
+          "ownerSelector": ".ds.input.text > :is(.prefix, .suffix)",
+          "contract": "field adornment gap and outside inset",
+          "sourceExpression": "--form-field-inline-gap plus --ds-form-field-padding-inline-start/end"
+        }
+      ],
+      "reason": "The Text specimen renders both prefix and suffix slots, but the catalog has no witness on them (its trailing-artwork witness is attached to Number). These slots change the content keyline and reserve intrinsic adornment space."
+    },
+    {
+      "id": "extra-select-multiple-no-artwork-variant",
+      "selector": ".ds.input.select[multiple]",
+      "specimen": "select",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/SelectInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-end",
+          "ownerSelector": ".ds.input.select[multiple]",
+          "contract": "plain field inset without trailing artwork",
+          "sourceExpression": "var(--ds-form-field-padding-inline-end); :not([multiple]) artwork override does not apply"
+        }
+      ],
+      "reason": "Multiple select deliberately restores platform listbox appearance and does not reserve the single-select chevron canvas; it is a geometry-changing variant absent from the catalog."
+    },
+    {
+      "id": "extra-select-chevron-canvas",
+      "selector": ".ds.input.select:not([multiple]) + .select-chevron",
+      "specimen": "select",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/SelectInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "canvas and outside-edge position",
+          "ownerSelector": ".ds.input.select:not([multiple]) + .select-chevron",
+          "contract": "field trailing artwork canvas",
+          "sourceExpression": "--_select-chevron-canvas: 1rem; --_select-canvas-outer-edge-inset: var(--spacing-inset-field-inline)"
+        },
+        {
+          "axis": "vertical",
+          "property": "center position",
+          "ownerSelector": ".ds.input.select:not([multiple]) + .select-chevron",
+          "contract": "zero-layout overlaid artwork",
+          "sourceExpression": "top: calc(anchor(center) - (var(--_select-chevron-canvas) / 2))"
+        }
+      ],
+      "reason": "The native select witness sees reserved end padding, but no catalog witness directly accounts for the absolutely positioned artwork canvas and its logical-edge anchoring."
+    },
+    {
+      "id": "extra-range-control-intercontrol-gap",
+      "selector": ".ds.range-control",
+      "specimen": "range",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/RangeField/common/RangeControl/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "ownerSelector": ".ds.range-control",
+          "contract": "range slider-to-number relationship",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "Catalog witnesses cover both children independently but omit the parent-owned gap between them."
+    },
+    {
+      "id": "extra-rating-cluster-gap",
+      "selector": ".ds.form-rating",
+      "specimen": "rating",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/RatingInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "ownerSelector": ".ds.form-rating",
+          "contract": "rating-star optical gap",
+          "sourceExpression": "var(--ds-rating-star-optical-gap-inline)"
+        }
+      ],
+      "reason": "The catalog selects stars/glyphs, but the cluster is the only spacing owner between stars."
+    },
+    {
+      "id": "extra-choices-group-layout-gap",
+      "selector": ".ds.form-choices:is(.inline, .stacked, .columns)",
+      "specimen": "choices",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/ChoicesField/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "column-gap",
+          "ownerSelector": ".ds.form-choices:is(.inline, .stacked, .columns)",
+          "contract": "choice-group option separation",
+          "sourceExpression": "var(--container-gap-loose)"
+        },
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.form-choices:is(.inline, .stacked, .columns)",
+          "contract": "choice-group option separation",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "Option witnesses capture within-row marker geometry but omit the parent-owned spacing between wrapped, stacked, or columnar options."
+    },
+    {
+      "id": "extra-rich-choices-group-gap",
+      "selector": ".ds.form-rich-choices",
+      "specimen": "rich-choices",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/component/RichChoicesField/styles.css",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.form-rich-choices",
+          "contract": "rich-choice card separation",
+          "sourceExpression": "var(--form-group-gap, var(--spacing-gap-field-block))"
+        }
+      ],
+      "reason": "The frame witness covers each card, not the grid-owned gap between cards."
+    },
+    {
+      "id": "extra-field-payload-stack-gap",
+      "selector": ".ds.field > .payload",
+      "specimen": "text",
+      "activation": "submit-form",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.field > .payload",
+          "contract": "field payload child separation",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "The field witness names the outer label-to-payload gap, but the payload grid independently owns description/control/error separation."
+    },
+    {
+      "id": "extra-field-leading-description-gap-variant",
+      "selector": ".ds.field:has(> .payload > .ds.field-description:first-child)",
+      "specimen": "text",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.field:has(> .payload > .ds.field-description:first-child)",
+          "contract": "label-to-leading-description gap",
+          "sourceExpression": "var(--form-field-label-description-gap, var(--form-field-label-description-gap-default))"
+        }
+      ],
+      "reason": "This structural state replaces the default label-to-payload gap and is a geometry-changing Field variant not separately witnessed."
+    },
+    {
+      "id": "extra-toggle-field-stack-gap",
+      "selector": ".ds.field.field-toggle",
+      "specimen": "checkbox",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/common/Wrapper/ToggleWrapper.css",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.field.field-toggle",
+          "contract": "toggle-field section gap",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "Catalog toggle witnesses select only the control row; the outer ToggleWrapper owns spacing among optional heading, control row, description, and error."
+    },
+    {
+      "id": "extra-color-inline-hex-row-variant",
+      "selector": ".ds.input.color.inline > .hex-input-row",
+      "specimen": "color",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ColorInput/ColorInput.tsx (.ds-field-frame when no swatches); packages/react/ds-global-form/src/lib/subcomponent/ColorInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "padding-inline-start/end and gap",
+          "ownerSelector": ".ds.input.color.inline > .hex-input-row",
+          "contract": "inline field-framed hex row",
+          "sourceExpression": "ds-field-frame --ds-box-padding-inline-* plus gap var(--form-field-inline-gap, var(--form-field-inline-gap-default))"
+        },
+        {
+          "axis": "vertical",
+          "property": "padding-block and compensation",
+          "ownerSelector": ".ds.input.color.inline > .hex-input-row",
+          "contract": "inline regular field row",
+          "sourceExpression": "ds-field-frame --ds-box-padding-block-* plus margin-block-end var(--ds-row-compensation-block-end)"
+        }
+      ],
+      "reason": "Hex-only ColorInput moves the frame from the nested input to the row and makes the input borderless, a different owner graph from the popover specimen."
+    },
+    {
+      "id": "extra-file-upload-file-list-gap",
+      "selector": ".ds.input.file-upload > .file-list",
+      "specimen": "file",
+      "activation": "select-file",
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/FileUploadInput/styles.css",
+      "relationships": [
+        {
+          "axis": "vertical",
+          "property": "gap",
+          "ownerSelector": ".ds.input.file-upload > .file-list",
+          "contract": "file-row separation",
+          "sourceExpression": "var(--form-group-gap, var(--form-group-gap-default))"
+        }
+      ],
+      "reason": "The input shell gap separates major regions; the list independently owns separation between repeated file rows."
+    },
+    {
+      "id": "extra-combobox-selected-items-layout",
+      "selector": ".ds.form-combobox > .selected-items",
+      "specimen": "combobox-multiple",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/ComboboxInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "gap",
+          "ownerSelector": ".ds.form-combobox > .selected-items",
+          "contract": "selected-chip separation",
+          "sourceExpression": "var(--space-050)"
+        },
+        {
+          "axis": "vertical",
+          "property": "row-gap",
+          "ownerSelector": ".ds.form-combobox > .selected-items",
+          "contract": "wrapped selected-chip separation",
+          "sourceExpression": "var(--space-050)"
+        },
+        {
+          "axis": "vertical",
+          "property": "margin-block-end",
+          "ownerSelector": ".ds.form-combobox > .selected-items",
+          "contract": "selected-items-to-input separation",
+          "sourceExpression": "var(--space-050)"
+        }
+      ],
+      "reason": "Chip witnesses capture one chip's internal geometry but omit the wrapping container's gap and its margin before the input."
+    },
+    {
+      "id": "extra-switch-track-canvas-variant",
+      "selector": ".ds.form-switch",
+      "specimen": "switch",
+      "activation": null,
+      "disposition": "token-owner",
+      "ownerSource": "packages/react/ds-global-form/src/lib/subcomponent/SwitchInput/styles.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "track inline-size",
+          "ownerSelector": ".ds.form-switch",
+          "contract": "switch marker canvas",
+          "sourceExpression": "calc(var(--ds-leading-mark-canvas) * 2)"
+        },
+        {
+          "axis": "vertical",
+          "property": "track block-size",
+          "ownerSelector": ".ds.form-switch",
+          "contract": "switch marker canvas",
+          "sourceExpression": "var(--ds-leading-mark-canvas)"
+        },
+        {
+          "axis": "horizontal",
+          "property": "knob inset and travel",
+          "ownerSelector": ".ds.form-switch::before",
+          "contract": "switch internal marker geometry",
+          "sourceExpression": "--switch-knob-inset: 1px; translate derives from track width, knob size, and both insets"
+        }
+      ],
+      "reason": "The shared toggle-row witness does not account for the switch's 2:1 marker canvas or knob inset/travel, which differ from checkbox geometry."
+    },
+    {
+      "id": "extra-form-subgrid-columns-boundary",
+      "selector": ".ds.form",
+      "specimen": "form-shell",
+      "activation": null,
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global-form/src/index.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "grid-template-columns/grid-column",
+          "ownerSelector": ".ds.form",
+          "contract": "external application layout boundary",
+          "sourceExpression": "grid-template-columns: subgrid; grid-column: 1 / -1"
+        }
+      ],
+      "reason": "The form inherits its columns from the containing application grid. This is layout composition, not a component inset bucket; only the form's row-gap is intrinsic."
+    },
+    {
+      "id": "extra-field-grid-placement-boundary",
+      "selector": ".ds.field",
+      "specimen": "text",
+      "activation": null,
+      "disposition": "non-spacing-boundary",
+      "ownerSource": "packages/react/ds-global-form/src/lib/common/Wrapper/styles.css; packages/react/ds-global-form/src/index.css",
+      "relationships": [
+        {
+          "axis": "horizontal",
+          "property": "grid-column placement",
+          "ownerSelector": ".ds.field, .form-layout-side",
+          "contract": "external application layout boundary",
+          "sourceExpression": "--form-field-columns, --form-label-columns, and --form-payload-columns"
+        }
+      ],
+      "reason": "These hooks place Field regions into the parent subgrid and may be set by application composition. They do not establish intrinsic edge padding or a component spacing token."
+    }
+  ],
+  "coverage": {
+    "familiesVisited": 7,
+    "axesVisited": [
+      "horizontal",
+      "vertical"
+    ],
+    "uniqueCatalogWitnesses": 54,
+    "catalogRecords": 54,
+    "catalogDispositionCounts": {
+      "token-owner": 29,
+      "supporting-evidence": 19,
+      "non-spacing-boundary": 6
+    },
+    "extraRecords": 16,
+    "extraDispositionCounts": {
+      "token-owner": 14,
+      "supporting-evidence": 0,
+      "non-spacing-boundary": 2
+    },
+    "unresolvedCatalogIds": []
+  },
+  "taxonomyPressure": [
+    "The source reference ds-global-form Choices stylesheet consumes --ds-leading-mark-group-inset-bare, but that custom property is not declared anywhere in the reference worktree. The bare group inset is therefore unresolved and cannot support a measured/token assignment from source alone.",
+    "alignment-phone-input-country-divider is cataloged as zero-layout-paint, but source implements border-inline-end on the country select. It is a layout-bearing internal divider and must be accounted with the adjacent gaps.",
+    "alignment-color-input-swatch-grid is cataloged with a border-aware-inset oracle, but the grid owns no border or padding; it owns only row/column gaps. The parent popover owns its outside inset.",
+    "ColorInput popover and FileUpload drop zone are framed panels/buttons marked ds-field-frame. They consume field outside-edge/row-nudge geometry, not the default surface framed-box insets suggested by their catalog families.",
+    "Combobox list is also marked ds-field-frame but resets padding to zero; its options own action-inline and in-box block padding. Treating the list itself as a padded sectioned panel would double-count the inset.",
+    "The FORM catalog undercounts container-owned relationships: parent gaps for Range, Rating, Choices, RichChoices, Field payloads, ToggleWrapper, file lists, and selected Combobox chips are absent even though they change rendered geometry.",
+    "The multiple-select, inline ColorInput, thumbnail-bearing file row, switch track, and text/number adornment forms are geometry-changing variants. A component-name-level denominator would collapse materially different owner graphs.",
+    "Shared field geometry is genuinely centralized: Text, plain Number, Date, DateTime, Time, and Combobox input frames are dependents of one border-aware field/regular-row owner. Select artwork, Textarea multiline block behavior, Password reveal, Phone partitions, and nested Color hex input are not equivalent extensions of that owner.",
+    "Unboxed Label, Description, and Error copy share one typography-alignment owner; Description and Error are evidence dependents, while Field/Toggle/Form wrappers independently own semantic gaps around those leaves.",
+    "Form and Field subgrid column placement is an explicit application-layout boundary. It must remain outside component spacing buckets even though the same elements intrinsically own vertical gaps.",
+    "Composite witness geometry must retain split ownership. In Text, Number, Password, and Combobox, the outer wrapper owns real borders and trailing compensation while the child input owns padding; adornment slots/actions own intervening gaps. A measured outer-to-text distance is not the algebraic sum of wrapper border and child padding when another flex item intervenes."
+  ]
+}

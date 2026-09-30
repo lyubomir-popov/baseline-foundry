@@ -60,6 +60,14 @@ Read in this order:
 - Demos dogfood BF contracts and include only the minimum local specimen CSS
   required to frame or isolate the component.
 
+## Baseline Foundry and Pragma
+
+- BF is the owner's fast sandbox. Spacing and typography decisions are proven
+  here first, then reimplemented in the official Pragma repository; the two
+  keep separate goals but implement shared spacing decisions in sync.
+- Pragma-targeted planning packages may live in BF. Pragma source code never
+  does. Neither repository's measured values are evidence for the other.
+
 ## Spec workflow
 
 - Load Spec Kit commands/templates only when the user requests spec work.
