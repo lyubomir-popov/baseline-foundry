@@ -42,6 +42,7 @@ interface Box {
   parent: number;
   top: number;
   height: number;
+  lineHeight: number;
   marginBottom: number;
   paddingTop: number;
   probes: number[];
@@ -64,6 +65,7 @@ export interface BodyLineRhythmRecord {
   rootSize: number;
   epsilon: Record<string, number>;
   maxPhaseResidual: number;
+  maxWholeStepOffset: number;
   exceptions: Record<string, { measured: number; predicted: number | null; }>;
 }
 
@@ -190,6 +192,7 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
                 parent: elements.indexOf(element.parentElement as HTMLElement),
                 top: rect.top,
                 height: rect.height,
+                lineHeight: Number.parseFloat(styles.lineHeight),
                 marginBottom: Number.parseFloat(styles.marginBottom),
                 paddingTop: Number.parseFloat(styles.paddingTop),
                 probes: Array.from(element.children)
@@ -211,7 +214,7 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
         const { baselineUnit, step, roles } = expectations[tier];
         const stepPx = step * rootSize;
         const label = `${tier} at a ${rootSize}px root`;
-        const record: BodyLineRhythmRecord = { tier, rootSize, epsilon: {}, maxPhaseResidual: 0, exceptions: {} };
+        const record: BodyLineRhythmRecord = { tier, rootSize, epsilon: {}, maxPhaseResidual: 0, maxWholeStepOffset: 0, exceptions: {} };
         const offset = (node: TreeNode) => node.probes[0] - node.top;
 
         // AC-5 phase translation and whole-step tops.
@@ -236,6 +239,17 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
         assert(plainH3.tag === "h3" && classedH3.tag === "p" && classedH3.role === "h3"
           && Math.abs(plainH3.height - classedH3.height) <= 0.01 && plainH3.paddingTop === classedH3.paddingTop && plainH3.marginBottom === classedH3.marginBottom,
         `Expected ${label} opted h3 and p.bf-h3 to occupy the same box; got ${JSON.stringify([plainH3, classedH3])}.`);
+
+        // AC-5 independent of computeBodyLineRhythm: the step is the rendered body line height and |ε| stays under 1/16 of the root (research R2).
+        const renderedStep = opted.children[0].lineHeight;
+        const epsilonBound = rootSize / 16;
+        assert(opted.children[0].role === "body" && renderedStep > 0, `Expected ${label} opted matrix to open with a body paragraph.`);
+        const assertOnRenderedStep = (distance: number, what: string) => {
+          const off = offStep(distance, renderedStep);
+          record.maxWholeStepOffset = Math.max(record.maxWholeStepOffset, off);
+          assert(off <= epsilonBound, `Expected ${label} ${what} first baseline within ${epsilonBound}px of a whole ${renderedStep}px body line; off by ${off}px.`);
+        };
+        opted.children.forEach(node => assertOnRenderedStep(node.probes[0] - opted.top, `opted matrix ${node.tag} (${node.role}), from the flow top,`));
 
         // AC-7 nested non-opted theme resolves the current ledger.
         const nested = flow("nested", "matrix");
@@ -263,6 +277,7 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
               assert(Math.abs(distance - lineHeight * rootSize) <= TOLERANCE_PX, `Expected ${label} ${variant} ${heading.tag} line ${line + 1} to follow line ${line} by ${lineHeight}rem; got ${distance}px.`);
             }
             if (variant !== "opted") continue;
+            assertOnRenderedStep(heading.probes[0] - heading.top, `opted wrapped ${heading.tag} line 1, from its top,`);
             const advance = following.top - heading.top;
             const key = `wrapped ${heading.tag} at ${heading.probes.length} lines, following`;
             if (WRAPPED_QUALIFYING[tier].includes(heading.role)) {
@@ -359,6 +374,27 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
 
     assert(runtimeErrors.length === 0, `Expected the body-line rhythm demo console to remain clean; received ${runtimeErrors.join(" | ")}.`);
     await page.close();
+
+    // The demo switches tiers by class on the editorial bundle; spot-check the direct non-editorial bundles too.
+    for (const tier of ["documentation", "app", "os"] as const) {
+      const direct = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 1024, height: 600 } });
+      const url = `${origin}/__body-line-direct-${tier}.html`;
+      await direct.route(url, route => route.fulfill({
+        contentType: "text/html",
+        body: `<!doctype html><html><head><link rel="stylesheet" href="/dist/tiers/${tier}/styles.css"></head><body class="bf-theme is-body-line-rhythm"><div class="bf-prose" style="gap:0"><h1>Heading</h1><p>Body</p></div></body></html>`
+      }));
+      await direct.goto(url, { waitUntil: "load" });
+      const [h1, p] = await direct.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>(".bf-prose > *")).map(element => {
+        const styles = getComputedStyle(element);
+        return { top: element.getBoundingClientRect().top, paddingTop: Number.parseFloat(styles.paddingTop), marginBottom: Number.parseFloat(styles.marginBottom), lineHeight: Number.parseFloat(styles.lineHeight) };
+      }));
+      const expected = expectations[tier].roles.h1;
+      const advance = p.top - h1.top;
+      assert(Math.abs(h1.paddingTop - (expected.nudge + expected.phase) * 16) <= TOLERANCE_PX && Math.abs(h1.marginBottom - expected.closure * 16) <= TOLERANCE_PX,
+        `Expected dist/tiers/${tier}/styles.css h1 to take nudge + phase ${(expected.nudge + expected.phase) * 16}px and closure ${expected.closure * 16}px; got ${h1.paddingTop}px and ${h1.marginBottom}px.`);
+      assert(advance > 0 && offStep(advance, p.lineHeight) <= TOLERANCE_PX, `Expected dist/tiers/${tier}/styles.css h1 to p advance of whole ${p.lineHeight}px body lines; got ${advance}px.`);
+      await direct.close();
+    }
   } finally {
     await browser.close();
   }
@@ -388,5 +424,9 @@ export function formatBodyLineRhythmRecords(records: BodyLineRhythmRecord[]): st
   }
   const maxResidual = Math.max(...records.map(record => record.maxPhaseResidual));
   lines.push("", `Max |opted - current - phase| across tiers, roles and roots: ${maxResidual.toFixed(4)}px.`);
+  for (const size of ROOT_SIZES) {
+    const maxOffset = Math.max(...records.filter(record => record.rootSize === size).map(record => record.maxWholeStepOffset));
+    lines.push(`Max first-baseline distance from a whole rendered body line @${size}px: ${maxOffset.toFixed(3)}px (bound ${size / 16}px).`);
+  }
   return lines.join("\n");
 }

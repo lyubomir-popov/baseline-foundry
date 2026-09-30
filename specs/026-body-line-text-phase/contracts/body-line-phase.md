@@ -190,14 +190,25 @@ ledger.
 
 ## Rendered obligations
 
-All rendered checks are differential. Absolute phase is not asserted:
+Rendered checks are differential, plus one bounded absolute check that does
+not use `computeBodyLineRhythm`. Absolute phase is not asserted to 0.1px:
 Chromium rounds ascent, descent and half-leading to whole pixels, so |ε|
 reaches 0.906px at 16px and 1.813px at 32px (research R2 cross-check).
 
 - Engine: Chromium, DPR 1. Roots 16px and 32px. Tiers editorial,
-  documentation, app, os. Tolerance 0.1px throughout.
+  documentation, app, os. Tolerance 0.1px unless stated.
 - Probe: a zero-height `inline-block` element on the baseline at the start of
   each line. `elementTop` is the element's border-box top.
+- **Whole body lines, independent (AC-5)**: the step is the computed
+  `line-height` of the opted matrix's first `p`. In the opted one-line matrix
+  `probe − flowTop`, and for each opted wrapped heading `line 1 probe −
+  elementTop`, is within `root / 16` (1px at 16px, 2px at 32px) of a whole
+  step. The bound exceeds max |ε| plus the per-element 1/64px drift and is
+  below every bU, so a phase off by one bU fails.
+- **Direct bundles**: `dist/tiers/{documentation,app,os}/styles.css`, loaded
+  directly at a 16px root with the modifier on the root, give a prose `h1`
+  `nudge + phase` block-start padding and the closure as bottom margin
+  (0.1px), and an `h1` to `p` advance of whole rendered body lines.
 - Fixtures: the same markup in an opted and a non-opted column, each in a
   zero-gap `.bf-prose` flow (demo-local `gap: 0` specimen rule). The
   metric-flush pair sits in `.bf-prose.bf-stack.is-metric-flush` so both the

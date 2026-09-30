@@ -481,6 +481,10 @@ holds everywhere else.”
   `line 2 − line 1` for exceptions. Absolute ε is recorded, never asserted
   (R2 cross-check). Element-to-previous measurement avoids Chromium's
   −1/64px per-element layout drift (tops measured 31.984, 87.969, 127.953).
+  Because differential checks share `computeBodyLineRhythm` with the build,
+  one bounded absolute check backs them: first baselines sit within
+  `root / 16` of a whole rendered body line, which a one-bU phase error
+  exceeds.
 - **T6** – a prose `li` with a direct `p`/`.bf-body` child zeroes its
   block-start padding and closure; its paragraphs carry the terms (R6). The
   zeroes are carried by `--bf-body-loose-item-start`/`-end`, which the nested
