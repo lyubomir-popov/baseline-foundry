@@ -336,7 +336,7 @@ export function validateTypographicSpecimen(pageCatalogJs: string, specimenHtml:
   assert(!specimenHtml.includes('bf-card'), "Expected typographic-specimen.html to avoid decorative card wrappers.");
 }
 
-/** Spec 026 T014: the body-line comparison route dogfoods BF and keeps its candidate rules page-local. */
+/** Spec 026 T014: the body-line comparison route dogfoods BF and keeps its specimen rules page-local. */
 export function validateBodyLineRhythmDemo(pageCatalogJs: string, html: string, css: string, js: string): void {
   const pageName = "demo/spec/body-line-rhythm.html";
   assertNoDuplicateClassAttributes(pageName, html);
@@ -358,27 +358,21 @@ export function validateBodyLineRhythmDemo(pageCatalogJs: string, html: string, 
   }
   assert(!html.includes("is-body-line-rhythm"), `Expected ${pageName} to drop the retired is-body-line-rhythm modifier.`);
   assert((html.match(/data-body-line-root="baseline-host"\s*>\s*<div\s+class="bf-theme bf-tier-editorial"\s+data-body-line-root="nested-default"/g) ?? []).length === 2, `Expected ${pageName} to nest a default theme directly inside an opted-out root for the matrix and the lists.`);
-  for (const [flowName, count] of [["ledger", 2], ["matrix", 3], ["hgroup", 2], ["wrapped", 2], ["tight", 3], ["loose", 3], ["nested-list", 3], ["ordered", 2], ["flush", 2], ["rule", 2], ["quote", 2]] as const) {
+  for (const [flowName, count] of [["ledger", 2], ["prose-gap", 2], ["stack", 2], ["section", 2], ["component", 2], ["matrix", 3], ["hgroup", 2], ["wrapped", 2], ["tight", 3], ["loose", 3], ["nested-list", 3], ["ordered", 2], ["flush", 2], ["rule", 2], ["quote", 2]] as const) {
     assert((html.match(new RegExp(`data-body-line-flow="${flowName}"`, "g")) ?? []).length === count, `Expected ${pageName} to render ${count} ${flowName} fixtures.`);
   }
-  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 26, `Expected every ${pageName} fixture flow to use the zero-gap specimen and the body-line ruling.`);
+  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 26, `Expected every ${pageName} zero-gap fixture flow to use the zero-gap specimen and the body-line ruling.`);
+  // Owner ruling R6: the container-gap fixtures run on BF's own gaps, with no specimen gap override.
+  assert((html.match(/class="bf-prose body-line-ruling"\s+data-body-line-flow="prose-gap"/g) ?? []).length === 2
+    && (html.match(/class="bf-stack body-line-ruling"\s+data-body-line-flow="(?:stack|component)"/g) ?? []).length === 4
+    && (html.match(/class="bf-section body-line-ruling"\s+data-body-line-flow="section"/g) ?? []).length === 2, `Expected ${pageName} to show prose, stack, section and text-component-text flows on BF's own gaps.`);
+  assert((html.match(/<p>Before the component<\/p>\s*<div class="bf-cluster">\s*<button class="bf-button" type="button">Action<\/button>\s*<\/div>\s*<p>After the component<\/p>/g) ?? []).length === 2, `Expected ${pageName} to show the text, component, text exception in both columns.`);
   assert((html.match(/<hgroup>\s*<h1>[^<]+<\/h1>\s*<h2>/g) ?? []).length === 2 && (html.match(/<hgroup>\s*<h1>[^<]+<\/h1>\s*<p>/g) ?? []).length === 2, `Expected ${pageName} to show hgroup h1 + h2 and h1 + p specimens in both columns.`);
   assert((html.match(/<li>\s*Nested item one\s*<ul>\s*<li>Third level one<\/li>/g) ?? []).length === 3, `Expected ${pageName} nested lists to reach three levels.`);
   assert((html.match(/class="bf-prose bf-stack is-metric-flush body-line-flow"/g) ?? []).length === 2, `Expected ${pageName} metric-flush pairs to sit in .bf-prose.bf-stack.is-metric-flush.`);
-  for (const option of ["a", "b", "c", "d"]) {
-    assert(html.includes(`data-body-line-gap="${option}"`) && html.includes(`(${option}) `), `Expected ${pageName} to show labelled D4 option (${option}).`);
-  }
-  assert(html.includes("not public API") && css.includes("not public API") && css.includes("None of these classes is Baseline Foundry public API"), `Expected ${pageName} and its stylesheet to label the D4 candidates as not public API.`);
-  for (const rule of [
-    ".body-line-gap-b.bf-stack {\n  gap: round(up, var(--bf-stack-space), var(--bf-body-rhythm-step));",
-    ".body-line-gap-b .bf-prose {\n  gap: round(up, var(--bf-section-space-shallow), var(--bf-body-rhythm-step));",
-    ".body-line-gap-c .bf-prose {\n  gap: 0;",
-    ".body-line-gap-d.bf-stack {\n  gap: round(down, var(--bf-stack-space), var(--bf-body-rhythm-step));",
-    ".body-line-gap-d .bf-prose {\n  gap: round(down, var(--bf-section-space-shallow), var(--bf-body-rhythm-step));",
-    ".body-line-flow {\n  gap: 0;"
-  ]) {
-    assert(css.includes(rule), `Expected demo/body-line-rhythm.css to contain the specimen rule ${rule.split("\n")[0]}.`);
-  }
+  // Owner ruling R6 closes D4 as option (c); the candidate specimens are gone.
+  assert(html.includes("Container gaps – ruled (c)") && !html.includes("data-body-line-gap=") && !/\((?:a|b|d)\) (?:Unchanged|Candidate)/.test(html) && !css.includes("body-line-gap-") && !css.includes("round("), `Expected ${pageName} to show one ruled (c) specimen and drop the D4 candidates.`);
+  assert(css.includes("None of these classes is Baseline Foundry public API") && css.includes(".body-line-flow {\n  gap: 0;"), "Expected demo/body-line-rhythm.css to keep only labelled page-local specimen rules.");
   const selectors = Array.from(css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{/g), match => match[1].trim());
   assert(selectors.length > 0 && selectors.every(selector => selector.startsWith(".body-line-")), `Expected demo/body-line-rhythm.css to scope every rule to a page-local body-line-* specimen class; got ${selectors.join(" | ")}.`);
   assert(js.includes('"bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os"') && js.includes('"is-dark", "is-light"'), "Expected demo/body-line-rhythm.js to mirror the page tier and tone onto nested comparison roots.");

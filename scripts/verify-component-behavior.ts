@@ -500,11 +500,14 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
       assertSharedHeight("single-line interface", interfaceComponents);
-      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - interfaceReference.textTop) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
-      assertSharedHeight("text-run", occupiedBlockGeometry.textRuns.filter(sample => sample.label !== "Prose list"));
-      // Spec 026 R3: a one-item prose list is a container-owned body-line block, roundUp(nudge + phase, step) + one line = two body lines in every tier.
-      const proseListRun = occupiedBlockGeometry.textRuns.find(sample => sample.label === "Prose list");
-      assert(proseListRun && Math.abs(proseListRun.height - 2 * occupiedBlockGeometry.bodyLine) <= renderedBorderTolerance, `Expected ${tier} one-item prose list specimen to occupy two ${occupiedBlockGeometry.bodyLine}px body lines; got ${JSON.stringify(proseListRun)}.`);
+      // Spec 026 R7: the reference is a bare page p, body-line phased; components keep the bU ledger one body phase above it.
+      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - (interfaceReference.textTop - occupiedBlockGeometry.bodyPhase)) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline less its ${occupiedBlockGeometry.bodyPhase}px body phase; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
+      // Spec 026 R7: page paragraphs and the prose list are body-line flow text; the other text runs keep the bU ledger.
+      const bodyLineRunLabels = ["Baseline reference", "Paragraph", "Prose list"];
+      assertSharedHeight("text-run", occupiedBlockGeometry.textRuns.filter(sample => !bodyLineRunLabels.includes(sample.label)));
+      // Spec 026 R3/R7: a one-line paragraph and a one-item prose list close to two body lines in every tier.
+      const bodyLineRuns = occupiedBlockGeometry.textRuns.filter(sample => bodyLineRunLabels.includes(sample.label));
+      assert(bodyLineRuns.length === 3 && bodyLineRuns.every(sample => Math.abs(sample.height - 2 * occupiedBlockGeometry.bodyLine) <= renderedBorderTolerance), `Expected ${tier} one-line paragraph and one-item prose list specimens to occupy two ${occupiedBlockGeometry.bodyLine}px body lines; got ${JSON.stringify(bodyLineRuns)}.`);
       const nestedReference = occupiedBlockGeometry.nested[0];
       const nestedHosts = occupiedBlockGeometry.nested.slice(1);
       assertSharedHeight("nested host", nestedHosts);
@@ -516,10 +519,12 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         const delta = Math.abs(phase - interfaceReferencePhase);
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
       }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
-      // Spec 026: the prose list's first baseline sits one body phase lower, on the body-line grid.
-      const runTextTop = (sample: { label: string; textTop: number | null }) => sample.textTop === null ? null : sample.textTop - (sample.label === "Prose list" ? occupiedBlockGeometry.bodyPhase : 0);
-      assert(Number.isFinite(occupiedBlockGeometry.bodyPhase) && occupiedBlockGeometry.textRuns.every(sample => runTextTop(sample) === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs((runTextTop(sample) ?? 0) - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline, the prose list one ${occupiedBlockGeometry.bodyPhase}px body phase lower; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
-      assert(occupiedBlockGeometry.nested.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || Math.abs(sample.textTop - nestedReference.textTop) <= renderedBorderTolerance), `Expected ${tier} nested host text to retain the page baseline while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
+      // Spec 026: body-line text sits one body phase lower than the bU ledger, so compare every run at its bU-ledger baseline.
+      const runTextTop = (sample: { label: string; textTop: number | null }) => sample.textTop === null ? null : sample.textTop - (bodyLineRunLabels.includes(sample.label) ? occupiedBlockGeometry.bodyPhase : 0);
+      const referenceRunTop = runTextTop(occupiedBlockGeometry.textRuns[0]);
+      assert(Number.isFinite(occupiedBlockGeometry.bodyPhase) && occupiedBlockGeometry.textRuns.every(sample => runTextTop(sample) === null || referenceRunTop === null || Math.abs((runTextTop(sample) ?? 0) - referenceRunTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline, body-line text one ${occupiedBlockGeometry.bodyPhase}px body phase lower; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
+      // Spec 026 R7: the nested reference is a bare page p, body-line phased; nested hosts keep the bU ledger.
+      assert(nestedHosts.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || Math.abs(sample.textTop - (nestedReference.textTop - occupiedBlockGeometry.bodyPhase)) <= renderedBorderTolerance), `Expected ${tier} nested host text to retain the page baseline less the ${occupiedBlockGeometry.bodyPhase}px body phase while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
       assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
       for (const label of ["Chip", "Tab action", "Color input", "Range control"] as const) {
@@ -3005,8 +3010,12 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
   };
 
   const assertExtendedPointerTarget = async (selector: string, label: string): Promise<void> => {
-    const targets = await page.locator(selector).evaluateAll(elements => elements.map(element => {
-      const target = element as HTMLElement;
+    const targets = await page.locator(selector).evaluateAll(elements => {
+      // Spec 026 R7: taller body-line page text moves fixtures under the fixed demo footer, which must not intercept these samples.
+      const suspendChrome = document.createElement("style");
+      suspendChrome.textContent = "[data-page-chrome], [data-page-chrome] * { pointer-events: none !important; }";
+      document.head.append(suspendChrome);
+      const measured = elements.map(element => {      const target = element as HTMLElement;
       const rect = target.getBoundingClientRect();
       const extension = getComputedStyle(target, "::after");
       const extensionWidth = Number.parseFloat(extension.width);
@@ -3052,7 +3061,10 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         interiorMisses,
         interiorSamples
       };
-    }));
+      });
+      suspendChrome.remove();
+      return measured;
+    });
 
     for (const target of targets) {
       assert(
@@ -3979,6 +3991,7 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
           paddingTop: Number.parseFloat(firstStylesBefore.paddingTop),
           paddingBottom: Number.parseFloat(firstStylesBefore.paddingBottom),
           marginBottom: Number.parseFloat(firstStylesBefore.marginBottom),
+          lineHeight: Number.parseFloat(firstStylesBefore.lineHeight),
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
         };
         internalFirst.style.setProperty("--bf-body-space-after", "99rem");
@@ -3990,6 +4003,7 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
           paddingTop: Number.parseFloat(firstStylesAfter.paddingTop),
           paddingBottom: Number.parseFloat(firstStylesAfter.paddingBottom),
           marginBottom: Number.parseFloat(firstStylesAfter.marginBottom),
+          lineHeight: Number.parseFloat(firstStylesAfter.lineHeight),
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
         };
         const ruleRect = rule.getBoundingClientRect();
@@ -4014,9 +4028,12 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
       const tolerance = 0.1;
       assert(state.before.internalGap > 0, `Expected ${tier} default bf-stack to own a positive internal gap.`);
       assert(state.before.sectionGap > state.before.internalGap, `Expected ${tier} bf-stack.is-section gap (${state.before.sectionGap}px) to exceed the internal gap (${state.before.internalGap}px).`);
-      assert(Math.abs(state.before.firstToSecond - (state.before.internalGap + state.before.marginBottom)) <= tolerance, `Expected ${tier} adjacent stack geometry to comprise the container gap plus baseline-compensation margin.`);
+      // Spec 026 R6: two adjacent text blocks space themselves by their closure; the stack gap between them is cancelled.
+      assert(Math.abs(state.before.firstToSecond - state.before.marginBottom) <= tolerance, `Expected ${tier} adjacent stack text to be separated by its body-line closure alone, the ${state.before.internalGap}px stack gap cancelled; got ${state.before.firstToSecond}px, closure ${state.before.marginBottom}px.`);
       assert(state.before.paddingBottom === 0, `Expected ${tier} text roles to retain zero padding-block-end, got ${state.before.paddingBottom}px.`);
-      assert(Math.abs(state.before.paddingTop + state.before.marginBottom - state.before.baseline) <= tolerance, `Expected ${tier} top nudge plus bottom-margin compensation to equal one ${state.before.baseline}px baseline unit.`);
+      // Spec 026 R7: page text closes nudge + phase + line + closure to whole body lines instead of nudge + closure to one bU.
+      const occupiedLines = (state.before.paddingTop + state.before.lineHeight + state.before.marginBottom) / state.before.lineHeight;
+      assert(Math.abs(occupiedLines - Math.round(occupiedLines)) * state.before.lineHeight <= tolerance, `Expected ${tier} top nudge and phase, line and closure to occupy whole ${state.before.lineHeight}px body lines; got ${JSON.stringify(state.before)}.`);
       assert(JSON.stringify(state.after) === JSON.stringify(state.before), `Expected ${tier} legacy --bf-body-space-after overrides not to affect production geometry. Before=${JSON.stringify(state.before)}, after=${JSON.stringify(state.after)}.`);
       assert(state.regressions.basicRowGap === 0, `Expected ${tier} bf-basic-section-layout to suppress the generic stack row gap, got ${state.regressions.basicRowGap}px.`);
       assert(Math.abs(state.regressions.ruleToHeader - state.regressions.ruleMarginBottom) <= tolerance, `Expected ${tier} basic-section text to follow only the rule's own trailing compensation. Distance=${state.regressions.ruleToHeader}px, margin=${state.regressions.ruleMarginBottom}px.`);

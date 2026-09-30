@@ -62,6 +62,7 @@ interface Flow {
   variant: string;
   name: string;
   top: number;
+  gap: number;
   boxes: Box[];
   children: TreeNode[];
 }
@@ -194,6 +195,7 @@ async function readFlows(page: Page): Promise<Flow[]> {
       variant: flow.closest<HTMLElement>("[data-body-line-root]")?.dataset.bodyLineRoot ?? "",
       name: flow.dataset.bodyLineFlow ?? "",
       top: flow.getBoundingClientRect().top,
+      gap: Number.parseFloat(getComputedStyle(flow).rowGap) || 0,
       boxes: elements.map(element => {
         const rect = element.getBoundingClientRect();
         const styles = getComputedStyle(element);
@@ -265,7 +267,7 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
         const offset = (node: TreeNode) => node.probes[0] - node.top;
 
         // Owner ruling R1: every .is-baseline-rhythm fixture renders main's geometry exactly.
-        for (const name of ["ledger", "matrix", "hgroup", "wrapped", "tight", "loose", "nested-list", "ordered", "flush", "rule", "quote"]) {
+        for (const name of ["ledger", "prose-gap", "stack", "section", "component", "matrix", "hgroup", "wrapped", "tight", "loose", "nested-list", "ordered", "flush", "rule", "quote"]) {
           const optOut = flow("baseline", name);
           const reference = mainFlow("baseline", name);
           assert(optOut.boxes.length === reference.boxes.length, `Expected ${label} opt-out ${name} fixture to mirror main.`);
@@ -427,6 +429,36 @@ export async function verifyBodyLineRhythm(origin: string): Promise<BodyLineRhyt
           assert(offStep(group.height, stepPx) <= TOLERANCE_PX && offStep(following.top - hgroupFlow.top, stepPx) <= TOLERANCE_PX, `Expected ${label} hgroup ${key} to occupy whole body lines and keep the following paragraph in phase; group ${group.height}px, following at ${following.top - hgroupFlow.top}px.`);
           assertOnRenderedStep(following.probes[0] - hgroupFlow.top, `paragraph after hgroup ${key},`);
         }
+
+        // Owner rulings R6 and R7: flow text spaces itself anywhere – prose with no gap, a stack whose gap is cancelled between text blocks, bare in a section.
+        const occupiedBottom = (node: TreeNode) => node.top + node.height + node.marginBottom;
+        for (const name of ["prose-gap", "stack", "section"] as const) {
+          const fixture = flow("body-line", name);
+          const [heading, first, second] = fixture.children;
+          assert(fixture.children.length === 3 && heading.tag === "h2" && first.tag === "p" && second.tag === "p", `Expected ${label} default ${name} fixture of h2, p, p.`);
+          const headingToFirst = first.top - heading.top;
+          assert(Math.abs(first.top - occupiedBottom(heading)) <= TOLERANCE_PX && offStep(headingToFirst, stepPx) <= TOLERANCE_PX, `Expected ${label} default ${name} p to follow the h2 closure directly, whole body lines after its top; advance ${headingToFirst}px, h2 occupied bottom ${occupiedBottom(heading) - heading.top}px.`);
+          const paragraphDelta = second.probes[0] - first.probes[0];
+          assert(Math.abs(paragraphDelta - 2 * stepPx) <= TOLERANCE_PX, `Expected ${label} default ${name} one-line p to p first-baseline advance of two ${stepPx}px body lines (one blank line); got ${paragraphDelta}px.`);
+          for (const node of fixture.children) assertOnRenderedStep(node.probes[0] - fixture.top, `default ${name} ${node.tag}, from the flow top,`);
+          record.measured[`${name} h2 to p top advance`] = headingToFirst;
+          record.measured[`${name} p to p baseline advance`] = paragraphDelta;
+        }
+        assert(flow("body-line", "prose-gap").gap === 0 && flow("baseline", "prose-gap").gap > 0, `Expected ${label} prose to have no gap by default and the group gap under the opt-out.`);
+        const optOutStack = flow("baseline", "stack");
+        assert(optOutStack.gap > 0 && Math.abs(optOutStack.children[2].top - occupiedBottom(optOutStack.children[1]) - optOutStack.gap) <= TOLERANCE_PX, `Expected ${label} opt-out stack text to keep main's stack gap.`);
+        record.measured["opt-out stack p to p baseline advance"] = optOutStack.children[2].probes[0] - optOutStack.children[1].probes[0];
+
+        // Text next to a component keeps the stack gap in both directions; text after it starts on a bU-quantized offset (recorded exception).
+        const componentFlow = flow("body-line", "component");
+        const [before, component, after] = componentFlow.children;
+        assert(componentFlow.children.length === 3 && before.tag === "p" && component.tag === "div" && after.tag === "p" && componentFlow.gap > 0, `Expected ${label} default text, component, text fixture.`);
+        const textToComponent = component.top - occupiedBottom(before);
+        const componentToText = after.top - occupiedBottom(component);
+        assert(Math.abs(textToComponent - componentFlow.gap) <= TOLERANCE_PX && Math.abs(componentToText - componentFlow.gap) <= TOLERANCE_PX, `Expected ${label} text and component to keep the ${componentFlow.gap}px stack gap both ways; got ${textToComponent}px and ${componentToText}px.`);
+        record.measured["text to component gap"] = textToComponent;
+        record.measured["component to text gap"] = componentToText;
+        record.exceptions["text after a component, following"] = { measured: offStep(after.top - componentFlow.top, stepPx), predicted: null };
 
         // AC-7 metric-flush pair keeps its internal baseline distance.
         const flushDistance = (variant: string) => {
