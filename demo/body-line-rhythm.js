@@ -63,12 +63,16 @@ function renderLedgers(rootSize) {
 
 function renderGapReadouts(rootSize) {
   for (const readout of document.querySelectorAll("[data-body-line-gap-readout]")) {
-    const stack = readout.closest("section")?.querySelector("[data-body-line-gap]");
-    const prose = stack?.querySelector(".bf-prose");
-    if (!stack || !prose) continue;
-    const stackGap = Number.parseFloat(getComputedStyle(stack).rowGap);
+    const column = readout.closest("section");
+    const prose = column?.querySelector("[data-body-line-flow='prose-gap']");
+    const stack = column?.querySelector("[data-body-line-flow='stack']");
+    const [, first, second] = stack ? Array.from(stack.children) : [];
+    if (!prose || !stack || !first || !second) continue;
     const proseGap = Number.parseFloat(getComputedStyle(prose).rowGap);
-    readout.textContent = `Stack gap ${rem(stackGap, rootSize)}, prose gap ${rem(proseGap, rootSize)}.`;
+    const stackGap = Number.parseFloat(getComputedStyle(stack).rowGap);
+    const firstStyles = getComputedStyle(first);
+    const between = second.getBoundingClientRect().top - first.getBoundingClientRect().bottom - Number.parseFloat(firstStyles.marginBottom);
+    readout.textContent = `Prose gap ${rem(proseGap, rootSize)}; stack gap ${rem(stackGap, rootSize)}, ${rem(Math.max(0, between), rootSize)} between two paragraphs.`;
   }
 }
 

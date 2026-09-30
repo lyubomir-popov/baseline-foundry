@@ -1,7 +1,8 @@
 /* Spec 026 body-line rhythm comparison – page-local specimen rules only.
  * None of these classes is Baseline Foundry public API. */
 
-/* Zero-gap fixture: isolates the text ledger from container gaps. */
+/* Zero-gap fixture: isolates the text ledger from container gaps in both
+ * columns, including the opt-out, whose prose keeps the group gap. */
 .body-line-flow {
   gap: 0;
 }
@@ -14,30 +15,4 @@
     transparent var(--bf-border-width)
   );
   background-size: 100% var(--bf-body-line-height);
-}
-
-/* D4 candidates – not public API. They exist only so the owner can rule on
- * container gaps (research D4); option (a) is the unchanged default. */
-
-/* (b) Round gaps up to whole body lines. */
-.body-line-gap-b.bf-stack {
-  gap: round(up, var(--bf-stack-space), var(--bf-body-rhythm-step));
-}
-
-.body-line-gap-b .bf-prose {
-  gap: round(up, var(--bf-section-space-shallow), var(--bf-body-rhythm-step));
-}
-
-/* (c) Collapse the prose gap; closure already supplies a blank body line. */
-.body-line-gap-c .bf-prose {
-  gap: 0;
-}
-
-/* (d) Round gaps down to whole body lines. */
-.body-line-gap-d.bf-stack {
-  gap: round(down, var(--bf-stack-space), var(--bf-body-rhythm-step));
-}
-
-.body-line-gap-d .bf-prose {
-  gap: round(down, var(--bf-section-space-shallow), var(--bf-body-rhythm-step));
 }

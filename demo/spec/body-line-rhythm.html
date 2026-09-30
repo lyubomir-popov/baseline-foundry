@@ -21,12 +21,13 @@
         <header class="bf-stack is-dense">
           <h1>Body-line rhythm</h1>
           <p>
-            Spec 026. Prose-flow paragraphs and headings take a phase inset
-            after their measured nudge and close to whole body lines by
-            default; prose lists own one block start and one closure, so every
-            item advances by one body line. Adding
+            Spec 026. Flow text anywhere in a <code>.bf-theme</code> –
+            paragraphs, headings, heading groups and prose lists – takes a
+            phase inset after its measured nudge and closes to whole body
+            lines by default, so adjacent text blocks need no container gap.
+            Component internals keep the baseline-unit ledger, and adding
             <code>is-baseline-rhythm</code> to a <code>.bf-theme</code> root
-            restores the baseline-unit ledger. Each comparison shows the
+            restores it for the whole subtree. Each comparison shows the
             default beside the opt-out for the active tier; the ruling marks
             every body line.
           </p>
@@ -134,135 +135,131 @@
 
         <section class="bf-stack" aria-labelledby="body-line-gaps">
           <header class="bf-stack is-dense">
-            <h2 id="body-line-gaps">Container gaps – D4 candidates</h2>
+            <h2 id="body-line-gaps">Container gaps – ruled (c)</h2>
             <p>
-              Every option runs on the default body-line ledger with prose and
-              stack gaps as authored. Options (b), (c) and (d) are page-local
-              candidate rules for the owner's open gap ruling, not public API.
+              Text blocks space themselves: the closure already supplies one
+              blank body line, so prose has no gap and a stack cancels its gap
+              between two adjacent text blocks. Text next to a component keeps
+              the stack gap, so text after a component starts on the
+              baseline-unit grid and its body-line phase is not guaranteed.
             </p>
           </header>
           <div class="bf-grid-scope">
             <div class="bf-grid">
               <section
-                class="bf-span-2 bf-stack is-dense"
-                aria-labelledby="body-line-gap-a"
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-gaps-default"
               >
-                <h3 class="bf-h6" id="body-line-gap-a">(a) Unchanged gaps</h3>
-                <p data-body-line-gap-readout>Default gaps.</p>
+                <h3 class="bf-h6" id="body-line-gaps-default">Default</h3>
+                <p data-body-line-gap-readout>Gaps.</p>
                 <div
-                  class="bf-theme bf-tier-editorial"
+                  class="bf-theme bf-tier-editorial bf-stack"
                   data-body-line-root="body-line"
                 >
-                  <div
-                    class="bf-stack body-line-ruling"
-                    data-body-line-gap="a"
-                  >
-                    <div class="bf-prose">
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Prose – no gap</h4>
+                    <div
+                      class="bf-prose body-line-ruling"
+                      data-body-line-flow="prose-gap"
+                    >
                       <h2>Heading</h2>
-                      <p>First paragraph.</p>
-                      <p>Second paragraph.</p>
+                      <p>First paragraph</p>
+                      <p>Second paragraph</p>
                     </div>
-                    <div class="bf-prose">
-                      <ul>
-                        <li>List item</li>
-                        <li>List item</li>
-                      </ul>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Text directly in a stack</h4>
+                    <div
+                      class="bf-stack body-line-ruling"
+                      data-body-line-flow="stack"
+                    >
+                      <h2>Heading</h2>
+                      <p>First paragraph</p>
+                      <p>Second paragraph</p>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Text bare in a section</h4>
+                    <section
+                      class="bf-section body-line-ruling"
+                      data-body-line-flow="section"
+                    >
+                      <h2>Heading</h2>
+                      <p>First paragraph</p>
+                      <p>Second paragraph</p>
+                    </section>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Exception – text, component, text</h4>
+                    <div
+                      class="bf-stack body-line-ruling"
+                      data-body-line-flow="component"
+                    >
+                      <p>Before the component</p>
+                      <div class="bf-cluster">
+                        <button class="bf-button" type="button">Action</button>
+                      </div>
+                      <p>After the component</p>
                     </div>
                   </div>
                 </div>
               </section>
               <section
-                class="bf-span-2 bf-stack is-dense"
-                aria-labelledby="body-line-gap-b-title"
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-gaps-baseline"
               >
-                <h3 class="bf-h6" id="body-line-gap-b-title">
-                  (b) Candidate – round up
+                <h3 class="bf-h6" id="body-line-gaps-baseline">
+                  Opt-out – <code>is-baseline-rhythm</code>
                 </h3>
-                <p data-body-line-gap-readout>
-                  <code>round(up, gap, step)</code> on stack and prose.
-                </p>
+                <p data-body-line-gap-readout>Gaps.</p>
                 <div
-                  class="bf-theme bf-tier-editorial"
-                  data-body-line-root="body-line"
+                  class="bf-theme bf-tier-editorial bf-stack is-baseline-rhythm"
+                  data-body-line-root="baseline"
                 >
-                  <div
-                    class="bf-stack body-line-ruling body-line-gap-b"
-                    data-body-line-gap="b"
-                  >
-                    <div class="bf-prose">
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Prose – group gap</h4>
+                    <div
+                      class="bf-prose body-line-ruling"
+                      data-body-line-flow="prose-gap"
+                    >
                       <h2>Heading</h2>
-                      <p>First paragraph.</p>
-                      <p>Second paragraph.</p>
-                    </div>
-                    <div class="bf-prose">
-                      <ul>
-                        <li>List item</li>
-                        <li>List item</li>
-                      </ul>
+                      <p>First paragraph</p>
+                      <p>Second paragraph</p>
                     </div>
                   </div>
-                </div>
-              </section>
-              <section
-                class="bf-span-2 bf-stack is-dense"
-                aria-labelledby="body-line-gap-c-title"
-              >
-                <h3 class="bf-h6" id="body-line-gap-c-title">
-                  (c) Candidate – zero prose gap
-                </h3>
-                <p data-body-line-gap-readout>
-                  Prose gap 0; the stack keeps its gap.
-                </p>
-                <div
-                  class="bf-theme bf-tier-editorial"
-                  data-body-line-root="body-line"
-                >
-                  <div
-                    class="bf-stack body-line-ruling body-line-gap-c"
-                    data-body-line-gap="c"
-                  >
-                    <div class="bf-prose">
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Text directly in a stack</h4>
+                    <div
+                      class="bf-stack body-line-ruling"
+                      data-body-line-flow="stack"
+                    >
                       <h2>Heading</h2>
-                      <p>First paragraph.</p>
-                      <p>Second paragraph.</p>
-                    </div>
-                    <div class="bf-prose">
-                      <ul>
-                        <li>List item</li>
-                        <li>List item</li>
-                      </ul>
+                      <p>First paragraph</p>
+                      <p>Second paragraph</p>
                     </div>
                   </div>
-                </div>
-              </section>
-              <section
-                class="bf-span-2 bf-stack is-dense"
-                aria-labelledby="body-line-gap-d-title"
-              >
-                <h3 class="bf-h6" id="body-line-gap-d-title">
-                  (d) Candidate – round down
-                </h3>
-                <p data-body-line-gap-readout>
-                  <code>round(down, gap, step)</code> on stack and prose.
-                </p>
-                <div
-                  class="bf-theme bf-tier-editorial"
-                  data-body-line-root="body-line"
-                >
-                  <div
-                    class="bf-stack body-line-ruling body-line-gap-d"
-                    data-body-line-gap="d"
-                  >
-                    <div class="bf-prose">
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Text bare in a section</h4>
+                    <section
+                      class="bf-section body-line-ruling"
+                      data-body-line-flow="section"
+                    >
                       <h2>Heading</h2>
-                      <p>First paragraph.</p>
-                      <p>Second paragraph.</p>
-                    </div>
-                    <div class="bf-prose">
-                      <ul>
-                        <li>List item</li>
-                        <li>List item</li>
-                      </ul>
+                      <p>First paragraph</p>
+                      <p>Second paragraph</p>
+                    </section>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Text, component, text</h4>
+                    <div
+                      class="bf-stack body-line-ruling"
+                      data-body-line-flow="component"
+                    >
+                      <p>Before the component</p>
+                      <div class="bf-cluster">
+                        <button class="bf-button" type="button">Action</button>
+                      </div>
+                      <p>After the component</p>
                     </div>
                   </div>
                 </div>
@@ -375,7 +372,7 @@
           <header class="bf-stack is-dense">
             <h2 id="body-line-hgroup">Heading groups</h2>
             <p>
-              Children of a prose <code>hgroup</code> keep their own phase and
+              Children of an <code>hgroup</code> keep their own phase and
               closure; every child after the first is pulled up by one whole
               body line, so the group stays in phase for the paragraph after
               it.
