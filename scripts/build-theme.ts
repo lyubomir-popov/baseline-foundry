@@ -109,7 +109,8 @@ async function main(): Promise<void> {
       distDir: build.distDir,
       baselineDir: build.baselineDir,
       surfaceLabel: build.surfaceLabel,
-      additionalSurfaces: build.additionalSurfaces
+      additionalSurfaces: build.additionalSurfaces,
+      requireBodyLineRhythm: true
     });
     console.log(`Generated experiment "${experiment}"`);
     console.log(`  tokens: ${result.tokensPath}`);
@@ -118,7 +119,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const defaultResult = await buildThemeFromConfig(arg || undefined);
+  const defaultResult = await buildThemeFromConfig(arg || undefined, { requireBodyLineRhythm: true });
   console.log(`Generated default theme tokens: ${defaultResult.tokensPath}`);
   console.log(`Generated default theme css: ${defaultResult.cssPath}`);
   console.log(`Generated default theme surfaces: ${defaultResult.surfaceManifestPath}`);
@@ -148,7 +149,8 @@ async function main(): Promise<void> {
       distDir: build.distDir,
       baselineDir: build.baselineDir,
       surfaceLabel: build.surfaceLabel,
-      additionalSurfaces: build.additionalSurfaces
+      additionalSurfaces: build.additionalSurfaces,
+      requireBodyLineRhythm: true
     });
     console.log(`Generated experiment "${name}"`);
     console.log(`  tokens: ${experimentResult.tokensPath}`);

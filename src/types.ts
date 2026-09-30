@@ -126,6 +126,13 @@ export interface ThemeTokens {
   components: ComponentTokens;
 }
 
+export interface BodyLineRhythmRole {
+  rhythmStep: string;
+  firstBaseline: string;
+  phaseStart: string;
+  closureEnd: string;
+}
+
 export interface ThemeSurface {
   name: string;
   label?: string;
@@ -136,6 +143,7 @@ export interface ThemeSurface {
   baselineTokensPath: string;
   tokens: ThemeTokens;
   metrics: BaselineGeneratorTokens;
+  bodyLineRhythm?: Record<string, BodyLineRhythmRole>;
 }
 
 export interface ThemeSurfaceManifestEntry {

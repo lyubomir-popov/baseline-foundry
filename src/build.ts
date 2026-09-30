@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { readFontMetrics, type FontMetrics } from "@lyubomir-popov/baseline-nudge-generator";
+import { BODY_LINE_RHYTHM_ROLES, computeBodyLineRhythm, type BodyLineRhythmResult } from "./body-line-rhythm.js";
 import { generateFoundryCss } from "./css.js";
 import {
   assertSpacingSetsEqual,
@@ -15,6 +17,7 @@ import { normalizeBuiltInThemeName, presetNames, resolveBuiltInThemePath, resolv
 import type {
   BaselineGeneratorElementToken,
   BaselineGeneratorTokens,
+  BodyLineRhythmRole,
   BuildThemeResult,
   ComponentTokens,
   DeriveBaselineTokensResult,
@@ -40,6 +43,8 @@ export interface BuildThemeFromConfigOptions {
   baselineDir?: string;
   surfaceLabel?: string;
   additionalSurfaces?: AdditionalThemeSurfaceBuildConfig[];
+  /** Fail the build when body-line rhythm data cannot be computed; built-in tier and preset configs always do. */
+  requireBodyLineRhythm?: boolean;
 }
 
 function parseRem(remValue: string): number {
@@ -471,6 +476,51 @@ function runtimeMetricsTokens(
   };
 }
 
+async function readRoleFontMetrics(
+  config: ThemeConfig,
+  sourceConfigPath: string,
+  families: ReadonlySet<string>
+): Promise<Record<string, FontMetrics>> {
+  const sourceConfigDir = path.dirname(sourceConfigPath);
+  const metricsByFamily: Record<string, FontMetrics> = {};
+
+  // Later files win per family, matching the nudge generator's metrics map.
+  for (const fontFile of config.fontFiles) {
+    if (fontFile.runtimeOnly || !families.has(fontFile.family)) continue;
+    metricsByFamily[fontFile.family] = await readFontMetrics(path.resolve(sourceConfigDir, fontFile.path));
+  }
+
+  return metricsByFamily;
+}
+
+async function resolveBodyLineRhythm(
+  surfaceName: string,
+  config: ThemeConfig,
+  sourceConfigPath: string,
+  tokens: ThemeTokens,
+  required: boolean
+): Promise<Record<string, BodyLineRhythmRole> | undefined> {
+  let result: BodyLineRhythmResult;
+
+  try {
+    const families = new Set(BODY_LINE_RHYTHM_ROLES.flatMap(roleName => tokens.roles[roleName]?.fontFamily ?? []));
+    const metricsByFamily = await readRoleFontMetrics(config, sourceConfigPath, families);
+    result = computeBodyLineRhythm(metricsByFamily, config.baselineUnit, tokens.roles);
+  } catch (error) {
+    result = { roles: {}, failures: [error instanceof Error ? error.message : String(error)] };
+  }
+
+  if (!result.failures.length) {
+    return result.roles;
+  }
+
+  if (required) {
+    throw new Error(`Body-line rhythm checks failed for surface "${surfaceName}": ${result.failures.join(" ")}`);
+  }
+
+  return undefined;
+}
+
 function buildSurfaceManifest(defaultSurface: string, surfaces: ThemeSurface[]): ThemeSurfaceManifest {
   return {
     defaultSurface,
@@ -495,6 +545,7 @@ async function buildThemeSurface(
     className?: string;
     label?: string;
     engine?: string;
+    requireBodyLineRhythm?: boolean;
   } = {}
 ): Promise<ThemeSurface> {
   const config = await readThemeConfig(resolvedConfigPath);
@@ -528,6 +579,7 @@ async function buildThemeSurface(
     ...config,
     fontFiles: createRuntimeFontFiles(config, resolvedConfigPath, resolvedOutputDir)
   };
+  const tokens = buildThemeTokens(runtimeConfig, baselineTokens, spacing, canonicalSpacing);
 
   return {
     name,
@@ -537,8 +589,15 @@ async function buildThemeSurface(
     configPath: resolvedConfigPath,
     baselineConfigPath,
     baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
-    tokens: buildThemeTokens(runtimeConfig, baselineTokens, spacing, canonicalSpacing),
-    metrics: runtimeMetricsTokens(baselineTokens, runtimeConfig.fontFiles)
+    tokens,
+    metrics: runtimeMetricsTokens(baselineTokens, runtimeConfig.fontFiles),
+    bodyLineRhythm: await resolveBodyLineRhythm(
+      name,
+      config,
+      resolvedConfigPath,
+      tokens,
+      Boolean(builtInName) || Boolean(options.requireBodyLineRhythm)
+    )
   };
 }
 
@@ -576,7 +635,8 @@ async function buildRelatedTierSurfaces(
 async function buildAdditionalThemeSurfaces(
   surfaceConfigs: AdditionalThemeSurfaceBuildConfig[],
   baselineDir: string,
-  outputDir: string
+  outputDir: string,
+  requireBodyLineRhythm: boolean
 ): Promise<ThemeSurface[]> {
   const surfaces: ThemeSurface[] = [];
 
@@ -588,7 +648,8 @@ async function buildAdditionalThemeSurfaces(
       outputDir,
       {
         className: surfaceConfig.className,
-        label: surfaceConfig.label
+        label: surfaceConfig.label,
+        requireBodyLineRhythm
       }
     ));
   }
@@ -615,6 +676,7 @@ async function buildTheme(
   options: {
     surfaceLabel?: string;
     additionalSurfaces?: AdditionalThemeSurfaceBuildConfig[];
+    requireBodyLineRhythm?: boolean;
   } = {}
 ): Promise<BuildThemeResult> {
   const resolvedDistDir = path.resolve(distDir);
@@ -632,7 +694,8 @@ async function buildTheme(
     resolvedDistDir,
     {
       label: options.surfaceLabel,
-      className: surfaceClassName(defaultSurfaceName)
+      className: surfaceClassName(defaultSurfaceName),
+      requireBodyLineRhythm: options.requireBodyLineRhythm
     }
   );
   const relatedSurfaces = await buildRelatedTierSurfaces(
@@ -644,7 +707,8 @@ async function buildTheme(
   const additionalSurfaces = await buildAdditionalThemeSurfaces(
     options.additionalSurfaces ?? [],
     resolvedBaselineDir,
-    resolvedDistDir
+    resolvedDistDir,
+    Boolean(options.requireBodyLineRhythm)
   );
   const surfaces = [defaultSurface, ...relatedSurfaces, ...additionalSurfaces];
   assertUniqueSurfaceNames(surfaces);
@@ -683,7 +747,8 @@ export async function buildThemeFromConfig(
   const baselineDir = options.baselineDir ?? "generated/baseline";
   return buildTheme(resolvedConfigPath, distDir, baselineDir, {
     surfaceLabel: options.surfaceLabel,
-    additionalSurfaces: options.additionalSurfaces
+    additionalSurfaces: options.additionalSurfaces,
+    requireBodyLineRhythm: options.requireBodyLineRhythm
   });
 }
 
