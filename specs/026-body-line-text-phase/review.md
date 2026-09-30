@@ -1,11 +1,13 @@
 # Review: Body-line text phase
 
 Closeout evidence for Spec 026. Phase A tasks T001–T021 are recorded first,
-with the implementation-review corrections; the CP-B default flip under the
-owner rulings of 2026-09-30 is recorded in
-[CP-B default flip](#cp-b-default-flip-2026-09-30) at the end and supersedes
-the Phase A opt-in wording above. T022 dark-tone review, T023 and the D4 gap
-ruling are still open.
+with the implementation-review corrections. The CP-B default flip (rulings
+R1–R5) is recorded in commits `2cff295`–`9be5d63` and in tasks T027–T036; no
+separate CP-B section was written here. The R6–R7 wave (flow text everywhere,
+D4 closed as (c)) is recorded in
+[R6–R7](#r6r7--flow-text-everywhere-self-spacing-text-blocks-2026-09-30) at the
+end and supersedes the prose-only wording above. T022 dark-tone review and
+T023 are still open.
 
 ## T002 – baseline capture
 
@@ -373,3 +375,155 @@ Run at `d73ad36`:
   5,410 checks, 0 failures.
 
 `test:build` re-run at `834648c` (docs only): 26,833 checks.
+
+## R6–R7 – flow text everywhere, self-spacing text blocks (2026-09-30)
+
+Owner rulings R6 (D4 = option (c)) and R7 (default everywhere), recorded in
+the spec and research D8. Wave start `6211aca`; commits `1cf47ce` (CSS and
+static contracts), `6be0fa9` (rendered contracts and behaviour updates),
+`47c97cd` (demo), `56fa1e4` (README and invariants), `9a239c2` (spec
+package), `6c1b65f` (demo readout rounding).
+
+### What changed
+
+- Role rules select every `p`/`.bf-body` and `h1`–`h6`/`.bf-h1`–`.bf-h6`
+  under `.bf-theme`; hgroup rules select every `hgroup`; the list block
+  selects every outermost prose list (`.bf-prose :is(ul, ol)` not inside a
+  prose `li`) and the item, dot and loose rules every `.bf-prose li`.
+- `--bf-text-gap-scale` (0 in surface blocks, 1 in the bU block) drives the
+  prose gap and the stack text join (research T13–T15).
+- Component roots share the `.bf-theme.is-baseline-rhythm` block.
+
+### Component-root reset list
+
+Derived by `bodyLineComponentRootClasses` in `src/css.ts` from the CSS that
+`generateFoundryCss` emits after the section (component modules, grid and
+app preset CSS): every `.bf-*` class, minus `BODY_LINE_FLOW_CLASS`, sorted.
+356 classes in all eight bundles (the app preset adds no class the
+components lack). Flow classes: theme, tier and surface roots; text roles
+and `bf-text-link`; `bf-engine-cap`/`bf-engine-metrics`; layout primitives
+`bf-page`, `bf-grid`, `bf-grid-item`, `bf-grid-scope`, `bf-span-*`,
+`bf-stack`, `bf-cluster`, `bf-section`, `bf-prose`, `bf-strip`, `bf-measure`,
+`bf-fixed-width`, `bf-inline-size`, `bf-stage-shell`, `bf-token-row`; page
+shells `bf-page-shell`, `bf-application`, `bf-main`, `bf-site-main`,
+`bf-docs-layout`, `bf-docs-layout-content`. The section is 22.3KB of a
+391KB tier bundle, most of it the root list.
+
+Static checks (`npm run test:build`, “Body-line rhythm section” and “markup
+scope”): the block's selector equals `:where(.bf-theme.is-baseline-rhythm,
+.<roots>)`; the roots derived from `dist` equal the roots derived from a
+no-rhythm source generation; no root is a flow class or the cap engine; every
+`bf-*` class and every text element inside a component in the 91 sources (89
+component pages, the pattern index and the README examples) has itself or an
+ancestor in the list. Eight
+classes are unstyled hooks (for example `.bf-notification-title`,
+`.bf-tiered-list-header-title`); each sits inside a reset root.
+
+### Component geometry proof
+
+- `npm run test:components`: 332 surfaces, 5,442 checks, 0 failures.
+  `git diff 6211aca..HEAD -- scripts/verify-component-baselines.ts` is empty;
+  the only change to the checker is CP-B's `7c68130`.
+- Scratch differential (`tmp/026-r7/component-diff.ts`, not committed): every
+  component demo page and tier rendered with and without the section, every
+  element inside a component root compared relative to its outermost root
+  (roots by size), transitions disabled. 9,844 boxes; 3 differences, all
+  `.bf-top-navigation-search-overlay`, a viewport-fixed overlay whose offset
+  from its root changes because page text above the root moved. No component
+  box, margin, padding or gap changed.
+
+### Changed behaviour assertions
+
+All in `scripts/verify-component-behavior.ts`, each with a one-line reason
+comment. Tolerances unchanged.
+
+| Family (page) | Before | After | Reason |
+|---|---|---|---|
+| `verifyNativeNumberStepper` (`spacing-vertical.html`), interface row | every component `textTop` within 0.51px of the reference `p`'s | within 0.51px of the reference's `textTop − bodyPhase` | the reference is a bare page `p`, now body-line phased; components keep bU |
+| same, text-run shared height | every run except “Prose list” shares one height | every run except “Baseline reference”, “Paragraph” and “Prose list” shares one height | those three are body-line flow text |
+| same, body-line runs | “Prose list” occupies two body lines | “Baseline reference”, “Paragraph” and “Prose list” each occupy two body lines | a one-line paragraph closes to two body lines in every tier |
+| same, run baselines | “Prose list” normalised by `bodyPhase`, compared to the raw reference | all three body-line runs normalised by `bodyPhase`, compared to the reference's bU baseline | same |
+| same, nested hosts | every nested sample (including the reference) within tolerance of the reference | every nested host within tolerance of the reference's `textTop − bodyPhase` | the nested reference is a bare page `p` |
+| `verifyContainerOwnedSpacing` (`typography.html`), bare `p + p` in a default stack | `firstToSecond = stack gap + margin-bottom` | `firstToSecond = margin-bottom` (the body-line closure) | R6: the stack gap is cancelled between adjacent text blocks |
+| same | `padding-top + margin-bottom = one bU` | `padding-top + line-height + margin-bottom` is a whole number of body lines | R7: page text closes to whole body lines |
+| `verifyBlockDerivedInlineGeometry` (`button.html`), extended pointer targets | sampled with the demo chrome hit-testable | demo chrome `pointer-events` suspended during sampling only, restored after | taller page text moved the fixtures under the fixed demo footer, which intercepted 4 rows; not an assertion change |
+
+The prose-list assertions from CP-B are subsumed into the rows above. No
+other family changed; `verifySemanticRoleClassPrecedence` and the page-wide
+bU phase contract pass unmodified.
+
+### New rendered contracts
+
+`scripts/behavior/body-line-rhythm-contracts.ts`: `prose-gap`, `stack`,
+`section` and `component` fixtures join the opt-out-equals-main check
+(max residual 0.0000px across every fixture box, line and dot, all tiers,
+16px and 32px). Default: h2 → p follows the h2 occupied block and is whole
+steps; one-line p → p is exactly two steps; every first baseline within
+`root / 16` of a whole step; default prose gap 0, opt-out prose gap positive;
+opt-out stack keeps main's gap; text ↔ component keeps the stack gap both
+ways.
+
+### Measured (px, @16px / @32px)
+
+| Tier | p → p (prose, stack, section) | h2 → p top | opt-out stack p → p | text → component / component → text | tight / loose list | hgroup h1 → h2 / h1 → p | text after component, off step |
+|---|---|---|---|---|---|---|---|
+| Editorial | 47.98 / 95.98 | 71.98 / 143.98 | 55.98 / 111.98 | 24.00 / 24.00 (48 / 48) | 24 / 48 (48 / 96) | 47.98 / 24.44 (95.98 / 49.91) | 8.05 / 16.05 |
+| Documentation | 39.98 / 79.98 | 59.98 / 119.98 | 47.98 / 95.98 | 23.99 / 24.00 (48 / 48) | 20 / 40 (40 / 80) | 39.98 / 19.61 (79.98 / 41.22) | 8.03 / 16.05 |
+| App | 39.98 / 79.98 | 59.98 / 119.98 | 31.98 / 63.98 | 7.99 / 8.00 (16 / 16) | 20 / 40 (40 / 80) | 39.98 / 19.72 (79.98 / 40.45) | 0.03 / 0.05 |
+| OS | 31.98 / 63.98 | 47.98 / 95.98 | 43.98 / 87.98 | 24.00 / 24.00 (48 / 48) | 16 / 32 (32 / 64) | 31.98 / 16.39 (63.98 / 32.81) | 7.95 / 15.95 |
+
+p → p is identical in prose, stack and section. List deltas, dot offsets
+and hgroup distances equal the CP-B values. The −0.02px on whole-line values
+is Chromium's −1/64px layout drift.
+
+### Risk: stack gaps larger than a text block
+
+`tmp/026-r7/gap-clamp.ts` (not committed), three bare one-line paragraphs per
+stack, p1 → p2 / p2 → p3 top advance at 16px:
+
+| Tier | default | dense | loose | section | section-deep |
+|---|---|---|---|---|---|
+| Editorial | 47.98 / 47.98 | 47.98 / 47.98 | 47.98 / 47.98 | 47.98 / **64** | 47.98 / **128** |
+| Documentation | 39.98 / 39.98 | 39.98 / 39.98 | 39.98 / 39.98 | 39.98 / **48** | 39.98 / **96** |
+| App | 39.98 / 39.98 | 39.98 / 39.98 | 39.98 / 39.98 | 39.98 / 39.98 | 39.98 / 39.98 |
+| OS | 31.98 / 31.98 | 31.98 / 31.98 | 31.98 / 31.98 | 31.98 / **48** | 31.98 / **96** |
+
+When the gap exceeds the following text block's occupied height, the grid
+track clamps at zero and the next block lands one full gap later (research
+T18). Section stacks normally separate whole patterns, not bare paragraphs,
+so this is recorded, not fixed; the ruled formula is kept verbatim. An owner
+decision is needed if section stacks of bare text must also self-space (for
+example, cancelling through `margin-block-end` of the previous block as well
+as the following one, or treating section stacks as non-text containers).
+
+### Gates
+
+Run at `9a239c2` (the demo readout fix `6c1b65f` was re-validated with
+`npm run test:build`, 28,560 checks):
+
+- `npm run build`: green.
+- `npm test`: green. `test:build` 28,560 checks (body-line section 432 per
+  built-in bundle and 323 for the experiment; formulas 581; parity 70; demo
+  56; markup scope 3); `test:components` 332 surfaces, 5,442 checks,
+  0 failures; `test:behavior` passed.
+- `npm run qa:components`: green. 86 pages captured, 332 surfaces, 5,442
+  checks, 0 failures.
+
+The Playwright Chromium revision this worktree needs (1234) had been removed
+from the shared user cache by another process mid-wave; it was reinstalled
+with `npm run playwright:install` before the gates.
+
+### Screenshots (light, full page, 1440 px, DPR 1)
+
+`tmp/026-review/default/`:
+`body-line-rhythm-{editorial,documentation,app,os}-light.png`,
+`typography-{editorial,documentation,app,os}-light.png`,
+`patterns-index-{editorial,documentation,app,os}-light.png`. The fixed page
+chrome appears mid-page in full-page captures.
+
+### Open
+
+- Section-stack gap clamp (above) – owner decision.
+- Page shells are flow classes by judgement (research T16); if the owner
+  wants application shells on bU, add them to the reset list.
+- Dark-tone review (T022), T023, T031 serialization and the rest of T032.
