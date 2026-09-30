@@ -19,9 +19,8 @@ function roleOf(element) {
   return /^H[1-6]$/.test(element.tagName) ? element.tagName.toLowerCase() : "body";
 }
 
-function rem(px, rootSize) {
-  // Three decimals absorb Chromium's 1/64px layout snapping.
-  return `${Number((px / rootSize).toFixed(3))}rem`;
+function rem(px, rootSize, decimals = 3) {
+  return `${Number((px / rootSize).toFixed(decimals))}rem`;
 }
 
 function cell(text) {
@@ -51,7 +50,8 @@ function renderLedgers(rootSize) {
         cell(variable("nudge-start")),
         cell(isOpted ? variable("phase-start") : "–"),
         cell(variable(isOpted ? "closure-end" : "margin-bottom")),
-        cell(rem(occupied, rootSize))
+        // Occupied heights are whole bU (0.25rem or 0.5rem); two decimals absorb Chromium's -1/64px layout drift.
+        cell(rem(occupied, rootSize, 2))
       );
       return row;
     }));
