@@ -34,7 +34,7 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
 }
 
 :where(.bf-theme) :where(.bf-tabs-item) {
-  /* Keep tabs at their content width so a long list scrolls instead of overlapping. */
+  /* Long lists scroll rather than shrink tabs. */
   flex: 0 0 auto;
   margin: 0;
   min-inline-size: 0;
