@@ -287,7 +287,12 @@ async function verifyComponentPage(
       const rect = element.getBoundingClientRect();
       const styles = getComputedStyle(element);
       const marginBottom = Number.parseFloat(styles.marginBottom) || 0;
-      const offsetPx = rect.top - rootRect.top;
+      // Spec 026 R3: a prose list owns its items' nudge and phase once, so items are measured from the list content box.
+      const ownerList = element.tagName === "LI" ? element.closest<HTMLElement>(".bf-prose > ul, .bf-prose > ol") : null;
+      const originTop = ownerList
+        ? ownerList.getBoundingClientRect().top + (Number.parseFloat(getComputedStyle(ownerList).paddingTop) || 0)
+        : rootRect.top;
+      const offsetPx = rect.top - originTop;
       const measurePx = rect.height + marginBottom;
       const offsetNearest = baselinePx === 0 ? offsetPx : Math.round(offsetPx / baselinePx) * baselinePx;
       const measureNearest = baselinePx === 0 ? measurePx : Math.round(measurePx / baselinePx) * baselinePx;

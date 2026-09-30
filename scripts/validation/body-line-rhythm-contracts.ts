@@ -2,14 +2,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { BaselineNudgeGenerator, readFontMetrics, type FontMetrics } from "@lyubomir-popov/baseline-nudge-generator";
 import type { Rule } from "postcss";
-import { BODY_LINE_RHYTHM_ROLES, computeBodyLineRhythm, type BodyLineRhythmRoleInput } from "../../src/body-line-rhythm.ts";
+import { BODY_LINE_RHYTHM_ROLES, computeBodyLineRhythm, hgroupJoinClearances, type BodyLineRhythmRoleInput } from "../../src/body-line-rhythm.ts";
 import { BODY_LINE_RHYTHM_SECTION_END, BODY_LINE_RHYTHM_SECTION_START, generateFoundryCss } from "../../src/css.ts";
 import { resolveTierPath, tierNames, type BuiltInThemeName, type TierName } from "../../src/presets.ts";
-import type { BodyLineRhythmRole, ThemeFontFile, ThemeSurface, ThemeTokens } from "../../src/types.ts";
+import type { BodyLineRhythm, ThemeFontFile, ThemeSurface, ThemeTokens } from "../../src/types.ts";
 import { parseCss } from "../css-ast-helpers.ts";
 import { assert } from "../validation-assert.ts";
 
-type RhythmRecord = Record<string, BodyLineRhythmRole>;
+type RhythmRecord = BodyLineRhythm;
 
 export interface BodyLineRhythmBundle {
   css: string;
@@ -23,8 +23,30 @@ interface ManifestSurface {
 }
 
 const TOLERANCE = 0.00001;
-const ROOT = ":where(.bf-theme.is-body-line-rhythm)";
+const ROOT = ":where(.bf-theme)";
+const BASELINE_ROOT = ":where(.bf-theme.is-baseline-rhythm)";
 const NOT_CAP_ENGINE = ":not(:where(.bf-engine-cap, .bf-engine-cap *))";
+const PROSE_LIST_ITEM = ".bf-prose > :is(ul, ol) li";
+
+// Container-owned prose list block [start = body nudge + phase, closure], rem, per research R8.
+const EXPECTED_LIST: Record<TierName, [number, number]> = {
+  editorial: [0.41, 1.09],
+  documentation: [0.3275, 0.9225],
+  app: [0.3275, 0.9225],
+  os: [0.245, 0.755]
+};
+
+// Owner ruling R4 prediction: h1 to h2 baseline distance in a prose hgroup (h1 occupied minus one step), rem.
+const EXPECTED_HGROUP_H1_H2: Record<TierName, number> = { editorial: 3, documentation: 2.5, app: 2.5, os: 2 };
+
+// Pairs whose one-step pull would put the following cap height inside the previous descender (research R9); not joined.
+const EXPECTED_HGROUP_UNJOINED: Record<TierName, string[]> = {
+  editorial: [],
+  documentation: ["h1-h5", "h1-h6", "h2-h5", "h2-h6"],
+  app: [],
+  os: ["h1-h3", "h1-h4", "h2-h3", "h2-h4"]
+};
+const pairKey = (pair: { previous: string; following: string; }) => `${pair.previous}-${pair.following}`;
 
 // [nudge, step, phase, closure] in rem, from contracts/body-line-phase.md "Expected values".
 const EXPECTED: Record<TierName, Record<string, [number, number, number, number]>> = {
@@ -111,6 +133,32 @@ export async function validateBodyLineRhythmFormulas(tierTokens: Record<string, 
       assert(offStep(nudge + phase + lineHeight + closure, step) <= TOLERANCE, `Expected ${label} (nudge + phase + lh + closure) mod step to be 0.`);
       records += 1;
     }
+
+    // Owner ruling R3: one block start and one closure close any item count only because body lh is the step.
+    const [expectedBlockStart, expectedListClosure] = EXPECTED_LIST[tierName];
+    const list = result.list;
+    assert(list, `Expected a ${tierName} list block record.`);
+    const step = parseRem(result.roles.body.rhythmStep);
+    const blockStart = parseRem(list.blockStart);
+    const listClosure = parseRem(list.closureEnd);
+    assert(parseRem(roles.body.lineHeight) === step, `Expected ${tierName} body line height ${roles.body.lineHeight} to equal the ${step}rem rhythm step.`);
+    assert(Math.abs(blockStart - (parseRem(roles.body.nudgeTop) + parseRem(result.roles.body.phaseStart))) <= TOLERANCE && Math.abs(blockStart - expectedBlockStart) <= TOLERANCE, `Expected ${tierName} list block start ${expectedBlockStart}rem (body nudge + phase), got ${list.blockStart}.`);
+    assert(Math.abs(listClosure - expectedListClosure) <= TOLERANCE && listClosure >= 0 && listClosure < step, `Expected ${tierName} list closure ${expectedListClosure}rem in [0, step), got ${list.closureEnd}.`);
+    for (let items = 1; items <= 12; items += 1) {
+      assert(offStep(blockStart + items * step + listClosure, step) <= TOLERANCE, `Expected a ${tierName} list of ${items} one-line items to occupy whole body lines.`);
+    }
+
+    // Owner ruling R4: the one-step hgroup pull never brings the following first baseline closer than cap height plus descender.
+    const clearances = hgroupJoinClearances(metricsByFamily, roles, result.roles);
+    assert(clearances.length === 49, `Expected 49 ${tierName} hgroup join pairs, got ${clearances.length}.`);
+    const failing = clearances.filter(clearance => clearance.distance < clearance.required).map(pairKey);
+    assert(JSON.stringify(failing) === JSON.stringify(EXPECTED_HGROUP_UNJOINED[tierName]), `Expected ${tierName} hgroup pairs that cannot take the pull to be ${EXPECTED_HGROUP_UNJOINED[tierName].join(", ") || "none"}, got ${failing.join(", ") || "none"}.`);
+    assert(JSON.stringify(result.hgroupUnjoined?.map(pairKey)) === JSON.stringify(failing), `Expected the ${tierName} rhythm record to leave exactly the failing hgroup pairs unjoined.`);
+    for (const clearance of clearances.filter(candidate => !failing.includes(pairKey(candidate)))) {
+      assert(clearance.distance >= clearance.required, `Expected ${tierName} hgroup ${clearance.previous} + ${clearance.following} joined baseline distance ${clearance.distance}rem to be at least cap height plus descender ${clearance.required}rem.`);
+    }
+    const h1h2 = clearances.find(clearance => clearance.previous === "h1" && clearance.following === "h2");
+    assert(h1h2 && Math.abs(h1h2.distance - EXPECTED_HGROUP_H1_H2[tierName]) <= TOLERANCE, `Expected ${tierName} hgroup h1 + h2 baseline distance ${EXPECTED_HGROUP_H1_H2[tierName]}rem, got ${h1h2?.distance}rem.`);
   }
 
   assert(records === 28, `Expected 28 tier/role rhythm records, got ${records}.`);
@@ -208,12 +256,21 @@ export function matchesProseFlowScope(elements: MarkupElement[], index: number):
 
   if ([element, ...chain].some(candidate => hasClass(candidate, "bf-engine-cap"))) return false;
 
-  const proseLi = (candidate: MarkupElement | undefined, candidateIndex: number): boolean =>
-    candidate?.tag === "li" && ancestors(elements, candidateIndex).some(ancestor => hasClass(ancestor, "bf-prose"));
+  const isList = (candidate: MarkupElement | undefined) => candidate?.tag === "ul" || candidate?.tag === "ol";
+  const isProseList = (candidateIndex: number) => isList(elements[candidateIndex]) && hasClass(elements[elements[candidateIndex].parent], "bf-prose");
+  const isProseListItem = (candidateIndex: number): boolean => {
+    if (candidateIndex < 0 || elements[candidateIndex].tag !== "li") return false;
+    for (let ancestor = elements[candidateIndex].parent; ancestor >= 0; ancestor = elements[ancestor].parent) {
+      if (isProseList(ancestor)) return true;
+    }
+    return false;
+  };
+  const isProseHgroup = (candidate: MarkupElement | undefined) => candidate?.tag === "hgroup" && hasClass(elements[candidate.parent], "bf-prose");
 
-  if (hasClass(parent, "bf-prose") && (isBodyText(element) || isHeadingText(element))) return true;
-  if (proseLi(element, index)) return true;
-  return isBodyText(element) && proseLi(parent, element.parent);
+  if ((hasClass(parent, "bf-prose") || isProseHgroup(parent)) && (isBodyText(element) || isHeadingText(element))) return true;
+  if (isProseHgroup(parent) && element.parent >= 0 && elements.slice(element.parent + 1, index).some(sibling => sibling.parent === element.parent)) return true;
+  if (isProseList(index) || isProseListItem(index)) return true;
+  return isBodyText(element) && isProseListItem(element.parent);
 }
 
 export function componentRootFor(elements: MarkupElement[], index: number): MarkupElement | undefined {
@@ -270,8 +327,8 @@ function asThemeSurface(name: string, surface: ManifestSurface, bodyLineRhythm?:
 async function surfaceRhythm(label: string, bundleDir: string, surface: ManifestSurface): Promise<RhythmRecord> {
   const metricsByFamily = await metricsForFonts(surface.metrics.fontFiles, bundleDir);
   const result = computeBodyLineRhythm(metricsByFamily, parseRem(surface.tokens.baselineUnit), surface.tokens.roles);
-  assert(result.failures.length === 0, `Expected ${label} surfaces to pass the body-line rhythm checks, got: ${result.failures.join(" ")}`);
-  return result.roles;
+  assert(result.failures.length === 0 && result.list && result.hgroupUnjoined, `Expected ${label} surfaces to pass the body-line rhythm checks, got: ${result.failures.join(" ")}`);
+  return { roles: result.roles, list: result.list, hgroupUnjoined: result.hgroupUnjoined };
 }
 
 function stripSection(css: string): string {
@@ -313,15 +370,23 @@ function assertDeclarations(rule: Rule | undefined, expected: Record<string, str
   }
 }
 
-function rhythmDeclarations(rhythm: RhythmRecord): Record<string, string> {
+function rhythmDeclarations(rhythm: RhythmRecord, unjoinedKeys: string[]): Record<string, string> {
+  const surfaceUnjoined = rhythm.hgroupUnjoined.map(pairKey);
   return Object.fromEntries([
-    ...Object.entries(rhythm).flatMap(([roleName, role]) => [
+    ...Object.entries(rhythm.roles).flatMap(([roleName, role]) => [
       [`--bf-${roleName}-rhythm-step`, role.rhythmStep],
       [`--bf-${roleName}-phase-start`, role.phaseStart],
       [`--bf-${roleName}-closure-end`, role.closureEnd]
     ]),
-    ["--bf-body-loose-item-start", "0rem"],
-    ["--bf-body-loose-item-end", "0rem"]
+    ["--bf-body-list-block-start", rhythm.list.blockStart],
+    ["--bf-body-list-block-end", rhythm.list.closureEnd],
+    ["--bf-body-list-item-start", "0rem"],
+    ["--bf-body-list-item-end", "0rem"],
+    ["--bf-body-list-loose-gap", "var(--bf-body-rhythm-step)"],
+    ["--bf-body-loose-text-start", "0rem"],
+    ["--bf-body-loose-text-end", "0rem"],
+    ["--bf-hgroup-join", "calc(-1 * var(--bf-body-rhythm-step))"],
+    ...unjoinedKeys.map(key => [`--bf-hgroup-join-${key}`, surfaceUnjoined.includes(key) ? "0rem" : "var(--bf-hgroup-join)"])
   ]);
 }
 
@@ -352,70 +417,106 @@ export async function validateBodyLineRhythmBundle(
   assert(!/data-/.test(section) && !section.includes("!important"), `Expected ${label} section to avoid data-* selectors and !important.`);
 
   const rootRhythm = await surfaceRhythm(label, bundleDir, defaultSurface);
-  const roleNames = Object.keys(rootRhythm);
+  const roleNames = Object.keys(rootRhythm.roles);
   assert(roleNames.join() === BODY_LINE_RHYTHM_ROLES.join(), `Expected ${label} rhythm terms for body and h1-h6 in role order, got ${roleNames.join(", ")}.`);
 
   const rules: Rule[] = [];
   parseCss(section).each(node => {
     if (node.type === "rule") rules.push(node);
   });
-  const expectedRules = 1 + classSurfaces.length + 1 + roleNames.length + 3;
-  assert(rules.length === expectedRules, `Expected ${label} section to hold ${expectedRules} rules, got ${rules.length}.`);
 
-  const literals = new Map<string, RhythmRecord>([[ROOT, rootRhythm]]);
-  const blockSelectors = [ROOT, ...classSurfaces.map(([, surface]) => `:where(.bf-theme.${surface.className}.is-body-line-rhythm)`)];
+  const blockSelectors = [ROOT, ...classSurfaces.map(([, surface]) => `:where(.bf-theme.${surface.className})`)];
   const blockRhythms = [rootRhythm];
   for (const [, surface] of classSurfaces) {
     blockRhythms.push(await surfaceRhythm(label, bundleDir, surface));
   }
+  const unjoinedKeys = [...new Set(blockRhythms.flatMap(rhythm => rhythm.hgroupUnjoined.map(pairKey)))]
+    .sort((a, b) => {
+      const [aPrevious, aFollowing] = a.split("-").map(role => roleNames.indexOf(role));
+      const [bPrevious, bFollowing] = b.split("-").map(role => roleNames.indexOf(role));
+      return aPrevious - bPrevious || aFollowing - bFollowing;
+    });
+  if (classSurfaces.length >= 4) {
+    assert(unjoinedKeys.join() === [...EXPECTED_HGROUP_UNJOINED.documentation, ...EXPECTED_HGROUP_UNJOINED.os].sort().join(), `Expected ${label} to limit the documentation and OS hgroup pairs, got ${unjoinedKeys.join(", ")}.`);
+  }
+  const expectedRules = 1 + classSurfaces.length + 1 + roleNames.length + 1 + unjoinedKeys.length + 5;
+  assert(rules.length === expectedRules, `Expected ${label} section to hold ${expectedRules} rules, got ${rules.length}.`);
+
+  const literals = new Map<string, RhythmRecord>();
   blockSelectors.forEach((selector, index) => {
     assert(rules[index]?.selector === selector, `Expected ${label} rhythm block ${index + 1} to be ${selector}, got ${rules[index]?.selector}.`);
-    assertDeclarations(rules[index], rhythmDeclarations(blockRhythms[index]), `${label} ${selector}`);
+    assertDeclarations(rules[index], rhythmDeclarations(blockRhythms[index], unjoinedKeys), `${label} ${selector}`);
     literals.set(selector, blockRhythms[index]);
   });
 
-  const resetRule = rules[blockSelectors.length];
-  assert(resetRule?.selector === `${ROOT} :where(.bf-theme:not(.is-body-line-rhythm))`, `Expected ${label} nested non-opted theme reset after the surface blocks.`);
-  assertDeclarations(resetRule, Object.fromEntries([
+  // Owner ruling R1: the opt-out follows every surface block so the nearest .is-baseline-rhythm root restores main's ledger.
+  const baselineRule = rules[blockSelectors.length];
+  assert(baselineRule?.selector === BASELINE_ROOT, `Expected ${label} .is-baseline-rhythm block after the surface blocks, got ${baselineRule?.selector}.`);
+  assertDeclarations(baselineRule, Object.fromEntries([
     ...roleNames.flatMap(roleName => [
       [`--bf-${roleName}-rhythm-step`, "var(--bf-baseline)"],
       [`--bf-${roleName}-phase-start`, "0rem"],
       [`--bf-${roleName}-closure-end`, `var(--bf-${roleName}-margin-bottom)`]
     ]),
-    ["--bf-body-loose-item-start", "var(--bf-body-nudge-start)"],
-    ["--bf-body-loose-item-end", "var(--bf-body-margin-bottom)"]
-  ]), `${label} nested reset`);
+    ["--bf-body-list-block-start", "0rem"],
+    ["--bf-body-list-block-end", "0rem"],
+    ["--bf-body-list-item-start", "var(--bf-body-nudge-start)"],
+    ["--bf-body-list-item-end", "var(--bf-body-margin-bottom)"],
+    ["--bf-body-list-loose-gap", "0rem"],
+    ["--bf-body-loose-text-start", "var(--bf-body-nudge-start)"],
+    ["--bf-body-loose-text-end", "var(--bf-body-margin-bottom)"],
+    ["--bf-hgroup-join", "0rem"],
+    ...unjoinedKeys.map(key => [`--bf-hgroup-join-${key}`, "0rem"])
+  ]), `${label} .is-baseline-rhythm`);
 
   const applicationRules = rules.slice(blockSelectors.length + 1);
   roleNames.forEach((roleName, index) => {
     const tag = roleName === "body" ? "p" : roleName;
-    const parents = roleName === "body" ? [":where(.bf-prose)", ":where(.bf-prose li)"] : [":where(.bf-prose)"];
-    const expectedSelectors = parents.flatMap(parent => [
+    const parent = ":where(.bf-prose, .bf-prose > hgroup)";
+    const expectedSelectors = [
       `${ROOT} ${parent} > :where(${tag})${NOT_CAP_ENGINE}`,
       `${ROOT} ${parent} > .bf-${roleName}${NOT_CAP_ENGINE}`
-    ]);
-    assert(applicationRules[index]?.selectors.join("\n") === expectedSelectors.join("\n"), `Expected ${label} ${roleName} rule to select its semantic and class prose-flow shapes, got ${applicationRules[index]?.selector}.`);
+    ];
+    assert(applicationRules[index]?.selectors.join("\n") === expectedSelectors.join("\n"), `Expected ${label} ${roleName} rule to select its semantic and class prose-flow and hgroup shapes, got ${applicationRules[index]?.selector}.`);
     assertDeclarations(applicationRules[index], {
       "margin-bottom": `var(--bf-${roleName}-closure-end)`,
       "padding-block-start": `calc(var(--bf-${roleName}-nudge-start) + var(--bf-${roleName}-phase-start))`
     }, `${label} ${roleName} application`);
   });
 
-  const [liRule, markerRule, looseRule] = applicationRules.slice(roleNames.length);
-  assert(liRule?.selector === `${ROOT} :where(.bf-prose li)${NOT_CAP_ENGINE}`, `Expected ${label} prose li rule after the role rules.`);
-  assertDeclarations(liRule, {
-    "margin-bottom": "var(--bf-body-closure-end)",
-    "padding-block-start": "calc(var(--bf-body-nudge-start) + var(--bf-body-phase-start))"
-  }, `${label} prose li`);
-  assert(markerRule?.selector === `${ROOT} :where(.bf-prose ul > li)${NOT_CAP_ENGINE}::before`, `Expected ${label} prose marker shift after the li rule.`);
+  const [joinRule, ...rest] = applicationRules.slice(roleNames.length);
+  const pairRules = rest.slice(0, unjoinedKeys.length);
+  const [listRule, itemRule, markerRule, looseTextRule, looseGapRule] = rest.slice(unjoinedKeys.length);
+  assert(joinRule?.selector === `${ROOT} :where(.bf-prose > hgroup > * + *)${NOT_CAP_ENGINE}`, `Expected ${label} hgroup join rule after the role rules.`);
+  assertDeclarations(joinRule, { "margin-block-start": "var(--bf-hgroup-join)" }, `${label} hgroup join`);
+  const roleCompound = (roleName: string) => `:is(${roleName === "body" ? "p" : roleName}, .bf-${roleName})`;
+  unjoinedKeys.forEach((key, index) => {
+    const [previous, following] = key.split("-");
+    assert(pairRules[index]?.selector === `${ROOT} :where(.bf-prose > hgroup > ${roleCompound(previous)} + ${roleCompound(following)})${NOT_CAP_ENGINE}`, `Expected ${label} limited hgroup ${key} rule after the general join, got ${pairRules[index]?.selector}.`);
+    assertDeclarations(pairRules[index], { "margin-block-start": `var(--bf-hgroup-join-${key})` }, `${label} hgroup ${key} join`);
+  });
+  assert(listRule?.selector === `${ROOT} :where(.bf-prose) > :where(ul, ol)${NOT_CAP_ENGINE}`, `Expected ${label} container-owned prose list block rule.`);
+  assertDeclarations(listRule, {
+    "margin-bottom": "var(--bf-body-list-block-end)",
+    "padding-block-start": "var(--bf-body-list-block-start)"
+  }, `${label} prose list block`);
+  assert(itemRule?.selector === `${ROOT} :where(${PROSE_LIST_ITEM})${NOT_CAP_ENGINE}`, `Expected ${label} prose list item rule after the list block.`);
+  assertDeclarations(itemRule, {
+    "margin-bottom": "var(--bf-body-list-item-end)",
+    "padding-block-start": "var(--bf-body-list-item-start)"
+  }, `${label} prose list item`);
+  assert(markerRule?.selector === `${ROOT} :where(.bf-prose > ul > li, .bf-prose > :is(ul, ol) ul > li)${NOT_CAP_ENGINE}::before`, `Expected ${label} prose marker rule after the item rule.`);
   assertDeclarations(markerRule, {
-    "inset-block-start": "calc(var(--bf-tick-box-offset) + var(--bf-body-phase-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5))"
+    "inset-block-start": "calc(var(--bf-tick-box-offset) - var(--bf-body-nudge-start) + var(--bf-body-list-item-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5))"
   }, `${label} prose marker`);
-  assert(looseRule?.selector === `${ROOT} :where(.bf-prose li:has(> :where(p, .bf-body)))${NOT_CAP_ENGINE}`, `Expected ${label} loose-item rule to follow the li rule.`);
-  assertDeclarations(looseRule, {
-    "margin-bottom": "var(--bf-body-loose-item-end)",
-    "padding-block-start": "var(--bf-body-loose-item-start)"
-  }, `${label} loose item`);
+  assert(looseTextRule?.selectors.join("\n") === [`${ROOT} :where(${PROSE_LIST_ITEM}) > :where(p)${NOT_CAP_ENGINE}`, `${ROOT} :where(${PROSE_LIST_ITEM}) > .bf-body${NOT_CAP_ENGINE}`].join("\n"), `Expected ${label} loose-item text rule, got ${looseTextRule?.selector}.`);
+  assertDeclarations(looseTextRule, {
+    "margin-bottom": "var(--bf-body-loose-text-end)",
+    "padding-block-start": "var(--bf-body-loose-text-start)"
+  }, `${label} loose-item text`);
+  assert(looseGapRule?.selector === `${ROOT} :where(.bf-prose > :is(ul, ol) li:has(> :where(p, .bf-body)) + li:has(> :where(p, .bf-body)))${NOT_CAP_ENGINE}`, `Expected ${label} loose-item gap rule last.`);
+  assertDeclarations(looseGapRule, { "margin-block-start": "var(--bf-body-list-loose-gap)" }, `${label} loose-item gap`);
+  assert(!section.includes("is-body-line-rhythm") && !section.includes("loose-item-"), `Expected ${label} section to drop the retired opt-in modifier and loose-item properties.`);
 
   const metricFlushSelectors: string[] = [];
   parseCss(css).walkRules(rule => {
@@ -438,11 +539,13 @@ export function validateBodyLineRhythmParity(bundleLiterals: Record<string, Map<
     const direct = bundleLiterals[tierName]?.get(ROOT);
     assert(direct, `Expected the direct ${tierName} bundle to declare root rhythm literals.`);
     for (const [roleName, [, step, phase, closure]] of Object.entries(EXPECTED[tierName])) {
-      const role = direct[roleName];
+      const role = direct.roles[roleName];
       assert(role && parseRem(role.rhythmStep) === step && parseRem(role.phaseStart) === phase && parseRem(role.closureEnd) === closure, `Expected direct ${tierName}/${roleName} literals to equal the contract table.`);
     }
+    const [blockStart, listClosure] = EXPECTED_LIST[tierName];
+    assert(parseRem(direct.list.blockStart) === blockStart && parseRem(direct.list.closureEnd) === listClosure, `Expected direct ${tierName} list block literals to equal the contract table.`);
 
-    const classSelector = `:where(.bf-theme.bf-tier-${tierName}.is-body-line-rhythm)`;
+    const classSelector = `:where(.bf-theme.bf-tier-${tierName})`;
     const scopedBundles = Object.entries(bundleLiterals).filter(([, literals]) => literals.has(classSelector));
     assert(scopedBundles.length === 7, `Expected ${tierName} class-scoped rhythm blocks in the default, four tier and two preset bundles, found ${scopedBundles.length}.`);
     for (const [bundleName, literals] of scopedBundles) {
@@ -454,7 +557,7 @@ export function validateBodyLineRhythmParity(bundleLiterals: Record<string, Map<
   assert(JSON.stringify(bundleLiterals["app-tier"]?.get(ROOT)) === JSON.stringify(bundleLiterals.app?.get(ROOT)), "Expected the app-tier preset root to resolve the app rhythm literals.");
 }
 
-/** Research T4: without complete rhythm data the section is not emitted and the modifier is a no-op. */
+/** Research T4: without complete rhythm data the section is not emitted, so text keeps the baseline-unit ledger and the opt-out is a no-op. */
 export function validateBodyLineRhythmNoOp(bundle: BodyLineRhythmBundle, literals: Map<string, RhythmRecord> | undefined): void {
   const rhythm = literals?.get(ROOT);
   assert(rhythm, "Expected default bundle root rhythm literals.");

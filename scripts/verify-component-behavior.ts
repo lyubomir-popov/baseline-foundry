@@ -454,6 +454,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         rejectedLinkButton.remove();
         return {
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * rootSize,
+          bodyLine: Number.parseFloat(getComputedStyle(document.body).lineHeight),
+          bodyPhase: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-body-phase-start")) * rootSize,
           borderWidth: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-border-width")) * rootSize,
           rootSize,
           nestedApi,
@@ -499,7 +501,10 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
       assertSharedHeight("single-line interface", interfaceComponents);
       assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - interfaceReference.textTop) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
-      assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
+      assertSharedHeight("text-run", occupiedBlockGeometry.textRuns.filter(sample => sample.label !== "Prose list"));
+      // Spec 026 R3: a one-item prose list is a container-owned body-line block, roundUp(nudge + phase, step) + one line = two body lines in every tier.
+      const proseListRun = occupiedBlockGeometry.textRuns.find(sample => sample.label === "Prose list");
+      assert(proseListRun && Math.abs(proseListRun.height - 2 * occupiedBlockGeometry.bodyLine) <= renderedBorderTolerance, `Expected ${tier} one-item prose list specimen to occupy two ${occupiedBlockGeometry.bodyLine}px body lines; got ${JSON.stringify(proseListRun)}.`);
       const nestedReference = occupiedBlockGeometry.nested[0];
       const nestedHosts = occupiedBlockGeometry.nested.slice(1);
       assertSharedHeight("nested host", nestedHosts);
@@ -511,7 +516,9 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         const delta = Math.abs(phase - interfaceReferencePhase);
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
       }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
-      assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
+      // Spec 026: the prose list's first baseline sits one body phase lower, on the body-line grid.
+      const runTextTop = (sample: { label: string; textTop: number | null }) => sample.textTop === null ? null : sample.textTop - (sample.label === "Prose list" ? occupiedBlockGeometry.bodyPhase : 0);
+      assert(Number.isFinite(occupiedBlockGeometry.bodyPhase) && occupiedBlockGeometry.textRuns.every(sample => runTextTop(sample) === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs((runTextTop(sample) ?? 0) - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline, the prose list one ${occupiedBlockGeometry.bodyPhase}px body phase lower; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
       assert(occupiedBlockGeometry.nested.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || Math.abs(sample.textTop - nestedReference.textTop) <= renderedBorderTolerance), `Expected ${tier} nested host text to retain the page baseline while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
       assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
@@ -3820,6 +3827,7 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
           h6Reference: h6ReferenceTypography,
           h3Reference: h3ReferenceTypography,
           firstBaselinePhase: firstBaselineReferenceMarker.getBoundingClientRect().bottom - firstBaselineReference.getBoundingClientRect().top,
+          proseListClosurePx: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-body-list-block-end")) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
           semanticListSpacing: {
             listMarginBottom: getComputedStyle(semanticListProbe).marginBottom,
             paragraphMarginBottom: getComputedStyle(semanticListParagraphReference).marginBottom,
@@ -3853,7 +3861,8 @@ async function verifySemanticRoleClassPrecedence(origin: string): Promise<void> 
         assert(boundary, `Expected ${tier} ${caseName} prose-boundary fixture.`);
         assert(boundary.marginBottom === boundary.referenceMarginBottom, `Expected ${tier} ${caseName} flow boundaries to preserve baseline compensation. Boundary=${boundary.marginBottom}, reference=${boundary.referenceMarginBottom}.`);
         if (caseName === "ul" || caseName === "ol") {
-          assert(boundary.marginBottom === "0px", `Expected ${tier} semantic list containers to remain externally neutral, got ${boundary.marginBottom}.`);
+          // Spec 026 R3: a direct-child prose list is a container-owned block that carries the body-line closure once.
+          assert(state.proseListClosurePx > 0 && Math.abs(Number.parseFloat(boundary.marginBottom) - state.proseListClosurePx) <= 0.01, `Expected ${tier} direct-child prose ${caseName} to carry the ${state.proseListClosurePx}px body-line list closure, got ${boundary.marginBottom}.`);
         } else if (["plain-body", "classed-body", "plain-h3", "classed-h3", "blockquote"].includes(caseName)) {
           assert(boundary.referenceMarginBottom !== "0px", `Expected ${tier} ${caseName} to retain measurable bottom-margin compensation.`);
         }

@@ -352,14 +352,18 @@ export function validateBodyLineRhythmDemo(pageCatalogJs: string, html: string, 
   const roots = Array.from(html.matchAll(/<div\s+class="([^"]*)"\s+data-body-line-root="([^"]+)"/g), match => ({ classes: match[1].split(/\s+/), variant: match[2] }));
   assert(roots.length > 0 && roots.every(root => root.classes.includes("bf-theme") && root.classes.includes("bf-tier-editorial")), `Expected every ${pageName} comparison root to be a tier-classed .bf-theme.`);
   for (const root of roots) {
-    const isOpted = root.classes.includes("is-body-line-rhythm");
-    assert(isOpted === (root.variant === "opted" || root.variant === "nested-host"), `Expected ${pageName} ${root.variant} roots ${root.variant === "opted" || root.variant === "nested-host" ? "to carry" : "not to carry"} the opt-in modifier.`);
+    const isBaseline = root.classes.includes("is-baseline-rhythm");
+    const expectsBaseline = root.variant === "baseline" || root.variant === "baseline-host";
+    assert(isBaseline === expectsBaseline, `Expected ${pageName} ${root.variant} roots ${expectsBaseline ? "to carry" : "not to carry"} the is-baseline-rhythm opt-out.`);
   }
-  assert((html.match(/data-body-line-root="nested-host"\s*>\s*<div\s+class="bf-theme bf-tier-editorial"\s+data-body-line-root="nested"/g) ?? []).length === 2, `Expected ${pageName} to nest a non-opted theme directly inside an opted root for the matrix and the lists.`);
-  for (const [flowName, count] of [["ledger", 2], ["matrix", 3], ["wrapped", 2], ["tight", 3], ["loose", 3], ["nested-list", 2], ["flush", 2], ["rule", 2], ["quote", 2]] as const) {
+  assert(!html.includes("is-body-line-rhythm"), `Expected ${pageName} to drop the retired is-body-line-rhythm modifier.`);
+  assert((html.match(/data-body-line-root="baseline-host"\s*>\s*<div\s+class="bf-theme bf-tier-editorial"\s+data-body-line-root="nested-default"/g) ?? []).length === 2, `Expected ${pageName} to nest a default theme directly inside an opted-out root for the matrix and the lists.`);
+  for (const [flowName, count] of [["ledger", 2], ["matrix", 3], ["hgroup", 2], ["wrapped", 2], ["tight", 3], ["loose", 3], ["nested-list", 3], ["ordered", 2], ["flush", 2], ["rule", 2], ["quote", 2]] as const) {
     assert((html.match(new RegExp(`data-body-line-flow="${flowName}"`, "g")) ?? []).length === count, `Expected ${pageName} to render ${count} ${flowName} fixtures.`);
   }
-  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 21, `Expected every ${pageName} fixture flow to use the zero-gap specimen and the body-line ruling.`);
+  assert((html.match(/class="bf-prose body-line-flow body-line-ruling"/g) ?? []).length === 26, `Expected every ${pageName} fixture flow to use the zero-gap specimen and the body-line ruling.`);
+  assert((html.match(/<hgroup>\s*<h1>[^<]+<\/h1>\s*<h2>/g) ?? []).length === 2 && (html.match(/<hgroup>\s*<h1>[^<]+<\/h1>\s*<p>/g) ?? []).length === 2, `Expected ${pageName} to show hgroup h1 + h2 and h1 + p specimens in both columns.`);
+  assert((html.match(/<li>\s*Nested item one\s*<ul>\s*<li>Third level one<\/li>/g) ?? []).length === 3, `Expected ${pageName} nested lists to reach three levels.`);
   assert((html.match(/class="bf-prose bf-stack is-metric-flush body-line-flow"/g) ?? []).length === 2, `Expected ${pageName} metric-flush pairs to sit in .bf-prose.bf-stack.is-metric-flush.`);
   for (const option of ["a", "b", "c", "d"]) {
     assert(html.includes(`data-body-line-gap="${option}"`) && html.includes(`(${option}) `), `Expected ${pageName} to show labelled D4 option (${option}).`);
