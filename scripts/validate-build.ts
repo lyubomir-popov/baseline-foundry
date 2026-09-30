@@ -8,6 +8,7 @@ import { assert, getCheckCount } from "./validation-assert.ts";
 import { parseCss, assertRuleHasDecl, assertRuleMissingDecl } from "./css-ast-helpers.ts";
 import { validateRenewalComponentContracts } from "./validation/renewal-component-contracts.ts";
 import { validateDtcgSpacingContracts } from "./validation/dtcg-spacing-contracts.ts";
+import { validateBodyLineRhythmFormulas } from "./validation/body-line-rhythm-contracts.ts";
 import { assertNoDuplicateClassAttributes } from "./validation/html-contract-helpers.ts";
 import {
   validateAppTierDemoPage,
@@ -2126,6 +2127,12 @@ async function main(): Promise<void> {
     documentation: documentationTier,
     app: appTier,
     os: osTier
+  }));
+  await runInvariantAsync("Body-line rhythm formulas", () => validateBodyLineRhythmFormulas({
+    editorial: editorialTier.tokens,
+    documentation: documentationTier.tokens,
+    app: appTier.tokens,
+    os: osTier.tokens
   }));
   await runInvariantAsync("Canonical DTCG spacing adapter", () => validateDtcgSpacingContracts({
     editorial: editorialTier,
