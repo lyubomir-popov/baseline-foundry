@@ -90,6 +90,33 @@ Confirm that a proposed semantic role is not merely a renamed primitive and
 that density representation can expose both runtime members without a public
 modifier class.
 
+## Visual gallery
+
+Every review request from CP1 onward carries a gallery (FR-054). Build it from
+the Baseline Foundry worktree root, with Node:
+
+```powershell
+npx tsx specs/024-semantic-spacing-token-schema/scripts/build-visual-gallery.ts `
+  --gate cp1 `
+  --before 313ee82c13a126b779b9bd75902da5af13c28505 `
+  --after 1c2c6ba73 `
+  --packages ds-global,ds-global-form
+```
+
+It builds static Storybooks for both commits in temporary Pragma worktrees and
+writes `index.html` plus `manifest.json` to
+`H:\WSL_dev_projects\temp\spec-024-<gate>-gallery-<yyyymmdd>\`.
+
+To read it as the owner:
+
+1. Check the header: which commits, and how many stories changed, stayed the
+   same or failed per package.
+2. Read the "where to look" list first; each item links to one pair.
+3. Scroll the changed pairs. Toggle the guides where alignment matters.
+4. Glance at the collapsed unchanged list: it shows what has not moved yet.
+5. Record accept or reject, with any rejected pairs and a one-line reason, in
+   the gate's task entry (FR-054d).
+
 ## Review order
 
 1. Complete and independently review the bounded pre-CP1 geometry spike in

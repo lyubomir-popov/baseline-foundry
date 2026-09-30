@@ -54,8 +54,10 @@ Read in this order:
   Pragma spike tip is local commit `1c2c6ba73`. T005/T005a/T005b freeze 158
   React parts and 11 non-React rows against synced Pragma local `main`
   `90386bfbf`, equal to `origin/main` at capture. T006 assigns or bounds all 169
-  rows; T007–T011 are complete. The cold-start packet is ready for the mandatory
-  independent T012 CP1 review. The preserved
+  rows; T007–T011 are complete. The cold-start packet is ready; T011a builds
+  the CP1 visual gallery before the mandatory independent T012 CP1 review.
+  From CP1 onward every gate needs the owner's visual sign-off of a
+  before/after gallery of the real stories (FR-054). The preserved
   rejected candidate remains custody evidence, not completion evidence.
 - **Jira home**: [WD-36041](https://warthogs.atlassian.net/browse/WD-36041).
 - **Proposed Jira child**: “Define the minimal spacing taxonomy and governed

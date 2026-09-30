@@ -471,11 +471,23 @@ fixture items are not a prerequisite.
   rendered T008 proof, and all remaining exception classes. It asks CP1 to
   approve those classes as bounded recut work or identify exact blocking
   records; it does not treat classification as approval.
+- [ ] **T011a** Build `scripts/build-visual-gallery.ts` under FR-054f and
+  produce the CP1 gallery under FR-054a–c. Before is the spike base
+  `313ee82c13a126b779b9bd75902da5af13c28505`; after is the accepted spike tip
+  `1c2c6ba73`. Cover every story in the ds-global and ds-global-form
+  Storybooks. The header coverage counts show the owner which components the
+  proposed model has already moved and which it has not touched yet. Add the
+  "where to look" list, at minimum: the extra body line after paragraphs and
+  list items, the Docs/App form gap changes, the Card, Tile, Tooltip and
+  Popover padding changes, Section, and ColorInput. Link the gallery and its
+  manifest SHA-256 from `cp1-review-packet.md`.
 - [ ] **T012** Request an independent Opus adversarial review. Do not proceed
   while the denominator is open, assignments are null or the App gap ordering
-  remains contradictory.
+  remains contradictory. The request MUST include the T011a gallery, and every
+  finding with a visible effect MUST cite its gallery entry (FR-054c).
 - [ ] **T013** Incorporate findings and obtain owner approval of the minimum
-  taxonomy.
+  taxonomy, including the FR-054d owner visual sign-off of the T011a gallery.
+  If findings change any value, regenerate the gallery before sign-off.
 
 ## Phase 3 — semantic schema representation
 
@@ -506,12 +518,14 @@ fixture items are not a prerequisite.
 
 - [ ] **T018** Request an ordinary schema adversarial review covering DTCG
   validity, completeness, collision behavior, private-channel leakage and
-  runtime cascade semantics.
+  runtime cascade semantics. Attach a gallery under FR-054: if CP2 changes no
+  value from CP1, attach the signed-off T011a gallery by manifest SHA-256 and
+  say so; otherwise regenerate it with the spike carrier set to the CP2 values.
 - [ ] **T019** Request Opus review if the selected representation introduces a
   new modifier/builder architecture, public API or cross-repository migration
-  premise.
+  premise, with the same gallery as T018.
 - [ ] **T020** Incorporate findings and obtain owner approval before token
-  implementation.
+  implementation, including the FR-054d owner visual sign-off.
 
 ## Phase 4 — design-tokens contribution
 
@@ -524,7 +538,11 @@ fixture items are not a prerequisite.
 - [ ] **T024** Generate review artifacts from source and run the design-tokens
   repository gates.
 - [ ] **T025** Obtain adversarial implementation review before merge or
-  publication.
+  publication. Attach a gallery under FR-054: before is synced Pragma `main`
+  with its current token package; after is the same commit locally linked to
+  the candidate design-tokens build, with no Pragma edit. Tokens alone should
+  move nothing except what the T017a migration disposition names; every other
+  changed pair is a finding. Record the FR-054d owner sign-off.
 
 ## Phase 5 — Pragma adoption and Jira
 
@@ -540,7 +558,11 @@ fixture items are not a prerequisite.
   closeout; never invent future SHAs or results. Record activated owners and
   unmigrated sentinel consumers for every sequential merge.
 - [ ] **T026b** Review the foundation cuts and then the Commands first-family
-  cut at their mandatory handoff boundaries before later families.
+  cut at their mandatory handoff boundaries before later families. **Every**
+  cut, not only these, ships a gallery whose before is the cut's parent and
+  whose after is the cut's tip. Record the FR-054d owner sign-off before the
+  next cut starts; foundation cuts must show no changed pair except those they
+  declare.
 - [ ] **T026c** Replace the historical density-retirement task with governed
   host/subscriber integration and the CP2-approved compatibility disposition.
 - [ ] **T027** Prove automatic Chip density in table, tabs and side navigation,
@@ -550,8 +572,10 @@ fixture items are not a prerequisite.
   contribution after final rebase and before push; run root `bun run build`
   when artifacts or publishable packages change.
 - [ ] **T028a** Request the final actual Opus recut review with exact provider,
-  parent, branch, evidence, gate and owner-partition identities. Incorporate all
-  findings before human handoff.
+  parent, branch, evidence, gate and owner-partition identities. Include a
+  gallery whose before is `main` at the start of the recut and whose after is
+  the final integration tip, plus the per-cut sign-off record. Incorporate all
+  findings and record the FR-054d owner sign-off before human handoff.
 - [ ] **T029** Refresh WD-36041 and child metadata through jira-project-bridge;
   reconcile the proposed child against live Jira.
 - [ ] **T030** Prepare and dry-run the Jira plan, obtain explicit owner approval,
@@ -565,6 +589,10 @@ fixture items are not a prerequisite.
   class.
 - Do not review your own work where a review is required, and do not record a
   model identity that is not the reviewer's actual one.
+- Do not request a review from CP1 onward without its FR-054 gallery, and do not
+  treat a gate as passed without the owner's visual sign-off.
+- Do not start a Pragma cut before the previous cut's owner sign-off is
+  recorded.
 - Do not retire the independent density axis; remove a legacy public control
   only through the CP2-approved compatibility disposition.
 - Do not rebase, delete or repoint the only refs for the historical recut tips

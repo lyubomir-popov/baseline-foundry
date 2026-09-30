@@ -13,12 +13,14 @@ conflict.
 
 ## Short answer
 
-**Not ready for the recut. Ready for the independent CP1 review only.**
+**Not ready for the recut. Ready for the CP1 gallery, then the independent CP1
+review.**
 
 CP1 and CP2 are both unpassed and no approved provider artifact exists, so none
 of Phase 3, 4 or 5 can start. The denominator and its candidate T006
-assignments are now closed. T007–T011 are complete; T012 is the next and only
-authorised step.
+assignments are now closed. T007–T011 are complete. T011a – the visual gallery
+generator and the CP1 gallery (FR-054) – is next; T012 follows with the gallery
+attached. No gate from CP1 onward passes without the owner's visual sign-off.
 
 Worktree routing is phase-specific. T004c0–T004h happened in the isolated
 Pragma `feat/bf-inside-out-geometry` worktree, branched from exact recovery
@@ -665,14 +667,16 @@ The reviewer must not be the agent that did the work. If no independent reviewer
 is available, say so and stop — do not self-review, and do not describe the
 model you are as a different one (FR-048).
 
-Later gates, for orientation — none of them are yours to reach:
+Later gates, for orientation. From CP1 onward each needs **both** the reviewer's
+verdict and the owner's visual sign-off of its gallery (FR-054):
 
-| Gate | Review required | Source |
-|---|---|---|
-| CP1 taxonomy | Independent **Opus** adversarial review; "do not proceed" while the denominator is open | T012 |
-| CP2 schema | Ordinary adversarial review; Opus additionally if a new architecture or public API appears | T018, T019 |
-| Token implementation | Adversarial implementation review before merge or publication | T025 |
-| Final recut | Actual Opus recut review before human handoff | T028a |
+| Gate | Review required | Gallery before → after | Source |
+|---|---|---|---|
+| CP1 taxonomy | Independent **Opus** adversarial review; "do not proceed" while the denominator is open | Spike base → spike tip | T011a, T012 |
+| CP2 schema | Ordinary adversarial review; Opus additionally if a new architecture or public API appears | CP1 gallery, or regenerated with CP2 values | T018, T019 |
+| Token implementation | Adversarial implementation review before merge or publication | Pragma `main` → same commit on candidate tokens | T025 |
+| Every Pragma cut | Foundation and first-family reviews, then each family | Cut parent → cut tip, signed off before the next cut | T026b |
+| Final recut | Actual Opus recut review before human handoff | Recut-start `main` → final tip | T028a |
 
 Note that Pragma's own `AGENTS.md` mandates none of this — it governs commits,
 branches and the root gate. Every review obligation above comes from this spec
@@ -691,7 +695,16 @@ parts and 11 non-React rows against synced local `main` `90386bfbf`, equal to
 `origin/main` at capture, including Modal, the expanded SideNavigation and
 SidePanel. T006 assigns or bounds all 169 rows in the schema-version-2
 inventory. T007–T011 are complete; T008 current-main comparison evidence is
-preserved in its isolated local Pragma worktree and T012 is next.
+preserved in its isolated local Pragma worktree. T011a, the CP1 gallery, is
+next, then T012.
+
+End every hand-back to the owner with exactly three items (FR-054e):
+
+1. the gallery link, or "no visible change" with the reason;
+2. what you are unsure of;
+3. the decisions you need from the owner.
+
+Put narrative status in the task entry, not in the hand-back.
 
 ## How to verify, and how much
 

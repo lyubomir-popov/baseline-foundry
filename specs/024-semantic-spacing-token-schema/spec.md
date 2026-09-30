@@ -134,6 +134,35 @@ local paths as the justification.
    **Then** each pull request consumes the approved schema and passes the owning
    repository’s full gate.
 
+---
+
+### User story 5 – See what every reviewed change does to the components (Priority: P1)
+
+The design-system owner can open one page at every review gate and see each
+real Pragma story before and after the change under review, per product, with
+the changed ones first. The owner approves or rejects what the components look
+like; the reviewer approves or rejects whether the code follows the rules.
+
+**Why this priority**: Reviewers check code against the spec's rules and
+numbers. Only the owner can judge whether the result looks right, and
+author-made comparison stories show only what their author chose to show. A
+gate that the owner cannot see is a gate the owner cannot hold.
+
+**Independent test**: Given only the gallery link from a review request, the
+owner can say which components changed, in which products, and whether each
+change is wanted, without reading code, measurements or chat history.
+
+**Acceptance scenarios**:
+
+1. **Given** a review request, **When** the owner opens its gallery, **Then**
+   every story of every touched Storybook appears as a before/after pair for
+   Site, Docs and App, changed pairs first, with the before and after commits
+   named.
+2. **Given** a reviewer finding with a visible effect, **When** the owner reads
+   it, **Then** it names the gallery entry – story, product and where to look.
+3. **Given** the reviewer accepts but the owner rejects a visible change,
+   **When** the gate is recorded, **Then** the gate has not passed.
+
 ### Edge cases
 
 - Equal values across products do not erase a semantic distinction.
@@ -570,6 +599,52 @@ local paths as the justification.
   consumer, RichChoicesField and per-instance form override is deferred to T007
   or T010, and the recorded Summon, boilerplate, ds-app Storybook and Svelte WPE
   boundaries remain unchanged.
+- **FR-054**: Owner direction, 2026-09-29: every review gate from CP1 onward –
+  T012, T018/T019, T025, every Pragma cut review under T026b and T028a – MUST
+  ship a **visual gallery** with its review request, and MUST NOT pass without
+  a recorded owner visual sign-off of that gallery. Reviewer acceptance is
+  necessary but not sufficient. The gallery is the owner's evidence; the FR-046
+  comparison sheet remains the author's geometry evidence and MUST NOT be
+  offered in place of the gallery.
+- **FR-054a**: The gallery renders the **existing** stories of every Storybook
+  the candidate touches – not a hand-picked subset and not evidence-only
+  stories – twice: once at the candidate's exact parent or base ("before") and
+  once at the candidate ("after"). "Before" MUST be the commit the candidate is
+  built on, never an unrelated mainline, so that every visible difference is
+  caused by the candidate. Each story renders for Site, Docs and App through the
+  Storybook product global, in Chromium at DPR 1, a 16px root and one fixed
+  viewport recorded in the gallery. Evidence-only stories MAY appear in a
+  separate, labelled section that does not count towards coverage.
+- **FR-054b**: The gallery is one self-contained HTML page. Its header names
+  the gate, both commits, the viewport and, per package, the number of stories
+  changed, unchanged and failed to render. Changed pairs come first, ordered by
+  the share of pixels that differ; unchanged pairs are listed and collapsed so
+  that what has *not* moved is visible too. Each pair shows before, after and a
+  highlighted difference, the change in rendered height, and a per-product
+  baseline-unit and body-line guide overlay that can be toggled. A story that
+  fails to render in either state is listed as failed, never omitted.
+- **FR-054c**: The gallery author MUST add a short "where to look" list of three
+  to ten entries, each linking to one pair and saying in one line what
+  changed and why. Every reviewer finding with a visible effect MUST cite the
+  gallery entry – story, product and region – and a finding with no visible
+  effect MUST say so.
+- **FR-054d**: Owner visual sign-off MUST be recorded in the gate's task entry
+  and review file with the date, the gallery manifest SHA-256, a verdict of
+  accept or reject, and any rejected pairs with a one-line reason. Rejected
+  pairs block the gate exactly as a reviewer P1 does. In the Pragma recut, each
+  cut's sign-off MUST be recorded before the next cut starts, so the owner
+  approves one component family at a time.
+- **FR-054e**: Every agent hand-back to the owner MUST end with exactly three
+  items: the gallery link (or "no visible change" with the reason), what the
+  agent is unsure of, and the decisions it needs from the owner. Narrative
+  status belongs in the task entry, not in the hand-back.
+- **FR-054f**: The gallery generator lives in this package as
+  `scripts/build-visual-gallery.ts` and runs with Node, not Bun. It builds
+  static Storybooks for both commits in temporary Pragma worktrees and serves
+  them on ephemeral ports; it MUST NOT edit Pragma source, write into Pragma,
+  or bind ports 6114 or 6115. Output goes to an external evidence root
+  `H:\WSL_dev_projects\temp\spec-024-<gate>-gallery-<yyyymmdd>\` with a
+  `manifest.json` hashing every image and the page.
 
 ### Key entities
 
@@ -616,6 +691,9 @@ local paths as the justification.
 - **SC-009**: The final recut ledger contains no duplicate or unassigned
   approved relationships and records exact parent, provider, path, proof, size
   and rollback identities for every slice.
+- **SC-010**: Every review gate from CP1 onward has a gallery manifest SHA-256
+  and an owner visual sign-off recorded beside the reviewer's verdict, and every
+  Pragma cut's sign-off predates the start of the next cut.
 
 ## Assumptions
 

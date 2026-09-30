@@ -131,16 +131,25 @@ After owner approval, use jira-project-bridge to create or reuse the truthful
 WD-36041 child, link this durable record and publish only reviewed current
 status. Jira is not the source schema.
 
+## Owner visual gate
+
+From CP1 onward every gate has two approvals (FR-054): the reviewer judges
+whether the code follows the rules; the owner judges what the components look
+like, from a before/after gallery of the real stories. Neither substitutes for
+the other. In the recut this also sets the pace: one cut, one gallery, one
+owner sign-off, then the next cut.
+
 ## Checkpoint crosswalk
 
-| Gate | Spec coordinate | Dependency |
-|---|---|---|
-| Taxonomy CP1 | Pragma 022 T008; this spec T011–T013 | Reconciled current-main denominator and proposed assignments |
-| Schema CP2 | This spec T014–T020 | CP1-approved taxonomy |
-| Token implementation review | This spec T021–T025 | CP2-approved representation and policy |
-| Pragma foundation review | Recut handoff, foundation cuts | Exact reviewed provider artifact |
-| First-family review | Recut handoff, Commands cut | Reviewed foundation runtime |
-| Final recut Opus review | Recut handoff after all cuts | Complete owner partition and integration evidence |
+| Gate | Spec coordinate | Dependency | Gallery before → after |
+|---|---|---|---|
+| Taxonomy CP1 | Pragma 022 T008; this spec T011–T013 | Reconciled current-main denominator and proposed assignments | Spike base `313ee82c1` → spike tip `1c2c6ba73` |
+| Schema CP2 | This spec T014–T020 | CP1-approved taxonomy | CP1 gallery reused, or regenerated with CP2 values |
+| Token implementation review | This spec T021–T025 | CP2-approved representation and policy | Pragma `main` → same commit linked to candidate tokens |
+| Pragma foundation review | Recut handoff, foundation cuts | Exact reviewed provider artifact | Cut parent → cut tip |
+| First-family review | Recut handoff, Commands cut | Reviewed foundation runtime | Cut parent → cut tip |
+| Each later family cut | Recut handoff | Previous cut's owner sign-off | Cut parent → cut tip |
+| Final recut Opus review | Recut handoff after all cuts | Complete owner partition and integration evidence | Recut-start `main` → final integration tip |
 
 The similarly named historical Pragma contract checkpoint is not schema CP2.
 The design-tokens contribution is the sole production semantic source; any CSS
