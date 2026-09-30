@@ -322,34 +322,49 @@ Example:
 
 Engine choice remains separate: `.bf-engine-metrics` is the default production path, `.bf-engine-cap` is demo-only.
 
-### Body-line rhythm (provisional opt-in)
+### Body-line rhythm
 
-Add `is-body-line-rhythm` to a `.bf-theme` root to put its prose flows on the
-body-line grid (Spec 026, Phase A). Paragraphs and headings that are direct
-children of `.bf-prose`, prose list items and their direct paragraphs keep
-their measured nudge, add a phase inset that lands the first baseline on a
-whole body line, and close their occupied block to whole body lines instead of
-one baseline unit. The terms are computed at build time from the same font
-metrics as the nudge and behave identically in all four tiers, in direct and
-class-scoped bundles. A custom theme built with `buildThemeFromConfig` gets
-the section when its terms can be computed; otherwise the modifier is a
-no-op.
+Prose text sits on the body-line grid by default (Spec 026). Paragraphs and
+headings that are direct children of `.bf-prose` keep their measured nudge,
+add a phase inset that lands the first baseline on a whole body line, and
+close their occupied block to whole body lines instead of one baseline unit.
+A prose `ul` or `ol` is one container-owned block: it carries the body nudge
+and phase once at the top and the closure once at the end, so every item,
+nested item and following outer item advances exactly one body line; loose
+items (`li > p`) are one body line apart. Children of a prose `hgroup` keep
+their own terms and each child after the first is pulled up one whole body
+line, except pairs whose caps would reach the previous descender. The terms
+are computed at build time from the same font metrics as the nudge and behave
+identically in all four tiers, in direct and class-scoped bundles.
 
 ```html
-<article class="bf-theme bf-tier-documentation is-body-line-rhythm">
+<article class="bf-theme bf-tier-documentation">
 	<div class="bf-prose">
-		<h2>Body-line heading</h2>
-		<p>Paragraphs and headings share one body-line phase.</p>
+		<hgroup>
+			<h2>Body-line heading</h2>
+			<p>Joined standfirst</p>
+		</hgroup>
+		<p>Paragraphs, headings and lists share one body-line phase.</p>
+	</div>
+</article>
+
+<article class="bf-theme bf-tier-documentation is-baseline-rhythm">
+	<div class="bf-prose">
+		<p>This subtree keeps the baseline-unit ledger.</p>
 	</div>
 </article>
 ```
 
-Text outside `.bf-prose`, component text, controls, `blockquote`, `hr` and
-code stay on the baseline-unit ledger, and container gaps are unchanged until
-the owner rules on them. Wrapped headings whose line height is not a whole
-body line, nested lists and metric-flush pairs are recorded exceptions. The
-modifier is provisional: it may be retired if body-line rhythm becomes the
-default. Compare both ledgers per tier at `demo/spec/body-line-rhythm.html`.
+Add `is-baseline-rhythm` to a `.bf-theme` root to restore the baseline-unit
+ledger – nudge plus one-baseline-unit compensation per element and per list
+item – for its subtree; the nearest theme root wins in either direction. Text
+outside `.bf-prose`, component text, controls, `blockquote`, `hr` and code
+stay on the baseline-unit ledger, and container gaps are unchanged until the
+owner rules on them. Wrapped headings whose line height is not a whole body
+line and metric-flush pairs are recorded exceptions. A custom theme built
+with `buildThemeFromConfig` gets body-line rhythm when its terms can be
+computed; otherwise its text keeps the baseline-unit ledger. Compare both
+ledgers per tier at `demo/spec/body-line-rhythm.html`.
 
 See `config/tiers/` for the four canonical source configs. Compatibility preset names resolve to those same owners rather than duplicate JSON files.
 

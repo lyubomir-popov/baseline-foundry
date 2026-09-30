@@ -197,8 +197,9 @@ offsets recorded.
 
 - [ ] T024 BLOCKED on owner: rule on D4 option (a), (b), (c) or (d) from the
   demo; record the ruling and date in `research.md` D4.
-- [ ] T025 Implement the ruled gap behaviour under the modifier in
-  `src/css.ts`, remove the demo candidate rules, and extend static and
+- [ ] T025 Implement the ruled gap behaviour for the default body-line ledger
+  (leaving `.is-baseline-rhythm` on main's gaps) in `src/css.ts`, remove the
+  demo candidate rules, and extend static and
   rendered checks to prove phase after the affected containers. Scope any
   stack rule to stacks that hold prose; if (c) is extended to stacks, add the
   modifier the ruling names and amend FR-001 (depends on T024).
@@ -206,28 +207,67 @@ offsets recorded.
 
 **Checkpoint**: gap ruling implemented; Phase A closeable.
 
-## CP-B – Default flip (blocked on owner)
+## CP-B – Default flip
 
-Not part of Phase A. Starts only after separate owner approval following
-browser review of CP-A.
+Approved by the owner rulings of 2026-09-30 (spec “Owner rulings”, research
+D7), which also amend the scope: container-owned list blocks (R3) and the
+hgroup join (R4).
 
-- [ ] T027 BLOCKED on owner: approve flipping the default.
-- [ ] T028 Make body-line rhythm the default for in-scope text and decide the
-  modifier's fate (retire, or keep as a no-op for one deprecation window).
-- [ ] T029 Rewrite the invariant statements listed in research D6 in
+- [x] T027 Owner approves flipping the default.
+  *Evidence*: rulings R1–R5, 2026-09-30, recorded in spec.md and research D7.
+- [x] T028 Make body-line rhythm the default for in-scope text and decide the
+  modifier's fate.
+  *Evidence*: `.is-body-line-rhythm` removed (never released); root and tier
+  blocks declare the body-line terms on `:where(.bf-theme)` and
+  `:where(.bf-theme.bf-tier-<tier>)`; `:where(.bf-theme.is-baseline-rhythm)`
+  redeclares them to the bU ledger. The Phase A nested reset is gone. Section
+  comments renamed “Body-line rhythm (Spec 026)” / “End body-line rhythm
+  (Spec 026)”.
+- [x] T029 Rewrite the invariant statements listed in research D6 in
   `AGENTS.md`, `docs/architecture.md` and `docs/agent-index.md`.
-- [ ] T030 Replace the text parts of `scripts/validate-build.ts` lines
-  376–379 and `scripts/verify-component-behavior.ts` lines 506–512 with
-  body-line equivalents; keep bU contracts for controls.
+  *Evidence*: all three now state that prose text defaults to body-line phase
+  with container-owned list blocks and that `.is-baseline-rhythm` restores the
+  bU ledger; the Phase A scoped-exception bullet is removed. README documents
+  the default and the opt-out.
+- [x] T030 (amended) Review the bU text contracts against the default.
+  *Evidence*: `scripts/validate-build.ts` `marginBottom = bU − nudgeTop` is a
+  token contract and still holds (the tokens and `--bf-<role>-margin-bottom`
+  are unchanged). The page-wide bU phase contract in
+  `scripts/verify-component-behavior.ts` passes unmodified, because every
+  body-line term is a whole-bU translation. Two checks legitimately change and
+  are recorded with reasons in review.md: prose-list item boxes in
+  `scripts/verify-component-baselines.ts` are measured from their list's
+  content box, and the one-item prose-list text-run specimen is asserted as a
+  two-body-line block.
 - [ ] T031 Serialize the terms into tokens and surface manifests with
-  documented meanings and equality assertions.
+  documented meanings and equality assertions. *Open*: not covered by the
+  rulings; the terms stay CSS-private.
 - [ ] T032 Resolve the T003 inventory and whether `bf-stack`/`bf-section`
   text joins the scope, and the `blockquote`, `hr`, `pre`/`code`,
-  nested-list, metric-flush downstream and `a.bf-text-link` exceptions.
-- [ ] T033 Full gates, screenshot rebaseline review, four-tier browser review
-  and closeout in `review.md`.
+  metric-flush downstream and `a.bf-text-link` exceptions. *Partly done*: the
+  nested-list exception is resolved by R3; the rest stays open.
+- [x] T033 Full gates, screenshot review and closeout in `review.md`.
+  *Evidence*: review.md “CP-B default flip”. Browser review is the four-tier
+  light capture set in `tmp/026-review/flip/`; dark-tone review remains with
+  T022.
+- [x] T034 (R3) Container-owned prose list block: list start and closure
+  computed in `src/body-line-rhythm.ts`, `lh_body = step` and the list closure
+  asserted statically per tier; items, nested lists and loose text carry no
+  block terms; loose items one step apart; dot keeps main's offset; the
+  per-`li` ledger and `--bf-body-loose-item-*` removed. Rendered: every line
+  delta at three nesting levels, tight, ordered and loose deltas, dot parity
+  with main.
+- [x] T035 (R4) Heading-group join with the static cap-height-plus-descender
+  proof. Four pairs fail (Documentation h1/h2 → h5/h6, OS h1/h2 → h3/h4) and
+  stay unjoined through `--bf-hgroup-join-<P>-<N>`. Rendered: h1 + h2 and
+  h1 + p specimens, predicted h1 → h2 distance, phase after the group.
+- [x] T036 (R1) Differential check that every `.is-baseline-rhythm` fixture
+  equals main, rendering the same route with the section stripped from the
+  tier bundle.
 
-**CP-B**: default flipped and bU text ledger retired.
+**CP-B**: default flipped; bU text ledger available as the
+`.is-baseline-rhythm` opt-out. D4 (T024–T026), T022 dark review, T023, T031
+and the rest of T032 remain open.
 
 ## Dependencies
 
@@ -237,4 +277,5 @@ browser review of CP-A.
 - T007 needs T004 and T005. T011–T014 need T008. T015–T018 need T013.
 - T020 lands in the same change as T008. T019 can run any time after T008.
   T021–T023 need all earlier Phase A tasks.
-- T024 needs CP-A. T025 needs T024. CP-B needs T026 and a separate approval.
+- T024 needs CP-A. T025 needs T024. CP-B was approved directly by the owner
+  rulings of 2026-09-30 and does not wait for D4.

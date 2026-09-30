@@ -1,8 +1,11 @@
 # Review: Body-line text phase
 
-Closeout evidence for Spec 026. Phase A tasks T001–T021 are recorded here,
-with the implementation-review corrections at the end; T022 (browser review)
-and T023 (owner review request) are still open.
+Closeout evidence for Spec 026. Phase A tasks T001–T021 are recorded first,
+with the implementation-review corrections; the CP-B default flip under the
+owner rulings of 2026-09-30 is recorded in
+[CP-B default flip](#cp-b-default-flip-2026-09-30) at the end and supersedes
+the Phase A opt-in wording above. T022 dark-tone review, T023 and the D4 gap
+ruling are still open.
 
 ## T002 – baseline capture
 

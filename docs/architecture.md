@@ -52,9 +52,25 @@ a fourth inset.
 
 All four tiers use one ownership model:
 
-- each metric-aligned text element owns its measured `padding-block-start`;
-- each element owns only the complementary, non-semantic
-  `margin-block-end` required to complete a baseline unit;
+- prose text defaults to body-line phase (Spec 026, owner ruling
+  2026-09-30): paragraphs and headings that are direct children of
+  `.bf-prose` or of a prose `hgroup` own their measured
+  `padding-block-start` plus a build-time phase inset, and a
+  `margin-block-end` closure to whole body lines;
+- a prose `ul`/`ol` is a container-owned block: the list carries the body
+  nudge and phase once as `padding-block-start` and the closure once as
+  `margin-block-end`, and its items and nested lists carry no block padding or
+  margin, so every item line advances one body line; loose items are one body
+  line apart;
+- each child of a prose `hgroup` after the first is pulled up one whole body
+  line, except pairs whose static cap-height-plus-descender proof fails, which
+  stay unjoined;
+- `.bf-theme.is-baseline-rhythm` restores the baseline-unit ledger below for
+  its subtree; the nearest theme root wins through inherited private
+  properties;
+- all other metric-aligned text owns its measured `padding-block-start`
+  and only the complementary, non-semantic `margin-block-end` required to
+  complete a baseline unit;
 - production text uses no bottom-padding compensation and role space-after
   does not contribute to layout;
 - layout containers and patterns own semantic spacing between direct children;
@@ -63,13 +79,8 @@ All four tiers use one ownership model:
 - flow boundaries preserve compensation and therefore do not need semantic
   last-child margin trimming.
 
-Provisional opt-in (Spec 026, Phase A, owner-approved 2026-09-30): under
-`.bf-theme.is-body-line-rhythm`, prose-flow text – paragraphs and headings
-that are direct children of `.bf-prose`, prose list items and their direct
-paragraphs – adds a build-time phase inset after its nudge and closes its
-occupied block to whole body lines instead of one baseline unit. Nudge and
-compensation properties keep their meaning, container gaps are unchanged, and
-everything outside the modifier stays on the baseline-unit ledger above.
+Nudge and compensation properties keep their meaning under both ledgers, and
+container gaps are unchanged until the owner rules on Spec 026 D4.
 
 This owner decision aligns BF with the current container-owned direction in the
 Canonical spacing reference while preserving BF's independent tier values and

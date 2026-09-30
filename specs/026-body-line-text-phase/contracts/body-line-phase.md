@@ -1,6 +1,7 @@
 # Contract: Body-line phase
 
-Normative for Phase A. Rationale lives in [research.md](../research.md).
+Normative for Spec 026 after the CP-B owner rulings of 2026-09-30 (spec
+“Owner rulings”). Rationale lives in [research.md](../research.md).
 
 ## Symbols
 
@@ -13,20 +14,39 @@ Normative for Phase A. Rationale lives in [research.md](../research.md).
 | `nudge` | Existing `nudgeTop` / `--bf-<role>-nudge-start`, unchanged |
 | `F*` | `bU · ceil(b / bU − 1e-9)` – the grid line the generator's nudge targets |
 | `roundUp(x, s)` | Smallest whole multiple of `s` that is `≥ x` (tolerance 1e-9) |
+| `cap`, `desc` | Role cap height (OS/2 `sCapHeight`) and descender (hhea descent), rem |
 | `ε` | Rendered first baseline minus F*, px. Recorded, never asserted |
 
 ## Terms
 
 ```text
-step    = roles.body.lineHeight                       (rem)
-phase   = roundUp(F*, step) − F*                      block-start, after nudge
-closure = roundUp(nudge + phase + lh, step) − (nudge + phase + lh)
-                                                      block-end, replaces bU compensation
+step          = roles.body.lineHeight                          (rem)
+phase         = roundUp(F*, step) − F*                         block-start, after nudge
+closure       = roundUp(nudge + phase + lh, step) − (nudge + phase + lh)
+                                                               block-end, replaces bU compensation
+list start    = body nudge + body phase                        prose list padding-block-start
+list closure  = roundUp(list start, step) − list start         prose list margin-bottom
+hgroup join   = −step                                          each hgroup child after the first
 ```
 
-Both round up only. Neither is a spacing token, neither has a public property,
-neither appears in `tokens.spacing`, `canonicalSpacing`, token JSON or surface
-manifests in Phase A.
+All terms round up only. The list closure is valid for any item count only
+because every item line advances `lh_body = step`; it therefore equals the
+body closure. None is a spacing token or has a public property; none appears
+in `tokens.spacing`, `canonicalSpacing`, token JSON or surface manifests.
+
+### Heading-group clearance
+
+For an ordered pair of roles `P` then `N` in a prose `hgroup`, the joined
+baseline distance, from `P`'s last baseline to `N`'s first, is
+
+```text
+d(P, N) = (lh_P + closure_P − step) + (nudge_N + phase_N + b_N) − b_P
+```
+
+independent of `P`'s line count, because the closure literal is fixed. The
+join is allowed only when `d(P, N) ≥ cap_N + desc_P`. A surface where a pair
+fails takes `0rem` for that pair – no pull, so phase still holds – through
+`--bf-hgroup-join-<P>-<N>`.
 
 ## Build-time checks
 
@@ -37,11 +57,15 @@ the source config. For every in-scope role:
 1. `step / bU` is a whole number (±1e-9).
 2. The recomputed generator nudge (`calculateNudgeRem`, line height passed as
    a bU count) equals `nudgeTop` within 0.00001rem.
-3. `|b + nudge − F*| < 0.0625rem`. This also fails loudly when the generator
-   moved a negative compensated nudge to the next grid line.
+3. `|b + nudge − F*| < 0.0625rem`.
 4. `0 ≤ phase < step` and `0 ≤ closure < step`.
 5. `(F* + phase) mod step` and `(nudge + phase + lh + closure) mod step` are 0
    within 0.00001rem.
+
+For the surface: body `lh` equals `step`; the list closure equals the body
+closure and `(list start + list closure) mod step = 0`; every role has a cap
+height, and the unjoined hgroup pairs are the pairs failing the clearance
+inequality.
 
 Failure handling:
 
@@ -50,103 +74,137 @@ Failure handling:
   any check fails or rhythm data cannot be computed.
 - A custom surface built through the public `buildThemeFromConfig` export
   gets rhythm data when it can be computed and the checks pass. Otherwise it
-  gets none, its bundle emits no section and the modifier is a no-op. The
-  build script's strict mode is an internal option, stripped from the
-  published declarations.
+  gets none, its bundle emits no section, its text keeps the bU ledger and
+  `.is-baseline-rhythm` is a no-op. The build script's strict mode is an
+  internal option, stripped from the published declarations.
 
 Values are formatted with the existing rem helper (five decimals).
 
 ## Scope
 
-Phase A selects prose-flow text only.
-
-| Role | Selectors under the modifier |
+| Target | Selectors |
 |---|---|
-| body | `:where(.bf-prose) > :where(p)`, `:where(.bf-prose) > .bf-body`, `:where(.bf-prose li) > :where(p)`, `:where(.bf-prose li) > .bf-body`, `:where(.bf-prose li)` |
-| h1–h6 | `:where(.bf-prose) > :where(hN)`, `:where(.bf-prose) > .bf-hN` |
+| body, h1–h6 | `:where(.bf-prose, .bf-prose > hgroup) > :where(<tag>)` and `… > .bf-<role>` |
+| hgroup join | `:where(.bf-prose > hgroup > * + *)`; limited pairs `:where(.bf-prose > hgroup > :is(<P>, .bf-<P>) + :is(<N>, .bf-<N>))` |
+| list block | `:where(.bf-prose) > :where(ul, ol)` |
+| list items | `:where(.bf-prose > :is(ul, ol) li)` |
+| list dot | `:where(.bf-prose > ul > li, .bf-prose > :is(ul, ol) ul > li)::before` |
+| loose text | `:where(.bf-prose > :is(ul, ol) li) > :where(p)` and `… > .bf-body` |
+| loose gap | `:where(.bf-prose > :is(ul, ol) li:has(> :where(p, .bf-body)) + li:has(> :where(p, .bf-body)))` |
 
-Every application selector, including the marker and loose-item rules, ends
-its subject compound with `:not(:where(.bf-engine-cap, .bf-engine-cap *))`,
-which adds no specificity. Only roles present in the surface are emitted.
+Every selector is prefixed by `:where(.bf-theme)` and ends its subject
+compound with `:not(:where(.bf-engine-cap, .bf-engine-cap *))`, which adds no
+specificity. Only roles present in the surface are emitted.
 
-Not selected: text in `bf-stack`, `bf-section` and component flows, meta,
-lead, `figcaption`, `blockquote`, `hr`, `pre`/`code`, `a.bf-text-link`,
-component rules, controls and anything under `.bf-engine-cap`.
+Not selected: text in `bf-stack`, `bf-section` and component flows, prose
+lists that are not direct children of `.bf-prose`, meta, lead,
+`figcaption`, `blockquote`, `hr`, `pre`/`code`, `a.bf-text-link`, component
+rules, controls and anything under `.bf-engine-cap`.
 
 ## Generated CSS shape
 
 One contiguous section, emitted after the `.bf-prose li` and
 `.bf-prose blockquote` rules and before `hr`, opened by
-`/* Body-line rhythm opt-in (Spec 026). */` and closed by
-`/* End body-line rhythm opt-in (Spec 026). */`. Order inside the section:
+`/* Body-line rhythm (Spec 026). */` and closed by
+`/* End body-line rhythm (Spec 026). */`. Order inside the section:
 
 ```css
-/* Body-line rhythm opt-in (Spec 026). */
+/* Body-line rhythm (Spec 026). */
 
-/* 1. Root surface literals. */
-:where(.bf-theme.is-body-line-rhythm) {
+/* 1. Root surface literals: the default ledger. */
+:where(.bf-theme) {
   --bf-body-rhythm-step: <step>;
   --bf-body-phase-start: <phase>;
   --bf-body-closure-end: <closure>;
   /* …h1–h6 in role order… */
-  --bf-body-loose-item-start: 0rem;
-  --bf-body-loose-item-end: 0rem;
+  --bf-body-list-block-start: <list start>;
+  --bf-body-list-block-end: <list closure>;
+  --bf-body-list-item-start: 0rem;
+  --bf-body-list-item-end: 0rem;
+  --bf-body-list-loose-gap: var(--bf-body-rhythm-step);
+  --bf-body-loose-text-start: 0rem;
+  --bf-body-loose-text-end: 0rem;
+  --bf-hgroup-join: calc(-1 * var(--bf-body-rhythm-step));
+  --bf-hgroup-join-<P>-<N>: var(--bf-hgroup-join) | 0rem;  /* per limited pair in the bundle */
 }
 
 /* 2. One block per class-scoped surface, in existing surface order. */
-:where(.bf-theme.bf-tier-<tier>.is-body-line-rhythm) { /* same shape */ }
+:where(.bf-theme.bf-tier-<tier>) { /* same shape */ }
 
-/* 3. Nested non-opted theme reset. */
-:where(.bf-theme.is-body-line-rhythm) :where(.bf-theme:not(.is-body-line-rhythm)) {
+/* 3. Opt-out: every term to main's baseline-unit ledger. */
+:where(.bf-theme.is-baseline-rhythm) {
   --bf-<role>-rhythm-step: var(--bf-baseline);
   --bf-<role>-phase-start: 0rem;
   --bf-<role>-closure-end: var(--bf-<role>-margin-bottom);
-  --bf-body-loose-item-start: var(--bf-body-nudge-start);
-  --bf-body-loose-item-end: var(--bf-body-margin-bottom);
+  --bf-body-list-block-start: 0rem;
+  --bf-body-list-block-end: 0rem;
+  --bf-body-list-item-start: var(--bf-body-nudge-start);
+  --bf-body-list-item-end: var(--bf-body-margin-bottom);
+  --bf-body-list-loose-gap: 0rem;
+  --bf-body-loose-text-start: var(--bf-body-nudge-start);
+  --bf-body-loose-text-end: var(--bf-body-margin-bottom);
+  --bf-hgroup-join: 0rem;
+  --bf-hgroup-join-<P>-<N>: 0rem;
 }
 
-/* 4. Application, per in-scope role; body adds the prose li > p shapes. */
-:where(.bf-theme.is-body-line-rhythm) :where(.bf-prose) > :where(h3):not(:where(.bf-engine-cap, .bf-engine-cap *)),
-:where(.bf-theme.is-body-line-rhythm) :where(.bf-prose) > .bf-h3:not(:where(.bf-engine-cap, .bf-engine-cap *)) {
+/* 4. Role application, prose and hgroup parents. */
+:where(.bf-theme) :where(.bf-prose, .bf-prose > hgroup) > :where(h3):not(:where(.bf-engine-cap, .bf-engine-cap *)),
+:where(.bf-theme) :where(.bf-prose, .bf-prose > hgroup) > .bf-h3:not(:where(.bf-engine-cap, .bf-engine-cap *)) {
   margin-bottom: var(--bf-h3-closure-end);
   padding-block-start: calc(var(--bf-h3-nudge-start) + var(--bf-h3-phase-start));
 }
 
-/* 5. Prose list items use body terms; the custom dot follows the phase. */
-:where(.bf-theme.is-body-line-rhythm) :where(.bf-prose li):not(:where(.bf-engine-cap, .bf-engine-cap *)) {
-  margin-bottom: var(--bf-body-closure-end);
-  padding-block-start: calc(var(--bf-body-nudge-start) + var(--bf-body-phase-start));
+/* 5. Heading-group join, then one rule per limited pair. */
+:where(.bf-theme) :where(.bf-prose > hgroup > * + *):not(…) {
+  margin-block-start: var(--bf-hgroup-join);
+}
+:where(.bf-theme) :where(.bf-prose > hgroup > :is(h1, .bf-h1) + :is(h5, .bf-h5)):not(…) {
+  margin-block-start: var(--bf-hgroup-join-h1-h5);
 }
 
-:where(.bf-theme.is-body-line-rhythm) :where(.bf-prose ul > li):not(:where(.bf-engine-cap, .bf-engine-cap *))::before {
-  inset-block-start: calc(var(--bf-tick-box-offset) + var(--bf-body-phase-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));
+/* 6. Container-owned prose list block, items, dot, loose text and gap. */
+:where(.bf-theme) :where(.bf-prose) > :where(ul, ol):not(…) {
+  margin-bottom: var(--bf-body-list-block-end);
+  padding-block-start: var(--bf-body-list-block-start);
+}
+:where(.bf-theme) :where(.bf-prose > :is(ul, ol) li):not(…) {
+  margin-bottom: var(--bf-body-list-item-end);
+  padding-block-start: var(--bf-body-list-item-start);
+}
+:where(.bf-theme) :where(.bf-prose > ul > li, .bf-prose > :is(ul, ol) ul > li):not(…)::before {
+  inset-block-start: calc(var(--bf-tick-box-offset) - var(--bf-body-nudge-start) + var(--bf-body-list-item-start) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));
+}
+:where(.bf-theme) :where(.bf-prose > :is(ul, ol) li) > :where(p):not(…),
+:where(.bf-theme) :where(.bf-prose > :is(ul, ol) li) > .bf-body:not(…) {
+  margin-bottom: var(--bf-body-loose-text-end);
+  padding-block-start: var(--bf-body-loose-text-start);
+}
+:where(.bf-theme) :where(.bf-prose > :is(ul, ol) li:has(> :where(p, .bf-body)) + li:has(> :where(p, .bf-body))):not(…) {
+  margin-block-start: var(--bf-body-list-loose-gap);
 }
 
-/* 6. Loose items: child paragraphs carry the terms. */
-:where(.bf-theme.is-body-line-rhythm) :where(.bf-prose li:has(> :where(p, .bf-body))):not(:where(.bf-engine-cap, .bf-engine-cap *)) {
-  margin-bottom: var(--bf-body-loose-item-end);
-  padding-block-start: var(--bf-body-loose-item-start);
-}
-
-/* End body-line rhythm opt-in (Spec 026). */
+/* End body-line rhythm (Spec 026). */
 ```
 
 Rules:
 
+- Custom properties inherit, so the nearest `.bf-theme` root wins: a default
+  root nested in an opted-out one redeclares the body-line literals, and an
+  opted-out root nested in a default one redeclares the bU ledger. No nested
+  reset rule is needed. The opt-out block follows every surface block so
+  `.bf-theme.bf-tier-<tier>.is-baseline-rhythm` resolves the bU ledger.
+- The opt-out's `var()` values resolve on the opted-out root against its own
+  role properties, so every tier gets its own bU ledger.
 - Application declarations have no `var()` fallback; the section is emitted
   only when every surface in the bundle has rhythm data.
+- The marker subtracts the body nudge and adds the item start, so its offset
+  from the first baseline equals main's under both ledgers.
 - `padding-block-end` and every other base declaration are left to the base
-  rule.
-- No `data-*`, `!important`, `ui-*` or BEM selector.
+  rules. No `data-*`, `!important`, `ui-*` or BEM selector; no `1cap`.
 - `.bf-stack.is-metric-flush` rules (specificity 0,2,0) keep precedence.
-- Rule 6 follows rule 5 so it wins at equal specificity.
-- Rule 6 reads `--bf-body-loose-item-start` and `--bf-body-loose-item-end`
-  rather than literals: the opted blocks set them to `0rem` and the nested
-  reset restores the body nudge and margin, so a non-opted theme nested in an
-  opted root keeps the current loose-item ledger. Like the other terms, they
-  are section-private and not public tokens.
-- Removing the section, opening to closing comment inclusive, yields the
-  output generated without rhythm data, byte for byte.
+- Removing the section, opening to closing comment inclusive, yields main's
+  generated CSS byte for byte, which is the baseline-unit ledger that
+  `.is-baseline-rhythm` must reproduce.
 
 ## Expected values
 
@@ -169,6 +227,13 @@ the section.
 | OS | h3, h4 | 0.16 | 1 | 0 | 0.84 |
 | OS | h1, h2 | 0.21917 | 1 | 0.5 | 0.78083 |
 
+| Tier | List start | List closure | hgroup h1 → h2 | Unjoined hgroup pairs |
+|---|---:|---:|---:|---|
+| Editorial | 0.41 | 1.09 | 3 | none |
+| Documentation | 0.3275 | 0.9225 | 2.5 | h1/h2 → h5/h6 |
+| App | 0.3275 | 0.9225 | 2.5 | none |
+| OS | 0.245 | 0.755 | 2 | h1/h2 → h3/h4 |
+
 Wrapped qualifying (`lh mod step = 0`): Editorial h1, h2, h5, h6;
 Documentation h1, h2; App h5, h6; OS h3, h4, h5, h6. All others are wrapped
 type-scale exceptions.
@@ -181,18 +246,17 @@ Measured and recorded in `review.md`, not asserted. Sizes at a 16px root.
 |---|---|---|---|---|---|
 | Wrapped heading, `lh mod step ≠ 0` | Line 2+ and following content off phase | research R3 | R3 | R3 | R3 |
 | Metric-flush pair, h2 then p | Off by `(n₁ + ph₁ + lh₁ − n₂ − ph₂) mod step` | 0.15881rem (2.54px) | 0.21125rem (3.38px) | 0.14167rem (2.27px) | 0.02583rem (0.41px) |
-| Nested list | Child items off by `(nudge + phase + lh) mod step` | 0.41rem (6.56px) | 0.3275rem (5.24px) | 0.3275rem (5.24px) | 0.245rem (3.92px) |
 | `hr` (0.5rem occupied) | Off by 0.5rem | 8px | 8px | 8px | 8px |
 | `blockquote` (body `lh + bU`) | Off by `(lh + bU) mod step` | 8px | 4px | 4px | 4px |
 | `bf-grid` row gap | Unchanged gap | 1rem | 1.5rem | 1.5rem | – |
+| Several paragraphs in one loose item | Not separated | – | – | – | – |
 
-`pre`/`code` and text outside `.bf-prose` are not selected and keep the bU
-ledger.
+Nested lists are no longer an exception (R3).
 
 ## Rendered obligations
 
-Rendered checks are differential, plus one bounded absolute check that does
-not use `computeBodyLineRhythm`. Absolute phase is not asserted to 0.1px:
+Rendered checks are differential, plus bounded absolute checks that do not
+use `computeBodyLineRhythm`. Absolute phase is not asserted to 0.1px:
 Chromium rounds ascent, descent and half-leading to whole pixels, so |ε|
 reaches 0.906px at 16px and 1.813px at 32px (research R2 cross-check).
 
@@ -200,45 +264,38 @@ reaches 0.906px at 16px and 1.813px at 32px (research R2 cross-check).
   documentation, app, os. Tolerance 0.1px unless stated.
 - Probe: a zero-height `inline-block` element on the baseline at the start of
   each line. `elementTop` is the element's border-box top.
+- Fixtures: the same markup in a default column and an `.is-baseline-rhythm`
+  column, each in a zero-gap `.bf-prose` flow (demo-local `gap: 0` specimen
+  rule), plus a default theme nested in an opted-out host.
+- **Opt-out equals main (R1)**: the route is rendered a second time with the
+  section stripped from the requested tier bundle, which is main's CSS. Every
+  `.is-baseline-rhythm` fixture box (top from its flow, height, margin-bottom,
+  padding-top), every line baseline and every dot equals that rendering.
+- **Phase translation (AC-5)**: for body and h1–h6, `(probeY − elementTop)`
+  default minus opt-out equals the phase in px; element tops advance by whole
+  steps; `h3` and `p.bf-h3` occupy the same box.
 - **Whole body lines, independent (AC-5)**: the step is the computed
-  `line-height` of the opted matrix's first `p`. In the opted one-line matrix
-  `probe − flowTop`, and for each opted wrapped heading `line 1 probe −
-  elementTop`, is within `root / 16` (1px at 16px, 2px at 32px) of a whole
-  step. The bound exceeds max |ε| plus the per-element 1/64px drift and is
-  below every bU, so a phase off by one bU fails.
-- **Direct bundles**: `dist/tiers/{documentation,app,os}/styles.css`, loaded
-  directly at a 16px root with the modifier on the root, give a prose `h1`
-  `nudge + phase` block-start padding and the closure as bottom margin
-  (0.1px), and an `h1` to `p` advance of whole rendered body lines.
-- Fixtures: the same markup in an opted and a non-opted column, each in a
-  zero-gap `.bf-prose` flow (demo-local `gap: 0` specimen rule). The
-  metric-flush pair sits in `.bf-prose.bf-stack.is-metric-flush` so both the
-  opt-in and the flush rules reach it.
-- **Phase translation (AC-5)**: for body and h1–h6,
-  `(probeY − elementTop)` opted minus non-opted equals the phase in px.
-- **Whole-step tops (AC-5)**: in the opted flow the first element top equals
-  the flow top, and each element top minus the previous element top is a
-  whole number of steps. Measuring element-to-previous avoids Chromium's
-  −1/64px per-element layout drift.
-- **Wrapped (AC-6)**: forced two- and three-line headings via `<br>`. Each
-  line-to-line distance equals `lh` in px. Qualifying roles: the following
-  sibling's top is whole steps from the heading top. Editorial h3,
-  documentation h3, app h1 and os h1 at two lines: the distance from
-  `line 2 − line 1` to the nearest whole step equals the research R3
-  prediction and is at least one bU in px.
-- **Edges (AC-7)**: a nested non-opted `.bf-theme` matches the non-opted
-  reference for `probe − elementTop` and element-to-previous tops, in the
-  one-line matrix and in tight and loose prose lists (text offset, dot offset
-  and item advance); baseline-to-baseline distance inside a metric-flush pair
-  equals the non-opted pair; the `.bf-prose ul` dot centre minus the first
-  probe equals the non-opted value; a loose item's `probe − itemTop` and dot
-  offset from the item top equal a tight item's under the modifier.
-- **Recorded, not asserted**: absolute ε per tier, role and root, and the
-  offsets in [Recorded exceptions](#recorded-exceptions).
-- Outside the modifier the existing browser contracts run unmodified.
-
-## Phase B hooks (not normative in Phase A)
-
-Default flip, scope beyond prose, serialization into tokens and manifests
-with equality assertions, invariant rewrite and gap behaviour follow the
-owner rulings recorded in [research.md](../research.md) D4 and D6.
+  `line-height` of the default matrix's first `p`. First baselines of the
+  matrix, wrapped line 1, list first items and the paragraph after each
+  hgroup sit within `root / 16` of a whole step from their flow or element
+  top.
+- **Wrapped (AC-6)**: as before, on the default column.
+- **Lists (R3)**: in the default and nested-default columns, consecutive
+  first-baseline deltas equal the rendered step for tight, ordered and
+  three-level nested items and twice the step for loose items; every item's
+  computed line height is the step; each list starts at its flow top and
+  occupies whole steps; every dot's offset from its first baseline equals
+  main's tight-item offset; loose text sits where tight text does.
+- **Heading groups (R4)**: children keep their own nudge and phase; the
+  second child's top equals the first child's occupied bottom minus one step;
+  h1 → h2 baseline distance equals the R4 prediction; the group occupies whole
+  steps and the following paragraph stays in phase.
+- **Nested default**: a default theme in an opted-out host matches the
+  default column for `probe − elementTop` and element advance.
+- **Direct bundles**: `dist/tiers/{documentation,app,os}/styles.css` at a 16px
+  root give a default prose `h1` `nudge + phase` padding and the closure, an
+  `h1` to `p` advance of whole body lines, and an `.is-baseline-rhythm` `h1`
+  the nudge and `bU − nudge`.
+- **Recorded, not asserted**: absolute ε per tier, role and root; the offsets
+  in [Recorded exceptions](#recorded-exceptions); measured list and hgroup
+  distances.

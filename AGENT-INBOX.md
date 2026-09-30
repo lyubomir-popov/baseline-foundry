@@ -8,7 +8,7 @@ active package. Keep this file short; move anything settled to its owner.
 | Worktree | Branch | State |
 |---|---|---|
 | `baseline-foundry` (this checkout) | `main` | Clean, equal to `origin/main` at `v0.2.1` |
-| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Spec 026 Phase A opt-in; T001–T021 done; T022–T023 open (owner review); based on `main` because 025 has not landed |
+| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Spec 026 CP-B done under owner rulings R1–R5 (2026-09-30): body-line rhythm is the default, `.is-baseline-rhythm` opts out, list blocks and hgroup join landed. Open: D4 gaps (T024–T026), dark-tone review (T022), T023, T031, rest of T032. Rebased on `main` `b58ca08` |
 | `../baseline-foundry-worktrees/feat-025-compact-alignment-grid` | `feat/025-compact-alignment-grid` | All tasks done; closeout edits uncommitted; 6 behind `main` |
 | `../baseline-foundry-worktrees/feat-024-semantic-spacing-token-schema` | `feat/024-semantic-spacing-token-schema` | Pragma-targeted planning store run by a separate agent. Do not edit it from BF work |
 | `../baseline-foundry-worktrees/wip-bf-typography-cap-metric` | `wip/bf-typography-cap-metric` | Parked, unvalidated BF work recovered from the old 022 checkout |

@@ -13,6 +13,10 @@
 - Owner direction for BF, 2026-09-30: “I'd like to see the in-phase headings
   vs paragraphs work we just did on pragma implemented on bf too.” Approves
   the Phase A opt-in in BF only (D2).
+- Owner rulings R1–R5, 2026-09-30 (CP-B approval): body-line rhythm becomes
+  the default with `.is-baseline-rhythm` as the opt-out, container-owned list
+  blocks, the hgroup join, metrics only, D4 still open. Recorded in
+  [D7](#d7--owner-rulings-2026-09-30-cp-b) and the spec.
 - Adversarial review of this package, 2026-09-30: independent numbers in
   [R2](#independent-cross-check) and the corrections applied throughout.
 - BF metric model: `@lyubomir-popov/baseline-nudge-generator` 1.5.1,
@@ -225,6 +229,9 @@ loose-item rule must follow the opt-in `li` rule.
 
 ## R5 – Inheritance and nested themes
 
+*Superseded at CP-B by R1 of the owner rulings (D7).* The Phase A analysis
+follows; the flipped design is described after it.
+
 Custom properties inherit. A nested `.bf-theme` without the modifier would
 still match the descendant opt-in selectors and read the ancestor's phase and
 closure against its own nudges. A reset scoped under the modifier –
@@ -233,6 +240,16 @@ closure against its own nudges. A reset scoped under the modifier –
 `--bf-<role>-margin-bottom` and step to `var(--bf-baseline)`. Nested opted
 roots of another tier pick up their own tier block, which is emitted after the
 root block, as the existing class surfaces already are.
+
+**After CP-B.** Every `.bf-theme` root matches `:where(.bf-theme)` and its
+`:where(.bf-theme.bf-tier-<tier>)` block, so every root redeclares the
+body-line literals for itself; `:where(.bf-theme.is-baseline-rhythm)`, emitted
+after all surface blocks, redeclares every term to the bU ledger with `var()`
+references that resolve on that root against its own role properties.
+Application rules only read the properties, so the nearest root wins in both
+directions and the Phase A nested reset is gone. Rendered proof: the
+nested-default fixtures equal the default column, and every opted-out fixture
+equals main (review.md).
 
 Spec pages load `dist/tiers/editorial/styles.css` and switch tier through body
 classes (`demo/spec-runtime.js`), so class-scoped blocks are the path the demo
@@ -332,7 +349,134 @@ and (d) would also reach component-internal stacks, such as the accordion's
 `bf-stack is-dense` list, unless scoped to stacks that hold prose (for
 example `.bf-stack:has(> .bf-prose)`).
 
+## R8 – Container-owned list block (CP-B, ruling R3)
+
+The Phase A per-`li` ledger gave every item `nudge + phase` and a closure, so
+a tight item occupied `nudge + phase + lh + closure` – two body lines in every
+tier – and a nested list's child items drifted by `(nudge + phase + lh) mod
+step` because the outer closure landed after the nested list.
+
+The ruled model moves the terms to the list. With `s = body nudge + phase`:
+
+```text
+list padding-block-start = s
+item line                 = lh_body = step       (every item, nested item and next outer item)
+list margin-bottom        = roundUp(s, step) − s
+occupied(n lines)         = roundUp(s, step) + n · step
+```
+
+`occupied` is a whole step for every `n` only because `lh_body = step`, which
+is true by definition of the step; the build and the static contract still
+assert it per tier, and assert that the list closure equals the body closure.
+
+| Tier | s = list start | List closure | Tight item delta @16px | Loose item delta @16px |
+|---|---:|---:|---:|---:|
+| Editorial | 0.41rem | 1.09rem | 24px | 48px |
+| Documentation | 0.3275rem | 0.9225rem | 20px | 40px |
+| App | 0.3275rem | 0.9225rem | 20px | 40px |
+| OS | 0.245rem | 0.755rem | 16px | 32px |
+
+Loose items: the inner paragraph's nudge, phase and closure are 0, and a loose
+item after a loose item starts one body step later (`margin-block-start`),
+so loose items are two steps apart and each first baseline stays in phase.
+
+Marker: the `ul > li::before` dot is absolutely positioned from the item's
+padding box. Main puts the first line box at `li top + body nudge`; the list
+block puts it at `li top`. The dot therefore subtracts the body nudge and adds
+`--bf-body-list-item-start` (0 by default, the body nudge under the opt-out),
+so `dot − first baseline` equals main's value in both ledgers: measured −5px
+(Editorial) and −4px (Documentation, App, OS) at 16px, −11, −9, −9 and −8px at
+32px, identical in main and the default at every nesting depth. Native `ol`
+markers sit on the first line's baseline and follow the text.
+
+## R9 – Heading-group join clearance (CP-B, ruling R4)
+
+For a pair `P` then `N` in a prose `hgroup`, the pull of one step places
+`N`'s top at `P`'s occupied bottom minus one step. The distance from `P`'s last
+baseline to `N`'s first baseline is
+
+```text
+d(P, N) = (lh_P + closure_P − step) + (nudge_N + phase_N + b_N) − b_P
+```
+
+It does not depend on how many lines `P` wraps to, because the closure literal
+is fixed. The required clearance is `cap_N + desc_P`, with cap height from the
+OS/2 `sCapHeight` (693 units for Ubuntu Sans) and descender from hhea descent
+(260 units), as read by the generator's `readFontMetrics`. Of 49 ordered pairs
+per tier:
+
+| Tier | Failing pairs | Shortfall | h1 → h2 d / required | h1 → p d / required | Smallest margin |
+|---|---|---:|---|---|---:|
+| Editorial | none | – | 3 / 2.50163rem | 1.53869 / 1.3755rem | 0.16319rem |
+| Documentation | h1/h2 → h5/h6 | 0.02532rem (0.41px) | 2.5 / 1.906rem | 1.28125 / 1.12637rem | −0.02532rem |
+| App | none | – | 2.5 / 1.4295rem | 1.27083 / 0.99638rem | 0.09427rem |
+| OS | h1/h2 → h3/h4 | 0.06217rem (0.99px) | 2 / 1.4295rem | 1.02083 / 0.90975rem | −0.06217rem |
+
+The failing pairs are left unjoined in their tiers (D7 T10): the second child
+keeps the unpulled position, one whole step lower, so phase still holds and
+glyphs do not overlap. The h1 → h2 distances match the ruling's prediction.
+
 ## Decisions
+
+### D7 – Owner rulings, 2026-09-30 (CP-B)
+
+The owner approved the in-scope text as the default and ruled, close to
+verbatim:
+
+- **R1** – body-line rhythm is the default, not opt-in; the bU-only text
+  ledger becomes the opt-in via `.bf-theme.is-baseline-rhythm`;
+  `.is-body-line-rhythm` is removed entirely (never released). Custom
+  properties make the nearest theme win: root and tier blocks declare the
+  body-line terms on `:where(.bf-theme)` and the `.bf-tier-*` class blocks,
+  and `:where(.bf-theme.is-baseline-rhythm)` redeclares them to the bU ledger
+  (phase 0, closure = existing margin-bottom, list and hgroup terms to their
+  bU equivalents). Under `.is-baseline-rhythm` in-scope geometry must equal
+  main's exactly, by a differential rendered check.
+- **R2** – BF stays metrics-only; no `1cap` anywhere.
+- **R3** – nesting must not affect item-to-item line boxes and tight items
+  sit at line spacing: a prose list carries the body nudge and phase once as
+  `padding-block-start` and the closure once as `margin-bottom`
+  (`roundUp(nudge + phase, step) − (nudge + phase)`, valid for any item count
+  because body line height equals the step – asserted statically per tier);
+  items and nested lists carry zero block padding and margin; a loose item's
+  inner `p` carries no nudge, phase or closure and consecutive loose items are
+  one body step apart; the `ul` dot and `ol` marker keep main's relation to
+  the first baseline; the per-`li` ledger and loose-item properties go; under
+  `.is-baseline-rhythm` lists keep main's per-item geometry.
+- **R4** – `.bf-prose > hgroup` children keep their own terms and every
+  child after the first takes `margin-block-start: calc(-1 *
+  var(--bf-body-rhythm-step))`. Predicted h1 → h2: Editorial 3rem,
+  Documentation 2.5rem, App 2.5rem, OS 2rem. Static proof per tier that the
+  joined distance is at least the following cap height plus the previous
+  descender; on failure, record and limit the join rather than overlap
+  glyphs. No negative-margin utilities.
+- **R5** – D4 container gaps stay open; the demo keeps the candidates.
+
+Implementation decisions under the rulings:
+
+- **T8** – the section stays contiguous and purely additive, so stripping it
+  still yields main's CSS byte for byte. That is both the static identity
+  proof and the rendered reference for “equals main”: the behaviour test
+  serves the demo with the section stripped and compares every
+  `.is-baseline-rhythm` fixture against it.
+- **T9** – the hgroup pull reads `--bf-hgroup-join`, which is
+  `calc(-1 * var(--bf-body-rhythm-step))` by default – the ruled formula –
+  and `0rem` under the opt-out. A literal `calc(-1 *
+  var(--bf-body-rhythm-step))` in the rule would pull by one bU under the
+  opt-out (where the step is `bU`), which would move hgroup children away from
+  main's geometry and break R1's exact-equality requirement. Main has no
+  hgroup join, so its bU equivalent is none.
+- **T10** – the static proof fails for four pairs in two tiers (R9). The ruled
+  fallback is to limit the join; the limit is `0rem` (no pull), not a partial
+  pull, because any pull that is not a whole step breaks phase. It is carried
+  per surface by `--bf-hgroup-join-<P>-<N>`, declared for the union of limited
+  pairs in the bundle, so the nearest theme still wins.
+- **T11** – the list block only applies to `ul`/`ol` that are direct
+  children of `.bf-prose`; lists deeper in prose keep main's per-`li` ledger,
+  which the base `.bf-prose li` rule still provides.
+- **T12** – loose separation applies only between two loose items
+  (`li:has(> p) + li:has(> p)`), as ruled. Several paragraphs inside one loose
+  item are not separated; recorded, not asserted.
 
 ### D1 – Scope: prose flows
 

@@ -5,6 +5,15 @@
 
 ## Summary
 
+**CP-B update, 2026-09-30.** The owner rulings R1–R5 (spec “Owner
+rulings”) flip the default: body-line rhythm applies to prose text without a
+class, `.bf-theme.is-baseline-rhythm` restores main's bU ledger, and
+`.is-body-line-rhythm` is removed. Prose lists become container-owned blocks
+(R3) and prose `hgroup` children join with a one-step pull (R4). The section
+stays contiguous and additive, so stripping it still yields main's CSS; that
+stripped CSS is also the rendered reference for the opt-out. The Phase A plan
+follows for history.
+
 Add an opt-in theme-root modifier, `.bf-theme.is-body-line-rhythm`, under
 which prose-flow paragraphs, headings and list items take two element-owned
 terms from the Pragma rule: a phase inset after the existing nudge and a
@@ -38,12 +47,12 @@ Phase B. The owner approved the Phase A opt-in for BF on 2026-09-30.
 | Invariant | Status |
 |---|---|
 | Container-owned semantic spacing | Kept. Terms are element-owned metric corrections; gaps unchanged until D4 |
-| Text keeps only nudge and complementary compensation | **Scoped exception.** Under the opt-in, prose-flow text adds a phase inset and closes to whole body lines, in every built-in tier. Owner-approved for BF on 2026-09-30, Phase A only. T020 adds a scoped-exception note to `AGENTS.md`; the invariant wording changes only in Phase B (D6) |
+| Text keeps only nudge and complementary compensation | **Rewritten at CP-B.** Prose text defaults to body-line phase with container-owned list blocks; `.is-baseline-rhythm` restores the bU ledger (owner rulings 2026-09-30). `AGENTS.md`, architecture and agent index carry the new wording |
 | A Pragma ruling is not automatically a BF requirement | Met by the BF-specific owner approval; Phase B needs its own ruling |
 | Real font metrics, cap engine demo-only | Kept (research D5 and T1); every application selector excludes `.bf-engine-cap` |
 | OS first-class, four-tier parity | Modifier and values emitted for all four tiers, direct, preset and class-scoped |
 | Controls occupied-block model | Untouched; controls stay on bU |
-| Flat `bf-*`/`is-*`, no styled `data-*` | `is-body-line-rhythm` on the theme root |
+| Flat `bf-*`/`is-*`, no styled `data-*` | `is-baseline-rhythm` on the theme root (CP-B); `is-body-line-rhythm` removed |
 | Plain and role-classed equivalents occupy one box | Both selector shapes emitted per role |
 | Never hand-edit `dist/` | Changes in `src/`; rebuild |
 | Demos dogfood BF | Demo uses BF classes; local specimen CSS limited to the grid ruling, the zero-gap fixture and the D4 candidates |
