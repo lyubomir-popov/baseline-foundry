@@ -15,39 +15,52 @@
   *Evidence 2026-09-30*: branch confirmed; registered in both files. Rebase
   skipped: the branch already sits on `main` (`6c43f99`, equal to
   `origin/main`) and Spec 025 has not landed, so `main` is the base.
-- [ ] T002 After T001 and before any source edit, run
+- [x] T002 After T001 and before any source edit, run
   `npm run setup:demo-font` (the gitignored IBM Plex font is otherwise missing
   and the experiment build throws before `build:lib`), then `npm run build`;
   copy `dist/` to `tmp/026-main-dist/` and record SHA-256 hashes of every CSS,
   `tokens.json` and `surfaces.json` in `specs/026-body-line-text-phase/review.md`.
-- [ ] T003 [P] Inventory from markup, not CSS: in `demo/components`,
+  *Evidence*: captured at `c6016b2`; 24 hashes in review.md.
+- [x] T003 [P] Inventory from markup, not CSS: in `demo/components`,
   `demo/patterns` and the README examples, list every bare `p`, `h1`–`h6` and
   `li` and every `.bf-body`/`.bf-hN` inside a component root, and every
   `.bf-prose` inside a component root with its direct children. Record the
   list in `review.md` and confirm none is matched by the prose-flow scope
   (research D1); any match is a defect to resolve before T008.
+  *Evidence*: 478 bare and 136 role-classed text elements in component
+  roots; the only 3 component-internal `.bf-prose` are the quote wrapper
+  with a lone `blockquote`; 0 of 58 prose-flow matches are inside a
+  component root (review.md).
 
 ## Phase 2 – Foundational compute
 
-- [ ] T004 Create `src/body-line-rhythm.ts`: a pure function taking hhea
+- [x] T004 Create `src/body-line-rhythm.ts`: a pure function taking hhea
   metrics per font family, `bU` and in-scope role tokens, returning per-role
   `rhythmStep`, `firstBaseline`, `phaseStart`, `closureEnd` and any failed
   contract build-time checks.
-- [ ] T005 Add optional `bodyLineRhythm` to `ThemeSurface` in `src/types.ts`
+- [x] T005 Add optional `bodyLineRhythm` to `ThemeSurface` in `src/types.ts`
   without touching `ThemeTokens`, `TypographyToken` or manifest entry types.
   Declare `readFontMetrics` in `src/baseline-nudge-generator.d.ts`, or reuse
   the dynamic-import cast in `src/build.ts` `generateBaselineTokens`.
-- [ ] T006 In `src/build.ts` `buildThemeSurface`, read metrics with
+- [x] T006 In `src/build.ts` `buildThemeSurface`, read metrics with
   `readFontMetrics` per role `fontFamily` from the source config's
   non-`runtimeOnly` font files, paths resolved relative to the source config;
   call T004. Surfaces built by `scripts/build-theme.ts` throw on any failed
   check or missing data; custom surfaces get no record (depends on T004,
   T005).
-- [ ] T007 In `scripts/validate-build.ts`, import `src/body-line-rhythm.ts`
+  *Evidence*: built-in tier/preset configs always require the record;
+  `scripts/build-theme.ts` passes `requireBodyLineRhythm: true` for the
+  default and experiment builds. A custom surface whose record cannot be
+  computed gets none.
+- [x] T007 In `scripts/validate-build.ts`, import `src/body-line-rhythm.ts`
   directly (records are not written to `dist/`) and assert the 28 tier/role
   records against the contract table and formulas (AC-1). The recomputed
   generator nudge passes line height as a bU count. Keep the existing
   `marginBottom = bU − nudgeTop` assertion unchanged.
+  *Evidence*: “Body-line rhythm formulas”, 313 checks, via
+  `scripts/validation/body-line-rhythm-contracts.ts`. Checkpoint met: after
+  T004–T007 every CSS, `tokens.json` and `surfaces.json` hashed equal to the
+  capture.
 
 **Checkpoint**: `npm run build` and `npm run test:build` pass; every CSS,
 `tokens.json` and `surfaces.json` in `dist/` is byte-equal to
@@ -56,14 +69,16 @@
 
 ## Phase 3 – US1 opt-in section (P1)
 
-- [ ] T008 [US1] In `src/css.ts`, add root rhythm data to
+- [x] T008 [US1] In `src/css.ts`, add root rhythm data to
   `generateFoundryCss` options and emit the contract section, with opening and
   closing comments, after the `.bf-prose` list and blockquote rules: root
   block, class-surface blocks, nested reset, prose-flow application, prose
   `li`, `ul` marker shift and the loose-item rule, with the cap-engine
   exclusion on every application selector. Emit nothing unless every surface
   has rhythm data (depends on T003, T006).
-- [ ] T009 [US1] In `scripts/validate-build.ts`, add identity (section
+  *Evidence*: section emitted in all 8 bundles; T020 (`AGENTS.md` note) is
+  deliberately left for the T011+ pass and must land before merge.
+- [x] T009 [US1] In `scripts/validate-build.ts`, add identity (section
   stripped from opening to closing comment equals no-rhythm generation, per
   direct, preset and experiment bundle), cascade/order/specificity, a static
   check that every application selector carries
@@ -71,10 +86,16 @@
   parity, and a markup scan of `demo/components`, `demo/patterns` and README
   examples for application-selector matches inside component roots (AC-2 to
   AC-4).
-- [ ] T010 [US1] Rebuild and diff `dist/` against `tmp/026-main-dist/` with
+  *Evidence*: checks live in
+  `scripts/validation/body-line-rhythm-contracts.ts`, run from
+  `validate-build.ts`: section 246 checks per built-in bundle and 171 for the
+  experiment, parity 66, no-op 5, markup scope 59.
+- [x] T010 [US1] Rebuild and diff `dist/` against `tmp/026-main-dist/` with
   the section stripped; confirm every `tokens.json` and `surfaces.json` is
   byte-equal; record the result in `review.md`. If the branch was rebased
   after T002, re-run T002 first.
+  *Evidence*: 8/8 CSS equal after stripping, 16/16 JSON byte-equal, no
+  rebase since T002; `npm run test:build` 26,686 checks green (review.md).
 
 **Checkpoint**: static acceptance AC-1 to AC-4 green.
 
