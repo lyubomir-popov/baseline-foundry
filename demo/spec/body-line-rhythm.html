@@ -21,13 +21,14 @@
         <header class="bf-stack is-dense">
           <h1>Body-line rhythm</h1>
           <p>
-            Provisional opt-in (Spec 026, Phase A). Adding
-            <code>is-body-line-rhythm</code> to a <code>.bf-theme</code> root
-            gives prose-flow paragraphs, headings and list items a phase inset
-            after their measured nudge and a closure to whole body lines.
-            Each comparison shows the current baseline-unit ledger beside the
-            opt-in ledger for the active tier; the ruling marks every body
-            line.
+            Spec 026. Prose-flow paragraphs and headings take a phase inset
+            after their measured nudge and close to whole body lines by
+            default; prose lists own one block start and one closure, so every
+            item advances by one body line. Adding
+            <code>is-baseline-rhythm</code> to a <code>.bf-theme</code> root
+            restores the baseline-unit ledger. Each comparison shows the
+            default beside the opt-out for the active tier; the ruling marks
+            every body line.
           </p>
         </header>
 
@@ -43,14 +44,14 @@
             <div class="bf-grid">
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-ledger-current"
+                aria-labelledby="body-line-ledger-default"
               >
-                <h3 class="bf-h6" id="body-line-ledger-current">
-                  Current – baseline-unit ledger
+                <h3 class="bf-h6" id="body-line-ledger-default">
+                  Default – body-line ledger
                 </h3>
                 <div
                   class="bf-theme bf-tier-editorial"
-                  data-body-line-root="current"
+                  data-body-line-root="body-line"
                 >
                   <div
                     class="bf-prose body-line-flow body-line-ruling"
@@ -68,15 +69,15 @@
                 <div class="bf-table-scroll" tabindex="0">
                   <table
                     class="bf-table"
-                    aria-label="Current ledger terms"
-                    data-body-line-ledger="current"
+                    aria-label="Default ledger terms"
+                    data-body-line-ledger="body-line"
                   >
                     <thead>
                       <tr>
                         <th>Element</th>
                         <th>Nudge</th>
                         <th>Phase</th>
-                        <th>To bU</th>
+                        <th>Closure</th>
                         <th>Occupied</th>
                       </tr>
                     </thead>
@@ -86,14 +87,14 @@
               </section>
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-ledger-opted"
+                aria-labelledby="body-line-ledger-baseline"
               >
-                <h3 class="bf-h6" id="body-line-ledger-opted">
-                  Opt-in – body-line ledger
+                <h3 class="bf-h6" id="body-line-ledger-baseline">
+                  Opt-out – <code>is-baseline-rhythm</code>
                 </h3>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial is-baseline-rhythm"
+                  data-body-line-root="baseline"
                 >
                   <div
                     class="bf-prose body-line-flow body-line-ruling"
@@ -111,15 +112,15 @@
                 <div class="bf-table-scroll" tabindex="0">
                   <table
                     class="bf-table"
-                    aria-label="Opt-in ledger terms"
-                    data-body-line-ledger="opted"
+                    aria-label="Baseline-unit ledger terms"
+                    data-body-line-ledger="baseline"
                   >
                     <thead>
                       <tr>
                         <th>Element</th>
                         <th>Nudge</th>
                         <th>Phase</th>
-                        <th>Closure</th>
+                        <th>To bU</th>
                         <th>Occupied</th>
                       </tr>
                     </thead>
@@ -135,9 +136,9 @@
           <header class="bf-stack is-dense">
             <h2 id="body-line-gaps">Container gaps – D4 candidates</h2>
             <p>
-              Every option runs under the opt-in with default prose and stack
-              gaps as authored. Options (b), (c) and (d) are page-local
-              candidate rules for the owner's gap ruling, not public API.
+              Every option runs on the default body-line ledger with prose and
+              stack gaps as authored. Options (b), (c) and (d) are page-local
+              candidate rules for the owner's open gap ruling, not public API.
             </p>
           </header>
           <div class="bf-grid-scope">
@@ -149,8 +150,8 @@
                 <h3 class="bf-h6" id="body-line-gap-a">(a) Unchanged gaps</h3>
                 <p data-body-line-gap-readout>Default gaps.</p>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial"
+                  data-body-line-root="body-line"
                 >
                   <div
                     class="bf-stack body-line-ruling"
@@ -181,8 +182,8 @@
                   <code>round(up, gap, step)</code> on stack and prose.
                 </p>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial"
+                  data-body-line-root="body-line"
                 >
                   <div
                     class="bf-stack body-line-ruling body-line-gap-b"
@@ -213,8 +214,8 @@
                   Prose gap 0; the stack keeps its gap.
                 </p>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial"
+                  data-body-line-root="body-line"
                 >
                   <div
                     class="bf-stack body-line-ruling body-line-gap-c"
@@ -245,8 +246,8 @@
                   <code>round(down, gap, step)</code> on stack and prose.
                 </p>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial"
+                  data-body-line-root="body-line"
                 >
                   <div
                     class="bf-stack body-line-ruling body-line-gap-d"
@@ -274,9 +275,9 @@
           <header class="bf-stack is-dense">
             <h2 id="body-line-matrix">One-line heading matrix</h2>
             <p>
-              Body and h1–h6 in a zero-gap prose flow. Under the opt-in every
+              Body and h1–h6 in a zero-gap prose flow. By default every
               element top is a whole body line from the previous one; a
-              nested theme without the modifier falls back to the current
+              default theme nested inside an opted-out root keeps the body-line
               ledger.
             </p>
           </header>
@@ -284,12 +285,12 @@
             <div class="bf-grid">
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-matrix-current"
+                aria-labelledby="body-line-matrix-default"
               >
-                <h3 class="bf-h6" id="body-line-matrix-current">Current</h3>
+                <h3 class="bf-h6" id="body-line-matrix-default">Default</h3>
                 <div
                   class="bf-theme bf-tier-editorial"
-                  data-body-line-root="current"
+                  data-body-line-root="body-line"
                 >
                   <div
                     class="bf-prose body-line-flow body-line-ruling"
@@ -309,12 +310,14 @@
               </section>
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-matrix-opted"
+                aria-labelledby="body-line-matrix-baseline"
               >
-                <h3 class="bf-h6" id="body-line-matrix-opted">Opt-in</h3>
+                <h3 class="bf-h6" id="body-line-matrix-baseline">
+                  Opt-out
+                </h3>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial is-baseline-rhythm"
+                  data-body-line-root="baseline"
                 >
                   <div
                     class="bf-prose body-line-flow body-line-ruling"
@@ -337,15 +340,15 @@
                 aria-labelledby="body-line-matrix-nested"
               >
                 <h3 class="bf-h6" id="body-line-matrix-nested">
-                  Nested theme without the modifier, inside the opt-in
+                  Default theme nested inside the opt-out
                 </h3>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="nested-host"
+                  class="bf-theme bf-tier-editorial is-baseline-rhythm"
+                  data-body-line-root="baseline-host"
                 >
                   <div
                     class="bf-theme bf-tier-editorial"
-                    data-body-line-root="nested"
+                    data-body-line-root="nested-default"
                   >
                     <div
                       class="bf-prose body-line-flow body-line-ruling"
@@ -368,6 +371,74 @@
           </div>
         </section>
 
+        <section class="bf-stack" aria-labelledby="body-line-hgroup">
+          <header class="bf-stack is-dense">
+            <h2 id="body-line-hgroup">Heading groups</h2>
+            <p>
+              Children of a prose <code>hgroup</code> keep their own phase and
+              closure; every child after the first is pulled up by one whole
+              body line, so the group stays in phase for the paragraph after
+              it.
+            </p>
+          </header>
+          <div class="bf-grid-scope">
+            <div class="bf-grid">
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-hgroup-default"
+              >
+                <h3 class="bf-h6" id="body-line-hgroup-default">Default</h3>
+                <div
+                  class="bf-theme bf-tier-editorial"
+                  data-body-line-root="body-line"
+                >
+                  <div
+                    class="bf-prose body-line-flow body-line-ruling"
+                    data-body-line-flow="hgroup"
+                  >
+                    <hgroup>
+                      <h1>Group title</h1>
+                      <h2>Joined subtitle</h2>
+                    </hgroup>
+                    <p>Paragraph after the group</p>
+                    <hgroup>
+                      <h1>Group title</h1>
+                      <p>Joined standfirst</p>
+                    </hgroup>
+                    <p>Paragraph after the group</p>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="bf-span-4 bf-stack is-dense"
+                aria-labelledby="body-line-hgroup-baseline"
+              >
+                <h3 class="bf-h6" id="body-line-hgroup-baseline">Opt-out</h3>
+                <div
+                  class="bf-theme bf-tier-editorial is-baseline-rhythm"
+                  data-body-line-root="baseline"
+                >
+                  <div
+                    class="bf-prose body-line-flow body-line-ruling"
+                    data-body-line-flow="hgroup"
+                  >
+                    <hgroup>
+                      <h1>Group title</h1>
+                      <h2>Joined subtitle</h2>
+                    </hgroup>
+                    <p>Paragraph after the group</p>
+                    <hgroup>
+                      <h1>Group title</h1>
+                      <p>Joined standfirst</p>
+                    </hgroup>
+                    <p>Paragraph after the group</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
         <section class="bf-stack" aria-labelledby="body-line-wrapped">
           <header class="bf-stack is-dense">
             <h2 id="body-line-wrapped">Wrapped headings</h2>
@@ -382,12 +453,12 @@
             <div class="bf-grid">
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-wrapped-current"
+                aria-labelledby="body-line-wrapped-default"
               >
-                <h3 class="bf-h6" id="body-line-wrapped-current">Current</h3>
+                <h3 class="bf-h6" id="body-line-wrapped-default">Default</h3>
                 <div
                   class="bf-theme bf-tier-editorial"
-                  data-body-line-root="current"
+                  data-body-line-root="body-line"
                 >
                   <div
                     class="bf-prose body-line-flow body-line-ruling"
@@ -422,12 +493,12 @@
               </section>
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-wrapped-opted"
+                aria-labelledby="body-line-wrapped-baseline"
               >
-                <h3 class="bf-h6" id="body-line-wrapped-opted">Opt-in</h3>
+                <h3 class="bf-h6" id="body-line-wrapped-baseline">Opt-out</h3>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial is-baseline-rhythm"
+                  data-body-line-root="baseline"
                 >
                   <div
                     class="bf-prose body-line-flow body-line-ruling"
@@ -468,22 +539,23 @@
           <header class="bf-stack is-dense">
             <h2 id="body-line-lists">Lists</h2>
             <p>
-              Tight and loose items share one text position and dot. A nested
-              list is a recorded exception: the outer item's closure lands
-              after the nested list, so nested items are off phase. A nested
-              theme without the modifier keeps the current list ledger.
+              The list owns one block start and one closure. Tight items,
+              nested items at every level and the next outer item each advance
+              by one body line; loose items are one body line apart and share
+              the tight text position and dot. A default theme nested inside
+              the opt-out keeps the body-line list.
             </p>
           </header>
           <div class="bf-grid-scope">
             <div class="bf-grid">
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-lists-current"
+                aria-labelledby="body-line-lists-default"
               >
-                <h3 class="bf-h6" id="body-line-lists-current">Current</h3>
+                <h3 class="bf-h6" id="body-line-lists-default">Default</h3>
                 <div
                   class="bf-theme bf-tier-editorial bf-stack"
-                  data-body-line-root="current"
+                  data-body-line-root="body-line"
                 >
                   <div class="bf-stack is-dense">
                     <h4 class="bf-h6">Tight items</h4>
@@ -507,37 +579,56 @@
                       <ul>
                         <li><p>Loose item one</p></li>
                         <li><p>Loose item two</p></li>
+                        <li><p>Loose item three</p></li>
                       </ul>
                     </div>
                   </div>
                   <div class="bf-stack is-dense">
-                    <h4 class="bf-h6">Nested list</h4>
+                    <h4 class="bf-h6">Nested list, three levels</h4>
                     <div
                       class="bf-prose body-line-flow body-line-ruling"
                       data-body-line-flow="nested-list"
                     >
                       <ul>
                         <li>
-                          Outer item
+                          Outer item one
                           <ul>
-                            <li>Nested item one</li>
+                            <li>
+                              Nested item one
+                              <ul>
+                                <li>Third level one</li>
+                                <li>Third level two</li>
+                              </ul>
+                            </li>
                             <li>Nested item two</li>
                           </ul>
                         </li>
-                        <li>Outer item after</li>
+                        <li>Outer item two</li>
                       </ul>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Ordered list</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="ordered"
+                    >
+                      <ol>
+                        <li>Ordered item one</li>
+                        <li>Ordered item two</li>
+                      </ol>
                     </div>
                   </div>
                 </div>
               </section>
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-lists-opted"
+                aria-labelledby="body-line-lists-baseline"
               >
-                <h3 class="bf-h6" id="body-line-lists-opted">Opt-in</h3>
+                <h3 class="bf-h6" id="body-line-lists-baseline">Opt-out</h3>
                 <div
-                  class="bf-theme bf-tier-editorial bf-stack is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial bf-stack is-baseline-rhythm"
+                  data-body-line-root="baseline"
                 >
                   <div class="bf-stack is-dense">
                     <h4 class="bf-h6">Tight items</h4>
@@ -561,25 +652,44 @@
                       <ul>
                         <li><p>Loose item one</p></li>
                         <li><p>Loose item two</p></li>
+                        <li><p>Loose item three</p></li>
                       </ul>
                     </div>
                   </div>
                   <div class="bf-stack is-dense">
-                    <h4 class="bf-h6">Nested list</h4>
+                    <h4 class="bf-h6">Nested list, three levels</h4>
                     <div
                       class="bf-prose body-line-flow body-line-ruling"
                       data-body-line-flow="nested-list"
                     >
                       <ul>
                         <li>
-                          Outer item
+                          Outer item one
                           <ul>
-                            <li>Nested item one</li>
+                            <li>
+                              Nested item one
+                              <ul>
+                                <li>Third level one</li>
+                                <li>Third level two</li>
+                              </ul>
+                            </li>
                             <li>Nested item two</li>
                           </ul>
                         </li>
-                        <li>Outer item after</li>
+                        <li>Outer item two</li>
                       </ul>
+                    </div>
+                  </div>
+                  <div class="bf-stack is-dense">
+                    <h4 class="bf-h6">Ordered list</h4>
+                    <div
+                      class="bf-prose body-line-flow body-line-ruling"
+                      data-body-line-flow="ordered"
+                    >
+                      <ol>
+                        <li>Ordered item one</li>
+                        <li>Ordered item two</li>
+                      </ol>
                     </div>
                   </div>
                 </div>
@@ -589,15 +699,15 @@
                 aria-labelledby="body-line-lists-nested"
               >
                 <h3 class="bf-h6" id="body-line-lists-nested">
-                  Nested theme without the modifier, inside the opt-in
+                  Default theme nested inside the opt-out
                 </h3>
                 <div
-                  class="bf-theme bf-tier-editorial is-body-line-rhythm"
-                  data-body-line-root="nested-host"
+                  class="bf-theme bf-tier-editorial is-baseline-rhythm"
+                  data-body-line-root="baseline-host"
                 >
                   <div
                     class="bf-theme bf-tier-editorial"
-                    data-body-line-root="nested"
+                    data-body-line-root="nested-default"
                   >
                     <div class="bf-stack">
                       <div class="bf-stack is-dense">
@@ -622,6 +732,31 @@
                           <ul>
                             <li><p>Loose item one</p></li>
                             <li><p>Loose item two</p></li>
+                            <li><p>Loose item three</p></li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="bf-stack is-dense">
+                        <h4 class="bf-h6">Nested list, three levels</h4>
+                        <div
+                          class="bf-prose body-line-flow body-line-ruling"
+                          data-body-line-flow="nested-list"
+                        >
+                          <ul>
+                            <li>
+                              Outer item one
+                              <ul>
+                                <li>
+                                  Nested item one
+                                  <ul>
+                                    <li>Third level one</li>
+                                    <li>Third level two</li>
+                                  </ul>
+                                </li>
+                                <li>Nested item two</li>
+                              </ul>
+                            </li>
+                            <li>Outer item two</li>
                           </ul>
                         </div>
                       </div>
@@ -647,14 +782,14 @@
             <div class="bf-grid">
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-exceptions-current"
+                aria-labelledby="body-line-exceptions-default"
               >
-                <h3 class="bf-h6" id="body-line-exceptions-current">
-                  Current
+                <h3 class="bf-h6" id="body-line-exceptions-default">
+                  Default
                 </h3>
                 <div
                   class="bf-theme bf-tier-editorial bf-stack"
-                  data-body-line-root="current"
+                  data-body-line-root="body-line"
                 >
                   <div class="bf-stack is-dense">
                     <h4 class="bf-h6">Metric-flush pair</h4>
@@ -697,12 +832,14 @@
               </section>
               <section
                 class="bf-span-4 bf-stack is-dense"
-                aria-labelledby="body-line-exceptions-opted"
+                aria-labelledby="body-line-exceptions-baseline"
               >
-                <h3 class="bf-h6" id="body-line-exceptions-opted">Opt-in</h3>
+                <h3 class="bf-h6" id="body-line-exceptions-baseline">
+                  Opt-out
+                </h3>
                 <div
-                  class="bf-theme bf-tier-editorial bf-stack is-body-line-rhythm"
-                  data-body-line-root="opted"
+                  class="bf-theme bf-tier-editorial bf-stack is-baseline-rhythm"
+                  data-body-line-root="baseline"
                 >
                   <div class="bf-stack is-dense">
                     <h4 class="bf-h6">Metric-flush pair</h4>

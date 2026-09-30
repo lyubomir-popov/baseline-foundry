@@ -35,21 +35,24 @@ function renderLedgers(rootSize) {
     const tbody = table.tBodies[0];
     if (!flow || !tbody) continue;
 
-    const isOpted = flow.closest("[data-body-line-root]")?.classList.contains("is-body-line-rhythm") ?? false;
+    const isBaseline = flow.closest("[data-body-line-root]")?.classList.contains("is-baseline-rhythm") ?? false;
+    // The body-line list is one container-owned block; the baseline-unit ledger still closes every item.
     const elements = Array.from(flow.children).flatMap(child =>
-      child.matches("ul, ol") ? Array.from(child.children) : [child]
+      child.matches("ul, ol") && isBaseline ? Array.from(child.children) : [child]
     );
     tbody.replaceChildren(...elements.map(element => {
       const role = roleOf(element);
       const styles = getComputedStyle(element);
       const variable = name => styles.getPropertyValue(`--bf-${role}-${name}`).trim() || "–";
+      const isList = element.matches("ul, ol");
       const occupied = element.getBoundingClientRect().height + Number.parseFloat(styles.marginBottom);
+      const tag = element.tagName.toLowerCase();
       const row = document.createElement("tr");
       row.append(
-        cell(element.tagName === "P" || element.tagName === "LI" ? `${element.tagName.toLowerCase()} (${role})` : role),
+        cell(isList ? `${tag} (list block)` : tag === "p" || tag === "li" ? `${tag} (${role})` : role),
         cell(variable("nudge-start")),
-        cell(isOpted ? variable("phase-start") : "–"),
-        cell(variable(isOpted ? "closure-end" : "margin-bottom")),
+        cell(isBaseline ? "–" : variable("phase-start")),
+        cell(isBaseline ? variable("margin-bottom") : variable(isList ? "list-block-end" : "closure-end")),
         // Occupied heights are whole bU (0.25rem or 0.5rem); two decimals absorb Chromium's -1/64px layout drift.
         cell(rem(occupied, rootSize, 2))
       );
