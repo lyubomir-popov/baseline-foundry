@@ -5,8 +5,19 @@
 
 ## Summary
 
+**Owner rulings R8–R10, 2026-10-01 (handover).** R8 snaps section and
+strip boundaries to whole body lines per tier; R9 lets the five panel
+content roots host body-line flow text while chrome stays on bU; R10
+confirms F1–F11. Implementation follows the orchestrator constraints C1–C4
+(research D10, verified 2026-10-01): R8 is a BF-local derived layer of
+private rem literals inside the section, never a change to the Canonical
+tokens or the provider artifact (C1); it reaches section-boundary consumers
+only, pending owner confirmation at T-R0 (C2); R9 uses source and active
+properties (C3); component baselines stay unchanged except bare flow text
+in panel content roots (C4). Release floor stays `0.3.0` or later.
+
 **Adversarial-review update, 2026-09-30.** Orchestrator rulings F1–F11
-(spec, pending owner confirmation) narrow R6: prose keeps its gap, and prose
+(spec, confirmed by the owner 2026-10-01) narrow R6: prose keeps its gap, and prose
 and pattern-internal stacks cancel it only between two adjacent visible
 text blocks, reading the parent's modifier token (research D9). Section
 stacks keep their gap; cluster children, `blockquote`, `fieldset` and
@@ -90,6 +101,21 @@ One scoped exception, justified above. Phase B may retire the public class
 `src/css-components*.ts`, tier configs, the nudge generator and `dist/` are
 not edited.
 
+### R8–R10 source map (handover)
+
+| File | Change |
+|---|---|
+| `src/body-line-rhythm.ts` | Pure snap in whole bU counts (research T27) from the resolved group, pattern, region and strip block tokens and the body step; add the four values to the rhythm record |
+| `src/css.ts` | Inside the section: snapped literals and source properties on the root and tier blocks; provider restore and bU active terms in the reset block; `.bf-theme.is-baseline-rhythm` redeclares sources too; a panel restore block for the five panel content roots after the reset block; consumer rules for the three section stacks, `.bf-page.is-fill` and `.bf-strip` at the end of the section |
+| `scripts/validation/body-line-rhythm-contracts.ts` | R8 table and formula per tier; provider artifact, SHA-256 constant, tier configs, token JSON, manifests and Canonical-named declarations byte-identical to main; only C2 consumers read the snapped properties; panel restore list equals the five R9 roots; every chrome class inside them is a reset root |
+| `scripts/behavior/body-line-rhythm-contracts.ts` | Rendered section and strip values per tier; phase after a section boundary; panel text phase from the content box; chrome equals main; opt-out equals main |
+| `scripts/verify-component-baselines.ts` | Only checks measuring bare flow text in the five panel content roots may change (C4) |
+| `demo/spec/body-line-rhythm.html`, `demo/body-line-rhythm.js` | Section and strip specimen per tier; panel specimens for `bf-panel-content`, `bf-tabs-panel`, `bf-accordion-panel`, `bf-modal-body`, `bf-aside` |
+| `README.md`, `docs/architecture.md`, `AGENTS.md` | “Unreleased” migration note for R8 and R9; architecture detail; one-bullet invariant wording |
+
+`config/canonical-spacing.resolved.json`, `src/dtcg-spacing.ts` and
+`config/tiers/*.json` are not edited (C1).
+
 ## Stages
 
 1. **Rebase, then capture.** Rebase onto `main` (including Spec 025 if it
@@ -120,6 +146,12 @@ not edited.
 7. **Gap ruling.** After the owner rules on D4, implement the chosen behaviour
    under the modifier, remove the demo candidate rules and extend the checks.
 8. **Phase B** is blocked on a separate owner approval.
+9. **R8–R10 handover** (tasks “Owner rulings R8–R10”): confirm C2 with the
+   owner (T-R0); R8 compute, emit and static checks; R8 consumer rules; R9
+   source and active mechanism; R9 panel scope and chrome exclusion;
+   rendered contracts; demo; docs; gates; four-tier light and dark
+   screenshots into `tmp/026-review/final/`; `review.md`; owner review
+   request.
 
 ## Validation economy
 
@@ -146,3 +178,8 @@ captured route carries the modifier; any diff is a defect.
 | Visible spacing change for existing consumers (F8) | README “Unreleased” migration note; `is-baseline-rhythm` restores the old spacing; first release ≥ `0.3.0` |
 | Cancelled gap clamping a grid track (F4) | Section stacks never cancel; static `occupied − gap ≥ 0` proof per tier, role and pattern gap; rendered whole-line advance per modifier |
 | Page-local gap overrides over-cancelling | The join reads the token; documented in `docs/agent-index.md`; the demo keeps its zero-gap specimen only where BF cancels nothing |
+| R8 changing a Canonical token or the provider artifact (C1) | Snapped values are private derived properties; static byte-identity check on the artifact, its SHA-256 constant, tier configs, token JSON, manifests and Canonical-named declarations |
+| R8 reaching component internals (C2) | Only section-stack, page-fill and strip rules read the snapped properties; component roots restore the provider value; owner confirms scope at T-R0 |
+| App `is-section-shallow` equal to `is-section` (R8) | Owner-accepted; flagged in the review request |
+| Panel restore leaking into the opt-out or chrome (C3) | `.is-baseline-rhythm` redeclares sources; chrome is its own reset root; rendered chrome-equals-main and opt-out-equals-main panel fixtures |
+| Panel text off the page grid (C3) | Recorded exception: no panel block inset is a whole body line; phase is asserted from the content box |

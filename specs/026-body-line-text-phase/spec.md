@@ -7,8 +7,10 @@
 **Status**: Phase A opt-in implemented and reviewed; CP-B default flip
 implemented 2026-09-30 under rulings R1–R5; scope widened to all flow text
 and D4 closed as option (c) under rulings R6–R7 the same day. Adversarial
-review findings F1–F11 fixed under orchestrator rulings the same day, pending
-owner confirmation.
+review findings F1–F11 fixed under orchestrator rulings the same day and
+confirmed by the owner on 2026-10-01 (R10). Owner rulings R8 (body-line
+section and strip boundaries) and R9 (panel content hosts flow text) of
+2026-10-01 are recorded and handed over; implementation starts at task T-R0.
 
 **Input**: Port the owner-approved Pragma rule that keeps headings and
 paragraphs in one body-line phase (Pragma Spec 024, T004d2; owner decision
@@ -108,9 +110,9 @@ and R4 from prose flows to all flow text.
 
 ## Orchestrator rulings, 2026-09-30 (adversarial review F1–F11)
 
-Orchestrator decisions on the R6/R7 adversarial review, **pending owner
-confirmation**. They refine R6 and R7; where they differ, they win until the
-owner rules otherwise.
+Orchestrator decisions on the R6/R7 adversarial review, **confirmed by the
+owner on 2026-10-01 (R10)**. They refine R6 and R7; F4 is refined by R8 and
+F11 is resolved by R9.
 
 - **F1 – R6 is text-to-text only.** R6 means zero gap between two adjacent
   text blocks, not a zero prose gap. `.bf-prose` keeps its
@@ -127,6 +129,10 @@ owner rules otherwise.
   (`is-section-shallow`, `is-section`, `is-section-deep`) are boundaries
   between complete sections or patterns (AGENTS invariant). Every cancelled
   gap must leave a non-negative margin box and a whole-line advance.
+  *Refined by R8: section stacks keep their gap, now snapped to whole body
+  lines, so phase after a section boundary holds when the preceding block
+  closed to whole body lines; after a component it is still not
+  guaranteed.*
 - **F5 – element-styled containers.** `blockquote`, `table` and `fieldset`
   join the reset roots inside `:where()`; the markup scan covers
   element-styled components.
@@ -146,19 +152,62 @@ owner rules otherwise.
 - **F10 – AGENTS wording.** One short bullet; detail in
   `docs/architecture.md`.
 - **F11 – component panels.** Panels keep the bU ledger; recorded as an open
-  owner question.
+  owner question. *Resolved by R9: panel content hosts the default
+  flow-text rhythm.*
+
+## Owner rulings, 2026-10-01 (R8–R10)
+
+Recorded verbatim. They close open questions Q1–Q3.
+
+- **R8.** Section and strip boundaries must be whole multiples of each
+  tier's body-line step. Applies to the three section boundary spacings
+  (shallow, section, deep) and the strip block inset across all four
+  built-in tiers. Snap each current value to the nearest POSITIVE whole body
+  line; on an exact tie, round up. Formula:
+  `snapped = step × max(1, floor(value/step + 0.5))`. Resulting table
+  (verified from `config/tiers/*.json`; current → snapped):
+
+  | Tier (step) | shallow | section | deep | strip |
+  |---|---|---|---|---|
+  | editorial (24px) | 24→24 | 64→72 | 128→120 | 64→72 |
+  | documentation (20px) | 24→20 | 48→40 | 96→100 | 48→40 |
+  | app (20px) | 8→20 | 16→20 | 32→40 | 48→40 |
+  | os (16px) | 24→32 (tie, up) | 48→48 | 96→96 | 32→32 |
+
+  App shallow and section both become 20px, so `is-section-shallow` and
+  `is-section` become identical in app (owner-accepted consequence of the
+  rule; flag it in the review request). Editorial deep and documentation
+  deep move in opposite directions.
+- **R9.** Panel content hosts the default body-line flow-text rhythm: bare
+  flow text in `bf-panel-content`, `bf-tabs-panel`, `bf-accordion-panel`,
+  `bf-modal-body` and `bf-aside`. Component chrome – titles, tab labels,
+  accordion triggers, controls and other UI internals – stays on the
+  baseline-unit ledger.
+- **R10.** The owner confirms adversarial-review rulings F1–F11, with F4
+  refined by R8 (section stacks keep their gap, now body-line-snapped, so
+  phase after a section boundary holds when the preceding block closed to
+  whole body lines; after a component it is still not guaranteed) and F11
+  resolved by R9.
+
+Orchestrator implementation constraints C1–C4 (verified 2026-10-01) are in
+[research D10](research.md#d10--owner-rulings-2026-10-01-r8r10-and-orchestrator-constraints-c1c4).
+C1: the Canonical section and strip tokens and the provider artifact do not
+change; R8 is a BF-local derived layer. C2: R8 reaches section-boundary
+consumers only, pending owner confirmation (Q4).
 
 ## Open owner questions
 
-- **Q1 (F4).** Body-line phase after a section boundary is not guaranteed,
-  because section gaps are baseline-unit tokens (for example Documentation
-  `is-section` 48px against a 20px body line). Accept, or quantize section
-  gaps to whole body lines?
-- **Q2 (F11).** Component panels – `bf-panel`, `bf-panel-content`,
-  `bf-tabs-panel`, `bf-accordion-panel`, `bf-modal-body`, `bf-aside` – are
-  reset roots, so app-tier prose inside them keeps the bU ledger and differs
-  from page prose. Keep, or let panels host body-line flow text?
-- **Q3 (F1–F7).** Confirm the orchestrator rulings above.
+- **Q1 (F4).** *Closed by R8*: section and strip boundaries snap to whole
+  body lines.
+- **Q2 (F11).** *Closed by R9*: the five panel content roots host body-line
+  flow text; panel chrome stays on bU.
+- **Q3 (F1–F7).** *Closed by R10*: F1–F11 confirmed.
+- **Q4 (C2, task T-R0).** Confirm that R8 reaches only section-boundary
+  consumers (section stacks, `.bf-page.is-fill` block-end padding, strip
+  block-end padding) and leaves the default stack gap, the prose gap and
+  every component that reads `--bf-section-space-shallow` on the provider
+  value; alternative in research D10. Ask the owner before implementing
+  T-R8.
 
 BF closes every metric-aligned text element to the baseline unit (bU). The
 element owns its measured top nudge and a bottom margin of `bU − nudge`, so a
@@ -192,6 +241,14 @@ so it computes both terms exactly rather than through the
   class the component, grid and preset CSS styles, except flow containers
   and page shells, every `bf-cluster` child and `blockquote`, `fieldset` and
   `table` share the opt-out block.
+- Panel content hosts flow text (R9): bare flow text in `bf-panel-content`,
+  `bf-tabs-panel`, `bf-accordion-panel`, `bf-modal-body` and `bf-aside`
+  takes the default rhythm, phased from the panel's content box; panel
+  chrome stays on bU.
+- Section and strip boundaries are whole body lines (R8): section stacks
+  and the strip and page-fill block-end padding take the snapped values of
+  the R8 table in every tier, through private derived properties; the
+  Canonical tokens behind them do not change (C1).
 - A prose `ul`/`ol` is one container-owned block: the body nudge and phase
   once at the top, the closure once at the end; tight items, nested items at
   any depth and the next outer item each advance one body line; loose items
@@ -216,13 +273,18 @@ so it computes both terms exactly rather than through the
 
 - Component text (every element inside a component root), controls, the
   meta role, `blockquote`, `hr`, `pre`/`code`, `a.bf-text-link` and the
-  cap-engine demo stay on the bU ledger (R7).
+  cap-engine demo stay on the bU ledger (R7). Bare flow text in the five
+  panel content roots is the one exception (R9).
 - No type-scale token changes to chase wrapped exceptions.
 - Neither term is a spacing token. No public spacing property, no DTCG
   spacing entry and no `--bf-space-*` change. No negative-margin utility.
-- Container gaps change only as ruled in R6 with F1 and F4: prose and
-  pattern-internal stack gaps are cancelled between adjacent text blocks.
-  Section-stack, `bf-grid` row, `bf-cluster` and `bf-stage-shell` gaps are
+  The R8 snapped values are private derived properties: the Canonical
+  tokens, the provider artifact, `--bf-section-space-*`, `--bf-strip-space`
+  and every token JSON and surface manifest keep their values (C1).
+- Container gaps change only as ruled in R6 with F1 and F4, and R8: prose
+  and pattern-internal stack gaps are cancelled between adjacent text
+  blocks; section-stack gaps and strip block-end padding snap to whole body
+  lines. `bf-grid` row, `bf-cluster` and `bf-stage-shell` gaps are
   unchanged.
 - No `1cap` anywhere (R2). No Pragma source, publication or release.
 - T031 (serializing the terms into tokens and manifests) remains open; the
@@ -322,7 +384,9 @@ candidates and the recorded exceptions.
 - `hr` (0.5rem occupied) and `blockquote` (body line height plus bU) break
   phase for following prose content. Recorded exceptions.
 - Component text is outside the body-line scope because every component
-  root redeclares the bU ledger (R7). The root list is every `bf-*` class the
+  root redeclares the bU ledger (R7); the five panel content roots restore
+  the body-line ledger for their bare flow text (R9), and chrome inside
+  them is a component root of its own. The root list is every `bf-*` class the
   component, grid and preset CSS styles, minus flow containers and page
   shells; a static markup scan proves every component class in the component
   and pattern demos and README examples is covered (AC-3).
@@ -336,8 +400,18 @@ candidates and the recorded exceptions.
   the parent's token, and its own gap resolves to 0 under the default ledger.
 - A hidden or `display: contents` sibling between two text blocks leaves
   the gap in place (F2, F7). Under-cancelling is safe; recorded exception.
-- Section stacks keep their gap (F4), so body-line phase after a section
-  boundary is not guaranteed (open question Q1).
+- Section stacks keep their gap (F4), snapped to whole body lines (R8), so
+  body-line phase after a section boundary holds when the preceding block
+  closed to whole body lines; after a component it is still not
+  guaranteed.
+- App `is-section-shallow` and `is-section` both resolve to 20px under R8
+  and are identical in that tier (owner-accepted). OS shallow is an exact
+  tie (24px / 16px = 1.5) and rounds up to 32px. Editorial deep shrinks
+  (128 → 120px) while Documentation deep grows (96 → 100px).
+- Body-line phase inside a panel content root is relative to its content
+  box, not the page grid: the panel's block-start inset is a bU value that
+  is not a whole body line in any built-in tier (research D10, C3 table).
+  Recorded exception.
 - Every cancelled pattern-internal gap is at most the shallow section space
   (1.5rem; App 0.5rem) and every one-line text block occupies at least two
   body lines (2rem or more), so the margin box never goes negative and the
@@ -401,9 +475,12 @@ candidates and the recorded exceptions.
   nudge generator uses, read per role `fontFamily`. The build recomputes each
   generator nudge and fails a built-in surface if it differs from `nudgeTop`
   by more than 0.00001rem. No `1cap` (R2).
-- **FR-011**: generated CSS outside the section is byte-identical to main's
-  generated CSS. Every `tokens.json` and `surfaces.json` is byte-identical to
-  main. Compiled TypeScript outputs in `dist/` are expected to change.
+- **FR-011** (amended by R8, C1): generated CSS outside the section is
+  byte-identical to main's generated CSS; the R8 properties and consumer
+  rules live inside the section. Every `tokens.json` and `surfaces.json`,
+  `config/canonical-spacing.resolved.json` and every Canonical-named and
+  `--bf-section-space-*`/`--bf-strip-space` declaration is byte-identical
+  to main. Compiled TypeScript outputs in `dist/` are expected to change.
 - **FR-012** (amended by R1): the nearest theme root wins. A default
   `.bf-theme` nested in an opted-out root resolves the body-line ledger and an
   opted-out root nested in a default one resolves the bU ledger.
@@ -466,14 +543,42 @@ candidates and the recorded exceptions.
   and the page shells `bf-page-shell`, `bf-application`, `bf-main`,
   `bf-site-main`, `bf-docs-layout`, `bf-docs-layout-content`). Every element
   selector styled after the section is a control, `hr`, a table part or an
-  element root.
-- **FR-024** (R7): component geometry is byte-for-byte unaffected:
-  `npm run test:components` passes with `scripts/verify-component-baselines.ts`
-  unchanged since CP-B.
+  element root. *Amended by R9*: the five panel content roots stay in the
+  list for their own geometry and restore the body-line ledger for their
+  descendants (FR-027).
+- **FR-024** (R7, amended by R9 and C4): component geometry is
+  byte-for-byte unaffected: `npm run test:components` passes with
+  `scripts/verify-component-baselines.ts` unchanged since CP-B, except
+  checks that measure bare flow text inside the five panel content roots;
+  each such change is listed in `review.md` with before, after and reason.
 - **FR-025** (F8): README carries an “Unreleased” migration note for the
   visible spacing change (`is-baseline-rhythm` on `.bf-theme` roots keeps the
   old spacing), and the first release containing Spec 026 must be `0.3.0` or
   later per `docs/publishing.md`. `package.json` is not changed here.
+- **FR-026** (R8, C1, C2): per surface, the build computes
+  `snapped = step × max(1, floor(value / step + 0.5))` for the resolved
+  group, pattern, region and strip block tokens and emits them as private
+  rem literals (`--bf-body-line-section-space-shallow`, `-section`,
+  `-deep`, `--bf-body-line-strip-space`) on the root and tier blocks.
+  `.bf-stack.is-section-shallow`, `.is-section`, `.is-section-deep`,
+  `.bf-page.is-fill` block-end padding and `.bf-strip` block-end padding
+  read them by default; `.is-baseline-rhythm` and component roots restore
+  the provider values. The default stack gap, the prose gap and components
+  that read `--bf-section-space-shallow` stay on the provider value unless
+  the owner rules otherwise at T-R0 (Q4).
+- **FR-027** (R9, C3): each body-line term has a source property declared
+  on the theme root and tier blocks (body-line literals) and on
+  `.bf-theme.is-baseline-rhythm` (bU ledger), and an active property that
+  application rules read. Component roots set active terms to the bU ledger
+  and never touch sources; `bf-panel-content`, `bf-tabs-panel`,
+  `bf-accordion-panel`, `bf-modal-body` and `bf-aside` set active terms back
+  to `var(<source>)`. Chrome inside them is its own component root and
+  stays on bU.
+- **FR-028** (C1): `config/canonical-spacing.resolved.json`,
+  `canonicalSpacingProductsSha256`, tier config values and the resolved
+  `spacing.gap.group.block`, `spacing.gap.pattern.block`,
+  `spacing.gap.region.block` and `spacing.inset.strip.block` tokens do not
+  change; a static check asserts it.
 
 ### Key entities
 
@@ -566,10 +671,12 @@ candidates and the recorded exceptions.
     ledgers; text ↔ component keeps the stack gap both ways; the offset of
     text after a component is recorded, not asserted. The opt-out equals main
     for all four fixtures.
-15. **Component geometry unchanged** (R7) – `npm run test:components`
-    passes with no change to `scripts/verify-component-baselines.ts` in this
-    wave; changed page-text behaviour assertions are listed in `review.md`
-    with before and after.
+15. **Component geometry unchanged** (R7, amended by R9 and C4) –
+    `npm run test:components` (5,442 checks) passes with no change to
+    `scripts/verify-component-baselines.ts` except checks that measure bare
+    flow text inside the five panel content roots; those and changed
+    page-text behaviour assertions are listed in `review.md` with before,
+    after and reason.
 16. **Adjacency** (F1–F7) – Chromium DPR 1, 16px root, all four tiers,
     against main's CSS (the bundle with the section stripped), each fixture in
     a whole-pixel slot, within 0.1px: the clearance after `pre`, `table`,
@@ -586,6 +693,25 @@ candidates and the recorded exceptions.
     children take only the one-step join; a child stack or prose block keeps
     the parent gap; hidden-middle and `display: contents` offsets are
     recorded. Every fixture under `.is-baseline-rhythm` equals main.
+17. **Section and strip, static** (R8, C1) – per tier, the four emitted
+    snapped literals equal the R8 table (editorial 1.5 / 4.5 / 7.5 / 4.5rem,
+    documentation 1.25 / 2.5 / 6.25 / 2.5rem, app 1.25 / 1.25 / 2.5 /
+    2.5rem, os 2 / 3 / 6 / 2rem) and the formula from the resolved token and
+    body step; the provider artifact, its SHA-256 constant, tier configs,
+    every `tokens.json` and `surfaces.json` and every Canonical-named and
+    `--bf-section-space-*`/`--bf-strip-space` declaration are byte-identical
+    to main; only the C2 consumers read the snapped properties.
+18. **Section and strip, rendered** (R8) – Chromium DPR 1, 16px root, all
+    four tiers: the gap of each section stack and the block-end padding of
+    `.bf-strip` and `.bf-page.is-fill` equal the R8 table within 0.1px; text
+    after a section boundary that follows a text block stays in phase; under
+    `.is-baseline-rhythm` each equals main exactly.
+19. **Panel content** (R9) – in each of the five panel content roots, all
+    four tiers: bare `h2`, `p`, `p` and a prose list take the default
+    rhythm, with first baselines whole steps from the content-box top and
+    p → p two steps apart; panel chrome (titles, tab labels, accordion
+    triggers, controls, modal header and footer, aside navigation) equals
+    main; the same panels under `.is-baseline-rhythm` equal main.
 
 ## Assumptions
 

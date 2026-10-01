@@ -23,6 +23,12 @@
   [D8](#d8--owner-rulings-2026-09-30-r6r7) and the spec.
 - Adversarial review of this package, 2026-09-30: independent numbers in
   [R2](#independent-cross-check) and the corrections applied throughout.
+- Owner rulings R8–R10, 2026-10-01: section and strip boundaries snap to
+  whole body lines, panel content hosts flow text, F1–F11 confirmed.
+  Recorded with orchestrator constraints C1–C4 in
+  [D10](#d10--owner-rulings-2026-10-01-r8r10-and-orchestrator-constraints-c1c4)
+  and the spec. Owner rulings R1–R10 are not the research sections R1–R9
+  below; owner rulings are always cited as rulings.
 - BF metric model: `@lyubomir-popov/baseline-nudge-generator` 1.5.1,
   `src/nudge-generator.js` `calculateNudgeRem` (lines 57–101); `readFontMetrics`
   is exported from `src/index.js`.
@@ -422,11 +428,137 @@ glyphs do not overlap. The h1 → h2 distances match the ruling's prediction.
 
 ## Decisions
 
-### D9 – Orchestrator rulings on the R6/R7 adversarial review (F1–F11), pending owner confirmation
+### D10 – Owner rulings, 2026-10-01 (R8–R10) and orchestrator constraints C1–C4
+
+Owner rulings, full text in the spec:
+
+- **R8** – section boundaries (shallow, section, deep) and the strip block
+  inset snap to the nearest positive whole body line per tier, ties up:
+  `snapped = step × max(1, floor(value / step + 0.5))`. App shallow and
+  section both become 20px (owner-accepted).
+- **R9** – bare flow text in `bf-panel-content`, `bf-tabs-panel`,
+  `bf-accordion-panel`, `bf-modal-body` and `bf-aside` takes the default
+  rhythm; component chrome stays on bU.
+- **R10** – F1–F11 confirmed; F4 refined by R8, F11 resolved by R9.
+
+R8 values at a 16px root, from the provider artifact (equal to
+`config/tiers/*.json`):
+
+| Tier (bU, step) | Shallow | Section | Deep | Strip |
+|---|---|---|---|---|
+| Editorial (8px, 24px) | 24 → 24px (1.5rem) | 64 → 72px (4.5rem) | 128 → 120px (7.5rem) | 64 → 72px (4.5rem) |
+| Documentation (4px, 20px) | 24 → 20px (1.25rem) | 48 → 40px (2.5rem) | 96 → 100px (6.25rem) | 48 → 40px (2.5rem) |
+| App (4px, 20px) | 8 → 20px (1.25rem) | 16 → 20px (1.25rem) | 32 → 40px (2.5rem) | 48 → 40px (2.5rem) |
+| OS (4px, 16px) | 24 → 32px (2rem), tie | 48 → 48px (3rem) | 96 → 96px (6rem) | 32 → 32px (2rem) |
+
+**T27 – exact rounding.** Compute in whole bU counts so ties are exact:
+with `v` the token and `s` the step in bU,
+`snapped = s · max(1, floor((2v + s) / (2s)))` bU, then format as rem with
+the existing helper. OS shallow (`v = 6`, `s = 4`) gives 8 bU (2rem); App
+shallow (`v = 2`, `s = 5`) gives 0, clamped to 5 bU (1.25rem).
+
+Orchestrator constraints, each *orchestrator constraint, verified
+2026-10-01*:
+
+- **C1 – provider authentication.** `--bf-section-space-shallow`,
+  `--bf-section-space`, `--bf-section-space-deep` and `--bf-strip-space` are
+  the BF aliases of Canonical DTCG tokens `spacing.gap.group.block`,
+  `spacing.gap.pattern.block`, `spacing.gap.region.block` and
+  `spacing.inset.strip.block` (`bfSpacingCompatibilityAliases`,
+  `src/dtcg-spacing.ts` lines 57–70), authenticated against
+  `config/canonical-spacing.resolved.json` with the pinned
+  `canonicalSpacingProductsSha256` (line 52). Tier config values, the
+  provider artifact and those token values do not change. R8 is a BF-local
+  derived layer: build-time rem literals computed in TypeScript from the
+  resolved token value and the tier body step (T27), emitted as private
+  properties `--bf-body-line-section-space-shallow`, `-section`, `-deep`
+  and `--bf-body-line-strip-space`; `.is-baseline-rhythm` and component
+  reset roots restore the provider values. Token JSON, surface manifests
+  and Canonical-named properties stay byte-identical, with a static check.
+- **C2 – R8 reaches section-boundary consumers only.**
+  `.bf-stack.is-section-shallow`, `.is-section` and `.is-section-deep`
+  (`src/css.ts` lines 598–608), `.bf-page.is-fill` block-end padding
+  (line 498) and `.bf-strip` block-end padding (line 514). The constraint
+  as written named “`.bf-section` block padding (~498)”; line 498 is
+  `.bf-page.is-fill`, and `.bf-section`, `.is-shallow` and `.is-deep` set
+  only `margin-block-end: 0` (lines 501–511), so `.bf-section` has no
+  section-space consumer; T-R0 confirms the corrected list. The default
+  `.bf-stack` gap (line 569), the `.bf-prose` gap (line 632) and the
+  text-join gap table (lines 251 and 257) also read
+  `--bf-section-space-shallow` but are pattern-internal, and components
+  read it directly (`tab-section`, `tiered-list-equal-height-row`,
+  `document-navigation` ToC gap, `linked-logo-site-layout`,
+  `sites-editorial-ports`, `sites-foundation`, `static-content-ports`);
+  snapping the token itself would change in-component gaps (App 8 → 20px).
+  Those consumers stay on the provider value. **ASK OWNER TO CONFIRM
+  before implementing T-R8** (task T-R0).
+
+  *Alternative.* Also snap the default `.bf-stack` gap and the `.bf-prose`
+  gap for flow text only: both read an active
+  `--bf-body-line-section-space-shallow` that component roots reset to the
+  provider value, and the text-join gap for the default stack and prose
+  reads the same property so the text-to-text cancel stays exact.
+  Component internals that read `--bf-section-space-shallow` directly never
+  change. Text-to-text spacing is unchanged; text-to-non-text clearance
+  moves to whole body lines in page flow (Documentation 24 → 20px, App
+  8 → 20px, OS 24 → 32px, Editorial unchanged), which reverses F1's “equals
+  main” clearance assertion in three tiers.
+- **C3 – R9 mechanism: source and active properties.** Panel content roots
+  are in the bU reset list today, and so is their `bf-panel` ancestor. Each
+  body-line term (role phase, closure and step, list, loose, hgroup and
+  `--bf-text-gap-scale` terms, and the R8 properties) gets a source
+  property, for example `--bf-body-line-h2-phase-start-source`, declared
+  on the theme root and tier blocks, and an active property that
+  application rules read. Component reset roots set active properties to
+  the bU ledger and never touch sources; the five panel content roots set
+  active properties back to `var(<source>)` in a block after the reset
+  block. Chrome inside those panels – titles, tab labels, accordion
+  triggers, controls, modal header and footer, aside navigation – is a
+  component root of its own and stays bU.
+
+  *Derived, not in the constraint as written:* `.bf-theme.is-baseline-rhythm`
+  is a theme root, not a component root, so it must redeclare the sources
+  to the bU ledger as well as the active properties. Otherwise a panel
+  inside an opted-out theme would restore the body-line ledger and break
+  opt-out-equals-main (R1).
+
+  Panel block-start insets are bU values, so body-line phase inside a panel
+  is relative to the panel's content box, not the page grid. Recorded
+  exception in every tier: no inset below is a whole body line.
+
+  | Root | Block-start inset | Editorial (24px) | Documentation (20px) | App (20px) | OS (16px) |
+  |---|---|---|---|---|---|
+  | `bf-panel-content`, `bf-modal-body` | `--bf-panel-padding-block` (`spacing.inset.surface.block`, `panelPaddingBlockBaselineUnits`) | 2 bU = 16px, not whole | 4 bU = 16px, not whole | 3 bU = 12px, not whole | 2 bU = 8px, not whole |
+  | `bf-accordion-panel` | `--bf-baseline` (1 bU) | 8px, not whole | 4px, not whole | 4px, not whole | 4px, not whole |
+  | `bf-tabs-panel`, `bf-aside` | none; top set by the preceding chrome or the nested panel | bU-quantized | bU-quantized | bU-quantized | bU-quantized |
+
+  `bf-panel-content.is-flush` has no block inset. Only `bf-panel-content`
+  and `bf-modal-body` read the surface inset; the accordion panel reads one
+  bU (`src/css-components.ts` line 1290).
+- **C4 – proof.** `npm run test:components` (5,442 checks) stays green with
+  `scripts/verify-component-baselines.ts` unchanged except where a check
+  measures bare flow text inside the five panel content roots; each such
+  change is listed in `review.md` with before, after and reason. Section
+  and strip values are asserted at render time per tier against the R8
+  table within 0.1px, and `.is-baseline-rhythm` still equals main exactly.
+
+**T28 – R8 lives inside the section.** The snapped literals sit in the
+root and tier blocks, the provider restore in the reset block and the
+consumer rules in a new block at the end of the section, at the same
+zero specificity as main's rules and later in source order. Stripping the
+section therefore still yields main's CSS (FR-011, AC-2), which remains
+the rendered reference for the opt-out.
+
+**T29 – R8 properties follow the source and active pair**, so a section
+stack placed directly in a panel content root takes the snapped value and
+one inside any other component root takes the provider value. Confirm with
+the owner at T-R0 together with C2.
+
+### D9 – Orchestrator rulings on the R6/R7 adversarial review (F1–F11), confirmed 2026-10-01
 
 Orchestrator decisions, 2026-09-30, full text in the spec. They supersede
-T13, T14 and T18 below and refine T15–T17; the owner has not yet confirmed
-them (spec, open question Q3).
+T13, T14 and T18 below and refine T15–T17; the owner confirmed them on
+2026-10-01 (R10), with F4 refined by R8 and F11 resolved by R9.
 
 - **T19 – prose keeps its gap (F1).** The section no longer declares a prose
   gap, so main's `.bf-prose { gap: var(--bf-section-space-shallow) }` rule is

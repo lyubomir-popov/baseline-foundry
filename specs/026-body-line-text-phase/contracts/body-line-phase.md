@@ -1,8 +1,14 @@
 # Contract: Body-line phase
 
 Normative for Spec 026 after the owner rulings of 2026-09-30: R1–R5 (CP-B)
-and R6–R7 (flow text everywhere, self-spacing text blocks). Rationale lives
-in [research.md](../research.md).
+and R6–R7 (flow text everywhere, self-spacing text blocks), the orchestrator
+rulings F1–F11 confirmed by the owner on 2026-10-01 (R10), and the owner
+rulings R8 (section and strip boundaries) and R9 (panel content hosts) of
+2026-10-01. R8 and R9 are specified in
+[Section and strip boundaries](#section-and-strip-boundaries-r8) and
+[Panel content hosts](#panel-content-hosts-r9) and are not yet implemented
+(tasks “Owner rulings R8–R10”). Rationale lives in
+[research.md](../research.md).
 
 ## Symbols
 
@@ -103,7 +109,9 @@ specificity. Only roles present in the surface are emitted.
 Not selected: meta, lead, `figcaption`, `blockquote`, `hr`, `pre`/`code`,
 `a.bf-text-link`, controls and anything under `.bf-engine-cap`. Text inside
 a component root, a `bf-cluster` child, `blockquote`, `fieldset` or `table`
-is selected but resolves every term to the bU ledger (block 3).
+is selected but resolves every term to the bU ledger (block 3). Planned
+(R9): bare flow text in a panel content host resolves the body-line ledger
+again.
 
 ## Generated CSS shape
 
@@ -274,6 +282,81 @@ Wrapped qualifying (`lh mod step = 0`): Editorial h1, h2, h5, h6;
 Documentation h1, h2; App h5, h6; OS h3, h4, h5, h6. All others are wrapped
 type-scale exceptions.
 
+## Section and strip boundaries (R8)
+
+Planned; implements owner ruling R8 under orchestrator constraints C1 and
+C2 (research D10, verified 2026-10-01).
+
+```text
+snapped = step × max(1, floor(value / step + 0.5))     nearest positive whole body line, ties up
+        = s · max(1, floor((2v + s) / (2s))) bU          exact form, v and s in whole bU
+```
+
+`value` is the resolved Canonical token; `step` is the body line height.
+
+| Token (BF alias) | Private property | Consumer (`src/css.ts`) |
+|---|---|---|
+| `spacing.gap.group.block` (`--bf-section-space-shallow`) | `--bf-body-line-section-space-shallow` | `.bf-stack.is-section-shallow` gap |
+| `spacing.gap.pattern.block` (`--bf-section-space`) | `--bf-body-line-section-space` | `.bf-stack.is-section` gap; `.bf-page.is-fill` block-end padding |
+| `spacing.gap.region.block` (`--bf-section-space-deep`) | `--bf-body-line-section-space-deep` | `.bf-stack.is-section-deep` gap |
+| `spacing.inset.strip.block` (`--bf-strip-space`) | `--bf-body-line-strip-space` | `.bf-strip` block-end padding |
+
+Expected literals, rem (px at a 16px root):
+
+| Tier (step) | Shallow | Section | Deep | Strip |
+|---|---:|---:|---:|---:|
+| Editorial (1.5) | 1.5 (24) | 4.5 (72) | 7.5 (120) | 4.5 (72) |
+| Documentation (1.25) | 1.25 (20) | 2.5 (40) | 6.25 (100) | 2.5 (40) |
+| App (1.25) | 1.25 (20) | 1.25 (20) | 2.5 (40) | 2.5 (40) |
+| OS (1) | 2 (32) | 3 (48) | 6 (96) | 2 (32) |
+
+Rules:
+
+- *C1, orchestrator constraint, verified 2026-10-01.* The provider artifact
+  `config/canonical-spacing.resolved.json`, `canonicalSpacingProductsSha256`,
+  tier configs, the four tokens, `--bf-section-space-*`, `--bf-strip-space`,
+  every Canonical-named property, `tokens.json` and `surfaces.json` stay
+  byte-identical to main. The snapped values are private and appear only in
+  the section.
+- *C2, orchestrator constraint, verified 2026-10-01; owner confirmation at
+  T-R0.* Only the consumers above read the snapped properties. The default
+  `.bf-stack` gap, the `.bf-prose` gap, the text-join gap table and every
+  component that reads `--bf-section-space-shallow` keep the provider value.
+  `.bf-section` has no block padding in main and is not a consumer.
+- `.is-baseline-rhythm` and component reset roots set the four properties
+  to `var(<BF alias>)`, so under the opt-out each consumer equals main.
+- The section-stack text-join gap stays `0rem` (F4): section stacks never
+  cancel.
+- App `is-section-shallow` and `is-section` resolve to the same 1.25rem
+  (owner-accepted).
+
+## Panel content hosts (R9)
+
+Planned; implements owner ruling R9 under orchestrator constraint C3
+(research D10, verified 2026-10-01).
+
+- Hosts: `bf-panel-content`, `bf-tabs-panel`, `bf-accordion-panel`,
+  `bf-modal-body`, `bf-aside`. They stay in the reset list for their own
+  geometry.
+- Every body-line term, including list, loose, hgroup,
+  `--bf-text-gap-scale` and the R8 properties, is split into a source
+  property and an active property. Application rules read active
+  properties only.
+- Root and tier blocks declare sources (body-line literals) and set each
+  active property to `var(<source>)`. `.bf-theme.is-baseline-rhythm`
+  declares sources and active properties to the bU ledger. Component reset
+  roots set active properties to the bU ledger and never touch sources.
+- A panel restore block, after the reset block, sets every active property
+  on the five hosts to `var(<source>)`. An element that is both a host and
+  another root takes the restore.
+- Chrome inside the hosts – titles, tab labels, accordion triggers,
+  controls, modal header and footer, aside navigation – is a component
+  root of its own and stays bU. A static check requires every non-flow
+  `bf-*` class inside a host in the demo and README markup to be a reset
+  root.
+- Phase is relative to the host's content box: no host block-start inset is
+  a whole body line (research D10, C3 table).
+
 ## Recorded exceptions
 
 Measured and recorded in `review.md`, not asserted. Sizes at a 16px root.
@@ -288,7 +371,8 @@ Measured and recorded in `review.md`, not asserted. Sizes at a 16px root.
 | Text after a component or other non-text child | Starts one gap after a bU-quantized block; measured | 8.05px | 8.03px | 0.03px | 7.95px |
 | Child `.bf-prose` or non-`hgroup` `.bf-stack` after text (F7) | Keeps the parent gap | 24px | 24px | 8px | 24px |
 | Hidden or `display: contents` sibling between text blocks (F2, F7) | Keeps the gap | 24px | 24px | 8px | 24px |
-| Text in a section stack (F4) | Keeps the section gap; phase after it not guaranteed (open question Q1) | section tokens | section tokens | section tokens | section tokens |
+| Text in a section stack (F4, R8) | Keeps the section gap, snapped to whole body lines; phase holds after a text block, not after a component | 24 / 72 / 120px | 20 / 40 / 100px | 20 / 20 / 40px | 32 / 48 / 96px |
+| Text in a panel content host (R9) | Phase from the content box; panel-content and modal-body inset / accordion inset, not whole body lines | 16 / 8px | 16 / 4px | 12 / 4px | 8 / 4px |
 | Several paragraphs in one loose item | Not separated | – | – | – | – |
 
 Nested lists are no longer an exception (R3).
@@ -354,8 +438,21 @@ reaches 0.906px at 16px and 1.813px at 32px (research R2 cross-check).
   root give a default prose `h1` `nudge + phase` padding and the closure, an
   `h1` to `p` advance of whole body lines, and an `.is-baseline-rhythm` `h1`
   the nudge and `bU − nudge`.
-- **Component geometry (R7)**: `npm run test:components` passes with
-  `scripts/verify-component-baselines.ts` unchanged since CP-B.
+- **Component geometry (R7, R9, C4)**: `npm run test:components` (5,442
+  checks) passes with `scripts/verify-component-baselines.ts` unchanged
+  since CP-B, except checks that measure bare flow text inside the five
+  panel content hosts; each is listed in `review.md` with before, after and
+  reason.
+- **Section and strip (R8, C4)**: per tier at a 16px root, each section
+  stack gap and the `.bf-strip` and `.bf-page.is-fill` block-end padding
+  equal the R8 table within 0.1px; text after a section boundary that
+  follows a text block stays in phase; under `.is-baseline-rhythm` each
+  equals main exactly.
+- **Panel content (R9, C3)**: in each host and tier, bare `h2`, `p`, `p`
+  and a prose list take the default rhythm, with first baselines whole
+  steps from the host's content-box top and p → p two steps apart; chrome
+  boxes and baselines equal main; the same panels under
+  `.is-baseline-rhythm` equal main.
 - **Recorded, not asserted**: absolute ε per tier, role and root; the offsets
   in [Recorded exceptions](#recorded-exceptions); measured list, hgroup, p → p,
   h2 → p and text ↔ component distances.

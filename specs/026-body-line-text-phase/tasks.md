@@ -305,7 +305,8 @@ open; the section-stack gap clamp (research T18) needs an owner decision.
 
 ## F1–F11 – Adversarial review fixes
 
-Orchestrator rulings, 2026-09-30, pending owner confirmation (spec, research
+Orchestrator rulings, 2026-09-30, confirmed by the owner 2026-10-01 (R10;
+spec, research
 D9).
 
 - [x] T042 (F1, F4, F6, F7) Prose keeps its gap; per-modifier
@@ -339,7 +340,90 @@ D9).
   index detail, spec, plan, research, contract and review.
   *Evidence*: commit `c2bafea`.
 
-**F1–F11**: done. Open owner questions Q1–Q3 (spec).
+**F1–F11**: done and confirmed (R10). Open owner questions Q1–Q3 closed by
+R8–R10; Q4 is task T-R0.
+
+## Owner rulings R8–R10 (handover)
+
+Owner rulings R8–R10, 2026-10-01, and orchestrator constraints C1–C4
+(spec, research D10, contract “Section and strip boundaries” and “Panel
+content hosts”). Work only in this worktree. Metrics only, no `1cap`. Never
+edit `config/canonical-spacing.resolved.json`, `src/dtcg-spacing.ts` or
+`config/tiers/*.json`. Release floor stays `0.3.0` or later. T-H5 and T-H7
+supersede T022 and T023.
+
+- [ ] T-R0 **ASK OWNER TO CONFIRM before implementing T-R8.** Confirm the C2
+  interpretation: R8 reaches `.bf-stack.is-section-shallow`, `.is-section`,
+  `.is-section-deep`, `.bf-page.is-fill` block-end padding and `.bf-strip`
+  block-end padding only (`.bf-section` has no section-space consumer in
+  main, so C2's “`.bf-section` block padding” is read as `.bf-page.is-fill`,
+  `src/css.ts` line 498); the default stack gap, the prose gap, the
+  text-join gap table and the seven components that read
+  `--bf-section-space-shallow` stay on the provider value. Present the
+  alternative (research D10: also snap the default stack and prose gap for
+  flow text only) and T29 (R8 properties restored in panel hosts). Record
+  the answer in spec Q4 and research D10.
+- [ ] T-R8a (R8, C1) Compute, emit and check statically. Snap in whole bU
+  counts in `src/body-line-rhythm.ts` (research T27); emit
+  `--bf-body-line-section-space-shallow`, `-section`, `-deep` and
+  `--bf-body-line-strip-space` in the root and tier blocks and the provider
+  restore in the reset block, all inside the section (`src/css.ts`). Static
+  checks: the R8 table per tier and the formula; the provider artifact, its
+  SHA-256 constant, tier configs, every `tokens.json` and `surfaces.json`
+  and every Canonical-named, `--bf-section-space-*` and `--bf-strip-space`
+  declaration byte-identical to main; stripped-section identity still holds
+  (depends on T-R0).
+- [ ] T-R8b (R8, C2) Consumer rules at the end of the section for the three
+  section stacks, `.bf-page.is-fill` and `.bf-strip`; static check that only
+  those rules read the snapped properties and that the section-stack
+  text-join gap stays `0rem` (depends on T-R8a).
+- [ ] T-R9a (R9, C3) Source and active properties for every body-line term,
+  including list, loose, hgroup, `--bf-text-gap-scale` and the R8
+  properties. Root and tier blocks declare sources and set active to
+  `var(<source>)`; `.bf-theme.is-baseline-rhythm` declares both to the bU
+  ledger; component reset roots set active only; application rules read
+  active only. Static: no reset root declares a source; existing static,
+  component and behaviour families stay green (depends on T-R8b).
+- [ ] T-R9b (R9, C3) Panel scope and chrome exclusion: a restore block after
+  the reset block for `bf-panel-content`, `bf-tabs-panel`,
+  `bf-accordion-panel`, `bf-modal-body` and `bf-aside`. Static: the restore
+  list equals the five R9 hosts; every non-flow `bf-*` class inside a host
+  in the demo and README markup is a reset root, and no chrome class
+  (titles, tab labels, accordion triggers, controls, modal header and
+  footer, aside navigation) is in the restore list (depends on T-R9a).
+- [ ] T-H1 Rendered contracts in `scripts/behavior/body-line-rhythm-contracts.ts`:
+  section stack gaps and `.bf-strip` and `.bf-page.is-fill` block-end
+  padding per tier equal the R8 table within 0.1px; phase after a section
+  boundary that follows text; bare text in each panel host phased from its
+  content box; chrome equals main; opt-out equals main for section, strip
+  and panel fixtures. `npm run test:components` green with
+  `scripts/verify-component-baselines.ts` changed only for bare flow text in
+  the five hosts (C4) (depends on T-R9b).
+- [ ] T-H2 Demo: a section and strip specimen per tier and panel specimens
+  for `bf-panel-content`, `bf-tabs-panel`, `bf-accordion-panel`,
+  `bf-modal-body` and `bf-aside` in `demo/spec/body-line-rhythm.html`, each
+  beside its `.is-baseline-rhythm` twin; extend the demo static checks
+  (depends on T-H1).
+- [ ] T-H3 Docs: README “Unreleased” migration note (R8 snapped section and
+  strip spacing, R9 panel text, `is-baseline-rhythm` restores both),
+  `docs/architecture.md` detail and the `AGENTS.md` bullet (one bullet, at
+  most five lines, FR-018); update `docs/specs.md`, which still says F1–F11
+  are pending (depends on T-H2).
+- [ ] T-H4 Gates: `npm run build`, `npm test` and `npm run qa:components`
+  green; record counts (depends on T-H3).
+- [ ] T-H5 Fresh four-tier light and dark full-page screenshots of
+  `demo/spec/body-line-rhythm.html` and two representative pages –
+  `demo/spec/typography.html` (page flow and section stacks) and
+  `demo/components/application-layout.html` (panels) – into
+  `tmp/026-review/final/`, then browser review (depends on T-H4).
+- [ ] T-H6 `review.md`: R8 rendered values per tier, provider identity
+  evidence, every changed component-baseline check with before, after and
+  reason, panel measurements, gate counts, screenshot list (depends on
+  T-H5).
+- [ ] T-H7 Final owner review request: flag app `is-section-shallow` equal
+  to `is-section`, Editorial and Documentation deep moving in opposite
+  directions, the panel inset exception and the T-R0 outcome; release floor
+  `0.3.0` or later (depends on T-H6).
 
 ## Dependencies
 
@@ -351,3 +435,6 @@ D9).
   T021–T023 need all earlier Phase A tasks.
 - T024 needs CP-A. T025 needs T024. CP-B was approved directly by the owner
   rulings of 2026-09-30 and does not wait for D4.
+- T-R0 → T-R8a → T-R8b → T-R9a → T-R9b → T-H1 → T-H2 → T-H3 → T-H4 →
+  T-H5 → T-H6 → T-H7. T-R9a does not depend on the C2 answer except for
+  T29 and may start while T-R0 is pending.

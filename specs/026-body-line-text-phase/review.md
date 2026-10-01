@@ -7,7 +7,8 @@ separate CP-B section was written here. The R6–R7 wave (flow text everywhere,
 D4 closed as (c)) is recorded in
 [R6–R7](#r6r7--flow-text-everywhere-self-spacing-text-blocks-2026-09-30) at the
 end and supersedes the prose-only wording above. T022 dark-tone review and
-T023 are still open.
+T023 are superseded by handover tasks T-H5 and T-H7; see
+[Owner rulings R8–R10](#owner-rulings-r8r10-handover-2026-10-01).
 
 ## T002 – baseline capture
 
@@ -537,7 +538,8 @@ chrome appears mid-page in full-page captures.
 
 ## Adversarial review F1–F11 – fixes (2026-09-30)
 
-Orchestrator rulings (spec, research D9), pending owner confirmation.
+Orchestrator rulings (spec, research D9), confirmed by the owner on
+2026-10-01 (R10).
 “Before” is the reviewer's measurement at `f175ca3` (`tmp/r67/`); “after” is
 `verifyBodyLineRhythmAdjacency` and `tmp/026-fix/measure.mjs` at `4fe0ddd`,
 Chromium DPR 1, 16px root, main = the same bundle with the section stripped
@@ -619,7 +621,32 @@ and the console is clean.
 
 ### Open owner questions
 
-- Q1 – body-line phase after a section boundary is not guaranteed, because
-  section gaps are baseline-unit tokens.
-- Q2 – component panels keep the bU ledger.
-- Q3 – confirm orchestrator rulings F1–F11.
+Closed on 2026-10-01: Q1 by R8 (section and strip boundaries snap to whole
+body lines), Q2 by R9 (panel content hosts flow text), Q3 by R10 (F1–F11
+confirmed).
+
+## Owner rulings R8–R10 (handover, 2026-10-01)
+
+Recorded in the spec and research D10; not implemented. Code head is
+`4fe0ddd`; every gate count above is the last-known-green state (29,142
+static, 5,442 component checks, behaviour and `qa:components` green).
+
+Evidence the next agent must add here (tasks T-R0 to T-H7):
+
+- T-R0 owner answer on C2 and T29.
+- R8 static: emitted literals per tier against the R8 table; provider
+  artifact, `canonicalSpacingProductsSha256`, tier configs, token JSON,
+  manifests and Canonical-named declarations byte-identical to main.
+- R8 rendered: section stack gaps and strip and page-fill block-end padding
+  per tier, measured against the table (0.1px); opt-out equals main.
+- R9: panel text measurements per host and tier from the content box;
+  chrome equals main; opt-out panels equal main.
+- C4: every changed check in `scripts/verify-component-baselines.ts`
+  (bare flow text in the five hosts only) with before, after and reason.
+- Gates, screenshots in `tmp/026-review/final/` (four tiers, light and
+  dark) and browser findings.
+
+The review request must flag that App `is-section-shallow` and `is-section`
+both resolve to 20px (owner-accepted), that Editorial deep shrinks
+(128 → 120px) while Documentation deep grows (96 → 100px), and that no
+panel block inset is a whole body line in any tier.

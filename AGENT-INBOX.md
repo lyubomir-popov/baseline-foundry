@@ -8,7 +8,7 @@ active package. Keep this file short; move anything settled to its owner.
 | Worktree | Branch | State |
 |---|---|---|
 | `baseline-foundry` (this checkout) | `main` | Clean, equal to `origin/main` at `v0.2.1` |
-| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Spec 026 under owner rulings R1–R7 and orchestrator rulings F1–F11 (2026-09-30, pending owner confirmation): body-line rhythm is the default for flow text anywhere under `.bf-theme`; prose and pattern-internal stacks cancel their gap only between adjacent visible text blocks; section stacks keep theirs; component roots, cluster children, `blockquote`, `fieldset`, `table` and `.is-baseline-rhythm` keep the bU ledger. Gates green. Open: owner questions Q1–Q3 (spec), dark-tone review (T022), T023, T031, rest of T032. First release ≥ `0.3.0`. Rebased on `main` `b58ca08` |
+| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Spec 026; see [Handover (2026-10-01)](#handover-2026-10-01) |
 | `../baseline-foundry-worktrees/feat-025-compact-alignment-grid` | `feat/025-compact-alignment-grid` | All tasks done; closeout edits uncommitted; 6 behind `main` |
 | `../baseline-foundry-worktrees/feat-024-semantic-spacing-token-schema` | `feat/024-semantic-spacing-token-schema` | Pragma-targeted planning store run by a separate agent. Do not edit it from BF work |
 | `../baseline-foundry-worktrees/wip-bf-typography-cap-metric` | `wip/bf-typography-cap-metric` | Parked, unvalidated BF work recovered from the old 022 checkout |
@@ -16,6 +16,30 @@ active package. Keep this file short; move anything settled to its owner.
 
 Execution order is in [`TODO.md`](TODO.md); package status is in
 [`docs/specs.md`](docs/specs.md).
+
+## Handover (2026-10-01)
+
+Spec 026, branch `feat/026-body-line-text-phase` in
+`../baseline-foundry-worktrees/feat-026-body-line-text-phase`, rebased on
+`main` `b58ca08`. Code head `4fe0ddd`; docs on top (latest: this handover
+commit).
+
+- **Done:** owner rulings R1–R7 and adversarial fixes F1–F11 (confirmed by
+  the owner 2026-10-01, R10). Gates green: `test:build` 29,142 static
+  checks, `test:components` 5,442 checks, `test:behavior` green,
+  `qa:components` green.
+- **Next:** tasks phase “Owner rulings R8–R10 (handover)” in
+  [`tasks.md`](specs/026-body-line-text-phase/tasks.md), starting with
+  T-R0 – ask the owner to confirm C2 before any R8 code.
+- **C1:** never change the Canonical section/strip tokens, tier configs or
+  the provider artifact; R8 is private derived properties inside the
+  section.
+- **C2:** R8 reaches section stacks, page-fill and strip padding only;
+  default stack, prose and component gaps stay on the provider value.
+- **Safety:** work only in this worktree; metrics only, no `1cap`; never
+  edit `config/canonical-spacing.resolved.json`; no push without the owner.
+- Release floor `0.3.0` or later. Still open beyond the handover: T031 and
+  the rest of T032.
 
 ## BF and Pragma
 
