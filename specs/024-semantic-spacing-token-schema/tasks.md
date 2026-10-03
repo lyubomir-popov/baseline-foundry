@@ -504,6 +504,20 @@ fixture items are not a prerequisite.
 - [ ] **T013** Incorporate findings and obtain owner approval of the minimum
   taxonomy, including the FR-054d owner visual sign-off of the T011a gallery.
   If findings change any value, regenerate the gallery before sign-off.
+  **2026-10-03, FR-062:** split. First recompute the role count and merge
+  ledger under FR-060, then present the twelve CP1 decisions with their
+  FR-043c–FR-061 resolutions for written approval. The visual sign-off moves
+  to the T011b review bench for the recut foundation; the CP1 gallery is not
+  signed.
+- [ ] **T011b** Build the FR-054g review-bench generator beside
+  `scripts/build-visual-gallery.ts`: curated compositions per decision,
+  identical DOM, before/after stylesheet toggle, tier switch, overlays,
+  per-section status, hashed manifest.
+- [ ] **T011c** Commit the body-phase demo as the first FR-054h concept bench
+  under `benches/body-phase/`, free of Pragma code, with the relative-shift
+  option removed, and add `benches/index.html` listing every open decision:
+  body phase, control row, surface insets (FR-060), gaps and seams (FR-061),
+  continuation (FR-059), governed density (FR-057).
 
 ## Phase 3 — Pragma foundation and component families
 
@@ -546,6 +560,11 @@ no new tests while the design is open. Before any push, run Pragma's root
   `H:\WSL_dev_projects\temp\spec-024-foundation-gallery-20260930` (built
   before the snapping commit; the snapping moves no term by more than
   1/64px).
+  **2026-10-03: typography part to be recut under FR-043e.** Replace the
+  default body-line closure and the per-role root ledger in `alignment.css`
+  with one element-level rule, an opt-in body-phase class, the `.ds` step
+  reset and the FR-039b3 heading line-height override. The row contract, list
+  reset and gap values stand. The three family cuts restack on the new tip.
 - [ ] **T026c — family cuts** After the foundation sign-off, implement one
   family, build its parent→tip gallery and obtain owner sign-off before starting
   the next. Follow `recut-handoff.md` order: Commands; Field geometry; Select

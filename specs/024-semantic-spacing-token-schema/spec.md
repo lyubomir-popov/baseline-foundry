@@ -328,15 +328,16 @@ change is wanted, without reading code, measurements or chat history.
   `padding = max(0, inset + nudge - border)` against its own computed border.
   Occupied-total agreement alone is not sufficient.
 - **FR-039b**: The rhythm correction has two computed terms at opposite edges,
-  neither ever authored. A **phase** term at block-start lifts the element's
-  first baseline onto its rhythm step. Its later lines stay in phase with body
-  copy beside them only where FR-039b3's whole-multiple predicate holds. A
-  **compensation** term at block-end closes the element's occupied block size to
-  a whole number of that step, and its sum MUST include the phase term. Both MUST
-  round up only, MUST read a rhythm step named for its context rather than one
-  global value, and MUST be excluded from the semantic token count and from
-  public `--spacing-*` output on the same basis as `spacing.baseline` under
-  FR-021 and FR-022.
+  neither ever authored. A **phase** term at block-start puts the element's
+  first baseline where a body text baseline would sit on its rhythm step; body
+  text's phase is therefore zero. A **compensation** term at block-end ends the
+  element on a whole rhythm step, and its sum MUST include the phase term. On
+  the default `bU` step the compensation rounds up only. Inside a body-phase
+  container (FR-043e) it cancels the element's own nudge instead, so it may be
+  negative by at most that nudge. Both terms MUST read a rhythm step named for
+  its context rather than one global value, and MUST be excluded from the
+  semantic token count and from public `--spacing-*` output on the same basis
+  as `spacing.baseline` under FR-021 and FR-022.
 - **FR-039b1**: The phase term MUST NOT be relocated to block-end. A block-end
   term re-phases only what follows the element and leaves the element's own
   lines off the grid, and it corrupts the designed heading-to-body relationship
@@ -348,17 +349,19 @@ change is wanted, without reading code, measurements or chat history.
   MUST NOT adopt the unused provider nudge primitives or merge
   `feat/bf-metric-nudge`. Their final authority is a CP2 question.
 - **FR-039b3**: A phase term aligns every line only where the role's line height
-  is a whole multiple of the contextual rhythm step. The spike MUST evaluate
-  `mod(line-height, rhythm-step) = 0` for every role/product pair, prove the
-  qualifying combinations, and carry every failure to CP1 as a type-scale
-  exception. It MUST NOT change typography tokens to manufacture a pass. The
-  qualifying heading combinations are Site H1/H2/H5/H6, Docs H1/H2 and App
-  H5/H6; all other heading/product combinations are recorded exceptions.
+  is a whole multiple of the contextual rhythm step. On the type scale the
+  body-line multiples are Site H1/H2/H5/H6, Docs H1/H2 and App H5/H6. Owner
+  direction, 2026-10-03, superseding the earlier exception table: inside a
+  body-phase container every other heading role takes the nearest whole body
+  line, never less than its font size – Site H3/H4 24/24, Docs H3/H4 24/40,
+  Docs H5/H6 18/20, App H1/H2 24/40 and App H3/H4 18/20. This is a contextual
+  override, not a typography-token change; outside a body-phase container the
+  type scale applies unchanged. Site 24/24 and the 24/40 roles are pending
+  owner visual review.
 - **FR-039c**: Every control MUST resolve to a whole number of its declared
   rhythm step in every product. A text owner MUST do so at one, two and three
-  lines where `mod(line-height, rhythm-step) = 0`; every non-qualifying
-  role/product pair MUST match the FR-039b3 exception table and be carried to
-  CP1 rather than counted as a T004d2 failure.
+  lines; inside a body-phase container this holds for every role through the
+  FR-039b3 override.
 - **FR-039d**: Border subtraction MUST be per edge and MUST read the actual
   border on that edge. A nominal constant border applied so that bordered and
   borderless variants share one geometry is not equivalent and MUST NOT be used.
@@ -448,9 +451,8 @@ change is wanted, without reading code, measurements or chat history.
   uniform count of baseline units across tiers; `group` is not. CP1 confirms
   that asymmetry or corrects it.
 - **FR-043c**: Owner direction, 2026-09-30, superseding the FR-043 values for
-  `group` and `pattern` and resolving FR-043b. Headings and body text close
-  on whole body lines by default, with no opt-in class on any parent. Gaps
-  between blocks snap to the nearest whole body line:
+  `group` and `pattern` and resolving FR-043b. Gaps between blocks snap to the
+  nearest whole body line:
   - `group` is one body line: Site 24px, Docs 20px, App 20px;
   - `pattern` is Site 72px (three lines) and Docs/App 40px (two lines).
 
@@ -468,6 +470,30 @@ change is wanted, without reading code, measurements or chat history.
   distinction from FR-039's 1/64px snapping is deliberate: a bounded
   per-element error is accepted, while an error that accumulates across
   elements is not.
+- **FR-043e**: Owner direction, 2026-10-03, superseding the 2026-09-30 default
+  body-line closure. Body phase is **opt-in** through a container class; the
+  default rhythm step is `bU`. The contract is the spacing specification
+  §2.8.3:
+  - the class sets only the rhythm step its text descendants correct to and
+    owns no semantic spacing;
+  - every text element calculates nudge, phase and compensation from its own
+    line height and `1cap` on the element itself, so an inherited step switch
+    recalculates them. Custom properties substitute `var()` where they are
+    declared, so per-role results precomputed on a product root cannot follow
+    the switch and MUST NOT be the mechanism;
+  - a `.ds` component root resets the step to `bU`;
+  - inside the container, semantic gaps between text blocks are whole body
+    lines, and an `element` gap after a heading is a minimum folded into the
+    heading's compensation;
+  - the flow starts on a body line, and non-text content in it must occupy
+    whole body lines;
+  - no JavaScript. With FR-039b3's snapped heading line heights, CSS alone
+    keeps every line in phase without counting wrapped lines.
+
+  Evidence: the body-phase concept bench (FR-054h), first built at
+  `H:\WSL_dev_projects\temp\body-phase-demo\index.html`: 15 of 15
+  blocks in phase on all three products with snapped leading, at a prose
+  height of 984 / 780 / 680px against 1048 / 740 / 656px on the `bU` grid.
 - **FR-044**: Governed density exists to satisfy one constraint: **nesting an
   enrolled child inside an approved host MUST NOT change the host's occupied
   size**. A table row whose cells are otherwise plain text must not grow because
@@ -666,6 +692,31 @@ change is wanted, without reading code, measurements or chat history.
   or bind ports 6114 or 6115. Output goes to an external evidence root
   `H:\WSL_dev_projects\temp\spec-024-<gate>-gallery-<yyyymmdd>\` with a
   `manifest.json` hashing every image and the page.
+- **FR-054g**: Owner direction, 2026-10-03: the owner signs off on a **review
+  bench**, not the gallery. The gallery stays as a coverage appendix for
+  regressions. The bench is one page, organised by decision rather than by
+  story:
+  - one section per decision or family, each with a few curated
+    compositions and a one-line "what to look for";
+  - one identical DOM per composition, rendered once. A toggle (keyboard and
+    tabs) swaps between the stylesheet captured at the before commit and the
+    one captured at the after commit, so nothing moves except what the
+    values move;
+  - Site / Docs / App switch, baseline-unit and body-line overlays, and box
+    outlines;
+  - a composition whose markup differs between the two commits is flagged
+    as such, never silently shown with one side's markup;
+  - a status per section: decided, implemented, signed off.
+
+  Its generator lives beside the gallery generator, under the same FR-054f
+  constraints. Output goes to an external evidence root with a manifest that
+  hashes both stylesheets, the markup and the page; FR-054d sign-off records
+  that manifest's hash.
+- **FR-054h**: Each open decision gets a **concept bench** first: a standalone
+  page in pure CSS, free of Pragma code, that isolates one mechanism, lets the
+  owner switch between the alternatives and measures the result. Concept
+  benches live in this package under `benches/`, with an index listing each
+  decision's status. The body-phase demo is the first.
 - **FR-055**: Owner direction, 2026-09-30: implement and visually approve the
   Pragma component families before authoring the semantic schema or token file
   in design-tokens. During that work, all candidate values MUST live in the
@@ -684,7 +735,48 @@ change is wanted, without reading code, measurements or chat history.
   superseded geometry MAY be updated to the new value, or deleted when the new
   model removes what they assert, with the disposition recorded in one line in
   the commit body.
+### Owner rulings, 2026-10-02 and 2026-10-03
 
+- **FR-056**: Every component sets its text in the tier's root type size as the
+  type scale defines it: the body size, 16px on Site and 14px on Docs/App,
+  read from `--typography-text-primary-font-size`. No component reduces its
+  font size for density or nesting. Button and field labels at 14px on
+  Docs/App are correct.
+- **FR-057**: Density is reachable only by nesting an enrolled component in an
+  approved host (FR-044). The public `.dense` and `.comfortable` classes are
+  deprecated: for one release they stay as selectors that change no component
+  geometry, are documented as deprecated, and are removed in the next major
+  release. This ruling is the FR-025 disposition for those selectors and
+  supersedes the retention in FR-028 and FR-035.
+- **FR-058**: A modified element keeps the role of the unmodified one. An
+  icon-leading Button uses the action inline inset on both edges, never the
+  field inset. An icon-only Button is the square action variant: its inline
+  padding equals its block padding so the occupied box is square. The
+  Modal/SidePanel close action uses that variant (CP1 decision 6).
+- **FR-059**: The continuation indent in Accordion and SideNavigation is
+  derived, not authored: start inset + mark size + mark gap. The published
+  `spacing.inset.continuation.inline` becomes a deprecated alias that Pragma
+  does not read; its removal belongs to T017a.
+- **FR-060**: Surface padding scales with the surface, replacing a single
+  surface inset role:
+  - compact surfaces (Tooltip and similar) use the field inset;
+  - standard surfaces (Card, Tile) use the action inset at inline-start,
+    inline-end and block-end, and about half of it at block-start, because
+    nudged text already brings space above its first baseline;
+  - major overlays (Modal, SidePanel) align their gutters with the grid
+    margin, a page-level inset owned by the grid under FR-021 and FR-040.
+
+  The owner's starting values are 1rem and 0.5rem for a standard surface;
+  they are confirmed on the insets bench (FR-054h). The CP1 role count and
+  the merge ledger MUST be recomputed under this ruling before T013.
+- **FR-061**: A surface owns its block padding and the `group` gap between its
+  sections. Sections carry no block padding of their own, and adjacent insets
+  MUST NOT add up to form a seam. A section with its own fill or divider is a
+  surface and takes the inset of its size (CP1 decision 4).
+- **FR-062**: T013 is split. The taxonomy is approved in writing against the
+  CP1 decisions as resolved by FR-043c to FR-061. The visual sign-off moves to
+  the review bench (FR-054g) for the recut foundation, and the CP1 gallery is
+  not signed.
 ### Key entities
 
 - **Primitive dimension**: A value token with no component-spacing purpose.
