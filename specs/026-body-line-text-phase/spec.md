@@ -195,6 +195,41 @@ C1: the Canonical section and strip tokens and the provider artifact do not
 change; R8 is a BF-local derived layer. C2: R8 reaches section-boundary
 consumers only, pending owner confirmation (Q4).
 
+## Owner rulings, 2026-10-03 (R11–R15)
+
+Recorded from the Pragma Spec 024 decision (FR-043e and the spacing
+specification §2.8.3). They supersede R1, R6 and R7 and FR-007 where they
+differ.
+
+- **R11 – opt-in, not default.** Body-line rhythm is opt-in through a
+  container class; the default is the baseline-unit ledger, rendering main's
+  geometry exactly. `.is-baseline-rhythm` is retired before release (Spec 026
+  is unreleased). The opt-in class redeclares the per-role body-line terms;
+  BF's terms are build-time literals, so redeclaring them on a descendant
+  works by inheritance. Component roots keep resetting to the bU ledger.
+- **R12 – the closure cancels the nudge.** Phase is measured from body text,
+  so body text's phase is zero. Inside the opt-in container,
+  `closure = roundUp(phase + line-height, step) − phase − line-height − nudge`;
+  for body text that is `−nudge`, and no text block adds a blank line. The
+  nudge stays `padding-top`; no relative positioning. This replaces FR-007's
+  round-up-only rule for body-line terms.
+- **R13 – no gap cancelling.** Because text no longer closes with a blank
+  line, the R6 gap cancel and its F1, F2, F4, F6 and F7 machinery are
+  removed. Inside the opt-in container, gaps between text blocks are whole
+  body lines, and an element gap after a heading is a minimum folded into
+  the heading's closure. R8's body-line section and strip snapping stands.
+- **R14 – heading line heights snap inside the container.** A role whose
+  line height is not a whole number of body lines takes the nearest whole
+  body line, never less than its font size, inside the opt-in container
+  only. Compute the table per BF tier, OS included, from
+  `config/tiers/*.json`. Type-scale tokens do not change. FR-017's
+  wrapped-heading exceptions are then closed.
+- **R15 – re-derive the rest.** Re-check R3 (list block), R4 (hgroup join)
+  and R9 (panel content) against R11–R13. The hgroup pull existed to remove
+  a closure blank line and is expected to go. Panel content takes body-line
+  rhythm only when the author opts it in. Record each outcome for owner
+  confirmation; do not implement a re-derivation unconfirmed.
+
 ## Open owner questions
 
 - **Q1 (F4).** *Closed by R8*: section and strip boundaries snap to whole
