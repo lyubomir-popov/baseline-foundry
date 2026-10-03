@@ -152,6 +152,16 @@ at their implementation/closeout checkpoints; this is not a push-ready claim.
 
 ## Owner hand-back (FR-054e)
 
+Update after the original review: a Button's zero-width baseline marker was a
+direct flex child and therefore added a trailing mark gap. It now sits inside
+the label span. Fresh evidence at
+`H:\WSL_dev_projects\temp\spec-024-checkpoint-a-marker-fix-20261003\`
+records 94/94 passing checks, including marker removal leaving Button width and
+height unchanged for all six tier/mode pairs and baseline spread remaining 0px.
+The original manifest and evidence above still identify the originally reviewed
+implementation and have not been overwritten. The other bounded corrections
+in `opus-A-review.md` remain pending; this change does not advance the checkpoint.
+
 1. Bench: <http://127.0.0.1:8797/specs/024-semantic-spacing-token-schema/benches/>.
 2. Uncertainty: Site 24/24 visual comfort and the two labelled FR-060 mappings;
    cap-proxy concepts do not certify BF font metrics or production host coverage.

@@ -535,6 +535,15 @@ fixture items are not a prerequisite.
   Heading leading and the public opt-in class remain owner decisions.
   `opus-A-review-request.md` is the next gate; T011c stays unchecked pending
   actual independent review. No production source, push, PR or publication.
+  **2026-10-03, marker correction:** moved each Button baseline marker inside
+  its label span. As a direct flex child it incorrectly introduced a trailing
+  mark gap (8px Site/Docs, 4px App). The corrected marker contributes no width
+  or height in all six tier/mode pairs; baseline spread remains 0px. A fresh
+  94/94-check browser capture is preserved separately at
+  `H:\WSL_dev_projects\temp\spec-024-checkpoint-a-marker-fix-20261003\`.
+  Original checkpoint A evidence is untouched. The independent review now
+  present in `opus-A-review.md` accepts A with bounded corrections; this marker
+  fix does not discharge its remaining correction list or advance T011c.
 
 ## Phase 3 — Pragma foundation and component families
 
