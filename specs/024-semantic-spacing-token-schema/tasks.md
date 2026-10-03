@@ -518,6 +518,23 @@ fixture items are not a prerequisite.
   option removed, and add `benches/index.html` listing every open decision:
   body phase, control row, surface insets (FR-060), gaps and seams (FR-061),
   continuation (FR-059), governed density (FR-057).
+  **2026-10-03, checkpoint A prepared:** six isolated concept pages plus a
+  decision index are implemented under `benches/`. The supplied body-phase
+  demo is ported without relative shift, closure-only or JS line-count layout;
+  the leading comparison stays. All layout switches use native controls and
+  CSS; JS only displays measurements. Existing BF font served over HTTP; no
+  font added. Chromium 151.0.7922.34 at DPR 1 passed 82 checks over 57
+  comparison states, including no-JS layout equivalence, three prose widths,
+  375/768px viewport checks, square actions, bU occupied controls, continuation
+  input changes and enrolled-child host fit. Snapped leading passes all 15
+  blocks under FR-043d at every tested tier/width and shows no accumulated
+  body-baseline drift. Screenshots visually inspected. Evidence lives at
+  `H:\WSL_dev_projects\temp\spec-024-checkpoint-a-20261003\`.
+  The surface bench labels two unresolved mappings: 16px standard starting
+  values versus 12px Docs/App action insets, and the compact block inset.
+  Heading leading and the public opt-in class remain owner decisions.
+  `opus-A-review-request.md` is the next gate; T011c stays unchecked pending
+  actual independent review. No production source, push, PR or publication.
 
 ## Phase 3 — Pragma foundation and component families
 
