@@ -98,6 +98,31 @@ jira-project-bridge/
 
 ## Execution sequence
 
+### Current handover order (2026-10-04)
+
+This order governs the work from checkpoint A onwards. The phases below
+remain the long-range shape. Stop at each checkpoint, write
+`opus-<checkpoint>-review-request.md` and hand back under FR-054e. Nothing
+is pushed, PR'd or published.
+
+| Step | Tasks | Depends on | Stop |
+|---|---|---|---|
+| A′ – checkpoint A corrections | T011d | `opus-A-review.md` | – (reviewed with A2) |
+| A2 – stroke concept bench | T011e | FR-063–FR-063g | – |
+| A2 review | T011f | T011d, T011e | Opus review, then owner sign-off of the stroke bench |
+| B – T013 preparation | T013 (first half) | FR-060 | Opus review. May run beside A′/A2 |
+| C – Pragma foundation recut and restack | T026b | A2 accepted and signed off; owner decision on P2-2 | Opus review; root `bun run check` and `bun run test` |
+| D – review bench | T011b | C | Owner sign-off on the bench |
+| E – BF Spec 026 rework | Spec 026 R11–R14 | – | `npm test` green; Opus review |
+
+**Decided by the owner, not the implementer:** the opt-in body-phase class
+name; Site 24/24 against 24/48 and the 24/40 roles; whether FR-058 squares the
+painted or the occupied box (`opus-A-review.md` P2-2); the surface values
+after the P2-3 switches exist; Spec 026 R15 outcomes and Q4.
+
+**Recorded by a human, never claimed by an agent:** the FR-063g Windows
+contrast-theme keyboard checks in Chromium and Firefox, and Safari coverage.
+
 ### Phase A — evidence and taxonomy
 
 Complete the bounded block-geometry/gap-scale spike and its independent T004h

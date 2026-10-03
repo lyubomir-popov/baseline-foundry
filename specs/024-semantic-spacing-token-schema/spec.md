@@ -310,7 +310,8 @@ change is wanted, without reading code, measurements or chat history.
   font size or line height from a target box height. The row contract MUST
   expose a per-edge block inset term; a padding formula of nudge minus border
   alone is incomplete, and its measured output MUST NOT be cited as the model's
-  intended geometry.
+  intended geometry. For the recut, FR-063 removes the border-subtraction step:
+  strokes take no layout space.
 - **FR-039a**: The block inset MUST be the block-axis member of an existing
   `inset` role, with zero as a legitimate value. It MUST NOT introduce a new
   relationship family, a component-named token or an element-owned `spaceAfter`.
@@ -326,7 +327,9 @@ change is wanted, without reading code, measurements or chat history.
   product target and OS `null`. The inset edges MUST be equal; both MUST resolve
   to zero on Site and one baseline on Docs/App; and each edge MUST prove
   `padding = max(0, inset + nudge - border)` against its own computed border.
-  Occupied-total agreement alone is not sufficient.
+  Occupied-total agreement alone is not sufficient. This identity is the
+  spike's historical record; under FR-063 the recut identity is
+  `padding = inset + nudge` with a zero computed border on every stroked edge.
 - **FR-039b**: The rhythm correction has two computed terms at opposite edges,
   neither ever authored. A **phase** term at block-start puts the element's
   first baseline where a body text baseline would sit on its rhythm step; body
@@ -365,6 +368,8 @@ change is wanted, without reading code, measurements or chat history.
 - **FR-039d**: Border subtraction MUST be per edge and MUST read the actual
   border on that edge. A nominal constant border applied so that bordered and
   borderless variants share one geometry is not equivalent and MUST NOT be used.
+  Superseded for the recut by FR-063: no stroke is a layout border, so there
+  is nothing to subtract.
 - **FR-039e**: The bounded pre-CP1 T004d1a denominator has exactly four measured
   members: shared external-row Button excluding `.link`, shared external-row
   Chip excluding `.is-nested`, composite `.ds.input.chrome`, and direct native
@@ -386,7 +391,9 @@ change is wanted, without reading code, measurements or chat history.
   mutation and no production-style edit, or record a waiver if those hooks do
   not reach zero. A proved zero edge MUST retain the scaled occupied target and
   show its padding grow by exactly the removed border; bordered preconditions
-  and restored geometry MUST be measured.
+  and restored geometry MUST be measured. Under FR-063 these waivers lapse at
+  the recut: each member sets a zero layout border and paints its stroke,
+  with native Select subject to FR-063f.
 - **FR-039g**: The T004d1a target is rem-scaled: Site/Docs/App are 40/32/32 at a
   16px root and 45/36/36 at an 18px root. Exploratory completion runs Chromium
   DPR 1, both roots, all three products and all four members; Chromium is
@@ -474,8 +481,13 @@ change is wanted, without reading code, measurements or chat history.
   body-line closure. Body phase is **opt-in** through a container class; the
   default rhythm step is `bU`. The contract is the spacing specification
   §2.8.3:
-  - the class sets only the rhythm step its text descendants correct to and
-    owns no semantic spacing;
+  - the class sets the rhythm step its text descendants correct to, plus the
+    three rules that change with it: phase is measured from a body anchor
+    the container computes once from body text's own `1cap` (a registered
+    `<length>`, so descendants cannot reinterpret it); compensation cancels
+    the nudge instead of rounding up (FR-039b); and an `element` gap after a
+    heading folds into the heading's compensation. Heading snapping
+    (FR-039b3) follows from the step. The class owns no semantic spacing;
   - every text element calculates nudge, phase and compensation from its own
     line height and `1cap` on the element itself, so an inherited step switch
     recalculates them. Custom properties substitute `var()` where they are
@@ -777,6 +789,121 @@ change is wanted, without reading code, measurements or chat history.
   CP1 decisions as resolved by FR-043c to FR-061. The visual sign-off moves to
   the review bench (FR-054g) for the recut foundation, and the CP1 gallery is
   not signed.
+### Owner ruling, 2026-10-04
+
+FR-063 is the invariant. FR-063a–FR-063f define its default implementation
+and limits. FR-063g makes adoption conditional on a stroke bench.
+
+- **FR-063**: **Strokes take no layout space.** A component's padding,
+  occupied size and baseline position MUST NOT depend on whether, or how
+  thickly, any of its edges is stroked. This supersedes the border-subtraction
+  clauses of FR-039, FR-039a1, FR-039d and FR-039f for the recut. Two defects
+  motivate it. Chromium snaps layout border widths to whole device pixels, so
+  at 150% OS scaling a 1px border lays out at 0.667px (0.8px at 125%): every
+  bordered box falls short of its rhythm step, and in a body-phase flow the
+  shortfalls accumulate, which FR-043d forbids. Users at 100% and 200% are
+  unaffected. Separately, mixed per-side border widths or colours meet on a
+  mitred diagonal, so per-side edges taper.
+- **FR-063a**: **Default implementation and scope.** A nonempty control or
+  surface box – Button, Chip, field chrome, Card, Tile, Tooltip, Modal,
+  SidePanel and similar – paints its strokes as inset `box-shadow` layers over
+  a zero layout border. Its **paint owner** is the element whose `box-shadow`
+  carries those layers. Each of the following needs a named paint owner and
+  its own acceptance before conversion, and keeps its current construction
+  with its geometry deviation recorded until then:
+  - dividers and zero-height separators, because an inset shadow needs a
+    nonempty padding box;
+  - collapsed-table borders, because of `border-collapse` conflict resolution
+    and row-span seams;
+  - native chrome that cannot reliably take a zero border (FR-063f).
+
+  Border-drawn shapes that are not edges, such as Tooltip arrows, keep their
+  borders.
+- **FR-063b**: **Layers and corners.** Each stroked side is its own layer: top
+  `inset 0 W 0 0 C`, bottom `inset 0 -W 0 0 C`, left `inset W 0 0 0 C`, right
+  `inset -W 0 0 0 C`. A uniform all-side stroke MUST use the spread form
+  `inset 0 0 0 W C`, which follows `border-radius` evenly. At square corners,
+  per-side layers overlap in declared order, the first listed painting on
+  top, instead of mitring. Each component MUST specify that order. Mixed
+  per-side strokes on a rounded corner still taper along the curve. They need
+  owner visual approval at each supported radius; otherwise use a uniform
+  ring, a zero radius or a separately approved construction.
+- **FR-063c**: **Composition.** Every `box-shadow` layer a paint owner may
+  show – stroke, selection or highlight, focus, elevation – MUST be a named
+  custom-property slot, assembled in one declaration in a fixed, documented
+  order. Every slot MUST default to the valid no-op layer
+  `0 0 0 0 transparent`, never `none`: one `none` member invalidates the
+  whole list. Slots MUST be initialised on each paint owner, so no layer leaks
+  into descendants by inheritance. State and theme rules MUST set slots and
+  MUST NOT replace the assembled property. Existing rules that replace the
+  whole list, such as field focus and error in `ds-global-form`, MUST be
+  rewritten as slot updates. Slot names are proposed at checkpoint C.
+- **FR-063d**: **Forced colours.** Forced-colours mode removes `box-shadow`.
+  Every stroked paint owner MUST define its unfocused, focused, invalid,
+  selected and disabled states under `@media (forced-colors: active)`, with
+  explicit outline ownership and cascade precedence:
+  - **Unfocused:** a boundary `outline` of the stroke width with a matching
+    negative `outline-offset`, in a system colour. It takes no layout space.
+    Where per-side widths differ, it uses the widest stroked side; where a
+    boundary is required but no side is stroked, it uses a nonzero fallback.
+    Per-side styling is not preserved.
+  - **Focus:** focus MAY replace the unfocused boundary outline, provided the
+    focused outline preserves control identification and visibly
+    distinguishes focus through width, style or position. Colour alone MUST
+    NOT be the sole distinction. Where necessary, use a separate paint owner.
+    Focused-invalid and focusable-disabled states MUST preserve focus
+    indication. The expected default is an inset boundary that becomes a
+    thicker inset focus outline. A positive-offset outline needs a clipping
+    check.
+  - **Other states:** invalid, selected, and any state shown today only by a
+    shadow layer, such as SideNavigation's active marker, MUST keep a
+    non-colour cue that survives forced colours.
+  - **Prohibitions:** no rule may set `outline: none` on a paint owner in
+    forced-colours mode. The existing field focus rule that sets
+    `outline: none` MUST NOT be carried into the migration unchanged.
+    Forced-colour adjustment MUST NOT be disabled to keep shadows.
+- **FR-063e**: **Clearance.** Padding stays stroke-independent without
+  qualification: no padding is raised to fit a stroke. Each supported variant
+  and theme stroke width MUST prove that its strokes stay visible and clear of
+  content on straight edges and rounded corners, including where a child has
+  an opaque background. A failing variant takes another paint construction or
+  a reviewed restriction on stroke width, never extra padding, which would
+  break host fit (FR-044).
+- **FR-063f**: **Direction, hooks and native controls.**
+  - `box-shadow` offsets are physical. Existing physical hooks, such as
+    `--form-input-border-width-top|right|bottom|left` and
+    `--form-input-border-color-*`, keep their names and physical meaning and
+    feed the stroke layers. Renaming them is a separate public-API decision.
+  - A logical start or end stroke maps to physical offsets through a
+    direction sign. Shared `:dir(ltr)` / `:dir(rtl)` rules set it, and each
+    paint owner resets it. Nested direction islands MUST be checked. Vertical
+    writing modes are out of scope.
+  - Each native control family – text input, textarea, select and range –
+    MUST name its paint owner and supported `appearance` mode, reset layout
+    borders on that owner and on any relevant internal parts, and keep its
+    native affordances, such as the select caret, in forced colours.
+    `appearance: base-select` MUST be feature-gated, with a tested
+    ordinary-select fallback.
+- **FR-063g**: **Evidence before adoption.** Adoption is conditional on a
+  stroke concept bench (FR-054h). Before any family adopting FR-063 is signed
+  off, the bench MUST show the following beside the layout-border
+  construction:
+  - occupied geometry at scale factors 1, 1.25, 1.5 and 2, run with real OS
+    scaling or Chromium's launch flag `--force-device-scale-factor`. Context
+    `deviceScaleFactor` emulation does not reproduce border snapping and
+    MUST NOT be cited as evidence;
+  - stroke sharpness at those scales;
+  - mixed per-side strokes at square and rounded corners;
+  - combined focus, invalid, selected and disabled states;
+  - dense nesting, with FR-044 host fit;
+  - native controls and their affordances;
+  - nested RTL;
+  - forced-colours states.
+
+  Real Windows contrast-theme keyboard checks in Chromium and Firefox, and
+  Safari coverage of normal painting and controls, MUST be recorded by whoever
+  ran them. An agent that cannot run one records it as pending and MUST NOT
+  claim it.
 ### Key entities
 
 - **Primitive dimension**: A value token with no component-spacing purpose.

@@ -544,6 +544,86 @@ fixture items are not a prerequisite.
   Original checkpoint A evidence is untouched. The independent review now
   present in `opus-A-review.md` accepts A with bounded corrections; this marker
   fix does not discharge its remaining correction list or advance T011c.
+- [ ] **T011d — checkpoint A corrections** Discharge the `opus-A-review.md`
+  correction list in `benches/`, one atomic `fix(spec-024): …` commit per
+  item. Edit concept-bench files only.
+  1. F1: add a fractional-scale limit to `benches/README.md` (Inputs and
+     limits) and to the T011c entry. Add launch-scale passes at 1.25 and 1.5
+     to the evidence driver: launch Chromium with
+     `--force-device-scale-factor=S` and use a context with `viewport: null`.
+     Context `deviceScaleFactor` emulation does not reproduce border
+     snapping. Record the bordered-control and surface shortfalls as
+     measured; do not tune values to pass.
+  2. P3-1: in Current mode the nested filled surface must use the old
+     8/16/8 inset. Scope the 8/16/16 padding to Proposed.
+  3. P3-2: give the `gaps-seams` section paragraphs `.text-line`, so they
+     carry the nudge.
+  4. P3-3: include `borderTopWidth` / `borderBottomWidth` in the seam
+     diagnostic in `measure.js`.
+  5. P3-4: extend the driver with a no-JS layout comparison for every
+     alternative on all six pages, plus numeric assertions that proposed
+     surfaces close to whole bU and that plain-section seams equal the
+     `group` gap. Narrow the T011c wording if any check cannot run.
+  6. P3-5: remove the process ID from `benches/README.md`.
+  7. P2-3: add switches to `surface-insets/` so the owner can compare
+     alternatives. Docs/App standard surfaces: 16/8 against the action-role
+     reading 12/6. Compact block edges: the field-inline value against the
+     control block inset and against bU.
+
+  Capture fresh evidence in
+  `H:\WSL_dev_projects\temp\spec-024-checkpoint-a-corrections-<yyyymmdd>\`,
+  with a hashed `manifest.json`. Leave the original checkpoint A evidence
+  untouched.
+- [ ] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
+  list it in `benches/index.html` as "Decided; adoption verification
+  pending". Use pure CSS, no Pragma code and no font binary, like the other
+  benches. Every specimen renders once. A native control toggles between the
+  layout-border construction and the FR-063 stroke construction, alongside
+  the usual tier, outline and grid switches. The page shows the live
+  `devicePixelRatio` and each specimen's computed border width.
+  The specimens:
+  1. a uniform-ring control (Button-like): occupied size and whole-bU closure;
+  2. a mixed per-side field (bottom 2px, sides 1px, different colours),
+     using Pragma's physical per-side hook names, at radius 0 and at a
+     rounded radius. Show the layer order (FR-063b);
+  3. combined states on one composed `box-shadow` list with
+     `0 0 0 0 transparent` slot defaults (FR-063c): unfocused,
+     `:focus-visible`, invalid, focused-invalid, selected, disabled and
+     focusable-disabled. Assert that the assembled value never computes
+     to `none`;
+  4. a forced-colours policy for the same states (FR-063d): an inset
+     boundary outline, and focus as a thicker inset outline. No
+     `outline: none` on the paint owner. Invalid and selected keep a
+     non-colour cue;
+  5. dense nesting: a stroked chip in a plain table row. Host height is
+     unchanged (FR-044);
+  6. clearance (FR-063e): straight and rounded edges, plus a child with an
+     opaque background. Report stroke visibility. Never raise padding;
+  7. native controls (FR-063f): text input, textarea, `appearance: none`
+     select with its caret, and range. Name each paint owner and appearance
+     mode;
+  8. nested RTL: a `dir="rtl"` container with a `dir="ltr"` island. A
+     logical start stroke flips through the direction sign; physical hooks
+     do not flip.
+
+  The evidence driver runs four separate Chromium launches at
+  `--force-device-scale-factor` 1, 1.25, 1.5 and 2. It asserts identical
+  occupied geometry for the stroke construction at every scale, and records
+  the border construction as measured. It captures enlarged edge crops at
+  each scale for the sharpness inspection. It runs the forced-colours
+  cascade checks under `page.emulateMedia({ forcedColors: 'active' })` and
+  records that emulation is not a real Windows contrast theme. The evidence
+  root is
+  `H:\WSL_dev_projects\temp\spec-024-stroke-bench-<yyyymmdd>\`, with a
+  hashed `manifest.json`. List these as pending owner or human steps; never
+  claim them: real Windows contrast-theme keyboard checks in Chromium and
+  Firefox, and Safari coverage of normal painting and controls.
+- [ ] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
+  covering T011d and T011e: exact commits, evidence roots, manifest hashes,
+  the F1 scale results and the pending human checks. Hand back under FR-054e
+  and stop. T011c is checked only when the review confirms that the
+  correction list is discharged. No Pragma file may adopt FR-063 until the
+  review accepts the stroke bench and the owner signs it off.
 
 ## Phase 3 — Pragma foundation and component families
 
@@ -591,6 +671,22 @@ no new tests while the design is open. Before any push, run Pragma's root
   with one element-level rule, an opt-in body-phase class, the `.ds` step
   reset and the FR-039b3 heading line-height override. The row contract, list
   reset and gap values stand. The three family cuts restack on the new tip.
+  **2026-10-04, FR-063: do this after T011f and the owner's stroke-bench
+  sign-off.**
+  - The row contract loses its border term: block padding is `inset + nudge`.
+  - Add the shared stroke infrastructure: shadow slots defaulting to
+    `0 0 0 0 transparent` and initialised on each paint owner, the
+    direction-sign rules, and the forced-colours outline pattern. Propose
+    slot names in the checkpoint C request.
+  - The restacked Commands, Fields and Markers cuts each convert their
+    nonempty control boxes under FR-063a–f, or record an FR-063a exception.
+  - Fields must rewrite the field focus and error rules in
+    `ds-global-form/src/index.css` (around lines 300 and 366) as slot
+    updates, must not carry `outline: none` into forced colours, and must
+    feed the physical per-side hooks into stroke layers. ColorInput's
+    per-edge border subtraction becomes strokes.
+  - Do not start the Commands restack until the owner has decided P2-2 of
+    `opus-A-review.md`: FR-058 square painted box or square occupied box.
 - [ ] **T026c — family cuts** After the foundation sign-off, implement one
   family, build its parent→tip gallery and obtain owner sign-off before starting
   the next. Follow `recut-handoff.md` order: Commands; Field geometry; Select
@@ -600,6 +696,12 @@ no new tests while the design is open. Before any push, run Pragma's root
   in that family's task entry. Replace the historical density-retirement work
   with governed host/subscriber integration, but do not pre-empt the later
   T017a compatibility disposition.
+  **2026-10-04, FR-063:** each later family converts its strokes under
+  FR-063a–f. Surfaces and Card sections take stroke slots. Navigation keeps
+  SideNavigation's active marker as a selection slot, with a non-colour
+  forced-colours cue. Each divider or collapsed table needs FR-063a
+  acceptance before conversion. TokenSwatch's inner highlight must keep its
+  colour sample: record its paint-origin change in that family's entry.
   **Built back to back 2026-09-30 on owner direction to use the session; each
   owner sign-off is still outstanding, and a rejection restacks the later
   cuts.** All local, unpushed, stacked on the foundation:
@@ -734,3 +836,8 @@ no new tests while the design is open. Before any push, run Pragma's root
 - Do not write planning or Jira artifacts into Pragma.
 - Do not merge, publish or release from this draft package without separate
   owner direction.
+- Do not adopt FR-063 in any Pragma file before T011f is reviewed and the
+  owner has signed off the stroke bench.
+- Do not cite context `deviceScaleFactor` emulation as fractional-scale
+  evidence; use OS scaling or `--force-device-scale-factor`.
+- Do not raise padding to fit a stroke (FR-063e).
