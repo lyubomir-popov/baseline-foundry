@@ -594,7 +594,7 @@ fixture items are not a prerequisite.
   6px is off their 4px grid. Every plain seam equals its tier's group gap.
   Manifest SHA-256:
   `6ad4b2793d14868a8435f69fa3bf2b1006c20f3ddb373fecd3b6210e8aaab1c8`.
-- [ ] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
+- [x] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
   list it in `benches/index.html` as "Decided; adoption verification
   pending". Use pure CSS, no Pragma code and no font binary, like the other
   benches. Every specimen renders once. A native control toggles between the
@@ -652,7 +652,16 @@ fixture items are not a prerequisite.
   and row-derived closure. The corrected bench uses BF's generated production
   stylesheet, classes and tokens rather than bespoke component chrome. New
   evidence must preserve the reviewed packet and use a new manifest.
-- [ ] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
+  **Corrected 2026-10-04.** The recut loads BF's generated stylesheet and
+  uses shipped BF component classes and tokens. All A2 findings are addressed.
+  Four separate Chromium 151 launches at scale 1, 1.25, 1.5 and 2 pass
+  1,045/1,045 checks. Range-only forced-colours captures pass pixel checks for
+  both the track and thumb. Evidence root:
+  `H:\WSL_dev_projects\temp\spec-024-stroke-bench-a2-corrections-20261004\`.
+  Manifest SHA-256:
+  `7a009fbbaa44556eec0d1494de5b5f9af8c38a1cf507d67c5a813873fe9ce2a1`.
+  Windows contrast-theme and Safari checks remain human-only and pending.
+- [x] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
   covering T011d and T011e: exact commits, evidence roots, manifest hashes,
   the F1 scale results and the pending human checks. Hand back under FR-054e
   and stop. T011c is checked only when the review confirms that the
@@ -665,6 +674,11 @@ fixture items are not a prerequisite.
   corrections verdict. A correction request with the new implementation
   commit, new evidence roots and hashes is required before Opus rereview and
   owner stroke-bench sign-off.
+  **Correction request prepared 2026-10-04.**
+  `opus-A2-correction-review-request.md` records commits `80dfbfc` and
+  `aedd700`, the correction evidence and manifest hash, all finding
+  dispositions, and the remaining human-only checks. Work stops for Opus
+  rereview; owner visual sign-off remains pending.
 
 ## Phase 3 — Pragma foundation and component families
 
