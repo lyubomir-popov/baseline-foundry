@@ -720,7 +720,7 @@ fixture items are not a prerequisite.
   mouse-focused forced-colours boundary. Evidence root:
   `H:\WSL_dev_projects\temp\spec-024-fidelity-recut-20261004\`; manifest
   SHA-256:
-  `3bbf51eccd757c15be1a14e407e839573292fdf0ca77ad6b5b864a35f9df5740`.
+  `2a20cfe926e0e84f5d43293baddfb61f4b91dd8b30057c4d49e9429a2a705dae`.
   `npm test` and `npm run qa:components` pass.
 
 ## Phase 3 — Pragma foundation and component families
