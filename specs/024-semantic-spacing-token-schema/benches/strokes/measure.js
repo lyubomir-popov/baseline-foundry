@@ -13,6 +13,13 @@ function geometry(element) {
     boxShadow: style.boxShadow,
     outline: `${style.outlineWidth} ${style.outlineStyle} / ${style.outlineOffset}`,
     direction: style.direction,
+    slots: {
+      focus: style.getPropertyValue('--shadow-focus').trim(),
+      invalid: style.getPropertyValue('--shadow-invalid').trim(),
+      selection: style.getPropertyValue('--shadow-selection').trim(),
+      start: style.getPropertyValue('--stroke-start').trim(),
+      left: style.getPropertyValue('--stroke-left').trim(),
+    },
   };
 }
 
@@ -27,6 +34,9 @@ function measure() {
     if (specimen.id === 'dense-nesting') {
       const hosts = [...specimen.querySelectorAll('tr')].map(row => row.getBoundingClientRect().height);
       rows.push(`Host height delta: ${px(hosts[1] - hosts[0])}`);
+    }
+    if (specimen.id === 'forced-colours') {
+      rows.push('The forced-colours run measures and captures the section 3 owners.');
     }
     if (specimen.id === 'clearance') {
       rows.push('Opaque full-bleed child: inset stroke is computed but visually occluded; use an independent paint owner.');
