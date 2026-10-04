@@ -196,12 +196,13 @@ C1: the Canonical section and strip tokens and the provider artifact do not
 change; R8 is a BF-local derived layer. C2: R8 reaches section-boundary
 consumers only, pending owner confirmation (Q4).
 
-## Owner rulings, 2026-10-03 (R11–R15)
+## SP-4 experimental proposals, 2026-10-03 (R11–R15)
 
-Recorded from the relocated Pragma Spec 024 decision: FR-043e requires the
-opt-in container to set every body-phase term, and spacing specification
-§2.8.3 defines the closing rhythm. They supersede R1, R6 and R7 and FR-007
-where they differ.
+R11–R15 explore SP-4 on this feature branch only. SP-4 remains Experimental,
+so these proposals do not govern Baseline Foundry `main`. They were recorded
+from relocated Pragma Spec 024 as the direction for checkpoint E and would
+supersede R1, R6 and R7 and FR-007 where they differ if the owner approves
+SP-4.
 
 - **R11 – opt-in, not default.** Body-line rhythm is opt-in through a
   container class; the default is the baseline-unit ledger, rendering main's
