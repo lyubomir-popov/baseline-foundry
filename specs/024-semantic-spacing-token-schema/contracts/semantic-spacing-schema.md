@@ -282,26 +282,36 @@ beyond one term for the interval being resolved to.
 
 ### The decomposition
 
-An element's occupied block size is:
+Under the FR-063 recut, an element's occupied block size is:
 
 ```
-occupied = border-block-start
-         + inset-block-start + phase-block-start + nudge-block-start
+occupied = padding-block-start
          + n × line-height
-         + inset-block-end
-         + border-block-end
+         + padding-block-end
          + compensation-block-end
 ```
+
+Paint-only strokes contribute zero. The padding terms depend on the element's
+contract:
+
+```
+plain text:    padding-start = phase + nudge; padding-end = 0
+control seat:  padding-start = inset + nudge; padding-end = inset + nudge
+```
+
+The equal control-seat edges put the line box between matching metric seats.
+The separate block-end compensation is only the modulo remainder that closes
+the occupied row to its rhythm step.
 
 | Term | Kind | Home | Authored? |
 |---|---|---|---|
 | `nudge-block-start` | metric correction | typography, element-owned | no — read from font metrics |
 | `phase-block-start` | rhythm correction | contract layer, element-owned | no — computed |
 | `inset-block-*` | **semantic spacing** | **this schema** | **yes** |
-| `border-block-*` | box model | component | subtracted per edge, never added |
+| paint-only stroke | component paint | component | no — excluded from geometry |
 | `compensation-block-end` | rhythm correction | contract layer, element-owned | no — computed |
 
-The current Pragma row contract implements only nudge minus border:
+The historical Pragma row contract implements only nudge minus border:
 
 ```css
 --ds-row-padding-block-start: max(0px,
@@ -309,8 +319,8 @@ The current Pragma row contract implements only nudge minus border:
 ```
 
 That is why a Docs/App Button measures 22.3px against an intended 32px. There
-is no inset term and no place to put one. Adding it is the single change that
-closes the gap:
+is no inset term and no place to put one. The pre-FR-063 spike added it with
+this historical formula:
 
 ```css
 --ds-row-padding-block-start: max(0px, calc(
@@ -319,12 +329,10 @@ closes the gap:
   var(--ds-row-border-block-start)));
 ```
 
-Border subtraction stays per edge and reads the actual border on that edge. An
-element bordered on one block edge only subtracts on that edge; a borderless
-variant subtracts nothing. This is the point of departure from the control seat
-on current main, which folds a **nominal constant** border so that bordered and
-borderless variants share one geometry — a different occupied size for the
-borderless case.
+Before FR-063, border subtraction stayed per edge and read the actual border on
+that edge. That historical rule is retained here only to explain the measured
+spike and its point of departure from current main. The recut uses zero layout
+borders and `padding = inset + nudge` on both control-seat edges.
 
 ### The block inset is an existing role
 

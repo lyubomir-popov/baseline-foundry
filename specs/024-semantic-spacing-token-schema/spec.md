@@ -311,7 +311,9 @@ change is wanted, without reading code, measurements or chat history.
   expose a per-edge block inset term; a padding formula of nudge minus border
   alone is incomplete, and its measured output MUST NOT be cited as the model's
   intended geometry. For the recut, FR-063 removes the border-subtraction step:
-  strokes take no layout space.
+  strokes take no layout space. It does not change the symmetric control seat:
+  block-start and block-end padding each remain `inset + nudge`, and the
+  block-end compensation closes that box to its rhythm step.
 - **FR-039a**: The block inset MUST be the block-axis member of an existing
   `inset` role, with zero as a legitimate value. It MUST NOT introduce a new
   relationship family, a component-named token or an element-owned `spaceAfter`.
@@ -780,7 +782,12 @@ change is wanted, without reading code, measurements or chat history.
 
   The owner's starting values are 1rem and 0.5rem for a standard surface;
   they are confirmed on the insets bench (FR-054h). The CP1 role count and
-  the merge ledger MUST be recomputed under this ruling before T013.
+  the merge ledger MUST be recomputed under this ruling before T013. This
+  block-start/block-end asymmetry applies only to the standard surface's outer
+  semantic inset. It does not alter the symmetric control-row seat or replace
+  a child text element's own nudge and compensation. The insets bench MUST also
+  show a full-action symmetric surface alternative before this value is signed
+  off.
 - **FR-061**: A surface owns its block padding and the `group` gap between its
   sections. Sections carry no block padding of their own, and adjacent insets
   MUST NOT add up to form a seam. A section with its own fill or divider is a

@@ -1,81 +1,159 @@
-.decision-proof h3 {
-  font-size: 16px;
-  line-height: 24px;
-  margin: 0 0 8px;
+.tier-note {
+  display: none;
+  padding: 12px 16px;
+  background: #f0ebf5;
+  border-inline-start: 3px solid #633494;
+}
+
+:root:has(#tier-site:checked) .tier-site-note,
+:root:has(#tier-docs:checked) .tier-docs-note,
+:root:has(#tier-app:checked) .tier-app-note {
+  display: block;
+}
+
+.site-only,
+.docs-app-only {
+  display: none;
+}
+
+:root:has(#tier-site:checked) .site-only,
+:root:has(#tier-docs:checked) .docs-app-only,
+:root:has(#tier-app:checked) .docs-app-only {
+  display: block;
 }
 
 .proof-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 24px;
+}
+
+.proof-grid.four-up {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .proof-grid > div {
   min-width: 0;
 }
 
-.proof-grid strong {
-  display: block;
-  margin-top: 8px;
+.proof-grid h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.bf-theme .sample .text-line {
+  font-size: var(--size);
+  line-height: var(--line);
+}
+
+.control-contract {
+  --offset: calc((var(--line) + 1cap) / 2);
+  --nudge: round(nearest, calc(round(up, var(--offset), var(--bu)) - var(--offset)), 0.015625px);
+  --seat: calc(var(--row-inset) + var(--nudge));
+  --seat-box: calc(var(--line) + 2 * var(--seat));
+  --seat-close: mod(calc(var(--bu) - mod(var(--seat-box), var(--bu))), var(--bu));
+  display: inline-flex;
+  align-items: baseline;
+  border: 0;
+  border-radius: 2px;
+  padding-block: var(--seat);
+  padding-inline: var(--action);
+  margin-block-end: var(--seat-close);
+  background: #f4f1f7;
+  box-shadow: inset 0 0 0 1px #787878;
+  font-size: var(--size);
+  line-height: var(--line);
 }
 
 .proof-surface {
+  --inline: var(--action);
+  --start: 0px;
+  --end: 0px;
   box-sizing: border-box;
   display: flow-root;
   max-width: 320px;
+  padding: var(--start) var(--inline) var(--end);
   background: #f7f4fa;
-  padding-inline: 8px;
 }
 
 .proof-surface p {
-  margin: 0;
+  margin-block-start: 0;
 }
 
-.proof-border {
+.legacy-border {
   border: 1px solid #8d8d8d;
-  padding-block: 0;
 }
 
-.proof-stroke {
+.paint-stroke,
+.standard-choice {
   border: 0;
   box-shadow: inset 0 0 0 1px #8d8d8d;
 }
 
-.site-proof {
-  --size: 16px;
-  --line: 24px;
-  --bu: 8px;
+.site-zero {
+  --inline: var(--field);
 }
 
-.site-proof .proof-stroke {
-  padding-block: 0;
+.standard-choice {
+  --end: var(--action);
 }
 
-.docs-proof {
-  --size: 14px;
-  --line: 20px;
-  --bu: 4px;
+.choice-half {
+  --start: calc(var(--action) / 2);
 }
 
-.docs-proof .proof-surface {
-  padding-inline: 12px;
-  padding-block-end: 12px;
+.choice-lower {
+  --start: var(--bu);
 }
 
-.docs-proof .proof-six {
-  padding-block-start: 6px;
+.choice-upper {
+  --start: calc(2 * var(--bu));
 }
 
-.docs-proof .proof-four {
-  padding-block-start: 4px;
+.choice-symmetric {
+  --start: var(--action);
 }
 
-.docs-proof .proof-eight {
-  padding-block-start: 8px;
+:root:has(#proposed:checked) .surface {
+  display: flow-root;
+  border: 0;
+  padding: var(--start) var(--inline) var(--end);
+  box-shadow: inset 0 0 0 1px #8d8d8d;
+}
+
+:root:has(#proposed:checked):has(#standard-lower:checked) .surface.standard {
+  --inline: var(--action);
+  --start: var(--bu);
+  --end: var(--action);
+}
+
+:root:has(#proposed:checked):has(#standard-upper:checked) .surface.standard {
+  --inline: var(--action);
+  --start: calc(2 * var(--bu));
+  --end: var(--action);
+}
+
+:root:has(#proposed:checked):has(#standard-symmetric:checked) .surface.standard {
+  --inline: var(--action);
+  --start: var(--action);
+  --end: var(--action);
+}
+
+@media (forced-colors: active) {
+  .control-contract,
+  .paint-stroke,
+  .standard-choice,
+  :root:has(#proposed:checked) .surface {
+    box-shadow: none;
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
 }
 
 @media (max-width: 600px) {
-  .proof-grid {
+  .proof-grid,
+  .proof-grid.four-up {
     grid-template-columns: 1fr;
   }
 }

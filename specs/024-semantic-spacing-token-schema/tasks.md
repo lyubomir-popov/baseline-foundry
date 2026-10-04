@@ -692,6 +692,18 @@ fixture items are not a prerequisite.
   stylesheet reproduction, the corrected fidelity claim, checkpoint-C
   obligations, surface comparison commit `115c7f3`, and the final evidence
   hash. Work stops for final Opus rereview; owner sign-off remains pending.
+  **Owner correction after the final request, 2026-10-04.** The direct surface
+  proof was a separate hard-coded implementation that ignored the Site / Docs /
+  App controls, while the controlled Proposed specimen still used a layout
+  border. Replace it with BF-styled specimens driven by the live controls,
+  restate the symmetric control-seat sequence, and show full-action symmetric
+  surface padding beside FR-060's asymmetric candidates. The old final request
+  is superseded; prepare a new Opus request after targeted browser verification.
+  **Correction implemented 2026-10-04.** Targeted Chromium verification passes
+  112/112 checks at real launch scale factors 1 and 1.5, including every tier
+  and surface choice, equal control-seat padding, zero layout borders and the
+  forced-colours outline fallback. Evidence root:
+  `H:\WSL_dev_projects\temp\spec-024-surface-symmetry-20261004\`.
 
 ## Phase 3 — Pragma foundation and component families
 
@@ -741,7 +753,10 @@ no new tests while the design is open. Before any push, run Pragma's root
   reset and gap values stand. The three family cuts restack on the new tip.
   **2026-10-04, FR-063: do this after T011f and the owner's stroke-bench
   sign-off.**
-  - The row contract loses its border term: block padding is `inset + nudge`.
+  - The row contract loses its border term: block-start and block-end padding
+    are both `inset + nudge`. The line box remains symmetrically seated between
+    the two paint-only strokes, and `margin-block-end` supplies only the modulo
+    closure needed to return the occupied row to an exact rhythm step.
   - Add the shared stroke infrastructure: shadow slots defaulting to
     `0 0 0 0 transparent` and initialised on each paint owner, the
     direction-sign rules, and the forced-colours outline pattern. Propose
