@@ -1,11 +1,12 @@
 # Checkpoint A concept benches
 
 These are isolated CSS explanations for T011c / FR-054h. The stroke bench
-loads this worktree's generated BF stylesheet and uses its real component
-classes and tokens; its local stylesheet is limited to the alternative stroke
-construction and evidence annotations. The other concept benches import no
-production CSS. None is the commit-based review bench required by T011b /
-FR-054g, and none grants production sign-off.
+loads this worktree's generated BF stylesheet and uses its component classes,
+colour channels and typography. The bench authors the experimental FR-063
+geometry, including padding, line-height, widths and radii, so it is a
+production-styled concept rather than a production component rendering. The
+other concept benches import no production CSS. None is the commit-based
+review bench required by T011b / FR-054g, and none grants production sign-off.
 
 Serve the Spec 024 worktree root, so the pages can load its existing font over
 HTTP. No font binary is added by this change:
@@ -17,6 +18,14 @@ python -m http.server 8797 --bind 127.0.0.1
 Open <http://127.0.0.1:8797/specs/024-semantic-spacing-token-schema/benches/>.
 The existing body-phase server on 8796 is left alone. Stop this server with
 Ctrl+C if running it in a terminal.
+
+Before reviewing the stroke page, run `npm run build:theme`. Its generated
+stylesheet is reproducible from BF source commit
+`c97ae4fca21ee1e87d23b208951abe3ed61a223f`; a fresh build produces
+SHA-256
+`41562b85745135ac4bcd35581bb608098ce1e18abd777d6cd0d4dcee5eac0934`
+for `dist/styles.css`, matching the correction-evidence input. The stroke
+driver rebuilds the stylesheet and fails if that hash changes.
 
 Native radios select CSS using `:has()`. Every composition occurs once.
 JavaScript reads geometry and fills diagnostic outputs; it does not set layout

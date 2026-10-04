@@ -594,7 +594,7 @@ fixture items are not a prerequisite.
   6px is off their 4px grid. Every plain seam equals its tier's group gap.
   Manifest SHA-256:
   `6ad4b2793d14868a8435f69fa3bf2b1006c20f3ddb373fecd3b6210e8aaab1c8`.
-- [x] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
+- [ ] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
   list it in `benches/index.html` as "Decided; adoption verification
   pending". Use pure CSS, no Pragma code and no font binary, like the other
   benches. Every specimen renders once. A native control toggles between the
@@ -650,18 +650,19 @@ fixture items are not a prerequisite.
   host. Its bounded P3 list also requires separate invalid/selection slots, a
   focused focusable-disabled state, a logical-start slot, a square mixed crop,
   and row-derived closure. The corrected bench uses BF's generated production
-  stylesheet, classes and tokens rather than bespoke component chrome. New
-  evidence must preserve the reviewed packet and use a new manifest.
-  **Corrected 2026-10-04.** The recut loads BF's generated stylesheet and
-  uses shipped BF component classes and tokens. All A2 findings are addressed.
-  Four separate Chromium 151 launches at scale 1, 1.25, 1.5 and 2 pass
-  1,045/1,045 checks. Range-only forced-colours captures pass pixel checks for
-  both the track and thumb. Evidence root:
-  `H:\WSL_dev_projects\temp\spec-024-stroke-bench-a2-corrections-20261004\`.
-  Manifest SHA-256:
+  stylesheet, classes, colours and typography; its experimental geometry is
+  locally authored rather than production fidelity. New evidence must preserve
+  the reviewed packet and use a new manifest.
+  **First correction packet, 2026-10-04.** Four Chromium launch scales passed
+  1,045/1,045 checks at manifest
   `7a009fbbaa44556eec0d1494de5b5f9af8c38a1cf507d67c5a813873fe9ce2a1`.
-  Windows contrast-theme and Safari checks remain human-only and pending.
-- [x] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
+  `opus-A2-correction-review.md` discharges every original A2 finding and
+  accepts normal-mode appearance for owner review, but finds that BF's
+  mouse-focus reset can still remove the forced-colours boundary. T011e is
+  reopened for that P1-A rule, mouse-click checks, and a reproducible BF build
+  input. P2-A/P3-A documentation is corrected here; P3-B is carried into
+  checkpoint C.
+- [ ] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
   covering T011d and T011e: exact commits, evidence roots, manifest hashes,
   the F1 scale results and the pending human checks. Hand back under FR-054e
   and stop. T011c is checked only when the review confirms that the
@@ -674,11 +675,10 @@ fixture items are not a prerequisite.
   corrections verdict. A correction request with the new implementation
   commit, new evidence roots and hashes is required before Opus rereview and
   owner stroke-bench sign-off.
-  **Correction request prepared 2026-10-04.**
-  `opus-A2-correction-review-request.md` records commits `80dfbfc` and
-  `aedd700`, the correction evidence and manifest hash, all finding
-  dispositions, and the remaining human-only checks. Work stops for Opus
-  rereview; owner visual sign-off remains pending.
+  **First correction review, 2026-10-04.** Request commit `35a81c2` was
+  reviewed in `opus-A2-correction-review.md`. The final rereview request
+  must include the P1-A fix `029937e`, the reproducible generated-style
+  check, the direct surface-choice demo, and a new evidence manifest.
 
 ## Phase 3 — Pragma foundation and component families
 
@@ -733,6 +733,13 @@ no new tests while the design is open. Before any push, run Pragma's root
     `0 0 0 0 transparent` and initialised on each paint owner, the
     direction-sign rules, and the forced-colours outline pattern. Propose
     slot names in the checkpoint C request.
+  - Rewrite every production hover, focus, invalid, selection and elevation
+    rule as a named-slot update. The concept bench's high-specificity assembled
+    list winning over BF state rules is not evidence that this rewrite is
+    complete.
+  - Override every production `outline: none` focus reset in forced colours.
+    Mouse focus keeps the 1px boundary; only `:focus-visible` gets the thick
+    focus outline, except a wrapper paint owner may use `:focus-within`.
   - The restacked Commands, Fields and Markers cuts each convert their
     nonempty control boxes under FR-063a–f, or record an FR-063a exception.
   - Fields must rewrite the field focus and error rules in
