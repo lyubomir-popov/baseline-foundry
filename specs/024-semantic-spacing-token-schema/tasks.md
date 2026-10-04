@@ -513,7 +513,7 @@ fixture items are not a prerequisite.
   `scripts/build-visual-gallery.ts`: curated compositions per decision,
   identical DOM, before/after stylesheet toggle, tier switch, overlays,
   per-section status, hashed manifest.
-- [ ] **T011c** Commit the body-phase demo as the first FR-054h concept bench
+- [x] **T011c** Commit the body-phase demo as the first FR-054h concept bench
   under `benches/body-phase/`, free of Pragma code, with the relative-shift
   option removed, and add `benches/index.html` listing every open decision:
   body phase, control row, surface insets (FR-060), gaps and seams (FR-061),
@@ -542,8 +542,8 @@ fixture items are not a prerequisite.
   The surface bench labels two unresolved mappings: 16px standard starting
   values versus 12px Docs/App action insets, and the compact block inset.
   Heading leading and the public opt-in class remain owner decisions.
-  `opus-A-review-request.md` is the next gate; T011c stays unchecked pending
-  actual independent review. No production source, push, PR or publication.
+  `opus-A-review-request.md` is the next gate. No production source, push, PR
+  or publication.
   **2026-10-03, marker correction:** moved each Button baseline marker inside
   its label span. As a direct flex child it incorrectly introduced a trailing
   mark gap (8px Site/Docs, 4px App). The corrected marker contributes no width
@@ -552,7 +552,9 @@ fixture items are not a prerequisite.
   `H:\WSL_dev_projects\temp\spec-024-checkpoint-a-marker-fix-20261003\`.
   Original checkpoint A evidence is untouched. The independent review now
   present in `opus-A-review.md` accepts A with bounded corrections; this marker
-  fix does not discharge its remaining correction list or advance T011c.
+  fix did not by itself discharge the remaining correction list.
+  **Accepted 2026-10-04.** The independent checkpoint A2 review confirms that
+  the checkpoint-A correction list is fully discharged. T011c is complete.
 - [x] **T011d — checkpoint A corrections** Discharge the `opus-A-review.md`
   correction list in `benches/`, one atomic `fix(spec-024): …` commit per
   item. Edit concept-bench files only.
@@ -586,12 +588,13 @@ fixture items are not a prerequisite.
   **Completed 2026-10-04.** Seven atomic correction commits implement the
   list. Separate launch-scale runs reproduce the fractional-border shortfall.
   JavaScript-enabled and disabled geometry matches in 165/165 alternatives.
-  Surface/seam assertions pass 52/60: eight owner-facing surface alternatives
-  expose a 2px whole-bU residual and remain decision evidence rather than
-  approved values; every plain seam equals its tier's group gap. Manifest
-  SHA-256:
+  Surface/seam assertions pass 52/60. Two Site compact failures are
+  layout-border subtraction artefacts that close under FR-063; six Docs/App
+  standard action-half alternatives are real owner-decision failures because
+  6px is off their 4px grid. Every plain seam equals its tier's group gap.
+  Manifest SHA-256:
   `6ad4b2793d14868a8435f69fa3bf2b1006c20f3ddb373fecd3b6210e8aaab1c8`.
-- [x] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
+- [ ] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
   list it in `benches/index.html` as "Decided; adoption verification
   pending". Use pure CSS, no Pragma code and no font binary, like the other
   benches. Every specimen renders once. A native control toggles between the
@@ -641,7 +644,15 @@ fixture items are not a prerequisite.
   `2d9523c63df4828b7e79bb298c1a7f7e28f66d50b8a5cdf0becb00928ca193e8`.
   The required Windows contrast-theme and Safari checks remain human-only and
   pending.
-- [x] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
+  **Reopened 2026-10-04.** The Opus A2 review accepts checkpoint A corrections
+  but blocks stroke-bench sign-off on the disappearing forced-colours range,
+  forced-colours rules attached to duplicate owners, and a fixed-height dense
+  host. Its bounded P3 list also requires separate invalid/selection slots, a
+  focused focusable-disabled state, a logical-start slot, a square mixed crop,
+  and row-derived closure. The corrected bench uses BF's generated production
+  stylesheet, classes and tokens rather than bespoke component chrome. New
+  evidence must preserve the reviewed packet and use a new manifest.
+- [ ] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
   covering T011d and T011e: exact commits, evidence roots, manifest hashes,
   the F1 scale results and the pending human checks. Hand back under FR-054e
   and stop. T011c is checked only when the review confirms that the
@@ -649,9 +660,11 @@ fixture items are not a prerequisite.
   review accepts the stroke bench and the owner signs it off.
   **Completed 2026-10-04.** `opus-A2-review-request.md` records the exact
   implementation commits, both verified evidence-manifest hashes, the eight
-  unresolved surface alternatives and the human-only checks. Work stops here
-  for the independent Opus verdict and owner stroke-bench sign-off. T011c
-  remains unchecked.
+  initially unresolved surface alternatives and the human-only checks.
+  **Reopened 2026-10-04.** `opus-A2-review.md` records an accept-with-bounded-
+  corrections verdict. A correction request with the new implementation
+  commit, new evidence roots and hashes is required before Opus rereview and
+  owner stroke-bench sign-off.
 
 ## Phase 3 — Pragma foundation and component families
 

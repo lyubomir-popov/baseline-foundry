@@ -1,8 +1,11 @@
 # Checkpoint A concept benches
 
-These are isolated CSS explanations for T011c / FR-054h. They import neither
-Pragma source nor BF production CSS. They are not the commit-based review bench
-required by T011b / FR-054g and do not grant production sign-off.
+These are isolated CSS explanations for T011c / FR-054h. The stroke bench
+loads this worktree's generated BF stylesheet and uses its real component
+classes and tokens; its local stylesheet is limited to the alternative stroke
+construction and evidence annotations. The other concept benches import no
+production CSS. None is the commit-based review bench required by T011b /
+FR-054g, and none grants production sign-off.
 
 Serve the Spec 024 worktree root, so the pages can load its existing font over
 HTTP. No font binary is added by this change:
@@ -47,11 +50,14 @@ stroke remedy, whose adoption remains conditional on the separate stroke bench.
 
 The checkpoint-A correction driver also compares layout geometry with and
 without JavaScript for every layout-affecting alternative on all six pages.
-All 165 states match. Its surface assertions pass 52 of 60 states: the Site
-compact `control block inset` alternative occupies 34px on an 8px grid, and
-the Docs/App standard `action role / half` alternative occupies 42px on a 4px
-grid. Those eight 2px residuals are decision evidence from the new switches,
-not approved values. All six plain-section seams equal the tier's `group` gap.
+All 165 states match. Its surface assertions pass 52 of 60 states. Two Site
+compact `control block inset` failures are artefacts of the old layout-border
+construction: subtracting a 1px border from a 0px inset clamps the padding to
+zero and produces 34px, while the FR-063 stroke construction closes at 32px.
+The six real owner-decision failures are the Docs/App standard `action role /
+half` alternatives: half of 12px is 6px, so they occupy 42px on a 4px grid.
+For that choice, “about half” must resolve to 4px or 8px. All six plain-section
+seams equal the tier's `group` gap.
 
 The stroke page uses separate Chromium launches at scale factors 1, 1.25, 1.5
 and 2; every context has a null viewport. It records layout-border snapping as
