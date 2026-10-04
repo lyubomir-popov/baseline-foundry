@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stroke-independent geometry · Spec 024</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../bench.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a href="../">← Decisions</a>
+    <h1>Stroke-independent geometry</h1>
+    <span class="status">Decided; adoption verification pending</span>
+    <p>Compare a layout border with FR-063 paint-only strokes. Geometry, composition, state ownership, native chrome and direction are visible in one CSS-only specimen each.</p>
+  </header>
+  <main>
+    <div class="controls">
+      <fieldset><legend>Construction · B / P</legend><label><input id="current" name="construction" type="radio" checked>Layout border</label><label><input id="proposed" name="construction" type="radio">FR-063 stroke</label></fieldset>
+      <fieldset><legend>Tier · S / D / A</legend><label><input id="tier-site" name="tier" type="radio" checked>Site</label><label><input id="tier-docs" name="tier" type="radio">Docs</label><label><input id="tier-app" name="tier" type="radio">App</label></fieldset>
+      <fieldset><legend>Show</legend><label><input id="outlines" type="checkbox">Box outlines</label><label><input id="grid" type="checkbox">bU grid</label></fieldset>
+    </div>
+
+    <p class="dpr" aria-live="polite"></p>
+
+    <section class="specimen" id="uniform-ring">
+      <h2>1. Uniform control ring</h2>
+      <div class="sample stroke-row"><button class="stroke-owner uniform-owner" data-measure="Uniform control"><span>Continue</span></button><span class="text-line">Adjacent body text</span></div>
+      <output class="measurements"></output>
+    </section>
+
+    <section class="specimen" id="mixed-sides">
+      <h2>2. Mixed physical sides and corners</h2>
+      <p>Layer order is top, right, bottom, left. The physical hook names do not become logical hooks.</p>
+      <div class="sample stroke-row">
+        <div class="stroke-owner mixed-owner" data-measure="Square mixed field">Square</div>
+        <div class="stroke-owner mixed-owner rounded" data-measure="Rounded mixed field">Rounded</div>
+      </div>
+      <code>--form-input-border-width/color-top|right|bottom|left</code>
+      <output class="measurements"></output>
+    </section>
+
+    <section class="specimen" id="combined-states">
+      <h2>3. Composed shadow slots</h2>
+      <p>Every owner assembles focus, state, four side or uniform stroke, and elevation slots. Empty slots are transparent shadows rather than <code>none</code>.</p>
+      <div class="sample state-grid">
+        <button class="stroke-owner state-owner" data-state="unfocused" data-measure="Unfocused">Unfocused</button>
+        <button class="stroke-owner state-owner is-focus" data-state="focus" data-measure="Focused">Focused</button>
+        <button class="stroke-owner state-owner is-invalid" aria-invalid="true" data-state="invalid" data-measure="Invalid">Invalid</button>
+        <button class="stroke-owner state-owner is-invalid is-focus" aria-invalid="true" data-state="focused-invalid" data-measure="Focused invalid">Focused invalid</button>
+        <button class="stroke-owner state-owner is-selected" aria-pressed="true" data-state="selected" data-measure="Selected">Selected</button>
+        <button class="stroke-owner state-owner" disabled data-state="disabled" data-measure="Disabled">Disabled</button>
+        <button class="stroke-owner state-owner is-focusable-disabled" aria-disabled="true" data-state="focusable-disabled" data-measure="Focusable disabled">Focusable disabled</button>
+      </div>
+      <output class="measurements"></output>
+    </section>
+
+    <section class="specimen" id="forced-colours">
+      <h2>4. Forced-colours ownership</h2>
+      <p>Under forced colours the shadow list disappears. Each state explicitly owns an inset outline; focus replaces it with a thicker inset outline. Invalid and selected add a non-colour mark.</p>
+      <div class="sample state-grid forced-grid">
+        <button class="stroke-owner fc-owner" data-state="unfocused" data-measure="FC unfocused">Unfocused</button>
+        <button class="stroke-owner fc-owner is-focus" data-state="focus" data-measure="FC focused">Focused</button>
+        <button class="stroke-owner fc-owner is-invalid" aria-invalid="true" data-state="invalid" data-measure="FC invalid">Invalid</button>
+        <button class="stroke-owner fc-owner is-invalid is-focus" aria-invalid="true" data-state="focused-invalid" data-measure="FC focused invalid">Focused invalid</button>
+        <button class="stroke-owner fc-owner is-selected" aria-pressed="true" data-state="selected" data-measure="FC selected">Selected</button>
+        <button class="stroke-owner fc-owner" disabled data-state="disabled" data-measure="FC disabled">Disabled</button>
+        <button class="stroke-owner fc-owner is-focusable-disabled" aria-disabled="true" data-state="focusable-disabled" data-measure="FC focusable disabled">Focusable disabled</button>
+      </div>
+      <output class="measurements"></output>
+    </section>
+
+    <section class="specimen" id="dense-nesting">
+      <h2>5. Dense child in a plain row</h2>
+      <div class="sample"><table class="stroke-table"><tbody><tr data-host="plain"><td>Plain text</td></tr><tr data-host="chip"><td><span class="stroke-owner dense-chip" data-measure="Dense chip">Stable</span></td></tr></tbody></table></div>
+      <output class="measurements"></output>
+    </section>
+
+    <section class="specimen" id="clearance">
+      <h2>6. Clearance and child occlusion</h2>
+      <p>Padding is fixed by the component. It never grows to fit the stroke. The opaque full-bleed child demonstrates why a different paint owner is required when a child covers the inset layer.</p>
+      <div class="sample stroke-row">
+        <div class="stroke-owner clearance-owner" data-measure="Straight clearance"><span>Clear edge</span></div>
+        <div class="stroke-owner clearance-owner rounded" data-measure="Rounded clearance"><span>Rounded edge</span></div>
+        <div class="stroke-owner clearance-owner opaque-case" data-measure="Opaque child clearance"><span class="opaque-child">Opaque child</span></div>
+      </div>
+      <output class="measurements"></output>
+    </section>
+
+    <section class="specimen" id="native-controls">
+      <h2>7. Native control paint owners</h2>
+      <div class="sample native-grid">
+        <label>Text input <input class="stroke-owner native-owner" data-owner="input element; appearance:auto" data-measure="Text input" value="Text"></label>
+        <label>Textarea <textarea class="stroke-owner native-owner" data-owner="textarea element; appearance:auto" data-measure="Textarea">Two lines&#10;of text</textarea></label>
+        <label>Select shell <span class="stroke-owner select-owner" data-owner="wrapper; select appearance:none" data-measure="Select wrapper"><select><option>One</option><option>Two</option></select><span class="select-caret" aria-hidden="true">⌄</span></span></label>
+        <label>Range <input class="stroke-range" type="range" min="0" max="10" value="6" data-owner="range element and engine track pseudo-elements; appearance:none" data-measure="Range"></label>
+      </div>
+      <output class="measurements"></output>
+    </section>
+
+    <section class="specimen" id="direction">
+      <h2>8. Nested direction</h2>
+      <div class="sample direction-grid" dir="rtl">
+        <div class="stroke-owner direction-owner logical-owner" data-measure="RTL logical start">RTL logical start</div>
+        <div class="stroke-owner direction-owner physical-owner" data-measure="RTL physical left">RTL physical left</div>
+        <div class="ltr-island" dir="ltr">
+          <div class="stroke-owner direction-owner logical-owner" data-measure="LTR island logical start">LTR island logical start</div>
+          <div class="stroke-owner direction-owner physical-owner" data-measure="LTR island physical left">LTR island physical left</div>
+        </div>
+      </div>
+      <output class="measurements"></output>
+    </section>
+  </main>
+  <script src="measure.js"></script>
+</body>
+</html>

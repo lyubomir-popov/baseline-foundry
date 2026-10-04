@@ -30,6 +30,7 @@ also work.
 | `gaps-seams/` | Group / pattern gaps, parent-owned plain-section seams, filled child surfaces | Ruling decided; concept awaits review |
 | `continuation/` | Start inset + mark size + mark gap, including input changes | Ruling decided; concept awaits review |
 | `governed-density/` | Approved host fit, constant font size, deprecated density selector with no effect | Ruling decided; concept awaits review |
+| `strokes/` | Layout-border comparison, paint-only strokes, composed states, forced colours, native controls and direction | Decided; adoption verification pending |
 
 ## Inputs and limits
 
@@ -51,6 +52,14 @@ compact `control block inset` alternative occupies 34px on an 8px grid, and
 the Docs/App standard `action role / half` alternative occupies 42px on a 4px
 grid. Those eight 2px residuals are decision evidence from the new switches,
 not approved values. All six plain-section seams equal the tier's `group` gap.
+
+The stroke page uses separate Chromium launches at scale factors 1, 1.25, 1.5
+and 2; every context has a null viewport. It records layout-border snapping as
+an observation and requires the paint-only construction to keep identical CSS
+geometry at every scale. Forced-colours emulation tests cascade ownership only.
+Real Windows contrast-theme keyboard checks in Chromium and Firefox, and
+Safari coverage of ordinary painting and native controls, remain human checks
+and are not claimed by this bench.
 
 The body-phase page is ported from the supplied temporary demo. Relative shift,
 closure-only after headings, and the JavaScript line-count option are removed.
