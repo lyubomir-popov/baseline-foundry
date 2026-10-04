@@ -704,6 +704,8 @@ fixture items are not a prerequisite.
   and surface choice, equal control-seat padding, zero layout borders and the
   forced-colours outline fallback. Evidence root:
   `H:\WSL_dev_projects\temp\spec-024-surface-symmetry-20261004\`.
+  `opus-A2-symmetry-review-request.md` is the current rereview handoff; it
+  supersedes `opus-A2-final-review-request.md`.
 
 ## Phase 3 — Pragma foundation and component families
 
