@@ -44,6 +44,14 @@ snapping. The evidence records the used border widths and geometry as observed
 and does not tune the bench values to pass. FR-063 selects the prospective
 stroke remedy, whose adoption remains conditional on the separate stroke bench.
 
+The checkpoint-A correction driver also compares layout geometry with and
+without JavaScript for every layout-affecting alternative on all six pages.
+All 165 states match. Its surface assertions pass 52 of 60 states: the Site
+compact `control block inset` alternative occupies 34px on an 8px grid, and
+the Docs/App standard `action role / half` alternative occupies 42px on a 4px
+grid. Those eight 2px residuals are decision evidence from the new switches,
+not approved values. All six plain-section seams equal the tier's `group` gap.
+
 The body-phase page is ported from the supplied temporary demo. Relative shift,
 closure-only after headings, and the JavaScript line-count option are removed.
 The leading comparison is retained. The original canvas-derived cap ratio is
