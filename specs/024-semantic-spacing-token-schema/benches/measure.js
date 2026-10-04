@@ -17,7 +17,17 @@ function measure() {
     const continuation = sample.querySelector('.continuation');
     if (title && continuation) rows.push(`Continuation keyline error: ${px(continuation.getBoundingClientRect().left + number(getComputedStyle(continuation).paddingLeft) - title.getBoundingClientRect().left)}`);
     const sections = [...sample.querySelectorAll('.seams > section')];
-    for (let i = 1; i < sections.length; i++) rows.push(`Section ${i}→${i + 1} content seam: ${px(sections[i].getBoundingClientRect().top + number(getComputedStyle(sections[i]).paddingTop) - sections[i - 1].getBoundingClientRect().bottom + number(getComputedStyle(sections[i - 1]).paddingBottom))}`);
+    for (let i = 1; i < sections.length; i++) {
+      const previousStyle = getComputedStyle(sections[i - 1]);
+      const nextStyle = getComputedStyle(sections[i]);
+      const seam = sections[i].getBoundingClientRect().top
+        + number(nextStyle.borderTopWidth)
+        + number(nextStyle.paddingTop)
+        - sections[i - 1].getBoundingClientRect().bottom
+        + number(previousStyle.borderBottomWidth)
+        + number(previousStyle.paddingBottom);
+      rows.push(`Section ${i}→${i + 1} content seam: ${px(seam)}`);
+    }
     box.querySelector('output').textContent = rows.join('\n');
   }
 }
