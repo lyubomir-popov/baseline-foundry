@@ -59,6 +59,17 @@ Read in this order:
   rebuild; never hand-edit generated CSS or JSON.
 - Demos dogfood BF contracts and include only the minimum local specimen CSS
   required to frame or isolate the component.
+- Requirement IDs are traceability, not explanations. In every demo, review,
+  handover, and evidence record, spell out the operative rule on the first
+  mention of an ID; for example, `FR-063 — strokes take no layout space`.
+  Never require the reader to hunt through a spec index to understand a label.
+- A demo that claims BF or Pragma fidelity must load that system's shipped
+  stylesheet and use its real classes and anatomy. List every stylesheet the
+  page loads, and label local experimental CSS plainly. Do not mix systems on
+  one page unless each specimen uses its named system's real CSS.
+- Experimental component CSS changes only the construction under test. Do not
+  invent component states, icons, radii, or behavior and present them as a
+  shipped contract.
 
 ## Baseline Foundry and Pragma
 
