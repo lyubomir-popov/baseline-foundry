@@ -40,7 +40,10 @@ input { accent-color: #633494; }
 .baseline { display: inline-block; width: 0; height: 0; vertical-align: baseline; }
 .surface { --inline: 16px; --start: 8px; --end: 8px; border: 1px solid #8d8d8d; padding: calc(var(--start) - 1px) calc(var(--inline) - 1px) calc(var(--end) - 1px); max-width: 640px; background: #f7f4fa; }
 :root:has(#proposed:checked) .surface.compact { --inline: var(--field); --start: var(--field); --end: var(--field); }
+:root:has(#proposed:checked):has(#compact-row:checked) .surface.compact { --start: var(--row-inset); --end: var(--row-inset); }
+:root:has(#proposed:checked):has(#compact-bu:checked) .surface.compact { --start: var(--bu); --end: var(--bu); }
 :root:has(#proposed:checked) .surface.standard { --inline: 16px; --start: 8px; --end: 16px; }
+:root:has(#proposed:checked):has(#standard-action:checked) .surface.standard { --inline: var(--action); --start: calc(var(--action) / 2); --end: var(--action); }
 :root:has(#proposed:checked) .surface.major { --inline: var(--grid-margin); }
 .surface section { padding-block: 8px; }
 :root:has(#proposed:checked) .surface.seams { --end: 16px; display: flex; flex-direction: column; gap: var(--group); }
