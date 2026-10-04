@@ -1,5 +1,11 @@
 # Spec 024 — resume here
 
+> **Relocated 2026-10-04.** Active Spec 024 work now lives at
+> `canonical-spacing-spec/specs/024-semantic-spacing-token-schema/` on branch
+> `feat/024-semantic-spacing-token-schema`. Retain this BF branch unchanged
+> after the parking commit: historical reviews cite its commit IDs. The pending
+> BF-fidelity request is superseded by the relocation review in the new home.
+
 This package defines the new semantic spacing-token schema derived from the
 Pragma component-spacing audit. It does not redefine the primitive dimension
 scale and it does not treat the current 12-token provider as the final
