@@ -13,17 +13,18 @@
     <header>
       <a href="../">← Decisions</a>
       <h1>Surface insets by size</h1>
-      <span class="status">Control seat fixed · surface values pending</span>
-      <p>Control rows keep equal block padding. This page separately compares the proposed outer padding of compact, standard and major surfaces. FR-039, FR-060 and FR-063.</p>
+      <span class="status">Control seat and standard surface fixed · compact/major pending</span>
+      <p>Control rows keep equal block padding. Surface values are a separate question. <strong>FR-063 — strokes take no layout space</strong>; here that means a zero layout border plus an inset <code>box-shadow</code>.</p>
     </header>
     <main>
       <div class="controls">
-        <fieldset><legend>Construction · B / P</legend><label><input id="current" name="values" type="radio" value="current" checked>Layout border</label><label><input id="proposed" name="values" type="radio" value="proposed">FR-063 stroke</label></fieldset>
+        <fieldset><legend>Boundary construction</legend><label><input id="current" name="values" type="radio" value="current" checked>CSS border (affects layout)</label><label><input id="proposed" name="values" type="radio" value="proposed">Inset shadow (paint only)</label></fieldset>
         <fieldset><legend>Tier · S / D / A</legend><label><input id="tier-site" name="tier" type="radio" value="site" checked>Site</label><label><input id="tier-docs" name="tier" type="radio" value="docs">Docs</label><label><input id="tier-app" name="tier" type="radio" value="app">App</label></fieldset>
-        <fieldset><legend>Proposed standard surface</legend><label><input id="standard-owner" name="standard-values" type="radio" value="owner" checked>Owner 8/16</label><label><input id="standard-action" name="standard-values" type="radio" value="half">Action half/full</label><label><input id="standard-lower" name="standard-values" type="radio" value="lower">Start 1 bU</label><label><input id="standard-upper" name="standard-values" type="radio" value="upper">Start 2 bU</label><label><input id="standard-symmetric" name="standard-values" type="radio" value="symmetric">Symmetric action</label></fieldset>
         <fieldset><legend>Proposed compact block edges</legend><label><input id="compact-field" name="compact-block" type="radio" value="field" checked>Field inset</label><label><input id="compact-row" name="compact-block" type="radio" value="row">Control inset</label><label><input id="compact-bu" name="compact-block" type="radio" value="bu">1 bU</label></fieldset>
         <fieldset><legend>Show</legend><label><input id="outlines" type="checkbox">Box outlines</label><label><input id="grid" type="checkbox">bU grid</label></fieldset>
       </div>
+
+      <aside class="provenance" aria-label="Demo provenance"><strong>What powers this page:</strong> BF's built stylesheet supplies colour, type and base classes; <code>bench.css</code> supplies the page frame; this page's <code>styles.css</code> authors the experimental surface geometry. No Pragma CSS is loaded, and these are anonymous surface boxes rather than production Tooltip, Card, Modal or SidePanel anatomy.</aside>
 
       <p class="tier-note tier-site-note"><strong>Site:</strong> 16/24 type, 8px bU, 0px control inset, 8px field inset and 16px action inset.</p>
       <p class="tier-note tier-docs-note"><strong>Docs:</strong> 14/20 type, 4px bU, 4px control inset, 8px field inset and 12px action inset.</p>
@@ -41,52 +42,50 @@
         <p>Both boxes request a 0px outer surface inset around the same governed text row. The legacy layout borders add two pixels after padding has clamped to zero. The stroke construction does not.</p>
         <div class="sample proof-grid">
           <div><h3>Layout border</h3><div class="bf-panel proof-surface site-zero legacy-border" data-measure="Site layout-border compact"><p class="text-line">Compact content</p></div></div>
-          <div><h3>FR-063 stroke</h3><div class="bf-panel proof-surface site-zero paint-stroke" data-measure="Site paint-stroke compact"><p class="text-line">Compact content</p></div></div>
+          <div><h3>Paint-only inset shadow</h3><div class="bf-panel proof-surface site-zero paint-stroke" data-measure="Site paint-stroke compact"><p class="text-line">Compact content</p></div></div>
         </div>
         <output class="measurements" aria-live="polite"></output>
       </section>
 
       <section class="specimen site-only">
-        <h2>Site standard surface · asymmetric ruling versus symmetric action</h2>
-        <p>FR-060 currently proposes 8px at block-start and 16px at block-end. The symmetric alternative uses the full 16px action inset on both edges. This comparison changes only the surface’s outer semantic inset; the child text keeps its own nudge and closure.</p>
+        <h2>Site standard surface · symmetric action value</h2>
+        <p>The action inset resolves directly to 16px, exactly two 8px baseline units. Both block edges use that same on-grid semantic value.</p>
         <div class="sample proof-grid">
-          <div><h3>Current FR-060 · half/full</h3><div class="bf-panel proof-surface standard-choice choice-half" data-measure="Site standard half/full"><p class="text-line">Standard content</p></div></div>
-          <div><h3>Symmetric action</h3><div class="bf-panel proof-surface standard-choice choice-symmetric" data-measure="Site standard symmetric"><p class="text-line">Standard content</p></div></div>
+          <div><h3>Previous half/full proposal · 8/16px</h3><div class="bf-panel proof-surface standard-choice choice-half" data-measure="Site standard half/full"><p class="text-line">Standard content</p></div></div>
+          <div><h3>Selected symmetric value · 16/16px</h3><div class="bf-panel proof-surface standard-choice choice-symmetric" data-measure="Site standard symmetric"><p class="text-line">Standard content</p></div></div>
         </div>
         <output class="measurements" aria-live="polite"></output>
       </section>
 
       <section class="specimen docs-app-only">
-        <h2>Docs/App standard surface · the 4px, 8px and symmetry question</h2>
-        <p>FR-060’s literal half of the 12px action inset is 6px, which is between 4px grid lines. The 4px and 8px candidates keep the asymmetric surface proposal on-grid. The 12px candidate restores symmetric outer surface padding. None of these values changes the symmetric control-row rule above.</p>
-        <div class="sample proof-grid four-up">
-          <div><h3>Literal half</h3><div class="bf-panel proof-surface standard-choice choice-half" data-measure="Standard literal half"><p class="text-line">Standard content</p></div></div>
-          <div><h3>Lower · 1 bU</h3><div class="bf-panel proof-surface standard-choice choice-lower" data-measure="Standard lower step"><p class="text-line">Standard content</p></div></div>
-          <div><h3>Upper · 2 bU</h3><div class="bf-panel proof-surface standard-choice choice-upper" data-measure="Standard upper step"><p class="text-line">Standard content</p></div></div>
-          <div><h3>Symmetric action</h3><div class="bf-panel proof-surface standard-choice choice-symmetric" data-measure="Standard symmetric action"><p class="text-line">Standard content</p></div></div>
+        <h2>Docs/App standard surface · 12px snapped semantic value</h2>
+        <p>The action inset is 12px, which is already exactly three 4px baseline units. The earlier 4px-versus-8px question applied only to rounding a literal half-action value of 6px. Selecting the full symmetric action value removes that tie.</p>
+        <div class="sample proof-grid">
+          <div><h3>Previous literal half · 6/12px</h3><div class="bf-panel proof-surface standard-choice choice-half" data-measure="Standard literal half"><p class="text-line">Standard content</p></div></div>
+          <div><h3>Selected symmetric value · 12/12px</h3><div class="bf-panel proof-surface standard-choice choice-symmetric" data-measure="Standard symmetric action"><p class="text-line">Standard content</p></div></div>
         </div>
         <output class="measurements" aria-live="polite"></output>
       </section>
 
       <section class="specimen">
-        <h2>Compact · Tooltip model</h2>
+        <h2>Anonymous compact surface</h2>
         <div class="sample"><div class="bf-panel surface compact" data-measure="Compact surface"><p class="text-line">A short explanation.</p></div></div>
         <output class="measurements" aria-live="polite"></output>
       </section>
 
       <section class="specimen">
-        <h2>Standard · Card model</h2>
+        <h2>Anonymous standard surface</h2>
         <div class="sample"><div class="bf-panel surface standard" data-measure="Standard surface"><p class="text-line">A card brings a little more breathing room.</p></div></div>
         <output class="measurements" aria-live="polite"></output>
       </section>
 
       <section class="specimen">
-        <h2>Major · Modal / SidePanel model</h2>
+        <h2>Anonymous major surface</h2>
         <div class="sample"><div class="bf-panel surface major" data-measure="Major surface"><p class="text-line">An overlay aligns to the page grid margin.</p></div></div>
         <output class="measurements" aria-live="polite"></output>
       </section>
 
-      <p>The construction and tier controls now drive the live specimens. Some compact choices are intentionally equal: Site field = bU, Docs control = bU, and all three App compact choices resolve to 4px. In Proposed mode Site’s owner and action-half standard choices are also both 8px/16px.</p>
+      <p>The construction and tier controls drive the live specimens. Some compact choices are intentionally equal: Site field = bU, Docs control = bU, and all three App compact choices resolve to 4px.</p>
     </main>
     <script src="../measure.js"></script>
   </body>

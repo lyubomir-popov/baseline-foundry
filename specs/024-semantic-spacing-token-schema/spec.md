@@ -774,20 +774,20 @@ change is wanted, without reading code, measurements or chat history.
 - **FR-060**: Surface padding scales with the surface, replacing a single
   surface inset role:
   - compact surfaces (Tooltip and similar) use the field inset;
-  - standard surfaces (Card, Tile) use the action inset at inline-start,
-    inline-end and block-end, and about half of it at block-start, because
-    nudged text already brings space above its first baseline;
+  - standard surfaces (Card, Tile) use the action inset symmetrically on every
+    edge: Site resolves the role to 16px (two 8px baseline units), while
+    Docs/App resolve it to 12px (three 4px baseline units);
   - major overlays (Modal, SidePanel) align their gutters with the grid
     margin, a page-level inset owned by the grid under FR-021 and FR-040.
 
-  The owner's starting values are 1rem and 0.5rem for a standard surface;
-  they are confirmed on the insets bench (FR-054h). The CP1 role count and
-  the merge ledger MUST be recomputed under this ruling before T013. This
-  block-start/block-end asymmetry applies only to the standard surface's outer
-  semantic inset. It does not alter the symmetric control-row seat or replace
-  a child text element's own nudge and compensation. The insets bench MUST also
-  show a full-action symmetric surface alternative before this value is signed
-  off.
+  Owner correction, 2026-10-04: the earlier half/full standard-surface
+  proposal is superseded. Half of the Docs/App action value is 6px, exactly
+  between their 4px grid lines; there is no principled nearest-step result.
+  The full action values above are already on-grid and keep the outer surface
+  symmetric. This surface padding does not alter the symmetric control-row
+  seat or replace a child text element's own nudge and compensation. The CP1
+  role count and merge ledger MUST be recomputed under this ruling before
+  T013.
 - **FR-061**: A surface owns its block padding and the `group` gap between its
   sections. Sections carry no block padding of their own, and adjacent insets
   MUST NOT add up to form a seam. A section with its own fill or divider is a

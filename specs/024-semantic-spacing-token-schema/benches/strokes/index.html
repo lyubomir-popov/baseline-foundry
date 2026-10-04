@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Stroke-independent geometry · Spec 024</title>
+  <title>Paint-only stroke recut · Spec 024</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="../../../../dist/styles.css">
   <link rel="stylesheet" href="../bench.css">
@@ -12,103 +12,63 @@
 <body class="bf-theme">
   <header>
     <a href="../">← Decisions</a>
-    <h1>Stroke-independent geometry</h1>
-    <span class="status">Decided; adoption verification pending</span>
-    <p>This bench uses Baseline Foundry’s shipped component classes and tokens. The local CSS changes only the border construction, slot composition, and evidence annotations needed to test FR-063.</p>
+    <h1>Layout border versus paint-only stroke</h1>
+    <span class="status">BF fidelity recut · review pending</span>
+    <p><strong>FR-063 — strokes take no layout space.</strong> The proposed construction removes the CSS layout border and paints the same boundary inside the box with an inset <code>box-shadow</code>. In forced colours, an inset <code>outline</code> paints the boundary instead.</p>
   </header>
   <main>
+    <aside class="provenance" aria-label="Demo provenance">
+      <strong>What powers this page</strong>
+      <ol>
+        <li><code>dist/styles.css</code>: freshly built BF production tokens, tier scopes, components, states, type and icons.</li>
+        <li><code>../bench.css</code>: page frame, measurement panel and optional debug grid.</li>
+        <li><code>styles.css</code>: the candidate border-to-shadow overrides marked “Proposed”, comparison layout, and forced-colours fallback.</li>
+      </ol>
+      <p>No Pragma stylesheet is loaded. Nothing on this page is labelled as a Pragma component.</p>
+    </aside>
+
     <div class="controls">
-      <fieldset><legend>Construction · B / P</legend><label><input id="current" name="construction" type="radio" checked>Layout border</label><label><input id="proposed" name="construction" type="radio">FR-063 stroke</label></fieldset>
-      <fieldset><legend>Tier · S / D / A</legend><label><input id="tier-site" name="tier" type="radio" checked>Site</label><label><input id="tier-docs" name="tier" type="radio">Docs</label><label><input id="tier-app" name="tier" type="radio">App</label></fieldset>
-      <fieldset><legend>Show</legend><label><input id="outlines" type="checkbox">Box outlines</label><label><input id="grid" type="checkbox">bU grid</label></fieldset>
+      <fieldset><legend>Show</legend><label><input id="outlines" type="checkbox">Box outlines</label><label><input id="grid" type="checkbox">Baseline grid</label></fieldset>
     </div>
 
     <p class="dpr" aria-live="polite"></p>
 
-    <section class="specimen" id="uniform-ring">
-      <h2>1. BF button with a uniform ring</h2>
-      <p>The button keeps the production <code>bf-button</code> contract. Its block padding comes from the row inset and cap nudge; trailing compensation closes the occupied row to the active baseline.</p>
-      <div class="sample stroke-row"><button class="bf-button stroke-owner uniform-owner" data-measure="Uniform BF button"><span class="bf-button-label">Continue</span></button><span class="text-line">Adjacent body text</span></div>
-      <output class="measurements"></output>
-    </section>
+    <section class="specimen" id="production-components">
+      <h2>Real BF components in all three tiers</h2>
+      <p>Each lane activates BF's shipped tier class. “Current” is the production BF layout border. “Proposed” keeps the production component and changes only border construction plus the padding that BF currently subtracts for that border.</p>
+      <div class="tier-grid">
+        <article class="tier-lane bf-theme bf-tier-editorial">
+          <h3>Site <small>BF editorial tier</small></h3>
+          <div class="contract-group"><h4>Button</h4><div class="comparison-row"><div><span class="comparison-label">Current BF</span><button class="bf-button" type="button" data-measure="Site current button"><span class="bf-button-label">Continue</span></button></div><div><span class="comparison-label">Proposed inset shadow</span><button class="bf-button experiment-button" type="button" data-measure="Site proposed button"><span class="bf-button-label">Continue</span></button></div></div></div>
+          <div class="contract-group"><h4>Fully rounded nested chip</h4><div class="comparison-row"><div><span class="comparison-label">Counterfactual layout border</span><span class="bf-chip is-nested experiment-layout-chip" data-measure="Site layout-border chip"><span class="bf-chip-value">Stable</span></span></div><div><span class="comparison-label">Shipped BF inset shadow</span><span class="bf-chip is-nested experiment-paint-chip" data-measure="Site shipped paint chip"><span class="bf-chip-value">Stable</span></span></div></div></div>
+          <div class="contract-group"><h4>Highlighted card with elevation</h4><div class="comparison-row"><article class="bf-card is-highlighted"><span class="comparison-label">Current BF</span><p class="bf-body">Boundary and elevation</p></article><article class="bf-card is-highlighted experiment-card" data-measure="Site proposed card"><span class="comparison-label">Proposed composed shadows</span><p class="bf-body">Boundary and elevation</p></article></div></div>
+          <div class="contract-group"><h4>Text input and untouched range</h4><div class="comparison-row"><label class="bf-field"><span class="bf-form-label">Current BF input</span><span class="bf-control"><input class="bf-input" value="Text"></span></label><label class="bf-field"><span class="bf-form-label">Proposed bottom stroke</span><span class="bf-control"><input class="bf-input experiment-input" value="Text" data-measure="Site proposed input"></span></label></div><label class="bf-field is-range"><span class="bf-form-label">Shipped BF range — unchanged and excluded from this recut</span><span class="bf-control"><span class="bf-slider"><input type="range" min="0" max="100" value="64"><input class="bf-slider-input" type="number" min="0" max="100" value="64"></span></span></label></div>
+          <output class="measurements"></output>
+        </article>
 
-    <section class="specimen" id="mixed-sides">
-      <h2>2. Pragma field hooks with mixed physical sides</h2>
-      <p>The fields use BF input chrome and Pragma’s physical per-side hook names. Layer order is top, right, bottom, left. Rounded mixed strokes are shown for visual approval, without claiming even corner joins.</p>
-      <div class="sample stroke-row">
-        <input class="bf-input stroke-owner mixed-owner" data-measure="Square mixed field" aria-label="Square mixed field" value="Square">
-        <input class="bf-input stroke-owner mixed-owner rounded" data-measure="Rounded mixed field" aria-label="Rounded mixed field" value="Rounded">
+        <article class="tier-lane bf-theme bf-tier-documentation">
+          <h3>Docs <small>BF documentation tier</small></h3>
+          <div class="contract-group"><h4>Button</h4><div class="comparison-row"><div><span class="comparison-label">Current BF</span><button class="bf-button" type="button" data-measure="Docs current button"><span class="bf-button-label">Continue</span></button></div><div><span class="comparison-label">Proposed inset shadow</span><button class="bf-button experiment-button" type="button" data-measure="Docs proposed button"><span class="bf-button-label">Continue</span></button></div></div></div>
+          <div class="contract-group"><h4>Fully rounded nested chip</h4><div class="comparison-row"><div><span class="comparison-label">Counterfactual layout border</span><span class="bf-chip is-nested experiment-layout-chip" data-measure="Docs layout-border chip"><span class="bf-chip-value">Stable</span></span></div><div><span class="comparison-label">Shipped BF inset shadow</span><span class="bf-chip is-nested experiment-paint-chip" data-measure="Docs shipped paint chip"><span class="bf-chip-value">Stable</span></span></div></div></div>
+          <div class="contract-group"><h4>Highlighted card with elevation</h4><div class="comparison-row"><article class="bf-card is-highlighted"><span class="comparison-label">Current BF</span><p class="bf-body">Boundary and elevation</p></article><article class="bf-card is-highlighted experiment-card" data-measure="Docs proposed card"><span class="comparison-label">Proposed composed shadows</span><p class="bf-body">Boundary and elevation</p></article></div></div>
+          <div class="contract-group"><h4>Text input and untouched range</h4><div class="comparison-row"><label class="bf-field"><span class="bf-form-label">Current BF input</span><span class="bf-control"><input class="bf-input" value="Text"></span></label><label class="bf-field"><span class="bf-form-label">Proposed bottom stroke</span><span class="bf-control"><input class="bf-input experiment-input" value="Text" data-measure="Docs proposed input"></span></label></div><label class="bf-field is-range"><span class="bf-form-label">Shipped BF range — unchanged</span><span class="bf-control"><span class="bf-slider"><input type="range" min="0" max="100" value="64"><input class="bf-slider-input" type="number" min="0" max="100" value="64"></span></span></label></div>
+          <output class="measurements"></output>
+        </article>
+
+        <article class="tier-lane bf-theme bf-tier-app">
+          <h3>App <small>BF app tier</small></h3>
+          <div class="contract-group"><h4>Button</h4><div class="comparison-row"><div><span class="comparison-label">Current BF</span><button class="bf-button" type="button" data-measure="App current button"><span class="bf-button-label">Continue</span></button></div><div><span class="comparison-label">Proposed inset shadow</span><button class="bf-button experiment-button" type="button" data-measure="App proposed button"><span class="bf-button-label">Continue</span></button></div></div></div>
+          <div class="contract-group"><h4>Fully rounded nested chip</h4><div class="comparison-row"><div><span class="comparison-label">Counterfactual layout border</span><span class="bf-chip is-nested experiment-layout-chip" data-measure="App layout-border chip"><span class="bf-chip-value">Stable</span></span></div><div><span class="comparison-label">Shipped BF inset shadow</span><span class="bf-chip is-nested experiment-paint-chip" data-measure="App shipped paint chip"><span class="bf-chip-value">Stable</span></span></div></div></div>
+          <div class="contract-group"><h4>Highlighted card with elevation</h4><div class="comparison-row"><article class="bf-card is-highlighted"><span class="comparison-label">Current BF</span><p class="bf-body">Boundary and elevation</p></article><article class="bf-card is-highlighted experiment-card" data-measure="App proposed card"><span class="comparison-label">Proposed composed shadows</span><p class="bf-body">Boundary and elevation</p></article></div></div>
+          <div class="contract-group"><h4>Text input and untouched range</h4><div class="comparison-row"><label class="bf-field"><span class="bf-form-label">Current BF input</span><span class="bf-control"><input class="bf-input" value="Text"></span></label><label class="bf-field"><span class="bf-form-label">Proposed bottom stroke</span><span class="bf-control"><input class="bf-input experiment-input" value="Text" data-measure="App proposed input"></span></label></div><label class="bf-field is-range"><span class="bf-form-label">Shipped BF range — unchanged</span><span class="bf-control"><span class="bf-slider"><input type="range" min="0" max="100" value="64"><input class="bf-slider-input" type="number" min="0" max="100" value="64"></span></span></label></div>
+          <output class="measurements"></output>
+        </article>
       </div>
-      <code>--form-input-border-width/color-top|right|bottom|left</code>
-      <output class="measurements"></output>
     </section>
 
-    <section class="specimen" id="combined-states">
-      <h2>3. BF button states on one composed shadow list</h2>
-      <p>These same paint owners are used for normal and forced-colours evidence. Focus, invalid, selection, four sides, uniform stroke, and elevation have separate named slots. Every empty slot is a transparent shadow.</p>
-      <div class="sample state-grid">
-        <button class="bf-button stroke-owner state-owner" data-state="unfocused" data-measure="Unfocused">Unfocused</button>
-        <button class="bf-button stroke-owner state-owner is-focus" data-state="focus" data-measure="Focused">Focused</button>
-        <button class="bf-button stroke-owner state-owner is-invalid" aria-invalid="true" data-state="invalid" data-measure="Invalid">Invalid</button>
-        <button class="bf-button stroke-owner state-owner is-invalid is-focus" aria-invalid="true" data-state="focused-invalid" data-measure="Focused invalid">Focused invalid</button>
-        <button class="bf-button stroke-owner state-owner is-selected" aria-pressed="true" data-state="selected" data-measure="Selected">Selected</button>
-        <button class="bf-button stroke-owner state-owner is-invalid is-selected" aria-invalid="true" aria-pressed="true" data-state="invalid-selected" data-measure="Invalid selected">Invalid + selected</button>
-        <button class="bf-button stroke-owner state-owner" disabled data-state="disabled" data-measure="Disabled">Disabled</button>
-        <button class="bf-button stroke-owner state-owner is-focusable-disabled is-focus" aria-disabled="true" data-state="focusable-disabled" data-measure="Focused focusable disabled">Focusable disabled</button>
-      </div>
-      <output class="measurements"></output>
-    </section>
-
-    <section class="specimen" id="forced-colours">
-      <h2>4. Forced-colours ownership on the same controls</h2>
-      <p>Forced-colours capture drives the section 3 controls directly; it does not render a duplicate state set. Each state owns an inset boundary outline. Static focus replaces it with a thicker inset outline, while glyph, underline, and dashed cues preserve state without colour.</p>
-      <div class="sample policy-card" aria-describedby="forced-policy-output">
-        <strong>Evidence target:</strong> <a href="#combined-states">section 3’s BF buttons</a>
-        <span>Boundary 1px · focus 3px · invalid “!” · selected “✓” and underline · disabled dashed</span>
-      </div>
-      <output class="measurements" id="forced-policy-output"></output>
-    </section>
-
-    <section class="specimen" id="dense-nesting">
-      <h2>5. BF nested chip in a content-sized table row</h2>
-      <p>The table uses BF’s separate-border table contract and the chip uses the shipped <code>bf-chip is-nested</code> pattern. No row height is fixed: a layout border can grow the host, while an inset stroke must fit without changing it.</p>
-      <div class="sample"><table class="bf-table stroke-table"><tbody><tr data-host="plain"><td>Stable</td></tr><tr data-host="chip"><td><button class="bf-chip is-nested stroke-owner dense-chip" data-measure="Nested BF chip"><span class="bf-chip-value">Stable</span></button></td></tr></tbody></table></div>
-      <output class="measurements"></output>
-    </section>
-
-    <section class="specimen" id="clearance">
-      <h2>6. BF surface clearance and child occlusion</h2>
-      <p>Padding remains fixed by the surface contract. The opaque full-bleed child shows why a different paint owner is required when content covers an inset layer.</p>
-      <div class="sample stroke-row">
-        <div class="bf-panel stroke-owner clearance-owner" data-measure="Straight BF surface"><span>Clear edge</span></div>
-        <div class="bf-panel stroke-owner clearance-owner rounded" data-measure="Rounded BF surface"><span>Rounded edge</span></div>
-        <div class="bf-panel stroke-owner clearance-owner opaque-case" data-measure="Opaque child surface"><span class="opaque-child">Opaque child</span></div>
-      </div>
-      <output class="measurements"></output>
-    </section>
-
-    <section class="specimen" id="native-controls">
-      <h2>7. BF field and Pragma range paint owners</h2>
-      <div class="sample native-grid">
-        <label class="bf-field"><span class="bf-form-label">Text input</span><span class="bf-control"><input class="bf-input stroke-owner native-owner" data-owner="input element; appearance:auto" data-measure="BF text input" value="Text"></span></label>
-        <label class="bf-field"><span class="bf-form-label">Textarea</span><span class="bf-control"><textarea class="bf-input stroke-owner native-owner" data-owner="textarea element; appearance:auto" data-measure="BF textarea">Two lines&#10;of text</textarea></span></label>
-        <label class="bf-field"><span class="bf-form-label">Select</span><span class="bf-control stroke-owner select-owner" data-owner="wrapper; select appearance:none" data-measure="BF select wrapper"><select class="bf-input"><option>One</option><option>Two</option></select><span class="select-caret" aria-hidden="true">⌄</span></span></label>
-        <label class="bf-field is-range"><span class="bf-form-label">Range</span><span class="bf-control"><span class="bf-slider"><input class="stroke-range" type="range" min="0" max="10" value="6" data-owner="range root; track and thumb pseudo-elements; appearance:none" data-measure="Pragma range"></span></span></label>
-      </div>
-      <output class="measurements"></output>
-    </section>
-
-    <section class="specimen" id="direction">
-      <h2>8. BF field chrome in nested direction</h2>
-      <div class="sample direction-grid" dir="rtl">
-        <div class="bf-input stroke-owner direction-owner logical-owner" data-measure="RTL logical start">RTL logical start</div>
-        <div class="bf-input stroke-owner direction-owner physical-owner" data-measure="RTL physical left">RTL physical left</div>
-        <div class="ltr-island" dir="ltr">
-          <div class="bf-input stroke-owner direction-owner logical-owner" data-measure="LTR island logical start">LTR island logical start</div>
-          <div class="bf-input stroke-owner direction-owner physical-owner" data-measure="LTR island physical left">LTR island physical left</div>
-        </div>
-      </div>
-      <output class="measurements"></output>
+    <section class="specimen" id="limits">
+      <h2>What this page does and does not prove</h2>
+      <p>It proves the candidate construction on real BF geometry and shows BF's already-shipped fully rounded chip precedent. It does not claim Pragma integration, invent combined button states, or redraw native range chrome. Mixed per-side strokes and rounded-corner taper remain a CSS-mechanism test in the specification, not a BF button variant.</p>
     </section>
   </main>
   <script src="measure.js"></script>

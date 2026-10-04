@@ -706,6 +706,22 @@ fixture items are not a prerequisite.
   `H:\WSL_dev_projects\temp\spec-024-surface-symmetry-20261004\`.
   `opus-A2-symmetry-review-request.md` is the current rereview handoff; it
   supersedes `opus-A2-final-review-request.md`.
+  **Owner fidelity correction, 2026-10-04.** The synthetic state, native-range,
+  rounded-field, direction and fake-panel specimens are withdrawn as component
+  evidence. The stroke page now uses BF's shipped tier scopes and real Button,
+  nested Chip, highlighted Card, Input and Range anatomy; local CSS changes
+  only the proposed boundary construction and forced-colours fallback. The
+  surface page names its boxes as anonymous local geometry. FR-060 now selects
+  symmetric standard-surface action insets: 16/16px Site and 12/12px Docs/App.
+  The previous evidence and rereview request are superseded; fresh evidence
+  and a new Opus request are required. Targeted Chromium checks at launch
+  scales 1 and 1.5 confirm stable proposed geometry, the expected current
+  layout-border shortfall, all three symmetric surface values, and the
+  mouse-focused forced-colours boundary. Evidence root:
+  `H:\WSL_dev_projects\temp\spec-024-fidelity-recut-20261004\`; manifest
+  SHA-256:
+  `3bbf51eccd757c15be1a14e407e839573292fdf0ca77ad6b5b864a35f9df5740`.
+  `npm test` and `npm run qa:components` pass.
 
 ## Phase 3 — Pragma foundation and component families
 

@@ -1,12 +1,14 @@
 # Checkpoint A concept benches
 
 These are isolated CSS explanations for T011c / FR-054h. The stroke bench
-loads this worktree's generated BF stylesheet and uses its component classes,
-colour channels and typography. The bench authors the experimental FR-063
-geometry, including padding, line-height, widths and radii, so it is a
-production-styled concept rather than a production component rendering. The
-other concept benches import no production CSS. None is the commit-based
-review bench required by T011b / FR-054g, and none grants production sign-off.
+loads a fresh build of BF and uses shipped tier scopes, component anatomy,
+geometry, states, type and icons. Its local CSS is limited to the proposed
+border-to-inset-shadow conversion, comparison layout and forced-colours
+fallback. It loads no Pragma CSS and makes no Pragma integration claim. The
+surface page also loads BF for colour and type, but its surface boxes remain
+explicitly local value-choice geometry rather than BF or Pragma components.
+None is the commit-based review bench required by T011b / FR-054g, and none
+grants production sign-off.
 
 Serve the Spec 024 worktree root, so the pages can load its existing font over
 HTTP. No font binary is added by this change:
@@ -38,11 +40,11 @@ also work.
 |---|---|---|
 | `body-phase/` | bU, superseded default closure, opt-in cancelled closure; type-scale / nearest / upward heading leading | Mechanism decided; heading leading and class name pending |
 | `control-row/` | Symmetric border-aware row edges, occupied closure, action inset for leading icons, square icon-only action | Ruling decided; concept awaits review |
-| `surface-insets/` | Symmetric control-seat invariant; compact / standard / major outside-edge insets | Control rule decided; per-tier surface values and compact block hypothesis pending |
+| `surface-insets/` | Symmetric control-seat invariant; anonymous compact / standard / major outside-edge insets | Control and symmetric standard value decided; compact and major values pending |
 | `gaps-seams/` | Group / pattern gaps, parent-owned plain-section seams, filled child surfaces | Ruling decided; concept awaits review |
 | `continuation/` | Start inset + mark size + mark gap, including input changes | Ruling decided; concept awaits review |
 | `governed-density/` | Approved host fit, constant font size, deprecated density selector with no effect | Ruling decided; concept awaits review |
-| `strokes/` | Layout-border comparison, paint-only strokes, composed states, forced colours, native controls and direction | Decided; adoption verification pending |
+| `strokes/` | Real BF button, chip, card, input and range contracts; minimal border-to-inset-shadow conversion | Fidelity recut; Opus and owner review pending |
 
 ## Inputs and limits
 
@@ -63,23 +65,21 @@ All 165 states match. Its surface assertions pass 52 of 60 states. Two Site
 compact `control block inset` failures are artefacts of the old layout-border
 construction: subtracting a 1px border from a 0px inset clamps the padding to
 zero and produces 34px, while the FR-063 stroke construction closes at 32px.
-The six real owner-decision failures are the Docs/App standard `action role /
-half` alternatives: half of 12px is 6px, so they occupy 42px on a 4px grid.
-For that asymmetric choice, “about half” must resolve to 4px or 8px. Owner
-review then identified that the proof panels ignored the tier controls and that
-the surface proposal could be mistaken for the symmetric control-seat rule.
-The repaired page drives one BF-styled specimen path from every control, states
-the equal `inset + nudge` control invariant first, and adds the full-action
-symmetric surface alternative (16/16 Site; 12/12 Docs/App). All six
-plain-section seams equal the tier's `group` gap.
+The six original Docs/App failures came from the superseded asymmetric
+half-action proposal: half of 12px is 6px, exactly between 4px grid lines. The
+owner selected the full symmetric action value instead: 16/16px on Site and
+12/12px on Docs/App. Those values already equal whole baseline units, so no
+4px-versus-8px tie remains. The page states the equal `inset + nudge` control
+invariant first and labels the surface boxes as anonymous local geometry. All
+six plain-section seams equal the tier's `group` gap.
 
-The stroke page uses separate Chromium launches at scale factors 1, 1.25, 1.5
-and 2; every context has a null viewport. It records layout-border snapping as
-an observation and requires the paint-only construction to keep identical CSS
-geometry at every scale. Forced-colours emulation tests cascade ownership only.
-Real Windows contrast-theme keyboard checks in Chromium and Firefox, and
-Safari coverage of ordinary painting and native controls, remain human checks
-and are not claimed by this bench.
+The earlier synthetic stroke evidence used separate Chromium launches at scale
+factors 1, 1.25, 1.5 and 2. Owner review found that it locally reconstructed
+component geometry and state cues, so those packets no longer support BF or
+Pragma adoption claims. The fidelity recut uses real BF components and keeps
+the local experiment to border construction. Fresh evidence and Opus review
+are required. Real Windows contrast-theme keyboard checks in Chromium and
+Firefox, and Safari coverage, remain human checks.
 
 The body-phase page is ported from the supplied temporary demo. Relative shift,
 closure-only after headings, and the JavaScript line-count option are removed.
@@ -116,17 +116,16 @@ inspected provider sources. All are literal bench inputs, not new public tokens.
 | Old continuation alias | 32 | 24 | 24 |
 | Proposed group / pattern | 24/72 | 20/40 | 20/40 |
 
-FR-060's 1rem standard-surface starting value is shown as 16px side/end and 8px
-top in all tiers. Docs/App currently have 12px action insets, so applying that
-starting value literally is not yet the same as reading their action role.
-The page also shows full-action symmetric block padding because FR-060's
-asymmetry is a surface proposal, not a change to the symmetric control-row
-contract, and the owner has reopened that distinction for visual review.
-Targeted Chromium verification at real launch scale factors 1 and 1.5 passes
-112/112 checks: tier-panel switching, every compact and standard choice,
-equal control-seat padding, 40/32/32 occupied rows, zero layout borders,
-paint-only strokes and the forced-colours outline fallback. Evidence is at
-`H:\WSL_dev_projects\temp\spec-024-surface-symmetry-20261004\`.
+FR-060 now uses the action inset symmetrically for standard surfaces: 16px in
+Site and 12px in Docs/App. The prior half/full alternative remains visible only
+as the superseded comparison that explains where the 4px-versus-8px question
+came from.
+Targeted Chromium verification at launch scale factors 1 and 1.5 confirms
+stable paint-only chip geometry, zero candidate layout borders, the expected
+fractional-scale shortfall on current layout-border buttons, and surviving
+mouse-focus boundaries in forced-colours emulation. The surface switch resolves
+to symmetric 16px Site and 12px Docs/App padding. Evidence is at
+`H:\WSL_dev_projects\temp\spec-024-fidelity-recut-20261004\`.
 The compact page proposes the field-inline magnitude on block edges too, clearly
 labelled as a hypothesis because the field role has no block axis. Major overlays
 show 32px inline grid margins, leaving their undecided block edges at the prior

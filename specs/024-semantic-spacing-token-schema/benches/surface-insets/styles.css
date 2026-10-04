@@ -5,6 +5,13 @@
   border-inline-start: 3px solid #633494;
 }
 
+.provenance {
+  background: #f0ebf5;
+  border-inline-start: 3px solid #633494;
+  margin-block-end: 24px;
+  padding: 16px;
+}
+
 :root:has(#tier-site:checked) .tier-site-note,
 :root:has(#tier-docs:checked) .tier-docs-note,
 :root:has(#tier-app:checked) .tier-app-note {
@@ -112,7 +119,7 @@
 }
 
 .choice-symmetric {
-  --start: var(--action);
+  --start: var(--action-on-grid, var(--action));
 }
 
 :root:has(#proposed:checked) .surface {
@@ -122,22 +129,16 @@
   box-shadow: inset 0 0 0 1px #8d8d8d;
 }
 
-:root:has(#proposed:checked):has(#standard-lower:checked) .surface.standard {
-  --inline: var(--action);
-  --start: var(--bu);
-  --end: var(--action);
+:root:has(#proposed:checked) .surface.standard {
+  --inline: var(--action-on-grid, var(--action));
+  --start: var(--action-on-grid, var(--action));
+  --end: var(--action-on-grid, var(--action));
 }
 
-:root:has(#proposed:checked):has(#standard-upper:checked) .surface.standard {
-  --inline: var(--action);
-  --start: calc(2 * var(--bu));
-  --end: var(--action);
-}
-
-:root:has(#proposed:checked):has(#standard-symmetric:checked) .surface.standard {
-  --inline: var(--action);
-  --start: var(--action);
-  --end: var(--action);
+@supports (padding: round(nearest, 1px, 1px)) {
+  :root {
+    --action-on-grid: round(nearest, var(--action), var(--bu));
+  }
 }
 
 @media (forced-colors: active) {
