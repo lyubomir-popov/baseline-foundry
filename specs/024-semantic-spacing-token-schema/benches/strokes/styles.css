@@ -389,10 +389,19 @@ textarea.native-owner {
   }
 
   .stroke-owner:focus-visible,
-  .stroke-owner:focus-within,
   .state-owner.is-focus {
     outline-width: 3px;
     outline-offset: -3px;
+  }
+
+  .select-owner:focus-within {
+    outline-width: 3px;
+    outline-offset: -3px;
+  }
+
+  .bf-theme .stroke-owner.stroke-owner:focus:not(:focus-visible) {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
   }
 
   .state-owner.is-selected {
