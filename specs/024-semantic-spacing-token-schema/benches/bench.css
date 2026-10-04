@@ -45,7 +45,8 @@ input { accent-color: #633494; }
 .surface section { padding-block: 8px; }
 :root:has(#proposed:checked) .surface.seams { --end: 16px; display: flex; flex-direction: column; gap: var(--group); }
 :root:has(#proposed:checked) .surface.seams > section:not(.nested) { padding-block: 0; }
-.surface .nested { border: 1px solid #8d8d8d; padding: 7px 15px 15px; background: #eee6f4; }
+.surface .nested { border: 1px solid #8d8d8d; padding: 7px 15px; background: #eee6f4; }
+:root:has(#proposed:checked) .surface .nested { padding-block-end: 15px; }
 .gap-stack { display: flex; flex-direction: column; gap: var(--gap); }
 .gap-stack.group { --gap: 24px; }
 :root:has(#tier-docs:checked) .gap-stack.group, :root:has(#tier-app:checked) .gap-stack.group { --gap: 16px; }
