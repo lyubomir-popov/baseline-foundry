@@ -594,7 +594,7 @@ fixture items are not a prerequisite.
   6px is off their 4px grid. Every plain seam equals its tier's group gap.
   Manifest SHA-256:
   `6ad4b2793d14868a8435f69fa3bf2b1006c20f3ddb373fecd3b6210e8aaab1c8`.
-- [ ] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
+- [x] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
   list it in `benches/index.html` as "Decided; adoption verification
   pending". Use pure CSS, no Pragma code and no font binary, like the other
   benches. Every specimen renders once. A native control toggles between the
@@ -662,7 +662,15 @@ fixture items are not a prerequisite.
   reopened for that P1-A rule, mouse-click checks, and a reproducible BF build
   input. P2-A/P3-A documentation is corrected here; P3-B is carried into
   checkpoint C.
-- [ ] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
+  **Final correction, 2026-10-04.** Commits `029937e` and `10e9738`
+  restore the boundary for mouse-focused stroke and range owners without
+  over-signalling thick focus. A fresh BF theme build matches the recorded
+  generated stylesheet. Four launch scales pass 1,095/1,095 checks, including
+  50 new mouse-focus assertions. Evidence root:
+  `H:\WSL_dev_projects\temp\spec-024-stroke-bench-a2-final-20261004\`.
+  Manifest SHA-256:
+  `c617b3367fdbaa4960754bfa5fe8836d75aae637873a0258b584a49a650d1d4f`.
+- [x] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
   covering T011d and T011e: exact commits, evidence roots, manifest hashes,
   the F1 scale results and the pending human checks. Hand back under FR-054e
   and stop. T011c is checked only when the review confirms that the
@@ -679,6 +687,11 @@ fixture items are not a prerequisite.
   reviewed in `opus-A2-correction-review.md`. The final rereview request
   must include the P1-A fix `029937e`, the reproducible generated-style
   check, the direct surface-choice demo, and a new evidence manifest.
+  **Final request prepared 2026-10-04.**
+  `opus-A2-final-review-request.md` records both focus-reset fixes, generated
+  stylesheet reproduction, the corrected fidelity claim, checkpoint-C
+  obligations, surface comparison commit `115c7f3`, and the final evidence
+  hash. Work stops for final Opus rereview; owner sign-off remains pending.
 
 ## Phase 3 — Pragma foundation and component families
 
