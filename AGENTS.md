@@ -60,6 +60,17 @@ Read in this order:
 - Demos dogfood BF contracts and include only the minimum local specimen CSS
   required to frame or isolate the component.
 
+## Repository map
+
+| Repository | Spacing responsibility |
+|---|---|
+| `canonical-spacing-spec` | Governing spacing specification, ruling list, and Spec 024 |
+| `baseline-foundry` (this repository) | Baseline Foundry implementation and Spec 026 |
+| `pragma` | Pragma implementation only |
+
+Pre-relocation Spec 024 history remains available under the
+`spec-024-bf-history` tag in this repository.
+
 ## Baseline Foundry and Pragma
 
 - BF is the owner's fast sandbox. Spacing and typography decisions are proven
