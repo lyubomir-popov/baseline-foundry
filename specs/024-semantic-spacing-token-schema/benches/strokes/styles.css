@@ -404,6 +404,11 @@ textarea.native-owner {
     outline-offset: -1px;
   }
 
+  .bf-theme .stroke-range.stroke-range:focus:not(:focus-visible) {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+
   .state-owner.is-selected {
     text-decoration: underline;
     text-decoration-thickness: 2px;
