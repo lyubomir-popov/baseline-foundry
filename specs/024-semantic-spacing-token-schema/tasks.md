@@ -553,7 +553,7 @@ fixture items are not a prerequisite.
   Original checkpoint A evidence is untouched. The independent review now
   present in `opus-A-review.md` accepts A with bounded corrections; this marker
   fix does not discharge its remaining correction list or advance T011c.
-- [ ] **T011d — checkpoint A corrections** Discharge the `opus-A-review.md`
+- [x] **T011d — checkpoint A corrections** Discharge the `opus-A-review.md`
   correction list in `benches/`, one atomic `fix(spec-024): …` commit per
   item. Edit concept-bench files only.
   1. F1: add a fractional-scale limit to `benches/README.md` (Inputs and
@@ -583,7 +583,15 @@ fixture items are not a prerequisite.
   `H:\WSL_dev_projects\temp\spec-024-checkpoint-a-corrections-<yyyymmdd>\`,
   with a hashed `manifest.json`. Leave the original checkpoint A evidence
   untouched.
-- [ ] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
+  **Completed 2026-10-04.** Seven atomic correction commits implement the
+  list. Separate launch-scale runs reproduce the fractional-border shortfall.
+  JavaScript-enabled and disabled geometry matches in 165/165 alternatives.
+  Surface/seam assertions pass 52/60: eight owner-facing surface alternatives
+  expose a 2px whole-bU residual and remain decision evidence rather than
+  approved values; every plain seam equals its tier's group gap. Manifest
+  SHA-256:
+  `6ad4b2793d14868a8435f69fa3bf2b1006c20f3ddb373fecd3b6210e8aaab1c8`.
+- [x] **T011e — stroke concept bench (FR-063g)** Add `benches/strokes/` and
   list it in `benches/index.html` as "Decided; adoption verification
   pending". Use pure CSS, no Pragma code and no font binary, like the other
   benches. Every specimen renders once. A native control toggles between the
@@ -627,12 +635,23 @@ fixture items are not a prerequisite.
   hashed `manifest.json`. List these as pending owner or human steps; never
   claim them: real Windows contrast-theme keyboard checks in Chromium and
   Firefox, and Safari coverage of normal painting and controls.
-- [ ] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
+  **Completed 2026-10-04.** `benches/strokes/` implements all eight specimens.
+  Four separate Chromium 151 launches at scale 1, 1.25, 1.5 and 2 pass
+  1,346/1,346 checks with zero page or HTTP errors. Manifest SHA-256:
+  `2d9523c63df4828b7e79bb298c1a7f7e28f66d50b8a5cdf0becb00928ca193e8`.
+  The required Windows contrast-theme and Safari checks remain human-only and
+  pending.
+- [x] **T011f — checkpoint A2 stop** Write `opus-A2-review-request.md`
   covering T011d and T011e: exact commits, evidence roots, manifest hashes,
   the F1 scale results and the pending human checks. Hand back under FR-054e
   and stop. T011c is checked only when the review confirms that the
   correction list is discharged. No Pragma file may adopt FR-063 until the
   review accepts the stroke bench and the owner signs it off.
+  **Completed 2026-10-04.** `opus-A2-review-request.md` records the exact
+  implementation commits, both verified evidence-manifest hashes, the eight
+  unresolved surface alternatives and the human-only checks. Work stops here
+  for the independent Opus verdict and owner stroke-bench sign-off. T011c
+  remains unchecked.
 
 ## Phase 3 — Pragma foundation and component families
 
