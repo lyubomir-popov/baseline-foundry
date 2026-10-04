@@ -8,9 +8,9 @@ active package. Keep this file short; move anything settled to its owner.
 | Worktree | Branch | State |
 |---|---|---|
 | `baseline-foundry` (this checkout) | `main` | Clean, equal to `origin/main` at `v0.2.1` |
-| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Pushed. Body-line rhythm default; awaiting owner browser review and D4 gap ruling |
+| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Pushed tip predates R11–R15: body-line rhythm becomes opt-in. Rework is handover step 5 |
 | `../baseline-foundry-worktrees/feat-025-compact-alignment-grid` | `feat/025-compact-alignment-grid` | All tasks done; closeout edits uncommitted; 6 behind `main` |
-| `../baseline-foundry-worktrees/feat-024-semantic-spacing-token-schema` | `feat/024-semantic-spacing-token-schema` | Pragma-targeted planning store run by a separate agent. Do not edit it from BF work |
+| `../baseline-foundry-worktrees/feat-024-semantic-spacing-token-schema` | `feat/024-semantic-spacing-token-schema` | Retained immutable history for relocated Spec 024; final pushed parking commit `ad3a3db3709f2637084445b9c59a9b53f9a4ca4c` |
 | `../baseline-foundry-worktrees/wip-bf-typography-cap-metric` | `wip/bf-typography-cap-metric` | Parked, unvalidated BF work recovered from the old 022 checkout |
 | `../baseline-foundry-worktrees/feat-020b-page-grid-token-adoption` | `feat/020b-page-grid-token-adoption` | Parked; blocked on a design-tokens page/grid provider |
 
@@ -23,7 +23,8 @@ The boundary is in [`AGENTS.md`](AGENTS.md). Spec 022, the first inside-out
 Pragma spacing exploration, is archived at
 [`docs/spec-archive/022-pragma-spacing-adoption/`](docs/spec-archive/022-pragma-spacing-adoption/).
 Its implementation branch was too large to review or merge; Spec 024 owns the
-recut. Do not resume 022.
+recut from `../canonical-spacing-spec/specs/024-semantic-spacing-token-schema/`.
+Do not resume 022 or edit the parked BF Spec 024 branch.
 
 ## Cross-repository tokens
 
