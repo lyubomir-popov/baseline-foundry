@@ -3,11 +3,12 @@
 ## Sources
 
 - Pragma rule, read-only reference:
-  `feat-024-semantic-spacing-token-schema/specs/024-semantic-spacing-token-schema/contracts/semantic-spacing-schema.md`,
+  `canonical-spacing-spec/specs/024-semantic-spacing-token-schema/contracts/semantic-spacing-schema.md`,
   section “The rhythm correction has two terms, at opposite edges” (lines
   410–567; owner decision at line 523), and `implementation-handover.md` section
-  “7. T004d2 – the two rhythm terms” (lines 322–430). Both live in the sibling
-  worktree `H:\WSL_dev_projects\baseline-foundry-worktrees\feat-024-semantic-spacing-token-schema`.
+  “7. T004d2 – the two rhythm terms” (lines 322–430). Both live in sibling repo
+  `H:\WSL_dev_projects\canonical-spacing-spec`; the historical BF branch is
+  retained only to resolve old review SHAs.
 - Owner decision, 2026-09-28: use the product body line as the rhythm step and
   accept full in-phase closure; the stronger common body-line phase governs.
 - Owner direction for BF, 2026-09-30: “I'd like to see the in-phase headings

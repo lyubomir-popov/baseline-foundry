@@ -13,8 +13,9 @@ section and strip boundaries) and R9 (panel content hosts flow text) of
 2026-10-01 are recorded and handed over; implementation starts at task T-R0.
 
 **Input**: Port the owner-approved Pragma rule that keeps headings and
-paragraphs in one body-line phase (Pragma Spec 024, T004d2; owner decision
-2026-09-28) to BF, delivered as an opt-in first.
+paragraphs in one body-line phase (Pragma Spec 024, T004d2, now at
+`canonical-spacing-spec/specs/024-semantic-spacing-token-schema/`; owner
+decision 2026-09-28) to BF, delivered as an opt-in first.
 
 **Owner direction for BF**, 2026-09-30: “I'd like to see the in-phase
 headings vs paragraphs work we just did on pragma implemented on bf too.” This
@@ -197,9 +198,10 @@ consumers only, pending owner confirmation (Q4).
 
 ## Owner rulings, 2026-10-03 (R11–R15)
 
-Recorded from the Pragma Spec 024 decision (FR-043e and the spacing
-specification §2.8.3). They supersede R1, R6 and R7 and FR-007 where they
-differ.
+Recorded from the relocated Pragma Spec 024 decision: FR-043e requires the
+opt-in container to set every body-phase term, and spacing specification
+§2.8.3 defines the closing rhythm. They supersede R1, R6 and R7 and FR-007
+where they differ.
 
 - **R11 – opt-in, not default.** Body-line rhythm is opt-in through a
   container class; the default is the baseline-unit ledger, rendering main's
