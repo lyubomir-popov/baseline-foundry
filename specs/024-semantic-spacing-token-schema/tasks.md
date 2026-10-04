@@ -530,6 +530,15 @@ fixture items are not a prerequisite.
   blocks under FR-043d at every tested tier/width and shows no accumulated
   body-baseline drift. Screenshots visually inspected. Evidence lives at
   `H:\WSL_dev_projects\temp\spec-024-checkpoint-a-20261003\`.
+  Those whole-bU control and surface geometry results are limited to DPR 1.
+  At fractional layout scale Chromium can snap an authored 1px layout border
+  below 1 CSS px while the bench still subtracts the authored width from its
+  padding, leaving the bordered box short. The correction evidence uses
+  separate `--force-device-scale-factor` launches at 1.25 and 1.5 with a null
+  context viewport, records the used border widths and resulting geometry,
+  and does not tune values to pass. Context `deviceScaleFactor` emulation is
+  not evidence for this defect. FR-063 is the selected remedy; its adoption
+  verification remains pending at checkpoint A2.
   The surface bench labels two unresolved mappings: 16px standard starting
   values versus 12px Docs/App action insets, and the compact block inset.
   Heading leading and the public opt-in class remain owner decisions.

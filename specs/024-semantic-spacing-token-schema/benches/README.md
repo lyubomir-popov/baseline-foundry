@@ -33,6 +33,17 @@ also work.
 
 ## Inputs and limits
 
+Checkpoint A's whole-bU control and surface geometry claims are limited to
+DPR 1. At fractional layout scale Chromium can snap an authored 1px layout
+border to a smaller used CSS width, while these benches still subtract the
+authored 1px from padding. The result is a correspondingly short painted or
+occupied box. Fractional-scale evidence therefore uses separate Chromium
+launches with `--force-device-scale-factor` at 1.25 and 1.5; changing only a
+Playwright context's `deviceScaleFactor` does not exercise this border
+snapping. The evidence records the used border widths and geometry as observed
+and does not tune the bench values to pass. FR-063 selects the prospective
+stroke remedy, whose adoption remains conditional on the separate stroke bench.
+
 The body-phase page is ported from the supplied temporary demo. Relative shift,
 closure-only after headings, and the JavaScript line-count option are removed.
 The leading comparison is retained. The original canvas-derived cap ratio is
