@@ -20,8 +20,11 @@ in `docs/specs.md`; per-spec tasks live in the package.
 3. 020b page/grid adoption stays parked until design-tokens publishes a
    page/grid provider.
 
-Spec 024 is Pragma-targeted and run separately; it is not BF execution order.
-Publication and release need separate owner direction.
+Spec 024 is Pragma-targeted and now lives at
+`../canonical-spacing-spec/specs/024-semantic-spacing-token-schema/`; it is
+not BF execution order. Its former BF branch is retained only so historical
+review SHAs remain reachable. Publication and release need separate owner
+direction.
 
 ## Candidate order after Spec 001
 
