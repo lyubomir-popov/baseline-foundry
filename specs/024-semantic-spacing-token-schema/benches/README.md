@@ -13,7 +13,7 @@ python -m http.server 8797 --bind 127.0.0.1
 
 Open <http://127.0.0.1:8797/specs/024-semantic-spacing-token-schema/benches/>.
 The existing body-phase server on 8796 is left alone. Stop this server with
-Ctrl+C if running it in a terminal; the current background instance is PID 10408.
+Ctrl+C if running it in a terminal.
 
 Native radios select CSS using `:has()`. Every composition occurs once.
 JavaScript reads geometry and fills diagnostic outputs; it does not set layout
