@@ -80,10 +80,6 @@ function roleSelectedStartNudgeVar(roleName: string, fallback?: string): string 
   return fallback ? `var(--bf-${roleName}-nudge-start, ${fallback})` : `var(--bf-${roleName}-nudge-start)`;
 }
 
-function roleSelectedEndNudgeVar(roleName: string, fallback?: string): string {
-  return fallback ? `var(--bf-${roleName}-nudge-end, ${fallback})` : `var(--bf-${roleName}-nudge-end)`;
-}
-
 export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[]): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
@@ -94,7 +90,6 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const inputMarginBottom = "var(--bf-interface-row-compensation-block-end)";
   const buttonMarginBottom = "var(--bf-interface-row-compensation-block-end)";
   const bodySelectedStartNudge = roleSelectedStartNudgeVar("body", body.nudgeTop);
-  const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
   const h4LineHeight = roleLineHeightVar("h4", h4.lineHeight);
   const h5LineHeight = roleLineHeightVar("h5", h5.lineHeight);
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
@@ -1003,17 +998,17 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 }
 
 :where(.bf-theme) :where(.bf-tooltip-message) {
-${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-background-alt);
+  background-color: var(--bf-color-background-alt);
   box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default), 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
   color: var(--bf-color-text-default);
+  display: flow-root;
   inline-size: max-content;
   inset-inline-start: 0;
   margin: 0;
   max-inline-size: min(20rem, calc(100vw - (var(--bf-baseline) * 4)));
   opacity: 0;
-  padding-block-end: ${bodySelectedEndNudge};
-  padding-block-start: ${bodySelectedStartNudge};
-  padding-inline: var(--bf-component-inline-inset-continuation);
+  padding-block: var(--bf-control-block-inset);
+  padding-inline: var(--bf-component-inline-inset-field);
   pointer-events: none;
   position: absolute;
   top: 100%;
@@ -1021,6 +1016,13 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
   visibility: hidden;
   white-space: normal;
   z-index: 12;
+}
+
+:where(.bf-theme) :where(.bf-tooltip-text) {
+${typeStyles(body, { includeCase: false })}  display: block;
+  margin: 0 0 var(--bf-body-margin-bottom);
+  padding-block-end: 0;
+  padding-block-start: ${bodySelectedStartNudge};
 }
 
 :where(.bf-theme) :where(.bf-tooltip):is(:hover, :focus-within) > :where(.bf-tooltip-message),

@@ -866,7 +866,6 @@ function validateCommonCss(css: string): void {
     [":where(.bf-theme) :where(.bf-option-card)", "continuation"],
     [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "continuation"],
     [":where(.bf-theme) :where(.bf-contextual-menu-link)", "action"],
-    [":where(.bf-theme) :where(.bf-tooltip-message)", "continuation"],
     [":where(.bf-theme) :where(.bf-code-snippet-title)", "continuation"],
     [":where(.bf-theme) :where(.bf-code-snippet-dropdown)", "action"],
     [":where(.bf-theme) :where(.bf-code-snippet-block, .bf-code-snippet-block.is-icon, .bf-code-snippet-block.is-numbered)", "continuation"]
@@ -875,6 +874,17 @@ function validateCommonCss(css: string): void {
       "padding-inline": `var(--bf-component-inline-inset-${inset})`
     }, `${selector} chooses the shared ${inset} component inset`);
   }
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tooltip-message)", {
+    "display": "flow-root",
+    "padding-block": "var(--bf-control-block-inset)",
+    "padding-inline": "var(--bf-component-inline-inset-field)"
+  }, "Tooltip outer surface owns compact padding and contains its metric text child");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tooltip-text)", {
+    "display": "block",
+    "margin": "0 0 var(--bf-body-margin-bottom)",
+    "padding-block-end": "0"
+  }, "Tooltip inner text owns metric nudge and SP13 compensation separately from surface padding");
+  assert(css.includes("padding-block-start: var(--bf-body-nudge-start,"), "Expected Tooltip inner text to consume the generated body metric nudge with a tier fallback.");
   for (const selector of [
     ":where(.bf-theme) :where(fieldset, .bf-fieldset)",
     ":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)",

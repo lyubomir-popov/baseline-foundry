@@ -4734,6 +4734,8 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
   const expectedPanelPaddingPx = { editorial: 16, documentation: 12, app: 12, os: 8 } as const;
   const expectedPanelInlinePx = { editorial: 32, documentation: 30, app: 30, os: 20 } as const;
+  const expectedTooltipBlockPx = { editorial: 0, documentation: 4, app: 4, os: 0 } as const;
+  const expectedTooltipInlinePx = { editorial: 8, documentation: 8, app: 8, os: 4 } as const;
   const browser = await openBrowser();
 
   try {
@@ -4750,6 +4752,8 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           <input class="bf-input is-nested" type="text" value="Nested parity">
           <table class="bf-table"><tbody><tr><td>Table parity</td></tr></tbody></table>
           <section class="bf-panel"><header class="bf-panel-header"><h2 class="bf-panel-title">Parity</h2></header><footer class="bf-panel-footer"><button class="bf-panel-toggle">Footer</button></footer></section>
+          <span class="bf-tooltip"><button class="bf-button">Tip</button><p class="bf-tooltip-message"><span class="bf-tooltip-text">Metric tip</span></p></span>
+          <span class="bf-tooltip is-detached"><button class="bf-button">Detached</button><p class="bf-tooltip-message"><span class="bf-tooltip-text">Detached tip</span></p></span>
           <span class="bf-status-label">Parity</span>
         </body>`);
       await page.waitForFunction(expected => Array.from(document.styleSheets).some(sheet => sheet.href?.includes(expected)), stylesheet);
@@ -4766,7 +4770,10 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         const appPage = document.querySelector<HTMLElement>(".bf-page");
         const appGrid = appPage?.querySelector<HTMLElement>(".bf-grid");
         const fixedWidth = document.querySelector<HTMLElement>(".bf-fixed-width");
-        if (!input || !button || !nestedInput || !tableRow || !header || !footer || !status || !appPage || !appGrid || !fixedWidth) {
+        const tooltip = document.querySelector<HTMLElement>(".bf-tooltip:not(.is-detached) .bf-tooltip-message");
+        const tooltipText = tooltip?.querySelector<HTMLElement>(".bf-tooltip-text");
+        const detachedTooltip = document.querySelector<HTMLElement>(".bf-tooltip.is-detached .bf-tooltip-message");
+        if (!input || !button || !nestedInput || !tableRow || !header || !footer || !status || !appPage || !appGrid || !fixedWidth || !tooltip || !tooltipText || !detachedTooltip) {
           throw new Error("Missing surface parity fixture.");
         }
 
@@ -4792,6 +4799,8 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         const buttonStyles = getComputedStyle(button);
         const headerStyles = getComputedStyle(header);
         const footerStyles = getComputedStyle(footer);
+        const tooltipStyles = getComputedStyle(tooltip);
+        const tooltipTextStyles = getComputedStyle(tooltipText);
         return {
           inputHeight: input.getBoundingClientRect().height,
           inputMarginBottom: Number.parseFloat(inputStyles.marginBottom) || 0,
@@ -4815,7 +4824,21 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           pageWidth: appPage.getBoundingClientRect().width,
           gridWidth: appGrid.getBoundingClientRect().width,
           fixedStart: fixedWidth.getBoundingClientRect().left,
-          fixedWidth: fixedWidth.getBoundingClientRect().width
+          fixedWidth: fixedWidth.getBoundingClientRect().width,
+          tooltipArrowPresent: getComputedStyle(tooltip, "::before").content === "none" ? 0 : 1,
+          tooltipBlockEnd: Number.parseFloat(tooltipStyles.paddingBlockEnd) || 0,
+          tooltipBlockStart: Number.parseFloat(tooltipStyles.paddingBlockStart) || 0,
+          tooltipContainmentDelta: tooltip.getBoundingClientRect().height
+            - (Number.parseFloat(tooltipStyles.paddingBlockStart) || 0)
+            - (Number.parseFloat(tooltipStyles.paddingBlockEnd) || 0)
+            - tooltipText.getBoundingClientRect().height
+            - (Number.parseFloat(tooltipTextStyles.marginBlockEnd) || 0),
+          tooltipDetachedArrowAbsent: getComputedStyle(detachedTooltip, "::before").content === "none" ? 1 : 0,
+          tooltipInlineEnd: Number.parseFloat(tooltipStyles.paddingInlineEnd) || 0,
+          tooltipInlineStart: Number.parseFloat(tooltipStyles.paddingInlineStart) || 0,
+          tooltipTextMarginEnd: Number.parseFloat(tooltipTextStyles.marginBlockEnd) || 0,
+          tooltipTextPaddingEnd: Number.parseFloat(tooltipTextStyles.paddingBlockEnd) || 0,
+          tooltipTextPaddingStart: Number.parseFloat(tooltipTextStyles.paddingBlockStart) || 0
         };
       });
     };
@@ -4836,6 +4859,9 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
       assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel headers to use ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
       assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelInlinePx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px block-end padding and the ${expectedPanelInlinePx[tier]}px Canonical continuation inset, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
+      assert(direct.tooltipInlineStart === expectedTooltipInlinePx[tier] && direct.tooltipInlineEnd === expectedTooltipInlinePx[tier] && direct.tooltipBlockStart === expectedTooltipBlockPx[tier] && direct.tooltipBlockEnd === expectedTooltipBlockPx[tier], `Expected direct ${tier} Tooltip outer compact padding to resolve from the ${expectedTooltipInlinePx[tier]}px field role and ${expectedTooltipBlockPx[tier]}px compact block role: ${JSON.stringify(direct)}.`);
+      assert(Math.abs(direct.tooltipContainmentDelta) <= 0.05 && direct.tooltipTextPaddingStart > 0 && direct.tooltipTextPaddingEnd === 0 && direct.tooltipTextMarginEnd >= direct.tooltipTextPaddingStart, `Expected direct ${tier} Tooltip to contain its inner metric nudge and SP13 end compensation independently from outer padding: ${JSON.stringify(direct)}.`);
+      assert(direct.tooltipArrowPresent === 1 && direct.tooltipDetachedArrowAbsent === 1, `Expected direct ${tier} Tooltip arrow anatomy to remain present while detached mode suppresses it: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.regularPainted + direct.regularCompensation - direct.regularOccupied) <= 0.05, `Expected direct ${tier} painted row plus compensation to equal its occupied row: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.inputHeight + direct.inputMarginBottom - direct.regularOccupied) <= 0.05 && Math.abs(direct.buttonHeight + direct.buttonMarginBottom - direct.regularOccupied) <= 0.05, `Expected direct ${tier} fields and buttons to consume one complete regular occupied row: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.bodyLine + direct.inBoxPaddingStart + direct.inBoxPaddingEnd - direct.regularOccupied) <= 0.05, `Expected direct ${tier} in-box start, body line, and end compensation to equal the occupied row: ${JSON.stringify(direct)}.`);
