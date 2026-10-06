@@ -821,7 +821,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");
   assert(css.includes(":where(.bf-theme) :where(thead th) {\n  font-family: var(--bf-body-font-family"), "Expected CSS to style table headers as body-role text.");
-  assert(css.includes("--bf-interface-row-painted-block-size: calc(var(--bf-interface-row-line-height)") && css.includes("--bf-interface-row-compensation-block-end: mod(") && css.includes("--bf-interface-row-occupied-block-size: calc(var(--bf-interface-row-painted-block-size) + var(--bf-interface-row-compensation-block-end));") && css.includes("--bf-in-box-row-padding-block-start: var(--bf-interface-row-content-offset-block-start);") && css.includes("--bf-in-box-row-padding-block-end: max(0rem, calc(var(--bf-interface-row-occupied-block-size) - var(--bf-interface-row-line-height)"), "Expected bordered controls and marginless repeated rows to share one rem/token-derived occupied-block target with explicit in-box compensation.");
+  assert(css.includes("--bf-interface-row-padding-block: calc(var(--bf-control-block-inset) + var(--bf-body-nudge-start") && css.includes("--bf-interface-row-painted-block-size: calc(var(--bf-interface-row-line-height) + (var(--bf-interface-row-padding-block) * 2));") && css.includes("--bf-interface-row-content-offset-block-start: var(--bf-interface-row-padding-block);") && css.includes("--bf-interface-row-compensation-block-end: mod(") && css.includes("--bf-interface-row-occupied-block-size: calc(var(--bf-interface-row-painted-block-size) + var(--bf-interface-row-compensation-block-end));") && css.includes("--bf-in-box-row-padding-block-start: var(--bf-interface-row-content-offset-block-start);") && css.includes("--bf-in-box-row-padding-block-end: max(0rem, calc(var(--bf-interface-row-occupied-block-size) - var(--bf-interface-row-line-height)"), "Expected controls and marginless repeated rows to share one zero-layout-border occupied-block target with explicit in-box compensation.");
   assert(css.includes("--bf-table-row-padding-block-start: var(--bf-in-box-row-padding-block-start);") && css.includes("--bf-table-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - var(--bf-body-line-height") && css.includes("--bf-table-row-line-height: var(--bf-body-line-height"), "Expected table rows to preserve body text metrics while targeting the shared interface-row occupied block.");
   assert(css.includes(":where(.bf-theme) :where(th, td) {\n  border: 0;\n  border-block-end: var(--bf-table-row-border-size) solid transparent;"), "Expected table cells to reserve border space inside the row box instead of relying on inset shadows.");
   assert(css.includes("padding-block-end: var(--bf-table-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-table-row-padding-block-start);"), "Expected table cells to consume the shared metric start and trailing row-compensation variables.");
@@ -941,7 +941,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-interface-row-visual-offset: calc(var(--bf-interface-row-content-offset-block-start)") && css.includes("--bf-switch-track-offset: var(--bf-interface-row-visual-offset);") && css.includes("--bf-tick-box-offset: var(--bf-interface-row-visual-offset);") && css.includes("--bf-leading-icon-offset: var(--bf-interface-row-visual-offset);"), "Expected switch, tick, and leading-icon geometry to share one body-line visual offset.");
   assert(css.includes("--bf-leading-mark-gap: var(--spacing-gap-mark-inline);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the canonical shared mark gap rather than an unrelated inset.");
   assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);") && css.includes("inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));"), "Expected the enlarged radio dot to remain concentric with its outer circle inside the shared row geometry.");
-  assert(css.includes("--bf-interface-row-padding-block:") && css.includes("--bf-interface-row-compensation-block-end:") && css.includes("--bf-interface-row-visual-offset:"), "Expected generated CSS to expose one border-aware occupied-block contract for body-sized single-line UI.");
+  assert(css.includes("--bf-interface-row-padding-block:") && css.includes("--bf-interface-row-compensation-block-end:") && css.includes("--bf-interface-row-visual-offset:"), "Expected generated CSS to expose one paint-only occupied-block contract for body-sized single-line UI.");
   for (const retiredVariable of [
     "--bf-control-baseline-reserve:",
     "--bf-control-block-padding:",
@@ -1116,17 +1116,17 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedInteractiveSelector})`, {
     "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
-    "padding-block": "var(--bf-nested-framed-row-padding-block)"
-  }, "explicit nested fields and buttons fit within a host-owned body line");
+    "padding-block": "max(0rem, calc(var(--bf-nested-row-padding-block) - var(--bf-border-width)))"
+  }, "explicit nested fields and buttons preserve their host fit while their still-real family strokes await migration");
   assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedFieldSelector})`, {
-    "block-size": "var(--bf-nested-framed-row-painted-block-size)"
+    "block-size": "var(--bf-nested-row-painted-block-size)"
   }, "nested textual fields replace the browser intrinsic floor with their token-derived border box");
   assert(nestedTextInputTypes.every(type => css.includes(`input.bf-input.is-nested[type='${type}']`)), "Expected every supported nested textual input type to be explicit in the positive allowlist.");
   assert(!css.includes("input.bf-input.is-nested:not([type='file'])") && !css.includes("button.bf-button.is-nested") && css.includes(".bf-button.is-nested:not(.is-link)"), "Expected nested density to reject catch-all inputs and link buttons while remaining element-agnostic for bordered buttons.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label)", {
     "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
-    "padding-block": "var(--bf-nested-framed-row-padding-block)"
+    "padding-block": "var(--bf-nested-row-padding-block)"
   }, "explicit nested selection controls fit within a host-owned body line");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
     "padding-inline-start": "calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
@@ -1183,9 +1183,9 @@ function validateCommonCss(css: string): void {
   }, "status labels keep the canonical inline label treatment");
   const statusLabelRuleStart = css.indexOf(":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {");
   const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
-  assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-interface-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end)"), "Expected status-label paint to use the symmetric shared interface-row contract.");
+  assert(statusLabelRule.includes("border-block: 0") && statusLabelRule.includes("padding-block: var(--bf-interface-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end)"), "Expected status-label geometry to use the symmetric zero-layout-border interface-row contract.");
   assert(css.includes("--bf-nested-row-line-height: calc(var(--bf-interface-row-line-height) - var(--bf-baseline));") && !css.includes("--bf-nested-row-line-height: max(") && css.includes("--bf-nested-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height)) / 2));") && css.includes("--bf-nested-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-row-padding-block) * 2));"), "Expected nested surface geometry to use the designed body-line-minus-baseline expression without silently selecting among unrelated constraints.");
-  assert(css.includes("--bf-nested-framed-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height) - (var(--bf-border-width) * 2)) / 2));") && css.includes("--bf-nested-framed-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2));") && css.includes("--bf-nested-framed-row-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-framed-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));"), "Expected nested interactive controls to use an explicit two-border ledger within the host body line.");
+  assert(css.includes("--bf-nested-row-visual-offset: calc(var(--bf-nested-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));") && !css.includes("--bf-nested-framed-row-"), "Expected nested interactive controls to share the zero-layout-border ledger within the host body line.");
   const expectedSquareAliases = new Map<string, string>([
     [":where(.bf-theme)", "var(--bf-interface-row-painted-block-size)"],
     [":where(.bf-theme) :where(.bf-badge)", "var(--bf-interface-row-line-height)"],
@@ -1233,8 +1233,8 @@ function validateCommonCss(css: string): void {
   }, "bare numbered pagination consumes painted-block geometry without an action inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", {
     "border-radius": "var(--bf-radius)",
-    "padding-inline": "var(--bf-component-inline-inset-action-bordered)"
-  }, "labelled pagination controls retain the Action contract and shared radius");
+    "padding-inline": "max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)))"
+  }, "labelled pagination controls preserve the Action keyline while their real stroke awaits family migration");
   assert(!css.includes("--bf-pagination-slot-inline-size"), "Expected pagination to retire its occupied-block inline slot alias.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notification, .bf-notification.is-information, .bf-notification.is-positive, .bf-notification.is-caution, .bf-notification.is-negative)", {
     "--bf-notification-close-painted-block-size": "calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default))"
@@ -1629,7 +1629,7 @@ function validateCommonCss(css: string): void {
     "appearance": "none",
     "background": "transparent",
     "border": "0 solid transparent",
-    "border-block-width": "var(--bf-border-width)",
+    "border-block-width": "0",
     "display": "inline-flex",
     "padding-block": "var(--bf-interface-row-padding-block)"
   }, "panel toggle styling stays on the regular metric-derived interface contract");

@@ -10,7 +10,8 @@
 - [ ] Compensation-only block-end governance across remaining component families (FR-061a/SP-1)
 - [x] SideNavigation panel geometry — `a468e8f`, gates green; logs `sidenav-check-types.log`, `sidenav-npm-test.log`, `sidenav-qa-components.log`
 - [x] Governed dense Site Chip — current tip, gates green; logs `dense-chip-check-types.log`, `dense-chip-npm-test.log`, `dense-chip-qa-components.log`
-- [ ] Paint-only row contract and component families
+- [x] Paint-only row contract — current tip, gates green; logs `row-contract-check-types.log`, `row-contract-npm-test.log`, `row-contract-qa-components.log`
+- [ ] Paint-only component families
 - [ ] Before/after review demo and negative specimens
 - [ ] Root gates and Chromium evidence
 - [ ] Conformance board and final Opus request

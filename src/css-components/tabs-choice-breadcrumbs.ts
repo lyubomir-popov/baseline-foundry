@@ -45,7 +45,7 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
 ${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-color-text-muted);
   cursor: pointer;
   display: flex;
@@ -243,7 +243,7 @@ ${bodyTypeStyles}  align-items: center;
   margin-bottom: ${buttonMarginBottom};
   max-inline-size: 100%;
   overflow: hidden;
-${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordered);
+${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;

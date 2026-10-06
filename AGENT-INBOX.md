@@ -37,14 +37,25 @@ and must not be changed.
   at 40px. Nested tables/products and the legacy class boundary cases are
   covered. Its required gates are green in `dense-chip-check-types.log`,
   `dense-chip-npm-test.log`, and `dense-chip-qa-components.log`.
+- The current row-contract item removes layout-border arithmetic from the
+  regular and nested ledgers, removes the bordered Action alias and obsolete
+  build guards, and drops transparent frame borders from row-only geometry.
+  Its required gates are green in `row-contract-check-types.log`,
+  `row-contract-npm-test.log`, and `row-contract-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-Migrate the shared row contract to paint-only strokes, then move each component
-family to the automatic overlay or its named anatomy exception. Preserve the
-governed dense Site Chip policy and the established non-Site nested contracts.
+Move each component family from its real layout border to the automatic
+overlay or its named anatomy exception. Preserve the governed dense Site Chip
+policy and the established non-Site nested contracts.
+
+The shared row ledger is final, but the intermediate source still has local
+border subtraction only where a family retains a real stroke: fields and file
+buttons, Button/Choice/SegmentedControl/SideNavigation toggle, Chip,
+Pagination, and nested fields/buttons. Remove each local term with that
+family's paint migration; none may remain at the final checkpoint.
 
 FR-061a/SP-1 remains in progress beyond the landed margin-direction step:
 remaining semantic or structural block-end margins in responsive navigation,
@@ -55,8 +66,8 @@ it is not the final compensation-only end-margin classifier.
 
 ## Remaining order
 
-1. Paint-only row contract first, then atomic component-family commits using the
-   reviewed exception map in `paint-impact-audit.md`.
+1. Atomic paint-only component-family commits using the reviewed exception map
+   in `paint-impact-audit.md`; remove each staged local border term with its owner.
 2. Complete compensation-only end-margin ownership in the affected component
    families and replace the directional gate with final end-margin governance.
 3. Identical-DOM before/after demo, browser scale evidence, BF board columns,

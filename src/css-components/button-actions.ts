@@ -20,7 +20,7 @@ ${bodyTypeStyles}  appearance: none;
   cursor: pointer;
   display: inline-block;
   margin-bottom: ${buttonMarginBottom};
-${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordered);
+${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
   text-align: center;
   text-decoration: none;
 }

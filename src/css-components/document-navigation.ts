@@ -125,7 +125,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 ${bodyCaseTypeStyles}  align-items: center;
   background: var(--bf-color-background-default);
   border: 0 solid transparent;
-  border-block-width: var(--bf-border-width);
+  border-block-width: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: none;
@@ -194,7 +194,7 @@ ${bodyCaseTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation-link) {
-    border-block: var(--bf-border-width) solid transparent;
+    border-block: 0;
     display: block;
     overflow: hidden;
     padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));
@@ -299,7 +299,7 @@ ${bodyCaseTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-logo) > :where(.bf-top-navigation-link),
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-link, .bf-top-navigation-menu-toggle, .bf-top-navigation-search-toggle) {
   border: 0 solid transparent;
-  border-block-width: var(--bf-border-width);
+  border-block-width: 0;
   color: var(--bf-color-text-muted);
   font-size: var(--bf-body-font-size);
   line-height: var(--bf-body-line-height);
@@ -410,7 +410,7 @@ ${bodyCaseTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(a.bf-table-of-contents-link) {
-${bodyTypeStyles}  border-block: var(--bf-border-width) solid transparent;
+${bodyTypeStyles}  border-block: 0;
   color: var(--bf-color-link-default);
   display: block;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);

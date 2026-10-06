@@ -247,7 +247,7 @@ export function validateRenewalComponentContracts(
     "padding-inline-start": "var(--bf-component-inline-inset-continuation)"
   }, "table-of-contents section headings use the canonical prominent heading color without an extra row gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-table-of-contents-link)", {
-    "border-block": "var(--bf-border-width) solid transparent",
+    "border-block": "0",
     "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
     "padding-block": "var(--bf-interface-row-padding-block)",
     "padding-inline-end": "var(--bf-component-inline-inset-action)",

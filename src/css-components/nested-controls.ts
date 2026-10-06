@@ -16,25 +16,25 @@ export function nestedControlsCss(): string {
   return `:where(.bf-theme) :where(${nestedInteractiveSelector}) {
   line-height: var(--bf-nested-row-line-height);
   margin-block: 0;
-  padding-block: var(--bf-nested-framed-row-padding-block);
+  padding-block: max(0rem, calc(var(--bf-nested-row-padding-block) - var(--bf-border-width)));
 }
 
 /* Replaced textual controls retain a browser-owned intrinsic block floor even
    after their line and padding adopt the nested contract. This derived size is the exact
-   sum of that same line, padding and real borders; it is not a density target
+   sum of that same line and padding; it is not a density target
    independent of the active tier. */
 :where(.bf-theme) :where(${nestedFieldSelector}) {
-  block-size: var(--bf-nested-framed-row-painted-block-size);
+  block-size: var(--bf-nested-row-painted-block-size);
 }
 
 :where(.bf-theme) :where(.bf-checkbox.is-nested, .bf-radio.is-nested) {
-  --bf-tick-box-offset: var(--bf-nested-framed-row-visual-offset);
+  --bf-tick-box-offset: var(--bf-nested-row-visual-offset);
 }
 
 :where(.bf-theme) :where(.bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label) {
   line-height: var(--bf-nested-row-line-height);
   margin-block: 0;
-  padding-block: var(--bf-nested-framed-row-padding-block);
+  padding-block: var(--bf-nested-row-padding-block);
 }
 `;
 }

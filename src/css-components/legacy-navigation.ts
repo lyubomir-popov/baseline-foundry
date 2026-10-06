@@ -128,7 +128,7 @@ ${bodyTypeStyles}  align-items: center;
   gap: var(--bf-leading-mark-gap);
   justify-content: center;
   margin: 0 0 ${buttonMarginBottom};
-${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordered);
+${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
   text-decoration: none;
 }
 
@@ -216,7 +216,7 @@ ${bodyTypeStyles}  align-items: center;
   align-self: start;
   background: transparent;
   border: 0;
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-color-text-inactive);
   display: flex;
   gap: var(--bf-side-navigation-icon-gap);

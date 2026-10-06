@@ -95,7 +95,7 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
-  const buttonPadding = "  padding-block: var(--bf-interface-row-padding-block);\n";
+  const buttonPadding = "  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));\n";
 
   return `${componentContractsCss(tokens, themeSurfaces)}
 ${controlGeometryCss({ bodyLineHeight, bodySelectedStartNudge })}
@@ -255,7 +255,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   max-inline-size: 100%;
   min-inline-size: 0;
   margin-bottom: ${inputMarginBottom};
-  padding-block: var(--bf-interface-row-padding-block);
+  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));
   padding-inline: var(--bf-component-inline-inset-field);
 }
 
@@ -269,7 +269,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
    metric strut gives their wrapper the same natural padding/border/margin
    construction as every textual control, including under browser zoom. */
 :where(.bf-theme) :where(.bf-color-control)::before {
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   content: "\\00a0";
   grid-area: color-control;
   line-height: var(--bf-body-line-height);
@@ -340,8 +340,8 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   cursor: pointer;
   margin-inline-end: var(--bf-field-gap);
   min-block-size: 0;
-  padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: var(--bf-component-inline-inset-action-bordered);
+  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));
+  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -401,7 +401,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 
 :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   cursor: pointer;
   display: block;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -545,7 +545,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-switch-label) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   cursor: pointer;
   display: inline-block;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -553,7 +553,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 }
 
 :where(.bf-theme) :where(.bf-validation-message) {
-${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width) solid transparent;
+${typeStyles(body, { includeCase: false })}  border-block: 0;
   color: var(--bf-color-text-muted);
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
   margin-inline-start: var(--bf-leading-mark-group-inset);
@@ -1146,7 +1146,7 @@ ${typeStyles(body, { includeCase: false })}  display: block;
 
 :where(.bf-theme) :where(.bf-pagination-item.is-truncation) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   margin-block-end: var(--bf-interface-row-compensation-block-end);
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-inline-unit);
@@ -1163,8 +1163,8 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   gap: var(--bf-leading-mark-gap);
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
-  padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: var(--bf-component-inline-inset-action-bordered);
+  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));
+  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
   text-align: center;
   text-decoration: none;
 }
@@ -1258,7 +1258,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   appearance: none;
   background: transparent;
   border: 0;
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: flex;

@@ -63,11 +63,11 @@ Every body-sized single-line interface uses the same metric-derived ledger:
 
 ```text
 line            = body line
-padding         = max(body start nudge - border, 0)
-painted block   = line + 2 × padding + 2 × border
+padding         = control-block inset + body start nudge
+painted block   = line + 2 × padding
 compensation    = distance from painted block to the next baseline multiple
 occupied block  = painted block + compensation
-content start   = border + padding
+content start   = padding
 visual offset   = content start + (line - visual size) / 2
 ```
 
@@ -81,11 +81,10 @@ The corresponding variables are:
 - `--bf-interface-row-content-offset-block-start`
 - `--bf-interface-row-visual-offset`
 
-Standalone controls paint their border box and carry compensation in their
-block-end margin. Marginless hosts use the same occupied target but absorb the
+Standalone controls carry compensation in their block-end margin. Strokes are
+paint and never enter this ledger. Marginless hosts use the same occupied target but absorb the
 compensation inside the box through `--bf-in-box-row-padding-block-start` and
-`--bf-in-box-row-padding-block-end`. A table cell subtracts its real separator
-once from its own block-end calculation.
+`--bf-in-box-row-padding-block-end`.
 
 There is no independent compact control scale and no authored target height.
 
@@ -112,17 +111,13 @@ on both block edges, carries no compensation margin, and shares the host text
 baseline. The host absorbs those two edges so its ordinary 40px row does not
 grow. The same Chip remains on its 40px occupied seat outside the provider.
 
-Two ledgers cover the only material paint cases:
-
-| Nested paint | Members | Variables |
-|---|---|---|
-| Zero-footprint block edge | chip, status label, badge line | `--bf-nested-row-line-height`, `--bf-nested-row-padding-block`, `--bf-nested-row-painted-block-size` |
-| Two real block borders | text/number/select input, bordered button, checkbox, radio | `--bf-nested-framed-row-padding-block`, `--bf-nested-framed-row-painted-block-size`, `--bf-nested-framed-row-visual-offset` |
-
-The nested line is body line minus one active baseline. Both ledgers fit within
-the host body line and contribute no external block margin. Build validation
-rejects a tier when that designed line cannot contain its body font, control
-visual, or two real block borders.
+One zero-layout-border ledger covers nested surfaces and controls:
+`--bf-nested-row-line-height`, `--bf-nested-row-padding-block`,
+`--bf-nested-row-painted-block-size`, and
+`--bf-nested-row-visual-offset`. The nested line is body line minus one active
+baseline. It fits within the host body line and contributes no external block
+margin. Build validation rejects a tier when that designed line cannot contain
+its body font or control visual.
 
 The modifier positively allowlists text, number, search, password, email, URL,
 telephone, and select fields. It is intentionally unavailable to date/time,

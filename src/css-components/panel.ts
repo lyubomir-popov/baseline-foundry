@@ -110,7 +110,7 @@ ${bodyTypeStyles}  align-items: center;
   appearance: none;
   background: transparent;
   border: 0 solid transparent;
-  border-block-width: var(--bf-border-width);
+  border-block-width: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-flex;

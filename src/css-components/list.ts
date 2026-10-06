@@ -21,7 +21,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item) {
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-low-contrast);
   margin-block-end: var(--bf-interface-row-compensation-block-end);
   padding-block: var(--bf-interface-row-padding-block);

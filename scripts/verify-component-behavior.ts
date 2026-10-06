@@ -150,7 +150,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
     assert(Math.abs(alignmentGeometry.checkboxCenterY - alignmentGeometry.checkboxCheckCenterY) <= alignmentGeometry.borderWidth * 0.5, "Expected the checkbox check to sit optically within half a scalable border unit of the outer-box centre.");
     assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), `Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline: ${JSON.stringify({ starts: alignmentGeometry.markedTextStarts, blue: alignmentGeometry.blueStart })}.`);
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell and status-label text to share the green field-inset keyline.");
-    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, chip, segmented-control, tab, and pagination text to share the red Action keyline.");
+    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), `Expected button, chip, segmented-control, tab, and pagination text to share the red Action keyline: ${JSON.stringify({ starts: alignmentGeometry.commandTextStarts, red: alignmentGeometry.redStart })}.`);
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
     const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
     assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, table of contents, notification, and panel copy to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
@@ -5373,7 +5373,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           "--bf-body-line-height",
           "--bf-in-box-row-padding-block-end",
           "--bf-in-box-row-padding-block-start",
-          "--bf-nested-framed-row-painted-block-size",
+          "--bf-nested-row-painted-block-size",
           "--bf-interface-row-compensation-block-end",
           "--bf-interface-row-occupied-block-size",
           "--bf-interface-row-painted-block-size"
@@ -5401,7 +5401,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           bodyLine: contractValues["--bf-body-line-height"],
           inBoxPaddingEnd: contractValues["--bf-in-box-row-padding-block-end"],
           inBoxPaddingStart: contractValues["--bf-in-box-row-padding-block-start"],
-          nestedFramedPainted: contractValues["--bf-nested-framed-row-painted-block-size"],
+          nestedPainted: contractValues["--bf-nested-row-painted-block-size"],
           nestedInputHeight: nestedInput.getBoundingClientRect().height,
           regularCompensation: contractValues["--bf-interface-row-compensation-block-end"],
           regularOccupied: contractValues["--bf-interface-row-occupied-block-size"],
@@ -5457,7 +5457,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       assert(Math.abs(direct.regularPainted + direct.regularCompensation - direct.regularOccupied) <= 0.05, `Expected direct ${tier} painted row plus compensation to equal its occupied row: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.inputHeight + direct.inputMarginBottom - direct.regularOccupied) <= 0.05 && Math.abs(direct.buttonHeight + direct.buttonMarginBottom - direct.regularOccupied) <= 0.05, `Expected direct ${tier} fields and buttons to consume one complete regular occupied row: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.bodyLine + direct.inBoxPaddingStart + direct.inBoxPaddingEnd - direct.regularOccupied) <= 0.05, `Expected direct ${tier} in-box start, body line, and end compensation to equal the occupied row: ${JSON.stringify(direct)}.`);
-      assert(Math.abs(direct.nestedInputHeight - direct.nestedFramedPainted) <= 0.05 && direct.nestedInputHeight <= direct.bodyLine + 0.05, `Expected direct ${tier} nested framed fields to use the derived paint ledger and fit inside the host body line: ${JSON.stringify(direct)}.`);
+      assert(Math.abs(direct.nestedInputHeight - direct.nestedPainted) <= 0.05 && direct.nestedInputHeight <= direct.bodyLine + 0.05, `Expected direct ${tier} nested framed fields to use the derived paint ledger and fit inside the host body line: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.tableRowHeight - direct.regularOccupied) <= 0.1, `Expected direct ${tier} table rows to absorb the shared occupied contract in-box: ${JSON.stringify(direct)}.`);
       directCaps.push(direct.fixedWidth);
       if (tier === "app") {

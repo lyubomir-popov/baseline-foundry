@@ -194,9 +194,6 @@ export function validateThemeConfig(config: ThemeConfig): void {
     }
   }
 
-  if (config.components.inlineInsetActionUnits * config.inlineUnitRem < config.components.borderWidthRem) {
-    throw new Error("Component action inset must contain its bordered action edge.");
-  }
   if (
     config.components.inlineInsetFieldUnits > config.components.inlineInsetActionUnits
   ) {
@@ -379,13 +376,6 @@ function buildThemeTokens(
       `Nested line ${toRem(nestedLineHeight)} cannot contain the control visual ${toRem(config.components.controlVisualSizeRem)}.`
     );
   }
-  const nestedFramedPaint = nestedLineHeight + (config.components.borderWidthRem * 2);
-  if (nestedFramedPaint > parseRem(body.lineHeight)) {
-    throw new Error(
-      `Nested framed controls require ${toRem(nestedFramedPaint)}, which exceeds the body line ${body.lineHeight}.`
-    );
-  }
-
   return {
     baselineUnit: spacingRem(spacing, "spacing.baseline"),
     inlineUnit: toRem(config.inlineUnitRem),

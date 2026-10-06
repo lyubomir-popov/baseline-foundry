@@ -59,7 +59,7 @@ ${bodyTypeStyles}  align-items: baseline;
   margin: 0 var(--bf-component-inline-inset-field) var(--bf-interface-row-compensation-block-end) 0;
   max-inline-size: 100%;
   min-inline-size: min(100%, calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2)));
-  padding-block: var(--bf-interface-row-padding-block);
+  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));
   /* Chips use the Action text keyline. The paint-derived floor only governs
      very short dense labels, keeping them stadium-shaped rather than circular. */
   padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
@@ -182,7 +182,7 @@ ${bodyTypeStyles}  align-items: center;
   --bf-ui-status-background: color-mix(in srgb, var(--bf-color-background-alt) 70%, black);
   --bf-ui-status-color: var(--bf-color-button-positive-text);
   background-color: var(--bf-ui-status-background);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-ui-status-color);
   display: inline-block;
   inline-size: fit-content;

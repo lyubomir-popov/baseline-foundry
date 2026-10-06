@@ -30,7 +30,7 @@ export function listTreeCss(options: ListTreeCssOptions): string {
 
 :where(.bf-theme) :where(a.bf-list-tree-link) {
 ${bodyTypeStyles}  color: var(--bf-color-text-default);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   cursor: pointer;
   display: block;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -61,7 +61,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 ${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: flex;
