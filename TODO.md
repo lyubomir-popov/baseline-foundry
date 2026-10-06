@@ -5,11 +5,13 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Close Spec 025 compact alignment grid: commit its pending review/tasks
+1. Complete Spec 028 shared spacing decisions on its isolated worktree, run the
+   full gates and stop at the final Opus review checkpoint for owner sign-off.
+2. Close Spec 025 compact alignment grid: commit its pending review/tasks
    edits, bring the branch up to `main` (v0.2.0/v0.2.1 landed after it), rerun
    `npm test` and `npm run qa:components`, then land by owner-approved direct
    fast-forward and archive the package.
-2. Port the Pragma body-line phase and closure decision (Spec 024 contract,
+3. Port the Pragma body-line phase and closure decision (Spec 024 contract,
    owner decision 2026-09-28) to BF as a new numbered package: headings lift
    their first baseline onto the body-line step, and paragraphs, lists and
    headings close their occupied block to whole body lines rather than the
@@ -17,7 +19,7 @@ in `docs/specs.md`; per-spec tasks live in the package.
    whether the parked `wip/bf-typography-cap-metric` branch (typography
    discipline, generated cap-height tokens, paint-only icon shift) folds in or
    lands first.
-3. 020b page/grid adoption stays parked until design-tokens publishes a
+4. 020b page/grid adoption stays parked until design-tokens publishes a
    page/grid provider.
 
 Spec 024 is Pragma-targeted and run separately; it is not BF execution order.

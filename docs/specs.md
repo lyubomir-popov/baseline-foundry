@@ -7,6 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
+| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | In progress; applies Spec 024 rulings to BF built-ins and real component demos |
 | 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Body-line rhythm is the default for prose text, with `.is-baseline-rhythm` as the opt-out; container-owned lists and `hgroup` join. Gates green; owner browser review and the D4 container-gap ruling pending |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |
