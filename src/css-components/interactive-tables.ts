@@ -5,7 +5,12 @@
  * rhythm through its tier tokens. Runtime hooks never participate in styling.
  */
 export function interactiveTablesCss(): string {
-  return `:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]) {
+  const mobileCardStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr)", { anchor: "relative" });
+
+  return `${mobileCardStroke.owner}
+
+:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]) {
+  --bf-table-cell-stroke-color: var(--bf-color-border-default);
   color: var(--bf-color-text-default);
   cursor: pointer;
   outline-color: var(--bf-color-focus);
@@ -68,9 +73,22 @@ export function interactiveTablesCss(): string {
   content: "";
   display: inline-block;
   inline-size: var(--bf-icon-size-default);
-  margin-inline-start: calc(var(--bf-leading-mark-gap) / 2);
+  margin-inline-start: var(--bf-leading-mark-gap);
   opacity: 0;
   vertical-align: var(--bf-inline-icon-baseline-shift);
+}
+
+/* Sortable headers lease ::after to the caret, so their row rule uses the
+   remaining pseudo as a named one-sided paint owner. */
+:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::before {
+  background: none;
+  border: 0 solid transparent;
+  box-shadow: inset 0 calc(var(--bf-table-row-border-size) * -1) 0 var(--bf-table-cell-stroke-color);
+  box-sizing: border-box;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'], .bf-table.is-sortable th[aria-sort='descending'])::after {
@@ -94,7 +112,7 @@ export function interactiveTablesCss(): string {
   overflow: visible;
   /* Complete the ordinary start-nudge inset with the paired end nudge while
      consuming the row rule inside it, so wrapped detail rows stay on-grid. */
-  padding-block-end: calc(var(--bf-space-1) + var(--bf-body-nudge-end) - var(--bf-table-row-border-size));
+  padding-block-end: calc(var(--bf-space-1) + var(--bf-body-nudge-end));
   white-space: normal;
 }
 
@@ -123,22 +141,23 @@ export function interactiveTablesCss(): string {
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody) {
     display: grid;
-    gap: 0 var(--bf-component-inline-inset-continuation);
+    gap: var(--bf-space-3) var(--bf-component-inline-inset-continuation);
     grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
     inline-size: 100%;
   }
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr) {
-    border: var(--bf-border-width) solid var(--bf-color-border-default);
+    border: 0;
     display: block;
-    margin-block-end: calc(var(--bf-space-3) - (var(--bf-border-width) * 2));
+    margin-block-end: 0;
     min-inline-size: 0;
-    padding-inline: var(--bf-panel-padding-inline);
+    padding-inline: var(--bf-component-inline-inset-action);
   }
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr > :where(th, td)) {
-    border-block-end-color: transparent;
-    display: block;
+    --bf-table-cell-stroke-color: transparent;
+    display: grid;
+    gap: var(--bf-space-1);
     inline-size: 100%;
     min-inline-size: 0;
     overflow: hidden;
@@ -167,7 +186,7 @@ export function interactiveTablesCss(): string {
     font-style: var(--bf-body-font-style);
     font-weight: 550;
     line-height: var(--bf-body-line-height);
-    margin-block-end: var(--bf-space-1);
+    margin-block-end: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -177,5 +196,15 @@ export function interactiveTablesCss(): string {
     overflow: visible;
   }
 }
+
+${mobileCardStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::before {
+    border-block-end: var(--bf-table-row-border-size) solid CanvasText;
+    box-shadow: none;
+  }
+}
 `;
 }
+import { allSidedStrokeOverlayCss } from "./stroke-paint.js";

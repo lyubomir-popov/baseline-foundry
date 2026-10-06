@@ -1,5 +1,11 @@
+import { blockStartStrokeOverlayCss } from "./stroke-paint.js";
+
 export function listCss({ bodyTypeStyles }: { bodyTypeStyles: string }): string {
-  return `:where(.bf-theme) :where(.bf-list) {
+  const dividedItemStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:not(:first-child))", { anchor: "relative" });
+
+  return `${dividedItemStroke.owner}
+
+:where(.bf-theme) :where(.bf-list) {
   align-content: start;
   display: grid;
   list-style: none;
@@ -22,13 +28,8 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 
 :where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item) {
   border-block: 0;
-  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-low-contrast);
   margin-block-end: var(--bf-interface-row-compensation-block-end);
   padding-block: var(--bf-interface-row-padding-block);
-}
-
-:where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:first-child) {
-  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {
@@ -123,5 +124,7 @@ ${bodyTypeStyles}  display: inline-block;
   content: "\\2022";
   display: inline;
   margin-inline-start: var(--bf-inline-list-space);
-}`;
+}
+
+${dividedItemStroke.painter}`;
 }

@@ -823,7 +823,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(thead th) {\n  font-family: var(--bf-body-font-family"), "Expected CSS to style table headers as body-role text.");
   assert(css.includes("--bf-interface-row-padding-block: calc(var(--bf-control-block-inset) + var(--bf-body-nudge-start") && css.includes("--bf-interface-row-painted-block-size: calc(var(--bf-interface-row-line-height) + (var(--bf-interface-row-padding-block) * 2));") && css.includes("--bf-interface-row-content-offset-block-start: var(--bf-interface-row-padding-block);") && css.includes("--bf-interface-row-compensation-block-end: mod(") && css.includes("--bf-interface-row-occupied-block-size: calc(var(--bf-interface-row-painted-block-size) + var(--bf-interface-row-compensation-block-end));") && css.includes("--bf-in-box-row-padding-block-start: var(--bf-interface-row-content-offset-block-start);") && css.includes("--bf-in-box-row-padding-block-end: max(0rem, calc(var(--bf-interface-row-occupied-block-size) - var(--bf-interface-row-line-height)"), "Expected controls and marginless repeated rows to share one zero-layout-border occupied-block target with explicit in-box compensation.");
   assert(css.includes("--bf-table-row-padding-block-start: var(--bf-in-box-row-padding-block-start);") && css.includes("--bf-table-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - var(--bf-body-line-height") && css.includes("--bf-table-row-line-height: var(--bf-body-line-height"), "Expected table rows to preserve body text metrics while targeting the shared interface-row occupied block.");
-  assert(css.includes(":where(.bf-theme) :where(th, td) {\n  border: 0;\n  border-block-end: var(--bf-table-row-border-size) solid transparent;"), "Expected table cells to reserve border space inside the row box instead of relying on inset shadows.");
+  assert(css.includes(":where(.bf-theme) :where(th, td) {\n  --bf-table-cell-stroke-color: transparent;\n  border: 0;") && css.includes(":where(.bf-theme) :where(th:not([aria-sort]), td)::after") && css.includes("border-block-end: var(--bf-stroke-width) solid CanvasText;"), "Expected ordinary table cells to paint row rules on an out-of-flow overlay with a real forced-colors edge.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::before") && css.includes("border-block-end: var(--bf-table-row-border-size) solid CanvasText;"), "Expected sortable headers to preserve their caret pseudo while painting the row rule from the remaining pseudo.");
   assert(css.includes("padding-block-end: var(--bf-table-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-table-row-padding-block-start);"), "Expected table cells to consume the shared metric start and trailing row-compensation variables.");
   assert(!css.includes("tbody tr:has(.bf-status-label) > td"), "Expected table density not to depend on a contextual status-label selector; nested auxiliaries opt in explicitly.");
   assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine demo override selector.");
@@ -1379,6 +1380,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-search-and-filter-panel)::after => inherit",
     ":where(.bf-theme) :where(.bf-search-box-button)::after => inherit",
     ":where(.bf-theme) :where(.bf-filter-panel-section:not(:last-child))::after => inherit",
+    ":where(.bf-theme) :where(.bf-inline-options)::after => inherit",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) => 0",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)::after => inherit",
     ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)::after => inherit",
@@ -1386,6 +1388,9 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer)::after => inherit",
     ":where(.bf-theme) :where(.bf-switch-slider) => var(--bf-control-visual-size)",
     ":where(.bf-theme) :where(.bf-switch-slider)::before => 50%",
+    ":where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr)::after => inherit",
+    ":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])::after => inherit",
+    ":where(.bf-theme) :where(.bf-tabs-list)::after => inherit",
     ":where(.bf-theme) :where(.bf-top-navigation)::after => inherit",
     ":where(.bf-theme) :where(.bf-tooltip-message)::after => inherit",
     ":where(.bf-theme) :where(.bf-validation-message)::before => 50%",
@@ -1395,7 +1400,9 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(input[type='range'])::-moz-range-thumb => 50%",
     ":where(.bf-theme) :where(input[type='range'])::-moz-range-track => var(--bf-baseline)",
     ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-runnable-track => var(--bf-baseline)",
-    ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb => 50%"
+    ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb => 50%",
+    ":where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:not(:first-child))::after => inherit",
+    ":where(.bf-theme) :where(th:not([aria-sort]), td)::after => inherit"
   ].sort();
   const unaffectedRadii: string[] = [];
   ast.walkDecls("border-radius", declaration => {
@@ -1684,9 +1691,9 @@ function validateCommonCss(css: string): void {
     "gap": "var(--bf-space-2)"
   }, "tabs own the relationship between their list and panel");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
-    "box-shadow": "inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default)",
     "margin": "0"
-  }, "tab lists paint their boundary without changing layout and do not leak trailing margin");
+  }, "tab lists do not leak trailing margin");
+  assert(css.includes(":where(.bf-theme) :where(.bf-tabs-list)::after") && css.includes(":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])::after"), "Expected tab-list and active-tab boundaries to use automatic out-of-flow overlays.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
     "overflow-x": "auto",
     "white-space": "nowrap"
@@ -1711,11 +1718,11 @@ function validateCommonCss(css: string): void {
     "padding-inline": "var(--bf-component-inline-inset-field)"
   }, "choice rows keep the canonical selection-row layout while tightening with the field padding token");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-options)", {
-    "border-bottom": "var(--bf-border-width) solid var(--bf-color-border-default)",
+    "border": "0",
     "display": "grid",
     "gap": "var(--bf-field-gap)",
     "padding-inline": "var(--bf-component-inline-inset-continuation)"
-  }, "inline options keep the canonical stacked layout on the shared continuation inset");
+  }, "inline options keep the canonical stacked layout without putting their painted boundary in layout");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-option-grid)", {
     "display": "grid",
     "grid-template-columns": "repeat(auto-fit, minmax(min(100%, 10rem), 1fr))"

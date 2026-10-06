@@ -872,7 +872,13 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
     outline-offset: calc(var(--bf-border-width) * -1);
   }
 
-  :where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb,
+  :where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb {
+    border: 0;
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
   :where(.bf-theme) :where(input[type='range'])::-moz-range-thumb {
     border: 0;
     box-shadow: none;

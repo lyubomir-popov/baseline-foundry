@@ -3152,7 +3152,7 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
           }
           const chipRect = nestedChip.getBoundingClientRect();
           const badgeRect = nestedBadge.getBoundingClientRect();
-          const activeStyles = getComputedStyle(activeTab);
+          const activeStyles = getComputedStyle(activeTab, "::after");
           const plainTextCellStyles = getComputedStyle(plainTextCell);
           const controlCellStyles = getComputedStyle(controlCell);
           const rowBorderSize = Number.parseFloat(
@@ -4438,7 +4438,13 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
     { route: "/demo/components/notice.html", selector: ".bf-notice", forcedSide: "inlineStart" },
     { route: "/demo/components/notification.html", selector: ".bf-notification:not(.is-borderless)", forcedSide: "outline" },
     { route: "/demo/components/notification.html", selector: ".bf-notification-meta", forcedSide: "blockStart" },
-    { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer", forcedSide: "blockStart" }
+    { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer", forcedSide: "blockStart" },
+    { route: "/demo/components/table.html", selector: ".bf-table tbody td", forcedSide: "blockEnd", widthVariable: "--bf-table-row-border-size" },
+    { route: "/demo/components/table-mobile-card.html", selector: ".table-demo-narrow .bf-table.is-mobile-card > tbody > tr", forcedSide: "outline" },
+    { route: "/demo/components/list.html", selector: ".bf-list.is-divided > li + li", forcedSide: "blockStart" },
+    { route: "/demo/components/tabs.html", selector: ".bf-tabs-list", forcedSide: "blockEnd" },
+    { route: "/demo/components/tabs.html", selector: ".bf-tabs-link[aria-selected='true']", forcedSide: "blockEnd", widthVariable: "--bf-bar-thickness" },
+    { route: "/demo/components/inline-options.html", selector: ".bf-inline-options", forcedSide: "blockEnd" }
   ] as const;
 
   try {
@@ -4448,7 +4454,8 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
       await waitForFonts(page);
       const owner = page.locator(testCase.selector).first();
       await owner.scrollIntoViewIfNeeded();
-      const normal = await owner.evaluate(element => {
+      const widthVariable = "widthVariable" in testCase ? testCase.widthVariable : "--bf-stroke-width";
+      const normal = await owner.evaluate((element, localWidthVariable) => {
         const node = element as HTMLElement;
         const ownerStyle = getComputedStyle(node);
         const overlay = getComputedStyle(node, "::after");
@@ -4460,7 +4467,7 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
         const overlayPointerEvents = overlay.pointerEvents;
         const overlayPosition = overlay.position;
         const overlayZIndex = overlay.zIndex;
-        node.style.setProperty("--bf-stroke-width", "6px");
+        node.style.setProperty(localWidthVariable, "6px");
         const after = node.getBoundingClientRect();
         const widenedOverlay = getComputedStyle(node, "::after");
         const result = {
@@ -4477,9 +4484,9 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
           overlayZIndex,
           widenedOverlayBoxShadow: widenedOverlay.boxShadow
         };
-        node.style.removeProperty("--bf-stroke-width");
+        node.style.removeProperty(localWidthVariable);
         return result;
-      });
+      }, widthVariable);
       assert(normal.borderWidths.every(width => width === 0), `Expected ${testCase.selector} to use zero layout borders; got ${JSON.stringify(normal)}.`);
       assert(normal.isolation === "auto" && normal.overlayZIndex === "auto", `Expected ${testCase.selector} paint to add no isolation or overlay stacking index; got ${JSON.stringify(normal)}.`);
       assert(normal.overlayBoxShadow !== "none" && normal.widenedOverlayBoxShadow !== normal.overlayBoxShadow, `Expected ${testCase.selector} to paint its boundary from the local stroke-width slot; got ${JSON.stringify(normal)}.`);
@@ -5538,8 +5545,9 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
         const active = document.querySelector<HTMLElement>(".bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']");
         if (!list || !active) return null;
         const styles = getComputedStyle(active);
+        const overlay = getComputedStyle(active, "::after");
         return {
-          boxShadow: styles.boxShadow,
+          boxShadow: overlay.boxShadow,
           gap: Math.abs(list.getBoundingClientRect().bottom - active.getBoundingClientRect().bottom),
           token: styles.getPropertyValue("--bf-bar-thickness").trim()
         };
@@ -5564,7 +5572,7 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
         return {
           activeIndex: active ? links.indexOf(active) : -1,
           activeBarGap: activeRect ? Math.abs(listRect.bottom - activeRect.bottom) : null,
-          activeBoxShadow: active ? getComputedStyle(active).boxShadow : "",
+          activeBoxShadow: active ? getComputedStyle(active, "::after").boxShadow : "",
           activeVisible: activeRect ? activeRect.left >= listRect.left - 1 && activeRect.right <= listRect.right + 1 : false,
           clipped: [...items, ...links].filter(element => element.scrollWidth > element.clientWidth).map(element => element.textContent?.trim()),
           componentOverflow: tabs.getBoundingClientRect().right - parent.getBoundingClientRect().right,
@@ -6240,6 +6248,37 @@ async function verifyNarrowTierSwitchRangeGeometry(origin: string): Promise<void
         </script>
       </body>`);
     await page.waitForFunction(() => document.fonts.status === "loaded");
+
+    const cssomPage = await browser.newPage({ viewport: { width: 600, height: 480 } });
+    await cssomPage.goto(`${origin}/demo/components/range.html`, { waitUntil: "networkidle" });
+    await cssomPage.emulateMedia({ forcedColors: "active" });
+    const forcedThumbRules = await cssomPage.evaluate(() => {
+      const matched: Array<{ outline: string; selector: string }> = [];
+      const pending: CSSRule[] = [];
+      for (const sheet of Array.from(document.styleSheets)) {
+        try {
+          pending.push(...Array.from(sheet.cssRules));
+        } catch {
+          // Font stylesheets may be cross-origin; the tier stylesheet is local.
+        }
+      }
+      while (pending.length > 0) {
+        const rule = pending.pop();
+        if (!rule) continue;
+        if (rule instanceof CSSStyleRule && rule.selectorText.includes("::-webkit-slider-thumb")) {
+          matched.push({ outline: rule.style.outline, selector: rule.selectorText });
+        }
+        if ("cssRules" in rule) {
+          pending.push(...Array.from((rule as CSSGroupingRule).cssRules));
+        }
+      }
+      return matched;
+    });
+    assert(
+      forcedThumbRules.some(rule => rule.selector.includes("input[type=") && rule.selector.includes("range") && rule.outline.includes("CanvasText")),
+      `Expected Chromium to retain the forced-colors WebKit thumb outline as a valid CSSOM rule; got ${JSON.stringify(forcedThumbRules)}.`
+    );
+    await cssomPage.close();
 
     const range = page.locator("#tier-density");
     await range.dispatchEvent("input");

@@ -71,22 +71,28 @@ and must not be changed.
   surface spacing, local RTL paint, forced-colors edges and real pointer
   routing. Its required gates are green in `overlays-check-types.log`,
   `overlays-npm-test.log`, and `overlays-qa-components.log`.
+- `f32f9ce` migrates Notice, Notification and metadata seams to automatic
+  overlays. Checkbox, Radio, Switch and Range native parts plus the
+  fieldset/legend anatomy use bounded self-paint exceptions with zero layout
+  borders, inset forced-colors outlines and preserved native slots. Its
+  required gates are green in `feedback-check-types.log`,
+  `feedback-npm-test.log`, and `feedback-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-The active feedback/native-parts item moves Notice and Notification boundaries
-and metadata seams to automatic overlays. Checkbox, Radio, Switch, Range,
-file-selector and fieldset/legend anatomy use narrow self-paint exceptions where
-browser-owned parts or occupied glyph pseudos preclude the ordinary overlay.
-Exact browser coverage checks unchanged marker slots, zero layout borders,
-forced-colors outlines, Notification closure and the fieldset legend/filled-
-child paint order.
+The active table/divider item moves table row rules, mobile table-card frames,
+divided-list separators, Tabs rules and InlineOptions boundaries to automatic
+overlays. Sortable headers retain their caret on `::after` and use `::before`
+as the named one-sided stroke owner. The item also repairs the preceding Range
+family's grouped vendor-pseudo forced-colors rule: Chromium drops that mixed
+selector list, so WebKit and Mozilla thumb rules are separate and an actual
+CSSOM regression checks that the Chromium rule survives parsing.
 
-After this item, continue moving static/table/divider families from layout or
-root-shadow strokes to automatic overlays or named anatomy exceptions. Preserve
-the governed dense Site Chip policy and established non-Site nested contracts.
+After this item, finish the emitted border/root-shadow inventory and semantic
+margin/icon ownership sweep. Preserve the governed dense Site Chip policy and
+established non-Site nested contracts.
 
 The shared row ledger is final, but the intermediate source still has local
 border subtraction only where a family still retains a real stroke. Remove

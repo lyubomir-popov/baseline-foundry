@@ -1,4 +1,5 @@
 import { componentDensityPolicy, siteDenseChipPolicySelectors, siteDenseChipScopedCss } from "../component-density-policy.js";
+import { blockEndStrokeOverlayCss } from "./stroke-paint.js";
 
 type TableCssOptions = {
   bodyLineHeight: string;
@@ -11,15 +12,18 @@ export function tableCss(options: TableCssOptions): string {
   const { bodyLineHeight, bodyMediumTypeStyles, bodyTypeStyles, siteScopes } = options;
   const denseChipHosts = siteDenseChipPolicySelectors().hosts;
   const density = componentDensityPolicy.siteDenseChip;
+  const cellStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(th:not([aria-sort]), td)", { anchor: "relative", color: "var(--bf-table-cell-stroke-color, transparent)", width: "var(--bf-table-row-border-size)" });
   const denseChipHostCss = denseChipHosts
     ? `\n/* A Site Table.Cell is the approved dense Chip provider. Nested scopes make\n   the nearest cell and product root authoritative through neutral wrappers. */\n${siteDenseChipScopedCss(siteScopes, denseChipHosts, `${density.currentMember}: var(${density.denseMember});\npadding-block-end: max(0rem, calc(var(--bf-table-row-padding-block-end) - var(${density.currentMember})));\npadding-block-start: max(0rem, calc(var(--bf-table-row-padding-block-start) - var(${density.currentMember})));`)}\n`
     : "";
 
-  return `:where(.bf-theme) {
+  return `${cellStroke.owner}
+
+:where(.bf-theme) {
   --bf-table-row-border-size: var(--bf-border-width);
   --bf-table-row-padding-block-start: var(--bf-in-box-row-padding-block-start);
   --bf-table-row-block-size: var(--bf-interface-row-occupied-block-size);
-  --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start) - var(--bf-table-row-border-size)));
+  --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start)));
   --bf-table-row-line-height: ${bodyLineHeight};
 }
 
@@ -54,8 +58,8 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(th, td) {
+  --bf-table-cell-stroke-color: transparent;
   border: 0;
-  border-block-end: var(--bf-table-row-border-size) solid transparent;
   color: var(--bf-color-text-default);
   line-height: var(--bf-table-row-line-height);
   margin: 0;
@@ -84,17 +88,18 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(thead th) {
 ${bodyMediumTypeStyles}  color: var(--bf-color-text-default);
-  border-block-end-color: var(--bf-color-border-default);
+  --bf-table-cell-stroke-color: var(--bf-color-border-default);
   line-height: var(--bf-table-row-line-height);
 }
 
 :where(.bf-theme) :where(tbody tr:not(:last-child) td, tfoot td) {
-  border-block-end-color: var(--bf-color-border-low-contrast);
+  --bf-table-cell-stroke-color: var(--bf-color-border-low-contrast);
 }
 
 :where(.bf-theme) :where(tbody tr:hover td) {
   background: color-mix(in srgb, var(--bf-color-background-hover) 68%, transparent);
 }
+${cellStroke.painter}
 ${denseChipHostCss}
 `;
 }

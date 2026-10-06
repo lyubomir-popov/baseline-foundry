@@ -1,4 +1,4 @@
-import { allSidedStrokeOverlayCss } from "./stroke-paint.js";
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss } from "./stroke-paint.js";
 
 type TabsChoiceBreadcrumbsCssOptions = {
   bodyCaseTypeStyles: string;
@@ -18,10 +18,19 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
   const segmentedButtonSelector = ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)";
   const choiceStrokeCss = allSidedStrokeOverlayCss(choiceRowSelector, { anchor: "relative" });
   const segmentedStrokeCss = allSidedStrokeOverlayCss(segmentedButtonSelector, { anchor: "relative", color: "var(--bf-color-border-high-contrast)" });
+  const tabsListStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-tabs-list)", { anchor: "relative", color: "var(--bf-color-border-default)" });
+  const activeTabStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])", { anchor: "relative", color: "var(--bf-color-text-default)", width: "var(--bf-bar-thickness)" });
+  const inlineOptionsStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-inline-options)", { anchor: "relative", color: "var(--bf-color-border-default)" });
 
   return `${choiceStrokeCss.owner}
 
 ${segmentedStrokeCss.owner}
+
+${tabsListStroke.owner}
+
+${activeTabStroke.owner}
+
+${inlineOptionsStroke.owner}
 
 :where(.bf-theme) :where(.bf-tabs) {
   display: grid;
@@ -30,7 +39,6 @@ ${segmentedStrokeCss.owner}
 }
 
 :where(.bf-theme) :where(.bf-tabs-list) {
-  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);
   display: flex;
   gap: 0;
   list-style: none;
@@ -86,7 +94,6 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']) {
-  box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
 }
 
@@ -182,10 +189,10 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-inline-options) {
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   display: grid;
   gap: var(--bf-field-gap);
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-block-end: var(--bf-panel-padding-block);
   padding-block-start: var(--bf-panel-padding-block);
   padding-inline: var(--bf-component-inline-inset-continuation);
 }
@@ -358,5 +365,11 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 ${choiceStrokeCss.painter}
 
 ${segmentedStrokeCss.painter}
+
+${tabsListStroke.painter}
+
+${activeTabStroke.painter}
+
+${inlineOptionsStroke.painter}
 `;
 }
