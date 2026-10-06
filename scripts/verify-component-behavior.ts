@@ -152,8 +152,9 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell and status-label text to share the green field-inset keyline.");
     assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), `Expected button, chip, segmented-control, tab, and pagination text to share the red Action keyline: ${JSON.stringify({ starts: alignmentGeometry.commandTextStarts, red: alignmentGeometry.redStart })}.`);
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
-    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
-    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, table of contents, notification, and panel copy to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
+    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart];
+    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, table of contents, and notification to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
+    assert(Math.abs(alignmentGeometry.panelStart - alignmentGeometry.redStart) < 0.51, `Expected panel copy to start at the root-owned Action inset; got ${JSON.stringify(alignmentGeometry)}.`);
     assert(Math.abs(alignmentGeometry.sideNavigationPlainStart - alignmentGeometry.sideNavigationDisclosureStart) < 0.51, `Expected plain and disclosure SideNavigation rows to share their panel-owned label keyline; got ${JSON.stringify(alignmentGeometry)}.`);
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent the active tier Action inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
@@ -207,7 +208,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
             return { x: matrix.m41, y: matrix.m42 };
           };
           return {
-            action: [".bf-button", ".bf-chip", ".bf-chip.is-borderless", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
+            action: [".bf-button", ".bf-chip", ".bf-chip.is-borderless", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link", ".bf-panel-content p"].map(textStart),
             continuation: [
               textStart(".bf-accordion-tab"),
               textStart(".bf-list-tree-toggle"),
@@ -215,8 +216,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
               document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').getBoundingClientRect().left,
               textStart(".bf-table-of-contents-heading"),
               textStart(".bf-table-of-contents-link"),
-              document.querySelector(".bf-notification-title").getBoundingClientRect().left,
-              textStart(".bf-panel-content p")
+              document.querySelector(".bf-notification-title").getBoundingClientRect().left
             ],
             sideNavigation: [
               textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
@@ -236,7 +236,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         })()`);
         assert(matrix.action.every(start => Math.abs(start - matrix.keylines.action) < 0.51), `Expected ${tier}/${tone} action copy to share the action inset: ${JSON.stringify(matrix)}.`);
         assert(matrix.field.every(start => Math.abs(start - matrix.keylines.field) < 0.51), `Expected ${tier}/${tone} field copy to share the field inset: ${JSON.stringify(matrix)}.`);
-        assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, notification, and panel copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
+        assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, and notification copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
         assert(Math.max(...matrix.sideNavigation) - Math.min(...matrix.sideNavigation) < 0.51, `Expected ${tier}/${tone} SideNavigation rows to share the panel label keyline: ${JSON.stringify(matrix)}.`);
         assert(Math.max(...matrix.markCenters) - Math.min(...matrix.markCenters) < 0.51, `Expected ${tier}/${tone} leading marks to share one centre: ${JSON.stringify(matrix.markCenters)}.`);
         assert(matrix.numberInput.appearance === "auto" && matrix.numberInput.backgroundImage === "none", `Expected ${tier}/${tone} number input to retain its native pointer-accessible spinner: ${JSON.stringify(matrix.numberInput)}.`);
@@ -426,7 +426,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const fieldLine = document.querySelector<HTMLElement>("[data-spacing-keyline='field-text-start']");
       const continuationLine = document.querySelector<HTMLElement>("[data-spacing-keyline='disclosure-label-start']");
       const field = document.querySelector<HTMLElement>(".bf-status-label");
-      const continuation = document.querySelector<HTMLElement>(".bf-panel-content p");
+      const continuation = document.querySelector<HTMLElement>(".bf-table-of-contents-link");
       if (!fieldLine || !continuationLine || !field || !continuation) throw new Error("Missing zoom keylines or specimens.");
       const fieldRange = document.createRange();
       fieldRange.selectNodeContents(field);
@@ -1541,9 +1541,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     for (const boundary of [
       { width: 640, persistent: false, columns: 1, label: "at a narrow pattern allocation" },
       { width: 767, persistent: false, columns: 2, label: "below 48rem after the drawer releases space" },
-      { width: 775, persistent: true, columns: 1, allocation: 619, label: "one pixel below the 620px intrinsic split threshold" },
-      { width: 776, persistent: true, columns: 2, allocation: 620, label: "at the 620px intrinsic split threshold" },
-      { width: 777, persistent: true, columns: 2, allocation: 621, label: "one pixel above the 620px intrinsic split threshold" }
+      { width: 768, persistent: true, columns: 2, allocation: 648, label: "at the first persistent-navigation viewport" },
+      { width: 775, persistent: true, columns: 2, allocation: 655, label: "above the intrinsic split threshold" }
     ] as const) {
       await page.setViewportSize({ width: boundary.width, height: 960 });
       await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -1590,11 +1589,28 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       assert(state.drawerPosition === (boundary.persistent ? "static" : "fixed"), `Expected application navigation drawer positioning to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert((state.overlayDisplay === "none") === boundary.persistent, `Expected application navigation overlay lifecycle to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       if ("allocation" in boundary) {
-        assert(state.basicAllocation === boundary.allocation, `Expected the derived 30px continuation inset to leave a ${boundary.allocation}px basic-section allocation ${boundary.label}; got ${JSON.stringify(state)}.`);
+        assert(state.basicAllocation === boundary.allocation, `Expected the root-owned App panel inset to leave a ${boundary.allocation}px basic-section allocation ${boundary.label}; got ${JSON.stringify(state)}.`);
       }
       assert(state.basicColumns === boundary.columns, `Expected application basic-section to use ${boundary.columns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.tieredHeaderColumns === boundary.columns, `Expected application tiered-list header to use ${boundary.columns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
     }
+
+    const thresholdCases = await page.evaluate(() => [619, 620, 621].map(width => {
+      const fixture = document.createElement("section");
+      fixture.className = "bf-basic-section";
+      fixture.style.cssText = `inline-size:${width}px;position:fixed;visibility:hidden`;
+      fixture.innerHTML = `<div class="bf-basic-section-layout"><div class="bf-basic-section-header">Header</div><div class="bf-basic-section-content">Content</div></div>`;
+      document.body.append(fixture);
+      const layout = fixture.querySelector<HTMLElement>(".bf-basic-section-layout");
+      const result = {
+        allocation: layout?.getBoundingClientRect().width ?? 0,
+        columns: layout ? getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
+        width
+      };
+      fixture.remove();
+      return result;
+    }));
+    assert(thresholdCases[0].allocation === 619 && thresholdCases[0].columns === 1 && thresholdCases[1].allocation === 620 && thresholdCases[1].columns === 2 && thresholdCases[2].allocation === 621 && thresholdCases[2].columns === 2, `Expected the intrinsic 620px BasicSection split to hold immediately below, at, and above its sourced threshold; got ${JSON.stringify(thresholdCases)}.`);
 
     await page.setViewportSize({ width: 1440, height: 960 });
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -1801,6 +1817,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const logoRect = logo.getBoundingClientRect();
       const tagRect = tag.getBoundingClientRect();
       const headerStyles = getComputedStyle(header);
+      const panelStyles = getComputedStyle(panel);
       return {
         headerLeft: headerRect.left,
         headerTop: headerRect.top,
@@ -1808,6 +1825,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         panelWidth: panelRect.width,
         panelLeft: panelRect.left,
         panelTop: panelRect.top,
+        panelPaddingBlockStart: Number.parseFloat(panelStyles.paddingBlockStart),
         paddingBlockStart: headerStyles.paddingBlockStart,
         paddingInlineStart: headerStyles.paddingInlineStart,
         tagHeight: tagRect.height,
@@ -1821,7 +1839,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     assert(navigationBrandState, "Expected the application navigation brand to be measurable.");
     assert(navigationBrandState.paddingBlockStart === "0px" && Number.parseFloat(navigationBrandState.paddingInlineStart) > 0, `Expected the navigation-brand header to remove block padding and retain the panel inline inset. Got block=${navigationBrandState.paddingBlockStart}, inline=${navigationBrandState.paddingInlineStart}.`);
-    assert(Math.abs(navigationBrandState.headerTop - navigationBrandState.panelTop) <= 1 && Math.abs(navigationBrandState.tagTop - navigationBrandState.panelTop) <= 1, `Expected the Canonical tag to meet the panel's top edge. Got panel=${navigationBrandState.panelTop}px, header=${navigationBrandState.headerTop}px, tag=${navigationBrandState.tagTop}px.`);
+    assert(Math.abs(navigationBrandState.headerTop - navigationBrandState.panelTop - navigationBrandState.panelPaddingBlockStart) <= 1 && Math.abs(navigationBrandState.tagTop - navigationBrandState.panelTop) <= 1, `Expected the header to begin at the root-owned surface inset while the Canonical tag extends to the panel edge. Got ${JSON.stringify(navigationBrandState)}.`);
     assert(Math.abs(navigationBrandState.headerLeft - navigationBrandState.panelLeft) <= 1 && Math.abs((navigationBrandState.tagLeft - navigationBrandState.panelLeft) - Number.parseFloat(navigationBrandState.paddingInlineStart)) <= 1, `Expected the Canonical tag to share the panel content inset. Got panel=${navigationBrandState.panelLeft}px, tag=${navigationBrandState.tagLeft}px, inset=${navigationBrandState.paddingInlineStart}.`);
     assert(Math.abs(navigationBrandState.tagWidth - 22) <= 1 && Math.abs(navigationBrandState.tagHeight - 38) <= 1, `Expected the Canonical tag to retain 22x38px geometry. Got ${navigationBrandState.tagWidth}x${navigationBrandState.tagHeight}px.`);
     assert(navigationBrandState.titleTransform === "none", `Expected the navigation-brand title to use the fixed brand-line centre without a second optical transform. Got ${navigationBrandState.titleTransform}.`);
@@ -1869,7 +1887,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const nestedLabel = content?.querySelector<HTMLElement>(".bf-side-navigation-list .bf-side-navigation-list .bf-side-navigation-label");
       const contextSwitcher = content?.querySelector<HTMLSelectElement>("[data-side-navigation-context-switcher] > .bf-field-boundary > select");
       const defaultContent = document.querySelector<HTMLElement>(".bf-main .bf-panel-content");
-      if (!content || !activeLink || !topLevelLink || !activeLabel || !iconLink || !iconLabel || !icon || !heading || !nestedLabel || !contextSwitcher || !defaultContent) {
+      const defaultPanel = defaultContent?.closest<HTMLElement>(".bf-panel");
+      if (!content || !activeLink || !topLevelLink || !activeLabel || !iconLink || !iconLabel || !icon || !heading || !nestedLabel || !contextSwitcher || !defaultContent || !defaultPanel) {
         return null;
       }
 
@@ -1898,6 +1917,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const selectedPaintStyles = getComputedStyle(activeLink, "::after");
       const switcherStyles = getComputedStyle(contextSwitcher);
       const defaultContentStyles = getComputedStyle(defaultContent);
+      const defaultPanelStyles = getComputedStyle(defaultPanel);
       const baselinePx = baselineProbe.getBoundingClientRect().width;
       const expectedIconGap = iconGapProbe.getBoundingClientRect().width;
       const expectedGutter = gutterProbe.getBoundingClientRect().width;
@@ -1924,6 +1944,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         contentPaddingInlineEnd: contentStyles.paddingInlineEnd,
         contentPaddingInlineStart: contentStyles.paddingInlineStart,
         defaultPaddingInlineStart: defaultContentStyles.paddingInlineStart,
+        defaultPanelPaddingInlineStart: defaultPanelStyles.paddingInlineStart,
         headingTextInset: heading.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(heading).paddingInlineStart) - contentRect.left,
         iconGap: iconLabel.getBoundingClientRect().left - icon.getBoundingClientRect().right,
         expectedIconGap,
@@ -1955,7 +1976,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(navigationCompositionState.nestedPaddingInlineStart - navigationCompositionState.topLevelPaddingInlineStart) <= 0.1 && Math.abs(navigationCompositionState.nestedLabelInset - navigationCompositionState.iconLabelInset) <= 1, `Expected nested SideNavigation labels to retain their parent keyline. Got ${JSON.stringify(navigationCompositionState)}.`);
     assert(Math.abs(navigationCompositionState.contextSwitcherInset - navigationCompositionState.iconLabelInset) <= 1 && Math.abs(navigationCompositionState.contextSwitcherPaddingInlineStart - navigationCompositionState.expectedFieldInset) <= 0.1, `Expected the ContextSwitcher box to begin on the label keyline and retain the field inset. Got ${JSON.stringify(navigationCompositionState)}.`);
     assert(Math.abs(navigationCompositionState.rowPaddingInlineEnd - navigationCompositionState.expectedGutter) <= 0.1, `Expected SideNavigation rows to retain the grid-margin end gutter. Got ${JSON.stringify(navigationCompositionState)}.`);
-    assert(Number.parseFloat(navigationCompositionState.defaultPaddingInlineStart) > 0, `Expected ordinary panel content to remain padded. Got ${navigationCompositionState.defaultPaddingInlineStart}.`);
+    assert(navigationCompositionState.defaultPaddingInlineStart === "0px" && Number.parseFloat(navigationCompositionState.defaultPanelPaddingInlineStart) > 0, `Expected ordinary panel content to rely on the root-owned surface inset. Got ${JSON.stringify(navigationCompositionState)}.`);
 
     await pinToggle.evaluate(element => {
       if (element instanceof HTMLElement) {
@@ -4393,6 +4414,193 @@ async function verifyCommandPaintOwners(origin: string): Promise<void> {
   }
 }
 
+async function verifySurfacePaintOwners(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 1000 } });
+  const cases = [
+    { route: "/demo/components/contextual-menu.html", selector: ".bf-contextual-menu-dropdown", forcedSide: "outline" },
+    { route: "/demo/components/contextual-menu.html", selector: ".bf-contextual-menu-group + .bf-contextual-menu-group", forcedSide: "blockStart" },
+    { route: "/demo/components/tooltip.html", selector: ".bf-tooltip.is-detached .bf-tooltip-message", forcedSide: "outline" },
+    { route: "/demo/components/modal.html", selector: ".bf-modal-dialog", forcedSide: "outline" },
+    { route: "/demo/components/modal.html", selector: ".bf-modal-header", forcedSide: "blockEnd" },
+    { route: "/demo/components/modal.html", selector: ".bf-modal-footer", forcedSide: "blockStart" },
+    { route: "/demo/components/code-snippet.html", selector: ".bf-code-snippet.is-bordered", forcedSide: "outline" },
+    { route: "/demo/components/code-snippet.html", selector: ".bf-code-snippet-header", forcedSide: "blockEnd" },
+    { route: "/demo/components/code-snippet.html", selector: ".bf-code-snippet-header.is-stacked .bf-code-snippet-dropdowns", forcedSide: "blockStart" },
+    { route: "/demo/components/search-and-filter.html", selector: ".bf-search-and-filter-panel[aria-hidden='false']", forcedSide: "attachedPanel" },
+    { route: "/demo/components/search-and-filter.html", selector: ".bf-filter-panel-section:not(:last-child)", forcedSide: "blockEnd" },
+    { route: "/demo/components/search-box.html", selector: ".bf-search-box-button", forcedSide: "inlineStart" },
+    { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer", forcedSide: "blockStart" }
+  ] as const;
+
+  try {
+    for (const testCase of cases) {
+      await page.emulateMedia({ forcedColors: "none" });
+      await page.goto(`${origin}${testCase.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const owner = page.locator(testCase.selector).first();
+      await owner.scrollIntoViewIfNeeded();
+      const normal = await owner.evaluate(element => {
+        const node = element as HTMLElement;
+        const ownerStyle = getComputedStyle(node);
+        const overlay = getComputedStyle(node, "::after");
+        const before = node.getBoundingClientRect();
+        const overlayBoxShadow = overlay.boxShadow;
+        const overlayBoxSizing = overlay.boxSizing;
+        const overlayContent = overlay.content;
+        const overlayInset = overlay.inset;
+        const overlayPointerEvents = overlay.pointerEvents;
+        const overlayPosition = overlay.position;
+        const overlayZIndex = overlay.zIndex;
+        node.style.setProperty("--bf-stroke-width", "6px");
+        const after = node.getBoundingClientRect();
+        const widenedOverlay = getComputedStyle(node, "::after");
+        const result = {
+          before: { height: before.height, width: before.width },
+          after: { height: after.height, width: after.width },
+          borderWidths: [ownerStyle.borderBlockStartWidth, ownerStyle.borderBlockEndWidth, ownerStyle.borderInlineStartWidth, ownerStyle.borderInlineEndWidth].map(Number.parseFloat),
+          isolation: ownerStyle.isolation,
+          overlayBoxShadow,
+          overlayBoxSizing,
+          overlayContent,
+          overlayInset,
+          overlayPointerEvents,
+          overlayPosition,
+          overlayZIndex,
+          widenedOverlayBoxShadow: widenedOverlay.boxShadow
+        };
+        node.style.removeProperty("--bf-stroke-width");
+        return result;
+      });
+      assert(normal.borderWidths.every(width => width === 0), `Expected ${testCase.selector} to use zero layout borders; got ${JSON.stringify(normal)}.`);
+      assert(normal.isolation === "auto" && normal.overlayZIndex === "auto", `Expected ${testCase.selector} paint to add no isolation or overlay stacking index; got ${JSON.stringify(normal)}.`);
+      assert(normal.overlayBoxShadow !== "none" && normal.widenedOverlayBoxShadow !== normal.overlayBoxShadow, `Expected ${testCase.selector} to paint its boundary from the local stroke-width slot; got ${JSON.stringify(normal)}.`);
+      assert(normal.overlayBoxSizing === "border-box" && normal.overlayContent === '\"\"' && normal.overlayInset === "0px" && normal.overlayPointerEvents === "none" && normal.overlayPosition === "absolute", `Expected ${testCase.selector}::after to be the exact pointer-transparent paint owner; got ${JSON.stringify(normal)}.`);
+      assert(normal.before.width === normal.after.width && normal.before.height === normal.after.height, `Expected ${testCase.selector} occupied geometry to be independent of paint width; got ${JSON.stringify(normal)}.`);
+
+      await page.emulateMedia({ forcedColors: "active" });
+      const forced = await owner.evaluate((element, forcedSide) => {
+        const overlay = getComputedStyle(element, "::after");
+        return {
+          forcedSide,
+          outlineStyle: overlay.outlineStyle,
+          outlineWidth: Number.parseFloat(overlay.outlineWidth),
+          blockStartStyle: overlay.borderBlockStartStyle,
+          blockStartWidth: Number.parseFloat(overlay.borderBlockStartWidth),
+          blockEndStyle: overlay.borderBlockEndStyle,
+          blockEndWidth: Number.parseFloat(overlay.borderBlockEndWidth),
+          inlineStartStyle: overlay.borderInlineStartStyle,
+          inlineStartWidth: Number.parseFloat(overlay.borderInlineStartWidth),
+          inlineEndStyle: overlay.borderInlineEndStyle,
+          inlineEndWidth: Number.parseFloat(overlay.borderInlineEndWidth),
+          shadow: overlay.boxShadow
+        };
+      }, testCase.forcedSide);
+      if (testCase.forcedSide === "outline") {
+        assert(forced.outlineStyle === "solid" && forced.outlineWidth > 0, `Expected ${testCase.selector} to retain a real forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "blockStart") {
+        assert(forced.blockStartStyle === "solid" && forced.blockStartWidth > 0, `Expected ${testCase.selector} to retain its block-start forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "blockEnd") {
+        assert(forced.blockEndStyle === "solid" && forced.blockEndWidth > 0, `Expected ${testCase.selector} to retain its block-end forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "inlineStart") {
+        assert(forced.inlineStartStyle === "solid" && forced.inlineStartWidth > 0, `Expected ${testCase.selector} to retain its inline-start forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "attachedPanel") {
+        assert(forced.blockStartWidth === 0 && forced.blockEndStyle === "solid" && forced.blockEndWidth > 0 && forced.inlineStartStyle === "solid" && forced.inlineStartWidth > 0 && forced.inlineEndStyle === "solid" && forced.inlineEndWidth > 0, `Expected attached SearchAndFilter paint to retain exactly three forced-colors edges; got ${JSON.stringify(forced)}.`);
+      }
+      assert(forced.shadow === "none", `Expected ${testCase.selector} forced-colors paint to use system borders/outlines rather than shadows; got ${JSON.stringify(forced)}.`);
+    }
+
+    await page.emulateMedia({ forcedColors: "none" });
+    await page.goto(`${origin}/demo/components/code-snippet.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const dropdowns = page.locator(".bf-code-snippet-header.is-stacked .bf-code-snippet-dropdowns").first();
+    await dropdowns.evaluate(element => {
+      const first = element.querySelector<HTMLElement>(".bf-code-snippet-dropdown");
+      if (!first) throw new Error("Missing code-snippet dropdown fixture.");
+      const adjacent = first.cloneNode(true) as HTMLElement;
+      adjacent.textContent = "Copy URL";
+      element.append(adjacent);
+    });
+    const inlineDivider = await dropdowns.locator(".bf-code-snippet-dropdown + .bf-code-snippet-dropdown").evaluate(element => {
+      const owner = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      return {
+        borderInlineStart: Number.parseFloat(owner.borderInlineStartWidth),
+        shadow: overlay.boxShadow,
+        pointerEvents: overlay.pointerEvents
+      };
+    });
+    assert(inlineDivider.borderInlineStart === 0 && inlineDivider.shadow !== "none" && inlineDivider.pointerEvents === "none", `Expected adjacent code actions to retain an out-of-flow inline-start divider; got ${JSON.stringify(inlineDivider)}.`);
+    const copiedBlock = page.locator(".bf-code-snippet-block.is-icon").first();
+    const copiedState = await copiedBlock.evaluate(element => {
+      const node = element as HTMLElement;
+      const before = node.getBoundingClientRect();
+      node.classList.add("is-copied");
+      const after = node.getBoundingClientRect();
+      const owner = getComputedStyle(node);
+      const overlay = getComputedStyle(node, "::after");
+      return {
+        borderWidths: [owner.borderBlockStartWidth, owner.borderBlockEndWidth, owner.borderInlineStartWidth, owner.borderInlineEndWidth].map(Number.parseFloat),
+        heightDelta: after.height - before.height,
+        overlayPointerEvents: overlay.pointerEvents,
+        overlayShadow: overlay.boxShadow,
+        widthDelta: after.width - before.width
+      };
+    });
+    assert(copiedState.borderWidths.every(width => width === 0) && copiedState.heightDelta === 0 && copiedState.widthDelta === 0 && copiedState.overlayPointerEvents === "none" && copiedState.overlayShadow !== "none", `Expected copied CodeSnippet state to paint without changing its occupied box or click target; got ${JSON.stringify(copiedState)}.`);
+    const rtlInlineDividerShadow = await dropdowns.evaluate(element => {
+      element.setAttribute("dir", "rtl");
+      const adjacent = element.querySelector<HTMLElement>(".bf-code-snippet-dropdown + .bf-code-snippet-dropdown");
+      return adjacent ? getComputedStyle(adjacent, "::after").boxShadow : "none";
+    });
+    assert(rtlInlineDividerShadow.includes("-1px 0px 0px"), `Expected a locally nested RTL code-action divider to paint on logical inline-start; got ${rtlInlineDividerShadow}.`);
+
+    await page.goto(`${origin}/demo/components/search-box.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const searchBox = page.locator(".bf-search-box").first();
+    await searchBox.evaluate(element => element.setAttribute("dir", "rtl"));
+    const rtlSearchShadow = await searchBox.locator(".bf-search-box-button").evaluate(element => getComputedStyle(element, "::after").boxShadow);
+    assert(rtlSearchShadow.includes("-1px 0px 0px"), `Expected a locally nested RTL SearchBox action divider to paint on logical inline-start; got ${rtlSearchShadow}.`);
+    await page.emulateMedia({ forcedColors: "active" });
+    const rtlSearchForced = await searchBox.locator(".bf-search-box-button").evaluate(element => {
+      const overlay = getComputedStyle(element, "::after");
+      return {
+        left: Number.parseFloat(overlay.borderLeftWidth),
+        right: Number.parseFloat(overlay.borderRightWidth)
+      };
+    });
+    assert(rtlSearchForced.right > 0 && rtlSearchForced.left === 0, `Expected a locally nested RTL SearchBox separator to use the physical right forced-colors edge; got ${JSON.stringify(rtlSearchForced)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+
+    const interactions = [
+      { route: "/demo/components/contextual-menu.html", selector: ".bf-contextual-menu-link" },
+      { route: "/demo/components/modal.html", selector: ".bf-modal-close" },
+      { route: "/demo/components/code-snippet.html", selector: ".bf-code-snippet-dropdown" },
+      { route: "/demo/components/search-and-filter.html", selector: ".bf-search-and-filter-panel[aria-hidden='false'] .bf-chip" },
+      { route: "/demo/components/search-box.html", selector: ".bf-search-box-button" },
+      { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer a" }
+    ] as const;
+    for (const interaction of interactions) {
+      await page.goto(`${origin}${interaction.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const target = page.locator(interaction.selector).first();
+      await target.scrollIntoViewIfNeeded();
+      await target.evaluate(element => {
+        (element as HTMLElement).dataset.surfacePointerRoute = "pending";
+        element.addEventListener("click", () => {
+          (element as HTMLElement).dataset.surfacePointerRoute = "routed";
+        }, { once: true });
+      });
+      await target.click();
+      const clicked = await target.getAttribute("data-surface-pointer-route") === "routed";
+      assert(clicked, `Expected ${interaction.selector} interaction to route through the pointer-transparent surface overlay.`);
+    }
+  } finally {
+    await page.close();
+    await browser.close();
+  }
+}
+
 async function verifyQualifiedAnchorStates(origin: string): Promise<void> {
   const cases = [
     { route: "/examples/grid/app-panels.html", selector: "a.pc-sequence-link", decoration: "none", label: "page sequence button" },
@@ -5581,7 +5789,8 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
   const expectedPanelPaddingPx = { editorial: 16, documentation: 12, app: 12, os: 8 } as const;
-  const expectedPanelInlinePx = { editorial: 32, documentation: 30, app: 30, os: 20 } as const;
+  const expectedPanelInlinePx = { editorial: 16, documentation: 12, app: 12, os: 8 } as const;
+  const expectedPanelGapPx = { editorial: 24, documentation: 20, app: 20, os: 24 } as const;
   const expectedTooltipBlockPx = { editorial: 0, documentation: 4, app: 4, os: 0 } as const;
   const expectedTooltipInlinePx = { editorial: 8, documentation: 8, app: 8, os: 4 } as const;
   const browser = await openBrowser();
@@ -5614,6 +5823,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         const nestedInput = document.querySelector<HTMLElement>(".bf-input.is-nested");
         const nestedInputBoundary = nestedInput?.closest<HTMLElement>(".bf-field-boundary");
         const tableRow = document.querySelector<HTMLElement>(".bf-table tr");
+        const panel = document.querySelector<HTMLElement>(".bf-panel");
         const header = document.querySelector<HTMLElement>(".bf-panel-header");
         const footer = document.querySelector<HTMLElement>(".bf-panel-footer");
         const status = document.querySelector<HTMLElement>(".bf-status-label");
@@ -5623,7 +5833,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         const tooltip = document.querySelector<HTMLElement>(".bf-tooltip:not(.is-detached) .bf-tooltip-message");
         const tooltipText = tooltip?.querySelector<HTMLElement>(".bf-tooltip-text");
         const detachedTooltip = document.querySelector<HTMLElement>(".bf-tooltip.is-detached .bf-tooltip-message");
-        if (!input || !inputBoundary || !button || !nestedInput || !nestedInputBoundary || !tableRow || !header || !footer || !status || !appPage || !appGrid || !fixedWidth || !tooltip || !tooltipText || !detachedTooltip) {
+        if (!input || !inputBoundary || !button || !nestedInput || !nestedInputBoundary || !tableRow || !panel || !header || !footer || !status || !appPage || !appGrid || !fixedWidth || !tooltip || !tooltipText || !detachedTooltip) {
           throw new Error("Missing surface parity fixture.");
         }
 
@@ -5647,6 +5857,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
         const inputStyles = getComputedStyle(inputBoundary);
         const buttonStyles = getComputedStyle(button);
+        const panelStyles = getComputedStyle(panel);
         const headerStyles = getComputedStyle(header);
         const footerStyles = getComputedStyle(footer);
         const tooltipStyles = getComputedStyle(tooltip);
@@ -5665,9 +5876,12 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           regularOccupied: contractValues["--bf-interface-row-occupied-block-size"],
           regularPainted: contractValues["--bf-interface-row-painted-block-size"],
           tableRowHeight: tableRow.getBoundingClientRect().height,
-          panelPaddingStart: Number.parseFloat(headerStyles.paddingBlockStart) || 0,
-          panelPaddingEnd: Number.parseFloat(headerStyles.paddingBlockEnd) || 0,
-          panelGap: Number.parseFloat(headerStyles.gap) || 0,
+          panelPaddingStart: Number.parseFloat(panelStyles.paddingBlockStart) || 0,
+          panelPaddingEnd: Number.parseFloat(panelStyles.paddingBlockEnd) || 0,
+          panelPaddingInlineStart: Number.parseFloat(panelStyles.paddingInlineStart) || 0,
+          panelPaddingInlineEnd: Number.parseFloat(panelStyles.paddingInlineEnd) || 0,
+          panelGap: Number.parseFloat(panelStyles.gap) || 0,
+          headerPadding: Number.parseFloat(headerStyles.paddingBlockStart) + Number.parseFloat(headerStyles.paddingBlockEnd) + Number.parseFloat(headerStyles.paddingInlineStart) + Number.parseFloat(headerStyles.paddingInlineEnd),
           footerPaddingEnd: Number.parseFloat(footerStyles.paddingBlockEnd) || 0,
           footerPaddingInlineStart: Number.parseFloat(footerStyles.paddingInlineStart) || 0,
           statusHeight: status.getBoundingClientRect().height,
@@ -5707,8 +5921,9 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
       assert(Math.abs(direct.fixedWidth - expectedCapPx[tier]) <= 1, `Expected direct ${tier} bf-fixed-width to resolve to ${expectedCapPx[tier]}px, got ${direct.fixedWidth}px.`);
       assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
-      assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel headers to use ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
-      assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelInlinePx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px block-end padding and the ${expectedPanelInlinePx[tier]}px Canonical continuation inset, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
+      assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel roots to own ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
+      assert(direct.panelPaddingInlineStart === expectedPanelInlinePx[tier] && direct.panelPaddingInlineEnd === expectedPanelInlinePx[tier] && direct.panelGap === expectedPanelGapPx[tier], `Expected direct ${tier} panel roots to own ${expectedPanelInlinePx[tier]}px action insets and ${expectedPanelGapPx[tier]}px group gap: ${JSON.stringify(direct)}.`);
+      assert(direct.headerPadding === 0 && direct.footerPaddingEnd === 0 && direct.footerPaddingInlineStart === 0, `Expected direct ${tier} panel sections to add no padding inside the root-owned surface inset: ${JSON.stringify(direct)}.`);
       assert(direct.tooltipInlineStart === expectedTooltipInlinePx[tier] && direct.tooltipInlineEnd === expectedTooltipInlinePx[tier] && direct.tooltipBlockStart === expectedTooltipBlockPx[tier] && direct.tooltipBlockEnd === expectedTooltipBlockPx[tier], `Expected direct ${tier} Tooltip outer compact padding to resolve from the ${expectedTooltipInlinePx[tier]}px field role and ${expectedTooltipBlockPx[tier]}px compact block role: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.tooltipContainmentDelta) <= 0.05 && direct.tooltipTextPaddingStart > 0 && direct.tooltipTextPaddingEnd === 0 && direct.tooltipTextMarginEnd >= direct.tooltipTextPaddingStart, `Expected direct ${tier} Tooltip to contain its inner metric nudge and SP13 end compensation independently from outer padding: ${JSON.stringify(direct)}.`);
       assert(direct.tooltipArrowPresent === 1 && direct.tooltipDetachedArrowAbsent === 1, `Expected direct ${tier} Tooltip arrow anatomy to remain present while detached mode suppresses it: ${JSON.stringify(direct)}.`);
@@ -6356,6 +6571,7 @@ async function main(): Promise<void> {
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);
     await verifyCommandPaintOwners(origin);
+    await verifySurfacePaintOwners(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);

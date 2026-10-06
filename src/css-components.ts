@@ -26,7 +26,7 @@ import { sitesFoundationCss } from "./css-components/sites-foundation.js";
 import { sitesEditorialPortsCss } from "./css-components/sites-editorial-ports.js";
 import { sitesRichListsCss } from "./css-components/sites-rich-lists.js";
 import { staticContentPortsCss } from "./css-components/static-content-ports.js";
-import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss } from "./css-components/stroke-paint.js";
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss, inlineStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { tableCss } from "./css-components/table.js";
 import { tabSectionCss } from "./css-components/tab-section.js";
 import { tabsChoiceBreadcrumbsCss } from "./css-components/tabs-choice-breadcrumbs.js";
@@ -101,11 +101,33 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const fieldStroke = blockEndStrokeOverlayCss(fieldBoundarySelector, { anchor: "relative" });
   const navigationBarSelector = ":where(.bf-theme) :where(.bf-navigation-bar)";
   const navigationBarStroke = blockEndStrokeOverlayCss(navigationBarSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const contextualMenuStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-contextual-menu-dropdown)", { anchor: "existing" });
+  const contextualMenuGroupStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group)", { anchor: "relative" });
+  const tooltipMessageStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-tooltip-message)", { anchor: "existing" });
+  const modalDialogStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-modal-dialog)", { anchor: "relative" });
+  const modalHeaderStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-modal-header)", { anchor: "relative" });
+  const modalFooterStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-modal-footer)", { anchor: "relative" });
+  const codeSnippetStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet.is-bordered)", { anchor: "relative" });
+  const codeSnippetHeaderStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet-header)", { anchor: "relative" });
+  const codeSnippetStackedDropdownStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet-header.is-stacked) :where(.bf-code-snippet-dropdowns)", { anchor: "relative" });
+  const codeSnippetDropdownStroke = inlineStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet-dropdown) + :where(.bf-code-snippet-dropdown)", { anchor: "relative" });
+  const copiedCodeSnippetStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet-block.is-icon.is-copied)", { anchor: "existing", color: "var(--bf-color-border-information)" });
 
   return `${componentContractsCss(tokens, themeSurfaces)}
 ${controlGeometryCss({ bodyLineHeight, bodySelectedStartNudge })}
 ${applicationGeometryCss()}
 ${navigationGeometryCss()}
+${contextualMenuStroke.owner}
+${contextualMenuGroupStroke.owner}
+${tooltipMessageStroke.owner}
+${modalDialogStroke.owner}
+${modalHeaderStroke.owner}
+${modalFooterStroke.owner}
+${codeSnippetStroke.owner}
+${codeSnippetHeaderStroke.owner}
+${codeSnippetStackedDropdownStroke.owner}
+${codeSnippetDropdownStroke.owner}
+${copiedCodeSnippetStroke.owner}
 :where(.bf-theme) {
 ${foundryComponentColorVars("light")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
@@ -986,9 +1008,10 @@ ${legacyNavigationCss({
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-dropdown) {
+  --bf-overlay-elevation-layer: 0 0.75rem 2rem rgba(0, 0, 0, 0.28);
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
-  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.28);
+  border: 0;
+  box-shadow: none;
   display: none;
   list-style: none;
   margin: 0;
@@ -997,7 +1020,7 @@ ${legacyNavigationCss({
   padding: 0;
   position: absolute;
   right: 0;
-  top: calc(100% - var(--bf-border-width));
+  top: 100%;
   width: fit-content;
   z-index: 9;
 }
@@ -1022,7 +1045,7 @@ ${legacyNavigationCss({
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group) {
-  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-default);
+  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-link) {
@@ -1072,6 +1095,9 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   pointer-events: none;
 }
 
+${contextualMenuStroke.painter}
+${contextualMenuGroupStroke.painter}
+
 :where(.bf-theme) :where(.bf-tooltip) {
   --bf-tooltip-arrow-size: calc(var(--bf-baseline) * 0.5);
   --bf-tooltip-arrow-offset-inline: calc(var(--bf-tooltip-arrow-size) * 1.5);
@@ -1087,8 +1113,9 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 }
 
 :where(.bf-theme) :where(.bf-tooltip-message) {
+  --bf-overlay-elevation-layer: 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
   background-color: var(--bf-color-background-alt);
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default), 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
+  box-shadow: none;
   color: var(--bf-color-text-default);
   display: flow-root;
   inline-size: max-content;
@@ -1101,7 +1128,7 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   pointer-events: none;
   position: absolute;
   top: 100%;
-  transform: translateY(calc(var(--bf-baseline) - var(--bf-border-width)));
+  transform: translateY(var(--bf-baseline));
   visibility: hidden;
   white-space: normal;
   z-index: 12;
@@ -1145,7 +1172,7 @@ ${typeStyles(body, { includeCase: false })}  display: block;
 
 :where(.bf-theme) :where(.bf-tooltip.is-btm-center) > :where(.bf-tooltip-message) {
   inset-inline-start: 50%;
-  transform: translate(-50%, calc(var(--bf-baseline) - var(--bf-border-width)));
+  transform: translate(-50%, var(--bf-baseline));
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-btm-center) > :where(.bf-tooltip-message)::before {
@@ -1196,6 +1223,8 @@ ${typeStyles(body, { includeCase: false })}  display: block;
   inset-inline-end: var(--bf-tooltip-arrow-offset-inline);
   inset-inline-start: auto;
 }
+
+${tooltipMessageStroke.painter}
 
 ${paginationStroke.owner}
 
@@ -1412,12 +1441,12 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   border: 0;
   inset: 0;
   margin: auto;
-  max-inline-size: min(100vw - (var(--bf-baseline) * 8), 36rem);
+  max-inline-size: min(calc(100vw - (var(--bf-page-margin) * 2)), 36rem);
   padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-modal.is-workflow) {
-  --bf-modal-workflow-viewport-gap: var(--bf-component-inline-inset-continuation);
+  --bf-modal-workflow-viewport-gap: calc(var(--bf-page-margin) * 2);
   --bf-modal-workflow-max-inline-size: 42rem;
   --bf-modal-workflow-min-inline-size: 32rem;
   --bf-modal-workflow-max-block-size: 40rem;
@@ -1441,9 +1470,11 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 
 :where(.bf-theme) :where(.bf-modal-dialog) {
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   display: grid;
-  gap: 0;
+  gap: var(--bf-section-space-shallow);
+  padding-block: var(--bf-panel-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(.bf-modal.is-workflow > .bf-modal-dialog) {
@@ -1455,22 +1486,19 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer) {
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-panel-padding-inline);
+  padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-modal-header) {
   align-items: start;
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   display: flex;
   gap: var(--bf-field-gap);
   justify-content: space-between;
 }
 
 :where(.bf-theme) :where(.bf-modal-body) {
-  padding-block-end: var(--bf-panel-padding-block);
-  padding-block-start: var(--bf-panel-padding-block);
+  padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-modal.is-workflow) :where(.bf-modal-header, .bf-modal-footer) {
@@ -1491,7 +1519,7 @@ ${typeStyles(h4, { includeCase: false })}  margin: 0 0 var(--bf-h4-margin-bottom
 
 :where(.bf-theme) :where(.bf-modal-footer) {
   align-items: start;
-  border-top: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
@@ -1507,6 +1535,10 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   padding: 0;
 }
 
+${modalDialogStroke.painter}
+${modalHeaderStroke.painter}
+${modalFooterStroke.painter}
+
 :where(.bf-theme) :where(.bf-code-snippet) {
   display: grid;
   gap: 0;
@@ -1515,13 +1547,13 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet.is-bordered) {
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default);
+  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-header) {
   align-items: start;
   background: var(--bf-color-background-active);
-  box-shadow: inset 0 -0.0625rem 0 var(--bf-color-border-default);
+  box-shadow: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -1553,7 +1585,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-default);
 :where(.bf-theme) :where(.bf-code-snippet-header.is-stacked) :where(.bf-code-snippet-dropdowns) {
   justify-content: stretch;
   margin-inline-start: 0;
-  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-default);
+  box-shadow: none;
   width: 100%;
 }
 
@@ -1572,7 +1604,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-dropdown) + :where(.bf-code-snippet-dropdown) {
-  box-shadow: inset 0.0625rem 0 0 var(--bf-color-border-default);
+  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-dropdown):focus:not(:focus-visible) {
@@ -1634,7 +1666,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon.is-copied) {
   background: color-mix(in srgb, var(--bf-color-background-alt) 78%, var(--bf-color-background-information-default));
-  box-shadow: inset 0 0 0 0.0625rem var(--bf-color-border-information);
+  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon):focus:not(:focus-visible) {
@@ -1666,6 +1698,12 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   text-align: right;
   user-select: none;
 }
+
+${codeSnippetStroke.painter}
+${codeSnippetHeaderStroke.painter}
+${codeSnippetStackedDropdownStroke.painter}
+${codeSnippetDropdownStroke.painter}
+${copiedCodeSnippetStroke.painter}
 
 :where(.bf-theme) :where(.bf-application) {
   background: var(--bf-color-background-default);

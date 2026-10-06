@@ -55,15 +55,34 @@ and must not be changed.
   compositions use their existing outer owners. Its required gates are green
   in `fields-check-types.log`, `fields-npm-test.log`, and
   `fields-qa-components.log`.
+- `cbcabbe` migrates navigation bars, drawers, pagination and navigation
+  actions to out-of-flow paint while preserving the tagged Canonical brand,
+  icon slots, SideNavigation selection and existing navigation stack contract.
+  Its required gates are green in `navigation-check-types.log`,
+  `navigation-npm-test.log`, and `navigation-qa-components.log`.
+- `c3af935` migrates Card, OptionCard and ContentCard surface boundaries and
+  seams to out-of-flow paint, moves standard surface ownership to the Card
+  root, preserves the missing-preview leaf exception, and proves a real menu
+  can escape the following Card. Its required gates are green in
+  `cards-check-types.log`, `cards-npm-test.log`, and
+  `cards-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-Continue moving navigation, surfaces/overlays, and static/table/divider
-families from real layout borders to the automatic overlay or a named anatomy
-exception. Preserve the governed dense Site Chip policy and the established
-non-Site nested contracts.
+The active surface/overlay item moves Panel, Modal, ContextualMenu, Tooltip,
+SearchAndFilter and CodeSnippet boundaries and section seams to automatic
+overlays. Panel and Modal roots own standard surface insets and group gaps;
+flush SideNavigation retains its governed gutters and the tagged brand reaches
+the surface edge. Exact browser coverage checks zero layout borders, paint-width
+independence, forced-colors edges, locally nested RTL one-sided paint and real
+pointer routing.
+
+After this item, continue moving feedback, marker/native-part, and
+static/table/divider families from layout or root-shadow strokes to automatic
+overlays or named anatomy exceptions. Preserve the governed dense Site Chip
+policy and the established non-Site nested contracts.
 
 The shared row ledger is final, but the intermediate source still has local
 border subtraction only where a family still retains a real stroke. Remove

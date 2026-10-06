@@ -13,7 +13,10 @@
 - [x] Paint-only row contract — `b395a56`, gates green; logs `row-contract-check-types.log`, `row-contract-npm-test.log`, `row-contract-qa-components.log`
 - [ ] Paint-only component families
   - [x] Row-bearing commands (Button, Chip, ChoiceRow, SegmentedControl, Pagination) — `5a020b7`, gates green; logs `commands-check-types.log`, `commands-npm-test.log`, `commands-qa-components.log`
-  - [x] Native fields and search compositions — current tip, gates green; logs `fields-check-types.log`, `fields-npm-test.log`, `fields-qa-components.log`
+  - [x] Native fields and search compositions — `c3512eb`, gates green; logs `fields-check-types.log`, `fields-npm-test.log`, `fields-qa-components.log`
+  - [x] Navigation bars, drawers, pagination and navigation actions — `cbcabbe`, gates green; logs `navigation-check-types.log`, `navigation-npm-test.log`, `navigation-qa-components.log`
+  - [x] Cards, OptionCard and ContentCard surfaces — `c3af935`, gates green; logs `cards-check-types.log`, `cards-npm-test.log`, `cards-qa-components.log`
+  - [ ] Panels, modals, popup surfaces and code snippets — current change
 - [ ] Before/after review demo and negative specimens
 - [ ] Root gates and Chromium evidence
 - [ ] Conformance board and final Opus request

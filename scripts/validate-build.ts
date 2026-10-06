@@ -877,7 +877,20 @@ function validateCommonCss(css: string): void {
   }, "SideNavigation selection paints out of flow inside the start gutter");
   assert(css.includes("@media (forced-colors: active)") && css.includes("border-inline-start: var(--bf-bar-thickness) solid CanvasText;"), "Expected selected SideNavigation gutter paint to retain a one-sided system-color border in forced colors.");
   assert(css.includes("min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-nudge-end));"), "Expected single-line side-navigation group headings to reserve a four-baseline occupied block without counting the ordinary in-box end nudge twice.");
-  assert(css.includes("min-block-size: calc(var(--bf-interface-row-occupied-block-size) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to combine the regular interface row with their structural end padding.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel)", {
+    "gap": "var(--bf-section-space-shallow)",
+    "padding-block": "var(--bf-panel-padding-block)",
+    "padding-inline": "var(--bf-panel-content-padding-inline)"
+  }, "panel roots own the surface inset and group gap between sections");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel.bf-side-navigation)", {
+    "gap": "0",
+    "padding": "0"
+  }, "SideNavigation composition keeps its own grid-margin gutters and group rhythm");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel-footer)", {
+    "border": "0",
+    "min-block-size": "var(--bf-interface-row-occupied-block-size)",
+    "padding": "0"
+  }, "panel footers keep only their interface row while the root owns surrounding surface spacing");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0rem;"), "Expected flush stacks to remove only their container gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-metric-flush) {\n  --bf-stack-space: 0rem;") && css.includes(":where(.bf-theme) .bf-stack.is-metric-flush > :where(") && css.includes(":has(+ :where(") && css.includes(" + :where(") && css.includes("margin-block-end: 0;") && css.includes("padding-block-start: 0;"), "Expected metric-flush stacks to cancel only configured adjacent text-role compensation and start nudges.");
@@ -892,7 +905,7 @@ function validateCommonCss(css: string): void {
   for (const [selector, inset] of [
     [":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", "action"],
     [":where(.bf-theme) :where(.bf-option-card)", "action"],
-    [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "continuation"],
+    [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "action"],
     [":where(.bf-theme) :where(.bf-contextual-menu-link)", "action"],
     [":where(.bf-theme) :where(.bf-code-snippet-title)", "continuation"],
     [":where(.bf-theme) :where(.bf-code-snippet-dropdown)", "action"],
@@ -915,13 +928,27 @@ function validateCommonCss(css: string): void {
   assert(css.includes("padding-block-start: var(--bf-body-nudge-start,"), "Expected Tooltip inner text to consume the generated body metric nudge with a tier fallback.");
   for (const selector of [
     ":where(.bf-theme) :where(fieldset, .bf-fieldset)",
-    ":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)",
     ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)"
   ]) {
     assertRuleHasDecl(ast, selector, {
       "padding-inline": "var(--bf-panel-padding-inline)"
     }, `${selector} consumes structural panel padding rather than a component content inset`);
   }
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-modal-dialog)", {
+    "gap": "var(--bf-section-space-shallow)",
+    "padding-block": "var(--bf-panel-padding-block)",
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "modal roots own standard surface insets and the group gap between sections");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)", {
+    "padding": "0"
+  }, "modal sections add no padding inside the root-owned surface spacing");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-panel)", {
+    "gap": "var(--bf-section-space-shallow)",
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "SearchAndFilter roots own the standard surface inset and group gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-filter-panel-section)", {
+    "padding": "0"
+  }, "SearchAndFilter sections add no spacing beside the root-owned group gap");
   assert(css.includes("vertical-align: baseline;") && !css.includes("vertical-align: calc(var(--bf-border-width) - var(--bf-body-nudge-start"), "Expected inline chips to expose their first text baseline without reapplying the body metric nudge.");
   assert(css.includes("margin: 0 0 calc(0.5rem - 0.0625rem);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 0.0625rem thickness.");
   assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
@@ -1303,19 +1330,33 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-card-preview:not(.is-missing))::after => inherit",
     ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)::after => inherit",
     ":where(.bf-theme) :where(.bf-choice-row)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet-block.is-icon.is-copied)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet-dropdown) + :where(.bf-code-snippet-dropdown)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet-header)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet-header.is-stacked) :where(.bf-code-snippet-dropdowns)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet.is-bordered)::after => inherit",
     ":where(.bf-theme) :where(.bf-content-card)::after => inherit",
     ":where(.bf-theme) :where(.bf-content-card-footer)::after => inherit",
+    ":where(.bf-theme) :where(.bf-contextual-menu-dropdown)::after => inherit",
+    ":where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group)::after => inherit",
     ":where(.bf-theme) :where(.bf-field-boundary) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after => inherit",
     ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
+    ":where(.bf-theme) :where(.bf-modal-dialog)::after => inherit",
+    ":where(.bf-theme) :where(.bf-modal-footer)::after => inherit",
+    ":where(.bf-theme) :where(.bf-modal-header)::after => inherit",
     ":where(.bf-theme) :where(.bf-navigation-bar)::after => inherit",
     ":where(.bf-theme) :where(.bf-option-card)::after => inherit",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)::after => inherit",
+    ":where(.bf-theme) :where(.bf-panel-footer)::after => inherit",
     ":where(.bf-theme) :where(.bf-prose ul > li)::before => 50%",
     ":where(.bf-theme) :where(.bf-radio-label)::after => 50%",
     ":where(.bf-theme) :where(.bf-radio-label)::before => 50%",
+    ":where(.bf-theme) :where(.bf-search-and-filter-panel)::after => inherit",
+    ":where(.bf-theme) :where(.bf-search-box-button)::after => inherit",
+    ":where(.bf-theme) :where(.bf-filter-panel-section:not(:last-child))::after => inherit",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) => 0",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)::after => inherit",
     ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)::after => inherit",
@@ -1324,6 +1365,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-switch-slider) => var(--bf-control-visual-size)",
     ":where(.bf-theme) :where(.bf-switch-slider)::before => 50%",
     ":where(.bf-theme) :where(.bf-top-navigation)::after => inherit",
+    ":where(.bf-theme) :where(.bf-tooltip-message)::after => inherit",
     ":where(.bf-theme) :where(.bf-validation-message)::before => 50%",
     ":where(.bf-theme) :where(input[type='file'])::file-selector-button => var(--bf-radius)",
     ":where(.bf-theme) :where(input[type='range']) => var(--bf-baseline)",

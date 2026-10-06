@@ -1,3 +1,5 @@
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss, inlineStartStrokeOverlayCss } from "./stroke-paint.js";
+
 type SearchBoxAndFilterCssOptions = {
   bodySelectedStartNudge: string;
   bodyTypeStyles: string;
@@ -10,8 +12,16 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
     bodyTypeStyles,
     inputMarginBottom,
   } = options;
+  const panelSelector = ":where(.bf-theme) :where(.bf-search-and-filter-panel)";
+  const panelStroke = allSidedStrokeOverlayCss(panelSelector, { anchor: "existing" });
+  const sectionStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-filter-panel-section:not(:last-child))", { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
+  const searchActionStroke = inlineStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-search-box-button)", { anchor: "existing" });
 
-  return `:where(.bf-theme) :where(.bf-search-box) {
+  return `${panelStroke.owner}
+${sectionStroke.owner}
+${searchActionStroke.owner}
+
+:where(.bf-theme) :where(.bf-search-box) {
   --bf-search-box-action-inline-size: max(var(--bf-pointer-target-minimum), calc(var(--bf-icon-size-default) + (var(--bf-component-inline-inset-field) * 2)));
   --bf-search-box-trailing-inline-size: calc(var(--bf-search-box-action-inline-size) * 2);
   display: flex;
@@ -45,7 +55,7 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   appearance: none;
   background: transparent;
   border: 0;
-  box-shadow: inset var(--bf-border-width) 0 0 var(--bf-color-border-default);
+  box-shadow: none;
   color: var(--bf-color-text-default);
   cursor: pointer;
   inset-inline-end: 0;
@@ -67,10 +77,6 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   text-indent: 0;
   top: 50%;
   transform: translate(-50%, -50%);
-}
-
-:where(.bf-theme) :where(.bf-search-box-button)::after {
-  content: none;
 }
 
 :where(.bf-theme) :where(.bf-search-box-reset:focus:not(:focus-visible), .bf-search-box-button:focus:not(:focus-visible)) {
@@ -194,15 +200,16 @@ ${bodyTypeStyles}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-panel) {
+  --bf-overlay-elevation-layer: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  --bf-overlay-stroke-layer: inset var(--bf-stroke-width) 0 0 var(--bf-stroke-color), inset calc(var(--bf-stroke-width) * -1) 0 0 var(--bf-stroke-color), inset 0 calc(var(--bf-stroke-width) * -1) 0 var(--bf-stroke-color);
   background-color: var(--bf-color-background-inputs);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
-  border-top: 0;
-  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  border: 0;
+  box-shadow: none;
   display: grid;
-  gap: var(--bf-field-gap);
+  gap: var(--bf-section-space-shallow);
   opacity: 1;
-  padding-bottom: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-component-inline-inset-continuation);
+  padding-bottom: var(--bf-panel-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
   padding-top: var(--bf-panel-padding-block);
   position: absolute;
   top: 100%;
@@ -234,16 +241,11 @@ ${bodyTypeStyles}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-filter-panel-section) {
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
   display: grid;
   gap: var(--bf-field-gap);
   margin: 0;
-  padding-bottom: calc(var(--bf-baseline) * 0.75);
-}
-
-:where(.bf-theme) :where(.bf-filter-panel-section:last-child) {
-  border-bottom: 0;
-  padding-bottom: 0;
+  padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-filter-panel-section-heading) {
@@ -271,6 +273,19 @@ ${bodyTypeStyles}  appearance: none;
   padding: 0;
   position: absolute;
   right: 0;
+}
+
+${panelStroke.painter}
+${sectionStroke.painter}
+${searchActionStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-search-and-filter-panel)::after {
+    border-block-end: var(--bf-stroke-width) solid CanvasText;
+    border-block-start: 0;
+    border-inline: var(--bf-stroke-width) solid CanvasText;
+    outline: none;
+  }
 }
 `;
 }

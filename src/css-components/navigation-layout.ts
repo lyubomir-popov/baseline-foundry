@@ -40,7 +40,7 @@ export function navigationLayoutCss(): string {
   box-sizing: border-box;
   display: flex;
   inline-size: var(--bf-top-navigation-logo-tag-inline-size);
-  inset-block-start: 0;
+  inset-block-start: var(--bf-top-navigation-logo-tag-start, 0);
   inset-inline-start: 0;
   justify-content: center;
   padding-block: 0 var(--bf-top-navigation-logo-icon-bottom-offset);
