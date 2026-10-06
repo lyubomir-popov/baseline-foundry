@@ -1,37 +1,54 @@
+import { allSidedStrokeOverlayCss } from "./stroke-paint.js";
+
 type ButtonActionCssOptions = {
   bodyTypeStyles: string;
   buttonMarginBottom: string;
-  buttonPadding: string;
 };
 
 export function buttonActionsCss(options: ButtonActionCssOptions): string {
-  const { bodyTypeStyles, buttonMarginBottom, buttonPadding } = options;
+  const { bodyTypeStyles, buttonMarginBottom } = options;
+  const buttonSelector = ":where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))), .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))))";
+  const buttonStrokeCss = allSidedStrokeOverlayCss(buttonSelector, { anchor: "relative", color: "var(--bf-color-border-high-contrast)" });
 
   return `:where(.bf-theme) {
   --bf-pointer-target-minimum: 24px;
+  --bf-pointer-target-separation: 0.0625rem;
 }
 
 :where(.bf-theme) :where(.bf-button, .bf-button.is-base) {
 ${bodyTypeStyles}  appearance: none;
+  --bf-stroke-color: var(--bf-color-border-high-contrast);
+  --bf-stroke-width: var(--bf-border-width);
+  --bf-overlay-stroke-layer: inset 0 0 0 var(--bf-stroke-width) var(--bf-stroke-color);
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: 0 0 0 0 transparent;
+  --bf-overlay-selection-block-start-width: 0rem;
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-inline-start-width: 0rem;
+  --bf-overlay-selection-inline-end-width: 0rem;
   background-color: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: inline-block;
   margin-bottom: ${buttonMarginBottom};
-${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-align: center;
   text-decoration: none;
 }
+
+${buttonStrokeCss.owner}
 
 :where(.bf-theme) :where(.bf-button) {
   background-color: var(--bf-color-background-default);
 }
 
 :where(.bf-theme) :where(.bf-button.is-base) {
+  --bf-stroke-color: transparent;
   background-color: transparent;
-  border-color: transparent;
 }
 
 :where(.bf-theme) :where(.bf-button:hover, .bf-button.is-base:hover) {
@@ -50,12 +67,18 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
 }
 
 :where(.bf-theme) :where(.bf-button, .bf-button.is-base):focus:not(:focus-visible) {
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
   outline: none;
 }
 
 :where(.bf-theme) :where(.bf-button, .bf-button.is-base):focus-visible {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: 0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
+}
+
+:where(.bf-theme) :where(.bf-button[aria-pressed='true']) {
+  --bf-overlay-selection-block-end-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
 }
 
 /* ------------------------------------------------------------------ */
@@ -65,20 +88,20 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-button.is-positive) {
+  --bf-stroke-color: var(--bf-color-button-positive-default);
   background-color: var(--bf-color-button-positive-default);
-  border-color: var(--bf-color-button-positive-default);
   color: var(--bf-color-button-positive-text);
 }
 
 :where(.bf-theme) :where(.bf-button.is-positive:hover) {
+  --bf-stroke-color: var(--bf-color-button-positive-hover);
   background-color: var(--bf-color-button-positive-hover);
-  border-color: var(--bf-color-button-positive-hover);
   color: var(--bf-color-button-positive-text);
 }
 
 :where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true'])) {
+  --bf-stroke-color: var(--bf-color-button-positive-active);
   background-color: var(--bf-color-button-positive-active);
-  border-color: var(--bf-color-button-positive-active);
   color: var(--bf-color-button-positive-text);
 }
 
@@ -89,20 +112,20 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-button.is-negative) {
+  --bf-stroke-color: var(--bf-color-button-negative-default);
   background-color: var(--bf-color-button-negative-default);
-  border-color: var(--bf-color-button-negative-default);
   color: var(--bf-color-button-negative-text);
 }
 
 :where(.bf-theme) :where(.bf-button.is-negative:hover) {
+  --bf-stroke-color: var(--bf-color-button-negative-hover);
   background-color: var(--bf-color-button-negative-hover);
-  border-color: var(--bf-color-button-negative-hover);
   color: var(--bf-color-button-negative-text);
 }
 
 :where(.bf-theme) :where(.bf-button.is-negative:is(:active, [aria-pressed='true'])) {
+  --bf-stroke-color: var(--bf-color-button-negative-active);
   background-color: var(--bf-color-button-negative-active);
-  border-color: var(--bf-color-button-negative-active);
   color: var(--bf-color-button-negative-text);
 }
 
@@ -114,6 +137,7 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-button.is-link) {
+  --bf-stroke-width: 0rem;
   background-color: transparent;
   border: 0;
   border-radius: 0;
@@ -132,7 +156,7 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
 }
 
 :where(.bf-theme) :where(.bf-button.is-link:focus-visible) {
-  outline-offset: 0;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
 }
 
 /* ------------------------------------------------------------------ */
@@ -154,18 +178,24 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
   justify-content: center;
 }
 
-/* An icon-only flex button has no text line box to preserve the occupied
- * control rhythm. A zero-width metric strut restores the active body line
- * without imposing a target block size or changing icon/label spacing. */
+/* Icon-only buttons are the named command-family self-paint exception. Their
+ * two pseudos already own the metric strut and the out-of-flow minimum pointer
+ * target, so the root paints its stroke without adding layout geometry. */
 :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
   --bf-action-target-overflow: max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-square-block-size)) / 2));
 
+  box-shadow: var(--bf-overlay-stroke-layer), var(--bf-overlay-selection-layer), var(--bf-overlay-elevation-layer);
   column-gap: 0;
   justify-self: start;
   margin-inline: var(--bf-action-target-overflow);
   min-inline-size: var(--bf-square-block-size);
   padding-inline: 0;
   position: relative;
+}
+
+:where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)):focus-visible) {
+  outline: 0.125rem solid var(--bf-color-focus);
+  outline-offset: -0.125rem;
 }
 
 :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::before {
@@ -179,13 +209,43 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
  * control's paint or occupied block geometry. */
 :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::after {
   block-size: max(100%, var(--bf-pointer-target-minimum));
+  box-shadow: none;
   content: "";
+  inset: auto;
   inline-size: max(100%, var(--bf-pointer-target-minimum));
   left: 50%;
   pointer-events: auto;
   position: absolute;
   top: 50%;
   translate: -50% -50%;
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-button, .bf-button.is-base):focus {
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width) * -1);
+  }
+
+  :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
+    box-shadow: none;
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width, var(--bf-border-width)) * -1);
+  }
+
+  :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))[aria-pressed='true']) {
+    outline-style: double;
+    outline-width: var(--bf-bar-thickness);
+  }
+
+  :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)):focus-visible)::after {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.1875rem;
+  }
+
+  :where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))):focus-visible, .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))):focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.1875rem;
+  }
 }
 
 :where(.bf-theme) :where(.bf-button-label) {
@@ -225,7 +285,7 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
   scrollbar-width: thin;
 }
 
-:where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested) > .bf-icon:only-child)) {
+:where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested))) {
   --bf-action-target-block-clearance: var(--bf-baseline);
 
   padding-block: var(--bf-action-target-block-clearance);
@@ -248,10 +308,10 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
  * and remains on phase in older engines. */
 @supports (row-gap: round(up, 0.0625rem, 0.0625rem)) {
   :where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap)) {
-    --bf-action-target-row-gap-floor: round(up, max(0rem, calc(var(--bf-pointer-target-minimum) - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline));
+    --bf-action-target-row-gap-floor: round(up, max(0rem, calc(var(--bf-pointer-target-minimum) - var(--bf-body-line-height) + var(--bf-pointer-target-separation))), var(--bf-baseline));
   }
 
-  :where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested) > .bf-icon:only-child)) {
+  :where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested))) {
     --bf-action-target-block-clearance: round(up, max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
   }
 }
@@ -259,5 +319,6 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
 :where(.bf-theme) :where(.bf-actions.is-nowrap) > * {
   flex: 0 0 auto;
 }
+${buttonStrokeCss.painter}
 `;
 }

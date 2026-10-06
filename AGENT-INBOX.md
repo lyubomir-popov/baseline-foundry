@@ -4,7 +4,7 @@ Date: 2026-10-06
 Branch: `feat/028-shared-spacing-decisions`
 Worktree: `../baseline-foundry-worktrees/feat-028-shared-spacing-decisions`
 Base: `6deca99776f35b85afde01b68bb0fffe817e29aa`
-Governing Canonical values: `7169231`; routing: `b100649` after `303875a`
+Governing Canonical values: `7169231`; routing: `c53b12b` after `b100649`
 
 ## Current objective
 
@@ -42,6 +42,13 @@ and must not be changed.
   build guards, and drops transparent frame borders from row-only geometry.
   Its required gates are green in `row-contract-check-types.log`,
   `row-contract-npm-test.log`, and `row-contract-qa-components.log`.
+- The current row-bearing command-family item migrates Button, Chip, ChoiceRow,
+  SegmentedControl and Pagination to locally reset paint slots. The automatic
+  last-child overlay is the default. Icon-only Button retains its metric strut
+  and pointer-target pseudos as a named leaf self-paint exception; Pagination
+  moves both directional arrows to `::before` so `::after` remains the overlay.
+  Its required gates are green in `commands-check-types.log`,
+  `commands-npm-test.log`, and `commands-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
@@ -53,9 +60,8 @@ policy and the established non-Site nested contracts.
 
 The shared row ledger is final, but the intermediate source still has local
 border subtraction only where a family retains a real stroke: fields and file
-buttons, Button/Choice/SegmentedControl/SideNavigation toggle, Chip,
-Pagination, and nested fields/buttons. Remove each local term with that
-family's paint migration; none may remain at the final checkpoint.
+buttons, SideNavigation toggle, and nested fields/buttons. Remove each local
+term with that family's paint migration; none may remain at the final checkpoint.
 
 FR-061a/SP-1 remains in progress beyond the landed margin-direction step:
 remaining semantic or structural block-end margins in responsive navigation,

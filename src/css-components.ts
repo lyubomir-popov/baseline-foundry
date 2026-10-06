@@ -26,6 +26,7 @@ import { sitesFoundationCss } from "./css-components/sites-foundation.js";
 import { sitesEditorialPortsCss } from "./css-components/sites-editorial-ports.js";
 import { sitesRichListsCss } from "./css-components/sites-rich-lists.js";
 import { staticContentPortsCss } from "./css-components/static-content-ports.js";
+import { allSidedStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { tableCss } from "./css-components/table.js";
 import { tabSectionCss } from "./css-components/tab-section.js";
 import { tabsChoiceBreadcrumbsCss } from "./css-components/tabs-choice-breadcrumbs.js";
@@ -96,6 +97,7 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
   const buttonPadding = "  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));\n";
+  const paginationStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", { anchor: "existing", color: "var(--bf-color-border-high-contrast)" });
 
   return `${componentContractsCss(tokens, themeSurfaces)}
 ${controlGeometryCss({ bodyLineHeight, bodySelectedStartNudge })}
@@ -752,7 +754,7 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
 
 ${iconCss()}
 
-${buttonActionsCss({ bodyTypeStyles, buttonMarginBottom, buttonPadding })}
+${buttonActionsCss({ bodyTypeStyles, buttonMarginBottom })}
 
 ${nestedControlsCss()}
 
@@ -793,7 +795,6 @@ ${tabsChoiceBreadcrumbsCss({
   bodyStrongTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
   bodyTypeStyles,
   buttonMarginBottom,
-  buttonPadding,
 })}
 
 ${tabSectionCss()}
@@ -1120,6 +1121,8 @@ ${typeStyles(body, { includeCase: false })}  display: block;
   inset-inline-start: auto;
 }
 
+${paginationStroke.owner}
+
 :where(.bf-theme) :where(nav.bf-pagination) {
   display: block;
 }
@@ -1155,7 +1158,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) {
 ${typeStyles(body, { includeCase: false })}  align-items: center;
   background-color: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   cursor: pointer;
@@ -1163,8 +1166,9 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   gap: var(--bf-leading-mark-gap);
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
-  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));
-  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
+  position: relative;
   text-align: center;
   text-decoration: none;
 }
@@ -1179,50 +1183,59 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-pagination-link:focus:not(:focus-visible), .bf-pagination-link.is-previous:focus:not(:focus-visible), .bf-pagination-link.is-next:focus:not(:focus-visible)) {
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
   outline: none;
 }
 
 :where(.bf-theme) :where(.bf-pagination-link:focus-visible, .bf-pagination-link.is-previous:focus-visible, .bf-pagination-link.is-next:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: 0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
 }
 
 :where(.bf-theme) :where(.bf-pagination-link.is-active, .bf-pagination-link[aria-current='page'], .bf-pagination-link[aria-current='true']) {
+  --bf-overlay-selection-block-end-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
   background-color: var(--bf-color-background-active);
 }
 
-:where(.bf-theme) :where(.bf-pagination-link.is-previous, .bf-pagination-link.is-next)::before,
-:where(.bf-theme) :where(.bf-pagination-link.is-previous, .bf-pagination-link.is-next)::after {
+:where(.bf-theme) :where(.bf-pagination-link.is-previous, .bf-pagination-link.is-next)::before {
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
   display: inline-block;
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
 }
 
 :where(.bf-theme) :where(.bf-pagination-link.is-previous)::before {
   transform: rotate(90deg);
 }
 
-:where(.bf-theme) :where(.bf-pagination-link.is-previous)::after {
-  display: none;
-}
-
-:where(.bf-theme) :where(.bf-pagination-link.is-next)::after {
-  transform: rotate(-90deg);
-}
-
 :where(.bf-theme) :where(.bf-pagination-link.is-next)::before {
-  display: none;
+  order: 2;
+  transform: rotate(-90deg);
 }
 
 :where(.bf-theme) :where(.bf-pagination-link.is-disabled, .bf-pagination-link.is-previous.is-disabled, .bf-pagination-link.is-next.is-disabled, .bf-pagination-link[aria-disabled='true'], .bf-pagination-link.is-previous[aria-disabled='true'], .bf-pagination-link.is-next[aria-disabled='true']) {
   cursor: not-allowed;
   opacity: 0.5;
   pointer-events: none;
+}
+
+${paginationStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-pagination-link:focus, .bf-pagination-link.is-previous:focus, .bf-pagination-link.is-next:focus) {
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width) * -1);
+  }
+
+  :where(.bf-theme) :where(.bf-pagination-link:focus-visible, .bf-pagination-link.is-previous:focus-visible, .bf-pagination-link.is-next:focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.1875rem;
+  }
 }
 
 :where(.bf-theme) :where(.bf-accordion) {

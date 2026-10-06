@@ -1,9 +1,10 @@
+import { allSidedStrokeOverlayCss } from "./stroke-paint.js";
+
 type TabsChoiceBreadcrumbsCssOptions = {
   bodyCaseTypeStyles: string;
   bodyStrongTypeStyles: string;
   bodyTypeStyles: string;
   buttonMarginBottom: string;
-  buttonPadding: string;
 };
 
 export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOptions): string {
@@ -12,10 +13,17 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
     bodyStrongTypeStyles,
     bodyTypeStyles,
     buttonMarginBottom,
-    buttonPadding,
   } = options;
+  const choiceRowSelector = ":where(.bf-theme) :where(.bf-choice-row)";
+  const segmentedButtonSelector = ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)";
+  const choiceStrokeCss = allSidedStrokeOverlayCss(choiceRowSelector, { anchor: "relative" });
+  const segmentedStrokeCss = allSidedStrokeOverlayCss(segmentedButtonSelector, { anchor: "relative", color: "var(--bf-color-border-high-contrast)" });
 
-  return `:where(.bf-theme) :where(.bf-tabs) {
+  return `${choiceStrokeCss.owner}
+
+${segmentedStrokeCss.owner}
+
+:where(.bf-theme) :where(.bf-tabs) {
   display: grid;
   gap: var(--bf-space-2);
   min-inline-size: 0;
@@ -122,7 +130,7 @@ ${bodyTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-choice-row) {
   align-items: center;
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: grid;
@@ -130,7 +138,8 @@ ${bodyTypeStyles}  align-items: center;
   grid-template-columns: auto minmax(0, 1fr) auto;
   margin: 0 0 ${buttonMarginBottom};
   min-inline-size: 0;
-${buttonPadding}  padding-inline: var(--bf-component-inline-inset-field);
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-choice-row:hover) {
@@ -138,8 +147,8 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-choice-row:has(:focus-visible)) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
 }
 
 :where(.bf-theme) :where(.bf-choice-row input[type='radio']) {
@@ -166,8 +175,10 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-choice-row.is-active),
 :where(.bf-theme) :where(.bf-choice-row:has(input[type='radio']:checked)) {
+  --bf-overlay-selection-block-end-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-focus);
+  --bf-stroke-color: var(--bf-color-focus);
   background: var(--bf-color-background-active);
-  border-color: var(--bf-color-focus);
 }
 
 :where(.bf-theme) :where(.bf-inline-options) {
@@ -227,14 +238,14 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-item + .bf-segmented-control-item, .bf-tab-buttons-item + .bf-tab-buttons-item) {
-  margin-inline-start: calc(var(--bf-border-width) * -1);
+  margin-inline-start: 0;
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) {
 ${bodyTypeStyles}  align-items: center;
   appearance: none;
   background-color: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   border-radius: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
@@ -243,7 +254,8 @@ ${bodyTypeStyles}  align-items: center;
   margin-bottom: ${buttonMarginBottom};
   max-inline-size: 100%;
   overflow: hidden;
-${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -265,19 +277,38 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button:focus:not(:focus-visible), .bf-tab-buttons-button:focus:not(:focus-visible)) {
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
   outline: none;
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button:focus-visible, .bf-tab-buttons-button:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
   z-index: 2;
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button.is-active, .bf-tab-buttons-button.is-active, .bf-segmented-control-button[aria-pressed='true'], .bf-tab-buttons-button[aria-pressed='true'], .bf-segmented-control-button[aria-selected='true'], .bf-tab-buttons-button[aria-selected='true']) {
+  --bf-overlay-selection-block-end-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
   background-color: var(--bf-color-background-active);
   color: var(--bf-color-text-default);
   z-index: 1;
+}
+
+:where(.bf-theme) :where(.bf-segmented-control-button:focus-visible, .bf-tab-buttons-button:focus-visible) {
+  z-index: 2;
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-segmented-control-button:focus, .bf-tab-buttons-button:focus) {
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width) * -1);
+  }
+
+  :where(.bf-theme) :where(.bf-choice-row:has(:focus-visible), .bf-segmented-control-button:focus-visible, .bf-tab-buttons-button:focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.1875rem;
+  }
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs) {
@@ -324,5 +355,8 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-breadcrumbs-item [aria-current='page'], .bf-breadcrumbs-item.is-active) {
   color: var(--bf-color-text-default);
 }
+${choiceStrokeCss.painter}
+
+${segmentedStrokeCss.painter}
 `;
 }

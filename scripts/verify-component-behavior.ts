@@ -2868,7 +2868,7 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
               paddingBlockStart: Number.parseFloat(childStyles.paddingBlockStart),
               borderBlockEnd: Number.parseFloat(childStyles.borderBlockEndWidth),
               borderBlockStart: Number.parseFloat(childStyles.borderBlockStartWidth),
-              boxShadow: childStyles.boxShadow,
+              strokeBoxShadow: getComputedStyle(child, "::after").boxShadow,
               plainHeight
             };
           });
@@ -2877,7 +2877,7 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
         assert(navigation.every(item => Math.abs(item.hostHeight - item.plainHeight) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces not to enlarge side-navigation rows: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => item.childHeight <= item.hostLineHeight + 0.1), `Expected ${tier}/${tone} nested auxiliary paint to fit inside the host body line: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => item.marginBlockStart === 0 && item.marginBlockEnd === 0 && Math.abs(item.paddingBlockStart - item.paddingBlockEnd) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces to use zero block margins and symmetric padding: ${JSON.stringify(navigation)}.`);
-        assert(navigation.every(item => item.borderBlockStart === 0 && item.borderBlockEnd === 0 && (item.childKind !== "chip" || item.boxShadow !== "none")), `Expected ${tier}/${tone} nested auxiliary borders to paint without adding block footprint: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => item.borderBlockStart === 0 && item.borderBlockEnd === 0 && (item.childKind !== "chip" || item.strokeBoxShadow !== "none")), `Expected ${tier}/${tone} nested auxiliary borders to paint on the automatic overlay without adding block footprint: ${JSON.stringify(navigation)}.`);
       }
     }
 
@@ -3212,7 +3212,7 @@ async function verifyDenseSiteChipEnrollment(origin: string): Promise<void> {
               paddingBlockStart: Number.parseFloat(autoStyle.paddingBlockStart),
               borderBlockEnd: Number.parseFloat(autoStyle.borderBlockEndWidth),
               borderBlockStart: Number.parseFloat(autoStyle.borderBlockStartWidth),
-              boxShadow: autoStyle.boxShadow
+              strokeBoxShadow: getComputedStyle(autoChip, "::after").boxShadow
             },
             classed: {
               height: classedChip.getBoundingClientRect().height,
@@ -3338,7 +3338,7 @@ async function verifyDenseSiteChipEnrollment(origin: string): Promise<void> {
             Math.abs(geometry.auto.marginBlockEnd) < 0.01 &&
             geometry.auto.borderBlockStart === 0 &&
             geometry.auto.borderBlockEnd === 0 &&
-            geometry.auto.boxShadow !== "none",
+            geometry.auto.strokeBoxShadow !== "none",
             `Expected ${tier}/${tone} automatic Chip enrollment to bind the named 4px dense control-block member into a 32px paint-only box with no child compensation: ${JSON.stringify(geometry)}.`
           );
           assert(
@@ -3821,25 +3821,30 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         }
         const excludedNested = await page.locator("[data-excluded-nested-icon-button]").evaluate(element => {
           const style = getComputedStyle(element);
-          const extension = getComputedStyle(element, "::after");
+          const extension = getComputedStyle(element, "::before");
+          const stroke = getComputedStyle(element, "::after");
           return {
             minInlineSize: style.minInlineSize,
             paddingInlineStart: Number.parseFloat(style.paddingInlineStart),
             paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
-            extensionContent: extension.content
+            extensionContent: extension.content,
+            strokeBoxShadow: stroke.boxShadow
           };
         });
-        assert(excludedNested.paddingInlineStart > 0 && excludedNested.paddingInlineEnd > 0 && excludedNested.extensionContent === "none", `Expected ${tier}/${tone} the unsupported bordered nested icon-only button to remain outside block-derived geometry and pointer-target extension; got ${JSON.stringify(excludedNested)}.`);
+        assert(excludedNested.paddingInlineStart > 0 && excludedNested.paddingInlineEnd > 0 && excludedNested.extensionContent === "none" && excludedNested.strokeBoxShadow !== "none", `Expected ${tier}/${tone} the unsupported nested icon-only button to remain outside block-derived geometry and pointer-target extension while retaining paint-only stroke; got ${JSON.stringify(excludedNested)}.`);
         await assertExtendedPointerTarget("[data-block-derived-icon-button]", `${tier}/${tone} icon-only button`);
         const adjacentTargetGeometry = await page.locator("[data-adjacent-icon-target-fixture]").evaluateAll(groups => groups.map(group => {
           const targets = Array.from(group.querySelectorAll<HTMLElement>("[data-adjacent-icon-target]"));
           const rects = targets.map(target => target.getBoundingClientRect());
+          const groupStyle = getComputedStyle(group);
+          const separationSource = groupStyle.getPropertyValue("--bf-pointer-target-separation").trim();
+          const targetSeparation = Number.parseFloat(separationSource) * (separationSource.endsWith("rem") ? Number.parseFloat(getComputedStyle(document.documentElement).fontSize) : 1);
           return {
             kind: group.getAttribute("data-adjacent-icon-target-fixture"),
-            gap: Number.parseFloat(getComputedStyle(group).columnGap),
-            rowGap: Number.parseFloat(getComputedStyle(group).rowGap),
-            borderWidth: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-border-width")),
-            baseline: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-baseline")),
+            gap: Number.parseFloat(groupStyle.columnGap),
+            rowGap: Number.parseFloat(groupStyle.rowGap),
+            targetSeparation,
+            baseline: Number.parseFloat(groupStyle.getPropertyValue("--bf-baseline")),
             targetMarginBlockStart: targets[0] ? Number.parseFloat(getComputedStyle(targets[0]).marginBlockStart) : Number.POSITIVE_INFINITY,
             centreDistance: rects.length === 2
               ? Math.abs((rects[1].left + (rects[1].width / 2)) - (rects[0].left + (rects[0].width / 2)))
@@ -3848,7 +3853,7 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         }));
         assert(adjacentTargetGeometry.every(geometry => {
           const blockRemainder = geometry.rowGap % geometry.baseline;
-          return geometry.gap > 0 && geometry.centreDistance >= 24 + geometry.borderWidth - 0.01 &&
+          return geometry.gap > 0 && geometry.targetSeparation === 1 && geometry.centreDistance >= 24 + geometry.targetSeparation - 0.01 &&
             Math.abs(geometry.targetMarginBlockStart) <= 0.01 &&
             (blockRemainder <= 0.01 || Math.abs(blockRemainder - geometry.baseline) <= 0.01);
         }), `Expected ${tier}/${tone} each ordinary BF container to preserve inline target clearance, keep child block margins neutral, and hold its row-gap floor on phase; got ${JSON.stringify(adjacentTargetGeometry)}.`);
@@ -3870,16 +3875,19 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         const wrappedTargetGeometry = await page.locator("[data-adjacent-icon-target-fixture]").evaluateAll(groups => groups.map(group => {
           const targets = Array.from(group.querySelectorAll<HTMLElement>("[data-adjacent-icon-target]"));
           const rects = targets.map(target => target.getBoundingClientRect());
+          const groupStyle = getComputedStyle(group);
+          const separationSource = groupStyle.getPropertyValue("--bf-pointer-target-separation").trim();
+          const targetSeparation = Number.parseFloat(separationSource) * (separationSource.endsWith("rem") ? Number.parseFloat(getComputedStyle(document.documentElement).fontSize) : 1);
           return {
             kind: group.getAttribute("data-adjacent-icon-target-fixture"),
-            borderWidth: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-border-width")),
-            rowGap: Number.parseFloat(getComputedStyle(group).rowGap),
+            targetSeparation,
+            rowGap: Number.parseFloat(groupStyle.rowGap),
             centreDistance: rects.length === 2
               ? Math.abs((rects[1].top + (rects[1].height / 2)) - (rects[0].top + (rects[0].height / 2)))
               : 0
           };
         }));
-        assert(wrappedTargetGeometry.every(geometry => geometry.rowGap > 0 && geometry.centreDistance >= 24 + geometry.borderWidth - 0.01), `Expected ${tier}/${tone} wrapped actions and clusters to retain a positive row-gap and block-axis clearance between 24 CSS-pixel targets; got ${JSON.stringify(wrappedTargetGeometry)}.`);
+        assert(wrappedTargetGeometry.every(geometry => geometry.rowGap > 0 && geometry.targetSeparation === 1 && geometry.centreDistance >= 24 + geometry.targetSeparation - 0.01), `Expected ${tier}/${tone} wrapped actions and clusters to retain the explicit non-paint separation between 24 CSS-pixel targets without depending on stroke width; got ${JSON.stringify(wrappedTargetGeometry)}.`);
         await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} wrapped adjacent link-style icon-only button`);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "rtl"));
         await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} RTL wrapped adjacent link-style icon-only button`);
@@ -4077,9 +4085,7 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const browser = await openBrowser({ forceDeviceScaleFactor: 1.5 });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-  const shapeTolerance = 1.05;
-  let sawFractionalBorder = false;
-  let exercisedRasterAllowance = false;
+  const shapeTolerance = 0.02;
 
   try {
     await page.goto(`${origin}/demo/components/button.html`, { waitUntil: "networkidle" });
@@ -4090,21 +4096,22 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
       const boxes = await page.locator("[data-block-derived-icon-button]:not(.is-link)").evaluateAll(elements => elements.map(element => {
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
+        const stroke = getComputedStyle(element, "::after");
         return {
           width: rect.width,
           height: rect.height,
           borderBlockStartWidth: Number.parseFloat(style.borderBlockStartWidth),
-          borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth)
+          borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth),
+          rootBoxShadow: style.boxShadow,
+          targetPosition: stroke.position,
+          targetPointerEvents: stroke.pointerEvents
         };
       }));
       assert(boxes.length === 2, `Expected two bordered icon-only controls in the forced-scale ${tier} sweep.`);
       for (const box of boxes) {
         const difference = Math.abs(box.width - box.height);
-        assert(difference <= shapeTolerance, `Expected forced-scale ${tier} icon-only paint to stay square within one authored rasterised border; got ${JSON.stringify(box)}.`);
-        if ([box.borderBlockStartWidth, box.borderBlockEndWidth].some(width => width > 0.65 && width < 0.68)) {
-          sawFractionalBorder = true;
-        }
-        if (difference > 0.51) exercisedRasterAllowance = true;
+        assert(difference <= shapeTolerance, `Expected forced-scale ${tier} icon-only paint to stay exactly square without a layout-border allowance; got ${JSON.stringify(box)}.`);
+        assert(box.borderBlockStartWidth === 0 && box.borderBlockEndWidth === 0 && box.rootBoxShadow !== "none" && box.targetPosition === "absolute" && box.targetPointerEvents === "auto", `Expected forced-scale ${tier} named icon-only controls to keep zero layout borders, self-painted stroke slots, and their out-of-flow pointer target; got ${JSON.stringify(box)}.`);
       }
     }
 
@@ -4116,21 +4123,120 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
       const chip = await page.locator("[data-block-derived-chip]:not(.is-nested)").first().evaluate(element => {
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
+        const stroke = getComputedStyle(element, "::after");
         return {
           width: rect.width,
           height: rect.height,
           borderBlockStartWidth: Number.parseFloat(style.borderBlockStartWidth),
-          borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth)
+          borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth),
+          strokeBoxShadow: stroke.boxShadow,
+          strokeBoxSizing: stroke.boxSizing,
+          strokeInset: stroke.inset,
+          strokePointerEvents: stroke.pointerEvents
         };
       });
       assert(chip.width > chip.height + shapeTolerance, `Expected the forced-scale ${tier} Action-framed chip to remain a stadium with its bounded paint-derived floor; got ${JSON.stringify(chip)}.`);
-      if ([chip.borderBlockStartWidth, chip.borderBlockEndWidth].some(width => width > 0.65 && width < 0.68)) {
-        sawFractionalBorder = true;
-      }
+      assert(chip.borderBlockStartWidth === 0 && chip.borderBlockEndWidth === 0 && chip.strokeBoxShadow !== "none" && chip.strokeBoxSizing === "border-box" && chip.strokeInset === "0px" && chip.strokePointerEvents === "none", `Expected forced-scale ${tier} Chip to retain its exact zero-layout-border paint overlay; got ${JSON.stringify(chip)}.`);
+    }
+  } finally {
+    await page.close();
+    await browser.close();
+  }
+}
+
+async function verifyCommandPaintOwners(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const cases = [
+    { route: "/demo/components/button.html", selector: ".bf-button:not(.is-link):not(.is-icon)", pseudo: "::after" },
+    { route: "/demo/components/chip.html", selector: ".bf-chip", pseudo: "::after" },
+    { route: "/demo/components/choice-row.html", selector: ".bf-choice-row", pseudo: "::after" },
+    { route: "/demo/components/segmented-control.html", selector: ".bf-segmented-control-button:not(.is-active)", pseudo: "::after" },
+    { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-previous", pseudo: "::after" },
+    { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-next", pseudo: "::after" }
+  ] as const;
+
+  try {
+    for (const testCase of cases) {
+      await page.goto(`${origin}${testCase.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const geometry = await page.locator(testCase.selector).first().evaluate((element, pseudo) => {
+        const owner = getComputedStyle(element);
+        const overlay = getComputedStyle(element, pseudo);
+        return {
+          borderWidths: [owner.borderBlockStartWidth, owner.borderBlockEndWidth, owner.borderInlineStartWidth, owner.borderInlineEndWidth],
+          isolation: owner.isolation,
+          ownerZIndex: owner.zIndex,
+          overlayBoxShadow: overlay.boxShadow,
+          overlayBoxSizing: overlay.boxSizing,
+          overlayContent: overlay.content,
+          overlayInset: overlay.inset,
+          overlayPointerEvents: overlay.pointerEvents,
+          overlayPosition: overlay.position,
+          overlayZIndex: overlay.zIndex
+        };
+      }, testCase.pseudo);
+      assert(geometry.borderWidths.every(width => Number.parseFloat(width) === 0), `Expected ${testCase.selector} to retain zero layout borders; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.isolation === "auto" && geometry.ownerZIndex === "auto" && geometry.overlayZIndex === "auto", `Expected ${testCase.selector} paint not to introduce isolation or a stacking index; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.overlayBoxShadow !== "none" && geometry.overlayBoxSizing === "border-box" && geometry.overlayContent === '""' && geometry.overlayInset === "0px" && geometry.overlayPointerEvents === "none" && geometry.overlayPosition === "absolute", `Expected ${testCase.selector}${testCase.pseudo} to be the exact pointer-transparent paint owner; got ${JSON.stringify(geometry)}.`);
     }
 
-    assert(sawFractionalBorder, "Expected the forced 1.5 device scale sweep to rasterise an authored 1px border to roughly 2/3 CSS px.");
-    assert(exercisedRasterAllowance, "Expected the forced 1.5 device scale sweep to exercise more than 0.51px of the reviewed 1.05px shape tolerance.");
+    await page.goto(`${origin}/demo/components/pagination.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const arrows = await page.evaluate(() => {
+      const previous = document.querySelector<HTMLElement>(".bf-pagination-link.is-previous");
+      const next = document.querySelector<HTMLElement>(".bf-pagination-link.is-next");
+      if (!previous || !next) return null;
+      return {
+        previousArrow: getComputedStyle(previous, "::before").backgroundImage,
+        previousStroke: getComputedStyle(previous, "::after").boxShadow,
+        nextArrow: getComputedStyle(next, "::before").backgroundImage,
+        nextStroke: getComputedStyle(next, "::after").boxShadow
+      };
+    });
+    assert(arrows && arrows.previousArrow !== "none" && arrows.nextArrow !== "none" && arrows.previousStroke !== "none" && arrows.nextStroke !== "none", `Expected pagination directional arrows and their variant-specific paint pseudos to coexist; got ${JSON.stringify(arrows)}.`);
+
+    await page.goto(`${origin}/demo/components/choice-row.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const nestedSlots = await page.locator(".bf-choice-row").first().evaluate(parent => {
+      (parent as HTMLElement).style.setProperty("--bf-overlay-stroke-layer", "inset 0 0 0 0.5rem magenta");
+      const child = document.createElement("span");
+      child.className = "bf-chip";
+      child.textContent = "Nested";
+      parent.append(child);
+      const childStyle = getComputedStyle(child);
+      const result = {
+        parentStroke: getComputedStyle(parent).getPropertyValue("--bf-overlay-stroke-layer").trim(),
+        childStroke: childStyle.getPropertyValue("--bf-overlay-stroke-layer").trim(),
+        childSelection: childStyle.getPropertyValue("--bf-overlay-selection-layer").trim(),
+        childFocus: childStyle.getPropertyValue("--bf-overlay-focus-layer").trim(),
+        childElevation: childStyle.getPropertyValue("--bf-overlay-elevation-layer").trim()
+      };
+      child.remove();
+      return result;
+    });
+    assert(nestedSlots.parentStroke.includes("magenta") && !nestedSlots.childStroke.includes("magenta") && [nestedSlots.childSelection, nestedSlots.childFocus, nestedSlots.childElevation].every(value => value === "0 0 0 0 transparent"), `Expected nested paint owners to reset every slot locally; got ${JSON.stringify(nestedSlots)}.`);
+
+    await page.goto(`${origin}/demo/components/segmented-control.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await page.emulateMedia({ forcedColors: "active" });
+    const active = page.locator(".bf-segmented-control-button.is-active");
+    await active.focus();
+    const forced = await active.evaluate(element => {
+      const owner = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      return {
+        boundaryOutlineStyle: overlay.outlineStyle,
+        boundaryOutlineWidth: Number.parseFloat(overlay.outlineWidth),
+        focusOutlineStyle: owner.outlineStyle,
+        focusOutlineWidth: Number.parseFloat(owner.outlineWidth),
+        selectionBorderStyle: overlay.borderBlockEndStyle,
+        selectionBorderWidth: Number.parseFloat(overlay.borderBlockEndWidth),
+        strokeShadow: overlay.boxShadow
+      };
+    });
+    assert(forced.boundaryOutlineStyle === "solid" && forced.boundaryOutlineWidth > 0 && forced.focusOutlineStyle === "solid" && forced.focusOutlineWidth >= 2 && forced.selectionBorderStyle === "solid" && forced.selectionBorderWidth >= 3 && forced.strokeShadow === "none", `Expected forced colors to expose separate system boundary, focus, and one-sided selected paint; got ${JSON.stringify(forced)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
   } finally {
     await page.close();
     await browser.close();
@@ -6097,6 +6203,7 @@ async function main(): Promise<void> {
     await verifyDenseSiteChipEnrollment(origin);
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);
+    await verifyCommandPaintOwners(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);

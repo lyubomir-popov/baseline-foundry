@@ -961,13 +961,17 @@ function validateCommonCss(css: string): void {
   }
   assert(!css.includes("--bf-table-row-padding:") && !css.includes(":where(.bf-theme.is-dark),\n:where(.bf-theme.is-dark)"), "Expected generated CSS to omit retired table alignment variables and duplicate dark-theme selectors.");
   assert(css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected bordered controls and body-sized single-line rows to share one regular padding contract.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive) {\n  background-color: var(--bf-color-button-positive-default);"), "Expected generated CSS to define the bf-button.is-positive surface from the themed positive tokens.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:hover) {\n  background-color: var(--bf-color-button-positive-hover);"), "Expected bf-button.is-positive to surface the themed positive hover token.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true'])) {\n  background-color: var(--bf-color-button-positive-active);"), "Expected bf-button.is-positive to surface the themed positive active token.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-negative) {\n  background-color: var(--bf-color-button-negative-default);"), "Expected generated CSS to define the bf-button.is-negative surface from the themed negative tokens.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-negative:hover) {\n  background-color: var(--bf-color-button-negative-hover);"), "Expected bf-button.is-negative to surface the themed negative hover token.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-negative:is(:active, [aria-pressed='true'])) {\n  background-color: var(--bf-color-button-negative-active);"), "Expected bf-button.is-negative to surface the themed negative active token.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link) {\n  background-color: transparent;\n  border: 0;\n  border-radius: 0;\n  color: var(--bf-color-link-default);"), "Expected generated CSS to define the bf-button.is-link surface from the shared link tokens.");
+  for (const [selector, strokeColor, backgroundColor, label] of [
+    [":where(.bf-theme) :where(.bf-button.is-positive)", "var(--bf-color-button-positive-default)", "var(--bf-color-button-positive-default)", "positive"],
+    [":where(.bf-theme) :where(.bf-button.is-positive:hover)", "var(--bf-color-button-positive-hover)", "var(--bf-color-button-positive-hover)", "positive hover"],
+    [":where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true']))", "var(--bf-color-button-positive-active)", "var(--bf-color-button-positive-active)", "positive active"],
+    [":where(.bf-theme) :where(.bf-button.is-negative)", "var(--bf-color-button-negative-default)", "var(--bf-color-button-negative-default)", "negative"],
+    [":where(.bf-theme) :where(.bf-button.is-negative:hover)", "var(--bf-color-button-negative-hover)", "var(--bf-color-button-negative-hover)", "negative hover"],
+    [":where(.bf-theme) :where(.bf-button.is-negative:is(:active, [aria-pressed='true']))", "var(--bf-color-button-negative-active)", "var(--bf-color-button-negative-active)", "negative active"]
+  ] as const) {
+    assertRuleHasDecl(ast, selector, { "--bf-stroke-color": strokeColor, "background-color": backgroundColor }, `Button ${label} updates its locally reset stroke and surface slots together`);
+  }
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-link)", { "--bf-stroke-width": "0rem", "background-color": "transparent", "border": "0", "border-radius": "0", "color": "var(--bf-color-link-default)" }, "link Button removes command chrome through the local stroke-width source");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link:hover) {\n  background-color: transparent;\n  color: var(--bf-color-link-default);\n  text-decoration: underline;"), "Expected bf-button.is-link hover state to keep transparent chrome and restore underline treatment.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-leading-mark-gap);"), "Expected bf-button.is-icon to use the shared mark/icon gap for its explicit icon/label relationship.");
@@ -1013,7 +1017,7 @@ function validateCommonCss(css: string): void {
   }, "the built-in nowrap action row declares its clipping scrollport without charging text-only strips block padding");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", "padding-block", "text-only nowrap action strips retain their occupied block");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", "padding-inline", "text-only nowrap action strips retain their leading keyline");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested) > .bf-icon:only-child))", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested)))", {
     "--bf-action-target-block-clearance": "var(--bf-baseline)",
     "padding-block": "var(--bf-action-target-block-clearance)"
   }, "nowrap action rows with icon-only targets own symmetric target clearance without changing text-only strips");
@@ -1024,9 +1028,9 @@ function validateCommonCss(css: string): void {
     "margin-block-end": "0"
   }, "link icon targets leave symmetric clearance to their nowrap owner");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap))", {
-    "--bf-action-target-row-gap-floor": "round(up, max(0rem, calc(var(--bf-pointer-target-minimum) - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline))"
-  }, "supporting engines round the exact inter-row target shortfall up to a complete active baseline");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested) > .bf-icon:only-child))", {
+    "--bf-action-target-row-gap-floor": "round(up, max(0rem, calc(var(--bf-pointer-target-minimum) - var(--bf-body-line-height) + var(--bf-pointer-target-separation))), var(--bf-baseline))"
+  }, "supporting engines round the explicit non-paint target separation up to a complete active baseline");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested)))", {
     "--bf-action-target-block-clearance": "round(up, max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-body-line-height)) / 2)), var(--bf-baseline))"
   }, "supporting engines round the owning nowrap row's block-edge shortfall without a one-baseline cap");
   assert(!css.includes("is-icon-target-wrap") && !css.includes("is-icon-target-scrollport"), "Expected generated CSS to remove the unadopted icon-target opt-in API.");
@@ -1138,22 +1142,22 @@ function validateCommonCss(css: string): void {
     "inline-size": "fit-content",
     "justify-content": "center",
     "justify-self": "start",
-    "padding-inline": "max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)))",
+    "padding-inline": "var(--bf-ui-chip-padding-inline)",
     "white-space": "nowrap"
   }, "chips keep the canonical neutral token defaults and inline chip layout");
   assertRuleHasDecl(ast, ":where(.bf-theme)", {
     "--bf-ui-chip-padding-inline": "var(--bf-component-inline-inset-action)"
   }, "chips use the shared Action inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
-    "min-inline-size": "min(100%, calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2)))"
-  }, "short Action-framed chips retain a container-safe stadium silhouette under the dense Canonical inset without changing block geometry");
+    "min-inline-size": "min(100%, calc(var(--bf-interface-row-painted-block-size) + var(--bf-inline-unit)))"
+  }, "short Action-framed chips retain a container-safe stadium silhouette independent of paint width");
   const legacyTableChipSelector = ":where(.bf-chip.is-nested:not(.bf-theme):not(:scope td .bf-chip, :scope .bf-theme .bf-chip))";
   const legacySideNavigationChipSelector = ":where(.bf-chip.is-nested:not(.bf-theme):not(:scope .bf-side-navigation .bf-chip, :scope .bf-theme .bf-chip))";
   assertRuleHasDecl(ast, legacyTableChipSelector, {
-    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)))"
+    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + var(--bf-inline-unit)))"
   }, "short Chips in named legacy hosts retain the same container-safe stadium contract");
   assertRuleHasDecl(ast, legacySideNavigationChipSelector, {
-    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)))"
+    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + var(--bf-inline-unit)))"
   }, "short Chips in named legacy navigation hosts retain the same container-safe stadium contract");
   assert(css.includes("--bf-ui-chip-radius: 999rem;") && css.includes("border-radius: var(--bf-ui-chip-radius);"), "Expected standalone and nested chips to use the shared rem-based pill radius.");
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
@@ -1232,9 +1236,10 @@ function validateCommonCss(css: string): void {
     "padding-inline": "0"
   }, "bare numbered pagination consumes painted-block geometry without an action inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", {
+    "border": "0",
     "border-radius": "var(--bf-radius)",
-    "padding-inline": "max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)))"
-  }, "labelled pagination controls preserve the Action keyline while their real stroke awaits family migration");
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "labelled pagination controls preserve the Action keyline with zero layout-border geometry");
   assert(!css.includes("--bf-pagination-slot-inline-size"), "Expected pagination to retire its occupied-block inline slot alias.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notification, .bf-notification.is-information, .bf-notification.is-positive, .bf-notification.is-caution, .bf-notification.is-negative)", {
     "--bf-notification-close-painted-block-size": "calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default))"
@@ -1270,13 +1275,18 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-application-aside-resize-handle)::after => 62.4375rem",
     ":where(.bf-theme) :where(.bf-button, .bf-button.is-base) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-button.is-link) => 0",
+    ":where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))), .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))))::after => inherit",
+    ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)::after => inherit",
+    ":where(.bf-theme) :where(.bf-choice-row)::after => inherit",
     ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)::after => inherit",
     ":where(.bf-theme) :where(.bf-prose ul > li)::before => 50%",
     ":where(.bf-theme) :where(.bf-radio-label)::after => 50%",
     ":where(.bf-theme) :where(.bf-radio-label)::before => 50%",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) => 0",
+    ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)::after => inherit",
     ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-switch-slider) => var(--bf-control-visual-size)",
     ":where(.bf-theme) :where(.bf-switch-slider)::before => 50%",
@@ -1323,7 +1333,7 @@ function validateCommonCss(css: string): void {
       "margin-block": "0",
       "padding-block": "var(--bf-nested-row-padding-block)",
       "border": "0",
-      "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border)",
+      "--bf-stroke-color": "var(--bf-ui-chip-border)",
       "padding-inline": "var(--bf-ui-chip-padding-inline)"
     }, "nested Chips in named legacy hosts fit the host-owned body line and paint without block footprint");
     assertRuleHasDecl(ast, `${legacyChipSelector} :where(.bf-chip-lead, .bf-chip-value)`, {
@@ -1336,7 +1346,7 @@ function validateCommonCss(css: string): void {
      paint geometry, but only the Site Table.Cell path changes density. */
   assertRuleHasDecl(ast, legacyTableChipSelector, {
     "border": "0",
-    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border)",
+    "--bf-stroke-color": "var(--bf-ui-chip-border)",
     "padding-inline": "var(--bf-ui-chip-padding-inline)"
   }, "legacy table Chips use the reviewed paint-only compatibility anatomy");
   const density = componentDensityPolicy.siteDenseChip;
@@ -1391,7 +1401,7 @@ function validateCommonCss(css: string): void {
     "background-position": "left var(--bf-component-inline-inset-field) center"
   }, "select artwork follows logical inline-end in RTL");
   assert(!css.includes("--bf-ui-icon-number-stepper") && !css.includes("::-webkit-inner-spin-button") && !css.includes("::-webkit-outer-spin-button"), "Expected number inputs not to paint inert replacement arrows or disable native spin buttons.");
-  assert(css.includes("--bf-ui-badge-padding-inline: var(--bf-border-width);") && !css.includes("--bf-ui-badge-padding-inline: calc("), "Expected badge overflow padding to stay token-derived without reconstructing a block size from typography.");
+  assert(css.includes("--bf-ui-badge-padding-inline: 0.0625rem;") && !css.includes("--bf-ui-badge-padding-inline: var(--bf-border-width);") && !css.includes("--bf-ui-badge-padding-inline: calc("), "Expected badge overflow padding to stay a named rem-scalable member independent of stroke width and typography.");
   assert(!css.includes("min-width: calc(var(--bf-body-line-height") && !css.includes("min-inline-size: calc(var(--bf-body-line-height"), "Expected badge inline floors to resolve through the cascade-repointed square contract rather than a build-time body-line interpolation.");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before", "chip value separators");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "badges");

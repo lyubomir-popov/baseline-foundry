@@ -9,9 +9,10 @@
 - [x] Nonzero block-start removal and zero-padding containment — `5184484`, gates green
 - [ ] Compensation-only block-end governance across remaining component families (FR-061a/SP-1)
 - [x] SideNavigation panel geometry — `a468e8f`, gates green; logs `sidenav-check-types.log`, `sidenav-npm-test.log`, `sidenav-qa-components.log`
-- [x] Governed dense Site Chip — current tip, gates green; logs `dense-chip-check-types.log`, `dense-chip-npm-test.log`, `dense-chip-qa-components.log`
-- [x] Paint-only row contract — current tip, gates green; logs `row-contract-check-types.log`, `row-contract-npm-test.log`, `row-contract-qa-components.log`
+- [x] Governed dense Site Chip — `801e856`, gates green; logs `dense-chip-check-types.log`, `dense-chip-npm-test.log`, `dense-chip-qa-components.log`
+- [x] Paint-only row contract — `b395a56`, gates green; logs `row-contract-check-types.log`, `row-contract-npm-test.log`, `row-contract-qa-components.log`
 - [ ] Paint-only component families
+  - [x] Row-bearing commands (Button, Chip, ChoiceRow, SegmentedControl, Pagination) — current tip, gates green; logs `commands-check-types.log`, `commands-npm-test.log`, `commands-qa-components.log`
 - [ ] Before/after review demo and negative specimens
 - [ ] Root gates and Chromium evidence
 - [ ] Conformance board and final Opus request
