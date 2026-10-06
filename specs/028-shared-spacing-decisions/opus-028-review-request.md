@@ -18,8 +18,8 @@ the owner. It is not owner visual sign-off and does not authorize a merge.
 - Canonical routing reviewed through: `c53b12b`
 - Evidence root: `H:/WSL_dev_projects/temp/bf-028-20261006/`
 - Overall evidence manifest: `bf-028-evidence-manifest.json`
-- Overall manifest SHA-256: `934f3f05c4ac2b800d7041bd18d03cff449369e99d69f38472a996337ca4ec5d`
-- Root review manifest SHA-256: `3c277d6e43d7b56a8fc196a81582bc5f40d1029749c4b7044bec78a715d7a707`
+- Overall manifest SHA-256: `204fdec1e22a5474e4f288c423a8e869666f7c7e76ac2c4af6abbd9b930660cf`
+- Root review manifest SHA-256: `a6630a06c081233b82374f699b63542208bc467a594708fecb3ef188c88014b4`
 
 Review page while the feature server is alive:
 `http://127.0.0.1:4176/demo/spec-028/index.html`.

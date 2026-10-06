@@ -12,6 +12,6 @@ decision remain pending; no board row claims `signed off`.
 
 The sealed overall evidence manifest is
 `H:/WSL_dev_projects/temp/bf-028-20261006/bf-028-evidence-manifest.json`, SHA-256
-`934f3f05c4ac2b800d7041bd18d03cff449369e99d69f38472a996337ca4ec5d`.
+`204fdec1e22a5474e4f288c423a8e869666f7c7e76ac2c4af6abbd9b930660cf`.
 Its root review manifest is SHA-256
-`3c277d6e43d7b56a8fc196a81582bc5f40d1029749c4b7044bec78a715d7a707`.
+`a6630a06c081233b82374f699b63542208bc467a594708fecb3ef188c88014b4`.

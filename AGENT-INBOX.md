@@ -115,7 +115,7 @@ Implementation and demo are complete. The immutable review target is
 contract and paint audits accept the requested scope with no open P1/P2. The
 overall evidence manifest is
 `H:/WSL_dev_projects/temp/bf-028-20261006/bf-028-evidence-manifest.json`, SHA-256
-`934f3f05c4ac2b800d7041bd18d03cff449369e99d69f38472a996337ca4ec5d`.
+`204fdec1e22a5474e4f288c423a8e869666f7c7e76ac2c4af6abbd9b930660cf`.
 
 ## Remaining order
 
