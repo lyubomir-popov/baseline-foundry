@@ -333,16 +333,17 @@ exceed the authored gap in a wrapped container with no icon target; the current
 demo impact is two multi-row OS form-atlas clusters whose row gap rises from
 8px to 12px.
 
-`.bf-actions.is-nowrap` declares its own horizontal scrollport. A direct
-icon-only target inside it therefore owns symmetric, baseline-rounded
-`margin-block` clearance; its existing `margin-inline` supplies the logical-edge
-scroll extent. Text-only nowrap strips receive no padding, retain their leading
-keyline, and keep their original block size. Supporting engines resolve the
-per-edge block allowance to zero in Editorial and one complete baseline in
+`.bf-actions.is-nowrap` declares its own horizontal scrollport. When it contains
+a direct icon-only target, the scrollport owns symmetric, baseline-rounded
+`padding-block` clearance; the target's existing `margin-inline` supplies the
+logical-edge scroll extent, while its ordinary block-end compensation remains
+part of the row ledger. Text-only nowrap strips receive no padding, retain their
+leading keyline, and keep their original block size. Supporting engines resolve
+the per-edge block allowance to zero in Editorial and one complete baseline in
 Documentation, App, and OS; the fallback uses one safe baseline in every tier.
 Exact rounding is deliberately uncapped for custom configurations. No public
 wrap or scrollport opt-in class is exposed. `.bf-cluster.is-nowrap` is neither
-a clipping scrollport nor covered by the block-margin rule; any future clipping
+a clipping scrollport nor covered by the owner-padding rule; any future clipping
 owner outside `.bf-actions.is-nowrap` must provide and verify its own block
 containment.
 

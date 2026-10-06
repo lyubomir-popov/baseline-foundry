@@ -291,10 +291,11 @@ ${buttonStrokeCss.owner}
   padding-block: var(--bf-action-target-block-clearance);
 }
 
-/* A nowrap row becomes a clipping scrollport. Only direct icon-only targets
- * reserve their own block overflow, so text-only strips keep their original
- * block size and leading keyline. Existing target-owned inline margins supply
- * the corresponding logical-edge scroll extent. */
+/* A nowrap row becomes a clipping scrollport. The parent rule above reserves
+ * block overflow only when a direct icon-only target is present, so text-only
+ * strips keep their original block size and leading keyline. Existing
+ * target-owned inline margins supply the logical-edge scroll extent; these
+ * child rules retain only ordinary row compensation. */
 :where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
   margin-block-end: ${buttonMarginBottom};
 }
