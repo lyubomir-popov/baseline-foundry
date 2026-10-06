@@ -1,4 +1,4 @@
-import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss } from "./stroke-paint.js";
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss } from "./stroke-paint.js";
 
 export interface LegacyNavigationCssOptions {
   bodyMediumTypeStyles: string;
@@ -20,10 +20,16 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   const drawerHeaderStroke = blockEndStrokeOverlayCss(drawerHeaderSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
   const topNavigationSelector = ":where(.bf-theme) :where(.bf-top-navigation)";
   const topNavigationStroke = blockEndStrokeOverlayCss(topNavigationSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const topNavigationDropdownSelector = ":where(.bf-theme) :where(.bf-top-navigation-dropdown)";
+  const topNavigationDropdownStroke = blockStartStrokeOverlayCss(topNavigationDropdownSelector, { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
+  const topNavigationSearchSelector = ":where(.bf-theme) :where(.bf-top-navigation-search)";
+  const topNavigationSearchStroke = blockStartStrokeOverlayCss(topNavigationSearchSelector, { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
 
   return `${toggleStroke.owner}
 ${drawerHeaderStroke.owner}
 ${topNavigationStroke.owner}
+${topNavigationDropdownStroke.owner}
+${topNavigationSearchStroke.owner}
 
 :where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
   /* The navigation panel owns grid-margin gutters. Every row reserves one
@@ -543,9 +549,7 @@ ${bodyTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
   background: var(--bf-color-background-default);
   border: 0;
-  /* Dropdowns are elevated popup surfaces. Their boundary and elevation are
-     composed on the popup itself so descendants remain above both layers. */
-  box-shadow: inset 0 var(--bf-border-width) 0 var(--bf-color-border-low-contrast);
+  box-shadow: none;
   display: none;
   list-style: none;
   margin: 0;
@@ -657,7 +661,7 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-search) {
-  box-shadow: inset 0 var(--bf-border-width) 0 var(--bf-color-border-low-contrast);
+  box-shadow: none;
   display: none;
   min-inline-size: 0;
   padding-block: var(--bf-top-navigation-link-padding-block);
@@ -750,7 +754,9 @@ ${bodyTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
-    box-shadow: 0 0 0 var(--bf-border-width) var(--bf-color-border-low-contrast), 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
+    --bf-overlay-stroke-layer: inset 0 0 0 var(--bf-stroke-width) var(--bf-stroke-color);
+    --bf-overlay-elevation-layer: 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
+    box-shadow: none;
     left: 0;
     min-inline-size: max(100%, 12rem);
     position: absolute;
@@ -768,6 +774,7 @@ ${bodyTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-search) {
+    --bf-stroke-width: 0rem;
     align-items: center;
     box-shadow: none;
     flex: 1 1 auto;
@@ -814,14 +821,23 @@ ${bodyTypeStyles}  align-items: center;
 
   :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
     box-shadow: none;
-    outline: var(--bf-border-width) solid CanvasText;
-    outline-offset: calc(var(--bf-border-width) * -1);
   }
 }
 
 @media (forced-colors: active) and (min-width: 64.75rem) {
   :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before {
     content: none;
+  }
+}
+
+${topNavigationDropdownStroke.painter}
+${topNavigationSearchStroke.painter}
+
+@media (forced-colors: active) and (min-width: 64.75rem) {
+  :where(.bf-theme) :where(.bf-top-navigation-dropdown)::after {
+    border-block-start: 0;
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width) * -1);
   }
 }
 

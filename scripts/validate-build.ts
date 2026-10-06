@@ -1342,6 +1342,7 @@ function validateCommonCss(css: string): void {
   ]);
   const expectedUnaffectedRadii = [
     ":where(.bf-theme) :where(.bf-application-aside-resize-handle)::after => 62.4375rem",
+    ":where(.bf-theme) :where(.bf-aside)::after => inherit",
     ":where(.bf-theme) :where(.bf-button, .bf-button.is-base) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-button.is-link) => 0",
     ":where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))), .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))))::after => inherit",
@@ -1369,6 +1370,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-modal-footer)::after => inherit",
     ":where(.bf-theme) :where(.bf-modal-header)::after => inherit",
     ":where(.bf-theme) :where(.bf-navigation-bar)::after => inherit",
+    ":where(.bf-theme) :where(.bf-navigation-drawer)::after => inherit",
     ":where(.bf-theme) :where(.bf-notice, .bf-notice.is-information, .bf-notice.is-positive, .bf-notice.is-caution, .bf-notice.is-negative)::after => inherit",
     ":where(.bf-theme) :where(.bf-notification-meta)::after => inherit",
     ":where(.bf-theme) :where(.bf-notification:not(.is-borderless))::after => inherit",
@@ -1396,6 +1398,9 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-tabs-list)::after => inherit",
     ":where(.bf-theme) :where(.bf-token-row)::after => inherit",
     ":where(.bf-theme) :where(.bf-top-navigation)::after => inherit",
+    ":where(.bf-theme) :where(.bf-top-navigation-dropdown)::after => inherit",
+    ":where(.bf-theme) :where(.bf-top-navigation-search)::after => inherit",
+    ":where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search)::after => inherit",
     ":where(.bf-theme) :where(.bf-tooltip-message)::after => inherit",
     ":where(.bf-theme) :where(.bf-validation-message)::before => 50%",
     ":where(.bf-theme) :where(input[type='file'])::file-selector-button => var(--bf-radius)",

@@ -83,16 +83,20 @@ and must not be changed.
   the WebKit rule in its CSSOM. Its required gates are green in
   `tables-check-types.log`, `tables-npm-test.log`, and
   `tables-qa-components.log`.
+- `0410c72` migrates token rows, rules, CTA blocks, Hero, equal-height columns
+  and ArticlePagination to out-of-flow paint, and binds DividedSection/rule
+  clearance to the governed group/item roles. It also anchors the sortable
+  header exception to its real cell and proves exact pseudo bounds through
+  CDP. Its required gates are green in `static-check-types.log`,
+  `static-npm-test.log`, and `static-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-The active static/editorial item migrates token rows, rules, CTA blocks, Hero,
-equal-height columns and article pagination to out-of-flow paint. It binds
-DividedSection and rule clearance to the governed group/item roles. The item
-also repairs the preceding table family's sortable-header stroke anchor and
-proves the real `::before` pseudo bounds through CDP without changing the row.
+The active shell-paint item moves TopNavigation dropdown/search popup frames,
+application navigation drawers and asides to logical automatic overlays while
+preserving their existing popup/elevation stack and pointer routing.
 
 After this item, finish the emitted border/root-shadow inventory and semantic
 margin/icon ownership sweep. Preserve the governed dense Site Chip policy and

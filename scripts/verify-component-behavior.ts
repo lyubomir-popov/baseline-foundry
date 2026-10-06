@@ -1337,17 +1337,20 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
       if (!panel || !handle) return null;
       const handleRect = handle.getBoundingClientRect();
       const panelStyle = getComputedStyle(panel);
+      const panelOverlayStyle = getComputedStyle(panel, "::after");
       const dividerStyle = getComputedStyle(handle, "::after");
       const dividerWidth = Number.parseFloat(dividerStyle.width);
       return {
         background: dividerStyle.backgroundColor,
         borderWidth: Number.parseFloat(panelStyle.borderInlineStartWidth),
+        overlayPointerEvents: panelOverlayStyle.pointerEvents,
+        overlayShadow: panelOverlayStyle.boxShadow,
         dividerWidth,
         handleWidth: handleRect.width
       };
     });
     assert(idleDivider, "Expected the pinned-aside divider to be measurable.");
-    assert(idleDivider.background === "rgba(0, 0, 0, 0)" && idleDivider.borderWidth === 1 && idleDivider.dividerWidth === 2 && idleDivider.handleWidth >= 24, `Expected the idle resize affordance to preserve its hit target without double-painting the aside border; got ${JSON.stringify(idleDivider)}.`);
+    assert(idleDivider.background === "rgba(0, 0, 0, 0)" && idleDivider.borderWidth === 0 && idleDivider.overlayPointerEvents === "none" && idleDivider.overlayShadow !== "none" && idleDivider.dividerWidth === 2 && idleDivider.handleWidth >= 24, `Expected the idle resize affordance to preserve its hit target above the pointer-transparent aside overlay; got ${JSON.stringify(idleDivider)}.`);
 
     await handle.hover();
     await page.waitForTimeout(160);
@@ -1439,6 +1442,8 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
 
       const appRect = app.getBoundingClientRect();
       const asideRect = aside.getBoundingClientRect();
+      const asideStyle = getComputedStyle(aside);
+      const asidePaint = getComputedStyle(aside, "::after");
       return {
         appTop: appRect.top,
         appBottom: appRect.bottom,
@@ -1447,7 +1452,11 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
         asideBottom: asideRect.bottom,
         asideRight: asideRect.right,
         asideWidth: asideRect.width,
-        asideHeight: asideRect.height
+        asideHeight: asideRect.height,
+        borderInlineStartWidth: Number.parseFloat(asideStyle.borderInlineStartWidth),
+        rootShadow: asideStyle.boxShadow,
+        overlayShadow: asidePaint.boxShadow,
+        overlayPointerEvents: asidePaint.pointerEvents
       };
     });
 
@@ -1457,6 +1466,7 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
     assert(Math.abs(openGeometry.asideBottom - openGeometry.appBottom) <= 2, `Expected open drawer to attach to the bottom edge of the application. App bottom ${openGeometry.appBottom}px, drawer bottom ${openGeometry.asideBottom}px.`);
     assert(Math.abs(openGeometry.asideRight - openGeometry.appRight) <= 2, `Expected open drawer to attach to the right edge of the application. App right ${openGeometry.appRight}px, drawer right ${openGeometry.asideRight}px.`);
     assert(openGeometry.asideWidth >= 320, `Expected open drawer to have a substantial visible width. Got ${openGeometry.asideWidth}px.`);
+    assert(openGeometry.borderInlineStartWidth === 0 && openGeometry.rootShadow === "none" && openGeometry.overlayShadow !== "none" && openGeometry.overlayPointerEvents === "none", `Expected the open drawer edge and elevation to share its pointer-transparent overlay without layout paint; got ${JSON.stringify(openGeometry)}.`);
 
     await toggle.click();
     await page.waitForTimeout(220);
@@ -1591,7 +1601,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       assert(state, `Expected application navigation state ${boundary.label}.`);
       assert(state.areas.includes('"navigation main') === boundary.persistent, `Expected application navigation persistence to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.drawerHidden === (boundary.persistent ? "false" : "true"), `Expected application navigation accessibility state to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
-      assert(state.drawerPosition === (boundary.persistent ? "static" : "fixed"), `Expected application navigation drawer positioning to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+      assert(state.drawerPosition === (boundary.persistent ? "relative" : "fixed"), `Expected application navigation drawer positioning to retain an overlay anchor while switching ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert((state.overlayDisplay === "none") === boundary.persistent, `Expected application navigation overlay lifecycle to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       if ("allocation" in boundary) {
         assert(state.basicAllocation === boundary.allocation, `Expected the root-owned App panel inset to leave a ${boundary.allocation}px basic-section allocation ${boundary.label}; got ${JSON.stringify(state)}.`);
@@ -2301,6 +2311,7 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       }
 
       const dropdownStyles = getComputedStyle(dropdownElement);
+      const dropdownPaint = getComputedStyle(dropdownElement, "::after");
       const navigationRect = navigationElement.getBoundingClientRect();
       const dropdownRect = dropdownElement.getBoundingClientRect();
       const contentRect = document.querySelector<HTMLElement>("[data-baseline-label='top navigation content']")?.getBoundingClientRect();
@@ -2317,7 +2328,8 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         display: dropdownStyles.display,
         position: dropdownStyles.position,
         borderTopWidth: Number.parseFloat(dropdownStyles.borderTopWidth),
-        paintBoundary: dropdownStyles.boxShadow,
+        paintBoundary: dropdownPaint.boxShadow,
+        paintPointerEvents: dropdownPaint.pointerEvents,
         escapesNavigation: dropdownRect.bottom > navigationRect.bottom,
         overlapsFollowingContent: contentRect ? dropdownRect.bottom > contentRect.top : false,
         hitOwnsPopup: Boolean(hit?.closest(".bf-top-navigation-dropdown") === dropdownElement),
@@ -2333,9 +2345,23 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     assert(desktopDropdownState.hidden === "false", `Expected desktop dropdown aria-hidden=false, got ${desktopDropdownState.hidden}.`);
     assert(desktopDropdownState.display === "block", `Expected desktop dropdown display to become block, got ${desktopDropdownState.display}.`);
     assert(desktopDropdownState.position === "absolute", `Expected desktop dropdown to be absolutely positioned, got ${desktopDropdownState.position}.`);
-    assert(desktopDropdownState.borderTopWidth === 0 && desktopDropdownState.paintBoundary !== "none", `Expected desktop dropdown boundary and elevation to paint without a layout border, got ${JSON.stringify(desktopDropdownState)}.`);
+    assert(desktopDropdownState.borderTopWidth === 0 && desktopDropdownState.paintBoundary !== "none" && desktopDropdownState.paintPointerEvents === "none", `Expected desktop dropdown boundary and elevation to use its pointer-transparent overlay without a layout border, got ${JSON.stringify(desktopDropdownState)}.`);
     assert(desktopDropdownState.escapesNavigation && desktopDropdownState.overlapsFollowingContent && desktopDropdownState.hitOwnsPopup, `Expected the real desktop dropdown to escape the navigation box and remain interactive above following content. Got ${JSON.stringify(desktopDropdownState)}.`);
     assert(desktopDropdownState.navigationIsolation === "isolate" && desktopDropdownState.navigationZIndex === "98", `Expected the pre-existing sticky navigation popup layer to remain the containing stack owner. Got ${JSON.stringify(desktopDropdownState)}.`);
+
+    await desktopPage.emulateMedia({ forcedColors: "active" });
+    const forcedDesktopDropdown = await desktopPage.locator(".bf-top-navigation-dropdown[aria-hidden='false']").evaluate(element => {
+      const paint = getComputedStyle(element, "::after");
+      return {
+        blockStartWidth: Number.parseFloat(paint.borderBlockStartWidth),
+        outlineStyle: paint.outlineStyle,
+        outlineWidth: Number.parseFloat(paint.outlineWidth),
+        pointerEvents: paint.pointerEvents,
+        shadow: paint.boxShadow
+      };
+    });
+    assert(forcedDesktopDropdown.blockStartWidth === 0 && forcedDesktopDropdown.outlineStyle === "solid" && forcedDesktopDropdown.outlineWidth > 0 && forcedDesktopDropdown.pointerEvents === "none" && forcedDesktopDropdown.shadow === "none", `Expected the desktop dropdown to switch from the mobile one-sided edge to an all-sided system outline. Got ${JSON.stringify(forcedDesktopDropdown)}.`);
+    await desktopPage.emulateMedia({ forcedColors: "none" });
 
     const desktopSearchToggle = desktopPage.locator(".bf-top-navigation-nav .bf-top-navigation-search-toggle").first();
     await desktopSearchToggle.waitFor({ state: "visible" });
@@ -2635,20 +2661,21 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       if (!navigationItem || !dropdown || !dividedItem) return null;
       const navigationDivider = getComputedStyle(navigationItem, "::before");
       const itemDivider = getComputedStyle(dividedItem, "::before");
-      const dropdownStyles = getComputedStyle(dropdown);
+      const dropdownPaint = getComputedStyle(dropdown, "::after");
       return {
         navigationDividerBackground: navigationDivider.backgroundColor,
         navigationDividerHeight: Number.parseFloat(navigationDivider.blockSize),
         itemDividerBackground: itemDivider.backgroundColor,
         itemDividerHeight: Number.parseFloat(itemDivider.blockSize),
-        dropdownOutlineStyle: dropdownStyles.outlineStyle,
-        dropdownOutlineWidth: Number.parseFloat(dropdownStyles.outlineWidth)
+        dropdownBlockStartStyle: dropdownPaint.borderBlockStartStyle,
+        dropdownBlockStartWidth: Number.parseFloat(dropdownPaint.borderBlockStartWidth),
+        dropdownPointerEvents: dropdownPaint.pointerEvents
       };
     });
     assert(forcedMobilePaint, "Expected forced-colors mobile navigation separators to be measurable.");
     assert(forcedMobilePaint.navigationDividerBackground !== "rgba(0, 0, 0, 0)" && forcedMobilePaint.navigationDividerHeight > 0, `Expected the mobile navigation divider to retain an out-of-flow system-color cue. Got ${JSON.stringify(forcedMobilePaint)}.`);
     assert(forcedMobilePaint.itemDividerBackground !== "rgba(0, 0, 0, 0)" && forcedMobilePaint.itemDividerHeight > 0, `Expected mobile dropdown item separators to retain out-of-flow system-color cues. Got ${JSON.stringify(forcedMobilePaint)}.`);
-    assert(forcedMobilePaint.dropdownOutlineStyle !== "none" && forcedMobilePaint.dropdownOutlineWidth > 0, `Expected the mobile dropdown popup boundary to remain visible in forced colors. Got ${JSON.stringify(forcedMobilePaint)}.`);
+    assert(forcedMobilePaint.dropdownBlockStartStyle === "solid" && forcedMobilePaint.dropdownBlockStartWidth > 0 && forcedMobilePaint.dropdownPointerEvents === "none", `Expected the mobile dropdown popup to retain its pointer-transparent one-sided forced-colors boundary. Got ${JSON.stringify(forcedMobilePaint)}.`);
     await mobilePage.emulateMedia({ forcedColors: "none" });
 
     await mobilePage.keyboard.press("Escape");
@@ -4439,6 +4466,8 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
     { route: "/demo/components/notification.html", selector: ".bf-notification:not(.is-borderless)", forcedSide: "outline" },
     { route: "/demo/components/notification.html", selector: ".bf-notification-meta", forcedSide: "blockStart" },
     { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer", forcedSide: "blockStart" },
+    { route: "/demo/components/application-layout.html", selector: ".bf-navigation-drawer", forcedSide: "inlineEnd" },
+    { route: "/demo/components/application-layout.html", selector: ".bf-aside.is-pinned", forcedSide: "inlineStart" },
     { route: "/demo/components/table.html", selector: ".bf-table tbody td", forcedSide: "blockEnd", widthVariable: "--bf-table-row-border-size" },
     { route: "/demo/components/table-mobile-card.html", selector: ".table-demo-narrow .bf-table.is-mobile-card > tbody > tr", forcedSide: "outline" },
     { route: "/demo/components/list.html", selector: ".bf-list.is-divided > li + li", forcedSide: "blockStart" },
@@ -4521,6 +4550,8 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
         assert(forced.blockEndStyle === "solid" && forced.blockEndWidth > 0, `Expected ${testCase.selector} to retain its block-end forced-colors boundary; got ${JSON.stringify(forced)}.`);
       } else if (testCase.forcedSide === "inlineStart") {
         assert(forced.inlineStartStyle === "solid" && forced.inlineStartWidth > 0, `Expected ${testCase.selector} to retain its inline-start forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "inlineEnd") {
+        assert(forced.inlineEndStyle === "solid" && forced.inlineEndWidth > 0, `Expected ${testCase.selector} to retain its inline-end forced-colors boundary; got ${JSON.stringify(forced)}.`);
       } else if (testCase.forcedSide === "attachedPanel") {
         assert(forced.blockStartWidth === 0 && forced.blockEndStyle === "solid" && forced.blockEndWidth > 0 && forced.inlineStartStyle === "solid" && forced.inlineStartWidth > 0 && forced.inlineEndStyle === "solid" && forced.inlineEndWidth > 0, `Expected attached SearchAndFilter paint to retain exactly three forced-colors edges; got ${JSON.stringify(forced)}.`);
       }

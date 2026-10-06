@@ -19,7 +19,8 @@
   - [x] Panels, modals, popup surfaces and code snippets — `1b00248`, gates green; logs `overlays-check-types.log`, `overlays-npm-test.log`, `overlays-qa-components.log`
   - [x] Feedback surfaces and native marker parts — `f32f9ce`, gates green; logs `feedback-check-types.log`, `feedback-npm-test.log`, `feedback-qa-components.log`
   - [x] Tables, divided lists and tab rules — `ebe54a0`, gates green; logs `tables-check-types.log`, `tables-npm-test.log`, `tables-qa-components.log`
-  - [ ] Static and editorial rules — current change; gates green in `static-check-types.log`, `static-npm-test.log`, `static-qa-components.log`
+  - [x] Static and editorial rules — `0410c72`, gates green; logs `static-check-types.log`, `static-npm-test.log`, `static-qa-components.log`
+  - [ ] Navigation popup and application shell frames — current change
 - [ ] Before/after review demo and negative specimens
 - [ ] Root gates and Chromium evidence
 - [ ] Conformance board and final Opus request

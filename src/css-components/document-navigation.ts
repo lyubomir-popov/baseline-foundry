@@ -1,3 +1,5 @@
+import { allSidedStrokeOverlayCss } from "./stroke-paint.js";
+
 type DocumentNavigationCssOptions = {
   bodyCaseTypeStyles: string;
   bodyTypeStyles: string;
@@ -12,8 +14,10 @@ type DocumentNavigationCssOptions = {
  */
 export function documentNavigationCss(options: DocumentNavigationCssOptions): string {
   const { bodyCaseTypeStyles, bodyTypeStyles, headingTypeStyles } = options;
+  const reducedSearchStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search)", { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
 
-  return `/* ------------------------------------------------------------------ */
+  return `${reducedSearchStroke.owner}
+/* ------------------------------------------------------------------ */
 /* Document navigation (Vanilla parity)                                 */
 /* ------------------------------------------------------------------ */
 
@@ -372,9 +376,10 @@ ${bodyCaseTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search) {
+    --bf-overlay-elevation-layer: 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
     background: var(--bf-color-background-alt);
     border: 0;
-    box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-low-contrast), 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
+    box-shadow: none;
     inset-block-start: 100%;
     inset-inline-end: 0;
     padding: var(--bf-panel-padding-block) var(--bf-top-navigation-link-padding-inline);
@@ -394,10 +399,10 @@ ${bodyCaseTypeStyles}  align-items: center;
 
   :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search) {
     box-shadow: none;
-    outline: var(--bf-border-width) solid CanvasText;
-    outline-offset: calc(var(--bf-border-width) * -1);
   }
 }
+
+${reducedSearchStroke.painter}
 
 /* ------------------------------------------------------------------ */
 /* Table of contents                                                   */

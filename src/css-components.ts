@@ -26,7 +26,7 @@ import { sitesFoundationCss } from "./css-components/sites-foundation.js";
 import { sitesEditorialPortsCss } from "./css-components/sites-editorial-ports.js";
 import { sitesRichListsCss } from "./css-components/sites-rich-lists.js";
 import { staticContentPortsCss } from "./css-components/static-content-ports.js";
-import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss, inlineStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss, inlineEndStrokeOverlayCss, inlineStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { tableCss } from "./css-components/table.js";
 import { tabSectionCss } from "./css-components/tab-section.js";
 import { tabsChoiceBreadcrumbsCss } from "./css-components/tabs-choice-breadcrumbs.js";
@@ -101,6 +101,8 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const fieldStroke = blockEndStrokeOverlayCss(fieldBoundarySelector, { anchor: "relative" });
   const navigationBarSelector = ":where(.bf-theme) :where(.bf-navigation-bar)";
   const navigationBarStroke = blockEndStrokeOverlayCss(navigationBarSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const navigationDrawerStroke = inlineEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-navigation-drawer)", { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const applicationAsideStroke = inlineStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-aside)", { anchor: "existing", color: "var(--bf-color-border-default)" });
   const contextualMenuStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-contextual-menu-dropdown)", { anchor: "existing" });
   const contextualMenuGroupStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group)", { anchor: "relative" });
   const tooltipMessageStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-tooltip-message)", { anchor: "existing" });
@@ -128,6 +130,8 @@ ${codeSnippetHeaderStroke.owner}
 ${codeSnippetStackedDropdownStroke.owner}
 ${codeSnippetDropdownStroke.owner}
 ${copiedCodeSnippetStroke.owner}
+${navigationDrawerStroke.owner}
+${applicationAsideStroke.owner}
 :where(.bf-theme) {
 ${foundryComponentColorVars("light")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
@@ -1834,7 +1838,7 @@ ${navigationBarStroke.painter}
 :where(.bf-theme) :where(.bf-navigation-drawer) {
   background: var(--bf-color-background-alt);
   block-size: 100dvh;
-  border-inline-end: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
   bottom: 0;
   inline-size: min(100%, var(--bf-application-navigation-width));
   left: 0;
@@ -1850,7 +1854,8 @@ ${navigationBarStroke.painter}
 }
 
 :where(.bf-theme) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {
-  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  --bf-overlay-elevation-layer: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  box-shadow: none;
   transform: translateX(0);
   visibility: visible;
 }
@@ -1929,7 +1934,7 @@ ${navigationBarStroke.painter}
 
 :where(.bf-theme) :where(.bf-aside) {
   background: var(--bf-color-background-default);
-  border-inline-start: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   grid-area: aside;
   inline-size: 100%;
   min-block-size: 0;
@@ -1941,7 +1946,8 @@ ${navigationBarStroke.painter}
 :where(.bf-theme) :where(.bf-aside.is-overlay, .bf-aside.is-drawer) {
   align-self: stretch;
   block-size: auto;
-  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  --bf-overlay-elevation-layer: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  box-shadow: none;
   bottom: 0;
   grid-column: 1 / -1;
   grid-row: 1 / -1;
@@ -1959,6 +1965,9 @@ ${navigationBarStroke.painter}
   visibility: hidden;
   z-index: 30;
 }
+
+${navigationDrawerStroke.painter}
+${applicationAsideStroke.painter}
 
 :where(.bf-theme) :where(.bf-aside.is-overlay.is-icon, .bf-aside.is-drawer.is-icon) {
   inline-size: min(100%, var(--bf-application-drawer-width-icon));
@@ -2107,7 +2116,7 @@ ${navigationBarStroke.painter}
     box-shadow: none;
     inline-size: 100%;
     min-block-size: 0;
-    position: static;
+    position: relative;
     transform: translateX(0);
     visibility: visible;
   }
