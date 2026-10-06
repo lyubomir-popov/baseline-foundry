@@ -89,38 +89,33 @@ and must not be changed.
   header exception to its real cell and proves exact pseudo bounds through
   CDP. Its required gates are green in `static-check-types.log`,
   `static-npm-test.log`, and `static-qa-components.log`.
+- `cf48e2f` migrates TopNavigation dropdown/search popup frames and application
+  drawer/aside edges to automatic logical overlays while preserving their
+  existing elevation and stack contract. Desktop dropdowns retain all-sided
+  forced-colors paint while mobile dropdowns retain their top-only edge. Its
+  required gates are green in `shells-check-types.log`,
+  `shells-npm-test.log`, and `shells-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-The active shell-paint item moves TopNavigation dropdown/search popup frames,
-application navigation drawers and asides to logical automatic overlays while
-preserving their existing popup/elevation stack and pointer routing.
+The final ownership item is gate-green and awaiting its atomic commit. It
+closes the emitted border/root-shadow, compensation-only margin, peer-spacing,
+and icon-slot inventories. Mobile SideNavigation uses its governed parent group
+gap; mobile table cards use group/grid gaps; contained logos and inline options
+use their collection-owned relationships; Chip dismiss uses the tier mark gap,
+body-sized mask and flow-neutral 24px target; sortable carets keep a full icon
+plus mark-gap slot in both directions and sort states. Forced-colors glyph paint
+is narrowly system-colour-owned on the glyph pseudo.
 
-After this item, finish the emitted border/root-shadow inventory and semantic
-margin/icon ownership sweep. Preserve the governed dense Site Chip policy and
-established non-Site nested contracts.
-
-The shared row ledger is final, but the intermediate source still has local
-border subtraction only where a family still retains a real stroke. Remove
-each local term with that family's paint migration; none may remain at the
-final checkpoint.
-
-FR-061a/SP-1 remains in progress beyond the landed margin-direction step:
-remaining semantic or structural block-end margins in responsive navigation,
-ContentCard, mobile tables, contained logos, and equal-height rows must move to
-their owning family layouts before the final conformance checkpoint. The
-current AST gate intentionally proves only the nonzero block-start inventory;
-it is not the final compensation-only end-margin classifier.
+The required logs are green at `governance-check-types-final.log`,
+`governance-npm-test-final.log`, and `governance-qa-components-final.log`.
 
 ## Remaining order
 
-1. Atomic paint-only component-family commits using the reviewed exception map
-   in `paint-impact-audit.md`; remove each staged local border term with its owner.
-2. Complete compensation-only end-margin ownership in the affected component
-   families and replace the directional gate with final end-margin governance.
-3. Identical-DOM before/after demo, browser scale evidence, BF board columns,
+1. Commit the gate-green final ownership item.
+2. Identical-DOM before/after demo, browser scale evidence, BF board columns,
    manifest, review docs, and `opus-028-review-request.md`; stop for external Opus.
 
 Run `npm run check:types`, `npm test`, and `npm run qa:components` after each

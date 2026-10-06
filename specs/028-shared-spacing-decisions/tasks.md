@@ -7,7 +7,7 @@
 - [x] Four-tier SP-13 text compensation — `b4a6b13`, independent 28-role oracle green
 - [x] Tooltip compact surface — `948f240`, gates green
 - [x] Nonzero block-start removal and zero-padding containment — `5184484`, gates green
-- [ ] Compensation-only block-end governance across remaining component families (FR-061a/SP-1)
+- [x] Compensation-only block-end governance and final semantic/icon ownership sweep (FR-061a/SP-1) — gates green; logs `governance-check-types-final.log`, `governance-npm-test-final.log`, `governance-qa-components-final.log`
 - [x] SideNavigation panel geometry — `a468e8f`, gates green; logs `sidenav-check-types.log`, `sidenav-npm-test.log`, `sidenav-qa-components.log`
 - [x] Governed dense Site Chip — `801e856`, gates green; logs `dense-chip-check-types.log`, `dense-chip-npm-test.log`, `dense-chip-qa-components.log`
 - [x] Paint-only row contract — `b395a56`, gates green; logs `row-contract-check-types.log`, `row-contract-npm-test.log`, `row-contract-qa-components.log`
@@ -20,7 +20,7 @@
   - [x] Feedback surfaces and native marker parts — `f32f9ce`, gates green; logs `feedback-check-types.log`, `feedback-npm-test.log`, `feedback-qa-components.log`
   - [x] Tables, divided lists and tab rules — `ebe54a0`, gates green; logs `tables-check-types.log`, `tables-npm-test.log`, `tables-qa-components.log`
   - [x] Static and editorial rules — `0410c72`, gates green; logs `static-check-types.log`, `static-npm-test.log`, `static-qa-components.log`
-  - [ ] Navigation popup and application shell frames — current change
+  - [x] Navigation popup and application shell frames — `cf48e2f`, gates green; logs `shells-check-types.log`, `shells-npm-test.log`, `shells-qa-components.log`
 - [ ] Before/after review demo and negative specimens
 - [ ] Root gates and Chromium evidence
 - [ ] Conformance board and final Opus request

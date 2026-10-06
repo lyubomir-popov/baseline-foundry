@@ -66,17 +66,27 @@ export function interactiveTablesCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after {
-  background-image: var(--bf-ui-icon-chevron-down);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  background: currentColor;
   block-size: var(--bf-icon-size-default);
   content: "";
   display: inline-block;
-  inline-size: var(--bf-icon-size-default);
-  margin-inline-start: var(--bf-leading-mark-gap);
+  inline-size: calc(var(--bf-leading-mark-gap) + var(--bf-icon-size-default));
+  mask-image: var(--bf-ui-icon-chevron-down);
+  mask-position: right center;
+  mask-repeat: no-repeat;
+  mask-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
   opacity: 0;
+  pointer-events: none;
   vertical-align: var(--bf-inline-icon-baseline-shift);
+  -webkit-mask-image: var(--bf-ui-icon-chevron-down);
+  -webkit-mask-position: right center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+}
+
+:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]:dir(rtl))::after {
+  mask-position: left center;
+  -webkit-mask-position: left center;
 }
 
 /* Sortable headers lease ::after to the caret, so their row rule uses the
@@ -97,7 +107,8 @@ export function interactiveTablesCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'])::after {
-  transform: rotate(180deg);
+  mask-image: var(--bf-ui-icon-chevron-up);
+  -webkit-mask-image: var(--bf-ui-icon-chevron-up);
 }
 
 :where(.bf-theme) :where(.bf-table.is-expanding .bf-table-expand-toggle) {
@@ -142,7 +153,7 @@ export function interactiveTablesCss(): string {
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody) {
     display: grid;
-    gap: var(--bf-space-3) var(--bf-component-inline-inset-continuation);
+    gap: var(--bf-section-space-shallow) var(--bf-grid-gap-inline);
     grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
     inline-size: 100%;
   }
@@ -201,6 +212,11 @@ export function interactiveTablesCss(): string {
 ${mobileCardStroke.painter}
 
 @media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
   :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::before {
     border-block-end: var(--bf-table-row-border-size) solid CanvasText;
     box-shadow: none;

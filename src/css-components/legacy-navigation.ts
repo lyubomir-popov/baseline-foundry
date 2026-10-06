@@ -65,11 +65,12 @@ ${topNavigationSearchStroke.owner}
   display: grid;
   gap: 0rem;
   min-inline-size: 0;
+  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {
-  inline-size: auto;
-  margin-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
+  inline-size: 100%;
+  margin-inline: 0;
 }
 
 /* The intrinsic single-line heading plus metric end compensation closes on
@@ -77,12 +78,18 @@ ${topNavigationSearchStroke.owner}
    headings can grow. */
 :where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading) {
   min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-nudge-end));
+  padding-inline: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-drawer) {
+  --bf-side-navigation-drawer-elevation-layer: 0 0 0 0 transparent;
   background: var(--bf-color-background-default);
+  box-shadow: var(--bf-side-navigation-drawer-elevation-layer);
   bottom: 0;
   color: var(--bf-color-text-default);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bf-section-space-shallow);
   inline-size: 100%;
   left: 0;
   overflow: auto;
@@ -95,7 +102,7 @@ ${topNavigationSearchStroke.owner}
 }
 
 :where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-expanded) :where(.bf-side-navigation-drawer) {
-  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  --bf-side-navigation-drawer-elevation-layer: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
   transform: translateX(0);
 }
 
@@ -122,13 +129,22 @@ ${topNavigationSearchStroke.owner}
 
 :where(.bf-theme) :where(.bf-side-navigation-drawer-header) {
   background: var(--bf-color-background-default);
-  margin-bottom: calc(var(--bf-baseline) * 2);
+  margin-bottom: 0;
   padding-bottom: var(--bf-panel-padding-block);
   padding-inline: var(--bf-panel-padding-inline);
   padding-top: var(--bf-panel-padding-block);
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-drawer-chrome) {
+  display: grid;
+  gap: 0;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-drawer-body) {
+  min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer) {
@@ -946,6 +962,11 @@ ${bodyTypeStyles}  background: transparent;
   padding-inline-start: var(--bf-side-navigation-label-keyline);
 }
 
+:where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading:not(.is-linked)),
+:where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading.is-linked) > :where(.bf-side-navigation-link) {
+  padding-inline: 0;
+}
+
 :where(.bf-theme) :where(.bf-side-navigation-icon) > svg {
   block-size: var(--bf-side-navigation-icon-size);
   display: block;
@@ -961,7 +982,7 @@ ${bodyTypeStyles}  background: transparent;
 
   :where(.bf-theme) :where(.bf-side-navigation-drawer),
   :where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-expanded) :where(.bf-side-navigation-drawer) {
-    box-shadow: none;
+    --bf-side-navigation-drawer-elevation-layer: 0 0 0 0 transparent;
     display: block;
     max-inline-size: none;
     overflow: visible;

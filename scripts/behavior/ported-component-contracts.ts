@@ -247,6 +247,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           const nested = root.querySelector<HTMLElement>(".bf-table-of-contents-list .bf-table-of-contents-list");
           const parentItem = nested?.parentElement;
           const parentLink = parentItem?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-link");
+          const nestedLink = nested?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-item > .bf-table-of-contents-link");
           const current = root.querySelector<HTMLElement>(".bf-table-of-contents-link[aria-current]");
           const narrowIndentProbe = document.createElement("span");
           const regularIndentProbe = document.createElement("span");
@@ -260,13 +261,13 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           rowPaddingProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-interface-row-padding-block)";
           root.append(narrowIndentProbe, regularIndentProbe, sectionSpaceProbe, textProbe, rowPaddingProbe);
           const direction = getComputedStyle(root).direction;
-          const nestedRect = nested?.getBoundingClientRect();
+          const nestedRect = nestedLink?.getBoundingClientRect();
           const parentRect = parentLink?.getBoundingClientRect();
           const sections = Array.from(root.querySelectorAll<HTMLElement>(":scope > .bf-table-of-contents-section"));
           const secondSection = sections[1];
           const secondHeading = secondSection?.querySelector<HTMLElement>(".bf-table-of-contents-heading");
           const dividerStyle = secondSection ? getComputedStyle(secondSection, "::before") : null;
-          const result = nested && parentLink && current && nestedRect && parentRect ? {
+          const result = nested && nestedLink && parentLink && current && nestedRect && parentRect ? {
             actualWidth: root.getBoundingClientRect().width,
             direction,
             sectionGap: Number.parseFloat(getComputedStyle(root).rowGap),
@@ -278,6 +279,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
             dividerBlockSize: Number.parseFloat(dividerStyle?.blockSize ?? "0"),
             dividerToHeading: secondSection && secondHeading ? secondHeading.getBoundingClientRect().top - secondSection.getBoundingClientRect().top : Number.POSITIVE_INFINITY,
             nestedMargin: Number.parseFloat(getComputedStyle(nested).marginInlineStart),
+            nestedPadding: Number.parseFloat(getComputedStyle(nested).paddingInlineStart),
             linkPadding: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-link")).map(link => {
               const style = getComputedStyle(link);
               return [Number.parseFloat(style.paddingBlockStart), Number.parseFloat(style.paddingBlockEnd)];
@@ -303,7 +305,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
         }, width);
         assert(state, `Expected ${tier} table-of-contents state at ${width}.`);
         const expectedIndent = expectedSpace === "var(--bf-leading-mark-gap)" ? state.expectedNarrowIndent : state.expectedRegularIndent;
-        assert(Math.abs(state.nestedMargin - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} at ${width}; margin=${state.nestedMargin}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
+        assert(state.nestedMargin === 0 && Math.abs(state.nestedPadding - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} through owner padding at ${width}; margin=${state.nestedMargin}, padding=${state.nestedPadding}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
         assert(Math.abs(state.sectionGap - state.expectedSectionGap) <= 0.1 && state.sectionPadding.every(([start, end]) => start === 0 && end === 0), `Expected ${tier} table-of-contents sections to receive their shallow separation from the parent stack without item padding at ${width}.`);
         assert(state.linkPadding.every(([start, end]) => Math.abs(start - state.expectedRowPadding) <= 0.1 && Math.abs(end - state.expectedRowPadding) <= 0.1), `Expected ${tier} table-of-contents links to share symmetric single-line row padding at ${width}; expected ${state.expectedRowPadding}, got ${JSON.stringify(state.linkPadding)}.`);
         assert(state.listGaps.every(gap => Math.abs(gap) <= 0.1) && state.itemGaps.every(gap => Math.abs(gap) <= 0.1), `Expected ${tier} table-of-contents rows to match the side-navigation zero-gap rhythm at ${width}; got lists=${state.listGaps}, items=${state.itemGaps}.`);
@@ -325,7 +327,8 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
         root.setAttribute("dir", "rtl");
         const nested = root.querySelector<HTMLElement>(".bf-table-of-contents-list .bf-table-of-contents-list");
         const parentLink = nested?.parentElement?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-link");
-        const nestedRect = nested?.getBoundingClientRect();
+        const nestedLink = nested?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-item > .bf-table-of-contents-link");
+        const nestedRect = nestedLink?.getBoundingClientRect();
         const parentRect = parentLink?.getBoundingClientRect();
         const result = {
           direction: getComputedStyle(root).direction,
@@ -406,6 +409,51 @@ export async function verifyInteractiveTables(origin: string): Promise<void> {
       assert(Math.abs(targetGeometry.buttonHeight - targetGeometry.lineHeight) <= 0.1 && targetGeometry.paddingStart === 0 && targetGeometry.paddingEnd === 0, `Expected ${tier} sort button to keep its text-line flow footprint after moving target extension out of layout; got ${JSON.stringify(targetGeometry)}.`);
       assert(targetGeometry.extensionHeight >= 24 && targetGeometry.interiorSamples > 0 && targetGeometry.allSamplesHit, `Expected ${tier} sort button's complete one-pixel interior 24 CSS-pixel extension scan to route to the real button; got ${JSON.stringify(targetGeometry)}.`);
       assert(Math.abs(targetGeometry.headerHeight - targetGeometry.expectedHeaderHeight) <= 0.1, `Expected ${tier} sortable header row to comprise only its text line, owned cell padding, and row strokes; got ${JSON.stringify(targetGeometry)}.`);
+
+      const activeHeader = page.locator(".bf-table.is-sortable").nth(1).locator("th[aria-sort='ascending']").first();
+      const caretGeometry = await activeHeader.evaluate(header => {
+        const owner = header as HTMLElement;
+        owner.dir = "ltr";
+        const ltrStyle = getComputedStyle(owner, "::after");
+        const ltr = {
+          backgroundColor: ltrStyle.backgroundColor,
+          inlineSize: Number.parseFloat(ltrStyle.inlineSize),
+          maskImage: ltrStyle.maskImage || ltrStyle.webkitMaskImage,
+          maskPosition: ltrStyle.maskPosition || ltrStyle.webkitMaskPosition,
+          maskSize: ltrStyle.maskSize || ltrStyle.webkitMaskSize,
+          paddingInlineEnd: Number.parseFloat(ltrStyle.paddingInlineEnd),
+          paddingInlineStart: Number.parseFloat(ltrStyle.paddingInlineStart),
+          transform: ltrStyle.transform
+        };
+        owner.dir = "rtl";
+        const rtlStyle = getComputedStyle(owner, "::after");
+        const rtl = {
+          backgroundColor: rtlStyle.backgroundColor,
+          inlineSize: Number.parseFloat(rtlStyle.inlineSize),
+          maskImage: rtlStyle.maskImage || rtlStyle.webkitMaskImage,
+          maskPosition: rtlStyle.maskPosition || rtlStyle.webkitMaskPosition,
+          maskSize: rtlStyle.maskSize || rtlStyle.webkitMaskSize,
+          paddingInlineEnd: Number.parseFloat(rtlStyle.paddingInlineEnd),
+          paddingInlineStart: Number.parseFloat(rtlStyle.paddingInlineStart),
+          transform: rtlStyle.transform
+        };
+        const result = {
+          ltr,
+          rtl
+        };
+        owner.removeAttribute("dir");
+        return result;
+      });
+      const expectedIconSize = { editorial: 16, documentation: 14, app: 14, os: 12 }[tier];
+      const expectedMarkGap = { editorial: 8, documentation: 8, app: 8, os: 4 }[tier];
+      for (const [direction, caret] of [["ltr", caretGeometry.ltr], ["rtl", caretGeometry.rtl]] as const) {
+        const maskDimensions = caret.maskSize.split(/\s+/).map(value => Number.parseFloat(value));
+        assert(Math.abs(caret.inlineSize - (expectedIconSize + expectedMarkGap)) <= 0.1, `Expected ${tier}/${direction} sortable caret to reserve one tier icon plus the full mark gap without squeezing the glyph; got ${JSON.stringify(caretGeometry)}.`);
+        assert(caret.paddingInlineStart === 0 && caret.paddingInlineEnd === 0 && caret.transform === "none", `Expected ${tier}/${direction} sortable caret geometry to stay independent of padding and transforms; got ${JSON.stringify(caretGeometry)}.`);
+        assert(maskDimensions.length === 2 && maskDimensions.every(value => Math.abs(value - expectedIconSize) <= 0.1), `Expected ${tier}/${direction} sortable caret paint to retain the full tier icon size; got ${JSON.stringify(caretGeometry)}.`);
+        assert(caret.maskImage !== "none" && caret.backgroundColor !== "rgba(0, 0, 0, 0)", `Expected ${tier}/${direction} sortable caret to use a currentColor mask that remains available to forced colors; got ${JSON.stringify(caretGeometry)}.`);
+      }
+      assert(caretGeometry.ltr.maskPosition !== caretGeometry.rtl.maskPosition, `Expected ${tier} sortable caret to mirror its painted-edge placement in nested RTL without moving its label gap; got ${JSON.stringify(caretGeometry)}.`);
     }
     await tierSelect.selectOption("editorial");
     await page.waitForFunction(() => document.body.dataset.bfTier === "editorial");
@@ -437,12 +485,21 @@ export async function verifyInteractiveTables(origin: string): Promise<void> {
     await coresButton.focus();
     await coresButton.press("Enter");
     assert(await coresHeader.getAttribute("aria-sort") === "ascending", "Expected first sortable-table activation to set aria-sort=ascending.");
+    const ascendingCaret = await coresHeader.evaluate(header => {
+      const style = getComputedStyle(header, "::after");
+      return { inlineSize: style.inlineSize, maskImage: style.maskImage || style.webkitMaskImage, maskPosition: style.maskPosition || style.webkitMaskPosition, transform: style.transform };
+    });
     assert(JSON.stringify(await coreValues()) === JSON.stringify(["2", "4", "8", "16"]), "Expected sortable table numeric values to sort ascending.");
     assert(await page.locator(".bf-table.is-sortable").first().locator("th[aria-sort='ascending']").count() === 1, "Expected sortable table to expose exactly one active sort column.");
     await assertStableWidths("ascending state");
 
     await coresButton.press("Space");
     assert(await coresHeader.getAttribute("aria-sort") === "descending", "Expected second sortable-table activation to set aria-sort=descending.");
+    const descendingCaret = await coresHeader.evaluate(header => {
+      const style = getComputedStyle(header, "::after");
+      return { inlineSize: style.inlineSize, maskImage: style.maskImage || style.webkitMaskImage, maskPosition: style.maskPosition || style.webkitMaskPosition, transform: style.transform };
+    });
+    assert(ascendingCaret.maskImage !== descendingCaret.maskImage && ascendingCaret.inlineSize === descendingCaret.inlineSize && ascendingCaret.maskPosition === descendingCaret.maskPosition && ascendingCaret.transform === "none" && descendingCaret.transform === "none", `Expected ascending and descending sort states to swap only their full-size glyph mask without shifting the gap or slot; ascending=${JSON.stringify(ascendingCaret)}, descending=${JSON.stringify(descendingCaret)}.`);
     assert(JSON.stringify(await coreValues()) === JSON.stringify(["16", "8", "4", "2"]), "Expected sortable table numeric values to sort descending.");
     await assertStableWidths("descending state");
 
@@ -625,6 +682,22 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
       return { height: item.getBoundingClientRect().height, expected, marginBlockStart: Number.parseFloat(styles.marginBlockStart), overflow: root.scrollWidth - root.clientWidth };
     });
     assert(logoState && Math.abs(logoState.height - logoState.expected) <= 0.1 && logoState.marginBlockStart === 0 && logoState.overflow <= 1, "Expected logo section to retain its large intrinsic mark size without block-start margins or overflow.");
+    const containedLogoSpacing = await page.locator(".bf-logo-section.is-contained").evaluate(root => {
+      const itemsOwner = root.querySelector<HTMLElement>(".bf-logo-section-items");
+      const items = Array.from(root.querySelectorAll<HTMLElement>(".bf-logo-section-item"));
+      if (!itemsOwner || items.length < 3) return null;
+      itemsOwner.style.inlineSize = "10rem";
+      const rects = items.map(item => item.getBoundingClientRect()).sort((a, b) => a.top - b.top || a.left - b.left);
+      const firstTop = rects[0]?.top ?? 0;
+      const firstRow = rects.filter(rect => Math.abs(rect.top - firstTop) <= 0.1);
+      const secondRow = rects.find(rect => rect.top > firstTop + 0.1);
+      return {
+        actualGap: secondRow ? secondRow.top - Math.max(...firstRow.map(rect => rect.bottom)) : -1,
+        itemMargins: items.map(item => Number.parseFloat(getComputedStyle(item).marginBlockEnd)),
+        rowGap: Number.parseFloat(getComputedStyle(itemsOwner).rowGap)
+      };
+    });
+    assert(containedLogoSpacing && containedLogoSpacing.itemMargins.every(margin => margin === 0) && containedLogoSpacing.rowGap > 0 && Math.abs(containedLogoSpacing.actualGap - containedLogoSpacing.rowGap) <= 0.1, `Expected contained logo wrapping to use its parent-owned row gap with zero child relationship margins; got ${JSON.stringify(containedLogoSpacing)}.`);
 
     await page.goto(`${origin}/demo/components/media-object.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);

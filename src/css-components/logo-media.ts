@@ -29,7 +29,7 @@ export function logoMediaCss(): string {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  column-gap: var(--bf-component-inline-inset-continuation);
+  column-gap: var(--bf-grid-gap-inline);
   min-inline-size: 0;
   padding-block: 0;
 }
@@ -71,11 +71,12 @@ export function logoMediaCss(): string {
    It is named for the component's behaviour—not Vanilla's legacy selector. */
 :where(.bf-theme) :where(.bf-logo-section.is-contained) :where(.bf-logo-section-item) {
   inline-size: calc(var(--bf-space-8) + var(--bf-space-1));
-  margin-block: 0 var(--bf-space-1);
+  margin-block: 0;
 }
 
 :where(.bf-theme) :where(.bf-logo-section.is-contained) :where(.bf-logo-section-items) {
   padding-block: 0;
+  row-gap: var(--bf-space-1);
 }
 
 :where(.bf-theme) :where(.bf-logo-section.is-contained) :where(.bf-logo-section-logo) {
@@ -97,7 +98,7 @@ export function logoMediaCss(): string {
 
   :where(.bf-theme) :where(.bf-logo-section.is-contained) :where(.bf-logo-section-item) {
     inline-size: calc(var(--bf-space-12) + var(--bf-space-1));
-    margin-block: 0 var(--bf-space-1);
+    margin-block: 0;
   }
 
   :where(.bf-theme) :where(.bf-logo-section.is-contained) :where(.bf-logo-section-items) {

@@ -45,6 +45,11 @@ Read in this order:
 - Controls follow the Vanilla occupied-block model: symmetric nudge-derived
   padding, no target block size, and trailing compensation that snaps the
   occupied block to the grid.
+- Component strokes are paint. Ordinary framed components use a locally reset,
+  pointer-transparent automatic `::after` overlay with no wrapper, isolation,
+  or z-index. Named leaf/native-part exceptions must keep zero layout borders;
+  one-sided forced-colors paint uses a logical system-color border on the same
+  out-of-flow owner, while all-sided paint uses an inset system outline.
 - Canonical tagged navigation preserves the 2.375rem-by-1.375rem tag, 1rem mark
   box, and fixed 0.375rem mark-to-tag-bottom offset. The mark aligns to the first title
   line rather than the tag centre; the tag attaches to the navigation top and

@@ -1,5 +1,5 @@
 import { componentPages } from "../component-demo-shared.ts";
-import { parseCss, assertRuleHasDecl } from "../css-ast-helpers.ts";
+import { parseCss, assertRuleHasDecl, assertRuleMissingDecl } from "../css-ast-helpers.ts";
 import { assert } from "../validation-assert.ts";
 
 export function validateRenewalComponentContracts(
@@ -255,6 +255,10 @@ export function validateRenewalComponentContracts(
     "padding-inline-end": "var(--bf-component-inline-inset-action)",
     "padding-inline-start": "var(--bf-component-inline-inset-continuation)"
   }, "table-of-contents links share the body-sized single-line row contract");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-list .bf-table-of-contents-list)", {
+    "padding-inline-start": "var(--bf-component-inline-inset-action)"
+  }, "nested table-of-contents lists own their regular indentation as padding");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-table-of-contents-list .bf-table-of-contents-list)", "margin-inline-start", "table-of-contents indentation is not a relationship margin");
   assert(!css.includes("padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));"), "Expected document-navigation text links to contain no hidden semantic half-space padding.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-list)", {
     "--bf-divided-section-rule-to-content": "var(--bf-field-gap)",

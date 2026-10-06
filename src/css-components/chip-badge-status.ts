@@ -41,7 +41,6 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-action);
   --bf-ui-chip-radius: 999rem;
   --bf-ui-badge-padding-inline: 0.0625rem;
-  --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
 }
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) {
@@ -61,7 +60,7 @@ ${bodyTypeStyles}  align-items: baseline;
   inline-size: fit-content;
   justify-content: center;
   justify-self: start;
-  margin: 0 var(--bf-component-inline-inset-field) var(--bf-interface-row-compensation-block-end) 0;
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   max-inline-size: 100%;
   min-inline-size: min(100%, calc(var(--bf-interface-row-painted-block-size) + var(--bf-inline-unit)));
   padding-block: var(--bf-interface-row-padding-block);
@@ -76,6 +75,10 @@ ${bodyTypeStyles}  align-items: baseline;
      second chip-only occupied height. */
   vertical-align: baseline;
   white-space: nowrap;
+}
+
+:where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):has(> :where(.bf-badge, .bf-badge.is-negative)) {
+  column-gap: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-chip.is-positive) {
@@ -203,8 +206,7 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) :where(.bf-badge, .bf-badge.is-negative) {
   align-self: center;
-  margin-inline-end: var(--bf-ui-badge-overhang);
-  margin-inline-start: var(--bf-component-inline-inset-field);
+  margin-inline: 0;
 }
 
 :where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {

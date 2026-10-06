@@ -498,12 +498,12 @@ ${bodyTypeStyles}  border-block: 0;
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-list .bf-table-of-contents-list) {
-  margin-inline-start: var(--bf-component-inline-inset-action);
+  padding-inline-start: var(--bf-component-inline-inset-action);
 }
 
 @container bf-table-of-contents (width < 20rem) {
   :where(.bf-theme) :where(.bf-table-of-contents-list .bf-table-of-contents-list) {
-    margin-inline-start: var(--bf-leading-mark-gap);
+    padding-inline-start: var(--bf-leading-mark-gap);
   }
 }
 `;

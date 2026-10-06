@@ -210,7 +210,7 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-inline-options-options) {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--bf-component-inline-inset-continuation);
+  gap: var(--bf-field-gap);
 }
 
 :where(.bf-theme) :where(.bf-inline-options-option) {
@@ -346,7 +346,7 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-breadcrumbs-item) + :where(.bf-breadcrumbs-item)::before {
   color: var(--bf-color-text-muted);
   content: "/";
-  margin-inline-end: var(--bf-leading-mark-gap);
+  padding-inline-end: var(--bf-leading-mark-gap);
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) a {

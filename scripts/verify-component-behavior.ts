@@ -658,6 +658,27 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       assert(Math.abs(primaryNavigationGeometry.tagWidth - 22) < 0.51 && Math.abs(primaryNavigationGeometry.tagHeight - 38) < 0.51 && Math.abs(primaryNavigationGeometry.tagIconWidth - 16) < 0.51 && Math.abs(primaryNavigationGeometry.tagIconHeight - 16) < 0.51, `Expected ${theme} Canonical tagged brand to preserve its 38x22px tag and 16px mark anatomy; got ${JSON.stringify(primaryNavigationGeometry)}.`);
       assert(Math.abs(primaryNavigationGeometry.plainStart - primaryNavigationGeometry.disclosureStart) < 0.51 && Math.abs((primaryNavigationGeometry.plainStart - primaryNavigationGeometry.navigationLeft) - primaryNavigationGeometry.expectedKeyline) < 0.51, `Expected ${theme} plain and disclosure SideNavigation rows to share gutter + icon + gap; got ${JSON.stringify(primaryNavigationGeometry)}.`);
     }
+    await page.setViewportSize({ width: 800, height: 900 });
+    const drawerSpacing = await page.evaluate(() => {
+      const drawer = document.querySelector<HTMLElement>("#component-side-navigation-docs .bf-side-navigation-drawer");
+      const chrome = drawer?.querySelector<HTMLElement>(":scope > .bf-side-navigation-drawer-chrome");
+      const header = chrome?.querySelector<HTMLElement>(".bf-side-navigation-drawer-header");
+      const body = drawer?.querySelector<HTMLElement>(":scope > .bf-side-navigation-drawer-body");
+      if (!drawer || !chrome || !header || !body) return null;
+      const probe = document.createElement("span");
+      probe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
+      drawer.append(probe);
+      const expectedGap = probe.getBoundingClientRect().height;
+      probe.remove();
+      return {
+        display: getComputedStyle(drawer).display,
+        expectedGap,
+        gap: body.getBoundingClientRect().top - chrome.getBoundingClientRect().bottom,
+        headerMarginEnd: Number.parseFloat(getComputedStyle(header).marginBlockEnd)
+      };
+    });
+    assert(drawerSpacing && drawerSpacing.display === "flex" && drawerSpacing.headerMarginEnd === 0 && Math.abs(drawerSpacing.gap - drawerSpacing.expectedGap) <= 0.1, `Expected the mobile SideNavigation drawer to own its chrome/body relationship through the governed group gap with no child margin; got ${JSON.stringify(drawerSpacing)}.`);
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`${origin}/demo/spec/spacing.html`, { waitUntil: "networkidle" });
     await page.waitForSelector("#spacing-horizontal-panel .spacing-audit-panel-content", { state: "attached" });
     await page.waitForSelector("#spacing-vertical-panel .spacing-audit-panel-content", { state: "attached" });
@@ -2960,16 +2981,21 @@ async function verifyInlineListSeparatorSpacing(origin: string): Promise<void> {
             }
 
             const listStyles = getComputedStyle(list);
+            const plainListStyles = getComputedStyle(plainList);
             const result = {
               columnGap: Number.parseFloat(listStyles.columnGap),
               direction: listStyles.direction,
               display: listStyles.display,
               flexWrap: listStyles.flexWrap,
               itemMargins: items.map(item => Number.parseFloat(getComputedStyle(item).marginInlineEnd)),
+              plainColumnGap: Number.parseFloat(plainListStyles.columnGap),
+              plainDisplay: plainListStyles.display,
+              plainFlexWrap: plainListStyles.flexWrap,
               plainItemMargins: Array.from(plainList.querySelectorAll<HTMLElement>(".bf-inline-list-item")).map(item => Number.parseFloat(getComputedStyle(item).marginInlineEnd)),
               rootFontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
               separatorContents: items.map(item => getComputedStyle(item, "::after").content),
               separatorMargins: items.map(item => Number.parseFloat(getComputedStyle(item, "::after").marginInlineStart)),
+              separatorPaddings: items.map(item => Number.parseFloat(getComputedStyle(item, "::after").paddingInlineStart)),
               sharedSpace: listStyles.getPropertyValue("--bf-inline-list-space").trim()
             };
 
@@ -2979,10 +3005,10 @@ async function verifyInlineListSeparatorSpacing(origin: string): Promise<void> {
           }, direction);
 
           assert(geometry, `Expected ${tier}/${tone}/${direction} middot-list geometry to be measurable.`);
-          assert(geometry.display === "flex" && geometry.flexWrap === "wrap", `Expected ${tier}/${tone}/${direction} middot lists to remove inline source-whitespace from separator geometry; got ${JSON.stringify(geometry)}.`);
-          assert(geometry.sharedSpace === "0.5rem" && Math.abs(geometry.columnGap - (geometry.rootFontSize * 0.5)) <= 0.01, `Expected ${tier}/${tone}/${direction} middot separators to reserve the shared 0.5rem after the dot; got ${JSON.stringify(geometry)}.`);
-          assert(geometry.separatorMargins.slice(0, -1).every(margin => Math.abs(margin - geometry.columnGap) <= 0.01), `Expected ${tier}/${tone}/${direction} middot separators to reserve the same 0.5rem before the dot; got ${JSON.stringify(geometry)}.`);
-          assert(geometry.plainItemMargins.slice(0, -1).every(margin => Math.abs(margin - geometry.columnGap) <= 0.01) && geometry.plainItemMargins.at(-1) === 0, `Expected ${tier}/${tone}/${direction} the plain inline list to share the fixed 0.5rem inline spacing rule; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.display === "flex" && geometry.flexWrap === "wrap" && geometry.plainDisplay === "flex" && geometry.plainFlexWrap === "wrap", `Expected ${tier}/${tone}/${direction} inline lists to remove inline source-whitespace from relationship geometry; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.sharedSpace === "0.5rem" && Math.abs(geometry.columnGap - (geometry.rootFontSize * 0.5)) <= 0.01 && Math.abs(geometry.plainColumnGap - geometry.columnGap) <= 0.01, `Expected ${tier}/${tone}/${direction} inline-list parents to own the shared 0.5rem relationship gap; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.separatorMargins.every(margin => margin === 0) && geometry.separatorPaddings.slice(0, -1).every(padding => Math.abs(padding - geometry.columnGap) <= 0.01), `Expected ${tier}/${tone}/${direction} middot separators to use owned padding before the dot instead of a relationship margin; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.plainItemMargins.every(margin => margin === 0), `Expected ${tier}/${tone}/${direction} plain inline-list items to leave relationship spacing to the parent gap; got ${JSON.stringify(geometry)}.`);
           assert(geometry.itemMargins.every(margin => margin === 0), `Expected ${tier}/${tone}/${direction} middot items not to add a second trailing spacing owner; got ${JSON.stringify(geometry)}.`);
           assert(geometry.separatorContents.slice(0, -1).every(content => content === '"•"') && geometry.separatorContents.at(-1) === "none", `Expected ${tier}/${tone}/${direction} only inter-item positions to paint a middot separator; got ${JSON.stringify(geometry)}.`);
           assert(geometry.direction === direction, `Expected middot-list logical spacing to mirror in ${direction}; got ${JSON.stringify(geometry)}.`);
@@ -3945,11 +3971,12 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
           probe.style.cssText = "padding-inline-start:var(--bf-component-inline-inset-field);position:fixed;visibility:hidden";
           badge.parentElement?.append(probe);
           const expected = Number.parseFloat(getComputedStyle(probe).paddingInlineStart);
-          const actual = Number.parseFloat(getComputedStyle(badge).marginInlineStart);
+          const actual = Number.parseFloat(getComputedStyle(badge.parentElement as HTMLElement).columnGap);
+          const badgeMargin = Number.parseFloat(getComputedStyle(badge).marginInlineStart) + Number.parseFloat(getComputedStyle(badge).marginInlineEnd);
           probe.remove();
-          return { actual, expected };
+          return { actual, badgeMargin, expected };
         });
-        assert(Math.abs(compositeBadgeGap.actual - compositeBadgeGap.expected) <= 0.01, `Expected ${tier}/${tone} moving the chip's outer keyline to leave its internal badge gap on Field; got ${JSON.stringify(compositeBadgeGap)}.`);
+        assert(Math.abs(compositeBadgeGap.actual - compositeBadgeGap.expected) <= 0.01 && compositeBadgeGap.badgeMargin === 0, `Expected ${tier}/${tone} the Chip parent to own its badge relationship as the Field gap with zero child margin; got ${JSON.stringify(compositeBadgeGap)}.`);
       }
     }
 
@@ -4358,6 +4385,7 @@ async function verifyCommandPaintOwners(origin: string): Promise<void> {
     { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-previous", pseudo: "::after" },
     { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-next", pseudo: "::after" }
   ] as const;
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
 
   try {
     for (const testCase of cases) {
@@ -4383,6 +4411,66 @@ async function verifyCommandPaintOwners(origin: string): Promise<void> {
       assert(geometry.isolation === "auto" && geometry.ownerZIndex === "auto" && geometry.overlayZIndex === "auto", `Expected ${testCase.selector} paint not to introduce isolation or a stacking index; got ${JSON.stringify(geometry)}.`);
       assert(geometry.overlayBoxShadow !== "none" && geometry.overlayBoxSizing === "border-box" && geometry.overlayContent === '""' && geometry.overlayInset === "0px" && geometry.overlayPointerEvents === "none" && geometry.overlayPosition === "absolute", `Expected ${testCase.selector}${testCase.pseudo} to be the exact pointer-transparent paint owner; got ${JSON.stringify(geometry)}.`);
     }
+
+    await page.goto(`${origin}/demo/components/chip.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const dismiss = page.locator("[data-dismissible-chip] .bf-chip-dismiss");
+      const geometry = await dismiss.evaluate(element => {
+        const rect = element.getBoundingClientRect();
+        const previousRect = element.previousElementSibling?.getBoundingClientRect();
+        const parent = element.parentElement as HTMLElement | null;
+        const owner = getComputedStyle(element);
+        const icon = getComputedStyle(element, "::before");
+        const target = getComputedStyle(element, "::after");
+        const points = [
+          [rect.left + (rect.width / 2) - 11.5, rect.top + (rect.height / 2) - 11.5],
+          [rect.left + (rect.width / 2) + 11.5, rect.top + (rect.height / 2) - 11.5],
+          [rect.left + (rect.width / 2) - 11.5, rect.top + (rect.height / 2) + 11.5],
+          [rect.left + (rect.width / 2) + 11.5, rect.top + (rect.height / 2) + 11.5]
+        ];
+        return {
+          iconSize: Number.parseFloat(owner.getPropertyValue("--bf-icon-size-default")),
+          ownerHeight: rect.height,
+          ownerWidth: rect.width,
+          parentGap: parent ? Number.parseFloat(getComputedStyle(parent).columnGap) : -1,
+          visualGap: previousRect ? rect.left - previousRect.right : -1,
+          iconHeight: Number.parseFloat(icon.height),
+          iconWidth: Number.parseFloat(icon.width),
+          iconBackground: icon.backgroundColor,
+          iconMask: icon.maskImage || icon.webkitMaskImage,
+          iconMaskSize: icon.maskSize || icon.webkitMaskSize,
+          targetHeight: Number.parseFloat(target.minHeight),
+          targetWidth: Number.parseFloat(target.minWidth),
+          targetPointerEvents: target.pointerEvents,
+          cornerHits: points.map(([x, y]) => document.elementFromPoint(x, y)?.closest(".bf-chip-dismiss") === element)
+        };
+      });
+      const expectedIconSize = { editorial: 16, documentation: 14, app: 14, os: 12 }[tier];
+      const expectedMarkGap = { editorial: 8, documentation: 8, app: 8, os: 4 }[tier];
+      assert(Math.abs(geometry.ownerHeight - expectedIconSize) <= 0.1 && Math.abs(geometry.ownerWidth - expectedIconSize) <= 0.1 && Math.abs(geometry.iconHeight - expectedIconSize) <= 0.1 && Math.abs(geometry.iconWidth - expectedIconSize) <= 0.1, `Expected ${tier} Chip dismiss paint and slot to follow the ${expectedIconSize}px tier icon token; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.iconMask !== "none" && geometry.iconBackground !== "rgba(0, 0, 0, 0)" && geometry.iconMaskSize.split(/\s+/).every(value => Math.abs(Number.parseFloat(value) - expectedIconSize) <= 0.1), `Expected ${tier} Chip dismiss to paint a full-size currentColor mask instead of a theme-fixed SVG image; got ${JSON.stringify(geometry)}.`);
+      assert(Math.abs(geometry.parentGap - expectedMarkGap) <= 0.1 && Math.abs(geometry.visualGap - expectedMarkGap) <= 0.1, `Expected ${tier} Chip parent to own the governed ${expectedMarkGap}px mark gap before its dismiss icon; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.targetHeight >= 24 && geometry.targetWidth >= 24 && geometry.targetPointerEvents === "auto" && geometry.cornerHits.every(Boolean), `Expected ${tier} Chip dismiss to retain a fully routed 24px target without enlarging its icon slot; got ${JSON.stringify(geometry)}.`);
+    }
+
+    await page.emulateMedia({ forcedColors: "active" });
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const forcedIcon = await page.locator("[data-dismissible-chip] .bf-chip-dismiss").evaluate(element => {
+        const icon = getComputedStyle(element, "::before");
+        return {
+          background: icon.backgroundColor,
+          color: getComputedStyle(element).color,
+          maskImage: icon.maskImage || icon.webkitMaskImage
+        };
+      });
+      assert(forcedIcon.maskImage !== "none" && forcedIcon.background !== "rgba(0, 0, 0, 0)" && forcedIcon.background === forcedIcon.color, `Expected ${tier} Chip dismiss to remain a system-currentColor mask in forced colors; got ${JSON.stringify(forcedIcon)}.`);
+    }
+    await page.emulateMedia({ forcedColors: "none" });
 
     await page.goto(`${origin}/demo/components/pagination.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);

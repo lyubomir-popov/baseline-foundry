@@ -80,17 +80,21 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-list-item) > :where(.bf-list) {
-  margin-inline-start: var(--bf-component-inline-inset-action);
+  padding-inline-start: var(--bf-component-inline-inset-action);
   padding-block-start: var(--bf-body-nudge-end);
 }
 
 :where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) > :where(.bf-list) {
-  margin-inline-start: 0;
+  padding-inline-start: 0;
 }
 
 :where(.bf-theme) :where(.bf-inline-list) {
   --bf-inline-list-space: 0.5rem;
 
+  align-items: baseline;
+  column-gap: var(--bf-inline-list-space);
+  display: flex;
+  flex-wrap: wrap;
   margin: 0;
   padding: 0;
 }
@@ -99,7 +103,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 ${bodyTypeStyles}  display: inline-block;
   list-style: none;
   margin-block-end: var(--bf-body-margin-bottom);
-  margin-inline-end: var(--bf-inline-list-space);
+  margin-inline-end: 0;
   padding-block-end: 0;
   padding-block-start: var(--bf-body-nudge-start);
 }
@@ -123,7 +127,7 @@ ${bodyTypeStyles}  display: inline-block;
 :where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item:not(:last-of-type))::after {
   content: "\\2022";
   display: inline;
-  margin-inline-start: var(--bf-inline-list-space);
+  padding-inline-start: var(--bf-inline-list-space);
 }
 
 ${dividedItemStroke.painter}`;

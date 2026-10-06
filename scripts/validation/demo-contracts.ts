@@ -30,7 +30,7 @@ export function validateAppTierDemoPage(pageName: string, html: string): void {
     assert((html.match(/\b(?:bf-chip|bf-status-label)[^"\n]*\bis-nested\b/g) ?? []).length === 6, "Expected every application-layout navigation/table auxiliary surface to opt into the explicit nested fit contract.");
   }
   if (pageName === "side-navigation.html") {
-    assert(html.includes('class="bf-panel bf-side-navigation-drawer"') && html.includes('class="bf-panel-header is-navigation-brand"'), "Expected side-navigation.html to exercise the optional documentation-drawer brand composition.");
+    assert(html.includes('class="bf-panel bf-side-navigation-drawer"') && html.includes('class="bf-side-navigation-drawer-chrome"') && html.includes('class="bf-side-navigation-drawer-body bf-side-navigation-groups"') && html.includes('class="bf-panel-header is-navigation-brand"'), "Expected side-navigation.html to exercise the drawer-owned chrome/body spacing anatomy and optional brand composition.");
     assert(html.includes('class="bf-panel-header is-sticky is-navigation-brand"'), "Expected side-navigation.html to exercise the primary-navigation brand header.");
     assert((html.match(/class="bf-top-navigation-logo is-canonical-tagged"/g) ?? []).length === 2 && (html.match(/src="\.\.\/assets\/canonical-mark\.svg"/g) ?? []).length === 2 && html.includes('>Baseline Foundry<'), "Expected both side-navigation compositions to reuse the tagged Circle of Friends asset and Baseline Foundry wordmark.");
     assert(html.includes('aria-label="Primary application navigation"') && html.includes('class="bf-side-navigation-accordion-button"'), "Expected side-navigation.html to compare plain and disclosure rows in a primary application rail.");
