@@ -45,6 +45,7 @@ export interface ThemeComponentsConfig {
   inlineInsetActionUnits: number;
   inlineInsetContinuationUnits: number;
   markGapInlineUnits: number;
+  controlBlockInsetBaselineUnits: number;
   controlVisualSizeRem: number;
   fieldGapBaselineUnits: number;
   panelPaddingInlineUnits: number;
@@ -107,6 +108,7 @@ export interface ComponentTokens {
   inlineInsetField: string;
   inlineInsetAction: string;
   inlineInsetContinuation: string;
+  controlBlockInset: string;
   controlVisualSize: string;
   fieldGap: string;
   panelPaddingInline: string;

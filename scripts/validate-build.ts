@@ -1698,7 +1698,8 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 2rem application outer margin.");
   assert(layout.contentMaxWidth === '60rem', "Expected the app-tier fixed-width token to use the derived 60rem cap.");
   assert(components.panelPaddingInline === '0.75rem' && components.panelPaddingBlock === '0.75rem', "Expected App panel padding to retain 0.75rem on both independently authored axes.");
-  assert(components.inlineInsetField === '0.25rem', "Expected the App field inset to tighten for dense data entry.");
+  assert(components.inlineInsetField === '0.5rem', "Expected the App field inset to match the shared 8px input inset.");
+  assert(components.controlBlockInset === '0.25rem', "Expected the App control block inset to use one 4px baseline unit.");
   assert(components.inlineInsetAction === '0.75rem', "Expected the App action inset to adopt the Canonical three-unit command start.");
   assert(components.inlineInsetContinuation === '1.5rem', "Expected the App continuation inset to adopt the Canonical six-unit copy start.");
   assert(!("controlMinBlockSize" in components), "Expected the app-tier preset tokens to stop exposing legacy control height tokens.");

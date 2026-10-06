@@ -111,6 +111,7 @@
     "inlineInsetActionUnits": 3,
     "inlineInsetContinuationUnits": 6,
     "markGapInlineUnits": 2,
+    "controlBlockInsetBaselineUnits": 1,
     "controlVisualSizeRem": 0.875,
     "fieldGapBaselineUnits": 2,
     "panelPaddingInlineUnits": 4,

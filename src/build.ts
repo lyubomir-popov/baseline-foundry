@@ -108,6 +108,7 @@ const REQUIRED_COMPONENT_FIELDS = [
   "inlineInsetActionUnits",
   "inlineInsetContinuationUnits",
   "markGapInlineUnits",
+  "controlBlockInsetBaselineUnits",
   "controlVisualSizeRem",
   "fieldGapBaselineUnits",
   "panelPaddingInlineUnits",
@@ -178,6 +179,7 @@ export function validateThemeConfig(config: ThemeConfig): void {
     config.components.inlineInsetActionUnits < 0 ||
     config.components.inlineInsetContinuationUnits < 0 ||
     config.components.markGapInlineUnits < 0 ||
+    config.components.controlBlockInsetBaselineUnits < 0 ||
     config.components.fieldGapBaselineUnits < 0 ||
     config.components.panelPaddingInlineUnits < 0 ||
     config.components.panelPaddingBlockBaselineUnits < 0
@@ -340,6 +342,7 @@ function buildComponentTokens(config: ThemeConfig, spacing: ResolvedDtcgSpacing)
     inlineInsetField: spacingRem(spacing, "spacing.inset.field.inline"),
     inlineInsetAction: spacingRem(spacing, "spacing.inset.action.inline"),
     inlineInsetContinuation: spacingRem(spacing, "spacing.inset.continuation.inline"),
+    controlBlockInset: toRem(config.components.controlBlockInsetBaselineUnits * config.baselineUnit),
     controlVisualSize: toRem(config.components.controlVisualSizeRem),
     fieldGap: spacingRem(spacing, "spacing.gap.field.block"),
     panelPaddingInline: spacingRem(spacing, "spacing.inset.surface.inline"),

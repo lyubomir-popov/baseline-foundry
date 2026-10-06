@@ -42,14 +42,20 @@ interface ResolvedDtcgSpacingArtifact {
   source: {
     package: "@canonical/design-tokens";
     repository: string;
-    commit: string;
+    baseCommit: string;
     resolver: string;
+    workingValues: {
+      repository: "canonical-spacing-spec";
+      commit: "7169231";
+      spec: "024-semantic-spacing-token-schema";
+      status: "working; design-tokens contribution pending";
+    };
   };
   products: Record<CanonicalProduct, ResolvedDtcgSpacing>;
 }
 
 export const canonicalSpacingSourceCommit = "18f57b95b1aa1dfe85a45746016b055c807d6628";
-export const canonicalSpacingProductsSha256 = "97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571";
+export const canonicalSpacingProductsSha256 = "b9260be24cfd61553dbb74f0fc42e8966b29ed2c40bb87f64c4d869652757be1";
 const canonicalSpacingSourceRepository = "https://github.com/canonical/design-tokens";
 const canonicalSpacingResolver = "tokens/canonical/canonical.resolver.json";
 const canonicalProductOrder: CanonicalProduct[] = ["site", "docs", "app", "os"];
@@ -142,10 +148,15 @@ export function validateCanonicalSpacingArtifact(value: unknown): asserts value 
   if (
     value.source.package !== "@canonical/design-tokens" ||
     value.source.repository !== canonicalSpacingSourceRepository ||
-    value.source.commit !== canonicalSpacingSourceCommit ||
-    value.source.resolver !== canonicalSpacingResolver
+    value.source.baseCommit !== canonicalSpacingSourceCommit ||
+    value.source.resolver !== canonicalSpacingResolver ||
+    !isRecord(value.source.workingValues) ||
+    value.source.workingValues.repository !== "canonical-spacing-spec" ||
+    value.source.workingValues.commit !== "7169231" ||
+    value.source.workingValues.spec !== "024-semantic-spacing-token-schema" ||
+    value.source.workingValues.status !== "working; design-tokens contribution pending"
   ) {
-    throw new Error(`Canonical spacing artifact must pin design-tokens ${canonicalSpacingSourceCommit}.`);
+    throw new Error(`Canonical spacing artifact must pin design-tokens ${canonicalSpacingSourceCommit} and identify the Spec 024 working-value status.`);
   }
 
   const actualProducts = Object.keys(value.products).sort();

@@ -2,13 +2,19 @@
   "format": "canonical-resolver-apply-spacing-v1",
   "integrity": {
     "algorithm": "sha256",
-    "canonicalProducts": "97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571"
+    "canonicalProducts": "b9260be24cfd61553dbb74f0fc42e8966b29ed2c40bb87f64c4d869652757be1"
   },
   "source": {
     "package": "@canonical/design-tokens",
     "repository": "https://github.com/canonical/design-tokens",
-    "commit": "18f57b95b1aa1dfe85a45746016b055c807d6628",
-    "resolver": "tokens/canonical/canonical.resolver.json"
+    "baseCommit": "18f57b95b1aa1dfe85a45746016b055c807d6628",
+    "resolver": "tokens/canonical/canonical.resolver.json",
+    "workingValues": {
+      "repository": "canonical-spacing-spec",
+      "commit": "7169231",
+      "spec": "024-semantic-spacing-token-schema",
+      "status": "working; design-tokens contribution pending"
+    }
   },
   "products": {
     "site": {
@@ -42,11 +48,11 @@
     "app": {
       "spacing.baseline": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
       "spacing.gap.field.block": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
-      "spacing.gap.mark.inline": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
+      "spacing.gap.mark.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.gap.group.block": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.gap.pattern.block": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
       "spacing.gap.region.block": { "$type": "dimension", "$value": { "value": 2, "unit": "rem" } },
-      "spacing.inset.field.inline": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
+      "spacing.inset.field.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.inset.action.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
       "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.5, "unit": "rem" } },
       "spacing.inset.surface.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },

@@ -5,6 +5,7 @@ function componentInputDeclarations(components: ComponentTokens): string {
   --bf-bar-thickness: ${components.barThickness};
   --bf-radius: ${components.radius};
   --bf-component-inline-inset-action-bordered: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
+  --bf-control-block-inset: ${components.controlBlockInset};
   --bf-control-visual-size: ${components.controlVisualSize};
 `;
 }
@@ -26,7 +27,7 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
   /* Regular single-line interface rows use one metric-derived occupied block.
      Visible and transparent block borders both consume the frame slots. */
   --bf-interface-row-line-height: ${bodyLineHeight};
-  --bf-interface-row-padding-block: max(0rem, calc(${bodyNudgeStart} - var(--bf-border-width)));
+  --bf-interface-row-padding-block: max(0rem, calc(var(--bf-control-block-inset) + ${bodyNudgeStart} - var(--bf-border-width)));
   --bf-interface-row-painted-block-size: calc(var(--bf-interface-row-line-height) + (var(--bf-interface-row-padding-block) * 2) + (var(--bf-border-width) * 2));
   --bf-interface-row-compensation-block-end: mod(calc(var(--bf-baseline) - mod(var(--bf-interface-row-painted-block-size), var(--bf-baseline))), var(--bf-baseline));
   --bf-interface-row-occupied-block-size: calc(var(--bf-interface-row-painted-block-size) + var(--bf-interface-row-compensation-block-end));

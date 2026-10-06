@@ -497,7 +497,11 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
       assertSharedHeight("single-line interface", interfaceComponents);
-      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - interfaceReference.textTop) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
+      const sharesBaselinePhase = (position: number, reference: number) => {
+        const delta = Math.abs(position - reference) % occupiedBlockGeometry.baseline;
+        return Math.min(delta, occupiedBlockGeometry.baseline - delta) <= renderedBorderTolerance;
+      };
+      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || sharesBaselinePhase(sample.textTop, interfaceReference.textTop)), `Expected ${tier} single-line interface text to share the five-letter reference baseline phase; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
       assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
       const nestedReference = occupiedBlockGeometry.nested[0];
       const nestedHosts = occupiedBlockGeometry.nested.slice(1);
@@ -511,7 +515,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
       }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
       assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
-      assert(occupiedBlockGeometry.nested.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || Math.abs(sample.textTop - nestedReference.textTop) <= renderedBorderTolerance), `Expected ${tier} nested host text to retain the page baseline while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
+      assert(occupiedBlockGeometry.nested.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || sharesBaselinePhase(sample.textTop, nestedReference.textTop)), `Expected ${tier} nested host text to retain the page baseline phase while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
       assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
       for (const label of ["Chip", "Tab action", "Color input", "Range control"] as const) {
@@ -4799,7 +4803,7 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
   const canonicalExpected = {
     editorial: [0.5, 0.5, 0.5, 1.5, 4, 8, 0.5, 1, 2, 1, 1, 4],
     documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 0.75, 1.5, 1, 1, 3],
-    app: [0.25, 0.5, 0.25, 0.5, 1, 2, 0.25, 0.75, 1.5, 0.75, 0.75, 3],
+    app: [0.25, 0.5, 0.5, 0.5, 1, 2, 0.5, 0.75, 1.5, 0.75, 0.75, 3],
     os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 0.5, 1.25, 0.5, 0.5, 2]
   } as const;
   const canonicalProperties = [

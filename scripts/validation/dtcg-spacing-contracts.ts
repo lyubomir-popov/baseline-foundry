@@ -66,11 +66,11 @@ const FINAL_MATRIX: Matrix = {
   app: {
     "spacing.baseline": 0.25,
     "spacing.gap.field.block": 0.5,
-    "spacing.gap.mark.inline": 0.25,
+    "spacing.gap.mark.inline": 0.5,
     "spacing.gap.group.block": 0.5,
     "spacing.gap.pattern.block": 1,
     "spacing.gap.region.block": 2,
-    "spacing.inset.field.inline": 0.25,
+    "spacing.inset.field.inline": 0.5,
     "spacing.inset.action.inline": 0.75,
     "spacing.inset.continuation.inline": 1.5,
     "spacing.inset.surface.inline": 0.75,
@@ -162,6 +162,7 @@ export async function validateDtcgSpacingContracts(
 ): Promise<void> {
   const artifact = JSON.parse(await fs.readFile(path.resolve("config/canonical-spacing.resolved.json"), "utf8")) as Record<string, unknown>;
   const source = artifact.source as Record<string, unknown>;
+  const workingValues = source.workingValues as Record<string, unknown>;
   const integrity = artifact.integrity as Record<string, unknown>;
   const products = artifact.products as Record<Product, Record<string, unknown>>;
 
@@ -174,9 +175,13 @@ export async function validateDtcgSpacingContracts(
   assert(
     source.package === "@canonical/design-tokens" &&
       source.repository === "https://github.com/canonical/design-tokens" &&
-      source.commit === SOURCE_COMMIT &&
-      source.resolver === "tokens/canonical/canonical.resolver.json",
-    `Expected the resolved spacing artifact to pin the exact design-tokens ${SOURCE_COMMIT} provider and resolver.`
+      source.baseCommit === SOURCE_COMMIT &&
+      source.resolver === "tokens/canonical/canonical.resolver.json" &&
+      workingValues.repository === "canonical-spacing-spec" &&
+      workingValues.commit === "7169231" &&
+      workingValues.spec === "024-semantic-spacing-token-schema" &&
+      workingValues.status === "working; design-tokens contribution pending",
+    `Expected the spacing artifact to identify design-tokens ${SOURCE_COMMIT} as its base and Spec 024 at 7169231 as its working-value source.`
   );
   assert(JSON.stringify(Object.keys(products).sort()) === JSON.stringify(["app", "docs", "os", "site"]), "Expected the resolved spacing artifact to contain exactly four products.");
   assert(!existsSync(path.resolve("config/canonical-spacing.compatibility-overlay.json")), "Expected 020a to remove the temporary BF compatibility overlay file.");
