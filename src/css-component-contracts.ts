@@ -57,7 +57,7 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
 
   /* Leading marks are positioned backwards from the continuation copy inset;
      a mark never creates a fourth content inset. */
-  --bf-leading-mark-size: var(--bf-control-visual-size);
+  --bf-leading-mark-size: var(--bf-icon-size-default);
   --bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));
   --bf-leading-mark-group-inset: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-offset));
   --bf-tick-label-offset: var(--bf-leading-mark-offset);

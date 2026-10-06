@@ -1,6 +1,6 @@
 export function iconCss(): string {
   return `:where(.bf-theme) {
-  --bf-icon-size-default: 1rem;
+  --bf-icon-size-default: var(--bf-body-font-size);
   --bf-icon-size-medium: 2.5rem;
   --bf-icon-size-large: 4rem;
   --bf-icon-size-x-large: 4.5rem;
