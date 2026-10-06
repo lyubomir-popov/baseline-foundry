@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spec 028 — shared spacing review</title>
+    <link id="review-bundle" rel="stylesheet" href="./before/editorial.css" />
+    <link rel="stylesheet" href="../demo-fonts.css" />
+    <link rel="stylesheet" href="./review.css" />
+  </head>
+  <body class="bf-theme is-light" data-review-version="before" data-review-tier="editorial">
+    <header class="review-controls" aria-label="Review controls">
+      <div class="review-controls-title">
+        <strong>BF Spec 028</strong>
+        <span>Identical DOM · bundle switch only</span>
+      </div>
+      <fieldset>
+        <legend>Bundle</legend>
+        <label><input type="radio" name="version" value="before" checked /> Before</label>
+        <label><input type="radio" name="version" value="after" /> After</label>
+      </fieldset>
+      <label>Tier
+        <select data-review-tier-select>
+          <option value="editorial">Site</option>
+          <option value="documentation">Docs</option>
+          <option value="app">App</option>
+          <option value="os">OS</option>
+        </select>
+      </label>
+      <label>Tone
+        <select data-review-tone-select>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <label>Viewport
+        <select data-review-width-select>
+          <option value="desktop">Desktop</option>
+          <option value="mobile">Mobile</option>
+        </select>
+      </label>
+      <label><input type="checkbox" data-review-baseline /> Baselines</label>
+      <label><input type="checkbox" data-review-boxes /> Boxes</label>
+      <output data-review-status aria-live="polite">Loading bundle…</output>
+    </header>
+
+    <aside class="review-provenance" aria-label="Bundle provenance">
+      <strong data-review-label>Before · Site</strong>
+      <span data-review-source></span>
+      <code data-review-hash></code>
+      <span data-review-dom>DOM signature pending</span>
+    </aside>
+
+    <main id="review-canvas" class="review-canvas" data-review-canvas>
+      <section class="review-intro" data-review-box>
+        <p class="bf-h5">Shared spacing, text compensation and paint-only frames</p>
+        <h1 class="bf-h2">The same real BF markup under the base and feature bundles</h1>
+        <p class="bf-body">Switch the bundle, tier, tone and viewport while this document stays unchanged. The shell only positions the review controls and diagnostics.</p>
+      </section>
+
+      <section class="review-section bf-stack" aria-labelledby="review-rows" data-review-box>
+        <h2 id="review-rows" class="bf-h3">Rows, fields and dense enrollment</h2>
+        <div class="review-row" data-review-box>
+          <p class="bf-body">Outside text baseline</p>
+          <button class="bf-button" type="button">Run checks</button>
+          <span class="bf-field-boundary"><input class="bf-input" type="text" value="Field text" aria-label="Field text" /></span>
+          <span class="bf-chip is-information">Status</span>
+        </div>
+        <table class="bf-table review-density-table" aria-label="Dense Site Chip baseline specimen" data-review-box>
+          <tbody>
+            <tr><td>Plain cell text</td><td>Aligned text <span class="bf-chip">Dense Site Chip</span></td></tr>
+          </tbody>
+        </table>
+        <p class="bf-body">Standalone <span class="bf-chip">Standalone Chip</span> keeps its ordinary occupied seat.</p>
+      </section>
+
+      <section class="review-section review-two-column" data-review-box>
+        <div class="bf-stack">
+          <h2 class="bf-h3">Tooltip frame and contained text</h2>
+          <div class="bf-tooltip is-detached">
+            <button class="bf-button is-base" type="button">Spacing help</button>
+            <p class="bf-tooltip-message" aria-hidden="false"><span class="bf-tooltip-text">Compact outer inset contains the metric text nudge and closing compensation.</span></p>
+          </div>
+        </div>
+        <div class="bf-stack">
+          <h2 class="bf-h3">Focus and filled child</h2>
+          <button class="bf-option-card review-filled-option" type="button" data-focus-specimen data-review-box>
+            <span class="bf-body">The automatic boundary and focus paint remain visible above an edge-to-edge child.</span>
+            <span class="review-filled-child" aria-hidden="true">Opaque child paint</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="review-section review-two-column" data-review-box>
+        <div class="bf-stack">
+          <h2 class="bf-h3">Side navigation keylines</h2>
+          <nav class="bf-panel bf-side-navigation is-icons" aria-label="Review side navigation">
+            <div class="bf-side-navigation-context-switcher" data-side-navigation-context-switcher>
+              <span class="bf-side-navigation-context-switcher-label">Project</span>
+              <span class="bf-field-boundary"><select aria-label="Project"><option>Baseline Foundry</option></select></span>
+            </div>
+            <div class="bf-side-navigation-groups">
+              <section class="bf-side-navigation-group">
+                <div class="bf-side-navigation-group-header"><h3 class="bf-side-navigation-heading">Foundations</h3></div>
+                <ul class="bf-side-navigation-list">
+                  <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#review-rows"><span class="bf-icon is-search" aria-hidden="true"></span><span>Spacing values</span></a></li>
+                  <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" aria-current="page" href="#review-negative"><span class="bf-icon is-search" aria-hidden="true"></span><span>Paint owners</span></a></li>
+                  <li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#review-table"><span class="bf-icon is-search" aria-hidden="true"></span><span>Nested keyline</span></a></li>
+                </ul>
+              </section>
+            </div>
+          </nav>
+        </div>
+        <div class="bf-stack" id="review-table">
+          <h2 class="bf-h3">Logical table paint</h2>
+          <div class="review-scrollport">
+            <table class="bf-table is-sortable" aria-label="Sortable review table">
+              <thead><tr><th aria-sort="ascending"><button class="bf-table-sort-button" type="button">Package</button></th><th aria-sort="none"><button class="bf-table-sort-button" type="button">Queue</button></th></tr></thead>
+              <tbody><tr><td>baseline-foundry</td><td>12</td></tr><tr><td>spacing-contracts</td><td>4</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="review-negative" class="review-section bf-stack" data-review-box>
+        <h2 class="bf-h3">Negative paint and containing-block specimens</h2>
+        <div class="review-card-stack">
+          <article class="bf-card bf-stack" data-popup-card data-review-box>
+            <header class="bf-card-header"><p class="bf-h4">Popup escapes the real Card</p></header>
+            <div class="bf-card-content"><p class="bf-body">The menu crosses the next Card without clipping or a new stacking context.</p></div>
+            <div class="bf-contextual-menu is-left">
+              <button class="bf-button is-base bf-contextual-menu-toggle" type="button" aria-expanded="true">Inspect</button>
+              <ul class="bf-contextual-menu-dropdown" aria-hidden="false" data-review-popup>
+                <li class="bf-contextual-menu-group"><button class="bf-contextual-menu-link" type="button">Popup hit target</button></li>
+                <li class="bf-contextual-menu-group"><button class="bf-contextual-menu-link" type="button">Second action</button></li>
+              </ul>
+            </div>
+          </article>
+          <article class="bf-card is-highlighted bf-stack" data-review-following-card data-review-box>
+            <header class="bf-card-header"><p class="bf-h4">Following Card</p></header>
+            <div class="bf-card-content"><p class="bf-body">The open menu overlaps this surface and remains clickable.</p></div>
+          </article>
+        </div>
+
+        <section class="bf-notification is-negative" id="review-dismissible" aria-labelledby="review-notification-title" data-containing-owner data-review-box>
+          <span class="bf-icon bf-notification-icon" aria-hidden="true"></span>
+          <div class="bf-notification-content bf-stack is-metric-flush">
+            <h3 class="bf-notification-title bf-h6" id="review-notification-title">Containing-block sentinel</h3>
+            <p class="bf-notification-message">The absolute dismiss action remains anchored to the real notification root.</p>
+            <button class="bf-button is-base is-icon bf-notification-close" type="button" aria-label="Dismiss notification" data-containing-child><span class="bf-icon is-close" aria-hidden="true"></span></button>
+          </div>
+        </section>
+      </section>
+
+      <section class="review-section bf-stack" data-review-box>
+        <h2 class="bf-h3">Long-page stability</h2>
+        <p class="bf-body">This closing section keeps the bundle controls visible while reviewers scroll between pressure cases.</p>
+        <div class="review-repeat" aria-label="Repeated row span">
+          <button class="bf-button" type="button">1</button><button class="bf-button" type="button">2</button><button class="bf-button" type="button">3</button><button class="bf-button" type="button">4</button><button class="bf-button" type="button">5</button><button class="bf-button" type="button">6</button><button class="bf-button" type="button">7</button><button class="bf-button" type="button">8</button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="./review.js"></script>
+  </body>
+</html>

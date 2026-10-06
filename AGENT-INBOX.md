@@ -95,28 +95,33 @@ and must not be changed.
   forced-colors paint while mobile dropdowns retain their top-only edge. Its
   required gates are green in `shells-check-types.log`,
   `shells-npm-test.log`, and `shells-qa-components.log`.
+- `65a1436` closes the emitted border/root-shadow, compensation-only margin,
+  peer-spacing and icon-slot inventories. Its required gates are green in
+  `governance-check-types-final.log`, `governance-npm-test-final.log`, and
+  `governance-qa-components-final.log`.
+- `12d47ab` moves linked Card and OptionCard keyboard focus paint onto their
+  automatic overlay, so normal and forced-colors focus stays visible above an
+  edge-covering opaque child. Its required gates are green in
+  `focus-overlay-check-types.log`, `focus-overlay-npm-test.log`, and
+  `focus-overlay-qa-components.log`; the independent 64-state pixel matrix is
+  also green.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-The final ownership item is gate-green and awaiting its atomic commit. It
-closes the emitted border/root-shadow, compensation-only margin, peer-spacing,
-and icon-slot inventories. Mobile SideNavigation uses its governed parent group
-gap; mobile table cards use group/grid gaps; contained logos and inline options
-use their collection-owned relationships; Chip dismiss uses the tier mark gap,
-body-sized mask and flow-neutral 24px target; sortable carets keep a full icon
-plus mark-gap slot in both directions and sort states. Forced-colors glyph paint
-is narrowly system-colour-owned on the glyph pseudo.
-
-The required logs are green at `governance-check-types-final.log`,
-`governance-npm-test-final.log`, and `governance-qa-components-final.log`.
+The identical-DOM Spec 028 review page is at `/demo/spec-028/index.html`.
+It switches only between the independently rebuilt `6deca997` tier bundles and
+the feature bundles from `12d47ab`, hashes the actual CSS response bytes, keeps
+sticky controls, and exercises all four tiers at desktop/mobile widths. The
+real popup, containing-block, filled-child and focus pressure cases are covered
+by the repository behavior gate and independent physical/pixel browser probes.
 
 ## Remaining order
 
-1. Commit the gate-green final ownership item.
-2. Identical-DOM before/after demo, browser scale evidence, BF board columns,
-   manifest, review docs, and `opus-028-review-request.md`; stop for external Opus.
+1. Commit the gate-green identical-DOM review demo.
+2. Fill the BF board columns, seal the manifest and review docs, and write
+   `opus-028-review-request.md`; stop for external Opus.
 
 Run `npm run check:types`, `npm test`, and `npm run qa:components` after each
 atomic item. Do not edit frozen neutral diagnostics, push, merge, or open a PR.

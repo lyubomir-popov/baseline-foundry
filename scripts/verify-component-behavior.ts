@@ -6788,6 +6788,124 @@ async function verifyParityInteractions(origin: string): Promise<void> {
   }
 }
 
+async function verifySpec028ReviewDemo(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const versions = ["before", "after"] as const;
+  const viewports = [
+    { label: "desktop", width: 1100, height: 800 },
+    { label: "mobile", width: 390, height: 844 }
+  ] as const;
+
+  try {
+    for (const viewport of viewports) {
+      const page = await browser.newPage({ deviceScaleFactor: 1, viewport });
+      const runtimeErrors: string[] = [];
+      page.on("pageerror", error => runtimeErrors.push(error.message));
+      page.on("console", message => {
+        if (message.type() === "error") runtimeErrors.push(message.text());
+      });
+      await page.goto(`${origin}/demo/spec-028/index.html`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const originalMarkup = await page.locator("[data-review-canvas]").innerHTML();
+
+      for (const version of versions) {
+        await page.locator(`input[name="version"][value="${version}"]`).check();
+        for (const tier of tiers) {
+          await page.locator("[data-review-tier-select]").selectOption(tier);
+          await page.locator("[data-review-width-select]").selectOption(viewport.label);
+          await page.waitForFunction(() => document.querySelector<HTMLOutputElement>("[data-review-status]")?.value === "PASS · bundle + identical DOM");
+          await waitForFonts(page);
+
+          const initial = await page.evaluate(() => {
+            const controls = document.querySelector<HTMLElement>(".review-controls");
+            const canvas = document.querySelector<HTMLElement>("[data-review-canvas]");
+            const bundle = document.querySelector<HTMLLinkElement>("#review-bundle");
+            return {
+              controlsTop: controls?.getBoundingClientRect().top,
+              documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+              fontFamily: getComputedStyle(document.querySelector(".bf-body") as Element).fontFamily,
+              href: bundle?.href,
+              markup: canvas?.innerHTML,
+              status: document.querySelector<HTMLOutputElement>("[data-review-status]")?.value
+            };
+          });
+          assert(initial.status === "PASS · bundle + identical DOM" && initial.markup === originalMarkup, `Expected ${version}/${tier}/${viewport.label} to preserve the identical specimen DOM and verified bundle provenance.`);
+          assert(initial.fontFamily.includes("Ubuntu Sans"), `Expected ${version}/${tier}/${viewport.label} to load the BF Ubuntu Sans face; got ${initial.fontFamily}.`);
+          assert(initial.documentOverflow !== undefined && initial.documentOverflow <= 1, `Expected ${version}/${tier}/${viewport.label} provenance and specimens not to widen the document; overflow=${initial.documentOverflow}px.`);
+          assert(initial.href?.includes(version === "before" ? `/demo/spec-028/before/${tier}.css` : `/dist/tiers/${tier}/styles.css`), `Expected ${version}/${tier}/${viewport.label} to select only its declared BF stylesheet; got ${initial.href}.`);
+
+          await page.locator("[data-popup-card]").scrollIntoViewIfNeeded();
+          await page.waitForFunction(() => document.querySelector<HTMLElement>("[data-review-canvas]")?.dataset.popupCheck !== "not-measured");
+          const negative = await page.evaluate(() => {
+            const canvas = document.querySelector<HTMLElement>("[data-review-canvas]");
+            const controls = document.querySelector<HTMLElement>(".review-controls");
+            const popup = document.querySelector<HTMLElement>("[data-review-popup]");
+            const following = document.querySelector<HTMLElement>("[data-review-following-card]");
+            const owner = document.querySelector<HTMLElement>("[data-containing-owner]");
+            const child = document.querySelector<HTMLElement>("[data-containing-child]");
+            const popupOwner = document.querySelector<HTMLElement>("[data-popup-card]");
+            const popupRect = popup?.getBoundingClientRect();
+            const followingRect = following?.getBoundingClientRect();
+            const ownerRect = owner?.getBoundingClientRect();
+            const childRect = child?.getBoundingClientRect();
+            return {
+              containingBlockCheck: canvas?.dataset.containingBlockCheck,
+              controlsTop: controls?.getBoundingClientRect().top,
+              ownerIsolation: popupOwner ? getComputedStyle(popupOwner).isolation : undefined,
+              ownerZIndex: popupOwner ? getComputedStyle(popupOwner).zIndex : undefined,
+              popupCheck: canvas?.dataset.popupCheck,
+              popupOverlap: popupRect && followingRect ? Math.min(popupRect.bottom, followingRect.bottom) - Math.max(popupRect.top, followingRect.top) : Number.NEGATIVE_INFINITY,
+              childWithinOwner: Boolean(ownerRect && childRect && childRect.top >= ownerRect.top && childRect.right <= ownerRect.right + 1)
+            };
+          });
+          assert(Math.abs(negative.controlsTop ?? Number.POSITIVE_INFINITY) <= 0.5, `Expected ${version}/${tier}/${viewport.label} controls to remain sticky after scrolling; top=${negative.controlsTop}.`);
+          assert(negative.ownerIsolation === "auto" && negative.ownerZIndex === "auto", `Expected ${version}/${tier}/${viewport.label} popup Card to retain its real stacking behavior; got isolation=${negative.ownerIsolation}, z=${negative.ownerZIndex}.`);
+          assert(negative.popupOverlap > 1, `Expected ${version}/${tier}/${viewport.label} popup geometry to cross the following Card; overlap=${negative.popupOverlap}px.`);
+          assert(negative.childWithinOwner && negative.containingBlockCheck === "pass", `Expected ${version}/${tier}/${viewport.label} notification dismiss action to remain rooted in its real owner; got ${JSON.stringify(negative)}.`);
+          assert(negative.popupCheck === (version === "after" ? "pass" : "fail"), `Expected ${version}/${tier}/${viewport.label} popup hit result to expose the bundle delta; got ${negative.popupCheck}.`);
+
+          if (version === "after") {
+            const filled = page.locator("[data-focus-specimen]");
+            await filled.scrollIntoViewIfNeeded();
+            await page.locator(".bf-tooltip .bf-button").focus();
+            await page.keyboard.press("Tab");
+            const paint = await filled.evaluate(element => {
+              const owner = element.getBoundingClientRect();
+              const childElement = element.querySelector<HTMLElement>(".review-filled-child");
+              const child = childElement?.getBoundingClientRect();
+              const childStyle = getComputedStyle(childElement as Element);
+              const overlay = getComputedStyle(element, "::after");
+              const style = getComputedStyle(element);
+              return {
+                active: document.activeElement === element,
+                childCoversOwner: Boolean(child && Math.abs(child.top - owner.top) <= 0.1 && Math.abs(child.right - owner.right) <= 0.1 && Math.abs(child.bottom - owner.bottom) <= 0.1 && Math.abs(child.left - owner.left) <= 0.1),
+                childPosition: childStyle.position,
+                childZIndex: childStyle.zIndex,
+                focusVisible: element.matches(":focus-visible"),
+                isolation: style.isolation,
+                overlayBoxShadow: overlay.boxShadow,
+                overlayInset: overlay.inset,
+                overlayPointerEvents: overlay.pointerEvents,
+                overlayPosition: overlay.position,
+                ownerZIndex: style.zIndex
+              };
+            });
+            assert(paint.active && paint.focusVisible, `Expected ${tier}/${viewport.label} filled-child OptionCard to receive keyboard-visible focus; got ${JSON.stringify(paint)}.`);
+            assert(paint.childCoversOwner && paint.childPosition === "absolute" && paint.childZIndex === "auto", `Expected ${tier}/${viewport.label} diagnostic opaque child to cover the real owner without fixture stacking; got ${JSON.stringify(paint)}.`);
+            assert(paint.overlayPosition === "absolute" && paint.overlayInset === "0px" && paint.overlayPointerEvents === "none" && paint.overlayBoxShadow !== "none", `Expected ${tier}/${viewport.label} automatic last-child overlay to cover the filled child without intercepting input; got ${JSON.stringify(paint)}.`);
+            assert(paint.isolation === "auto" && paint.ownerZIndex === "auto", `Expected ${tier}/${viewport.label} filled-child owner not to rely on new stacking normalization; got ${JSON.stringify(paint)}.`);
+          }
+        }
+      }
+      assert(runtimeErrors.length === 0, `Expected the Spec 028 ${viewport.label} review matrix to avoid runtime errors; got ${runtimeErrors.join(" | ")}.`);
+      await page.close();
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const { server, origin } = await createStaticServer(rootDir);
@@ -6833,6 +6951,7 @@ async function main(): Promise<void> {
     await verifyContentCardGeometry(origin);
     await verifyLinkedLogoAndStickyFooterGeometry(origin);
     await verifySiteShellPrimitiveGeometry(origin);
+    await verifySpec028ReviewDemo(origin);
 
     console.log("Component behavior verification passed.");
   } finally {
