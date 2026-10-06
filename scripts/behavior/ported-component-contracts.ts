@@ -1760,17 +1760,34 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
       });
       assert(state.borderWidths.every(width => width === "0px") && state.overlay.content !== "none" && state.overlay.position === "absolute" && state.overlay.pointerEvents === "none" && state.overlay.inset.every(value => value === "0px") && state.overlay.shadow !== "none", `Expected ${tier} active OptionCard to use a zero-layout-border composed overlay; got ${JSON.stringify(state)}.`);
       assert(Math.abs(state.sizeDelta.height) <= 0.001 && Math.abs(state.sizeDelta.width) <= 0.001, `Expected ${tier} OptionCard occupied geometry to remain exact when paint width changes; got ${JSON.stringify(state.sizeDelta)}.`);
+      await active.evaluate(element => {
+        if (element.querySelector("[data-filled-child-pressure]")) return;
+        const child = document.createElement("span");
+        child.dataset.filledChildPressure = "";
+        child.style.cssText = "background:Canvas;inset:0;pointer-events:none;position:absolute";
+        element.append(child);
+      });
       await active.focus();
-      assert(await active.evaluate(element => getComputedStyle(element).outlineStyle !== "none"), `Expected ${tier} active OptionCard keyboard focus to remain visible above its overlay.`);
+      const focusPaint = await active.evaluate(element => {
+        const owner = element.getBoundingClientRect();
+        const child = element.querySelector<HTMLElement>("[data-filled-child-pressure]")?.getBoundingClientRect();
+        return {
+          childCoversOwner: Boolean(child && Math.abs(child.top - owner.top) <= 0.1 && Math.abs(child.right - owner.right) <= 0.1 && Math.abs(child.bottom - owner.bottom) <= 0.1 && Math.abs(child.left - owner.left) <= 0.1),
+          focusVisible: element.matches(":focus-visible"),
+          ownerOutline: getComputedStyle(element).outlineStyle,
+          overlayShadow: getComputedStyle(element, "::after").boxShadow
+        };
+      });
+      assert(focusPaint.childCoversOwner && focusPaint.focusVisible && focusPaint.ownerOutline === "none" && focusPaint.overlayShadow !== "none", `Expected ${tier} active OptionCard keyboard focus to compose into its above-content overlay over an edge-covering opaque child; got ${JSON.stringify(focusPaint)}.`);
     }
 
     await page.emulateMedia({ forcedColors: "active" });
     const forcedState = await page.locator("button.bf-option-card.is-active").evaluate(element => {
       const owner = getComputedStyle(element);
       const overlay = getComputedStyle(element, "::after");
-      return { ownerOutline: owner.outlineStyle, ownerOutlineWidth: owner.outlineWidth, ownerOutlineOffset: owner.outlineOffset, overlayOutline: overlay.outlineStyle, overlayOutlineWidth: overlay.outlineWidth, selectedBorder: overlay.borderBlockStartStyle, selectedWidth: overlay.borderBlockStartWidth };
+      return { ownerOutline: owner.outlineStyle, overlayOutline: overlay.outlineStyle, overlayOutlineWidth: overlay.outlineWidth, overlayOutlineOffset: overlay.outlineOffset, selectedBorder: overlay.borderBlockStartStyle, selectedWidth: overlay.borderBlockStartWidth };
     });
-    assert(forcedState.ownerOutline !== "none" && Number.parseFloat(forcedState.ownerOutlineWidth) >= 3 && Number.parseFloat(forcedState.ownerOutlineOffset) <= -4 && forcedState.overlayOutline !== "none" && Number.parseFloat(forcedState.overlayOutlineWidth) > 0 && Number.parseFloat(forcedState.overlayOutlineWidth) < Number.parseFloat(forcedState.ownerOutlineWidth) && forcedState.selectedBorder === "solid" && Number.parseFloat(forcedState.selectedWidth) > 0, `Expected forced-colours OptionCard to retain a distinct inset keyboard focus ring, thinner system boundary, and one-sided selected cue; got ${JSON.stringify(forcedState)}.`);
+    assert(forcedState.ownerOutline === "none" && forcedState.overlayOutline !== "none" && Number.parseFloat(forcedState.overlayOutlineWidth) >= 3 && Number.parseFloat(forcedState.overlayOutlineOffset) <= -4 && forcedState.selectedBorder === "solid" && Number.parseFloat(forcedState.selectedWidth) > 0, `Expected forced-colours OptionCard to paint its inset keyboard focus and one-sided selected cue on the above-content overlay; got ${JSON.stringify(forcedState)}.`);
     await page.goto(`${origin}/demo/components/cards.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
     const linkedCard = page.locator("a.bf-card");
@@ -1778,9 +1795,9 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
     const linkedForcedState = await linkedCard.evaluate(element => {
       const owner = getComputedStyle(element);
       const overlay = getComputedStyle(element, "::after");
-      return { ownerOutline: owner.outlineStyle, ownerOutlineWidth: owner.outlineWidth, ownerOutlineOffset: owner.outlineOffset, overlayOutline: overlay.outlineStyle, overlayOutlineWidth: overlay.outlineWidth };
+      return { ownerOutline: owner.outlineStyle, overlayOutline: overlay.outlineStyle, overlayOutlineWidth: overlay.outlineWidth, overlayOutlineOffset: overlay.outlineOffset };
     });
-    assert(linkedForcedState.ownerOutline !== "none" && Number.parseFloat(linkedForcedState.ownerOutlineWidth) >= 3 && Number.parseFloat(linkedForcedState.ownerOutlineOffset) <= -4 && linkedForcedState.overlayOutline !== "none" && Number.parseFloat(linkedForcedState.overlayOutlineWidth) > 0 && Number.parseFloat(linkedForcedState.overlayOutlineWidth) < Number.parseFloat(linkedForcedState.ownerOutlineWidth), `Expected forced-colours linked Card to retain a distinct inset keyboard focus ring over its thinner system boundary; got ${JSON.stringify(linkedForcedState)}.`);
+    assert(linkedForcedState.ownerOutline === "none" && linkedForcedState.overlayOutline !== "none" && Number.parseFloat(linkedForcedState.overlayOutlineWidth) >= 3 && Number.parseFloat(linkedForcedState.overlayOutlineOffset) <= -4, `Expected forced-colours linked Card to paint its inset keyboard focus on the above-content overlay; got ${JSON.stringify(linkedForcedState)}.`);
     await page.emulateMedia({ forcedColors: "none" });
 
     await page.close();

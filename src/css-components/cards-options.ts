@@ -70,8 +70,8 @@ ${optionStroke.owner}
 }
 
 :where(.bf-theme) :where(a.bf-card:focus-visible, a.bf-card.is-highlighted:focus-visible, a.bf-card.is-overlay:focus-visible, a.bf-card.is-muted:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
 }
 
 :where(.bf-theme) :where(.bf-card.is-preview) {
@@ -189,8 +189,8 @@ ${optionStroke.owner}
 }
 
 :where(.bf-theme) :where(button.bf-option-card:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
 }
 
 :where(.bf-theme) :where(.bf-option-card-label) {
@@ -228,6 +228,10 @@ ${optionStroke.painter}
   }
 
   :where(.bf-theme) :where(a.bf-card:focus-visible, button.bf-option-card:focus-visible) {
+    outline: none;
+  }
+
+  :where(.bf-theme) :where(a.bf-card:focus-visible, button.bf-option-card:focus-visible)::after {
     outline: 0.1875rem solid Highlight;
     outline-offset: -0.25rem;
   }
