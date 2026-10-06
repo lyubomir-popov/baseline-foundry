@@ -2,7 +2,7 @@
   "format": "canonical-resolver-apply-spacing-v1",
   "integrity": {
     "algorithm": "sha256",
-    "canonicalProducts": "b9260be24cfd61553dbb74f0fc42e8966b29ed2c40bb87f64c4d869652757be1"
+    "canonicalProducts": "763e5041648b8f7166cf2607e829a4c6fc519cd6c07dc9ac8eced68dedbab253"
   },
   "source": {
     "package": "@canonical/design-tokens",
@@ -40,7 +40,7 @@
       "spacing.gap.region.block": { "$type": "dimension", "$value": { "value": 6, "unit": "rem" } },
       "spacing.inset.field.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.inset.action.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
-      "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.5, "unit": "rem" } },
+      "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.875, "unit": "rem" } },
       "spacing.inset.surface.inline": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
       "spacing.inset.surface.block": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
       "spacing.inset.strip.block": { "$type": "dimension", "$value": { "value": 3, "unit": "rem" } }
@@ -54,7 +54,7 @@
       "spacing.gap.region.block": { "$type": "dimension", "$value": { "value": 2, "unit": "rem" } },
       "spacing.inset.field.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.inset.action.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
-      "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.5, "unit": "rem" } },
+      "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.875, "unit": "rem" } },
       "spacing.inset.surface.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
       "spacing.inset.surface.block": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
       "spacing.inset.strip.block": { "$type": "dimension", "$value": { "value": 3, "unit": "rem" } }

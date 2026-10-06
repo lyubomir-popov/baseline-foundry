@@ -1283,8 +1283,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     for (const boundary of [
       { width: 640, persistent: false, columns: 1, label: "at a narrow pattern allocation" },
       { width: 767, persistent: false, columns: 2, label: "below 48rem after the drawer releases space" },
-      { width: 768, persistent: true, columns: 2, label: "at the start of the 768–779px App band where the Canonical continuation inset crosses the intrinsic split threshold" },
-      { width: 779, persistent: true, columns: 2, label: "at the end of the 768–779px App band where the previous continuation inset still left the composition below its intrinsic split threshold" }
+      { width: 775, persistent: true, columns: 1, allocation: 619, label: "one pixel below the 620px intrinsic split threshold" },
+      { width: 776, persistent: true, columns: 2, allocation: 620, label: "at the 620px intrinsic split threshold" },
+      { width: 777, persistent: true, columns: 2, allocation: 621, label: "one pixel above the 620px intrinsic split threshold" }
     ] as const) {
       await page.setViewportSize({ width: boundary.width, height: 960 });
       await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -1317,6 +1318,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         const tieredHeader = fixture.querySelector<HTMLElement>(".bf-tiered-list-header");
         return {
           areas: getComputedStyle(application).gridTemplateAreas,
+          basicAllocation: basicLayout?.getBoundingClientRect().width ?? 0,
           basicColumns: basicLayout ? getComputedStyle(basicLayout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
           drawerHidden: drawer.getAttribute("aria-hidden"),
           drawerPosition: getComputedStyle(drawer).position,
@@ -1329,6 +1331,9 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       assert(state.drawerHidden === (boundary.persistent ? "false" : "true"), `Expected application navigation accessibility state to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.drawerPosition === (boundary.persistent ? "static" : "fixed"), `Expected application navigation drawer positioning to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert((state.overlayDisplay === "none") === boundary.persistent, `Expected application navigation overlay lifecycle to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+      if ("allocation" in boundary) {
+        assert(state.basicAllocation === boundary.allocation, `Expected the derived 30px continuation inset to leave a ${boundary.allocation}px basic-section allocation ${boundary.label}; got ${JSON.stringify(state)}.`);
+      }
       assert(state.basicColumns === boundary.columns, `Expected application basic-section to use ${boundary.columns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.tieredHeaderColumns === boundary.columns, `Expected application tiered-list header to use ${boundary.columns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
     }
@@ -4677,7 +4682,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
   const expectedPanelPaddingPx = { editorial: 16, documentation: 16, app: 12, os: 8 } as const;
-  const expectedPanelInlinePx = { editorial: 32, documentation: 24, app: 24, os: 20 } as const;
+  const expectedPanelInlinePx = { editorial: 32, documentation: 30, app: 30, os: 20 } as const;
   const browser = await openBrowser();
 
   try {
@@ -4802,8 +4807,8 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
   const canonicalExpected = {
     editorial: [0.5, 0.5, 0.5, 1.5, 4, 8, 0.5, 1, 2, 1, 1, 4],
-    documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 0.75, 1.5, 1, 1, 3],
-    app: [0.25, 0.5, 0.5, 0.5, 1, 2, 0.5, 0.75, 1.5, 0.75, 0.75, 3],
+    documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 0.75, 1.875, 1, 1, 3],
+    app: [0.25, 0.5, 0.5, 0.5, 1, 2, 0.5, 0.75, 1.875, 0.75, 0.75, 3],
     os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 0.5, 1.25, 0.5, 0.5, 2]
   } as const;
   const canonicalProperties = [
@@ -4862,16 +4867,19 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
   const providerRules = providerSelectors.map((selector, ruleIndex) => {
     const tier = providerSelectorOrder[ruleIndex];
     const declarations = canonicalProperties.map((property, tokenIndex) => {
+      if (property === "--spacing-inset-continuation-inline") {
+        return `${property}:${canonicalExpected[tier][tokenIndex]}rem`;
+      }
       const primitive = dimensionProperty.get(canonicalExpected[tier][tokenIndex]);
       assert(primitive, `Expected a provider primitive for ${tier} ${property}.`);
       return `${property}:var(${primitive})`;
     }).join(";");
     return `${selector}{${declarations}}`;
   }).join("");
-  // Primitive references and ds.tokens match the current generated
-  // sets.primitive.css + sets.semantic.css output. The product selectors are a
-  // synthetic forward-compatibility guard for Canonical's documented future
-  // shape; the pinned provider currently emits only :root spacing declarations.
+  // Authored values use the provider's existing dimension primitives. The
+  // continuation value is a resolved Spec 024 working value derived from field
+  // inset + body-sized icon + mark gap, so this synthetic provider emits that
+  // result directly rather than pretending an upstream primitive exists.
   const canonicalProviderCss = `:root{${primitiveDeclarations}}@layer ds.tokens{${providerRules}}`;
   const browser = await openBrowser();
 

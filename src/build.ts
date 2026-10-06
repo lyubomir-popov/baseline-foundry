@@ -26,8 +26,6 @@ import type {
   TypographyToken
 } from "./types.js";
 
-const DISCLOSURE_ICON_INLINE_SIZE_REM = 1;
-
 export interface AdditionalThemeSurfaceBuildConfig {
   name: string;
   configPath: string;
@@ -106,7 +104,6 @@ const REQUIRED_COMPONENT_FIELDS = [
   "radiusRem",
   "inlineInsetFieldUnits",
   "inlineInsetActionUnits",
-  "inlineInsetContinuationUnits",
   "markGapInlineUnits",
   "controlBlockInsetBaselineUnits",
   "controlVisualSizeRem",
@@ -177,7 +174,6 @@ export function validateThemeConfig(config: ThemeConfig): void {
     config.components.radiusRem < 0 ||
     config.components.inlineInsetFieldUnits < 0 ||
     config.components.inlineInsetActionUnits < 0 ||
-    config.components.inlineInsetContinuationUnits < 0 ||
     config.components.markGapInlineUnits < 0 ||
     config.components.controlBlockInsetBaselineUnits < 0 ||
     config.components.fieldGapBaselineUnits < 0 ||
@@ -190,7 +186,6 @@ export function validateThemeConfig(config: ThemeConfig): void {
   for (const field of [
     "inlineInsetFieldUnits",
     "inlineInsetActionUnits",
-    "inlineInsetContinuationUnits",
     "markGapInlineUnits",
     "panelPaddingInlineUnits"
   ] as const) {
@@ -203,15 +198,9 @@ export function validateThemeConfig(config: ThemeConfig): void {
     throw new Error("Component action inset must contain its bordered action edge.");
   }
   if (
-    config.components.inlineInsetFieldUnits > config.components.inlineInsetActionUnits ||
-    config.components.inlineInsetActionUnits > config.components.inlineInsetContinuationUnits
+    config.components.inlineInsetFieldUnits > config.components.inlineInsetActionUnits
   ) {
-    throw new Error("Component inline inset counts must be ordered field <= action <= continuation.");
-  }
-  const authoredContinuation = config.components.inlineInsetContinuationUnits * config.inlineUnitRem;
-  const authoredDisclosureNeed = DISCLOSURE_ICON_INLINE_SIZE_REM + (config.components.markGapInlineUnits * config.inlineUnitRem);
-  if (authoredContinuation < authoredDisclosureNeed) {
-    throw new Error(`Component continuation inset ${toRem(authoredContinuation)} cannot contain its fixed disclosure canvas and mark gap ${toRem(authoredDisclosureNeed)}.`);
+    throw new Error("Component inline inset counts must be ordered field <= action.");
   }
 
   const elementIdentifiers = new Set<string>();
@@ -390,14 +379,6 @@ function buildThemeTokens(
   if (nestedFramedPaint > parseRem(body.lineHeight)) {
     throw new Error(
       `Nested framed controls require ${toRem(nestedFramedPaint)}, which exceeds the body line ${body.lineHeight}.`
-    );
-  }
-
-  const leadingMarkNeed = config.components.controlVisualSizeRem +
-    spacing["spacing.gap.mark.inline"].$value.value;
-  if (spacing["spacing.inset.continuation.inline"].$value.value < leadingMarkNeed) {
-    throw new Error(
-      `Continuation inset ${spacingRem(spacing, "spacing.inset.continuation.inline")} cannot contain the leading mark and gap ${toRem(leadingMarkNeed)}.`
     );
   }
 

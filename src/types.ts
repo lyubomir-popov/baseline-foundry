@@ -43,7 +43,6 @@ export interface ThemeComponentsConfig {
   radiusRem: number;
   inlineInsetFieldUnits: number;
   inlineInsetActionUnits: number;
-  inlineInsetContinuationUnits: number;
   markGapInlineUnits: number;
   controlBlockInsetBaselineUnits: number;
   controlVisualSizeRem: number;

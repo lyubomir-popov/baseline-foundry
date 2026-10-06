@@ -1367,7 +1367,7 @@ function validateCommonCss(css: string): void {
     "padding-inline-end": "var(--bf-search-and-filter-trailing-inline-size)"
   }, "search-and-filter inputs reserve their trailing affordance space from the field padding token");
   assert(css.includes("--bf-disclosure-gap: var(--bf-leading-mark-gap);"), "Expected disclosures to share the Canonical mark/icon text-gap owner.");
-  assert(css.includes("--bf-disclosure-icon-inline-size: 1rem;"), "Expected generated CSS to define the shared disclosure icon-size token.");
+  assert(css.includes("--bf-disclosure-icon-inline-size: var(--bf-icon-size-default);"), "Expected generated CSS to derive the shared disclosure icon slot from the tier body icon size.");
   assert(css.includes("--bf-disclosure-icon-optical-offset-block: 0rem;"), "Expected disclosure chevrons to remain centred on their text line without the leading-icon optical offset.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-accordion-button)", {
     "gap": "var(--bf-disclosure-gap)"
@@ -1701,7 +1701,7 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(components.inlineInsetField === '0.5rem', "Expected the App field inset to match the shared 8px input inset.");
   assert(components.controlBlockInset === '0.25rem', "Expected the App control block inset to use one 4px baseline unit.");
   assert(components.inlineInsetAction === '0.75rem', "Expected the App action inset to adopt the Canonical three-unit command start.");
-  assert(components.inlineInsetContinuation === '1.5rem', "Expected the App continuation inset to adopt the Canonical six-unit copy start.");
+  assert(components.inlineInsetContinuation === '1.875rem', "Expected the App continuation inset to derive from input inset, 14px icon and 8px mark gap.");
   assert(components.controlVisualSize === '0.875rem', "Expected App icons and leading marks to match the 14px body type size.");
   assert(!("controlMinBlockSize" in components), "Expected the app-tier preset tokens to stop exposing legacy control height tokens.");
   assert(!("controlMinBlockSizeDense" in components), "Expected the app-tier preset tokens to stop exposing legacy dense control height tokens.");
@@ -1815,7 +1815,7 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   assert(layout.sectionSpaceDeep === "6rem", "Expected the documentation tier deep section rhythm to be 6rem.");
   assert(components.inlineInsetField === "0.5rem", "Expected the Documentation field inset to tighten relative to actions.");
   assert(components.inlineInsetAction === "0.75rem", "Expected the Documentation action inset to adopt the Canonical three-unit command start.");
-  assert(components.inlineInsetContinuation === "1.5rem", "Expected the Documentation continuation inset to adopt the Canonical six-unit copy start.");
+  assert(components.inlineInsetContinuation === "1.875rem", "Expected the Documentation continuation inset to derive from input inset, 14px icon and 8px mark gap.");
   assert(components.controlVisualSize === "0.875rem", "Expected the documentation tier visual control size to tighten slightly.");
   assert(css.includes('.bf-h1'), "Expected the documentation tier CSS to emit role utility selectors.");
 }

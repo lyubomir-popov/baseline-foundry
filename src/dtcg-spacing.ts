@@ -55,7 +55,7 @@ interface ResolvedDtcgSpacingArtifact {
 }
 
 export const canonicalSpacingSourceCommit = "18f57b95b1aa1dfe85a45746016b055c807d6628";
-export const canonicalSpacingProductsSha256 = "b9260be24cfd61553dbb74f0fc42e8966b29ed2c40bb87f64c4d869652757be1";
+export const canonicalSpacingProductsSha256 = "763e5041648b8f7166cf2607e829a4c6fc519cd6c07dc9ac8eced68dedbab253";
 const canonicalSpacingSourceRepository = "https://github.com/canonical/design-tokens";
 const canonicalSpacingResolver = "tokens/canonical/canonical.resolver.json";
 const canonicalProductOrder: CanonicalProduct[] = ["site", "docs", "app", "os"];
@@ -199,6 +199,12 @@ export function legacyThemeConfigSpacing(config: ThemeConfig): ResolvedDtcgSpaci
     $value: { value: magnitude, unit: "rem" }
   });
 
+  const bodyIdentifier = config.roles.body;
+  const body = config.elements.find(element => element.identifier === bodyIdentifier);
+  if (!body) {
+    throw new Error(`Cannot derive continuation inset: body role ${JSON.stringify(bodyIdentifier)} has no matching element.`);
+  }
+
   return {
     "spacing.baseline": value(config.baselineUnit),
     "spacing.gap.field.block": value(config.components.fieldGapBaselineUnits * config.baselineUnit),
@@ -208,7 +214,11 @@ export function legacyThemeConfigSpacing(config: ThemeConfig): ResolvedDtcgSpaci
     "spacing.gap.region.block": value(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
     "spacing.inset.field.inline": value(config.components.inlineInsetFieldUnits * config.inlineUnitRem),
     "spacing.inset.action.inline": value(config.components.inlineInsetActionUnits * config.inlineUnitRem),
-    "spacing.inset.continuation.inline": value(config.components.inlineInsetContinuationUnits * config.inlineUnitRem),
+    "spacing.inset.continuation.inline": value(
+      (config.components.inlineInsetFieldUnits * config.inlineUnitRem) +
+      body.fontSize +
+      (config.components.markGapInlineUnits * config.inlineUnitRem)
+    ),
     "spacing.inset.surface.inline": value(config.components.panelPaddingInlineUnits * config.inlineUnitRem),
     "spacing.inset.surface.block": value(config.components.panelPaddingBlockBaselineUnits * config.baselineUnit),
     "spacing.inset.strip.block": value(config.layout.stripSpaceBaselineUnits * config.baselineUnit)

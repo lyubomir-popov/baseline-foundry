@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { canonicalSpacingProductsSha256, validateCanonicalSpacingArtifact } from "../../src/dtcg-spacing.ts";
+import { canonicalSpacingProductsSha256, legacyThemeConfigSpacing, validateCanonicalSpacingArtifact } from "../../src/dtcg-spacing.ts";
 import { validateThemeConfig } from "../../src/build.ts";
 import type { ThemeConfig } from "../../src/types.ts";
 import { parseCss } from "../css-ast-helpers.ts";
@@ -58,7 +58,7 @@ const FINAL_MATRIX: Matrix = {
     "spacing.gap.region.block": 6,
     "spacing.inset.field.inline": 0.5,
     "spacing.inset.action.inline": 0.75,
-    "spacing.inset.continuation.inline": 1.5,
+    "spacing.inset.continuation.inline": 1.875,
     "spacing.inset.surface.inline": 1,
     "spacing.inset.surface.block": 1,
     "spacing.inset.strip.block": 3
@@ -72,7 +72,7 @@ const FINAL_MATRIX: Matrix = {
     "spacing.gap.region.block": 2,
     "spacing.inset.field.inline": 0.5,
     "spacing.inset.action.inline": 0.75,
-    "spacing.inset.continuation.inline": 1.5,
+    "spacing.inset.continuation.inline": 1.875,
     "spacing.inset.surface.inline": 0.75,
     "spacing.inset.surface.block": 0.75,
     "spacing.inset.strip.block": 3
@@ -139,6 +139,10 @@ function legacyConfigValues(config: Record<string, unknown>): Record<TokenId, nu
   const inlineUnit = config.inlineUnitRem as number;
   const layout = config.layout as Record<string, number>;
   const components = config.components as Record<string, number>;
+  const roles = config.roles as Record<string, string>;
+  const elements = config.elements as Array<Record<string, unknown>>;
+  const body = elements.find(element => element.identifier === roles.body);
+  assert(body, "Expected legacy spacing derivation to resolve the configured body role.");
   return {
     "spacing.baseline": baseline,
     "spacing.gap.field.block": components.fieldGapBaselineUnits * baseline,
@@ -148,7 +152,7 @@ function legacyConfigValues(config: Record<string, unknown>): Record<TokenId, nu
     "spacing.gap.region.block": layout.sectionSpaceDeepBaselineUnits * baseline,
     "spacing.inset.field.inline": components.inlineInsetFieldUnits * inlineUnit,
     "spacing.inset.action.inline": components.inlineInsetActionUnits * inlineUnit,
-    "spacing.inset.continuation.inline": components.inlineInsetContinuationUnits * inlineUnit,
+    "spacing.inset.continuation.inline": (components.inlineInsetFieldUnits * inlineUnit) + (body.fontSize as number) + (components.markGapInlineUnits * inlineUnit),
     "spacing.inset.surface.inline": components.panelPaddingInlineUnits * inlineUnit,
     "spacing.inset.surface.block": components.panelPaddingBlockBaselineUnits * baseline,
     "spacing.inset.strip.block": layout.stripSpaceBaselineUnits * baseline
@@ -208,7 +212,7 @@ export async function validateDtcgSpacingContracts(
     const config = JSON.parse(await fs.readFile(path.resolve("config/tiers", `${tier}.json`), "utf8")) as Record<string, unknown>;
     assert(config.inlineUnitRem === 0.25, `Expected ${tier} to author the shared 0.25rem inline unit.`);
     const configComponents = config.components as Record<string, unknown>;
-    for (const field of ["inlineInsetFieldUnits", "inlineInsetActionUnits", "inlineInsetContinuationUnits", "markGapInlineUnits", "panelPaddingInlineUnits"]) {
+    for (const field of ["inlineInsetFieldUnits", "inlineInsetActionUnits", "markGapInlineUnits", "panelPaddingInlineUnits"]) {
       assert(Number.isInteger(configComponents[field]) && (configComponents[field] as number) >= 0, `Expected ${tier} components.${field} to be a non-negative whole inline-unit count.`);
     }
     assert(!Object.hasOwn(configComponents, "inlineInsetFieldRem") && !Object.hasOwn(configComponents, "panelPaddingInlineBaselineUnits"), `Expected ${tier} not to retain pre-020a horizontal authoring fields.`);
@@ -237,13 +241,20 @@ export async function validateDtcgSpacingContracts(
   }
 
   const validConfig = JSON.parse(await fs.readFile(path.resolve("config/tiers/os.json"), "utf8")) as ThemeConfig;
+  const appConfig = JSON.parse(await fs.readFile(path.resolve("config/tiers/app.json"), "utf8")) as ThemeConfig;
+  const appContinuationBefore = legacyThemeConfigSpacing(appConfig)["spacing.inset.continuation.inline"].$value.value;
+  appConfig.components.controlVisualSizeRem = 2;
+  const appContinuationAfter = legacyThemeConfigSpacing(appConfig)["spacing.inset.continuation.inline"].$value.value;
+  assert(
+    appContinuationBefore === 1.875 && appContinuationAfter === appContinuationBefore,
+    "Expected App continuation to remain 8px field + 14px body-sized icon + 8px gap when controlVisualSizeRem changes independently."
+  );
   const invalidCases: Array<[string, (config: ThemeConfig) => void]> = [
     ["missing inline unit", config => { delete (config as Partial<ThemeConfig>).inlineUnitRem; }],
     ["non-finite inline unit", config => { config.inlineUnitRem = Number.NaN; }],
     ["negative inline count", config => { config.components.markGapInlineUnits = -1; }],
     ["fractional inline count", config => { config.components.inlineInsetActionUnits = 3.5; }],
-    ["misordered inline insets", config => { config.components.inlineInsetFieldUnits = config.components.inlineInsetActionUnits + 1; }],
-    ["fixed disclosure continuation fit", config => { config.components.inlineInsetContinuationUnits = 4; }]
+    ["misordered inline insets", config => { config.components.inlineInsetFieldUnits = config.components.inlineInsetActionUnits + 1; }]
   ];
   for (const [label, mutate] of invalidCases) {
     const invalid = structuredClone(validConfig);

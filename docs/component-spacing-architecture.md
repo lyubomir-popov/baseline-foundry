@@ -16,14 +16,14 @@ The three component inline insets are:
 
 | Inset | Public variable | Editorial | Documentation | App | OS |
 |---|---|---:|---:|---:|---:|
-| Field | `--bf-component-inline-inset-field` | `0.5rem` | `0.5rem` | `0.25rem` | `0.25rem` |
+| Field | `--bf-component-inline-inset-field` | `0.5rem` | `0.5rem` | `0.5rem` | `0.25rem` |
 | Action | `--bf-component-inline-inset-action` | `1rem` | `0.75rem` | `0.75rem` | `0.5rem` |
-| Continuation | `--bf-component-inline-inset-continuation` | `2rem` | `1.5rem` | `1.5rem` | `1.25rem` |
+| Continuation | `--bf-component-inline-inset-continuation` | `2rem` | `1.875rem` | `1.875rem` | `1.25rem` |
 
 Every tier authors `inlineUnitRem: 0.25` plus whole counts in
-`inlineInsetFieldUnits`, `inlineInsetActionUnits`, and
-`inlineInsetContinuationUnits`. Generated token JSON exposes
-`inlineInsetField`, `inlineInsetAction`, and `inlineInsetContinuation`.
+`inlineInsetFieldUnits` and `inlineInsetActionUnits`. The continuation inset is
+derived from the field inset, body-sized icon slot, and mark gap. Generated
+token JSON exposes all three insets.
 
 Page margins, grid gutters, navigation depth, and structural surface padding
 are not component insets. A border, icon, or mark may be compensated inside a
@@ -39,7 +39,7 @@ reviewed block-derived minimum described below.
 | Body font | `1rem` | `0.875rem` | `0.875rem` | `0.75rem` |
 | Body line | `1.5rem` | `1.25rem` | `1.25rem` | `1rem` |
 | Border | `0.0625rem` | `0.0625rem` | `0.0625rem` | `0.0625rem` |
-| Control visual | `1rem` | `0.875rem` | `1rem` | `0.75rem` |
+| Control visual | `1rem` | `0.875rem` | `0.875rem` | `0.75rem` |
 | Field gap | `0.5rem` | `0.5rem` | `0.5rem` | `0.25rem` |
 | Structural panel inline padding | `1rem` | `1rem` | `0.75rem` | `0.5rem` |
 | Structural panel block padding | `1rem` | `1rem` | `0.75rem` | `0.5rem` |
