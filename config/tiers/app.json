@@ -96,8 +96,8 @@
     "contentMaxWidthRem": 60,
     "contentPaddingInlineRem": 1,
     "measureRem": 40,
-    "sectionSpaceBaselineUnits": 4,
-    "sectionSpaceShallowBaselineUnits": 2,
+    "sectionSpaceBaselineUnits": 10,
+    "sectionSpaceShallowBaselineUnits": 5,
     "sectionSpaceDeepBaselineUnits": 8,
     "stripSpaceBaselineUnits": 12,
     "gridGapInlineBaselineUnits": 6,
@@ -112,7 +112,7 @@
     "markGapInlineUnits": 2,
     "controlBlockInsetBaselineUnits": 1,
     "controlVisualSizeRem": 0.875,
-    "fieldGapBaselineUnits": 2,
+    "fieldGapBaselineUnits": 1,
     "panelPaddingInlineUnits": 3,
     "panelPaddingBlockBaselineUnits": 3
   }

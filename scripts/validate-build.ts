@@ -434,7 +434,7 @@ function validateTierPanelPaddingProgression(
 ): void {
   const expectedPadding = new Map([
     ["editorial", "1rem"],
-    ["documentation", "1rem"],
+    ["documentation", "0.75rem"],
     ["app", "0.75rem"],
     ["os", "0.5rem"]
   ]);
@@ -1811,7 +1811,7 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   assert(layout.gridGapInline === "1.5rem", "Expected the documentation tier inline grid gap token to be 1.5rem.");
   assert(layout.gridGapBlock === "1.5rem", "Expected the documentation tier block grid gap token to be 1.5rem.");
   assert(layout.pageMargin === "1.5rem", "Expected the documentation tier page margin token to be 1.5rem.");
-  assert(layout.sectionSpace === "3rem", "Expected the documentation tier section rhythm to be 3rem.");
+  assert(layout.sectionSpace === "2.5rem", "Expected the documentation tier section rhythm to be 2.5rem.");
   assert(layout.sectionSpaceDeep === "6rem", "Expected the documentation tier deep section rhythm to be 6rem.");
   assert(components.inlineInsetField === "0.5rem", "Expected the Documentation field inset to tighten relative to actions.");
   assert(components.inlineInsetAction === "0.75rem", "Expected the Documentation action inset to adopt the Canonical three-unit command start.");
@@ -1845,7 +1845,7 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.gridGapInline === "1rem", "Expected the prose default inline grid gap token to provide the x-small 1rem gutter.");
   assert(layout.gridGapBlock === "1rem", "Expected the prose default block grid gap token to provide the x-small 1rem gap.");
   assert(layout.pageMargin === "1rem", "Expected the prose default page margin token to provide the x-small 1rem margin.");
-  assert(layout.sectionSpace === "4rem", "Expected the prose default section rhythm to be 4rem.");
+  assert(layout.sectionSpace === "4.5rem", "Expected the prose default section rhythm to be 4.5rem.");
   assert(components.radius === "0rem", "Expected the prose default controls to stay square, matching the compat visual direction.");
   assert(components.inlineInsetField === "0.5rem", "Expected the Editorial field inset to preserve its readable content start.");
   assert(components.inlineInsetAction === "1rem", "Expected the Editorial action inset to preserve the shared command start.");

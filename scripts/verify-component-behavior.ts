@@ -4026,11 +4026,21 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
       assert(Math.abs(state.densityGaps["is-dense"] - state.before.baseline) <= tolerance, `Expected ${tier} dense stacks to use one baseline.`);
       assert(Math.abs(state.densityGaps["is-loose"] - state.before.baseline * 2) <= tolerance, `Expected ${tier} loose stacks to use two baselines.`);
       assert(Math.abs(state.densityGaps["is-section-shallow"] - state.before.internalGap) <= tolerance, `Expected ${tier} explicit shallow stacks to match the default pattern gap.`);
-      assert(state.densityGaps["is-section-deep"] > state.before.sectionGap, `Expected ${tier} deep section stacks to exceed the regular section gap.`);
+      const approvedGaps = {
+        editorial: { group: 24, section: 72 },
+        documentation: { group: 20, section: 40 },
+        app: { group: 20, section: 40 },
+        os: { group: 24, section: 48 }
+      }[tier];
+      assert(Math.abs(state.before.internalGap - approvedGaps.group) <= tolerance, `Expected ${tier} group stacks to resolve to ${approvedGaps.group}px, got ${state.before.internalGap}px.`);
+      assert(Math.abs(state.before.sectionGap - approvedGaps.section) <= tolerance, `Expected ${tier} section stacks to resolve to ${approvedGaps.section}px, got ${state.before.sectionGap}px.`);
+      if (tier === "app") {
+        assert(Math.abs(state.densityGaps["is-section-deep"] - 32) <= tolerance, `Expected App's separately governed region gap to remain 32px, got ${state.densityGaps["is-section-deep"]}px.`);
+      } else {
+        assert(state.densityGaps["is-section-deep"] > state.before.sectionGap, `Expected ${tier} deep section stacks to exceed the regular section gap.`);
+      }
 
       if (tier === "editorial") {
-        assert(Math.abs(state.before.internalGap - 24) <= tolerance, `Expected Sites/editorial internal stacks to resolve to 1.5rem (24px), got ${state.before.internalGap}px.`);
-        assert(Math.abs(state.before.sectionGap - 64) <= tolerance, `Expected Sites/editorial section stacks to resolve to 4rem (64px), got ${state.before.sectionGap}px.`);
         assert(Math.abs(state.densityGaps["is-section-deep"] - 128) <= tolerance, `Expected Sites/editorial deep section stacks to resolve to 8rem (128px), got ${state.densityGaps["is-section-deep"]}px.`);
       }
     }
@@ -4681,7 +4691,7 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
 async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
-  const expectedPanelPaddingPx = { editorial: 16, documentation: 16, app: 12, os: 8 } as const;
+  const expectedPanelPaddingPx = { editorial: 16, documentation: 12, app: 12, os: 8 } as const;
   const expectedPanelInlinePx = { editorial: 32, documentation: 30, app: 30, os: 20 } as const;
   const browser = await openBrowser();
 
@@ -4806,9 +4816,9 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
 async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
   const canonicalExpected = {
-    editorial: [0.5, 0.5, 0.5, 1.5, 4, 8, 0.5, 1, 2, 1, 1, 4],
-    documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 0.75, 1.875, 1, 1, 3],
-    app: [0.25, 0.5, 0.5, 0.5, 1, 2, 0.5, 0.75, 1.875, 0.75, 0.75, 3],
+    editorial: [0.5, 0.5, 0.5, 1.5, 4.5, 8, 0.5, 1, 2, 1, 1, 4],
+    documentation: [0.25, 0.25, 0.5, 1.25, 2.5, 6, 0.5, 0.75, 1.875, 0.75, 0.75, 3],
+    app: [0.25, 0.25, 0.5, 1.25, 2.5, 2, 0.5, 0.75, 1.875, 0.75, 0.75, 3],
     os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 0.5, 1.25, 0.5, 0.5, 2]
   } as const;
   const canonicalProperties = [
@@ -4854,8 +4864,10 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     [1.25, "--dimension-250"],
     [1.5, "--dimension-300"],
     [2, "--dimension-400"],
+    [2.5, "--dimension-500"],
     [3, "--dimension-600"],
     [4, "--dimension-800"],
+    [4.5, "--dimension-900"],
     [6, "--dimension-1200"],
     [8, "--dimension-1600"]
   ]);

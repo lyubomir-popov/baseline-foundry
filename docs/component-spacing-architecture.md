@@ -40,9 +40,11 @@ reviewed block-derived minimum described below.
 | Body line | `1.5rem` | `1.25rem` | `1.25rem` | `1rem` |
 | Border | `0.0625rem` | `0.0625rem` | `0.0625rem` | `0.0625rem` |
 | Control visual | `1rem` | `0.875rem` | `0.875rem` | `0.75rem` |
-| Field gap | `0.5rem` | `0.5rem` | `0.5rem` | `0.25rem` |
-| Structural panel inline padding | `1rem` | `1rem` | `0.75rem` | `0.5rem` |
-| Structural panel block padding | `1rem` | `1rem` | `0.75rem` | `0.5rem` |
+| Field gap | `0.5rem` | `0.25rem` | `0.25rem` | `0.25rem` |
+| Group gap | `1.5rem` | `1.25rem` | `1.25rem` | `1.5rem` |
+| Pattern/section gap | `4.5rem` | `2.5rem` | `2.5rem` | `3rem` |
+| Structural panel inline padding | `1rem` | `0.75rem` | `0.75rem` | `0.5rem` |
+| Structural panel block padding | `1rem` | `0.75rem` | `0.75rem` | `0.5rem` |
 
 All authored lengths are scalable `rem` values. Runtime pixel measurements
 exist only in browser assertions because layout engines report computed

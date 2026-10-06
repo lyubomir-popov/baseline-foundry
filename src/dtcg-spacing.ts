@@ -55,7 +55,7 @@ interface ResolvedDtcgSpacingArtifact {
 }
 
 export const canonicalSpacingSourceCommit = "18f57b95b1aa1dfe85a45746016b055c807d6628";
-export const canonicalSpacingProductsSha256 = "763e5041648b8f7166cf2607e829a4c6fc519cd6c07dc9ac8eced68dedbab253";
+export const canonicalSpacingProductsSha256 = "f8fa3f4ac6d94fa1e262ab0530bd2c6d41da2932dc91c06151c711ca093cf679";
 const canonicalSpacingSourceRepository = "https://github.com/canonical/design-tokens";
 const canonicalSpacingResolver = "tokens/canonical/canonical.resolver.json";
 const canonicalProductOrder: CanonicalProduct[] = ["site", "docs", "app", "os"];

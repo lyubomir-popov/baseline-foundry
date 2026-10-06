@@ -96,7 +96,7 @@
     "contentMaxWidthRem": 90,
     "contentPaddingInlineRem": 1,
     "measureRem": 40,
-    "sectionSpaceBaselineUnits": 8,
+    "sectionSpaceBaselineUnits": 9,
     "sectionSpaceShallowBaselineUnits": 3,
     "sectionSpaceDeepBaselineUnits": 16,
     "stripSpaceBaselineUnits": 8,
