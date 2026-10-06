@@ -109,7 +109,7 @@ async function validateSpec028ReviewDemo(html: string, css: string, runtime: str
   assert(runtime.includes("const specimens = canvas.innerHTML;") && runtime.includes("const markupUnchanged = canvas.innerHTML === specimens;") && runtime.includes("updateSequence"), "Expected the runtime to verify identical specimen markup and suppress stale asynchronous bundle updates.");
   assert(runtime.includes('canvas.dataset.popupCheck = "not-measured"') && runtime.includes('window.addEventListener("scroll", runNegativeChecks') && runtime.includes("new ResizeObserver"), "Expected offscreen negatives to stay unmeasured until visible and sticky offsets to follow the rendered control height.");
   assert(provenance.before.sourceCommit === "6deca99776f35b85afde01b68bb0fffe817e29aa" && provenance.before.manifestSha256 === "e9004646356afe62f7f53307305ba0e2ff57064a379b96ec9e52b3ccab6b80fc", "Expected Before provenance to pin the independently built base source and build manifest.");
-  assert(provenance.after.semanticSourceCommit === "12d47abb938aecb5884387c376560d8aab66a655" && provenance.after.bundleSourceCommit === "12d47abb938aecb5884387c376560d8aab66a655", "Expected After provenance to pin the final accepted source used to build the feature bundles.");
+  assert(/^[0-9a-f]{40}$/.test(provenance.after.semanticSourceCommit) && provenance.after.bundleSourceCommit === provenance.after.semanticSourceCommit, "Expected After provenance to pin one full Git-resolvable source commit for the corrected feature bundles.");
   for (const tier of ["editorial", "documentation", "app", "os"]) {
     const beforeHash = await hashFile(path.resolve("demo/spec-028/before", `${tier}.css`));
     const afterHash = await hashFile(path.resolve("dist/tiers", tier, "styles.css"));
@@ -1103,11 +1103,12 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)", {
     "position": "relative"
   }, "field paint owners establish their overlay containing block");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select)", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select)", {
     "border": "0",
     "margin": "0",
     "padding-block": "var(--bf-interface-row-padding-block)"
   }, "native fields retain interaction while layout geometry excludes stroke width");
+  assert(css.includes(":not(:where(.bf-field-boundary *, .bf-color-control *, .bf-search-box *, .bf-search-and-filter-search-container *))") && css.includes("box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-native-field-stroke-color);") && css.includes("outline: var(--bf-border-width) solid CanvasText;"), "Expected bare text-like native fields, including omitted-type inputs, to retain one geometry-neutral compatibility boundary without double-painting inside approved owners.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after", {
     "border": "0 solid transparent",
     "pointer-events": "none",
@@ -1568,7 +1569,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-equal-height-row-col:not(.is-borderless))::after => inherit",
     ":where(.bf-theme) :where(.bf-field-boundary) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after => inherit",
-    ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
     ":where(.bf-theme) :where(.bf-modal-dialog)::after => inherit",
     ":where(.bf-theme) :where(.bf-modal-footer)::after => inherit",

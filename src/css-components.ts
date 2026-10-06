@@ -284,8 +284,8 @@ ${fieldStroke.owner}
 
 /* Replaced fields keep native interaction on the form element while this
    named boundary owns the out-of-flow one-sided stroke and occupied-row end
-   compensation. Raw unwrapped fields remain usable but intentionally have no
-   component boundary. */
+   compensation. Unwrapped text-like fields retain a self-painted compatibility
+   boundary so existing consumer markup never becomes boundaryless. */
 :where(.bf-theme) :where(.bf-field-boundary) {
   border-radius: var(--bf-radius);
   display: grid;
@@ -296,11 +296,11 @@ ${fieldStroke.owner}
   min-inline-size: 0;
 }
 
-:where(.bf-theme) :where(.bf-field-boundary) > :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='file'], textarea, select) {
+:where(.bf-theme) :where(.bf-field-boundary) > :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='file'], textarea, select) {
   grid-area: field-boundary;
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
 ${typeStyles(body, { includeCase: false })}  appearance: none;
   background-color: var(--bf-color-background-inputs);
   border: 0;
@@ -312,6 +312,15 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   margin: 0;
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-field);
+}
+
+/* The named wrapper is the preferred anatomy. This compatibility path is
+   intentionally limited to bare replaced fields and paints inside the native
+   box, preserving zero layout borders and avoiding a doubled wrapped edge. */
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):not(:where(.bf-field-boundary *, .bf-color-control *, .bf-search-box *, .bf-search-and-filter-search-container *)) {
+  --bf-native-field-stroke-color: var(--bf-color-border-high-contrast);
+  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-native-field-stroke-color);
+  margin-block-end: ${inputMarginBottom};
 }
 
 :where(.bf-theme) :where(.bf-color-control) {
@@ -344,21 +353,21 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   padding: 0;
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
   background-color: var(--bf-color-background-hover);
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus:not(:focus-visible) {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus:not(:focus-visible) {
   outline: none;
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--bf-color-background-active);
   outline: 0.125rem solid var(--bf-color-focus);
   outline-offset: -0.125rem;
 }
 
-:where(.bf-theme) :where(.bf-field-boundary) > :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='file'], textarea, select):focus-visible,
+:where(.bf-theme) :where(.bf-field-boundary) > :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='file'], textarea, select):focus-visible,
 :where(.bf-theme) :where(.bf-color-control) > :where(input[type='color'].bf-color-input):focus-visible,
 :where(.bf-theme) :where(.bf-search-box, .bf-search-and-filter-search-container) :where(input):focus-visible {
   outline: none;
@@ -368,12 +377,12 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):disabled {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select)[readonly] {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select)[readonly] {
   background-color: var(--bf-color-background-alt);
   color: var(--bf-color-text-muted);
 }
@@ -475,6 +484,16 @@ ${fieldStroke.painter}
   :where(.bf-theme) :where(select) {
     appearance: auto;
     background-image: none;
+  }
+
+  /* Replaced controls cannot reliably host a generated paint pseudo. An inset
+     system outline is the named all-sided native self-paint fallback; it keeps
+     the compatibility path at zero layout-border width in forced colours. */
+  :where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):not(:where(.bf-field-boundary *, .bf-color-control *, .bf-search-box *, .bf-search-and-filter-search-container *)) {
+    border: 0;
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
   }
 
   :where(.bf-theme) :where(input[type='file'])::file-selector-button {
@@ -676,7 +695,8 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
   position: absolute;
 }
 
-:where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+  --bf-native-field-stroke-color: var(--bf-color-border-caution);
   background-color: var(--bf-color-background-caution-default);
 }
 
@@ -700,7 +720,8 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
   background: var(--bf-color-border-caution);
 }
 
-:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+  --bf-native-field-stroke-color: var(--bf-color-border-negative);
   background-color: var(--bf-color-background-negative-default);
 }
 
@@ -724,7 +745,8 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
   background: var(--bf-color-border-negative);
 }
 
-:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+  --bf-native-field-stroke-color: var(--bf-color-border-positive);
   background-color: var(--bf-color-background-positive-default);
 }
 

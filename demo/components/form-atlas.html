@@ -252,6 +252,25 @@
         </table>
       </div>
     </section>
+
+    <section class="bf-section is-shallow bf-stack" data-native-field-compatibility data-baseline-ignore="true">
+      <h2 class="bf-h4" data-baseline-ignore="true">Native field compatibility</h2>
+      <p class="bf-body" data-baseline-ignore="true">New compositions should use <code>bf-field-boundary</code>. Bare fields keep one compatibility edge during migration.</p>
+      <div class="bf-cluster" data-baseline-ignore="true">
+        <input class="bf-input" type="text" value="Bare input" aria-label="Bare compatibility input" data-baseline-ignore="true">
+        <input value="Bare default input" aria-label="Bare default compatibility input" data-baseline-ignore="true">
+        <select aria-label="Bare compatibility select" data-baseline-ignore="true"><option>Bare select</option></select>
+        <textarea aria-label="Bare compatibility textarea" data-baseline-ignore="true">Bare textarea</textarea>
+      </div>
+      <div class="bf-cluster" data-baseline-ignore="true">
+        <span class="bf-field-boundary" data-baseline-ignore="true"><input class="bf-input" type="text" value="Wrapped input" aria-label="Wrapped compatibility input" data-baseline-ignore="true"></span>
+        <span class="bf-field-boundary" data-baseline-ignore="true"><select aria-label="Wrapped compatibility select" data-baseline-ignore="true"><option>Wrapped select</option></select></span>
+        <span class="bf-field-boundary" data-baseline-ignore="true"><textarea aria-label="Wrapped compatibility textarea" data-baseline-ignore="true">Wrapped textarea</textarea></span>
+      </div>
+      <div class="bf-validation is-error" data-baseline-ignore="true">
+        <input class="bf-input" type="text" value="Bare validation" aria-label="Bare compatibility validation input" data-baseline-ignore="true">
+      </div>
+    </section>
   </main>
 
   <script type="module" src="../component-demo.js"></script>

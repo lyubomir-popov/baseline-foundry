@@ -4650,6 +4650,95 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
 
     await page.goto(`${origin}/demo/components/form-atlas.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    const fieldTierSelect = page.getByLabel("Tier", { exact: true });
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await fieldTierSelect.selectOption(tier);
+      await page.waitForSelector(`body.bf-tier-${tier}`);
+      const nativeCompatibility = await page.locator("[data-native-field-compatibility]").evaluate(element => {
+        const bare = [
+          element.querySelector<HTMLInputElement>("input[aria-label='Bare compatibility input']"),
+          element.querySelector<HTMLInputElement>("input[aria-label='Bare default compatibility input']"),
+          element.querySelector<HTMLSelectElement>("select[aria-label='Bare compatibility select']"),
+          element.querySelector<HTMLTextAreaElement>("textarea[aria-label='Bare compatibility textarea']")
+        ];
+        const wrapped = [
+          element.querySelector<HTMLInputElement>("input[aria-label='Wrapped compatibility input']"),
+          element.querySelector<HTMLSelectElement>("select[aria-label='Wrapped compatibility select']"),
+          element.querySelector<HTMLTextAreaElement>("textarea[aria-label='Wrapped compatibility textarea']")
+        ];
+        const owners = Array.from(element.querySelectorAll<HTMLElement>(".bf-field-boundary"));
+        const validation = element.querySelector<HTMLInputElement>("input[aria-label='Bare compatibility validation input']");
+        if (bare.some(field => !field) || wrapped.some(field => !field) || owners.length !== 3 || !validation) {
+          throw new Error("Missing native-field compatibility fixtures.");
+        }
+        const validationProbe = document.createElement("i");
+        validationProbe.style.color = getComputedStyle(validation).getPropertyValue("--bf-native-field-stroke-color").trim();
+        element.append(validationProbe);
+        const validationResolvedColor = getComputedStyle(validationProbe).color;
+        validationProbe.remove();
+        return {
+          bare: bare.map(field => {
+            const style = getComputedStyle(field as HTMLElement);
+            return {
+              borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth],
+              height: (field as HTMLElement).getBoundingClientRect().height,
+              marginBlockEnd: Number.parseFloat(style.marginBlockEnd),
+              width: (field as HTMLElement).getBoundingClientRect().width,
+              shadow: style.boxShadow
+            };
+          }),
+          owners: owners.map(owner => ({
+            height: owner.getBoundingClientRect().height,
+            marginBlockEnd: Number.parseFloat(getComputedStyle(owner).marginBlockEnd),
+            shadow: getComputedStyle(owner, "::after").boxShadow
+          })),
+          validationColor: getComputedStyle(validation).getPropertyValue("--bf-native-field-stroke-color").trim(),
+          validationResolvedColor,
+          validationShadow: getComputedStyle(validation).boxShadow,
+          wrapped: wrapped.map(field => getComputedStyle(field as HTMLElement).boxShadow)
+        };
+      });
+      assert(nativeCompatibility.bare.every(field => field.borderWidths.every(width => width === "0px") && field.shadow !== "none"), `Expected ${tier} bare input/select/textarea compatibility boundaries to self-paint without layout borders: ${JSON.stringify(nativeCompatibility)}.`);
+      assert(nativeCompatibility.wrapped.every(shadow => shadow === "none") && nativeCompatibility.owners.every(owner => owner.shadow !== "none"), `Expected ${tier} wrapped fields to paint exactly once on bf-field-boundary: ${JSON.stringify(nativeCompatibility)}.`);
+      assert(nativeCompatibility.bare.slice(0, 3).every(field => field.marginBlockEnd > 0 && Math.abs((field.height + field.marginBlockEnd) - (nativeCompatibility.owners[0].height + nativeCompatibility.owners[0].marginBlockEnd)) <= 0.1), `Expected ${tier} bare single-line fields to preserve the wrapped field's occupied row and trailing compensation: ${JSON.stringify(nativeCompatibility)}.`);
+      assert(nativeCompatibility.validationColor !== "" && nativeCompatibility.validationShadow.includes(nativeCompatibility.validationResolvedColor), `Expected ${tier} bare validation paint to use the validation stroke colour: ${JSON.stringify(nativeCompatibility)}.`);
+
+      await page.emulateMedia({ forcedColors: "active" });
+      const forcedCompatibility = await page.locator("[data-native-field-compatibility]").evaluate(element => {
+        const bare = Array.from(element.querySelectorAll<HTMLElement>("input[aria-label^='Bare compatibility'], input[aria-label='Bare default compatibility input'], select[aria-label='Bare compatibility select'], textarea[aria-label='Bare compatibility textarea']"));
+        const wrapped = Array.from(element.querySelectorAll<HTMLElement>(".bf-field-boundary > input, .bf-field-boundary > select, .bf-field-boundary > textarea"));
+        const owners = Array.from(element.querySelectorAll<HTMLElement>(".bf-field-boundary"));
+        return {
+          bare: bare.map(field => {
+            const style = getComputedStyle(field);
+            const painted = { height: field.getBoundingClientRect().height, width: field.getBoundingClientRect().width };
+            field.style.outline = "none";
+            const unpainted = { height: field.getBoundingClientRect().height, width: field.getBoundingClientRect().width };
+            field.style.removeProperty("outline");
+            return {
+              borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth].map(Number.parseFloat),
+              height: painted.height,
+              noOutlineHeight: unpainted.height,
+              noOutlineWidth: unpainted.width,
+              outlineOffset: Number.parseFloat(style.outlineOffset),
+              outlineStyle: style.outlineStyle,
+              outlineWidth: Number.parseFloat(style.outlineWidth),
+              shadow: style.boxShadow,
+              width: painted.width
+            };
+          }),
+          owners: owners.map(owner => {
+            const overlay = getComputedStyle(owner, "::after");
+            return { blockEndStyle: overlay.borderBlockEndStyle, blockEndWidth: Number.parseFloat(overlay.borderBlockEndWidth) };
+          }),
+          wrapped: wrapped.map(field => Number.parseFloat(getComputedStyle(field).borderBlockEndWidth))
+        };
+      });
+      assert(forcedCompatibility.bare.every(field => field.borderWidths.every(width => width === 0) && field.outlineStyle === "solid" && field.outlineWidth > 0 && field.outlineOffset < 0 && field.shadow === "none"), `Expected ${tier} bare native fields to retain an inset forced-colours boundary with zero layout borders: ${JSON.stringify(forcedCompatibility)}.`);
+      assert(forcedCompatibility.bare.every(field => Math.abs(field.width - field.noOutlineWidth) <= 0.01 && Math.abs(field.height - field.noOutlineHeight) <= 0.01), `Expected ${tier} forced-colours fallback paint not to change bare native-field geometry: ${JSON.stringify(forcedCompatibility.bare)}.`);
+      assert(forcedCompatibility.wrapped.every(width => width === 0) && forcedCompatibility.owners.every(owner => owner.blockEndStyle === "solid" && owner.blockEndWidth > 0), `Expected ${tier} wrapped fields to keep forced-colours paint solely on bf-field-boundary: ${JSON.stringify(forcedCompatibility)}.`);
+      await page.emulateMedia({ forcedColors: "none" });
+    }
     const fieldset = page.locator("[data-fieldset-paint-owner]");
     const fieldsetNormal = await fieldset.evaluate(element => {
       const node = element as HTMLElement;
