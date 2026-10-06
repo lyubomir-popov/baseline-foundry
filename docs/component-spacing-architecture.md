@@ -294,12 +294,13 @@ Inline `.bf-icon` paint aligns to the font's cap-height centre, not the line-box
 bottom. `--bf-inline-icon-baseline-shift` derives the default placement from
 `1cap`, the default icon size, and half the scalable border as an optical lift;
 size modifiers add the difference between their active size and that default.
-The default icon trims one scalable border from its block-start layout margin
-so a raster edge cannot grow the compact body line, while larger icons reserve
-their full painted block. Sortable-table chevrons reuse the default metric and
-trim. Flex, grid, and positioned component owners explicitly neutralize the
-inline trim and retain their own cross-axis placement. Absolutely positioned
-leading marks keep their separate `--bf-leading-icon-offset` row contract.
+The icon keeps zero layout margin and applies that optical adjustment through
+`vertical-align`, so raster placement does not change the compact body line or
+reserve hidden block space. Sortable-table chevrons reuse the same default size
+and baseline shift. Flex, grid, and positioned component owners retain their
+own cross-axis placement without a layout trim to neutralize. Absolutely
+positioned leading marks keep their separate `--bf-leading-icon-offset` row
+contract.
 
 Icon-only buttons extend their pointer target, not their paint, to at least
 24-by-24 CSS pixels with an out-of-flow pseudo-element. The `24px` value is the
