@@ -1116,6 +1116,25 @@ function validateCommonCss(css: string): void {
   assert(css.includes("flex: 0 1 5rem;"), "Expected slider number inputs to shrink before overflowing.");
   assert(!css.includes("min-inline-size: 5rem;"), "Expected slider number inputs to avoid a hard minimum width.");
   assert(css.includes(":where(.bf-switch-slider)"), "Expected generated CSS to include switch styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(fieldset, .bf-fieldset)", {
+    "border": "0",
+    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default)"
+  }, "native fieldset/legend anatomy self-paints its frame without layout-border geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label)::before", {
+    "border": "0",
+    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast)"
+  }, "checkbox and radio frame parts self-paint because the sibling pseudo owns their glyph");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-switch-slider)::before", {
+    "border": "0",
+    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast)"
+  }, "switch native marker anatomy self-paints its thumb frame");
+  for (const selector of [
+    ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb",
+    ":where(.bf-theme) :where(input[type='range'])::-moz-range-thumb"
+  ]) {
+    assertRuleHasDecl(ast, selector, { "border": "0" }, `${selector} keeps native-part frame paint out of layout geometry`);
+  }
+  assert(css.includes("outline: var(--bf-border-width) solid CanvasText;") && css.includes("outline-offset: calc(var(--bf-border-width) * -1);"), "Expected named native marker and fieldset exceptions to retain inset all-sided system outlines in forced colors.");
   assert(css.includes(":where(.bf-validation-message)"), "Expected generated CSS to include validation message styling.");
   assert(!css.includes(".has-error"), "Expected generated CSS to omit the deprecated has-error validation alias.");
   assert(!css.includes(".has-success"), "Expected generated CSS to omit the deprecated has-success validation alias.");
@@ -1347,6 +1366,9 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-modal-footer)::after => inherit",
     ":where(.bf-theme) :where(.bf-modal-header)::after => inherit",
     ":where(.bf-theme) :where(.bf-navigation-bar)::after => inherit",
+    ":where(.bf-theme) :where(.bf-notice, .bf-notice.is-information, .bf-notice.is-positive, .bf-notice.is-caution, .bf-notice.is-negative)::after => inherit",
+    ":where(.bf-theme) :where(.bf-notification-meta)::after => inherit",
+    ":where(.bf-theme) :where(.bf-notification:not(.is-borderless))::after => inherit",
     ":where(.bf-theme) :where(.bf-option-card)::after => inherit",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)::after => inherit",

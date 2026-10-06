@@ -16,7 +16,8 @@
   - [x] Native fields and search compositions — `c3512eb`, gates green; logs `fields-check-types.log`, `fields-npm-test.log`, `fields-qa-components.log`
   - [x] Navigation bars, drawers, pagination and navigation actions — `cbcabbe`, gates green; logs `navigation-check-types.log`, `navigation-npm-test.log`, `navigation-qa-components.log`
   - [x] Cards, OptionCard and ContentCard surfaces — `c3af935`, gates green; logs `cards-check-types.log`, `cards-npm-test.log`, `cards-qa-components.log`
-  - [ ] Panels, modals, popup surfaces and code snippets — current change
+  - [x] Panels, modals, popup surfaces and code snippets — `1b00248`, gates green; logs `overlays-check-types.log`, `overlays-npm-test.log`, `overlays-qa-components.log`
+  - [ ] Feedback surfaces and native marker parts — current change
 - [ ] Before/after review demo and negative specimens
 - [ ] Root gates and Chromium evidence
 - [ ] Conformance board and final Opus request

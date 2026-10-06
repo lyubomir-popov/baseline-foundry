@@ -257,15 +257,19 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(fieldset, .bf-fieldset) {
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  /* The native fieldset/legend pair keeps its boundary below the legend and
+     arbitrary filled descendants. This named anatomy self-paints the frame. */
+  border: 0;
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default);
   margin: 0;
   min-inline-size: 0;
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-block-end: var(--bf-panel-padding-block);
   padding-inline: var(--bf-panel-padding-inline);
   padding-block-start: var(--bf-panel-padding-block);
 }
 
 :where(.bf-theme) :where(fieldset, .bf-fieldset) > :where(legend, .bf-legend) {
+  background: var(--bf-color-background-default);
   margin-bottom: 0;
   padding-inline: var(--bf-inline-unit);
 }
@@ -512,7 +516,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label)::before {
   background: var(--bf-color-background-default);
   block-size: var(--bf-control-visual-size);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast);
   inline-size: var(--bf-control-visual-size);
   inset-inline-start: 0;
   inset-block-start: var(--bf-tick-box-offset);
@@ -549,7 +554,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-checkbox-input:checked + .bf-checkbox-label)::before {
   background: var(--bf-color-link-default);
-  border-color: var(--bf-color-link-default);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-link-default);
 }
 
 :where(.bf-theme) :where(.bf-checkbox-input:checked + .bf-checkbox-label)::after {
@@ -558,7 +563,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-radio-input:checked + .bf-radio-label)::before {
   background: var(--bf-color-link-default);
-  border-color: var(--bf-color-link-default);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-link-default);
 }
 
 :where(.bf-theme) :where(.bf-radio-input:checked + .bf-radio-label)::after {
@@ -607,7 +612,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   background: var(--bf-color-background-default);
   block-size: var(--bf-control-visual-size);
   box-sizing: border-box;
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast);
   border-radius: 50%;
   content: "";
   inline-size: var(--bf-control-visual-size);
@@ -622,7 +628,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 }
 
 :where(.bf-theme) :where(.bf-switch-input:checked + .bf-switch-slider)::before {
-  border-color: var(--bf-color-link-default);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-link-default);
   transform: translateX(100%);
 }
 
@@ -810,10 +816,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
 :where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb {
   appearance: none;
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   block-size: var(--bf-control-visual-size);
   border-radius: 50%;
-  box-shadow: 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast), 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
   inline-size: var(--bf-control-visual-size);
   margin-top: calc((var(--bf-slider-track-size) - var(--bf-control-visual-size)) / 2);
 }
@@ -836,10 +842,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
 
 :where(.bf-theme) :where(input[type='range'])::-moz-range-thumb {
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   block-size: var(--bf-control-visual-size);
   border-radius: 50%;
-  box-shadow: 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast), 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
   inline-size: var(--bf-control-visual-size);
 }
 
@@ -849,6 +855,30 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
 
 :where(.bf-theme) :where(input[type='range']):focus-visible::-moz-range-thumb {
   outline: calc(var(--bf-baseline) * 0.25) solid var(--bf-color-focus);
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(fieldset, .bf-fieldset) {
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
+  :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label)::before,
+  :where(.bf-theme) :where(.bf-switch-slider)::before {
+    border: 0;
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
+  :where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb,
+  :where(.bf-theme) :where(input[type='range'])::-moz-range-thumb {
+    border: 0;
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
 }
 
 ${iconCss()}

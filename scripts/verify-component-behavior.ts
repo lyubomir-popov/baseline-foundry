@@ -88,7 +88,11 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const radio = box(".bf-radio-label");
       const radioOuter = pseudo(".bf-radio-label");
       const radioDot = pseudo(".bf-radio-label", "::after");
-      const radioOuterStyle = getComputedStyle(document.querySelector(".bf-radio-label"), "::before");
+      const borderProbe = document.createElement("i");
+      borderProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-border-width);block-size:1px";
+      document.body.append(borderProbe);
+      const paintedBorderWidth = borderProbe.getBoundingClientRect().width;
+      borderProbe.remove();
       const checkbox = box(".bf-checkbox-label");
       const checkboxOuter = pseudo(".bf-checkbox-label");
       const checkboxCheck = pseudo(".bf-checkbox-label", "::after");
@@ -117,8 +121,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         radioCenterY: radio.top + radioOuter.top + (radioOuter.height / 2),
         radioDotCenterY: radio.top + radioDot.top + (radioDot.height / 2),
         radioDotWidth: radioDot.width,
-        borderWidth: number(radioOuterStyle.borderInlineStartWidth),
-        expectedRadioDotWidth: (radioOuter.width * 0.375) + number(radioOuterStyle.borderInlineStartWidth),
+        borderWidth: paintedBorderWidth,
+        expectedRadioDotWidth: (radioOuter.width * 0.375) + paintedBorderWidth,
         checkboxCenter: checkbox.left + checkboxOuter.left + (checkboxOuter.width / 2),
         checkboxCenterY: checkbox.top + checkboxOuter.top + (checkboxOuter.height / 2),
         checkboxCheckCenterY: checkbox.top + checkboxCheck.top + (checkboxCheck.height / 2),
@@ -390,13 +394,14 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const radioOuter = getComputedStyle(radioLabel, "::before");
       const radioDot = getComputedStyle(radioLabel, "::after");
       const actionProbe = document.createElement("i");
-      actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);position:absolute;visibility:hidden";
+      actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);block-size:var(--bf-border-width);position:absolute;visibility:hidden";
       pageElement.append(actionProbe);
       const actionInset = actionProbe.getBoundingClientRect().width;
+      const paintedBorderWidth = actionProbe.getBoundingClientRect().height;
       actionProbe.remove();
       return {
         rootSize,
-        borderWidth: Number.parseFloat(radioOuter.borderInlineStartWidth),
+        borderWidth: paintedBorderWidth,
         lineWidth: Number.parseFloat(getComputedStyle(red).width),
         lineAuthoredWidth: red.style.width,
         lineAuthoredLeft: red.style.left,
@@ -4430,6 +4435,9 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
     { route: "/demo/components/search-and-filter.html", selector: ".bf-search-and-filter-panel[aria-hidden='false']", forcedSide: "attachedPanel" },
     { route: "/demo/components/search-and-filter.html", selector: ".bf-filter-panel-section:not(:last-child)", forcedSide: "blockEnd" },
     { route: "/demo/components/search-box.html", selector: ".bf-search-box-button", forcedSide: "inlineStart" },
+    { route: "/demo/components/notice.html", selector: ".bf-notice", forcedSide: "inlineStart" },
+    { route: "/demo/components/notification.html", selector: ".bf-notification:not(.is-borderless)", forcedSide: "outline" },
+    { route: "/demo/components/notification.html", selector: ".bf-notification-meta", forcedSide: "blockStart" },
     { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer", forcedSide: "blockStart" }
   ] as const;
 
@@ -4511,6 +4519,71 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
     }
 
     await page.emulateMedia({ forcedColors: "none" });
+
+    await page.goto(`${origin}/demo/components/form-atlas.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const fieldset = page.locator("[data-fieldset-paint-owner]");
+    const fieldsetNormal = await fieldset.evaluate(element => {
+      const node = element as HTMLElement;
+      const before = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      const legend = node.querySelector<HTMLElement>("legend");
+      const filled = node.querySelector<HTMLElement>(".bf-stack");
+      node.style.setProperty("--bf-border-width", "6px");
+      const after = node.getBoundingClientRect();
+      const widenedShadow = getComputedStyle(node).boxShadow;
+      node.style.removeProperty("--bf-border-width");
+      return {
+        before: { width: before.width, height: before.height },
+        after: { width: after.width, height: after.height },
+        borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth].map(Number.parseFloat),
+        filledBackground: filled ? getComputedStyle(filled).backgroundColor : "",
+        legendBackground: legend ? getComputedStyle(legend).backgroundColor : "",
+        shadow: style.boxShadow,
+        widenedShadow
+      };
+    });
+    assert(fieldsetNormal.borderWidths.every(width => width === 0) && fieldsetNormal.shadow !== "none" && fieldsetNormal.widenedShadow !== fieldsetNormal.shadow && fieldsetNormal.before.width === fieldsetNormal.after.width && fieldsetNormal.before.height === fieldsetNormal.after.height, `Expected the named fieldset/legend anatomy to self-paint without layout geometry; got ${JSON.stringify(fieldsetNormal)}.`);
+    assert(fieldsetNormal.legendBackground !== "rgba(0, 0, 0, 0)" && fieldsetNormal.filledBackground !== "rgba(0, 0, 0, 0)", `Expected the legend and filled-child specimen to exercise the fieldset's below-content paint order; got ${JSON.stringify(fieldsetNormal)}.`);
+    const markerGeometry = await page.locator("main.bf-page").evaluate(element => {
+      const selectors = [".bf-checkbox-label", ".bf-radio-label", ".bf-switch-slider"];
+      return selectors.map(selector => {
+        const marker = element.querySelector<HTMLElement>(selector);
+        if (!marker) throw new Error(`Missing marker specimen ${selector}.`);
+        const before = getComputedStyle(marker, "::before");
+        const initial = { width: Number.parseFloat(before.width), height: Number.parseFloat(before.height) };
+        const initialBorders = [before.borderBlockStartWidth, before.borderBlockEndWidth, before.borderInlineStartWidth, before.borderInlineEndWidth].map(Number.parseFloat);
+        const initialShadow = before.boxShadow;
+        marker.style.setProperty("--bf-border-width", "6px");
+        const widened = getComputedStyle(marker, "::before");
+        const result = {
+          selector,
+          initial,
+          widened: { width: Number.parseFloat(widened.width), height: Number.parseFloat(widened.height) },
+          borders: initialBorders,
+          shadow: initialShadow,
+          widenedShadow: widened.boxShadow
+        };
+        marker.style.removeProperty("--bf-border-width");
+        return result;
+      });
+    });
+    assert(markerGeometry.every(marker => marker.borders.every(width => width === 0) && marker.shadow !== "none" && marker.widenedShadow !== marker.shadow && marker.initial.width === marker.widened.width && marker.initial.height === marker.widened.height), `Expected checkbox, radio, and switch marker frames to self-paint without changing their native slots; got ${JSON.stringify(markerGeometry)}.`);
+    await page.emulateMedia({ forcedColors: "active" });
+    const fieldsetForced = await fieldset.evaluate(element => {
+      const style = getComputedStyle(element);
+      return { shadow: style.boxShadow, outlineStyle: style.outlineStyle, outlineWidth: Number.parseFloat(style.outlineWidth) };
+    });
+    assert(fieldsetForced.shadow === "none" && fieldsetForced.outlineStyle === "solid" && fieldsetForced.outlineWidth > 0, `Expected the fieldset exception to use a real forced-colors outline; got ${JSON.stringify(fieldsetForced)}.`);
+    const markersForced = await page.locator("main.bf-page").evaluate(element => [".bf-checkbox-label", ".bf-radio-label", ".bf-switch-slider"].map(selector => {
+      const marker = element.querySelector<HTMLElement>(selector);
+      if (!marker) throw new Error(`Missing forced-colors marker ${selector}.`);
+      const style = getComputedStyle(marker, "::before");
+      return { selector, borderWidth: Number.parseFloat(style.borderInlineStartWidth), outlineStyle: style.outlineStyle, outlineWidth: Number.parseFloat(style.outlineWidth), shadow: style.boxShadow };
+    }));
+    assert(markersForced.every(marker => marker.borderWidth === 0 && marker.outlineStyle === "solid" && marker.outlineWidth > 0 && marker.shadow === "none"), `Expected native marker exceptions to use inset all-sided system outlines without layout borders; got ${JSON.stringify(markersForced)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+
     await page.goto(`${origin}/demo/components/code-snippet.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
     const dropdowns = page.locator(".bf-code-snippet-header.is-stacked .bf-code-snippet-dropdowns").first();
@@ -5523,16 +5596,25 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
     await page.goto(`${origin}/demo/components/notice.html`, { waitUntil: "networkidle" });
     const noticeSemantics = await page.locator(".bf-notice").evaluateAll(elements => elements.map(element => {
       const styles = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      const probe = document.createElement("i");
+      probe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-stroke-width);block-size:1px";
+      element.append(probe);
+      const paintedWidth = probe.getBoundingClientRect().width;
+      probe.remove();
       return {
-        barThickness: Number.parseFloat(styles.borderInlineStartWidth),
+        barThickness: paintedWidth,
         barThicknessToken: styles.getPropertyValue("--bf-bar-thickness").trim(),
+        layoutBorder: Number.parseFloat(styles.borderInlineStartWidth),
+        overlayPointerEvents: overlay.pointerEvents,
+        overlayShadow: overlay.boxShadow,
         role: element.getAttribute("role"),
         titleTag: element.querySelector(".bf-notice-title")?.tagName ?? null
       };
     }));
     assert(noticeSemantics.length === 5, "Expected all five notice variants in the semantic fixture.");
     assert(noticeSemantics.every(notice => notice.role === "note" && notice.titleTag === "H2"), "Expected static notices to retain note landmarks and semantic h2 titles.");
-    assert(noticeSemantics.every(notice => notice.barThickness === 3 && notice.barThicknessToken === "0.1875rem"), "Expected every notice variant to use the shared 3px/0.1875rem emphasis bar.");
+    assert(noticeSemantics.every(notice => notice.barThickness === 3 && notice.barThicknessToken === "0.1875rem" && notice.layoutBorder === 0 && notice.overlayPointerEvents === "none" && notice.overlayShadow !== "none"), "Expected every notice variant to paint the shared 3px/0.1875rem emphasis bar in a pointer-transparent overlay without a layout border.");
 
     await page.setContent(`<!doctype html><link rel="stylesheet" href="${origin}/dist/tiers/editorial/styles.css"><body class="bf-theme">Scoped reset</body>`);
     await page.waitForFunction(() => Array.from(document.styleSheets).some(sheet => sheet.href?.includes("/dist/tiers/editorial/styles.css")));
@@ -6395,7 +6477,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
           const notificationStyle = getComputedStyle(notification);
           const accentStyle = getComputedStyle(notification, "::before");
-          const accentEnd = notificationRect.left + Number.parseFloat(notificationStyle.borderInlineStartWidth) + Number.parseFloat(accentStyle.insetInlineStart) + Number.parseFloat(accentStyle.inlineSize);
+          const accentEnd = notificationRect.left + Number.parseFloat(accentStyle.insetInlineStart) + Number.parseFloat(accentStyle.inlineSize);
           return iconRect.left - accentEnd;
         });
         const iconToTextGaps = notifications.map(notification => {
@@ -6474,10 +6556,9 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         const rtlNotificationRect = rtlNotification.getBoundingClientRect();
         const rtlIconRect = (rtlNotification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
         const rtlContentRect = (rtlNotification.querySelector(".bf-notification-content") as HTMLElement).getBoundingClientRect();
-        const rtlNotificationStyle = getComputedStyle(rtlNotification);
         const rtlAccentStyle = getComputedStyle(rtlNotification, "::before");
         const rtlBarWidth = Number.parseFloat(rtlAccentStyle.inlineSize);
-        const rtlAccentStart = rtlNotificationRect.right - Number.parseFloat(rtlNotificationStyle.borderInlineStartWidth) - Number.parseFloat(rtlAccentStyle.insetInlineStart) - rtlBarWidth;
+        const rtlAccentStart = rtlNotificationRect.right - Number.parseFloat(rtlAccentStyle.insetInlineStart) - rtlBarWidth;
         const rtlClose = document.querySelector<HTMLElement>(".bf-notification-close");
         const rtlCloseRootRect = (rtlClose?.closest(".bf-notification") as HTMLElement).getBoundingClientRect();
         const rtlCloseRect = rtlClose?.getBoundingClientRect();
@@ -6519,7 +6600,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       });
       assert(geometry.baseline > 0, `Expected ${tier} notification fixture to resolve a positive baseline.`);
       assert(geometry.barThicknessToken === "0.1875rem" && geometry.accentWidths.every(width => width === 3), `Expected ${tier} notification accents to use the shared 3px/0.1875rem emphasis bar; got ${geometry.accentWidths.join(", ")}px/${geometry.barThicknessToken}.`);
-      assert(geometry.rootLeadingBorders.every(width => width === 1), `Expected ${tier} notification accent paint not to consume the continuation rail; root borders=${geometry.rootLeadingBorders.join(", ")}px.`);
+      assert(geometry.rootLeadingBorders.every(width => width === 0), `Expected ${tier} notification boundary paint to remain out of flow; root borders=${geometry.rootLeadingBorders.join(", ")}px.`);
       assert(geometry.paddingBlockStarts.every(padding => padding === 0), `Expected ${tier} notification roots to have no top padding; got ${geometry.paddingBlockStarts.join(", ")}px.`);
       assert(geometry.leadingIconGaps.every(gap => gap >= -0.05 && Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification accent paint not to overlap the leading icon while preserving the shared continuation (${geometry.expectedLeadingIconGap}px after the bar); got ${geometry.leadingIconGaps.join(", ")}px.`);
       assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal the shared Canonical mark gap (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);

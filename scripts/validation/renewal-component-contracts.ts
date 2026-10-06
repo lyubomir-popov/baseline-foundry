@@ -153,7 +153,7 @@ export function validateRenewalComponentContracts(
   assert(!css.includes("--bf-top-navigation-brand-region"), "Expected generated tier CSS to remove the fixed top-navigation brand-region token.");
   assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));") && css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;"), "Expected grid-aligned navigation to share the eight-column page grid and begin primary navigation at column three.");
   assert(css.includes("--bf-bar-thickness: 0.1875rem;"), "Expected generated tier CSS to expose the shared rem-based 0.1875rem emphasis-bar token.");
-  assert(css.includes("border-inline-start: var(--bf-bar-thickness) solid var(--bf-notice-border);") && css.includes("inline-size: var(--bf-bar-thickness);") && css.includes("background: var(--bf-notification-accent);") && css.includes("box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notices, notifications, tabs, and highlight rules to consume the shared emphasis-bar token.");
+  assert(css.includes("--bf-stroke-width: var(--bf-bar-thickness);") && css.includes("--bf-stroke-color: var(--bf-notice-border);") && css.includes("inline-size: var(--bf-bar-thickness);") && css.includes("background: var(--bf-notification-accent);") && css.includes("box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notices, notifications, tabs, and highlight rules to consume the shared emphasis-bar token.");
   assert(css.includes("container-name: bf-article-pagination;") && css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes("inline-size: calc((100cqi - var(--bf-leading-mark-gap)) / 2);"), "Expected article pagination to retain its named container and persistent equal-half structure with a horizontal gap owner.");
   assert(css.includes("column-gap: var(--bf-leading-mark-gap);") && css.includes("row-gap: var(--bf-space-half);"), "Expected article pagination to separate its horizontal mark gap from its vertical rhythm token.");
   assert(css.includes("padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination to use semantic medium padding with metric baseline compensation.");
@@ -270,8 +270,10 @@ export function validateRenewalComponentContracts(
   }, "divided-section rules occupy the final half-rem before following content");
   assert(!css.includes("inset-block-start: calc(var(--bf-stack-space) / -2);"), "Expected divided-section rules not to float at the midpoint of the parent-owned gap.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notice, .bf-notice.is-information, .bf-notice.is-positive, .bf-notice.is-caution, .bf-notice.is-negative)", {
+    "border": "0",
     "margin": "0"
-  }, "notice surfaces leave external spacing to their parent stack");
+  }, "notice surfaces leave external spacing to their parent stack and reserve no layout border");
+  assert(css.includes("--bf-stroke-color: var(--bf-notice-border);\n  --bf-stroke-width: var(--bf-bar-thickness);") && css.includes("border-inline-start: var(--bf-stroke-width) solid CanvasText;"), "Expected notice accents to use the logical out-of-flow overlay with a real forced-colors edge.");
   assert(css.includes(".bf-password-reveal[aria-pressed='true']") && css.includes(".bf-notification[hidden]"), "Expected interactive feedback CSS to expose stateful reveal and dismissal contracts.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-logo-section-items)", {
     "padding-block": "0"
