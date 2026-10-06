@@ -16,17 +16,14 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   } = options;
 
   return `:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
-  /* Plain navigation commands use the action inset. Icon-led rows move only their mark canvas,
-     so their copy reaches the shared continuation inset without a fourth
-     component inset. Navigation depth is added separately below. */
-  /* Navigation copy uses one continuation inset whether a row has a leading
-     disclosure/icon slot or not. The mark canvas is derived backwards from
-     that inset, so iconless rows never introduce a fourth text start. */
-  --bf-side-navigation-content-inset: var(--bf-component-inline-inset-continuation);
-  --bf-side-navigation-disclosure-inset: var(--bf-disclosure-group-inset);
-  --bf-side-navigation-depth-step: var(--bf-component-inline-inset-action);
-  --bf-side-navigation-group-gap: 1.5rem;
-  --bf-side-navigation-heading-list-gap: 0.5rem;
+  /* The navigation panel owns grid-margin gutters. Every row reserves one
+     tier-sized icon column plus the shared mark gap, including iconless and
+     nested rows, so every label reaches one stable panel keyline. */
+  --bf-side-navigation-gutter: var(--bf-page-margin);
+  --bf-side-navigation-icon-size: var(--bf-icon-size-default);
+  --bf-side-navigation-label-keyline: calc(var(--bf-side-navigation-gutter) + var(--bf-side-navigation-icon-size) + var(--bf-side-navigation-icon-gap));
+  --bf-side-navigation-group-gap: var(--bf-section-space-shallow);
+  --bf-side-navigation-heading-list-gap: var(--bf-field-gap);
   color: var(--bf-color-text-inactive);
   display: block;
   inline-size: 100%;
@@ -56,11 +53,12 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
 
 :where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {
   inline-size: auto;
-  margin-inline: var(--bf-side-navigation-content-inset) 0;
+  margin-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
 }
 
-/* A single-line group heading occupies four baselines. min-block-size keeps
-   that phase exact while still allowing a long heading to wrap and grow. */
+/* The intrinsic single-line heading plus metric end compensation closes on
+   the tier grid. This lower minimum remains only a wrapping floor, so longer
+   headings can grow. */
 :where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading) {
   min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-nudge-end));
 }
@@ -138,10 +136,10 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
   transform: rotate(-90deg);
 }
 
@@ -149,10 +147,10 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
   transform: rotate(90deg);
 }
 
@@ -173,11 +171,28 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
 ${bodySemiboldTypeStyles}  display: block;
   margin: 0 0 var(--bf-body-margin-bottom);
   padding-block: var(--bf-body-nudge-start) 0;
-  padding-inline: var(--bf-side-navigation-content-inset);
+  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-heading.is-linked) {
   padding-inline: 0;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-context-switcher) {
+  display: grid;
+  gap: var(--bf-field-gap);
+  min-inline-size: 0;
+  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-context-switcher-label) {
+${bodySemiboldTypeStyles}  display: block;
+  margin: 0 0 var(--bf-body-margin-bottom);
+  padding-block: var(--bf-body-nudge-start) 0;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-context-switcher) > :where(select) {
+  inline-size: 100%;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {
@@ -204,7 +219,7 @@ ${bodyTypeStyles}  align-items: center;
   border-block: var(--bf-border-width) solid transparent;
   color: var(--bf-color-text-inactive);
   display: flex;
-  gap: var(--bf-leading-mark-gap);
+  gap: var(--bf-side-navigation-icon-gap);
   inline-size: 100%;
   justify-content: flex-start;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -213,46 +228,19 @@ ${bodyTypeStyles}  align-items: center;
      following panel/list item rather than inside the clipped row itself. */
   overflow: hidden;
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: var(--bf-side-navigation-content-inset);
-  --bf-side-navigation-row-inset: var(--bf-side-navigation-content-inset);
+  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
   position: relative;
   text-align: left;
   text-decoration: none;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-accordion-button) {
-  --bf-side-navigation-row-inset: var(--bf-side-navigation-disclosure-inset);
-  gap: var(--bf-disclosure-gap);
+  gap: var(--bf-side-navigation-icon-gap);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item.is-title) > :where(.bf-side-navigation-link, .bf-side-navigation-text) {
   color: var(--bf-color-text-default);
   font-weight: 600;
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-list) > :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title) > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset));
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + var(--bf-side-navigation-depth-step));
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + (var(--bf-side-navigation-depth-step) * 2));
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + (var(--bf-side-navigation-depth-step) * 3));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-link:hover, .bf-side-navigation-accordion-button:hover) {
@@ -276,9 +264,29 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true']) {
   background: var(--bf-color-background-active);
-  box-shadow: inset var(--bf-bar-thickness) 0 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
   cursor: default;
+}
+
+/* Selection is one-sided paint inside the start gutter. It neither consumes
+   row space nor changes the shared label keyline. */
+:where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true'])::after {
+  background: var(--bf-color-text-default);
+  block-size: 100%;
+  content: "";
+  inline-size: var(--bf-bar-thickness);
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true'])::after {
+    background: transparent;
+    border-inline-start: var(--bf-bar-thickness) solid CanvasText;
+    inline-size: 0;
+  }
 }
 
 :where(.bf-theme) :where(.bf-top-navigation) {
@@ -736,6 +744,13 @@ ${bodyTypeStyles}  align-items: center;
   transition: transform 120ms ease;
 }
 
+:where(.bf-theme) :where(.bf-side-navigation-accordion-button)::before {
+  flex: none;
+  inset-block-start: calc(var(--bf-border-width) + var(--bf-interface-row-padding-block) + ((var(--bf-body-line-height) - var(--bf-side-navigation-icon-size)) * 0.5));
+  inset-inline-start: var(--bf-side-navigation-gutter);
+  position: absolute;
+}
+
 :where(.bf-theme) :where(.bf-side-navigation-accordion-button[aria-expanded='false'], .bf-side-navigation-expand[aria-expanded='false'])::before {
   transform: translateY(var(--bf-disclosure-icon-optical-offset-block)) rotate(-90deg);
 }
@@ -786,51 +801,40 @@ ${bodyTypeStyles}  background: transparent;
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-icon) {
   align-items: center;
   display: inline-flex;
-  flex: 0 0 var(--bf-disclosure-icon-inline-size);
-  inline-size: var(--bf-disclosure-icon-inline-size);
+  flex: none;
+  inline-size: var(--bf-side-navigation-icon-size);
+  inset-block-start: calc(var(--bf-border-width) + var(--bf-interface-row-padding-block) + ((var(--bf-body-line-height) - var(--bf-side-navigation-icon-size)) * 0.5));
+  inset-inline-start: var(--bf-side-navigation-gutter);
   justify-content: center;
+  position: absolute;
   transform: translateY(var(--bf-side-navigation-icon-optical-offset-block));
 }
 
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-icon) {
+  inset: auto;
+  position: static;
   transform: none;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  --bf-side-navigation-row-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-side-navigation-icon-gap)));
   align-items: baseline;
   column-gap: var(--bf-side-navigation-icon-gap);
-}
-
-/* Icon navigation keeps one stable label edge. Rows may omit a decorative
-   icon without collapsing the shared icon track and pulling their copy left. */
-:where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text):not(:has(> .bf-side-navigation-icon))::before {
-  content: "";
-  flex: 0 0 var(--bf-disclosure-icon-inline-size);
-  inline-size: var(--bf-disclosure-icon-inline-size);
-}
-
-/* A collapsed icon rail cannot communicate an iconless destination. Remove
-   the alignment spacer with the hidden label so it cannot become a blank
-   visual affordance in that state. */
-:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text):not(:has(> .bf-side-navigation-icon))::before {
-  content: none;
 }
 
 /* Icon-navigation headings share the label edge, not the icon edge. This
    keeps section names aligned with both the menu copy and a tagged wordmark. */
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading:not(.is-linked)) {
-  padding-inline-start: var(--bf-component-inline-inset-continuation);
+  padding-inline-start: var(--bf-side-navigation-label-keyline);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading.is-linked) > :where(.bf-side-navigation-link) {
-  padding-inline-start: var(--bf-component-inline-inset-continuation);
+  padding-inline-start: var(--bf-side-navigation-label-keyline);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-icon) > svg {
-  block-size: 1rem;
+  block-size: var(--bf-side-navigation-icon-size);
   display: block;
-  inline-size: 1rem;
+  inline-size: var(--bf-side-navigation-icon-size);
 }
 
 @media (min-width: 64.75rem) {

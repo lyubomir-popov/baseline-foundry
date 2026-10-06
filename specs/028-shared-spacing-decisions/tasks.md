@@ -8,7 +8,7 @@
 - [x] Tooltip compact surface — `948f240`, gates green
 - [x] Nonzero block-start removal and zero-padding containment — current tip, gates green
 - [ ] Compensation-only block-end governance across remaining component families (FR-061a/SP-1)
-- [ ] SideNavigation panel geometry
+- [x] SideNavigation panel geometry — gates green; logs `sidenav-check-types.log`, `sidenav-npm-test.log`, `sidenav-qa-components.log`
 - [ ] Governed dense Site Chip
 - [ ] Paint-only row contract and component families
 - [ ] Before/after review demo and negative specimens

@@ -21,17 +21,25 @@ and must not be changed.
 - `6717ccc` SP-6 gaps and SP-3 standard surface values.
 - `b4a6b13` four-tier SP-13 text compensation; independent 28-role oracle green.
 - `948f240` Tooltip compact frame and contained metric text owner.
-- Current tip removes nonzero block-start spacing, contains final text margins,
+- `5184484` removes nonzero block-start spacing, contains final text margins,
   and preserves control/navigation geometry. Its type, test, and component-QA
   logs are `margins-check-types.log`, `margins-npm-test.log`, and
   `margins-qa-components.log`.
+- The current SideNavigation item owns page-margin gutters on both edges,
+  derives one tier icon/gap label keyline for Header, GroupHeader and nested
+  rows, adds a real ContextSwitcher, and paints selection in the start gutter.
+  Its required gates are green in `sidenav-check-types.log`,
+  `sidenav-npm-test.log`, and `sidenav-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-Begin SideNavigation gutters, label keylines, selected-gutter paint, and the
-real ContextSwitcher specimen. Keep the tagged Canonical brand anatomy.
+Implement the statically enrolled dense Site Chip contract in the actual table
+cell provider. It must be automatic for Chip as a component type, independent
+of `.is-nested`, align exactly with the host's outside text baseline, occupy
+32px inside the provider, and retain a 40px standalone seat. Preserve the
+established non-Site nested contracts.
 
 FR-061a/SP-1 remains in progress beyond the landed margin-direction step:
 remaining semantic or structural block-end margins in responsive navigation,
@@ -42,13 +50,12 @@ it is not the final compensation-only end-margin classifier.
 
 ## Remaining order
 
-1. SideNavigation gutters/keylines/ContextSwitcher.
-2. Dense Site Chip 32px enrolled-host contract; standalone 40px.
-3. Paint-only row contract first, then atomic component-family commits using the
+1. Dense Site Chip 32px enrolled-host contract; standalone 40px.
+2. Paint-only row contract first, then atomic component-family commits using the
    reviewed exception map in `paint-impact-audit.md`.
-4. Complete compensation-only end-margin ownership in the affected component
+3. Complete compensation-only end-margin ownership in the affected component
    families and replace the directional gate with final end-margin governance.
-5. Identical-DOM before/after demo, browser scale evidence, BF board columns,
+4. Identical-DOM before/after demo, browser scale evidence, BF board columns,
    manifest, review docs, and `opus-028-review-request.md`; stop for external Opus.
 
 Run `npm run check:types`, `npm test`, and `npm run qa:components` after each

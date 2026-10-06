@@ -24,6 +24,7 @@ export function validateAppTierDemoPage(pageName: string, html: string): void {
     assert(html.includes('class="bf-panel-header is-sticky is-navigation-brand"'), "Expected application-layout.html to dogfood the flush navigation-brand panel header.");
     assert((html.match(/class="bf-top-navigation-logo is-canonical-tagged"/g) ?? []).length === 2, "Expected application-layout.html to share the Canonical tagged-logo contract between its responsive bar and drawer.");
     assert(html.includes('viewBox="0 0 60.45 57.87"'), "Expected the application drawer brand to use the proportionate Circle of Friends source shape.");
+    assert(html.includes('data-side-navigation-context-switcher') && html.includes('<select aria-label="Project context">'), "Expected application-layout.html to exercise the real native SideNavigation ContextSwitcher anatomy.");
     assert(html.includes("bf-panel-footer is-sticky") && html.includes("data-application-layout-main-footer") && html.includes("data-application-layout-navigation-footer"), "Expected application-layout.html to exercise aligned persistent panel footers in navigation and main panels.");
     assert((html.match(/is-control-pair bf-stack is-flush/g) ?? []).length === 5, "Expected application-layout.html control pairs to contain metric compensation with the generic flush stack.");
     assert((html.match(/\b(?:bf-chip|bf-status-label)[^"\n]*\bis-nested\b/g) ?? []).length === 6, "Expected every application-layout navigation/table auxiliary surface to opt into the explicit nested fit contract.");

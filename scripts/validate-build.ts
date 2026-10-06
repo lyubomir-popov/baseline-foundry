@@ -843,12 +843,12 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ol) {\n  padding-inline-start: calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));") && css.includes(":where(.bf-theme) :where(.bf-prose ol > li) {\n  padding-inline-start: calc(var(--bf-leading-mark-size) * 0.5);"), "Expected ordered prose lists to retain complementary shared-leading-mark compensation after the group inset.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul) {\n  list-style: none;\n  padding-inline-start: var(--bf-leading-mark-group-inset);") && css.includes(":where(.bf-theme) :where(.bf-prose ul > li) {\n  padding-inline-start: var(--bf-leading-mark-offset);") && css.includes("inline-size: var(--bf-list-marker-dot-size);\n  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));"), "Expected unordered prose-list dots to occupy the shared leading-mark canvas and their text to reach the disclosure continuation keyline.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-groups) {\n  align-content: start;\n  display: grid;\n  gap: var(--bf-side-navigation-group-gap);") && css.includes("--bf-side-navigation-group-gap: 1.5rem;"), "Expected side-navigation heading/list groups to own the fixed 1.5rem separation.");
-  assert(css.includes("--bf-side-navigation-heading-list-gap: 0.5rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group) {\n  display: grid;\n  gap: var(--bf-side-navigation-heading-list-gap);"), "Expected each side-navigation group to own the fixed half-rem transition from its header to its list.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-groups) {\n  align-content: start;\n  display: grid;\n  gap: var(--bf-side-navigation-group-gap);") && css.includes("--bf-side-navigation-group-gap: var(--bf-section-space-shallow);"), "Expected side-navigation groups to use the governed tier group gap.");
+  assert(css.includes("--bf-side-navigation-heading-list-gap: var(--bf-field-gap);") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group) {\n  display: grid;\n  gap: var(--bf-side-navigation-heading-list-gap);"), "Expected each side-navigation group to use the governed tier item gap between its header and list.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html)", {
     "min-inline-size": "0"
   }, "side navigation yields intrinsic inline width when placed in a narrow grid or flex rail");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) {\n  display: grid;\n  gap: 0rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {\n  inline-size: auto;\n  margin-inline: var(--bf-side-navigation-content-inset) 0;") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected real compensated rules and headings to share a tight header, with each rule running from the continuation text inset to the navigation edge.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) {\n  display: grid;\n  gap: 0rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {\n  inline-size: auto;\n  margin-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected real compensated rules and headings to share a tight header, with each rule running between the SideNavigation label keyline and end gutter.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  display: grid;\n  grid-auto-rows: minmax(var(--bf-interface-row-occupied-block-size), auto);") && css.includes("align-self: start;"), "Expected side-navigation rows to preserve the shared single-line minimum while allowing expanded accordion content to grow its track.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-list)", {
     "min-inline-size": "0"
@@ -864,6 +864,17 @@ function validateCommonCss(css: string): void {
     "overflow": "hidden",
     "text-overflow": "ellipsis"
   }, "side-navigation labels retain overflow containment while their row can grow for wrapped copy");
+  assert(css.includes("--bf-side-navigation-gutter: var(--bf-page-margin);") && css.includes("--bf-side-navigation-icon-size: var(--bf-icon-size-default);") && css.includes("--bf-side-navigation-label-keyline: calc(var(--bf-side-navigation-gutter) + var(--bf-side-navigation-icon-size) + var(--bf-side-navigation-icon-gap));") && !css.includes("--bf-side-navigation-depth-step"), "Expected SideNavigation to derive one non-progressive label keyline from its page-margin gutter, tier icon and mark gap.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-context-switcher)", {
+    "padding-inline": "var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter)"
+  }, "SideNavigation ContextSwitcher places its real select on the label keyline and keeps the opposing gutter");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-context-switcher) > :where(select)", "margin-block-end", "ContextSwitcher preserves the control's grid-closing block-end compensation");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true'])::after", {
+    "inset-inline-start": "0",
+    "pointer-events": "none",
+    "position": "absolute"
+  }, "SideNavigation selection paints out of flow inside the start gutter");
+  assert(css.includes("@media (forced-colors: active)") && css.includes("border-inline-start: var(--bf-bar-thickness) solid CanvasText;"), "Expected selected SideNavigation gutter paint to retain a one-sided system-color border in forced colors.");
   assert(css.includes("min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-nudge-end));"), "Expected single-line side-navigation group headings to reserve a four-baseline occupied block without counting the ordinary in-box end nudge twice.");
   assert(css.includes("min-block-size: calc(var(--bf-interface-row-occupied-block-size) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to combine the regular interface row with their structural end padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
@@ -1397,8 +1408,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-disclosure-icon-inline-size: var(--bf-icon-size-default);"), "Expected generated CSS to derive the shared disclosure icon slot from the tier body icon size.");
   assert(css.includes("--bf-disclosure-icon-optical-offset-block: 0rem;"), "Expected disclosure chevrons to remain centred on their text line without the leading-icon optical offset.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-accordion-button)", {
-    "gap": "var(--bf-disclosure-gap)"
-  }, "side-navigation accordion buttons use the shared disclosure gap instead of the generic compact row gap");
+    "gap": "var(--bf-side-navigation-icon-gap)"
+  }, "side-navigation accordion buttons use the panel's tier mark gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-accordion-tab)", {
     "gap": "var(--bf-disclosure-gap)"
   }, "accordion tabs use the shared disclosure gap instead of a pseudo-element margin");

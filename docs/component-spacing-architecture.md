@@ -25,7 +25,7 @@ Every tier authors `inlineUnitRem: 0.25` plus whole counts in
 derived from the field inset, body-sized icon slot, and mark gap. Generated
 token JSON exposes all three insets.
 
-Page margins, grid gutters, navigation depth, and structural surface padding
+Page margins, grid gutters, structural navigation placement, and surface padding
 are not component insets. A border, icon, or mark may be compensated inside a
 component, but author-visible text must resolve its first glyph to one of the
 three insets. Content with no meaningful text advance may instead use the
@@ -167,16 +167,27 @@ the 3rem brand/header block. Brand titles and adjacent breadcrumbs align to the
 same line without optical transforms; the fixed 2.375rem-by-1.375rem tag and
 1rem mark geometry remain independent of the header's inline extension.
 
-Grouped side navigation uses three explicit spacing owners. The outer
-`bf-side-navigation-groups` container separates complete groups;
-`bf-side-navigation-group` owns the fixed 0.5rem transition from its header to
-its list; and `bf-side-navigation-group-header` keeps a real compensated `hr`
-and its H6-styled heading tight. The rule begins on the continuation text inset
-and stretches to the navigation end edge. Rules never come from list pseudo-
-elements, and their one-half-rem occupied block must not shift later headings
-off the active baseline phase. A single-line group heading reserves four
-baselines through a minimum block size; longer headings may still wrap and
-grow, while the common case cannot accumulate fractional font-box drift.
+Side navigation is a panel-level composition. It owns the page-margin token on
+both edges, then derives one label keyline from the start gutter, the tier body
+icon size and the tier mark gap. Rows without icons reserve the same lane;
+nested rows do not add depth. Title rows, group headings and the outer edge of a
+real ContextSwitcher select all use that keyline, while the select retains the
+field inset inside its box. The fixed Canonical tagged-brand anatomy is a
+separate named mark and does not redefine the row icon slot.
+
+Grouped side navigation keeps three explicit block-spacing owners. The outer
+`bf-side-navigation-groups` container uses the governed group gap;
+`bf-side-navigation-group` uses the governed item gap from its header to its
+list; and `bf-side-navigation-group-header` keeps a real compensated `hr` and
+its H6-styled heading tight. The rule begins on the label keyline and ends at
+the opposing page-margin gutter. A single-line heading's minimum plus its
+metric compensation closes on the active baseline grid; longer headings may
+still wrap and grow.
+
+The selected row keeps its background across the full panel and paints a 3px
+indicator in the start gutter without changing row geometry. Forced-colors
+mode replaces the filled indicator with an out-of-flow one-sided system-color
+border.
 
 Plain and middot inline lists share one fixed `0.5rem` inline-composition space.
 The middot modifier uses a wrapping flex row so HTML source whitespace cannot
