@@ -4,9 +4,10 @@
 - [x] Tier-sized icons — `955bc27`, gates green
 - [x] Derived continuation — `49bae12`, gates green
 - [x] Shared gaps and standard surfaces — `6717ccc`, gates green
-- [x] Four-tier SP-13 text compensation — independent 28-role oracle green
-- [ ] Block-end margins and zero-padding containment
-- [ ] Tooltip compact surface
+- [x] Four-tier SP-13 text compensation — `b4a6b13`, independent 28-role oracle green
+- [x] Tooltip compact surface — `948f240`, gates green
+- [x] Nonzero block-start removal and zero-padding containment — current tip, gates green
+- [ ] Compensation-only block-end governance across remaining component families (FR-061a/SP-1)
 - [ ] SideNavigation panel geometry
 - [ ] Governed dense Site Chip
 - [ ] Paint-only row contract and component families

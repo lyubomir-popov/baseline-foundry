@@ -3365,7 +3365,7 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
           const extension = target ? getComputedStyle(target, "::after") : null;
           const targetStyle = target ? getComputedStyle(target) : null;
           return {
-            baseline: Number.parseFloat(style.getPropertyValue("--bf-baseline")),
+            baseline: Number.parseFloat(style.getPropertyValue("--bf-baseline")) * 16,
             paddingBlockStart: Number.parseFloat(style.paddingBlockStart),
             paddingBlockEnd: Number.parseFloat(style.paddingBlockEnd),
             paddingInlineStart: Number.parseFloat(style.paddingInlineStart),
@@ -3375,16 +3375,16 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
             requiredBlockOverflow: targetRect && extension ? Math.max(0, (Number.parseFloat(extension.height) - targetRect.height) / 2) : Number.POSITIVE_INFINITY
           };
         });
-        const blockPhaseRemainder = scrollportGeometry.targetMarginBlockStart % scrollportGeometry.baseline;
+        const blockPhaseRemainder = scrollportGeometry.paddingBlockStart % scrollportGeometry.baseline;
         assert(
-          Math.abs(scrollportGeometry.paddingBlockStart) <= 0.01 &&
-          Math.abs(scrollportGeometry.paddingBlockEnd) <= 0.01 &&
+          Math.abs(scrollportGeometry.paddingBlockStart - scrollportGeometry.paddingBlockEnd) <= 0.01 &&
           Math.abs(scrollportGeometry.paddingInlineStart) <= 0.01 &&
           Math.abs(scrollportGeometry.paddingInlineEnd) <= 0.01 &&
-          Math.abs(scrollportGeometry.targetMarginBlockStart - scrollportGeometry.targetMarginBlockEnd) <= 0.01 &&
+          Math.abs(scrollportGeometry.targetMarginBlockStart) <= 0.01 &&
+          Math.abs(scrollportGeometry.targetMarginBlockEnd) <= 0.01 &&
           (blockPhaseRemainder <= 0.01 || Math.abs(blockPhaseRemainder - scrollportGeometry.baseline) <= 0.01) &&
-          scrollportGeometry.targetMarginBlockStart >= scrollportGeometry.requiredBlockOverflow - 0.01,
-          `Expected ${tier}/${tone} only the icon target to reserve symmetric, sufficient, baseline-rounded clearance inside an otherwise unpadded nowrap scrollport; got ${JSON.stringify(scrollportGeometry)}.`
+          scrollportGeometry.paddingBlockStart >= scrollportGeometry.requiredBlockOverflow - 0.01,
+          `Expected ${tier}/${tone} the nowrap scrollport containing icon targets to own symmetric, sufficient, baseline-rounded block clearance while its target remains margin-neutral; got ${JSON.stringify(scrollportGeometry)}.`
         );
         await actionsFixture.evaluate(element => { element.scrollLeft = 0; });
         await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} nowrap-scrollport start icon target`, false);
@@ -3417,6 +3417,8 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
       const targetStyle = target ? getComputedStyle(target) : null;
       const result = {
         rowGapFloor,
+        paddingBlockStart: Number.parseFloat(getComputedStyle(element).paddingBlockStart),
+        paddingBlockEnd: Number.parseFloat(getComputedStyle(element).paddingBlockEnd),
         targetMarginBlockStart: targetStyle ? Number.parseFloat(targetStyle.marginBlockStart) : Number.POSITIVE_INFINITY
       };
       element.classList.remove("is-nowrap");
@@ -3426,9 +3428,9 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
       return result;
     }, bodyLine);
     const nearMinimumClearance = await customClearance("1.4375rem");
-    assert(Math.abs(nearMinimumClearance.rowGapFloor - 4) <= 0.01 && Math.abs(nearMinimumClearance.targetMarginBlockStart - 4) <= 0.01, `Expected a sub-baseline custom row and per-edge target shortfall to round up to one complete baseline; got ${JSON.stringify(nearMinimumClearance)}.`);
+    assert(Math.abs(nearMinimumClearance.rowGapFloor - 4) <= 0.01 && Math.abs(nearMinimumClearance.paddingBlockStart - 4) <= 0.01 && Math.abs(nearMinimumClearance.paddingBlockEnd - 4) <= 0.01 && Math.abs(nearMinimumClearance.targetMarginBlockStart) <= 0.01, `Expected a sub-baseline custom row and per-edge target shortfall to round up to one complete owner-provided baseline; got ${JSON.stringify(nearMinimumClearance)}.`);
     const multiBaselineClearance = await customClearance("0.5rem");
-    assert(Math.abs(multiBaselineClearance.rowGapFloor - 20) <= 0.01 && Math.abs(multiBaselineClearance.targetMarginBlockStart - 8) <= 0.01, `Expected a large custom inter-row shortfall and per-edge nowrap shortfall to round independently above one baseline instead of being capped; got ${JSON.stringify(multiBaselineClearance)}.`);
+    assert(Math.abs(multiBaselineClearance.rowGapFloor - 20) <= 0.01 && Math.abs(multiBaselineClearance.paddingBlockStart - 8) <= 0.01 && Math.abs(multiBaselineClearance.paddingBlockEnd - 8) <= 0.01 && Math.abs(multiBaselineClearance.targetMarginBlockStart) <= 0.01, `Expected a large custom inter-row shortfall and per-edge nowrap shortfall to round independently above one owner-provided baseline; got ${JSON.stringify(multiBaselineClearance)}.`);
 
     await page.goto(`${origin}/demo/components/actions.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -4004,7 +4006,38 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
         chip.textContent = "Content-sized chip";
         chipStack.append(chip);
 
-        fixture.append(internalStack, sectionStack, ...densityStacks.map(({ stack }) => stack), basicLayout, chipStack);
+        const flushPanel = document.createElement("div");
+        flushPanel.className = "bf-panel-content is-flush";
+        const flushPanelText = document.createElement("p");
+        flushPanelText.textContent = "Contained final panel margin";
+        flushPanel.append(flushPanelText);
+
+        const flushPanelStack = document.createElement("div");
+        flushPanelStack.className = "bf-panel-content bf-stack is-flush";
+        const flushStackFirst = document.createElement("p");
+        flushStackFirst.textContent = "First stacked panel row";
+        const flushStackLast = document.createElement("p");
+        flushStackLast.textContent = "Final stacked panel row";
+        flushPanelStack.append(flushStackFirst, flushStackLast);
+
+        const densePanelStack = document.createElement("div");
+        densePanelStack.className = "bf-panel-content bf-stack is-dense";
+        densePanelStack.append(document.createElement("p"), document.createElement("p"));
+
+        const prose = document.createElement("div");
+        prose.className = "bf-prose";
+        const proseList = document.createElement("ul");
+        const proseListItem = document.createElement("li");
+        proseListItem.textContent = "Contained final list margin";
+        proseList.append(proseListItem);
+        prose.append(proseList);
+
+        const proseStackList = document.createElement("ul");
+        proseStackList.className = "bf-stack is-dense";
+        proseStackList.append(document.createElement("li"), document.createElement("li"));
+        prose.append(proseStackList);
+
+        fixture.append(internalStack, sectionStack, ...densityStacks.map(({ stack }) => stack), basicLayout, chipStack, flushPanel, flushPanelStack, densePanelStack, prose);
         document.body.append(fixture);
 
         const firstStylesBefore = getComputedStyle(internalFirst);
@@ -4045,8 +4078,26 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
         const densityGaps = Object.fromEntries(
           densityStacks.map(({ modifier, stack }) => [modifier, Number.parseFloat(getComputedStyle(stack).rowGap)])
         );
+        const flushPanelTextStyle = getComputedStyle(flushPanelText);
+        const proseListItemStyle = getComputedStyle(proseListItem);
+        const containment = {
+          flushPanelDisplay: getComputedStyle(flushPanel).display,
+          flushPanelHeight: flushPanel.getBoundingClientRect().height,
+          flushPanelTextHeight: flushPanelText.getBoundingClientRect().height,
+          flushPanelTextMarginEnd: Number.parseFloat(flushPanelTextStyle.marginBlockEnd),
+          flushStackDisplay: getComputedStyle(flushPanelStack).display,
+          flushStackGap: Number.parseFloat(getComputedStyle(flushPanelStack).rowGap),
+          densePanelStackDisplay: getComputedStyle(densePanelStack).display,
+          densePanelStackGap: Number.parseFloat(getComputedStyle(densePanelStack).rowGap),
+          proseListDisplay: getComputedStyle(proseList).display,
+          proseListHeight: proseList.getBoundingClientRect().height,
+          proseListItemHeight: proseListItem.getBoundingClientRect().height,
+          proseListItemMarginEnd: Number.parseFloat(proseListItemStyle.marginBlockEnd),
+          proseStackListDisplay: getComputedStyle(proseStackList).display,
+          proseStackListGap: Number.parseFloat(getComputedStyle(proseStackList).rowGap)
+        };
         fixture.remove();
-        return { before, after, regressions, densityGaps };
+        return { before, after, regressions, densityGaps, containment };
       });
 
       const tolerance = 0.1;
@@ -4062,6 +4113,13 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
       assert(Math.abs(state.regressions.ruleToHeader - state.regressions.ruleMarginBottom) <= tolerance, `Expected ${tier} basic-section text to follow only the rule's own trailing compensation. Distance=${state.regressions.ruleToHeader}px, margin=${state.regressions.ruleMarginBottom}px.`);
       assert(state.regressions.chipWidth < state.regressions.chipStackWidth, `Expected ${tier} chip grid items to hug content. Chip=${state.regressions.chipWidth}px, stack=${state.regressions.chipStackWidth}px.`);
       assert(state.regressions.chipJustifySelf === "start", `Expected ${tier} chips to opt out of grid-item stretch, got justify-self=${state.regressions.chipJustifySelf}.`);
+      assert(state.containment.flushPanelDisplay === "flow-root", `Expected ${tier} standalone flush panel content to establish a flow root, got ${state.containment.flushPanelDisplay}.`);
+      assert(Math.abs(state.containment.flushPanelHeight - state.containment.flushPanelTextHeight - state.containment.flushPanelTextMarginEnd) <= tolerance, `Expected ${tier} standalone flush panel content to contain its final text margin. Owner=${state.containment.flushPanelHeight}px, child=${state.containment.flushPanelTextHeight}px, margin=${state.containment.flushPanelTextMarginEnd}px.`);
+      assert(state.containment.flushStackDisplay === "grid" && state.containment.flushStackGap === 0, `Expected ${tier} stack-composed flush panel content to preserve its grid utility and zero gap, got display=${state.containment.flushStackDisplay}, gap=${state.containment.flushStackGap}px.`);
+      assert(state.containment.densePanelStackDisplay === "grid" && Math.abs(state.containment.densePanelStackGap - state.before.baseline) <= tolerance, `Expected ${tier} dense stack-composed panel content to preserve its grid utility and one-baseline gap, got display=${state.containment.densePanelStackDisplay}, gap=${state.containment.densePanelStackGap}px.`);
+      assert(state.containment.proseListDisplay === "flow-root", `Expected ${tier} prose lists to establish a flow root, got ${state.containment.proseListDisplay}.`);
+      assert(Math.abs(state.containment.proseListHeight - state.containment.proseListItemHeight - state.containment.proseListItemMarginEnd) <= tolerance, `Expected ${tier} prose lists to contain their final item margin. Owner=${state.containment.proseListHeight}px, child=${state.containment.proseListItemHeight}px, margin=${state.containment.proseListItemMarginEnd}px.`);
+      assert(state.containment.proseStackListDisplay === "grid" && Math.abs(state.containment.proseStackListGap - state.before.baseline) <= tolerance, `Expected ${tier} prose lists composed with a dense stack to preserve grid layout and one-baseline gap, got display=${state.containment.proseStackListDisplay}, gap=${state.containment.proseStackListGap}px.`);
       assert(state.densityGaps["is-flush"] === 0, `Expected ${tier} flush stacks to use a zero gap.`);
       assert(Math.abs(state.densityGaps["is-extra-dense"] - state.before.baseline / 2) <= tolerance, `Expected ${tier} extra-dense stacks to use half a baseline.`);
       assert(Math.abs(state.densityGaps["is-dense"] - state.before.baseline) <= tolerance, `Expected ${tier} dense stacks to use one baseline.`);
@@ -5380,6 +5438,28 @@ async function verifyParityInteractions(origin: string): Promise<void> {
             required: close.getBoundingClientRect().width + Number.parseFloat(closeStyle.insetInlineEnd)
           }];
         });
+        const shellClosures = notifications.map(notification => {
+          const rootRect = notification.getBoundingClientRect();
+          const rootStyle = getComputedStyle(notification);
+          const flowChildren = Array.from(notification.children).filter(child => getComputedStyle(child).position !== "absolute") as HTMLElement[];
+          const last = flowChildren.at(-1);
+          const lastRect = last?.getBoundingClientRect();
+          const lastStyle = last ? getComputedStyle(last) : null;
+          const lastInset = lastStyle ? Number.parseFloat(lastStyle.insetBlockStart) : 0;
+          const flowBottom = (lastRect?.bottom ?? rootRect.top) - (Number.isFinite(lastInset) ? lastInset : 0);
+          const expectedBottom = flowBottom
+            + (lastStyle ? Number.parseFloat(lastStyle.marginBlockEnd) : 0)
+            + Number.parseFloat(rootStyle.paddingBlockEnd)
+            + Number.parseFloat(rootStyle.borderBlockEndWidth);
+          const remainder = ((rootRect.height % baseline) + baseline) % baseline;
+          return {
+            kind: notification.className,
+            height: rootRect.height,
+            endPadding: Number.parseFloat(rootStyle.paddingBlockEnd),
+            closureDelta: rootRect.bottom - expectedBottom,
+            gridDelta: Math.min(remainder, baseline - remainder)
+          };
+        });
         const documentElement = document.documentElement;
         const originalDirection = documentElement.getAttribute("dir");
         documentElement.setAttribute("dir", "rtl");
@@ -5422,6 +5502,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           iconFirstLineCentreDeltas,
           metricFlushPairs,
           closeClearances,
+          shellClosures,
           rtlGeometry,
           expectedLeadingIconGap: Math.max(0, continuationInset - referenceIconSize - markGap - referenceBarWidth),
           expectedIconToTextGap: markGap,
@@ -5438,6 +5519,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       assert(geometry.iconFirstLineCentreDeltas.every(delta => delta <= 0.05), `Expected ${tier} notification severity icons to align to the first title/body line; centre deltas=${geometry.iconFirstLineCentreDeltas.join(", ")}px.`);
       assert(geometry.metricFlushPairs.length === 4 && geometry.metricFlushPairs.every(pair => pair.marginEnd === 0 && pair.paddingStart === 0 && pair.stackGap === 0 && pair.glyphGap <= geometry.baseline + 1), `Expected ${tier} separate notification roles to use the metric-flush relationship; got ${JSON.stringify(geometry.metricFlushPairs)} at ${geometry.baseline}px baseline.`);
       assert(geometry.closeClearances.every(clearance => clearance.reserved >= clearance.required), `Expected ${tier} notification copy to clear the close control; got ${JSON.stringify(geometry.closeClearances)}.`);
+      assert(geometry.shellClosures.every(shell => Math.abs(shell.closureDelta) <= 0.1 && shell.endPadding >= 0 && (shell.kind.includes("is-borderless") || shell.gridDelta <= 0.1)), `Expected ${tier} notification shells to close exactly around their final flow child with nonnegative owner padding, and bordered/inline shells to close to the active baseline; the embedded borderless state may wrap inside its external surface owner. Got ${JSON.stringify(geometry.shellClosures)}.`);
       assert(Math.abs(geometry.rtlGeometry.leadingIconGap - geometry.expectedLeadingIconGap) <= 0.05 && Math.abs(geometry.rtlGeometry.iconToTextGap - geometry.expectedIconToTextGap) <= 0.05 && geometry.rtlGeometry.closeAtInlineEnd, `Expected ${tier} notification leading geometry and close control to mirror in RTL; got ${JSON.stringify(geometry.rtlGeometry)}.`);
       assert(geometry.overflow.every(delta => delta <= 1), `Expected ${tier} notifications to avoid inline overflow; deltas=${geometry.overflow.join(", ")}.`);
       assert(geometry.notificationTitlesUseH6 && geometry.inlineUsesSingleBodyRun && geometry.notificationFontSizes.length > 0 && geometry.notificationFontSizes.every(fontSize => fontSize === geometry.h6FontSize), `Expected ${tier} separate notification headings to use bf-h6 while inline feedback stays one strong-plus-regular body run; heading classes=${geometry.notificationTitlesUseH6}, inline=${geometry.inlineUsesSingleBodyRun}, sizes=${geometry.notificationFontSizes.join(", ")}.`);

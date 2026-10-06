@@ -82,7 +82,7 @@ export function interactiveFeedbackCss(): string {
   max-inline-size: 100%;
   min-inline-size: 0;
   overflow-wrap: anywhere;
-  padding-block-end: max(0rem, calc(var(--bf-space-half) - var(--bf-border-width)));
+  padding-block-end: max(0rem, calc(var(--bf-space-half) - (var(--bf-border-width) * 2)));
   padding-block-start: 0;
   padding-inline: calc(var(--bf-component-inline-inset-continuation) - var(--bf-border-width)) var(--bf-component-inline-inset-action);
   position: relative;
@@ -126,7 +126,6 @@ export function interactiveFeedbackCss(): string {
   background-image: none;
   inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-h6-nudge-start) - var(--bf-border-width));
   inset-inline-start: calc(var(--bf-component-inline-inset-continuation) - var(--bf-border-width) - var(--bf-leading-mark-size) - var(--bf-leading-mark-gap));
-  margin-block-start: 0;
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-.75 5.25h1.5v5h-1.5v-5zM8 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z'/%3E%3C/svg%3E");
   mask-position: center;
   mask-repeat: no-repeat;
@@ -160,11 +159,24 @@ export function interactiveFeedbackCss(): string {
   min-inline-size: 0;
 }
 
+:where(.bf-theme) :where(.bf-notification-content:not(.bf-stack, .bf-grid, .bf-cluster)) {
+  display: flow-root;
+}
+
 :where(.bf-theme) :where(.bf-notification-content) {
   /* Neutralise the shell's top border so the first metric role starts on-grid. */
-  margin-block: calc(var(--bf-border-width) * -1) 0;
   padding-block-start: 0;
   padding-inline-end: var(--bf-notification-close-painted-block-size);
+}
+
+:where(.bf-theme) :where(.bf-notification-content > :not(.bf-notification-close)) {
+  inset-block-start: calc(var(--bf-border-width) * -1);
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-notification-meta) {
+  inset-block-start: calc(var(--bf-border-width) * -1);
+  position: relative;
 }
 
 :where(.bf-theme) :where(.bf-notification.is-borderless .bf-notification-content) {
@@ -172,15 +184,23 @@ export function interactiveFeedbackCss(): string {
   margin-block-start: 0;
 }
 
+:where(.bf-theme) :where(.bf-notification.is-borderless .bf-notification-content > :not(.bf-notification-close)) {
+  inset-block-start: 0;
+}
+
+:where(.bf-theme) :where(.bf-notification.is-borderless .bf-notification-meta) {
+  inset-block-start: 0;
+}
+
 /* Metadata-bearing notifications use a full baseline between title and copy,
    and pair it with the full end inset. This keeps both the metadata boundary
    and the complete shell on-grid; simpler messages retain compact rhythm. */
 :where(.bf-theme) :where(.bf-notification:has(> .bf-notification-meta)) {
-  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
+  padding-block-end: calc(var(--bf-space-1) - (var(--bf-border-width) * 2));
 }
 
 :where(.bf-theme) :where(.bf-notification.is-inline) {
-  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
+  padding-block-end: calc(var(--bf-space-1) - (var(--bf-border-width) * 2));
 }
 
 /* Return the cancelled H6/body metric edges to the shell boundary. The
@@ -189,7 +209,7 @@ export function interactiveFeedbackCss(): string {
  * reopening the visible title/copy gap. Keep this after the shell variants so
  * the metric relationship owns their final compensation. */
 :where(.bf-theme) :where(.bf-notification:has(> .bf-notification-content.is-metric-flush):not(.is-borderless)) {
-  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width) + var(--bf-baseline) - var(--bf-h6-nudge-start) - var(--bf-body-nudge-end));
+  padding-block-end: calc(var(--bf-space-1) - (var(--bf-border-width) * 2) + var(--bf-baseline) - var(--bf-h6-nudge-start) - var(--bf-body-nudge-end));
 }
 
 :where(.bf-theme) :where(.bf-notification-message, .bf-notification-timestamp) {

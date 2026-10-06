@@ -368,6 +368,48 @@ export async function verifyInteractiveTables(origin: string): Promise<void> {
       assert(widths.length === initialWidths.length && widths.every((width, index) => Math.abs(width - initialWidths[index]) <= 0.1), `Expected sortable-table column widths to remain stable in ${state}; initial=${initialWidths.join(", ")}, current=${widths.join(", ")}.`);
     };
 
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const targetGeometry = await coresButton.evaluate(button => {
+        const control = button as HTMLElement;
+        const header = control.closest("th") as HTMLElement;
+        const buttonRect = control.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+        const buttonStyle = getComputedStyle(control);
+        const headerStyle = getComputedStyle(header);
+        const extensionStyle = getComputedStyle(control, "::before");
+        const extensionHeight = Number.parseFloat(extensionStyle.height);
+        const targetTop = buttonRect.top + ((buttonRect.height - extensionHeight) / 2);
+        const targetBottom = targetTop + extensionHeight;
+        const samples: Array<[number, number]> = [];
+        for (let y = Math.ceil(targetTop + 1); y <= Math.floor(targetBottom - 1); y += 1) {
+          for (let x = Math.ceil(buttonRect.left + 1); x <= Math.floor(buttonRect.right - 1); x += 1) samples.push([x, y]);
+        }
+        return {
+          buttonHeight: buttonRect.height,
+          lineHeight: Number.parseFloat(buttonStyle.lineHeight),
+          paddingStart: Number.parseFloat(buttonStyle.paddingBlockStart),
+          paddingEnd: Number.parseFloat(buttonStyle.paddingBlockEnd),
+          extensionHeight,
+          headerHeight: headerRect.height,
+          expectedHeaderHeight: buttonRect.height
+            + Number.parseFloat(headerStyle.paddingBlockStart)
+            + Number.parseFloat(headerStyle.paddingBlockEnd)
+            + Number.parseFloat(headerStyle.borderBlockStartWidth)
+            + Number.parseFloat(headerStyle.borderBlockEndWidth),
+          interiorSamples: samples.length,
+          allSamplesHit: samples.every(([x, y]) => document.elementFromPoint(x, y)?.closest(".bf-table-sort-button") === control)
+        };
+      });
+      assert(Math.abs(targetGeometry.buttonHeight - targetGeometry.lineHeight) <= 0.1 && targetGeometry.paddingStart === 0 && targetGeometry.paddingEnd === 0, `Expected ${tier} sort button to keep its text-line flow footprint after moving target extension out of layout; got ${JSON.stringify(targetGeometry)}.`);
+      assert(targetGeometry.extensionHeight >= 24 && targetGeometry.interiorSamples > 0 && targetGeometry.allSamplesHit, `Expected ${tier} sort button's complete one-pixel interior 24 CSS-pixel extension scan to route to the real button; got ${JSON.stringify(targetGeometry)}.`);
+      assert(Math.abs(targetGeometry.headerHeight - targetGeometry.expectedHeaderHeight) <= 0.1, `Expected ${tier} sortable header row to comprise only its text line, owned cell padding, and row strokes; got ${JSON.stringify(targetGeometry)}.`);
+    }
+    await tierSelect.selectOption("editorial");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "editorial");
+
     await coresButton.focus();
     await coresButton.press("Enter");
     assert(await coresHeader.getAttribute("aria-sort") === "ascending", "Expected first sortable-table activation to set aria-sort=ascending.");
@@ -553,7 +595,7 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
       probe.remove();
       return { height: item.getBoundingClientRect().height, expected, marginBlockStart: Number.parseFloat(styles.marginBlockStart), overflow: root.scrollWidth - root.clientWidth };
     });
-    assert(logoState && Math.abs(logoState.height - logoState.expected) <= 0.1 && logoState.marginBlockStart < 0 && logoState.overflow <= 1, "Expected logo section to retain its large intrinsic mark size and negative row-pull geometry without overflow.");
+    assert(logoState && Math.abs(logoState.height - logoState.expected) <= 0.1 && logoState.marginBlockStart === 0 && logoState.overflow <= 1, "Expected logo section to retain its large intrinsic mark size without block-start margins or overflow.");
 
     await page.goto(`${origin}/demo/components/media-object.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -918,6 +960,22 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
             const ratio = headerRect && logosRect && headerRect.width > 0 ? logosRect.width / headerRect.width : 0;
             const sectionRect = section.getBoundingClientRect();
             const starts = new Set(cards.map(card => Math.round(card.getBoundingClientRect().left)));
+            const spacing = cards.map(card => {
+              const mark = card.querySelector<HTMLElement>(".bf-linked-logo-section-mark");
+              const rule = card.querySelector<HTMLElement>(".bf-linked-logo-section-card-rule");
+              const copy = card.querySelector<HTMLElement>(".bf-linked-logo-section-card-copy");
+              if (!mark || !rule || !copy) return null;
+              const markRect = mark.getBoundingClientRect();
+              const ruleRect = rule.getBoundingClientRect();
+              const copyRect = copy.getBoundingClientRect();
+              return {
+                rowGap: Number.parseFloat(getComputedStyle(card).rowGap),
+                markCompensation: Number.parseFloat(getComputedStyle(mark).marginBlockEnd),
+                markToRule: ruleRect.top - markRect.bottom,
+                ruleToCopy: copyRect.top - ruleRect.bottom,
+                ruleHeight: ruleRect.height
+              };
+            }).filter(Boolean);
             return {
               className: section.className,
               requestedWidth: rootWidth,
@@ -926,6 +984,7 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
               ratio,
               layoutColumns: layout ? getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
               markRatios,
+              spacing,
               overflow: section.scrollWidth - section.clientWidth,
               layoutWidth: layoutRect?.width ?? 0
             };
@@ -939,6 +998,7 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
             : width.expectedColumns;
           assert(measurement.columns === expectedColumns, `Expected ${tier} ${measurement.className} linked-logo cards to use ${expectedColumns} column(s) ${width.label}; got ${measurement.columns}.`);
           assert(measurement.markRatios.every(ratio => Math.abs(ratio - (16 / 9)) <= 0.02), `Expected ${tier} ${measurement.className} linked-logo marks to retain a 16:9 ratio.`);
+          assert(measurement.spacing.every(item => item && item.ruleHeight === 0 && Math.abs(item.ruleToCopy - item.rowGap) <= 0.1 && Math.abs(item.markToRule - item.rowGap - item.markCompensation) <= 0.1), `Expected ${tier} ${measurement.className} linked-logo cards to use the parent row gap around a zero-height divider while retaining only mark grid-closure compensation; got ${JSON.stringify(measurement.spacing)}.`);
           assert(measurement.overflow <= 1, `Expected ${tier} ${measurement.className} linked-logo section at ${width.label} to avoid inline overflow.`);
 
           const isLarge = width.value === "64.75rem";
@@ -954,6 +1014,13 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
         }
       }
     }
+    await page.emulateMedia({ forcedColors: "active" });
+    const forcedDivider = await page.locator(".bf-linked-logo-section-card-rule").first().evaluate(rule => {
+      const style = getComputedStyle(rule, "::after");
+      return { color: style.borderBlockStartColor, width: Number.parseFloat(style.borderBlockStartWidth), pointerEvents: style.pointerEvents };
+    });
+    assert(forcedDivider.width > 0 && forcedDivider.color !== "rgba(0, 0, 0, 0)" && forcedDivider.pointerEvents === "none", `Expected the linked-logo divider to remain a pointer-transparent one-sided system-color stroke in forced colors; got ${JSON.stringify(forcedDivider)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
 
     await page.goto(`${origin}/demo/components/sticky-footer.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);

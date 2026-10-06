@@ -520,6 +520,10 @@ ${capEngineDemo}
   padding-block-end: 0;
 }
 
+:where(.bf-theme) :where(.bf-prose :is(ul, ol):not(.bf-stack, .bf-grid, .bf-cluster)) {
+  display: flow-root;
+}
+
 :where(.bf-theme) :where(.bf-prose ol) {
   padding-inline-start: calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));
 }

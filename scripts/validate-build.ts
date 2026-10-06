@@ -686,13 +686,29 @@ function validateCommonCss(css: string): void {
   // legacy ones should prefer the AST helpers (assertRuleHasDecl, etc.) over
   // brittle multi-line substring checks. See scripts/css-ast-helpers.ts.
   const ast = parseCss(css);
+  const ownedBlockStartMarginExceptions = new Set<string>();
+  ast.walkDecls(declaration => {
+    if (!["margin", "margin-block", "margin-block-start", "margin-top"].includes(declaration.prop)) return;
+    const firstValue = declaration.value.trim().split(/\s+/)[0];
+    if (/^0(?:rem|px|em|%)?$/.test(firstValue)) return;
+    const selector = ((declaration.parent as { selector?: string }).selector ?? "").replace(/\s+/g, " ");
+    const key = `${selector}|${declaration.prop}|${declaration.value}`;
+    const isOwnedException =
+      (selector === ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb" && declaration.prop === "margin-top" && declaration.value === "calc((var(--bf-slider-track-size) - var(--bf-control-visual-size)) / 2)") ||
+      (selector === ":where(.bf-theme) :where(.bf-modal)" && declaration.prop === "margin" && declaration.value === "auto") ||
+      (selector.includes(".bf-article-pagination-link.is-previous:not(:only-child) .bf-article-pagination-label") && declaration.prop === "margin" && declaration.value === "-0.0625rem") ||
+      (selector.includes(".bf-equal-height-row.is-divider-1") && selector.includes(".is-divider-2") && declaration.prop === "margin" && declaration.value === "auto");
+    assert(isOwnedException, `Expected ${selector} ${declaration.prop}:${declaration.value} not to allocate an unowned block-start margin.`);
+    ownedBlockStartMarginExceptions.add(key);
+  });
+  assert(ownedBlockStartMarginExceptions.size === 4, `Expected exactly four named native/accessibility/structural block-start margin exceptions, got ${JSON.stringify([...ownedBlockStartMarginExceptions])}.`);
   assert(!css.includes("@font-face"), "Expected built-in CSS to leave runtime font URLs to the consumer-owned font declaration.");
   assert(!css.includes("UbuntuSans[wdth,wght].ttf"), "Expected built-in CSS to avoid a runtime URL to the unbundled development font.");
   const normativeTargetMinimums = css.match(/24px\b/g) ?? [];
   assert(
-    normativeTargetMinimums.length === 5 &&
+    normativeTargetMinimums.length === 1 &&
     !/-?(?:\d+(?:\.\d+)?|\.\d+)px\b/.test(css.replaceAll("24px", "")),
-    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except for the five reviewed uses of the 24 CSS-pixel target minimum.",
+    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except for one shared 24 CSS-pixel target-minimum input.",
   );
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 38.75rem threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 105.0625rem threshold for the 16-column grid.");
@@ -944,7 +960,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-leading-mark-gap);"), "Expected bf-button.is-icon to use the shared mark/icon gap for its explicit icon/label relationship.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
-    "--bf-action-target-overflow": "max(0rem, calc((24px - var(--bf-square-block-size)) / 2))",
+    "--bf-action-target-overflow": "max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-square-block-size)) / 2))",
     "column-gap": "0",
     "justify-self": "start",
     "margin-inline": "var(--bf-action-target-overflow)",
@@ -958,9 +974,9 @@ function validateCommonCss(css: string): void {
     "inline-size": "0"
   }, "icon-only buttons preserve the occupied body line through a zero-width metric strut");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::after", {
-    "block-size": "max(100%, 24px)",
+    "block-size": "max(100%, var(--bf-pointer-target-minimum))",
     "content": '""',
-    "inline-size": "max(100%, 24px)",
+    "inline-size": "max(100%, var(--bf-pointer-target-minimum))",
     "left": "50%",
     "pointer-events": "auto",
     "position": "absolute",
@@ -982,28 +998,26 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", {
     "flex-wrap": "nowrap",
     "overflow-x": "auto"
-  }, "the built-in nowrap action row declares its clipping scrollport without charging text-only strips padding");
-  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", "padding-block", "text-only nowrap action strips retain their original occupied block");
+  }, "the built-in nowrap action row declares its clipping scrollport without charging text-only strips block padding");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", "padding-block", "text-only nowrap action strips retain their occupied block");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", "padding-inline", "text-only nowrap action strips retain their leading keyline");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested) > .bf-icon:only-child))", {
     "--bf-action-target-block-clearance": "var(--bf-baseline)",
-    "margin-block-end": "calc(var(--bf-action-target-block-clearance) + var(--bf-interface-row-compensation-block-end))",
-    "margin-block-start": "var(--bf-action-target-block-clearance)"
-  }, "only icon-only targets reserve block clearance inside the nowrap scrollport");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
-    "margin-block-end": "var(--bf-action-target-block-clearance)"
-  }, "link icon targets use symmetric target-owned nowrap clearance");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap))", {
-    "--bf-action-target-row-gap-floor": "round(up, max(0rem, calc(24px - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline))"
-  }, "supporting engines round the exact inter-row target shortfall up to a complete active baseline");
+    "padding-block": "var(--bf-action-target-block-clearance)"
+  }, "nowrap action rows with icon-only targets own symmetric target clearance without changing text-only strips");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
-    "--bf-action-target-block-clearance": "round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline))"
-  }, "supporting engines round only an icon target's nowrap block shortfall without a one-baseline cap");
+    "margin-block-end": "var(--bf-interface-row-compensation-block-end)"
+  }, "icon-only targets retain ordinary row compensation inside their owner-provided clearance");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
+    "margin-block-end": "0"
+  }, "link icon targets leave symmetric clearance to their nowrap owner");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap))", {
+    "--bf-action-target-row-gap-floor": "round(up, max(0rem, calc(var(--bf-pointer-target-minimum) - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline))"
+  }, "supporting engines round the exact inter-row target shortfall up to a complete active baseline");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested) > .bf-icon:only-child))", {
+    "--bf-action-target-block-clearance": "round(up, max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-body-line-height)) / 2)), var(--bf-baseline))"
+  }, "supporting engines round the owning nowrap row's block-edge shortfall without a one-baseline cap");
   assert(!css.includes("is-icon-target-wrap") && !css.includes("is-icon-target-scrollport"), "Expected generated CSS to remove the unadopted icon-target opt-in API.");
-  const contextualIconTargetHas = /\.(?:bf-actions|bf-cluster)(?=[^>+~,{]*:has\()/;
-  ast.walkRules(rule => {
-    assert(!contextualIconTargetHas.test(rule.selector), `Expected icon target container ${rule.selector} never to infer geometry through :has().`);
-  });
   assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-component-inline-inset-action);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: 0;"), "Expected generated CSS to keep bf-cta-block externally neutral and use a horizontal action-space owner.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
@@ -1014,7 +1028,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-1)::before {\n  grid-row: 2;\n}"), "Expected bf-equal-height-row.is-divider-1 to draw a cross-column rule on subgrid row 2.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-2)::after {\n  grid-row: 3;\n}"), "Expected bf-equal-height-row.is-divider-2 to draw a cross-column rule on subgrid row 3.");
   assert(!css.includes("bf-equal-heights") && !css.includes(".equal-heights"), "Expected equal-heights Sites recipe to reuse bf-equal-height-row without a duplicate CSS family.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: block;\n  inline-size: 100%;\n  margin: 0;\n}"), "Expected bf-figure to stay externally neutral for its owning stack.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: grid;\n  gap: var(--bf-space-1);\n  inline-size: 100%;\n  margin: 0;\n}"), "Expected bf-figure to stay externally neutral while owning its caption gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas, svg) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure-caption) {\n  color: var(--bf-color-text-default);\n  display: block;\n  font-style: italic;"), "Expected bf-figure-caption to render as an italic block beneath the media.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect) {\n  aspect-ratio: 16 / 9;"), "Expected generated CSS to define the bf-aspect default 16:9 slot.");
@@ -1414,38 +1428,22 @@ function validateCommonCss(css: string): void {
     "min-inline-size": "0",
     "padding-block": "calc(var(--bf-baseline) / 2)"
   }, "top-navigation row reserves one complete baseline across its block edges");
-  assert(css.includes("transform: rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to point downward before expansion.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: rotate(180deg);\n}"), "Expected active top-navigation chevrons to rotate upward after expansion.");
+  assert(css.includes("transform: translateY(-50%) rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to use inset centering and point downward before expansion.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: translateY(-50%) rotate(180deg);\n}"), "Expected active top-navigation chevrons to remain inset-centred and rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
   assert(css.includes("--bf-top-navigation-reduced-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));") && css.includes("top: var(--bf-top-navigation-reduced-row-block-size);"), "Expected reduced top navigation to absorb the complete interface-row compensation and place dropdowns from that occupied row.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon)", {
     "background-size": "contain",
     "display": "inline-block",
-    "margin-block-start": "var(--bf-inline-icon-line-box-trim)",
     "transform": "var(--bf-icon-transform)",
     "vertical-align": "calc(var(--bf-inline-icon-baseline-shift) + ((var(--bf-icon-size-default) - var(--bf-icon-size)) / 2))"
   }, "icon base styling keeps the shared image-sized inline-block contract and metric baseline alignment");
   assert(css.includes("--bf-inline-icon-baseline-shift: calc((var(--bf-border-width) * 0.5) + ((1cap - var(--bf-icon-size-default)) / 2));"), "Expected inline icons to derive one Vanilla-compatible cap-centred baseline shift from the active font metric, default icon size, and scalable optical lift.");
-  assert(css.includes("--bf-inline-icon-line-box-trim: calc(var(--bf-border-width) * -1);"), "Expected the default inline icon to trim one scalable border from its layout margin without moving its paint.");
-  for (const size of ["medium", "large", "x-large", "xx-large"]) {
-    assertRuleHasDecl(ast, `:where(.bf-theme) :where(.bf-icon.is-${size})`, {
-      "--bf-inline-icon-line-box-trim": "0rem"
-    }, `${size} icon reserves its full painted block instead of inheriting the default line-box trim`);
-  }
+  assert(!css.includes("--bf-inline-icon-line-box-trim"), "Expected icons to avoid layout-margin or relative-inset line-box trims.");
   assert(!css.includes("vertical-align: bottom;"), "Expected no reusable inline icon to align against the line-box bottom edge.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after", {
-    "margin-block-start": "var(--bf-inline-icon-line-box-trim)",
     "vertical-align": "var(--bf-inline-icon-baseline-shift)"
   }, "sortable-table chevrons reuse the shared inline-icon metric alignment");
-  for (const selector of [
-    ":where(.bf-theme) :where(.bf-article-pagination-direction > .bf-icon)",
-    ":where(.bf-theme) :where(.bf-in-page-navigation-toggle > .bf-icon)",
-    ":where(.bf-theme) :where(.bf-notification-icon)"
-  ]) {
-    assertRuleHasDecl(ast, selector, {
-      "margin-block-start": "0"
-    }, `${selector} keeps its flex, grid, or positioned owner responsible for block placement`);
-  }
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon.is-search)", {
     "--bf-icon-image": "var(--bf-ui-icon-search)"
   }, "search icons resolve from the shared search glyph token");
@@ -1551,7 +1549,7 @@ function validateCommonCss(css: string): void {
     "min-block-size": "calc((var(--bf-interface-row-occupied-block-size) * 2) + var(--bf-baseline))",
     "text-align": "left"
   }, "option-card keeps the canonical stacked selection-card treatment");
-  assert(css.includes(":where(.bf-form-help.is-tight)"), "Expected generated CSS to include the tight helper-text modifier.");
+  assert(css.includes(":where(.bf-field:has(> .bf-form-help.is-tight))"), "Expected tight helper text to switch its owning field to zero row-gap.");
   assert(css.includes("input[type='color'].bf-color-input"), "Expected generated CSS to include the compact color-input treatment.");
   assert(css.includes(":where(.bf-actions)"), "Expected generated CSS to include the canonical actions-row helper.");
   assert(!css.includes(".config-tabs"), "Expected compat CSS to omit the downstream equal-tab aliases.");
@@ -1980,7 +1978,7 @@ async function validateScalableAuthoredLengths(): Promise<void> {
     }
   }
 
-  assert(normativeTargetOccurrences === 5, `Expected exactly five uses of the normative 24 CSS-pixel target minimum (two target axes, target-owned inline and nowrap block allowances, and one wrapping-row gap floor), got ${normativeTargetOccurrences}.`);
+  assert(normativeTargetOccurrences === 1, `Expected exactly one shared authored 24 CSS-pixel target-minimum input, got ${normativeTargetOccurrences}.`);
   assert(violations.length === 0, `Expected authored component and demo styles to use rem-scalable lengths except for the reviewed 24 CSS-pixel target minimum; found other px units in ${violations.join(", ")}.`);
 }
 

@@ -272,8 +272,12 @@ export function validateRenewalComponentContracts(
     "margin": "0"
   }, "notice surfaces leave external spacing to their parent stack");
   assert(css.includes(".bf-password-reveal[aria-pressed='true']") && css.includes(".bf-notification[hidden]"), "Expected interactive feedback CSS to expose stateful reveal and dismissal contracts.");
-  assert(css.includes("margin-block: calc(var(--bf-space-1) * -1);") && css.includes("padding-block: var(--bf-space-1);"), "Expected logo section to retain Vanilla's small negative row pull and matching wrapper compensation.");
-  assert(css.includes("margin-block: calc(var(--bf-space-2) * -1);") && css.includes("padding-block: var(--bf-space-2);"), "Expected logo section to retain Vanilla's large negative row pull and matching wrapper compensation.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-logo-section-items)", {
+    "padding-block": "0"
+  }, "logo rows expose their intrinsic slot without compensating wrapper padding");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-logo-section-item)", {
+    "margin-block": "0"
+  }, "logo marks avoid negative block-start row pulls");
   assert(css.includes("block-size: calc(var(--bf-space-8) + var(--bf-space-1));") && css.includes("block-size: calc(var(--bf-space-12) + var(--bf-space-1));"), "Expected logo section marks to use intrinsic small and large BF slot sizes.");
   assert(css.includes("container-name: bf-media-object;") && css.includes("grid-template-columns: repeat(4, minmax(0, 1fr));") && css.includes("@container bf-media-object (width >= 38.75rem)") && css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));"), "Expected media object to use its own four/eight-column container grid.");
   assert(css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;") && !css.includes(".bf-media-object.is-media-end"), "Expected media object media and copy to occupy the first two and remaining grid columns without a directional variant.");

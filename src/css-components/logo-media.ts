@@ -4,8 +4,8 @@
  * Vanilla → BF rhythm mapping (at Vanilla's 0.5rem unit):
  * - Logo mark heights 4.5rem / 6.5rem → `space-8 + space-1` / `space-12 +
  *   space-1` (nine / thirteen BF baselines).
- * - Logo 2rem inline gap → `space-4`; Vanilla's 0.5rem / 1rem negative row pull
- *   and matching wrapper compensation → `space-1` / `space-2`.
+ * - Logo 2rem inline gap → `space-4`; the intrinsic mark slot owns its block
+ *   size directly instead of pairing negative item margins with wrapper padding.
  * - Media thumbnails 3rem / 6rem → `space-6` / `space-12`; their 1rem
  *   gap → `space-2`; trailing 1.5rem → `section-space-shallow`; metadata top
  *   0.5rem → `space-1`.
@@ -31,7 +31,7 @@ export function logoMediaCss(): string {
   flex-wrap: wrap;
   column-gap: var(--bf-component-inline-inset-continuation);
   min-inline-size: 0;
-  padding-block: var(--bf-space-1);
+  padding-block: 0;
 }
 
 :where(.bf-theme) :where(.bf-logo-section-item) {
@@ -40,7 +40,7 @@ export function logoMediaCss(): string {
   display: flex;
   flex: 0 0 auto;
   max-inline-size: 100%;
-  margin-block: calc(var(--bf-space-1) * -1);
+  margin-block: 0;
   min-inline-size: 0;
 }
 
@@ -87,12 +87,12 @@ export function logoMediaCss(): string {
    query container itself, responds when its allocated space reaches it. */
 @container bf-logo-section (width >= 38.75rem) {
   :where(.bf-theme) :where(.bf-logo-section-items) {
-    padding-block: var(--bf-space-2);
+    padding-block: 0;
   }
 
   :where(.bf-theme) :where(.bf-logo-section-item) {
     block-size: calc(var(--bf-space-12) + var(--bf-space-1));
-    margin-block: calc(var(--bf-space-2) * -1);
+    margin-block: 0;
   }
 
   :where(.bf-theme) :where(.bf-logo-section.is-contained) :where(.bf-logo-section-item) {
@@ -210,7 +210,8 @@ export function logoMediaCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-media-object-meta .bf-icon) {
-  margin-block-start: var(--bf-body-nudge-start);
+  inset-block-start: var(--bf-body-nudge-start);
+  position: relative;
 }
 
 @container bf-media-object (width >= 38.75rem) {

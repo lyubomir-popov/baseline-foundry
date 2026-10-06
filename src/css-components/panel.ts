@@ -144,6 +144,10 @@ ${bodyTypeStyles}  align-items: center;
   padding-inline: var(--bf-panel-content-padding-inline);
 }
 
+:where(.bf-theme) :where(.bf-panel-content:not(.bf-stack, .bf-grid, .bf-cluster)) {
+  display: flow-root;
+}
+
 :where(.bf-theme) :where(.bf-panel-content.is-flush) {
   padding-block: 0;
   padding-inline: 0;

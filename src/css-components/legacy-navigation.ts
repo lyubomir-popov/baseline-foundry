@@ -475,17 +475,16 @@ ${bodyTypeStyles}  align-items: center;
   bottom: 0;
   content: "";
   inline-size: 1rem;
-  margin-block: auto;
   pointer-events: none;
   position: absolute;
   right: var(--bf-top-navigation-link-padding-inline);
-  top: 0;
-  transform: rotate(0deg);
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
   transition: transform 160ms ease;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {
-  transform: rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
@@ -544,7 +543,7 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider) {
   border-top: var(--bf-border-width) solid var(--bf-color-border-default);
-  margin-block: calc(var(--bf-baseline) * 0.5);
+  block-size: var(--bf-baseline);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown > li + li) > :where(.bf-top-navigation-dropdown-item) {

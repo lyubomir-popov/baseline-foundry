@@ -20,17 +20,27 @@ export function interactiveTablesCss(): string {
   cursor: inherit;
   display: inline-block;
   font: inherit;
-  margin-block: -0.125rem;
   margin-inline: calc((var(--bf-component-inline-inset-field) / 2) * -1);
   max-inline-size: 100%;
-  overflow: hidden;
-  padding-block: 0.125rem;
+  overflow: visible;
+  padding-block: 0;
   padding-inline: calc(var(--bf-component-inline-inset-field) / 2);
+  position: relative;
   text-align: inherit;
   text-decoration: inherit;
   text-overflow: inherit;
   vertical-align: inherit;
   white-space: inherit;
+}
+
+:where(.bf-theme) :where(.bf-table-sort-button)::before {
+  block-size: max(100%, var(--bf-pointer-target-minimum));
+  content: "";
+  inline-size: 100%;
+  inset: 50% 0 auto;
+  pointer-events: auto;
+  position: absolute;
+  translate: 0 -50%;
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]:hover, .bf-table-sort-button:focus-visible) {
@@ -58,7 +68,6 @@ export function interactiveTablesCss(): string {
   content: "";
   display: inline-block;
   inline-size: var(--bf-icon-size-default);
-  margin-block-start: var(--bf-inline-icon-line-box-trim);
   margin-inline-start: calc(var(--bf-leading-mark-gap) / 2);
   opacity: 0;
   vertical-align: var(--bf-inline-icon-baseline-shift);

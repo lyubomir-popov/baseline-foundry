@@ -32,7 +32,8 @@ export function ctaFigureAspectCss(): string {
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-figure) {
-  display: block;
+  display: grid;
+  gap: var(--bf-space-1);
   inline-size: 100%;
   margin: 0;
 }
@@ -56,7 +57,7 @@ export function ctaFigureAspectCss(): string {
   display: block;
   font-style: italic;
   inline-size: 100%;
-  margin-block: var(--bf-space-1) 0;
+  margin-block: 0;
 }
 
 /* ------------------------------------------------------------------ */

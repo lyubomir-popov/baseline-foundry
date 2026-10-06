@@ -7,7 +7,11 @@ type ButtonActionCssOptions = {
 export function buttonActionsCss(options: ButtonActionCssOptions): string {
   const { bodyTypeStyles, buttonMarginBottom, buttonPadding } = options;
 
-  return `:where(.bf-theme) :where(.bf-button, .bf-button.is-base) {
+  return `:where(.bf-theme) {
+  --bf-pointer-target-minimum: 24px;
+}
+
+:where(.bf-theme) :where(.bf-button, .bf-button.is-base) {
 ${bodyTypeStyles}  appearance: none;
   background-color: var(--bf-color-background-default);
   border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
@@ -154,7 +158,7 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
  * control rhythm. A zero-width metric strut restores the active body line
  * without imposing a target block size or changing icon/label spacing. */
 :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
-  --bf-action-target-overflow: max(0rem, calc((24px - var(--bf-square-block-size)) / 2));
+  --bf-action-target-overflow: max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-square-block-size)) / 2));
 
   column-gap: 0;
   justify-self: start;
@@ -174,9 +178,9 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
  * out-of-flow box extends only the pointer target; it does not change the
  * control's paint or occupied block geometry. */
 :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::after {
-  block-size: max(100%, 24px);
+  block-size: max(100%, var(--bf-pointer-target-minimum));
   content: "";
-  inline-size: max(100%, 24px);
+  inline-size: max(100%, var(--bf-pointer-target-minimum));
   left: 50%;
   pointer-events: auto;
   position: absolute;
@@ -221,19 +225,22 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   scrollbar-width: thin;
 }
 
+:where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested) > .bf-icon:only-child)) {
+  --bf-action-target-block-clearance: var(--bf-baseline);
+
+  padding-block: var(--bf-action-target-block-clearance);
+}
+
 /* A nowrap row becomes a clipping scrollport. Only direct icon-only targets
  * reserve their own block overflow, so text-only strips keep their original
  * block size and leading keyline. Existing target-owned inline margins supply
  * the corresponding logical-edge scroll extent. */
 :where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
-  --bf-action-target-block-clearance: var(--bf-baseline);
-
-  margin-block-end: calc(var(--bf-action-target-block-clearance) + ${buttonMarginBottom});
-  margin-block-start: var(--bf-action-target-block-clearance);
+  margin-block-end: ${buttonMarginBottom};
 }
 
 :where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
-  margin-block-end: var(--bf-action-target-block-clearance);
+  margin-block-end: 0;
 }
 
 /* Modern CSS rounds the exact inter-row and per-edge scrollport shortfalls up
@@ -241,11 +248,11 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
  * and remains on phase in older engines. */
 @supports (row-gap: round(up, 0.0625rem, 0.0625rem)) {
   :where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap)) {
-    --bf-action-target-row-gap-floor: round(up, max(0rem, calc(24px - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline));
+    --bf-action-target-row-gap-floor: round(up, max(0rem, calc(var(--bf-pointer-target-minimum) - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline));
   }
 
-  :where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
-    --bf-action-target-block-clearance: round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
+  :where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested) > .bf-icon:only-child)) {
+    --bf-action-target-block-clearance: round(up, max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-body-line-height)) / 2)), var(--bf-baseline));
   }
 }
 

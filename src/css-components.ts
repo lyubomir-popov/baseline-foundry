@@ -171,8 +171,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   padding-block-start: ${bodySelectedStartNudge};
 }
 
-:where(.bf-theme) :where(.bf-form-help.is-tight) {
-  margin-top: calc(var(--bf-baseline) * -1);
+:where(.bf-theme) :where(.bf-field:has(> .bf-form-help.is-tight)) {
+  row-gap: 0;
 }
 
 :where(.bf-theme) :where(.bf-field) {
@@ -507,7 +507,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   display: inline-block;
   flex: none;
   inline-size: calc(var(--bf-control-visual-size) * 2);
-  margin-block-start: var(--bf-switch-track-offset);
+  inset-block-start: var(--bf-switch-track-offset);
   position: relative;
 }
 
@@ -673,8 +673,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   block-size: var(--bf-slider-track-size);
   border: 0;
   border-radius: var(--bf-baseline);
-  margin: var(--bf-slider-track-offset) 0 calc(var(--bf-slider-row-block-size) - var(--bf-slider-track-offset) - var(--bf-slider-track-size));
+  margin: 0;
   padding: 0;
+  position: relative;
+  inset-block-start: var(--bf-slider-track-offset);
 }
 
 /* A composite slider's numeric field owns the shared occupied row. Stretching
@@ -684,6 +686,14 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   align-self: stretch;
   block-size: auto;
   margin-block: 0;
+}
+
+:where(.bf-theme) :where(.bf-slider.is-stacked, .bf-field.is-range.is-stacked .bf-slider) :where(input[type='range']) {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% var(--bf-slider-track-size);
+  block-size: var(--bf-slider-row-block-size);
+  inset-block-start: 0;
 }
 
 :where(.bf-theme) :where(input[type='range']):focus:not(:focus-visible) {
