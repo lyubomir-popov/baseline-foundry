@@ -17,15 +17,15 @@
       <button class="bf-button" type="button" data-baseline-check="box" data-baseline-label="form atlas button">test</button>
 
       <div class="bf-control bf-inline-size is-compact">
-        <input class="bf-input" type="text" value="test" aria-label="Form atlas text input" data-baseline-check="box" data-baseline-label="form atlas text input">
+        <span class="bf-field-boundary" data-baseline-check="box" data-baseline-label="form atlas text input"><input class="bf-input" type="text" value="test" aria-label="Form atlas text input" data-baseline-ignore="true"></span>
       </div>
 
       <div class="bf-control bf-inline-size is-compact">
-        <select aria-label="Form atlas select" data-baseline-check="box" data-baseline-label="form atlas select">
+        <span class="bf-field-boundary" data-baseline-check="box" data-baseline-label="form atlas select"><select aria-label="Form atlas select" data-baseline-ignore="true">
           <option selected>test</option>
           <option>alpha</option>
           <option>omega</option>
-        </select>
+        </select></span>
       </div>
 
       <div class="bf-search-box bf-inline-size is-regular" data-baseline-check="box" data-baseline-label="form atlas search box">
@@ -180,7 +180,7 @@
         <div class="bf-control" data-baseline-check="box" data-baseline-label="form atlas range control">
           <div class="bf-slider" data-baseline-check="box" data-baseline-label="form atlas range wrapper">
             <input id="form-atlas-range" type="range" min="0" max="100" value="64" data-baseline-ignore="true" data-baseline-label="form atlas range input">
-            <input class="bf-slider-input" type="number" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="form atlas range number input">
+            <span class="bf-field-boundary" data-baseline-check="box" data-baseline-label="form atlas range number input"><input class="bf-slider-input" type="number" min="0" max="100" value="64" data-baseline-ignore="true"></span>
           </div>
         </div>
       </div>
@@ -190,7 +190,7 @@
         <div class="bf-control" data-baseline-check="box" data-baseline-label="form atlas stacked range control">
           <div class="bf-slider" data-baseline-check="box" data-baseline-label="form atlas stacked range wrapper">
             <input id="form-atlas-range-stacked" type="range" min="0" max="100" value="64" data-baseline-ignore="true" data-baseline-label="form atlas stacked range input">
-            <input class="bf-slider-input" type="number" min="0" max="100" value="64" data-baseline-check="box" data-baseline-label="form atlas stacked range number input">
+            <span class="bf-field-boundary" data-baseline-check="box" data-baseline-label="form atlas stacked range number input"><input class="bf-slider-input" type="number" min="0" max="100" value="64" data-baseline-ignore="true"></span>
           </div>
         </div>
       </div>
@@ -198,7 +198,7 @@
       <div class="bf-field bf-inline-size is-regular" data-baseline-check="box" data-baseline-label="form atlas file input field">
         <label class="bf-form-label" for="form-atlas-file-input" data-baseline-check="flow" data-baseline-label="form atlas file input label">test</label>
         <div class="bf-control" data-baseline-check="box" data-baseline-label="form atlas file input control">
-          <input id="form-atlas-file-input" type="file" data-baseline-check="box" data-baseline-label="form atlas file input">
+          <span class="bf-field-boundary" data-baseline-check="box" data-baseline-label="form atlas file input"><input id="form-atlas-file-input" type="file" data-baseline-ignore="true"></span>
         </div>
         <p class="bf-form-help" data-baseline-check="flow" data-baseline-label="form atlas file input help">test</p>
       </div>
@@ -206,7 +206,7 @@
       <div class="bf-field is-success bf-inline-size is-wide" data-baseline-check="box" data-baseline-label="form atlas validation field">
         <label class="bf-form-label" for="form-atlas-validation" data-baseline-check="flow" data-baseline-label="form atlas validation label">test</label>
         <div class="bf-control" data-baseline-check="box" data-baseline-label="form atlas validation control">
-          <input id="form-atlas-validation" class="bf-input" type="text" value="test" data-baseline-check="box" data-baseline-label="form atlas validation input">
+          <span class="bf-field-boundary" data-baseline-check="box" data-baseline-label="form atlas validation input"><input id="form-atlas-validation" class="bf-input" type="text" value="test" data-baseline-ignore="true"></span>
         </div>
         <p class="bf-validation-message" data-baseline-check="flow" data-baseline-label="form atlas validation message">test</p>
       </div>

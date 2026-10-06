@@ -49,19 +49,26 @@ and must not be changed.
   moves both directional arrows to `::before` so `::after` remains the overlay.
   Its required gates are green in `commands-check-types.log`,
   `commands-npm-test.log`, and `commands-qa-components.log`.
+- The current native-field item adds the named `bf-field-boundary` anatomy,
+  moves row compensation and one-sided paint to that owner, and preserves the
+  native select, number, textarea, file, colour and range interactions. Search
+  compositions use their existing outer owners. Its required gates are green
+  in `fields-check-types.log`, `fields-npm-test.log`, and
+  `fields-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-Move each component family from its real layout border to the automatic
-overlay or its named anatomy exception. Preserve the governed dense Site Chip
-policy and the established non-Site nested contracts.
+Continue moving navigation, surfaces/overlays, and static/table/divider
+families from real layout borders to the automatic overlay or a named anatomy
+exception. Preserve the governed dense Site Chip policy and the established
+non-Site nested contracts.
 
 The shared row ledger is final, but the intermediate source still has local
-border subtraction only where a family retains a real stroke: fields and file
-buttons, SideNavigation toggle, and nested fields/buttons. Remove each local
-term with that family's paint migration; none may remain at the final checkpoint.
+border subtraction only where a family still retains a real stroke. Remove
+each local term with that family's paint migration; none may remain at the
+final checkpoint.
 
 FR-061a/SP-1 remains in progress beyond the landed margin-direction step:
 remaining semantic or structural block-end margins in responsive navigation,

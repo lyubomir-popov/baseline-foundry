@@ -12,8 +12,8 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   } = options;
 
   return `:where(.bf-theme) :where(.bf-search-box) {
-  --bf-search-box-action-inline-size: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
-  --bf-search-box-trailing-inline-size: calc((var(--bf-search-box-action-inline-size) * 2) + var(--bf-border-width));
+  --bf-search-box-action-inline-size: max(var(--bf-pointer-target-minimum), calc(var(--bf-icon-size-default) + (var(--bf-component-inline-inset-field) * 2)));
+  --bf-search-box-trailing-inline-size: calc(var(--bf-search-box-action-inline-size) * 2);
   display: flex;
   inline-size: 100%;
   margin: 0 0 ${inputMarginBottom};
@@ -38,17 +38,17 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 }
 
 :where(.bf-theme) :where(.bf-search-box-reset) {
-  inset-inline-end: calc(var(--bf-search-box-action-inline-size) + var(--bf-border-width));
+  inset-inline-end: var(--bf-search-box-action-inline-size);
 }
 
 :where(.bf-theme) :where(.bf-search-box-button) {
   appearance: none;
   background: transparent;
   border: 0;
-  border-inline-start: var(--bf-border-width) solid var(--bf-color-border-default);
+  box-shadow: inset var(--bf-border-width) 0 0 var(--bf-color-border-default);
   color: var(--bf-color-text-default);
   cursor: pointer;
-  inset-inline-end: var(--bf-border-width);
+  inset-inline-end: 0;
   margin: 0;
   padding: 0;
   text-indent: -624.9375rem;
@@ -58,10 +58,10 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   background-image: var(--bf-ui-icon-search);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
   left: 50%;
   position: absolute;
   text-indent: 0;
@@ -94,7 +94,6 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 :where(.bf-theme) :where(.bf-search-and-filter-search-container) {
   align-items: stretch;
   background: transparent;
-  box-shadow: inset 0 -0.0625rem 0 var(--bf-color-border-high-contrast);
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
@@ -110,7 +109,7 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
 }
 
 :where(.bf-theme) :where(.bf-search-and-filter-box) {
-  --bf-search-and-filter-action-inline-size: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
+  --bf-search-and-filter-action-inline-size: max(var(--bf-pointer-target-minimum), calc(var(--bf-icon-size-default) + (var(--bf-component-inline-inset-field) * 2)));
   --bf-search-and-filter-trailing-inline-size: calc(var(--bf-search-and-filter-action-inline-size) * 2);
   display: inline-flex;
   flex: 1 1 12rem;
@@ -144,10 +143,10 @@ export function searchBoxAndFilterCss(options: SearchBoxAndFilterCssOptions): st
   background-image: var(--bf-ui-icon-search);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
   left: 50%;
   position: absolute;
   text-indent: 0;

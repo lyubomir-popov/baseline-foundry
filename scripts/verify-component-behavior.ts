@@ -278,6 +278,69 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
     ]);
     assert(numberGeometry.appearance === "auto" && numberGeometry.backgroundImage === "none", `Expected the number field to expose the browser-owned spinner without inert replacement artwork; got ${JSON.stringify(numberGeometry)}.`);
     assert(["hidden", "clip"].includes(selectGeometry.overflow) && selectGeometry.textOverflow === "ellipsis" && selectGeometry.whiteSpace === "nowrap", `Expected constrained selects to truncate before their trailing chevron; got ${JSON.stringify(selectGeometry)}.`);
+    const boundaryGeometry = await page.evaluate(() => {
+      const native = document.querySelector<HTMLInputElement>('input[type="number"]');
+      const owner = native?.closest<HTMLElement>(".bf-field-boundary");
+      const select = document.querySelector<HTMLSelectElement>("select");
+      const selectOwner = select?.closest<HTMLElement>(".bf-field-boundary");
+      if (!native || !owner || !select || !selectOwner) throw new Error("Missing native field boundary specimens.");
+      const nativeStyles = getComputedStyle(native);
+      const ownerStyles = getComputedStyle(owner);
+      const overlayStyles = getComputedStyle(owner, "::after");
+      return {
+        nativeBorderWidths: [nativeStyles.borderBlockStartWidth, nativeStyles.borderBlockEndWidth, nativeStyles.borderInlineStartWidth, nativeStyles.borderInlineEndWidth],
+        nativeMarginBlockEnd: Number.parseFloat(nativeStyles.marginBlockEnd),
+        ownerMarginBlockEnd: Number.parseFloat(ownerStyles.marginBlockEnd),
+        overlayInsets: [overlayStyles.insetBlockStart, overlayStyles.insetBlockEnd, overlayStyles.insetInlineStart, overlayStyles.insetInlineEnd],
+        overlayPointerEvents: overlayStyles.pointerEvents,
+        overlayPosition: overlayStyles.position,
+        ownerHeight: owner.getBoundingClientRect().height,
+        nativeHeight: native.getBoundingClientRect().height,
+        selectOwnerHeight: selectOwner.getBoundingClientRect().height,
+        selectHeight: select.getBoundingClientRect().height
+      };
+    });
+    assert(boundaryGeometry.nativeBorderWidths.every(width => width === "0px") && boundaryGeometry.nativeMarginBlockEnd === 0 && boundaryGeometry.ownerMarginBlockEnd > 0, `Expected the named field boundary, rather than the replaced native element, to own paint and row compensation: ${JSON.stringify(boundaryGeometry)}.`);
+    assert(boundaryGeometry.overlayInsets.every(inset => inset === "0px") && boundaryGeometry.overlayPointerEvents === "none" && boundaryGeometry.overlayPosition === "absolute", `Expected the field stroke to use a non-intercepting automatic last-child overlay: ${JSON.stringify(boundaryGeometry)}.`);
+    assert(Math.abs(boundaryGeometry.ownerHeight - boundaryGeometry.nativeHeight) <= 0.1 && Math.abs(boundaryGeometry.selectOwnerHeight - boundaryGeometry.selectHeight) <= 0.1, `Expected native fields and their paint owners to share exact visible bounds: ${JSON.stringify(boundaryGeometry)}.`);
+    await number.focus();
+    const focusedFieldPaint = await number.evaluate(element => {
+      const owner = element.closest<HTMLElement>(".bf-field-boundary");
+      if (!owner) throw new Error("Missing focused number field owner.");
+      return {
+        nativeOutline: getComputedStyle(element).outlineStyle,
+        ownerPaint: getComputedStyle(owner, "::after").boxShadow
+      };
+    });
+    assert(focusedFieldPaint.nativeOutline === "none" && focusedFieldPaint.ownerPaint !== "none", `Expected keyboard focus to relay to the field overlay without adding native layout paint: ${JSON.stringify(focusedFieldPaint)}.`);
+    await page.emulateMedia({ forcedColors: "active" });
+    const forcedFieldPaint = await number.evaluate(element => {
+      const owner = element.closest<HTMLElement>(".bf-field-boundary");
+      if (!owner) throw new Error("Missing forced-colour number field owner.");
+      const overlay = getComputedStyle(owner, "::after");
+      const ownerStyle = getComputedStyle(owner);
+      return {
+        boundaryStyle: overlay.borderBlockEndStyle,
+        boundaryWidth: Number.parseFloat(overlay.borderBlockEndWidth),
+        focusStyle: ownerStyle.outlineStyle,
+        pointerEvents: overlay.pointerEvents
+      };
+    });
+    assert(forcedFieldPaint.boundaryStyle === "solid" && forcedFieldPaint.boundaryWidth > 0 && forcedFieldPaint.focusStyle !== "none" && forcedFieldPaint.pointerEvents === "none", `Expected the one-sided field rule and inward focus cue to remain explicit system-colour paint: ${JSON.stringify(forcedFieldPaint)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+    const textareaResize = await page.locator("textarea").evaluate(element => {
+      const owner = element.closest<HTMLElement>(".bf-field-boundary");
+      if (!owner) throw new Error("Missing textarea field owner.");
+      const before = owner.getBoundingClientRect().height;
+      element.style.blockSize = `${element.getBoundingClientRect().height + 32}px`;
+      return {
+        before,
+        after: owner.getBoundingClientRect().height,
+        nativeAfter: element.getBoundingClientRect().height,
+        resize: getComputedStyle(element).resize
+      };
+    });
+    assert(textareaResize.resize === "vertical" && textareaResize.after > textareaResize.before + 31 && Math.abs(textareaResize.after - textareaResize.nativeAfter) <= 0.1, `Expected textarea resizing to remain native while its boundary follows the visible box: ${JSON.stringify(textareaResize)}.`);
     const rtlTrailingGeometry = await page.evaluate(() => {
       const field = document.querySelector<HTMLSelectElement>("select");
       if (!field) throw new Error("Missing RTL select artwork specimen.");
@@ -436,11 +499,14 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         rejectedDate.className = "bf-input is-nested";
         rejectedDate.type = "date";
         rejectedDate.style.cssText = "position:absolute;visibility:hidden";
+        const rejectedDateBoundary = document.createElement("span");
+        rejectedDateBoundary.className = "bf-field-boundary";
+        rejectedDateBoundary.append(rejectedDate);
         const rejectedLinkButton = document.createElement("button");
         rejectedLinkButton.className = "bf-button is-link is-nested";
         rejectedLinkButton.textContent = "Rejected link button";
         rejectedLinkButton.style.cssText = "position:absolute;visibility:hidden";
-        document.body.append(rejectedDate, rejectedLinkButton);
+        document.body.append(rejectedDateBoundary, rejectedLinkButton);
         const allowedNestedInput = document.querySelector<HTMLElement>("[aria-label='Table text input']");
         const allowedNestedButton = document.querySelector<HTMLElement>("[aria-label='Table control row fit comparison'] .bf-button.is-nested");
         const nestedApi = allowedNestedInput && allowedNestedButton ? {
@@ -449,11 +515,11 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           allowedInputLine: Number.parseFloat(getComputedStyle(allowedNestedInput).lineHeight),
           allowedInputMargin: Number.parseFloat(getComputedStyle(allowedNestedInput).marginBlockEnd),
           rejectedDateLine: Number.parseFloat(getComputedStyle(rejectedDate).lineHeight),
-          rejectedDateMargin: Number.parseFloat(getComputedStyle(rejectedDate).marginBlockEnd),
+          rejectedDateMargin: Number.parseFloat(getComputedStyle(rejectedDateBoundary).marginBlockEnd),
           rejectedLinkLine: Number.parseFloat(getComputedStyle(rejectedLinkButton).lineHeight),
           rejectedLinkMargin: Number.parseFloat(getComputedStyle(rejectedLinkButton).marginBlockEnd)
         } : null;
-        rejectedDate.remove();
+        rejectedDateBoundary.remove();
         rejectedLinkButton.remove();
         return {
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * rootSize,
@@ -838,8 +904,9 @@ async function verifySideNavigationPanelGeometry(origin: string): Promise<void> 
             const nestedLabel = nav?.querySelector<HTMLElement>(".bf-side-navigation-list .bf-side-navigation-list .bf-side-navigation-label");
             const active = nav?.querySelector<HTMLElement>(".bf-side-navigation-link[aria-current='page']");
             const switcher = nav?.querySelector<HTMLElement>("[data-side-navigation-context-switcher]");
+            const selectBoundary = switcher?.querySelector<HTMLElement>(".bf-field-boundary");
             const select = switcher?.querySelector<HTMLSelectElement>("select");
-            if (!nav || !iconRow || !icon || !iconLabel || !headerLabel || !groupHeader || !nestedLabel || !active || !switcher || !select) return null;
+            if (!nav || !iconRow || !icon || !iconLabel || !headerLabel || !groupHeader || !nestedLabel || !active || !switcher || !selectBoundary || !select) return null;
 
             const navRect = nav.getBoundingClientRect();
             const direction = getComputedStyle(nav).direction;
@@ -918,7 +985,7 @@ async function verifySideNavigationPanelGeometry(origin: string): Promise<void> 
               rowPaddingInlineStart: Number.parseFloat(activeStyles.paddingInlineStart),
               selectEndGutter: direction === "rtl" ? selectRect.left - navRect.left : navRect.right - selectRect.right,
               selectPaddingInlineStart: Number.parseFloat(selectStyles.paddingInlineStart),
-              selectMarginBlockEnd: Number.parseFloat(selectStyles.marginBlockEnd),
+              selectMarginBlockEnd: Number.parseFloat(getComputedStyle(selectBoundary).marginBlockEnd),
               selectStart: direction === "rtl" ? navRect.right - selectRect.right : selectRect.left - navRect.left,
               switcherPaddingInlineEnd: Number.parseFloat(getComputedStyle(switcher).paddingInlineEnd),
               switcherPaddingInlineStart: Number.parseFloat(getComputedStyle(switcher).paddingInlineStart)
@@ -1800,7 +1867,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const icon = iconLink?.querySelector<HTMLElement>(".bf-side-navigation-icon");
       const heading = content?.querySelector<HTMLElement>("[data-icon-navigation-heading]");
       const nestedLabel = content?.querySelector<HTMLElement>(".bf-side-navigation-list .bf-side-navigation-list .bf-side-navigation-label");
-      const contextSwitcher = content?.querySelector<HTMLSelectElement>("[data-side-navigation-context-switcher] > select");
+      const contextSwitcher = content?.querySelector<HTMLSelectElement>("[data-side-navigation-context-switcher] > .bf-field-boundary > select");
       const defaultContent = document.querySelector<HTMLElement>(".bf-main .bf-panel-content");
       if (!content || !activeLink || !topLevelLink || !activeLabel || !iconLink || !iconLabel || !icon || !heading || !nestedLabel || !contextSwitcher || !defaultContent) {
         return null;
@@ -2935,18 +3002,22 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
           );
           const plainTextCell = plainTextRow?.querySelector<HTMLElement>("td");
           const controlCell = controlRow?.querySelector<HTMLElement>("td");
+          const nestedTextInput = controlRow?.querySelector<HTMLElement>("[aria-label='Table text input']");
+          const nestedNumberInput = controlRow?.querySelector<HTMLElement>("[aria-label='Table number input']");
           const controlTargets = controlRow
             ? [
-                controlRow.querySelector<HTMLElement>("[aria-label='Table text input']"),
-                controlRow.querySelector<HTMLElement>("[aria-label='Table number input']"),
+                nestedTextInput?.closest<HTMLElement>(".bf-field-boundary") ?? null,
+                nestedNumberInput?.closest<HTMLElement>(".bf-field-boundary") ?? null,
                 controlRow.querySelector<HTMLElement>(".bf-button"),
                 controlRow.querySelector<HTMLElement>(".bf-checkbox-label"),
                 controlRow.querySelector<HTMLElement>(".bf-radio-label")
               ]
             : [];
+          const standaloneTextInput = document.querySelector<HTMLElement>("[aria-label='Text input'] .bf-input");
+          const standaloneNumberInput = document.querySelector<HTMLElement>("[aria-label='Number input'] .bf-input");
           const standaloneTargets = [
-            document.querySelector<HTMLElement>("[aria-label='Text input'] .bf-input"),
-            document.querySelector<HTMLElement>("[aria-label='Number input'] .bf-input"),
+            standaloneTextInput?.closest<HTMLElement>(".bf-field-boundary") ?? null,
+            standaloneNumberInput?.closest<HTMLElement>(".bf-field-boundary") ?? null,
             document.querySelector<HTMLElement>("[aria-label='Button'] .bf-button"),
             document.querySelector<HTMLElement>("[aria-label='Checkbox'] .bf-checkbox-label"),
             document.querySelector<HTMLElement>("[aria-label='Radio'] .bf-radio-label")
@@ -5445,9 +5516,9 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         <body class="bf-theme ${bodyClass}" style="margin:0">
           <div class="bf-page"><div class="bf-grid"><span>Fluid grid</span></div></div>
           <div class="bf-fixed-width is-start-aligned">Bounded row</div>
-          <input class="bf-input" value="Parity">
+          <span class="bf-field-boundary"><input class="bf-input" value="Parity"></span>
           <button class="bf-button">Parity</button>
-          <input class="bf-input is-nested" type="text" value="Nested parity">
+          <span class="bf-field-boundary"><input class="bf-input is-nested" type="text" value="Nested parity"></span>
           <table class="bf-table"><tbody><tr><td>Table parity</td></tr></tbody></table>
           <section class="bf-panel"><header class="bf-panel-header"><h2 class="bf-panel-title">Parity</h2></header><footer class="bf-panel-footer"><button class="bf-panel-toggle">Footer</button></footer></section>
           <span class="bf-tooltip"><button class="bf-button">Tip</button><p class="bf-tooltip-message"><span class="bf-tooltip-text">Metric tip</span></p></span>
@@ -5459,8 +5530,10 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
       return page.evaluate(() => {
         const input = document.querySelector<HTMLElement>(".bf-input");
+        const inputBoundary = input?.closest<HTMLElement>(".bf-field-boundary");
         const button = document.querySelector<HTMLElement>(".bf-button");
         const nestedInput = document.querySelector<HTMLElement>(".bf-input.is-nested");
+        const nestedInputBoundary = nestedInput?.closest<HTMLElement>(".bf-field-boundary");
         const tableRow = document.querySelector<HTMLElement>(".bf-table tr");
         const header = document.querySelector<HTMLElement>(".bf-panel-header");
         const footer = document.querySelector<HTMLElement>(".bf-panel-footer");
@@ -5471,7 +5544,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         const tooltip = document.querySelector<HTMLElement>(".bf-tooltip:not(.is-detached) .bf-tooltip-message");
         const tooltipText = tooltip?.querySelector<HTMLElement>(".bf-tooltip-text");
         const detachedTooltip = document.querySelector<HTMLElement>(".bf-tooltip.is-detached .bf-tooltip-message");
-        if (!input || !button || !nestedInput || !tableRow || !header || !footer || !status || !appPage || !appGrid || !fixedWidth || !tooltip || !tooltipText || !detachedTooltip) {
+        if (!input || !inputBoundary || !button || !nestedInput || !nestedInputBoundary || !tableRow || !header || !footer || !status || !appPage || !appGrid || !fixedWidth || !tooltip || !tooltipText || !detachedTooltip) {
           throw new Error("Missing surface parity fixture.");
         }
 
@@ -5493,14 +5566,14 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           return [property, value];
         }));
 
-        const inputStyles = getComputedStyle(input);
+        const inputStyles = getComputedStyle(inputBoundary);
         const buttonStyles = getComputedStyle(button);
         const headerStyles = getComputedStyle(header);
         const footerStyles = getComputedStyle(footer);
         const tooltipStyles = getComputedStyle(tooltip);
         const tooltipTextStyles = getComputedStyle(tooltipText);
         return {
-          inputHeight: input.getBoundingClientRect().height,
+          inputHeight: inputBoundary.getBoundingClientRect().height,
           inputMarginBottom: Number.parseFloat(inputStyles.marginBottom) || 0,
           buttonHeight: button.getBoundingClientRect().height,
           buttonMarginBottom: Number.parseFloat(buttonStyles.marginBottom) || 0,
@@ -5508,7 +5581,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           inBoxPaddingEnd: contractValues["--bf-in-box-row-padding-block-end"],
           inBoxPaddingStart: contractValues["--bf-in-box-row-padding-block-start"],
           nestedPainted: contractValues["--bf-nested-row-painted-block-size"],
-          nestedInputHeight: nestedInput.getBoundingClientRect().height,
+          nestedInputHeight: nestedInputBoundary.getBoundingClientRect().height,
           regularCompensation: contractValues["--bf-interface-row-compensation-block-end"],
           regularOccupied: contractValues["--bf-interface-row-occupied-block-size"],
           regularPainted: contractValues["--bf-interface-row-painted-block-size"],

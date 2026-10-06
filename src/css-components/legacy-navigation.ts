@@ -191,7 +191,7 @@ ${bodySemiboldTypeStyles}  display: block;
   padding-block: var(--bf-body-nudge-start) 0;
 }
 
-:where(.bf-theme) :where(.bf-side-navigation-context-switcher) > :where(select) {
+:where(.bf-theme) :where(.bf-side-navigation-context-switcher) > :where(.bf-field-boundary) {
   inline-size: 100%;
 }
 

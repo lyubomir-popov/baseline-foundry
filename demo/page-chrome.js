@@ -183,9 +183,11 @@ function renderSelect(options, selectedValue) {
 
   return `
     <div class="bf-control pc-select-wrap">
-      <select data-page-chrome-tier-select aria-label="Tier">
-        ${optionMarkup}
-      </select>
+      <span class="bf-field-boundary">
+        <select data-page-chrome-tier-select aria-label="Tier">
+          ${optionMarkup}
+        </select>
+      </span>
     </div>`;
 }
 

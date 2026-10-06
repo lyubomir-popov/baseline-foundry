@@ -12,7 +12,8 @@
 - [x] Governed dense Site Chip — `801e856`, gates green; logs `dense-chip-check-types.log`, `dense-chip-npm-test.log`, `dense-chip-qa-components.log`
 - [x] Paint-only row contract — `b395a56`, gates green; logs `row-contract-check-types.log`, `row-contract-npm-test.log`, `row-contract-qa-components.log`
 - [ ] Paint-only component families
-  - [x] Row-bearing commands (Button, Chip, ChoiceRow, SegmentedControl, Pagination) — current tip, gates green; logs `commands-check-types.log`, `commands-npm-test.log`, `commands-qa-components.log`
+  - [x] Row-bearing commands (Button, Chip, ChoiceRow, SegmentedControl, Pagination) — `5a020b7`, gates green; logs `commands-check-types.log`, `commands-npm-test.log`, `commands-qa-components.log`
+  - [x] Native fields and search compositions — current tip, gates green; logs `fields-check-types.log`, `fields-npm-test.log`, `fields-qa-components.log`
 - [ ] Before/after review demo and negative specimens
 - [ ] Root gates and Chromium evidence
 - [ ] Conformance board and final Opus request

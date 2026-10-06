@@ -124,14 +124,33 @@ telephone, and select fields. It is intentionally unavailable to date/time,
 textarea, file, colour, range, link-button, and multiline content. An
 unsupported input cannot acquire nested geometry merely by adding the class.
 
+Replaced text fields use a named paint owner around the native element. Keep
+the ID, name, value, validation attributes, and interaction on the native
+control:
+
+```html
+<div class="bf-control">
+  <span class="bf-field-boundary">
+    <input class="bf-input" type="text">
+  </span>
+</div>
+```
+
+The boundary owns the block-end compensation, one-sided paint overlay, and
+focus relay. The native element retains its stepper, select opening, textarea
+resize handle, or picker and has no layout border. Search compositions use
+their existing search-box owner, while `bf-color-control` remains the colour
+picker's metric and paint owner. The file selector button and range parts are
+named browser-part adaptations inside those outer contracts.
+
 ## Component classification
 
 | Component family | Inline inset | Block contract | Border/host rule |
 |---|---|---|---|
-| Text, number, select, search, password, email, URL, telephone | Field | Regular; framed nested when explicitly hosted | Real borders; select and number share one trailing `1rem` chevron canvas |
+| Text, number, select, search, password, email, URL, telephone | Field | Regular; paint-owner nested when explicitly hosted | `bf-field-boundary` owns the one-sided overlay; select reserves the tier icon plus mark gap and field edge inset, while number keeps its native stepper |
 | Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
 | Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
-| Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
+| Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; paint-owner nested for real buttons | Layout padding never subtracts stroke width; the file selector remains an explicit native-part paint owner |
 | Chip | Action | Regular; governed Site Table.Cell density; legacy zero-footprint nesting in named hosts | The Action inset frames chip commands. A Site Table.Cell automatically binds its Chip to the 4px dense control-block member for a 32px box and absorbs those edges into the ordinary 40px row. Standalone Chips retain their regular occupied seat. Inset paint keeps the dense border out of layout. One-character chips remain stadiums; use a badge for a circular counter. |
 | Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
@@ -143,10 +162,10 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Fieldset, modal regions, drawer chrome | Structural surface padding | Region-owned | Uses `--bf-panel-padding-inline`, not a component inset |
 | Page, grid, navigation nesting | Structural layout | Layout-owned | Never folded into component padding |
 
-The continuation-fit build guard uses the fixed `1rem` disclosure canvas plus
-the active Canonical mark gap, not the smaller tier control visual. Docs and OS
-sit exactly on that boundary, so a tighter continuation value fails before CSS
-generation instead of silently reaching the `max(0rem, …)` placement clamp.
+The continuation-fit build guard uses the tier body-sized disclosure canvas
+plus the active Canonical mark gap. Docs and OS sit exactly on that boundary,
+so a tighter continuation value fails before CSS generation instead of
+silently reaching a placement clamp.
 Notifications retain the tier leading-mark size and Canonical gap. Their 3px
 accent is non-consuming paint; if that paint would oversubscribe the rail, only
 the paint protrudes by the exact shortfall so it cannot overlap the icon.
@@ -162,8 +181,9 @@ inventing a navigation-only height.
 
 The replaced native color input composes through `bf-color-control`. Because a
 color input has no body-text line box, the wrapper contributes an invisible
-metric strut using the shared line, symmetric padding, rem border, and
-trailing compensation; the native input stretches into that row. Composite
+metric strut using the shared line and symmetric padding; the wrapper owns the
+out-of-flow rule and trailing compensation while the native input stretches
+into that row. Composite
 sliders use their paired numeric field as the occupied-row owner and stretch
 the range track within it. These are explicit component compositions, not
 audit-page height patches.

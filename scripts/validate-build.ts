@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "../src/baseline-grid-theme.js";
-import { nestedFieldSelector, nestedInteractiveSelector, nestedTextInputTypes } from "../src/css-components/nested-controls.js";
+import { nestedFieldSelector, nestedTextInputTypes } from "../src/css-components/nested-controls.js";
 import { componentDensityPolicy } from "../src/component-density-policy.js";
 import { tierNames } from "../src/presets.ts";
 import { componentPages } from "./component-demo-shared.ts";
@@ -869,7 +869,7 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-context-switcher)", {
     "padding-inline": "var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter)"
   }, "SideNavigation ContextSwitcher places its real select on the label keyline and keeps the opposing gutter");
-  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-context-switcher) > :where(select)", "margin-block-end", "ContextSwitcher preserves the control's grid-closing block-end compensation");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-context-switcher) > :where(.bf-field-boundary)", "margin-block-end", "ContextSwitcher preserves the field boundary's grid-closing block-end compensation");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true'])::after", {
     "inset-inline-start": "0",
     "pointer-events": "none",
@@ -934,7 +934,25 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-stage-shell"), "Expected CSS to include the stage-shell helper.");
   assert(css.includes(".u-baseline-grid"), "Expected CSS to include the baseline grid utility.");
   assert(!css.includes("min-inline-size: 8em;"), "Expected text-like controls to avoid hard minimum widths that break narrow panels.");
-  assert(css.includes("input[type='file'])::file-selector-button") && css.includes("box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);") && css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected file inputs to paint one field rule and avoid double-padding around their selector button.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-field-boundary)", {
+    "display": "grid",
+    "grid-template-areas": '"field-boundary"',
+    "margin-block-end": "var(--bf-interface-row-compensation-block-end)"
+  }, "replaced fields use a named boundary owner for compensation and paint");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)", {
+    "position": "relative"
+  }, "field paint owners establish their overlay containing block");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select)", {
+    "border": "0",
+    "margin": "0",
+    "padding-block": "var(--bf-interface-row-padding-block)"
+  }, "native fields retain interaction while layout geometry excludes stroke width");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after", {
+    "border": "0 solid transparent",
+    "pointer-events": "none",
+    "position": "absolute"
+  }, "field paint uses the automatic non-intercepting last-child overlay");
+  assert(css.includes("input[type='file'])::file-selector-button") && css.includes("box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default);") && css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected the file selector's named native part to paint without a layout border while the field boundary owns the outer rule.");
   assert(css.includes(":where(.bf-control) {\n  display: grid;\n  gap: var(--bf-field-gap);\n  min-inline-size: 0;"), "Expected form controls to allow shrinking inside narrow containers.");
   assert(css.includes(":where(.bf-field.is-checkbox) :where(.bf-control) {\n  gap: 0;"), "Expected checkbox field controls to avoid downstream gap overrides.");
   assert(css.includes("--bf-slider-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place the slider track metrically within the shared interface row.");
@@ -1117,14 +1135,14 @@ function validateCommonCss(css: string): void {
     "table-layout": "auto",
     "width": "100%"
   }, "tables keep the canonical BF table layout contract");
-  assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedInteractiveSelector})`, {
+  assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedFieldSelector}, .bf-button.is-nested:not(.is-link))`, {
     "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
-    "padding-block": "max(0rem, calc(var(--bf-nested-row-padding-block) - var(--bf-border-width)))"
-  }, "explicit nested fields and buttons preserve their host fit while their still-real family strokes await migration");
+    "padding-block": "var(--bf-nested-row-padding-block)"
+  }, "explicit nested fields and buttons preserve host fit without subtracting paint width from layout geometry");
   assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedFieldSelector})`, {
-    "block-size": "var(--bf-nested-row-painted-block-size)"
-  }, "nested textual fields replace the browser intrinsic floor with their token-derived border box");
+    "block-size": "100%"
+  }, "nested textual fields fill their named boundary owner");
   assert(nestedTextInputTypes.every(type => css.includes(`input.bf-input.is-nested[type='${type}']`)), "Expected every supported nested textual input type to be explicit in the positive allowlist.");
   assert(!css.includes("input.bf-input.is-nested:not([type='file'])") && !css.includes("button.bf-button.is-nested") && css.includes(".bf-button.is-nested:not(.is-link)"), "Expected nested density to reject catch-all inputs and link buttons while remaining element-agnostic for bordered buttons.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label)", {
@@ -1278,6 +1296,8 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))), .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))))::after => inherit",
     ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)::after => inherit",
     ":where(.bf-theme) :where(.bf-choice-row)::after => inherit",
+    ":where(.bf-theme) :where(.bf-field-boundary) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after => inherit",
     ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) => var(--bf-radius)",
@@ -1320,7 +1340,7 @@ function validateCommonCss(css: string): void {
   });
   assert(JSON.stringify(unaffectedRadiusLonghands.sort()) === JSON.stringify(expectedUnaffectedRadiusLonghands), `Expected every radius longhand to retain the reviewed declaration set; got ${JSON.stringify(unaffectedRadiusLonghands)}.`);
   assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
-  assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-interface-row-compensation-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural interface row as textual controls.");
+  assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-block-end: var(--bf-interface-row-compensation-block-end);") && css.includes("margin: 0;\n  min-block-size: 0;"), "Expected the color wrapper to own row compensation and the out-of-flow field stroke while preserving its metric strut and native picker.");
   assert(css.includes("padding-block-end: var(--bf-in-box-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-in-box-row-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "line-height": "var(--bf-nested-row-line-height)",
@@ -1391,12 +1411,12 @@ function validateCommonCss(css: string): void {
   }, "number inputs retain the browser-owned pointer-accessible stepper");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(select)", {
     "background-position": "right var(--bf-component-inline-inset-field) center",
-    "background-size": "1rem 1rem",
+    "background-size": "var(--bf-icon-size-default) var(--bf-icon-size-default)",
     "overflow": "hidden",
     "text-overflow": "ellipsis",
     "white-space": "nowrap",
-    "padding-inline-end": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))"
-  }, "selects reserve one trailing chevron canvas and truncate long selected values");
+    "padding-inline-end": "calc(var(--bf-icon-size-default) + var(--bf-leading-mark-gap) + var(--bf-component-inline-inset-field))"
+  }, "selects reserve the tier icon, mark gap, and field edge inset while truncating long selected values");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(select:dir(rtl))", {
     "background-position": "left var(--bf-component-inline-inset-field) center"
   }, "select artwork follows logical inline-end in RTL");
@@ -1441,8 +1461,8 @@ function validateCommonCss(css: string): void {
     "visibility": "hidden"
   }, "wide expanded navigation removes the compact brand row without deleting its responsive controls");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-box)", {
-    "--bf-search-box-action-inline-size": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))",
-    "--bf-search-box-trailing-inline-size": "calc((var(--bf-search-box-action-inline-size) * 2) + var(--bf-border-width))",
+    "--bf-search-box-action-inline-size": "max(var(--bf-pointer-target-minimum), calc(var(--bf-icon-size-default) + (var(--bf-component-inline-inset-field) * 2)))",
+    "--bf-search-box-trailing-inline-size": "calc(var(--bf-search-box-action-inline-size) * 2)",
     "display": "flex",
     "position": "relative"
   }, "search boxes keep the canonical inline search layout");
@@ -1453,7 +1473,7 @@ function validateCommonCss(css: string): void {
     "display": "grid"
   }, "search-and-filter keeps the canonical outer grid shell");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-box)", {
-    "--bf-search-and-filter-action-inline-size": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))",
+    "--bf-search-and-filter-action-inline-size": "max(var(--bf-pointer-target-minimum), calc(var(--bf-icon-size-default) + (var(--bf-component-inline-inset-field) * 2)))",
     "--bf-search-and-filter-trailing-inline-size": "calc(var(--bf-search-and-filter-action-inline-size) * 2)",
     "display": "inline-flex",
     "flex": "1 1 12rem",

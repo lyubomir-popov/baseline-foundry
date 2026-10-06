@@ -26,7 +26,7 @@ import { sitesFoundationCss } from "./css-components/sites-foundation.js";
 import { sitesEditorialPortsCss } from "./css-components/sites-editorial-ports.js";
 import { sitesRichListsCss } from "./css-components/sites-rich-lists.js";
 import { staticContentPortsCss } from "./css-components/static-content-ports.js";
-import { allSidedStrokeOverlayCss } from "./css-components/stroke-paint.js";
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { tableCss } from "./css-components/table.js";
 import { tabSectionCss } from "./css-components/tab-section.js";
 import { tabsChoiceBreadcrumbsCss } from "./css-components/tabs-choice-breadcrumbs.js";
@@ -98,6 +98,8 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
   const buttonPadding = "  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));\n";
   const paginationStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", { anchor: "existing", color: "var(--bf-color-border-high-contrast)" });
+  const fieldBoundarySelector = ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)";
+  const fieldStroke = blockEndStrokeOverlayCss(fieldBoundarySelector, { anchor: "relative" });
 
   return `${componentContractsCss(tokens, themeSurfaces)}
 ${controlGeometryCss({ bodyLineHeight, bodySelectedStartNudge })}
@@ -125,7 +127,7 @@ ${foundryComponentColorVars("light")}
   --bf-h6-nudge-end: calc(var(--bf-baseline) - var(--bf-h6-nudge-start));
 }
 
-:where(.bf-theme.bf-engine-cap) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme.bf-engine-cap) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container) {
   margin-bottom: ${inputMarginBottom};
 }
 
@@ -245,19 +247,37 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   padding-inline: var(--bf-inline-unit);
 }
 
+${fieldStroke.owner}
+
+/* Replaced fields keep native interaction on the form element while this
+   named boundary owns the out-of-flow one-sided stroke and occupied-row end
+   compensation. Raw unwrapped fields remain usable but intentionally have no
+   component boundary. */
+:where(.bf-theme) :where(.bf-field-boundary) {
+  border-radius: var(--bf-radius);
+  display: grid;
+  grid-template-areas: "field-boundary";
+  inline-size: 100%;
+  margin-block-end: ${inputMarginBottom};
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme) :where(.bf-field-boundary) > :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='file'], textarea, select) {
+  grid-area: field-boundary;
+}
+
 :where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
 ${typeStyles(body, { includeCase: false })}  appearance: none;
   background-color: var(--bf-color-background-inputs);
-  border: 0 solid transparent;
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
-  border-top: var(--bf-border-width) solid transparent;
+  border: 0;
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
-  margin-bottom: ${inputMarginBottom};
-  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));
+  margin: 0;
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-field);
 }
 
@@ -265,6 +285,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   display: grid;
   grid-template-areas: "color-control";
   inline-size: 4rem;
+  margin-block-end: ${inputMarginBottom};
 }
 
 /* Native color inputs do not expose a body-text line box. This invisible
@@ -275,7 +296,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   content: "\\00a0";
   grid-area: color-control;
   line-height: var(--bf-body-line-height);
-  margin-bottom: var(--bf-interface-row-compensation-block-end);
+  margin: 0;
   padding-block: var(--bf-interface-row-padding-block);
   visibility: hidden;
 }
@@ -285,9 +306,9 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   block-size: auto;
   grid-area: color-control;
   inline-size: 100%;
-  margin-bottom: var(--bf-interface-row-compensation-block-end);
+  margin: 0;
   min-block-size: 0;
-  padding: var(--bf-border-width);
+  padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
@@ -301,7 +322,17 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 :where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--bf-color-background-active);
   outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: 0.125rem;
+  outline-offset: -0.125rem;
+}
+
+:where(.bf-theme) :where(.bf-field-boundary) > :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='file'], textarea, select):focus-visible,
+:where(.bf-theme) :where(.bf-color-control) > :where(input[type='color'].bf-color-input):focus-visible,
+:where(.bf-theme) :where(.bf-search-box, .bf-search-and-filter-search-container) :where(input):focus-visible {
+  outline: none;
+}
+
+:where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container):has(:focus-visible) {
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
 }
 
 :where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):disabled {
@@ -322,10 +353,10 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 
 :where(.bf-theme) :where(input[type='file']) {
 ${typeStyles(body, { includeCase: false })}  background: transparent;
-  border: 0 solid transparent;
-  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);
+  border: 0;
+  box-shadow: none;
   color: var(--bf-color-text-default);
-  margin-bottom: ${inputMarginBottom};
+  margin: 0;
   max-inline-size: 100%;
   min-inline-size: 0;
   padding-block: 0;
@@ -336,14 +367,15 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 :where(.bf-theme) :where(input[type='file'])::file-selector-button {
 ${typeStyles(body, { includeCase: false })}  appearance: none;
   background: var(--bf-color-background-alt);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   border-radius: var(--bf-radius);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default);
   color: var(--bf-color-text-default);
   cursor: pointer;
   margin-inline-end: var(--bf-field-gap);
   min-block-size: 0;
-  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));
-  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -354,9 +386,9 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: right var(--bf-component-inline-inset-field) center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
   overflow: hidden;
-  padding-inline-end: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
+  padding-inline-end: calc(var(--bf-icon-size-default) + var(--bf-leading-mark-gap) + var(--bf-component-inline-inset-field));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -371,17 +403,52 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   appearance: auto;
 }
 
+/* Platform pickers keep their native affordance. The named boundary owns the
+   component rule without replacing the browser's calendar or time controls. */
+:where(.bf-theme) :where(input.bf-input:is([type='date'], [type='datetime-local'], [type='time'], [type='month'], [type='week'])) {
+  appearance: auto;
+  background-image: none;
+}
+
 :where(.bf-theme) :where(select:dir(rtl)) {
   background-position: left var(--bf-component-inline-inset-field) center;
 }
 
 :where(.bf-theme) :where(.bf-slider-input) {
-  flex: 0 1 5rem;
-  inline-size: min(100%, 5rem);
-  justify-self: end;
+  inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
   text-align: right;
+}
+
+:where(.bf-theme) :where(.bf-slider) > :where(.bf-field-boundary:has(> .bf-slider-input)) {
+  flex: 0 1 5rem;
+  inline-size: min(100%, 5rem);
+  justify-self: end;
+}
+
+${fieldStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container):has(:focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.125rem;
+  }
+
+  :where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container):not(:has(:focus-visible)) {
+    outline: none;
+  }
+
+  :where(.bf-theme) :where(select) {
+    appearance: auto;
+    background-image: none;
+  }
+
+  :where(.bf-theme) :where(input[type='file'])::file-selector-button {
+    box-shadow: none;
+    outline: var(--bf-border-width) solid ButtonText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
 }
 
 :where(.bf-theme) :where(.bf-checkbox, .bf-radio) {
@@ -577,7 +644,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
 
 :where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
   background-color: var(--bf-color-background-caution-default);
-  border-bottom-color: var(--bf-color-border-caution);
+}
+
+:where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-field-boundary, .bf-search-box, .bf-search-and-filter-search-container) {
+  --bf-stroke-color: var(--bf-color-border-caution);
 }
 
 :where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
@@ -598,7 +668,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
 
 :where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
   background-color: var(--bf-color-background-negative-default);
-  border-bottom-color: var(--bf-color-border-negative);
+}
+
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-field-boundary, .bf-search-box, .bf-search-and-filter-search-container) {
+  --bf-stroke-color: var(--bf-color-border-negative);
 }
 
 :where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
@@ -619,7 +692,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
 
 :where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
   background-color: var(--bf-color-background-positive-default);
-  border-bottom-color: var(--bf-color-border-positive);
+}
+
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-field-boundary, .bf-search-box, .bf-search-and-filter-search-container) {
+  --bf-stroke-color: var(--bf-color-border-positive);
 }
 
 :where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
