@@ -1,18 +1,50 @@
-# Agent inbox — Spec 028 live handover
+# Agent inbox — Spec 028 Opus corrections
 
-Date: 2026-10-06
+Date: 2026-10-07
 Branch: `feat/028-shared-spacing-decisions`
 Worktree: `../baseline-foundry-worktrees/feat-028-shared-spacing-decisions`
 Base: `6deca99776f35b85afde01b68bb0fffe817e29aa`
-Governing Canonical values: `7169231`; routing: `c53b12b` after `b100649`
+Governing feature snapshot: `7169231fcc3168032275d920d32856f9669107ac`
 
 ## Current objective
 
-Complete BF Spec 028 through the saved final Opus checkpoint. Do not resume parked
-Spec 026 or implement body-line phase. Main checkout's dirty inbox is preserved
-and must not be changed.
+Address the actual **changes requested** verdict in
+[`opus-028-review.md`](specs/028-shared-spacing-decisions/opus-028-review.md), then
+prepare the next external Opus checkpoint. The report is preserved unchanged in
+`94a9025535b26bfd9f872f328e82a70ee387188e`. It accepts the first cut's bundle
+fidelity and numerical proofs, not its custom review shell or newly identified
+regressions.
 
-## Landed and green
+Do not resume parked Spec 026, implement body-line phase or Pragma, edit the main
+checkout's dirty inbox, push, merge or open a PR. BF retains metric-derived
+alignment; future Pragma alignment uses element-local `1cap`. OS takes SP-13
+and retains its separately governed values elsewhere.
+
+## Correction progress
+
+- B1: bare native fields keep normal, validation and forced-color boundaries.
+  `94dea088b6c1fdfd7d1066388140b2c4dcfd0e41`; all three required gates pass.
+- D2: detached Tooltip paint anchors to its message; positioned behavior stays
+  intact. `9a7d7c8fa99551428206ec8eae7ca38cf5449318`; all three gates and the
+  independent 16-state message/frame audit pass.
+- S1/S3: `959b5599f4cb2e8a0836e71d867def3d7cc34445`; all three required gates
+  pass, with the independent final audit pending. Preserve raw-table
+  clipping/ellipsis, rowspan geometry and static
+  anchors; correct conditional leaf paint. Raw cells use inset system-color
+  outlines in forced colors, with the added cell edges disclosed. Named BF
+  tables retain one-sided paint.
+- S2: disclose Card overflow and prove separate content scrolling/popup escape.
+- M1: restore exact component text-top assertions with explicit optical cases.
+- D1/M2: move Before/After into BF's shared controls, layout, grid and scripts;
+  test actual mobile viewports and retire the custom review shell.
+- B2/S4: correct full-SHA/effective-override provenance and regeneration guards;
+  name untested Firefox explicitly. Canonical main activation remains pending.
+
+Source/demo/scripts/config and component docs have one writer; root owns this
+inbox and Spec 028 routing/progress docs. Commit final routing after the source
+and runtime freeze. See [tasks](specs/028-shared-spacing-decisions/tasks.md).
+
+## First-cut history (not the corrected review target)
 
 - `b496f26` Spec 028 package and catalog routing.
 - `f199993` control values and 0/4/4px compact block inset.
@@ -108,20 +140,36 @@ and must not be changed.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
-## Active change
+## Evidence and active change
 
-Implementation and demo are complete. The immutable review target is
-`db10d20`; the feature bundles come from `12d47ab`. The final independent
-contract and paint audits accept the requested scope with no open P1/P2. The
-overall evidence manifest is
+The first immutable review target was `db10d20`, built from `12d47ab`.
+Its internal paint/runtime acceptance is superseded by the actual Opus findings.
+Keep its accepted numerical proofs and sealed evidence unchanged. Its manifest is
 `H:/WSL_dev_projects/temp/bf-028-20261006/bf-028-evidence-manifest.json`, SHA-256
 `204fdec1e22a5474e4f288c423a8e869666f7c7e76ac2c4af6abbd9b930660cf`.
 
+New correction evidence is being assembled under
+`H:/WSL_dev_projects/temp/bf-028-opus-corrections-20261006/`; it is not sealed yet.
+The BF server runs at `http://127.0.0.1:4176/`. Use existing BF component/spec
+pages. The shared Before/After control is still pending, and the custom shell is
+being retired. Frozen Canonical diagnostics are unchanged and are not the owner
+sign-off surface.
+
 ## Remaining order
 
-1. Commit the final review metadata carrier.
-2. Stop for the single external Opus checkpoint. Owner visual sign-off and
-   merge remain pending.
+1. Finish correction gates, independent paint/runtime review and root integration.
+2. Seal separate evidence and save a new correction request; do not overwrite
+   the original report, request or sealed evidence.
+3. Stop for the external Opus review. Owner visual sign-off remains pending.
+
+Canonical main at receipt is `cad4aacf91b7e70bee81730552b76ef0d8291a34`; the
+ruling snapshot is still feature-branch-only. Before BF main adoption, the owner
+must merge the governing rulings and the artifact must be re-pinned to the
+resulting full main commit, or the owner must record an explicit exception.
+No exception is inferred. Feature corrections do not satisfy this prerequisite.
+
+Browser forced-color emulation is not Windows contrast-theme sign-off. Firefox,
+Safari and actual Windows display scaling require recorded coverage or limits.
 
 Run `npm run check:types`, `npm test`, and `npm run qa:components` after each
 atomic item. Do not edit frozen neutral diagnostics, push, merge, or open a PR.
