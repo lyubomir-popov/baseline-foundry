@@ -17,6 +17,28 @@ async function readAsideWidth(page: import("playwright").Page): Promise<number> 
   return page.locator(".bf-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
 }
 
+async function readPseudoBorderBox(page: import("playwright").Page, selector: string, pseudoType: "after" | "before"): Promise<{ height: number; left: number; top: number; width: number }> {
+  const session = await page.context().newCDPSession(page);
+  try {
+    const documentResult = await session.send("DOM.getDocument", { depth: -1, pierce: true }) as { root: { nodeId: number } };
+    const queryResult = await session.send("DOM.querySelector", { nodeId: documentResult.root.nodeId, selector }) as { nodeId: number };
+    assert(queryResult.nodeId > 0, `Expected ${selector} to resolve for ${pseudoType} geometry.`);
+    const description = await session.send("DOM.describeNode", { depth: 1, nodeId: queryResult.nodeId, pierce: true }) as {
+      node: { pseudoElements?: Array<{ nodeId: number; pseudoType: string }> };
+    };
+    const pseudo = description.node.pseudoElements?.find(candidate => candidate.pseudoType === pseudoType);
+    assert(pseudo, `Expected ${selector}::${pseudoType} in Chromium's DOM tree.`);
+    const boxResult = await session.send("DOM.getBoxModel", { nodeId: pseudo.nodeId }) as { model: { border: number[] } };
+    const xs = boxResult.model.border.filter((_, index) => index % 2 === 0);
+    const ys = boxResult.model.border.filter((_, index) => index % 2 === 1);
+    const left = Math.min(...xs);
+    const top = Math.min(...ys);
+    return { height: Math.max(...ys) - top, left, top, width: Math.max(...xs) - left };
+  } finally {
+    await session.detach();
+  }
+}
+
 async function verifyNativeNumberStepper(origin: string): Promise<void> {
   const browser = await openBrowser();
 
@@ -4891,6 +4913,79 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
   }
 }
 
+async function verifyTooltipPaintBounds(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const viewports = [
+    { label: "desktop", width: 1100, height: 800 },
+    { label: "mobile", width: 390, height: 844 }
+  ] as const;
+
+  try {
+    for (const viewport of viewports) {
+      const page = await browser.newPage({ viewport });
+      await page.goto(`${origin}/demo/components/tooltip.html`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const tierSelect = page.getByLabel("Tier", { exact: true });
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await tierSelect.selectOption(tier);
+        await page.waitForSelector(`body.bf-tier-${tier}`);
+        const detached = page.locator(".bf-tooltip.is-detached .bf-tooltip-message");
+        const positionedOwner = page.locator("[data-tooltip-positioned]");
+        const positionedTrigger = positionedOwner.locator(".bf-button");
+        const positioned = positionedOwner.locator(".bf-tooltip-message");
+        await page.mouse.move(0, viewport.height - 1);
+        await positionedTrigger.focus();
+        await page.waitForFunction(() => getComputedStyle(document.querySelector("[data-tooltip-positioned] .bf-tooltip-message") as Element).visibility === "visible");
+
+        for (const mode of ["normal", "forced"] as const) {
+          await page.emulateMedia({ forcedColors: mode === "forced" ? "active" : "none" });
+          const geometry = await page.evaluate(`(() => {
+            const read = selector => {
+              const element = document.querySelector(selector);
+              if (!element) throw new Error("Missing tooltip message " + selector + ".");
+              const rect = element.getBoundingClientRect();
+              const overlay = getComputedStyle(element, "::after");
+              return {
+                height: rect.height,
+                left: rect.left,
+                overlayPointerEvents: overlay.pointerEvents,
+                overlayPosition: overlay.position,
+                position: getComputedStyle(element).position,
+                top: rect.top,
+                visibility: getComputedStyle(element).visibility,
+                width: rect.width
+              };
+            };
+            return {
+              detached: read(".bf-tooltip.is-detached .bf-tooltip-message"),
+              positioned: read("[data-tooltip-positioned] .bf-tooltip-message"),
+              viewportWidth: window.innerWidth
+            };
+          })()`);
+          const detachedOverlay = await readPseudoBorderBox(page, ".bf-tooltip.is-detached .bf-tooltip-message", "after");
+          const positionedOverlay = await readPseudoBorderBox(page, "[data-tooltip-positioned] .bf-tooltip-message", "after");
+          const matchesOwner = (owner: typeof geometry.detached, overlay: typeof detachedOverlay) =>
+            Math.abs(owner.left - overlay.left) <= 0.1 && Math.abs(owner.top - overlay.top) <= 0.1 && Math.abs(owner.width - overlay.width) <= 0.1 && Math.abs(owner.height - overlay.height) <= 0.1;
+          assert(geometry.viewportWidth === viewport.width, `Expected the ${tier}/${viewport.label} Tooltip breaker to use the real ${viewport.width}px viewport.`);
+          assert(geometry.detached.position === "relative" && geometry.positioned.position === "absolute", `Expected ${tier}/${viewport.label}/${mode} detached Tooltip paint to establish its own anchor while positioned Tooltip placement remains absolute: ${JSON.stringify(geometry)}.`);
+          assert(geometry.detached.visibility === "visible" && geometry.positioned.visibility === "visible", `Expected ${tier}/${viewport.label}/${mode} detached and focused positioned messages to remain visible.`);
+          assert(geometry.detached.overlayPosition === "absolute" && geometry.positioned.overlayPosition === "absolute" && geometry.detached.overlayPointerEvents === "none" && geometry.positioned.overlayPointerEvents === "none", `Expected ${tier}/${viewport.label}/${mode} Tooltip paint to stay out of flow and pointer-transparent: ${JSON.stringify(geometry)}.`);
+          assert(matchesOwner(geometry.detached, detachedOverlay) && matchesOwner(geometry.positioned, positionedOverlay), `Expected ${tier}/${viewport.label}/${mode} Tooltip overlay bounds to equal their actual message bounds: owners=${JSON.stringify(geometry)}, detached=${JSON.stringify(detachedOverlay)}, positioned=${JSON.stringify(positionedOverlay)}.`);
+        }
+        await page.emulateMedia({ forcedColors: "none" });
+        await page.mouse.move(0, viewport.height - 1);
+        await positionedTrigger.blur();
+        await page.waitForFunction(() => getComputedStyle(document.querySelector("[data-tooltip-positioned] .bf-tooltip-message") as Element).visibility === "hidden");
+        await positionedTrigger.hover();
+        await page.waitForFunction(() => getComputedStyle(document.querySelector("[data-tooltip-positioned] .bf-tooltip-message") as Element).visibility === "visible");
+      }
+      await page.close();
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyQualifiedAnchorStates(origin: string): Promise<void> {
   const cases = [
     { route: "/examples/grid/app-panels.html", selector: "a.pc-sequence-link", decoration: "none", label: "page sequence button" },
@@ -7020,6 +7115,7 @@ async function main(): Promise<void> {
     await verifyFractionalScaleBlockDerivedGeometry(origin);
     await verifyCommandPaintOwners(origin);
     await verifySurfacePaintOwners(origin);
+    await verifyTooltipPaintBounds(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);

@@ -1244,7 +1244,7 @@ ${typeStyles(body, { includeCase: false })}  display: block;
 :where(.bf-theme) :where(.bf-tooltip.is-detached) > :where(.bf-tooltip-message) {
   inset-inline-start: auto;
   pointer-events: auto;
-  position: static;
+  position: relative;
   top: auto;
   transform: none;
 }
