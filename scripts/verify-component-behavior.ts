@@ -822,6 +822,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         footerBottomDelta: footer ? window.innerHeight - footer.getBoundingClientRect().bottom : null,
         footerHeight: footer?.getBoundingClientRect().height ?? null,
         reservedFooterSpace: Number.parseFloat(bodyStyles.paddingBlockEnd),
+        baseline: Number.parseFloat(bodyStyles.getPropertyValue("--bf-baseline")) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
         sequence: sequence.map(link => ({
           accessibleName: link.getAttribute("aria-label"),
           background: getComputedStyle(link).backgroundColor,
@@ -839,7 +840,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
     assert(chrome.sequence.length === 2 && chrome.sequence.every(link => link.accessibleName && link.iconCount === 1 && link.text === "" && link.canonicalBase && !link.nestedTheme && link.background === "rgba(0, 0, 0, 0)" && link.color === "rgb(0, 0, 0)" && link.iconImage.includes("stroke='%23000'") && link.decoration === "none"), `Expected canonical light-tone base/icon link-buttons to inherit the page tone and expose accessible names: ${JSON.stringify(chrome.sequence)}.`);
     assert(chrome.brandText && chrome.crumbText && Math.abs(chrome.brandText.top - chrome.crumbText.top) <= 0.1 && Math.abs(chrome.brandText.bottom - chrome.crumbText.bottom) <= 0.1, `Expected the tagged brand title and breadcrumb to share one fixed header text line: ${JSON.stringify(chrome)}.`);
     assert(chrome.brandBlockSize !== null && chrome.headerHeight !== null && chrome.barHeight !== null && Math.abs(chrome.headerHeight - chrome.brandBlockSize) <= 0.1 && Math.abs(chrome.barHeight - chrome.brandBlockSize) <= 0.1, `Expected the header rule to paint in-box while the bar occupies exactly the derived tagged-brand block: ${JSON.stringify(chrome)}.`);
-    assert(chrome.footerBottomDelta !== null && Math.abs(chrome.footerBottomDelta) <= 0.1 && chrome.footerHeight !== null && Math.abs(chrome.reservedFooterSpace - chrome.footerHeight) <= 0.1, `Expected fixed bottom controls to reserve their measured height: ${JSON.stringify(chrome)}.`);
+    assert(chrome.footerBottomDelta !== null && Math.abs(chrome.footerBottomDelta) <= 0.1 && chrome.footerHeight !== null && Math.abs(chrome.reservedFooterSpace - chrome.footerHeight - chrome.baseline) <= 0.1, `Expected fixed bottom controls to reserve their measured height plus one baseline of unobscured scroll clearance: ${JSON.stringify(chrome)}.`);
 
     const toneControl = page.locator("label:has([data-page-chrome-tone-toggle])");
     await toneControl.click();
@@ -3005,8 +3006,29 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
     }
   };
 
-  const assertExtendedPointerTarget = async (selector: string, label: string): Promise<void> => {
-    const targets = await page.locator(selector).evaluateAll(elements => elements.map(element => {
+  const assertExtendedPointerTarget = async (selector: string, label: string, ensureViewport = true): Promise<void> => {
+    const matched = page.locator(selector);
+    const targets: Array<{
+      paintWidth: number;
+      paintHeight: number;
+      extensionWidth: number;
+      extensionHeight: number;
+      extensionPosition: string;
+      extensionPointerEvents: string;
+      hitEdges: boolean[];
+      interiorMisses: number;
+      interiorSamples: number;
+      matchIndex: number;
+      rect: { top: number; right: number; bottom: number; left: number };
+      viewport: { width: number; height: number };
+      firstMiss: { x: number; y: number; tag: string | null; className: string | null } | null;
+    }> = [];
+    for (let index = 0; index < await matched.count(); index += 1) {
+      const locator = matched.nth(index);
+      if (ensureViewport) {
+        await locator.evaluate(element => element.scrollIntoView({ block: "center", inline: "center" }));
+      }
+      targets.push(await locator.evaluate((element, matchIndex) => {
       const target = element as HTMLElement;
       const rect = target.getBoundingClientRect();
       const extension = getComputedStyle(target, "::after");
@@ -3029,9 +3051,14 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         [right, bottom],
         [left, bottom]
       ];
+      let firstMiss: { x: number; y: number; tag: string | null; className: string | null } | null = null;
       const hitEdges = points.map(([x, y]) => {
         const hit = document.elementFromPoint(x, y);
-        return hit === target || (hit instanceof Node && target.contains(hit));
+        const matches = hit === target || (hit instanceof Node && target.contains(hit));
+        if (!matches && !firstMiss) {
+          firstMiss = { x, y, tag: hit?.tagName ?? null, className: hit instanceof HTMLElement ? hit.className : null };
+        }
+        return matches;
       });
       let interiorSamples = 0;
       let interiorMisses = 0;
@@ -3039,7 +3066,12 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         for (let x = left; x <= right; x += 1) {
           const hit = document.elementFromPoint(x, y);
           interiorSamples += 1;
-          if (!(hit === target || (hit instanceof Node && target.contains(hit)))) interiorMisses += 1;
+          if (!(hit === target || (hit instanceof Node && target.contains(hit)))) {
+            interiorMisses += 1;
+            if (!firstMiss) {
+              firstMiss = { x, y, tag: hit?.tagName ?? null, className: hit instanceof HTMLElement ? hit.className : null };
+            }
+          }
         }
       }
       return {
@@ -3051,9 +3083,14 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         extensionPointerEvents: extension.pointerEvents,
         hitEdges,
         interiorMisses,
-        interiorSamples
+        interiorSamples,
+        matchIndex,
+        rect: { top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left },
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+        firstMiss
       };
-    }));
+      }, index));
+    }
 
     for (const target of targets) {
       assert(
@@ -3350,14 +3387,14 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
           `Expected ${tier}/${tone} only the icon target to reserve symmetric, sufficient, baseline-rounded clearance inside an otherwise unpadded nowrap scrollport; got ${JSON.stringify(scrollportGeometry)}.`
         );
         await actionsFixture.evaluate(element => { element.scrollLeft = 0; });
-        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} nowrap-scrollport start icon target`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} nowrap-scrollport start icon target`, false);
         await actionsFixture.evaluate(element => { element.scrollLeft = element.scrollWidth; });
-        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} nowrap-scrollport end icon target`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} nowrap-scrollport end icon target`, false);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "rtl"));
         await actionsFixture.evaluate(element => { element.scrollLeft = 0; });
-        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} RTL nowrap-scrollport start icon target`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} RTL nowrap-scrollport start icon target`, false);
         await actionsFixture.evaluate(element => { element.scrollLeft = -element.scrollWidth; });
-        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} RTL nowrap-scrollport end icon target`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} RTL nowrap-scrollport end icon target`, false);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "ltr"));
         await actionsFixture.evaluate(element => {
           element.classList.remove("is-nowrap");
@@ -3978,6 +4015,7 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
           paddingTop: Number.parseFloat(firstStylesBefore.paddingTop),
           paddingBottom: Number.parseFloat(firstStylesBefore.paddingBottom),
           marginBottom: Number.parseFloat(firstStylesBefore.marginBottom),
+          lineHeight: Number.parseFloat(firstStylesBefore.lineHeight),
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
         };
         internalFirst.style.setProperty("--bf-body-space-after", "99rem");
@@ -3989,6 +4027,7 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
           paddingTop: Number.parseFloat(firstStylesAfter.paddingTop),
           paddingBottom: Number.parseFloat(firstStylesAfter.paddingBottom),
           marginBottom: Number.parseFloat(firstStylesAfter.marginBottom),
+          lineHeight: Number.parseFloat(firstStylesAfter.lineHeight),
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
         };
         const ruleRect = rule.getBoundingClientRect();
@@ -4015,7 +4054,9 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
       assert(state.before.sectionGap > state.before.internalGap, `Expected ${tier} bf-stack.is-section gap (${state.before.sectionGap}px) to exceed the internal gap (${state.before.internalGap}px).`);
       assert(Math.abs(state.before.firstToSecond - (state.before.internalGap + state.before.marginBottom)) <= tolerance, `Expected ${tier} adjacent stack geometry to comprise the container gap plus baseline-compensation margin.`);
       assert(state.before.paddingBottom === 0, `Expected ${tier} text roles to retain zero padding-block-end, got ${state.before.paddingBottom}px.`);
-      assert(Math.abs(state.before.paddingTop + state.before.marginBottom - state.before.baseline) <= tolerance, `Expected ${tier} top nudge plus bottom-margin compensation to equal one ${state.before.baseline}px baseline unit.`);
+      const expectedCompensation = (Math.ceil(((state.before.lineHeight + (2 * state.before.paddingTop)) / state.before.baseline) - 1e-10) * state.before.baseline) - state.before.lineHeight - state.before.paddingTop;
+      assert(state.before.marginBottom + tolerance >= state.before.paddingTop, `Expected ${tier} bottom compensation to be at least the metric nudge.`);
+      assert(Math.abs(state.before.marginBottom - expectedCompensation) <= tolerance, `Expected ${tier} bottom compensation to be the smallest grid-closing value at least equal to its nudge.`);
       assert(JSON.stringify(state.after) === JSON.stringify(state.before), `Expected ${tier} legacy --bf-body-space-after overrides not to affect production geometry. Before=${JSON.stringify(state.before)}, after=${JSON.stringify(state.after)}.`);
       assert(state.regressions.basicRowGap === 0, `Expected ${tier} bf-basic-section-layout to suppress the generic stack row gap, got ${state.regressions.basicRowGap}px.`);
       assert(Math.abs(state.regressions.ruleToHeader - state.regressions.ruleMarginBottom) <= tolerance, `Expected ${tier} basic-section text to follow only the rule's own trailing compensation. Distance=${state.regressions.ruleToHeader}px, margin=${state.regressions.ruleMarginBottom}px.`);

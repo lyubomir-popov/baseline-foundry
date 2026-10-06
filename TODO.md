@@ -11,14 +11,8 @@ in `docs/specs.md`; per-spec tasks live in the package.
    edits, bring the branch up to `main` (v0.2.0/v0.2.1 landed after it), rerun
    `npm test` and `npm run qa:components`, then land by owner-approved direct
    fast-forward and archive the package.
-3. Port the Pragma body-line phase and closure decision (Spec 024 contract,
-   owner decision 2026-09-28) to BF as a new numbered package: headings lift
-   their first baseline onto the body-line step, and paragraphs, lists and
-   headings close their occupied block to whole body lines rather than the
-   baseline unit. BF keeps generated real-font metrics. Decide in that package
-   whether the parked `wip/bf-typography-cap-metric` branch (typography
-   discipline, generated cap-height tokens, paint-only icon shift) folds in or
-   lands first.
+3. Spec 026 body-line phase stays parked and excluded from BF by current owner
+   direction. Preserve its branch and history; do not resume or port it.
 4. 020b page/grid adoption stays parked until design-tokens publishes a
    page/grid provider.
 

@@ -302,7 +302,7 @@ export function injectPageChrome(options = {}) {
     document.body.insertBefore(footer, firstScript ?? null);
     const reserveFooter = () => {
       const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-      document.body.style.setProperty("--pc-footer-block-size", `${footer.getBoundingClientRect().height / rootRem}rem`);
+      document.body.style.setProperty("--pc-footer-block-size", `calc(${footer.getBoundingClientRect().height / rootRem}rem + var(--bf-baseline))`);
     };
     reserveFooter();
     if (typeof ResizeObserver === "function") {

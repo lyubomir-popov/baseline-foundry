@@ -374,9 +374,12 @@ function validateTierSurfaceParity(
     const roles = (artifact.tokens.roles ?? {}) as Record<string, Record<string, unknown>>;
     for (const [roleName, token] of Object.entries(roles)) {
       const marginBottom = parseRemValue(token.marginBottom);
-      const baselineCompensation = baselineUnit - parseRemValue(token.nudgeTop);
+      const lineHeight = parseRemValue(token.lineHeight);
+      const nudge = parseRemValue(token.nudgeTop);
+      const baselineCompensation = (Math.ceil(((lineHeight + (2 * nudge)) / baselineUnit) - 1e-10) * baselineUnit) - lineHeight - nudge;
       assert(Number.isFinite(marginBottom) && marginBottom >= 0, `Expected ${tierName}/${roleName} manifest marginBottom to be finite and non-negative.`);
-      assert(Math.abs(marginBottom - baselineCompensation) <= 0.00001, `Expected ${tierName}/${roleName} manifest marginBottom to complement nudgeTop to one baseline unit.`);
+      assert(marginBottom + 0.00001 >= nudge, `Expected ${tierName}/${roleName} manifest marginBottom to be at least its metric nudge.`);
+      assert(Math.abs(marginBottom - baselineCompensation) <= 0.00001, `Expected ${tierName}/${roleName} manifest marginBottom to be the smallest grid-closing compensation at least equal to its nudge.`);
     }
   }
 }
@@ -845,7 +848,7 @@ function validateCommonCss(css: string): void {
     "overflow": "hidden",
     "text-overflow": "ellipsis"
   }, "side-navigation labels retain overflow containment while their row can grow for wrapped copy");
-  assert(css.includes("min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-margin-bottom));"), "Expected single-line side-navigation group headings to reserve a four-baseline occupied block without counting metric compensation twice.");
+  assert(css.includes("min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-nudge-end));"), "Expected single-line side-navigation group headings to reserve a four-baseline occupied block without counting the ordinary in-box end nudge twice.");
   assert(css.includes("min-block-size: calc(var(--bf-interface-row-occupied-block-size) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to combine the regular interface row with their structural end padding.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0rem;"), "Expected flush stacks to remove only their container gap.");

@@ -1,60 +1,43 @@
-# Agent inbox
+# Agent inbox — Spec 028 live handover
 
-Live state only. Durable history lives in git, `docs/spec-archive/`, and the
-active package. Keep this file short; move anything settled to its owner.
+Date: 2026-10-06
+Branch: `feat/028-shared-spacing-decisions`
+Worktree: `../baseline-foundry-worktrees/feat-028-shared-spacing-decisions`
+Base: `6deca99776f35b85afde01b68bb0fffe817e29aa`
+Governing Canonical values: `7169231`; routing: `303875a`
 
-## Worktrees and live work (2026-09-30)
+## Current objective
 
-| Worktree | Branch | State |
-|---|---|---|
-| `baseline-foundry` (this checkout) | `main` | Clean, equal to `origin/main` at `v0.2.1` |
-| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Pushed. Body-line rhythm default; awaiting owner browser review and D4 gap ruling |
-| `../baseline-foundry-worktrees/feat-025-compact-alignment-grid` | `feat/025-compact-alignment-grid` | All tasks done; closeout edits uncommitted; 6 behind `main` |
-| `../baseline-foundry-worktrees/feat-024-semantic-spacing-token-schema` | `feat/024-semantic-spacing-token-schema` | Pragma-targeted planning store run by a separate agent. Do not edit it from BF work |
-| `../baseline-foundry-worktrees/wip-bf-typography-cap-metric` | `wip/bf-typography-cap-metric` | Parked, unvalidated BF work recovered from the old 022 checkout |
-| `../baseline-foundry-worktrees/feat-020b-page-grid-token-adoption` | `feat/020b-page-grid-token-adoption` | Parked; blocked on a design-tokens page/grid provider |
+Complete BF Spec 028 through the saved final Opus checkpoint. Do not resume parked
+Spec 026 or implement body-line phase. Main checkout's dirty inbox is preserved
+and must not be changed.
 
-Execution order is in [`TODO.md`](TODO.md); package status is in
-[`docs/specs.md`](docs/specs.md).
+## Landed and green
 
-## BF and Pragma
+- `b496f26` Spec 028 package and catalog routing.
+- `f199993` control values and 0/4/4px compact block inset.
+- `955bc27` 16/14/14/12px body-sized icon source; tagged brand exception kept.
+- `49bae12` continuation derived from field + body icon + gap; no authored field.
+- `6717ccc` SP-6 gaps and SP-3 standard surface values.
 
-The boundary is in [`AGENTS.md`](AGENTS.md). Spec 022, the first inside-out
-Pragma spacing exploration, is archived at
-[`docs/spec-archive/022-pragma-spacing-adoption/`](docs/spec-archive/022-pragma-spacing-adoption/).
-Its implementation branch was too large to review or merge; Spec 024 owns the
-recut. Do not resume 022.
+Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
-## Cross-repository tokens
+## Active change
 
-The owner-approved governing contract is
-[`docs/cross-repo-token-architecture-spec.md`](docs/cross-repo-token-architecture-spec.md).
-The final independent sign-off is
-[`docs/cross-repo-token-architecture-signoff-review.md`](docs/cross-repo-token-architecture-signoff-review.md);
-its required corrections are incorporated. The durable execution sequence is
-[`docs/cross-repo-token-architecture-implementation-handoff.md`](docs/cross-repo-token-architecture-implementation-handoff.md).
-Design-tokens PRs 1 and 2 and BF contribution 3 (`2289a55`) are landed; 020a
-(`299f182`) removed the seven-point compatibility overlay. The other
-`docs/cross-repo-token-architecture-*` files are closed review evidence.
+SP-13 four-tier text compensation is implemented in the working tree. The
+independent `root-text-oracle.json` passes all 28 role outputs, including the 16
+expected changes, unchanged metric nudges/line heights, `c >= n`, and grid
+closure. Finish the BF behavior/full/QA gates, then commit atomically.
 
-Settled policy: `spacing.baseline` is 0.5rem for Site and 0.25rem for
-Docs/App/OS; exact line heights are typography-owned dimensions carried by a
-Canonical extension because DTCG 2025.10 permits only a numeric multiplier;
-Site display is 84px/96px; Site secondary 14px/20px is the only semantic
-half-step family and knowingly exits on the half-phase; controls are intrinsic
-with no target height.
+## Remaining order
 
-## Last-known-green
+1. Block-end margin containment and Tooltip compact inner text owner.
+2. SideNavigation gutters/keylines/ContextSwitcher.
+3. Dense Site Chip 32px enrolled-host contract; standalone 40px.
+4. Paint-only row contract first, then atomic component-family commits using the
+   reviewed exception map in `paint-impact-audit.md`.
+5. Identical-DOM before/after demo, browser scale evidence, BF board columns,
+   manifest, review docs, and `opus-028-review-request.md`; stop for external Opus.
 
-`main` at `8046424` (`v0.2.1`) passes `npm test` on 2026-09-30, including all
-component-baseline families and browser behavior. `npm run qa:components` was
-not rerun in that check.
-
-## Preserve
-
-- `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
-  `tmp/repo-health-2026-09-30/` (backup of the old 022 checkout).
-- `stash@{0}` holds the same 022 checkout state. Drop it only after the owner
-  confirms the archive and WIP branch are sufficient.
-- The sibling Vanilla checkout has user changes in `yarn.lock`; do not clean or
-  update it.
+Run `npm run check:types`, `npm test`, and `npm run qa:components` after each
+atomic item. Do not edit frozen neutral diagnostics, push, merge, or open a PR.

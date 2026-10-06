@@ -303,7 +303,11 @@ function toTypographyToken(identifier: string, token: BaselineGeneratorElementTo
   const elementConfig = config.elements.find(element => element.identifier === identifier);
   const fontFamily = token.fontFamily ?? config.fontFiles[0]?.family ?? "sans";
   const fontStack = config.fontStacks[fontFamily] ?? fontFamily;
-  const marginBottom = toRem(config.baselineUnit - parseRem(token.nudgeTop));
+  const lineHeight = parseRem(token.lineHeight);
+  const nudge = parseRem(token.nudgeTop);
+  const occupiedWithMinimumCompensation = lineHeight + (2 * nudge);
+  const closedBlockSize = Math.ceil((occupiedWithMinimumCompensation / config.baselineUnit) - 1e-10) * config.baselineUnit;
+  const marginBottom = toRem(closedBlockSize - lineHeight - nudge);
 
   return {
     ...token,

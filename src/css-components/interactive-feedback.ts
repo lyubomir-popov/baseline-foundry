@@ -189,7 +189,7 @@ export function interactiveFeedbackCss(): string {
  * reopening the visible title/copy gap. Keep this after the shell variants so
  * the metric relationship owns their final compensation. */
 :where(.bf-theme) :where(.bf-notification:has(> .bf-notification-content.is-metric-flush):not(.is-borderless)) {
-  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width) + var(--bf-baseline) - var(--bf-h6-nudge-start) - var(--bf-body-margin-bottom));
+  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width) + var(--bf-baseline) - var(--bf-h6-nudge-start) - var(--bf-body-nudge-end));
 }
 
 :where(.bf-theme) :where(.bf-notification-message, .bf-notification-timestamp) {

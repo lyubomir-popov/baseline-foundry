@@ -97,8 +97,9 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 :where(.bf-theme) :where(.bf-inline-list-item) {
 ${bodyTypeStyles}  display: inline-block;
   list-style: none;
+  margin-block-end: var(--bf-body-margin-bottom);
   margin-inline-end: var(--bf-inline-list-space);
-  padding-block-end: var(--bf-body-nudge-end);
+  padding-block-end: 0;
   padding-block-start: var(--bf-body-nudge-start);
 }
 

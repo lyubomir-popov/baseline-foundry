@@ -62,7 +62,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
 /* A single-line group heading occupies four baselines. min-block-size keeps
    that phase exact while still allowing a long heading to wrap and grow. */
 :where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading) {
-  min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-margin-bottom));
+  min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-nudge-end));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-drawer) {

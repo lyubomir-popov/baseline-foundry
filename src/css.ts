@@ -46,7 +46,15 @@ function fontFaceRule(fontFile: ThemeFontFile): string {
   return `@font-face {\n  font-family: "${fontFile.cssFamily}";\n  src: url("${fontFile.path}") format("${fontFormat(fontFile.path)}");\n  font-style: ${fontFile.fontStyle ?? "normal"};\n  font-weight: ${fontFile.fontWeight ?? "400"};\n  font-stretch: ${fontFile.fontStretch ?? "normal"};\n  font-display: ${fontFile.fontDisplay ?? "swap"};\n}\n`;
 }
 
-function baselineCompensation(nudgeTop: string, baselineUnit: string): string {
+function baselineCompensation(lineHeight: string, nudgeTop: string, baselineUnit: string): string {
+  const line = parseRemValue(lineHeight);
+  const nudge = parseRemValue(nudgeTop);
+  const unit = parseRemValue(baselineUnit);
+  const closedBlockSize = Math.ceil(((line + (2 * nudge)) / unit) - 1e-10) * unit;
+  return toRemLiteral(closedBlockSize - line - nudge);
+}
+
+function inBoxEndNudge(nudgeTop: string, baselineUnit: string): string {
   return toRemLiteral(parseRemValue(baselineUnit) - parseRemValue(nudgeTop));
 }
 
@@ -103,15 +111,16 @@ const ROLE_STYLE_DEFAULTS: Record<string, {
 
 function textRule(roleName: string, selectors: string[], token: TypographyToken, baselineUnit: string, extra = ""): string {
   const styleDefaults = ROLE_STYLE_DEFAULTS[roleName] ?? {};
-  const marginBottom = token.marginBottom ?? baselineCompensation(token.nudgeTop, baselineUnit);
+  const marginBottom = token.marginBottom ?? baselineCompensation(token.lineHeight, token.nudgeTop, baselineUnit);
   const nudgeStart = token.nudgeTop;
   return `${selectors.join(",\n")} {\n  font-family: ${roleFontFamilyVar(roleName, token.fontStack)};\n  font-size: ${roleFontSizeVar(roleName, token.fontSize)};\n  font-style: ${roleFontStyleVar(roleName, token.fontStyle ?? "normal")};\n  font-weight: ${roleFontWeightVar(roleName, token.fontWeight ?? 400)};\n  font-variant-caps: ${roleFontVariantCapsVar(roleName, token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal")};\n  letter-spacing: ${roleLetterSpacingVar(roleName, token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal")};\n  text-transform: ${roleTextTransformVar(roleName, token.textTransform ?? styleDefaults.textTransform ?? "none")};\n  line-height: ${roleLineHeightVar(roleName, token.lineHeight)};\n  margin-bottom: ${roleMarginBottomVar(roleName, marginBottom)};\n  padding-block-end: 0rem;\n  padding-block-start: ${roleNudgeStartVar(roleName, nudgeStart)};\n${extra}}\n`;
 }
 
 function roleVarDeclarations(roleName: string, token: TypographyToken, baselineUnit: string): string {
   const styleDefaults = ROLE_STYLE_DEFAULTS[roleName] ?? {};
-  const compensation = token.marginBottom ?? baselineCompensation(token.nudgeTop, baselineUnit);
-  return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-baseline-compensation: ${compensation};\n  --bf-${roleName}-margin-bottom: ${compensation};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${compensation};\n`;
+  const compensation = token.marginBottom ?? baselineCompensation(token.lineHeight, token.nudgeTop, baselineUnit);
+  const endNudge = inBoxEndNudge(token.nudgeTop, baselineUnit);
+  return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-baseline-compensation: ${compensation};\n  --bf-${roleName}-margin-bottom: ${compensation};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};\n`;
 }
 
 function spacingVarDeclarations(tokens: ThemeTokens): string {
@@ -541,7 +550,7 @@ ${capEngineDemo}
 }
 
 :where(.bf-theme) :where(.bf-prose li) {
-  margin: 0 0 ${roleMarginBottomVar("body", baselineCompensation(body.nudgeTop, baselineUnit))};
+  margin: 0 0 ${roleMarginBottomVar("body", baselineCompensation(body.lineHeight, body.nudgeTop, baselineUnit))};
   padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
 }
@@ -553,7 +562,7 @@ ${capEngineDemo}
   font-style: ${roleFontStyleVar("body", body.fontStyle ?? "normal")};
   font-weight: ${roleFontWeightVar("body", body.fontWeight ?? 400)};
   line-height: ${roleLineHeightVar("body", body.lineHeight)};
-  margin-bottom: ${roleMarginBottomVar("body", baselineCompensation(body.nudgeTop, baselineUnit))};
+  margin-bottom: ${roleMarginBottomVar("body", baselineCompensation(body.lineHeight, body.nudgeTop, baselineUnit))};
   max-inline-size: var(--bf-measure);
   padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
