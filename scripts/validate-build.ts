@@ -890,8 +890,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-component-inline-inset-field:") && css.includes("--bf-component-inline-inset-action:") && css.includes("--bf-component-inline-inset-continuation:") && !css.includes("--bf-disclosure-label-inline-offset:") && !css.includes("--bf-icon-label-inline-offset:"), "Expected field, action, and continuation to be authoritative component inset inputs rather than aliases of one component.");
   assert(css.includes("padding-inline-start: var(--bf-component-inline-inset-continuation);"), "Expected accordion panels to share the continuation inset.");
   for (const [selector, inset] of [
-    [":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", "continuation"],
-    [":where(.bf-theme) :where(.bf-option-card)", "continuation"],
+    [":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", "action"],
+    [":where(.bf-theme) :where(.bf-option-card)", "action"],
     [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "continuation"],
     [":where(.bf-theme) :where(.bf-contextual-menu-link)", "action"],
     [":where(.bf-theme) :where(.bf-code-snippet-title)", "continuation"],
@@ -1097,9 +1097,13 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", {
     "display": "flex",
     "flex-direction": "column",
-    "gap": "var(--bf-field-gap)",
-    "overflow": "auto"
-  }, "card surfaces keep the shared stacked surface contract");
+    "gap": "var(--bf-section-space-shallow)",
+    "overflow": "visible"
+  }, "card surfaces own the shared group gap while allowing owned popups to escape");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-header)", {
+    "border": "0",
+    "padding-block-end": "0"
+  }, "card sections add no block padding inside the surface-owned group gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-card, a.bf-card.is-highlighted, a.bf-card.is-overlay, a.bf-card.is-muted)", {
     "color": "inherit",
     "cursor": "pointer",
@@ -1294,13 +1298,19 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-button, .bf-button.is-base) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-button.is-link) => 0",
     ":where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))), .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))))::after => inherit",
+    ":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)::after => inherit",
+    ":where(.bf-theme) :where(.bf-card-header)::after => inherit",
+    ":where(.bf-theme) :where(.bf-card-preview:not(.is-missing))::after => inherit",
     ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)::after => inherit",
     ":where(.bf-theme) :where(.bf-choice-row)::after => inherit",
+    ":where(.bf-theme) :where(.bf-content-card)::after => inherit",
+    ":where(.bf-theme) :where(.bf-content-card-footer)::after => inherit",
     ":where(.bf-theme) :where(.bf-field-boundary) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after => inherit",
     ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
     ":where(.bf-theme) :where(.bf-navigation-bar)::after => inherit",
+    ":where(.bf-theme) :where(.bf-option-card)::after => inherit",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)::after => inherit",
     ":where(.bf-theme) :where(.bf-prose ul > li)::before => 50%",

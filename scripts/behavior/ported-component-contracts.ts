@@ -1335,10 +1335,13 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
       probe.style.cssText = "position:absolute;visibility:hidden;inline-size:1px;block-size:var(--bf-baseline)";
       document.body.append(probe);
       const baseline = probe.getBoundingClientRect().height;
+      probe.style.blockSize = "var(--bf-field-gap)";
+      const fieldGap = probe.getBoundingClientRect().height;
       probe.remove();
       const cards = Array.from(document.querySelectorAll<HTMLElement>(".bf-content-card"));
       return {
         baseline,
+        fieldGap,
         cards: cards.map(card => {
           const wrapper = card.closest<HTMLElement>(".bf-content-card-wrapper");
           const frame = card.querySelector<HTMLElement>(".bf-content-card-frame");
@@ -1360,6 +1363,9 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
           const firstFooterItem = footerInner?.firstElementChild as HTMLElement | null;
           const footerRect = footer?.getBoundingClientRect();
           const footerItemRect = firstFooterItem?.getBoundingClientRect();
+          const cardStyle = getComputedStyle(card);
+          const overlayStyle = getComputedStyle(card, "::after");
+          const footerOverlayStyle = footer ? getComputedStyle(footer, "::after") : null;
           return {
             className: card.className,
             width: cardRect.width,
@@ -1379,6 +1385,23 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
             descriptionLineHeight: descriptionStyle ? Number.parseFloat(descriptionStyle.lineHeight) : 0,
             descriptionHeight: description?.getBoundingClientRect().height ?? 0,
             footerClearance: footerRect && footerItemRect ? footerItemRect.top - footerRect.top - Number.parseFloat(getComputedStyle(footer).borderBlockStartWidth) : null,
+            footerPaddingStart: footerInner ? Number.parseFloat(getComputedStyle(footerInner).paddingBlockStart) : null,
+            borderWidths: [cardStyle.borderBlockStartWidth, cardStyle.borderBlockEndWidth, cardStyle.borderInlineStartWidth, cardStyle.borderInlineEndWidth],
+            overlay: {
+              content: overlayStyle.content,
+              inset: [overlayStyle.top, overlayStyle.right, overlayStyle.bottom, overlayStyle.left],
+              pointerEvents: overlayStyle.pointerEvents,
+              position: overlayStyle.position,
+              shadow: overlayStyle.boxShadow
+            },
+            footerOverlay: footerOverlayStyle ? {
+              content: footerOverlayStyle.content,
+              inset: [footerOverlayStyle.top, footerOverlayStyle.right, footerOverlayStyle.bottom, footerOverlayStyle.left],
+              pointerEvents: footerOverlayStyle.pointerEvents,
+              position: footerOverlayStyle.position,
+              shadow: footerOverlayStyle.boxShadow
+            } : null,
+            mainLinkAfterPosition: mainLink ? getComputedStyle(mainLink, "::after").position : "",
             overflow: card.scrollWidth - card.clientWidth
           };
         })
@@ -1391,7 +1414,11 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
         assert(Math.abs(card.height - Math.round(card.height / state.baseline) * state.baseline) <= contentCardBaselineTolerancePx, `Expected ${label} ${card.className} card height to snap to the baseline (height=${card.height}, baseline=${state.baseline}).`);
         assert(Math.abs(card.wrapperHeight - Math.round(card.wrapperHeight / state.baseline) * state.baseline) <= contentCardBaselineTolerancePx, `Expected ${label} ${card.className} wrapper height to snap to the baseline (height=${card.wrapperHeight}, baseline=${state.baseline}).`);
         assert(card.overflow <= 1, `Expected ${label} ${card.className} card to avoid inline overflow.`);
-        if (card.footerClearance !== null) assert(card.footerClearance >= 7, `Expected ${label} ${card.className} footer content to clear its top rule by the canonical half-rem allowance; got ${card.footerClearance}px.`);
+        assert(card.borderWidths.every(width => width === "0px"), `Expected ${label} ${card.className} boundary to consume no layout border; got ${card.borderWidths.join(", ")}.`);
+        assert(card.overlay.content !== "none" && card.overlay.position === "absolute" && card.overlay.pointerEvents === "none" && card.overlay.inset.every(value => value === "0px") && card.overlay.shadow !== "none", `Expected ${label} ${card.className} to use an exact, pointer-transparent automatic overlay; got ${JSON.stringify(card.overlay)}.`);
+        assert(card.mainLinkAfterPosition === "absolute", `Expected ${label} ${card.className} expanded main link to retain its root-card anchor.`);
+        if (card.footerOverlay) assert(card.footerOverlay.content !== "none" && card.footerOverlay.position === "absolute" && card.footerOverlay.pointerEvents === "none" && card.footerOverlay.inset.every(value => value === "0px") && card.footerOverlay.shadow !== "none", `Expected ${label} ${card.className} footer rule to use its own exact automatic overlay; got ${JSON.stringify(card.footerOverlay)}.`);
+        if (card.footerClearance !== null) assert(card.footerPaddingStart !== null && Math.abs(card.footerPaddingStart - state.fieldGap) <= 0.05 && card.footerClearance >= state.fieldGap - 0.05, `Expected ${label} ${card.className} footer owner to reserve the tier field gap (${state.fieldGap}px) before its aligned content; got padding=${card.footerPaddingStart}px, clearance=${card.footerClearance}px.`);
       }
     };
 
@@ -1524,6 +1551,130 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
       });
       assert(rtlState.direction === "rtl" && rtlState.overflowX === "auto" && rtlState.mask.includes("left") && rtlState.scrollable, `Expected ${tier} RTL content-card footer rail to preserve its left-edge mask and scroll contract.`);
     }
+
+    await page.goto(`${origin}/demo/components/cards.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const state = await page.evaluate(() => {
+        const root = document.querySelector<HTMLElement>(".bf-card");
+        const next = document.querySelectorAll<HTMLElement>(".bf-card")[1];
+        const header = root?.querySelector<HTMLElement>(".bf-card-header");
+        const popup = root?.querySelector<HTMLElement>("[data-card-popup]");
+        const imagePreview = document.querySelector<HTMLElement>("[data-card-preview]");
+        const missingPreview = document.querySelector<HTMLElement>("[data-card-preview-missing]");
+        if (!root || !next || !header || !popup || !imagePreview || !missingPreview) return null;
+        const rootStyle = getComputedStyle(root);
+        const rootOverlay = getComputedStyle(root, "::after");
+        const headerStyle = getComputedStyle(header);
+        const headerOverlay = getComputedStyle(header, "::after");
+        const imagePreviewStyle = getComputedStyle(imagePreview);
+        const imagePreviewOverlay = getComputedStyle(imagePreview, "::after");
+        const rootBefore = root.getBoundingClientRect();
+        root.style.setProperty("--bf-stroke-width", "4px");
+        const rootAfter = root.getBoundingClientRect();
+        root.style.removeProperty("--bf-stroke-width");
+        const popupRect = popup.getBoundingClientRect();
+        const nextRect = next.getBoundingClientRect();
+        const overlapTop = Math.max(popupRect.top, nextRect.top);
+        const overlapBottom = Math.min(popupRect.bottom, nextRect.bottom);
+        const sampleX = popupRect.left + Math.min(12, popupRect.width / 2);
+        const sampleY = overlapTop + Math.max(1, Math.min(8, (overlapBottom - overlapTop) / 2));
+        const hit = document.elementFromPoint(sampleX, sampleY);
+        const missingStyle = getComputedStyle(missingPreview);
+        const missingAfter = getComputedStyle(missingPreview, "::after");
+        const bodyProbe = document.createElement("span");
+        bodyProbe.style.cssText = "position:absolute;visibility:hidden;font-size:var(--bf-body-font-size)";
+        root.append(bodyProbe);
+        const expectedBodyFontSize = getComputedStyle(bodyProbe).fontSize;
+        bodyProbe.remove();
+        return {
+          root: {
+            borderWidths: [rootStyle.borderBlockStartWidth, rootStyle.borderBlockEndWidth, rootStyle.borderInlineStartWidth, rootStyle.borderInlineEndWidth],
+            overlay: { content: rootOverlay.content, inset: [rootOverlay.top, rootOverlay.right, rootOverlay.bottom, rootOverlay.left], pointerEvents: rootOverlay.pointerEvents, position: rootOverlay.position, shadow: rootOverlay.boxShadow }
+          },
+          header: {
+            borderWidths: [headerStyle.borderBlockStartWidth, headerStyle.borderBlockEndWidth, headerStyle.borderInlineStartWidth, headerStyle.borderInlineEndWidth],
+            overlay: { content: headerOverlay.content, inset: [headerOverlay.top, headerOverlay.right, headerOverlay.bottom, headerOverlay.left], pointerEvents: headerOverlay.pointerEvents, position: headerOverlay.position, shadow: headerOverlay.boxShadow }
+          },
+          imagePreview: {
+            borderWidths: [imagePreviewStyle.borderBlockStartWidth, imagePreviewStyle.borderBlockEndWidth, imagePreviewStyle.borderInlineStartWidth, imagePreviewStyle.borderInlineEndWidth],
+            overlay: { content: imagePreviewOverlay.content, inset: [imagePreviewOverlay.top, imagePreviewOverlay.right, imagePreviewOverlay.bottom, imagePreviewOverlay.left], pointerEvents: imagePreviewOverlay.pointerEvents, position: imagePreviewOverlay.position, shadow: imagePreviewOverlay.boxShadow }
+          },
+          highlightedShadow: getComputedStyle(next, "::after").boxShadow,
+          missing: {
+            borderWidths: [missingStyle.borderBlockStartWidth, missingStyle.borderBlockEndWidth, missingStyle.borderInlineStartWidth, missingStyle.borderInlineEndWidth],
+            content: missingAfter.content,
+            fontSize: missingAfter.fontSize,
+            shadow: missingStyle.boxShadow
+          },
+          expectedBodyFontSize,
+          overflow: getComputedStyle(root).overflow,
+          popupOverlap: overlapBottom - overlapTop,
+          popupHit: hit instanceof Element && Boolean(hit.closest("[data-card-popup]")),
+          sizeDelta: {
+            height: rootAfter.height - rootBefore.height,
+            width: rootAfter.width - rootBefore.width
+          }
+        };
+      });
+      assert(state, `Expected ${tier} card demo to expose surface, preview, header, and real contextual-menu specimens.`);
+      for (const [label, item] of [["card", state.root], ["card header", state.header], ["image preview", state.imagePreview]] as const) {
+        assert(item.borderWidths.every(width => width === "0px"), `Expected ${tier} ${label} to have zero layout borders; got ${item.borderWidths.join(", ")}.`);
+        assert(item.overlay.content !== "none" && item.overlay.position === "absolute" && item.overlay.pointerEvents === "none" && item.overlay.inset.every(value => value === "0px") && item.overlay.shadow !== "none", `Expected ${tier} ${label} to use an exact pointer-transparent overlay; got ${JSON.stringify(item.overlay)}.`);
+      }
+      assert(Math.abs(state.sizeDelta.height) <= 0.001 && Math.abs(state.sizeDelta.width) <= 0.001, `Expected ${tier} card occupied geometry to remain exact when the paint width changes; got ${JSON.stringify(state.sizeDelta)}.`);
+      assert(state.highlightedShadow !== "none", `Expected ${tier} highlighted Card to compose elevation into its overlay.`);
+      assert(state.missing.borderWidths.every(width => width === "0px") && state.missing.content.includes("Capture missing") && state.missing.shadow !== "none" && state.missing.fontSize === state.expectedBodyFontSize, `Expected ${tier} missing preview to retain its named text pseudo, body-sized label, and self-painted boundary; got ${JSON.stringify(state.missing)} vs body ${state.expectedBodyFontSize}.`);
+      assert(state.overflow === "visible" && state.popupOverlap > 1 && state.popupHit, `Expected ${tier} real contextual menu to escape Card clipping and win hit-testing across the following Card; got overflow=${state.overflow}, overlap=${state.popupOverlap}, hit=${state.popupHit}.`);
+    }
+
+    await page.goto(`${origin}/demo/components/option-card.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const active = page.locator("button.bf-option-card.is-active");
+      const state = await active.evaluate(element => {
+        const owner = getComputedStyle(element);
+        const overlay = getComputedStyle(element, "::after");
+        const before = element.getBoundingClientRect();
+        (element as HTMLElement).style.setProperty("--bf-stroke-width", "4px");
+        const after = element.getBoundingClientRect();
+        (element as HTMLElement).style.removeProperty("--bf-stroke-width");
+        return {
+          borderWidths: [owner.borderBlockStartWidth, owner.borderBlockEndWidth, owner.borderInlineStartWidth, owner.borderInlineEndWidth],
+          overlay: { content: overlay.content, inset: [overlay.top, overlay.right, overlay.bottom, overlay.left], pointerEvents: overlay.pointerEvents, position: overlay.position, shadow: overlay.boxShadow },
+          sizeDelta: { height: after.height - before.height, width: after.width - before.width }
+        };
+      });
+      assert(state.borderWidths.every(width => width === "0px") && state.overlay.content !== "none" && state.overlay.position === "absolute" && state.overlay.pointerEvents === "none" && state.overlay.inset.every(value => value === "0px") && state.overlay.shadow !== "none", `Expected ${tier} active OptionCard to use a zero-layout-border composed overlay; got ${JSON.stringify(state)}.`);
+      assert(Math.abs(state.sizeDelta.height) <= 0.001 && Math.abs(state.sizeDelta.width) <= 0.001, `Expected ${tier} OptionCard occupied geometry to remain exact when paint width changes; got ${JSON.stringify(state.sizeDelta)}.`);
+      await active.focus();
+      assert(await active.evaluate(element => getComputedStyle(element).outlineStyle !== "none"), `Expected ${tier} active OptionCard keyboard focus to remain visible above its overlay.`);
+    }
+
+    await page.emulateMedia({ forcedColors: "active" });
+    const forcedState = await page.locator("button.bf-option-card.is-active").evaluate(element => {
+      const owner = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      return { ownerOutline: owner.outlineStyle, ownerOutlineWidth: owner.outlineWidth, ownerOutlineOffset: owner.outlineOffset, overlayOutline: overlay.outlineStyle, overlayOutlineWidth: overlay.outlineWidth, selectedBorder: overlay.borderBlockStartStyle, selectedWidth: overlay.borderBlockStartWidth };
+    });
+    assert(forcedState.ownerOutline !== "none" && Number.parseFloat(forcedState.ownerOutlineWidth) >= 3 && Number.parseFloat(forcedState.ownerOutlineOffset) <= -4 && forcedState.overlayOutline !== "none" && Number.parseFloat(forcedState.overlayOutlineWidth) > 0 && Number.parseFloat(forcedState.overlayOutlineWidth) < Number.parseFloat(forcedState.ownerOutlineWidth) && forcedState.selectedBorder === "solid" && Number.parseFloat(forcedState.selectedWidth) > 0, `Expected forced-colours OptionCard to retain a distinct inset keyboard focus ring, thinner system boundary, and one-sided selected cue; got ${JSON.stringify(forcedState)}.`);
+    await page.goto(`${origin}/demo/components/cards.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const linkedCard = page.locator("a.bf-card");
+    await linkedCard.focus();
+    const linkedForcedState = await linkedCard.evaluate(element => {
+      const owner = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      return { ownerOutline: owner.outlineStyle, ownerOutlineWidth: owner.outlineWidth, ownerOutlineOffset: owner.outlineOffset, overlayOutline: overlay.outlineStyle, overlayOutlineWidth: overlay.outlineWidth };
+    });
+    assert(linkedForcedState.ownerOutline !== "none" && Number.parseFloat(linkedForcedState.ownerOutlineWidth) >= 3 && Number.parseFloat(linkedForcedState.ownerOutlineOffset) <= -4 && linkedForcedState.overlayOutline !== "none" && Number.parseFloat(linkedForcedState.overlayOutlineWidth) > 0 && Number.parseFloat(linkedForcedState.overlayOutlineWidth) < Number.parseFloat(linkedForcedState.ownerOutlineWidth), `Expected forced-colours linked Card to retain a distinct inset keyboard focus ring over its thinner system boundary; got ${JSON.stringify(linkedForcedState)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
 
     await page.close();
   } finally {
