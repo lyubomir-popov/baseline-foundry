@@ -297,6 +297,7 @@ export function validateParitySurfaceDemos(iconHtml: string, listHtml: string, t
   assert(listHtml.includes("is-crossed"), "Expected list.html to demo crossed list items.");
   assert(tableHtml.includes("is-icon-placeholder"), "Expected table.html to demo icon-placeholder cells.");
   assert(tableHtml.includes("bf-table-scroll") && tableHtml.includes('tabindex="0"'), "Expected table.html to exercise the keyboard-focusable horizontal-scroll wrapper.");
+  assert(tableHtml.includes("data-table-popup-breaker") && tableHtml.includes("bf-contextual-menu-dropdown") && tableHtml.includes("data-table-popup-action"), "Expected table.html to exercise a real BF popup escaping a native table cell.");
 }
 
 export function validateTopNavigationDemo(topNavigationHtml: string): void {

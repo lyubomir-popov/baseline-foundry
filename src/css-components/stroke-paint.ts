@@ -10,6 +10,56 @@ type StrokeOverlayCss = {
 };
 
 /**
+ * Paints an all-sided boundary directly on a leaf component. This keeps the
+ * composable paint slots without creating a normal-mode containing block or
+ * consuming a pseudo-element. Forced colors alone installs a bounded overlay
+ * anchor so system boundary, selection and focus paint remain distinct.
+ */
+export function allSidedStrokeSelfPaintCss(ownerSelector: string, options: Omit<StrokeOverlayOptions, "anchor">): string {
+  const color = options.color ?? "var(--bf-color-border-default)";
+  const width = options.width ?? "var(--bf-border-width)";
+
+  return `${ownerSelector} {
+  --bf-stroke-color: ${color};
+  --bf-stroke-width: ${width};
+  --bf-overlay-stroke-layer: inset 0 0 0 var(--bf-stroke-width) var(--bf-stroke-color);
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: 0 0 0 0 transparent;
+  --bf-overlay-selection-block-start-width: 0rem;
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-inline-start-width: 0rem;
+  --bf-overlay-selection-inline-end-width: 0rem;
+  box-shadow: var(--bf-overlay-stroke-layer), var(--bf-overlay-selection-layer), var(--bf-overlay-focus-layer), var(--bf-overlay-elevation-layer);
+}
+
+@media (forced-colors: active) {
+  ${ownerSelector} {
+    box-shadow: none;
+    position: relative;
+  }
+
+  ${ownerSelector}::after {
+    background: none;
+    border: 0 solid transparent;
+    border-block-end: var(--bf-overlay-selection-block-end-width) solid SelectedItem;
+    border-block-start: var(--bf-overlay-selection-block-start-width) solid SelectedItem;
+    border-inline-end: var(--bf-overlay-selection-inline-end-width) solid SelectedItem;
+    border-inline-start: var(--bf-overlay-selection-inline-start-width) solid SelectedItem;
+    border-radius: inherit;
+    box-shadow: none;
+    box-sizing: border-box;
+    content: "";
+    inset: 0;
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width) * -1);
+    pointer-events: none;
+    position: absolute;
+  }
+}`;
+}
+
+/**
  * Paints a component boundary in an automatic last-child pseudo-element.
  * Every owner resets the four composable paint slots locally so nested paint
  * owners cannot inherit a parent state. The overlay never participates in

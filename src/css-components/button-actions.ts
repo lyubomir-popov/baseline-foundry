@@ -1,4 +1,4 @@
-import { allSidedStrokeOverlayCss } from "./stroke-paint.js";
+import { allSidedStrokeSelfPaintCss } from "./stroke-paint.js";
 
 type ButtonActionCssOptions = {
   bodyTypeStyles: string;
@@ -8,7 +8,7 @@ type ButtonActionCssOptions = {
 export function buttonActionsCss(options: ButtonActionCssOptions): string {
   const { bodyTypeStyles, buttonMarginBottom } = options;
   const buttonSelector = ":where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))), .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))))";
-  const buttonStrokeCss = allSidedStrokeOverlayCss(buttonSelector, { anchor: "relative", color: "var(--bf-color-border-high-contrast)" });
+  const buttonStrokeCss = allSidedStrokeSelfPaintCss(buttonSelector, { color: "var(--bf-color-border-high-contrast)" });
 
   return `:where(.bf-theme) {
   --bf-pointer-target-minimum: 24px;
@@ -40,7 +40,7 @@ ${bodyTypeStyles}  appearance: none;
   text-decoration: none;
 }
 
-${buttonStrokeCss.owner}
+${buttonStrokeCss}
 
 :where(.bf-theme) :where(.bf-button) {
   background-color: var(--bf-color-background-default);
@@ -221,11 +221,6 @@ ${buttonStrokeCss.owner}
 }
 
 @media (forced-colors: active) {
-  :where(.bf-theme) :where(.bf-button, .bf-button.is-base):focus {
-    outline: var(--bf-stroke-width) solid CanvasText;
-    outline-offset: calc(var(--bf-stroke-width) * -1);
-  }
-
   :where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
     box-shadow: none;
     outline: var(--bf-stroke-width) solid CanvasText;
@@ -320,6 +315,5 @@ ${buttonStrokeCss.owner}
 :where(.bf-theme) :where(.bf-actions.is-nowrap) > * {
   flex: 0 0 auto;
 }
-${buttonStrokeCss.painter}
 `;
 }

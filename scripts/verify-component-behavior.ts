@@ -3115,7 +3115,7 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
               paddingBlockStart: Number.parseFloat(childStyles.paddingBlockStart),
               borderBlockEnd: Number.parseFloat(childStyles.borderBlockEndWidth),
               borderBlockStart: Number.parseFloat(childStyles.borderBlockStartWidth),
-              strokeBoxShadow: getComputedStyle(child, "::after").boxShadow,
+              strokeBoxShadow: childStyles.boxShadow,
               plainHeight
             };
           });
@@ -3124,7 +3124,7 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
         assert(navigation.every(item => Math.abs(item.hostHeight - item.plainHeight) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces not to enlarge side-navigation rows: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => item.childHeight <= item.hostLineHeight + 0.1), `Expected ${tier}/${tone} nested auxiliary paint to fit inside the host body line: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => item.marginBlockStart === 0 && item.marginBlockEnd === 0 && Math.abs(item.paddingBlockStart - item.paddingBlockEnd) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces to use zero block margins and symmetric padding: ${JSON.stringify(navigation)}.`);
-        assert(navigation.every(item => item.borderBlockStart === 0 && item.borderBlockEnd === 0 && (item.childKind !== "chip" || item.strokeBoxShadow !== "none")), `Expected ${tier}/${tone} nested auxiliary borders to paint on the automatic overlay without adding block footprint: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => item.borderBlockStart === 0 && item.borderBlockEnd === 0 && (item.childKind !== "chip" || item.strokeBoxShadow !== "none")), `Expected ${tier}/${tone} nested Chip boundaries to self-paint without adding block footprint: ${JSON.stringify(navigation)}.`);
       }
     }
 
@@ -3463,7 +3463,7 @@ async function verifyDenseSiteChipEnrollment(origin: string): Promise<void> {
               paddingBlockStart: Number.parseFloat(autoStyle.paddingBlockStart),
               borderBlockEnd: Number.parseFloat(autoStyle.borderBlockEndWidth),
               borderBlockStart: Number.parseFloat(autoStyle.borderBlockStartWidth),
-              strokeBoxShadow: getComputedStyle(autoChip, "::after").boxShadow
+              strokeBoxShadow: autoStyle.boxShadow
             },
             classed: {
               height: classedChip.getBoundingClientRect().height,
@@ -4074,13 +4074,12 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         const excludedNested = await page.locator("[data-excluded-nested-icon-button]").evaluate(element => {
           const style = getComputedStyle(element);
           const extension = getComputedStyle(element, "::before");
-          const stroke = getComputedStyle(element, "::after");
           return {
             minInlineSize: style.minInlineSize,
             paddingInlineStart: Number.parseFloat(style.paddingInlineStart),
             paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
             extensionContent: extension.content,
-            strokeBoxShadow: stroke.boxShadow
+            strokeBoxShadow: style.boxShadow
           };
         });
         assert(excludedNested.paddingInlineStart > 0 && excludedNested.paddingInlineEnd > 0 && excludedNested.extensionContent === "none" && excludedNested.strokeBoxShadow !== "none", `Expected ${tier}/${tone} the unsupported nested icon-only button to remain outside block-derived geometry and pointer-target extension while retaining paint-only stroke; got ${JSON.stringify(excludedNested)}.`);
@@ -4381,14 +4380,12 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
           height: rect.height,
           borderBlockStartWidth: Number.parseFloat(style.borderBlockStartWidth),
           borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth),
-          strokeBoxShadow: stroke.boxShadow,
-          strokeBoxSizing: stroke.boxSizing,
-          strokeInset: stroke.inset,
-          strokePointerEvents: stroke.pointerEvents
+          ownerBoxShadow: style.boxShadow,
+          ownerPosition: style.position
         };
       });
       assert(chip.width > chip.height + shapeTolerance, `Expected the forced-scale ${tier} Action-framed chip to remain a stadium with its bounded paint-derived floor; got ${JSON.stringify(chip)}.`);
-      assert(chip.borderBlockStartWidth === 0 && chip.borderBlockEndWidth === 0 && chip.strokeBoxShadow !== "none" && chip.strokeBoxSizing === "border-box" && chip.strokeInset === "0px" && chip.strokePointerEvents === "none", `Expected forced-scale ${tier} Chip to retain its exact zero-layout-border paint overlay; got ${JSON.stringify(chip)}.`);
+      assert(chip.borderBlockStartWidth === 0 && chip.borderBlockEndWidth === 0 && chip.ownerBoxShadow !== "none" && chip.ownerPosition === "relative", `Expected forced-scale ${tier} Chip to retain its pre-existing anchor while self-painting an exact zero-layout-border boundary; got ${JSON.stringify(chip)}.`);
     }
   } finally {
     await page.close();
@@ -4400,12 +4397,12 @@ async function verifyCommandPaintOwners(origin: string): Promise<void> {
   const browser = await openBrowser();
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const cases = [
-    { route: "/demo/components/button.html", selector: ".bf-button:not(.is-link):not(.is-icon)", pseudo: "::after" },
-    { route: "/demo/components/chip.html", selector: ".bf-chip", pseudo: "::after" },
-    { route: "/demo/components/choice-row.html", selector: ".bf-choice-row", pseudo: "::after" },
-    { route: "/demo/components/segmented-control.html", selector: ".bf-segmented-control-button:not(.is-active)", pseudo: "::after" },
-    { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-previous", pseudo: "::after" },
-    { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-next", pseudo: "::after" }
+    { route: "/demo/components/button.html", selector: ".bf-button:not(.is-link):not(.is-icon)", expectedPosition: "static" },
+    { route: "/demo/components/chip.html", selector: ".bf-chip", expectedPosition: "relative" },
+    { route: "/demo/components/choice-row.html", selector: ".bf-choice-row", expectedPosition: "static" },
+    { route: "/demo/components/segmented-control.html", selector: ".bf-segmented-control-button:not(.is-active)", expectedPosition: "static" },
+    { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-previous", expectedPosition: "static" },
+    { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-next", expectedPosition: "static" }
   ] as const;
   const tiers = ["editorial", "documentation", "app", "os"] as const;
 
@@ -4413,25 +4410,52 @@ async function verifyCommandPaintOwners(origin: string): Promise<void> {
     for (const testCase of cases) {
       await page.goto(`${origin}${testCase.route}`, { waitUntil: "networkidle" });
       await waitForFonts(page);
-      const geometry = await page.locator(testCase.selector).first().evaluate((element, pseudo) => {
-        const owner = getComputedStyle(element);
-        const overlay = getComputedStyle(element, pseudo);
+      const geometry = await page.locator(testCase.selector).first().evaluate(element => {
+        const node = element as HTMLElement;
+        const owner = getComputedStyle(node);
+        const unusedAfter = getComputedStyle(node, "::after");
+        const probe = document.createElement("span");
+        probe.style.cssText = "position:absolute;inset:0;pointer-events:none";
+        node.append(probe);
+        const containsProbe = probe.offsetParent === node;
+        probe.remove();
         return {
           borderWidths: [owner.borderBlockStartWidth, owner.borderBlockEndWidth, owner.borderInlineStartWidth, owner.borderInlineEndWidth],
+          containsProbe,
+          height: node.getBoundingClientRect().height,
           isolation: owner.isolation,
+          ownerBoxShadow: owner.boxShadow,
+          ownerPosition: owner.position,
           ownerZIndex: owner.zIndex,
-          overlayBoxShadow: overlay.boxShadow,
-          overlayBoxSizing: overlay.boxSizing,
+          unusedAfterContent: unusedAfter.content,
+          width: node.getBoundingClientRect().width
+        };
+      });
+      assert(geometry.borderWidths.every(width => Number.parseFloat(width) === 0), `Expected ${testCase.selector} to retain zero layout borders; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.isolation === "auto" && geometry.ownerZIndex === "auto" && geometry.ownerBoxShadow !== "none", `Expected ${testCase.selector} to compose its own stroke slots without isolation or a stacking index; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.ownerPosition === testCase.expectedPosition && geometry.containsProbe === (testCase.expectedPosition === "relative"), `Expected ${testCase.selector} to avoid a new containing block unless its existing anatomy requires one; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.unusedAfterContent === "none", `Expected ${testCase.selector} self-paint to leave its last-child pseudo free; got ${JSON.stringify(geometry)}.`);
+      await page.emulateMedia({ forcedColors: "active" });
+      const forcedGeometry = await page.locator(testCase.selector).first().evaluate(element => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        const overlay = getComputedStyle(element, "::after");
+        return {
+          borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth].map(Number.parseFloat),
+          height: rect.height,
           overlayContent: overlay.content,
-          overlayInset: overlay.inset,
+          overlayOutlineStyle: overlay.outlineStyle,
+          overlayOutlineWidth: Number.parseFloat(overlay.outlineWidth),
           overlayPointerEvents: overlay.pointerEvents,
           overlayPosition: overlay.position,
-          overlayZIndex: overlay.zIndex
+          ownerPosition: style.position,
+          shadow: style.boxShadow,
+          width: rect.width
         };
-      }, testCase.pseudo);
-      assert(geometry.borderWidths.every(width => Number.parseFloat(width) === 0), `Expected ${testCase.selector} to retain zero layout borders; got ${JSON.stringify(geometry)}.`);
-      assert(geometry.isolation === "auto" && geometry.ownerZIndex === "auto" && geometry.overlayZIndex === "auto", `Expected ${testCase.selector} paint not to introduce isolation or a stacking index; got ${JSON.stringify(geometry)}.`);
-      assert(geometry.overlayBoxShadow !== "none" && geometry.overlayBoxSizing === "border-box" && geometry.overlayContent === '""' && geometry.overlayInset === "0px" && geometry.overlayPointerEvents === "none" && geometry.overlayPosition === "absolute", `Expected ${testCase.selector}${testCase.pseudo} to be the exact pointer-transparent paint owner; got ${JSON.stringify(geometry)}.`);
+      });
+      assert(forcedGeometry.borderWidths.every(width => width === 0) && forcedGeometry.shadow === "none" && forcedGeometry.overlayContent === '""' && forcedGeometry.overlayOutlineStyle === "solid" && forcedGeometry.overlayOutlineWidth > 0 && forcedGeometry.overlayPointerEvents === "none" && forcedGeometry.overlayPosition === "absolute", `Expected ${testCase.selector} forced colors to use a named out-of-flow system-color layer with zero layout borders; got ${JSON.stringify(forcedGeometry)}.`);
+      assert(Math.abs(forcedGeometry.width - geometry.width) <= 0.1 && Math.abs(forcedGeometry.height - geometry.height) <= 0.1 && forcedGeometry.ownerPosition === "relative", `Expected ${testCase.selector} forced-colors paint to preserve geometry and establish only its bounded accessibility anchor; normal=${JSON.stringify(geometry)}, forced=${JSON.stringify(forcedGeometry)}.`);
+      await page.emulateMedia({ forcedColors: "none" });
     }
 
     await page.goto(`${origin}/demo/components/chip.html`, { waitUntil: "networkidle" });
@@ -4502,9 +4526,9 @@ async function verifyCommandPaintOwners(origin: string): Promise<void> {
       if (!previous || !next) return null;
       return {
         previousArrow: getComputedStyle(previous, "::before").backgroundImage,
-        previousStroke: getComputedStyle(previous, "::after").boxShadow,
+        previousStroke: getComputedStyle(previous).boxShadow,
         nextArrow: getComputedStyle(next, "::before").backgroundImage,
-        nextStroke: getComputedStyle(next, "::after").boxShadow
+        nextStroke: getComputedStyle(next).boxShadow
       };
     });
     assert(arrows && arrows.previousArrow !== "none" && arrows.nextArrow !== "none" && arrows.previousStroke !== "none" && arrows.nextStroke !== "none", `Expected pagination directional arrows and their variant-specific paint pseudos to coexist; got ${JSON.stringify(arrows)}.`);
@@ -4543,12 +4567,20 @@ async function verifyCommandPaintOwners(origin: string): Promise<void> {
         boundaryOutlineWidth: Number.parseFloat(overlay.outlineWidth),
         focusOutlineStyle: owner.outlineStyle,
         focusOutlineWidth: Number.parseFloat(owner.outlineWidth),
+        ownerPosition: owner.position,
         selectionBorderStyle: overlay.borderBlockEndStyle,
         selectionBorderWidth: Number.parseFloat(overlay.borderBlockEndWidth),
         strokeShadow: overlay.boxShadow
       };
     });
-    assert(forced.boundaryOutlineStyle === "solid" && forced.boundaryOutlineWidth > 0 && forced.focusOutlineStyle === "solid" && forced.focusOutlineWidth >= 2 && forced.selectionBorderStyle === "solid" && forced.selectionBorderWidth >= 3 && forced.strokeShadow === "none", `Expected forced colors to expose separate system boundary, focus, and one-sided selected paint; got ${JSON.stringify(forced)}.`);
+    assert(forced.boundaryOutlineStyle === "solid" && forced.boundaryOutlineWidth > 0 && forced.selectionBorderStyle === "solid" && forced.selectionBorderWidth >= 3 && forced.focusOutlineStyle === "solid" && forced.focusOutlineWidth >= 2 && forced.ownerPosition === "relative" && forced.strokeShadow === "none", `Expected forced colors to expose distinct system boundary, selected edge and keyboard focus on the bounded leaf accessibility layer; got ${JSON.stringify(forced)}.`);
+    await active.blur();
+    const forcedSelected = await active.evaluate(element => ({
+      borderBlockEndStyle: getComputedStyle(element, "::after").borderBlockEndStyle,
+      borderBlockEndWidth: Number.parseFloat(getComputedStyle(element, "::after").borderBlockEndWidth),
+      outlineStyle: getComputedStyle(element).outlineStyle
+    }));
+    assert(forcedSelected.borderBlockEndStyle === "solid" && forcedSelected.borderBlockEndWidth >= 3 && forcedSelected.outlineStyle === "none", `Expected the unfocused selected leaf to retain its one-sided forced-colors system border without a focus outline; got ${JSON.stringify(forcedSelected)}.`);
     await page.emulateMedia({ forcedColors: "none" });
   } finally {
     await page.close();
@@ -4578,7 +4610,7 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
     { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer", forcedSide: "blockStart" },
     { route: "/demo/components/application-layout.html", selector: ".bf-navigation-drawer", forcedSide: "inlineEnd" },
     { route: "/demo/components/application-layout.html", selector: ".bf-aside.is-pinned", forcedSide: "inlineStart" },
-    { route: "/demo/components/table.html", selector: ".bf-table tbody td", forcedSide: "blockEnd", widthVariable: "--bf-table-row-border-size" },
+    { route: "/demo/components/table.html", selector: ".bf-table tbody tr:not(:last-child) td", forcedSide: "blockEnd", widthVariable: "--bf-table-row-border-size" },
     { route: "/demo/components/table-mobile-card.html", selector: ".table-demo-narrow .bf-table.is-mobile-card > tbody > tr", forcedSide: "outline" },
     { route: "/demo/components/list.html", selector: ".bf-list.is-divided > li + li", forcedSide: "blockStart" },
     { route: "/demo/components/tabs.html", selector: ".bf-tabs-list", forcedSide: "blockEnd" },
@@ -4669,6 +4701,94 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
     }
 
     await page.emulateMedia({ forcedColors: "none" });
+
+    await page.goto(`${origin}/demo/components/table.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const tableTierSelect = page.getByLabel("Tier", { exact: true });
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await tableTierSelect.selectOption(tier);
+      await page.waitForSelector(`body.bf-tier-${tier}`);
+      const rawTable = await page.evaluate(() => {
+        const owner = document.createElement("div");
+        owner.style.position = "relative";
+        owner.innerHTML = "<table><thead><tr><th>Raw heading</th></tr></thead><tbody><tr><td><span style='position:absolute'>Raw popup</span>Clipped raw cell copy</td></tr><tr><td>Last row</td></tr></tbody></table>";
+        document.body.append(owner);
+        const heading = owner.querySelector<HTMLElement>("th");
+        const cell = owner.querySelector<HTMLElement>("td");
+        const probe = owner.querySelector<HTMLElement>("span");
+        if (!heading || !cell || !probe) throw new Error("Missing raw table probes.");
+        const cellRect = cell.getBoundingClientRect();
+        const result = {
+          cellHeight: cellRect.height,
+          cellPosition: getComputedStyle(cell).position,
+          headingShadow: getComputedStyle(heading).boxShadow,
+          offsetParentIsOwner: probe.offsetParent === owner,
+          overflow: getComputedStyle(cell).overflow,
+          rowShadow: getComputedStyle(cell).boxShadow,
+          textOverflow: getComputedStyle(cell).textOverflow
+        };
+        owner.dataset.rawTableProbe = "";
+        return result;
+      });
+      assert(rawTable.cellPosition === "static" && rawTable.offsetParentIsOwner && rawTable.overflow === "hidden" && rawTable.textOverflow === "ellipsis" && rawTable.headingShadow !== "none" && rawTable.rowShadow !== "none", `Expected ${tier} raw tables to preserve clipping and row paint without becoming containing blocks; got ${JSON.stringify(rawTable)}.`);
+      await page.emulateMedia({ forcedColors: "active" });
+      const rawForced = await page.locator("[data-raw-table-probe] tbody tr:first-child td").evaluate(element => ({
+        height: element.getBoundingClientRect().height,
+        outlineStyle: getComputedStyle(element).outlineStyle,
+        outlineWidth: Number.parseFloat(getComputedStyle(element).outlineWidth),
+        position: getComputedStyle(element).position
+      }));
+      assert(rawForced.outlineStyle === "solid" && rawForced.outlineWidth > 0 && Math.abs(rawForced.height - rawTable.cellHeight) <= 0.1 && rawForced.position === "static", `Expected ${tier} raw table forced-colors fallback to preserve geometry and positioning while painting the documented all-sided system outline; got ${JSON.stringify(rawForced)}.`);
+      await page.emulateMedia({ forcedColors: "none" });
+      await page.locator("[data-raw-table-probe]").evaluate(element => element.remove());
+      const bfCellContainment = await page.locator(".bf-table-scroll > .bf-table tbody tr:first-child td:first-child").evaluate(cell => {
+        const node = cell as HTMLElement;
+        const probe = document.createElement("span");
+        probe.textContent = "Bounded BF absolute probe";
+        probe.style.cssText = "position:absolute;inset-block-start:100%;inset-inline-start:0;z-index:20";
+        node.append(probe);
+        const cellRect = node.getBoundingClientRect();
+        const probeRect = probe.getBoundingClientRect();
+        const hit = document.elementFromPoint(probeRect.left + 1, cellRect.bottom + 1);
+        const result = {
+          clippedBelowCell: hit !== probe,
+          offsetParentIsCell: probe.offsetParent === node,
+          overflow: getComputedStyle(node).overflow,
+          position: getComputedStyle(node).position
+        };
+        probe.remove();
+        return result;
+      });
+      assert(bfCellContainment.position === "relative" && bfCellContainment.overflow === "hidden" && bfCellContainment.offsetParentIsCell && bfCellContainment.clippedBelowCell, `Expected ${tier} arbitrary absolute descendants in explicit BF cells to retain the bounded overlay-owner containment contract; got ${JSON.stringify(bfCellContainment)}.`);
+      const breaker = page.locator("[data-table-popup-breaker]");
+      const toggle = breaker.locator(".bf-contextual-menu-toggle");
+      await toggle.click();
+      await page.waitForSelector("[data-table-popup-breaker] .bf-contextual-menu-dropdown[aria-hidden='false']");
+      const popupGeometry = await breaker.evaluate(element => {
+        const cells = Array.from(element.querySelectorAll<HTMLElement>("th, td"));
+        const rows = Array.from(element.querySelectorAll<HTMLElement>("tr"));
+        const popupCell = element.querySelector<HTMLElement>("td:has(.bf-contextual-menu)");
+        const popup = element.querySelector<HTMLElement>(".bf-contextual-menu-dropdown");
+        const action = element.querySelector<HTMLElement>("[data-table-popup-action]");
+        if (!popupCell || !popup || !action) throw new Error("Missing the real table popup breaker.");
+        const cellRect = popupCell.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
+        const actionRect = action.getBoundingClientRect();
+        const hit = document.elementFromPoint(actionRect.left + (actionRect.width / 2), Math.min(actionRect.bottom - 1, Math.max(cellRect.bottom + 1, actionRect.top + 1)));
+        return {
+          cellOverflow: getComputedStyle(popupCell).overflow,
+          cellPositions: cells.map(cell => getComputedStyle(cell).position),
+          crossesCell: popupRect.bottom > cellRect.bottom + 1,
+          hitAction: hit?.closest("[data-table-popup-action]") === action,
+          popupVisible: getComputedStyle(popup).display !== "none" && getComputedStyle(popup).visibility === "visible",
+          rowPositions: rows.map(row => getComputedStyle(row).position)
+        };
+      });
+      assert(popupGeometry.cellPositions.every(position => position === "relative") && popupGeometry.rowPositions.every(position => position === "static"), `Expected ${tier} BF row rules to remain cell-owned without broadening containing blocks to raw tables or rows; got ${JSON.stringify(popupGeometry)}.`);
+      assert(popupGeometry.cellOverflow === "visible" && popupGeometry.crossesCell && popupGeometry.popupVisible && popupGeometry.hitAction, `Expected ${tier} real contextual-menu paint and input to escape its table cell; got ${JSON.stringify(popupGeometry)}.`);
+      await breaker.locator("[data-table-popup-action]").click();
+      assert(await breaker.locator(".bf-contextual-menu-dropdown").getAttribute("aria-hidden") === "true", `Expected ${tier} the real table popup action to route and close through BF initialization.`);
+    }
 
     await page.goto(`${origin}/demo/components/form-atlas.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);

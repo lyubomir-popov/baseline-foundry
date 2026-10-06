@@ -26,7 +26,7 @@ import { sitesFoundationCss } from "./css-components/sites-foundation.js";
 import { sitesEditorialPortsCss } from "./css-components/sites-editorial-ports.js";
 import { sitesRichListsCss } from "./css-components/sites-rich-lists.js";
 import { staticContentPortsCss } from "./css-components/static-content-ports.js";
-import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss, inlineEndStrokeOverlayCss, inlineStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
+import { allSidedStrokeOverlayCss, allSidedStrokeSelfPaintCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss, inlineEndStrokeOverlayCss, inlineStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { tableCss } from "./css-components/table.js";
 import { tabSectionCss } from "./css-components/tab-section.js";
 import { tabsChoiceBreadcrumbsCss } from "./css-components/tabs-choice-breadcrumbs.js";
@@ -96,7 +96,7 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
-  const paginationStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", { anchor: "existing", color: "var(--bf-color-border-high-contrast)" });
+  const paginationStroke = allSidedStrokeSelfPaintCss(":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", { color: "var(--bf-color-border-high-contrast)" });
   const fieldBoundarySelector = ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)";
   const fieldStroke = blockEndStrokeOverlayCss(fieldBoundarySelector, { anchor: "relative" });
   const navigationBarSelector = ":where(.bf-theme) :where(.bf-navigation-bar)";
@@ -1309,7 +1309,7 @@ ${typeStyles(body, { includeCase: false })}  display: block;
 
 ${tooltipMessageStroke.painter}
 
-${paginationStroke.owner}
+${paginationStroke}
 
 :where(.bf-theme) :where(nav.bf-pagination) {
   display: block;
@@ -1356,7 +1356,6 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   margin-bottom: ${buttonMarginBottom};
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-action);
-  position: relative;
   text-align: center;
   text-decoration: none;
 }
@@ -1412,18 +1411,12 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   pointer-events: none;
 }
 
-${paginationStroke.painter}
-
 @media (forced-colors: active) {
-  :where(.bf-theme) :where(.bf-pagination-link:focus, .bf-pagination-link.is-previous:focus, .bf-pagination-link.is-next:focus) {
-    outline: var(--bf-stroke-width) solid CanvasText;
-    outline-offset: calc(var(--bf-stroke-width) * -1);
-  }
-
   :where(.bf-theme) :where(.bf-pagination-link:focus-visible, .bf-pagination-link.is-previous:focus-visible, .bf-pagination-link.is-next:focus-visible) {
     outline: 0.125rem solid Highlight;
     outline-offset: -0.1875rem;
   }
+
 }
 
 :where(.bf-theme) :where(.bf-accordion) {

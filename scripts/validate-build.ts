@@ -941,7 +941,10 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(thead th) {\n  font-family: var(--bf-body-font-family"), "Expected CSS to style table headers as body-role text.");
   assert(css.includes("--bf-interface-row-padding-block: calc(var(--bf-control-block-inset) + var(--bf-body-nudge-start") && css.includes("--bf-interface-row-painted-block-size: calc(var(--bf-interface-row-line-height) + (var(--bf-interface-row-padding-block) * 2));") && css.includes("--bf-interface-row-content-offset-block-start: var(--bf-interface-row-padding-block);") && css.includes("--bf-interface-row-compensation-block-end: mod(") && css.includes("--bf-interface-row-occupied-block-size: calc(var(--bf-interface-row-painted-block-size) + var(--bf-interface-row-compensation-block-end));") && css.includes("--bf-in-box-row-padding-block-start: var(--bf-interface-row-content-offset-block-start);") && css.includes("--bf-in-box-row-padding-block-end: max(0rem, calc(var(--bf-interface-row-occupied-block-size) - var(--bf-interface-row-line-height)"), "Expected controls and marginless repeated rows to share one zero-layout-border occupied-block target with explicit in-box compensation.");
   assert(css.includes("--bf-table-row-padding-block-start: var(--bf-in-box-row-padding-block-start);") && css.includes("--bf-table-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - var(--bf-body-line-height") && css.includes("--bf-table-row-line-height: var(--bf-body-line-height"), "Expected table rows to preserve body text metrics while targeting the shared interface-row occupied block.");
-  assert(css.includes(":where(.bf-theme) :where(th, td) {\n  --bf-table-cell-stroke-color: transparent;\n  border: 0;") && css.includes(":where(.bf-theme) :where(th:not([aria-sort]), td)::after") && css.includes("border-block-end: var(--bf-stroke-width) solid CanvasText;"), "Expected ordinary table cells to paint row rules on an out-of-flow overlay with a real forced-colors edge.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)::after {") && css.includes("border-block-end: var(--bf-stroke-width) solid CanvasText;"), "Expected direct BF table cells to retain per-cell out-of-flow row rules and real forced-colors edges.");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(th, td)", "position", "ordinary table cells do not become containing blocks");
+  assert(css.includes(":has(.bf-contextual-menu) {\n  overflow: visible;"), "Expected direct BF cells that contain a real popup through supported neutral wrappers to expose its out-of-cell paint and input path.");
+  assert(css.includes(":where(.bf-theme) :where(th, td):not(.bf-table > thead > tr > *, .bf-table > tbody > tr > *, .bf-table > tfoot > tr > *) {\n    box-shadow: none;\n    outline: var(--bf-table-row-border-size) solid CanvasText;\n    outline-offset: calc(var(--bf-table-row-border-size) * -1);"), "Expected raw native table cells, including nested raw tables, to use the documented paint-only forced-colors outline fallback without a containing block.");
   assert(css.includes(":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::before") && css.includes("border-block-end: var(--bf-table-row-border-size) solid CanvasText;"), "Expected sortable headers to preserve their caret pseudo while painting the row rule from the remaining pseudo.");
   assert(css.includes("padding-block-end: var(--bf-table-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-table-row-padding-block-start);"), "Expected table cells to consume the shared metric start and trailing row-compensation variables.");
   assert(!css.includes("tbody tr:has(.bf-status-label) > td"), "Expected table density not to depend on a contextual status-label selector; nested auxiliaries opt in explicitly.");
@@ -1616,7 +1619,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-runnable-track => var(--bf-baseline)",
     ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb => 50%",
     ":where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:not(:first-child))::after => inherit",
-    ":where(.bf-theme) :where(th:not([aria-sort]), td)::after => inherit"
+    ":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)::after => inherit"
   ].sort();
   const unaffectedRadii: string[] = [];
   ast.walkDecls("border-radius", declaration => {
@@ -1650,7 +1653,8 @@ function validateCommonCss(css: string): void {
     assertRuleHasDecl(ast, legacyChipSelector, {
       "line-height": "var(--bf-nested-row-line-height)",
       "margin-block": "0",
-      "padding-block": "var(--bf-nested-row-padding-block)",
+      "--bf-chip-control-block-inset": "var(--bf-nested-row-padding-block)",
+      "padding-block": "var(--bf-chip-control-block-inset)",
       "border": "0",
       "--bf-stroke-color": "var(--bf-ui-chip-border)",
       "padding-inline": "var(--bf-ui-chip-padding-inline)"
