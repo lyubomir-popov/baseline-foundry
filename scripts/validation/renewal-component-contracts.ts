@@ -156,7 +156,7 @@ export function validateRenewalComponentContracts(
   assert(css.includes("--bf-stroke-width: var(--bf-bar-thickness);") && css.includes("--bf-stroke-color: var(--bf-notice-border);") && css.includes("inline-size: var(--bf-bar-thickness);") && css.includes("background: var(--bf-notification-accent);") && css.includes("--bf-overlay-selection-block-end-width: var(--bf-bar-thickness);") && css.includes("--bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-focus);") && css.includes("block-size: var(--bf-bar-thickness);"), "Expected notices, notifications, tabs, and highlight rules to consume the shared emphasis-bar token without putting tab selection paint in layout.");
   assert(css.includes("container-name: bf-article-pagination;") && css.includes("grid-template-columns: auto minmax(0, 1fr);") && css.includes("inline-size: calc((100cqi - var(--bf-leading-mark-gap)) / 2);"), "Expected article pagination to retain its named container and persistent equal-half structure with a horizontal gap owner.");
   assert(css.includes("column-gap: var(--bf-leading-mark-gap);") && css.includes("row-gap: var(--bf-space-half);"), "Expected article pagination to separate its horizontal mark gap from its vertical rhythm token.");
-  assert(css.includes("padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination to use semantic medium padding with metric baseline compensation.");
+  assert(css.includes("padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4));"), "Expected article pagination to use semantic medium padding with metric baseline compensation independently of paint.");
   assert(!css.includes("padding-block: calc(var(--bf-panel-padding-block) + (var(--bf-baseline) / 4) - var(--bf-border-width));"), "Expected article pagination not to inherit panel-density padding.");
   assert(css.includes("@container bf-article-pagination (width < 28.75rem)") && css.includes("inline-size: calc(var(--bf-space-6) + var(--bf-space-1));"), "Expected article pagination to retain Vanilla's compact previous-link threshold and mapped width.");
   assert(css.includes("@container (width >= 38.75rem)") && css.includes(".bf-data-spotlight.is-three-blocks") && css.includes("@container (width >= 45rem)") && css.includes(".bf-divided-section) :where(.bf-divided-section-layout)"), "Expected static content ports to expose intrinsic data-spotlight density and the shared readable split composition.");
@@ -184,14 +184,14 @@ export function validateRenewalComponentContracts(
   assert(css.includes("container-name: bf-text-spotlight;") && css.includes(".bf-text-spotlight-layout) {") && css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);"), "Expected text spotlight to expose its 25/75 descendant layout.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-hero)", {
     "padding-block-end": "0",
-    "padding-block-start": "calc(var(--bf-space-2) - var(--bf-border-width))"
-  }, "hero owns its compact entry boundary while leaving the section exit to its surrounding stack");
-  assert(css.includes("container-name: bf-hero;") && css.includes("border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);") && !css.includes("padding-block-end: calc(var(--bf-section-space) / 2);"), "Expected hero to expose its container and default entry rule without a semantic exit.");
-  assert(css.includes(".bf-hero.is-borderless") && css.includes("border-block-start: 0;") && css.includes("padding-block-start: var(--bf-space-2);"), "Expected hero to expose a borderless opt-out without consumer CSS or a rhythm shift.");
-  assert(css.includes("padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));") && css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to retain its wide space-3 entry boundary without border drift.");
+    "padding-block-start": "var(--bf-space-2)"
+  }, "hero owns its compact entry clearance while leaving the section exit to its surrounding stack");
+  assert(css.includes("container-name: bf-hero;") && css.includes(":where(.bf-hero:not(.is-borderless))::after") && !css.includes("padding-block-end: calc(var(--bf-section-space) / 2);"), "Expected hero to expose its container and automatic entry-rule overlay without a semantic exit.");
+  assert(css.includes(".bf-hero.is-borderless") && css.includes("padding-block-start: var(--bf-space-2);"), "Expected hero to expose a borderless opt-out without consumer CSS or a rhythm shift.");
+  assert(css.includes("padding-block-start: var(--bf-space-3);"), "Expected hero to retain its wide space-3 entry boundary independently of paint.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-hero.is-top-flush)", {
-    "padding-block-start": "calc(0.5rem - var(--bf-border-width))"
-  }, "top-flush hero matches native-rule clearance without a global spacing utility");
+    "padding-block-start": "var(--bf-field-gap)"
+  }, "top-flush hero matches the governed item-gap clearance without a global spacing utility");
   assert(css.includes(".bf-hero-layout) {") && css.includes(".bf-hero.is-25-75) :where(.bf-hero-layout)") && css.includes(".bf-hero.is-75-25) :where(.bf-hero-layout)"), "Expected hero composition queries to target the layout descendant for 50/50, 25/75, and 75/25 tracks.");
   assert(css.includes(".bf-hero-lead") && css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child)") && !css.includes(".bf-hero) > :where(.bf-hero-media.is-full:last-child) {\n  inline-size: 100%;\n  margin-block-end: 0;"), "Expected hero to expose a structural lead without a final-child semantic-margin reset.");
   assert(css.includes("@container bf-hero (width >= 45rem)") && css.includes(".bf-hero.is-split-medium") && css.includes(".bf-hero.is-fallback) :where(.bf-hero-intro)"), "Expected hero variants and its default split to share the measured 45rem threshold, with a fallback introduction rail.");
@@ -257,9 +257,9 @@ export function validateRenewalComponentContracts(
   }, "table-of-contents links share the body-sized single-line row contract");
   assert(!css.includes("padding-block: calc(var(--bf-body-nudge-start) + var(--bf-space-half)) calc(var(--bf-body-nudge-end) + var(--bf-space-half));"), "Expected document-navigation text links to contain no hidden semantic half-space padding.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-list)", {
-    "--bf-divided-section-rule-to-content": "calc(0.5rem - var(--bf-border-width))",
-    "--bf-stack-space": "1.5rem"
-  }, "divided-section list owns its fixed gap and rule-to-content contract");
+    "--bf-divided-section-rule-to-content": "var(--bf-field-gap)",
+    "--bf-stack-space": "var(--bf-section-space-shallow)"
+  }, "divided-section list owns the governed item and group gaps");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-item)", {
     "margin": "0",
     "padding": "0"
@@ -267,7 +267,7 @@ export function validateRenewalComponentContracts(
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-divided-section-item + .bf-divided-section-item)::before", {
     "block-size": "var(--bf-border-width)",
     "inset-block-start": "calc((var(--bf-divided-section-rule-to-content) + var(--bf-border-width)) * -1)"
-  }, "divided-section rules occupy the final half-rem before following content");
+  }, "divided-section rules occupy the governed item gap before following content");
   assert(!css.includes("inset-block-start: calc(var(--bf-stack-space) / -2);"), "Expected divided-section rules not to float at the midpoint of the parent-owned gap.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notice, .bf-notice.is-information, .bf-notice.is-positive, .bf-notice.is-caution, .bf-notice.is-negative)", {
     "border": "0",
@@ -285,7 +285,7 @@ export function validateRenewalComponentContracts(
   assert(css.includes("container-name: bf-media-object;") && css.includes("grid-template-columns: repeat(4, minmax(0, 1fr));") && css.includes("@container bf-media-object (width >= 38.75rem)") && css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));"), "Expected media object to use its own four/eight-column container grid.");
   assert(css.includes("grid-column: 1 / span 2;") && css.includes("grid-column: 3 / -1;") && !css.includes(".bf-media-object.is-media-end"), "Expected media object media and copy to occupy the first two and remaining grid columns without a directional variant.");
   assert(css.includes("container-name: bf-content-card;") && css.includes(".bf-content-card-wrapper") && css.includes(".bf-content-card-footer-inner"), "Expected content-card to expose its named allocation container, wrapper, and footer rail contracts.");
-  assert(css.includes("padding-block-start: calc(0.5rem - var(--bf-border-width));"), "Expected content-card footer rails to own the canonical half-rem clearance after their top rule.");
+  assert(css.includes("padding-block-start: var(--bf-field-gap);"), "Expected content-card footer rails to own the governed item-gap clearance independently of their painted rule.");
   assert(css.includes("@container bf-content-card (width >= 28.75rem)") && css.includes("@container bf-content-card (width >= 60rem)"), "Expected content-card to preserve intrinsic horizontal and feature reflow thresholds.");
   assert(css.includes("-webkit-line-clamp: 3;") && css.includes("-webkit-line-clamp: 2;"), "Expected content-card to retain the Vanilla title/description clamp contracts.");
   assert(!css.includes(".bf-content-card.has-image") && !css.includes(".bf-content-card.has-description"), "Expected content-card styling to use only is-* modifiers.");

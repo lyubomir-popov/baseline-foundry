@@ -410,6 +410,30 @@ export async function verifyInteractiveTables(origin: string): Promise<void> {
     await tierSelect.selectOption("editorial");
     await page.waitForFunction(() => document.body.dataset.bfTier === "editorial");
 
+    const sortableHeaderBox = await page.locator(".bf-table.is-sortable th[aria-sort]").first().boundingBox();
+    const cdp = await page.context().newCDPSession(page);
+    const documentNode = await cdp.send("DOM.getDocument", { depth: -1, pierce: true });
+    const headerNode = await cdp.send("DOM.querySelector", { nodeId: documentNode.root.nodeId, selector: ".bf-table.is-sortable th[aria-sort]" });
+    const headerDescription = await cdp.send("DOM.describeNode", { nodeId: headerNode.nodeId, depth: 1, pierce: true });
+    const beforePseudo = headerDescription.node.pseudoElements?.find(pseudo => pseudo.pseudoType === "before");
+    assert(sortableHeaderBox && beforePseudo?.backendNodeId, "Expected the sortable header and its named ::before stroke owner to be available to CDP.");
+    const pseudoBox = await cdp.send("DOM.getBoxModel", { backendNodeId: beforePseudo.backendNodeId });
+    const borderQuad = pseudoBox.model.border;
+    const pseudoBounds = {
+      left: Math.min(borderQuad[0], borderQuad[2], borderQuad[4], borderQuad[6]),
+      top: Math.min(borderQuad[1], borderQuad[3], borderQuad[5], borderQuad[7]),
+      right: Math.max(borderQuad[0], borderQuad[2], borderQuad[4], borderQuad[6]),
+      bottom: Math.max(borderQuad[1], borderQuad[3], borderQuad[5], borderQuad[7])
+    };
+    assert(
+      Math.abs(pseudoBounds.left - sortableHeaderBox.x) <= 0.1 &&
+      Math.abs(pseudoBounds.top - sortableHeaderBox.y) <= 0.1 &&
+      Math.abs(pseudoBounds.right - (sortableHeaderBox.x + sortableHeaderBox.width)) <= 0.1 &&
+      Math.abs(pseudoBounds.bottom - (sortableHeaderBox.y + sortableHeaderBox.height)) <= 0.1,
+      `Expected the sortable header's exceptional ::before stroke owner to anchor to the exact header box; header=${JSON.stringify(sortableHeaderBox)}, pseudo=${JSON.stringify(pseudoBounds)}.`
+    );
+    await cdp.detach();
+
     await coresButton.focus();
     await coresButton.press("Enter");
     assert(await coresHeader.getAttribute("aria-sort") === "ascending", "Expected first sortable-table activation to set aria-sort=ascending.");
@@ -543,12 +567,17 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
         const items = Array.from(list.querySelectorAll<HTMLElement>(".bf-divided-section-item"));
         const distanceProbe = document.createElement("span");
         distanceProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-divided-section-rule-to-content)";
-        list.append(distanceProbe);
+        const groupGapProbe = document.createElement("span");
+        groupGapProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
+        list.append(distanceProbe, groupGapProbe);
         const expectedRuleToContent = distanceProbe.getBoundingClientRect().height;
+        const expectedGroupGap = groupGapProbe.getBoundingClientRect().height;
         distanceProbe.remove();
+        groupGapProbe.remove();
         return {
           isStack: list.classList.contains("bf-stack"),
           rowGap: Number.parseFloat(getComputedStyle(list).rowGap),
+          expectedGroupGap,
           expectedRuleToContent,
           items: items.map(item => {
             const styles = getComputedStyle(item);
@@ -565,10 +594,10 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
           })
         };
       });
-      assert(listRhythm.isStack && listRhythm.rowGap === 24, `Expected ${tier} divided-section list to be a bf-stack with a fixed 24px gap.`);
+      assert(listRhythm.isStack && Math.abs(listRhythm.rowGap - listRhythm.expectedGroupGap) <= 0.1, `Expected ${tier} divided-section list to use the governed group gap; got ${JSON.stringify(listRhythm)}.`);
       assert(listRhythm.items.every(item => item.paddingStart === 0 && item.paddingEnd === 0 && item.marginStart === 0 && item.marginEnd === 0), `Expected ${tier} divided-section items to own no block padding or margin.`);
       assert(listRhythm.items[0]?.borderStart === 0, `Expected ${tier} first divided-section item to start without divider compensation.`);
-      assert(listRhythm.items.slice(1).every(item => item.borderStart === 0 && item.dividerBlockSize === 1 && Math.abs((-item.dividerInsetStart - item.dividerBlockSize) - listRhythm.expectedRuleToContent) <= 0.1 && (listRhythm.rowGap + item.dividerInsetStart) > listRhythm.expectedRuleToContent), `Expected ${tier} divided-section dividers to occupy the final half-rem before following content; gap=${listRhythm.rowGap}px, expected clear distance=${listRhythm.expectedRuleToContent}px, items=${JSON.stringify(listRhythm.items)}.`);
+      assert(listRhythm.items.slice(1).every(item => item.borderStart === 0 && item.dividerBlockSize === 1 && Math.abs((-item.dividerInsetStart - item.dividerBlockSize) - listRhythm.expectedRuleToContent) <= 0.1 && (listRhythm.rowGap + item.dividerInsetStart) > listRhythm.expectedRuleToContent), `Expected ${tier} divided-section dividers to preserve the governed item-gap clearance before following content; gap=${listRhythm.rowGap}px, expected clear distance=${listRhythm.expectedRuleToContent}px, items=${JSON.stringify(listRhythm.items)}.`);
     }
     const dividedState = await page.locator(".bf-divided-section").first().evaluate(root => {
       const header = root.querySelector<HTMLElement>(".bf-divided-section-header")?.getBoundingClientRect();
@@ -1122,10 +1151,13 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
           const shallowSpace = probe.getBoundingClientRect().height;
           const sectionSpace = probe.getBoundingClientRect().width;
           probe.remove();
+          const rootStyle = getComputedStyle(root);
+          const overlayStyle = getComputedStyle(root, "::after");
           return {
-            borderColor: getComputedStyle(root).borderBlockStartColor,
-            borderStyle: getComputedStyle(root).borderBlockStartStyle,
-            borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+            borderStyle: rootStyle.borderBlockStartStyle,
+            borderWidth: Number.parseFloat(rootStyle.borderBlockStartWidth),
+            overlayShadow: overlayStyle.boxShadow,
+            overlayPointerEvents: overlayStyle.pointerEvents,
             finalSlot: root.lastElementChild === media,
             leadToMedia: mediaRect.top - leadRect.bottom,
             shallowSpace,
@@ -1138,7 +1170,7 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
           };
         });
         assert(state, `Expected ${tier} closing-media hero geometry ${viewport.label}.`);
-        assert(state.borderStyle === "solid" && state.borderWidth > 0, `Expected ${tier} default hero to own one visible entry rule ${viewport.label}.`);
+        assert(state.borderStyle === "none" && state.borderWidth === 0 && state.overlayShadow !== "none" && state.overlayPointerEvents === "none", `Expected ${tier} default hero to paint one pointer-transparent entry rule outside layout ${viewport.label}; got ${JSON.stringify(state)}.`);
         assert(state.finalSlot && Math.abs(state.leadToMedia - state.shallowSpace) <= 0.1, `Expected ${tier} hero stack to own the shallow gap before final media ${viewport.label}.`);
         assert(state.mediaMarginEnd === 0 && Math.abs(state.mediaToHeroEnd - state.paddingEnd) <= 0.1, `Expected ${tier} hero exit boundary to begin immediately after closing media ${viewport.label}.`);
         assert(state.paddingEnd === 0, `Expected ${tier} hero to leave its exit boundary to the surrounding stack ${viewport.label}.`);
@@ -1147,9 +1179,10 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
         const borderlessState = await page.locator(".bf-hero.is-borderless").evaluate(root => ({
           borderStyle: getComputedStyle(root).borderBlockStartStyle,
           borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+          overlayContent: getComputedStyle(root, "::after").content,
           overflow: root.scrollWidth - root.clientWidth
         }));
-        assert(borderlessState.borderStyle === "none" && borderlessState.borderWidth === 0, `Expected ${tier} borderless hero to remove only its entry rule ${viewport.label}.`);
+        assert(borderlessState.borderStyle === "none" && borderlessState.borderWidth === 0 && borderlessState.overlayContent === "none", `Expected ${tier} borderless hero to remove only its entry rule ${viewport.label}.`);
         assert(borderlessState.overflow <= 1, `Expected ${tier} borderless hero to avoid inline overflow ${viewport.label}.`);
 
         const topFlushState = await page.locator(".bf-hero").first().evaluate(root => {
@@ -1159,15 +1192,16 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
           const state = {
             borderStyle: getComputedStyle(root).borderBlockStartStyle,
             borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+            overlayShadow: getComputedStyle(root, "::after").boxShadow,
             paddingStart: Number.parseFloat(getComputedStyle(root).paddingBlockStart),
-            ruleClearance: Number.parseFloat(getComputedStyle(referenceRule).marginBlockEnd),
+            ruleClearance: referenceRule.getBoundingClientRect().height + Number.parseFloat(getComputedStyle(referenceRule).marginBlockEnd),
             overflow: root.scrollWidth - root.clientWidth
           };
           referenceRule.remove();
           root.classList.remove("is-top-flush");
           return state;
         });
-        assert(topFlushState.borderStyle === "solid" && topFlushState.borderWidth > 0, `Expected ${tier} top-flush hero to retain its entry rule ${viewport.label}.`);
+        assert(topFlushState.borderStyle === "none" && topFlushState.borderWidth === 0 && topFlushState.overlayShadow !== "none", `Expected ${tier} top-flush hero to retain its out-of-flow entry rule ${viewport.label}.`);
         assert(Math.abs(topFlushState.paddingStart - topFlushState.ruleClearance) <= 0.1, `Expected ${tier} top-flush hero to match native-rule clearance ${viewport.label}.`);
         assert(topFlushState.overflow <= 1, `Expected ${tier} top-flush hero to avoid inline overflow ${viewport.label}.`);
       }

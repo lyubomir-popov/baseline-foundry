@@ -14,6 +14,7 @@ export function interactiveTablesCss(): string {
   color: var(--bf-color-text-default);
   cursor: pointer;
   outline-color: var(--bf-color-focus);
+  position: relative;
   white-space: nowrap;
 }
 

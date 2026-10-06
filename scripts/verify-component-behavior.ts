@@ -1194,7 +1194,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
             ruleInset: secondRuleRect.left - navigationRect.left,
             ruleEndSpread: navigationRect.right - secondRuleRect.right,
             ruleOccupiedBlock: secondRuleRect.height + Number.parseFloat(secondRuleStyles.marginBlockEnd),
-            ruleOccupiedBlockTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.5,
+            ruleOccupiedBlockTarget: headingListGapTarget,
             baseline,
             groupTops: navigationGroups.map(group => group.getBoundingClientRect().top),
             itemTracks: navigationItems.map(item => {
@@ -1216,7 +1216,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
       assert(Math.abs(geometry.navigation.headingListGap - geometry.navigation.headingListGapTarget) <= 0.1, `Expected ${tier} page-navigation group headers to use the governed item gap before their lists: ${JSON.stringify(geometry.navigation)}.`);
       assert(geometry.navigation.headerGaps.every(gap => gap === 0), `Expected ${tier} page-navigation rules and headings to remain a tight zero-gap header unit: ${JSON.stringify(geometry.navigation)}.`);
       assert(Math.abs(geometry.navigation.ruleInset - geometry.navigation.labelKeyline) <= 0.1 && Math.abs(geometry.navigation.ruleEndSpread - geometry.navigation.gutter) <= 0.1, `Expected ${tier} page-navigation rules to run from the label keyline to the end gutter: ${JSON.stringify(geometry.navigation)}.`);
-      assert(Math.abs(geometry.navigation.ruleOccupiedBlock - geometry.navigation.ruleOccupiedBlockTarget) <= 0.1, `Expected ${tier} page-navigation rules to preserve the compensated half-rem occupied block: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.ruleOccupiedBlock - geometry.navigation.ruleOccupiedBlockTarget) <= 0.1, `Expected ${tier} page-navigation rules to preserve the governed item-gap occupied block: ${JSON.stringify(geometry.navigation)}.`);
       const phaseDistance = (a: number, b: number, baseline: number) => {
         const delta = Math.abs((((a - b) % baseline) + baseline) % baseline);
         return Math.min(delta, baseline - delta);
@@ -4444,7 +4444,9 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
     { route: "/demo/components/list.html", selector: ".bf-list.is-divided > li + li", forcedSide: "blockStart" },
     { route: "/demo/components/tabs.html", selector: ".bf-tabs-list", forcedSide: "blockEnd" },
     { route: "/demo/components/tabs.html", selector: ".bf-tabs-link[aria-selected='true']", forcedSide: "blockEnd", widthVariable: "--bf-bar-thickness" },
-    { route: "/demo/components/inline-options.html", selector: ".bf-inline-options", forcedSide: "blockEnd" }
+    { route: "/demo/components/inline-options.html", selector: ".bf-inline-options", forcedSide: "blockEnd" },
+    { route: "/demo/components/cta-block.html", selector: ".bf-cta-block.is-bordered", forcedSide: "blockStart" },
+    { route: "/demo/components/hero.html", selector: ".bf-hero:not(.is-borderless)", forcedSide: "blockStart" }
   ] as const;
 
   try {

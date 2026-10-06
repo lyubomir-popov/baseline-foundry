@@ -77,18 +77,22 @@ and must not be changed.
   borders, inset forced-colors outlines and preserved native slots. Its
   required gates are green in `feedback-check-types.log`,
   `feedback-npm-test.log`, and `feedback-qa-components.log`.
+- `ebe54a0` migrates table row rules, mobile table-card frames, divided-list
+  separators, Tabs rules and InlineOptions boundaries to automatic overlays.
+  It also splits the Range thumb forced-colors vendor rules so Chromium keeps
+  the WebKit rule in its CSSOM. Its required gates are green in
+  `tables-check-types.log`, `tables-npm-test.log`, and
+  `tables-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-The active table/divider item moves table row rules, mobile table-card frames,
-divided-list separators, Tabs rules and InlineOptions boundaries to automatic
-overlays. Sortable headers retain their caret on `::after` and use `::before`
-as the named one-sided stroke owner. The item also repairs the preceding Range
-family's grouped vendor-pseudo forced-colors rule: Chromium drops that mixed
-selector list, so WebKit and Mozilla thumb rules are separate and an actual
-CSSOM regression checks that the Chromium rule survives parsing.
+The active static/editorial item migrates token rows, rules, CTA blocks, Hero,
+equal-height columns and article pagination to out-of-flow paint. It binds
+DividedSection and rule clearance to the governed group/item roles. The item
+also repairs the preceding table family's sortable-header stroke anchor and
+proves the real `::before` pseudo bounds through CDP without changing the row.
 
 After this item, finish the emitted border/root-shadow inventory and semantic
 margin/icon ownership sweep. Preserve the governed dense Site Chip policy and

@@ -1,5 +1,6 @@
 import { gridCss } from "./css-grid.js";
 import { componentsCss } from "./css-components.js";
+import { blockStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { appTierPresetCss } from "./css-app-tier.js";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "./baseline-grid-theme.js";
 import { generateBaselineGridOverlayCss, generateBaselineGridThemeOverrideCss } from "./baseline-grid-overlay.js";
@@ -278,6 +279,7 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
       : [])
   ];
   const presetCss = includesAppSurface ? `\n${appTierPresetCss(appScopes)}` : "";
+  const tokenRowStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-token-row)", { anchor: "relative", color: "var(--bf-color-rule)", width: "0.0625rem" });
 
   if (!body) {
     throw new Error("Theme tokens require a body role.");
@@ -587,27 +589,30 @@ ${capEngineDemo}
   inline-size: 100%;
   /* Reserve one half-rem rhythm step after the rule, including its */
   /* thickness, so borderless content does not touch the divider. */
-  margin: 0 0 calc(0.5rem - 0.0625rem);
+  margin: 0 0 calc(var(--bf-field-gap) - 0.0625rem);
 }
 
 /* Highlight rules share the same scalable emphasis-bar geometry as active
  * navigation, tabs, notifications, and document-navigation markers. */
 :where(.bf-theme) :where(hr.is-highlighted) {
   block-size: var(--bf-bar-thickness);
-  margin-block-end: calc(0.5rem - var(--bf-bar-thickness));
+  margin-block-end: calc(var(--bf-field-gap) - var(--bf-bar-thickness));
 }
 
+${tokenRowStroke.owner}
+
 :where(.bf-theme) :where(.bf-token-row) {
-  border-top: 0.0625rem solid var(--bf-color-rule);
   display: grid;
   gap: var(--bf-space-1);
   padding-top: var(--bf-space-2);
 }
 
 :where(.bf-theme) :where(.bf-token-row:first-child) {
-  border-top: 0;
+  --bf-stroke-width: 0rem;
   padding-top: 0;
 }
+
+${tokenRowStroke.painter}
 
 ${componentsCss(tokens, themeSurfaces, siteScopes)}
 

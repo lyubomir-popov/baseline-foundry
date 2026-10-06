@@ -801,7 +801,7 @@ function validateCommonCss(css: string): void {
     "block-size": "0.0625rem",
     "border": "0",
     "inline-size": "100%",
-    "margin": "0 0 calc(0.5rem - 0.0625rem)",
+    "margin": "0 0 calc(var(--bf-field-gap) - 0.0625rem)",
   }, "plain hr receives the basic rule contract");
   assert(css.includes(":where(.bf-theme) :where(.bf-page) {\n  margin-inline: auto;\n  max-inline-size: var(--bf-content-max-width);\n  padding-inline: var(--bf-page-margin);"), "Expected bf-page gutters to resolve directly from the shared grid-row margin token.");
   assert(!css.includes("#f5f1e8"), "Expected generated CSS to avoid the old paper-like default background fallback.");
@@ -951,8 +951,8 @@ function validateCommonCss(css: string): void {
     "padding": "0"
   }, "SearchAndFilter sections add no spacing beside the root-owned group gap");
   assert(css.includes("vertical-align: baseline;") && !css.includes("vertical-align: calc(var(--bf-border-width) - var(--bf-body-nudge-start"), "Expected inline chips to expose their first text baseline without reapplying the body metric nudge.");
-  assert(css.includes("margin: 0 0 calc(0.5rem - 0.0625rem);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 0.0625rem thickness.");
-  assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
+  assert(css.includes("margin: 0 0 calc(var(--bf-field-gap) - 0.0625rem);"), "Expected rules to reserve the governed item gap inclusive of their 0.0625rem thickness.");
+  assert(css.includes("margin-block-end: calc(var(--bf-field-gap) - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the governed item gap inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
   assert(!css.includes("padding-block: var(--bf-strip-space);"), "Expected strip rhythm to avoid symmetric top-and-bottom padding.");
   assert(css.includes(".bf-grid"), "Expected CSS to include grid selectors.");
@@ -1082,11 +1082,11 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("is-icon-target-wrap") && !css.includes("is-icon-target-scrollport"), "Expected generated CSS to remove the unadopted icon-target opt-in API.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-component-inline-inset-action);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: 0;"), "Expected generated CSS to keep bf-cta-block externally neutral and use a horizontal action-space owner.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row) {\n  container-type: inline-size;\n  display: grid;\n  gap: var(--bf-grid-gap-block) var(--bf-grid-gap-inline);\n  /* Keep the logical track system on the query container itself."), "Expected generated CSS to define the bf-equal-height-row query container without an invalid self-query.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  padding-block-start: var(--bf-space-1);"), "Expected bf-cta-block.is-bordered to preserve its clearance without putting the divider in layout.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row) {\n  container-type: inline-size;\n  column-gap: var(--bf-grid-gap-inline);\n  display: grid;"), "Expected generated CSS to define the bf-equal-height-row query container without an invalid self-query.");
   assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));"), "Expected bf-equal-height-row to expose its eight logical tracks at every width.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  display: grid;\n  grid-column: 1 / -1;\n  grid-row: span 4;\n  grid-template-rows: subgrid;"), "Expected bf-equal-height-row-col to span the narrow row and opt into subgrid alignment.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col.is-borderless) {\n  border-block-start: 0;\n}"), "Expected bf-equal-height-row-col.is-borderless modifier to drop the top border.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col) {\n  display: grid;\n  grid-column: 1 / -1;\n  grid-row: span 4;\n  grid-template-rows: subgrid;"), "Expected bf-equal-height-row-col to span the narrow row and opt into subgrid alignment without a layout border.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col:not(.is-borderless))::after"), "Expected non-borderless equal-height columns to paint through the automatic overlay.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-1)::before {\n  grid-row: 2;\n}"), "Expected bf-equal-height-row.is-divider-1 to draw a cross-column rule on subgrid row 2.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-2)::after {\n  grid-row: 3;\n}"), "Expected bf-equal-height-row.is-divider-2 to draw a cross-column rule on subgrid row 3.");
   assert(!css.includes("bf-equal-heights") && !css.includes(".equal-heights"), "Expected equal-heights Sites recipe to reuse bf-equal-height-row without a duplicate CSS family.");
@@ -1359,6 +1359,8 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-content-card-footer)::after => inherit",
     ":where(.bf-theme) :where(.bf-contextual-menu-dropdown)::after => inherit",
     ":where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group)::after => inherit",
+    ":where(.bf-theme) :where(.bf-cta-block.is-bordered)::after => inherit",
+    ":where(.bf-theme) :where(.bf-equal-height-row-col:not(.is-borderless))::after => inherit",
     ":where(.bf-theme) :where(.bf-field-boundary) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after => inherit",
     ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
@@ -1380,6 +1382,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-search-and-filter-panel)::after => inherit",
     ":where(.bf-theme) :where(.bf-search-box-button)::after => inherit",
     ":where(.bf-theme) :where(.bf-filter-panel-section:not(:last-child))::after => inherit",
+    ":where(.bf-theme) :where(.bf-hero:not(.is-borderless))::after => inherit",
     ":where(.bf-theme) :where(.bf-inline-options)::after => inherit",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) => 0",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)::after => inherit",
@@ -1391,6 +1394,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr)::after => inherit",
     ":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])::after => inherit",
     ":where(.bf-theme) :where(.bf-tabs-list)::after => inherit",
+    ":where(.bf-theme) :where(.bf-token-row)::after => inherit",
     ":where(.bf-theme) :where(.bf-top-navigation)::after => inherit",
     ":where(.bf-theme) :where(.bf-tooltip-message)::after => inherit",
     ":where(.bf-theme) :where(.bf-validation-message)::before => 50%",
