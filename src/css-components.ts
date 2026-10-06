@@ -96,10 +96,11 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
-  const buttonPadding = "  padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-border-width)));\n";
   const paginationStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", { anchor: "existing", color: "var(--bf-color-border-high-contrast)" });
   const fieldBoundarySelector = ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)";
   const fieldStroke = blockEndStrokeOverlayCss(fieldBoundarySelector, { anchor: "relative" });
+  const navigationBarSelector = ":where(.bf-theme) :where(.bf-navigation-bar)";
+  const navigationBarStroke = blockEndStrokeOverlayCss(navigationBarSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
 
   return `${componentContractsCss(tokens, themeSurfaces)}
 ${controlGeometryCss({ bodyLineHeight, bodySelectedStartNudge })}
@@ -974,8 +975,7 @@ ${legacyNavigationCss({
   bodyMediumTypeStyles: typeStyles(body, { fontWeight: 500, includeCase: false }),
   bodySemiboldTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
   bodyTypeStyles,
-  buttonMarginBottom,
-  buttonPadding
+  buttonMarginBottom
 })}
 
 :where(.bf-theme) :where(.bf-contextual-menu, .bf-contextual-menu.is-left, .bf-contextual-menu.is-center) {
@@ -1695,15 +1695,18 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   grid-template-rows: min-content minmax(0, 1fr) min-content;
 }
 
+${navigationBarStroke.owner}
+
 :where(.bf-theme) :where(.bf-navigation-bar) {
   background: var(--bf-color-background-alt);
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   grid-area: navigation-bar;
   min-block-size: var(--bf-navigation-bar-min-block-size);
   min-inline-size: 0;
   position: relative;
   z-index: 40;
 }
+
+${navigationBarStroke.painter}
 
 /* A responsive application brand occupies the persistent bar only while the
  * full navigation brand is unavailable. The same public tagged-logo contract
@@ -1713,10 +1716,6 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   align-items: start;
   column-gap: var(--bf-leading-mark-gap);
   padding-inline-end: var(--bf-panel-content-padding-inline);
-}
-
-:where(.bf-theme) :where(.bf-navigation-bar.is-responsive) {
-  margin-block-end: calc(var(--bf-border-width) * -1);
 }
 
 :where(.bf-theme) :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand) > :where(.bf-top-navigation-logo.is-canonical-tagged) {

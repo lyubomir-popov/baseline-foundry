@@ -1300,6 +1300,7 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after => inherit",
     ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
+    ":where(.bf-theme) :where(.bf-navigation-bar)::after => inherit",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)::after => inherit",
     ":where(.bf-theme) :where(.bf-prose ul > li)::before => 50%",
@@ -1307,9 +1308,12 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-radio-label)::before => 50%",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) => 0",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)::after => inherit",
+    ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)::after => inherit",
     ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer)::after => inherit",
     ":where(.bf-theme) :where(.bf-switch-slider) => var(--bf-control-visual-size)",
     ":where(.bf-theme) :where(.bf-switch-slider)::before => 50%",
+    ":where(.bf-theme) :where(.bf-top-navigation)::after => inherit",
     ":where(.bf-theme) :where(.bf-validation-message)::before => 50%",
     ":where(.bf-theme) :where(input[type='file'])::file-selector-button => var(--bf-radius)",
     ":where(.bf-theme) :where(input[type='range']) => var(--bf-baseline)",
@@ -1448,9 +1452,17 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-search-container[aria-expanded='false'])", {
     "min-block-size": "var(--bf-interface-row-painted-block-size)"
   }, "collapsed search-and-filter hosts leave trailing compensation to their external margin");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar.is-responsive)", {
-    "margin-block-end": "calc(var(--bf-border-width) * -1)"
-  }, "responsive application bars compensate their trailing keyline inside the baseline track");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar)", {
+    "--bf-overlay-stroke-layer": "inset 0 calc(var(--bf-stroke-width) * -1) 0 var(--bf-stroke-color)",
+    "--bf-stroke-color": "var(--bf-color-border-low-contrast)"
+  }, "responsive application bars paint their trailing keyline outside layout geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar)::after", {
+    "inset": "0",
+    "pointer-events": "none",
+    "position": "absolute"
+  }, "responsive application bars use the automatic last-child paint overlay");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar)", "border-bottom", "responsive application bars do not put their trailing keyline in layout");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-navigation-bar.is-responsive) {\n  margin-block-end:"), "Expected responsive application bars to need no negative border compensation.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application:has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed))", {
     "grid-template-areas": "\"navigation-bar navigation-bar\"\n    \"main aside\"",
     "grid-template-rows": "min-content minmax(0, 1fr)"
@@ -1521,7 +1533,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes("transform: translateY(-50%) rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to use inset centering and point downward before expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: translateY(-50%) rotate(180deg);\n}"), "Expected active top-navigation chevrons to remain inset-centred and rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
-  assert(css.includes("--bf-top-navigation-reduced-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));") && css.includes("top: var(--bf-top-navigation-reduced-row-block-size);"), "Expected reduced top navigation to absorb the complete interface-row compensation and place dropdowns from that occupied row.");
+  assert(css.includes("--bf-top-navigation-reduced-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("min-block-size: var(--bf-top-navigation-reduced-row-block-size);") && css.includes("padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));") && css.includes("top: var(--bf-top-navigation-reduced-row-block-size);"), "Expected reduced top navigation to occupy the complete interface row and place dropdowns from that row.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon)", {
     "background-size": "contain",
     "display": "inline-block",

@@ -1,9 +1,10 @@
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss } from "./stroke-paint.js";
+
 export interface LegacyNavigationCssOptions {
   bodyMediumTypeStyles: string;
   bodySemiboldTypeStyles: string;
   bodyTypeStyles: string;
   buttonMarginBottom: string;
-  buttonPadding: string;
 }
 
 export function legacyNavigationCss(options: LegacyNavigationCssOptions): string {
@@ -11,11 +12,20 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
     bodyMediumTypeStyles,
     bodySemiboldTypeStyles,
     bodyTypeStyles,
-    buttonMarginBottom,
-    buttonPadding
+    buttonMarginBottom
   } = options;
+  const toggleSelector = ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer)";
+  const toggleStroke = allSidedStrokeOverlayCss(toggleSelector, { anchor: "relative", color: "var(--bf-color-border-high-contrast)" });
+  const drawerHeaderSelector = ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)";
+  const drawerHeaderStroke = blockEndStrokeOverlayCss(drawerHeaderSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const topNavigationSelector = ":where(.bf-theme) :where(.bf-top-navigation)";
+  const topNavigationStroke = blockEndStrokeOverlayCss(topNavigationSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
 
-  return `:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
+  return `${toggleStroke.owner}
+${drawerHeaderStroke.owner}
+${topNavigationStroke.owner}
+
+:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
   /* The navigation panel owns grid-margin gutters. Every row reserves one
      tier-sized icon column plus the shared mark gap, including iconless and
      nested rows, so every label reaches one stable panel keyline. */
@@ -106,9 +116,8 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
 
 :where(.bf-theme) :where(.bf-side-navigation-drawer-header) {
   background: var(--bf-color-background-default);
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   margin-bottom: calc(var(--bf-baseline) * 2);
-  padding-bottom: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-bottom: var(--bf-panel-padding-block);
   padding-inline: var(--bf-panel-padding-inline);
   padding-top: var(--bf-panel-padding-block);
   position: sticky;
@@ -120,7 +129,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
 ${bodyTypeStyles}  align-items: center;
   appearance: none;
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   cursor: pointer;
@@ -128,7 +137,8 @@ ${bodyTypeStyles}  align-items: center;
   gap: var(--bf-leading-mark-gap);
   justify-content: center;
   margin: 0 0 ${buttonMarginBottom};
-${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset-action) - var(--bf-border-width)));
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-decoration: none;
 }
 
@@ -163,8 +173,18 @@ ${buttonPadding}  padding-inline: max(0rem, calc(var(--bf-component-inline-inset
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-toggle:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
+}
+
+${toggleStroke.painter}
+${drawerHeaderStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-side-navigation-toggle:focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.125rem;
+  }
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked) {
@@ -291,12 +311,13 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-top-navigation) {
   background: var(--bf-color-background-default);
-  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-low-contrast);
   color: var(--bf-color-text-default);
   isolation: isolate;
   position: relative;
   z-index: 50;
 }
+
+${topNavigationStroke.painter}
 
 :where(.bf-theme) :where(.bf-top-navigation.is-sticky) {
   position: sticky;
@@ -407,7 +428,18 @@ ${bodyMediumTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item) {
-  border-top: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before {
+  background: var(--bf-color-border-low-contrast);
+  block-size: var(--bf-border-width);
+  content: "";
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-item.is-right-shifted) {
@@ -457,8 +489,21 @@ ${bodyTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link),
 :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page']) {
   background: var(--bf-color-background-hover);
-  box-shadow: inset var(--bf-bar-thickness) 0 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link)::before,
+:where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link)::before,
+:where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page'])::before {
+  background: var(--bf-color-text-default);
+  block-size: 100%;
+  content: "";
+  inline-size: var(--bf-bar-thickness);
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-menu-toggle) {
@@ -478,11 +523,11 @@ ${bodyTypeStyles}  align-items: center;
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   bottom: 0;
   content: "";
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
   pointer-events: none;
   position: absolute;
   right: var(--bf-top-navigation-link-padding-inline);
@@ -497,7 +542,10 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
   background: var(--bf-color-background-default);
-  border-top: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
+  /* Dropdowns are elevated popup surfaces. Their boundary and elevation are
+     composed on the popup itself so descendants remain above both layers. */
+  box-shadow: inset 0 var(--bf-border-width) 0 var(--bf-color-border-low-contrast);
   display: none;
   list-style: none;
   margin: 0;
@@ -519,6 +567,7 @@ ${bodyTypeStyles}  align-items: center;
   min-inline-size: 0;
   padding-block: var(--bf-top-navigation-link-padding-block);
   padding-inline: calc(var(--bf-top-navigation-link-padding-inline) + var(--bf-component-inline-inset-action)) var(--bf-top-navigation-link-padding-inline);
+  position: relative;
   text-align: left;
   text-decoration: none;
   white-space: nowrap;
@@ -550,12 +599,24 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider) {
-  border-top: var(--bf-border-width) solid var(--bf-color-border-default);
   block-size: var(--bf-baseline);
+  position: relative;
 }
 
-:where(.bf-theme) :where(.bf-top-navigation-dropdown > li + li) > :where(.bf-top-navigation-dropdown-item) {
-  border-top: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+:where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider)::before,
+:where(.bf-theme) :where(.bf-top-navigation-dropdown > li + li) > :where(.bf-top-navigation-dropdown-item)::before {
+  background: var(--bf-color-border-low-contrast);
+  block-size: var(--bf-border-width);
+  content: "";
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider)::before {
+  background: var(--bf-color-border-default);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown-item:hover) {
@@ -580,11 +641,11 @@ ${bodyTypeStyles}  align-items: center;
   background-image: var(--bf-ui-icon-search);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
-  flex: 0 0 1rem;
-  inline-size: 1rem;
+  flex: 0 0 var(--bf-icon-size-default);
+  inline-size: var(--bf-icon-size-default);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-search-toggle[aria-pressed='true'])::after {
@@ -596,7 +657,7 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-search) {
-  border-top: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  box-shadow: inset 0 var(--bf-border-width) 0 var(--bf-color-border-low-contrast);
   display: none;
   min-inline-size: 0;
   padding-block: var(--bf-top-navigation-link-padding-block);
@@ -645,7 +706,11 @@ ${bodyTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item) {
-    border-top: 0;
+    position: relative;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before {
+    content: none;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-link, .bf-top-navigation-search-toggle) {
@@ -672,11 +737,19 @@ ${bodyTypeStyles}  align-items: center;
   :where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link),
   :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link),
   :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page']) {
-    box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
+    box-shadow: none;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page'])::before {
+    block-size: var(--bf-bar-thickness);
+    inline-size: 100%;
+    inset-block-start: auto;
+    inset-block-end: 0;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
-    border-top: 0;
     box-shadow: 0 0 0 var(--bf-border-width) var(--bf-color-border-low-contrast), 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
     left: 0;
     min-inline-size: max(100%, 12rem);
@@ -696,7 +769,7 @@ ${bodyTypeStyles}  align-items: center;
 
   :where(.bf-theme) :where(.bf-top-navigation-search) {
     align-items: center;
-    border-top: 0;
+    box-shadow: none;
     flex: 1 1 auto;
     justify-content: flex-end;
     padding-block: var(--bf-top-navigation-link-padding-block);
@@ -726,6 +799,32 @@ ${bodyTypeStyles}  align-items: center;
   }
 }
 
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-dropdown > li + li) > :where(.bf-top-navigation-dropdown-item)::before {
+    background: CanvasText;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page'])::before {
+    background: CanvasText;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+}
+
+@media (forced-colors: active) and (min-width: 64.75rem) {
+  :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before {
+    content: none;
+  }
+}
+
 :where(.bf-theme) :where(.bf-side-navigation-item:has(> .bf-side-navigation-list [aria-current='page']), .bf-side-navigation-item:has(> .bf-side-navigation-list [aria-current='true'])) > :where(.bf-side-navigation-link, .bf-side-navigation-accordion-button) {
   color: var(--bf-color-text-default);
 }
@@ -746,7 +845,7 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-side-navigation-accordion-button)::before {
   flex: none;
-  inset-block-start: calc(var(--bf-border-width) + var(--bf-interface-row-padding-block) + ((var(--bf-body-line-height) - var(--bf-side-navigation-icon-size)) * 0.5));
+  inset-block-start: calc(var(--bf-interface-row-padding-block) + ((var(--bf-body-line-height) - var(--bf-side-navigation-icon-size)) * 0.5));
   inset-inline-start: var(--bf-side-navigation-gutter);
   position: absolute;
 }
@@ -803,7 +902,7 @@ ${bodyTypeStyles}  background: transparent;
   display: inline-flex;
   flex: none;
   inline-size: var(--bf-side-navigation-icon-size);
-  inset-block-start: calc(var(--bf-border-width) + var(--bf-interface-row-padding-block) + ((var(--bf-body-line-height) - var(--bf-side-navigation-icon-size)) * 0.5));
+  inset-block-start: calc(var(--bf-interface-row-padding-block) + ((var(--bf-body-line-height) - var(--bf-side-navigation-icon-size)) * 0.5));
   inset-inline-start: var(--bf-side-navigation-gutter);
   justify-content: center;
   position: absolute;

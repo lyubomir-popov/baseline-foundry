@@ -2127,7 +2127,10 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         const tag = navigation?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
         const icon = navigation?.querySelector<SVGSVGElement>(".bf-top-navigation-logo-icon");
         const title = navigation?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
-        if (!navigation || !row || !banner || !primaryNavigation || !contentGrid || !active || !logoLink || !tag || !icon || !title) return null;
+        const dropdownToggle = navigation?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+        const searchToggle = navigation?.querySelector<HTMLElement>(".bf-top-navigation-search-toggle");
+        const plainNavigationLink = navigation?.querySelector<HTMLElement>(".bf-top-navigation-item.is-selected > .bf-top-navigation-link");
+        if (!navigation || !row || !banner || !primaryNavigation || !contentGrid || !active || !logoLink || !tag || !icon || !title || !dropdownToggle || !searchToggle || !plainNavigationLink) return null;
 
         const navigationRect = navigation.getBoundingClientRect();
         const rowRect = row.getBoundingClientRect();
@@ -2143,6 +2146,10 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         const tagStyles = getComputedStyle(tag);
         const iconStyles = getComputedStyle(icon);
         const titleStyles = getComputedStyle(title);
+        const activeIndicatorStyles = getComputedStyle(active, "::before");
+        const navigationBoundaryStyles = getComputedStyle(navigation, "::after");
+        const dropdownIconStyles = getComputedStyle(dropdownToggle, "::after");
+        const searchIconStyles = getComputedStyle(searchToggle, "::after");
         const viewBox = icon.viewBox.baseVal;
         const graphicBox = icon.getBBox();
         const graphicScale = iconRect.width / viewBox.width;
@@ -2158,7 +2165,16 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         return {
           tier: document.body.dataset.bfTier,
           barThicknessToken: getComputedStyle(navigation).getPropertyValue("--bf-bar-thickness").trim(),
-          activeShadow: getComputedStyle(active).boxShadow,
+          activeIndicatorBlockSize: Number.parseFloat(activeIndicatorStyles.blockSize),
+          activeIndicatorInlineSize: Number.parseFloat(activeIndicatorStyles.inlineSize),
+          activeIndicatorPosition: activeIndicatorStyles.position,
+          activeIndicatorPointerEvents: activeIndicatorStyles.pointerEvents,
+          navigationBoundaryBoxShadow: navigationBoundaryStyles.boxShadow,
+          navigationBoundaryPosition: navigationBoundaryStyles.position,
+          navigationBoundaryPointerEvents: navigationBoundaryStyles.pointerEvents,
+          dropdownIconSize: Number.parseFloat(dropdownIconStyles.inlineSize),
+          searchIconSize: Number.parseFloat(searchIconStyles.inlineSize),
+          endSlotSize: Number.parseFloat(getComputedStyle(dropdownToggle).paddingInlineEnd) - Number.parseFloat(getComputedStyle(plainNavigationLink).paddingInlineEnd),
           rowLeft: rowRect.left,
           rowWidth: rowRect.width,
           contentGridLeft: contentGridRect.left,
@@ -2193,7 +2209,13 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         assert(taggedGeometry, `Expected tagged top-navigation geometry for ${tier} at ${width}px.`);
         assert(taggedGeometry.tier === tier, `Expected tagged top-navigation fixture to use ${tier}, got ${taggedGeometry.tier}.`);
         assert(taggedGeometry.barThicknessToken === "0.1875rem", `Expected ${tier} to expose the shared 0.1875rem emphasis bar, got ${taggedGeometry.barThicknessToken}.`);
-        assert(taggedGeometry.activeShadow.includes("-3px"), `Expected ${tier} desktop top-navigation highlight to resolve to 3px, got ${taggedGeometry.activeShadow}.`);
+        assert(Math.abs(taggedGeometry.activeIndicatorBlockSize - 3) <= 0.1 && taggedGeometry.activeIndicatorInlineSize > 0, `Expected ${tier} desktop top-navigation highlight to paint a 3px block-end bar, got ${JSON.stringify(taggedGeometry)}.`);
+        assert(taggedGeometry.activeIndicatorPosition === "absolute" && taggedGeometry.activeIndicatorPointerEvents === "none", `Expected ${tier} desktop selection paint to stay out of layout and pointer routing.`);
+        assert(taggedGeometry.navigationBoundaryBoxShadow !== "none" && taggedGeometry.navigationBoundaryPosition === "absolute" && taggedGeometry.navigationBoundaryPointerEvents === "none", `Expected ${tier} navigation boundary to use the automatic out-of-flow paint overlay.`);
+        const expectedStandardIconSize = tier === "editorial" ? 16 : tier === "os" ? 12 : 14;
+        const expectedEndSlotSize = tier === "editorial" ? 24 : tier === "os" ? 16 : 22;
+        assert(Math.abs(taggedGeometry.dropdownIconSize - expectedStandardIconSize) <= 0.1 && Math.abs(taggedGeometry.searchIconSize - expectedStandardIconSize) <= 0.1, `Expected ${tier} top-navigation glyphs to follow the ${expectedStandardIconSize}px tier icon size, got dropdown=${taggedGeometry.dropdownIconSize}px search=${taggedGeometry.searchIconSize}px.`);
+        assert(Math.abs(taggedGeometry.endSlotSize - expectedEndSlotSize) <= 0.1, `Expected ${tier} dropdown end slot to combine its icon and mark gap (${expectedEndSlotSize}px), got ${taggedGeometry.endSlotSize}px.`);
         assert(Math.abs(taggedGeometry.rowLeft - taggedGeometry.contentGridLeft) <= 0.1 && Math.abs(taggedGeometry.rowWidth - taggedGeometry.contentGridWidth) <= 0.1, `Expected ${tier} navigation and content grids to share bounds at ${width}px.`);
         assert(Math.abs(taggedGeometry.bannerLeft - taggedGeometry.contentGridLeft) <= 0.1, `Expected ${tier} banner to begin at content column one at ${width}px.`);
         assert(Math.abs(taggedGeometry.primaryNavigationLeft - taggedGeometry.thirdContentColumnStart) <= 0.1, `Expected ${tier} primary navigation to begin at content column three at ${width}px; nav=${taggedGeometry.primaryNavigationLeft}, column=${taggedGeometry.thirdContentColumnStart}.`);
@@ -2218,6 +2240,23 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     }
 
     await desktopPage.setViewportSize({ width: 1440, height: 960 });
+    await desktopPage.emulateMedia({ forcedColors: "active" });
+    const forcedDesktopPaint = await desktopPage.evaluate(() => {
+      const navigation = document.querySelector<HTMLElement>("#top-navigation-default");
+      const active = navigation?.querySelector<HTMLElement>(".bf-top-navigation-item.is-selected > .bf-top-navigation-link");
+      if (!navigation || !active) return null;
+      const boundary = getComputedStyle(navigation, "::after");
+      const selection = getComputedStyle(active, "::before");
+      return {
+        boundaryWidth: Number.parseFloat(boundary.borderBlockEndWidth),
+        boundaryStyle: boundary.borderBlockEndStyle,
+        selectionBackground: selection.backgroundColor
+      };
+    });
+    assert(forcedDesktopPaint, "Expected forced-colors top-navigation paint to be measurable.");
+    assert(forcedDesktopPaint.boundaryWidth > 0 && forcedDesktopPaint.boundaryStyle === "solid", `Expected forced-colors navigation boundary to become a real out-of-flow system-color border. Got ${JSON.stringify(forcedDesktopPaint)}.`);
+    assert(forcedDesktopPaint.selectionBackground !== "rgba(0, 0, 0, 0)", `Expected forced-colors navigation selection to keep its one-sided system-color cue. Got ${JSON.stringify(forcedDesktopPaint)}.`);
+    await desktopPage.emulateMedia({ forcedColors: "none" });
 
     const desktopDropdownToggle = desktopPage.locator(".bf-top-navigation-dropdown-toggle").first();
     await desktopDropdownToggle.waitFor({ state: "visible" });
@@ -2236,6 +2275,12 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       }
 
       const dropdownStyles = getComputedStyle(dropdownElement);
+      const navigationRect = navigationElement.getBoundingClientRect();
+      const dropdownRect = dropdownElement.getBoundingClientRect();
+      const contentRect = document.querySelector<HTMLElement>("[data-baseline-label='top navigation content']")?.getBoundingClientRect();
+      const probeX = dropdownRect.left + Math.min(8, dropdownRect.width / 2);
+      const probeY = Math.min(dropdownRect.bottom - 1, navigationRect.bottom + 4);
+      const hit = document.elementFromPoint(probeX, probeY);
 
       return {
         menuOpen: Array.from(navigationElement.querySelectorAll<HTMLElement>(".bf-top-navigation-menu-toggle")).some(toggle => toggle.getAttribute("aria-expanded") === "true"),
@@ -2244,7 +2289,14 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         expanded: dropdownToggle.getAttribute("aria-expanded"),
         hidden: dropdownElement.getAttribute("aria-hidden"),
         display: dropdownStyles.display,
-        position: dropdownStyles.position
+        position: dropdownStyles.position,
+        borderTopWidth: Number.parseFloat(dropdownStyles.borderTopWidth),
+        paintBoundary: dropdownStyles.boxShadow,
+        escapesNavigation: dropdownRect.bottom > navigationRect.bottom,
+        overlapsFollowingContent: contentRect ? dropdownRect.bottom > contentRect.top : false,
+        hitOwnsPopup: Boolean(hit?.closest(".bf-top-navigation-dropdown") === dropdownElement),
+        navigationIsolation: getComputedStyle(navigationElement).isolation,
+        navigationZIndex: getComputedStyle(navigationElement).zIndex
       };
     });
 
@@ -2255,6 +2307,9 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     assert(desktopDropdownState.hidden === "false", `Expected desktop dropdown aria-hidden=false, got ${desktopDropdownState.hidden}.`);
     assert(desktopDropdownState.display === "block", `Expected desktop dropdown display to become block, got ${desktopDropdownState.display}.`);
     assert(desktopDropdownState.position === "absolute", `Expected desktop dropdown to be absolutely positioned, got ${desktopDropdownState.position}.`);
+    assert(desktopDropdownState.borderTopWidth === 0 && desktopDropdownState.paintBoundary !== "none", `Expected desktop dropdown boundary and elevation to paint without a layout border, got ${JSON.stringify(desktopDropdownState)}.`);
+    assert(desktopDropdownState.escapesNavigation && desktopDropdownState.overlapsFollowingContent && desktopDropdownState.hitOwnsPopup, `Expected the real desktop dropdown to escape the navigation box and remain interactive above following content. Got ${JSON.stringify(desktopDropdownState)}.`);
+    assert(desktopDropdownState.navigationIsolation === "isolate" && desktopDropdownState.navigationZIndex === "98", `Expected the pre-existing sticky navigation popup layer to remain the containing stack owner. Got ${JSON.stringify(desktopDropdownState)}.`);
 
     const desktopSearchToggle = desktopPage.locator(".bf-top-navigation-nav .bf-top-navigation-search-toggle").first();
     await desktopSearchToggle.waitFor({ state: "visible" });
@@ -2545,6 +2600,30 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     assert(mobileDropdownState.expanded === "true", `Expected mobile dropdown toggle aria-expanded=true, got ${mobileDropdownState.expanded}.`);
     assert(mobileDropdownState.hidden === "false", `Expected mobile dropdown aria-hidden=false, got ${mobileDropdownState.hidden}.`);
     assert(mobileDropdownState.display === "block", `Expected mobile dropdown display to become block, got ${mobileDropdownState.display}.`);
+
+    await mobilePage.emulateMedia({ forcedColors: "active" });
+    const forcedMobilePaint = await mobilePage.evaluate(() => {
+      const navigationItem = document.querySelector<HTMLElement>("#top-navigation-default .bf-top-navigation-nav .bf-top-navigation-item");
+      const dropdown = document.querySelector<HTMLElement>("#top-navigation-default .bf-top-navigation-dropdown[aria-hidden='false']");
+      const dividedItem = dropdown?.querySelector<HTMLElement>("li + li > .bf-top-navigation-dropdown-item");
+      if (!navigationItem || !dropdown || !dividedItem) return null;
+      const navigationDivider = getComputedStyle(navigationItem, "::before");
+      const itemDivider = getComputedStyle(dividedItem, "::before");
+      const dropdownStyles = getComputedStyle(dropdown);
+      return {
+        navigationDividerBackground: navigationDivider.backgroundColor,
+        navigationDividerHeight: Number.parseFloat(navigationDivider.blockSize),
+        itemDividerBackground: itemDivider.backgroundColor,
+        itemDividerHeight: Number.parseFloat(itemDivider.blockSize),
+        dropdownOutlineStyle: dropdownStyles.outlineStyle,
+        dropdownOutlineWidth: Number.parseFloat(dropdownStyles.outlineWidth)
+      };
+    });
+    assert(forcedMobilePaint, "Expected forced-colors mobile navigation separators to be measurable.");
+    assert(forcedMobilePaint.navigationDividerBackground !== "rgba(0, 0, 0, 0)" && forcedMobilePaint.navigationDividerHeight > 0, `Expected the mobile navigation divider to retain an out-of-flow system-color cue. Got ${JSON.stringify(forcedMobilePaint)}.`);
+    assert(forcedMobilePaint.itemDividerBackground !== "rgba(0, 0, 0, 0)" && forcedMobilePaint.itemDividerHeight > 0, `Expected mobile dropdown item separators to retain out-of-flow system-color cues. Got ${JSON.stringify(forcedMobilePaint)}.`);
+    assert(forcedMobilePaint.dropdownOutlineStyle !== "none" && forcedMobilePaint.dropdownOutlineWidth > 0, `Expected the mobile dropdown popup boundary to remain visible in forced colors. Got ${JSON.stringify(forcedMobilePaint)}.`);
+    await mobilePage.emulateMedia({ forcedColors: "none" });
 
     await mobilePage.keyboard.press("Escape");
     await mobilePage.waitForTimeout(180);

@@ -13,7 +13,7 @@ export function navigationGeometryCss(): string {
   --bf-side-navigation-icon-gap: var(--bf-leading-mark-gap);
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
   --bf-top-navigation-link-padding-inline: var(--bf-component-inline-inset-action);
-  --bf-top-navigation-end-slot-inline-size: calc(var(--bf-icon-size-default) + var(--bf-component-inline-inset-field));
+  --bf-top-navigation-end-slot-inline-size: calc(var(--bf-icon-size-default) + var(--bf-leading-mark-gap));
   --bf-top-navigation-search-toggle-inline-size: calc(var(--bf-icon-size-default) + (var(--bf-component-inline-inset-field) * 2));
   --bf-top-navigation-link-padding-block: max(var(--bf-body-nudge-start), calc(var(--bf-baseline) * 1.5));
   --bf-top-navigation-search-max-inline-size: 20rem;
