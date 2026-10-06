@@ -2,7 +2,7 @@
 
 **Feature branch**: `feat/028-shared-spacing-decisions`
 
-**Status**: In progress
+**Status**: External review requested
 
 ## Purpose
 

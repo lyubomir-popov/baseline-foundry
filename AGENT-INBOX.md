@@ -110,18 +110,18 @@ Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-The identical-DOM Spec 028 review page is at `/demo/spec-028/index.html`.
-It switches only between the independently rebuilt `6deca997` tier bundles and
-the feature bundles from `12d47ab`, hashes the actual CSS response bytes, keeps
-sticky controls, and exercises all four tiers at desktop/mobile widths. The
-real popup, containing-block, filled-child and focus pressure cases are covered
-by the repository behavior gate and independent physical/pixel browser probes.
+Implementation and demo are complete. The immutable review target is
+`db10d20`; the feature bundles come from `12d47ab`. The final independent
+contract and paint audits accept the requested scope with no open P1/P2. The
+overall evidence manifest is
+`H:/WSL_dev_projects/temp/bf-028-20261006/bf-028-evidence-manifest.json`, SHA-256
+`934f3f05c4ac2b800d7041bd18d03cff449369e99d69f38472a996337ca4ec5d`.
 
 ## Remaining order
 
-1. Commit the gate-green identical-DOM review demo.
-2. Fill the BF board columns, seal the manifest and review docs, and write
-   `opus-028-review-request.md`; stop for external Opus.
+1. Commit the final review metadata carrier.
+2. Stop for the single external Opus checkpoint. Owner visual sign-off and
+   merge remain pending.
 
 Run `npm run check:types`, `npm test`, and `npm run qa:components` after each
 atomic item. Do not edit frozen neutral diagnostics, push, merge, or open a PR.

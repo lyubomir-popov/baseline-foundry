@@ -23,5 +23,5 @@
   - [x] Navigation popup and application shell frames — `cf48e2f`, gates green; logs `shells-check-types.log`, `shells-npm-test.log`, `shells-qa-components.log`
 - [x] Filled-child Card/OptionCard focus repair — `12d47ab`, gates green; logs `focus-overlay-check-types.log`, `focus-overlay-npm-test.log`, `focus-overlay-qa-components.log`
 - [x] Before/after review demo and negative specimens — all-tier desktop/mobile behavior matrix green; logs `demo-check-types.log`, `demo-npm-test.log`, `demo-qa-components.log`
-- [ ] Root gates and Chromium evidence
-- [ ] Conformance board and final Opus request
+- [x] Root gates and Chromium evidence — final contract and paint audits accept the immutable `db10d20` source/demo target
+- [x] Conformance board and final Opus request — BF rows done without owner sign-off; manifest `934f3f05c…`
