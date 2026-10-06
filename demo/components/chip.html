@@ -26,7 +26,79 @@
  <span class="bf-chip is-borderless" data-baseline-check="box" data-baseline-label="chip borderless">
  <span class="bf-chip-value" data-baseline-ignore="true">Borderless</span>
  </span>
+ <span class="bf-chip is-nested" data-dense-chip-classed-outside>Legacy class outside a provider</span>
  </div>
+ </section>
+ <section class="bf-stack" data-baseline-ignore="true" aria-label="Automatic dense Site chip enrollment">
+  <table class="bf-table" aria-label="Dense Site chip provider comparison">
+   <tbody>
+    <tr data-dense-chip-plain-row>
+     <td>Host text only</td>
+    </tr>
+    <tr data-dense-chip-provider-row>
+     <td data-dense-chip-provider>
+      <span data-dense-chip-host-text>Host</span>
+      <span class="bf-chip" data-dense-chip-auto><span class="bf-chip-value" data-dense-chip-value>Chip</span></span>
+      <span data-dense-chip-non-subscriber>Peer</span>
+     </td>
+    </tr>
+    <tr data-dense-chip-classed-row>
+     <td><span class="bf-chip is-nested" data-dense-chip-classed>Chip</span></td>
+    </tr>
+    <tr data-dense-chip-wrapper-row>
+     <td data-dense-chip-wrapper-provider>
+      <span data-dense-chip-neutral-wrapper>
+       <span data-dense-chip-wrapper-host-text>Host</span>
+       <span class="bf-chip" data-dense-chip-wrapped><span class="bf-chip-value" data-dense-chip-wrapper-value>A</span></span>
+       <span class="bf-chip" data-dense-chip-wrapped>B</span>
+      </span>
+     </td>
+    </tr>
+    <tr data-dense-chip-outer-row>
+     <td data-dense-chip-outer-provider>
+      <table class="bf-table" aria-label="Nested table ownership boundary">
+       <tbody>
+        <tr data-dense-chip-inner-row>
+         <td data-dense-chip-inner-provider><span class="bf-chip" data-dense-chip-inner>Inner</span></td>
+        </tr>
+       </tbody>
+      </table>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <div class="bf-theme bf-tier-documentation" data-dense-chip-nested-product>
+   <table class="bf-table" aria-label="Nested product density boundary">
+    <tbody>
+     <tr><td data-dense-chip-nested-product-plain>Docs plain</td></tr>
+     <tr><td data-dense-chip-nested-product-provider><span class="bf-chip" data-dense-chip-nested-product-chip>Docs</span></td></tr>
+    </tbody>
+   </table>
+  </div>
+  <table class="bf-table" aria-label="Nested product provider boundary">
+   <tbody>
+    <tr>
+     <td data-dense-chip-product-outer-provider>
+      <div class="bf-theme bf-tier-app">
+       <span class="bf-chip" data-dense-chip-product-boundary-chip>App</span>
+       <span class="bf-chip is-nested" data-dense-chip-product-boundary-classed>App classed</span>
+      </div>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <div class="bf-theme bf-tier-documentation">
+   <div class="bf-theme bf-tier-editorial" data-dense-chip-restarted-site>
+    <span class="bf-chip" data-dense-chip-restarted-site-outside>Site outside</span>
+    <span class="bf-chip is-nested" data-dense-chip-restarted-site-outside-classed>Site outside classed</span>
+    <table class="bf-table" aria-label="Restarted Site density boundary">
+     <tbody>
+      <tr><td data-dense-chip-restarted-site-plain>Site plain</td></tr>
+      <tr><td data-dense-chip-restarted-site-provider><span class="bf-chip" data-dense-chip-restarted-site-chip>Site</span></td></tr>
+     </tbody>
+    </table>
+   </div>
+  </div>
  </section>
  <section class="bf-stack" data-baseline-ignore="true" aria-label="Nested chip overflow specimens">
   <table class="bf-table">

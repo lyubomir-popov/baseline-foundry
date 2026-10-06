@@ -269,6 +269,14 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
     ...(hasAppDefault ? [":where(.bf-theme)"] : []),
     ...(hasAppClassSurface ? [":where(.bf-theme.bf-tier-app)"] : [])
   ];
+  const siteScopes = [
+    ...((options.presetName === "editorial" || options.presetName === "prose")
+      ? [":where(.bf-theme:not(.bf-tier-documentation, .bf-tier-app, .bf-tier-os))"]
+      : []),
+    ...(themeSurfaces.some(surface => surface.className === "bf-tier-editorial")
+      ? [":where(.bf-theme.bf-tier-editorial)"]
+      : [])
+  ];
   const presetCss = includesAppSurface ? `\n${appTierPresetCss(appScopes)}` : "";
 
   if (!body) {
@@ -601,7 +609,7 @@ ${capEngineDemo}
   padding-top: 0;
 }
 
-${componentsCss(tokens, themeSurfaces)}
+${componentsCss(tokens, themeSurfaces, siteScopes)}
 
 ${gridCss(appScopes)}${presetCss}
 `;

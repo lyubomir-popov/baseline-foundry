@@ -30,16 +30,21 @@ and must not be changed.
   rows, adds a real ContextSwitcher, and paints selection in the start gutter.
   Its required gates are green in `sidenav-check-types.log`,
   `sidenav-npm-test.log`, and `sidenav-qa-components.log`.
+- The current governed dense Site Chip item uses a versioned Table.Cell/Chip
+  policy and nested CSS scopes to resolve the nearest provider and product
+  root through neutral descendants. Site Chips occupy 32px in the provider,
+  align exactly with adjacent text, and leave the host row and standalone seat
+  at 40px. Nested tables/products and the legacy class boundary cases are
+  covered. Its required gates are green in `dense-chip-check-types.log`,
+  `dense-chip-npm-test.log`, and `dense-chip-qa-components.log`.
 
 Gate logs live under `H:/WSL_dev_projects/temp/bf-028-20261006/`, named by item.
 
 ## Active change
 
-Implement the statically enrolled dense Site Chip contract in the actual table
-cell provider. It must be automatic for Chip as a component type, independent
-of `.is-nested`, align exactly with the host's outside text baseline, occupy
-32px inside the provider, and retain a 40px standalone seat. Preserve the
-established non-Site nested contracts.
+Migrate the shared row contract to paint-only strokes, then move each component
+family to the automatic overlay or its named anatomy exception. Preserve the
+governed dense Site Chip policy and the established non-Site nested contracts.
 
 FR-061a/SP-1 remains in progress beyond the landed margin-direction step:
 remaining semantic or structural block-end margins in responsive navigation,
@@ -50,12 +55,11 @@ it is not the final compensation-only end-margin classifier.
 
 ## Remaining order
 
-1. Dense Site Chip 32px enrolled-host contract; standalone 40px.
-2. Paint-only row contract first, then atomic component-family commits using the
+1. Paint-only row contract first, then atomic component-family commits using the
    reviewed exception map in `paint-impact-audit.md`.
-3. Complete compensation-only end-margin ownership in the affected component
+2. Complete compensation-only end-margin ownership in the affected component
    families and replace the directional gate with final end-margin governance.
-4. Identical-DOM before/after demo, browser scale evidence, BF board columns,
+3. Identical-DOM before/after demo, browser scale evidence, BF board columns,
    manifest, review docs, and `opus-028-review-request.md`; stop for external Opus.
 
 Run `npm run check:types`, `npm test`, and `npm run qa:components` after each

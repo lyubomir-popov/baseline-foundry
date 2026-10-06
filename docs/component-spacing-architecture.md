@@ -97,8 +97,20 @@ owns any semantic separation around it.
 
 ## Nested block contract
 
-`is-nested` is an explicit composition contract for a child placed inside a
-host-owned body line. It is never inferred from ancestry.
+`is-nested` remains a compatibility contract for the named legacy table and
+side-navigation hosts. It does not opt a component into density outside those
+hosts.
+
+The governed Site Table.Cell/Chip relationship is automatic. The versioned
+policy in `src/component-density-policy.ts` names Editorial as the product,
+`.bf-table td` as the provider, `.bf-chip` as the subscriber, and
+`spacing.inset.control.block` as the bound role. Nested CSS scopes stop at the
+nearest table cell and `.bf-theme` product root, so neutral descendants do not
+break enrollment while nested tables and products resolve independently. A
+Site provider selects the 4px dense member; its Chip uses that member directly
+on both block edges, carries no compensation margin, and shares the host text
+baseline. The host absorbs those two edges so its ordinary 40px row does not
+grow. The same Chip remains on its 40px occupied seat outside the provider.
 
 Two ledgers cover the only material paint cases:
 
@@ -125,7 +137,7 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
 | Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
 | Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
-| Chip | Action | Regular; zero-footprint nested | The Action inset frames chip commands; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. A paint-derived inline minimum is active only when dense Action padding would otherwise make very short content circular; it changes no block geometry. One-character chips are stadiums in every tier; use a badge for a circular counter. |
+| Chip | Action | Regular; governed Site Table.Cell density; legacy zero-footprint nesting in named hosts | The Action inset frames chip commands. A Site Table.Cell automatically binds its Chip to the 4px dense control-block member for a 32px box and absorbs those edges into the ordinary 40px row. Standalone Chips retain their regular occupied seat. Inset paint keeps the dense border out of layout. One-character chips remain stadiums; use a badge for a circular counter. |
 | Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
 | Checkbox, radio, prose/list marks, validation | Continuation copy | Regular; framed nested for selection controls | Mark position is calculated backward from the continuation copy inset |

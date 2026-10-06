@@ -1,11 +1,19 @@
+import { componentDensityPolicy, siteDenseChipPolicySelectors, siteDenseChipScopedCss } from "../component-density-policy.js";
+
 type TableCssOptions = {
   bodyLineHeight: string;
   bodyMediumTypeStyles: string;
   bodyTypeStyles: string;
+  siteScopes: string[];
 };
 
 export function tableCss(options: TableCssOptions): string {
-  const { bodyLineHeight, bodyMediumTypeStyles, bodyTypeStyles } = options;
+  const { bodyLineHeight, bodyMediumTypeStyles, bodyTypeStyles, siteScopes } = options;
+  const denseChipHosts = siteDenseChipPolicySelectors().hosts;
+  const density = componentDensityPolicy.siteDenseChip;
+  const denseChipHostCss = denseChipHosts
+    ? `\n/* A Site Table.Cell is the approved dense Chip provider. Nested scopes make\n   the nearest cell and product root authoritative through neutral wrappers. */\n${siteDenseChipScopedCss(siteScopes, denseChipHosts, `${density.currentMember}: var(${density.denseMember});\npadding-block-end: max(0rem, calc(var(--bf-table-row-padding-block-end) - var(${density.currentMember})));\npadding-block-start: max(0rem, calc(var(--bf-table-row-padding-block-start) - var(${density.currentMember})));`)}\n`
+    : "";
 
   return `:where(.bf-theme) {
   --bf-table-row-border-size: var(--bf-border-width);
@@ -87,5 +95,6 @@ ${bodyMediumTypeStyles}  color: var(--bf-color-text-default);
 :where(.bf-theme) :where(tbody tr:hover td) {
   background: color-mix(in srgb, var(--bf-color-background-hover) 68%, transparent);
 }
+${denseChipHostCss}
 `;
 }

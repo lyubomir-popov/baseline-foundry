@@ -1,15 +1,38 @@
+import { componentDensityPolicy, providerScopedCss, siteDenseChipPolicySelectors, siteDenseChipScopedCss } from "../component-density-policy.js";
+
 type ChipBadgeStatusCssOptions = {
   bodyCaseTypeStyles: string;
   bodyTypeStyles: string;
+  siteScopes: string[];
 };
 
 export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   const {
     bodyCaseTypeStyles,
     bodyTypeStyles,
+    siteScopes,
   } = options;
+  const density = componentDensityPolicy.siteDenseChip;
+  const denseSiteChips = siteDenseChipPolicySelectors().chips;
+  const denseSiteChipCss = denseSiteChips
+    ? `\n/* Chip enrollment follows the versioned nearest-provider policy through any\n   neutral descendant path. The legacy class does not opt instances in/out. */\n${siteDenseChipScopedCss(siteScopes, denseSiteChips, `${density.componentBinding}: var(${density.currentMember}, var(--bf-control-block-inset));\nborder: 0;\nbox-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);\nline-height: var(--bf-body-line-height);\nmargin-block: 0;\nmin-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(${density.componentBinding}) * 2)));\npadding-block: var(${density.componentBinding});\npadding-inline: var(--bf-ui-chip-padding-inline);`)}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips} :where(.bf-chip-lead, .bf-chip-value)`, "line-height: inherit;")}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips}:hover`, "box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-hover);")}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips}:is(:active, [aria-pressed='true'], .is-selected)`, "box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-active);")}\n`
+    : "";
+  const legacyNestedChipCss = (suffix: string, declarations: string) => [
+    { provider: ".bf-table td", boundary: "td" },
+    { provider: ".bf-side-navigation", boundary: ".bf-side-navigation" }
+  ].map(host => providerScopedCss(
+    [":where(.bf-theme)"],
+    host.provider,
+    [host.boundary, ".bf-theme"],
+    `:where(.bf-chip.is-nested:not(.bf-theme):not(:scope ${host.boundary} .bf-chip, :scope .bf-theme .bf-chip))${suffix}`,
+    declarations
+  )).join("\n\n");
+  const legacyNestedChipRules = `\n${legacyNestedChipCss("", "line-height: var(--bf-nested-row-line-height);\nmargin-block: 0;\npadding-block: var(--bf-nested-row-padding-block);\nborder: 0;\nbox-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);\nmin-inline-size: min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)));\npadding-inline: var(--bf-ui-chip-padding-inline);")}\n\n${legacyNestedChipCss(" :where(.bf-chip-lead, .bf-chip-value)", "line-height: inherit;")}\n\n${legacyNestedChipCss(":hover", "box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-hover);")}\n\n${legacyNestedChipCss(":is(:active, [aria-pressed='true'], .is-selected)", "box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-active);")}\n`;
 
   return `:where(.bf-theme) {
+  ${density.comfortableMember}: var(--bf-control-block-inset);
+  ${density.denseMember}: var(--bf-space-half);
+  ${density.currentMember}: var(${density.comfortableMember});
   --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-action);
   --bf-ui-chip-radius: 999rem;
   --bf-ui-badge-padding-inline: var(--bf-border-width);
@@ -194,38 +217,15 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   --bf-ui-status-color: var(--bf-color-button-negative-text);
 }
 
-/* Nested auxiliary surfaces fit a body-sized flex/grid host instead of
-   carrying a second standalone occupied-row contract. This modifier is
-   explicit so component density never changes merely because of ancestry. */
-:where(.bf-theme) :where(.bf-chip.is-nested, .bf-status-label.is-nested) {
+/* Named legacy hosts retain the one-release is-nested compatibility path.
+   The governed Site Table.Cell/Chip policy above enrolls through ancestry;
+   the compatibility modifier has no effect outside its named hosts. */
+:where(.bf-theme) :where(.bf-status-label.is-nested) {
   line-height: var(--bf-nested-row-line-height);
   margin-block: 0;
   padding-block: var(--bf-nested-row-padding-block);
 }
-
-:where(.bf-theme) :where(.bf-chip.is-nested) {
-  border: 0;
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);
-  min-inline-size: min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)));
-  /* The nested border is inset paint rather than box geometry, so the glyph
-     needs the complete Action inset instead of subtracting a real border. */
-  padding-inline: var(--bf-ui-chip-padding-inline);
-}
-
-/* Chip parts normally carry the standalone body line explicitly. A nested
-   chip must pass its reduced line through to those parts so a nested badge
-   can fit without making the host row taller. */
-:where(.bf-theme) :where(.bf-chip.is-nested) :where(.bf-chip-lead, .bf-chip-value) {
-  line-height: inherit;
-}
-
-:where(.bf-theme) :where(.bf-chip.is-nested:hover) {
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-hover);
-}
-
-:where(.bf-theme) :where(.bf-chip.is-nested:is(:active, [aria-pressed='true'], .is-selected)) {
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-active);
-}
+${legacyNestedChipRules}
 
 :where(.bf-theme) :where(.bf-status-label.is-nested) {
   border-block-width: 0;
@@ -236,5 +236,6 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   line-height: var(--bf-nested-row-line-height);
   vertical-align: middle;
 }
+${denseSiteChipCss}
 `;
 }

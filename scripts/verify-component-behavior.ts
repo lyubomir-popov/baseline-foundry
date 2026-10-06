@@ -509,7 +509,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
       const nestedReference = occupiedBlockGeometry.nested[0];
       const nestedHosts = occupiedBlockGeometry.nested.slice(1);
-      assertSharedHeight("nested host", nestedHosts);
+      const nestedHostReferenceFamily = nestedHosts;
+      assertSharedHeight("nested host", nestedHostReferenceFamily);
       const familyReferences = [interfaceReference, occupiedBlockGeometry.textRuns[0], nestedReference];
       const baselinePhase = (position: number) => ((position % occupiedBlockGeometry.baseline) + occupiedBlockGeometry.baseline) % occupiedBlockGeometry.baseline;
       const interfaceReferencePhase = interfaceReference.textTop === null ? null : baselinePhase(interfaceReference.textTop);
@@ -519,7 +520,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
       }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
       assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
-      assert(occupiedBlockGeometry.nested.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || sharesBaselinePhase(sample.textTop, nestedReference.textTop)), `Expected ${tier} nested host text to retain the page baseline phase while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
+      assert(nestedHostReferenceFamily.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || sharesBaselinePhase(sample.textTop, nestedReference.textTop)), `Expected ${tier} compact legacy host text to retain the page baseline phase while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
       assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
       for (const label of ["Chip", "Tab action", "Color input", "Range control"] as const) {
@@ -530,7 +531,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const tableHeight = interfaceComponents.find(sample => sample.label === "Table cell")?.height ?? 0;
       const controlHeight = interfaceComponents[0].height;
       assert(Math.abs(tableHeight - controlHeight) <= renderedBorderTolerance, `Expected ${tier} table cells to target the same single-line height as controls; controls=${controlHeight}, table=${tableHeight}.`);
-      assert(nestedHosts.every(sample => Math.abs(sample.height - controlHeight) <= renderedBorderTolerance), `Expected ${tier} real nested hosts to retain the shared single-line height; controls=${controlHeight}, nested=${JSON.stringify(nestedHosts)}.`);
+      assert(nestedHostReferenceFamily.every(sample => Math.abs(sample.height - controlHeight) <= renderedBorderTolerance), `Expected ${tier} compact legacy hosts to retain the shared single-line height; controls=${controlHeight}, nested=${JSON.stringify(nestedHosts)}.`);
       const allSamples = [...occupiedBlockGeometry.interfaceRows, ...occupiedBlockGeometry.textRuns, ...occupiedBlockGeometry.nested];
       assert(allSamples.every(sample => Math.abs(sample.width - occupiedBlockGeometry.rootSize * 5) < 0.1), `Expected every ${tier} vertical specimen to retain the shared 5rem width; got ${JSON.stringify(allSamples)}.`);
       assert(occupiedBlockGeometry.scrollRows.every(row => row.overflowX === "auto" && row.clusterPaddingBlock === 0 && Math.abs(row.scrollbarBlockSize - (occupiedBlockGeometry.baseline * 2)) < 0.1 && row.probeStartDelta !== null && Math.abs(row.probeStartDelta) < 0.1), `Expected every ${tier} vertical audit bucket to use an unpadded BF cluster and a baseline-snapped scrollbar without displacing its probes; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
@@ -3047,9 +3048,11 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
         assert(
           audit &&
             audit.badgeContained &&
-            audit.chipHeight <= audit.cellLineHeight + 0.1 &&
+            (tier === "editorial"
+              ? Math.abs(audit.chipHeight - 32) <= 0.1
+              : audit.chipHeight <= audit.cellLineHeight + 0.1) &&
             audit.rowHeightDelta <= 0.1,
-          `Expected ${tier}/${tone} nested badge to fit inside the compact table chip without enlarging its row: ${JSON.stringify(audit)}.`
+          `Expected ${tier}/${tone} nested badge to stay inside its governed table Chip without enlarging the row: ${JSON.stringify(audit)}.`
         );
         assert(
           audit &&
@@ -3078,6 +3081,323 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
     }
 
     await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyDenseSiteChipEnrollment(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const tones = ["light", "dark"] as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.goto(`${origin}/demo/components/chip.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+
+    for (const tone of tones) {
+      const toneToggle = page.locator("[data-page-chrome-tone-toggle]");
+      const wantsDark = tone === "dark";
+      if (await toneToggle.isChecked() !== wantsDark) {
+        await toneToggle.setChecked(wantsDark, { force: true });
+      }
+
+      for (const tier of tiers) {
+        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+        const geometry = await page.evaluate(() => {
+          const autoChip = document.querySelector<HTMLElement>("[data-dense-chip-auto]");
+          const classedChip = document.querySelector<HTMLElement>("[data-dense-chip-classed]");
+          const providerCell = document.querySelector<HTMLElement>("[data-dense-chip-provider]");
+          const plainCell = document.querySelector<HTMLElement>("[data-dense-chip-plain-row] td");
+          const plainRow = document.querySelector<HTMLElement>("[data-dense-chip-plain-row]");
+          const providerRow = document.querySelector<HTMLElement>("[data-dense-chip-provider-row]");
+          const classedRow = document.querySelector<HTMLElement>("[data-dense-chip-classed-row]");
+          const hostText = document.querySelector<HTMLElement>("[data-dense-chip-host-text]");
+          const chipValue = document.querySelector<HTMLElement>("[data-dense-chip-value]");
+          const nonSubscriber = document.querySelector<HTMLElement>("[data-dense-chip-non-subscriber]");
+          const standaloneChip = document.querySelector<HTMLElement>("[data-block-derived-chip='1']");
+          const classedOutside = document.querySelector<HTMLElement>("[data-dense-chip-classed-outside]");
+          const wrapperProvider = document.querySelector<HTMLElement>("[data-dense-chip-wrapper-provider]");
+          const neutralWrapper = document.querySelector<HTMLElement>("[data-dense-chip-neutral-wrapper]");
+          const wrapperHostText = document.querySelector<HTMLElement>("[data-dense-chip-wrapper-host-text]");
+          const wrapperChipValue = document.querySelector<HTMLElement>("[data-dense-chip-wrapper-value]");
+          const wrappedChips = document.querySelectorAll<HTMLElement>("[data-dense-chip-wrapped]");
+          const outerProvider = document.querySelector<HTMLElement>("[data-dense-chip-outer-provider]");
+          const innerProvider = document.querySelector<HTMLElement>("[data-dense-chip-inner-provider]");
+          const innerChip = document.querySelector<HTMLElement>("[data-dense-chip-inner]");
+          const nestedProductProvider = document.querySelector<HTMLElement>("[data-dense-chip-nested-product-provider]");
+          const nestedProductPlain = document.querySelector<HTMLElement>("[data-dense-chip-nested-product-plain]");
+          const nestedProductChip = document.querySelector<HTMLElement>("[data-dense-chip-nested-product-chip]");
+          const productOuterProvider = document.querySelector<HTMLElement>("[data-dense-chip-product-outer-provider]");
+          const productBoundaryChip = document.querySelector<HTMLElement>("[data-dense-chip-product-boundary-chip]");
+          const productBoundaryClassed = document.querySelector<HTMLElement>("[data-dense-chip-product-boundary-classed]");
+          const restartedSiteProvider = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-provider]");
+          const restartedSitePlain = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-plain]");
+          const restartedSiteChip = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-chip]");
+          const restartedSiteOutside = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-outside]");
+          const restartedSiteOutsideClassed = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-outside-classed]");
+          const wrapperTable = neutralWrapper?.closest<HTMLElement>("table");
+          if (!autoChip || !classedChip || !providerCell || !plainCell || !plainRow || !providerRow || !classedRow || !hostText || !chipValue || !nonSubscriber || !standaloneChip || !classedOutside || !wrapperProvider || !neutralWrapper || !wrapperHostText || !wrapperChipValue || !wrapperTable || wrappedChips.length !== 2 || !outerProvider || !innerProvider || !innerChip || !nestedProductProvider || !nestedProductPlain || !nestedProductChip || !productOuterProvider || !productBoundaryChip || !productBoundaryClassed || !restartedSiteProvider || !restartedSitePlain || !restartedSiteChip || !restartedSiteOutside || !restartedSiteOutsideClassed) {
+            throw new Error("Missing dense Site Chip enrollment fixture.");
+          }
+          const hostMarker = document.createElement("span");
+          hostMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;line-height:0;vertical-align:baseline";
+          hostText.append(hostMarker);
+          const hostBaseline = hostMarker.getBoundingClientRect().top;
+          hostMarker.remove();
+          const chipMarker = document.createElement("span");
+          chipMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;line-height:0;vertical-align:baseline";
+          chipValue.append(chipMarker);
+          const chipBaseline = chipMarker.getBoundingClientRect().top;
+          chipMarker.remove();
+          const wrapperHostMarker = document.createElement("span");
+          wrapperHostMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;line-height:0;vertical-align:baseline";
+          wrapperHostText.append(wrapperHostMarker);
+          const wrapperHostBaseline = wrapperHostMarker.getBoundingClientRect().top;
+          wrapperHostMarker.remove();
+          const wrapperChipMarker = document.createElement("span");
+          wrapperChipMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;line-height:0;vertical-align:baseline";
+          wrapperChipValue.append(wrapperChipMarker);
+          const wrapperChipBaseline = wrapperChipMarker.getBoundingClientRect().top;
+          wrapperChipMarker.remove();
+          const plainStyle = getComputedStyle(plainCell);
+          const providerStyle = getComputedStyle(providerCell);
+          const nonSubscriberStyle = getComputedStyle(nonSubscriber);
+          const standaloneStyle = getComputedStyle(standaloneChip);
+          const autoStyle = getComputedStyle(autoChip);
+          const classedStyle = getComputedStyle(classedChip);
+          const classedOutsideStyle = getComputedStyle(classedOutside);
+          const wrapperProviderStyle = getComputedStyle(wrapperProvider);
+          const outerProviderStyle = getComputedStyle(outerProvider);
+          const innerProviderStyle = getComputedStyle(innerProvider);
+          const innerChipStyle = getComputedStyle(innerChip);
+          const nestedProductProviderStyle = getComputedStyle(nestedProductProvider);
+          const nestedProductPlainStyle = getComputedStyle(nestedProductPlain);
+          const nestedProductChipStyle = getComputedStyle(nestedProductChip);
+          const productOuterProviderStyle = getComputedStyle(productOuterProvider);
+          const productBoundaryChipStyle = getComputedStyle(productBoundaryChip);
+          const productBoundaryClassedStyle = getComputedStyle(productBoundaryClassed);
+          const restartedSiteProviderStyle = getComputedStyle(restartedSiteProvider);
+          const restartedSitePlainStyle = getComputedStyle(restartedSitePlain);
+          const restartedSiteChipStyle = getComputedStyle(restartedSiteChip);
+          const restartedSiteOutsideStyle = getComputedStyle(restartedSiteOutside);
+          const restartedSiteOutsideClassedStyle = getComputedStyle(restartedSiteOutsideClassed);
+          const firstWrappedStyle = getComputedStyle(wrappedChips[0]);
+          const secondWrappedStyle = getComputedStyle(wrappedChips[1]);
+          const denseProbe = document.createElement("i");
+          denseProbe.style.cssText = "display:block;inline-size:var(--bf-control-block-inset-dense);block-size:0;position:absolute;visibility:hidden";
+          providerCell.append(denseProbe);
+          const denseMember = denseProbe.getBoundingClientRect().width;
+          denseProbe.remove();
+          const selectedProbe = document.createElement("i");
+          selectedProbe.style.cssText = "display:block;inline-size:var(--bf-density-control-block-inset);block-size:0;position:absolute;visibility:hidden";
+          providerCell.append(selectedProbe);
+          const selectedMember = selectedProbe.getBoundingClientRect().width;
+          selectedProbe.remove();
+          const previousWrapperTableStyle = wrapperTable.getAttribute("style");
+          wrapperTable.style.inlineSize = "6rem";
+          wrapperTable.style.tableLayout = "fixed";
+          const wrappedRowHeight = neutralWrapper.closest("tr")?.getBoundingClientRect().height ?? 0;
+          if (previousWrapperTableStyle === null) wrapperTable.removeAttribute("style");
+          else wrapperTable.setAttribute("style", previousWrapperTableStyle);
+          return {
+            auto: {
+              height: autoChip.getBoundingClientRect().height,
+              lineHeight: Number.parseFloat(autoStyle.lineHeight),
+              marginBlockEnd: Number.parseFloat(autoStyle.marginBlockEnd),
+              marginBlockStart: Number.parseFloat(autoStyle.marginBlockStart),
+              paddingBlockEnd: Number.parseFloat(autoStyle.paddingBlockEnd),
+              paddingBlockStart: Number.parseFloat(autoStyle.paddingBlockStart),
+              borderBlockEnd: Number.parseFloat(autoStyle.borderBlockEndWidth),
+              borderBlockStart: Number.parseFloat(autoStyle.borderBlockStartWidth),
+              boxShadow: autoStyle.boxShadow
+            },
+            classed: {
+              height: classedChip.getBoundingClientRect().height,
+              lineHeight: Number.parseFloat(classedStyle.lineHeight),
+              marginBlockEnd: Number.parseFloat(classedStyle.marginBlockEnd),
+              marginBlockStart: Number.parseFloat(classedStyle.marginBlockStart),
+              paddingBlockEnd: Number.parseFloat(classedStyle.paddingBlockEnd),
+              paddingBlockStart: Number.parseFloat(classedStyle.paddingBlockStart)
+            },
+            autoHasLegacyClass: autoChip.classList.contains("is-nested"),
+            classedHasLegacyClass: classedChip.classList.contains("is-nested"),
+            plainRowHeight: plainRow.getBoundingClientRect().height,
+            providerRowHeight: providerRow.getBoundingClientRect().height,
+            classedRowHeight: classedRow.getBoundingClientRect().height,
+            plainPaddingBlockStart: Number.parseFloat(plainStyle.paddingBlockStart),
+            plainPaddingBlockEnd: Number.parseFloat(plainStyle.paddingBlockEnd),
+            providerPaddingBlockStart: Number.parseFloat(providerStyle.paddingBlockStart),
+            providerPaddingBlockEnd: Number.parseFloat(providerStyle.paddingBlockEnd),
+            denseMember,
+            selectedMember,
+            hostBaseline,
+            chipBaseline,
+            nonSubscriberPaddingBlockStart: Number.parseFloat(nonSubscriberStyle.paddingBlockStart),
+            nonSubscriberPaddingBlockEnd: Number.parseFloat(nonSubscriberStyle.paddingBlockEnd),
+            nonSubscriberLineHeight: Number.parseFloat(nonSubscriberStyle.lineHeight),
+            standaloneHeight: standaloneChip.getBoundingClientRect().height,
+            standaloneMarginBlockEnd: Number.parseFloat(standaloneStyle.marginBlockEnd),
+            classedOutsideHeight: classedOutside.getBoundingClientRect().height,
+            classedOutsideLineHeight: Number.parseFloat(classedOutsideStyle.lineHeight),
+            classedOutsideMarginBlockEnd: Number.parseFloat(classedOutsideStyle.marginBlockEnd),
+            wrapperProviderPaddingBlockStart: Number.parseFloat(wrapperProviderStyle.paddingBlockStart),
+            wrapperProviderPaddingBlockEnd: Number.parseFloat(wrapperProviderStyle.paddingBlockEnd),
+            wrappedChipHeights: [wrappedChips[0].getBoundingClientRect().height, wrappedChips[1].getBoundingClientRect().height],
+            wrappedChipPaddings: [Number.parseFloat(firstWrappedStyle.paddingBlockStart), Number.parseFloat(secondWrappedStyle.paddingBlockStart)],
+            wrappedRowHeight,
+            wrapperDisplay: getComputedStyle(neutralWrapper).display,
+            wrapperHostBaseline,
+            wrapperChipBaseline,
+            outerProviderPaddingBlockStart: Number.parseFloat(outerProviderStyle.paddingBlockStart),
+            outerProviderPaddingBlockEnd: Number.parseFloat(outerProviderStyle.paddingBlockEnd),
+            innerProviderPaddingBlockStart: Number.parseFloat(innerProviderStyle.paddingBlockStart),
+            innerProviderPaddingBlockEnd: Number.parseFloat(innerProviderStyle.paddingBlockEnd),
+            innerChipHeight: innerChip.getBoundingClientRect().height,
+            innerChipPaddingBlockStart: Number.parseFloat(innerChipStyle.paddingBlockStart),
+            nestedProductProviderPaddingBlockStart: Number.parseFloat(nestedProductProviderStyle.paddingBlockStart),
+            nestedProductProviderPaddingBlockEnd: Number.parseFloat(nestedProductProviderStyle.paddingBlockEnd),
+            nestedProductPlainPaddingBlockStart: Number.parseFloat(nestedProductPlainStyle.paddingBlockStart),
+            nestedProductPlainPaddingBlockEnd: Number.parseFloat(nestedProductPlainStyle.paddingBlockEnd),
+            nestedProductChipHeight: nestedProductChip.getBoundingClientRect().height,
+            nestedProductChipLineHeight: Number.parseFloat(nestedProductChipStyle.lineHeight),
+            nestedProductChipPaddingBlockStart: Number.parseFloat(nestedProductChipStyle.paddingBlockStart),
+            productOuterProviderPaddingBlockStart: Number.parseFloat(productOuterProviderStyle.paddingBlockStart),
+            productOuterProviderPaddingBlockEnd: Number.parseFloat(productOuterProviderStyle.paddingBlockEnd),
+            productBoundaryChipHeight: productBoundaryChip.getBoundingClientRect().height,
+            productBoundaryChipLineHeight: Number.parseFloat(productBoundaryChipStyle.lineHeight),
+            productBoundaryChipPaddingBlockStart: Number.parseFloat(productBoundaryChipStyle.paddingBlockStart),
+            productBoundaryClassedHeight: productBoundaryClassed.getBoundingClientRect().height,
+            productBoundaryClassedLineHeight: Number.parseFloat(productBoundaryClassedStyle.lineHeight),
+            productBoundaryClassedPaddingBlockStart: Number.parseFloat(productBoundaryClassedStyle.paddingBlockStart),
+            restartedSiteProviderPaddingBlockStart: Number.parseFloat(restartedSiteProviderStyle.paddingBlockStart),
+            restartedSiteProviderPaddingBlockEnd: Number.parseFloat(restartedSiteProviderStyle.paddingBlockEnd),
+            restartedSitePlainPaddingBlockStart: Number.parseFloat(restartedSitePlainStyle.paddingBlockStart),
+            restartedSitePlainPaddingBlockEnd: Number.parseFloat(restartedSitePlainStyle.paddingBlockEnd),
+            restartedSiteChipHeight: restartedSiteChip.getBoundingClientRect().height,
+            restartedSiteChipLineHeight: Number.parseFloat(restartedSiteChipStyle.lineHeight),
+            restartedSiteChipPaddingBlockStart: Number.parseFloat(restartedSiteChipStyle.paddingBlockStart),
+            restartedSiteOutsideHeight: restartedSiteOutside.getBoundingClientRect().height,
+            restartedSiteOutsideMarginBlockEnd: Number.parseFloat(restartedSiteOutsideStyle.marginBlockEnd),
+            restartedSiteOutsideClassedHeight: restartedSiteOutsideClassed.getBoundingClientRect().height,
+            restartedSiteOutsideClassedLineHeight: Number.parseFloat(restartedSiteOutsideClassedStyle.lineHeight),
+            restartedSiteOutsideClassedPaddingBlockStart: Number.parseFloat(restartedSiteOutsideClassedStyle.paddingBlockStart),
+            restartedSiteOutsideClassedMarginBlockEnd: Number.parseFloat(restartedSiteOutsideClassedStyle.marginBlockEnd)
+          };
+        });
+
+        assert(!geometry.autoHasLegacyClass && geometry.classedHasLegacyClass, `Expected ${tier}/${tone} fixtures to distinguish automatic provider enrollment from the legacy modifier: ${JSON.stringify(geometry)}.`);
+        assert(Math.abs(geometry.nonSubscriberPaddingBlockStart) < 0.01 && Math.abs(geometry.nonSubscriberPaddingBlockEnd) < 0.01, `Expected the ${tier}/${tone} table provider not to alter a non-subscriber: ${JSON.stringify(geometry)}.`);
+        assert(
+          Math.abs(geometry.classedOutsideHeight - geometry.standaloneHeight) < 0.01 &&
+          Math.abs(geometry.classedOutsideMarginBlockEnd - geometry.standaloneMarginBlockEnd) < 0.01,
+          `Expected ${tier}/${tone} the legacy class outside a named host not to opt a Chip into density: ${JSON.stringify(geometry)}.`
+        );
+        assert(
+          Math.abs(geometry.nestedProductProviderPaddingBlockStart - geometry.nestedProductPlainPaddingBlockStart) < 0.01 &&
+          Math.abs(geometry.nestedProductProviderPaddingBlockEnd - geometry.nestedProductPlainPaddingBlockEnd) < 0.01 &&
+          (Math.abs(geometry.nestedProductChipHeight - 32) > 0.1 || Math.abs(geometry.nestedProductChipLineHeight - 24) > 0.1 || Math.abs(geometry.nestedProductChipPaddingBlockStart - 4) > 0.1),
+          `Expected ${tier}/${tone} a nested Documentation product root to terminate Site provider and subscriber resolution: ${JSON.stringify(geometry)}.`
+        );
+        assert(
+          Math.abs(geometry.productOuterProviderPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01 &&
+          Math.abs(geometry.productOuterProviderPaddingBlockEnd - geometry.plainPaddingBlockEnd) < 0.01 &&
+          Math.abs(geometry.productBoundaryClassedHeight - geometry.productBoundaryChipHeight) < 0.01 &&
+          Math.abs(geometry.productBoundaryClassedLineHeight - geometry.productBoundaryChipLineHeight) < 0.01 &&
+          Math.abs(geometry.productBoundaryClassedPaddingBlockStart - geometry.productBoundaryChipPaddingBlockStart) < 0.01 &&
+          (Math.abs(geometry.productBoundaryChipHeight - 32) > 0.1 || Math.abs(geometry.productBoundaryChipLineHeight - 24) > 0.1 || Math.abs(geometry.productBoundaryChipPaddingBlockStart - 4) > 0.1),
+          `Expected ${tier}/${tone} a nested App root and both plain/classed Chips not to activate the outer table-cell provider or inherit its legacy density path: ${JSON.stringify(geometry)}.`
+        );
+        assert(
+          Math.abs(geometry.restartedSiteChipHeight - 32) < 0.1 &&
+          Math.abs(geometry.restartedSiteChipLineHeight - 24) < 0.01 &&
+          Math.abs(geometry.restartedSiteChipPaddingBlockStart - 4) < 0.01 &&
+          Math.abs(geometry.restartedSiteProviderPaddingBlockStart - (geometry.restartedSitePlainPaddingBlockStart - 4)) < 0.01 &&
+          Math.abs(geometry.restartedSiteProviderPaddingBlockEnd - (geometry.restartedSitePlainPaddingBlockEnd - 4)) < 0.01,
+          `Expected ${tier}/${tone} an explicit nested Site root to restart its own provider/subscriber resolution: ${JSON.stringify(geometry)}.`
+        );
+        assert(
+          Math.abs(geometry.restartedSiteOutsideClassedHeight - geometry.restartedSiteOutsideHeight) < 0.01 &&
+          Math.abs(geometry.restartedSiteOutsideClassedMarginBlockEnd - geometry.restartedSiteOutsideMarginBlockEnd) < 0.01 &&
+          Math.abs(geometry.restartedSiteOutsideClassedHeight + geometry.restartedSiteOutsideClassedMarginBlockEnd - 40) < 0.1 &&
+          (Math.abs(geometry.restartedSiteOutsideClassedHeight - 32) > 0.1 || Math.abs(geometry.restartedSiteOutsideClassedLineHeight - 24) > 0.1 || Math.abs(geometry.restartedSiteOutsideClassedPaddingBlockStart - 4) > 0.1),
+          `Expected ${tier}/${tone} a classed Chip in a restarted Site product but outside its own named host to keep standalone geometry: ${JSON.stringify(geometry)}.`
+        );
+
+        if (tier === "editorial") {
+          assert(
+            Math.abs(geometry.denseMember - 4) < 0.01 &&
+            Math.abs(geometry.selectedMember - geometry.denseMember) < 0.01 &&
+            Math.abs(geometry.auto.height - 32) < 0.1 &&
+            Math.abs(geometry.auto.lineHeight - 24) < 0.01 &&
+            Math.abs(geometry.auto.paddingBlockStart - 4) < 0.01 &&
+            Math.abs(geometry.auto.paddingBlockEnd - 4) < 0.01 &&
+            Math.abs(geometry.auto.marginBlockStart) < 0.01 &&
+            Math.abs(geometry.auto.marginBlockEnd) < 0.01 &&
+            geometry.auto.borderBlockStart === 0 &&
+            geometry.auto.borderBlockEnd === 0 &&
+            geometry.auto.boxShadow !== "none",
+            `Expected ${tier}/${tone} automatic Chip enrollment to bind the named 4px dense control-block member into a 32px paint-only box with no child compensation: ${JSON.stringify(geometry)}.`
+          );
+          assert(
+            Math.abs(geometry.classed.height - geometry.auto.height) < 0.01 &&
+            Math.abs(geometry.classed.lineHeight - geometry.auto.lineHeight) < 0.01 &&
+            Math.abs(geometry.classed.paddingBlockStart - geometry.auto.paddingBlockStart) < 0.01 &&
+            Math.abs(geometry.classed.paddingBlockEnd - geometry.auto.paddingBlockEnd) < 0.01,
+            `Expected ${tier}/${tone} legacy class presence not to toggle the governed Site table result: ${JSON.stringify(geometry)}.`
+          );
+          assert(
+            Math.abs(geometry.providerRowHeight - 40) < 0.1 &&
+            Math.abs(geometry.classedRowHeight - 40) < 0.1 &&
+            Math.abs(geometry.providerRowHeight - geometry.plainRowHeight) < 0.1 &&
+            Math.abs(geometry.providerPaddingBlockStart - (geometry.plainPaddingBlockStart - geometry.denseMember)) < 0.01 &&
+            Math.abs(geometry.providerPaddingBlockEnd - (geometry.plainPaddingBlockEnd - geometry.denseMember)) < 0.01,
+            `Expected ${tier}/${tone} table provider to absorb both dense edges and preserve the ordinary 40px host row: ${JSON.stringify(geometry)}.`
+          );
+          assert(Math.abs(geometry.hostBaseline - geometry.chipBaseline) < 0.01, `Expected ${tier}/${tone} outside host text and enrolled Chip text to share the exact baseline, not merely a modulo phase: ${JSON.stringify(geometry)}.`);
+          assert(Math.abs(geometry.standaloneHeight + geometry.standaloneMarginBlockEnd - 40) < 0.1, `Expected ${tier}/${tone} standalone Chip to retain its 40px occupied seat: ${JSON.stringify(geometry)}.`);
+          assert(
+            Math.abs(geometry.wrapperProviderPaddingBlockStart - (geometry.plainPaddingBlockStart - geometry.denseMember)) < 0.01 &&
+            Math.abs(geometry.wrapperProviderPaddingBlockEnd - (geometry.plainPaddingBlockEnd - geometry.denseMember)) < 0.01 &&
+            geometry.wrappedChipHeights.every(height => Math.abs(height - 32) < 0.1) &&
+            geometry.wrappedChipPaddings.every(padding => Math.abs(padding - 4) < 0.01) &&
+            geometry.wrapperDisplay === "inline" &&
+            Math.abs(geometry.wrapperHostBaseline - geometry.wrapperChipBaseline) < 0.01 &&
+            geometry.wrappedRowHeight > 40,
+            `Expected ${tier}/${tone} neutral wrappers, multiple Chips and a real wrap to preserve one provider selection and the 32px subscriber contract: ${JSON.stringify(geometry)}.`
+          );
+          assert(
+            Math.abs(geometry.outerProviderPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01 &&
+            Math.abs(geometry.outerProviderPaddingBlockEnd - geometry.plainPaddingBlockEnd) < 0.01 &&
+            Math.abs(geometry.innerProviderPaddingBlockStart - (geometry.plainPaddingBlockStart - geometry.denseMember)) < 0.01 &&
+            Math.abs(geometry.innerProviderPaddingBlockEnd - (geometry.plainPaddingBlockEnd - geometry.denseMember)) < 0.01 &&
+            Math.abs(geometry.innerChipHeight - 32) < 0.1 &&
+            Math.abs(geometry.innerChipPaddingBlockStart - 4) < 0.01,
+            `Expected ${tier}/${tone} nested tables to enroll only the nearest owning Table.Cell: ${JSON.stringify(geometry)}.`
+          );
+        } else {
+          assert(
+            Math.abs(geometry.auto.lineHeight - 24) > 0.1 ||
+            Math.abs(geometry.auto.paddingBlockStart - 4) > 0.1 ||
+            Math.abs(geometry.auto.height - 32) > 0.1,
+            `Expected ${tier}/${tone} not to inherit the Site-only 32px dense Chip contract: ${JSON.stringify(geometry)}.`
+          );
+          assert(
+            Math.abs(geometry.providerPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01 &&
+            Math.abs(geometry.providerPaddingBlockEnd - geometry.plainPaddingBlockEnd) < 0.01,
+            `Expected ${tier}/${tone} table cells not to absorb the Site-only dense member: ${JSON.stringify(geometry)}.`
+          );
+          assert(
+            Math.abs(geometry.wrapperProviderPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01 &&
+            Math.abs(geometry.wrapperProviderPaddingBlockEnd - geometry.plainPaddingBlockEnd) < 0.01 &&
+            Math.abs(geometry.outerProviderPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01,
+            `Expected ${tier}/${tone} wrapper and nested-table hosts not to activate the Site-only provider: ${JSON.stringify(geometry)}.`
+          );
+        }
+      }
+    }
   } finally {
     await browser.close();
   }
@@ -5774,6 +6094,7 @@ async function main(): Promise<void> {
     await verifyInlineIconMetricAlignment(origin);
     await verifyInlineListSeparatorSpacing(origin);
     await verifyNestedAuxiliaryGeometry(origin);
+    await verifyDenseSiteChipEnrollment(origin);
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);
     await verifyQualifiedAnchorStates(origin);

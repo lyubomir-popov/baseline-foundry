@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "../src/baseline-grid-theme.js";
 import { nestedFieldSelector, nestedInteractiveSelector, nestedTextInputTypes } from "../src/css-components/nested-controls.js";
+import { componentDensityPolicy } from "../src/component-density-policy.js";
 import { tierNames } from "../src/presets.ts";
 import { componentPages } from "./component-demo-shared.ts";
 import { assert, getCheckCount } from "./validation-assert.ts";
@@ -1146,9 +1147,14 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
     "min-inline-size": "min(100%, calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2)))"
   }, "short Action-framed chips retain a container-safe stadium silhouette under the dense Canonical inset without changing block geometry");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested)", {
+  const legacyTableChipSelector = ":where(.bf-chip.is-nested:not(.bf-theme):not(:scope td .bf-chip, :scope .bf-theme .bf-chip))";
+  const legacySideNavigationChipSelector = ":where(.bf-chip.is-nested:not(.bf-theme):not(:scope .bf-side-navigation .bf-chip, :scope .bf-theme .bf-chip))";
+  assertRuleHasDecl(ast, legacyTableChipSelector, {
     "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)))"
-  }, "short nested chips retain the same container-safe stadium contract");
+  }, "short Chips in named legacy hosts retain the same container-safe stadium contract");
+  assertRuleHasDecl(ast, legacySideNavigationChipSelector, {
+    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)))"
+  }, "short Chips in named legacy navigation hosts retain the same container-safe stadium contract");
   assert(css.includes("--bf-ui-chip-radius: 999rem;") && css.includes("border-radius: var(--bf-ui-chip-radius);"), "Expected standalone and nested chips to use the shared rem-based pill radius.");
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
@@ -1216,9 +1222,10 @@ function validateCommonCss(css: string): void {
   ast.walkRules(rule => {
     if (!rule.selector.includes("bf-tier-")) return;
     const isBlockDerivedOverride = rule.selector.includes("bf-chip") || rule.selector.includes("bf-badge") || rule.selector.includes("bf-button.is-icon") || rule.selector.includes("bf-pagination-link");
+    const isGovernedSiteDenseChip = rule.selector.includes(".bf-tier-editorial") && rule.selector.includes(".bf-table td:has(") && rule.selector.includes(".bf-chip");
     let repointsSquare = false;
     rule.walkDecls("--bf-square-block-size", () => { repointsSquare = true; });
-    assert(!isBlockDerivedOverride && !repointsSquare, `Expected block-derived geometry to avoid per-tier overrides; found ${rule.selector}.`);
+    assert((!isBlockDerivedOverride || isGovernedSiteDenseChip) && !repointsSquare, `Expected block-derived geometry to avoid ungoverned per-tier overrides; found ${rule.selector}.`);
   });
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-pagination-link:not(.is-previous):not(.is-next))", {
     "min-inline-size": "var(--bf-square-block-size)",
@@ -1305,19 +1312,61 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
   assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-interface-row-compensation-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural interface row as textual controls.");
   assert(css.includes("padding-block-end: var(--bf-in-box-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-in-box-row-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested, .bf-status-label.is-nested)", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
     "padding-block": "var(--bf-nested-row-padding-block)"
-  }, "nested chip and status surfaces fit a host-owned body line");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested)", {
+  }, "nested status surfaces fit a host-owned body line");
+  for (const legacyChipSelector of [legacyTableChipSelector, legacySideNavigationChipSelector]) {
+    assertRuleHasDecl(ast, legacyChipSelector, {
+      "line-height": "var(--bf-nested-row-line-height)",
+      "margin-block": "0",
+      "padding-block": "var(--bf-nested-row-padding-block)",
+      "border": "0",
+      "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border)",
+      "padding-inline": "var(--bf-ui-chip-padding-inline)"
+    }, "nested Chips in named legacy hosts fit the host-owned body line and paint without block footprint");
+    assertRuleHasDecl(ast, `${legacyChipSelector} :where(.bf-chip-lead, .bf-chip-value)`, {
+      "line-height": "inherit"
+    }, "nested Chip parts inherit the compact host line so badges cannot enlarge it");
+  }
+  assert(!css.includes(":where(.bf-side-navigation .bf-chip.is-nested, .bf-table td .bf-chip.is-nested)"), "Expected the legacy Chip compatibility path to resolve only through scoped named hosts instead of a cross-product descendant selector.");
+  assert(css.includes("@scope (:where(.bf-theme)) to (:where(.bf-theme))") && css.includes("@scope (:where(.bf-side-navigation)) to (:where(.bf-side-navigation, .bf-theme))"), "Expected legacy nested Chips to stop at the nearest named host and product root.");
+  /* The scoped legacy compatibility path and the governed Site policy share
+     paint geometry, but only the Site Table.Cell path changes density. */
+  assertRuleHasDecl(ast, legacyTableChipSelector, {
     "border": "0",
     "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border)",
     "padding-inline": "var(--bf-ui-chip-padding-inline)"
-  }, "nested chips paint their border without adding block footprint");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested) :where(.bf-chip-lead, .bf-chip-value)", {
-    "line-height": "inherit"
-  }, "nested chip parts inherit the compact host line so badges cannot enlarge it");
+  }, "legacy table Chips use the reviewed paint-only compatibility anatomy");
+  const density = componentDensityPolicy.siteDenseChip;
+  assert(
+    componentDensityPolicy.version === 1 &&
+    density.product === "editorial" &&
+    density.provider === ".bf-table td" &&
+    JSON.stringify(density.providerBoundaries) === JSON.stringify(["td", ".bf-theme"]) &&
+    density.subscriber === ".bf-chip" &&
+    density.role === "spacing.inset.control.block",
+    `Expected the versioned dense Chip policy to name the exact product, nearest-provider boundaries, subscriber and role; got ${JSON.stringify(componentDensityPolicy)}.`
+  );
+  assert(
+    css.includes(`${density.comfortableMember}: var(--bf-control-block-inset);`) &&
+    css.includes(`${density.denseMember}: var(--bf-space-half);`) &&
+    css.includes(`${density.currentMember}: var(${density.denseMember});`) &&
+    css.includes(`${density.componentBinding}: var(${density.currentMember}, var(--bf-control-block-inset));`) &&
+    css.includes(`padding-block: var(${density.componentBinding});`) &&
+    css.includes("line-height: var(--bf-body-line-height);") &&
+    css.includes("margin-block: 0;") &&
+    css.includes("min-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(--bf-chip-control-block-inset) * 2)));"),
+    "Expected the Site table provider and Chip subscriber to bind the named dense control-block member without a layout-border term or child compensation."
+  );
+  assert(
+    css.includes("@scope (:where(.bf-theme.bf-tier-editorial)) to (:where(.bf-theme))") &&
+    css.includes("@scope (:where(.bf-table td)) to (:where(td, .bf-theme))") &&
+    css.includes(":scope:has(.bf-chip:not(.bf-theme):not(:scope td .bf-chip, :scope .bf-theme .bf-chip))") &&
+    !css.includes(".bf-dense-chip-host"),
+    "Expected automatic dense Chip enrollment to cross neutral descendants, stop at nearest cells and product roots, and expose no public host toggle."
+  );
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "border-block-width": "0"
   }, "nested status labels remove their transparent block border footprint");

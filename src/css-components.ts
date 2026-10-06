@@ -80,7 +80,7 @@ function roleSelectedStartNudgeVar(roleName: string, fallback?: string): string 
   return fallback ? `var(--bf-${roleName}-nudge-start, ${fallback})` : `var(--bf-${roleName}-nudge-start)`;
 }
 
-export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[]): string {
+export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[], siteScopes: string[] = []): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
@@ -835,11 +835,13 @@ ${tableCss({
   bodyLineHeight,
   bodyMediumTypeStyles: typeStyles(body, { fontWeight: 500, includeCase: false }),
   bodyTypeStyles,
+  siteScopes,
 })}
 
 ${chipBadgeStatusCss({
   bodyCaseTypeStyles: typeStyles(body),
   bodyTypeStyles,
+  siteScopes,
 })}
 
 :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear) {
