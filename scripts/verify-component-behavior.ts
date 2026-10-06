@@ -5106,6 +5106,114 @@ async function verifyTooltipPaintBounds(origin: string): Promise<void> {
   }
 }
 
+async function verifyCardOverflowOwnership(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const viewports = [
+    { label: "desktop", width: 1100, height: 800 },
+    { label: "mobile", width: 390, height: 844 }
+  ] as const;
+
+  try {
+    for (const viewport of viewports) {
+      const page = await browser.newPage({ viewport });
+      await page.goto(`${origin}/demo/components/cards.html`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const tierSelect = page.getByLabel("Tier", { exact: true });
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await tierSelect.selectOption(tier);
+        await page.waitForSelector(`body.bf-tier-${tier}`);
+        const wideCard = page.locator("[data-card-wide-content]");
+        const scrollOwner = wideCard.locator(".bf-card-scroll");
+        const scrollGeometry = await scrollOwner.evaluate(element => {
+          const node = element as HTMLElement;
+          node.scrollLeft = node.scrollWidth;
+          const card = node.closest<HTMLElement>(".bf-card");
+          const popup = document.querySelector<HTMLElement>("[data-card-popup]");
+          const cardRect = card?.getBoundingClientRect();
+          const scrollRect = node.getBoundingClientRect();
+          return {
+            cardOverflow: card ? getComputedStyle(card).overflow : "missing",
+            cardRect: cardRect ? { height: cardRect.height, width: cardRect.width } : null,
+            clientWidth: node.clientWidth,
+            documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+            overflowX: getComputedStyle(node).overflowX,
+            popupInsideScrollOwner: popup ? node.contains(popup) : true,
+            scrollRect: { height: scrollRect.height, width: scrollRect.width },
+            scrollLeft: node.scrollLeft,
+            scrollWidth: node.scrollWidth,
+            viewportWidth: window.innerWidth
+          };
+        });
+        assert(scrollGeometry.viewportWidth === viewport.width && scrollGeometry.cardOverflow === "visible" && scrollGeometry.overflowX === "auto", `Expected ${tier}/${viewport.label} to use the real viewport with visible Card root overflow and an inner BF scroll owner; got ${JSON.stringify(scrollGeometry)}.`);
+        assert(scrollGeometry.scrollWidth > scrollGeometry.clientWidth + 1 && scrollGeometry.scrollLeft > 0 && scrollGeometry.documentOverflow <= 1 && !scrollGeometry.popupInsideScrollOwner, `Expected ${tier}/${viewport.label} wide Card content to scroll internally without capturing the popup or widening the page; got ${JSON.stringify(scrollGeometry)}.`);
+
+        await scrollOwner.evaluate(element => { (element as HTMLElement).scrollLeft = 0; });
+        await scrollOwner.focus();
+        await page.keyboard.press("ArrowRight");
+        await page.waitForFunction(() => {
+          const owner = document.querySelector<HTMLElement>("[data-card-wide-content] .bf-card-scroll");
+          return owner && owner.scrollLeft > 0;
+        });
+        const keyboardScroll = await scrollOwner.evaluate(element => ({
+          focused: document.activeElement === element,
+          scrollLeft: (element as HTMLElement).scrollLeft
+        }));
+        assert(keyboardScroll.focused && keyboardScroll.scrollLeft > 0, `Expected ${tier}/${viewport.label} the documented tabindex Card scroll owner to retain focus and scroll with ArrowRight; got ${JSON.stringify(keyboardScroll)}.`);
+
+        await page.emulateMedia({ forcedColors: "active" });
+        const forcedGeometry = await scrollOwner.evaluate(element => {
+          const node = element as HTMLElement;
+          const card = node.closest<HTMLElement>(".bf-card");
+          const cardRect = card?.getBoundingClientRect();
+          const scrollRect = node.getBoundingClientRect();
+          return {
+            cardOverflow: card ? getComputedStyle(card).overflow : "missing",
+            cardRect: cardRect ? { height: cardRect.height, width: cardRect.width } : null,
+            overflowX: getComputedStyle(node).overflowX,
+            scrollRect: { height: scrollRect.height, width: scrollRect.width }
+          };
+        });
+        const sameSize = (before: { height: number; width: number } | null, after: { height: number; width: number } | null) =>
+          Boolean(before && after && Math.abs(before.height - after.height) <= 0.1 && Math.abs(before.width - after.width) <= 0.1);
+        assert(forcedGeometry.cardOverflow === "visible" && forcedGeometry.overflowX === "auto" && sameSize(scrollGeometry.cardRect, forcedGeometry.cardRect) && sameSize(scrollGeometry.scrollRect, forcedGeometry.scrollRect), `Expected ${tier}/${viewport.label} forced-colors paint to preserve Card/root scroll ownership and geometry; normal=${JSON.stringify(scrollGeometry)}, forced=${JSON.stringify(forcedGeometry)}.`);
+        await page.emulateMedia({ forcedColors: "none" });
+
+        const popupCard = page.locator("[data-card-popup-owner]").locator("xpath=ancestor::article[contains(@class,'bf-card')]");
+        const popup = page.locator("[data-card-popup]");
+        const popupAction = popup.locator(".bf-contextual-menu-link").last();
+        await popupCard.scrollIntoViewIfNeeded();
+        const popupGeometry = await popupAction.evaluate(action => {
+          const popup = action.closest<HTMLElement>("[data-card-popup]");
+          const card = action.closest<HTMLElement>(".bf-card");
+          if (!popup || !card) throw new Error("Missing Card popup geometry.");
+          const popupRect = popup.getBoundingClientRect();
+          const cardRect = card.getBoundingClientRect();
+          const actionRect = (action as HTMLElement).getBoundingClientRect();
+          const hit = document.elementFromPoint(actionRect.left + (actionRect.width / 2), actionRect.top + (actionRect.height / 2));
+          return {
+            cardOverflow: getComputedStyle(card).overflow,
+            crossesCard: popupRect.bottom > cardRect.bottom + 1,
+            hitAction: hit?.closest(".bf-contextual-menu-link") === action,
+            popupVisible: getComputedStyle(popup).display !== "none"
+          };
+        });
+        assert(popupGeometry.cardOverflow === "visible" && popupGeometry.crossesCard && popupGeometry.hitAction && popupGeometry.popupVisible, `Expected ${tier}/${viewport.label} the real Card popup to cross the root and remain pointer-routable; got ${JSON.stringify(popupGeometry)}.`);
+        await popupAction.click();
+        assert(await popup.getAttribute("aria-hidden") === "true", `Expected ${tier}/${viewport.label} the Card popup action to close its real menu.`);
+        const toggle = page.locator("[data-card-popup-owner] .bf-contextual-menu-toggle");
+        await toggle.click();
+        assert(await popup.getAttribute("aria-hidden") === "false", `Expected ${tier}/${viewport.label} the Card popup toggle to reopen its real menu.`);
+        await page.keyboard.press("Escape");
+        assert(await popup.getAttribute("aria-hidden") === "true" && await toggle.getAttribute("aria-expanded") === "false", `Expected ${tier}/${viewport.label} Escape to close the real Card popup and restore its toggle state.`);
+        await toggle.click();
+      }
+      await page.close();
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyQualifiedAnchorStates(origin: string): Promise<void> {
   const cases = [
     { route: "/examples/grid/app-panels.html", selector: "a.pc-sequence-link", decoration: "none", label: "page sequence button" },
@@ -7236,6 +7344,7 @@ async function main(): Promise<void> {
     await verifyCommandPaintOwners(origin);
     await verifySurfacePaintOwners(origin);
     await verifyTooltipPaintBounds(origin);
+    await verifyCardOverflowOwnership(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);

@@ -1295,6 +1295,15 @@ function validateCommonCss(css: string): void {
     "border": "0",
     "padding-block-end": "0"
   }, "card sections add no block padding inside the surface-owned group gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-scroll)", {
+    "max-inline-size": "100%",
+    "min-inline-size": "0",
+    "overflow-x": "auto",
+    "scrollbar-width": "thin"
+  }, "wide Card content scrolls on an inner BF owner while the Card root remains available to escaping overlays");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-scroll) > :where(table, .bf-table, pre, .bf-code-snippet)", {
+    "min-inline-size": "var(--bf-card-scroll-min-inline-size, var(--bf-table-scroll-min-inline-size, 48rem))"
+  }, "wide Card content reuses the table-scroll intrinsic-width convention");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-card, a.bf-card.is-highlighted, a.bf-card.is-overlay, a.bf-card.is-muted)", {
     "color": "inherit",
     "cursor": "pointer",

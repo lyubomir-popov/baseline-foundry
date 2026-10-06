@@ -137,6 +137,19 @@ ${optionStroke.owner}
   min-inline-size: 0;
 }
 
+/* Card roots remain visible-overflow paint owners so owned overlays can cross
+   their edge. Intrinsically wide content opts into this inner scroll owner. */
+:where(.bf-theme) :where(.bf-card-scroll) {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+:where(.bf-theme) :where(.bf-card-scroll) > :where(table, .bf-table, pre, .bf-code-snippet) {
+  min-inline-size: var(--bf-card-scroll-min-inline-size, var(--bf-table-scroll-min-inline-size, 48rem));
+}
+
 :where(.bf-theme) :where(.bf-card-thumbnail) {
   block-size: auto;
   max-block-size: calc(var(--bf-control-visual-size) * 2);

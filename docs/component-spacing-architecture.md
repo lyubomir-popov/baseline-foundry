@@ -188,6 +188,31 @@ Notifications retain the tier leading-mark size and Canonical gap. Their 3px
 accent is non-consuming paint; if that paint would oversubscribe the rail, only
 the paint protrudes by the exact shortfall so it cannot overlap the icon.
 
+## Card overflow ownership
+
+Card roots now use `overflow: visible`. This is an explicit change from the
+former root scrollport: it lets Card-owned menus and other overlays cross the
+surface edge. The paint overlay does not cause that escape by itself; removing
+the root clip is what makes the popup visible and interactive.
+
+Wrap intrinsically wide Card content in `bf-card-scroll`. That inner BF owner
+provides horizontal scrolling. Tables, code snippets, and preformatted content
+reuse the existing `bf-table-scroll` 48rem content-floor convention; this is an
+intrinsic-content threshold rather than a spacing role. Keep popups as siblings
+of the scroll owner so content remains scrollable while overlays remain
+unclipped:
+
+```html
+<article class="bf-card">
+  <div class="bf-card-content">
+    <div class="bf-card-scroll" role="region" tabindex="0" aria-label="Wide Card content">
+      <table class="bf-table">...</table>
+    </div>
+  </div>
+  <div class="bf-contextual-menu">...</div>
+</article>
+```
+
 ## Reviewed compositions
 
 Side-navigation lists preserve the same natural link paint and trailing
