@@ -43,12 +43,33 @@
 - [x] S1/S3: table composition and conditional leaf paint —
   `959b5599f4cb2e8a0836e71d867def3d7cc34445`; required gates green in
   `s1-s3-check-types-final.log`, `s1-s3-npm-test-green.log`,
-  `s1-s3-qa-components-final.log`. Independent final audit pending.
-- [ ] S2: disclose Card overflow and prove separate content scrolling/popup escape.
-- [ ] M1: restore exact component text-top assertions.
-- [ ] D1/M2: shared BF Before/After controls, grid and initializers; real mobile.
-- [ ] B2/S4: full provenance, working-override guard and explicit Firefox limits.
-- [ ] Independent final paint/runtime review and root integration.
+  `s1-s3-qa-components-final.log`. Independent exact-tip audit accepts the
+  review's narrow-to-BF remedy: owned BF cells still clip arbitrary absolute
+  children; supported BF menus escape through neutral wrappers.
+- [x] S2: Card overflow disclosure and BF content scrolling —
+  `949c140965ee941bd40411dcc4437e5bec24b9fe`; `s2-check-types-final.log` and
+  `s2-qa-components-final.log` exit 0; independent 8-state audit passes.
+  `s2-npm-test-final.log` exits 0 but has the temporary nonexistent source-pin
+  limitation. Corrected `s2-provenance-test-build-final.log` exits 0; the final
+  complete source/runtime gates now pass with the corrected provenance.
+- [x] M1: exact component text-top assertions —
+  `b0831c716d04ff386116ee7aae8615c014aaa3ea`; gates green in
+  `m1-check-types-final.log`, `m1-npm-test-final.log`,
+  `m1-qa-components-final.log`; independent eight-state audit records zero peer
+  spread. Reference phase and the case-safe Badge exception remain explicit.
+- [x] D1/M2: shared BF Before/After controls, grid and initializers; real mobile
+  — `28a7af5bfb761955e4b041b3669d1523d7ec5900`.
+- [x] B2/S4: full provenance and working-override guard
+  — source `dd9db8588e549f8f8a21acf6fcdb9585200c60b1`, metadata
+  `f172e907094f99dbab12baffa17b58030cff9180`. Firefox 155 nested-density
+  audit passes 8 states; full Firefox interaction coverage is not claimed.
+  The external Canonical-main gate remains open below.
+- [x] Independent final paint/runtime review and root integration.
+  Paint report `0d3c79236846499e1c267cc15b39ba0cbce911cbec9159fd4553c7f0eead443f`;
+  B2 report `0353e6352a86d639541c58a550dcff40710823f275e517bacdc74f67187adadf`;
+  runtime report `c591d5c8b9273a40e559963221d6fc60059e983f11b487a2b3e5038b636dca2e`.
+  Independent runtime: 80 DPR1 + 32 launch-scale/DPR1.5 states. Root: 24
+  version/tier/viewport states, real hit testing, failure rollback and retry.
 - [ ] Seal correction evidence, update BF board columns and save the next request.
 - [ ] External Opus verdict and owner visual sign-off.
 - [ ] Owner Canonical main activation and resulting full-SHA artifact re-pin
@@ -58,3 +79,15 @@ Correction logs and independent reports are under
 `H:/WSL_dev_projects/temp/bf-028-opus-corrections-20261006/`; not sealed yet.
 Failed attempts remain distinct from green gate logs. The original
 `bf-028-20261006` evidence and request stay unchanged.
+
+## Final corrected-source gates
+
+All exit 0 at the final source/runtime freeze:
+
+| Log | SHA-256 |
+|---|---|
+| `final-check-types.log` | `315ddf78ae96d26254506037f4909ac94e140b75754d9fd7fd7e604ef854d68c` |
+| `final-npm-test.log` | `289e26c75131a15f1762aeda87afdf860b77a40860bbe18c8b59d235d49c0816` |
+| `final-qa-components.log` | `13d0c4dfbcbd2f94c8d1ffc73714f9c41a90edd9b16c3b7952d43de0728b318e` |
+| `final-source-build.log` | `9586af71323b9ad3409390f3cff8c4afe560bc2f8b851bc8005b4876296d4ec5` |
+| `final-provenance-verifier.log` | `048469025aa9c09927d1a427288d8d5a9bf08b1e91c9b65a91ad2a7cacbf3ae3` |

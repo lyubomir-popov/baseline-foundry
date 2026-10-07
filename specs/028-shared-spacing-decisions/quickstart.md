@@ -5,16 +5,35 @@ npm install
 npm run check:types
 npm test
 npm run qa:components
-npm run demo:serve -- --host 127.0.0.1 --port 4176 --open false
+npm run demo:serve -- --host 127.0.0.1 --port 4176 --strictPort
 ```
 
-Open `http://127.0.0.1:4176/demo/spec-028/index.html`. The sticky controls
-switch only the BF stylesheet between the freshly built `6deca997` base and
-`12d47ab` feature bundles. Exercise Before/After, all four tiers, desktop/mobile,
-light/dark, baselines and boxes. The page reports the actual response hash,
-content type and identical specimen-DOM signature.
+Use BF's existing pages:
 
-The popup, containing-block, filled-child and focus specimens are real BF
-components. The filled child is deliberate diagnostic pressure: it reaches the
-owner edges without fixture isolation or z-index so the automatic overlay and
-keyboard focus must remain visible above it.
+- [Vertical spacing](http://127.0.0.1:4176/demo/spec/spacing-vertical.html)
+- [Tooltip](http://127.0.0.1:4176/demo/components/tooltip.html)
+- [Cards](http://127.0.0.1:4176/demo/components/cards.html)
+
+Use the shared controls in BF's fixed footer: Before/After, tier, tone and
+baseline grid. The comparison keeps the real specimen nodes and BF component
+initializers. The old `demo/spec-028/index.html` route redirects to the real
+vertical-spacing page; its bespoke CSS and script have been removed.
+The immutable Before source remains
+`6deca99776f35b85afde01b68bb0fffe817e29aa`.
+
+Exercise both versions, all four tiers,
+light/dark and BF's baseline grid. Mobile review must use an actual narrow
+browser viewport, not a desktop canvas made narrower by a control. Verify real
+Tooltip, menu and navigation behavior through BF's initializers.
+
+Before is the archived CSS comparison. Matching Before token JSON was not
+preserved, so token diagnostics and token-file links are explicitly unavailable
+in that mode. After shows the current generated values. Bundle provenance is
+linked from BF's shared chrome. The page's own BF layout legitimately follows
+the selected BF stylesheet.
+
+Current source pins, checks and the correction-review handoff live in
+[tasks](tasks.md) and the [inbox](../../AGENT-INBOX.md). The original request and
+sealed evidence remain historical. Exact browser coverage is recorded in the
+correction request; Safari, real Windows contrast themes and display scaling
+still require explicit platform coverage.

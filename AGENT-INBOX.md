@@ -28,17 +28,28 @@ and retains its separately governed values elsewhere.
   intact. `9a7d7c8fa99551428206ec8eae7ca38cf5449318`; all three gates and the
   independent 16-state message/frame audit pass.
 - S1/S3: `959b5599f4cb2e8a0836e71d867def3d7cc34445`; all three required gates
-  pass, with the independent final audit pending. Preserve raw-table
+  pass, with the independent exact-tip audit accepted. Preserve raw-table
   clipping/ellipsis, rowspan geometry and static
   anchors; correct conditional leaf paint. Raw cells use inset system-color
   outlines in forced colors, with the added cell edges disclosed. Named BF
-  tables retain one-sided paint.
-- S2: disclose Card overflow and prove separate content scrolling/popup escape.
-- M1: restore exact component text-top assertions with explicit optical cases.
-- D1/M2: move Before/After into BF's shared controls, layout, grid and scripts;
-  test actual mobile viewports and retire the custom review shell.
-- B2/S4: correct full-SHA/effective-override provenance and regeneration guards;
-  name untested Firefox explicitly. Canonical main activation remains pending.
+  tables retain one-sided paint. Owned BF cells still clip arbitrary absolute
+  children; supported BF menus through neutral wrappers release clipping. This
+  follows the review's explicit narrow-to-BF option, not universal popup escape.
+- S2: `949c140965ee941bd40411dcc4437e5bec24b9fe` adds the BF content scroll owner
+  and documents Card overflow independently. Source checks and independent
+  browser checks pass. The first full-test log has a temporary provenance-pin
+  limitation; the corrected-pin affected build check passes. The final complete
+  source/runtime triplet passes with the corrected provenance.
+- M1: exact component text-top assertions and case-safe optical cases are
+  restored in `b0831c716d04ff386116ee7aae8615c014aaa3ea`; all three required
+  gates and the independent eight-state peer audit pass.
+- D1/M2: `28a7af5bfb761955e4b041b3669d1523d7ec5900` puts Before/After in
+  BF shared controls, layout, grid and initializers. Real 390px/960px responsive
+  drawer and 1100px desktop checks pass; the custom shell is removed.
+- B2/S4: source `dd9db8588e549f8f8a21acf6fcdb9585200c60b1` and metadata
+  `f172e907094f99dbab12baffa17b58030cff9180` use full resolvable pins and
+  guarded working overrides. Firefox 155 passes eight nested-density states;
+  full Firefox interaction coverage remains a limit. Main activation is pending.
 
 Source/demo/scripts/config and component docs have one writer; root owns this
 inbox and Spec 028 routing/progress docs. Commit final routing after the source
@@ -151,13 +162,13 @@ Keep its accepted numerical proofs and sealed evidence unchanged. Its manifest i
 New correction evidence is being assembled under
 `H:/WSL_dev_projects/temp/bf-028-opus-corrections-20261006/`; it is not sealed yet.
 The BF server runs at `http://127.0.0.1:4176/`. Use existing BF component/spec
-pages. The shared Before/After control is still pending, and the custom shell is
-being retired. Frozen Canonical diagnostics are unchanged and are not the owner
+pages. The shared Before/After control is ready and the custom shell has been
+removed. Frozen Canonical diagnostics are unchanged and are not the owner
 sign-off surface.
 
 ## Remaining order
 
-1. Finish correction gates, independent paint/runtime review and root integration.
+1. Correction gates, independent paint/runtime review and root integration pass.
 2. Seal separate evidence and save a new correction request; do not overwrite
    the original report, request or sealed evidence.
 3. Stop for the external Opus review. Owner visual sign-off remains pending.

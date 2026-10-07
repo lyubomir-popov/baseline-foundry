@@ -4,10 +4,10 @@
 2. [x] Align margins, surfaces, SideNavigation and governed dense Chip geometry.
 3. [x] Remove layout-border assumptions, then migrate stroke families atomically.
 4. [x] Add the initial faithful bundle comparison and negative specimens
-   (historical; the custom shell fails BF dogfooding and is being replaced).
+   (historical; the custom shell failed BF dogfooding and has been replaced).
 5. [x] Run repository gates and four-tier desktop/mobile browser evidence.
 6. [x] Fill the BF conformance columns and prepare the first Opus request.
-7. [ ] Address the external Opus product/demo findings, with source gates and
+7. [x] Address the external Opus product/demo findings, with source gates and
    independent paint/runtime review.
 8. [ ] Seal separate correction evidence and stop at the next external review.
 

@@ -2,7 +2,7 @@
 
 **Feature branch**: `feat/028-shared-spacing-decisions`
 
-**Status**: External Opus changes requested; corrections in progress
+**Status**: Corrections verified; assembling the next external Opus checkpoint
 
 ## Purpose
 
@@ -33,8 +33,10 @@ This package records only BF implementation, evidence and review state.
 - Frozen neutral diagnostics are unchanged.
 - Canonical main activation and a final full-main-SHA re-pin remain prerequisites
   to BF main adoption. Feature corrections do not authorize a merge.
-- Firefox is unvalidated unless actual evidence is recorded. Windows
-  contrast-theme and Safari review remain human-only.
+- Chromium covers the comparison and focused paint/runtime checks. Firefox 155
+  has a focused eight-state nested-density audit; that is not a complete
+  Firefox component/interaction matrix. Windows contrast-theme, actual display
+  scaling and Safari review remain separate platform limits.
 
 ## External review receipt
 

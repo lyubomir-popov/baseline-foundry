@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
-| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | In progress; applies Spec 024 rulings to BF built-ins and real component demos |
+| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | Corrections verified; preparing the next external Opus checkpoint. Owner sign-off and Canonical main activation pending |
 | 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Parked and excluded from BF by current owner direction; preserve branch/history and do not resume |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |
