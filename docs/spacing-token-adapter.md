@@ -3,16 +3,26 @@
 BF's four built-in tiers consume the resolved DTCG dimension records in
 `config/canonical-spacing.resolved.json`. That artifact is pinned to
 `canonical/design-tokens` commit
-`18f57b95b1aa1dfe85a45746016b055c807d6628` and contains exactly the twelve
-approved `spacing.*` IDs for Site, Docs, App, and OS. Production validation
-also pins SHA-256
-`97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571`
-over the ordered 4 × 12 DTCG records. A value change at any point fails before
-generation.
+`18f57b95b1aa1dfe85a45746016b055c807d6628` for the schema and resolver shape.
+That base resolver does not produce the four product matrices consumed here.
+The 48 working product values are an explicit Spec 024 override pinned to
+`canonical-spacing-spec` commit
+`7169231fcc3168032275d920d32856f9669107ac`. Production validation pins SHA-256
+`f8fa3f4ac6d94fa1e262ab0530bd2c6d41da2932dc91c06151c711ca093cf679`
+over the ordered 4 × 12 DTCG records and rejects provenance changes that would
+silently regenerate them from the base resolver.
+
+Activation remains pending. Canonical `main` was observed at
+`cad4aacf91b7e70bee81730552b76ef0d8291a34`; it does not yet carry equivalent
+owner rulings. The owner must land equivalent rulings on Canonical main and BF
+must then repin the resulting full main commit. A squash or rebase may produce
+a new commit, so activation does not depend on the proposal commit remaining an
+ancestor. The design-tokens contribution is also still pending. This artifact
+records working values and does not claim that either external gate has landed.
 
 Contribution 3 introduced the format adapter and temporarily retained seven
-values. Spec 020a has adopted the provider matrix and removed that local
-overlay. The seven adopted values are:
+values. Spec 020a removed that local overlay and now consumes the guarded Spec
+024 working override. The seven adopted working values are:
 
 | Product | Adopted Canonical values |
 |---|---|

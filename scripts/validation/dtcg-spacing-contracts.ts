@@ -181,14 +181,39 @@ export async function validateDtcgSpacingContracts(
       source.repository === "https://github.com/canonical/design-tokens" &&
       source.baseCommit === SOURCE_COMMIT &&
       source.resolver === "tokens/canonical/canonical.resolver.json" &&
+      source.baseRole === "schema and resolver base only; does not generate the working product values below" &&
       workingValues.repository === "canonical-spacing-spec" &&
-      workingValues.commit === "7169231" &&
+      workingValues.commit === "7169231fcc3168032275d920d32856f9669107ac" &&
       workingValues.spec === "024-semantic-spacing-token-schema" &&
-      workingValues.status === "working; design-tokens contribution pending",
-    `Expected the spacing artifact to identify design-tokens ${SOURCE_COMMIT} as its base and Spec 024 at 7169231 as its working-value source.`
+      workingValues.origin === "Spec 024 working-values override; not @canonical/design-tokens resolver product output" &&
+      workingValues.status === "working override; canonical-main merge and design-tokens contribution pending" &&
+      workingValues.regenerationGuard === "preserve this override until the owner lands equivalent rulings on canonical main and BF repins the resulting full main commit" &&
+      JSON.stringify(workingValues.canonicalMain) === JSON.stringify({
+        observedCommit: "cad4aacf91b7e70bee81730552b76ef0d8291a34",
+        status: "pending equivalent-ruling merge to canonical main and final-main repin"
+      }),
+    `Expected the spacing artifact to identify design-tokens ${SOURCE_COMMIT} as its shape/resolver base and the full Spec 024 commit as a guarded working override pending canonical-main merge.`
   );
   assert(JSON.stringify(Object.keys(products).sort()) === JSON.stringify(["app", "docs", "os", "site"]), "Expected the resolved spacing artifact to contain exactly four products.");
   assert(!existsSync(path.resolve("config/canonical-spacing.compatibility-overlay.json")), "Expected 020a to remove the temporary BF compatibility overlay file.");
+
+  for (const mutateMetadata of [
+    (copy: Record<string, unknown>) => { ((copy.source as Record<string, unknown>).workingValues as Record<string, unknown>).commit = "7169231"; },
+    (copy: Record<string, unknown>) => { (copy.source as Record<string, unknown>).baseRole = "resolver product output"; },
+    (copy: Record<string, unknown>) => { ((copy.source as Record<string, unknown>).workingValues as Record<string, unknown>).origin = "@canonical/design-tokens resolver product output"; },
+    (copy: Record<string, unknown>) => { ((copy.source as Record<string, unknown>).workingValues as Record<string, unknown>).regenerationGuard = "regenerate from base resolver"; },
+    (copy: Record<string, unknown>) => { (((copy.source as Record<string, unknown>).workingValues as Record<string, unknown>).canonicalMain as Record<string, unknown>).requiredAncestor = "7169231fcc3168032275d920d32856f9669107ac"; }
+  ]) {
+    const mutated = structuredClone(artifact);
+    mutateMetadata(mutated);
+    let rejected = false;
+    try {
+      validateCanonicalSpacingArtifact(mutated);
+    } catch {
+      rejected = true;
+    }
+    assert(rejected, "Expected production validation to reject provenance metadata that could silently replace the Spec 024 working override with base-resolver output.");
+  }
 
   for (const [product, productTokens] of Object.entries(products) as Array<[Product, Record<string, unknown>]>) {
     for (const id of TOKEN_IDS) {

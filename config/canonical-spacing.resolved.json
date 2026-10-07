@@ -9,11 +9,18 @@
     "repository": "https://github.com/canonical/design-tokens",
     "baseCommit": "18f57b95b1aa1dfe85a45746016b055c807d6628",
     "resolver": "tokens/canonical/canonical.resolver.json",
+    "baseRole": "schema and resolver base only; does not generate the working product values below",
     "workingValues": {
       "repository": "canonical-spacing-spec",
-      "commit": "7169231",
+      "commit": "7169231fcc3168032275d920d32856f9669107ac",
       "spec": "024-semantic-spacing-token-schema",
-      "status": "working; design-tokens contribution pending"
+      "origin": "Spec 024 working-values override; not @canonical/design-tokens resolver product output",
+      "status": "working override; canonical-main merge and design-tokens contribution pending",
+      "regenerationGuard": "preserve this override until the owner lands equivalent rulings on canonical main and BF repins the resulting full main commit",
+      "canonicalMain": {
+        "observedCommit": "cad4aacf91b7e70bee81730552b76ef0d8291a34",
+        "status": "pending equivalent-ruling merge to canonical main and final-main repin"
+      }
     }
   },
   "products": {
