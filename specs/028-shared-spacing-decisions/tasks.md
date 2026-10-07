@@ -70,13 +70,17 @@
   runtime report `c591d5c8b9273a40e559963221d6fc60059e983f11b487a2b3e5038b636dca2e`.
   Independent runtime: 80 DPR1 + 32 launch-scale/DPR1.5 states. Root: 24
   version/tier/viewport states, real hit testing, failure rollback and retry.
-- [ ] Seal correction evidence, update BF board columns and save the next request.
+- [x] Seal correction evidence and save the
+  [next external request](opus-028-corrections-review-request.md). BF board
+  routing is recorded in Canonical T011h; no owner sign-off is claimed.
 - [ ] External Opus verdict and owner visual sign-off.
 - [ ] Owner Canonical main activation and resulting full-SHA artifact re-pin
   before BF main adoption; no exception has been inferred.
 
 Correction logs and independent reports are under
-`H:/WSL_dev_projects/temp/bf-028-opus-corrections-20261006/`; not sealed yet.
+`H:/WSL_dev_projects/temp/bf-028-opus-corrections-20261006/`; sealed 146-file
+manifest SHA-256 `9a454edc12176811ae25a6506d0bdcc5ea0d52d22be5cb6018efc7f33df62aae`.
+Frozen review target: `acce81f9ea09ac2ac00f1168fd895733b5eeb2a9`.
 Failed attempts remain distinct from green gate logs. The original
 `bf-028-20261006` evidence and request stay unchanged.
 

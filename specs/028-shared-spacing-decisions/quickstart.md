@@ -37,3 +37,7 @@ Current source pins, checks and the correction-review handoff live in
 sealed evidence remain historical. Exact browser coverage is recorded in the
 correction request; Safari, real Windows contrast themes and display scaling
 still require explicit platform coverage.
+
+The [correction request](opus-028-corrections-review-request.md) and separate
+[integration verdict](corrections-integration-review.md) are ready. Implementation
+is stopped at this external checkpoint; owner sign-off and activation are open.

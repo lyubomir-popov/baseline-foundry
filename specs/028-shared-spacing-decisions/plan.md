@@ -9,7 +9,7 @@
 6. [x] Fill the BF conformance columns and prepare the first Opus request.
 7. [x] Address the external Opus product/demo findings, with source gates and
    independent paint/runtime review.
-8. [ ] Seal separate correction evidence and stop at the next external review.
+8. [x] Seal separate correction evidence and stop at the next external review.
 
 The governing implementation handover is
 [`gpt-handover-bf-switch-2026-10-05.md`](../../../../canonical-spacing-spec-worktrees/docs-bottom-compensation-spec/specs/024-semantic-spacing-token-schema/gpt-handover-bf-switch-2026-10-05.md).

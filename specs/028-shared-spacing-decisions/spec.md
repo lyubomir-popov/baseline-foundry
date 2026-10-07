@@ -2,7 +2,7 @@
 
 **Feature branch**: `feat/028-shared-spacing-decisions`
 
-**Status**: Corrections verified; assembling the next external Opus checkpoint
+**Status**: Corrections verified and sealed; awaiting external Opus and owner sign-off
 
 ## Purpose
 
@@ -45,4 +45,5 @@ compatibility, Tooltip anchoring, table popup behavior, Card overflow disclosure
 leaf paint ownership, exact assertions, demo dogfooding and provenance. The
 accepted first-cut numerical evidence remains historical; its internal
 paint/runtime acceptance does not close these findings. See [tasks](tasks.md)
-for the correction queue. The next request will be saved separately.
+for the completed correction queue and the
+[new external request](opus-028-corrections-review-request.md).

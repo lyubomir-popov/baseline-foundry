@@ -1,4 +1,4 @@
-# Agent inbox — Spec 028 Opus corrections
+# Agent inbox — Spec 028 correction review checkpoint
 
 Date: 2026-10-07
 Branch: `feat/028-shared-spacing-decisions`
@@ -8,7 +8,9 @@ Governing feature snapshot: `7169231fcc3168032275d920d32856f9669107ac`
 
 ## Current objective
 
-Address the actual **changes requested** verdict in
+Corrections are verified and sealed; stop for the new
+[external Opus request](specs/028-shared-spacing-decisions/opus-028-corrections-review-request.md).
+The work addresses the actual **changes requested** verdict in
 [`opus-028-review.md`](specs/028-shared-spacing-decisions/opus-028-review.md), then
 prepare the next external Opus checkpoint. The report is preserved unchanged in
 `94a9025535b26bfd9f872f328e82a70ee387188e`. It accepts the first cut's bundle
@@ -159,8 +161,10 @@ Keep its accepted numerical proofs and sealed evidence unchanged. Its manifest i
 `H:/WSL_dev_projects/temp/bf-028-20261006/bf-028-evidence-manifest.json`, SHA-256
 `204fdec1e22a5474e4f288c423a8e869666f7c7e76ac2c4af6abbd9b930660cf`.
 
-New correction evidence is being assembled under
-`H:/WSL_dev_projects/temp/bf-028-opus-corrections-20261006/`; it is not sealed yet.
+Correction evidence is sealed under
+`H:/WSL_dev_projects/temp/bf-028-opus-corrections-20261006/`: 146 files, manifest
+SHA-256 `9a454edc12176811ae25a6506d0bdcc5ea0d52d22be5cb6018efc7f33df62aae`.
+Frozen review target: `acce81f9ea09ac2ac00f1168fd895733b5eeb2a9`.
 The BF server runs at `http://127.0.0.1:4176/`. Use existing BF component/spec
 pages. The shared Before/After control is ready and the custom shell has been
 removed. Frozen Canonical diagnostics are unchanged and are not the owner
@@ -169,8 +173,8 @@ sign-off surface.
 ## Remaining order
 
 1. Correction gates, independent paint/runtime review and root integration pass.
-2. Seal separate evidence and save a new correction request; do not overwrite
-   the original report, request or sealed evidence.
+2. Separate evidence and the new correction request are saved; preserve all
+   original report/request/evidence bytes.
 3. Stop for the external Opus review. Owner visual sign-off remains pending.
 
 Canonical main at receipt is `cad4aacf91b7e70bee81730552b76ef0d8291a34`; the
@@ -179,8 +183,9 @@ must merge the governing rulings and the artifact must be re-pinned to the
 resulting full main commit, or the owner must record an explicit exception.
 No exception is inferred. Feature corrections do not satisfy this prerequisite.
 
-Browser forced-color emulation is not Windows contrast-theme sign-off. Firefox,
-Safari and actual Windows display scaling require recorded coverage or limits.
+Browser forced-color emulation is not Windows contrast-theme sign-off. Firefox
+155 has eight focused density states only; full Firefox interaction, Safari
+and actual Windows display scaling remain unvalidated.
 
 Run `npm run check:types`, `npm test`, and `npm run qa:components` after each
 atomic item. Do not edit frozen neutral diagnostics, push, merge, or open a PR.
