@@ -413,3 +413,10 @@ and non-100% browser zoom. The browser checks compare:
 The horizontal and vertical spacing demos are inspection surfaces. Their local
 CSS may reveal guides, overflow, and measured ends, but may not alter component
 geometry.
+
+The correction matrix exercises the nested `@scope` density contracts in
+Chromium. A focused Firefox 155 audit also covers the real Chip page at 1100px
+and 390px in all four After tiers. It checks direct and neutral-wrapper provider
+enrolment, nested product boundaries, and an explicitly restarted Site scope.
+That focused audit does not imply full Firefox coverage for every component or
+interaction.

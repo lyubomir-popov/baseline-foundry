@@ -12,14 +12,14 @@
     }
   },
   "after": {
-    "semanticSourceCommit": "12d47abb938aecb5884387c376560d8aab66a655",
-    "bundleSourceCommit": "12d47abb938aecb5884387c376560d8aab66a655",
+    "semanticSourceCommit": "dd9db8588e549f8f8a21acf6fcdb9585200c60b1",
+    "bundleSourceCommit": "dd9db8588e549f8f8a21acf6fcdb9585200c60b1",
     "buildCommand": "npm run build",
     "bundles": {
-      "editorial": "9b8c0fc1caa3954d5f4f1d34ac501d49899e1c173c5b68cb830d0465bf07192d",
-      "documentation": "c6f52f0d581c8dde07fddafc74c07d32ea08bcdc356b734689d78b3690abdf7a",
-      "app": "67ecdfc3142ef207b16b16a88085d650d6a7e5ceac30fd98e9dc63ca15b112df",
-      "os": "8281501de3f57ccf5c76a95639dd9a4c5aeaec90b44231436a8e3897fc22522b"
+      "editorial": "da059c97e99cd8bca180ca22dcbd1e590c8cc7dd505d8ec6a9fdbb2f4e180730",
+      "documentation": "3aff4b1fecb44b29a7fca0d994a70094f8b7b4c6493fbd5a02d88052fbc00e72",
+      "app": "b85197d64994c14f20b36d3138fd6ed75fccf50594ea7794a02f1ce6d954664f",
+      "os": "a2e8b9f76d9a835695b712074ef4769fb3c0d4e2c1b882bd3e7850bd5488ee1b"
     }
   }
 }
