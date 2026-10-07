@@ -146,14 +146,15 @@ body.u-baseline-grid::after {
   min-inline-size: 8.5rem;
 }
 
-@media (max-width: 56rem) {
+@media (width < 64.75rem) {
   body:has(> .pc-root) {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
   }
 
   body:has(> .pc-root) > .pc-nav {
     grid-column: 1;
-    grid-row: auto;
+    grid-row: 1;
     block-size: auto;
     inline-size: auto;
     inset: auto;
@@ -162,6 +163,7 @@ body.u-baseline-grid::after {
 
   body:has(> .pc-root) > .pc-header {
     grid-column: 1;
+    grid-row: 2;
   }
 
   body:has(> .pc-root) > .pc-footer {
@@ -171,6 +173,7 @@ body.u-baseline-grid::after {
   body:has(> .pc-root) > main,
   body:has(> .pc-root) > .pc-content {
     grid-column: 1;
+    grid-row: 3;
   }
 
   .pc-footer {

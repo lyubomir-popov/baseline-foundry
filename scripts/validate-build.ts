@@ -85,31 +85,38 @@ async function readTextArtifact(filePath: string): Promise<string> {
   return fs.readFile(filePath, "utf8");
 }
 
-async function validateSpec028ReviewDemo(html: string, css: string, runtime: string, provenanceText: string, pageCatalogJs: string): Promise<void> {
+async function validateSpec028ReviewDemo(
+  redirectHtml: string,
+  provenanceText: string,
+  pageCatalogJs: string,
+  pageChromeJs: string,
+  componentDemoJs: string,
+  specRuntimeJs: string,
+  bundleVersionJs: string
+): Promise<void> {
   const provenance = JSON.parse(provenanceText) as {
     before: { sourceCommit: string; manifestSha256: string; bundles: Record<string, string> };
     after: { semanticSourceCommit: string; bundleSourceCommit: string; bundles: Record<string, string> };
   };
   const hashFile = async (filePath: string): Promise<string> => createHash("sha256").update(await fs.readFile(filePath)).digest("hex");
 
-  assert(pageCatalogJs.includes('{ title: "Spec 028 before/after review", href: "/demo/spec-028/index.html" }'), "Expected the catalog to route the Spec 028 comparison page.");
-  assert(html.includes('<link id="review-bundle" rel="stylesheet" href="./before/editorial.css" />') && html.includes('<link rel="stylesheet" href="../demo-fonts.css" />') && html.includes('<link rel="stylesheet" href="./review.css" />'), "Expected the review page to load one switched BF bundle, the verified demo font face, and the non-product review shell.");
-  for (const control of ['name="version" value="before"', 'name="version" value="after"', "data-review-tier-select", "data-review-tone-select", "data-review-width-select", "data-review-baseline", "data-review-boxes", "data-review-status"]) {
-    assert(html.includes(control), `Expected the review page to expose ${control}.`);
+  assert(pageCatalogJs.includes('{ title: "Spec 028 spacing comparison", href: "/demo/spec/spacing-vertical.html" }'), "Expected the catalog to route Spec 028 comparison through the real vertical-spacing page.");
+  assert(redirectHtml.includes('new URL("../spec/spacing-vertical.html", window.location.href)') && redirectHtml.includes("target.search = window.location.search") && redirectHtml.includes("target.hash = window.location.hash") && redirectHtml.includes("window.location.replace(target)"), "Expected the retired bespoke route to preserve query/hash state while redirecting to the real spacing page.");
+  for (const retiredFile of ["demo/spec-028/review.css", "demo/spec-028/review.js"]) {
+    let missing = false;
+    try {
+      await fs.access(path.resolve(retiredFile));
+    } catch {
+      missing = true;
+    }
+    assert(missing, `Expected the bespoke review asset ${retiredFile} to be removed.`);
   }
-  for (const specimen of ["bf-field-boundary", "bf-tooltip-text", "bf-side-navigation-context-switcher", "bf-table is-sortable", "data-review-popup", "data-containing-owner", "data-containing-child", "data-focus-specimen", "review-filled-child"]) {
-    assert(html.includes(specimen), `Expected the review page to include the real/negative ${specimen} specimen.`);
-  }
-  assert(css.includes(".review-controls {") && css.includes("position: sticky;") && css.includes("top: var(--review-controls-height, 0rem);"), "Expected long-page review controls and provenance to remain sticky without a hard-coded wrapped-control height.");
-  assert(css.includes(".review-canvas {\n  display: grid;\n  gap: clamp(2rem, 6vw, 4.5rem);") && !css.includes(".review-canvas > * + *"), "Expected the demo scaffold to own section relationships through a parent gap.");
-  assert(css.includes("grid-template-columns: minmax(0, 1fr);") && css.includes("overflow-wrap: anywhere;"), "Expected mobile provenance hashes and DOM signatures to wrap without widening the document.");
-  assert(!css.includes("[data-popup-card] { z-index:"), "Expected the popup escape specimen not to raise its Card through fixture CSS.");
-  assert(css.includes(".review-filled-child") && css.includes("inset: 0;") && css.includes("position: absolute;"), "Expected the filled-child pressure specimen to cover the actual owner edges without wrapper or z-index normalization.");
-  assert(runtime.includes('return version === "before" ? `./before/${tier}.css` : `../../dist/tiers/${tier}/styles.css`;') && runtime.includes('headers: { Accept: "text/css" }'), "Expected the runtime to switch only between pinned base and feature BF CSS and hash the actual CSS response bytes.");
-  assert(runtime.includes("const specimens = canvas.innerHTML;") && runtime.includes("const markupUnchanged = canvas.innerHTML === specimens;") && runtime.includes("updateSequence"), "Expected the runtime to verify identical specimen markup and suppress stale asynchronous bundle updates.");
-  assert(runtime.includes('canvas.dataset.popupCheck = "not-measured"') && runtime.includes('window.addEventListener("scroll", runNegativeChecks') && runtime.includes("new ResizeObserver"), "Expected offscreen negatives to stay unmeasured until visible and sticky offsets to follow the rendered control height.");
+  assert(pageChromeJs.includes("data-page-chrome-${kind}-select") && pageChromeJs.includes('renderSelect("version"') && pageChromeJs.includes("versionSelect"), "Expected the shared BF page chrome to own the Before/After selector.");
+  assert(bundleVersionJs.includes('value: "before"') && bundleVersionJs.includes('value: "after"') && bundleVersionJs.includes("swapBundleStylesheet") && bundleVersionJs.includes("preserveBundleVersion"), "Expected one shared bundle-version runtime to preserve versioned links and swap only the BF tier stylesheet.");
+  assert(componentDemoJs.includes("BUNDLE_VERSION_OPTIONS") && componentDemoJs.includes("swapBundleStylesheet") && componentDemoJs.includes("runtime.applyVersion"), "Expected real component pages to expose the shared version selector without replacing their specimen nodes.");
+  assert(specRuntimeJs.includes("BUNDLE_VERSION_OPTIONS") && specRuntimeJs.includes("swapBundleStylesheet") && specRuntimeJs.includes("writeBundleVersion") && specRuntimeJs.includes("initComponents"), "Expected real spec pages to expose the same shared version selector and retain component initialization hooks.");
   assert(provenance.before.sourceCommit === "6deca99776f35b85afde01b68bb0fffe817e29aa" && provenance.before.manifestSha256 === "e9004646356afe62f7f53307305ba0e2ff57064a379b96ec9e52b3ccab6b80fc", "Expected Before provenance to pin the independently built base source and build manifest.");
-  assert(/^[0-9a-f]{40}$/.test(provenance.after.semanticSourceCommit) && provenance.after.bundleSourceCommit === provenance.after.semanticSourceCommit, "Expected After provenance to pin one full Git-resolvable source commit for the corrected feature bundles.");
+  assert(/^[0-9a-f]{40}$/.test(provenance.after.semanticSourceCommit) && provenance.after.bundleSourceCommit === provenance.after.semanticSourceCommit, "Expected After provenance to pin one full source commit; the opt-in local provenance gate separately proves object existence.");
   for (const tier of ["editorial", "documentation", "app", "os"]) {
     const beforeHash = await hashFile(path.resolve("demo/spec-028/before", `${tier}.css`));
     const afterHash = await hashFile(path.resolve("dist/tiers", tier, "styles.css"));
@@ -2520,15 +2527,14 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/spec/spacing-vertical.html")),
     readTextArtifact(path.resolve("demo/panel.html"))
   ]);
-  const [pageChromeJs, specRuntimeJs, examplePageJs] = await Promise.all([
+  const [pageChromeJs, specRuntimeJs, examplePageJs, bundleVersionJs] = await Promise.all([
     readTextArtifact(path.resolve("demo/page-chrome.js")),
     readTextArtifact(path.resolve("demo/spec-runtime.js")),
-    readTextArtifact(path.resolve("demo/example-page.js"))
+    readTextArtifact(path.resolve("demo/example-page.js")),
+    readTextArtifact(path.resolve("demo/bundle-version.js"))
   ]);
-  const [spec028ReviewHtml, spec028ReviewCss, spec028ReviewJs, spec028ReviewProvenance] = await Promise.all([
+  const [spec028ReviewHtml, spec028ReviewProvenance] = await Promise.all([
     readTextArtifact(path.resolve("demo/spec-028/index.html")),
-    readTextArtifact(path.resolve("demo/spec-028/review.css")),
-    readTextArtifact(path.resolve("demo/spec-028/review.js")),
     readTextArtifact(path.resolve("demo/spec-028/provenance.json"))
   ]);
 
@@ -2620,7 +2626,7 @@ async function main(): Promise<void> {
   }));
   await runInvariantAsync("Example dogfooding", () => validateExampleDogfooding());
   runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, componentShellCss, specShellCss, pageChromeCss, pageChromeJs, componentDemoJs, specRuntimeJs, examplePageJs));
-  await runInvariantAsync("Spec 028 review demo", () => validateSpec028ReviewDemo(spec028ReviewHtml, spec028ReviewCss, spec028ReviewJs, spec028ReviewProvenance, pageCatalogJs));
+  await runInvariantAsync("Spec 028 review demo", () => validateSpec028ReviewDemo(spec028ReviewHtml, spec028ReviewProvenance, pageCatalogJs, pageChromeJs, componentDemoJs, specRuntimeJs, bundleVersionJs));
   runInvariant("Engine illustration page", () => validateEngineIllustrationPage(pageCatalogJs, componentAtlasHtml, engineIllustrationHtml, componentShellCss));
   runInvariant("Range page", () => validateRangePage(rangeHtml, componentShellCss));
   runInvariant("Button demo", () => validateButtonDemo(buttonHtml));

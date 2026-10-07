@@ -742,16 +742,16 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
 
     await page.goto(`${origin}/index.html`, { waitUntil: "networkidle" });
     await page.evaluate(key => sessionStorage.removeItem(key), storageKey);
-    const targetLink = page.locator(`.pc-nav a[href='${targetRoute}']`);
+    const targetLink = page.locator(`.pc-nav a[href^='${targetRoute}']`);
     await targetLink.scrollIntoViewIfNeeded();
     const scrollBeforeNavigation = await page.locator(".pc-nav").evaluate(nav => nav.scrollTop);
     assert(scrollBeforeNavigation > 0, "Expected the notification catalog link to require a scrolled navigation position.");
 
     await Promise.all([
-      page.waitForURL(`**${targetRoute}`),
+      page.waitForURL(`**${targetRoute}*`),
       targetLink.click()
     ]);
-    await page.locator(`.pc-nav a[href='${targetRoute}'][aria-current='page']`).waitFor({ state: "visible" });
+    await page.locator(`.pc-nav a[href^='${targetRoute}'][aria-current='page']`).waitFor({ state: "visible" });
     await page.waitForTimeout(80);
 
     const readNavigationState = () => page.evaluate(() => {
@@ -1206,7 +1206,9 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         const secondRuleRect = secondRule.getBoundingClientRect();
         const secondRuleStyles = getComputedStyle(secondRule);
         const baseline = Number.parseFloat(getComputedStyle(navigation).getPropertyValue("--bf-baseline")) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const navigationItems = Array.from(navigation.querySelectorAll<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item"));
+        const navigationItems = navigationGroups.flatMap(group =>
+          Array.from(group.querySelectorAll<HTMLElement>(":scope > .bf-side-navigation-list > .bf-side-navigation-item"))
+        );
         const linkRange = document.createRange();
         linkRange.selectNodeContents(firstLink);
         const labelKeylineProbe = document.createElement("span");
@@ -1682,6 +1684,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     await page.setViewportSize({ width: 1440, height: 960 });
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    await page.locator("[data-page-chrome-tier-select]").selectOption("editorial");
+    await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-tier]")?.dataset.bundleTier === "editorial");
     await disableDemoChromeHitTesting(page);
 
     const viewportFillState = await page.evaluate(() => {
@@ -5858,6 +5862,10 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
       await page.goto(`${origin}/demo/components/article-pagination.html`, { waitUntil: "networkidle" });
       await waitForFonts(page);
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const paginationIcon = await page.evaluate(() => {
         const link = document.querySelector<HTMLElement>(".bf-article-pagination-link.is-previous");
         const direction = link?.querySelector<HTMLElement>(".bf-article-pagination-direction");
@@ -5913,6 +5921,10 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
       await page.goto(`${origin}/demo/components/button.html`, { waitUntil: "networkidle" });
       await waitForFonts(page);
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const buttonIcon = await page.evaluate(() => {
         const button = Array.from(document.querySelectorAll<HTMLElement>(".bf-button.is-icon"))
           .find(candidate => candidate.textContent?.includes("Continue"));
@@ -6082,6 +6094,10 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
     await waitForFonts(page);
     for (const tier of ["editorial", "documentation", "app", "os"] as const) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const tabRule = await page.evaluate(() => {
         const list = document.querySelector<HTMLElement>(".bf-tabs-list");
         const active = document.querySelector<HTMLElement>(".bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']");
@@ -6189,6 +6205,10 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
     await waitForFonts(page);
     for (const tier of tiers) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const measurements = await page.evaluate((widths) => {
         const nav = document.querySelector<HTMLElement>(".article-pagination-demo-narrow .bf-article-pagination");
         if (!nav) return null;
@@ -6288,6 +6308,10 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
     await waitForFonts(page);
     for (const tier of tiers) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const measurements = await page.evaluate((widths) => {
         const selectors = {
           default: ".bf-tiered-list:not(.is-description-full-width):not(.is-list-full-width):not(.is-flush):not(.is-triple)",
@@ -6378,6 +6402,10 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
     await waitForFonts(page);
     for (const tier of tiers) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const measurement = await page.evaluate(() => {
         const row = document.querySelector<HTMLElement>(".bf-equal-height-row:not(.is-wrap)");
         if (!row) return null;
@@ -7211,116 +7239,159 @@ async function verifyParityInteractions(origin: string): Promise<void> {
 
 async function verifySpec028ReviewDemo(origin: string): Promise<void> {
   const browser = await openBrowser();
+  const provenance = JSON.parse(await fs.readFile(path.resolve("demo/spec-028/provenance.json"), "utf8")) as {
+    before: { bundles: Record<string, string> };
+    after: { bundles: Record<string, string> };
+  };
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const versions = ["before", "after"] as const;
-  const viewports = [
-    { label: "desktop", width: 1100, height: 800 },
-    { label: "mobile", width: 390, height: 844 }
+  const viewports = [{ label: "desktop", width: 1100, height: 800 }, { label: "mobile", width: 390, height: 844 }] as const;
+  const pages = [
+    { label: "vertical spacing", route: "/demo/spec/spacing-vertical.html", sentinel: "#spacing-vertical-audit" },
+    { label: "Tooltip", route: "/demo/components/tooltip.html", sentinel: "[data-tooltip-positioned]" },
+    { label: "Cards", route: "/demo/components/cards.html", sentinel: "[data-card-wide-content]" },
+    { label: "Form", route: "/demo/components/form-atlas.html", sentinel: "input, select, textarea" }
   ] as const;
 
   try {
+    const redirectPage = await browser.newPage({ viewport: { width: 1100, height: 800 } });
+    await redirectPage.goto(`${origin}/demo/spec-028/index.html?bundle=before#vertical-controls`, { waitUntil: "networkidle" });
+    assert(redirectPage.url().includes("/demo/spec/spacing-vertical.html?bundle=before#vertical-controls"), `Expected the retired Spec 028 route to preserve query/hash while redirecting to the real vertical-spacing page; got ${redirectPage.url()}.`);
+    await redirectPage.close();
+
     for (const viewport of viewports) {
-      const page = await browser.newPage({ deviceScaleFactor: 1, viewport });
-      const runtimeErrors: string[] = [];
-      page.on("pageerror", error => runtimeErrors.push(error.message));
-      page.on("console", message => {
-        if (message.type() === "error") runtimeErrors.push(message.text());
-      });
-      await page.goto(`${origin}/demo/spec-028/index.html`, { waitUntil: "networkidle" });
-      await waitForFonts(page);
-      const originalMarkup = await page.locator("[data-review-canvas]").innerHTML();
+      for (const pageSpec of pages) {
+        const page = await browser.newPage({ deviceScaleFactor: 1, viewport });
+        const runtimeErrors: string[] = [];
+        page.on("pageerror", error => runtimeErrors.push(error.message));
+        page.on("console", message => { if (message.type() === "error") runtimeErrors.push(message.text()); });
+        await page.goto(`${origin}${pageSpec.route}?bundle=before`, { waitUntil: "networkidle" });
+        await waitForFonts(page);
 
-      for (const version of versions) {
-        await page.locator(`input[name="version"][value="${version}"]`).check();
-        for (const tier of tiers) {
-          await page.locator("[data-review-tier-select]").selectOption(tier);
-          await page.locator("[data-review-width-select]").selectOption(viewport.label);
-          await page.waitForFunction(() => document.querySelector<HTMLOutputElement>("[data-review-status]")?.value === "PASS · bundle + identical DOM");
-          await waitForFonts(page);
+        const versionSelect = page.locator("[data-page-chrome-version-select]");
+        const tierSelect = page.locator("[data-page-chrome-tier-select]");
+        const sentinelHandle = await page.locator(pageSpec.sentinel).first().elementHandle();
+        assert(await versionSelect.count() === 1 && await tierSelect.count() === 1 && sentinelHandle, `Expected ${pageSpec.label}/${viewport.label} to use the real specimen page and shared BF toolbar.`);
+        if (viewport.label === "mobile") {
+          const drawerToggle = page.locator(".pc-nav > .bf-side-navigation > .bf-side-navigation-toggle");
+          await drawerToggle.click();
+          await page.waitForFunction(() => document.querySelector(".pc-nav > .bf-side-navigation")?.classList.contains("is-drawer-expanded"));
+          assert(await page.locator(".pc-nav .bf-side-navigation-drawer").getAttribute("aria-hidden") === "false", `Expected ${pageSpec.label}/mobile the shared BF drawer toggle to expose the catalog.`);
+          await page.keyboard.press("Escape");
+          assert(await page.locator(".pc-nav .bf-side-navigation-drawer").getAttribute("aria-hidden") === "true" && await drawerToggle.getAttribute("aria-expanded") === "false" && await drawerToggle.evaluate(node => document.activeElement === node), `Expected ${pageSpec.label}/mobile Escape to close the shared BF catalog drawer and restore focus.`);
+          await page.locator("main, .pc-content").first().scrollIntoViewIfNeeded();
+          await versionSelect.focus();
+          await page.keyboard.press("End");
+          await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-version]")?.dataset.bundleVersion === "after");
+          await page.keyboard.press("Home");
+          await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-version]")?.dataset.bundleVersion === "before");
+          await tierSelect.focus();
+          await page.keyboard.press("End");
+          await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-tier]")?.dataset.bundleTier === "os");
+          await page.keyboard.press("Home");
+          await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-tier]")?.dataset.bundleTier === "editorial");
+        }
 
-          const initial = await page.evaluate(() => {
-            const controls = document.querySelector<HTMLElement>(".review-controls");
-            const canvas = document.querySelector<HTMLElement>("[data-review-canvas]");
-            const bundle = document.querySelector<HTMLLinkElement>("#review-bundle");
-            return {
-              controlsTop: controls?.getBoundingClientRect().top,
-              documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-              fontFamily: getComputedStyle(document.querySelector(".bf-body") as Element).fontFamily,
-              href: bundle?.href,
-              markup: canvas?.innerHTML,
-              status: document.querySelector<HTMLOutputElement>("[data-review-status]")?.value
-            };
-          });
-          assert(initial.status === "PASS · bundle + identical DOM" && initial.markup === originalMarkup, `Expected ${version}/${tier}/${viewport.label} to preserve the identical specimen DOM and verified bundle provenance.`);
-          assert(initial.fontFamily.includes("Ubuntu Sans"), `Expected ${version}/${tier}/${viewport.label} to load the BF Ubuntu Sans face; got ${initial.fontFamily}.`);
-          assert(initial.documentOverflow !== undefined && initial.documentOverflow <= 1, `Expected ${version}/${tier}/${viewport.label} provenance and specimens not to widen the document; overflow=${initial.documentOverflow}px.`);
-          assert(initial.href?.includes(version === "before" ? `/demo/spec-028/before/${tier}.css` : `/dist/tiers/${tier}/styles.css`), `Expected ${version}/${tier}/${viewport.label} to select only its declared BF stylesheet; got ${initial.href}.`);
+        for (const version of versions) {
+          await versionSelect.selectOption(version);
+          for (const tier of tiers) {
+            await tierSelect.selectOption(tier);
+            await page.waitForFunction(({ expectedTier, expectedVersion }) => {
+              const link = document.querySelector<HTMLLinkElement>("link[data-bundle-version]");
+              return link?.dataset.bundleTier === expectedTier && link.dataset.bundleVersion === expectedVersion && document.body.dataset.bfTier === expectedTier;
+            }, { expectedTier: tier, expectedVersion: version });
+            await waitForFonts(page);
 
-          await page.locator("[data-popup-card]").scrollIntoViewIfNeeded();
-          await page.waitForFunction(() => document.querySelector<HTMLElement>("[data-review-canvas]")?.dataset.popupCheck !== "not-measured");
-          const negative = await page.evaluate(() => {
-            const canvas = document.querySelector<HTMLElement>("[data-review-canvas]");
-            const controls = document.querySelector<HTMLElement>(".review-controls");
-            const popup = document.querySelector<HTMLElement>("[data-review-popup]");
-            const following = document.querySelector<HTMLElement>("[data-review-following-card]");
-            const owner = document.querySelector<HTMLElement>("[data-containing-owner]");
-            const child = document.querySelector<HTMLElement>("[data-containing-child]");
-            const popupOwner = document.querySelector<HTMLElement>("[data-popup-card]");
-            const popupRect = popup?.getBoundingClientRect();
-            const followingRect = following?.getBoundingClientRect();
-            const ownerRect = owner?.getBoundingClientRect();
-            const childRect = child?.getBoundingClientRect();
-            return {
-              containingBlockCheck: canvas?.dataset.containingBlockCheck,
-              controlsTop: controls?.getBoundingClientRect().top,
-              ownerIsolation: popupOwner ? getComputedStyle(popupOwner).isolation : undefined,
-              ownerZIndex: popupOwner ? getComputedStyle(popupOwner).zIndex : undefined,
-              popupCheck: canvas?.dataset.popupCheck,
-              popupOverlap: popupRect && followingRect ? Math.min(popupRect.bottom, followingRect.bottom) - Math.max(popupRect.top, followingRect.top) : Number.NEGATIVE_INFINITY,
-              childWithinOwner: Boolean(ownerRect && childRect && childRect.top >= ownerRect.top && childRect.right <= ownerRect.right + 1)
-            };
-          });
-          assert(Math.abs(negative.controlsTop ?? Number.POSITIVE_INFINITY) <= 0.5, `Expected ${version}/${tier}/${viewport.label} controls to remain sticky after scrolling; top=${negative.controlsTop}.`);
-          assert(negative.ownerIsolation === "auto" && negative.ownerZIndex === "auto", `Expected ${version}/${tier}/${viewport.label} popup Card to retain its real stacking behavior; got isolation=${negative.ownerIsolation}, z=${negative.ownerZIndex}.`);
-          assert(negative.popupOverlap > 1, `Expected ${version}/${tier}/${viewport.label} popup geometry to cross the following Card; overlap=${negative.popupOverlap}px.`);
-          assert(negative.childWithinOwner && negative.containingBlockCheck === "pass", `Expected ${version}/${tier}/${viewport.label} notification dismiss action to remain rooted in its real owner; got ${JSON.stringify(negative)}.`);
-          assert(negative.popupCheck === (version === "after" ? "pass" : "fail"), `Expected ${version}/${tier}/${viewport.label} popup hit result to expose the bundle delta; got ${negative.popupCheck}.`);
-
-          if (version === "after") {
-            const filled = page.locator("[data-focus-specimen]");
-            await filled.scrollIntoViewIfNeeded();
-            await page.locator(".bf-tooltip .bf-button").focus();
-            await page.keyboard.press("Tab");
-            const paint = await filled.evaluate(element => {
-              const owner = element.getBoundingClientRect();
-              const childElement = element.querySelector<HTMLElement>(".review-filled-child");
-              const child = childElement?.getBoundingClientRect();
-              const childStyle = getComputedStyle(childElement as Element);
-              const overlay = getComputedStyle(element, "::after");
-              const style = getComputedStyle(element);
+            const state = await page.evaluate(async ({ expectedVersion, expectedWidth }) => {
+              const link = document.querySelector<HTMLLinkElement>("link[data-bundle-version]");
+              const footer = document.querySelector<HTMLElement>("[data-page-chrome].pc-footer");
+              const nav = document.querySelector<HTMLElement>("[data-page-chrome].pc-nav");
+              const response = link ? await fetch(link.href, { cache: "no-store" }) : null;
+              const bytes = response ? new Uint8Array(await response.arrayBuffer()) : new Uint8Array();
+              const digest = bytes.length > 0 ? await crypto.subtle.digest("SHA-256", bytes) : null;
+              const sha256 = digest ? Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("") : "";
+              const footerRect = footer?.getBoundingClientRect();
+              const versionControl = document.querySelector<HTMLElement>("[data-page-chrome-version-select]");
+              const versionRect = versionControl?.getBoundingClientRect();
+              const versionHit = versionRect ? document.elementFromPoint(versionRect.left + (versionRect.width / 2), versionRect.top + (versionRect.height / 2)) : null;
+              const tierControl = document.querySelector<HTMLElement>("[data-page-chrome-tier-select]");
+              const tierRect = tierControl?.getBoundingClientRect();
+              const tierHit = tierRect ? document.elementFromPoint(tierRect.left + (tierRect.width / 2), tierRect.top + (tierRect.height / 2)) : null;
               return {
-                active: document.activeElement === element,
-                childCoversOwner: Boolean(child && Math.abs(child.top - owner.top) <= 0.1 && Math.abs(child.right - owner.right) <= 0.1 && Math.abs(child.bottom - owner.bottom) <= 0.1 && Math.abs(child.left - owner.left) <= 0.1),
-                childPosition: childStyle.position,
-                childZIndex: childStyle.zIndex,
-                focusVisible: element.matches(":focus-visible"),
-                isolation: style.isolation,
-                overlayBoxShadow: overlay.boxShadow,
-                overlayInset: overlay.inset,
-                overlayPointerEvents: overlay.pointerEvents,
-                overlayPosition: overlay.position,
-                ownerZIndex: style.zIndex
+                bodyTier: document.body.dataset.bfTier,
+                documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+                footerBottom: footerRect ? window.innerHeight - footerRect.bottom : null,
+                footerPosition: footer ? getComputedStyle(footer).position : null,
+                href: link?.href,
+                innerWidth: window.innerWidth,
+                navPosition: nav ? getComputedStyle(nav).position : null,
+                pageLinksPreserveVersion: Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-page-chrome] a[href]"))
+                  .filter(anchor => anchor.href.startsWith(window.location.origin))
+                  .every(anchor => new URL(anchor.href).searchParams.get("bundle") === expectedVersion),
+                selectedTier: (document.querySelector("[data-page-chrome-tier-select]") as HTMLSelectElement | null)?.value,
+                selectedVersion: (document.querySelector("[data-page-chrome-version-select]") as HTMLSelectElement | null)?.value,
+                sha256,
+                urlVersion: new URL(window.location.href).searchParams.get("bundle"),
+                tierControlHit: Boolean(tierControl && tierHit && (tierHit === tierControl || tierHit.closest("[data-page-chrome-tier-select]") === tierControl)),
+                versionControlHit: Boolean(versionControl && versionHit && (versionHit === versionControl || versionHit.closest("[data-page-chrome-version-select]") === versionControl)),
+                viewportMatches: window.matchMedia(`(width: ${expectedWidth}px)`).matches,
+                wholePageUsesSharedChrome: document.querySelectorAll(".review-controls, .review-provenance, [data-review-canvas]").length === 0
               };
-            });
-            assert(paint.active && paint.focusVisible, `Expected ${tier}/${viewport.label} filled-child OptionCard to receive keyboard-visible focus; got ${JSON.stringify(paint)}.`);
-            assert(paint.childCoversOwner && paint.childPosition === "absolute" && paint.childZIndex === "auto", `Expected ${tier}/${viewport.label} diagnostic opaque child to cover the real owner without fixture stacking; got ${JSON.stringify(paint)}.`);
-            assert(paint.overlayPosition === "absolute" && paint.overlayInset === "0px" && paint.overlayPointerEvents === "none" && paint.overlayBoxShadow !== "none", `Expected ${tier}/${viewport.label} automatic last-child overlay to cover the filled child without intercepting input; got ${JSON.stringify(paint)}.`);
-            assert(paint.isolation === "auto" && paint.ownerZIndex === "auto", `Expected ${tier}/${viewport.label} filled-child owner not to rely on new stacking normalization; got ${JSON.stringify(paint)}.`);
+            }, { expectedVersion: version, expectedWidth: viewport.width });
+
+            const expectedHref = version === "before" ? `/demo/spec-028/before/${tier}.css` : `/dist/tiers/${tier}/styles.css`;
+            assert(state.innerWidth === viewport.width && state.viewportMatches, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to use a real ${viewport.width}px viewport; got ${JSON.stringify(state)}.`);
+            assert(state.href?.includes(expectedHref) && state.sha256 === provenance[version].bundles[tier], `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to load and hash the declared BF tier stylesheet; got ${JSON.stringify(state)}.`);
+            assert(state.bodyTier === tier && state.selectedTier === tier && state.selectedVersion === version && state.urlVersion === version, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} controls, URL and body tier to stay synchronized; got ${JSON.stringify(state)}.`);
+            assert(state.wholePageUsesSharedChrome && state.pageLinksPreserveVersion && state.versionControlHit && state.tierControlHit && state.footerPosition === "fixed" && Math.abs(state.footerBottom ?? Number.POSITIVE_INFINITY) <= 0.5, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to reuse hit-testable sticky shared BF chrome and preserve the selected bundle in navigation; got ${JSON.stringify(state)}.`);
+            assert(state.documentOverflow <= 1 && state.navPosition === (viewport.label === "mobile" ? "static" : "fixed"), `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to use the responsive BF layout without fake mobile framing or horizontal overflow; got ${JSON.stringify(state)}.`);
+            assert(await sentinelHandle.evaluate(node => node.isConnected), `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} version switching to preserve the actual specimen node.`);
+
+            if (version === "after") {
+              if (pageSpec.label === "Tooltip") {
+                const trigger = page.locator("[data-tooltip-positioned] > .bf-button");
+                const message = page.locator("[data-tooltip-positioned] > .bf-tooltip-message");
+                await page.mouse.move(0, 0);
+                await trigger.blur();
+                await page.waitForFunction(() => document.querySelector("[data-tooltip-positioned] > .bf-tooltip-message")?.getAttribute("aria-hidden") === "true");
+                await trigger.focus();
+                await page.waitForFunction(() => {
+                  const tooltipMessage = document.querySelector("[data-tooltip-positioned] > .bf-tooltip-message");
+                  return tooltipMessage?.getAttribute("aria-hidden") === "false" && getComputedStyle(tooltipMessage).visibility === "visible";
+                });
+                assert(await message.getAttribute("aria-hidden") === "false", `Expected ${tier}/${viewport.label} Tooltip focus to expose its real message.`);
+                await trigger.blur();
+                await trigger.hover();
+                await page.waitForFunction(() => getComputedStyle(document.querySelector("[data-tooltip-positioned] > .bf-tooltip-message") as Element).visibility === "visible");
+              } else if (pageSpec.label === "Cards") {
+                const toggle = page.locator("[data-card-popup-owner] .bf-contextual-menu-toggle");
+                const popup = page.locator("[data-card-popup]");
+                if (await popup.getAttribute("aria-hidden") === "true") {
+                  await toggle.click();
+                  assert(await popup.getAttribute("aria-hidden") === "false", `Expected ${tier}/${viewport.label} Card menu toggle to open the real popup.`);
+                }
+                await toggle.click();
+                assert(await popup.getAttribute("aria-hidden") === "true", `Expected ${tier}/${viewport.label} Card menu toggle to close the real popup.`);
+                await toggle.click();
+                await page.keyboard.press("Escape");
+                assert(await popup.getAttribute("aria-hidden") === "true" && await toggle.getAttribute("aria-expanded") === "false", `Expected ${tier}/${viewport.label} Escape to close the real Card popup.`);
+                await toggle.click();
+              } else if (pageSpec.label === "Form") {
+                const field = page.locator("input:not([type='hidden']):not([disabled])").first();
+                await field.focus();
+                assert(await field.evaluate(node => document.activeElement === node), `Expected ${tier}/${viewport.label} the real Form field to remain interactive after bundle switching.`);
+              }
+            }
           }
         }
+
+        const baselineToggle = page.locator("[data-page-chrome-baseline-toggle]");
+        const beforeBaseline = await baselineToggle.isChecked();
+        await baselineToggle.locator("..").click();
+        assert(await page.locator("body").evaluate((body, before) => body.classList.contains("u-baseline-grid") !== before, beforeBaseline), `Expected ${pageSpec.label}/${viewport.label} the shared BF baseline toggle to control the real page.`);
+        assert(runtimeErrors.length === 0, `Expected ${pageSpec.label}/${viewport.label} version matrix to avoid runtime errors; got ${runtimeErrors.join(" | ")}.`);
+        await page.close();
       }
-      assert(runtimeErrors.length === 0, `Expected the Spec 028 ${viewport.label} review matrix to avoid runtime errors; got ${runtimeErrors.join(" | ")}.`);
-      await page.close();
     }
   } finally {
     await browser.close();
