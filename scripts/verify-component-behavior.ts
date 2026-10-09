@@ -7250,7 +7250,8 @@ async function verifySpec028ReviewDemo(origin: string): Promise<void> {
     { label: "vertical spacing", route: "/demo/spec/spacing-vertical.html", sentinel: "#spacing-vertical-audit" },
     { label: "Tooltip", route: "/demo/components/tooltip.html", sentinel: "[data-tooltip-positioned]" },
     { label: "Cards", route: "/demo/components/cards.html", sentinel: "[data-card-wide-content]" },
-    { label: "Form", route: "/demo/components/form-atlas.html", sentinel: "input, select, textarea" }
+    { label: "Form", route: "/demo/components/form-atlas.html", sentinel: "input, select, textarea" },
+    { label: "SideNavigation", route: "/demo/components/side-navigation.html", sentinel: "#component-side-navigation-docs" }
   ] as const;
 
   try {
@@ -7274,11 +7275,51 @@ async function verifySpec028ReviewDemo(origin: string): Promise<void> {
         assert(await versionSelect.count() === 1 && await tierSelect.count() === 1 && sentinelHandle, `Expected ${pageSpec.label}/${viewport.label} to use the real specimen page and shared BF toolbar.`);
         if (viewport.label === "mobile") {
           const drawerToggle = page.locator(".pc-nav > .bf-side-navigation > .bf-side-navigation-toggle");
-          await drawerToggle.click();
+
+          if (pageSpec.label === "SideNavigation") {
+            const specimenRoot = page.locator("#component-side-navigation-docs");
+            const specimenClose = specimenRoot.locator(".bf-side-navigation-drawer .bf-side-navigation-toggle.is-in-drawer");
+            const initialOwnership = await page.evaluate(() => {
+              const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+              const sharedToggle = sharedNavigation?.querySelector<HTMLElement>(":scope > .bf-side-navigation > .bf-side-navigation-toggle");
+              const specimen = document.querySelector<HTMLElement>("#component-side-navigation-docs");
+              const brand = specimen?.querySelector<HTMLElement>(".bf-top-navigation-link");
+              if (!sharedNavigation || !sharedToggle || !specimen || !brand) return null;
+              const brandRect = brand.getBoundingClientRect();
+              const sharedRect = sharedToggle.getBoundingClientRect();
+              const brandHit = document.elementFromPoint(brandRect.left + (brandRect.width / 2), brandRect.top + (brandRect.height / 2));
+              return {
+                brandHit: Boolean(brandHit && brand.contains(brandHit)),
+                brandVisible: brandRect.width > 0 && brandRect.height > 0 && getComputedStyle(brand).visibility === "visible",
+                sharedDisplay: getComputedStyle(sharedNavigation).display,
+                sharedToggleArea: sharedRect.width * sharedRect.height,
+                specimenExpanded: specimen.classList.contains("is-drawer-expanded")
+              };
+            });
+            assert(initialOwnership?.specimenExpanded && initialOwnership.brandVisible && initialOwnership.brandHit && initialOwnership.sharedDisplay === "none" && initialOwnership.sharedToggleArea === 0, `Expected the expanded SideNavigation specimen to own the mobile viewport without shared chrome covering its visible brand; got ${JSON.stringify(initialOwnership)}.`);
+            await specimenClose.click();
+            await page.waitForFunction(() => !document.querySelector("#component-side-navigation-docs")?.classList.contains("is-drawer-expanded") && getComputedStyle(document.querySelector(".pc-nav") as Element).display !== "none");
+          }
+
+          await drawerToggle.focus();
+          await drawerToggle.press("Enter");
           await page.waitForFunction(() => document.querySelector(".pc-nav > .bf-side-navigation")?.classList.contains("is-drawer-expanded"));
           assert(await page.locator(".pc-nav .bf-side-navigation-drawer").getAttribute("aria-hidden") === "false", `Expected ${pageSpec.label}/mobile the shared BF drawer toggle to expose the catalog.`);
           await page.keyboard.press("Escape");
           assert(await page.locator(".pc-nav .bf-side-navigation-drawer").getAttribute("aria-hidden") === "true" && await drawerToggle.getAttribute("aria-expanded") === "false" && await drawerToggle.evaluate(node => document.activeElement === node), `Expected ${pageSpec.label}/mobile Escape to close the shared BF catalog drawer and restore focus.`);
+
+          if (pageSpec.label === "SideNavigation") {
+            const specimenRoot = page.locator("#component-side-navigation-docs");
+            const specimenToggle = specimenRoot.locator(":scope > .bf-side-navigation-toggle");
+            await specimenToggle.focus();
+            await specimenToggle.press("Space");
+            await page.waitForFunction(() => document.querySelector("#component-side-navigation-docs")?.classList.contains("is-drawer-expanded"));
+            assert(await page.locator(".pc-nav").evaluate(node => getComputedStyle(node).display === "none") && !await page.locator(".pc-nav > .bf-side-navigation").evaluate(node => node.classList.contains("is-drawer-expanded")), "Expected the specimen and shared page-navigation toggles to preserve independent drawer state.");
+            await page.keyboard.press("Escape");
+            await page.waitForFunction(() => !document.querySelector("#component-side-navigation-docs")?.classList.contains("is-drawer-expanded") && getComputedStyle(document.querySelector(".pc-nav") as Element).display !== "none");
+            assert(await specimenToggle.evaluate(node => document.activeElement === node), "Expected Escape to close the specimen drawer and restore focus to its own trigger.");
+          }
+
           await page.locator("main, .pc-content").first().scrollIntoViewIfNeeded();
           await versionSelect.focus();
           await page.keyboard.press("End");

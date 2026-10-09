@@ -161,6 +161,13 @@ body.u-baseline-grid::after {
     position: static;
   }
 
+  /* An expanded specimen drawer owns the narrow viewport. Suppress the demo
+   * catalog rail until that specimen closes so shared chrome cannot cover its
+   * brand or close control. */
+  body:has(> .pc-content .bf-side-navigation.is-drawer-expanded) > .pc-nav {
+    display: none;
+  }
+
   body:has(> .pc-root) > .pc-header {
     grid-column: 1;
     grid-row: 2;
@@ -178,6 +185,11 @@ body.u-baseline-grid::after {
 
   .pc-footer {
     inset-inline-start: 0;
+  }
+
+  .pc-header,
+  .pc-footer {
+    z-index: 100;
   }
 
   .pc-controls {
