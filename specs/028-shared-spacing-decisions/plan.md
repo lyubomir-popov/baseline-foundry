@@ -21,6 +21,14 @@
     mobile chrome overlap as a limitation; narrow N3 to inputs with no `type`
     attribute. Preserve the accepted spacing corrections, all prior requests,
     review receipts and sealed evidence.
+11. [x] Complete the recorded ApplicationLayout shared-chrome prerequisite
+    before its mobile visual approval: keep its actual expanded navigation
+    branding, Pin and Close usable; exclude shared chrome from rendering and
+    keyboard focus only in the actual narrow expanded state; verify closing,
+    pinning, reopening and responsive recovery. Preserve accepted R1 and
+    unrelated drawer pages. Run root gates and independent review, then hand
+    back for owner visual sign-off. T011g's existing popup request remains the
+    next mandatory external Opus gate; do not reopen accepted R1.
 
 The governing implementation handover is
 [`gpt-handover-bf-switch-2026-10-05.md`](../../../../canonical-spacing-spec-worktrees/docs-bottom-compensation-spec/specs/024-semantic-spacing-token-schema/gpt-handover-bf-switch-2026-10-05.md).

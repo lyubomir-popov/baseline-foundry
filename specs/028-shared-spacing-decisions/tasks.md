@@ -149,8 +149,14 @@ changes, accepted N2–N5 dispositions and retained the earlier spacing repairs.
 - [x] Clarify the CSS comment to cover header/footer hiding; retain catalog
   `display: none` because its drawer explicitly overrides visibility.
 - [ ] Obtain owner visual sign-off.
-- [ ] Track ApplicationLayout's pre-existing 390px brand/Pin/Close overlap for
-  a separate shared-chrome repair before its mobile visual approval. Product
+- [x] Repair ApplicationLayout's pre-existing 390px brand/Pin/Close overlap as
+  a separate shared-chrome prerequisite before its mobile visual approval.
+  Cover actual narrow/open versus pinned/closed/desktop states, forward and
+  reverse Tab exclusion and recovery, real pointer controls, Escape, reopening
+  and responsive boundaries. Validate both bundles, four tiers and LTR/RTL;
+  preserve accepted SideNavigation behavior, unrelated Tooltip and catalog.
+  Hand back for owner visual sign-off and the existing T011g popup review;
+  do not introduce another R1 rereview. Product
   non-modal background focus and DrawerPanel's retained shared chrome remain
   disclosed limits, not R1 conformance claims.
 
@@ -161,3 +167,38 @@ finished failing at the dependency audit on `source-map-js` after engineering
 gates passed on Node 22.14.0 and Node 24; dependencies
 are unchanged here and a green release audit remains required. No owner sign-off,
 Pragma implementation, main merge, release or token publication is claimed.
+
+## ApplicationLayout mobile prerequisite completed — October 9
+
+The real mobile drawer now owns its branding, Pin and Close. Below its own
+48rem breakpoint, opening it removes shared catalog/header/footer rendering
+and focus; Close or Escape restores the shared review controls. Product source,
+spacing values, dependencies and comparison bundles are unchanged. Final demo
+and harness source is `6f7f4683979746f1fbf96f6de77f6767560cec00`. Root type, full test, component QA and provenance
+gates pass. The [integration review](reviews/application-chrome-integration-review.md),
+[independent review](reviews/application-chrome-adversarial-review.md) and
+[sequence audit](reviews/application-chrome-sequencing-audit.md) record exact
+coverage and the preserved failed/cancelled attempts. The new 192-file evidence
+seal has SHA-256 `a42f3bcfcf840fddd50b536e325f2d2acc46378e1d29831f4e81c234e9a24fc5`; all four earlier seals and protected receipts/probes
+verify unchanged.
+
+This completes the below-768px mobile prerequisite, with owner visual approval
+still pending. A separate pre-existing wider-layout limitation remains: the
+shared footer intercepts the real Pin pointer in Before and After Docs at
+768px and Editorial at 1035px (four of 32 probes; keyboard Space works in all
+32). These cases need follow-up before all-width ApplicationLayout approval.
+Product non-modal background focus and DrawerPanel's shared chrome remain
+limits. Chromium checks do not certify native Windows, Safari, full Firefox or
+fractional viewport dimensions.
+
+The accepted spacing repairs and accepted R1 remain closed. The next mandatory
+external Opus checkpoint is the existing Spec 024 T011g popup-correction
+request, linked in the [handoff](reviews/application-chrome-handoff.md).
+Owner real-component visual sign-off, N2's outline fallback decision,
+governing-main activation/full-SHA repin and a green dependency audit remain
+open. T011i token contribution follows visual sign-off; Pragma implementation
+follows its remaining planning and activation gates.
+
+- [ ] Resolve the four recorded persistent-layout Pin pointer interceptions
+  before approving ApplicationLayout across all widths. Keep this separate
+  from the completed mobile prerequisite and accepted R1.

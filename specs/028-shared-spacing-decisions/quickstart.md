@@ -13,6 +13,7 @@ Use BF's existing pages:
 - [Vertical spacing](http://127.0.0.1:4176/demo/spec/spacing-vertical.html)
 - [Tooltip](http://127.0.0.1:4176/demo/components/tooltip.html)
 - [Cards](http://127.0.0.1:4176/demo/components/cards.html)
+- [ApplicationLayout](http://127.0.0.1:4176/demo/components/application-layout.html)
 
 Use the shared controls in BF's fixed footer: Before/After, tier, tone and
 baseline grid. The comparison keeps the real specimen nodes and BF component
@@ -47,7 +48,11 @@ The initially expanded SideNavigation specimen hides shared catalog/header/foote
 on narrow viewports; Escape closes it to recover shared review controls. A
 keyboard-reopened drawer restores trigger focus; the initial markup-open drawer
 has no recorded trigger. Verify full Tab cycles and both bundles, not only
-programmatic focus. ApplicationLayout still has a pre-existing mobile overlap;
-do not read the SideNavigation claim as applying to every drawer page.
+programmatic focus. ApplicationLayout now has its own bounded below-768px demo-chrome repair.
+Open its real navigation at 390px; brand/Pin/Close should remain usable while
+shared controls are hidden. Close or Escape restores those controls. Test both
+bundles and all tiers. The wider-layout Pin pointer overlaps recorded in the
+[integration review](reviews/application-chrome-integration-review.md) remain
+separate; this is not all-width ApplicationLayout approval.
 The R1 external review gate is satisfied. Owner sign-off, N2 fallback decision,
 governing-main activation and the dependency audit remain open.

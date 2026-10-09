@@ -1,52 +1,49 @@
-# Agent inbox – Spec 028 R1 correction accepted
+# Agent inbox — mobile prerequisite completed; popup checkpoint next
 
 Date: 2026-10-09
 Branch: `feat/028-shared-spacing-decisions`
-Runtime target: `36c93b6a23fe71e74dac7ea147e14e79c7372013`
+Final demo/harness source: `6f7f4683979746f1fbf96f6de77f6767560cec00`
+Product/After source: `dd9db8588e549f8f8a21acf6fcdb9585200c60b1`
+Before source: `6deca99776f35b85afde01b68bb0fffe817e29aa`
 
-The October 7 correction verdict accepted the bounded spacing repairs. The
-October 9 follow-up verdict requested changes for medium R1: N1's z-index
-adjustment left shared footer controls obscured but focusable. N2–N5 dispositions
-are accepted. Both actual untracked receipts, all prior reports/requests, the
-external probe and the 146/207-file evidence seals remain unchanged.
+ApplicationLayout's recorded mobile prerequisite is completed with demo-only
+CSS and regression coverage. Real brand/Pin/Close work below 48rem; complete
+forward/reverse Tab excludes hidden shared chrome. Close/Escape restore shared
+controls and the recorded opener. Root types, full test, component QA and
+provenance pass. Full findings and exact evidence are in
+`specs/028-shared-spacing-decisions/reviews/application-chrome-integration-review.md`
+and its adjacent worker/independent/sequence reports. New 192-file seal:
+`a42f3bcfcf840fddd50b536e325f2d2acc46378e1d29831f4e81c234e9a24fc5`.
 
-R1 is repaired with conditional shared header/footer `visibility: hidden`,
-retained layout boxes, and no unconditional z-index 100 override. Complete Tab
-cycles exclude shared chrome while the SideNavigation specimen is expanded;
-Escape restores keyboard-reachable, hit-testable shared controls. Reopened
-Escape restores trigger focus. The markup-initial drawer has no recorded
-trigger; the initial recovery test explicitly focuses the available trigger.
-Product CSS/runtime, values, Before/After bundles and provenance are unchanged.
+The external spacing correction acceptance, N2–N5 dispositions and R1
+acceptance remain satisfied. The three actual untracked external receipts,
+all prior requests/reviews, probes and four previous seals are unchanged.
+SideNavigation's accepted CSS is unchanged; its harness now waits for settled
+paint before unchanged hit assertions. Failed and cancelled attempts remain
+separate from final green logs.
 
 ## Next action and stopping point
 
-The external R1 correction verdict is **accept**, with two non-blocking comment
-notes. The actual new receipt remains untracked and unchanged at
-`specs/028-shared-spacing-decisions/opus-028-r1-correction-review.md`, SHA-256
-`04630d8de77da208b7e11c9f17af3cc3dedfed22b16aff6fedb9b2f3bc8955df`.
-Opus independently checked 12 Chromium SideNavigation states plus Tooltip,
-including full Shift+Tab exclusion, pointer tier changes and pointer reopening.
-The CSS comment now covers header/footer hiding and explains why the catalog
-rail retains `display: none`; executable CSS and the test harness are unchanged.
-The completed request is `specs/028-shared-spacing-decisions/reviews/opus-028-r1-correction-review-request.md`.
-Full writer, independent, root findings and dispositions are adjacent. Required
-type/test/component QA/provenance gates pass at the runtime pin. The new manifest
-seals 166 files, SHA-256 `b0d995bd4be84ebac9a2358c07208a180cfe7d55b67739e8d196d9702dc52fc5`.
-The external R1 checkpoint is satisfied. Owner visual sign-off and the remaining
-gates below are still open. Temporary servers are closed. Close the
-initially expanded mobile specimen to access shared tier/version controls.
+The next mandatory external Opus review is the existing Spec 024 T011g popup
+correction request, not another R1 or ApplicationLayout cycle. See
+`specs/028-shared-spacing-decisions/reviews/application-chrome-handoff.md`.
+T011h remains open for owner real-component visual approval and N2's explicit
+outline fallback decision. Equivalent governing-main activation/full-SHA repin
+and the existing source-map-js dependency audit failure remain gates. T011i
+contributes signed-off values to design-tokens after T011h sign-off. Do not
+start token or Pragma phases through these gates. Spec 026 remains parked.
 
-ApplicationLayout's 390px branding/Pin/Close overlap and product non-modal
-background focus remain known limitations outside R1. DrawerPanel controls were
-hit-testable but its shared chrome still paints above its expanded overlay.
-N3 release wording is "inputs with no `type` attribute"; empty/invalid types do
-not join the added selector. N2 still requires a ruling-process owner decision
-or directed construction change; accepted disclosure is not a fallback waiver.
+Four pre-existing wider-layout Pin pointer overlaps remain: Before/After Docs
+768px and Editorial 1035px. They need separate follow-up before all-width
+ApplicationLayout approval. Product non-modal background focus and DrawerPanel
+shared chrome remain limits. Full Firefox/Safari/native Windows contrast and
+display scaling, fractional viewport pixels and long-stack drift are unclaimed.
+N3 release wording remains "inputs with no `type` attribute"; empty/invalid
+types are excluded. No waiver, owner approval, main merge, release or token
+publication is inferred.
 
-Owner visual approval, equivalent governing-main activation/full-SHA repin,
-the separate Spec 024 T011g popup verdict and a green dependency audit remain
-open. Reviewed-carrier CI runs 37991276508 and 37991272123 both finished failing
-on `source-map-js` after green engineering checks on Node 22.14.0 and Node 24.
-Full Firefox/Safari/native Windows contrast/display
-scaling and fractional long-stack drift remain limits. No Pragma source work,
-main merge, release, token publication or exception is claimed.
+Owner demo server is intentionally available at `http://127.0.0.1:4176` from
+this worktree. Temporary writer/reviewer servers are closed. Open the real
+ApplicationLayout specimen at 390px; Close/Escape recovers the shared footer
+controls. Initially expanded SideNavigation likewise hides shared controls
+until closed. Server ownership details live in the separate publication scratch.

@@ -7,7 +7,9 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 1. Obtain Spec 028 owner visual sign-off and N2's explicit fallback decision.
    Opus accepted R1; earlier spacing repairs and N2–N5 dispositions stand.
-   ApplicationLayout's separate mobile overlap remains a known limitation.
+   ApplicationLayout's mobile prerequisite is repaired and root-validated;
+   its four wider-layout Pin pointer interceptions remain separate follow-up.
+   The existing Spec 024 T011g popup request is the next external Opus gate.
    Canonical-main activation/full-SHA
    re-pin and a green dependency audit remain required before merge readiness;
    the current `source-map-js` audit failure is recorded in the review package.

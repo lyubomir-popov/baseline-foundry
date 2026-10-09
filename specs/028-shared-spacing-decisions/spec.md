@@ -4,6 +4,7 @@
 
 **Status**: Earlier spacing corrections and N2–N5 dispositions accepted by Opus;
 R1 mobile chrome focus correction accepted by Opus on October 9;
+ApplicationLayout mobile prerequisite implemented and root-validated;
 owner visual sign-off and remaining activation/release gates pending
 
 ## Purpose
@@ -63,9 +64,12 @@ footer stayed focusable beneath the drawer. Opus accepted the R1 correction
 and complete Tab-cycle regression checks in response to the
 [correction request](reviews/opus-028-r1-correction-review-request.md). N2–N5
 dispositions are accepted. N3 release wording is inputs with no `type` attribute;
-empty/invalid types are not added by that selector. ApplicationLayout's mobile
-chrome overlap and the product drawer's pre-existing background focus remain
-explicit limitations; R1 does not claim every drawer page is corrected.
+empty/invalid types are not added by that selector. At the R1 pin,
+ApplicationLayout's mobile chrome overlap remained a separate
+limitation. The subsequent bounded demo repair completes that mobile
+prerequisite; wider-layout Pin pointer overlaps and product non-modal background
+focus remain explicit limitations. R1 does not claim every drawer page is
+corrected.
 
 The accepted R1 receipt remains untracked and unchanged at
 `opus-028-r1-correction-review.md`, SHA-256
