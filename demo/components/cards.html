@@ -17,7 +17,28 @@
  <div class="bf-card-content" data-baseline-ignore="true">
  <p class="bf-body" data-baseline-check="flow" data-baseline-label="card body 1">Neutral summary surface for settings, teasers, and basic grouping.</p>
  </div>
- <button class="bf-button is-base" type="button" data-baseline-check="box" data-baseline-label="card button 1">Inspect</button>
+ <div class="bf-contextual-menu is-left" data-card-popup-owner data-baseline-ignore="true">
+ <button class="bf-button is-base bf-contextual-menu-toggle" type="button" aria-expanded="true" data-baseline-check="box" data-baseline-label="card button 1">Inspect</button>
+ <ul class="bf-contextual-menu-dropdown" aria-hidden="false" data-card-popup data-baseline-ignore="true">
+ <li class="bf-contextual-menu-group"><button class="bf-contextual-menu-link" type="button">Open details</button></li>
+ <li class="bf-contextual-menu-group"><button class="bf-contextual-menu-link" type="button">Duplicate card</button></li>
+ </ul>
+ </div>
+ </article>
+
+ <article class="bf-card" data-card-wide-content data-baseline-ignore="true">
+ <header class="bf-card-header">
+ <h5 class="bf-h5">Wide content</h5>
+ <p class="bf-h4">Card-owned horizontal scroll</p>
+ </header>
+ <div class="bf-card-content">
+ <div class="bf-card-scroll" role="region" tabindex="0" aria-label="Wide Card content">
+ <table class="bf-table">
+ <thead><tr><th>Token</th><th>Editorial</th><th>Documentation</th><th>Application</th><th>Operating system</th></tr></thead>
+ <tbody><tr><td>Component inline inset</td><td>Action</td><td>Action</td><td>Action</td><td>Action</td></tr></tbody>
+ </table>
+ </div>
+ </div>
  </article>
 
  <article class="bf-card is-highlighted bf-stack" data-baseline-check="box" data-baseline-label="card highlighted">
@@ -40,6 +61,16 @@
  <p class="bf-body" data-baseline-check="flow" data-baseline-label="card body 3">Best used for metadata and supporting notes.</p>
  </div>
  <button class="bf-button is-base" type="button" data-baseline-check="box" data-baseline-label="card button 3">Open</button>
+ </article>
+
+ <a class="bf-card is-preview" href="#captured-preview" data-baseline-ignore="true">
+ <div class="bf-card-preview" data-card-preview><img class="bf-card-preview-image" src="../assets/aspect-wide.svg" alt="Layered landscape preview"></div>
+ <div class="bf-card-inner"><p class="bf-h4">Captured preview</p><p class="bf-body">The image stays below an out-of-flow boundary.</p></div>
+ </a>
+
+ <article class="bf-card is-preview" data-baseline-ignore="true">
+ <div class="bf-card-preview is-missing" data-card-preview-missing></div>
+ <div class="bf-card-inner"><p class="bf-h4">Missing preview</p><p class="bf-body">The label retains its named self-painted boundary.</p></div>
  </article>
  </section>
   <script type="module" src="../component-demo.js"></script>

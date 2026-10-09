@@ -5,10 +5,16 @@
  * rhythm through its tier tokens. Runtime hooks never participate in styling.
  */
 export function interactiveTablesCss(): string {
-  return `:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]) {
+  const mobileCardStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr)", { anchor: "relative" });
+
+  return `${mobileCardStroke.owner}
+
+:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]) {
+  --bf-table-cell-stroke-color: var(--bf-color-border-default);
   color: var(--bf-color-text-default);
   cursor: pointer;
   outline-color: var(--bf-color-focus);
+  position: relative;
   white-space: nowrap;
 }
 
@@ -20,17 +26,27 @@ export function interactiveTablesCss(): string {
   cursor: inherit;
   display: inline-block;
   font: inherit;
-  margin-block: -0.125rem;
   margin-inline: calc((var(--bf-component-inline-inset-field) / 2) * -1);
   max-inline-size: 100%;
-  overflow: hidden;
-  padding-block: 0.125rem;
+  overflow: visible;
+  padding-block: 0;
   padding-inline: calc(var(--bf-component-inline-inset-field) / 2);
+  position: relative;
   text-align: inherit;
   text-decoration: inherit;
   text-overflow: inherit;
   vertical-align: inherit;
   white-space: inherit;
+}
+
+:where(.bf-theme) :where(.bf-table-sort-button)::before {
+  block-size: max(100%, var(--bf-pointer-target-minimum));
+  content: "";
+  inline-size: 100%;
+  inset: 50% 0 auto;
+  pointer-events: auto;
+  position: absolute;
+  translate: 0 -50%;
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]:hover, .bf-table-sort-button:focus-visible) {
@@ -50,18 +66,40 @@ export function interactiveTablesCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after {
-  background-image: var(--bf-ui-icon-chevron-down);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
+  background: currentColor;
   block-size: var(--bf-icon-size-default);
   content: "";
   display: inline-block;
-  inline-size: var(--bf-icon-size-default);
-  margin-block-start: var(--bf-inline-icon-line-box-trim);
-  margin-inline-start: calc(var(--bf-leading-mark-gap) / 2);
+  inline-size: calc(var(--bf-leading-mark-gap) + var(--bf-icon-size-default));
+  mask-image: var(--bf-ui-icon-chevron-down);
+  mask-position: right center;
+  mask-repeat: no-repeat;
+  mask-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
   opacity: 0;
+  pointer-events: none;
   vertical-align: var(--bf-inline-icon-baseline-shift);
+  -webkit-mask-image: var(--bf-ui-icon-chevron-down);
+  -webkit-mask-position: right center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+}
+
+:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]:dir(rtl))::after {
+  mask-position: left center;
+  -webkit-mask-position: left center;
+}
+
+/* Sortable headers lease ::after to the caret, so their row rule uses the
+   remaining pseudo as a named one-sided paint owner. */
+:where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::before {
+  background: none;
+  border: 0 solid transparent;
+  box-shadow: inset 0 calc(var(--bf-table-row-border-size) * -1) 0 var(--bf-table-cell-stroke-color);
+  box-sizing: border-box;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'], .bf-table.is-sortable th[aria-sort='descending'])::after {
@@ -69,7 +107,8 @@ export function interactiveTablesCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'])::after {
-  transform: rotate(180deg);
+  mask-image: var(--bf-ui-icon-chevron-up);
+  -webkit-mask-image: var(--bf-ui-icon-chevron-up);
 }
 
 :where(.bf-theme) :where(.bf-table.is-expanding .bf-table-expand-toggle) {
@@ -85,7 +124,7 @@ export function interactiveTablesCss(): string {
   overflow: visible;
   /* Complete the ordinary start-nudge inset with the paired end nudge while
      consuming the row rule inside it, so wrapped detail rows stay on-grid. */
-  padding-block-end: calc(var(--bf-space-1) + var(--bf-body-nudge-end) - var(--bf-table-row-border-size));
+  padding-block-end: calc(var(--bf-space-1) + var(--bf-body-nudge-end));
   white-space: normal;
 }
 
@@ -114,22 +153,23 @@ export function interactiveTablesCss(): string {
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody) {
     display: grid;
-    gap: 0 var(--bf-component-inline-inset-continuation);
+    gap: var(--bf-section-space-shallow) var(--bf-grid-gap-inline);
     grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
     inline-size: 100%;
   }
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr) {
-    border: var(--bf-border-width) solid var(--bf-color-border-default);
+    border: 0;
     display: block;
-    margin-block-end: calc(var(--bf-space-3) - (var(--bf-border-width) * 2));
+    margin-block-end: 0;
     min-inline-size: 0;
-    padding-inline: var(--bf-panel-padding-inline);
+    padding-inline: var(--bf-component-inline-inset-action);
   }
 
   :where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr > :where(th, td)) {
-    border-block-end-color: transparent;
-    display: block;
+    --bf-table-cell-stroke-color: transparent;
+    display: grid;
+    gap: var(--bf-space-1);
     inline-size: 100%;
     min-inline-size: 0;
     overflow: hidden;
@@ -158,7 +198,7 @@ export function interactiveTablesCss(): string {
     font-style: var(--bf-body-font-style);
     font-weight: 550;
     line-height: var(--bf-body-line-height);
-    margin-block-end: var(--bf-space-1);
+    margin-block-end: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -168,5 +208,20 @@ export function interactiveTablesCss(): string {
     overflow: visible;
   }
 }
+
+${mobileCardStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  :where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::before {
+    border-block-end: var(--bf-table-row-border-size) solid CanvasText;
+    box-shadow: none;
+  }
+}
 `;
 }
+import { allSidedStrokeOverlayCss } from "./stroke-paint.js";

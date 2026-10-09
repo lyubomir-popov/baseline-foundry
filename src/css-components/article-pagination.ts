@@ -24,7 +24,7 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
 
 :where(.bf-theme) :where(a.bf-article-pagination-link) {
   background-color: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid transparent;
+  border: 0;
   box-sizing: border-box;
   color: var(--bf-color-text-default);
   display: grid;
@@ -32,7 +32,7 @@ export function articlePaginationCss(options: ArticlePaginationCssOptions): stri
   grid-template-rows: auto auto;
   inline-size: calc((100cqi - var(--bf-leading-mark-gap)) / 2);
   min-inline-size: 0;
-  padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4) - var(--bf-border-width));
+  padding-block: calc(var(--bf-space-2) + (var(--bf-baseline) / 4));
   position: relative;
   row-gap: var(--bf-space-half);
   text-decoration: none;
@@ -100,7 +100,6 @@ ${bodyCaseTypeStyles}  color: inherit;
 
 :where(.bf-theme) :where(.bf-article-pagination-direction > .bf-icon) {
   --bf-icon-size: var(--bf-icon-size-default);
-  margin-block-start: 0;
 }
 
 :where(.bf-theme) .bf-article-pagination:dir(rtl) .bf-article-pagination-link.is-previous .bf-icon {

@@ -1,3 +1,5 @@
+import { allSidedStrokeOverlayCss } from "./stroke-paint.js";
+
 type DocumentNavigationCssOptions = {
   bodyCaseTypeStyles: string;
   bodyTypeStyles: string;
@@ -12,8 +14,10 @@ type DocumentNavigationCssOptions = {
  */
 export function documentNavigationCss(options: DocumentNavigationCssOptions): string {
   const { bodyCaseTypeStyles, bodyTypeStyles, headingTypeStyles } = options;
+  const reducedSearchStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search)", { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
 
-  return `/* ------------------------------------------------------------------ */
+  return `${reducedSearchStroke.owner}
+/* ------------------------------------------------------------------ */
 /* Document navigation (Vanilla parity)                                 */
 /* ------------------------------------------------------------------ */
 
@@ -47,13 +51,24 @@ ${headingTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-in-page-navigation-list) {
   --bf-stack-space: var(--bf-space-1);
   align-content: start;
-  border-inline-start: var(--bf-bar-thickness) solid var(--bf-color-border-low-contrast);
   display: grid;
   gap: var(--bf-stack-space);
   list-style: none;
   margin: 0;
   min-inline-size: 0;
   padding: 0;
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-in-page-navigation-list)::after {
+  background: var(--bf-color-border-low-contrast);
+  block-size: 100%;
+  content: "";
+  inline-size: var(--bf-bar-thickness);
+  inset-block: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-in-page-navigation-item) {
@@ -117,6 +132,10 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   padding: 0;
 }
 
+:where(.bf-theme) :where(.bf-in-page-navigation-list .bf-in-page-navigation-list)::after {
+  content: none;
+}
+
 :where(.bf-theme) :where(.bf-in-page-navigation-list .bf-in-page-navigation-list .bf-in-page-navigation-link) {
   padding-inline-start: calc(var(--bf-component-inline-inset-action) * 2);
 }
@@ -125,7 +144,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 ${bodyCaseTypeStyles}  align-items: center;
   background: var(--bf-color-background-default);
   border: 0 solid transparent;
-  border-block-width: var(--bf-border-width);
+  border-block-width: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: none;
@@ -151,20 +170,29 @@ ${bodyCaseTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-in-page-navigation-toggle > .bf-icon) {
   --bf-icon-size: var(--bf-icon-size-default);
-  margin-block-start: 0;
 }
 
 @container bf-in-page-navigation (width < 40rem) {
   :where(.bf-theme) :where(.bf-in-page-navigation-nav) {
     align-items: center;
     background: var(--bf-color-background-default);
-    border-block-end: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     row-gap: 0;
     max-block-size: none;
     overflow: visible;
-    position: static;
+    position: relative;
+  }
+
+  :where(.bf-theme) :where(.bf-in-page-navigation-nav)::after {
+    background: var(--bf-color-border-low-contrast);
+    block-size: var(--bf-border-width);
+    content: "";
+    inline-size: 100%;
+    inset-block-end: 0;
+    inset-inline: 0;
+    pointer-events: none;
+    position: absolute;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation-heading) {
@@ -172,7 +200,6 @@ ${bodyCaseTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation-list) {
-    border: 0;
     display: flex;
     gap: 0;
     grid-column: 1;
@@ -182,6 +209,10 @@ ${bodyCaseTypeStyles}  align-items: center;
     overscroll-behavior-inline: contain;
     scrollbar-width: none;
     white-space: nowrap;
+  }
+
+  :where(.bf-theme) :where(.bf-in-page-navigation-list)::after {
+    content: none;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation-list::-webkit-scrollbar) {
@@ -195,7 +226,7 @@ ${bodyCaseTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation-link) {
-    border-block: var(--bf-border-width) solid transparent;
+    border-block: 0;
     display: block;
     overflow: hidden;
     padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));
@@ -240,16 +271,26 @@ ${bodyCaseTypeStyles}  align-items: center;
 
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded > .bf-in-page-navigation-nav > .bf-in-page-navigation-list, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) > .bf-in-page-navigation-nav > .bf-in-page-navigation-list) {
     background: var(--bf-color-background-alt);
-    border-inline-start: var(--bf-bar-thickness) solid var(--bf-color-border-low-contrast);
     display: grid;
     gap: var(--bf-stack-space);
     grid-column: 1 / -1;
     grid-row: 2;
-    /* The mobile nav owns a bottom rule; reserve its thickness within the
-       list's trailing space so the expanded state keeps its baseline phase. */
-    margin-block-end: calc(var(--bf-space-2) - var(--bf-border-width));
+    margin-block-end: 0;
     overflow: visible;
+    padding-block-end: var(--bf-space-2);
+    position: relative;
     white-space: normal;
+  }
+
+  :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded > .bf-in-page-navigation-nav > .bf-in-page-navigation-list, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) > .bf-in-page-navigation-nav > .bf-in-page-navigation-list)::after {
+    background: var(--bf-color-border-low-contrast);
+    block-size: 100%;
+    content: "";
+    inline-size: var(--bf-bar-thickness);
+    inset-block: 0;
+    inset-inline-start: 0;
+    pointer-events: none;
+    position: absolute;
   }
 
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded .bf-in-page-navigation-item, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) .bf-in-page-navigation-item) {
@@ -273,7 +314,7 @@ ${bodyCaseTypeStyles}  align-items: center;
   :where(.bf-theme) :where(.bf-in-page-navigation.is-expanded .bf-in-page-navigation-link.is-active, .bf-in-page-navigation.is-expanded .bf-in-page-navigation-link[aria-current], .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) .bf-in-page-navigation-link.is-active, .bf-in-page-navigation:has(.bf-in-page-navigation-toggle[aria-expanded='true']) .bf-in-page-navigation-link[aria-current])::before {
     block-size: 100%;
     inset-block: 0;
-    inset-inline-start: calc(var(--bf-border-width) * -3);
+    inset-inline-start: calc(var(--bf-bar-thickness) * -1);
   }
 }
 
@@ -300,10 +341,11 @@ ${bodyCaseTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-logo) > :where(.bf-top-navigation-link),
 :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-link, .bf-top-navigation-menu-toggle, .bf-top-navigation-search-toggle) {
   border: 0 solid transparent;
-  border-block-width: var(--bf-border-width);
+  border-block-width: 0;
   color: var(--bf-color-text-muted);
   font-size: var(--bf-body-font-size);
   line-height: var(--bf-body-line-height);
+  min-block-size: var(--bf-top-navigation-reduced-row-block-size);
   padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));
   padding-block-start: var(--bf-interface-row-padding-block);
 }
@@ -334,9 +376,10 @@ ${bodyCaseTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search) {
+    --bf-overlay-elevation-layer: 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
     background: var(--bf-color-background-alt);
-    border: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
-    box-shadow: 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
+    border: 0;
+    box-shadow: none;
     inset-block-start: 100%;
     inset-inline-end: 0;
     padding: var(--bf-panel-padding-block) var(--bf-top-navigation-link-padding-inline);
@@ -347,6 +390,19 @@ ${bodyCaseTypeStyles}  align-items: center;
     display: flex;
   }
 }
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-in-page-navigation-list)::after,
+  :where(.bf-theme) :where(.bf-in-page-navigation-nav)::after {
+    background: CanvasText;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search) {
+    box-shadow: none;
+  }
+}
+
+${reducedSearchStroke.painter}
 
 /* ------------------------------------------------------------------ */
 /* Table of contents                                                   */
@@ -411,7 +467,7 @@ ${bodyCaseTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(a.bf-table-of-contents-link) {
-${bodyTypeStyles}  border-block: var(--bf-border-width) solid transparent;
+${bodyTypeStyles}  border-block: 0;
   color: var(--bf-color-link-default);
   display: block;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -442,12 +498,12 @@ ${bodyTypeStyles}  border-block: var(--bf-border-width) solid transparent;
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-list .bf-table-of-contents-list) {
-  margin-inline-start: var(--bf-component-inline-inset-action);
+  padding-inline-start: var(--bf-component-inline-inset-action);
 }
 
 @container bf-table-of-contents (width < 20rem) {
   :where(.bf-theme) :where(.bf-table-of-contents-list .bf-table-of-contents-list) {
-    margin-inline-start: var(--bf-leading-mark-gap);
+    padding-inline-start: var(--bf-leading-mark-gap);
   }
 }
 `;

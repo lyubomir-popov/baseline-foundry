@@ -7,7 +7,8 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
-| 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Body-line rhythm is the default for prose text, with `.is-baseline-rhythm` as the opt-out; container-owned lists and `hgroup` join. Gates green; owner browser review and the D4 container-gap ruling pending |
+| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | Opus accepted R1 on October 9; earlier spacing corrections and N2–N5 dispositions stand. ApplicationLayout mobile prerequisite repaired and root-validated; four wider-layout Pin pointer overlaps remain; existing T011g popup review pending; owner sign-off, N2 fallback decision, Canonical-main activation/full-SHA repin and release audit pending |
+| 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Parked and excluded from BF by current owner direction; preserve branch/history and do not resume |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |
 

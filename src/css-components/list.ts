@@ -1,5 +1,11 @@
+import { blockStartStrokeOverlayCss } from "./stroke-paint.js";
+
 export function listCss({ bodyTypeStyles }: { bodyTypeStyles: string }): string {
-  return `:where(.bf-theme) :where(.bf-list) {
+  const dividedItemStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:not(:first-child))", { anchor: "relative" });
+
+  return `${dividedItemStroke.owner}
+
+:where(.bf-theme) :where(.bf-list) {
   align-content: start;
   display: grid;
   list-style: none;
@@ -21,14 +27,9 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item) {
-  border-block: var(--bf-border-width) solid transparent;
-  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-low-contrast);
+  border-block: 0;
   margin-block-end: var(--bf-interface-row-compensation-block-end);
   padding-block: var(--bf-interface-row-padding-block);
-}
-
-:where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:first-child) {
-  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {
@@ -79,17 +80,21 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 }
 
 :where(.bf-theme) :where(.bf-list-item) > :where(.bf-list) {
-  margin-inline-start: var(--bf-component-inline-inset-action);
+  padding-inline-start: var(--bf-component-inline-inset-action);
   padding-block-start: var(--bf-body-nudge-end);
 }
 
 :where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) > :where(.bf-list) {
-  margin-inline-start: 0;
+  padding-inline-start: 0;
 }
 
 :where(.bf-theme) :where(.bf-inline-list) {
   --bf-inline-list-space: 0.5rem;
 
+  align-items: baseline;
+  column-gap: var(--bf-inline-list-space);
+  display: flex;
+  flex-wrap: wrap;
   margin: 0;
   padding: 0;
 }
@@ -97,8 +102,9 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 :where(.bf-theme) :where(.bf-inline-list-item) {
 ${bodyTypeStyles}  display: inline-block;
   list-style: none;
-  margin-inline-end: var(--bf-inline-list-space);
-  padding-block-end: var(--bf-body-nudge-end);
+  margin-block-end: var(--bf-body-margin-bottom);
+  margin-inline-end: 0;
+  padding-block-end: 0;
   padding-block-start: var(--bf-body-nudge-start);
 }
 
@@ -121,6 +127,8 @@ ${bodyTypeStyles}  display: inline-block;
 :where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item:not(:last-of-type))::after {
   content: "\\2022";
   display: inline;
-  margin-inline-start: var(--bf-inline-list-space);
-}`;
+  padding-inline-start: var(--bf-inline-list-space);
+}
+
+${dividedItemStroke.painter}`;
 }

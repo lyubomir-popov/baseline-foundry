@@ -1,7 +1,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "../src/baseline-grid-theme.js";
-import { nestedFieldSelector, nestedInteractiveSelector, nestedTextInputTypes } from "../src/css-components/nested-controls.js";
+import { nestedFieldSelector, nestedTextInputTypes } from "../src/css-components/nested-controls.js";
+import { componentDensityPolicy } from "../src/component-density-policy.js";
 import { tierNames } from "../src/presets.ts";
 import { componentPages } from "./component-demo-shared.ts";
 import { assert, getCheckCount } from "./validation-assert.ts";
@@ -81,6 +83,46 @@ async function readThemeArtifacts(baseDir: string): Promise<{
 async function readTextArtifact(filePath: string): Promise<string> {
   await assertExists(filePath);
   return fs.readFile(filePath, "utf8");
+}
+
+async function validateSpec028ReviewDemo(
+  redirectHtml: string,
+  provenanceText: string,
+  pageCatalogJs: string,
+  pageChromeJs: string,
+  componentDemoJs: string,
+  specRuntimeJs: string,
+  bundleVersionJs: string
+): Promise<void> {
+  const provenance = JSON.parse(provenanceText) as {
+    before: { sourceCommit: string; manifestSha256: string; bundles: Record<string, string> };
+    after: { semanticSourceCommit: string; bundleSourceCommit: string; bundles: Record<string, string> };
+  };
+  const hashFile = async (filePath: string): Promise<string> => createHash("sha256").update(await fs.readFile(filePath)).digest("hex");
+
+  assert(pageCatalogJs.includes('{ title: "Spec 028 spacing comparison", href: "/demo/spec/spacing-vertical.html" }'), "Expected the catalog to route Spec 028 comparison through the real vertical-spacing page.");
+  assert(redirectHtml.includes('new URL("../spec/spacing-vertical.html", window.location.href)') && redirectHtml.includes("target.search = window.location.search") && redirectHtml.includes("target.hash = window.location.hash") && redirectHtml.includes("window.location.replace(target)"), "Expected the retired bespoke route to preserve query/hash state while redirecting to the real spacing page.");
+  for (const retiredFile of ["demo/spec-028/review.css", "demo/spec-028/review.js"]) {
+    let missing = false;
+    try {
+      await fs.access(path.resolve(retiredFile));
+    } catch {
+      missing = true;
+    }
+    assert(missing, `Expected the bespoke review asset ${retiredFile} to be removed.`);
+  }
+  assert(pageChromeJs.includes("data-page-chrome-${kind}-select") && pageChromeJs.includes('renderSelect("version"') && pageChromeJs.includes("versionSelect"), "Expected the shared BF page chrome to own the Before/After selector.");
+  assert(bundleVersionJs.includes('value: "before"') && bundleVersionJs.includes('value: "after"') && bundleVersionJs.includes("swapBundleStylesheet") && bundleVersionJs.includes("preserveBundleVersion"), "Expected one shared bundle-version runtime to preserve versioned links and swap only the BF tier stylesheet.");
+  assert(componentDemoJs.includes("BUNDLE_VERSION_OPTIONS") && componentDemoJs.includes("swapBundleStylesheet") && componentDemoJs.includes("runtime.applyVersion"), "Expected real component pages to expose the shared version selector without replacing their specimen nodes.");
+  assert(specRuntimeJs.includes("BUNDLE_VERSION_OPTIONS") && specRuntimeJs.includes("swapBundleStylesheet") && specRuntimeJs.includes("writeBundleVersion") && specRuntimeJs.includes("initComponents"), "Expected real spec pages to expose the same shared version selector and retain component initialization hooks.");
+  assert(provenance.before.sourceCommit === "6deca99776f35b85afde01b68bb0fffe817e29aa" && provenance.before.manifestSha256 === "e9004646356afe62f7f53307305ba0e2ff57064a379b96ec9e52b3ccab6b80fc", "Expected Before provenance to pin the independently built base source and build manifest.");
+  assert(/^[0-9a-f]{40}$/.test(provenance.after.semanticSourceCommit) && provenance.after.bundleSourceCommit === provenance.after.semanticSourceCommit, "Expected After provenance to pin one full source commit; the opt-in local provenance gate separately proves object existence.");
+  for (const tier of ["editorial", "documentation", "app", "os"]) {
+    const beforeHash = await hashFile(path.resolve("demo/spec-028/before", `${tier}.css`));
+    const afterHash = await hashFile(path.resolve("dist/tiers", tier, "styles.css"));
+    assert(beforeHash === provenance.before.bundles[tier], `Expected ${tier} Before CSS bytes to match review provenance.`);
+    assert(afterHash === provenance.after.bundles[tier], `Expected ${tier} After CSS bytes to match review provenance.`);
+  }
 }
 
 function assertRelativeFontFilePaths(fontFiles: Array<Record<string, unknown>>, label: string): void {
@@ -374,9 +416,12 @@ function validateTierSurfaceParity(
     const roles = (artifact.tokens.roles ?? {}) as Record<string, Record<string, unknown>>;
     for (const [roleName, token] of Object.entries(roles)) {
       const marginBottom = parseRemValue(token.marginBottom);
-      const baselineCompensation = baselineUnit - parseRemValue(token.nudgeTop);
+      const lineHeight = parseRemValue(token.lineHeight);
+      const nudge = parseRemValue(token.nudgeTop);
+      const baselineCompensation = (Math.ceil(((lineHeight + (2 * nudge)) / baselineUnit) - 1e-10) * baselineUnit) - lineHeight - nudge;
       assert(Number.isFinite(marginBottom) && marginBottom >= 0, `Expected ${tierName}/${roleName} manifest marginBottom to be finite and non-negative.`);
-      assert(Math.abs(marginBottom - baselineCompensation) <= 0.00001, `Expected ${tierName}/${roleName} manifest marginBottom to complement nudgeTop to one baseline unit.`);
+      assert(marginBottom + 0.00001 >= nudge, `Expected ${tierName}/${roleName} manifest marginBottom to be at least its metric nudge.`);
+      assert(Math.abs(marginBottom - baselineCompensation) <= 0.00001, `Expected ${tierName}/${roleName} manifest marginBottom to be the smallest grid-closing compensation at least equal to its nudge.`);
     }
   }
 }
@@ -434,7 +479,7 @@ function validateTierPanelPaddingProgression(
 ): void {
   const expectedPadding = new Map([
     ["editorial", "1rem"],
-    ["documentation", "1rem"],
+    ["documentation", "0.75rem"],
     ["app", "0.75rem"],
     ["os", "0.5rem"]
   ]);
@@ -683,13 +728,113 @@ function validateCommonCss(css: string): void {
   // legacy ones should prefer the AST helpers (assertRuleHasDecl, etc.) over
   // brittle multi-line substring checks. See scripts/css-ast-helpers.ts.
   const ast = parseCss(css);
+  const ownedBlockStartMarginExceptions = new Set<string>();
+  ast.walkDecls(declaration => {
+    if (!["margin", "margin-block", "margin-block-start", "margin-top"].includes(declaration.prop)) return;
+    const firstValue = declaration.value.trim().split(/\s+/)[0];
+    if (/^0(?:rem|px|em|%)?$/.test(firstValue)) return;
+    const selector = ((declaration.parent as { selector?: string }).selector ?? "").replace(/\s+/g, " ");
+    const key = `${selector}|${declaration.prop}|${declaration.value}`;
+    const isOwnedException =
+      (selector === ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb" && declaration.prop === "margin-top" && declaration.value === "calc((var(--bf-slider-track-size) - var(--bf-control-visual-size)) / 2)") ||
+      (selector === ":where(.bf-theme) :where(.bf-modal)" && declaration.prop === "margin" && declaration.value === "auto") ||
+      (selector.includes(".bf-article-pagination-link.is-previous:not(:only-child) .bf-article-pagination-label") && declaration.prop === "margin" && declaration.value === "-0.0625rem") ||
+      (selector.includes(".bf-equal-height-row.is-divider-1") && selector.includes(".is-divider-2") && declaration.prop === "margin" && declaration.value === "auto");
+    assert(isOwnedException, `Expected ${selector} ${declaration.prop}:${declaration.value} not to allocate an unowned block-start margin.`);
+    ownedBlockStartMarginExceptions.add(key);
+  });
+  assert(ownedBlockStartMarginExceptions.size === 4, `Expected exactly four named native/accessibility/structural block-start margin exceptions, got ${JSON.stringify([...ownedBlockStartMarginExceptions])}.`);
+  const splitMarginValues = (value: string): string[] => {
+    const parts: string[] = [];
+    let current = "";
+    let depth = 0;
+    for (const character of value.trim()) {
+      if (character === "(") depth += 1;
+      else if (character === ")") depth -= 1;
+      if (/\s/.test(character) && depth === 0) {
+        if (current) {
+          parts.push(current);
+          current = "";
+        }
+      } else {
+        current += character;
+      }
+    }
+    if (current) parts.push(current);
+    return parts;
+  };
+  const blockEndMarginValue = (property: string, value: string): string | undefined => {
+    if (property === "margin-block-end" || property === "margin-bottom") return value.trim();
+    const parts = splitMarginValues(value);
+    if (property === "margin-block") return parts.length === 1 ? parts[0] : parts[1];
+    if (property !== "margin") return undefined;
+    if (parts.length === 1 || parts.length === 2) return parts[0];
+    return parts[2];
+  };
+  const ownedBlockEndMarginExceptions = new Set<string>();
+  ast.walkDecls(declaration => {
+    const value = blockEndMarginValue(declaration.prop, declaration.value);
+    if (!value || /^0(?:rem|px|em|%)?$/.test(value)) return;
+    const selector = ((declaration.parent as { selector?: string }).selector ?? "").replace(/\s+/g, " ");
+    const isMetricCompensation = /var\(--bf-(?:body|h[1-6])-margin-bottom(?:,|\))/.test(value) || value === "var(--bf-interface-row-compensation-block-end)";
+    if (isMetricCompensation) return;
+    const key = `${selector}|${declaration.prop}|${declaration.value}`;
+    const isOwnedException =
+      (selector === ":where(.bf-theme) :where(.bf-linked-logo-section-mark)" && declaration.prop === "margin-block-end" && value.replace(/\s+/g, "").startsWith("calc(round(up,")) ||
+      (selector === ":where(.bf-theme) :where(hr)" && declaration.prop === "margin" && value === "calc(var(--bf-field-gap) - 0.0625rem)") ||
+      (selector === ":where(.bf-theme) :where(hr.is-highlighted)" && declaration.prop === "margin-block-end" && value === "calc(var(--bf-field-gap) - var(--bf-bar-thickness))") ||
+      (selector.includes(".bf-article-pagination-link.is-previous:not(:only-child) .bf-article-pagination-label") && declaration.prop === "margin" && value === "-0.0625rem") ||
+      (selector === ":where(.bf-theme) :where(.bf-modal)" && declaration.prop === "margin" && value === "auto") ||
+      (selector.includes(".bf-equal-height-row.is-divider-1") && selector.includes(".is-divider-2") && declaration.prop === "margin" && value === "auto");
+    assert(isOwnedException, `Expected ${selector} ${declaration.prop}:${declaration.value} to use metric/grid compensation or a named native/accessibility/divider exception at block end.`);
+    ownedBlockEndMarginExceptions.add(key);
+  });
+  assert(ownedBlockEndMarginExceptions.size === 6, `Expected exactly six named block-end exceptions beyond metric/grid compensation, got ${JSON.stringify([...ownedBlockEndMarginExceptions])}.`);
+  const inlineMarginValues = (property: string, value: string): string[] => {
+    if (property === "margin-inline" || property === "margin-left" || property === "margin-right") return [value.trim()];
+    if (property === "margin-inline-start" || property === "margin-inline-end") return [value.trim()];
+    if (property !== "margin") return [];
+    const parts = splitMarginValues(value);
+    if (parts.length === 1) return [parts[0]];
+    if (parts.length === 2 || parts.length === 3) return [parts[1]];
+    return [parts[1], parts[3]];
+  };
+  const namedInlineMarginExceptions = new Set<string>();
+  ast.walkDecls(declaration => {
+    const values = inlineMarginValues(declaration.prop, declaration.value).filter(value => !/^0(?:rem|px|em|%)?$/.test(value));
+    if (values.length === 0) return;
+    const selector = ((declaration.parent as { selector?: string }).selector ?? "").replace(/\s+/g, " ");
+    const key = `${selector}|${declaration.prop}|${declaration.value}`;
+    const isStructuralAutoAlignment = values.every(value => value === "auto") && [
+      ".bf-page",
+      ".bf-notification-actions",
+      ".bf-panel-controls",
+      ".bf-top-navigation-item.is-right-shifted",
+      ".bf-side-navigation-status",
+      ".bf-code-snippet-dropdowns",
+      ".bf-equal-height-row.is-columns-2",
+      ".bf-equal-height-row.is-columns-3",
+      ".bf-fixed-width"
+    ].some(fragment => selector.includes(fragment));
+    const isNativeOpticalOrTargetException =
+      (selector.includes("input[type='file']") && selector.includes("::file-selector-button") && declaration.prop === "margin-inline-end" && declaration.value === "var(--bf-field-gap)") ||
+      (selector.includes(".bf-button.is-icon:not(.is-nested)") && declaration.prop === "margin-inline" && declaration.value === "var(--bf-action-target-overflow)") ||
+      (selector.includes(".bf-table-sort-button") && declaration.prop === "margin-inline" && declaration.value.includes("* -1")) ||
+      (selector.includes(".is-icon-placeholder") && selector.includes(".bf-icon:first-child") && (declaration.prop === "margin-inline-start" || declaration.prop === "margin-inline-end")) ||
+      (selector.includes(".bf-article-pagination-link.is-previous:not(:only-child) .bf-article-pagination-label") && declaration.prop === "margin" && declaration.value === "-0.0625rem") ||
+      (selector === ":where(.bf-theme) :where(.bf-modal)" && declaration.prop === "margin" && declaration.value === "auto") ||
+      (selector.includes(".bf-equal-height-row.is-divider-1") && selector.includes(".is-divider-2") && declaration.prop === "margin" && declaration.value === "auto");
+    assert(isStructuralAutoAlignment || isNativeOpticalOrTargetException, `Expected ${selector} ${declaration.prop}:${declaration.value} to avoid inline relationship margins or match one named structural/native/optical/target exception.`);
+    namedInlineMarginExceptions.add(key);
+  });
+  assert(namedInlineMarginExceptions.size === 18, `Expected exactly 18 named inline structural/native/optical/target margin exceptions, got ${JSON.stringify([...namedInlineMarginExceptions])}.`);
   assert(!css.includes("@font-face"), "Expected built-in CSS to leave runtime font URLs to the consumer-owned font declaration.");
   assert(!css.includes("UbuntuSans[wdth,wght].ttf"), "Expected built-in CSS to avoid a runtime URL to the unbundled development font.");
   const normativeTargetMinimums = css.match(/24px\b/g) ?? [];
   assert(
-    normativeTargetMinimums.length === 5 &&
+    normativeTargetMinimums.length === 1 &&
     !/-?(?:\d+(?:\.\d+)?|\.\d+)px\b/.test(css.replaceAll("24px", "")),
-    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except for the five reviewed uses of the 24 CSS-pixel target minimum.",
+    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except for one shared 24 CSS-pixel target-minimum input.",
   );
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 38.75rem threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 105.0625rem threshold for the 16-column grid.");
@@ -781,7 +926,7 @@ function validateCommonCss(css: string): void {
     "block-size": "0.0625rem",
     "border": "0",
     "inline-size": "100%",
-    "margin": "0 0 calc(0.5rem - 0.0625rem)",
+    "margin": "0 0 calc(var(--bf-field-gap) - 0.0625rem)",
   }, "plain hr receives the basic rule contract");
   assert(css.includes(":where(.bf-theme) :where(.bf-page) {\n  margin-inline: auto;\n  max-inline-size: var(--bf-content-max-width);\n  padding-inline: var(--bf-page-margin);"), "Expected bf-page gutters to resolve directly from the shared grid-row margin token.");
   assert(!css.includes("#f5f1e8"), "Expected generated CSS to avoid the old paper-like default background fallback.");
@@ -801,9 +946,13 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-span-16"), "Expected the grid CSS to include the 16-column span class.");
   assert(!css.includes(".bf-span-12"), "Expected the grid CSS to omit the old 12-column span class.");
   assert(css.includes(":where(.bf-theme) :where(thead th) {\n  font-family: var(--bf-body-font-family"), "Expected CSS to style table headers as body-role text.");
-  assert(css.includes("--bf-interface-row-painted-block-size: calc(var(--bf-interface-row-line-height)") && css.includes("--bf-interface-row-compensation-block-end: mod(") && css.includes("--bf-interface-row-occupied-block-size: calc(var(--bf-interface-row-painted-block-size) + var(--bf-interface-row-compensation-block-end));") && css.includes("--bf-in-box-row-padding-block-start: var(--bf-interface-row-content-offset-block-start);") && css.includes("--bf-in-box-row-padding-block-end: max(0rem, calc(var(--bf-interface-row-occupied-block-size) - var(--bf-interface-row-line-height)"), "Expected bordered controls and marginless repeated rows to share one rem/token-derived occupied-block target with explicit in-box compensation.");
+  assert(css.includes("--bf-interface-row-padding-block: calc(var(--bf-control-block-inset) + var(--bf-body-nudge-start") && css.includes("--bf-interface-row-painted-block-size: calc(var(--bf-interface-row-line-height) + (var(--bf-interface-row-padding-block) * 2));") && css.includes("--bf-interface-row-content-offset-block-start: var(--bf-interface-row-padding-block);") && css.includes("--bf-interface-row-compensation-block-end: mod(") && css.includes("--bf-interface-row-occupied-block-size: calc(var(--bf-interface-row-painted-block-size) + var(--bf-interface-row-compensation-block-end));") && css.includes("--bf-in-box-row-padding-block-start: var(--bf-interface-row-content-offset-block-start);") && css.includes("--bf-in-box-row-padding-block-end: max(0rem, calc(var(--bf-interface-row-occupied-block-size) - var(--bf-interface-row-line-height)"), "Expected controls and marginless repeated rows to share one zero-layout-border occupied-block target with explicit in-box compensation.");
   assert(css.includes("--bf-table-row-padding-block-start: var(--bf-in-box-row-padding-block-start);") && css.includes("--bf-table-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - var(--bf-body-line-height") && css.includes("--bf-table-row-line-height: var(--bf-body-line-height"), "Expected table rows to preserve body text metrics while targeting the shared interface-row occupied block.");
-  assert(css.includes(":where(.bf-theme) :where(th, td) {\n  border: 0;\n  border-block-end: var(--bf-table-row-border-size) solid transparent;"), "Expected table cells to reserve border space inside the row box instead of relying on inset shadows.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)::after {") && css.includes("border-block-end: var(--bf-stroke-width) solid CanvasText;"), "Expected direct BF table cells to retain per-cell out-of-flow row rules and real forced-colors edges.");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(th, td)", "position", "ordinary table cells do not become containing blocks");
+  assert(css.includes(":has(.bf-contextual-menu) {\n  overflow: visible;"), "Expected direct BF cells that contain a real popup through supported neutral wrappers to expose its out-of-cell paint and input path.");
+  assert(css.includes(":where(.bf-theme) :where(th, td):not(.bf-table > thead > tr > *, .bf-table > tbody > tr > *, .bf-table > tfoot > tr > *) {\n    box-shadow: none;\n    outline: var(--bf-table-row-border-size) solid CanvasText;\n    outline-offset: calc(var(--bf-table-row-border-size) * -1);"), "Expected raw native table cells, including nested raw tables, to use the documented paint-only forced-colors outline fallback without a containing block.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::before") && css.includes("border-block-end: var(--bf-table-row-border-size) solid CanvasText;"), "Expected sortable headers to preserve their caret pseudo while painting the row rule from the remaining pseudo.");
   assert(css.includes("padding-block-end: var(--bf-table-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-table-row-padding-block-start);"), "Expected table cells to consume the shared metric start and trailing row-compensation variables.");
   assert(!css.includes("tbody tr:has(.bf-status-label) > td"), "Expected table density not to depend on a contextual status-label selector; nested auxiliaries opt in explicitly.");
   assert(css.includes(":where(.bf-engine-cap)"), "Expected generated CSS to include the cap-engine demo override selector.");
@@ -820,16 +969,16 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-prose li"), "Expected CSS to include list item selectors.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose li) {\n  margin: 0 0 var(--bf-body-margin-bottom"), "Expected list items to carry body baseline compensation in margin-bottom.");
   assert(css.includes(":where(.bf-theme) :where(ul, ol) {\n  margin-bottom: 0;\n  padding-block-end: 0;"), "Expected semantic list containers not to add block-end margin or padding around item compensation.");
-  assert(css.includes("--bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));") && css.includes("--bf-leading-mark-group-inset: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-offset));"), "Expected controls and marker-bearing lists to share an explicit leading-mark family that reaches the continuation inset.");
+  assert(css.includes("--bf-leading-mark-size: var(--bf-icon-size-default);") && css.includes("--bf-leading-mark-offset: calc(var(--bf-leading-mark-size) + var(--bf-leading-mark-gap));") && css.includes("--bf-leading-mark-group-inset: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-offset));"), "Expected controls and marker-bearing lists to share the tier body-sized icon slot and reach the continuation inset.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ol) {\n  padding-inline-start: calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));") && css.includes(":where(.bf-theme) :where(.bf-prose ol > li) {\n  padding-inline-start: calc(var(--bf-leading-mark-size) * 0.5);"), "Expected ordered prose lists to retain complementary shared-leading-mark compensation after the group inset.");
   assert(css.includes(":where(.bf-theme) :where(.bf-prose ul) {\n  list-style: none;\n  padding-inline-start: var(--bf-leading-mark-group-inset);") && css.includes(":where(.bf-theme) :where(.bf-prose ul > li) {\n  padding-inline-start: var(--bf-leading-mark-offset);") && css.includes("inline-size: var(--bf-list-marker-dot-size);\n  inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-leading-mark-size) - var(--bf-list-marker-dot-size)) * 0.5));"), "Expected unordered prose-list dots to occupy the shared leading-mark canvas and their text to reach the disclosure continuation keyline.");
   assert(!css.includes(".bf-prose li + li"), "Expected list spacing to avoid the old ad hoc inter-item margin.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-groups) {\n  align-content: start;\n  display: grid;\n  gap: var(--bf-side-navigation-group-gap);") && css.includes("--bf-side-navigation-group-gap: 1.5rem;"), "Expected side-navigation heading/list groups to own the fixed 1.5rem separation.");
-  assert(css.includes("--bf-side-navigation-heading-list-gap: 0.5rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group) {\n  display: grid;\n  gap: var(--bf-side-navigation-heading-list-gap);"), "Expected each side-navigation group to own the fixed half-rem transition from its header to its list.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-groups) {\n  align-content: start;\n  display: grid;\n  gap: var(--bf-side-navigation-group-gap);") && css.includes("--bf-side-navigation-group-gap: var(--bf-section-space-shallow);"), "Expected side-navigation groups to use the governed tier group gap.");
+  assert(css.includes("--bf-side-navigation-heading-list-gap: var(--bf-field-gap);") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group) {\n  display: grid;\n  gap: var(--bf-side-navigation-heading-list-gap);"), "Expected each side-navigation group to use the governed tier item gap between its header and list.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html)", {
     "min-inline-size": "0"
   }, "side navigation yields intrinsic inline width when placed in a narrow grid or flex rail");
-  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) {\n  display: grid;\n  gap: 0rem;") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {\n  inline-size: auto;\n  margin-inline: var(--bf-side-navigation-content-inset) 0;") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected real compensated rules and headings to share a tight header, with each rule running from the continuation text inset to the navigation edge.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) {\n  display: grid;\n  gap: 0rem;\n  min-inline-size: 0;\n  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);") && css.includes(":where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {\n  inline-size: 100%;\n  margin-inline: 0;") && !css.includes(":where(.bf-theme) :where(.bf-side-navigation-list)::after"), "Expected the SideNavigation group header to own its keyline and end gutter as padding, with a full-width compensated rule and no relationship margin.");
   assert(css.includes(":where(.bf-theme) :where(.bf-side-navigation-list) {\n  display: grid;\n  grid-auto-rows: minmax(var(--bf-interface-row-occupied-block-size), auto);") && css.includes("align-self: start;"), "Expected side-navigation rows to preserve the shared single-line minimum while allowing expanded accordion content to grow its track.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-list)", {
     "min-inline-size": "0"
@@ -845,8 +994,32 @@ function validateCommonCss(css: string): void {
     "overflow": "hidden",
     "text-overflow": "ellipsis"
   }, "side-navigation labels retain overflow containment while their row can grow for wrapped copy");
-  assert(css.includes("min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-margin-bottom));"), "Expected single-line side-navigation group headings to reserve a four-baseline occupied block without counting metric compensation twice.");
-  assert(css.includes("min-block-size: calc(var(--bf-interface-row-occupied-block-size) + var(--bf-panel-padding-block));\n  padding-block-end: var(--bf-panel-padding-block);\n  padding-block-start: 0;"), "Expected panel footers to combine the regular interface row with their structural end padding.");
+  assert(css.includes("--bf-side-navigation-gutter: var(--bf-page-margin);") && css.includes("--bf-side-navigation-icon-size: var(--bf-icon-size-default);") && css.includes("--bf-side-navigation-label-keyline: calc(var(--bf-side-navigation-gutter) + var(--bf-side-navigation-icon-size) + var(--bf-side-navigation-icon-gap));") && !css.includes("--bf-side-navigation-depth-step"), "Expected SideNavigation to derive one non-progressive label keyline from its page-margin gutter, tier icon and mark gap.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-context-switcher)", {
+    "padding-inline": "var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter)"
+  }, "SideNavigation ContextSwitcher places its real select on the label keyline and keeps the opposing gutter");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-context-switcher) > :where(.bf-field-boundary)", "margin-block-end", "ContextSwitcher preserves the field boundary's grid-closing block-end compensation");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true'])::after", {
+    "inset-inline-start": "0",
+    "pointer-events": "none",
+    "position": "absolute"
+  }, "SideNavigation selection paints out of flow inside the start gutter");
+  assert(css.includes("@media (forced-colors: active)") && css.includes("border-inline-start: var(--bf-bar-thickness) solid CanvasText;"), "Expected selected SideNavigation gutter paint to retain a one-sided system-color border in forced colors.");
+  assert(css.includes("min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-nudge-end));"), "Expected single-line side-navigation group headings to reserve a four-baseline occupied block without counting the ordinary in-box end nudge twice.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel)", {
+    "gap": "var(--bf-section-space-shallow)",
+    "padding-block": "var(--bf-panel-padding-block)",
+    "padding-inline": "var(--bf-panel-content-padding-inline)"
+  }, "panel roots own the surface inset and group gap between sections");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel.bf-side-navigation)", {
+    "gap": "0",
+    "padding": "0"
+  }, "SideNavigation composition keeps its own grid-margin gutters and group rhythm");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-panel-footer)", {
+    "border": "0",
+    "min-block-size": "var(--bf-interface-row-occupied-block-size)",
+    "padding": "0"
+  }, "panel footers keep only their interface row while the root owns surrounding surface spacing");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack) {\n  --bf-stack-space: var(--bf-section-space-shallow);\n  align-content: start;"), "Expected default stacks to own the tier's shallow pattern gap without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-flush) {\n  --bf-stack-space: 0rem;"), "Expected flush stacks to remove only their container gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-stack.is-metric-flush) {\n  --bf-stack-space: 0rem;") && css.includes(":where(.bf-theme) .bf-stack.is-metric-flush > :where(") && css.includes(":has(+ :where(") && css.includes(" + :where(") && css.includes("margin-block-end: 0;") && css.includes("padding-block-start: 0;"), "Expected metric-flush stacks to cancel only configured adjacent text-role compensation and start nudges.");
@@ -859,11 +1032,10 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-component-inline-inset-field:") && css.includes("--bf-component-inline-inset-action:") && css.includes("--bf-component-inline-inset-continuation:") && !css.includes("--bf-disclosure-label-inline-offset:") && !css.includes("--bf-icon-label-inline-offset:"), "Expected field, action, and continuation to be authoritative component inset inputs rather than aliases of one component.");
   assert(css.includes("padding-inline-start: var(--bf-component-inline-inset-continuation);"), "Expected accordion panels to share the continuation inset.");
   for (const [selector, inset] of [
-    [":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", "continuation"],
-    [":where(.bf-theme) :where(.bf-option-card)", "continuation"],
-    [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "continuation"],
+    [":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", "action"],
+    [":where(.bf-theme) :where(.bf-option-card)", "action"],
+    [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "action"],
     [":where(.bf-theme) :where(.bf-contextual-menu-link)", "action"],
-    [":where(.bf-theme) :where(.bf-tooltip-message)", "continuation"],
     [":where(.bf-theme) :where(.bf-code-snippet-title)", "continuation"],
     [":where(.bf-theme) :where(.bf-code-snippet-dropdown)", "action"],
     [":where(.bf-theme) :where(.bf-code-snippet-block, .bf-code-snippet-block.is-icon, .bf-code-snippet-block.is-numbered)", "continuation"]
@@ -872,18 +1044,58 @@ function validateCommonCss(css: string): void {
       "padding-inline": `var(--bf-component-inline-inset-${inset})`
     }, `${selector} chooses the shared ${inset} component inset`);
   }
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tooltip-message)", {
+    "display": "flow-root",
+    "padding-block": "var(--bf-control-block-inset)",
+    "padding-inline": "var(--bf-component-inline-inset-field)"
+  }, "Tooltip outer surface owns compact padding and contains its metric text child");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tooltip-text)", {
+    "display": "block",
+    "margin": "0 0 var(--bf-body-margin-bottom)",
+    "padding-block-end": "0"
+  }, "Tooltip inner text owns metric nudge and SP13 compensation separately from surface padding");
+  assert(css.includes("padding-block-start: var(--bf-body-nudge-start,"), "Expected Tooltip inner text to consume the generated body metric nudge with a tier fallback.");
   for (const selector of [
     ":where(.bf-theme) :where(fieldset, .bf-fieldset)",
-    ":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)",
     ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)"
   ]) {
     assertRuleHasDecl(ast, selector, {
       "padding-inline": "var(--bf-panel-padding-inline)"
     }, `${selector} consumes structural panel padding rather than a component content inset`);
   }
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-drawer)", {
+    "display": "flex",
+    "flex-direction": "column",
+    "gap": "var(--bf-section-space-shallow)"
+  }, "mobile SideNavigation drawers own the relationship between chrome and body");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)", {
+    "margin-bottom": "0"
+  }, "SideNavigation drawer headers leave relationship spacing to their parent");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-drawer-chrome)", {
+    "display": "grid",
+    "gap": "0"
+  }, "SideNavigation drawer chrome groups its optional brand and sticky toggle without adding a second relationship gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-drawer-body)", {
+    "min-inline-size": "0"
+  }, "SideNavigation drawer body is the shrinkable content slot below the chrome");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-modal-dialog)", {
+    "gap": "var(--bf-section-space-shallow)",
+    "padding-block": "var(--bf-panel-padding-block)",
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "modal roots own standard surface insets and the group gap between sections");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)", {
+    "padding": "0"
+  }, "modal sections add no padding inside the root-owned surface spacing");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-panel)", {
+    "gap": "var(--bf-section-space-shallow)",
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "SearchAndFilter roots own the standard surface inset and group gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-filter-panel-section)", {
+    "padding": "0"
+  }, "SearchAndFilter sections add no spacing beside the root-owned group gap");
   assert(css.includes("vertical-align: baseline;") && !css.includes("vertical-align: calc(var(--bf-border-width) - var(--bf-body-nudge-start"), "Expected inline chips to expose their first text baseline without reapplying the body metric nudge.");
-  assert(css.includes("margin: 0 0 calc(0.5rem - 0.0625rem);"), "Expected rules to reserve a half-rem rhythm step inclusive of their 0.0625rem thickness.");
-  assert(css.includes("margin-block-end: calc(0.5rem - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the same half-rem rhythm step inclusive of their shared thickness.");
+  assert(css.includes("margin: 0 0 calc(var(--bf-field-gap) - 0.0625rem);"), "Expected rules to reserve the governed item gap inclusive of their 0.0625rem thickness.");
+  assert(css.includes("margin-block-end: calc(var(--bf-field-gap) - var(--bf-bar-thickness));"), "Expected highlighted rules to reserve the governed item gap inclusive of their shared thickness.");
   assert(css.includes("padding-block-end: var(--bf-strip-space);"), "Expected strip rhythm to live on the bottom edge only.");
   assert(!css.includes("padding-block: var(--bf-strip-space);"), "Expected strip rhythm to avoid symmetric top-and-bottom padding.");
   assert(css.includes(".bf-grid"), "Expected CSS to include grid selectors.");
@@ -893,14 +1105,33 @@ function validateCommonCss(css: string): void {
   assert(css.includes(".bf-stage-shell"), "Expected CSS to include the stage-shell helper.");
   assert(css.includes(".u-baseline-grid"), "Expected CSS to include the baseline grid utility.");
   assert(!css.includes("min-inline-size: 8em;"), "Expected text-like controls to avoid hard minimum widths that break narrow panels.");
-  assert(css.includes("input[type='file'])::file-selector-button") && css.includes("box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);") && css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected file inputs to paint one field rule and avoid double-padding around their selector button.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-field-boundary)", {
+    "display": "grid",
+    "grid-template-areas": '"field-boundary"',
+    "margin-block-end": "var(--bf-interface-row-compensation-block-end)"
+  }, "replaced fields use a named boundary owner for compensation and paint");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)", {
+    "position": "relative"
+  }, "field paint owners establish their overlay containing block");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select)", {
+    "border": "0",
+    "margin": "0",
+    "padding-block": "var(--bf-interface-row-padding-block)"
+  }, "native fields retain interaction while layout geometry excludes stroke width");
+  assert(css.includes(":not(:where(.bf-field-boundary *, .bf-color-control *, .bf-search-box *, .bf-search-and-filter-search-container *))") && css.includes("box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-native-field-stroke-color);") && css.includes("outline: var(--bf-border-width) solid CanvasText;"), "Expected bare text-like native fields, including omitted-type inputs, to retain one geometry-neutral compatibility boundary without double-painting inside approved owners.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after", {
+    "border": "0 solid transparent",
+    "pointer-events": "none",
+    "position": "absolute"
+  }, "field paint uses the automatic non-intercepting last-child overlay");
+  assert(css.includes("input[type='file'])::file-selector-button") && css.includes("box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default);") && css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected the file selector's named native part to paint without a layout border while the field boundary owns the outer rule.");
   assert(css.includes(":where(.bf-control) {\n  display: grid;\n  gap: var(--bf-field-gap);\n  min-inline-size: 0;"), "Expected form controls to allow shrinking inside narrow containers.");
   assert(css.includes(":where(.bf-field.is-checkbox) :where(.bf-control) {\n  gap: 0;"), "Expected checkbox field controls to avoid downstream gap overrides.");
   assert(css.includes("--bf-slider-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("--bf-slider-track-offset: calc(var(--bf-body-nudge-start"), "Expected generated CSS to place the slider track metrically within the shared interface row.");
   assert(css.includes("--bf-interface-row-visual-offset: calc(var(--bf-interface-row-content-offset-block-start)") && css.includes("--bf-switch-track-offset: var(--bf-interface-row-visual-offset);") && css.includes("--bf-tick-box-offset: var(--bf-interface-row-visual-offset);") && css.includes("--bf-leading-icon-offset: var(--bf-interface-row-visual-offset);"), "Expected switch, tick, and leading-icon geometry to share one body-line visual offset.");
   assert(css.includes("--bf-leading-mark-gap: var(--spacing-gap-mark-inline);") && css.includes("--bf-tick-label-offset: var(--bf-leading-mark-offset);"), "Expected generated CSS to derive tick-label spacing from the canonical shared mark gap rather than an unrelated inset.");
   assert(css.includes("--bf-radio-dot-size: calc((var(--bf-control-visual-size) * 0.375) + var(--bf-border-width));") && css.includes("inset-inline-start: calc((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5);") && css.includes("inset-block-start: calc(var(--bf-tick-box-offset) + ((var(--bf-control-visual-size) - var(--bf-radio-dot-size)) * 0.5));"), "Expected the enlarged radio dot to remain concentric with its outer circle inside the shared row geometry.");
-  assert(css.includes("--bf-interface-row-padding-block:") && css.includes("--bf-interface-row-compensation-block-end:") && css.includes("--bf-interface-row-visual-offset:"), "Expected generated CSS to expose one border-aware occupied-block contract for body-sized single-line UI.");
+  assert(css.includes("--bf-interface-row-padding-block:") && css.includes("--bf-interface-row-compensation-block-end:") && css.includes("--bf-interface-row-visual-offset:"), "Expected generated CSS to expose one paint-only occupied-block contract for body-sized single-line UI.");
   for (const retiredVariable of [
     "--bf-control-baseline-reserve:",
     "--bf-control-block-padding:",
@@ -920,18 +1151,22 @@ function validateCommonCss(css: string): void {
   }
   assert(!css.includes("--bf-table-row-padding:") && !css.includes(":where(.bf-theme.is-dark),\n:where(.bf-theme.is-dark)"), "Expected generated CSS to omit retired table alignment variables and duplicate dark-theme selectors.");
   assert(css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected bordered controls and body-sized single-line rows to share one regular padding contract.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive) {\n  background-color: var(--bf-color-button-positive-default);"), "Expected generated CSS to define the bf-button.is-positive surface from the themed positive tokens.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:hover) {\n  background-color: var(--bf-color-button-positive-hover);"), "Expected bf-button.is-positive to surface the themed positive hover token.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true'])) {\n  background-color: var(--bf-color-button-positive-active);"), "Expected bf-button.is-positive to surface the themed positive active token.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-negative) {\n  background-color: var(--bf-color-button-negative-default);"), "Expected generated CSS to define the bf-button.is-negative surface from the themed negative tokens.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-negative:hover) {\n  background-color: var(--bf-color-button-negative-hover);"), "Expected bf-button.is-negative to surface the themed negative hover token.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-negative:is(:active, [aria-pressed='true'])) {\n  background-color: var(--bf-color-button-negative-active);"), "Expected bf-button.is-negative to surface the themed negative active token.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link) {\n  background-color: transparent;\n  border: 0;\n  border-radius: 0;\n  color: var(--bf-color-link-default);"), "Expected generated CSS to define the bf-button.is-link surface from the shared link tokens.");
+  for (const [selector, strokeColor, backgroundColor, label] of [
+    [":where(.bf-theme) :where(.bf-button.is-positive)", "var(--bf-color-button-positive-default)", "var(--bf-color-button-positive-default)", "positive"],
+    [":where(.bf-theme) :where(.bf-button.is-positive:hover)", "var(--bf-color-button-positive-hover)", "var(--bf-color-button-positive-hover)", "positive hover"],
+    [":where(.bf-theme) :where(.bf-button.is-positive:is(:active, [aria-pressed='true']))", "var(--bf-color-button-positive-active)", "var(--bf-color-button-positive-active)", "positive active"],
+    [":where(.bf-theme) :where(.bf-button.is-negative)", "var(--bf-color-button-negative-default)", "var(--bf-color-button-negative-default)", "negative"],
+    [":where(.bf-theme) :where(.bf-button.is-negative:hover)", "var(--bf-color-button-negative-hover)", "var(--bf-color-button-negative-hover)", "negative hover"],
+    [":where(.bf-theme) :where(.bf-button.is-negative:is(:active, [aria-pressed='true']))", "var(--bf-color-button-negative-active)", "var(--bf-color-button-negative-active)", "negative active"]
+  ] as const) {
+    assertRuleHasDecl(ast, selector, { "--bf-stroke-color": strokeColor, "background-color": backgroundColor }, `Button ${label} updates its locally reset stroke and surface slots together`);
+  }
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-link)", { "--bf-stroke-width": "0rem", "background-color": "transparent", "border": "0", "border-radius": "0", "color": "var(--bf-color-link-default)" }, "link Button removes command chrome through the local stroke-width source");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-link:hover) {\n  background-color: transparent;\n  color: var(--bf-color-link-default);\n  text-decoration: underline;"), "Expected bf-button.is-link hover state to keep transparent chrome and restore underline treatment.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) > :where(.bf-icon) {\n  margin: 0;"), "Expected generated CSS to keep button icons free of ambiguous text-node-sensitive edge margins.");
   assert(css.includes(":where(.bf-theme) :where(.bf-button.is-icon) {\n  align-items: center;\n  column-gap: var(--bf-leading-mark-gap);"), "Expected bf-button.is-icon to use the shared mark/icon gap for its explicit icon/label relationship.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
-    "--bf-action-target-overflow": "max(0rem, calc((24px - var(--bf-square-block-size)) / 2))",
+    "--bf-action-target-overflow": "max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-square-block-size)) / 2))",
     "column-gap": "0",
     "justify-self": "start",
     "margin-inline": "var(--bf-action-target-overflow)",
@@ -945,9 +1180,9 @@ function validateCommonCss(css: string): void {
     "inline-size": "0"
   }, "icon-only buttons preserve the occupied body line through a zero-width metric strut");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))::after", {
-    "block-size": "max(100%, 24px)",
+    "block-size": "max(100%, var(--bf-pointer-target-minimum))",
     "content": '""',
-    "inline-size": "max(100%, 24px)",
+    "inline-size": "max(100%, var(--bf-pointer-target-minimum))",
     "left": "50%",
     "pointer-events": "auto",
     "position": "absolute",
@@ -969,39 +1204,37 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", {
     "flex-wrap": "nowrap",
     "overflow-x": "auto"
-  }, "the built-in nowrap action row declares its clipping scrollport without charging text-only strips padding");
-  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", "padding-block", "text-only nowrap action strips retain their original occupied block");
+  }, "the built-in nowrap action row declares its clipping scrollport without charging text-only strips block padding");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", "padding-block", "text-only nowrap action strips retain their occupied block");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap)", "padding-inline", "text-only nowrap action strips retain their leading keyline");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested)))", {
     "--bf-action-target-block-clearance": "var(--bf-baseline)",
-    "margin-block-end": "calc(var(--bf-action-target-block-clearance) + var(--bf-interface-row-compensation-block-end))",
-    "margin-block-start": "var(--bf-action-target-block-clearance)"
-  }, "only icon-only targets reserve block clearance inside the nowrap scrollport");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
-    "margin-block-end": "var(--bf-action-target-block-clearance)"
-  }, "link icon targets use symmetric target-owned nowrap clearance");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap))", {
-    "--bf-action-target-row-gap-floor": "round(up, max(0rem, calc(24px - var(--bf-body-line-height) + var(--bf-border-width))), var(--bf-baseline))"
-  }, "supporting engines round the exact inter-row target shortfall up to a complete active baseline");
+    "padding-block": "var(--bf-action-target-block-clearance)"
+  }, "nowrap action rows with icon-only targets own symmetric target clearance without changing text-only strips");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
-    "--bf-action-target-block-clearance": "round(up, max(0rem, calc((24px - var(--bf-body-line-height)) / 2)), var(--bf-baseline))"
-  }, "supporting engines round only an icon target's nowrap block shortfall without a one-baseline cap");
+    "margin-block-end": "var(--bf-interface-row-compensation-block-end)"
+  }, "icon-only targets retain ordinary row compensation inside their owner-provided clearance");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap) > :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label)))", {
+    "margin-block-end": "0"
+  }, "link icon targets leave symmetric clearance to their nowrap owner");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions:not(.is-nowrap), .bf-cluster:not(.is-nowrap))", {
+    "--bf-action-target-row-gap-floor": "round(up, max(0rem, calc(var(--bf-pointer-target-minimum) - var(--bf-body-line-height) + var(--bf-pointer-target-separation))), var(--bf-baseline))"
+  }, "supporting engines round the explicit non-paint target separation up to a complete active baseline");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-actions.is-nowrap:has(> .bf-button.is-icon:not(.is-nested)))", {
+    "--bf-action-target-block-clearance": "round(up, max(0rem, calc((var(--bf-pointer-target-minimum) - var(--bf-body-line-height)) / 2)), var(--bf-baseline))"
+  }, "supporting engines round the owning nowrap row's block-edge shortfall without a one-baseline cap");
   assert(!css.includes("is-icon-target-wrap") && !css.includes("is-icon-target-scrollport"), "Expected generated CSS to remove the unadopted icon-target opt-in API.");
-  const contextualIconTargetHas = /\.(?:bf-actions|bf-cluster)(?=[^>+~,{]*:has\()/;
-  ast.walkRules(rule => {
-    assert(!contextualIconTargetHas.test(rule.selector), `Expected icon target container ${rule.selector} never to infer geometry through :has().`);
-  });
   assert(css.includes(":where(.bf-theme) :where(.bf-button-label) {\n  min-inline-size: 0;"), "Expected icon buttons to expose an explicit label slot so leading and trailing icons have identical spacing.");
   assert(css.includes(":where(.bf-theme) :where(.bf-cta-block) {\n  align-items: baseline;\n  column-gap: var(--bf-component-inline-inset-action);\n  display: flex;\n  flex-wrap: wrap;\n  margin-block-end: 0;"), "Expected generated CSS to keep bf-cta-block externally neutral and use a horizontal action-space owner.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));"), "Expected bf-cta-block.is-bordered to add a top divider with snapped padding.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row) {\n  container-type: inline-size;\n  display: grid;\n  gap: var(--bf-grid-gap-block) var(--bf-grid-gap-inline);\n  /* Keep the logical track system on the query container itself."), "Expected generated CSS to define the bf-equal-height-row query container without an invalid self-query.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-cta-block.is-bordered) {\n  padding-block-start: var(--bf-space-1);"), "Expected bf-cta-block.is-bordered to preserve its clearance without putting the divider in layout.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row) {\n  container-type: inline-size;\n  column-gap: var(--bf-grid-gap-inline);\n  display: grid;"), "Expected generated CSS to define the bf-equal-height-row query container without an invalid self-query.");
   assert(css.includes("grid-template-columns: repeat(8, minmax(0, 1fr));"), "Expected bf-equal-height-row to expose its eight logical tracks at every width.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col) {\n  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);\n  display: grid;\n  grid-column: 1 / -1;\n  grid-row: span 4;\n  grid-template-rows: subgrid;"), "Expected bf-equal-height-row-col to span the narrow row and opt into subgrid alignment.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col.is-borderless) {\n  border-block-start: 0;\n}"), "Expected bf-equal-height-row-col.is-borderless modifier to drop the top border.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col) {\n  display: grid;\n  grid-column: 1 / -1;\n  grid-row: span 4;\n  grid-template-rows: subgrid;"), "Expected bf-equal-height-row-col to span the narrow row and opt into subgrid alignment without a layout border.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row-col:not(.is-borderless))::after"), "Expected non-borderless equal-height columns to paint through the automatic overlay.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-1)::before {\n  grid-row: 2;\n}"), "Expected bf-equal-height-row.is-divider-1 to draw a cross-column rule on subgrid row 2.");
   assert(css.includes(":where(.bf-theme) :where(.bf-equal-height-row.is-divider-2)::after {\n  grid-row: 3;\n}"), "Expected bf-equal-height-row.is-divider-2 to draw a cross-column rule on subgrid row 3.");
   assert(!css.includes("bf-equal-heights") && !css.includes(".equal-heights"), "Expected equal-heights Sites recipe to reuse bf-equal-height-row without a duplicate CSS family.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: block;\n  inline-size: 100%;\n  margin: 0;\n}"), "Expected bf-figure to stay externally neutral for its owning stack.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: grid;\n  gap: var(--bf-space-1);\n  inline-size: 100%;\n  margin: 0;\n}"), "Expected bf-figure to stay externally neutral while owning its caption gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas, svg) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure-caption) {\n  color: var(--bf-color-text-default);\n  display: block;\n  font-style: italic;"), "Expected bf-figure-caption to render as an italic block beneath the media.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect) {\n  aspect-ratio: 16 / 9;"), "Expected generated CSS to define the bf-aspect default 16:9 slot.");
@@ -1028,7 +1261,33 @@ function validateCommonCss(css: string): void {
   assert(css.includes("flex: 0 1 5rem;"), "Expected slider number inputs to shrink before overflowing.");
   assert(!css.includes("min-inline-size: 5rem;"), "Expected slider number inputs to avoid a hard minimum width.");
   assert(css.includes(":where(.bf-switch-slider)"), "Expected generated CSS to include switch styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(fieldset, .bf-fieldset)", {
+    "border": "0",
+    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default)"
+  }, "native fieldset/legend anatomy self-paints its frame without layout-border geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label)::before", {
+    "border": "0",
+    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast)"
+  }, "checkbox and radio frame parts self-paint because the sibling pseudo owns their glyph");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-switch-slider)::before", {
+    "border": "0",
+    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast)"
+  }, "switch native marker anatomy self-paints its thumb frame");
+  for (const selector of [
+    ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb",
+    ":where(.bf-theme) :where(input[type='range'])::-moz-range-thumb"
+  ]) {
+    assertRuleHasDecl(ast, selector, { "border": "0" }, `${selector} keeps native-part frame paint out of layout geometry`);
+  }
+  assert(css.includes("outline: var(--bf-border-width) solid CanvasText;") && css.includes("outline-offset: calc(var(--bf-border-width) * -1);"), "Expected named native marker and fieldset exceptions to retain inset all-sided system outlines in forced colors.");
   assert(css.includes(":where(.bf-validation-message)"), "Expected generated CSS to include validation message styling.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-validation-message)", {
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
+    "padding-inline-start": "calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset))"
+  }, "validation copy keeps only block-end compensation while owned padding reserves its marker keyline");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-validation-message)::before", {
+    "inset-inline-start": "var(--bf-leading-mark-group-inset)"
+  }, "validation marker paint follows the padding-owned keyline");
   assert(!css.includes(".has-error"), "Expected generated CSS to omit the deprecated has-error validation alias.");
   assert(!css.includes(".has-success"), "Expected generated CSS to omit the deprecated has-success validation alias.");
   assert(!css.includes(".has-warning"), "Expected generated CSS to omit the deprecated has-warning validation alias.");
@@ -1036,9 +1295,22 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", {
     "display": "flex",
     "flex-direction": "column",
-    "gap": "var(--bf-field-gap)",
-    "overflow": "auto"
-  }, "card surfaces keep the shared stacked surface contract");
+    "gap": "var(--bf-section-space-shallow)",
+    "overflow": "visible"
+  }, "card surfaces own the shared group gap while allowing owned popups to escape");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-header)", {
+    "border": "0",
+    "padding-block-end": "0"
+  }, "card sections add no block padding inside the surface-owned group gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-scroll)", {
+    "max-inline-size": "100%",
+    "min-inline-size": "0",
+    "overflow-x": "auto",
+    "scrollbar-width": "thin"
+  }, "wide Card content scrolls on an inner BF owner while the Card root remains available to escaping overlays");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-scroll) > :where(table, .bf-table, pre, .bf-code-snippet)", {
+    "min-inline-size": "var(--bf-card-scroll-min-inline-size, var(--bf-table-scroll-min-inline-size, 48rem))"
+  }, "wide Card content reuses the table-scroll intrinsic-width convention");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(a.bf-card, a.bf-card.is-highlighted, a.bf-card.is-overlay, a.bf-card.is-muted)", {
     "color": "inherit",
     "cursor": "pointer",
@@ -1074,20 +1346,20 @@ function validateCommonCss(css: string): void {
     "table-layout": "auto",
     "width": "100%"
   }, "tables keep the canonical BF table layout contract");
-  assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedInteractiveSelector})`, {
+  assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedFieldSelector}, .bf-button.is-nested:not(.is-link))`, {
     "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
-    "padding-block": "var(--bf-nested-framed-row-padding-block)"
-  }, "explicit nested fields and buttons fit within a host-owned body line");
+    "padding-block": "var(--bf-nested-row-padding-block)"
+  }, "explicit nested fields and buttons preserve host fit without subtracting paint width from layout geometry");
   assertRuleHasDecl(ast, `:where(.bf-theme) :where(${nestedFieldSelector})`, {
-    "block-size": "var(--bf-nested-framed-row-painted-block-size)"
-  }, "nested textual fields replace the browser intrinsic floor with their token-derived border box");
+    "block-size": "100%"
+  }, "nested textual fields fill their named boundary owner");
   assert(nestedTextInputTypes.every(type => css.includes(`input.bf-input.is-nested[type='${type}']`)), "Expected every supported nested textual input type to be explicit in the positive allowlist.");
   assert(!css.includes("input.bf-input.is-nested:not([type='file'])") && !css.includes("button.bf-button.is-nested") && css.includes(".bf-button.is-nested:not(.is-link)"), "Expected nested density to reject catch-all inputs and link buttons while remaining element-agnostic for bordered buttons.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-checkbox.is-nested > .bf-checkbox-label, .bf-radio.is-nested > .bf-radio-label)", {
     "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
-    "padding-block": "var(--bf-nested-framed-row-padding-block)"
+    "padding-block": "var(--bf-nested-row-padding-block)"
   }, "explicit nested selection controls fit within a host-owned body line");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
     "padding-inline-start": "calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
@@ -1099,18 +1371,26 @@ function validateCommonCss(css: string): void {
     "inline-size": "fit-content",
     "justify-content": "center",
     "justify-self": "start",
-    "padding-inline": "max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)))",
+    "padding-inline": "var(--bf-ui-chip-padding-inline)",
     "white-space": "nowrap"
   }, "chips keep the canonical neutral token defaults and inline chip layout");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)"
+  }, "standalone Chips keep only their block-end row compensation and leave peer spacing to their container");
   assertRuleHasDecl(ast, ":where(.bf-theme)", {
     "--bf-ui-chip-padding-inline": "var(--bf-component-inline-inset-action)"
   }, "chips use the shared Action inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
-    "min-inline-size": "min(100%, calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2)))"
-  }, "short Action-framed chips retain a container-safe stadium silhouette under the dense Canonical inset without changing block geometry");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested)", {
-    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)))"
-  }, "short nested chips retain the same container-safe stadium contract");
+    "min-inline-size": "min(100%, calc(var(--bf-interface-row-painted-block-size) + var(--bf-inline-unit)))"
+  }, "short Action-framed chips retain a container-safe stadium silhouette independent of paint width");
+  const legacyTableChipSelector = ":where(.bf-chip.is-nested:not(.bf-theme):not(:scope td .bf-chip, :scope .bf-theme .bf-chip))";
+  const legacySideNavigationChipSelector = ":where(.bf-chip.is-nested:not(.bf-theme):not(:scope .bf-side-navigation .bf-chip, :scope .bf-theme .bf-chip))";
+  assertRuleHasDecl(ast, legacyTableChipSelector, {
+    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + var(--bf-inline-unit)))"
+  }, "short Chips in named legacy hosts retain the same container-safe stadium contract");
+  assertRuleHasDecl(ast, legacySideNavigationChipSelector, {
+    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + var(--bf-inline-unit)))"
+  }, "short Chips in named legacy navigation hosts retain the same container-safe stadium contract");
   assert(css.includes("--bf-ui-chip-radius: 999rem;") && css.includes("border-radius: var(--bf-ui-chip-radius);"), "Expected standalone and nested chips to use the shared rem-based pill radius.");
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
@@ -1124,9 +1404,70 @@ function validateCommonCss(css: string): void {
     "text-indent": "0",
     "white-space": "nowrap"
   }, "badges keep the canonical body-sized pill geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):has(> :where(.bf-badge, .bf-badge.is-negative))", {
+    "column-gap": "var(--bf-component-inline-inset-field)"
+  }, "Chip parents own the field-sized relationship before direct badges");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) :where(.bf-badge, .bf-badge.is-negative)", {
-    "margin-inline-start": "var(--bf-component-inline-inset-field)"
-  }, "moving the chip's outer keyline to Action does not inflate its internal badge relationship");
+    "margin-inline": "0"
+  }, "badges leave their relationship spacing to the Chip parent");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip-dismiss)", {
+    "block-size": "var(--bf-icon-size-default)",
+    "inline-size": "var(--bf-icon-size-default)"
+  }, "Chip dismiss actions use the tier body icon slot");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):has(> .bf-chip-dismiss)", {
+    "column-gap": "var(--bf-leading-mark-gap)"
+  }, "Chip parents own the governed mark gap before a dismiss icon");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::before", {
+    "background": "currentColor",
+    "block-size": "var(--bf-icon-size-default)",
+    "inline-size": "var(--bf-icon-size-default)",
+    "mask-image": "var(--bf-ui-icon-close)",
+    "mask-size": "var(--bf-icon-size-default) var(--bf-icon-size-default)"
+  }, "close affordances mask the governed tier-sized icon from currentColor so forced colors retains it");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip-dismiss)::after", {
+    "min-block-size": "var(--bf-pointer-target-minimum)",
+    "min-inline-size": "var(--bf-pointer-target-minimum)",
+    "pointer-events": "auto"
+  }, "Chip dismiss keeps a flow-neutral 24px pointer target around the tier-sized icon");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after", {
+    "background": "currentColor",
+    "inline-size": "calc(var(--bf-leading-mark-gap) + var(--bf-icon-size-default))",
+    "mask-image": "var(--bf-ui-icon-chevron-down)",
+    "mask-position": "right center",
+    "mask-size": "var(--bf-icon-size-default) var(--bf-icon-size-default)"
+  }, "sortable headers reserve a separate full mark gap beside an unsqueezed tier-sized caret");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort]:dir(rtl))::after", {
+    "mask-position": "left center"
+  }, "sortable caret paint mirrors without translating its slot or label gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'])::after", {
+    "mask-image": "var(--bf-ui-icon-chevron-up)"
+  }, "ascending sort state swaps the glyph mask without rotating its reserved gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after", {
+    "background": "CanvasText",
+    "forced-color-adjust": "none"
+  }, "forced-colors sortable carets preserve their system-color mask paint");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::before", {
+    "background": "CanvasText",
+    "forced-color-adjust": "none"
+  }, "forced-colors close affordances preserve their system-color mask paint");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after", "padding-inline-start", "sortable caret gap remains separate from its tier-sized glyph box");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort='ascending'])::after", "transform", "ascending sort state swaps its mask without rotating the reserved gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody)", {
+    "gap": "var(--bf-section-space-shallow) var(--bf-grid-gap-inline)"
+  }, "mobile table cards use governed group and grid peer relationships rather than continuation or copied space values");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-logo-section.is-contained) :where(.bf-logo-section-item)", {
+    "margin-block": "0"
+  }, "contained logo items leave relationship spacing to their parent");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-logo-section.is-contained) :where(.bf-logo-section-items)", {
+    "row-gap": "var(--bf-space-1)"
+  }, "contained logo collections own their wrapped row relationship");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-logo-section-items)", {
+    "column-gap": "var(--bf-grid-gap-inline)"
+  }, "logo peers use the layout grid gutter rather than a label continuation keyline");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-options-options)", {
+    "gap": "var(--bf-field-gap)"
+  }, "inline option peers use the governed item gap rather than a label continuation keyline");
+  assert(!css.includes(":where(.bf-logo-section-items) {\n  align-items: center;\n  display: flex;\n  flex-wrap: wrap;\n  column-gap: var(--bf-component-inline-inset-continuation);") && !css.includes(":where(.bf-inline-options-options) {\n  display: flex;\n  flex-wrap: wrap;\n  gap: var(--bf-component-inline-inset-continuation);"), "Expected peer collections not to consume SP-10 label continuation as relationship spacing.");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "box-sizing", "badge sizing follows the shared border-box contract instead of a losing local content-box override");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "max-inline-size", "badges grow with wider counter content instead of clipping at an arbitrary character cap");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "overflow", "badges do not hide wider counter content");
@@ -1139,9 +1480,9 @@ function validateCommonCss(css: string): void {
   }, "status labels keep the canonical inline label treatment");
   const statusLabelRuleStart = css.indexOf(":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {");
   const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
-  assert(statusLabelRule.includes("border-block: var(--bf-border-width) solid transparent") && statusLabelRule.includes("padding-block: var(--bf-interface-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end)"), "Expected status-label paint to use the symmetric shared interface-row contract.");
+  assert(statusLabelRule.includes("border-block: 0") && statusLabelRule.includes("padding-block: var(--bf-interface-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end)"), "Expected status-label geometry to use the symmetric zero-layout-border interface-row contract.");
   assert(css.includes("--bf-nested-row-line-height: calc(var(--bf-interface-row-line-height) - var(--bf-baseline));") && !css.includes("--bf-nested-row-line-height: max(") && css.includes("--bf-nested-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height)) / 2));") && css.includes("--bf-nested-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-row-padding-block) * 2));"), "Expected nested surface geometry to use the designed body-line-minus-baseline expression without silently selecting among unrelated constraints.");
-  assert(css.includes("--bf-nested-framed-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height) - (var(--bf-border-width) * 2)) / 2));") && css.includes("--bf-nested-framed-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-framed-row-padding-block) * 2) + (var(--bf-border-width) * 2));") && css.includes("--bf-nested-framed-row-visual-offset: calc(var(--bf-border-width) + var(--bf-nested-framed-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));"), "Expected nested interactive controls to use an explicit two-border ledger within the host body line.");
+  assert(css.includes("--bf-nested-row-visual-offset: calc(var(--bf-nested-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));") && !css.includes("--bf-nested-framed-row-"), "Expected nested interactive controls to share the zero-layout-border ledger within the host body line.");
   const expectedSquareAliases = new Map<string, string>([
     [":where(.bf-theme)", "var(--bf-interface-row-painted-block-size)"],
     [":where(.bf-theme) :where(.bf-badge)", "var(--bf-interface-row-line-height)"],
@@ -1178,18 +1519,20 @@ function validateCommonCss(css: string): void {
   ast.walkRules(rule => {
     if (!rule.selector.includes("bf-tier-")) return;
     const isBlockDerivedOverride = rule.selector.includes("bf-chip") || rule.selector.includes("bf-badge") || rule.selector.includes("bf-button.is-icon") || rule.selector.includes("bf-pagination-link");
+    const isGovernedSiteDenseChip = rule.selector.includes(".bf-tier-editorial") && rule.selector.includes(".bf-table td:has(") && rule.selector.includes(".bf-chip");
     let repointsSquare = false;
     rule.walkDecls("--bf-square-block-size", () => { repointsSquare = true; });
-    assert(!isBlockDerivedOverride && !repointsSquare, `Expected block-derived geometry to avoid per-tier overrides; found ${rule.selector}.`);
+    assert((!isBlockDerivedOverride || isGovernedSiteDenseChip) && !repointsSquare, `Expected block-derived geometry to avoid ungoverned per-tier overrides; found ${rule.selector}.`);
   });
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-pagination-link:not(.is-previous):not(.is-next))", {
     "min-inline-size": "var(--bf-square-block-size)",
     "padding-inline": "0"
   }, "bare numbered pagination consumes painted-block geometry without an action inset");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", {
+    "border": "0",
     "border-radius": "var(--bf-radius)",
-    "padding-inline": "var(--bf-component-inline-inset-action-bordered)"
-  }, "labelled pagination controls retain the Action contract and shared radius");
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "labelled pagination controls preserve the Action keyline with zero layout-border geometry");
   assert(!css.includes("--bf-pagination-slot-inline-size"), "Expected pagination to retire its occupied-block inline slot alias.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-notification, .bf-notification.is-information, .bf-notification.is-positive, .bf-notification.is-caution, .bf-notification.is-negative)", {
     "--bf-notification-close-painted-block-size": "calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default))"
@@ -1223,18 +1566,66 @@ function validateCommonCss(css: string): void {
   ]);
   const expectedUnaffectedRadii = [
     ":where(.bf-theme) :where(.bf-application-aside-resize-handle)::after => 62.4375rem",
+    ":where(.bf-theme) :where(.bf-aside)::after => inherit",
     ":where(.bf-theme) :where(.bf-button, .bf-button.is-base) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-button.is-link) => 0",
-    ":where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))), .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))))::after => inherit",
+    ":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)::after => inherit",
+    ":where(.bf-theme) :where(.bf-card-header)::after => inherit",
+    ":where(.bf-theme) :where(.bf-card-preview:not(.is-missing))::after => inherit",
+    ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)::after => inherit",
+    ":where(.bf-theme) :where(.bf-choice-row)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet-block.is-icon.is-copied)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet-dropdown) + :where(.bf-code-snippet-dropdown)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet-header)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet-header.is-stacked) :where(.bf-code-snippet-dropdowns)::after => inherit",
+    ":where(.bf-theme) :where(.bf-code-snippet.is-bordered)::after => inherit",
+    ":where(.bf-theme) :where(.bf-content-card)::after => inherit",
+    ":where(.bf-theme) :where(.bf-content-card-footer)::after => inherit",
+    ":where(.bf-theme) :where(.bf-contextual-menu-dropdown)::after => inherit",
+    ":where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group)::after => inherit",
+    ":where(.bf-theme) :where(.bf-cta-block.is-bordered)::after => inherit",
+    ":where(.bf-theme) :where(.bf-equal-height-row-col:not(.is-borderless))::after => inherit",
+    ":where(.bf-theme) :where(.bf-field-boundary) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after => inherit",
+    ":where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
+    ":where(.bf-theme) :where(.bf-modal-dialog)::after => inherit",
+    ":where(.bf-theme) :where(.bf-modal-footer)::after => inherit",
+    ":where(.bf-theme) :where(.bf-modal-header)::after => inherit",
+    ":where(.bf-theme) :where(.bf-navigation-bar)::after => inherit",
+    ":where(.bf-theme) :where(.bf-navigation-drawer)::after => inherit",
+    ":where(.bf-theme) :where(.bf-notice, .bf-notice.is-information, .bf-notice.is-positive, .bf-notice.is-caution, .bf-notice.is-negative)::after => inherit",
+    ":where(.bf-theme) :where(.bf-notification-meta)::after => inherit",
+    ":where(.bf-theme) :where(.bf-notification:not(.is-borderless))::after => inherit",
+    ":where(.bf-theme) :where(.bf-option-card)::after => inherit",
     ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)::after => inherit",
+    ":where(.bf-theme) :where(.bf-panel-footer)::after => inherit",
     ":where(.bf-theme) :where(.bf-prose ul > li)::before => 50%",
     ":where(.bf-theme) :where(.bf-radio-label)::after => 50%",
     ":where(.bf-theme) :where(.bf-radio-label)::before => 50%",
+    ":where(.bf-theme) :where(.bf-search-and-filter-panel)::after => inherit",
+    ":where(.bf-theme) :where(.bf-search-box-button)::after => inherit",
+    ":where(.bf-theme) :where(.bf-filter-panel-section:not(:last-child))::after => inherit",
+    ":where(.bf-theme) :where(.bf-hero:not(.is-borderless))::after => inherit",
+    ":where(.bf-theme) :where(.bf-inline-options)::after => inherit",
     ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) => 0",
+    ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)::after => inherit",
+    ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)::after => inherit",
     ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer)::after => inherit",
     ":where(.bf-theme) :where(.bf-switch-slider) => var(--bf-control-visual-size)",
     ":where(.bf-theme) :where(.bf-switch-slider)::before => 50%",
+    ":where(.bf-theme) :where(.bf-table-mobile-card-frame > .bf-table.is-mobile-card > tbody > tr)::after => inherit",
+    ":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])::after => inherit",
+    ":where(.bf-theme) :where(.bf-tabs-list)::after => inherit",
+    ":where(.bf-theme) :where(.bf-token-row)::after => inherit",
+    ":where(.bf-theme) :where(.bf-top-navigation)::after => inherit",
+    ":where(.bf-theme) :where(.bf-top-navigation-dropdown)::after => inherit",
+    ":where(.bf-theme) :where(.bf-top-navigation-search)::after => inherit",
+    ":where(.bf-theme) :where(.bf-top-navigation.is-reduced) :where(.bf-top-navigation-search)::after => inherit",
+    ":where(.bf-theme) :where(.bf-tooltip-message)::after => inherit",
     ":where(.bf-theme) :where(.bf-validation-message)::before => 50%",
     ":where(.bf-theme) :where(input[type='file'])::file-selector-button => var(--bf-radius)",
     ":where(.bf-theme) :where(input[type='range']) => var(--bf-baseline)",
@@ -1242,7 +1633,9 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(input[type='range'])::-moz-range-thumb => 50%",
     ":where(.bf-theme) :where(input[type='range'])::-moz-range-track => var(--bf-baseline)",
     ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-runnable-track => var(--bf-baseline)",
-    ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb => 50%"
+    ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb => 50%",
+    ":where(.bf-theme) :where(.bf-list.is-divided) > :where(.bf-list-item:not(:first-child))::after => inherit",
+    ":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)::after => inherit"
   ].sort();
   const unaffectedRadii: string[] = [];
   ast.walkDecls("border-radius", declaration => {
@@ -1265,21 +1658,64 @@ function validateCommonCss(css: string): void {
   });
   assert(JSON.stringify(unaffectedRadiusLonghands.sort()) === JSON.stringify(expectedUnaffectedRadiusLonghands), `Expected every radius longhand to retain the reviewed declaration set; got ${JSON.stringify(unaffectedRadiusLonghands)}.`);
   assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
-  assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-bottom: var(--bf-interface-row-compensation-block-end);\n  min-block-size: 0;"), "Expected the replaced color control to use a metric strut and stretch within the same natural interface row as textual controls.");
+  assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-block-end: var(--bf-interface-row-compensation-block-end);") && css.includes("margin: 0;\n  min-block-size: 0;"), "Expected the color wrapper to own row compensation and the out-of-flow field stroke while preserving its metric strut and native picker.");
   assert(css.includes("padding-block-end: var(--bf-in-box-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-in-box-row-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested, .bf-status-label.is-nested)", {
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
     "padding-block": "var(--bf-nested-row-padding-block)"
-  }, "nested chip and status surfaces fit a host-owned body line");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested)", {
+  }, "nested status surfaces fit a host-owned body line");
+  for (const legacyChipSelector of [legacyTableChipSelector, legacySideNavigationChipSelector]) {
+    assertRuleHasDecl(ast, legacyChipSelector, {
+      "line-height": "var(--bf-nested-row-line-height)",
+      "margin-block": "0",
+      "--bf-chip-control-block-inset": "var(--bf-nested-row-padding-block)",
+      "padding-block": "var(--bf-chip-control-block-inset)",
+      "border": "0",
+      "--bf-stroke-color": "var(--bf-ui-chip-border)",
+      "padding-inline": "var(--bf-ui-chip-padding-inline)"
+    }, "nested Chips in named legacy hosts fit the host-owned body line and paint without block footprint");
+    assertRuleHasDecl(ast, `${legacyChipSelector} :where(.bf-chip-lead, .bf-chip-value)`, {
+      "line-height": "inherit"
+    }, "nested Chip parts inherit the compact host line so badges cannot enlarge it");
+  }
+  assert(!css.includes(":where(.bf-side-navigation .bf-chip.is-nested, .bf-table td .bf-chip.is-nested)"), "Expected the legacy Chip compatibility path to resolve only through scoped named hosts instead of a cross-product descendant selector.");
+  assert(css.includes("@scope (:where(.bf-theme)) to (:where(.bf-theme))") && css.includes("@scope (:where(.bf-side-navigation)) to (:where(.bf-side-navigation, .bf-theme))"), "Expected legacy nested Chips to stop at the nearest named host and product root.");
+  /* The scoped legacy compatibility path and the governed Site policy share
+     paint geometry, but only the Site Table.Cell path changes density. */
+  assertRuleHasDecl(ast, legacyTableChipSelector, {
     "border": "0",
-    "box-shadow": "inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border)",
+    "--bf-stroke-color": "var(--bf-ui-chip-border)",
     "padding-inline": "var(--bf-ui-chip-padding-inline)"
-  }, "nested chips paint their border without adding block footprint");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-nested) :where(.bf-chip-lead, .bf-chip-value)", {
-    "line-height": "inherit"
-  }, "nested chip parts inherit the compact host line so badges cannot enlarge it");
+  }, "legacy table Chips use the reviewed paint-only compatibility anatomy");
+  const density = componentDensityPolicy.siteDenseChip;
+  assert(
+    componentDensityPolicy.version === 1 &&
+    density.product === "editorial" &&
+    density.provider === ".bf-table td" &&
+    JSON.stringify(density.providerBoundaries) === JSON.stringify(["td", ".bf-theme"]) &&
+    density.subscriber === ".bf-chip" &&
+    density.role === "spacing.inset.control.block",
+    `Expected the versioned dense Chip policy to name the exact product, nearest-provider boundaries, subscriber and role; got ${JSON.stringify(componentDensityPolicy)}.`
+  );
+  assert(
+    css.includes(`${density.comfortableMember}: var(--bf-control-block-inset);`) &&
+    css.includes(`${density.denseMember}: var(--bf-space-half);`) &&
+    css.includes(`${density.currentMember}: var(${density.denseMember});`) &&
+    css.includes(`${density.componentBinding}: var(${density.currentMember}, var(--bf-control-block-inset));`) &&
+    css.includes(`padding-block: var(${density.componentBinding});`) &&
+    css.includes("line-height: var(--bf-body-line-height);") &&
+    css.includes("margin-block: 0;") &&
+    css.includes("min-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(--bf-chip-control-block-inset) * 2)));"),
+    "Expected the Site table provider and Chip subscriber to bind the named dense control-block member without a layout-border term or child compensation."
+  );
+  assert(
+    css.includes("@scope (:where(.bf-theme.bf-tier-editorial)) to (:where(.bf-theme))") &&
+    css.includes("@scope (:where(.bf-table td)) to (:where(td, .bf-theme))") &&
+    css.includes(":scope:has(.bf-chip:not(.bf-theme):not(:scope td .bf-chip, :scope .bf-theme .bf-chip))") &&
+    !css.includes(".bf-dense-chip-host"),
+    "Expected automatic dense Chip enrollment to cross neutral descendants, stop at nearest cells and product roots, and expose no public host toggle."
+  );
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "border-block-width": "0"
   }, "nested status labels remove their transparent block border footprint");
@@ -1294,17 +1730,17 @@ function validateCommonCss(css: string): void {
   }, "number inputs retain the browser-owned pointer-accessible stepper");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(select)", {
     "background-position": "right var(--bf-component-inline-inset-field) center",
-    "background-size": "1rem 1rem",
+    "background-size": "var(--bf-icon-size-default) var(--bf-icon-size-default)",
     "overflow": "hidden",
     "text-overflow": "ellipsis",
     "white-space": "nowrap",
-    "padding-inline-end": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))"
-  }, "selects reserve one trailing chevron canvas and truncate long selected values");
+    "padding-inline-end": "calc(var(--bf-icon-size-default) + var(--bf-leading-mark-gap) + var(--bf-component-inline-inset-field))"
+  }, "selects reserve the tier icon, mark gap, and field edge inset while truncating long selected values");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(select:dir(rtl))", {
     "background-position": "left var(--bf-component-inline-inset-field) center"
   }, "select artwork follows logical inline-end in RTL");
   assert(!css.includes("--bf-ui-icon-number-stepper") && !css.includes("::-webkit-inner-spin-button") && !css.includes("::-webkit-outer-spin-button"), "Expected number inputs not to paint inert replacement arrows or disable native spin buttons.");
-  assert(css.includes("--bf-ui-badge-padding-inline: var(--bf-border-width);") && !css.includes("--bf-ui-badge-padding-inline: calc("), "Expected badge overflow padding to stay token-derived without reconstructing a block size from typography.");
+  assert(css.includes("--bf-ui-badge-padding-inline: 0.0625rem;") && !css.includes("--bf-ui-badge-padding-inline: var(--bf-border-width);") && !css.includes("--bf-ui-badge-padding-inline: calc("), "Expected badge overflow padding to stay a named rem-scalable member independent of stroke width and typography.");
   assert(!css.includes("min-width: calc(var(--bf-body-line-height") && !css.includes("min-inline-size: calc(var(--bf-body-line-height"), "Expected badge inline floors to resolve through the cascade-repointed square contract rather than a build-time body-line interpolation.");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before", "chip value separators");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "badges");
@@ -1331,9 +1767,17 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-search-container[aria-expanded='false'])", {
     "min-block-size": "var(--bf-interface-row-painted-block-size)"
   }, "collapsed search-and-filter hosts leave trailing compensation to their external margin");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar.is-responsive)", {
-    "margin-block-end": "calc(var(--bf-border-width) * -1)"
-  }, "responsive application bars compensate their trailing keyline inside the baseline track");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar)", {
+    "--bf-overlay-stroke-layer": "inset 0 calc(var(--bf-stroke-width) * -1) 0 var(--bf-stroke-color)",
+    "--bf-stroke-color": "var(--bf-color-border-low-contrast)"
+  }, "responsive application bars paint their trailing keyline outside layout geometry");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar)::after", {
+    "inset": "0",
+    "pointer-events": "none",
+    "position": "absolute"
+  }, "responsive application bars use the automatic last-child paint overlay");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-navigation-bar)", "border-bottom", "responsive application bars do not put their trailing keyline in layout");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-navigation-bar.is-responsive) {\n  margin-block-end:"), "Expected responsive application bars to need no negative border compensation.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-application:has(> .bf-navigation)):has(> .bf-aside.is-pinned:not(.is-collapsed))", {
     "grid-template-areas": "\"navigation-bar navigation-bar\"\n    \"main aside\"",
     "grid-template-rows": "min-content minmax(0, 1fr)"
@@ -1344,8 +1788,8 @@ function validateCommonCss(css: string): void {
     "visibility": "hidden"
   }, "wide expanded navigation removes the compact brand row without deleting its responsive controls");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-box)", {
-    "--bf-search-box-action-inline-size": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))",
-    "--bf-search-box-trailing-inline-size": "calc((var(--bf-search-box-action-inline-size) * 2) + var(--bf-border-width))",
+    "--bf-search-box-action-inline-size": "max(var(--bf-pointer-target-minimum), calc(var(--bf-icon-size-default) + (var(--bf-component-inline-inset-field) * 2)))",
+    "--bf-search-box-trailing-inline-size": "calc(var(--bf-search-box-action-inline-size) * 2)",
     "display": "flex",
     "position": "relative"
   }, "search boxes keep the canonical inline search layout");
@@ -1356,7 +1800,7 @@ function validateCommonCss(css: string): void {
     "display": "grid"
   }, "search-and-filter keeps the canonical outer grid shell");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter-box)", {
-    "--bf-search-and-filter-action-inline-size": "calc(1rem + (var(--bf-component-inline-inset-field) * 2))",
+    "--bf-search-and-filter-action-inline-size": "max(var(--bf-pointer-target-minimum), calc(var(--bf-icon-size-default) + (var(--bf-component-inline-inset-field) * 2)))",
     "--bf-search-and-filter-trailing-inline-size": "calc(var(--bf-search-and-filter-action-inline-size) * 2)",
     "display": "inline-flex",
     "flex": "1 1 12rem",
@@ -1367,11 +1811,11 @@ function validateCommonCss(css: string): void {
     "padding-inline-end": "var(--bf-search-and-filter-trailing-inline-size)"
   }, "search-and-filter inputs reserve their trailing affordance space from the field padding token");
   assert(css.includes("--bf-disclosure-gap: var(--bf-leading-mark-gap);"), "Expected disclosures to share the Canonical mark/icon text-gap owner.");
-  assert(css.includes("--bf-disclosure-icon-inline-size: 1rem;"), "Expected generated CSS to define the shared disclosure icon-size token.");
+  assert(css.includes("--bf-disclosure-icon-inline-size: var(--bf-icon-size-default);"), "Expected generated CSS to derive the shared disclosure icon slot from the tier body icon size.");
   assert(css.includes("--bf-disclosure-icon-optical-offset-block: 0rem;"), "Expected disclosure chevrons to remain centred on their text line without the leading-icon optical offset.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-accordion-button)", {
-    "gap": "var(--bf-disclosure-gap)"
-  }, "side-navigation accordion buttons use the shared disclosure gap instead of the generic compact row gap");
+    "gap": "var(--bf-side-navigation-icon-gap)"
+  }, "side-navigation accordion buttons use the panel's tier mark gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-accordion-tab)", {
     "gap": "var(--bf-disclosure-gap)"
   }, "accordion tabs use the shared disclosure gap instead of a pseudo-element margin");
@@ -1401,38 +1845,32 @@ function validateCommonCss(css: string): void {
     "min-inline-size": "0",
     "padding-block": "calc(var(--bf-baseline) / 2)"
   }, "top-navigation row reserves one complete baseline across its block edges");
-  assert(css.includes("transform: rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to point downward before expansion.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: rotate(180deg);\n}"), "Expected active top-navigation chevrons to rotate upward after expansion.");
+  assert(css.includes("transform: translateY(-50%) rotate(0deg);\n  transition: transform 160ms ease;"), "Expected closed top-navigation chevrons to use inset centering and point downward before expansion.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {\n  transform: translateY(-50%) rotate(180deg);\n}"), "Expected active top-navigation chevrons to remain inset-centred and rotate upward after expansion.");
   assert(css.includes(":where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown) {"), "Expected generated CSS to include the active top-navigation dropdown reveal styling.");
-  assert(css.includes("--bf-top-navigation-reduced-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));") && css.includes("top: var(--bf-top-navigation-reduced-row-block-size);"), "Expected reduced top navigation to absorb the complete interface-row compensation and place dropdowns from that occupied row.");
+  assert(css.includes("--bf-top-navigation-reduced-row-block-size: var(--bf-interface-row-occupied-block-size);") && css.includes("min-block-size: var(--bf-top-navigation-reduced-row-block-size);") && css.includes("padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));") && css.includes("top: var(--bf-top-navigation-reduced-row-block-size);"), "Expected reduced top navigation to occupy the complete interface row and place dropdowns from that row.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon)", {
     "background-size": "contain",
     "display": "inline-block",
-    "margin-block-start": "var(--bf-inline-icon-line-box-trim)",
     "transform": "var(--bf-icon-transform)",
     "vertical-align": "calc(var(--bf-inline-icon-baseline-shift) + ((var(--bf-icon-size-default) - var(--bf-icon-size)) / 2))"
   }, "icon base styling keeps the shared image-sized inline-block contract and metric baseline alignment");
   assert(css.includes("--bf-inline-icon-baseline-shift: calc((var(--bf-border-width) * 0.5) + ((1cap - var(--bf-icon-size-default)) / 2));"), "Expected inline icons to derive one Vanilla-compatible cap-centred baseline shift from the active font metric, default icon size, and scalable optical lift.");
-  assert(css.includes("--bf-inline-icon-line-box-trim: calc(var(--bf-border-width) * -1);"), "Expected the default inline icon to trim one scalable border from its layout margin without moving its paint.");
-  for (const size of ["medium", "large", "x-large", "xx-large"]) {
-    assertRuleHasDecl(ast, `:where(.bf-theme) :where(.bf-icon.is-${size})`, {
-      "--bf-inline-icon-line-box-trim": "0rem"
-    }, `${size} icon reserves its full painted block instead of inheriting the default line-box trim`);
-  }
+  assert(!css.includes("--bf-inline-icon-line-box-trim"), "Expected icons to avoid layout-margin or relative-inset line-box trims.");
   assert(!css.includes("vertical-align: bottom;"), "Expected no reusable inline icon to align against the line-box bottom edge.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after", {
-    "margin-block-start": "var(--bf-inline-icon-line-box-trim)",
+    "inline-size": "calc(var(--bf-leading-mark-gap) + var(--bf-icon-size-default))",
+    "mask-image": "var(--bf-ui-icon-chevron-down)",
+    "mask-size": "var(--bf-icon-size-default) var(--bf-icon-size-default)",
+    "pointer-events": "none",
     "vertical-align": "var(--bf-inline-icon-baseline-shift)"
-  }, "sortable-table chevrons reuse the shared inline-icon metric alignment");
-  for (const selector of [
-    ":where(.bf-theme) :where(.bf-article-pagination-direction > .bf-icon)",
-    ":where(.bf-theme) :where(.bf-in-page-navigation-toggle > .bf-icon)",
-    ":where(.bf-theme) :where(.bf-notification-icon)"
-  ]) {
-    assertRuleHasDecl(ast, selector, {
-      "margin-block-start": "0"
-    }, `${selector} keeps its flex, grid, or positioned owner responsible for block placement`);
-  }
+  }, "sortable-table chevrons reserve the mark gap outside an unsqueezed tier-sized mask and reuse the shared inline-icon metric alignment");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after", "margin-inline-start", "sortable-table mark spacing is not a relationship margin");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-table.is-sortable th[aria-sort])::after", "padding-inline-start", "sortable-table mark spacing does not squeeze the icon content box");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-breadcrumbs-item) + :where(.bf-breadcrumbs-item)::before", {
+    "padding-inline-end": "var(--bf-leading-mark-gap)"
+  }, "breadcrumb separators use owned padding for the mark-to-label gap");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-breadcrumbs-item) + :where(.bf-breadcrumbs-item)::before", "margin-inline-end", "breadcrumb separator spacing is not a relationship margin");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-icon.is-search)", {
     "--bf-icon-image": "var(--bf-ui-icon-search)"
   }, "search icons resolve from the shared search glyph token");
@@ -1448,12 +1886,20 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-list) {\n  align-content: start;\n  display: grid;"), "Expected base lists to contain item compensation without stretching occupied tracks.");
   assert(css.includes(":where(.bf-theme) :where(.bf-list-item.is-ticked, .bf-list-item.is-crossed) {"), "Expected generated CSS to include ticked and crossed list-item styling.");
   assert(!css.includes("top: calc(var(--bf-leading-icon-offset) + (var(--bf-baseline) * 0.5));"), "Expected divided list icons to share the first-line alignment instead of sinking by half a baseline.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-item) > :where(.bf-list)", {
+    "padding-inline-start": "var(--bf-component-inline-inset-action)"
+  }, "nested lists own their indentation as padding rather than a relationship margin");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-list-item) > :where(.bf-list)", "margin-inline-start", "nested list indentation is not a margin");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-list)", {
-    "--bf-inline-list-space": "0.5rem"
-  }, "plain and middot inline lists share one fixed inline-composition space");
+    "--bf-inline-list-space": "0.5rem",
+    "align-items": "baseline",
+    "column-gap": "var(--bf-inline-list-space)",
+    "display": "flex",
+    "flex-wrap": "wrap"
+  }, "plain and middot inline lists share one parent-owned inline-composition gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-list-item)", {
-    "margin-inline-end": "var(--bf-inline-list-space)"
-  }, "plain inline-list items use the shared fixed inline space rather than the vertical baseline");
+    "margin-inline-end": "0"
+  }, "inline-list items leave inter-item spacing to the parent gap");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-list.is-middot)", {
     "align-items": "baseline",
     "column-gap": "var(--bf-inline-list-space)",
@@ -1465,8 +1911,9 @@ function validateCommonCss(css: string): void {
   }, "middot inline-list items leave all inter-item spacing to the list and separator");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item:not(:last-of-type))::after", {
     "content": "\"\\2022\"",
-    "margin-inline-start": "var(--bf-inline-list-space)"
-  }, "middot separators sit one half-rem after the preceding item");
+    "padding-inline-start": "var(--bf-inline-list-space)"
+  }, "middot separators use owned inline padding before the painted separator");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-inline-list.is-middot) :where(.bf-inline-list-item:not(:last-of-type))::after", "margin-inline-start", "middot separator spacing is not a margin");
   assert(css.includes(":where(.bf-theme) :where(.bf-skip-link)"), "Expected generated CSS to include the skip-link styling.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree)", {
     "list-style": "none"
@@ -1497,9 +1944,9 @@ function validateCommonCss(css: string): void {
     "gap": "var(--bf-space-2)"
   }, "tabs own the relationship between their list and panel");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
-    "box-shadow": "inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default)",
     "margin": "0"
-  }, "tab lists paint their boundary without changing layout and do not leak trailing margin");
+  }, "tab lists do not leak trailing margin");
+  assert(css.includes(":where(.bf-theme) :where(.bf-tabs-list)::after") && css.includes(":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])::after"), "Expected tab-list and active-tab boundaries to use automatic out-of-flow overlays.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
     "overflow-x": "auto",
     "white-space": "nowrap"
@@ -1524,11 +1971,11 @@ function validateCommonCss(css: string): void {
     "padding-inline": "var(--bf-component-inline-inset-field)"
   }, "choice rows keep the canonical selection-row layout while tightening with the field padding token");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-options)", {
-    "border-bottom": "var(--bf-border-width) solid var(--bf-color-border-default)",
+    "border": "0",
     "display": "grid",
     "gap": "var(--bf-field-gap)",
     "padding-inline": "var(--bf-component-inline-inset-continuation)"
-  }, "inline options keep the canonical stacked layout on the shared continuation inset");
+  }, "inline options keep the canonical stacked layout without putting their painted boundary in layout");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-option-grid)", {
     "display": "grid",
     "grid-template-columns": "repeat(auto-fit, minmax(min(100%, 10rem), 1fr))"
@@ -1538,7 +1985,7 @@ function validateCommonCss(css: string): void {
     "min-block-size": "calc((var(--bf-interface-row-occupied-block-size) * 2) + var(--bf-baseline))",
     "text-align": "left"
   }, "option-card keeps the canonical stacked selection-card treatment");
-  assert(css.includes(":where(.bf-form-help.is-tight)"), "Expected generated CSS to include the tight helper-text modifier.");
+  assert(css.includes(":where(.bf-field:has(> .bf-form-help.is-tight))"), "Expected tight helper text to switch its owning field to zero row-gap.");
   assert(css.includes("input[type='color'].bf-color-input"), "Expected generated CSS to include the compact color-input treatment.");
   assert(css.includes(":where(.bf-actions)"), "Expected generated CSS to include the canonical actions-row helper.");
   assert(!css.includes(".config-tabs"), "Expected compat CSS to omit the downstream equal-tab aliases.");
@@ -1558,7 +2005,7 @@ function validateCommonCss(css: string): void {
     "appearance": "none",
     "background": "transparent",
     "border": "0 solid transparent",
-    "border-block-width": "var(--bf-border-width)",
+    "border-block-width": "0",
     "display": "inline-flex",
     "padding-block": "var(--bf-interface-row-padding-block)"
   }, "panel toggle styling stays on the regular metric-derived interface contract");
@@ -1670,6 +2117,8 @@ function validateAppTierCss(css: string): void {
   assert(css.includes(':where(.bf-panel.is-fill)'), "Expected the app-tier CSS to include the canonical fill-height panel helper.");
   assert(!css.includes('--bf-app-panel-shadow:'), "Expected the app-tier preset CSS to avoid a shared panel shadow token now that bf-panel no longer carries card chrome.");
   assert(!css.includes('box-shadow: var(--bf-app-panel-shadow);'), "Expected the app-tier preset CSS to avoid applying panel box shadows through bf-panel.");
+  assert(css.includes('--bf-overlay-elevation-layer: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.12), 0 0 0.1875rem rgba(0, 0, 0, 0.12);') && !css.includes('box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.12), 0 0 0.1875rem rgba(0, 0, 0, 0.12);'), "Expected App drawer and aside elevation to feed the local overlay slot instead of repainting the root.");
+  assert(!css.includes('padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));'), "Expected App navigation panel headers to keep the parent-owned zero-padding section contract without subtracting paint width.");
   assert(!css.includes('.p-'), "Expected the app-tier preset CSS to omit deprecated p-* selectors.");
   assert(!css.includes('.vr-'), "Expected the app-tier preset CSS to omit deprecated vr-* selectors.");
 }
@@ -1698,9 +2147,11 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.pageMargin === '2rem', "Expected the app-tier preset page margin token to follow the 2rem application outer margin.");
   assert(layout.contentMaxWidth === '60rem', "Expected the app-tier fixed-width token to use the derived 60rem cap.");
   assert(components.panelPaddingInline === '0.75rem' && components.panelPaddingBlock === '0.75rem', "Expected App panel padding to retain 0.75rem on both independently authored axes.");
-  assert(components.inlineInsetField === '0.25rem', "Expected the App field inset to tighten for dense data entry.");
+  assert(components.inlineInsetField === '0.5rem', "Expected the App field inset to match the shared 8px input inset.");
+  assert(components.controlBlockInset === '0.25rem', "Expected the App control block inset to use one 4px baseline unit.");
   assert(components.inlineInsetAction === '0.75rem', "Expected the App action inset to adopt the Canonical three-unit command start.");
-  assert(components.inlineInsetContinuation === '1.5rem', "Expected the App continuation inset to adopt the Canonical six-unit copy start.");
+  assert(components.inlineInsetContinuation === '1.875rem', "Expected the App continuation inset to derive from input inset, 14px icon and 8px mark gap.");
+  assert(components.controlVisualSize === '0.875rem', "Expected App icons and leading marks to match the 14px body type size.");
   assert(!("controlMinBlockSize" in components), "Expected the app-tier preset tokens to stop exposing legacy control height tokens.");
   assert(!("controlMinBlockSizeDense" in components), "Expected the app-tier preset tokens to stop exposing legacy dense control height tokens.");
   assert(css.includes('.bf-h1'), "Expected the app-tier preset CSS to emit role utility selectors like the other presets.");
@@ -1809,11 +2260,11 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
   assert(layout.gridGapInline === "1.5rem", "Expected the documentation tier inline grid gap token to be 1.5rem.");
   assert(layout.gridGapBlock === "1.5rem", "Expected the documentation tier block grid gap token to be 1.5rem.");
   assert(layout.pageMargin === "1.5rem", "Expected the documentation tier page margin token to be 1.5rem.");
-  assert(layout.sectionSpace === "3rem", "Expected the documentation tier section rhythm to be 3rem.");
+  assert(layout.sectionSpace === "2.5rem", "Expected the documentation tier section rhythm to be 2.5rem.");
   assert(layout.sectionSpaceDeep === "6rem", "Expected the documentation tier deep section rhythm to be 6rem.");
   assert(components.inlineInsetField === "0.5rem", "Expected the Documentation field inset to tighten relative to actions.");
   assert(components.inlineInsetAction === "0.75rem", "Expected the Documentation action inset to adopt the Canonical three-unit command start.");
-  assert(components.inlineInsetContinuation === "1.5rem", "Expected the Documentation continuation inset to adopt the Canonical six-unit copy start.");
+  assert(components.inlineInsetContinuation === "1.875rem", "Expected the Documentation continuation inset to derive from input inset, 14px icon and 8px mark gap.");
   assert(components.controlVisualSize === "0.875rem", "Expected the documentation tier visual control size to tighten slightly.");
   assert(css.includes('.bf-h1'), "Expected the documentation tier CSS to emit role utility selectors.");
 }
@@ -1843,7 +2294,7 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   assert(layout.gridGapInline === "1rem", "Expected the prose default inline grid gap token to provide the x-small 1rem gutter.");
   assert(layout.gridGapBlock === "1rem", "Expected the prose default block grid gap token to provide the x-small 1rem gap.");
   assert(layout.pageMargin === "1rem", "Expected the prose default page margin token to provide the x-small 1rem margin.");
-  assert(layout.sectionSpace === "4rem", "Expected the prose default section rhythm to be 4rem.");
+  assert(layout.sectionSpace === "4.5rem", "Expected the prose default section rhythm to be 4.5rem.");
   assert(components.radius === "0rem", "Expected the prose default controls to stay square, matching the compat visual direction.");
   assert(components.inlineInsetField === "0.5rem", "Expected the Editorial field inset to preserve its readable content start.");
   assert(components.inlineInsetAction === "1rem", "Expected the Editorial action inset to preserve the shared command start.");
@@ -1930,7 +2381,7 @@ async function collectFiles(rootDir: string, extensions: ReadonlySet<string>): P
 async function validateScalableAuthoredLengths(): Promise<void> {
   const sourceFiles = [
     ...await collectFiles(path.resolve("src"), new Set([".ts"])),
-    ...await collectFiles(path.resolve("demo"), new Set([".css"])),
+    ...(await collectFiles(path.resolve("demo"), new Set([".css"]))).filter(filePath => !filePath.startsWith(path.resolve("demo/spec-028/before"))),
     ...await collectFiles(path.resolve("examples"), new Set([".css"])),
     path.resolve("demo/page-chrome.js"),
     path.resolve("demo/spec-runtime.js"),
@@ -1965,7 +2416,7 @@ async function validateScalableAuthoredLengths(): Promise<void> {
     }
   }
 
-  assert(normativeTargetOccurrences === 5, `Expected exactly five uses of the normative 24 CSS-pixel target minimum (two target axes, target-owned inline and nowrap block allowances, and one wrapping-row gap floor), got ${normativeTargetOccurrences}.`);
+  assert(normativeTargetOccurrences === 1, `Expected exactly one shared authored 24 CSS-pixel target-minimum input, got ${normativeTargetOccurrences}.`);
   assert(violations.length === 0, `Expected authored component and demo styles to use rem-scalable lengths except for the reviewed 24 CSS-pixel target minimum; found other px units in ${violations.join(", ")}.`);
 }
 
@@ -2076,10 +2527,15 @@ async function main(): Promise<void> {
     readTextArtifact(path.resolve("demo/spec/spacing-vertical.html")),
     readTextArtifact(path.resolve("demo/panel.html"))
   ]);
-  const [pageChromeJs, specRuntimeJs, examplePageJs] = await Promise.all([
+  const [pageChromeJs, specRuntimeJs, examplePageJs, bundleVersionJs] = await Promise.all([
     readTextArtifact(path.resolve("demo/page-chrome.js")),
     readTextArtifact(path.resolve("demo/spec-runtime.js")),
-    readTextArtifact(path.resolve("demo/example-page.js"))
+    readTextArtifact(path.resolve("demo/example-page.js")),
+    readTextArtifact(path.resolve("demo/bundle-version.js"))
+  ]);
+  const [spec028ReviewHtml, spec028ReviewProvenance] = await Promise.all([
+    readTextArtifact(path.resolve("demo/spec-028/index.html")),
+    readTextArtifact(path.resolve("demo/spec-028/provenance.json"))
   ]);
 
   await runInvariantAsync("Scalable authored lengths", validateScalableAuthoredLengths);
@@ -2170,6 +2626,7 @@ async function main(): Promise<void> {
   }));
   await runInvariantAsync("Example dogfooding", () => validateExampleDogfooding());
   runInvariant("Demo contracts", () => validateDemoContracts(engineSmokeHtml, componentShellCss, specShellCss, pageChromeCss, pageChromeJs, componentDemoJs, specRuntimeJs, examplePageJs));
+  await runInvariantAsync("Spec 028 review demo", () => validateSpec028ReviewDemo(spec028ReviewHtml, spec028ReviewProvenance, pageCatalogJs, pageChromeJs, componentDemoJs, specRuntimeJs, bundleVersionJs));
   runInvariant("Engine illustration page", () => validateEngineIllustrationPage(pageCatalogJs, componentAtlasHtml, engineIllustrationHtml, componentShellCss));
   runInvariant("Range page", () => validateRangePage(rangeHtml, componentShellCss));
   runInvariant("Button demo", () => validateButtonDemo(buttonHtml));

@@ -72,6 +72,7 @@ export function linkedLogoSiteLayoutCss(): string {
   container-type: inline-size;
   display: grid;
   grid-template-rows: auto auto auto;
+  row-gap: var(--bf-space-1);
   inline-size: 100%;
   min-inline-size: 0;
   text-decoration: none;
@@ -94,7 +95,7 @@ export function linkedLogoSiteLayoutCss(): string {
 
 /* Card tracks are fluid, so an exact 16:9 mark is often a fractional number
    of baselines tall. Keep the visual ratio exact and put only the residual
-   rhythm compensation after the mark; the copy keeps its own semantic
+   rhythm compensation after the mark; the card grid owns the inter-part
    spacing and the occupied card still lands on the tier grid. */
 @supports (margin-block-end: round(up, 0.0625rem, 0.0625rem)) {
   :where(.bf-theme) :where(.bf-linked-logo-section-mark) {
@@ -115,17 +116,31 @@ export function linkedLogoSiteLayoutCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-linked-logo-section-card-rule) {
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  block-size: 0;
   display: block;
-  margin-block-start: var(--bf-space-1);
+  position: relative;
 }
 
-/* A span inherits the real body role from the page; it owns only the
-   relationship to its preceding divider, not an alternative type scale. */
+:where(.bf-theme) :where(.bf-linked-logo-section-card-rule)::after {
+  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* A span inherits the real body role from the page; the card grid owns its
+   relationship to the divider, so this part adds no alternative spacing. */
 :where(.bf-theme) :where(.bf-linked-logo-section-card-copy) {
   display: block;
-  margin-block-start: calc(var(--bf-space-1) - var(--bf-border-width));
   overflow-wrap: anywhere;
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-linked-logo-section-card-rule)::after {
+    border-block-start-color: CanvasText;
+    forced-color-adjust: none;
+  }
 }
 
 /* The linked-logo block moves from one to two cards per row at the 4-column
@@ -183,7 +198,7 @@ export function linkedLogoSiteLayoutCss(): string {
 
 :where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-main),
 :where(.bf-theme) .bf-page-shell.is-site-layout > :where(.bf-site-main) {
-  flex: 0 0 auto;
+  flex: 1 0 auto;
   min-inline-size: 0;
 }
 
@@ -203,9 +218,5 @@ export function linkedLogoSiteLayoutCss(): string {
   min-block-size: 100%;
 }
 
-:where(.bf-theme.bf-page-shell.is-site-layout) > :where(.bf-site-footer.is-sticky),
-:where(.bf-theme) .bf-page-shell.is-site-layout > :where(.bf-site-footer.is-sticky) {
-  margin-block-start: auto;
-}
 `;
 }

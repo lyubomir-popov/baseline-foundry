@@ -1,5 +1,6 @@
 export const overviewPages = [
   { title: "Living spec", href: "/index.html" },
+  { title: "Spec 028 spacing comparison", href: "/demo/spec/spacing-vertical.html" },
   { title: "Controls gallery", href: "/demo/controls.html" },
   { title: "Component atlas", href: "/demo/components/index.html" },
   { title: "Pattern atlas", href: "/demo/patterns/index.html" }

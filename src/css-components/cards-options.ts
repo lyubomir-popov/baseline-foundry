@@ -1,3 +1,5 @@
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss } from "./stroke-paint.js";
+
 type CardsOptionsCssOptions = {
   bodyStrongTypeStyles: string;
   bodyTypeStyles: string;
@@ -5,23 +7,37 @@ type CardsOptionsCssOptions = {
 
 export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
   const { bodyStrongTypeStyles, bodyTypeStyles } = options;
+  const cardSelector = ":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)";
+  const cardStroke = allSidedStrokeOverlayCss(cardSelector, { anchor: "relative" });
+  const previewSelector = ":where(.bf-theme) :where(.bf-card-preview:not(.is-missing))";
+  const previewStroke = allSidedStrokeOverlayCss(previewSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const headerSelector = ":where(.bf-theme) :where(.bf-card-header)";
+  const headerStroke = blockEndStrokeOverlayCss(headerSelector, { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
+  const optionSelector = ":where(.bf-theme) :where(.bf-option-card)";
+  const optionStroke = allSidedStrokeOverlayCss(optionSelector, { anchor: "relative" });
 
-  return `:where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted) {
+  return `${cardStroke.owner}
+${previewStroke.owner}
+${headerStroke.owner}
+${optionStroke.owner}
+
+:where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted) {
   --bf-card-background: var(--bf-color-background-default);
   --bf-card-border: var(--bf-color-border-default);
-  --bf-card-shadow: none;
+  --bf-card-shadow: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: var(--bf-card-shadow);
+  --bf-stroke-color: var(--bf-card-border);
   background: var(--bf-card-background);
-  border: var(--bf-border-width) solid var(--bf-card-border);
-  box-shadow: var(--bf-card-shadow);
+  border: 0;
+  box-shadow: none;
   color: var(--bf-color-text-default);
   display: flex;
   flex-direction: column;
-  gap: var(--bf-field-gap);
+  gap: var(--bf-section-space-shallow);
   max-inline-size: 100%;
-  overflow: auto;
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-component-inline-inset-continuation);
+  overflow: visible;
+  padding-block: var(--bf-panel-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(.bf-card.is-highlighted) {
@@ -45,7 +61,7 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 }
 
 :where(.bf-theme) :where(a.bf-card:hover, a.bf-card.is-highlighted:hover, a.bf-card.is-overlay:hover, a.bf-card.is-muted:hover) {
-  border-color: var(--bf-color-focus);
+  --bf-stroke-color: var(--bf-color-focus);
   transform: translateY(-0.0625rem);
 }
 
@@ -54,8 +70,8 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 }
 
 :where(.bf-theme) :where(a.bf-card:focus-visible, a.bf-card.is-highlighted:focus-visible, a.bf-card.is-overlay:focus-visible, a.bf-card.is-muted:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
 }
 
 :where(.bf-theme) :where(.bf-card.is-preview) {
@@ -68,7 +84,7 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--bf-color-background-default) 78%, var(--bf-color-background-alt) 22%), var(--bf-color-background-alt)),
     var(--bf-color-background-alt);
-  border: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
   display: grid;
   min-inline-size: 0;
   overflow: hidden;
@@ -79,9 +95,16 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 :where(.bf-theme) :where(.bf-card-preview.is-missing)::after {
   color: var(--bf-color-text-inactive);
   content: "Capture missing";
-  font-size: 0.75rem;
+  font-size: var(--bf-body-font-size);
+  line-height: var(--bf-body-line-height);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+/* The missing-preview label occupies ::after, so this text-only state is the
+   named self-painted exception. Image previews retain the automatic overlay. */
+:where(.bf-theme) :where(.bf-card-preview.is-missing) {
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-low-contrast);
 }
 
 :where(.bf-theme) :where(.bf-card-preview-image) {
@@ -99,10 +122,10 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 }
 
 :where(.bf-theme) :where(.bf-card-header) {
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
   display: grid;
   gap: var(--bf-field-gap);
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-card-inner) {
@@ -112,6 +135,19 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 
 :where(.bf-theme) :where(.bf-card-content) {
   min-inline-size: 0;
+}
+
+/* Card roots remain visible-overflow paint owners so owned overlays can cross
+   their edge. Intrinsically wide content opts into this inner scroll owner. */
+:where(.bf-theme) :where(.bf-card-scroll) {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+:where(.bf-theme) :where(.bf-card-scroll) > :where(table, .bf-table, pre, .bf-code-snippet) {
+  min-inline-size: var(--bf-card-scroll-min-inline-size, var(--bf-table-scroll-min-inline-size, 48rem));
 }
 
 :where(.bf-theme) :where(.bf-card-thumbnail) {
@@ -129,16 +165,15 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
   align-content: start;
   align-items: start;
   background: color-mix(in srgb, var(--bf-color-background-default) 88%, black 12%);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   color: var(--bf-color-text-default);
   display: grid;
   gap: var(--bf-field-gap);
   margin: 0;
   min-block-size: calc((var(--bf-interface-row-occupied-block-size) * 2) + var(--bf-baseline));
   min-inline-size: 0;
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-component-inline-inset-continuation);
+  padding-block: var(--bf-panel-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-align: left;
 }
 
@@ -150,20 +185,25 @@ export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
 
 :where(.bf-theme) :where(button.bf-option-card:hover:not(:disabled)) {
   background: var(--bf-color-background-hover);
-  border-color: var(--bf-color-focus);
+  --bf-stroke-color: var(--bf-color-focus);
   transform: translateY(-0.0625rem);
 }
 
 :where(.bf-theme) :where(.bf-option-card.is-active),
 :where(.bf-theme) :where(button.bf-option-card:disabled) {
   background: color-mix(in srgb, var(--bf-color-background-active) 82%, var(--bf-color-focus) 18%);
-  border-color: var(--bf-color-focus);
+  --bf-stroke-color: var(--bf-color-focus);
   color: var(--bf-color-text-default);
 }
 
+:where(.bf-theme) :where(.bf-option-card.is-active) {
+  --bf-overlay-selection-block-start-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 var(--bf-bar-thickness) 0 var(--bf-color-focus);
+}
+
 :where(.bf-theme) :where(button.bf-option-card:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
 }
 
 :where(.bf-theme) :where(.bf-option-card-label) {
@@ -181,6 +221,33 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-option-card-meta.is-quiet) {
   color: var(--bf-color-text-inactive);
+}
+
+${cardStroke.painter}
+${previewStroke.painter}
+${headerStroke.painter}
+${optionStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-card-preview.is-missing) {
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
+  :where(.bf-theme) :where(a.bf-card:focus:not(:focus-visible), button.bf-option-card:focus:not(:focus-visible)) {
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
+  :where(.bf-theme) :where(a.bf-card:focus-visible, button.bf-option-card:focus-visible) {
+    outline: none;
+  }
+
+  :where(.bf-theme) :where(a.bf-card:focus-visible, button.bf-option-card:focus-visible)::after {
+    outline: 0.1875rem solid Highlight;
+    outline-offset: -0.25rem;
+  }
 }
 `;
 }

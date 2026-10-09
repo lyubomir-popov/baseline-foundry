@@ -1,9 +1,10 @@
+import { allSidedStrokeSelfPaintCss, blockEndStrokeOverlayCss } from "./stroke-paint.js";
+
 type TabsChoiceBreadcrumbsCssOptions = {
   bodyCaseTypeStyles: string;
   bodyStrongTypeStyles: string;
   bodyTypeStyles: string;
   buttonMarginBottom: string;
-  buttonPadding: string;
 };
 
 export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOptions): string {
@@ -12,17 +13,32 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
     bodyStrongTypeStyles,
     bodyTypeStyles,
     buttonMarginBottom,
-    buttonPadding,
   } = options;
+  const choiceRowSelector = ":where(.bf-theme) :where(.bf-choice-row)";
+  const segmentedButtonSelector = ":where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button)";
+  const choiceStrokeCss = allSidedStrokeSelfPaintCss(choiceRowSelector, {});
+  const segmentedStrokeCss = allSidedStrokeSelfPaintCss(segmentedButtonSelector, { color: "var(--bf-color-border-high-contrast)" });
+  const tabsListStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-tabs-list)", { anchor: "relative", color: "var(--bf-color-border-default)" });
+  const activeTabStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])", { anchor: "relative", color: "var(--bf-color-text-default)", width: "var(--bf-bar-thickness)" });
+  const inlineOptionsStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-inline-options)", { anchor: "relative", color: "var(--bf-color-border-default)" });
 
-  return `:where(.bf-theme) :where(.bf-tabs) {
+  return `${choiceStrokeCss}
+
+${segmentedStrokeCss}
+
+${tabsListStroke.owner}
+
+${activeTabStroke.owner}
+
+${inlineOptionsStroke.owner}
+
+:where(.bf-theme) :where(.bf-tabs) {
   display: grid;
   gap: var(--bf-space-2);
   min-inline-size: 0;
 }
 
 :where(.bf-theme) :where(.bf-tabs-list) {
-  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);
   display: flex;
   gap: 0;
   list-style: none;
@@ -45,7 +61,7 @@ export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOption
 ${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-color-text-muted);
   cursor: pointer;
   display: flex;
@@ -78,7 +94,6 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']) {
-  box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
 }
 
@@ -122,7 +137,7 @@ ${bodyTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-choice-row) {
   align-items: center;
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: grid;
@@ -130,7 +145,8 @@ ${bodyTypeStyles}  align-items: center;
   grid-template-columns: auto minmax(0, 1fr) auto;
   margin: 0 0 ${buttonMarginBottom};
   min-inline-size: 0;
-${buttonPadding}  padding-inline: var(--bf-component-inline-inset-field);
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-choice-row:hover) {
@@ -138,8 +154,8 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-choice-row:has(:focus-visible)) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
 }
 
 :where(.bf-theme) :where(.bf-choice-row input[type='radio']) {
@@ -166,15 +182,17 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-choice-row.is-active),
 :where(.bf-theme) :where(.bf-choice-row:has(input[type='radio']:checked)) {
+  --bf-overlay-selection-block-end-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-focus);
+  --bf-stroke-color: var(--bf-color-focus);
   background: var(--bf-color-background-active);
-  border-color: var(--bf-color-focus);
 }
 
 :where(.bf-theme) :where(.bf-inline-options) {
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   display: grid;
   gap: var(--bf-field-gap);
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-block-end: var(--bf-panel-padding-block);
   padding-block-start: var(--bf-panel-padding-block);
   padding-inline: var(--bf-component-inline-inset-continuation);
 }
@@ -192,7 +210,7 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-inline-options-options) {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--bf-component-inline-inset-continuation);
+  gap: var(--bf-field-gap);
 }
 
 :where(.bf-theme) :where(.bf-inline-options-option) {
@@ -227,14 +245,14 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-item + .bf-segmented-control-item, .bf-tab-buttons-item + .bf-tab-buttons-item) {
-  margin-inline-start: calc(var(--bf-border-width) * -1);
+  margin-inline-start: 0;
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button, .bf-tab-buttons-button) {
 ${bodyTypeStyles}  align-items: center;
   appearance: none;
   background-color: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   border-radius: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
@@ -243,7 +261,8 @@ ${bodyTypeStyles}  align-items: center;
   margin-bottom: ${buttonMarginBottom};
   max-inline-size: 100%;
   overflow: hidden;
-${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordered);
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-align: center;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -265,19 +284,34 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button:focus:not(:focus-visible), .bf-tab-buttons-button:focus:not(:focus-visible)) {
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
   outline: none;
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button:focus-visible, .bf-tab-buttons-button:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
   z-index: 2;
 }
 
 :where(.bf-theme) :where(.bf-segmented-control-button.is-active, .bf-tab-buttons-button.is-active, .bf-segmented-control-button[aria-pressed='true'], .bf-tab-buttons-button[aria-pressed='true'], .bf-segmented-control-button[aria-selected='true'], .bf-tab-buttons-button[aria-selected='true']) {
+  --bf-overlay-selection-block-end-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
   background-color: var(--bf-color-background-active);
   color: var(--bf-color-text-default);
   z-index: 1;
+}
+
+:where(.bf-theme) :where(.bf-segmented-control-button:focus-visible, .bf-tab-buttons-button:focus-visible) {
+  z-index: 2;
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-choice-row:has(:focus-visible), .bf-segmented-control-button:focus-visible, .bf-tab-buttons-button:focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.1875rem;
+  }
+
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs) {
@@ -308,7 +342,7 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-breadcrumbs-item) + :where(.bf-breadcrumbs-item)::before {
   color: var(--bf-color-text-muted);
   content: "/";
-  margin-inline-end: var(--bf-leading-mark-gap);
+  padding-inline-end: var(--bf-leading-mark-gap);
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) a {
@@ -324,5 +358,10 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-breadcrumbs-item [aria-current='page'], .bf-breadcrumbs-item.is-active) {
   color: var(--bf-color-text-default);
 }
+${tabsListStroke.painter}
+
+${activeTabStroke.painter}
+
+${inlineOptionsStroke.painter}
 `;
 }

@@ -26,6 +26,7 @@ import { sitesFoundationCss } from "./css-components/sites-foundation.js";
 import { sitesEditorialPortsCss } from "./css-components/sites-editorial-ports.js";
 import { sitesRichListsCss } from "./css-components/sites-rich-lists.js";
 import { staticContentPortsCss } from "./css-components/static-content-ports.js";
+import { allSidedStrokeOverlayCss, allSidedStrokeSelfPaintCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss, inlineEndStrokeOverlayCss, inlineStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { tableCss } from "./css-components/table.js";
 import { tabSectionCss } from "./css-components/tab-section.js";
 import { tabsChoiceBreadcrumbsCss } from "./css-components/tabs-choice-breadcrumbs.js";
@@ -80,11 +81,7 @@ function roleSelectedStartNudgeVar(roleName: string, fallback?: string): string 
   return fallback ? `var(--bf-${roleName}-nudge-start, ${fallback})` : `var(--bf-${roleName}-nudge-start)`;
 }
 
-function roleSelectedEndNudgeVar(roleName: string, fallback?: string): string {
-  return fallback ? `var(--bf-${roleName}-nudge-end, ${fallback})` : `var(--bf-${roleName}-nudge-end)`;
-}
-
-export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[]): string {
+export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[], siteScopes: string[] = []): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
@@ -94,21 +91,51 @@ export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[
   const inputMarginBottom = "var(--bf-interface-row-compensation-block-end)";
   const buttonMarginBottom = "var(--bf-interface-row-compensation-block-end)";
   const bodySelectedStartNudge = roleSelectedStartNudgeVar("body", body.nudgeTop);
-  const bodySelectedEndNudge = roleSelectedEndNudgeVar("body");
   const h4LineHeight = roleLineHeightVar("h4", h4.lineHeight);
   const h5LineHeight = roleLineHeightVar("h5", h5.lineHeight);
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
-  const buttonPadding = "  padding-block: var(--bf-interface-row-padding-block);\n";
+  const paginationStroke = allSidedStrokeSelfPaintCss(":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", { color: "var(--bf-color-border-high-contrast)" });
+  const fieldBoundarySelector = ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)";
+  const fieldStroke = blockEndStrokeOverlayCss(fieldBoundarySelector, { anchor: "relative" });
+  const navigationBarSelector = ":where(.bf-theme) :where(.bf-navigation-bar)";
+  const navigationBarStroke = blockEndStrokeOverlayCss(navigationBarSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const navigationDrawerStroke = inlineEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-navigation-drawer)", { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const applicationAsideStroke = inlineStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-aside)", { anchor: "existing", color: "var(--bf-color-border-default)" });
+  const contextualMenuStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-contextual-menu-dropdown)", { anchor: "existing" });
+  const contextualMenuGroupStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group)", { anchor: "relative" });
+  const tooltipMessageStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-tooltip-message)", { anchor: "existing" });
+  const modalDialogStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-modal-dialog)", { anchor: "relative" });
+  const modalHeaderStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-modal-header)", { anchor: "relative" });
+  const modalFooterStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-modal-footer)", { anchor: "relative" });
+  const codeSnippetStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet.is-bordered)", { anchor: "relative" });
+  const codeSnippetHeaderStroke = blockEndStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet-header)", { anchor: "relative" });
+  const codeSnippetStackedDropdownStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet-header.is-stacked) :where(.bf-code-snippet-dropdowns)", { anchor: "relative" });
+  const codeSnippetDropdownStroke = inlineStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet-dropdown) + :where(.bf-code-snippet-dropdown)", { anchor: "relative" });
+  const copiedCodeSnippetStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-code-snippet-block.is-icon.is-copied)", { anchor: "existing", color: "var(--bf-color-border-information)" });
 
   return `${componentContractsCss(tokens, themeSurfaces)}
 ${controlGeometryCss({ bodyLineHeight, bodySelectedStartNudge })}
 ${applicationGeometryCss()}
 ${navigationGeometryCss()}
+${contextualMenuStroke.owner}
+${contextualMenuGroupStroke.owner}
+${tooltipMessageStroke.owner}
+${modalDialogStroke.owner}
+${modalHeaderStroke.owner}
+${modalFooterStroke.owner}
+${codeSnippetStroke.owner}
+${codeSnippetHeaderStroke.owner}
+${codeSnippetStackedDropdownStroke.owner}
+${codeSnippetDropdownStroke.owner}
+${copiedCodeSnippetStroke.owner}
+${navigationDrawerStroke.owner}
+${applicationAsideStroke.owner}
 :where(.bf-theme) {
 ${foundryComponentColorVars("light")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
+  --bf-ui-icon-chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 9.75 8 6l3.75 3.75'/%3E%3C/svg%3E");
   --bf-ui-icon-close: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.25 4.25 11.75 11.75M11.75 4.25 4.25 11.75' fill='none' stroke='%23111' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
   --bf-ui-icon-error-grey: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 1.52588e-05C12.4183 1.52588e-05 16 3.58174 16 8.00002C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8.00002C0 3.58174 3.58172 1.52588e-05 8 1.52588e-05ZM10.2821 4.63808L11.3427 5.69874L9.05007 7.99008L11.3427 10.2821L10.2821 11.3427L7.99007 9.05008L5.69873 11.3427L4.63807 10.2821L6.92907 7.99008L4.63807 5.69874L5.69873 4.63808L7.99007 6.92908L10.2821 4.63808ZM1.5 8.00002C1.5 4.41016 4.41015 1.50002 8 1.50002C11.5899 1.50002 14.5 4.41016 14.5 8.00002C14.5 11.5899 11.5899 14.5 8 14.5C4.41015 14.5 1.5 11.5899 1.5 8.00002Z' fill='%23111' fill-rule='evenodd'/%3E%3C/svg%3E");
   --bf-ui-icon-search: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.964 1a5.964 5.964 0 014.709 9.623l4.303 4.305-1.06 1.06-4.306-4.305A5.964 5.964 0 116.963 1zm0 1.5a4.464 4.464 0 100 8.927 4.464 4.464 0 000-8.927z' fill='%23111' fill-rule='nonzero'/%3E%3C/svg%3E");
@@ -128,13 +155,14 @@ ${foundryComponentColorVars("light")}
   --bf-h6-nudge-end: calc(var(--bf-baseline) - var(--bf-h6-nudge-start));
 }
 
-:where(.bf-theme.bf-engine-cap) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme.bf-engine-cap) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container) {
   margin-bottom: ${inputMarginBottom};
 }
 
 :where(.bf-theme.is-dark) {
 ${foundryComponentColorVars("dark")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
+  --bf-ui-icon-chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 9.75 8 6l3.75 3.75'/%3E%3C/svg%3E");
   --bf-ui-icon-close: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.25 4.25 11.75 11.75M11.75 4.25 4.25 11.75' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
   --bf-ui-icon-error-grey: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 1.52588e-05C12.4183 1.52588e-05 16 3.58174 16 8.00002C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8.00002C0 3.58174 3.58172 1.52588e-05 8 1.52588e-05ZM10.2821 4.63808L11.3427 5.69874L9.05007 7.99008L11.3427 10.2821L10.2821 11.3427L7.99007 9.05008L5.69873 11.3427L4.63807 10.2821L6.92907 7.99008L4.63807 5.69874L5.69873 4.63808L7.99007 6.92908L10.2821 4.63808ZM1.5 8.00002C1.5 4.41016 4.41015 1.50002 8 1.50002C11.5899 1.50002 14.5 4.41016 14.5 8.00002C14.5 11.5899 11.5899 14.5 8 14.5C4.41015 14.5 1.5 11.5899 1.5 8.00002Z' fill='%23fff' fill-rule='evenodd'/%3E%3C/svg%3E");
   --bf-ui-icon-search: url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.964 1a5.964 5.964 0 014.709 9.623l4.303 4.305-1.06 1.06-4.306-4.305A5.964 5.964 0 116.963 1zm0 1.5a4.464 4.464 0 100 8.927 4.464 4.464 0 000-8.927z' fill='%23fff' fill-rule='nonzero'/%3E%3C/svg%3E");
@@ -176,8 +204,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   padding-block-start: ${bodySelectedStartNudge};
 }
 
-:where(.bf-theme) :where(.bf-form-help.is-tight) {
-  margin-top: calc(var(--bf-baseline) * -1);
+:where(.bf-theme) :where(.bf-field:has(> .bf-form-help.is-tight)) {
+  row-gap: 0;
 }
 
 :where(.bf-theme) :where(.bf-field) {
@@ -235,50 +263,82 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(fieldset, .bf-fieldset) {
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  /* The native fieldset/legend pair keeps its boundary below the legend and
+     arbitrary filled descendants. This named anatomy self-paints the frame. */
+  border: 0;
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default);
   margin: 0;
   min-inline-size: 0;
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  padding-block-end: var(--bf-panel-padding-block);
   padding-inline: var(--bf-panel-padding-inline);
   padding-block-start: var(--bf-panel-padding-block);
 }
 
 :where(.bf-theme) :where(fieldset, .bf-fieldset) > :where(legend, .bf-legend) {
+  background: var(--bf-color-background-default);
   margin-bottom: 0;
   padding-inline: var(--bf-inline-unit);
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+${fieldStroke.owner}
+
+/* Replaced fields keep native interaction on the form element while this
+   named boundary owns the out-of-flow one-sided stroke and occupied-row end
+   compensation. Unwrapped text-like fields retain a self-painted compatibility
+   boundary so existing consumer markup never becomes boundaryless. */
+:where(.bf-theme) :where(.bf-field-boundary) {
+  border-radius: var(--bf-radius);
+  display: grid;
+  grid-template-areas: "field-boundary";
+  inline-size: 100%;
+  margin-block-end: ${inputMarginBottom};
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+:where(.bf-theme) :where(.bf-field-boundary) > :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='file'], textarea, select) {
+  grid-area: field-boundary;
+}
+
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
 ${typeStyles(body, { includeCase: false })}  appearance: none;
   background-color: var(--bf-color-background-inputs);
-  border: 0 solid transparent;
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
-  border-top: var(--bf-border-width) solid transparent;
+  border: 0;
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
-  margin-bottom: ${inputMarginBottom};
+  margin: 0;
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-field);
+}
+
+/* The named wrapper is the preferred anatomy. This compatibility path is
+   intentionally limited to bare replaced fields and paints inside the native
+   box, preserving zero layout borders and avoiding a doubled wrapped edge. */
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):not(:where(.bf-field-boundary *, .bf-color-control *, .bf-search-box *, .bf-search-and-filter-search-container *)) {
+  --bf-native-field-stroke-color: var(--bf-color-border-high-contrast);
+  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-native-field-stroke-color);
+  margin-block-end: ${inputMarginBottom};
 }
 
 :where(.bf-theme) :where(.bf-color-control) {
   display: grid;
   grid-template-areas: "color-control";
   inline-size: 4rem;
+  margin-block-end: ${inputMarginBottom};
 }
 
 /* Native color inputs do not expose a body-text line box. This invisible
    metric strut gives their wrapper the same natural padding/border/margin
    construction as every textual control, including under browser zoom. */
 :where(.bf-theme) :where(.bf-color-control)::before {
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   content: "\\00a0";
   grid-area: color-control;
   line-height: var(--bf-body-line-height);
-  margin-bottom: var(--bf-interface-row-compensation-block-end);
+  margin: 0;
   padding-block: var(--bf-interface-row-padding-block);
   visibility: hidden;
 }
@@ -288,31 +348,41 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   block-size: auto;
   grid-area: color-control;
   inline-size: 100%;
-  margin-bottom: var(--bf-interface-row-compensation-block-end);
+  margin: 0;
   min-block-size: 0;
-  padding: var(--bf-border-width);
+  padding: 0;
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
   background-color: var(--bf-color-background-hover);
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus:not(:focus-visible) {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus:not(:focus-visible) {
   outline: none;
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):focus-visible {
   background-color: var(--bf-color-background-active);
   outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: 0.125rem;
+  outline-offset: -0.125rem;
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):disabled {
+:where(.bf-theme) :where(.bf-field-boundary) > :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], input[type='file'], textarea, select):focus-visible,
+:where(.bf-theme) :where(.bf-color-control) > :where(input[type='color'].bf-color-input):focus-visible,
+:where(.bf-theme) :where(.bf-search-box, .bf-search-and-filter-search-container) :where(input):focus-visible {
+  outline: none;
+}
+
+:where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container):has(:focus-visible) {
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+}
+
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-:where(.bf-theme) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select)[readonly] {
+:where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select)[readonly] {
   background-color: var(--bf-color-background-alt);
   color: var(--bf-color-text-muted);
 }
@@ -325,10 +395,10 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 
 :where(.bf-theme) :where(input[type='file']) {
 ${typeStyles(body, { includeCase: false })}  background: transparent;
-  border: 0 solid transparent;
-  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-default);
+  border: 0;
+  box-shadow: none;
   color: var(--bf-color-text-default);
-  margin-bottom: ${inputMarginBottom};
+  margin: 0;
   max-inline-size: 100%;
   min-inline-size: 0;
   padding-block: 0;
@@ -339,14 +409,15 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 :where(.bf-theme) :where(input[type='file'])::file-selector-button {
 ${typeStyles(body, { includeCase: false })}  appearance: none;
   background: var(--bf-color-background-alt);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   border-radius: var(--bf-radius);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default);
   color: var(--bf-color-text-default);
   cursor: pointer;
   margin-inline-end: var(--bf-field-gap);
   min-block-size: 0;
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: var(--bf-component-inline-inset-action-bordered);
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(input[type='file'])::file-selector-button:hover {
@@ -357,9 +428,9 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: right var(--bf-component-inline-inset-field) center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
   overflow: hidden;
-  padding-inline-end: calc(1rem + (var(--bf-component-inline-inset-field) * 2));
+  padding-inline-end: calc(var(--bf-icon-size-default) + var(--bf-leading-mark-gap) + var(--bf-component-inline-inset-field));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -374,17 +445,62 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   appearance: auto;
 }
 
+/* Platform pickers keep their native affordance. The named boundary owns the
+   component rule without replacing the browser's calendar or time controls. */
+:where(.bf-theme) :where(input.bf-input:is([type='date'], [type='datetime-local'], [type='time'], [type='month'], [type='week'])) {
+  appearance: auto;
+  background-image: none;
+}
+
 :where(.bf-theme) :where(select:dir(rtl)) {
   background-position: left var(--bf-component-inline-inset-field) center;
 }
 
 :where(.bf-theme) :where(.bf-slider-input) {
-  flex: 0 1 5rem;
-  inline-size: min(100%, 5rem);
-  justify-self: end;
+  inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
   text-align: right;
+}
+
+:where(.bf-theme) :where(.bf-slider) > :where(.bf-field-boundary:has(> .bf-slider-input)) {
+  flex: 0 1 5rem;
+  inline-size: min(100%, 5rem);
+  justify-self: end;
+}
+
+${fieldStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container):has(:focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.125rem;
+  }
+
+  :where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container):not(:has(:focus-visible)) {
+    outline: none;
+  }
+
+  :where(.bf-theme) :where(select) {
+    appearance: auto;
+    background-image: none;
+  }
+
+  /* Replaced controls cannot reliably host a generated paint pseudo. An inset
+     system outline is the named all-sided native self-paint fallback; it keeps
+     the compatibility path at zero layout-border width in forced colours. */
+  :where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):not(:where(.bf-field-boundary *, .bf-color-control *, .bf-search-box *, .bf-search-and-filter-search-container *)) {
+    border: 0;
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
+  :where(.bf-theme) :where(input[type='file'])::file-selector-button {
+    box-shadow: none;
+    outline: var(--bf-border-width) solid ButtonText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
 }
 
 :where(.bf-theme) :where(.bf-checkbox, .bf-radio) {
@@ -406,7 +522,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 
 :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   cursor: pointer;
   display: block;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -425,7 +541,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label)::before {
   background: var(--bf-color-background-default);
   block-size: var(--bf-control-visual-size);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast);
   inline-size: var(--bf-control-visual-size);
   inset-inline-start: 0;
   inset-block-start: var(--bf-tick-box-offset);
@@ -462,7 +579,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-checkbox-input:checked + .bf-checkbox-label)::before {
   background: var(--bf-color-link-default);
-  border-color: var(--bf-color-link-default);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-link-default);
 }
 
 :where(.bf-theme) :where(.bf-checkbox-input:checked + .bf-checkbox-label)::after {
@@ -471,7 +588,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-radio-input:checked + .bf-radio-label)::before {
   background: var(--bf-color-link-default);
-  border-color: var(--bf-color-link-default);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-link-default);
 }
 
 :where(.bf-theme) :where(.bf-radio-input:checked + .bf-radio-label)::after {
@@ -512,7 +629,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   display: inline-block;
   flex: none;
   inline-size: calc(var(--bf-control-visual-size) * 2);
-  margin-block-start: var(--bf-switch-track-offset);
+  inset-block-start: var(--bf-switch-track-offset);
   position: relative;
 }
 
@@ -520,7 +637,8 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
   background: var(--bf-color-background-default);
   block-size: var(--bf-control-visual-size);
   box-sizing: border-box;
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast);
   border-radius: 50%;
   content: "";
   inline-size: var(--bf-control-visual-size);
@@ -535,7 +653,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 }
 
 :where(.bf-theme) :where(.bf-switch-input:checked + .bf-switch-slider)::before {
-  border-color: var(--bf-color-link-default);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-link-default);
   transform: translateX(100%);
 }
 
@@ -550,7 +668,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 
 :where(.bf-theme) :where(.bf-switch-label) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   cursor: pointer;
   display: inline-block;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -558,12 +676,11 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 }
 
 :where(.bf-theme) :where(.bf-validation-message) {
-${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width) solid transparent;
+${typeStyles(body, { includeCase: false })}  border-block: 0;
   color: var(--bf-color-text-muted);
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
-  margin-inline-start: var(--bf-leading-mark-group-inset);
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline-start: var(--bf-leading-mark-offset);
+  padding-inline-start: calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset));
   position: relative;
 }
 
@@ -574,13 +691,17 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   content: "";
   inline-size: calc(var(--bf-control-visual-size) * 0.5);
   inset-block-start: ${alignedVisualStart(bodyLineHeight, "(var(--bf-control-visual-size) * 0.5)", bodySelectedStartNudge)};
-  inset-inline-start: 0;
+  inset-inline-start: var(--bf-leading-mark-group-inset);
   position: absolute;
 }
 
-:where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+  --bf-native-field-stroke-color: var(--bf-color-border-caution);
   background-color: var(--bf-color-background-caution-default);
-  border-bottom-color: var(--bf-color-border-caution);
+}
+
+:where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-field-boundary, .bf-search-box, .bf-search-and-filter-search-container) {
+  --bf-stroke-color: var(--bf-color-border-caution);
 }
 
 :where(.bf-theme) :where(.is-caution, .bf-validation.is-caution) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
@@ -599,9 +720,13 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   background: var(--bf-color-border-caution);
 }
 
-:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+  --bf-native-field-stroke-color: var(--bf-color-border-negative);
   background-color: var(--bf-color-background-negative-default);
-  border-bottom-color: var(--bf-color-border-negative);
+}
+
+:where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-field-boundary, .bf-search-box, .bf-search-and-filter-search-container) {
+  --bf-stroke-color: var(--bf-color-border-negative);
 }
 
 :where(.bf-theme) :where(.is-error, .bf-validation.is-error) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
@@ -620,9 +745,13 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   background: var(--bf-color-border-negative);
 }
 
-:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) {
+  --bf-native-field-stroke-color: var(--bf-color-border-positive);
   background-color: var(--bf-color-background-positive-default);
-  border-bottom-color: var(--bf-color-border-positive);
+}
+
+:where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-field-boundary, .bf-search-box, .bf-search-and-filter-search-container) {
+  --bf-stroke-color: var(--bf-color-border-positive);
 }
 
 :where(.bf-theme) :where(.is-success, .bf-validation.is-success) :where(.bf-input, input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select):hover {
@@ -678,8 +807,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   block-size: var(--bf-slider-track-size);
   border: 0;
   border-radius: var(--bf-baseline);
-  margin: var(--bf-slider-track-offset) 0 calc(var(--bf-slider-row-block-size) - var(--bf-slider-track-offset) - var(--bf-slider-track-size));
+  margin: 0;
   padding: 0;
+  position: relative;
+  inset-block-start: var(--bf-slider-track-offset);
 }
 
 /* A composite slider's numeric field owns the shared occupied row. Stretching
@@ -689,6 +820,14 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   align-self: stretch;
   block-size: auto;
   margin-block: 0;
+}
+
+:where(.bf-theme) :where(.bf-slider.is-stacked, .bf-field.is-range.is-stacked .bf-slider) :where(input[type='range']) {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% var(--bf-slider-track-size);
+  block-size: var(--bf-slider-row-block-size);
+  inset-block-start: 0;
 }
 
 :where(.bf-theme) :where(input[type='range']):focus:not(:focus-visible) {
@@ -704,10 +843,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
 :where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb {
   appearance: none;
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   block-size: var(--bf-control-visual-size);
   border-radius: 50%;
-  box-shadow: 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast), 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
   inline-size: var(--bf-control-visual-size);
   margin-top: calc((var(--bf-slider-track-size) - var(--bf-control-visual-size)) / 2);
 }
@@ -730,10 +869,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
 
 :where(.bf-theme) :where(input[type='range'])::-moz-range-thumb {
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   block-size: var(--bf-control-visual-size);
   border-radius: 50%;
-  box-shadow: 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-high-contrast), 0 0 calc(var(--bf-control-visual-size) * 0.25) 0.0625rem rgba(0, 0, 0, 0.2);
   inline-size: var(--bf-control-visual-size);
 }
 
@@ -745,9 +884,39 @@ ${typeStyles(body, { includeCase: false })}  border-block: var(--bf-border-width
   outline: calc(var(--bf-baseline) * 0.25) solid var(--bf-color-focus);
 }
 
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(fieldset, .bf-fieldset) {
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
+  :where(.bf-theme) :where(.bf-checkbox-label, .bf-radio-label)::before,
+  :where(.bf-theme) :where(.bf-switch-slider)::before {
+    border: 0;
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
+  :where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb {
+    border: 0;
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+
+  :where(.bf-theme) :where(input[type='range'])::-moz-range-thumb {
+    border: 0;
+    box-shadow: none;
+    outline: var(--bf-border-width) solid CanvasText;
+    outline-offset: calc(var(--bf-border-width) * -1);
+  }
+}
+
 ${iconCss()}
 
-${buttonActionsCss({ bodyTypeStyles, buttonMarginBottom, buttonPadding })}
+${buttonActionsCss({ bodyTypeStyles, buttonMarginBottom })}
 
 ${nestedControlsCss()}
 
@@ -788,7 +957,6 @@ ${tabsChoiceBreadcrumbsCss({
   bodyStrongTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
   bodyTypeStyles,
   buttonMarginBottom,
-  buttonPadding,
 })}
 
 ${tabSectionCss()}
@@ -830,11 +998,13 @@ ${tableCss({
   bodyLineHeight,
   bodyMediumTypeStyles: typeStyles(body, { fontWeight: 500, includeCase: false }),
   bodyTypeStyles,
+  siteScopes,
 })}
 
 ${chipBadgeStatusCss({
   bodyCaseTypeStyles: typeStyles(body),
   bodyTypeStyles,
+  siteScopes,
 })}
 
 :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear) {
@@ -851,28 +1021,48 @@ ${chipBadgeStatusCss({
 }
 
 :where(.bf-theme) :where(.bf-chip-dismiss) {
-  block-size: 1rem;
-  inline-size: 1rem;
-  margin-inline-start: var(--bf-ui-badge-padding-inline);
+  block-size: var(--bf-icon-size-default);
+  inline-size: var(--bf-icon-size-default);
 }
 
-:where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::before,
-:where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::after {
-  background: currentColor;
-  block-size: 0.125rem;
-  content: "";
-  inline-size: 0.75rem;
-  left: 50%;
-  position: absolute;
-  top: 50%;
+:where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):has(> .bf-chip-dismiss) {
+  column-gap: var(--bf-leading-mark-gap);
 }
 
 :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::before {
-  transform: translate(-50%, -50%) rotate(45deg);
+  background: currentColor;
+  block-size: var(--bf-icon-size-default);
+  content: "";
+  inline-size: var(--bf-icon-size-default);
+  left: 50%;
+  mask-image: var(--bf-ui-icon-close);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-mask-image: var(--bf-ui-icon-close);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
 }
 
-:where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
+:where(.bf-theme) :where(.bf-chip-dismiss)::after {
+  content: "";
+  inset: 50% auto auto 50%;
+  min-block-size: var(--bf-pointer-target-minimum);
+  min-inline-size: var(--bf-pointer-target-minimum);
+  pointer-events: auto;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear)::before {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
 }
 
 
@@ -890,8 +1080,7 @@ ${legacyNavigationCss({
   bodyMediumTypeStyles: typeStyles(body, { fontWeight: 500, includeCase: false }),
   bodySemiboldTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
   bodyTypeStyles,
-  buttonMarginBottom,
-  buttonPadding
+  buttonMarginBottom
 })}
 
 :where(.bf-theme) :where(.bf-contextual-menu, .bf-contextual-menu.is-left, .bf-contextual-menu.is-center) {
@@ -902,9 +1091,10 @@ ${legacyNavigationCss({
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-dropdown) {
+  --bf-overlay-elevation-layer: 0 0.75rem 2rem rgba(0, 0, 0, 0.28);
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
-  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.28);
+  border: 0;
+  box-shadow: none;
   display: none;
   list-style: none;
   margin: 0;
@@ -913,7 +1103,7 @@ ${legacyNavigationCss({
   padding: 0;
   position: absolute;
   right: 0;
-  top: calc(100% - var(--bf-border-width));
+  top: 100%;
   width: fit-content;
   z-index: 9;
 }
@@ -938,7 +1128,7 @@ ${legacyNavigationCss({
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group) {
-  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-default);
+  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-link) {
@@ -988,6 +1178,9 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   pointer-events: none;
 }
 
+${contextualMenuStroke.painter}
+${contextualMenuGroupStroke.painter}
+
 :where(.bf-theme) :where(.bf-tooltip) {
   --bf-tooltip-arrow-size: calc(var(--bf-baseline) * 0.5);
   --bf-tooltip-arrow-offset-inline: calc(var(--bf-tooltip-arrow-size) * 1.5);
@@ -1003,24 +1196,32 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
 }
 
 :where(.bf-theme) :where(.bf-tooltip-message) {
-${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-background-alt);
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default), 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
+  --bf-overlay-elevation-layer: 0 0.75rem 2rem rgba(0, 0, 0, 0.24);
+  background-color: var(--bf-color-background-alt);
+  box-shadow: none;
   color: var(--bf-color-text-default);
+  display: flow-root;
   inline-size: max-content;
   inset-inline-start: 0;
   margin: 0;
   max-inline-size: min(20rem, calc(100vw - (var(--bf-baseline) * 4)));
   opacity: 0;
-  padding-block-end: ${bodySelectedEndNudge};
-  padding-block-start: ${bodySelectedStartNudge};
-  padding-inline: var(--bf-component-inline-inset-continuation);
+  padding-block: var(--bf-control-block-inset);
+  padding-inline: var(--bf-component-inline-inset-field);
   pointer-events: none;
   position: absolute;
   top: 100%;
-  transform: translateY(calc(var(--bf-baseline) - var(--bf-border-width)));
+  transform: translateY(var(--bf-baseline));
   visibility: hidden;
   white-space: normal;
   z-index: 12;
+}
+
+:where(.bf-theme) :where(.bf-tooltip-text) {
+${typeStyles(body, { includeCase: false })}  display: block;
+  margin: 0 0 var(--bf-body-margin-bottom);
+  padding-block-end: 0;
+  padding-block-start: ${bodySelectedStartNudge};
 }
 
 :where(.bf-theme) :where(.bf-tooltip):is(:hover, :focus-within) > :where(.bf-tooltip-message),
@@ -1043,7 +1244,7 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 :where(.bf-theme) :where(.bf-tooltip.is-detached) > :where(.bf-tooltip-message) {
   inset-inline-start: auto;
   pointer-events: auto;
-  position: static;
+  position: relative;
   top: auto;
   transform: none;
 }
@@ -1054,7 +1255,7 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 
 :where(.bf-theme) :where(.bf-tooltip.is-btm-center) > :where(.bf-tooltip-message) {
   inset-inline-start: 50%;
-  transform: translate(-50%, calc(var(--bf-baseline) - var(--bf-border-width)));
+  transform: translate(-50%, var(--bf-baseline));
 }
 
 :where(.bf-theme) :where(.bf-tooltip.is-btm-center) > :where(.bf-tooltip-message)::before {
@@ -1106,6 +1307,10 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
   inset-inline-start: auto;
 }
 
+${tooltipMessageStroke.painter}
+
+${paginationStroke}
+
 :where(.bf-theme) :where(nav.bf-pagination) {
   display: block;
 }
@@ -1132,7 +1337,7 @@ ${typeStyles(body, { includeCase: false })}  background-color: var(--bf-color-ba
 
 :where(.bf-theme) :where(.bf-pagination-item.is-truncation) {
 ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   margin-block-end: var(--bf-interface-row-compensation-block-end);
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-inline-unit);
@@ -1141,7 +1346,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next) {
 ${typeStyles(body, { includeCase: false })}  align-items: center;
   background-color: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   cursor: pointer;
@@ -1150,7 +1355,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   justify-content: center;
   margin-bottom: ${buttonMarginBottom};
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: var(--bf-component-inline-inset-action-bordered);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-align: center;
   text-decoration: none;
 }
@@ -1165,50 +1370,53 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-pagination-link:focus:not(:focus-visible), .bf-pagination-link.is-previous:focus:not(:focus-visible), .bf-pagination-link.is-next:focus:not(:focus-visible)) {
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
   outline: none;
 }
 
 :where(.bf-theme) :where(.bf-pagination-link:focus-visible, .bf-pagination-link.is-previous:focus-visible, .bf-pagination-link.is-next:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: 0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
 }
 
 :where(.bf-theme) :where(.bf-pagination-link.is-active, .bf-pagination-link[aria-current='page'], .bf-pagination-link[aria-current='true']) {
+  --bf-overlay-selection-block-end-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
   background-color: var(--bf-color-background-active);
 }
 
-:where(.bf-theme) :where(.bf-pagination-link.is-previous, .bf-pagination-link.is-next)::before,
-:where(.bf-theme) :where(.bf-pagination-link.is-previous, .bf-pagination-link.is-next)::after {
+:where(.bf-theme) :where(.bf-pagination-link.is-previous, .bf-pagination-link.is-next)::before {
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
   display: inline-block;
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
 }
 
 :where(.bf-theme) :where(.bf-pagination-link.is-previous)::before {
   transform: rotate(90deg);
 }
 
-:where(.bf-theme) :where(.bf-pagination-link.is-previous)::after {
-  display: none;
-}
-
-:where(.bf-theme) :where(.bf-pagination-link.is-next)::after {
-  transform: rotate(-90deg);
-}
-
 :where(.bf-theme) :where(.bf-pagination-link.is-next)::before {
-  display: none;
+  order: 2;
+  transform: rotate(-90deg);
 }
 
 :where(.bf-theme) :where(.bf-pagination-link.is-disabled, .bf-pagination-link.is-previous.is-disabled, .bf-pagination-link.is-next.is-disabled, .bf-pagination-link[aria-disabled='true'], .bf-pagination-link.is-previous[aria-disabled='true'], .bf-pagination-link.is-next[aria-disabled='true']) {
   cursor: not-allowed;
   opacity: 0.5;
   pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-pagination-link:focus-visible, .bf-pagination-link.is-previous:focus-visible, .bf-pagination-link.is-next:focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.1875rem;
+  }
+
 }
 
 :where(.bf-theme) :where(.bf-accordion) {
@@ -1244,7 +1452,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   appearance: none;
   background: transparent;
   border: 0;
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: flex;
@@ -1309,12 +1517,12 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   border: 0;
   inset: 0;
   margin: auto;
-  max-inline-size: min(100vw - (var(--bf-baseline) * 8), 36rem);
+  max-inline-size: min(calc(100vw - (var(--bf-page-margin) * 2)), 36rem);
   padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-modal.is-workflow) {
-  --bf-modal-workflow-viewport-gap: var(--bf-component-inline-inset-continuation);
+  --bf-modal-workflow-viewport-gap: calc(var(--bf-page-margin) * 2);
   --bf-modal-workflow-max-inline-size: 42rem;
   --bf-modal-workflow-min-inline-size: 32rem;
   --bf-modal-workflow-max-block-size: 40rem;
@@ -1338,9 +1546,11 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 
 :where(.bf-theme) :where(.bf-modal-dialog) {
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   display: grid;
-  gap: 0;
+  gap: var(--bf-section-space-shallow);
+  padding-block: var(--bf-panel-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(.bf-modal.is-workflow > .bf-modal-dialog) {
@@ -1352,22 +1562,19 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer) {
-  padding-block-end: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-block-start: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
-  padding-inline: var(--bf-panel-padding-inline);
+  padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-modal-header) {
   align-items: start;
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   display: flex;
   gap: var(--bf-field-gap);
   justify-content: space-between;
 }
 
 :where(.bf-theme) :where(.bf-modal-body) {
-  padding-block-end: var(--bf-panel-padding-block);
-  padding-block-start: var(--bf-panel-padding-block);
+  padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-modal.is-workflow) :where(.bf-modal-header, .bf-modal-footer) {
@@ -1388,7 +1595,7 @@ ${typeStyles(h4, { includeCase: false })}  margin: 0 0 var(--bf-h4-margin-bottom
 
 :where(.bf-theme) :where(.bf-modal-footer) {
   align-items: start;
-  border-top: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-field-gap);
@@ -1404,6 +1611,10 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
   padding: 0;
 }
 
+${modalDialogStroke.painter}
+${modalHeaderStroke.painter}
+${modalFooterStroke.painter}
+
 :where(.bf-theme) :where(.bf-code-snippet) {
   display: grid;
   gap: 0;
@@ -1412,13 +1623,13 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet.is-bordered) {
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-color-border-default);
+  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-header) {
   align-items: start;
   background: var(--bf-color-background-active);
-  box-shadow: inset 0 -0.0625rem 0 var(--bf-color-border-default);
+  box-shadow: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -1450,7 +1661,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-default);
 :where(.bf-theme) :where(.bf-code-snippet-header.is-stacked) :where(.bf-code-snippet-dropdowns) {
   justify-content: stretch;
   margin-inline-start: 0;
-  box-shadow: inset 0 0.0625rem 0 var(--bf-color-border-default);
+  box-shadow: none;
   width: 100%;
 }
 
@@ -1469,7 +1680,7 @@ ${typeStyles(body, { includeCase: false })}  appearance: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-dropdown) + :where(.bf-code-snippet-dropdown) {
-  box-shadow: inset 0.0625rem 0 0 var(--bf-color-border-default);
+  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-dropdown):focus:not(:focus-visible) {
@@ -1531,7 +1742,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon.is-copied) {
   background: color-mix(in srgb, var(--bf-color-background-alt) 78%, var(--bf-color-background-information-default));
-  box-shadow: inset 0 0 0 0.0625rem var(--bf-color-border-information);
+  box-shadow: none;
 }
 
 :where(.bf-theme) :where(.bf-code-snippet-block.is-icon):focus:not(:focus-visible) {
@@ -1564,6 +1775,12 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   user-select: none;
 }
 
+${codeSnippetStroke.painter}
+${codeSnippetHeaderStroke.painter}
+${codeSnippetStackedDropdownStroke.painter}
+${codeSnippetDropdownStroke.painter}
+${copiedCodeSnippetStroke.painter}
+
 :where(.bf-theme) :where(.bf-application) {
   background: var(--bf-color-background-default);
   display: grid;
@@ -1592,15 +1809,18 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   grid-template-rows: min-content minmax(0, 1fr) min-content;
 }
 
+${navigationBarStroke.owner}
+
 :where(.bf-theme) :where(.bf-navigation-bar) {
   background: var(--bf-color-background-alt);
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   grid-area: navigation-bar;
   min-block-size: var(--bf-navigation-bar-min-block-size);
   min-inline-size: 0;
   position: relative;
   z-index: 40;
 }
+
+${navigationBarStroke.painter}
 
 /* A responsive application brand occupies the persistent bar only while the
  * full navigation brand is unavailable. The same public tagged-logo contract
@@ -1610,10 +1830,6 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   align-items: start;
   column-gap: var(--bf-leading-mark-gap);
   padding-inline-end: var(--bf-panel-content-padding-inline);
-}
-
-:where(.bf-theme) :where(.bf-navigation-bar.is-responsive) {
-  margin-block-end: calc(var(--bf-border-width) * -1);
 }
 
 :where(.bf-theme) :where(.bf-navigation-bar.is-responsive) :where(.bf-panel-header.is-navigation-brand) > :where(.bf-top-navigation-logo.is-canonical-tagged) {
@@ -1658,7 +1874,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-navigation-drawer) {
   background: var(--bf-color-background-alt);
   block-size: 100dvh;
-  border-inline-end: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
   bottom: 0;
   inline-size: min(100%, var(--bf-application-navigation-width));
   left: 0;
@@ -1674,7 +1890,8 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-navigation:not(.is-collapsed)) > :where(.bf-navigation-drawer) {
-  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  --bf-overlay-elevation-layer: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  box-shadow: none;
   transform: translateX(0);
   visibility: visible;
 }
@@ -1753,7 +1970,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-aside) {
   background: var(--bf-color-background-default);
-  border-inline-start: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   grid-area: aside;
   inline-size: 100%;
   min-block-size: 0;
@@ -1765,7 +1982,8 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
 :where(.bf-theme) :where(.bf-aside.is-overlay, .bf-aside.is-drawer) {
   align-self: stretch;
   block-size: auto;
-  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  --bf-overlay-elevation-layer: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  box-shadow: none;
   bottom: 0;
   grid-column: 1 / -1;
   grid-row: 1 / -1;
@@ -1783,6 +2001,9 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
   visibility: hidden;
   z-index: 30;
 }
+
+${navigationDrawerStroke.painter}
+${applicationAsideStroke.painter}
 
 :where(.bf-theme) :where(.bf-aside.is-overlay.is-icon, .bf-aside.is-drawer.is-icon) {
   inline-size: min(100%, var(--bf-application-drawer-width-icon));
@@ -1931,7 +2152,7 @@ ${typeStyles(h6, { includeCase: false })}  color: var(--bf-color-text-muted);
     box-shadow: none;
     inline-size: 100%;
     min-block-size: 0;
-    position: static;
+    position: relative;
     transform: translateX(0);
     visibility: visible;
   }

@@ -1,19 +1,46 @@
+import { componentDensityPolicy, providerScopedCss, siteDenseChipPolicySelectors, siteDenseChipScopedCss } from "../component-density-policy.js";
+import { allSidedStrokeSelfPaintCss } from "./stroke-paint.js";
+
 type ChipBadgeStatusCssOptions = {
   bodyCaseTypeStyles: string;
   bodyTypeStyles: string;
+  siteScopes: string[];
 };
 
 export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   const {
     bodyCaseTypeStyles,
     bodyTypeStyles,
+    siteScopes,
   } = options;
+  const density = componentDensityPolicy.siteDenseChip;
+  const chipSelector = ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)";
+  const chipStrokeCss = allSidedStrokeSelfPaintCss(chipSelector, { color: "var(--bf-ui-chip-border)" });
+  const denseSiteChips = siteDenseChipPolicySelectors().chips;
+  const denseSiteChipCss = denseSiteChips
+    ? `\n/* Chip enrollment follows the versioned nearest-provider policy through any\n   neutral descendant path. The legacy class does not opt instances in/out. */\n${siteDenseChipScopedCss(siteScopes, denseSiteChips, `${density.componentBinding}: var(${density.currentMember}, var(--bf-control-block-inset));\nborder: 0;\n--bf-stroke-color: var(--bf-ui-chip-border);\nline-height: var(--bf-body-line-height);\nmargin-block: 0;\nmin-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(${density.componentBinding}) * 2)));\npadding-block: var(${density.componentBinding});\npadding-inline: var(--bf-ui-chip-padding-inline);`)}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips} :where(.bf-chip-lead, .bf-chip-value)`, "line-height: inherit;")}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips}:hover`, "--bf-stroke-color: var(--bf-ui-chip-border-hover);")}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips}:is(:active, [aria-pressed='true'], .is-selected)`, "--bf-stroke-color: var(--bf-ui-chip-border-active);")}\n`
+    : "";
+  const legacyNestedChipCss = (suffix: string, declarations: string) => [
+    { provider: ".bf-table td", boundary: "td" },
+    { provider: ".bf-side-navigation", boundary: ".bf-side-navigation" }
+  ].map(host => providerScopedCss(
+    [":where(.bf-theme)"],
+    host.provider,
+    [host.boundary, ".bf-theme"],
+    `:where(.bf-chip.is-nested:not(.bf-theme):not(:scope ${host.boundary} .bf-chip, :scope .bf-theme .bf-chip))${suffix}`,
+    declarations
+  )).join("\n\n");
+  const legacyNestedChipRules = `\n${legacyNestedChipCss("", "--bf-chip-control-block-inset: var(--bf-nested-row-padding-block);\nline-height: var(--bf-nested-row-line-height);\nmargin-block: 0;\npadding-block: var(--bf-chip-control-block-inset);\nborder: 0;\n--bf-stroke-color: var(--bf-ui-chip-border);\nmin-inline-size: min(100%, calc(var(--bf-nested-row-painted-block-size) + var(--bf-inline-unit)));\npadding-inline: var(--bf-ui-chip-padding-inline);")}\n\n${legacyNestedChipCss(" :where(.bf-chip-lead, .bf-chip-value)", "line-height: inherit;")}\n\n${legacyNestedChipCss(":hover", "--bf-stroke-color: var(--bf-ui-chip-border-hover);")}\n\n${legacyNestedChipCss(":is(:active, [aria-pressed='true'], .is-selected)", "--bf-stroke-color: var(--bf-ui-chip-border-active);")}\n`;
 
-  return `:where(.bf-theme) {
+  return `${chipStrokeCss}
+
+:where(.bf-theme) {
+  ${density.comfortableMember}: var(--bf-control-block-inset);
+  ${density.denseMember}: var(--bf-space-half);
+  ${density.currentMember}: var(${density.comfortableMember});
   --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-action);
   --bf-ui-chip-radius: 999rem;
-  --bf-ui-badge-padding-inline: var(--bf-border-width);
-  --bf-ui-badge-overhang: calc(var(--bf-ui-badge-padding-inline) * -0.75);
+  --bf-ui-badge-padding-inline: 0.0625rem;
 }
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) {
@@ -24,8 +51,9 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   --bf-ui-chip-background-hover: var(--bf-color-background-neutral-hover);
   --bf-ui-chip-background-active: var(--bf-color-background-neutral-active);
 ${bodyTypeStyles}  align-items: baseline;
+  --bf-chip-control-block-inset: var(--bf-interface-row-padding-block);
   background-color: var(--bf-ui-chip-background);
-  border: var(--bf-border-width) solid var(--bf-ui-chip-border);
+  border: 0;
   border-radius: var(--bf-ui-chip-radius);
   color: var(--bf-color-text-default);
   display: inline-flex;
@@ -33,13 +61,13 @@ ${bodyTypeStyles}  align-items: baseline;
   inline-size: fit-content;
   justify-content: center;
   justify-self: start;
-  margin: 0 var(--bf-component-inline-inset-field) var(--bf-interface-row-compensation-block-end) 0;
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   max-inline-size: 100%;
-  min-inline-size: min(100%, calc(var(--bf-interface-row-painted-block-size) + (var(--bf-border-width) * 2)));
+  min-inline-size: min(100%, calc(var(--bf-interface-row-painted-block-size) + var(--bf-inline-unit)));
   padding-block: var(--bf-interface-row-padding-block);
   /* Chips use the Action text keyline. The paint-derived floor only governs
      very short dense labels, keeping them stadium-shaped rather than circular. */
-  padding-inline: max(0rem, calc(var(--bf-ui-chip-padding-inline) - var(--bf-border-width)));
+  padding-inline: var(--bf-ui-chip-padding-inline);
   position: relative;
   text-decoration: none;
   user-select: none;
@@ -48,6 +76,10 @@ ${bodyTypeStyles}  align-items: baseline;
      second chip-only occupied height. */
   vertical-align: baseline;
   white-space: nowrap;
+}
+
+:where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):has(> :where(.bf-badge, .bf-badge.is-negative)) {
+  column-gap: var(--bf-component-inline-inset-field);
 }
 
 :where(.bf-theme) :where(.bf-chip.is-positive) {
@@ -96,14 +128,34 @@ ${bodyTypeStyles}  align-items: baseline;
 }
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):hover {
+  --bf-stroke-color: var(--bf-ui-chip-border-hover);
   background-color: var(--bf-ui-chip-background-hover);
-  border-color: var(--bf-ui-chip-border-hover);
   text-decoration: none;
 }
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):is(:active, [aria-pressed='true'], .is-selected) {
+  --bf-overlay-selection-block-end-width: var(--bf-bar-thickness);
+  --bf-overlay-selection-layer: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-ui-chip-border-active);
+  --bf-stroke-color: var(--bf-ui-chip-border-active);
   background-color: var(--bf-ui-chip-background-active);
-  border-color: var(--bf-ui-chip-border-active);
+}
+
+:where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):focus:not(:focus-visible) {
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  outline: none;
+}
+
+:where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):focus-visible {
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):focus-visible {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.1875rem;
+  }
+
 }
 
 :where(.bf-theme) :where(.bf-chip-lead, .bf-chip-value) {
@@ -151,15 +203,14 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) :where(.bf-badge, .bf-badge.is-negative) {
   align-self: center;
-  margin-inline-end: var(--bf-ui-badge-overhang);
-  margin-inline-start: var(--bf-component-inline-inset-field);
+  margin-inline: 0;
 }
 
 :where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {
   --bf-ui-status-background: color-mix(in srgb, var(--bf-color-background-alt) 70%, black);
   --bf-ui-status-color: var(--bf-color-button-positive-text);
   background-color: var(--bf-ui-status-background);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-ui-status-color);
   display: inline-block;
   inline-size: fit-content;
@@ -194,38 +245,15 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   --bf-ui-status-color: var(--bf-color-button-negative-text);
 }
 
-/* Nested auxiliary surfaces fit a body-sized flex/grid host instead of
-   carrying a second standalone occupied-row contract. This modifier is
-   explicit so component density never changes merely because of ancestry. */
-:where(.bf-theme) :where(.bf-chip.is-nested, .bf-status-label.is-nested) {
+/* Named legacy hosts retain the one-release is-nested compatibility path.
+   The governed Site Table.Cell/Chip policy above enrolls through ancestry;
+   the compatibility modifier has no effect outside its named hosts. */
+:where(.bf-theme) :where(.bf-status-label.is-nested) {
   line-height: var(--bf-nested-row-line-height);
   margin-block: 0;
   padding-block: var(--bf-nested-row-padding-block);
 }
-
-:where(.bf-theme) :where(.bf-chip.is-nested) {
-  border: 0;
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border);
-  min-inline-size: min(100%, calc(var(--bf-nested-row-painted-block-size) + (var(--bf-border-width) * 2)));
-  /* The nested border is inset paint rather than box geometry, so the glyph
-     needs the complete Action inset instead of subtracting a real border. */
-  padding-inline: var(--bf-ui-chip-padding-inline);
-}
-
-/* Chip parts normally carry the standalone body line explicitly. A nested
-   chip must pass its reduced line through to those parts so a nested badge
-   can fit without making the host row taller. */
-:where(.bf-theme) :where(.bf-chip.is-nested) :where(.bf-chip-lead, .bf-chip-value) {
-  line-height: inherit;
-}
-
-:where(.bf-theme) :where(.bf-chip.is-nested:hover) {
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-hover);
-}
-
-:where(.bf-theme) :where(.bf-chip.is-nested:is(:active, [aria-pressed='true'], .is-selected)) {
-  box-shadow: inset 0 0 0 var(--bf-border-width) var(--bf-ui-chip-border-active);
-}
+${legacyNestedChipRules}
 
 :where(.bf-theme) :where(.bf-status-label.is-nested) {
   border-block-width: 0;
@@ -236,5 +264,6 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   line-height: var(--bf-nested-row-line-height);
   vertical-align: middle;
 }
+${denseSiteChipCss}
 `;
 }

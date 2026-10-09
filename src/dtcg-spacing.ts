@@ -42,14 +42,27 @@ interface ResolvedDtcgSpacingArtifact {
   source: {
     package: "@canonical/design-tokens";
     repository: string;
-    commit: string;
+    baseCommit: string;
     resolver: string;
+    baseRole: "schema and resolver base only; does not generate the working product values below";
+    workingValues: {
+      repository: "canonical-spacing-spec";
+      commit: "7169231fcc3168032275d920d32856f9669107ac";
+      spec: "024-semantic-spacing-token-schema";
+      origin: "Spec 024 working-values override; not @canonical/design-tokens resolver product output";
+      status: "working override; canonical-main merge and design-tokens contribution pending";
+      regenerationGuard: "preserve this override until the owner lands equivalent rulings on canonical main and BF repins the resulting full main commit";
+      canonicalMain: {
+        observedCommit: "cad4aacf91b7e70bee81730552b76ef0d8291a34";
+        status: "pending equivalent-ruling merge to canonical main and final-main repin";
+      };
+    };
   };
   products: Record<CanonicalProduct, ResolvedDtcgSpacing>;
 }
 
 export const canonicalSpacingSourceCommit = "18f57b95b1aa1dfe85a45746016b055c807d6628";
-export const canonicalSpacingProductsSha256 = "97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571";
+export const canonicalSpacingProductsSha256 = "f8fa3f4ac6d94fa1e262ab0530bd2c6d41da2932dc91c06151c711ca093cf679";
 const canonicalSpacingSourceRepository = "https://github.com/canonical/design-tokens";
 const canonicalSpacingResolver = "tokens/canonical/canonical.resolver.json";
 const canonicalProductOrder: CanonicalProduct[] = ["site", "docs", "app", "os"];
@@ -142,10 +155,22 @@ export function validateCanonicalSpacingArtifact(value: unknown): asserts value 
   if (
     value.source.package !== "@canonical/design-tokens" ||
     value.source.repository !== canonicalSpacingSourceRepository ||
-    value.source.commit !== canonicalSpacingSourceCommit ||
-    value.source.resolver !== canonicalSpacingResolver
+    value.source.baseCommit !== canonicalSpacingSourceCommit ||
+    value.source.resolver !== canonicalSpacingResolver ||
+    value.source.baseRole !== "schema and resolver base only; does not generate the working product values below" ||
+    !isRecord(value.source.workingValues) ||
+    value.source.workingValues.repository !== "canonical-spacing-spec" ||
+    value.source.workingValues.commit !== "7169231fcc3168032275d920d32856f9669107ac" ||
+    value.source.workingValues.spec !== "024-semantic-spacing-token-schema" ||
+    value.source.workingValues.origin !== "Spec 024 working-values override; not @canonical/design-tokens resolver product output" ||
+    value.source.workingValues.status !== "working override; canonical-main merge and design-tokens contribution pending" ||
+    value.source.workingValues.regenerationGuard !== "preserve this override until the owner lands equivalent rulings on canonical main and BF repins the resulting full main commit" ||
+    !isRecord(value.source.workingValues.canonicalMain) ||
+    value.source.workingValues.canonicalMain.observedCommit !== "cad4aacf91b7e70bee81730552b76ef0d8291a34" ||
+    Object.hasOwn(value.source.workingValues.canonicalMain, "requiredAncestor") ||
+    value.source.workingValues.canonicalMain.status !== "pending equivalent-ruling merge to canonical main and final-main repin"
   ) {
-    throw new Error(`Canonical spacing artifact must pin design-tokens ${canonicalSpacingSourceCommit}.`);
+    throw new Error(`Canonical spacing artifact must pin design-tokens ${canonicalSpacingSourceCommit}, preserve the full Spec 024 working override, and keep canonical-main activation pending.`);
   }
 
   const actualProducts = Object.keys(value.products).sort();
@@ -188,6 +213,12 @@ export function legacyThemeConfigSpacing(config: ThemeConfig): ResolvedDtcgSpaci
     $value: { value: magnitude, unit: "rem" }
   });
 
+  const bodyIdentifier = config.roles.body;
+  const body = config.elements.find(element => element.identifier === bodyIdentifier);
+  if (!body) {
+    throw new Error(`Cannot derive continuation inset: body role ${JSON.stringify(bodyIdentifier)} has no matching element.`);
+  }
+
   return {
     "spacing.baseline": value(config.baselineUnit),
     "spacing.gap.field.block": value(config.components.fieldGapBaselineUnits * config.baselineUnit),
@@ -197,7 +228,11 @@ export function legacyThemeConfigSpacing(config: ThemeConfig): ResolvedDtcgSpaci
     "spacing.gap.region.block": value(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
     "spacing.inset.field.inline": value(config.components.inlineInsetFieldUnits * config.inlineUnitRem),
     "spacing.inset.action.inline": value(config.components.inlineInsetActionUnits * config.inlineUnitRem),
-    "spacing.inset.continuation.inline": value(config.components.inlineInsetContinuationUnits * config.inlineUnitRem),
+    "spacing.inset.continuation.inline": value(
+      (config.components.inlineInsetFieldUnits * config.inlineUnitRem) +
+      body.fontSize +
+      (config.components.markGapInlineUnits * config.inlineUnitRem)
+    ),
     "spacing.inset.surface.inline": value(config.components.panelPaddingInlineUnits * config.inlineUnitRem),
     "spacing.inset.surface.block": value(config.components.panelPaddingBlockBaselineUnits * config.baselineUnit),
     "spacing.inset.strip.block": value(config.layout.stripSpaceBaselineUnits * config.baselineUnit)

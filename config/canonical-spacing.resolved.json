@@ -2,13 +2,26 @@
   "format": "canonical-resolver-apply-spacing-v1",
   "integrity": {
     "algorithm": "sha256",
-    "canonicalProducts": "97cffe22691cebbe29d786d2fbe10d04d014d412ed35ccaca386ca41e73bd571"
+    "canonicalProducts": "f8fa3f4ac6d94fa1e262ab0530bd2c6d41da2932dc91c06151c711ca093cf679"
   },
   "source": {
     "package": "@canonical/design-tokens",
     "repository": "https://github.com/canonical/design-tokens",
-    "commit": "18f57b95b1aa1dfe85a45746016b055c807d6628",
-    "resolver": "tokens/canonical/canonical.resolver.json"
+    "baseCommit": "18f57b95b1aa1dfe85a45746016b055c807d6628",
+    "resolver": "tokens/canonical/canonical.resolver.json",
+    "baseRole": "schema and resolver base only; does not generate the working product values below",
+    "workingValues": {
+      "repository": "canonical-spacing-spec",
+      "commit": "7169231fcc3168032275d920d32856f9669107ac",
+      "spec": "024-semantic-spacing-token-schema",
+      "origin": "Spec 024 working-values override; not @canonical/design-tokens resolver product output",
+      "status": "working override; canonical-main merge and design-tokens contribution pending",
+      "regenerationGuard": "preserve this override until the owner lands equivalent rulings on canonical main and BF repins the resulting full main commit",
+      "canonicalMain": {
+        "observedCommit": "cad4aacf91b7e70bee81730552b76ef0d8291a34",
+        "status": "pending equivalent-ruling merge to canonical main and final-main repin"
+      }
+    }
   },
   "products": {
     "site": {
@@ -16,7 +29,7 @@
       "spacing.gap.field.block": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.gap.mark.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.gap.group.block": { "$type": "dimension", "$value": { "value": 1.5, "unit": "rem" } },
-      "spacing.gap.pattern.block": { "$type": "dimension", "$value": { "value": 4, "unit": "rem" } },
+      "spacing.gap.pattern.block": { "$type": "dimension", "$value": { "value": 4.5, "unit": "rem" } },
       "spacing.gap.region.block": { "$type": "dimension", "$value": { "value": 8, "unit": "rem" } },
       "spacing.inset.field.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.inset.action.inline": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
@@ -27,28 +40,28 @@
     },
     "docs": {
       "spacing.baseline": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
-      "spacing.gap.field.block": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
+      "spacing.gap.field.block": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
       "spacing.gap.mark.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
-      "spacing.gap.group.block": { "$type": "dimension", "$value": { "value": 1.5, "unit": "rem" } },
-      "spacing.gap.pattern.block": { "$type": "dimension", "$value": { "value": 3, "unit": "rem" } },
+      "spacing.gap.group.block": { "$type": "dimension", "$value": { "value": 1.25, "unit": "rem" } },
+      "spacing.gap.pattern.block": { "$type": "dimension", "$value": { "value": 2.5, "unit": "rem" } },
       "spacing.gap.region.block": { "$type": "dimension", "$value": { "value": 6, "unit": "rem" } },
       "spacing.inset.field.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.inset.action.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
-      "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.5, "unit": "rem" } },
-      "spacing.inset.surface.inline": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
-      "spacing.inset.surface.block": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+      "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.875, "unit": "rem" } },
+      "spacing.inset.surface.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
+      "spacing.inset.surface.block": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
       "spacing.inset.strip.block": { "$type": "dimension", "$value": { "value": 3, "unit": "rem" } }
     },
     "app": {
       "spacing.baseline": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
-      "spacing.gap.field.block": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
-      "spacing.gap.mark.inline": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
-      "spacing.gap.group.block": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
-      "spacing.gap.pattern.block": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+      "spacing.gap.field.block": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
+      "spacing.gap.mark.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
+      "spacing.gap.group.block": { "$type": "dimension", "$value": { "value": 1.25, "unit": "rem" } },
+      "spacing.gap.pattern.block": { "$type": "dimension", "$value": { "value": 2.5, "unit": "rem" } },
       "spacing.gap.region.block": { "$type": "dimension", "$value": { "value": 2, "unit": "rem" } },
-      "spacing.inset.field.inline": { "$type": "dimension", "$value": { "value": 0.25, "unit": "rem" } },
+      "spacing.inset.field.inline": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
       "spacing.inset.action.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
-      "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.5, "unit": "rem" } },
+      "spacing.inset.continuation.inline": { "$type": "dimension", "$value": { "value": 1.875, "unit": "rem" } },
       "spacing.inset.surface.inline": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
       "spacing.inset.surface.block": { "$type": "dimension", "$value": { "value": 0.75, "unit": "rem" } },
       "spacing.inset.strip.block": { "$type": "dimension", "$value": { "value": 3, "unit": "rem" } }

@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { canonicalSpacingProductsSha256, validateCanonicalSpacingArtifact } from "../../src/dtcg-spacing.ts";
+import { canonicalSpacingProductsSha256, legacyThemeConfigSpacing, validateCanonicalSpacingArtifact } from "../../src/dtcg-spacing.ts";
 import { validateThemeConfig } from "../../src/build.ts";
 import type { ThemeConfig } from "../../src/types.ts";
 import { parseCss } from "../css-ast-helpers.ts";
@@ -40,7 +40,7 @@ const FINAL_MATRIX: Matrix = {
     "spacing.gap.field.block": 0.5,
     "spacing.gap.mark.inline": 0.5,
     "spacing.gap.group.block": 1.5,
-    "spacing.gap.pattern.block": 4,
+    "spacing.gap.pattern.block": 4.5,
     "spacing.gap.region.block": 8,
     "spacing.inset.field.inline": 0.5,
     "spacing.inset.action.inline": 1,
@@ -51,28 +51,28 @@ const FINAL_MATRIX: Matrix = {
   },
   docs: {
     "spacing.baseline": 0.25,
-    "spacing.gap.field.block": 0.5,
+    "spacing.gap.field.block": 0.25,
     "spacing.gap.mark.inline": 0.5,
-    "spacing.gap.group.block": 1.5,
-    "spacing.gap.pattern.block": 3,
+    "spacing.gap.group.block": 1.25,
+    "spacing.gap.pattern.block": 2.5,
     "spacing.gap.region.block": 6,
     "spacing.inset.field.inline": 0.5,
     "spacing.inset.action.inline": 0.75,
-    "spacing.inset.continuation.inline": 1.5,
-    "spacing.inset.surface.inline": 1,
-    "spacing.inset.surface.block": 1,
+    "spacing.inset.continuation.inline": 1.875,
+    "spacing.inset.surface.inline": 0.75,
+    "spacing.inset.surface.block": 0.75,
     "spacing.inset.strip.block": 3
   },
   app: {
     "spacing.baseline": 0.25,
-    "spacing.gap.field.block": 0.5,
-    "spacing.gap.mark.inline": 0.25,
-    "spacing.gap.group.block": 0.5,
-    "spacing.gap.pattern.block": 1,
+    "spacing.gap.field.block": 0.25,
+    "spacing.gap.mark.inline": 0.5,
+    "spacing.gap.group.block": 1.25,
+    "spacing.gap.pattern.block": 2.5,
     "spacing.gap.region.block": 2,
-    "spacing.inset.field.inline": 0.25,
+    "spacing.inset.field.inline": 0.5,
     "spacing.inset.action.inline": 0.75,
-    "spacing.inset.continuation.inline": 1.5,
+    "spacing.inset.continuation.inline": 1.875,
     "spacing.inset.surface.inline": 0.75,
     "spacing.inset.surface.block": 0.75,
     "spacing.inset.strip.block": 3
@@ -139,6 +139,10 @@ function legacyConfigValues(config: Record<string, unknown>): Record<TokenId, nu
   const inlineUnit = config.inlineUnitRem as number;
   const layout = config.layout as Record<string, number>;
   const components = config.components as Record<string, number>;
+  const roles = config.roles as Record<string, string>;
+  const elements = config.elements as Array<Record<string, unknown>>;
+  const body = elements.find(element => element.identifier === roles.body);
+  assert(body, "Expected legacy spacing derivation to resolve the configured body role.");
   return {
     "spacing.baseline": baseline,
     "spacing.gap.field.block": components.fieldGapBaselineUnits * baseline,
@@ -148,7 +152,7 @@ function legacyConfigValues(config: Record<string, unknown>): Record<TokenId, nu
     "spacing.gap.region.block": layout.sectionSpaceDeepBaselineUnits * baseline,
     "spacing.inset.field.inline": components.inlineInsetFieldUnits * inlineUnit,
     "spacing.inset.action.inline": components.inlineInsetActionUnits * inlineUnit,
-    "spacing.inset.continuation.inline": components.inlineInsetContinuationUnits * inlineUnit,
+    "spacing.inset.continuation.inline": (components.inlineInsetFieldUnits * inlineUnit) + (body.fontSize as number) + (components.markGapInlineUnits * inlineUnit),
     "spacing.inset.surface.inline": components.panelPaddingInlineUnits * inlineUnit,
     "spacing.inset.surface.block": components.panelPaddingBlockBaselineUnits * baseline,
     "spacing.inset.strip.block": layout.stripSpaceBaselineUnits * baseline
@@ -162,6 +166,7 @@ export async function validateDtcgSpacingContracts(
 ): Promise<void> {
   const artifact = JSON.parse(await fs.readFile(path.resolve("config/canonical-spacing.resolved.json"), "utf8")) as Record<string, unknown>;
   const source = artifact.source as Record<string, unknown>;
+  const workingValues = source.workingValues as Record<string, unknown>;
   const integrity = artifact.integrity as Record<string, unknown>;
   const products = artifact.products as Record<Product, Record<string, unknown>>;
 
@@ -174,12 +179,41 @@ export async function validateDtcgSpacingContracts(
   assert(
     source.package === "@canonical/design-tokens" &&
       source.repository === "https://github.com/canonical/design-tokens" &&
-      source.commit === SOURCE_COMMIT &&
-      source.resolver === "tokens/canonical/canonical.resolver.json",
-    `Expected the resolved spacing artifact to pin the exact design-tokens ${SOURCE_COMMIT} provider and resolver.`
+      source.baseCommit === SOURCE_COMMIT &&
+      source.resolver === "tokens/canonical/canonical.resolver.json" &&
+      source.baseRole === "schema and resolver base only; does not generate the working product values below" &&
+      workingValues.repository === "canonical-spacing-spec" &&
+      workingValues.commit === "7169231fcc3168032275d920d32856f9669107ac" &&
+      workingValues.spec === "024-semantic-spacing-token-schema" &&
+      workingValues.origin === "Spec 024 working-values override; not @canonical/design-tokens resolver product output" &&
+      workingValues.status === "working override; canonical-main merge and design-tokens contribution pending" &&
+      workingValues.regenerationGuard === "preserve this override until the owner lands equivalent rulings on canonical main and BF repins the resulting full main commit" &&
+      JSON.stringify(workingValues.canonicalMain) === JSON.stringify({
+        observedCommit: "cad4aacf91b7e70bee81730552b76ef0d8291a34",
+        status: "pending equivalent-ruling merge to canonical main and final-main repin"
+      }),
+    `Expected the spacing artifact to identify design-tokens ${SOURCE_COMMIT} as its shape/resolver base and the full Spec 024 commit as a guarded working override pending canonical-main merge.`
   );
   assert(JSON.stringify(Object.keys(products).sort()) === JSON.stringify(["app", "docs", "os", "site"]), "Expected the resolved spacing artifact to contain exactly four products.");
   assert(!existsSync(path.resolve("config/canonical-spacing.compatibility-overlay.json")), "Expected 020a to remove the temporary BF compatibility overlay file.");
+
+  for (const mutateMetadata of [
+    (copy: Record<string, unknown>) => { ((copy.source as Record<string, unknown>).workingValues as Record<string, unknown>).commit = "7169231"; },
+    (copy: Record<string, unknown>) => { (copy.source as Record<string, unknown>).baseRole = "resolver product output"; },
+    (copy: Record<string, unknown>) => { ((copy.source as Record<string, unknown>).workingValues as Record<string, unknown>).origin = "@canonical/design-tokens resolver product output"; },
+    (copy: Record<string, unknown>) => { ((copy.source as Record<string, unknown>).workingValues as Record<string, unknown>).regenerationGuard = "regenerate from base resolver"; },
+    (copy: Record<string, unknown>) => { (((copy.source as Record<string, unknown>).workingValues as Record<string, unknown>).canonicalMain as Record<string, unknown>).requiredAncestor = "7169231fcc3168032275d920d32856f9669107ac"; }
+  ]) {
+    const mutated = structuredClone(artifact);
+    mutateMetadata(mutated);
+    let rejected = false;
+    try {
+      validateCanonicalSpacingArtifact(mutated);
+    } catch {
+      rejected = true;
+    }
+    assert(rejected, "Expected production validation to reject provenance metadata that could silently replace the Spec 024 working override with base-resolver output.");
+  }
 
   for (const [product, productTokens] of Object.entries(products) as Array<[Product, Record<string, unknown>]>) {
     for (const id of TOKEN_IDS) {
@@ -203,7 +237,7 @@ export async function validateDtcgSpacingContracts(
     const config = JSON.parse(await fs.readFile(path.resolve("config/tiers", `${tier}.json`), "utf8")) as Record<string, unknown>;
     assert(config.inlineUnitRem === 0.25, `Expected ${tier} to author the shared 0.25rem inline unit.`);
     const configComponents = config.components as Record<string, unknown>;
-    for (const field of ["inlineInsetFieldUnits", "inlineInsetActionUnits", "inlineInsetContinuationUnits", "markGapInlineUnits", "panelPaddingInlineUnits"]) {
+    for (const field of ["inlineInsetFieldUnits", "inlineInsetActionUnits", "markGapInlineUnits", "panelPaddingInlineUnits"]) {
       assert(Number.isInteger(configComponents[field]) && (configComponents[field] as number) >= 0, `Expected ${tier} components.${field} to be a non-negative whole inline-unit count.`);
     }
     assert(!Object.hasOwn(configComponents, "inlineInsetFieldRem") && !Object.hasOwn(configComponents, "panelPaddingInlineBaselineUnits"), `Expected ${tier} not to retain pre-020a horizontal authoring fields.`);
@@ -232,13 +266,20 @@ export async function validateDtcgSpacingContracts(
   }
 
   const validConfig = JSON.parse(await fs.readFile(path.resolve("config/tiers/os.json"), "utf8")) as ThemeConfig;
+  const appConfig = JSON.parse(await fs.readFile(path.resolve("config/tiers/app.json"), "utf8")) as ThemeConfig;
+  const appContinuationBefore = legacyThemeConfigSpacing(appConfig)["spacing.inset.continuation.inline"].$value.value;
+  appConfig.components.controlVisualSizeRem = 2;
+  const appContinuationAfter = legacyThemeConfigSpacing(appConfig)["spacing.inset.continuation.inline"].$value.value;
+  assert(
+    appContinuationBefore === 1.875 && appContinuationAfter === appContinuationBefore,
+    "Expected App continuation to remain 8px field + 14px body-sized icon + 8px gap when controlVisualSizeRem changes independently."
+  );
   const invalidCases: Array<[string, (config: ThemeConfig) => void]> = [
     ["missing inline unit", config => { delete (config as Partial<ThemeConfig>).inlineUnitRem; }],
     ["non-finite inline unit", config => { config.inlineUnitRem = Number.NaN; }],
     ["negative inline count", config => { config.components.markGapInlineUnits = -1; }],
     ["fractional inline count", config => { config.components.inlineInsetActionUnits = 3.5; }],
-    ["misordered inline insets", config => { config.components.inlineInsetFieldUnits = config.components.inlineInsetActionUnits + 1; }],
-    ["fixed disclosure continuation fit", config => { config.components.inlineInsetContinuationUnits = 4; }]
+    ["misordered inline insets", config => { config.components.inlineInsetFieldUnits = config.components.inlineInsetActionUnits + 1; }]
   ];
   for (const [label, mutate] of invalidCases) {
     const invalid = structuredClone(validConfig);

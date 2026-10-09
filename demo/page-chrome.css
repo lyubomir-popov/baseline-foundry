@@ -146,22 +146,36 @@ body.u-baseline-grid::after {
   min-inline-size: 8.5rem;
 }
 
-@media (max-width: 56rem) {
+@media (width < 64.75rem) {
   body:has(> .pc-root) {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
   }
 
   body:has(> .pc-root) > .pc-nav {
     grid-column: 1;
-    grid-row: auto;
+    grid-row: 1;
     block-size: auto;
     inline-size: auto;
     inset: auto;
     position: static;
   }
 
+  /* While the specimen drawer is expanded, suppress the catalog rail and hide
+   * the shared header/footer so they cannot cover its brand or close control
+   * or receive focus beneath it. Keep the rail on display: none because its
+   * drawer explicitly sets visibility: visible. */
+  body:has(> .pc-content .bf-side-navigation.is-drawer-expanded) > .pc-nav {
+    display: none;
+  }
+
+  body:has(> .pc-content .bf-side-navigation.is-drawer-expanded) > :is(.pc-header, .pc-footer) {
+    visibility: hidden;
+  }
+
   body:has(> .pc-root) > .pc-header {
     grid-column: 1;
+    grid-row: 2;
   }
 
   body:has(> .pc-root) > .pc-footer {
@@ -171,6 +185,7 @@ body.u-baseline-grid::after {
   body:has(> .pc-root) > main,
   body:has(> .pc-root) > .pc-content {
     grid-column: 1;
+    grid-row: 3;
   }
 
   .pc-footer {
@@ -184,5 +199,20 @@ body.u-baseline-grid::after {
 
   .pc-sequence {
     justify-content: flex-end;
+  }
+}
+
+/* ApplicationLayout navigation is a viewport drawer only below its own 48rem
+ * breakpoint. Suppress the shared rail and hide the shared header/footer while
+ * that drawer is expanded so its brand and Pin/Close controls remain the real
+ * pointer and focus targets. The rail stays display: none because its own
+ * drawer can explicitly restore descendant visibility. */
+@media (width < 48rem) {
+  body:has(> .pc-content > .bf-application > .bf-navigation:not(.is-collapsed)) > .pc-nav {
+    display: none;
+  }
+
+  body:has(> .pc-content > .bf-application > .bf-navigation:not(.is-collapsed)) > :is(.pc-header, .pc-footer) {
+    visibility: hidden;
   }
 }

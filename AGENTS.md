@@ -32,10 +32,11 @@ Read in this order:
   compromise is not automatically a BF requirement.
 - Semantic vertical spacing is container-owned in every built-in tier:
   editorial, documentation, app, and OS. Metric-aligned text retains only its
-  measured top nudge and complementary bottom-margin compensation; role
-  space-after does not drive layout. Nested `bf-stack` containers own direct
-  child gaps, and plain and visual-role-classed equivalents must occupy the
-  same baseline-aligned box.
+  measured top nudge and a bottom-margin compensation that is the smallest
+  grid-closing value at least equal to that nudge; role space-after does not
+  drive layout. Nested `bf-stack` containers own direct child gaps, and plain
+  and visual-role-classed equivalents must occupy the same baseline-aligned
+  box.
 - Baseline compensation comes from real font metrics. The cap engine is a demo
   comparison, not a production surface.
 - OS is the fourth first-class built-in tier. Density differences are
@@ -44,6 +45,11 @@ Read in this order:
 - Controls follow the Vanilla occupied-block model: symmetric nudge-derived
   padding, no target block size, and trailing compensation that snaps the
   occupied block to the grid.
+- Component strokes are paint. Ordinary framed components use a locally reset,
+  pointer-transparent automatic `::after` overlay with no wrapper, isolation,
+  or z-index. Named leaf/native-part exceptions must keep zero layout borders;
+  one-sided forced-colors paint uses a logical system-color border on the same
+  out-of-flow owner, while all-sided paint uses an inset system outline.
 - Canonical tagged navigation preserves the 2.375rem-by-1.375rem tag, 1rem mark
   box, and fixed 0.375rem mark-to-tag-bottom offset. The mark aligns to the first title
   line rather than the tag centre; the tag attaches to the navigation top and
@@ -71,7 +77,8 @@ Read in this order:
   metric-based nudges generated from real font files; CSS `1cap` alignment is
   rejected for BF by owner decision (2026-09-30). Pragma uses `1cap` because its
   lead engineer prefers it; that choice stays in Pragma and must not be ported
-  back, even when a shared decision (such as body-line phase) is ported.
+  back. Body-line phase is excluded from BF by owner decision; its parked Spec
+  026 branch is historical work, not a future implementation instruction.
 
 ## Spec workflow
 

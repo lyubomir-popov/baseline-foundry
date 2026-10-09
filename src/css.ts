@@ -1,5 +1,6 @@
 import { gridCss } from "./css-grid.js";
 import { componentsCss } from "./css-components.js";
+import { blockStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { appTierPresetCss } from "./css-app-tier.js";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "./baseline-grid-theme.js";
 import { generateBaselineGridOverlayCss, generateBaselineGridThemeOverrideCss } from "./baseline-grid-overlay.js";
@@ -46,7 +47,15 @@ function fontFaceRule(fontFile: ThemeFontFile): string {
   return `@font-face {\n  font-family: "${fontFile.cssFamily}";\n  src: url("${fontFile.path}") format("${fontFormat(fontFile.path)}");\n  font-style: ${fontFile.fontStyle ?? "normal"};\n  font-weight: ${fontFile.fontWeight ?? "400"};\n  font-stretch: ${fontFile.fontStretch ?? "normal"};\n  font-display: ${fontFile.fontDisplay ?? "swap"};\n}\n`;
 }
 
-function baselineCompensation(nudgeTop: string, baselineUnit: string): string {
+function baselineCompensation(lineHeight: string, nudgeTop: string, baselineUnit: string): string {
+  const line = parseRemValue(lineHeight);
+  const nudge = parseRemValue(nudgeTop);
+  const unit = parseRemValue(baselineUnit);
+  const closedBlockSize = Math.ceil(((line + (2 * nudge)) / unit) - 1e-10) * unit;
+  return toRemLiteral(closedBlockSize - line - nudge);
+}
+
+function inBoxEndNudge(nudgeTop: string, baselineUnit: string): string {
   return toRemLiteral(parseRemValue(baselineUnit) - parseRemValue(nudgeTop));
 }
 
@@ -103,15 +112,16 @@ const ROLE_STYLE_DEFAULTS: Record<string, {
 
 function textRule(roleName: string, selectors: string[], token: TypographyToken, baselineUnit: string, extra = ""): string {
   const styleDefaults = ROLE_STYLE_DEFAULTS[roleName] ?? {};
-  const marginBottom = token.marginBottom ?? baselineCompensation(token.nudgeTop, baselineUnit);
+  const marginBottom = token.marginBottom ?? baselineCompensation(token.lineHeight, token.nudgeTop, baselineUnit);
   const nudgeStart = token.nudgeTop;
   return `${selectors.join(",\n")} {\n  font-family: ${roleFontFamilyVar(roleName, token.fontStack)};\n  font-size: ${roleFontSizeVar(roleName, token.fontSize)};\n  font-style: ${roleFontStyleVar(roleName, token.fontStyle ?? "normal")};\n  font-weight: ${roleFontWeightVar(roleName, token.fontWeight ?? 400)};\n  font-variant-caps: ${roleFontVariantCapsVar(roleName, token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal")};\n  letter-spacing: ${roleLetterSpacingVar(roleName, token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal")};\n  text-transform: ${roleTextTransformVar(roleName, token.textTransform ?? styleDefaults.textTransform ?? "none")};\n  line-height: ${roleLineHeightVar(roleName, token.lineHeight)};\n  margin-bottom: ${roleMarginBottomVar(roleName, marginBottom)};\n  padding-block-end: 0rem;\n  padding-block-start: ${roleNudgeStartVar(roleName, nudgeStart)};\n${extra}}\n`;
 }
 
 function roleVarDeclarations(roleName: string, token: TypographyToken, baselineUnit: string): string {
   const styleDefaults = ROLE_STYLE_DEFAULTS[roleName] ?? {};
-  const compensation = token.marginBottom ?? baselineCompensation(token.nudgeTop, baselineUnit);
-  return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-baseline-compensation: ${compensation};\n  --bf-${roleName}-margin-bottom: ${compensation};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${compensation};\n`;
+  const compensation = token.marginBottom ?? baselineCompensation(token.lineHeight, token.nudgeTop, baselineUnit);
+  const endNudge = inBoxEndNudge(token.nudgeTop, baselineUnit);
+  return `  --bf-${roleName}-font-family: ${token.fontStack};\n  --bf-${roleName}-font-size: ${token.fontSize};\n  --bf-${roleName}-font-style: ${token.fontStyle ?? "normal"};\n  --bf-${roleName}-font-weight: ${token.fontWeight ?? 400};\n  --bf-${roleName}-font-variant-caps: ${token.fontVariantCaps ?? styleDefaults.fontVariantCaps ?? "normal"};\n  --bf-${roleName}-letter-spacing: ${token.letterSpacing ?? styleDefaults.letterSpacing ?? "normal"};\n  --bf-${roleName}-text-transform: ${token.textTransform ?? styleDefaults.textTransform ?? "none"};\n  --bf-${roleName}-line-height: ${token.lineHeight};\n  --bf-${roleName}-space-after: ${token.spaceAfter};\n  --bf-${roleName}-baseline-compensation: ${compensation};\n  --bf-${roleName}-margin-bottom: ${compensation};\n  --bf-${roleName}-nudge-start: ${token.nudgeTop};\n  --bf-${roleName}-nudge-end: ${endNudge};\n`;
 }
 
 function spacingVarDeclarations(tokens: ThemeTokens): string {
@@ -260,7 +270,16 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
     ...(hasAppDefault ? [":where(.bf-theme)"] : []),
     ...(hasAppClassSurface ? [":where(.bf-theme.bf-tier-app)"] : [])
   ];
+  const siteScopes = [
+    ...((options.presetName === "editorial" || options.presetName === "prose")
+      ? [":where(.bf-theme:not(.bf-tier-documentation, .bf-tier-app, .bf-tier-os))"]
+      : []),
+    ...(themeSurfaces.some(surface => surface.className === "bf-tier-editorial")
+      ? [":where(.bf-theme.bf-tier-editorial)"]
+      : [])
+  ];
   const presetCss = includesAppSurface ? `\n${appTierPresetCss(appScopes)}` : "";
+  const tokenRowStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-token-row)", { anchor: "relative", color: "var(--bf-color-rule)", width: "0.0625rem" });
 
   if (!body) {
     throw new Error("Theme tokens require a body role.");
@@ -511,6 +530,10 @@ ${capEngineDemo}
   padding-block-end: 0;
 }
 
+:where(.bf-theme) :where(.bf-prose :is(ul, ol):not(.bf-stack, .bf-grid, .bf-cluster)) {
+  display: flow-root;
+}
+
 :where(.bf-theme) :where(.bf-prose ol) {
   padding-inline-start: calc(var(--bf-leading-mark-group-inset) + var(--bf-leading-mark-offset) - (var(--bf-leading-mark-size) * 0.5));
 }
@@ -541,7 +564,7 @@ ${capEngineDemo}
 }
 
 :where(.bf-theme) :where(.bf-prose li) {
-  margin: 0 0 ${roleMarginBottomVar("body", baselineCompensation(body.nudgeTop, baselineUnit))};
+  margin: 0 0 ${roleMarginBottomVar("body", baselineCompensation(body.lineHeight, body.nudgeTop, baselineUnit))};
   padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
 }
@@ -553,7 +576,7 @@ ${capEngineDemo}
   font-style: ${roleFontStyleVar("body", body.fontStyle ?? "normal")};
   font-weight: ${roleFontWeightVar("body", body.fontWeight ?? 400)};
   line-height: ${roleLineHeightVar("body", body.lineHeight)};
-  margin-bottom: ${roleMarginBottomVar("body", baselineCompensation(body.nudgeTop, baselineUnit))};
+  margin-bottom: ${roleMarginBottomVar("body", baselineCompensation(body.lineHeight, body.nudgeTop, baselineUnit))};
   max-inline-size: var(--bf-measure);
   padding-block-end: 0rem;
   padding-block-start: ${roleNudgeStartVar("body", body.nudgeTop)};
@@ -566,29 +589,32 @@ ${capEngineDemo}
   inline-size: 100%;
   /* Reserve one half-rem rhythm step after the rule, including its */
   /* thickness, so borderless content does not touch the divider. */
-  margin: 0 0 calc(0.5rem - 0.0625rem);
+  margin: 0 0 calc(var(--bf-field-gap) - 0.0625rem);
 }
 
 /* Highlight rules share the same scalable emphasis-bar geometry as active
  * navigation, tabs, notifications, and document-navigation markers. */
 :where(.bf-theme) :where(hr.is-highlighted) {
   block-size: var(--bf-bar-thickness);
-  margin-block-end: calc(0.5rem - var(--bf-bar-thickness));
+  margin-block-end: calc(var(--bf-field-gap) - var(--bf-bar-thickness));
 }
 
+${tokenRowStroke.owner}
+
 :where(.bf-theme) :where(.bf-token-row) {
-  border-top: 0.0625rem solid var(--bf-color-rule);
   display: grid;
   gap: var(--bf-space-1);
   padding-top: var(--bf-space-2);
 }
 
 :where(.bf-theme) :where(.bf-token-row:first-child) {
-  border-top: 0;
+  --bf-stroke-width: 0rem;
   padding-top: 0;
 }
 
-${componentsCss(tokens, themeSurfaces)}
+${tokenRowStroke.painter}
+
+${componentsCss(tokens, themeSurfaces, siteScopes)}
 
 ${gridCss(appScopes)}${presetCss}
 `;

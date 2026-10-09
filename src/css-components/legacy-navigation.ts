@@ -1,9 +1,10 @@
+import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss } from "./stroke-paint.js";
+
 export interface LegacyNavigationCssOptions {
   bodyMediumTypeStyles: string;
   bodySemiboldTypeStyles: string;
   bodyTypeStyles: string;
   buttonMarginBottom: string;
-  buttonPadding: string;
 }
 
 export function legacyNavigationCss(options: LegacyNavigationCssOptions): string {
@@ -11,22 +12,34 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
     bodyMediumTypeStyles,
     bodySemiboldTypeStyles,
     bodyTypeStyles,
-    buttonMarginBottom,
-    buttonPadding
+    buttonMarginBottom
   } = options;
+  const toggleSelector = ":where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer)";
+  const toggleStroke = allSidedStrokeOverlayCss(toggleSelector, { anchor: "relative", color: "var(--bf-color-border-high-contrast)" });
+  const drawerHeaderSelector = ":where(.bf-theme) :where(.bf-side-navigation-drawer-header)";
+  const drawerHeaderStroke = blockEndStrokeOverlayCss(drawerHeaderSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const topNavigationSelector = ":where(.bf-theme) :where(.bf-top-navigation)";
+  const topNavigationStroke = blockEndStrokeOverlayCss(topNavigationSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const topNavigationDropdownSelector = ":where(.bf-theme) :where(.bf-top-navigation-dropdown)";
+  const topNavigationDropdownStroke = blockStartStrokeOverlayCss(topNavigationDropdownSelector, { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
+  const topNavigationSearchSelector = ":where(.bf-theme) :where(.bf-top-navigation-search)";
+  const topNavigationSearchStroke = blockStartStrokeOverlayCss(topNavigationSearchSelector, { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
 
-  return `:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
-  /* Plain navigation commands use the action inset. Icon-led rows move only their mark canvas,
-     so their copy reaches the shared continuation inset without a fourth
-     component inset. Navigation depth is added separately below. */
-  /* Navigation copy uses one continuation inset whether a row has a leading
-     disclosure/icon slot or not. The mark canvas is derived backwards from
-     that inset, so iconless rows never introduce a fourth text start. */
-  --bf-side-navigation-content-inset: var(--bf-component-inline-inset-continuation);
-  --bf-side-navigation-disclosure-inset: var(--bf-disclosure-group-inset);
-  --bf-side-navigation-depth-step: var(--bf-component-inline-inset-action);
-  --bf-side-navigation-group-gap: 1.5rem;
-  --bf-side-navigation-heading-list-gap: 0.5rem;
+  return `${toggleStroke.owner}
+${drawerHeaderStroke.owner}
+${topNavigationStroke.owner}
+${topNavigationDropdownStroke.owner}
+${topNavigationSearchStroke.owner}
+
+:where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html) {
+  /* The navigation panel owns grid-margin gutters. Every row reserves one
+     tier-sized icon column plus the shared mark gap, including iconless and
+     nested rows, so every label reaches one stable panel keyline. */
+  --bf-side-navigation-gutter: var(--bf-page-margin);
+  --bf-side-navigation-icon-size: var(--bf-icon-size-default);
+  --bf-side-navigation-label-keyline: calc(var(--bf-side-navigation-gutter) + var(--bf-side-navigation-icon-size) + var(--bf-side-navigation-icon-gap));
+  --bf-side-navigation-group-gap: var(--bf-section-space-shallow);
+  --bf-side-navigation-heading-list-gap: var(--bf-field-gap);
   color: var(--bf-color-text-inactive);
   display: block;
   inline-size: 100%;
@@ -52,23 +65,31 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   display: grid;
   gap: 0rem;
   min-inline-size: 0;
+  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-group-header) > hr {
-  inline-size: auto;
-  margin-inline: var(--bf-side-navigation-content-inset) 0;
+  inline-size: 100%;
+  margin-inline: 0;
 }
 
-/* A single-line group heading occupies four baselines. min-block-size keeps
-   that phase exact while still allowing a long heading to wrap and grow. */
+/* The intrinsic single-line heading plus metric end compensation closes on
+   the tier grid. This lower minimum remains only a wrapping floor, so longer
+   headings can grow. */
 :where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading) {
-  min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-margin-bottom));
+  min-block-size: calc((var(--bf-baseline) * 4) - var(--bf-body-nudge-end));
+  padding-inline: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-drawer) {
+  --bf-side-navigation-drawer-elevation-layer: 0 0 0 0 transparent;
   background: var(--bf-color-background-default);
+  box-shadow: var(--bf-side-navigation-drawer-elevation-layer);
   bottom: 0;
   color: var(--bf-color-text-default);
+  display: flex;
+  flex-direction: column;
+  gap: var(--bf-section-space-shallow);
   inline-size: 100%;
   left: 0;
   overflow: auto;
@@ -81,7 +102,7 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
 }
 
 :where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-expanded) :where(.bf-side-navigation-drawer) {
-  box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
+  --bf-side-navigation-drawer-elevation-layer: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.38);
   transform: translateX(0);
 }
 
@@ -108,9 +129,8 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
 
 :where(.bf-theme) :where(.bf-side-navigation-drawer-header) {
   background: var(--bf-color-background-default);
-  border-bottom: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
-  margin-bottom: calc(var(--bf-baseline) * 2);
-  padding-bottom: calc(var(--bf-panel-padding-block) - var(--bf-border-width));
+  margin-bottom: 0;
+  padding-bottom: var(--bf-panel-padding-block);
   padding-inline: var(--bf-panel-padding-inline);
   padding-top: var(--bf-panel-padding-block);
   position: sticky;
@@ -118,11 +138,20 @@ export function legacyNavigationCss(options: LegacyNavigationCssOptions): string
   z-index: 1;
 }
 
+:where(.bf-theme) :where(.bf-side-navigation-drawer-chrome) {
+  display: grid;
+  gap: 0;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-drawer-body) {
+  min-inline-size: 0;
+}
+
 :where(.bf-theme) :where(.bf-side-navigation-toggle, .bf-side-navigation-toggle.is-in-drawer) {
 ${bodyTypeStyles}  align-items: center;
   appearance: none;
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-high-contrast);
+  border: 0;
   border-radius: var(--bf-radius);
   color: var(--bf-color-text-default);
   cursor: pointer;
@@ -130,7 +159,8 @@ ${bodyTypeStyles}  align-items: center;
   gap: var(--bf-leading-mark-gap);
   justify-content: center;
   margin: 0 0 ${buttonMarginBottom};
-${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordered);
+  padding-block: var(--bf-interface-row-padding-block);
+  padding-inline: var(--bf-component-inline-inset-action);
   text-decoration: none;
 }
 
@@ -138,10 +168,10 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
   transform: rotate(-90deg);
 }
 
@@ -149,10 +179,10 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
-  inline-size: 1rem;
+  inline-size: var(--bf-icon-size-default);
   transform: rotate(90deg);
 }
 
@@ -165,19 +195,46 @@ ${buttonPadding}  padding-inline: var(--bf-component-inline-inset-action-bordere
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-toggle:focus-visible) {
-  outline: 0.125rem solid var(--bf-color-focus);
-  outline-offset: -0.125rem;
+  --bf-overlay-focus-layer: inset 0 0 0 0.125rem var(--bf-color-focus);
+  outline: none;
+}
+
+${toggleStroke.painter}
+${drawerHeaderStroke.painter}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-side-navigation-toggle:focus-visible) {
+    outline: 0.125rem solid Highlight;
+    outline-offset: -0.125rem;
+  }
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-heading, .bf-side-navigation-heading.is-linked) {
 ${bodySemiboldTypeStyles}  display: block;
   margin: 0 0 var(--bf-body-margin-bottom);
   padding-block: var(--bf-body-nudge-start) 0;
-  padding-inline: var(--bf-side-navigation-content-inset);
+  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-heading.is-linked) {
   padding-inline: 0;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-context-switcher) {
+  display: grid;
+  gap: var(--bf-field-gap);
+  min-inline-size: 0;
+  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-context-switcher-label) {
+${bodySemiboldTypeStyles}  display: block;
+  margin: 0 0 var(--bf-body-margin-bottom);
+  padding-block: var(--bf-body-nudge-start) 0;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-context-switcher) > :where(.bf-field-boundary) {
+  inline-size: 100%;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-list) {
@@ -201,10 +258,10 @@ ${bodyTypeStyles}  align-items: center;
   align-self: start;
   background: transparent;
   border: 0;
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-color-text-inactive);
   display: flex;
-  gap: var(--bf-leading-mark-gap);
+  gap: var(--bf-side-navigation-icon-gap);
   inline-size: 100%;
   justify-content: flex-start;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -213,46 +270,19 @@ ${bodyTypeStyles}  align-items: center;
      following panel/list item rather than inside the clipped row itself. */
   overflow: hidden;
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: var(--bf-side-navigation-content-inset);
-  --bf-side-navigation-row-inset: var(--bf-side-navigation-content-inset);
+  padding-inline: var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter);
   position: relative;
   text-align: left;
   text-decoration: none;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-accordion-button) {
-  --bf-side-navigation-row-inset: var(--bf-side-navigation-disclosure-inset);
-  gap: var(--bf-disclosure-gap);
+  gap: var(--bf-side-navigation-icon-gap);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-item.is-title) > :where(.bf-side-navigation-link, .bf-side-navigation-text) {
   color: var(--bf-color-text-default);
   font-weight: 600;
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-list) > :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title) > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset));
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + var(--bf-side-navigation-depth-step));
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + (var(--bf-side-navigation-depth-step) * 2));
-}
-
-:where(.bf-theme) :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  :where(.bf-side-navigation-item, .bf-side-navigation-item.is-title)
-  > :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  padding-inline-start: calc(var(--bf-side-navigation-row-inset, var(--bf-side-navigation-content-inset)) + (var(--bf-side-navigation-depth-step) * 3));
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-link:hover, .bf-side-navigation-accordion-button:hover) {
@@ -276,19 +306,40 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true']) {
   background: var(--bf-color-background-active);
-  box-shadow: inset var(--bf-bar-thickness) 0 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
   cursor: default;
 }
 
+/* Selection is one-sided paint inside the start gutter. It neither consumes
+   row space nor changes the shared label keyline. */
+:where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true'])::after {
+  background: var(--bf-color-text-default);
+  block-size: 100%;
+  content: "";
+  inline-size: var(--bf-bar-thickness);
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-side-navigation-link.is-active, .bf-side-navigation-link[aria-current='page'], .bf-side-navigation-link[aria-current='true'])::after {
+    background: transparent;
+    border-inline-start: var(--bf-bar-thickness) solid CanvasText;
+    inline-size: 0;
+  }
+}
+
 :where(.bf-theme) :where(.bf-top-navigation) {
   background: var(--bf-color-background-default);
-  box-shadow: inset 0 calc(var(--bf-border-width) * -1) 0 var(--bf-color-border-low-contrast);
   color: var(--bf-color-text-default);
   isolation: isolate;
   position: relative;
   z-index: 50;
 }
+
+${topNavigationStroke.painter}
 
 :where(.bf-theme) :where(.bf-top-navigation.is-sticky) {
   position: sticky;
@@ -399,7 +450,18 @@ ${bodyMediumTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item) {
-  border-top: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before {
+  background: var(--bf-color-border-low-contrast);
+  block-size: var(--bf-border-width);
+  content: "";
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-item.is-right-shifted) {
@@ -449,8 +511,21 @@ ${bodyTypeStyles}  align-items: center;
 :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link),
 :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page']) {
   background: var(--bf-color-background-hover);
-  box-shadow: inset var(--bf-bar-thickness) 0 0 var(--bf-color-text-default);
   color: var(--bf-color-text-default);
+  position: relative;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link)::before,
+:where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link)::before,
+:where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page'])::before {
+  background: var(--bf-color-text-default);
+  block-size: 100%;
+  content: "";
+  inline-size: var(--bf-bar-thickness);
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-menu-toggle) {
@@ -470,27 +545,27 @@ ${bodyTypeStyles}  align-items: center;
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   bottom: 0;
   content: "";
-  inline-size: 1rem;
-  margin-block: auto;
+  inline-size: var(--bf-icon-size-default);
   pointer-events: none;
   position: absolute;
   right: var(--bf-top-navigation-link-padding-inline);
-  top: 0;
-  transform: rotate(0deg);
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
   transition: transform 160ms ease;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-dropdown-toggle)::after {
-  transform: rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
   background: var(--bf-color-background-default);
-  border-top: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
+  box-shadow: none;
   display: none;
   list-style: none;
   margin: 0;
@@ -512,6 +587,7 @@ ${bodyTypeStyles}  align-items: center;
   min-inline-size: 0;
   padding-block: var(--bf-top-navigation-link-padding-block);
   padding-inline: calc(var(--bf-top-navigation-link-padding-inline) + var(--bf-component-inline-inset-action)) var(--bf-top-navigation-link-padding-inline);
+  position: relative;
   text-align: left;
   text-decoration: none;
   white-space: nowrap;
@@ -543,12 +619,24 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider) {
-  border-top: var(--bf-border-width) solid var(--bf-color-border-default);
-  margin-block: calc(var(--bf-baseline) * 0.5);
+  block-size: var(--bf-baseline);
+  position: relative;
 }
 
-:where(.bf-theme) :where(.bf-top-navigation-dropdown > li + li) > :where(.bf-top-navigation-dropdown-item) {
-  border-top: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+:where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider)::before,
+:where(.bf-theme) :where(.bf-top-navigation-dropdown > li + li) > :where(.bf-top-navigation-dropdown-item)::before {
+  background: var(--bf-color-border-low-contrast);
+  block-size: var(--bf-border-width);
+  content: "";
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+:where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider)::before {
+  background: var(--bf-color-border-default);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-dropdown-item:hover) {
@@ -573,11 +661,11 @@ ${bodyTypeStyles}  align-items: center;
   background-image: var(--bf-ui-icon-search);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-icon-size-default) var(--bf-icon-size-default);
+  block-size: var(--bf-icon-size-default);
   content: "";
-  flex: 0 0 1rem;
-  inline-size: 1rem;
+  flex: 0 0 var(--bf-icon-size-default);
+  inline-size: var(--bf-icon-size-default);
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-search-toggle[aria-pressed='true'])::after {
@@ -589,7 +677,7 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-search) {
-  border-top: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  box-shadow: none;
   display: none;
   min-inline-size: 0;
   padding-block: var(--bf-top-navigation-link-padding-block);
@@ -638,7 +726,11 @@ ${bodyTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item) {
-    border-top: 0;
+    position: relative;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before {
+    content: none;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-link, .bf-top-navigation-search-toggle) {
@@ -665,12 +757,22 @@ ${bodyTypeStyles}  align-items: center;
   :where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link),
   :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link),
   :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page']) {
-    box-shadow: inset 0 calc(var(--bf-bar-thickness) * -1) 0 var(--bf-color-text-default);
+    box-shadow: none;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page'])::before {
+    block-size: var(--bf-bar-thickness);
+    inline-size: 100%;
+    inset-block-start: auto;
+    inset-block-end: 0;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
-    border-top: 0;
-    box-shadow: 0 0 0 var(--bf-border-width) var(--bf-color-border-low-contrast), 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
+    --bf-overlay-stroke-layer: inset 0 0 0 var(--bf-stroke-width) var(--bf-stroke-color);
+    --bf-overlay-elevation-layer: 0 calc(var(--bf-baseline) * 0.5) calc(var(--bf-baseline) * 2) rgba(0, 0, 0, 0.16);
+    box-shadow: none;
     left: 0;
     min-inline-size: max(100%, 12rem);
     position: absolute;
@@ -688,8 +790,9 @@ ${bodyTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-search) {
+    --bf-stroke-width: 0rem;
     align-items: center;
-    border-top: 0;
+    box-shadow: none;
     flex: 1 1 auto;
     justify-content: flex-end;
     padding-block: var(--bf-top-navigation-link-padding-block);
@@ -719,6 +822,41 @@ ${bodyTypeStyles}  align-items: center;
   }
 }
 
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-dropdown > li.is-divider)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-dropdown > li + li) > :where(.bf-top-navigation-dropdown-item)::before {
+    background: CanvasText;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation-item.is-selected) > :where(.bf-top-navigation-link)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-item.is-dropdown-toggle.is-active) > :where(.bf-top-navigation-link)::before,
+  :where(.bf-theme) :where(.bf-top-navigation-link[aria-current='page'])::before {
+    background: CanvasText;
+  }
+
+  :where(.bf-theme) :where(.bf-top-navigation-dropdown) {
+    box-shadow: none;
+  }
+}
+
+@media (forced-colors: active) and (min-width: 64.75rem) {
+  :where(.bf-theme) :where(.bf-top-navigation-nav) :where(.bf-top-navigation-item)::before {
+    content: none;
+  }
+}
+
+${topNavigationDropdownStroke.painter}
+${topNavigationSearchStroke.painter}
+
+@media (forced-colors: active) and (min-width: 64.75rem) {
+  :where(.bf-theme) :where(.bf-top-navigation-dropdown)::after {
+    border-block-start: 0;
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width) * -1);
+  }
+}
+
 :where(.bf-theme) :where(.bf-side-navigation-item:has(> .bf-side-navigation-list [aria-current='page']), .bf-side-navigation-item:has(> .bf-side-navigation-list [aria-current='true'])) > :where(.bf-side-navigation-link, .bf-side-navigation-accordion-button) {
   color: var(--bf-color-text-default);
 }
@@ -735,6 +873,13 @@ ${bodyTypeStyles}  align-items: center;
   inline-size: var(--bf-disclosure-icon-inline-size);
   transform: translateY(var(--bf-disclosure-icon-optical-offset-block));
   transition: transform 120ms ease;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-accordion-button)::before {
+  flex: none;
+  inset-block-start: calc(var(--bf-interface-row-padding-block) + ((var(--bf-body-line-height) - var(--bf-side-navigation-icon-size)) * 0.5));
+  inset-inline-start: var(--bf-side-navigation-gutter);
+  position: absolute;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-accordion-button[aria-expanded='false'], .bf-side-navigation-expand[aria-expanded='false'])::before {
@@ -787,51 +932,45 @@ ${bodyTypeStyles}  background: transparent;
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-icon) {
   align-items: center;
   display: inline-flex;
-  flex: 0 0 var(--bf-disclosure-icon-inline-size);
-  inline-size: var(--bf-disclosure-icon-inline-size);
+  flex: none;
+  inline-size: var(--bf-side-navigation-icon-size);
+  inset-block-start: calc(var(--bf-interface-row-padding-block) + ((var(--bf-body-line-height) - var(--bf-side-navigation-icon-size)) * 0.5));
+  inset-inline-start: var(--bf-side-navigation-gutter);
   justify-content: center;
+  position: absolute;
   transform: translateY(var(--bf-side-navigation-icon-optical-offset-block));
 }
 
 :where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation-icon) {
+  inset: auto;
+  position: static;
   transform: none;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-side-navigation-accordion-button) {
-  --bf-side-navigation-row-inset: max(0rem, calc(var(--bf-component-inline-inset-continuation) - var(--bf-disclosure-icon-inline-size) - var(--bf-side-navigation-icon-gap)));
   align-items: baseline;
   column-gap: var(--bf-side-navigation-icon-gap);
-}
-
-/* Icon navigation keeps one stable label edge. Rows may omit a decorative
-   icon without collapsing the shared icon track and pulling their copy left. */
-:where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text):not(:has(> .bf-side-navigation-icon))::before {
-  content: "";
-  flex: 0 0 var(--bf-disclosure-icon-inline-size);
-  inline-size: var(--bf-disclosure-icon-inline-size);
-}
-
-/* A collapsed icon rail cannot communicate an iconless destination. Remove
-   the alignment spacer with the hidden label so it cannot become a blank
-   visual affordance in that state. */
-:where(.bf-theme) :where(.bf-navigation.is-collapsed) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-link, .bf-side-navigation-text):not(:has(> .bf-side-navigation-icon))::before {
-  content: none;
 }
 
 /* Icon-navigation headings share the label edge, not the icon edge. This
    keeps section names aligned with both the menu copy and a tagged wordmark. */
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading:not(.is-linked)) {
-  padding-inline-start: var(--bf-component-inline-inset-continuation);
+  padding-inline-start: var(--bf-side-navigation-label-keyline);
 }
 
 :where(.bf-theme) :where(.bf-side-navigation.is-icons) :where(.bf-side-navigation-heading.is-linked) > :where(.bf-side-navigation-link) {
-  padding-inline-start: var(--bf-component-inline-inset-continuation);
+  padding-inline-start: var(--bf-side-navigation-label-keyline);
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading:not(.is-linked)),
+:where(.bf-theme) :where(.bf-side-navigation-group-header) > :where(.bf-side-navigation-heading.is-linked) > :where(.bf-side-navigation-link) {
+  padding-inline: 0;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-icon) > svg {
-  block-size: 1rem;
+  block-size: var(--bf-side-navigation-icon-size);
   display: block;
-  inline-size: 1rem;
+  inline-size: var(--bf-side-navigation-icon-size);
 }
 
 @media (min-width: 64.75rem) {
@@ -843,7 +982,7 @@ ${bodyTypeStyles}  background: transparent;
 
   :where(.bf-theme) :where(.bf-side-navigation-drawer),
   :where(.bf-theme) :where(.bf-side-navigation, .bf-side-navigation.is-icons, .bf-side-navigation.is-accordion, .bf-side-navigation.is-raw-html):where(.is-drawer-expanded) :where(.bf-side-navigation-drawer) {
-    box-shadow: none;
+    --bf-side-navigation-drawer-elevation-layer: 0 0 0 0 transparent;
     display: block;
     max-inline-size: none;
     overflow: visible;

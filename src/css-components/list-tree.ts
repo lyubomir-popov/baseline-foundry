@@ -30,7 +30,7 @@ export function listTreeCss(options: ListTreeCssOptions): string {
 
 :where(.bf-theme) :where(a.bf-list-tree-link) {
 ${bodyTypeStyles}  color: var(--bf-color-text-default);
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   cursor: pointer;
   display: block;
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
@@ -61,7 +61,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-default);
 ${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
-  border-block: var(--bf-border-width) solid transparent;
+  border-block: 0;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: flex;
@@ -90,11 +90,11 @@ ${bodyTypeStyles}  align-items: center;
   background-image: var(--bf-ui-icon-chevron-down);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 1rem 1rem;
-  block-size: 1rem;
+  background-size: var(--bf-disclosure-icon-inline-size) var(--bf-disclosure-icon-inline-size);
+  block-size: var(--bf-disclosure-icon-inline-size);
   content: "";
-  flex: 0 0 1rem;
-  inline-size: 1rem;
+  flex: 0 0 var(--bf-disclosure-icon-inline-size);
+  inline-size: var(--bf-disclosure-icon-inline-size);
   transform: translateY(var(--bf-disclosure-icon-optical-offset-block)) rotate(-90deg);
 }
 

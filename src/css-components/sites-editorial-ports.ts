@@ -16,7 +16,11 @@
  *   heading-styled paragraph.
  */
 export function sitesEditorialPortsCss(): string {
-  return `/* ------------------------------------------------------------------ */
+  const heroStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-hero:not(.is-borderless))", { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
+
+  return `${heroStroke.owner}
+
+/* ------------------------------------------------------------------ */
 /* Sites editorial compositions — hero and quote wrapper.              */
 /* Section boundaries and grid tracks are structural; nested stacks own */
 /* semantic gaps and every text child keeps metric compensation.        */
@@ -26,20 +30,20 @@ export function sitesEditorialPortsCss(): string {
    stack owns the section exit, and the rule replaces one pixel of padding so
    it never changes the rhythm. */
 :where(.bf-theme) :where(.bf-hero) {
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   container-name: bf-hero;
   container-type: inline-size;
   min-inline-size: 0;
   padding-block-end: 0;
-  padding-block-start: calc(var(--bf-space-2) - var(--bf-border-width));
+  padding-block-start: var(--bf-space-2);
 }
 
 /* The hero owns its entry rule so consumers do not need a loose sibling.
    The established borderless modifier removes only that visual boundary. */
 :where(.bf-theme) :where(.bf-hero.is-borderless) {
-  border-block-start: 0;
   padding-block-start: var(--bf-space-2);
 }
+
+${heroStroke.painter}
 
 :where(.bf-theme) :where(.bf-hero-layout) {
   display: grid;
@@ -109,7 +113,7 @@ export function sitesEditorialPortsCss(): string {
    two-column composition uses its measured intrinsic allocation below. */
 @media (width >= 64.75rem) {
   :where(.bf-theme) :where(.bf-hero) {
-    padding-block-start: calc(var(--bf-space-3) - var(--bf-border-width));
+    padding-block-start: var(--bf-space-3);
   }
 
   :where(.bf-theme) :where(.bf-hero.is-borderless) {
@@ -121,7 +125,7 @@ export function sitesEditorialPortsCss(): string {
    primitive. The border occupies one pixel of that clearance, just as the
    rule's compensated trailing margin does. */
 :where(.bf-theme) :where(.bf-hero.is-top-flush) {
-  padding-block-start: calc(0.5rem - var(--bf-border-width));
+  padding-block-start: var(--bf-field-gap);
 }
 
 @container bf-hero (width >= 45rem) {
@@ -301,3 +305,4 @@ export function sitesEditorialPortsCss(): string {
 }
 `;
 }
+import { blockStartStrokeOverlayCss } from "./stroke-paint.js";

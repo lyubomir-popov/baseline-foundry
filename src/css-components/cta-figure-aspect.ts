@@ -1,5 +1,11 @@
+import { blockStartStrokeOverlayCss } from "./stroke-paint.js";
+
 export function ctaFigureAspectCss(): string {
-  return `/* ------------------------------------------------------------------ */
+  const borderedCtaStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-cta-block.is-bordered)", { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
+
+  return `${borderedCtaStroke.owner}
+
+/* ------------------------------------------------------------------ */
 /* CTA block (Vanilla parity).                                         */
 /* Inline-row of call-to-action items (typically a heading and one or  */
 /* more buttons or links). Container-owned spacing: borderless by      */
@@ -19,9 +25,10 @@ export function ctaFigureAspectCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-cta-block.is-bordered) {
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
-  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));
+  padding-block-start: var(--bf-space-1);
 }
+
+${borderedCtaStroke.painter}
 
 /* ------------------------------------------------------------------ */
 /* Figure (Vanilla parity).                                            */
@@ -32,7 +39,8 @@ export function ctaFigureAspectCss(): string {
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-figure) {
-  display: block;
+  display: grid;
+  gap: var(--bf-space-1);
   inline-size: 100%;
   margin: 0;
 }
@@ -56,7 +64,7 @@ export function ctaFigureAspectCss(): string {
   display: block;
   font-style: italic;
   inline-size: 100%;
-  margin-block: var(--bf-space-1) 0;
+  margin-block: 0;
 }
 
 /* ------------------------------------------------------------------ */

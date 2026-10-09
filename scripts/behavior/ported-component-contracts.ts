@@ -247,6 +247,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           const nested = root.querySelector<HTMLElement>(".bf-table-of-contents-list .bf-table-of-contents-list");
           const parentItem = nested?.parentElement;
           const parentLink = parentItem?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-link");
+          const nestedLink = nested?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-item > .bf-table-of-contents-link");
           const current = root.querySelector<HTMLElement>(".bf-table-of-contents-link[aria-current]");
           const narrowIndentProbe = document.createElement("span");
           const regularIndentProbe = document.createElement("span");
@@ -260,13 +261,13 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
           rowPaddingProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-interface-row-padding-block)";
           root.append(narrowIndentProbe, regularIndentProbe, sectionSpaceProbe, textProbe, rowPaddingProbe);
           const direction = getComputedStyle(root).direction;
-          const nestedRect = nested?.getBoundingClientRect();
+          const nestedRect = nestedLink?.getBoundingClientRect();
           const parentRect = parentLink?.getBoundingClientRect();
           const sections = Array.from(root.querySelectorAll<HTMLElement>(":scope > .bf-table-of-contents-section"));
           const secondSection = sections[1];
           const secondHeading = secondSection?.querySelector<HTMLElement>(".bf-table-of-contents-heading");
           const dividerStyle = secondSection ? getComputedStyle(secondSection, "::before") : null;
-          const result = nested && parentLink && current && nestedRect && parentRect ? {
+          const result = nested && nestedLink && parentLink && current && nestedRect && parentRect ? {
             actualWidth: root.getBoundingClientRect().width,
             direction,
             sectionGap: Number.parseFloat(getComputedStyle(root).rowGap),
@@ -278,6 +279,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
             dividerBlockSize: Number.parseFloat(dividerStyle?.blockSize ?? "0"),
             dividerToHeading: secondSection && secondHeading ? secondHeading.getBoundingClientRect().top - secondSection.getBoundingClientRect().top : Number.POSITIVE_INFINITY,
             nestedMargin: Number.parseFloat(getComputedStyle(nested).marginInlineStart),
+            nestedPadding: Number.parseFloat(getComputedStyle(nested).paddingInlineStart),
             linkPadding: Array.from(root.querySelectorAll<HTMLElement>(".bf-table-of-contents-link")).map(link => {
               const style = getComputedStyle(link);
               return [Number.parseFloat(style.paddingBlockStart), Number.parseFloat(style.paddingBlockEnd)];
@@ -303,7 +305,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
         }, width);
         assert(state, `Expected ${tier} table-of-contents state at ${width}.`);
         const expectedIndent = expectedSpace === "var(--bf-leading-mark-gap)" ? state.expectedNarrowIndent : state.expectedRegularIndent;
-        assert(Math.abs(state.nestedMargin - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} at ${width}; margin=${state.nestedMargin}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
+        assert(state.nestedMargin === 0 && Math.abs(state.nestedPadding - expectedIndent) <= 0.1 && Math.abs(state.logicalIndent - expectedIndent) <= 0.1, `Expected ${tier} table-of-contents nested indentation to map to ${expectedSpace} through owner padding at ${width}; margin=${state.nestedMargin}, padding=${state.nestedPadding}, logical=${state.logicalIndent}, expected=${expectedIndent}.`);
         assert(Math.abs(state.sectionGap - state.expectedSectionGap) <= 0.1 && state.sectionPadding.every(([start, end]) => start === 0 && end === 0), `Expected ${tier} table-of-contents sections to receive their shallow separation from the parent stack without item padding at ${width}.`);
         assert(state.linkPadding.every(([start, end]) => Math.abs(start - state.expectedRowPadding) <= 0.1 && Math.abs(end - state.expectedRowPadding) <= 0.1), `Expected ${tier} table-of-contents links to share symmetric single-line row padding at ${width}; expected ${state.expectedRowPadding}, got ${JSON.stringify(state.linkPadding)}.`);
         assert(state.listGaps.every(gap => Math.abs(gap) <= 0.1) && state.itemGaps.every(gap => Math.abs(gap) <= 0.1), `Expected ${tier} table-of-contents rows to match the side-navigation zero-gap rhythm at ${width}; got lists=${state.listGaps}, items=${state.itemGaps}.`);
@@ -325,7 +327,8 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
         root.setAttribute("dir", "rtl");
         const nested = root.querySelector<HTMLElement>(".bf-table-of-contents-list .bf-table-of-contents-list");
         const parentLink = nested?.parentElement?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-link");
-        const nestedRect = nested?.getBoundingClientRect();
+        const nestedLink = nested?.querySelector<HTMLElement>(":scope > .bf-table-of-contents-item > .bf-table-of-contents-link");
+        const nestedRect = nestedLink?.getBoundingClientRect();
         const parentRect = parentLink?.getBoundingClientRect();
         const result = {
           direction: getComputedStyle(root).direction,
@@ -368,15 +371,135 @@ export async function verifyInteractiveTables(origin: string): Promise<void> {
       assert(widths.length === initialWidths.length && widths.every((width, index) => Math.abs(width - initialWidths[index]) <= 0.1), `Expected sortable-table column widths to remain stable in ${state}; initial=${initialWidths.join(", ")}, current=${widths.join(", ")}.`);
     };
 
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const targetGeometry = await coresButton.evaluate(button => {
+        const control = button as HTMLElement;
+        const header = control.closest("th") as HTMLElement;
+        const buttonRect = control.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+        const buttonStyle = getComputedStyle(control);
+        const headerStyle = getComputedStyle(header);
+        const extensionStyle = getComputedStyle(control, "::before");
+        const extensionHeight = Number.parseFloat(extensionStyle.height);
+        const targetTop = buttonRect.top + ((buttonRect.height - extensionHeight) / 2);
+        const targetBottom = targetTop + extensionHeight;
+        const samples: Array<[number, number]> = [];
+        for (let y = Math.ceil(targetTop + 1); y <= Math.floor(targetBottom - 1); y += 1) {
+          for (let x = Math.ceil(buttonRect.left + 1); x <= Math.floor(buttonRect.right - 1); x += 1) samples.push([x, y]);
+        }
+        return {
+          buttonHeight: buttonRect.height,
+          lineHeight: Number.parseFloat(buttonStyle.lineHeight),
+          paddingStart: Number.parseFloat(buttonStyle.paddingBlockStart),
+          paddingEnd: Number.parseFloat(buttonStyle.paddingBlockEnd),
+          extensionHeight,
+          headerHeight: headerRect.height,
+          expectedHeaderHeight: buttonRect.height
+            + Number.parseFloat(headerStyle.paddingBlockStart)
+            + Number.parseFloat(headerStyle.paddingBlockEnd)
+            + Number.parseFloat(headerStyle.borderBlockStartWidth)
+            + Number.parseFloat(headerStyle.borderBlockEndWidth),
+          interiorSamples: samples.length,
+          allSamplesHit: samples.every(([x, y]) => document.elementFromPoint(x, y)?.closest(".bf-table-sort-button") === control)
+        };
+      });
+      assert(Math.abs(targetGeometry.buttonHeight - targetGeometry.lineHeight) <= 0.1 && targetGeometry.paddingStart === 0 && targetGeometry.paddingEnd === 0, `Expected ${tier} sort button to keep its text-line flow footprint after moving target extension out of layout; got ${JSON.stringify(targetGeometry)}.`);
+      assert(targetGeometry.extensionHeight >= 24 && targetGeometry.interiorSamples > 0 && targetGeometry.allSamplesHit, `Expected ${tier} sort button's complete one-pixel interior 24 CSS-pixel extension scan to route to the real button; got ${JSON.stringify(targetGeometry)}.`);
+      assert(Math.abs(targetGeometry.headerHeight - targetGeometry.expectedHeaderHeight) <= 0.1, `Expected ${tier} sortable header row to comprise only its text line, owned cell padding, and row strokes; got ${JSON.stringify(targetGeometry)}.`);
+
+      const activeHeader = page.locator(".bf-table.is-sortable").nth(1).locator("th[aria-sort='ascending']").first();
+      const caretGeometry = await activeHeader.evaluate(header => {
+        const owner = header as HTMLElement;
+        owner.dir = "ltr";
+        const ltrStyle = getComputedStyle(owner, "::after");
+        const ltr = {
+          backgroundColor: ltrStyle.backgroundColor,
+          inlineSize: Number.parseFloat(ltrStyle.inlineSize),
+          maskImage: ltrStyle.maskImage || ltrStyle.webkitMaskImage,
+          maskPosition: ltrStyle.maskPosition || ltrStyle.webkitMaskPosition,
+          maskSize: ltrStyle.maskSize || ltrStyle.webkitMaskSize,
+          paddingInlineEnd: Number.parseFloat(ltrStyle.paddingInlineEnd),
+          paddingInlineStart: Number.parseFloat(ltrStyle.paddingInlineStart),
+          transform: ltrStyle.transform
+        };
+        owner.dir = "rtl";
+        const rtlStyle = getComputedStyle(owner, "::after");
+        const rtl = {
+          backgroundColor: rtlStyle.backgroundColor,
+          inlineSize: Number.parseFloat(rtlStyle.inlineSize),
+          maskImage: rtlStyle.maskImage || rtlStyle.webkitMaskImage,
+          maskPosition: rtlStyle.maskPosition || rtlStyle.webkitMaskPosition,
+          maskSize: rtlStyle.maskSize || rtlStyle.webkitMaskSize,
+          paddingInlineEnd: Number.parseFloat(rtlStyle.paddingInlineEnd),
+          paddingInlineStart: Number.parseFloat(rtlStyle.paddingInlineStart),
+          transform: rtlStyle.transform
+        };
+        const result = {
+          ltr,
+          rtl
+        };
+        owner.removeAttribute("dir");
+        return result;
+      });
+      const expectedIconSize = { editorial: 16, documentation: 14, app: 14, os: 12 }[tier];
+      const expectedMarkGap = { editorial: 8, documentation: 8, app: 8, os: 4 }[tier];
+      for (const [direction, caret] of [["ltr", caretGeometry.ltr], ["rtl", caretGeometry.rtl]] as const) {
+        const maskDimensions = caret.maskSize.split(/\s+/).map(value => Number.parseFloat(value));
+        assert(Math.abs(caret.inlineSize - (expectedIconSize + expectedMarkGap)) <= 0.1, `Expected ${tier}/${direction} sortable caret to reserve one tier icon plus the full mark gap without squeezing the glyph; got ${JSON.stringify(caretGeometry)}.`);
+        assert(caret.paddingInlineStart === 0 && caret.paddingInlineEnd === 0 && caret.transform === "none", `Expected ${tier}/${direction} sortable caret geometry to stay independent of padding and transforms; got ${JSON.stringify(caretGeometry)}.`);
+        assert(maskDimensions.length === 2 && maskDimensions.every(value => Math.abs(value - expectedIconSize) <= 0.1), `Expected ${tier}/${direction} sortable caret paint to retain the full tier icon size; got ${JSON.stringify(caretGeometry)}.`);
+        assert(caret.maskImage !== "none" && caret.backgroundColor !== "rgba(0, 0, 0, 0)", `Expected ${tier}/${direction} sortable caret to use a currentColor mask that remains available to forced colors; got ${JSON.stringify(caretGeometry)}.`);
+      }
+      assert(caretGeometry.ltr.maskPosition !== caretGeometry.rtl.maskPosition, `Expected ${tier} sortable caret to mirror its painted-edge placement in nested RTL without moving its label gap; got ${JSON.stringify(caretGeometry)}.`);
+    }
+    await tierSelect.selectOption("editorial");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "editorial");
+
+    const sortableHeaderBox = await page.locator(".bf-table.is-sortable th[aria-sort]").first().boundingBox();
+    const cdp = await page.context().newCDPSession(page);
+    const documentNode = await cdp.send("DOM.getDocument", { depth: -1, pierce: true });
+    const headerNode = await cdp.send("DOM.querySelector", { nodeId: documentNode.root.nodeId, selector: ".bf-table.is-sortable th[aria-sort]" });
+    const headerDescription = await cdp.send("DOM.describeNode", { nodeId: headerNode.nodeId, depth: 1, pierce: true });
+    const beforePseudo = headerDescription.node.pseudoElements?.find(pseudo => pseudo.pseudoType === "before");
+    assert(sortableHeaderBox && beforePseudo?.backendNodeId, "Expected the sortable header and its named ::before stroke owner to be available to CDP.");
+    const pseudoBox = await cdp.send("DOM.getBoxModel", { backendNodeId: beforePseudo.backendNodeId });
+    const borderQuad = pseudoBox.model.border;
+    const pseudoBounds = {
+      left: Math.min(borderQuad[0], borderQuad[2], borderQuad[4], borderQuad[6]),
+      top: Math.min(borderQuad[1], borderQuad[3], borderQuad[5], borderQuad[7]),
+      right: Math.max(borderQuad[0], borderQuad[2], borderQuad[4], borderQuad[6]),
+      bottom: Math.max(borderQuad[1], borderQuad[3], borderQuad[5], borderQuad[7])
+    };
+    assert(
+      Math.abs(pseudoBounds.left - sortableHeaderBox.x) <= 0.1 &&
+      Math.abs(pseudoBounds.top - sortableHeaderBox.y) <= 0.1 &&
+      Math.abs(pseudoBounds.right - (sortableHeaderBox.x + sortableHeaderBox.width)) <= 0.1 &&
+      Math.abs(pseudoBounds.bottom - (sortableHeaderBox.y + sortableHeaderBox.height)) <= 0.1,
+      `Expected the sortable header's exceptional ::before stroke owner to anchor to the exact header box; header=${JSON.stringify(sortableHeaderBox)}, pseudo=${JSON.stringify(pseudoBounds)}.`
+    );
+    await cdp.detach();
+
     await coresButton.focus();
     await coresButton.press("Enter");
     assert(await coresHeader.getAttribute("aria-sort") === "ascending", "Expected first sortable-table activation to set aria-sort=ascending.");
+    const ascendingCaret = await coresHeader.evaluate(header => {
+      const style = getComputedStyle(header, "::after");
+      return { inlineSize: style.inlineSize, maskImage: style.maskImage || style.webkitMaskImage, maskPosition: style.maskPosition || style.webkitMaskPosition, transform: style.transform };
+    });
     assert(JSON.stringify(await coreValues()) === JSON.stringify(["2", "4", "8", "16"]), "Expected sortable table numeric values to sort ascending.");
     assert(await page.locator(".bf-table.is-sortable").first().locator("th[aria-sort='ascending']").count() === 1, "Expected sortable table to expose exactly one active sort column.");
     await assertStableWidths("ascending state");
 
     await coresButton.press("Space");
     assert(await coresHeader.getAttribute("aria-sort") === "descending", "Expected second sortable-table activation to set aria-sort=descending.");
+    const descendingCaret = await coresHeader.evaluate(header => {
+      const style = getComputedStyle(header, "::after");
+      return { inlineSize: style.inlineSize, maskImage: style.maskImage || style.webkitMaskImage, maskPosition: style.maskPosition || style.webkitMaskPosition, transform: style.transform };
+    });
+    assert(ascendingCaret.maskImage !== descendingCaret.maskImage && ascendingCaret.inlineSize === descendingCaret.inlineSize && ascendingCaret.maskPosition === descendingCaret.maskPosition && ascendingCaret.transform === "none" && descendingCaret.transform === "none", `Expected ascending and descending sort states to swap only their full-size glyph mask without shifting the gap or slot; ascending=${JSON.stringify(ascendingCaret)}, descending=${JSON.stringify(descendingCaret)}.`);
     assert(JSON.stringify(await coreValues()) === JSON.stringify(["16", "8", "4", "2"]), "Expected sortable table numeric values to sort descending.");
     await assertStableWidths("descending state");
 
@@ -501,12 +624,17 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
         const items = Array.from(list.querySelectorAll<HTMLElement>(".bf-divided-section-item"));
         const distanceProbe = document.createElement("span");
         distanceProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-divided-section-rule-to-content)";
-        list.append(distanceProbe);
+        const groupGapProbe = document.createElement("span");
+        groupGapProbe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
+        list.append(distanceProbe, groupGapProbe);
         const expectedRuleToContent = distanceProbe.getBoundingClientRect().height;
+        const expectedGroupGap = groupGapProbe.getBoundingClientRect().height;
         distanceProbe.remove();
+        groupGapProbe.remove();
         return {
           isStack: list.classList.contains("bf-stack"),
           rowGap: Number.parseFloat(getComputedStyle(list).rowGap),
+          expectedGroupGap,
           expectedRuleToContent,
           items: items.map(item => {
             const styles = getComputedStyle(item);
@@ -523,10 +651,10 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
           })
         };
       });
-      assert(listRhythm.isStack && listRhythm.rowGap === 24, `Expected ${tier} divided-section list to be a bf-stack with a fixed 24px gap.`);
+      assert(listRhythm.isStack && Math.abs(listRhythm.rowGap - listRhythm.expectedGroupGap) <= 0.1, `Expected ${tier} divided-section list to use the governed group gap; got ${JSON.stringify(listRhythm)}.`);
       assert(listRhythm.items.every(item => item.paddingStart === 0 && item.paddingEnd === 0 && item.marginStart === 0 && item.marginEnd === 0), `Expected ${tier} divided-section items to own no block padding or margin.`);
       assert(listRhythm.items[0]?.borderStart === 0, `Expected ${tier} first divided-section item to start without divider compensation.`);
-      assert(listRhythm.items.slice(1).every(item => item.borderStart === 0 && item.dividerBlockSize === 1 && Math.abs((-item.dividerInsetStart - item.dividerBlockSize) - listRhythm.expectedRuleToContent) <= 0.1 && (listRhythm.rowGap + item.dividerInsetStart) > listRhythm.expectedRuleToContent), `Expected ${tier} divided-section dividers to occupy the final half-rem before following content; gap=${listRhythm.rowGap}px, expected clear distance=${listRhythm.expectedRuleToContent}px, items=${JSON.stringify(listRhythm.items)}.`);
+      assert(listRhythm.items.slice(1).every(item => item.borderStart === 0 && item.dividerBlockSize === 1 && Math.abs((-item.dividerInsetStart - item.dividerBlockSize) - listRhythm.expectedRuleToContent) <= 0.1 && (listRhythm.rowGap + item.dividerInsetStart) > listRhythm.expectedRuleToContent), `Expected ${tier} divided-section dividers to preserve the governed item-gap clearance before following content; gap=${listRhythm.rowGap}px, expected clear distance=${listRhythm.expectedRuleToContent}px, items=${JSON.stringify(listRhythm.items)}.`);
     }
     const dividedState = await page.locator(".bf-divided-section").first().evaluate(root => {
       const header = root.querySelector<HTMLElement>(".bf-divided-section-header")?.getBoundingClientRect();
@@ -553,7 +681,23 @@ export async function verifyPortedCompositionGeometry(origin: string): Promise<v
       probe.remove();
       return { height: item.getBoundingClientRect().height, expected, marginBlockStart: Number.parseFloat(styles.marginBlockStart), overflow: root.scrollWidth - root.clientWidth };
     });
-    assert(logoState && Math.abs(logoState.height - logoState.expected) <= 0.1 && logoState.marginBlockStart < 0 && logoState.overflow <= 1, "Expected logo section to retain its large intrinsic mark size and negative row-pull geometry without overflow.");
+    assert(logoState && Math.abs(logoState.height - logoState.expected) <= 0.1 && logoState.marginBlockStart === 0 && logoState.overflow <= 1, "Expected logo section to retain its large intrinsic mark size without block-start margins or overflow.");
+    const containedLogoSpacing = await page.locator(".bf-logo-section.is-contained").evaluate(root => {
+      const itemsOwner = root.querySelector<HTMLElement>(".bf-logo-section-items");
+      const items = Array.from(root.querySelectorAll<HTMLElement>(".bf-logo-section-item"));
+      if (!itemsOwner || items.length < 3) return null;
+      itemsOwner.style.inlineSize = "10rem";
+      const rects = items.map(item => item.getBoundingClientRect()).sort((a, b) => a.top - b.top || a.left - b.left);
+      const firstTop = rects[0]?.top ?? 0;
+      const firstRow = rects.filter(rect => Math.abs(rect.top - firstTop) <= 0.1);
+      const secondRow = rects.find(rect => rect.top > firstTop + 0.1);
+      return {
+        actualGap: secondRow ? secondRow.top - Math.max(...firstRow.map(rect => rect.bottom)) : -1,
+        itemMargins: items.map(item => Number.parseFloat(getComputedStyle(item).marginBlockEnd)),
+        rowGap: Number.parseFloat(getComputedStyle(itemsOwner).rowGap)
+      };
+    });
+    assert(containedLogoSpacing && containedLogoSpacing.itemMargins.every(margin => margin === 0) && containedLogoSpacing.rowGap > 0 && Math.abs(containedLogoSpacing.actualGap - containedLogoSpacing.rowGap) <= 0.1, `Expected contained logo wrapping to use its parent-owned row gap with zero child relationship margins; got ${JSON.stringify(containedLogoSpacing)}.`);
 
     await page.goto(`${origin}/demo/components/media-object.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -918,6 +1062,22 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
             const ratio = headerRect && logosRect && headerRect.width > 0 ? logosRect.width / headerRect.width : 0;
             const sectionRect = section.getBoundingClientRect();
             const starts = new Set(cards.map(card => Math.round(card.getBoundingClientRect().left)));
+            const spacing = cards.map(card => {
+              const mark = card.querySelector<HTMLElement>(".bf-linked-logo-section-mark");
+              const rule = card.querySelector<HTMLElement>(".bf-linked-logo-section-card-rule");
+              const copy = card.querySelector<HTMLElement>(".bf-linked-logo-section-card-copy");
+              if (!mark || !rule || !copy) return null;
+              const markRect = mark.getBoundingClientRect();
+              const ruleRect = rule.getBoundingClientRect();
+              const copyRect = copy.getBoundingClientRect();
+              return {
+                rowGap: Number.parseFloat(getComputedStyle(card).rowGap),
+                markCompensation: Number.parseFloat(getComputedStyle(mark).marginBlockEnd),
+                markToRule: ruleRect.top - markRect.bottom,
+                ruleToCopy: copyRect.top - ruleRect.bottom,
+                ruleHeight: ruleRect.height
+              };
+            }).filter(Boolean);
             return {
               className: section.className,
               requestedWidth: rootWidth,
@@ -926,6 +1086,7 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
               ratio,
               layoutColumns: layout ? getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
               markRatios,
+              spacing,
               overflow: section.scrollWidth - section.clientWidth,
               layoutWidth: layoutRect?.width ?? 0
             };
@@ -939,6 +1100,7 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
             : width.expectedColumns;
           assert(measurement.columns === expectedColumns, `Expected ${tier} ${measurement.className} linked-logo cards to use ${expectedColumns} column(s) ${width.label}; got ${measurement.columns}.`);
           assert(measurement.markRatios.every(ratio => Math.abs(ratio - (16 / 9)) <= 0.02), `Expected ${tier} ${measurement.className} linked-logo marks to retain a 16:9 ratio.`);
+          assert(measurement.spacing.every(item => item && item.ruleHeight === 0 && Math.abs(item.ruleToCopy - item.rowGap) <= 0.1 && Math.abs(item.markToRule - item.rowGap - item.markCompensation) <= 0.1), `Expected ${tier} ${measurement.className} linked-logo cards to use the parent row gap around a zero-height divider while retaining only mark grid-closure compensation; got ${JSON.stringify(measurement.spacing)}.`);
           assert(measurement.overflow <= 1, `Expected ${tier} ${measurement.className} linked-logo section at ${width.label} to avoid inline overflow.`);
 
           const isLarge = width.value === "64.75rem";
@@ -954,6 +1116,13 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
         }
       }
     }
+    await page.emulateMedia({ forcedColors: "active" });
+    const forcedDivider = await page.locator(".bf-linked-logo-section-card-rule").first().evaluate(rule => {
+      const style = getComputedStyle(rule, "::after");
+      return { color: style.borderBlockStartColor, width: Number.parseFloat(style.borderBlockStartWidth), pointerEvents: style.pointerEvents };
+    });
+    assert(forcedDivider.width > 0 && forcedDivider.color !== "rgba(0, 0, 0, 0)" && forcedDivider.pointerEvents === "none", `Expected the linked-logo divider to remain a pointer-transparent one-sided system-color stroke in forced colors; got ${JSON.stringify(forcedDivider)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
 
     await page.goto(`${origin}/demo/components/sticky-footer.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -1055,10 +1224,13 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
           const shallowSpace = probe.getBoundingClientRect().height;
           const sectionSpace = probe.getBoundingClientRect().width;
           probe.remove();
+          const rootStyle = getComputedStyle(root);
+          const overlayStyle = getComputedStyle(root, "::after");
           return {
-            borderColor: getComputedStyle(root).borderBlockStartColor,
-            borderStyle: getComputedStyle(root).borderBlockStartStyle,
-            borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+            borderStyle: rootStyle.borderBlockStartStyle,
+            borderWidth: Number.parseFloat(rootStyle.borderBlockStartWidth),
+            overlayShadow: overlayStyle.boxShadow,
+            overlayPointerEvents: overlayStyle.pointerEvents,
             finalSlot: root.lastElementChild === media,
             leadToMedia: mediaRect.top - leadRect.bottom,
             shallowSpace,
@@ -1071,7 +1243,7 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
           };
         });
         assert(state, `Expected ${tier} closing-media hero geometry ${viewport.label}.`);
-        assert(state.borderStyle === "solid" && state.borderWidth > 0, `Expected ${tier} default hero to own one visible entry rule ${viewport.label}.`);
+        assert(state.borderStyle === "none" && state.borderWidth === 0 && state.overlayShadow !== "none" && state.overlayPointerEvents === "none", `Expected ${tier} default hero to paint one pointer-transparent entry rule outside layout ${viewport.label}; got ${JSON.stringify(state)}.`);
         assert(state.finalSlot && Math.abs(state.leadToMedia - state.shallowSpace) <= 0.1, `Expected ${tier} hero stack to own the shallow gap before final media ${viewport.label}.`);
         assert(state.mediaMarginEnd === 0 && Math.abs(state.mediaToHeroEnd - state.paddingEnd) <= 0.1, `Expected ${tier} hero exit boundary to begin immediately after closing media ${viewport.label}.`);
         assert(state.paddingEnd === 0, `Expected ${tier} hero to leave its exit boundary to the surrounding stack ${viewport.label}.`);
@@ -1080,9 +1252,10 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
         const borderlessState = await page.locator(".bf-hero.is-borderless").evaluate(root => ({
           borderStyle: getComputedStyle(root).borderBlockStartStyle,
           borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+          overlayContent: getComputedStyle(root, "::after").content,
           overflow: root.scrollWidth - root.clientWidth
         }));
-        assert(borderlessState.borderStyle === "none" && borderlessState.borderWidth === 0, `Expected ${tier} borderless hero to remove only its entry rule ${viewport.label}.`);
+        assert(borderlessState.borderStyle === "none" && borderlessState.borderWidth === 0 && borderlessState.overlayContent === "none", `Expected ${tier} borderless hero to remove only its entry rule ${viewport.label}.`);
         assert(borderlessState.overflow <= 1, `Expected ${tier} borderless hero to avoid inline overflow ${viewport.label}.`);
 
         const topFlushState = await page.locator(".bf-hero").first().evaluate(root => {
@@ -1092,15 +1265,16 @@ export async function verifyLinkedLogoAndStickyFooterGeometry(origin: string): P
           const state = {
             borderStyle: getComputedStyle(root).borderBlockStartStyle,
             borderWidth: Number.parseFloat(getComputedStyle(root).borderBlockStartWidth),
+            overlayShadow: getComputedStyle(root, "::after").boxShadow,
             paddingStart: Number.parseFloat(getComputedStyle(root).paddingBlockStart),
-            ruleClearance: Number.parseFloat(getComputedStyle(referenceRule).marginBlockEnd),
+            ruleClearance: referenceRule.getBoundingClientRect().height + Number.parseFloat(getComputedStyle(referenceRule).marginBlockEnd),
             overflow: root.scrollWidth - root.clientWidth
           };
           referenceRule.remove();
           root.classList.remove("is-top-flush");
           return state;
         });
-        assert(topFlushState.borderStyle === "solid" && topFlushState.borderWidth > 0, `Expected ${tier} top-flush hero to retain its entry rule ${viewport.label}.`);
+        assert(topFlushState.borderStyle === "none" && topFlushState.borderWidth === 0 && topFlushState.overlayShadow !== "none", `Expected ${tier} top-flush hero to retain its out-of-flow entry rule ${viewport.label}.`);
         assert(Math.abs(topFlushState.paddingStart - topFlushState.ruleClearance) <= 0.1, `Expected ${tier} top-flush hero to match native-rule clearance ${viewport.label}.`);
         assert(topFlushState.overflow <= 1, `Expected ${tier} top-flush hero to avoid inline overflow ${viewport.label}.`);
       }
@@ -1268,10 +1442,13 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
       probe.style.cssText = "position:absolute;visibility:hidden;inline-size:1px;block-size:var(--bf-baseline)";
       document.body.append(probe);
       const baseline = probe.getBoundingClientRect().height;
+      probe.style.blockSize = "var(--bf-field-gap)";
+      const fieldGap = probe.getBoundingClientRect().height;
       probe.remove();
       const cards = Array.from(document.querySelectorAll<HTMLElement>(".bf-content-card"));
       return {
         baseline,
+        fieldGap,
         cards: cards.map(card => {
           const wrapper = card.closest<HTMLElement>(".bf-content-card-wrapper");
           const frame = card.querySelector<HTMLElement>(".bf-content-card-frame");
@@ -1293,6 +1470,9 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
           const firstFooterItem = footerInner?.firstElementChild as HTMLElement | null;
           const footerRect = footer?.getBoundingClientRect();
           const footerItemRect = firstFooterItem?.getBoundingClientRect();
+          const cardStyle = getComputedStyle(card);
+          const overlayStyle = getComputedStyle(card, "::after");
+          const footerOverlayStyle = footer ? getComputedStyle(footer, "::after") : null;
           return {
             className: card.className,
             width: cardRect.width,
@@ -1312,6 +1492,23 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
             descriptionLineHeight: descriptionStyle ? Number.parseFloat(descriptionStyle.lineHeight) : 0,
             descriptionHeight: description?.getBoundingClientRect().height ?? 0,
             footerClearance: footerRect && footerItemRect ? footerItemRect.top - footerRect.top - Number.parseFloat(getComputedStyle(footer).borderBlockStartWidth) : null,
+            footerPaddingStart: footerInner ? Number.parseFloat(getComputedStyle(footerInner).paddingBlockStart) : null,
+            borderWidths: [cardStyle.borderBlockStartWidth, cardStyle.borderBlockEndWidth, cardStyle.borderInlineStartWidth, cardStyle.borderInlineEndWidth],
+            overlay: {
+              content: overlayStyle.content,
+              inset: [overlayStyle.top, overlayStyle.right, overlayStyle.bottom, overlayStyle.left],
+              pointerEvents: overlayStyle.pointerEvents,
+              position: overlayStyle.position,
+              shadow: overlayStyle.boxShadow
+            },
+            footerOverlay: footerOverlayStyle ? {
+              content: footerOverlayStyle.content,
+              inset: [footerOverlayStyle.top, footerOverlayStyle.right, footerOverlayStyle.bottom, footerOverlayStyle.left],
+              pointerEvents: footerOverlayStyle.pointerEvents,
+              position: footerOverlayStyle.position,
+              shadow: footerOverlayStyle.boxShadow
+            } : null,
+            mainLinkAfterPosition: mainLink ? getComputedStyle(mainLink, "::after").position : "",
             overflow: card.scrollWidth - card.clientWidth
           };
         })
@@ -1324,7 +1521,11 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
         assert(Math.abs(card.height - Math.round(card.height / state.baseline) * state.baseline) <= contentCardBaselineTolerancePx, `Expected ${label} ${card.className} card height to snap to the baseline (height=${card.height}, baseline=${state.baseline}).`);
         assert(Math.abs(card.wrapperHeight - Math.round(card.wrapperHeight / state.baseline) * state.baseline) <= contentCardBaselineTolerancePx, `Expected ${label} ${card.className} wrapper height to snap to the baseline (height=${card.wrapperHeight}, baseline=${state.baseline}).`);
         assert(card.overflow <= 1, `Expected ${label} ${card.className} card to avoid inline overflow.`);
-        if (card.footerClearance !== null) assert(card.footerClearance >= 7, `Expected ${label} ${card.className} footer content to clear its top rule by the canonical half-rem allowance; got ${card.footerClearance}px.`);
+        assert(card.borderWidths.every(width => width === "0px"), `Expected ${label} ${card.className} boundary to consume no layout border; got ${card.borderWidths.join(", ")}.`);
+        assert(card.overlay.content !== "none" && card.overlay.position === "absolute" && card.overlay.pointerEvents === "none" && card.overlay.inset.every(value => value === "0px") && card.overlay.shadow !== "none", `Expected ${label} ${card.className} to use an exact, pointer-transparent automatic overlay; got ${JSON.stringify(card.overlay)}.`);
+        assert(card.mainLinkAfterPosition === "absolute", `Expected ${label} ${card.className} expanded main link to retain its root-card anchor.`);
+        if (card.footerOverlay) assert(card.footerOverlay.content !== "none" && card.footerOverlay.position === "absolute" && card.footerOverlay.pointerEvents === "none" && card.footerOverlay.inset.every(value => value === "0px") && card.footerOverlay.shadow !== "none", `Expected ${label} ${card.className} footer rule to use its own exact automatic overlay; got ${JSON.stringify(card.footerOverlay)}.`);
+        if (card.footerClearance !== null) assert(card.footerPaddingStart !== null && Math.abs(card.footerPaddingStart - state.fieldGap) <= 0.05 && card.footerClearance >= state.fieldGap - 0.05, `Expected ${label} ${card.className} footer owner to reserve the tier field gap (${state.fieldGap}px) before its aligned content; got padding=${card.footerPaddingStart}px, clearance=${card.footerClearance}px.`);
       }
     };
 
@@ -1457,6 +1658,147 @@ export async function verifyContentCardGeometry(origin: string): Promise<void> {
       });
       assert(rtlState.direction === "rtl" && rtlState.overflowX === "auto" && rtlState.mask.includes("left") && rtlState.scrollable, `Expected ${tier} RTL content-card footer rail to preserve its left-edge mask and scroll contract.`);
     }
+
+    await page.goto(`${origin}/demo/components/cards.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const state = await page.evaluate(() => {
+        const root = document.querySelector<HTMLElement>(".bf-card");
+        const next = document.querySelectorAll<HTMLElement>(".bf-card")[1];
+        const header = root?.querySelector<HTMLElement>(".bf-card-header");
+        const popup = root?.querySelector<HTMLElement>("[data-card-popup]");
+        const imagePreview = document.querySelector<HTMLElement>("[data-card-preview]");
+        const missingPreview = document.querySelector<HTMLElement>("[data-card-preview-missing]");
+        if (!root || !next || !header || !popup || !imagePreview || !missingPreview) return null;
+        const rootStyle = getComputedStyle(root);
+        const rootOverlay = getComputedStyle(root, "::after");
+        const headerStyle = getComputedStyle(header);
+        const headerOverlay = getComputedStyle(header, "::after");
+        const imagePreviewStyle = getComputedStyle(imagePreview);
+        const imagePreviewOverlay = getComputedStyle(imagePreview, "::after");
+        const rootBefore = root.getBoundingClientRect();
+        root.style.setProperty("--bf-stroke-width", "4px");
+        const rootAfter = root.getBoundingClientRect();
+        root.style.removeProperty("--bf-stroke-width");
+        const popupRect = popup.getBoundingClientRect();
+        const nextRect = next.getBoundingClientRect();
+        const overlapTop = Math.max(popupRect.top, nextRect.top);
+        const overlapBottom = Math.min(popupRect.bottom, nextRect.bottom);
+        const sampleX = popupRect.left + Math.min(12, popupRect.width / 2);
+        const sampleY = overlapTop + Math.max(1, Math.min(8, (overlapBottom - overlapTop) / 2));
+        const hit = document.elementFromPoint(sampleX, sampleY);
+        const missingStyle = getComputedStyle(missingPreview);
+        const missingAfter = getComputedStyle(missingPreview, "::after");
+        const bodyProbe = document.createElement("span");
+        bodyProbe.style.cssText = "position:absolute;visibility:hidden;font-size:var(--bf-body-font-size)";
+        root.append(bodyProbe);
+        const expectedBodyFontSize = getComputedStyle(bodyProbe).fontSize;
+        bodyProbe.remove();
+        return {
+          root: {
+            borderWidths: [rootStyle.borderBlockStartWidth, rootStyle.borderBlockEndWidth, rootStyle.borderInlineStartWidth, rootStyle.borderInlineEndWidth],
+            overlay: { content: rootOverlay.content, inset: [rootOverlay.top, rootOverlay.right, rootOverlay.bottom, rootOverlay.left], pointerEvents: rootOverlay.pointerEvents, position: rootOverlay.position, shadow: rootOverlay.boxShadow }
+          },
+          header: {
+            borderWidths: [headerStyle.borderBlockStartWidth, headerStyle.borderBlockEndWidth, headerStyle.borderInlineStartWidth, headerStyle.borderInlineEndWidth],
+            overlay: { content: headerOverlay.content, inset: [headerOverlay.top, headerOverlay.right, headerOverlay.bottom, headerOverlay.left], pointerEvents: headerOverlay.pointerEvents, position: headerOverlay.position, shadow: headerOverlay.boxShadow }
+          },
+          imagePreview: {
+            borderWidths: [imagePreviewStyle.borderBlockStartWidth, imagePreviewStyle.borderBlockEndWidth, imagePreviewStyle.borderInlineStartWidth, imagePreviewStyle.borderInlineEndWidth],
+            overlay: { content: imagePreviewOverlay.content, inset: [imagePreviewOverlay.top, imagePreviewOverlay.right, imagePreviewOverlay.bottom, imagePreviewOverlay.left], pointerEvents: imagePreviewOverlay.pointerEvents, position: imagePreviewOverlay.position, shadow: imagePreviewOverlay.boxShadow }
+          },
+          highlightedShadow: getComputedStyle(next, "::after").boxShadow,
+          missing: {
+            borderWidths: [missingStyle.borderBlockStartWidth, missingStyle.borderBlockEndWidth, missingStyle.borderInlineStartWidth, missingStyle.borderInlineEndWidth],
+            content: missingAfter.content,
+            fontSize: missingAfter.fontSize,
+            shadow: missingStyle.boxShadow
+          },
+          expectedBodyFontSize,
+          overflow: getComputedStyle(root).overflow,
+          popupOverlap: overlapBottom - overlapTop,
+          popupHit: hit instanceof Element && Boolean(hit.closest("[data-card-popup]")),
+          sizeDelta: {
+            height: rootAfter.height - rootBefore.height,
+            width: rootAfter.width - rootBefore.width
+          }
+        };
+      });
+      assert(state, `Expected ${tier} card demo to expose surface, preview, header, and real contextual-menu specimens.`);
+      for (const [label, item] of [["card", state.root], ["card header", state.header], ["image preview", state.imagePreview]] as const) {
+        assert(item.borderWidths.every(width => width === "0px"), `Expected ${tier} ${label} to have zero layout borders; got ${item.borderWidths.join(", ")}.`);
+        assert(item.overlay.content !== "none" && item.overlay.position === "absolute" && item.overlay.pointerEvents === "none" && item.overlay.inset.every(value => value === "0px") && item.overlay.shadow !== "none", `Expected ${tier} ${label} to use an exact pointer-transparent overlay; got ${JSON.stringify(item.overlay)}.`);
+      }
+      assert(Math.abs(state.sizeDelta.height) <= 0.001 && Math.abs(state.sizeDelta.width) <= 0.001, `Expected ${tier} card occupied geometry to remain exact when the paint width changes; got ${JSON.stringify(state.sizeDelta)}.`);
+      assert(state.highlightedShadow !== "none", `Expected ${tier} highlighted Card to compose elevation into its overlay.`);
+      assert(state.missing.borderWidths.every(width => width === "0px") && state.missing.content.includes("Capture missing") && state.missing.shadow !== "none" && state.missing.fontSize === state.expectedBodyFontSize, `Expected ${tier} missing preview to retain its named text pseudo, body-sized label, and self-painted boundary; got ${JSON.stringify(state.missing)} vs body ${state.expectedBodyFontSize}.`);
+      assert(state.overflow === "visible" && state.popupOverlap > 1 && state.popupHit, `Expected ${tier} real contextual menu to escape Card clipping and win hit-testing across the following Card; got overflow=${state.overflow}, overlap=${state.popupOverlap}, hit=${state.popupHit}.`);
+    }
+
+    await page.goto(`${origin}/demo/components/option-card.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await disableDemoChromeHitTesting(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const active = page.locator("button.bf-option-card.is-active");
+      const state = await active.evaluate(element => {
+        const owner = getComputedStyle(element);
+        const overlay = getComputedStyle(element, "::after");
+        const before = element.getBoundingClientRect();
+        (element as HTMLElement).style.setProperty("--bf-stroke-width", "4px");
+        const after = element.getBoundingClientRect();
+        (element as HTMLElement).style.removeProperty("--bf-stroke-width");
+        return {
+          borderWidths: [owner.borderBlockStartWidth, owner.borderBlockEndWidth, owner.borderInlineStartWidth, owner.borderInlineEndWidth],
+          overlay: { content: overlay.content, inset: [overlay.top, overlay.right, overlay.bottom, overlay.left], pointerEvents: overlay.pointerEvents, position: overlay.position, shadow: overlay.boxShadow },
+          sizeDelta: { height: after.height - before.height, width: after.width - before.width }
+        };
+      });
+      assert(state.borderWidths.every(width => width === "0px") && state.overlay.content !== "none" && state.overlay.position === "absolute" && state.overlay.pointerEvents === "none" && state.overlay.inset.every(value => value === "0px") && state.overlay.shadow !== "none", `Expected ${tier} active OptionCard to use a zero-layout-border composed overlay; got ${JSON.stringify(state)}.`);
+      assert(Math.abs(state.sizeDelta.height) <= 0.001 && Math.abs(state.sizeDelta.width) <= 0.001, `Expected ${tier} OptionCard occupied geometry to remain exact when paint width changes; got ${JSON.stringify(state.sizeDelta)}.`);
+      await active.evaluate(element => {
+        if (element.querySelector("[data-filled-child-pressure]")) return;
+        const child = document.createElement("span");
+        child.dataset.filledChildPressure = "";
+        child.style.cssText = "background:Canvas;inset:0;pointer-events:none;position:absolute";
+        element.append(child);
+      });
+      await active.focus();
+      const focusPaint = await active.evaluate(element => {
+        const owner = element.getBoundingClientRect();
+        const child = element.querySelector<HTMLElement>("[data-filled-child-pressure]")?.getBoundingClientRect();
+        return {
+          childCoversOwner: Boolean(child && Math.abs(child.top - owner.top) <= 0.1 && Math.abs(child.right - owner.right) <= 0.1 && Math.abs(child.bottom - owner.bottom) <= 0.1 && Math.abs(child.left - owner.left) <= 0.1),
+          focusVisible: element.matches(":focus-visible"),
+          ownerOutline: getComputedStyle(element).outlineStyle,
+          overlayShadow: getComputedStyle(element, "::after").boxShadow
+        };
+      });
+      assert(focusPaint.childCoversOwner && focusPaint.focusVisible && focusPaint.ownerOutline === "none" && focusPaint.overlayShadow !== "none", `Expected ${tier} active OptionCard keyboard focus to compose into its above-content overlay over an edge-covering opaque child; got ${JSON.stringify(focusPaint)}.`);
+    }
+
+    await page.emulateMedia({ forcedColors: "active" });
+    const forcedState = await page.locator("button.bf-option-card.is-active").evaluate(element => {
+      const owner = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      return { ownerOutline: owner.outlineStyle, overlayOutline: overlay.outlineStyle, overlayOutlineWidth: overlay.outlineWidth, overlayOutlineOffset: overlay.outlineOffset, selectedBorder: overlay.borderBlockStartStyle, selectedWidth: overlay.borderBlockStartWidth };
+    });
+    assert(forcedState.ownerOutline === "none" && forcedState.overlayOutline !== "none" && Number.parseFloat(forcedState.overlayOutlineWidth) >= 3 && Number.parseFloat(forcedState.overlayOutlineOffset) <= -4 && forcedState.selectedBorder === "solid" && Number.parseFloat(forcedState.selectedWidth) > 0, `Expected forced-colours OptionCard to paint its inset keyboard focus and one-sided selected cue on the above-content overlay; got ${JSON.stringify(forcedState)}.`);
+    await page.goto(`${origin}/demo/components/cards.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const linkedCard = page.locator("a.bf-card");
+    await linkedCard.focus();
+    const linkedForcedState = await linkedCard.evaluate(element => {
+      const owner = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      return { ownerOutline: owner.outlineStyle, overlayOutline: overlay.outlineStyle, overlayOutlineWidth: overlay.outlineWidth, overlayOutlineOffset: overlay.outlineOffset };
+    });
+    assert(linkedForcedState.ownerOutline === "none" && linkedForcedState.overlayOutline !== "none" && Number.parseFloat(linkedForcedState.overlayOutlineWidth) >= 3 && Number.parseFloat(linkedForcedState.overlayOutlineOffset) <= -4, `Expected forced-colours linked Card to paint its inset keyboard focus on the above-content overlay; got ${JSON.stringify(linkedForcedState)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
 
     await page.close();
   } finally {

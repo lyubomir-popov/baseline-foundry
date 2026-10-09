@@ -16,16 +16,16 @@ The three component inline insets are:
 
 | Inset | Public variable | Editorial | Documentation | App | OS |
 |---|---|---:|---:|---:|---:|
-| Field | `--bf-component-inline-inset-field` | `0.5rem` | `0.5rem` | `0.25rem` | `0.25rem` |
+| Field | `--bf-component-inline-inset-field` | `0.5rem` | `0.5rem` | `0.5rem` | `0.25rem` |
 | Action | `--bf-component-inline-inset-action` | `1rem` | `0.75rem` | `0.75rem` | `0.5rem` |
-| Continuation | `--bf-component-inline-inset-continuation` | `2rem` | `1.5rem` | `1.5rem` | `1.25rem` |
+| Continuation | `--bf-component-inline-inset-continuation` | `2rem` | `1.875rem` | `1.875rem` | `1.25rem` |
 
 Every tier authors `inlineUnitRem: 0.25` plus whole counts in
-`inlineInsetFieldUnits`, `inlineInsetActionUnits`, and
-`inlineInsetContinuationUnits`. Generated token JSON exposes
-`inlineInsetField`, `inlineInsetAction`, and `inlineInsetContinuation`.
+`inlineInsetFieldUnits` and `inlineInsetActionUnits`. The continuation inset is
+derived from the field inset, body-sized icon slot, and mark gap. Generated
+token JSON exposes all three insets.
 
-Page margins, grid gutters, navigation depth, and structural surface padding
+Page margins, grid gutters, structural navigation placement, and surface padding
 are not component insets. A border, icon, or mark may be compensated inside a
 component, but author-visible text must resolve its first glyph to one of the
 three insets. Content with no meaningful text advance may instead use the
@@ -39,10 +39,12 @@ reviewed block-derived minimum described below.
 | Body font | `1rem` | `0.875rem` | `0.875rem` | `0.75rem` |
 | Body line | `1.5rem` | `1.25rem` | `1.25rem` | `1rem` |
 | Border | `0.0625rem` | `0.0625rem` | `0.0625rem` | `0.0625rem` |
-| Control visual | `1rem` | `0.875rem` | `1rem` | `0.75rem` |
-| Field gap | `0.5rem` | `0.5rem` | `0.5rem` | `0.25rem` |
-| Structural panel inline padding | `1rem` | `1rem` | `0.75rem` | `0.5rem` |
-| Structural panel block padding | `1rem` | `1rem` | `0.75rem` | `0.5rem` |
+| Control visual | `1rem` | `0.875rem` | `0.875rem` | `0.75rem` |
+| Field gap | `0.5rem` | `0.25rem` | `0.25rem` | `0.25rem` |
+| Group gap | `1.5rem` | `1.25rem` | `1.25rem` | `1.5rem` |
+| Pattern/section gap | `4.5rem` | `2.5rem` | `2.5rem` | `3rem` |
+| Structural panel inline padding | `1rem` | `0.75rem` | `0.75rem` | `0.5rem` |
+| Structural panel block padding | `1rem` | `0.75rem` | `0.75rem` | `0.5rem` |
 
 All authored lengths are scalable `rem` values. Runtime pixel measurements
 exist only in browser assertions because layout engines report computed
@@ -51,7 +53,7 @@ geometry in CSS pixels.
 Horizontal component facts are independent of the vertical baseline. Each
 built-in tier uses a `0.25rem` inline unit; surface padding, the three insets,
 and mark/icon gaps are whole counts of it. `--bf-leading-mark-gap` is the
-single icon/mark-to-label gap owner at `0.5rem`, `0.5rem`, `0.25rem`, and
+single icon/mark-to-label gap owner at `0.5rem`, `0.5rem`, `0.5rem`, and
 `0.25rem`. `--bf-space-*` remains the vertical rhythm scale and is not used by
 explicit inline padding, inline margins, inline offsets, or column gaps.
 
@@ -61,11 +63,11 @@ Every body-sized single-line interface uses the same metric-derived ledger:
 
 ```text
 line            = body line
-padding         = max(body start nudge - border, 0)
-painted block   = line + 2 × padding + 2 × border
+padding         = control-block inset + body start nudge
+painted block   = line + 2 × padding
 compensation    = distance from painted block to the next baseline multiple
 occupied block  = painted block + compensation
-content start   = border + padding
+content start   = padding
 visual offset   = content start + (line - visual size) / 2
 ```
 
@@ -79,11 +81,10 @@ The corresponding variables are:
 - `--bf-interface-row-content-offset-block-start`
 - `--bf-interface-row-visual-offset`
 
-Standalone controls paint their border box and carry compensation in their
-block-end margin. Marginless hosts use the same occupied target but absorb the
+Standalone controls carry compensation in their block-end margin. Strokes are
+paint and never enter this ledger. Marginless hosts use the same occupied target but absorb the
 compensation inside the box through `--bf-in-box-row-padding-block-start` and
-`--bf-in-box-row-padding-block-end`. A table cell subtracts its real separator
-once from its own block-end calculation.
+`--bf-in-box-row-padding-block-end`.
 
 There is no independent compact control scale and no authored target height.
 
@@ -93,37 +94,82 @@ paint or target area; their box contains only the measured font start nudge,
 line box, and trailing baseline compensation. A container, not the text role,
 owns any semantic separation around it.
 
+Nonzero block-end margins are governed. Text roles use their generated metric
+compensation, interface rows use
+`--bf-interface-row-compensation-block-end`, and the linked-logo mark uses a
+container-query residual that closes its exact 16:9 height on the baseline
+grid. The only other named block-end cases are native dialog centring,
+visually-hidden ArticlePagination copy, equal-height divider centring, and the
+two zero-height rule constructions whose margin includes their painted
+thickness. Build validation rejects every other nonzero block-end margin.
+
+Relational inline space also belongs to gaps and padding. Nested lists and
+Table of Contents branches use logical padding; InlineList, Chip badge and Chip
+dismiss relationships use their parent column gap; marker and separator paint
+uses logical padding. The remaining nonzero inline margins form a closed,
+build-validated exception ledger: automatic structural alignment/centring,
+native file-button separation, flow-neutral pointer-target extension, and the
+table leading-icon optical pull into its reserved cell slot. None supplies
+ordinary sibling spacing.
+
 ## Nested block contract
 
-`is-nested` is an explicit composition contract for a child placed inside a
-host-owned body line. It is never inferred from ancestry.
+`is-nested` remains a compatibility contract for the named legacy table and
+side-navigation hosts. It does not opt a component into density outside those
+hosts.
 
-Two ledgers cover the only material paint cases:
+The governed Site Table.Cell/Chip relationship is automatic. The versioned
+policy in `src/component-density-policy.ts` names Editorial as the product,
+`.bf-table td` as the provider, `.bf-chip` as the subscriber, and
+`spacing.inset.control.block` as the bound role. Nested CSS scopes stop at the
+nearest table cell and `.bf-theme` product root, so neutral descendants do not
+break enrollment while nested tables and products resolve independently. A
+Site provider selects the 4px dense member; its Chip uses that member directly
+on both block edges, carries no compensation margin, and shares the host text
+baseline. The host absorbs those two edges so its ordinary 40px row does not
+grow. The same Chip remains on its 40px occupied seat outside the provider.
 
-| Nested paint | Members | Variables |
-|---|---|---|
-| Zero-footprint block edge | chip, status label, badge line | `--bf-nested-row-line-height`, `--bf-nested-row-padding-block`, `--bf-nested-row-painted-block-size` |
-| Two real block borders | text/number/select input, bordered button, checkbox, radio | `--bf-nested-framed-row-padding-block`, `--bf-nested-framed-row-painted-block-size`, `--bf-nested-framed-row-visual-offset` |
-
-The nested line is body line minus one active baseline. Both ledgers fit within
-the host body line and contribute no external block margin. Build validation
-rejects a tier when that designed line cannot contain its body font, control
-visual, or two real block borders.
+One zero-layout-border ledger covers nested surfaces and controls:
+`--bf-nested-row-line-height`, `--bf-nested-row-padding-block`,
+`--bf-nested-row-painted-block-size`, and
+`--bf-nested-row-visual-offset`. The nested line is body line minus one active
+baseline. It fits within the host body line and contributes no external block
+margin. Build validation rejects a tier when that designed line cannot contain
+its body font or control visual.
 
 The modifier positively allowlists text, number, search, password, email, URL,
 telephone, and select fields. It is intentionally unavailable to date/time,
 textarea, file, colour, range, link-button, and multiline content. An
 unsupported input cannot acquire nested geometry merely by adding the class.
 
+Replaced text fields use a named paint owner around the native element. Keep
+the ID, name, value, validation attributes, and interaction on the native
+control:
+
+```html
+<div class="bf-control">
+  <span class="bf-field-boundary">
+    <input class="bf-input" type="text">
+  </span>
+</div>
+```
+
+The boundary owns the block-end compensation, one-sided paint overlay, and
+focus relay. The native element retains its stepper, select opening, textarea
+resize handle, or picker and has no layout border. Search compositions use
+their existing search-box owner, while `bf-color-control` remains the colour
+picker's metric and paint owner. The file selector button and range parts are
+named browser-part adaptations inside those outer contracts.
+
 ## Component classification
 
 | Component family | Inline inset | Block contract | Border/host rule |
 |---|---|---|---|
-| Text, number, select, search, password, email, URL, telephone | Field | Regular; framed nested when explicitly hosted | Real borders; select and number share one trailing `1rem` chevron canvas |
-| Table header/body cell | Field | Regular in-box | Cell owns one separator subtraction |
+| Text, number, select, search, password, email, URL, telephone | Field | Regular; paint-owner nested when explicitly hosted | `bf-field-boundary` owns the one-sided overlay; select reserves the tier icon plus mark gap and field edge inset, while number keeps its native stepper |
+| Table header/body cell | Field | Regular in-box | Cell paints its separator on an out-of-flow overlay; stroke width never changes row geometry |
 | Status label | Field | Regular; zero-footprint nested | Nested status removes transparent block borders |
-| Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; framed nested for real buttons | Bordered actions subtract their own inline border from the content padding |
-| Chip | Action | Regular; zero-footprint nested | The Action inset frames chip commands; regular chips subtract their real border, while nested chips retain the full inset because their border is inset paint. A paint-derived inline minimum is active only when dense Action padding would otherwise make very short content circular; it changes no block geometry. One-character chips are stadiums in every tier; use a badge for a circular counter. |
+| Labelled button, segmented action, labelled previous/next pagination, file-selector button | Action | Regular; paint-owner nested for real buttons | Layout padding never subtracts stroke width; the file selector remains an explicit native-part paint owner |
+| Chip | Action | Regular; governed Site Table.Cell density; legacy zero-footprint nesting in named hosts | The Action inset frames chip commands. A Site Table.Cell automatically binds its Chip to the 4px dense control-block member for a 32px box and absorbs those edges into the ordinary 40px row. Standalone Chips retain their regular occupied seat. Inset paint keeps the dense border out of layout. One-character chips remain stadiums; use a badge for a circular counter. |
 | Badge, icon-only button, bare numbered pagination | Block-derived minimum | Each member's own painted block; nested re-points belong to badges, while icon-only buttons support regular and link-style paint | `--bf-square-block-size` follows paint, never occupied compensation; bordered nested icon-only buttons are excluded at the production selector because their icon canvas cannot fit the OS host line with padding and borders. Chip and badge alone may own pill/circle radius; button and pagination retain their existing radius. |
 | Tab | Action | Regular in-box at block end | Active rule is paint and does not add height |
 | Checkbox, radio, prose/list marks, validation | Continuation copy | Regular; framed nested for selection controls | Mark position is calculated backward from the continuation copy inset |
@@ -134,13 +180,38 @@ unsupported input cannot acquire nested geometry merely by adding the class.
 | Fieldset, modal regions, drawer chrome | Structural surface padding | Region-owned | Uses `--bf-panel-padding-inline`, not a component inset |
 | Page, grid, navigation nesting | Structural layout | Layout-owned | Never folded into component padding |
 
-The continuation-fit build guard uses the fixed `1rem` disclosure canvas plus
-the active Canonical mark gap, not the smaller tier control visual. Docs and OS
-sit exactly on that boundary, so a tighter continuation value fails before CSS
-generation instead of silently reaching the `max(0rem, …)` placement clamp.
+The continuation-fit build guard uses the tier body-sized disclosure canvas
+plus the active Canonical mark gap. Docs and OS sit exactly on that boundary,
+so a tighter continuation value fails before CSS generation instead of
+silently reaching a placement clamp.
 Notifications retain the tier leading-mark size and Canonical gap. Their 3px
 accent is non-consuming paint; if that paint would oversubscribe the rail, only
 the paint protrudes by the exact shortfall so it cannot overlap the icon.
+
+## Card overflow ownership
+
+Card roots now use `overflow: visible`. This is an explicit change from the
+former root scrollport: it lets Card-owned menus and other overlays cross the
+surface edge. The paint overlay does not cause that escape by itself; removing
+the root clip is what makes the popup visible and interactive.
+
+Wrap intrinsically wide Card content in `bf-card-scroll`. That inner BF owner
+provides horizontal scrolling. Tables, code snippets, and preformatted content
+reuse the existing `bf-table-scroll` 48rem content-floor convention; this is an
+intrinsic-content threshold rather than a spacing role. Keep popups as siblings
+of the scroll owner so content remains scrollable while overlays remain
+unclipped:
+
+```html
+<article class="bf-card">
+  <div class="bf-card-content">
+    <div class="bf-card-scroll" role="region" tabindex="0" aria-label="Wide Card content">
+      <table class="bf-table">...</table>
+    </div>
+  </div>
+  <div class="bf-contextual-menu">...</div>
+</article>
+```
 
 ## Reviewed compositions
 
@@ -153,8 +224,9 @@ inventing a navigation-only height.
 
 The replaced native color input composes through `bf-color-control`. Because a
 color input has no body-text line box, the wrapper contributes an invisible
-metric strut using the shared line, symmetric padding, rem border, and
-trailing compensation; the native input stretches into that row. Composite
+metric strut using the shared line and symmetric padding; the wrapper owns the
+out-of-flow rule and trailing compensation while the native input stretches
+into that row. Composite
 sliders use their paired numeric field as the occupied-row owner and stretch
 the range track within it. These are explicit component compositions, not
 audit-page height patches.
@@ -165,25 +237,45 @@ the 3rem brand/header block. Brand titles and adjacent breadcrumbs align to the
 same line without optical transforms; the fixed 2.375rem-by-1.375rem tag and
 1rem mark geometry remain independent of the header's inline extension.
 
-Grouped side navigation uses three explicit spacing owners. The outer
-`bf-side-navigation-groups` container separates complete groups;
-`bf-side-navigation-group` owns the fixed 0.5rem transition from its header to
-its list; and `bf-side-navigation-group-header` keeps a real compensated `hr`
-and its H6-styled heading tight. The rule begins on the continuation text inset
-and stretches to the navigation end edge. Rules never come from list pseudo-
-elements, and their one-half-rem occupied block must not shift later headings
-off the active baseline phase. A single-line group heading reserves four
-baselines through a minimum block size; longer headings may still wrap and
-grow, while the common case cannot accumulate fractional font-box drift.
+Side navigation is a panel-level composition. It owns the page-margin token on
+both edges, then derives one label keyline from the start gutter, the tier body
+icon size and the tier mark gap. Rows without icons reserve the same lane;
+nested rows do not add depth. Title rows, group headings and the outer edge of a
+real ContextSwitcher select all use that keyline, while the select retains the
+field inset inside its box. The fixed Canonical tagged-brand anatomy is a
+separate named mark and does not redefine the row icon slot.
+
+Grouped side navigation keeps three explicit block-spacing owners. The outer
+`bf-side-navigation-groups` container uses the governed group gap;
+`bf-side-navigation-group` uses the governed item gap from its header to its
+list; and `bf-side-navigation-group-header` keeps a real compensated `hr` and
+its H6-styled heading tight. The header's logical padding starts the rule and
+heading on the label keyline and ends them at
+the opposing page-margin gutter. A single-line heading's minimum plus its
+metric compensation closes on the active baseline grid; longer headings may
+still wrap and grow.
+
+The mobile documentation drawer exposes two owned anatomy slots:
+`bf-side-navigation-drawer-chrome` groups the optional brand and sticky toggle,
+and `bf-side-navigation-drawer-body` contains the navigation content. The
+drawer owns the governed group gap between those slots. At the persistent desktop
+breakpoint the toggle disappears and the drawer returns to ordinary block flow,
+so no child relationship margin survives.
+
+The selected row keeps its background across the full panel and paints a 3px
+indicator in the start gutter without changing row geometry. Forced-colors
+mode replaces the filled indicator with an out-of-flow one-sided system-color
+border.
 
 Plain and middot inline lists share one fixed `0.5rem` inline-composition space.
-The middot modifier uses a wrapping flex row so HTML source whitespace cannot
-become a third, font-dependent spacing owner; items contribute no trailing
-margin. The dot's logical start margin and the row's logical column gap mirror
-one another, while `align-items: baseline` preserves mixed-height text
-alignment. The half-rem value is a provisional component-local horizontal fact
-recorded for replacement by Spec 020's canonical spacing vocabulary.
-the same contract in RTL.
+Inline lists use a wrapping flex row so HTML source whitespace cannot become a
+third, font-dependent spacing owner. The parent owns the inter-item column gap,
+items keep zero inline margins, and the middot uses logical start padding before
+its painted separator. The dot padding and the row gap mirror one another, while
+`align-items: baseline` preserves mixed-height text alignment. The half-rem
+value is a provisional component-local horizontal fact recorded for
+replacement by Spec 020's canonical spacing vocabulary.
+Logical padding and gaps preserve the same contract in RTL.
 
 ## Ownership and cascade
 
@@ -227,18 +319,25 @@ Inline `.bf-icon` paint aligns to the font's cap-height centre, not the line-box
 bottom. `--bf-inline-icon-baseline-shift` derives the default placement from
 `1cap`, the default icon size, and half the scalable border as an optical lift;
 size modifiers add the difference between their active size and that default.
-The default icon trims one scalable border from its block-start layout margin
-so a raster edge cannot grow the compact body line, while larger icons reserve
-their full painted block. Sortable-table chevrons reuse the default metric and
-trim. Flex, grid, and positioned component owners explicitly neutralize the
-inline trim and retain their own cross-axis placement. Absolutely positioned
-leading marks keep their separate `--bf-leading-icon-offset` row contract.
+The icon keeps zero layout margin and applies that optical adjustment through
+`vertical-align`, so raster placement does not change the compact body line or
+reserve hidden block space. Sortable-table chevrons reuse the same default size
+and baseline shift. Flex, grid, and positioned component owners retain their
+own cross-axis placement without a layout trim to neutralize. Absolutely
+positioned leading marks keep their separate `--bf-leading-icon-offset` row
+contract.
 
 Icon-only buttons extend their pointer target, not their paint, to at least
 24-by-24 CSS pixels with an out-of-flow pseudo-element. The `24px` value is the
 normative unit used by WCAG 2.2 success criterion 2.5.8, not a design-system
 spacing token. It does not change the control's block size, occupied geometry,
 or token-derived painted square.
+
+Standard component icons and their slots follow `--bf-icon-size-default`:
+16px Editorial, 14px Documentation/App, and 12px OS at the default root. The
+fixed 16px Canonical tagged-brand mark is the named exception. Chip dismiss
+uses the tier icon slot and a separate out-of-flow 24px target, so the compact
+slot does not weaken pointer access or enlarge the Chip row.
 
 An out-of-flow target still needs layout clearance. Each supported icon-only
 button derives its own per-edge overflow from the same normative minimum and
@@ -260,16 +359,17 @@ exceed the authored gap in a wrapped container with no icon target; the current
 demo impact is two multi-row OS form-atlas clusters whose row gap rises from
 8px to 12px.
 
-`.bf-actions.is-nowrap` declares its own horizontal scrollport. A direct
-icon-only target inside it therefore owns symmetric, baseline-rounded
-`margin-block` clearance; its existing `margin-inline` supplies the logical-edge
-scroll extent. Text-only nowrap strips receive no padding, retain their leading
-keyline, and keep their original block size. Supporting engines resolve the
-per-edge block allowance to zero in Editorial and one complete baseline in
+`.bf-actions.is-nowrap` declares its own horizontal scrollport. When it contains
+a direct icon-only target, the scrollport owns symmetric, baseline-rounded
+`padding-block` clearance; the target's existing `margin-inline` supplies the
+logical-edge scroll extent, while its ordinary block-end compensation remains
+part of the row ledger. Text-only nowrap strips receive no padding, retain their
+leading keyline, and keep their original block size. Supporting engines resolve
+the per-edge block allowance to zero in Editorial and one complete baseline in
 Documentation, App, and OS; the fallback uses one safe baseline in every tier.
 Exact rounding is deliberately uncapped for custom configurations. No public
 wrap or scrollport opt-in class is exposed. `.bf-cluster.is-nowrap` is neither
-a clipping scrollport nor covered by the block-margin rule; any future clipping
+a clipping scrollport nor covered by the owner-padding rule; any future clipping
 owner outside `.bf-actions.is-nowrap` must provide and verify its own block
 containment.
 
@@ -313,3 +413,10 @@ and non-100% browser zoom. The browser checks compare:
 The horizontal and vertical spacing demos are inspection surfaces. Their local
 CSS may reveal guides, overflow, and measured ends, but may not alter component
 geometry.
+
+The correction matrix exercises the nested `@scope` density contracts in
+Chromium. A focused Firefox 155 audit also covers the real Chip page at 1100px
+and 390px in all four After tiers. It checks direct and neutral-wrapper provider
+enrolment, nested product boundaries, and an explicitly restarted Site scope.
+That focused audit does not imply full Firefox coverage for every component or
+interaction.

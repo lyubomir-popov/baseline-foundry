@@ -44,6 +44,13 @@
           </div>
           <div class="bf-panel-content is-flush" data-flush-navigation-content data-baseline-ignore="true">
             <nav class="bf-side-navigation is-icons" aria-label="Primary application navigation" data-baseline-ignore="true">
+              <label class="bf-side-navigation-context-switcher is-fading-when-collapsed" data-side-navigation-context-switcher>
+                <span class="bf-side-navigation-context-switcher-label">Project</span>
+                <span class="bf-field-boundary"><select aria-label="Project context">
+                  <option>Production estate</option>
+                  <option>Staging estate</option>
+                </select></span>
+              </label>
               <h3 class="bf-side-navigation-heading" data-icon-navigation-heading>Manage</h3>
               <ul class="bf-side-navigation-list" data-baseline-check="box" data-baseline-label="application layout nav list one">
                 <li class="bf-side-navigation-item is-title" data-baseline-check="box" data-baseline-label="application layout nav title item">
@@ -185,7 +192,7 @@
           <div class="bf-field" data-baseline-check="box" data-baseline-label="application layout aside field">
             <label class="bf-form-label" for="application-layout-owner" data-baseline-check="flow" data-baseline-label="application layout aside label">Selected zone</label>
             <div class="bf-control" data-baseline-check="box" data-baseline-label="application layout aside control">
-              <input id="application-layout-owner" class="bf-input" type="text" value="dc-a/rack-4" data-baseline-check="box" data-baseline-label="application layout aside input">
+              <span class="bf-field-boundary" data-baseline-check="box" data-baseline-label="application layout aside input"><input id="application-layout-owner" class="bf-input" type="text" value="dc-a/rack-4" data-baseline-ignore="true"></span>
             </div>
           </div>
           <div class="bf-actions" data-baseline-check="box" data-baseline-label="application layout aside actions">
