@@ -168,6 +168,10 @@ body.u-baseline-grid::after {
     display: none;
   }
 
+  body:has(> .pc-content .bf-side-navigation.is-drawer-expanded) > :is(.pc-header, .pc-footer) {
+    visibility: hidden;
+  }
+
   body:has(> .pc-root) > .pc-header {
     grid-column: 1;
     grid-row: 2;
@@ -185,11 +189,6 @@ body.u-baseline-grid::after {
 
   .pc-footer {
     inset-inline-start: 0;
-  }
-
-  .pc-header,
-  .pc-footer {
-    z-index: 100;
   }
 
   .pc-controls {

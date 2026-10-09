@@ -7275,30 +7275,124 @@ async function verifySpec028ReviewDemo(origin: string): Promise<void> {
         assert(await versionSelect.count() === 1 && await tierSelect.count() === 1 && sentinelHandle, `Expected ${pageSpec.label}/${viewport.label} to use the real specimen page and shared BF toolbar.`);
         if (viewport.label === "mobile") {
           const drawerToggle = page.locator(".pc-nav > .bf-side-navigation > .bf-side-navigation-toggle");
-
-          if (pageSpec.label === "SideNavigation") {
-            const specimenRoot = page.locator("#component-side-navigation-docs");
-            const specimenClose = specimenRoot.locator(".bf-side-navigation-drawer .bf-side-navigation-toggle.is-in-drawer");
-            const initialOwnership = await page.evaluate(() => {
+          const specimenRoot = page.locator("#component-side-navigation-docs");
+          const specimenToggle = specimenRoot.locator(":scope > .bf-side-navigation-toggle");
+          const specimenClose = specimenRoot.locator(".bf-side-navigation-drawer .bf-side-navigation-toggle.is-in-drawer");
+          const verifySpecimenViewportOwnership = async (state: "initial" | "reopened"): Promise<void> => {
+            const ownership = await page.evaluate(() => {
               const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+              const sharedHeader = document.querySelector<HTMLElement>(".pc-header");
+              const sharedFooter = document.querySelector<HTMLElement>(".pc-footer");
               const sharedToggle = sharedNavigation?.querySelector<HTMLElement>(":scope > .bf-side-navigation > .bf-side-navigation-toggle");
               const specimen = document.querySelector<HTMLElement>("#component-side-navigation-docs");
               const brand = specimen?.querySelector<HTMLElement>(".bf-top-navigation-link");
-              if (!sharedNavigation || !sharedToggle || !specimen || !brand) return null;
+              if (!sharedNavigation || !sharedHeader || !sharedFooter || !sharedToggle || !specimen || !brand) return null;
               const brandRect = brand.getBoundingClientRect();
+              const headerRect = sharedHeader.getBoundingClientRect();
+              const footerRect = sharedFooter.getBoundingClientRect();
               const sharedRect = sharedToggle.getBoundingClientRect();
               const brandHit = document.elementFromPoint(brandRect.left + (brandRect.width / 2), brandRect.top + (brandRect.height / 2));
+              const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+              const renderedFocusStops = Array.from(document.querySelectorAll<HTMLElement>(focusableSelector)).filter(element => {
+                const style = getComputedStyle(element);
+                const rect = element.getBoundingClientRect();
+                return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+              }).length;
               return {
                 brandHit: Boolean(brandHit && brand.contains(brandHit)),
                 brandVisible: brandRect.width > 0 && brandRect.height > 0 && getComputedStyle(brand).visibility === "visible",
+                footerBoxRetained: footerRect.width > 0 && footerRect.height > 0,
+                footerVisibility: getComputedStyle(sharedFooter).visibility,
+                headerBoxRetained: headerRect.width > 0 && headerRect.height > 0,
+                headerVisibility: getComputedStyle(sharedHeader).visibility,
+                renderedFocusStops,
                 sharedDisplay: getComputedStyle(sharedNavigation).display,
                 sharedToggleArea: sharedRect.width * sharedRect.height,
                 specimenExpanded: specimen.classList.contains("is-drawer-expanded")
               };
             });
-            assert(initialOwnership?.specimenExpanded && initialOwnership.brandVisible && initialOwnership.brandHit && initialOwnership.sharedDisplay === "none" && initialOwnership.sharedToggleArea === 0, `Expected the expanded SideNavigation specimen to own the mobile viewport without shared chrome covering its visible brand; got ${JSON.stringify(initialOwnership)}.`);
-            await specimenClose.click();
+            assert(ownership?.specimenExpanded && ownership.brandVisible && ownership.brandHit && ownership.sharedDisplay === "none" && ownership.sharedToggleArea === 0, `Expected the ${state} expanded SideNavigation specimen to own the mobile viewport without shared chrome covering its visible brand; got ${JSON.stringify(ownership)}.`);
+
+            await specimenClose.focus();
+            assert(await specimenClose.evaluate(node => document.activeElement === node), `Expected the ${state} expanded SideNavigation specimen close control to receive focus before the Tab regression.`);
+            const sharedFocusStops: string[] = [];
+            let returnedToClose = false;
+            for (let index = 0; index < ownership.renderedFocusStops + 2; index += 1) {
+              await page.keyboard.press("Tab");
+              const focusState = await page.evaluate(() => {
+                const active = document.activeElement;
+                const specimenCloseControl = document.querySelector("#component-side-navigation-docs .bf-side-navigation-drawer .bf-side-navigation-toggle.is-in-drawer");
+                const owner = active?.closest(".pc-header, .pc-footer, .pc-nav");
+                if (!(active instanceof HTMLElement)) return { returnedToClose: false, sharedChrome: null };
+                if (!(owner instanceof HTMLElement)) return { returnedToClose: active === specimenCloseControl, sharedChrome: null };
+                const ownerName = owner.classList.contains("pc-header") ? "header" : owner.classList.contains("pc-footer") ? "footer" : "navigation";
+                return {
+                  returnedToClose: active === specimenCloseControl,
+                  sharedChrome: `${ownerName}:${active.tagName.toLowerCase()}${active.id ? `#${active.id}` : ""}${active.className ? `.${String(active.className).trim().replace(/\s+/g, ".")}` : ""}`
+                };
+              });
+              if (focusState.sharedChrome) sharedFocusStops.push(focusState.sharedChrome);
+              if (focusState.returnedToClose) {
+                returnedToClose = true;
+                break;
+              }
+            }
+            assert(sharedFocusStops.length === 0, `Expected Tab from the ${state} specimen close control never to reach hidden shared header/footer/navigation controls; reached ${sharedFocusStops.join(", ")}.`);
+            assert(returnedToClose, `Expected Tab from the ${state} specimen close control to complete one full document focus cycle without entering shared chrome.`);
+            assert(ownership.headerVisibility === "hidden" && ownership.footerVisibility === "hidden" && ownership.headerBoxRetained && ownership.footerBoxRetained, `Expected the ${state} expanded SideNavigation specimen to hide shared header/footer rendering and focus while retaining their layout boxes; got ${JSON.stringify(ownership)}.`);
+
+            await page.keyboard.press("Escape");
             await page.waitForFunction(() => !document.querySelector("#component-side-navigation-docs")?.classList.contains("is-drawer-expanded") && getComputedStyle(document.querySelector(".pc-nav") as Element).display !== "none");
+            if (state === "reopened") {
+              assert(await specimenToggle.evaluate(node => document.activeElement === node), "Expected Escape after the keyboard-reopened Tab regression to close the specimen drawer and restore focus to its own trigger.");
+            } else {
+              await specimenToggle.focus();
+              assert(await specimenToggle.evaluate(node => document.activeElement === node), "Expected the initially expanded specimen trigger to accept focus after Escape closes its markup-open drawer.");
+            }
+
+            const expectedSharedControls = ["navigation", "tone", "baseline", "version", "tier"] as const;
+            const reachedSharedControls = new Map<string, boolean>();
+            const restoredFocusStopCount = await page.evaluate(() => {
+              const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+              return Array.from(document.querySelectorAll<HTMLElement>(focusableSelector)).filter(element => {
+                const style = getComputedStyle(element);
+                const rect = element.getBoundingClientRect();
+                return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+              }).length;
+            });
+            let restoredCycleComplete = false;
+            for (let index = 0; index < restoredFocusStopCount + 2; index += 1) {
+              await page.keyboard.press("Tab");
+              const focusState = await page.evaluate(() => {
+                const active = document.activeElement;
+                const specimenTrigger = document.querySelector("#component-side-navigation-docs > .bf-side-navigation-toggle");
+                if (!(active instanceof HTMLElement)) return { cycleComplete: false, hit: false, key: null };
+                const key = active.matches(".pc-nav > .bf-side-navigation > .bf-side-navigation-toggle") ? "navigation"
+                  : active.matches("[data-page-chrome-tone-toggle]") ? "tone"
+                    : active.matches("[data-page-chrome-baseline-toggle]") ? "baseline"
+                      : active.matches("[data-page-chrome-version-select]") ? "version"
+                        : active.matches("[data-page-chrome-tier-select]") ? "tier"
+                          : null;
+                const interactionOwner = active.closest<HTMLElement>("label") ?? active;
+                const rect = interactionOwner.getBoundingClientRect();
+                const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+                return {
+                  cycleComplete: active === specimenTrigger,
+                  hit: Boolean(hit && (hit === interactionOwner || interactionOwner.contains(hit))),
+                  key
+                };
+              });
+              if (focusState.key) reachedSharedControls.set(focusState.key, focusState.hit);
+              if (focusState.cycleComplete) {
+                restoredCycleComplete = true;
+                break;
+              }
+            }
+            assert(restoredCycleComplete && expectedSharedControls.every(control => reachedSharedControls.get(control)), `Expected one real Tab cycle after Escape from the ${state} specimen drawer to reach hit-testable shared navigation and all four footer controls; got ${JSON.stringify(Object.fromEntries(reachedSharedControls))}.`);
+          };
+
+          if (pageSpec.label === "SideNavigation") {
+            await verifySpecimenViewportOwnership("initial");
           }
 
           await drawerToggle.focus();
@@ -7309,15 +7403,11 @@ async function verifySpec028ReviewDemo(origin: string): Promise<void> {
           assert(await page.locator(".pc-nav .bf-side-navigation-drawer").getAttribute("aria-hidden") === "true" && await drawerToggle.getAttribute("aria-expanded") === "false" && await drawerToggle.evaluate(node => document.activeElement === node), `Expected ${pageSpec.label}/mobile Escape to close the shared BF catalog drawer and restore focus.`);
 
           if (pageSpec.label === "SideNavigation") {
-            const specimenRoot = page.locator("#component-side-navigation-docs");
-            const specimenToggle = specimenRoot.locator(":scope > .bf-side-navigation-toggle");
             await specimenToggle.focus();
             await specimenToggle.press("Space");
             await page.waitForFunction(() => document.querySelector("#component-side-navigation-docs")?.classList.contains("is-drawer-expanded"));
             assert(await page.locator(".pc-nav").evaluate(node => getComputedStyle(node).display === "none") && !await page.locator(".pc-nav > .bf-side-navigation").evaluate(node => node.classList.contains("is-drawer-expanded")), "Expected the specimen and shared page-navigation toggles to preserve independent drawer state.");
-            await page.keyboard.press("Escape");
-            await page.waitForFunction(() => !document.querySelector("#component-side-navigation-docs")?.classList.contains("is-drawer-expanded") && getComputedStyle(document.querySelector(".pc-nav") as Element).display !== "none");
-            assert(await specimenToggle.evaluate(node => document.activeElement === node), "Expected Escape to close the specimen drawer and restore focus to its own trigger.");
+            await verifySpecimenViewportOwnership("reopened");
           }
 
           await page.locator("main, .pc-content").first().scrollIntoViewIfNeeded();
