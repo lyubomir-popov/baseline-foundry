@@ -40,8 +40,8 @@ still require explicit platform coverage.
 
 The October 7 review accepted the spacing repairs. The October 9 follow-up
 requested R1 changes for obscured-but-focusable shared footer controls and
-accepted N2–N5 dispositions. The verified R1 correction is ready in the
-[new correction request](reviews/opus-028-r1-correction-review-request.md), with
+accepted N2–N5 dispositions. Opus accepted R1 in response to the
+[correction request](reviews/opus-028-r1-correction-review-request.md), with
 [root findings](reviews/r1-integration-review.md) and explicit limitations.
 The initially expanded SideNavigation specimen hides shared catalog/header/footer
 on narrow viewports; Escape closes it to recover shared review controls. A
@@ -49,5 +49,5 @@ keyboard-reopened drawer restores trigger focus; the initial markup-open drawer
 has no recorded trigger. Verify full Tab cycles and both bundles, not only
 programmatic focus. ApplicationLayout still has a pre-existing mobile overlap;
 do not read the SideNavigation claim as applying to every drawer page.
-Implementation stops at R1 external rereview. Owner sign-off, N2 exception,
+The R1 external review gate is satisfied. Owner sign-off, N2 fallback decision,
 governing-main activation and the dependency audit remain open.

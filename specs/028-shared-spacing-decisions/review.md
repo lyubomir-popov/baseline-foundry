@@ -1,9 +1,9 @@
-# Current review checkpoint – R1 correction, October 9
+# Current review outcome – R1 accepted, October 9
 
 The October 7 verdict accepts the bounded spacing repairs. The October 9
 follow-up requested changes for medium R1, with N2–N5 dispositions accepted.
-R1's conditional shared-chrome focus correction is implemented and verified.
-The current request is [the R1 correction](reviews/opus-028-r1-correction-review-request.md),
+Opus accepts R1's conditional shared-chrome focus correction.
+The completed request is [the R1 correction](reviews/opus-028-r1-correction-review-request.md),
 with [complete root findings](reviews/r1-integration-review.md) and
 [independent findings](reviews/r1-adversarial-review.md). All previous requests,
 reports, external receipts/probe material and sealed evidence remain unchanged.
@@ -14,6 +14,31 @@ background focus are explicit limitations. Original evidence below is historical
 The [final packet claim audit](reviews/r1-handoff-review.md) accepts the handoff
 after verifying all four root gates and the 166-file seal. That later report
 is separate metadata outside the seal, like the review request.
+
+The actual accepted review remains untracked and unchanged at
+`opus-028-r1-correction-review.md`, SHA-256
+`04630d8de77da208b7e11c9f17af3cc3dedfed22b16aff6fedb9b2f3bc8955df`.
+Opus checked 12 Chromium SideNavigation states (Before/After, 390/1035/1036px,
+LTR/RTL) plus Tooltip at 390px. In all eight narrow states, reverse Tab excluded
+shared chrome, no descendants escaped hiding, brand/close controls were
+hit-testable, pointer tier changes retained the specimen node and pointer
+reopening hid shared chrome again. Boundary and Tooltip controls stayed visible.
+Opus accepted recorded gates, CSS hashes and provenance without rerunning them.
+
+Both non-blocking notes are dispositioned: the source comment now describes
+header/footer hiding, and the catalog rail retains `display: none` because its
+drawer explicitly sets `visibility: visible`. Self-review verifies the source
+delta contains only this comment: removing CSS comments yields identical CSS,
+and the behavior harness is byte-identical to the reviewed runtime. The prior
+type/test/component QA/provenance results remain tied to `36c93b6a`; no new
+browser or root-gate run is claimed for this comment-only closeout.
+
+Reviewed-carrier CI runs [37991276508](https://github.com/lyubomir-popov/baseline-foundry/actions/runs/37991276508)
+and [37991272123](https://github.com/lyubomir-popov/baseline-foundry/actions/runs/37991272123)
+completed with passing engineering checks on Node 22.14.0 and Node 24, then
+failed on the existing `source-map-js` audit. Raw failed logs are retained in
+`H:/WSL_dev_projects/temp/bf-028-r1-acceptance-20261009/`. R1 acceptance closes
+its review gate; the other blockers above and separate T011g popup review stay open.
 
 # Review
 

@@ -28,8 +28,9 @@ The first external review requested changes. The October 7 correction review
 accepted the bounded repairs and identified the N1 demo-chrome fix required
 before the owner's visual pass. The October 9 follow-up review requested medium
 R1 changes and accepted N2–N5
-dispositions. R1 is repaired and verified; the next action is its separate
-external correction review. Accepted spacing and paint repairs remain closed.
+dispositions. The subsequent external correction review accepts R1. Its two
+non-blocking notes are closed by the CSS comment clarification and retention
+of catalog `display: none`. Accepted spacing and paint repairs remain closed.
 Owner visual sign-off and Canonical main activation
 remain separate gates. Preserve all original review requests, external reports,
 and all sealed evidence.

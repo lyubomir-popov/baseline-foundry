@@ -1,4 +1,4 @@
-# Agent inbox – Spec 028 R1 correction review checkpoint
+# Agent inbox – Spec 028 R1 correction accepted
 
 Date: 2026-10-09
 Branch: `feat/028-shared-spacing-decisions`
@@ -20,12 +20,20 @@ Product CSS/runtime, values, Before/After bundles and provenance are unchanged.
 
 ## Next action and stopping point
 
-Review `specs/028-shared-spacing-decisions/reviews/opus-028-r1-correction-review-request.md`.
+The external R1 correction verdict is **accept**, with two non-blocking comment
+notes. The actual new receipt remains untracked and unchanged at
+`specs/028-shared-spacing-decisions/opus-028-r1-correction-review.md`, SHA-256
+`04630d8de77da208b7e11c9f17af3cc3dedfed22b16aff6fedb9b2f3bc8955df`.
+Opus independently checked 12 Chromium SideNavigation states plus Tooltip,
+including full Shift+Tab exclusion, pointer tier changes and pointer reopening.
+The CSS comment now covers header/footer hiding and explains why the catalog
+rail retains `display: none`; executable CSS and the test harness are unchanged.
+The completed request is `specs/028-shared-spacing-decisions/reviews/opus-028-r1-correction-review-request.md`.
 Full writer, independent, root findings and dispositions are adjacent. Required
 type/test/component QA/provenance gates pass at the runtime pin. The new manifest
 seals 166 files, SHA-256 `b0d995bd4be84ebac9a2358c07208a180cfe7d55b67739e8d196d9702dc52fc5`.
-Implementation stops at this external R1 correction checkpoint; no Opus verdict
-or owner visual sign-off is inferred. Temporary servers are closed. Close the
+The external R1 checkpoint is satisfied. Owner visual sign-off and the remaining
+gates below are still open. Temporary servers are closed. Close the
 initially expanded mobile specimen to access shared tier/version controls.
 
 ApplicationLayout's 390px branding/Pin/Close overlap and product non-modal
@@ -37,7 +45,8 @@ or directed construction change; accepted disclosure is not a fallback waiver.
 
 Owner visual approval, equivalent governing-main activation/full-SHA repin,
 the separate Spec 024 T011g popup verdict and a green dependency audit remain
-open. Prior carrier CI 37978534940 finished failing on `source-map-js` after
-green engineering checks. Full Firefox/Safari/native Windows contrast/display
+open. Reviewed-carrier CI runs 37991276508 and 37991272123 both finished failing
+on `source-map-js` after green engineering checks on Node 22.14.0 and Node 24.
+Full Firefox/Safari/native Windows contrast/display
 scaling and fractional long-stack drift remain limits. No Pragma source work,
 main merge, release, token publication or exception is claimed.

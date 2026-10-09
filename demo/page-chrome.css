@@ -161,9 +161,10 @@ body.u-baseline-grid::after {
     position: static;
   }
 
-  /* An expanded specimen drawer owns the narrow viewport. Suppress the demo
-   * catalog rail until that specimen closes so shared chrome cannot cover its
-   * brand or close control. */
+  /* While the specimen drawer is expanded, suppress the catalog rail and hide
+   * the shared header/footer so they cannot cover its brand or close control
+   * or receive focus beneath it. Keep the rail on display: none because its
+   * drawer explicitly sets visibility: visible. */
   body:has(> .pc-content .bf-side-navigation.is-drawer-expanded) > .pc-nav {
     display: none;
   }

@@ -5,8 +5,8 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Review Spec 028's R1 mobile-chrome focus correction, then obtain owner visual
-   sign-off and N2 accessibility disposition. N2–N5 dispositions are accepted;
+1. Obtain Spec 028 owner visual sign-off and N2's explicit fallback decision.
+   Opus accepted R1; earlier spacing repairs and N2–N5 dispositions stand.
    ApplicationLayout's separate mobile overlap remains a known limitation.
    Canonical-main activation/full-SHA
    re-pin and a green dependency audit remain required before merge readiness;

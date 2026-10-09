@@ -141,7 +141,14 @@ changes, accepted N2–N5 dispositions and retained the earlier spacing repairs.
 - [x] Save the [new R1 correction request](reviews/opus-028-r1-correction-review-request.md),
   [root findings](reviews/r1-integration-review.md) and accepted N2–N5
   [dispositions with precise N3 wording](reviews/r1-dispositions.md).
-- [ ] Obtain the external R1 correction verdict and owner visual sign-off.
+- [x] Record the external R1 correction verdict: **accept**, receipt SHA-256
+  `04630d8de77da208b7e11c9f17af3cc3dedfed22b16aff6fedb9b2f3bc8955df`.
+  Preserve the new untracked receipt and external `opus-028-r1-probe` unchanged.
+  Opus adds 12 Chromium states plus Tooltip, including reverse Tab and pointer
+  tier/reopen checks. It did not rerun root gates, hashes or provenance.
+- [x] Clarify the CSS comment to cover header/footer hiding; retain catalog
+  `display: none` because its drawer explicitly overrides visibility.
+- [ ] Obtain owner visual sign-off.
 - [ ] Track ApplicationLayout's pre-existing 390px brand/Pin/Close overlap for
   a separate shared-chrome repair before its mobile visual approval. Product
   non-modal background focus and DrawerPanel's retained shared chrome remain
@@ -149,7 +156,8 @@ changes, accepted N2–N5 dispositions and retained the earlier spacing repairs.
 
 N2's explicit owner fallback decision and B2 governing-main activation/full-SHA
 repin remain open. The separate Spec 024 T011g popup review is still missing
-before Pragma source work. Prior carrier CI 37978534940 finished failing at the
-dependency audit on `source-map-js` after engineering gates passed; dependencies
+before Pragma source work. Reviewed-carrier CI runs 37991276508 and 37991272123
+finished failing at the dependency audit on `source-map-js` after engineering
+gates passed on Node 22.14.0 and Node 24; dependencies
 are unchanged here and a green release audit remains required. No owner sign-off,
 Pragma implementation, main merge, release or token publication is claimed.

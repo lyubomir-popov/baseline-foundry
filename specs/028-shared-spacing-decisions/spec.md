@@ -3,8 +3,8 @@
 **Feature branch**: `feat/028-shared-spacing-decisions`
 
 **Status**: Earlier spacing corrections and N2–N5 dispositions accepted by Opus;
-R1 mobile chrome focus correction verified and ready for external rereview
-before owner visual sign-off
+R1 mobile chrome focus correction accepted by Opus on October 9;
+owner visual sign-off and remaining activation/release gates pending
 
 ## Purpose
 
@@ -59,10 +59,16 @@ repair and explicit N2–N5 dispositions. It does not reopen the accepted
 spacing implementation or imply owner acceptance of accessibility deviations.
 
 The actual October 9 follow-up verdict requests medium R1 changes: the shared
-footer stayed focusable beneath the drawer. The R1 correction and complete
-Tab-cycle regression checks are ready in the
+footer stayed focusable beneath the drawer. Opus accepted the R1 correction
+and complete Tab-cycle regression checks in response to the
 [correction request](reviews/opus-028-r1-correction-review-request.md). N2–N5
 dispositions are accepted. N3 release wording is inputs with no `type` attribute;
 empty/invalid types are not added by that selector. ApplicationLayout's mobile
 chrome overlap and the product drawer's pre-existing background focus remain
 explicit limitations; R1 does not claim every drawer page is corrected.
+
+The accepted R1 receipt remains untracked and unchanged at
+`opus-028-r1-correction-review.md`, SHA-256
+`04630d8de77da208b7e11c9f17af3cc3dedfed22b16aff6fedb9b2f3bc8955df`.
+Its two non-blocking notes are addressed by clarifying the CSS comment and
+retaining the catalog rail's `display: none`. No executable CSS changes.
