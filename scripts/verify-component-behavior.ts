@@ -2407,7 +2407,20 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         }, { expectedTier: tier, expectedVersion: version });
         await matrixPage.locator("[data-application-layout-toggle]").first().click();
         await matrixPage.waitForFunction(() => !document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
-        await matrixPage.waitForTimeout(180);
+        await matrixPage.waitForFunction(() => {
+          const drawer = document.querySelector("#application-layout-navigation .bf-navigation-drawer");
+          if (!drawer || drawer.getAnimations().some(animation => animation.playState === "running")) return false;
+          return [
+            drawer.querySelector(".bf-top-navigation-link"),
+            drawer.querySelector("[data-application-layout-pin]"),
+            drawer.querySelector("[data-application-layout-close]")
+          ].every(target => {
+            if (!(target instanceof HTMLElement)) return false;
+            const rect = target.getBoundingClientRect();
+            const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+            return rect.width > 0 && rect.height > 0 && Boolean(hit && target.contains(hit));
+          });
+        });
         const matrixState = await matrixPage.evaluate(() => {
           const targets = {
             brand: document.querySelector<HTMLElement>(".bf-navigation-drawer .bf-top-navigation-link"),
@@ -7534,6 +7547,14 @@ async function verifySpec028ReviewDemo(origin: string): Promise<void> {
           const specimenToggle = specimenRoot.locator(":scope > .bf-side-navigation-toggle");
           const specimenClose = specimenRoot.locator(".bf-side-navigation-drawer .bf-side-navigation-toggle.is-in-drawer");
           const verifySpecimenViewportOwnership = async (state: "initial" | "reopened"): Promise<void> => {
+            await page.waitForFunction(() => {
+              const drawer = document.querySelector("#component-side-navigation-docs .bf-side-navigation-drawer");
+              const brand = drawer?.querySelector(".bf-top-navigation-link");
+              if (!(brand instanceof HTMLElement) || !drawer || drawer.getAnimations().some(animation => animation.playState === "running")) return false;
+              const rect = brand.getBoundingClientRect();
+              const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+              return rect.width > 0 && rect.height > 0 && Boolean(hit && brand.contains(hit));
+            });
             const ownership = await page.evaluate(() => {
               const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
               const sharedHeader = document.querySelector<HTMLElement>(".pc-header");
