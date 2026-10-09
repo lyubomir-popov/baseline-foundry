@@ -5,8 +5,10 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Complete Spec 028 shared spacing decisions on its isolated worktree, run the
-   full gates and stop at the final Opus review checkpoint for owner sign-off.
+1. Review Spec 028's bounded mobile-chrome follow-up, then obtain owner visual
+   sign-off and N2 accessibility disposition. Canonical-main activation/full-SHA
+   re-pin and a green dependency audit remain required before merge readiness;
+   the current `source-map-js` audit failure is recorded in the review package.
 2. Close Spec 025 compact alignment grid: commit its pending review/tasks
    edits, bring the branch up to `main` (v0.2.0/v0.2.1 landed after it), rerun
    `npm test` and `npm run qa:components`, then land by owner-approved direct

@@ -38,6 +38,11 @@ sealed evidence remain historical. Exact browser coverage is recorded in the
 correction request; Safari, real Windows contrast themes and display scaling
 still require explicit platform coverage.
 
-The [correction request](opus-028-corrections-review-request.md) and separate
-[integration verdict](corrections-integration-review.md) are ready. Implementation
-is stopped at this external checkpoint; owner sign-off and activation are open.
+The October 7 correction review accepted the bounded repairs. Its N1 mobile
+chrome follow-up is verified and ready in the
+[new bounded request](reviews/opus-028-followup-review-request.md), with a
+[separate integration verdict](reviews/followup-integration-review.md).
+The initially expanded SideNavigation specimen owns the mobile viewport; close
+it to access shared catalog and Before/After controls. Implementation is stopped
+at the requested review boundary. Owner sign-off, N2 accessibility disposition,
+governing-main activation and the release dependency audit remain open.

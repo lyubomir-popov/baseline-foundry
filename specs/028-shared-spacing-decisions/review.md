@@ -1,3 +1,12 @@
+# Current review checkpoint – October 9
+
+The October 7 external correction receipt accepts the bounded implementation.
+The N1 mobile chrome follow-up is implemented and verified. The current request
+is [the bounded follow-up](reviews/opus-028-followup-review-request.md), with
+[complete integration findings](reviews/followup-integration-review.md).
+Owner visual sign-off, N2 disposition, B2 activation and a green dependency
+audit remain open. The original review and evidence below are historical.
+
 # Review
 
 Implementation source is complete at `12d47abb938aecb5884387c376560d8aab66a655`.

@@ -73,7 +73,10 @@
 - [x] Seal correction evidence and save the
   [next external request](opus-028-corrections-review-request.md). BF board
   routing is recorded in Canonical T011h; no owner sign-off is claimed.
-- [ ] External Opus verdict and owner visual sign-off.
+- [x] External Opus correction verdict: October 7 receipt accepts the bounded
+  corrections; preserve the untracked report unchanged. SHA-256
+  `f3f0dc8b3409eeb3773e951b1b2ad62ce1b5bef837bd236601d65692493d4183`.
+- [ ] Owner visual sign-off on the real component Before/After pages.
 - [ ] Owner Canonical main activation and resulting full-SHA artifact re-pin
   before BF main adoption; no exception has been inferred.
 
@@ -83,6 +86,22 @@ manifest SHA-256 `9a454edc12176811ae25a6506d0bdcc5ea0d52d22be5cb6018efc7f33df62a
 Frozen review target: `acce81f9ea09ac2ac00f1168fd895733b5eeb2a9`.
 Failed attempts remain distinct from green gate logs. The original
 `bf-028-20261006` evidence and request stay unchanged.
+
+## October 9 review follow-up
+
+- [x] N1: fix the shared Pages toggle overlapping the brand on the mobile
+  SideNavigation demo. Verify both bundles, all tiers, responsive widths and
+  independent specimen navigation before the owner's visual pass.
+- [x] Record N2's owner decision requirement and N3's consumer-visible scope
+  change; disposition N4/N5 without silently changing governing rulings.
+- [x] Run the repository gates, independent adversarial review and root
+  integration checks; seal separate follow-up evidence.
+- [x] Save a bounded Opus follow-up request for the new chrome delta at the
+  user's requested stopping point. The accepted correction verdict remains
+  satisfied; it did not mandate another review of the accepted repairs.
+
+Spec 024's separate T011g popup diagnostic Opus verdict is still pending. This
+follow-up does not close that checkpoint or authorize Pragma source work.
 
 ## Final corrected-source gates
 
@@ -95,3 +114,11 @@ All exit 0 at the final source/runtime freeze:
 | `final-qa-components.log` | `13d0c4dfbcbd2f94c8d1ffc73714f9c41a90edd9b16c3b7952d43de0728b318e` |
 | `final-source-build.log` | `9586af71323b9ad3409390f3cff8c4afe560bc2f8b851bc8005b4876296d4ec5` |
 | `final-provenance-verifier.log` | `048469025aa9c09927d1a427288d8d5a9bf08b1e91c9b65a91ad2a7cacbf3ae3` |
+
+The new chrome source is `2abf5e8576fce8780ce3a68caecaa3ef89106444`. The
+[follow-up request](reviews/opus-028-followup-review-request.md) and
+[integration verdict](reviews/followup-integration-review.md) record final gates,
+independent reviews and a 207-file manifest (SHA-256 `6a305e7a81edd28b893747ec223005a336f6d45aef4a88ed5bec307e18be513d`).
+The new external verdict, owner visual sign-off, N2 disposition and B2 remain
+open. Existing CI/root audit also fail on `source-map-js`; dependency repair
+and a green release audit remain required before merge readiness.
