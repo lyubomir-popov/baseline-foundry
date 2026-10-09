@@ -1,11 +1,19 @@
-# Current review checkpoint – October 9
+# Current review checkpoint – R1 correction, October 9
 
-The October 7 external correction receipt accepts the bounded implementation.
-The N1 mobile chrome follow-up is implemented and verified. The current request
-is [the bounded follow-up](reviews/opus-028-followup-review-request.md), with
-[complete integration findings](reviews/followup-integration-review.md).
-Owner visual sign-off, N2 disposition, B2 activation and a green dependency
-audit remain open. The original review and evidence below are historical.
+The October 7 verdict accepts the bounded spacing repairs. The October 9
+follow-up requested changes for medium R1, with N2–N5 dispositions accepted.
+R1's conditional shared-chrome focus correction is implemented and verified.
+The current request is [the R1 correction](reviews/opus-028-r1-correction-review-request.md),
+with [complete root findings](reviews/r1-integration-review.md) and
+[independent findings](reviews/r1-adversarial-review.md). All previous requests,
+reports, external receipts/probe material and sealed evidence remain unchanged.
+Owner visual approval, N2's explicit fallback decision, governing-main activation
+and a green dependency audit remain open. ApplicationLayout and non-modal
+background focus are explicit limitations. Original evidence below is historical.
+
+The [final packet claim audit](reviews/r1-handoff-review.md) accepts the handoff
+after verifying all four root gates and the 166-file seal. That later report
+is separate metadata outside the seal, like the review request.
 
 # Review
 

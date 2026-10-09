@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
-| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | Bounded corrections accepted; mobile chrome follow-up verified and ready for bounded review. Owner sign-off, accessibility disposition, Canonical-main activation and release audit pending |
+| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | Earlier spacing corrections and N2–N5 dispositions accepted; follow-up requested R1 changes. R1 focus correction verified and ready for external review. ApplicationLayout mobile overlap remains a limitation; owner sign-off, N2 exception, Canonical-main activation and release audit pending |
 | 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Parked and excluded from BF by current owner direction; preserve branch/history and do not resume |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |

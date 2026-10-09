@@ -2,8 +2,9 @@
 
 **Feature branch**: `feat/028-shared-spacing-decisions`
 
-**Status**: Bounded corrections accepted by Opus; mobile chrome follow-up
-verified and ready for bounded external review before owner visual sign-off
+**Status**: Earlier spacing corrections and N2–N5 dispositions accepted by Opus;
+R1 mobile chrome focus correction verified and ready for external rereview
+before owner visual sign-off
 
 ## Purpose
 
@@ -56,3 +57,12 @@ It requires the N1 shared mobile catalog toggle overlap to be fixed before
 the owner's visual pass. The October 9 follow-up is limited to that chrome
 repair and explicit N2–N5 dispositions. It does not reopen the accepted
 spacing implementation or imply owner acceptance of accessibility deviations.
+
+The actual October 9 follow-up verdict requests medium R1 changes: the shared
+footer stayed focusable beneath the drawer. The R1 correction and complete
+Tab-cycle regression checks are ready in the
+[correction request](reviews/opus-028-r1-correction-review-request.md). N2–N5
+dispositions are accepted. N3 release wording is inputs with no `type` attribute;
+empty/invalid types are not added by that selector. ApplicationLayout's mobile
+chrome overlap and the product drawer's pre-existing background focus remain
+explicit limitations; R1 does not claim every drawer page is corrected.

@@ -1,36 +1,43 @@
-# Agent inbox – Spec 028 mobile follow-up review checkpoint
+# Agent inbox – Spec 028 R1 correction review checkpoint
 
 Date: 2026-10-09
 Branch: `feat/028-shared-spacing-decisions`
-Source/runtime target: `2abf5e8576fce8780ce3a68caecaa3ef89106444`
+Runtime target: `36c93b6a23fe71e74dac7ea147e14e79c7372013`
 
-The October 7 external correction verdict accepted the bounded repairs. Its
-untracked receipt remains unchanged. N1 mobile catalog overlap is now fixed;
-complete writer, independent and root findings plus a new bounded request are
-in `specs/028-shared-spacing-decisions/reviews/`. Required type/test/component
-QA/provenance gates pass. The evidence manifest seals 207 files at
-SHA-256 `6a305e7a81edd28b893747ec223005a336f6d45aef4a88ed5bec307e18be513d`. Product source, values, frozen Before bundles and
-provenance are unchanged; the earlier 146-file seal still verifies.
+The October 7 correction verdict accepted the bounded spacing repairs. The
+October 9 follow-up verdict requested changes for medium R1: N1's z-index
+adjustment left shared footer controls obscured but focusable. N2–N5 dispositions
+are accepted. Both actual untracked receipts, all prior reports/requests, the
+external probe and the 146/207-file evidence seals remain unchanged.
+
+R1 is repaired with conditional shared header/footer `visibility: hidden`,
+retained layout boxes, and no unconditional z-index 100 override. Complete Tab
+cycles exclude shared chrome while the SideNavigation specimen is expanded;
+Escape restores keyboard-reachable, hit-testable shared controls. Reopened
+Escape restores trigger focus. The markup-initial drawer has no recorded
+trigger; the initial recovery test explicitly focuses the available trigger.
+Product CSS/runtime, values, Before/After bundles and provenance are unchanged.
 
 ## Next action and stopping point
 
-Implementation stops at
-`specs/028-shared-spacing-decisions/reviews/opus-028-followup-review-request.md`.
-Review only the new mobile chrome delta and follow-up dispositions. The accepted
-repairs do not require a second full review. Owner visual sign-off remains open.
-Start a demo server through the package quickstart; temporary worker/root
-servers are closed. Close the initially expanded specimen to access the shared
-Before/After controls, then reopen it to inspect actual brand visibility.
+Review `specs/028-shared-spacing-decisions/reviews/opus-028-r1-correction-review-request.md`.
+Full writer, independent, root findings and dispositions are adjacent. Required
+type/test/component QA/provenance gates pass at the runtime pin. The new manifest
+seals 166 files, SHA-256 `b0d995bd4be84ebac9a2358c07208a180cfe7d55b67739e8d196d9702dc52fc5`.
+Implementation stops at this external R1 correction checkpoint; no Opus verdict
+or owner visual sign-off is inferred. Temporary servers are closed. Close the
+initially expanded mobile specimen to access shared tier/version controls.
 
-N2 requires owner acceptance or a changed construction for bare native-field
-and raw-cell forced-colors all-sided outlines. N3 discloses untyped inputs
-joining full field styling. N4/N5 remain minor deferred findings. Existing CI
-and a fresh audit fail on transitive `source-map-js`; repair the dependency
-and rerun release gates before merge readiness. Do not bypass the audit.
+ApplicationLayout's 390px branding/Pin/Close overlap and product non-modal
+background focus remain known limitations outside R1. DrawerPanel controls were
+hit-testable but its shared chrome still paints above its expanded overlay.
+N3 release wording is "inputs with no `type` attribute"; empty/invalid types do
+not join the added selector. N2 still requires a ruling-process owner decision
+or directed construction change; accepted disclosure is not a fallback waiver.
 
-B2 still requires equivalent governing rulings on canonical main and a final
-full-main-SHA BF re-pin, or an explicit owner exception. Spec 024 T011g's
-separate popup diagnostic Opus verdict remains pending before Pragma work.
-Full Firefox/Safari/native Windows contrast/display scaling and fractional
-long-stack drift remain limits. No owner visual sign-off, main merge, release
-or Pragma implementation is claimed.
+Owner visual approval, equivalent governing-main activation/full-SHA repin,
+the separate Spec 024 T011g popup verdict and a green dependency audit remain
+open. Prior carrier CI 37978534940 finished failing on `source-map-js` after
+green engineering checks. Full Firefox/Safari/native Windows contrast/display
+scaling and fractional long-stack drift remain limits. No Pragma source work,
+main merge, release, token publication or exception is claimed.

@@ -38,11 +38,16 @@ sealed evidence remain historical. Exact browser coverage is recorded in the
 correction request; Safari, real Windows contrast themes and display scaling
 still require explicit platform coverage.
 
-The October 7 correction review accepted the bounded repairs. Its N1 mobile
-chrome follow-up is verified and ready in the
-[new bounded request](reviews/opus-028-followup-review-request.md), with a
-[separate integration verdict](reviews/followup-integration-review.md).
-The initially expanded SideNavigation specimen owns the mobile viewport; close
-it to access shared catalog and Before/After controls. Implementation is stopped
-at the requested review boundary. Owner sign-off, N2 accessibility disposition,
-governing-main activation and the release dependency audit remain open.
+The October 7 review accepted the spacing repairs. The October 9 follow-up
+requested R1 changes for obscured-but-focusable shared footer controls and
+accepted N2–N5 dispositions. The verified R1 correction is ready in the
+[new correction request](reviews/opus-028-r1-correction-review-request.md), with
+[root findings](reviews/r1-integration-review.md) and explicit limitations.
+The initially expanded SideNavigation specimen hides shared catalog/header/footer
+on narrow viewports; Escape closes it to recover shared review controls. A
+keyboard-reopened drawer restores trigger focus; the initial markup-open drawer
+has no recorded trigger. Verify full Tab cycles and both bundles, not only
+programmatic focus. ApplicationLayout still has a pre-existing mobile overlap;
+do not read the SideNavigation claim as applying to every drawer page.
+Implementation stops at R1 external rereview. Owner sign-off, N2 exception,
+governing-main activation and the dependency audit remain open.

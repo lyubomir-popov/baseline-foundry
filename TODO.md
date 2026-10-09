@@ -5,8 +5,10 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Review Spec 028's bounded mobile-chrome follow-up, then obtain owner visual
-   sign-off and N2 accessibility disposition. Canonical-main activation/full-SHA
+1. Review Spec 028's R1 mobile-chrome focus correction, then obtain owner visual
+   sign-off and N2 accessibility disposition. N2–N5 dispositions are accepted;
+   ApplicationLayout's separate mobile overlap remains a known limitation.
+   Canonical-main activation/full-SHA
    re-pin and a green dependency audit remain required before merge readiness;
    the current `source-map-js` audit failure is recorded in the review package.
 2. Close Spec 025 compact alignment grid: commit its pending review/tasks
