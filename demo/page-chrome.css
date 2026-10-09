@@ -201,3 +201,18 @@ body.u-baseline-grid::after {
     justify-content: flex-end;
   }
 }
+
+/* ApplicationLayout navigation is a viewport drawer only below its own 48rem
+ * breakpoint. Suppress the shared rail and hide the shared header/footer while
+ * that drawer is expanded so its brand and Pin/Close controls remain the real
+ * pointer and focus targets. The rail stays display: none because its own
+ * drawer can explicitly restore descendant visibility. */
+@media (width < 48rem) {
+  body:has(> .pc-content > .bf-application > .bf-navigation:not(.is-collapsed)) > .pc-nav {
+    display: none;
+  }
+
+  body:has(> .pc-content > .bf-application > .bf-navigation:not(.is-collapsed)) > :is(.pc-header, .pc-footer) {
+    visibility: hidden;
+  }
+}

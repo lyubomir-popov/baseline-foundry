@@ -2075,12 +2075,11 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     const mobilePage = await browser.newPage({
       deviceScaleFactor: 1,
-      viewport: { width: 767, height: 960 }
+      viewport: { width: 390, height: 960 }
     });
 
     await mobilePage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(mobilePage);
-    await disableDemoChromeHitTesting(mobilePage);
 
     const mobileToggle = mobilePage.locator("[data-application-layout-toggle]").first();
     const mobileCollapsedBrandState = await mobilePage.evaluate(() => {
@@ -2104,7 +2103,62 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       };
     });
     assert(mobileCollapsedBrandState.barAtApplicationStart && mobileCollapsedBrandState.compactVisible && !mobileCollapsedBrandState.drawerVisible && mobileCollapsedBrandState.visibleHomeLinks === 1, `Expected narrow collapsed navigation to expose one compact brand in the application-start row. Got ${JSON.stringify(mobileCollapsedBrandState)}.`);
-    await mobileToggle.click({ force: true });
+
+    const readApplicationChromeState = () => mobilePage.evaluate(() => {
+      const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+      const sharedHeader = document.querySelector<HTMLElement>(".pc-header");
+      const sharedFooter = document.querySelector<HTMLElement>(".pc-footer");
+      const sharedToggle = sharedNavigation?.querySelector<HTMLElement>(":scope > .bf-side-navigation > .bf-side-navigation-toggle");
+      const sharedControls = {
+        baseline: document.querySelector<HTMLElement>("[data-page-chrome-baseline-toggle]"),
+        pages: sharedToggle,
+        tier: document.querySelector<HTMLElement>("[data-page-chrome-tier-select]"),
+        tone: document.querySelector<HTMLElement>("[data-page-chrome-tone-toggle]"),
+        version: document.querySelector<HTMLElement>("[data-page-chrome-version-select]")
+      };
+      const drawerBrand = document.querySelector<HTMLElement>(".bf-navigation-drawer .bf-top-navigation-link");
+      const pin = document.querySelector<HTMLElement>("[data-application-layout-pin]");
+      const close = document.querySelector<HTMLElement>("[data-application-layout-close]");
+      if (!sharedNavigation || !sharedHeader || !sharedFooter || !sharedToggle || !drawerBrand || !pin || !close) return null;
+
+      const headerRect = sharedHeader.getBoundingClientRect();
+      const footerRect = sharedFooter.getBoundingClientRect();
+      const hitStates = Object.fromEntries(Object.entries({ brand: drawerBrand, close, pin, sharedToggle }).map(([name, target]) => {
+        const rect = target.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+        const label = target.closest("label");
+        return [name, { area: rect.width * rect.height, targetHit: Boolean(hit && (target.contains(hit) || label?.contains(hit))) }];
+      })) as Record<string, { area: number; targetHit: boolean }>;
+      const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+      const renderedDescendantCounts = Object.fromEntries(Object.entries({ footer: sharedFooter, header: sharedHeader, navigation: sharedNavigation }).map(([name, owner]) => [name, Array.from(owner.querySelectorAll<HTMLElement>(focusableSelector)).filter(element => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+      }).length])) as Record<string, number>;
+      const sharedControlHits = Object.fromEntries(Object.entries(sharedControls).map(([name, target]) => {
+        if (!target) return [name, false];
+        const rect = target.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+        return [name, Boolean(hit && (target.contains(hit) || target.closest("label")?.contains(hit)))];
+      })) as Record<string, boolean>;
+      return {
+        brand: hitStates.brand,
+        close: hitStates.close,
+        footerBoxRetained: footerRect.width > 0 && footerRect.height > 0,
+        footerVisibility: getComputedStyle(sharedFooter).visibility,
+        headerBoxRetained: headerRect.width > 0 && headerRect.height > 0,
+        headerVisibility: getComputedStyle(sharedHeader).visibility,
+        navigationDisplay: getComputedStyle(sharedNavigation).display,
+        pin: hitStates.pin,
+        renderedDescendants: renderedDescendantCounts,
+        sharedControlHits,
+        sharedToggle: hitStates.sharedToggle
+      };
+    });
+
+    const closedChromeState = await readApplicationChromeState();
+    assert(closedChromeState?.navigationDisplay !== "none" && closedChromeState.headerVisibility === "visible" && closedChromeState.footerVisibility === "visible" && Object.values(closedChromeState.sharedControlHits).every(Boolean), `Expected collapsed mobile ApplicationLayout to retain hit-testable Pages and all four shared footer controls; got ${JSON.stringify(closedChromeState)}.`);
+    await mobileToggle.click();
     await mobilePage.waitForTimeout(180);
 
     const mobileOpenState = await mobilePage.evaluate(() => {
@@ -2145,6 +2199,113 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(mobileOpenState.drawerLeft >= -2, `Expected mobile navigation drawer to be aligned to the viewport edge, got left=${mobileOpenState.drawerLeft}.`);
     assert(mobileOpenState.responsiveBarDisplay !== "none" && !mobileOpenState.compactBrandVisible && mobileOpenState.drawerBrandVisible && mobileOpenState.visibleHomeLinks === 1, `Expected narrow expanded navigation to retain its bar controls while exposing only the drawer brand. Got ${JSON.stringify(mobileOpenState)}.`);
 
+    const openChromeState = await readApplicationChromeState();
+    assert(openChromeState?.navigationDisplay === "none" && openChromeState.headerVisibility === "hidden" && openChromeState.footerVisibility === "hidden" && openChromeState.headerBoxRetained && openChromeState.footerBoxRetained && Object.values(openChromeState.renderedDescendants).every(count => count === 0), `Expected expanded mobile ApplicationLayout to suppress every rendered shared-rail/header/footer descendant while retaining the header/footer boxes; got ${JSON.stringify(openChromeState)}.`);
+    assert(openChromeState.brand.targetHit && openChromeState.pin.targetHit && openChromeState.close.targetHit, `Expected the real ApplicationLayout brand, Pin and Close controls to own their visible pointer coordinates; got ${JSON.stringify(openChromeState)}.`);
+
+    const mobilePin = mobilePage.locator("[data-application-layout-pin]");
+    const mobileClose = mobilePage.locator("[data-application-layout-close]");
+    const mobileNavigation = mobilePage.locator("#application-layout-navigation");
+    const runApplicationFocusCycle = async (direction: "Tab" | "Shift+Tab", anchorSelector: string) => {
+      const anchor = mobilePage.locator(anchorSelector);
+      await anchor.focus();
+      const renderedFocusStops = await mobilePage.evaluate(() => {
+        const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+        return Array.from(document.querySelectorAll<HTMLElement>(focusableSelector)).filter(element => {
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+        }).length;
+      });
+      const sharedOwners = new Set<string>();
+      const sharedControls = new Set<string>();
+      const hitSharedControls = new Set<string>();
+      let returnedToAnchor = false;
+      for (let index = 0; index < renderedFocusStops + 2; index += 1) {
+        await mobilePage.keyboard.press(direction);
+        const state = await mobilePage.evaluate(selector => {
+          const active = document.activeElement;
+          const expectedAnchor = document.querySelector(selector);
+          const owner = active?.closest<HTMLElement>(".pc-nav, .pc-header, .pc-footer");
+          const sharedControl = active?.matches(".pc-nav .bf-side-navigation-toggle:not(.is-in-drawer)") ? "pages"
+            : active?.matches("[data-page-chrome-tone-toggle]") ? "tone"
+            : active?.matches("[data-page-chrome-baseline-toggle]") ? "baseline"
+            : active?.matches("[data-page-chrome-version-select]") ? "version"
+            : active?.matches("[data-page-chrome-tier-select]") ? "tier"
+            : null;
+          const activeRect = active?.getBoundingClientRect();
+          const activeHit = activeRect ? document.elementFromPoint(activeRect.left + (activeRect.width / 2), activeRect.top + (activeRect.height / 2)) : null;
+          return {
+            controlHit: Boolean(active && activeHit && (active.contains(activeHit) || active.closest("label")?.contains(activeHit))),
+            owner: owner?.classList.contains("pc-nav") ? "navigation" : owner?.classList.contains("pc-header") ? "header" : owner?.classList.contains("pc-footer") ? "footer" : null,
+            returned: active === expectedAnchor,
+            sharedControl
+          };
+        }, anchorSelector);
+        if (state.owner) sharedOwners.add(state.owner);
+        if (state.sharedControl) sharedControls.add(state.sharedControl);
+        if (state.sharedControl && state.controlHit) hitSharedControls.add(state.sharedControl);
+        if (state.returned) {
+          returnedToAnchor = true;
+          break;
+        }
+      }
+      return { hitSharedControls: [...hitSharedControls], renderedFocusStops, returnedToAnchor, sharedControls: [...sharedControls], sharedOwners: [...sharedOwners] };
+    };
+
+    for (const direction of ["Tab", "Shift+Tab"] as const) {
+      const openCycle = await runApplicationFocusCycle(direction, "[data-application-layout-close]");
+      assert(openCycle.returnedToAnchor && openCycle.sharedOwners.length === 0 && openCycle.sharedControls.length === 0, `Expected one full ${direction} cycle from the real Close control through the expanded mobile ApplicationLayout to exclude hidden shared chrome; got ${JSON.stringify(openCycle)}.`);
+    }
+
+    await mobilePin.click();
+    assert(await mobilePin.getAttribute("aria-pressed") === "true" && await mobileNavigation.evaluate(element => element.classList.contains("is-pinned")), "Expected the unobscured mobile Pin control to apply the real product pinned state.");
+    const pinnedChromeState = await readApplicationChromeState();
+    assert(pinnedChromeState?.navigationDisplay === "none" && pinnedChromeState.pin.targetHit && pinnedChromeState.close.targetHit, `Expected the still-expanded pinned mobile drawer to retain ownership of Pin/Close coordinates; got ${JSON.stringify(pinnedChromeState)}.`);
+    await mobilePin.click();
+    assert(await mobilePin.getAttribute("aria-pressed") === "false", "Expected the real mobile Pin control to remove the product pinned state on its second pointer activation.");
+
+    await mobileClose.click();
+    await mobilePage.waitForFunction(() => document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
+    assert(await mobileToggle.evaluate(node => document.activeElement === node), "Expected the real mobile Close control to restore focus to the ApplicationLayout opener.");
+    const pointerClosedChromeState = await readApplicationChromeState();
+    assert(pointerClosedChromeState?.navigationDisplay !== "none" && pointerClosedChromeState.headerVisibility === "visible" && pointerClosedChromeState.footerVisibility === "visible", `Expected pointer-closing ApplicationLayout to restore shared review chrome; got ${JSON.stringify(pointerClosedChromeState)}.`);
+
+    for (const direction of ["Tab", "Shift+Tab"] as const) {
+      const restoredCycle = await runApplicationFocusCycle(direction, "[data-application-layout-toggle]");
+      assert(restoredCycle.returnedToAnchor && ["navigation", "header", "footer"].every(owner => restoredCycle.sharedOwners.includes(owner)) && ["pages", "tone", "baseline", "version", "tier"].every(control => restoredCycle.sharedControls.includes(control) && restoredCycle.hitSharedControls.includes(control)), `Expected one full ${direction} cycle after pointer Close to restore keyboard reach and focused-coordinate hits for Pages and all four shared footer controls; got ${JSON.stringify(restoredCycle)}.`);
+    }
+
+    const sharedPagesToggle = mobilePage.locator(".pc-nav > .bf-side-navigation > .bf-side-navigation-toggle");
+    await sharedPagesToggle.scrollIntoViewIfNeeded();
+    await sharedPagesToggle.click();
+    await mobilePage.waitForFunction(() => document.querySelector(".pc-nav > .bf-side-navigation")?.classList.contains("is-drawer-expanded"));
+    await mobilePage.keyboard.press("Escape");
+    assert(await sharedPagesToggle.getAttribute("aria-expanded") === "false" && await sharedPagesToggle.evaluate(node => document.activeElement === node), "Expected restored Pages to open by real pointer and close by Escape with focus restored after ApplicationLayout Close.");
+
+    await mobileToggle.click();
+    await mobilePage.waitForFunction(() => !document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
+
+    const adversarialCatalogState = await mobilePage.evaluate(() => {
+      const sharedRoot = document.querySelector<HTMLElement>(".pc-nav > .bf-side-navigation");
+      const sharedDrawer = sharedRoot?.querySelector<HTMLElement>(".bf-side-navigation-drawer");
+      const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+      if (!sharedRoot || !sharedDrawer || !sharedNavigation) return null;
+      sharedRoot.classList.add("is-drawer-expanded");
+      sharedDrawer.setAttribute("aria-hidden", "false");
+      const drawerVisibility = getComputedStyle(sharedDrawer).visibility;
+      const navigationDisplay = getComputedStyle(sharedNavigation).display;
+      const renderedSharedDescendants = Array.from(sharedNavigation.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])")).filter(element => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+      }).length;
+      sharedRoot.classList.remove("is-drawer-expanded");
+      sharedDrawer.setAttribute("aria-hidden", "true");
+      return { drawerVisibility, navigationDisplay, renderedSharedDescendants };
+    });
+    assert(adversarialCatalogState?.drawerVisibility === "visible" && adversarialCatalogState.navigationDisplay === "none" && adversarialCatalogState.renderedSharedDescendants === 0, `Expected the ApplicationLayout drawer to suppress even an adversarial pre-expanded shared catalog whose drawer restores descendant visibility; got ${JSON.stringify(adversarialCatalogState)}.`);
+
     await mobilePage.keyboard.press("Escape");
     await mobilePage.waitForTimeout(180);
 
@@ -2179,7 +2340,101 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(mobileClosedState.overlayHidden === "true", `Expected mobile navigation overlay to hide after Escape, got aria-hidden=${mobileClosedState.overlayHidden}.`);
     assert(mobileClosedState.compactBrandVisible && !mobileClosedState.drawerBrandVisible && mobileClosedState.visibleHomeLinks === 1, `Expected Escape to restore exactly one compact application brand. Got ${JSON.stringify(mobileClosedState)}.`);
 
+    assert(await mobileToggle.evaluate(node => document.activeElement === node), "Expected Escape from the reopened mobile ApplicationLayout to restore focus to its real opener.");
+    const escapeClosedChromeState = await readApplicationChromeState();
+    assert(escapeClosedChromeState?.navigationDisplay !== "none" && escapeClosedChromeState.headerVisibility === "visible" && escapeClosedChromeState.footerVisibility === "visible", `Expected Escape to restore shared review chrome; got ${JSON.stringify(escapeClosedChromeState)}.`);
+    for (const direction of ["Tab", "Shift+Tab"] as const) {
+      const restoredCycle = await runApplicationFocusCycle(direction, "[data-application-layout-toggle]");
+      assert(restoredCycle.returnedToAnchor && ["pages", "tone", "baseline", "version", "tier"].every(control => restoredCycle.sharedControls.includes(control) && restoredCycle.hitSharedControls.includes(control)), `Expected one full ${direction} cycle after Escape to restore keyboard reach and focused-coordinate hits for Pages and all four shared footer controls; got ${JSON.stringify(restoredCycle)}.`);
+    }
+    await sharedPagesToggle.scrollIntoViewIfNeeded();
+    await sharedPagesToggle.click();
+    await mobilePage.waitForFunction(() => document.querySelector(".pc-nav > .bf-side-navigation")?.classList.contains("is-drawer-expanded"));
+    await mobilePage.keyboard.press("Escape");
+    assert(await sharedPagesToggle.getAttribute("aria-expanded") === "false" && await sharedPagesToggle.evaluate(node => document.activeElement === node), "Expected restored Pages to open by real pointer and close by Escape with focus restored after ApplicationLayout Escape.");
+
     await mobilePage.close();
+
+    const boundaryPage = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 767, height: 960 } });
+    for (const boundary of [
+      { width: 767, hidden: true },
+      { width: 768, hidden: false },
+      { width: 1035, hidden: false },
+      { width: 1036, hidden: false }
+    ] as const) {
+      await boundaryPage.setViewportSize({ width: boundary.width, height: 960 });
+      await boundaryPage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+      await boundaryPage.locator("[data-application-layout-toggle]").first().click();
+      await boundaryPage.waitForTimeout(180);
+      const state = await boundaryPage.evaluate(() => {
+        const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
+        const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+        const sharedHeader = document.querySelector<HTMLElement>(".pc-header");
+        const sharedFooter = document.querySelector<HTMLElement>(".pc-footer");
+        if (!navigation || !sharedNavigation || !sharedHeader || !sharedFooter) return null;
+        return {
+          navigationCollapsed: navigation.classList.contains("is-collapsed"),
+          navigationDisplay: getComputedStyle(sharedNavigation).display,
+          headerVisibility: getComputedStyle(sharedHeader).visibility,
+          footerVisibility: getComputedStyle(sharedFooter).visibility
+        };
+      });
+      assert(state && !state.navigationCollapsed, `Expected ApplicationLayout navigation to expand at ${boundary.width}px.`);
+      assert((state.navigationDisplay === "none") === boundary.hidden && (state.headerVisibility === "hidden") === boundary.hidden && (state.footerVisibility === "hidden") === boundary.hidden, `Expected shared chrome suppression to follow the exact product mobile boundary at ${boundary.width}px; got ${JSON.stringify(state)}.`);
+
+      if (boundary.width === 768) {
+        await boundaryPage.locator("[data-application-layout-pin]").evaluate(element => (element as HTMLElement).click());
+        const pinnedDesktop = await boundaryPage.evaluate(() => ({
+          pinned: document.querySelector("#application-layout-navigation")?.classList.contains("is-pinned"),
+          sharedNavigationDisplay: getComputedStyle(document.querySelector(".pc-nav") as Element).display,
+          sharedHeaderVisibility: getComputedStyle(document.querySelector(".pc-header") as Element).visibility,
+          sharedFooterVisibility: getComputedStyle(document.querySelector(".pc-footer") as Element).visibility
+        }));
+        assert(pinnedDesktop.pinned && pinnedDesktop.sharedNavigationDisplay !== "none" && pinnedDesktop.sharedHeaderVisibility === "visible" && pinnedDesktop.sharedFooterVisibility === "visible", `Expected pinned desktop ApplicationLayout at the exact 48rem boundary to retain shared review chrome; got ${JSON.stringify(pinnedDesktop)}.`);
+      }
+    }
+    await boundaryPage.close();
+
+    const matrixPage = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 390, height: 844 } });
+    await matrixPage.goto(`${origin}${route}?bundle=before`, { waitUntil: "networkidle" });
+    for (const version of ["before", "after"] as const) {
+      await matrixPage.locator("[data-page-chrome-version-select]").selectOption(version);
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await matrixPage.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await matrixPage.waitForFunction(({ expectedTier, expectedVersion }) => {
+          const link = document.querySelector<HTMLLinkElement>("link[data-bundle-version]");
+          return link?.dataset.bundleTier === expectedTier && link.dataset.bundleVersion === expectedVersion;
+        }, { expectedTier: tier, expectedVersion: version });
+        await matrixPage.locator("[data-application-layout-toggle]").first().click();
+        await matrixPage.waitForFunction(() => !document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
+        await matrixPage.waitForTimeout(180);
+        const matrixState = await matrixPage.evaluate(() => {
+          const targets = {
+            brand: document.querySelector<HTMLElement>(".bf-navigation-drawer .bf-top-navigation-link"),
+            close: document.querySelector<HTMLElement>("[data-application-layout-close]"),
+            pin: document.querySelector<HTMLElement>("[data-application-layout-pin]")
+          };
+          const hits = Object.fromEntries(Object.entries(targets).map(([name, target]) => {
+            const rect = target?.getBoundingClientRect();
+            if (!target || !rect) return [name, false];
+            const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+            return [name, Boolean(hit && target.contains(hit))];
+          })) as Record<string, boolean>;
+          return {
+            brandHit: hits.brand,
+            closeHit: hits.close,
+            footerVisibility: getComputedStyle(document.querySelector(".pc-footer") as Element).visibility,
+            headerVisibility: getComputedStyle(document.querySelector(".pc-header") as Element).visibility,
+            navigationDisplay: getComputedStyle(document.querySelector(".pc-nav") as Element).display,
+            pinHit: hits.pin
+          };
+        });
+        assert(matrixState.navigationDisplay === "none" && matrixState.headerVisibility === "hidden" && matrixState.footerVisibility === "hidden" && matrixState.brandHit && matrixState.pinHit && matrixState.closeHit, `Expected ${version}/${tier}/390px expanded ApplicationLayout brand, Pin and Close to own their pointer coordinates with shared chrome suppressed; got ${JSON.stringify(matrixState)}.`);
+        await matrixPage.locator("[data-application-layout-close]").click();
+        await matrixPage.waitForFunction(() => document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
+      }
+    }
+    await matrixPage.close();
   } finally {
     await browser.close();
   }
