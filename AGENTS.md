@@ -79,6 +79,11 @@ Read in this order:
   lead engineer prefers it; that choice stays in Pragma and must not be ported
   back. Body-line phase is excluded from BF by owner decision; its parked Spec
   026 branch is historical work, not a future implementation instruction.
+- Spacing work from 2026-10-10 runs across three repositories: the canonical
+  spacing spec repository orchestrates, BF is the sandbox worker that builds
+  one bucket page per spacing bucket, and a Pragma preview branch shows the
+  same bucket on Pragma's components. Roles, paths and how to drive it are in
+  [`AGENT-INBOX.md`](AGENT-INBOX.md).
 
 ## Spec workflow
 
