@@ -1,5 +1,21 @@
 # Tasks
 
+## Scope reset – 2026-10-10
+
+BF is a sandbox; the deliverables are in Spec 024 (see `spec.md`). Open work
+is only:
+
+- [ ] Build the bucket comparison pages listed in Spec 024 `tasks.md` T110.
+- [ ] Owner sign-off per bucket page (Spec 024 T111), recorded in Spec 024.
+- [ ] Change values only for rejected buckets (Spec 024 T112).
+
+Dropped, not to be resumed: owner sign-off on composite demo pages; the four
+ApplicationLayout Pin pointer overlaps; further demo-chrome work; the B2
+Canonical-main activation and full-SHA artifact re-pin as a BF gate; the
+`source-map-js` audit as a spacing gate; BF Firefox/Safari/Windows coverage.
+N2 (forced-colors fallback for bare fields and raw cells) is now an owner
+decision in Spec 024 (O2). Everything below is the pre-reset record.
+
 ## First cut (historical)
 
 - [x] Values and compact block inset â€” `f199993`, gates green

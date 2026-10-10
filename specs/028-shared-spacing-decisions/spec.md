@@ -2,10 +2,27 @@
 
 **Feature branch**: `feat/028-shared-spacing-decisions`
 
-**Status**: Earlier spacing corrections and N2–N5 dispositions accepted by Opus;
-R1 mobile chrome focus correction accepted by Opus on October 9;
-ApplicationLayout mobile prerequisite implemented and root-validated;
-owner visual sign-off and remaining activation/release gates pending
+**Status**: Scope reset 2026-10-10. Approved spacing values are applied to
+BF's real components in all four tiers. Remaining work: bucket comparison
+pages for owner sign-off. Earlier review history is below and in `tasks.md`.
+
+## Scope reset, 2026-10-10
+
+BF is the sandbox where Canonical spacing decisions are tried on real
+components. The deliverables live in Spec 024: the spacing architecture
+article, the Pragma token spec and the semantic tokens. This package
+therefore:
+
+- shows each spacing bucket on its own **comparison page** – members side by
+  side, led by a reference element, Before/After, tier switch, baseline grid
+  (Spec 024 FR-046, tasks T110–T112);
+- does not use composite or legacy example pages (ApplicationLayout,
+  DrawerPanel, page shells) as review targets;
+- treats a BF defect as in scope only when it stops a bucket page from
+  showing a spacing decision. A BF finding that reveals a missing rule goes
+  into Spec 024 as a rule; the BF repair is optional;
+- has no merge, release, provenance re-pin, CI or dependency-audit gate. BF
+  can merge this branch whenever its owner wants.
 
 ## Purpose
 
@@ -21,25 +38,20 @@ This package records only BF implementation, evidence and review state.
 
 - Every BF column on the conformance board names the implementation and check.
 - Built-in Site, Docs, App and OS bundles remain source-of-truth outputs.
-- Before/After runs on existing BF demo pages through their shared controls,
-  layout, baseline grid and component initializers. Specimens keep the same
-  markup while the BF bundle switches; legitimate BF page-layout differences
-  must not be attributed to a separate unchanged shell.
-- Type, test and component QA gates pass from the repository root.
-- Desktop and mobile evidence covers every tier at Chromium launch scales 1 and
-  1.5, with a hashed manifest.
+- One comparison page per spacing bucket, on real BF components, with the
+  same markup Before and After; only the BF bundle switches.
+- The owner signs off each bucket page; the record lives in Spec 024
+  `tasks.md`.
+- Type and test gates pass from the repository root.
 
 ## Boundaries
 
 - No body-phase or Spec 026 implementation.
 - No custom preview configuration.
 - Frozen neutral diagnostics are unchanged.
-- Canonical main activation and a final full-main-SHA re-pin remain prerequisites
-  to BF main adoption. Feature corrections do not authorize a merge.
-- Chromium covers the comparison and focused paint/runtime checks. Firefox 155
-  has a focused eight-state nested-density audit; that is not a complete
-  Firefox component/interaction matrix. Windows contrast-theme, actual display
-  scaling and Safari review remain separate platform limits.
+- No demo-chrome work unless a bucket page cannot render.
+- Browser coverage is Chromium. Firefox, Safari and Windows contrast themes
+  belong to Pragma adoption, not to this sandbox.
 
 ## External review receipt
 

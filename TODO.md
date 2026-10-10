@@ -5,14 +5,10 @@ in `docs/specs.md`; per-spec tasks live in the package.
 
 ## Now
 
-1. Obtain Spec 028 owner visual sign-off and N2's explicit fallback decision.
-   Opus accepted R1; earlier spacing repairs and N2–N5 dispositions stand.
-   ApplicationLayout's mobile prerequisite is repaired and root-validated;
-   its four wider-layout Pin pointer interceptions remain separate follow-up.
-   The existing Spec 024 T011g popup request is the next external Opus gate.
-   Canonical-main activation/full-SHA
-   re-pin and a green dependency audit remain required before merge readiness;
-   the current `source-map-js` audit failure is recorded in the review package.
+1. Spec 028 (scope reset 2026-10-10): build the spacing bucket comparison
+   pages listed in Spec 024 T110 and get the owner's sign-off per bucket.
+   BF is the sandbox; no demo-chrome, composite-page, re-pin or audit gates.
+   See `specs/028-shared-spacing-decisions/tasks.md`.
 2. Close Spec 025 compact alignment grid: commit its pending review/tasks
    edits, bring the branch up to `main` (v0.2.0/v0.2.1 landed after it), rerun
    `npm test` and `npm run qa:components`, then land by owner-approved direct
