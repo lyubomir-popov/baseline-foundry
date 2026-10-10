@@ -1108,6 +1108,11 @@ ${legacyNavigationCss({
   z-index: 9;
 }
 
+/* Menu rows touch; the intrinsic menu block closes to the grid once. */
+:where(.bf-theme) :where(.bf-contextual-menu-dropdown[aria-hidden='false']) {
+  block-size: calc-size(max-content, round(up, size, var(--bf-baseline)));
+}
+
 :where(.bf-theme) :where(.bf-contextual-menu-dropdown[aria-hidden='false']) {
   display: block;
 }
@@ -1147,6 +1152,10 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
+}
+
+:where(.bf-theme) :where(.bf-contextual-menu-dropdown) :where(.bf-contextual-menu-link) {
+  margin-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-link):visited {

@@ -284,15 +284,31 @@ async function verifyComponentPage(
         continue;
       }
 
-      const rect = element.getBoundingClientRect();
-      const styles = getComputedStyle(element);
+      // A tab strip or menu closes once as a set. Keep each authored mark, but
+      // measure its owning set and verify the visible rows remain gapless.
+      const groupedOwner = element.matches(".bf-tabs-link, .bf-contextual-menu-group, .bf-contextual-menu-link")
+        ? element.closest<HTMLElement>(".bf-tabs-list, .bf-contextual-menu-dropdown") : null;
+      const measured = groupedOwner ?? element;
+      const rect = measured.getBoundingClientRect();
+      const styles = getComputedStyle(measured);
       const marginBottom = Number.parseFloat(styles.marginBottom) || 0;
       const offsetPx = rect.top - rootRect.top;
       const measurePx = rect.height + marginBottom;
       const offsetNearest = baselinePx === 0 ? offsetPx : Math.round(offsetPx / baselinePx) * baselinePx;
       const measureNearest = baselinePx === 0 ? measurePx : Math.round(measurePx / baselinePx) * baselinePx;
       const offsetErrorPx = Math.abs(offsetPx - offsetNearest);
-      const measureErrorPx = Math.abs(measurePx - measureNearest);
+      let measureErrorPx = Math.abs(measurePx - measureNearest);
+      if (groupedOwner && element.matches(".bf-tabs-link, .bf-contextual-menu-link")) {
+        const rowStyle = getComputedStyle(element);
+        measureErrorPx = Math.max(measureErrorPx,
+          Math.abs(Number.parseFloat(rowStyle.paddingBlockStart) - Number.parseFloat(rowStyle.paddingBlockEnd)),
+          Math.abs(Number.parseFloat(rowStyle.marginBlockEnd)));
+      }
+      if (groupedOwner?.matches(".bf-contextual-menu-dropdown")) {
+        const rows = Array.from(groupedOwner.querySelectorAll<HTMLElement>(".bf-contextual-menu-link"));
+        const largestGap = Math.max(0, ...rows.slice(1).map((row, index) => Math.abs(row.getBoundingClientRect().top - rows[index].getBoundingClientRect().bottom)));
+        measureErrorPx = Math.max(measureErrorPx, largestGap);
+      }
       const label = (element.dataset.baselineLabel ?? "").replace(/\s+/g, " ").trim()
         || (element.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 80)
         || element.tagName.toLowerCase();

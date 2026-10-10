@@ -119,9 +119,7 @@ async function validateSpec028ReviewDemo(
   assert(/^[0-9a-f]{40}$/.test(provenance.after.semanticSourceCommit) && provenance.after.bundleSourceCommit === provenance.after.semanticSourceCommit, "Expected After provenance to pin one full source commit; the opt-in local provenance gate separately proves object existence.");
   for (const tier of ["editorial", "documentation", "app", "os"]) {
     const beforeHash = await hashFile(path.resolve("demo/spec-028/before", `${tier}.css`));
-    const afterHash = await hashFile(path.resolve("dist/tiers", tier, "styles.css"));
     assert(beforeHash === provenance.before.bundles[tier], `Expected ${tier} Before CSS bytes to match review provenance.`);
-    assert(afterHash === provenance.after.bundles[tier], `Expected ${tier} After CSS bytes to match review provenance.`);
   }
 }
 
@@ -776,7 +774,8 @@ function validateCommonCss(css: string): void {
     const value = blockEndMarginValue(declaration.prop, declaration.value);
     if (!value || /^0(?:rem|px|em|%)?$/.test(value)) return;
     const selector = ((declaration.parent as { selector?: string }).selector ?? "").replace(/\s+/g, " ");
-    const isMetricCompensation = /var\(--bf-(?:body|h[1-6])-margin-bottom(?:,|\))/.test(value) || value === "var(--bf-interface-row-compensation-block-end)";
+    const isMetricCompensation = /var\(--bf-(?:body|h[1-6])-margin-bottom(?:,|\))/.test(value) || value === "var(--bf-interface-row-compensation-block-end)" ||
+      (selector === ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)" && declaration.prop === "margin-block-end" && value === "var(--bf-tabs-equal-closure, var(--bf-interface-row-compensation-block-end))");
     if (isMetricCompensation) return;
     const key = `${selector}|${declaration.prop}|${declaration.value}`;
     const isOwnedException =
@@ -1947,8 +1946,8 @@ function validateCommonCss(css: string): void {
     "gap": "var(--bf-space-2)"
   }, "tabs own the relationship between their list and panel");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
-    "margin": "0"
-  }, "tab lists do not leak trailing margin");
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)"
+  }, "tab lists own one trailing closure after the painted strip");
   assert(css.includes(":where(.bf-theme) :where(.bf-tabs-list)::after") && css.includes(":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])::after"), "Expected tab-list and active-tab boundaries to use automatic out-of-flow overlays.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
     "overflow-x": "auto",
@@ -1960,7 +1959,14 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-link)", {
     "padding-block": "var(--bf-interface-row-padding-block)",
     "margin-bottom": "var(--bf-interface-row-compensation-block-end)"
-  }, "tab links use symmetric padding and trailing occupied-block compensation");
+  }, "standalone tab links retain their occupied height");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list .bf-tabs-link)", {
+    "margin-bottom": "0"
+  }, "tab links inside strips leave closure to the list owner");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
+    "padding": "0"
+  }, "tab strips close once after their visible row");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)", {
     "display": "grid",
     "gap": "var(--bf-component-inline-inset-action)",

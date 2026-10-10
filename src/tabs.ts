@@ -38,6 +38,43 @@ function activateTab(tab: HTMLElement): void {
 
 export function initTabs(options: TabsInitOptions = {}): () => void {
   const root = options.root ?? document;
+  const doc = root instanceof Document ? root : root.ownerDocument ?? document;
+  const win = doc.defaultView;
+  const equalLists = Array.from(root.querySelectorAll<HTMLElement>(".bf-tabs.is-equal .bf-tabs-list"));
+  let disposed = false;
+  let frame = 0;
+
+  const updateEqualClosures = (): void => {
+    frame = 0;
+    for (const list of equalLists) {
+      if (!list.isConnected) continue;
+      const probe = doc.createElement("i");
+      probe.style.cssText = "position:absolute;visibility:hidden;pointer-events:none;block-size:var(--bf-baseline);";
+      list.append(probe);
+      const baseline = probe.getBoundingClientRect().height;
+      probe.remove();
+      if (baseline <= 0) continue;
+      const height = list.getBoundingClientRect().height;
+      const closure = (baseline - (height % baseline)) % baseline;
+      const rootSize = Number.parseFloat(win?.getComputedStyle(doc.documentElement).fontSize ?? "16");
+      list.style.setProperty("--bf-tabs-equal-closure", `${closure / rootSize}rem`);
+    }
+  };
+  const scheduleEqualClosures = (): void => {
+    if (disposed || !win || frame) return;
+    frame = win.requestAnimationFrame(updateEqualClosures);
+  };
+  const resizeObserver = win && typeof win.ResizeObserver === "function"
+    ? new win.ResizeObserver(scheduleEqualClosures) : null;
+  for (const list of equalLists) resizeObserver?.observe(list);
+  const tierObserver = new MutationObserver(scheduleEqualClosures);
+  if (equalLists.length) {
+    tierObserver.observe(doc.body, { attributes: true, attributeFilter: ["class", "data-bf-tier"] });
+    win?.addEventListener("resize", scheduleEqualClosures, { passive: true });
+    for (const link of doc.querySelectorAll("link[rel='stylesheet']")) link.addEventListener("load", scheduleEqualClosures);
+    void doc.fonts?.ready.then(scheduleEqualClosures);
+    scheduleEqualClosures();
+  }
 
   const onClick = (event: Event): void => {
     const target = event.target;
@@ -99,6 +136,13 @@ export function initTabs(options: TabsInitOptions = {}): () => void {
   root.addEventListener("keydown", onKeyDown);
 
   return () => {
+    disposed = true;
+    if (win && frame) win.cancelAnimationFrame(frame);
+    resizeObserver?.disconnect();
+    tierObserver.disconnect();
+    win?.removeEventListener("resize", scheduleEqualClosures);
+    for (const link of doc.querySelectorAll("link[rel='stylesheet']")) link.removeEventListener("load", scheduleEqualClosures);
+    for (const list of equalLists) list.style.removeProperty("--bf-tabs-equal-closure");
     root.removeEventListener("click", onClick);
     root.removeEventListener("keydown", onKeyDown);
   };

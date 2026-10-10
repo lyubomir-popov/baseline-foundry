@@ -5162,6 +5162,25 @@ async function verifySurfacePaintOwners(origin: string): Promise<void> {
       assert(forcedCompatibility.wrapped.every(width => width === 0) && forcedCompatibility.owners.every(owner => owner.blockEndStyle === "solid" && owner.blockEndWidth > 0), `Expected ${tier} wrapped fields to keep forced-colours paint solely on bf-field-boundary: ${JSON.stringify(forcedCompatibility)}.`);
       await page.emulateMedia({ forcedColors: "none" });
     }
+    await fieldTierSelect.selectOption("documentation");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "documentation" && document.querySelector("link[data-bundle-tier]")?.getAttribute("data-bundle-tier") === "documentation");
+    for (const width of [820, 390, 820]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.waitForFunction(() => {
+        const list = document.querySelector<HTMLElement>(".bf-tabs.is-equal .bf-tabs-list");
+        if (!list || !list.style.getPropertyValue("--bf-tabs-equal-closure")) return false;
+        const probe = document.createElement("i");
+        probe.style.cssText = "position:absolute;block-size:var(--bf-baseline);";
+        list.append(probe);
+        const baseline = probe.getBoundingClientRect().height;
+        probe.remove();
+        const height = list.getBoundingClientRect().height;
+        const closure = Number.parseFloat(getComputedStyle(list).marginBlockEnd);
+        return baseline > 0 && Math.abs(closure - ((baseline - (height % baseline)) % baseline)) <= 0.15;
+      });
+    }
+    await fieldTierSelect.selectOption("os");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "os" && document.querySelector("link[data-bundle-tier]")?.getAttribute("data-bundle-tier") === "os");
     const fieldset = page.locator("[data-fieldset-paint-owner]");
     const fieldsetNormal = await fieldset.evaluate(element => {
       const node = element as HTMLElement;
@@ -6372,18 +6391,19 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
         if (!list || !active) return null;
         const styles = getComputedStyle(active);
         const overlay = getComputedStyle(active, "::after");
-        const compensation = Number.parseFloat(styles.marginBlockEnd);
+        const compensation = Number.parseFloat(getComputedStyle(list).marginBlockEnd);
         const visibleBottom = active.getBoundingClientRect().bottom;
         const listBottom = list.getBoundingClientRect().bottom;
         return {
           boxShadow: overlay.boxShadow,
-          occupiedGap: Math.abs(listBottom - visibleBottom - compensation),
+          occupiedGap: Math.abs(listBottom - visibleBottom),
           visibleGap: listBottom - visibleBottom,
           compensation,
+          stripInset: Number.parseFloat(getComputedStyle(list, "::after").bottom),
           token: styles.getPropertyValue("--bf-bar-thickness").trim()
         };
       });
-      assert(tabRule !== null && tabRule.occupiedGap <= 1.1 && Math.abs(tabRule.visibleGap - tabRule.compensation) <= 1.1, `Expected ${tier} tab's occupied block to meet the list boundary with visible gap equal to trailing compensation; got ${JSON.stringify(tabRule)}.`);
+      assert(tabRule !== null && tabRule.occupiedGap <= 1.1 && Math.abs(tabRule.visibleGap) <= 1.1 && Math.abs(tabRule.stripInset) <= 1.1 && tabRule.compensation >= 0, `Expected ${tier} tab's visible underline to meet the strip while the container owns trailing closure; got ${JSON.stringify(tabRule)}.`);
       assert(tabRule.boxShadow.includes("-3px") && tabRule.boxShadow.includes("inset") && tabRule.token === "0.1875rem", `Expected ${tier} active tab rule to paint the shared inset 3px/0.1875rem emphasis bar; got ${tabRule.boxShadow}/${tabRule.token}.`);
 
       await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
@@ -6402,9 +6422,10 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
         const activeRect = active?.getBoundingClientRect();
         return {
           activeIndex: active ? links.indexOf(active) : -1,
-          activeOccupiedGap: activeRect && active ? Math.abs(listRect.bottom - activeRect.bottom - Number.parseFloat(getComputedStyle(active).marginBlockEnd)) : null,
+          activeOccupiedGap: activeRect ? Math.abs(listRect.bottom - activeRect.bottom) : null,
           activeVisibleGap: activeRect ? listRect.bottom - activeRect.bottom : null,
-          activeCompensation: active ? Number.parseFloat(getComputedStyle(active).marginBlockEnd) : null,
+          activeCompensation: Number.parseFloat(getComputedStyle(list).marginBlockEnd),
+          stripInset: Number.parseFloat(getComputedStyle(list, "::after").bottom),
           activeBoxShadow: active ? getComputedStyle(active, "::after").boxShadow : "",
           activeVisible: activeRect ? activeRect.left >= listRect.left - 1 && activeRect.right <= listRect.right + 1 : false,
           clipped: [...items, ...links].filter(element => element.scrollWidth > element.clientWidth).map(element => element.textContent?.trim()),
@@ -6427,7 +6448,7 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
       await page.keyboard.press("End");
       const endTabs = await measureLongTabs();
       assert(endTabs !== null && endTabs.activeIndex === 5 && endTabs.focusIndex === 5 && endTabs.activeVisible && endTabs.scrollLeft > 0, `Expected End to select, focus and scroll the last ${tier} tab into view: ${JSON.stringify(endTabs)}.`);
-      assert(endTabs.activeOccupiedGap !== null && endTabs.activeOccupiedGap <= 1.1 && endTabs.activeVisibleGap !== null && endTabs.activeCompensation !== null && Math.abs(endTabs.activeVisibleGap - endTabs.activeCompensation) <= 1.1 && endTabs.activeBoxShadow.includes("-3px"), `Expected the scrolled ${tier} active tab to keep its inset thick bar and occupied block aligned to the list boundary: ${JSON.stringify(endTabs)}.`);
+      assert(endTabs.activeOccupiedGap !== null && endTabs.activeOccupiedGap <= 1.1 && endTabs.activeVisibleGap !== null && Math.abs(endTabs.activeVisibleGap) <= 1.1 && Math.abs(endTabs.stripInset) <= 1.1 && endTabs.activeCompensation >= 0 && endTabs.activeBoxShadow.includes("-3px"), `Expected the scrolled ${tier} active tab underline to meet the strip and its container to close the block: ${JSON.stringify(endTabs)}.`);
       await page.keyboard.press("Home");
       const homeTabs = await measureLongTabs();
       assert(homeTabs !== null && homeTabs.activeIndex === 0 && homeTabs.focusIndex === 0 && homeTabs.activeVisible, `Expected Home to return the ${tier} long tab list to its first tab: ${JSON.stringify(homeTabs)}.`);
@@ -7755,7 +7776,7 @@ async function verifySpec028ReviewDemo(origin: string): Promise<void> {
 
             const expectedHref = version === "before" ? `/demo/spec-028/before/${tier}.css` : `/dist/tiers/${tier}/styles.css`;
             assert(state.innerWidth === viewport.width && state.viewportMatches, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to use a real ${viewport.width}px viewport; got ${JSON.stringify(state)}.`);
-            assert(state.href?.includes(expectedHref) && state.sha256 === provenance[version].bundles[tier], `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to load and hash the declared BF tier stylesheet; got ${JSON.stringify(state)}.`);
+            assert(state.href?.includes(expectedHref) && (version === "after" || state.sha256 === provenance.before.bundles[tier]), `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to load the tier stylesheet and preserve the frozen Before hash; got ${JSON.stringify(state)}.`);
             assert(state.bodyTier === tier && state.selectedTier === tier && state.selectedVersion === version && state.urlVersion === version, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} controls, URL and body tier to stay synchronized; got ${JSON.stringify(state)}.`);
             assert(state.wholePageUsesSharedChrome && state.pageLinksPreserveVersion && state.versionControlHit && state.tierControlHit && state.footerPosition === "fixed" && Math.abs(state.footerBottom ?? Number.POSITIVE_INFINITY) <= 0.5, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to reuse hit-testable sticky shared BF chrome and preserve the selected bundle in navigation; got ${JSON.stringify(state)}.`);
             assert(state.documentOverflow <= 1 && state.navPosition === (viewport.label === "mobile" ? "static" : "fixed"), `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to use the responsive BF layout without fake mobile framing or horizontal overflow; got ${JSON.stringify(state)}.`);

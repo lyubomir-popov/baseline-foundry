@@ -42,7 +42,7 @@ ${inlineOptionsStroke.owner}
   display: flex;
   gap: 0;
   list-style: none;
-  margin: 0;
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   min-inline-size: 0;
   overflow-x: auto;
   padding: 0;
@@ -71,6 +71,10 @@ ${bodyTypeStyles}  align-items: center;
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-action);
   text-decoration: none;
+}
+
+:where(.bf-theme) :where(.bf-tabs-list .bf-tabs-link) {
+  margin-bottom: 0;
 }
 
 :where(.bf-theme) :where(.bf-tabs-link:hover) {
@@ -109,9 +113,12 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list) {
+  /* The Tabs runtime measures wrapped intrinsic height and supplies one
+     trailing remainder; the fallback retains the single-row closure. */
   display: grid;
   gap: var(--bf-component-inline-inset-action);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--bf-ui-tabs-equal-min)), 1fr));
+  margin-block-end: var(--bf-tabs-equal-closure, var(--bf-interface-row-compensation-block-end));
   overflow: visible;
   white-space: normal;
 }
