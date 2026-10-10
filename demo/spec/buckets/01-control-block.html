@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-spec-root="../../..">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control block spacing bucket · Baseline Foundry</title>
+    <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../../spec-shell.css" />
+    <style>
+      .bucket-page { max-inline-size: 90rem; }
+      .bucket-intro { max-inline-size: 68ch; }
+      .bucket-row { border-block-start: 0.0625rem solid var(--bf-color-border-neutral); padding-block: var(--bf-space-2); }
+      .bucket-row h2 { margin-block-end: var(--bf-space-1); }
+      .bucket-track { display: flex; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      .bucket-sample { flex: 0 0 12rem; min-inline-size: 0; }
+      .bucket-caption { display: block; margin-block-end: var(--bf-space-1); }
+      .bucket-probe { position: relative; display: flow-root; min-inline-size: 0; inset-block-start: var(--bucket-shift, 0rem); }
+      .bucket-probe::before, .bucket-probe::after { content: ""; position: absolute; inset-inline: 0; block-size: 0.0625rem; pointer-events: none; z-index: 4; }
+      .bucket-probe::before { inset-block-start: 0; background: #c33; }
+      .bucket-probe::after { inset-block-start: var(--bucket-baseline, 0rem); background: #2379cb; }
+      .bucket-probe > .bf-button:not(.is-icon), .bucket-probe > .bf-chip, .bucket-probe > .bf-contextual-menu-link, .bucket-probe > .bf-top-navigation-dropdown-item { inline-size: 100%; }
+      .bucket-probe > .bf-field-boundary { display: grid; }
+      .bucket-probe .bf-pagination, .bucket-probe .bf-tabs, .bucket-probe .bf-segmented-control { inline-size: 100%; }
+      .bucket-probe .bf-tabs-list, .bucket-probe .bf-segmented-control-list { padding: 0; }
+      .bucket-probe .bf-top-navigation-dropdown-item { background: var(--bf-color-background-default); }
+      .bucket-sample pre { font: 0.75rem/1.4 ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; margin-block: var(--bf-space-1) 0; }
+      .bucket-key { font: 0.8rem/1.4 ui-monospace, monospace; }
+      .bucket-key b { color: #c33; } .bucket-key i { color: #2379cb; font-style: normal; }
+    </style>
+  </head>
+  <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
+    <main class="bf-page is-fill bucket-page">
+      <header class="bf-stack is-dense bucket-intro">
+        <h1>01 · Control block</h1>
+        <p>Every standalone text control uses the tier body line, equal block padding of inset plus its metric nudge, and trailing grid compensation.</p>
+        <p class="bucket-key"><b>Red</b> = visible block start · <i>Blue</i> = estimated first text baseline. Box values use computed styles and rendered bounds; baseline uses font metrics.</p>
+      </header>
+      <div id="bucket-rows"></div>
+    </main>
+    <script type="module" src="./01-control-block.js"></script>
+  </body>
+</html>

@@ -1124,7 +1124,7 @@ ${legacyNavigationCss({
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-group) {
-  display: block;
+  display: flow-root;
 }
 
 :where(.bf-theme) :where(.bf-contextual-menu-group) + :where(.bf-contextual-menu-group) {
@@ -1138,10 +1138,9 @@ ${typeStyles(body, { includeCase: false })}  background: transparent;
   color: var(--bf-color-text-default);
   cursor: pointer;
   display: block;
-  margin: 0;
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   overflow: hidden;
-  padding-block-end: var(--bf-in-box-row-padding-block-end);
-  padding-block-start: var(--bf-in-box-row-padding-block-start);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-action);
   text-align: left;
   text-decoration: none;

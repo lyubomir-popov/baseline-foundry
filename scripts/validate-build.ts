@@ -1659,7 +1659,10 @@ function validateCommonCss(css: string): void {
   assert(JSON.stringify(unaffectedRadiusLonghands.sort()) === JSON.stringify(expectedUnaffectedRadiusLonghands), `Expected every radius longhand to retain the reviewed declaration set; got ${JSON.stringify(unaffectedRadiusLonghands)}.`);
   assert(css.includes(":where(.bf-theme) :where(button) {\n  font: inherit;") && !css.includes(".bf-theme button {"), "Expected the button font reset to preserve the zero-specificity component cascade.");
   assert(css.includes(":where(.bf-color-control)::before") && css.includes('grid-template-areas: "color-control";') && css.includes('content: "\\00a0";') && css.includes(":where(.bf-color-control) > :where(input[type='color'].bf-color-input)") && css.includes("align-self: stretch;") && css.includes("margin-block-end: var(--bf-interface-row-compensation-block-end);") && css.includes("margin: 0;\n  min-block-size: 0;"), "Expected the color wrapper to own row compensation and the out-of-flow field stroke while preserving its metric strut and native picker.");
-  assert(css.includes("padding-block-end: var(--bf-in-box-row-padding-block-end);") && css.includes("padding-block-start: var(--bf-in-box-row-padding-block-start);"), "Expected marginless contextual-menu commands to consume the shared in-box row compensation.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-contextual-menu-link)", {
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
+    "padding-block": "var(--bf-interface-row-padding-block)"
+  }, "contextual-menu commands use equal block padding and trailing compensation");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "line-height": "var(--bf-nested-row-line-height)",
     "margin-block": "0",
@@ -1955,8 +1958,9 @@ function validateCommonCss(css: string): void {
     "flex": "0 0 auto"
   }, "tab items keep their content width so long lists scroll instead of overlapping");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-link)", {
-    "padding-block-end": "calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end))"
-  }, "tab links retain the shared occupied height independently of the painted list boundary");
+    "padding-block": "var(--bf-interface-row-padding-block)",
+    "margin-bottom": "var(--bf-interface-row-compensation-block-end)"
+  }, "tab links use symmetric padding and trailing occupied-block compensation");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)", {
     "display": "grid",
     "gap": "var(--bf-component-inline-inset-action)",

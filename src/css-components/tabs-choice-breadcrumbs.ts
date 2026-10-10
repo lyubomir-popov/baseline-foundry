@@ -67,9 +67,8 @@ ${bodyTypeStyles}  align-items: center;
   display: flex;
   gap: var(--bf-leading-mark-gap);
   justify-content: center;
-  margin-bottom: 0;
-  padding-block-end: calc(var(--bf-interface-row-padding-block) + var(--bf-interface-row-compensation-block-end));
-  padding-block-start: var(--bf-interface-row-padding-block);
+  margin-bottom: var(--bf-interface-row-compensation-block-end);
+  padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-action);
   text-decoration: none;
 }
