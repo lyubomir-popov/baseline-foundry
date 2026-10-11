@@ -2,7 +2,6 @@ import { allSidedStrokeSelfPaintCss, blockEndStrokeOverlayCss } from "./stroke-p
 
 type TabsChoiceBreadcrumbsCssOptions = {
   bodyCaseTypeStyles: string;
-  bodyStrongTypeStyles: string;
   bodyTypeStyles: string;
   buttonMarginBottom: string;
 };
@@ -10,7 +9,6 @@ type TabsChoiceBreadcrumbsCssOptions = {
 export function tabsChoiceBreadcrumbsCss(options: TabsChoiceBreadcrumbsCssOptions): string {
   const {
     bodyCaseTypeStyles,
-    bodyStrongTypeStyles,
     bodyTypeStyles,
     buttonMarginBottom,
   } = options;
@@ -169,7 +167,7 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-choice-row-name) {
-${bodyStrongTypeStyles}  display: block;
+${bodyTypeStyles}  display: block;
   margin: 0;
   min-inline-size: 0;
   overflow: hidden;

@@ -1,7 +1,6 @@
 import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss, blockStartStrokeOverlayCss } from "./stroke-paint.js";
 
 export interface LegacyNavigationCssOptions {
-  bodyMediumTypeStyles: string;
   bodySemiboldTypeStyles: string;
   bodyTypeStyles: string;
   buttonMarginBottom: string;
@@ -9,7 +8,6 @@ export interface LegacyNavigationCssOptions {
 
 export function legacyNavigationCss(options: LegacyNavigationCssOptions): string {
   const {
-    bodyMediumTypeStyles,
     bodySemiboldTypeStyles,
     bodyTypeStyles,
     buttonMarginBottom
@@ -228,7 +226,7 @@ ${bodySemiboldTypeStyles}  display: block;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-context-switcher-label) {
-${bodySemiboldTypeStyles}  display: block;
+${bodyTypeStyles}  display: block;
   margin: 0 0 var(--bf-body-margin-bottom);
   padding-block: var(--bf-body-nudge-start) 0;
 }
@@ -282,7 +280,7 @@ ${bodyTypeStyles}  align-items: center;
 
 :where(.bf-theme) :where(.bf-side-navigation-item.is-title) > :where(.bf-side-navigation-link, .bf-side-navigation-text) {
   color: var(--bf-color-text-default);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 :where(.bf-theme) :where(.bf-side-navigation-link:hover, .bf-side-navigation-accordion-button:hover) {
@@ -376,7 +374,7 @@ ${topNavigationStroke.painter}
 }
 
 :where(.bf-theme) :where(.bf-top-navigation-logo) > :where(.bf-top-navigation-link) {
-${bodyMediumTypeStyles}  align-items: center;
+${bodyTypeStyles}  align-items: center;
   color: var(--bf-color-text-default);
   column-gap: var(--bf-leading-mark-gap);
   display: inline-flex;

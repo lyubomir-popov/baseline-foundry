@@ -310,7 +310,7 @@ export async function verifyReducedNavigationAndTableOfContents(origin: string):
         assert(state.linkPadding.every(([start, end]) => Math.abs(start - state.expectedRowPadding) <= 0.1 && Math.abs(end - state.expectedRowPadding) <= 0.1), `Expected ${tier} table-of-contents links to share symmetric single-line row padding at ${width}; expected ${state.expectedRowPadding}, got ${JSON.stringify(state.linkPadding)}.`);
         assert(state.listGaps.every(gap => Math.abs(gap) <= 0.1) && state.itemGaps.every(gap => Math.abs(gap) <= 0.1), `Expected ${tier} table-of-contents rows to match the side-navigation zero-gap rhythm at ${width}; got lists=${state.listGaps}, items=${state.itemGaps}.`);
         assert(state.dividerBlockSize === 1 && state.dividerToHeading < state.expectedSectionGap, `Expected ${tier} table-of-contents divider to paint tightly with the following heading instead of occupying the parent-owned section gap at ${width}.`);
-        assert(state.currentState === "location" && Number.parseFloat(state.currentWeight) >= 600 && state.currentColor === state.defaultTextColor, `Expected ${tier} table-of-contents current link to expose its semantic current state and default-text emphasis at ${width}.`);
+        assert(state.currentState === "location" && Number.parseFloat(state.currentWeight) === 400 && state.currentColor === state.defaultTextColor, `Expected ${tier} table-of-contents current link to expose its semantic current state with regular-weight default-text emphasis at ${width}.`);
         assert(state.rootOverflow <= 1, `Expected ${tier} table-of-contents to avoid inline overflow at ${width}; got ${state.rootOverflow}px.`);
       }
 

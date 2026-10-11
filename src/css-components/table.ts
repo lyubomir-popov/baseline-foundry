@@ -3,13 +3,12 @@ import { blockEndStrokeOverlayCss } from "./stroke-paint.js";
 
 type TableCssOptions = {
   bodyLineHeight: string;
-  bodyMediumTypeStyles: string;
   bodyTypeStyles: string;
   siteScopes: string[];
 };
 
 export function tableCss(options: TableCssOptions): string {
-  const { bodyLineHeight, bodyMediumTypeStyles, bodyTypeStyles, siteScopes } = options;
+  const { bodyLineHeight, bodyTypeStyles, siteScopes } = options;
   const denseChipHosts = siteDenseChipPolicySelectors().hosts;
   const density = componentDensityPolicy.siteDenseChip;
   const cellSelector = ":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)";
@@ -104,7 +103,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(thead th) {
-${bodyMediumTypeStyles}  color: var(--bf-color-text-default);
+${bodyTypeStyles}  color: var(--bf-color-text-default);
   line-height: var(--bf-table-row-line-height);
 }
 

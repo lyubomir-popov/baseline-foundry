@@ -1,12 +1,11 @@
 import { allSidedStrokeOverlayCss, blockEndStrokeOverlayCss } from "./stroke-paint.js";
 
 type CardsOptionsCssOptions = {
-  bodyStrongTypeStyles: string;
   bodyTypeStyles: string;
 };
 
 export function cardsOptionsCss(options: CardsOptionsCssOptions): string {
-  const { bodyStrongTypeStyles, bodyTypeStyles } = options;
+  const { bodyTypeStyles } = options;
   const cardSelector = ":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)";
   const cardStroke = allSidedStrokeOverlayCss(cardSelector, { anchor: "relative" });
   const previewSelector = ":where(.bf-theme) :where(.bf-card-preview:not(.is-missing))";
@@ -207,7 +206,7 @@ ${optionStroke.owner}
 }
 
 :where(.bf-theme) :where(.bf-option-card-label) {
-${bodyStrongTypeStyles}  display: block;
+${bodyTypeStyles}  display: block;
   margin: 0;
   min-inline-size: 0;
 }

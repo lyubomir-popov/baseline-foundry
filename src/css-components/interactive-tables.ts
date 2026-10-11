@@ -196,7 +196,7 @@ export function interactiveTablesCss(): string {
     font-family: var(--bf-body-font-family);
     font-size: var(--bf-body-font-size);
     font-style: var(--bf-body-font-style);
-    font-weight: 550;
+    font-weight: 400;
     line-height: var(--bf-body-line-height);
     margin-block-end: 0;
     overflow: hidden;

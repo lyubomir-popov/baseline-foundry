@@ -65,7 +65,7 @@ export function navigationLayoutCss(): string {
   align-self: start;
   color: var(--bf-color-text-default);
   font-size: var(--bf-top-navigation-logo-title-font-size, var(--bf-body-font-size, 1rem));
-  font-weight: 300;
+  font-weight: 400;
   line-height: var(--bf-top-navigation-logo-title-line-height, var(--bf-body-line-height, 1.5));
   overflow: visible;
   overflow-wrap: anywhere;

@@ -113,7 +113,7 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-in-page-navigation-link.is-active, .bf-in-page-navigation-link[aria-current]) {
   color: var(--bf-color-text-default);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 :where(.bf-theme) :where(.bf-in-page-navigation-link.is-active, .bf-in-page-navigation-link[aria-current])::before {
@@ -494,7 +494,7 @@ ${bodyTypeStyles}  border-block: 0;
 
 :where(.bf-theme) :where(.bf-table-of-contents-link.is-active, .bf-table-of-contents-link[aria-current]) {
   color: var(--bf-color-text-default);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 :where(.bf-theme) :where(.bf-table-of-contents-list .bf-table-of-contents-list) {

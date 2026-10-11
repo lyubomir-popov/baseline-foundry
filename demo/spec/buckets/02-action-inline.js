@@ -9,7 +9,7 @@ const peers = [
   ["Inactive Tab", '<div class="bf-tabs"><ul class="bf-tabs-list" role="tablist"><li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="false" data-target><span data-label>Inactive</span></button></li></ul></div>'],
   ["Contextual menu item", '<ul class="bf-contextual-menu-dropdown" aria-hidden="false"><li class="bf-contextual-menu-group"><button class="bf-contextual-menu-link" type="button" data-target><span data-label>Open</span></button><button class="bf-contextual-menu-link" type="button"><span>Save</span></button></li></ul>'],
   ["Top navigation menu item", '<ul class="bf-top-navigation-dropdown" aria-hidden="false"><li><a class="bf-top-navigation-dropdown-item" href="#bucket-rows" data-target><span class="bf-top-navigation-dropdown-item-label" data-label>Open</span></a></li><li><a class="bf-top-navigation-dropdown-item" href="#bucket-rows"><span class="bf-top-navigation-dropdown-item-label">Save</span></a></li></ul>'],
-  ["Horizontal top navigation", '<nav class="bf-top-navigation" aria-label="Bucket top navigation"><div class="bf-top-navigation-nav"><ul class="bf-top-navigation-list"><li class="bf-top-navigation-item"><a class="bf-top-navigation-link" href="#bucket-rows" data-target><span data-label>Docs</span></a></li></ul></div></nav>']
+  ["Horizontal top navigation", '<nav class="bf-top-navigation" aria-label="Bucket top navigation"><div class="bf-top-navigation-nav" aria-hidden="false"><ul class="bf-top-navigation-list"><li class="bf-top-navigation-item"><a class="bf-top-navigation-link" href="#bucket-rows" data-target><span data-label>Docs</span></a></li></ul></div></nav>']
 ];
 
 const section = document.createElement("section");
@@ -40,13 +40,16 @@ function updateMeasurements() {
     const box = target.getBoundingClientRect();
     const labelBox = label.getBoundingClientRect();
     const iconBox = icon?.getBoundingClientRect();
+    const navigationList = target.closest(".bf-top-navigation-nav .bf-top-navigation-list");
+    const stackedNavigation = navigationList && getComputedStyle(navigationList).flexDirection === "column";
+    const labelEnd = stackedNavigation ? "not observable (stacked navigation)" : format(box.right - labelBox.right);
     const iconMetrics = iconBox
       ? `box ${format(iconBox.width)} × ${format(iconBox.height)}; start ${format(iconBox.left - box.left)}; icon→label ${format(labelBox.left - iconBox.right)}`
       : "none";
     sample.querySelector("pre").textContent =
       `padding start/end ${style.paddingInlineStart} / ${style.paddingInlineEnd}\n` +
       `action role ${format(actionInset)}\n` +
-      `label start/end ${format(labelBox.left - box.left)} / ${format(box.right - labelBox.right)}\n` +
+      `label start/end ${format(labelBox.left - box.left)} / ${labelEnd}\n` +
       `leading icon ${iconMetrics}`;
   }
 }

@@ -946,7 +946,6 @@ ${panelCss({
 })}
 
 ${cardsOptionsCss({
-  bodyStrongTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
   bodyTypeStyles
 })}
 
@@ -954,7 +953,6 @@ ${contentCardCss()}
 
 ${tabsChoiceBreadcrumbsCss({
   bodyCaseTypeStyles: typeStyles(body),
-  bodyStrongTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
   bodyTypeStyles,
   buttonMarginBottom,
 })}
@@ -996,7 +994,6 @@ ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-backgrou
 
 ${tableCss({
   bodyLineHeight,
-  bodyMediumTypeStyles: typeStyles(body, { fontWeight: 500, includeCase: false }),
   bodyTypeStyles,
   siteScopes,
 })}
@@ -1077,7 +1074,6 @@ ${controlRowCss()}
 ${listTreeCss({ bodyTypeStyles })}
 
 ${legacyNavigationCss({
-  bodyMediumTypeStyles: typeStyles(body, { fontWeight: 500, includeCase: false }),
   bodySemiboldTypeStyles: typeStyles(body, { fontWeight: 600, includeCase: false }),
   bodyTypeStyles,
   buttonMarginBottom

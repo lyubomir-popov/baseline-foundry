@@ -237,7 +237,7 @@ ${bodyTypeStyles}  appearance: none;
 
 :where(.bf-theme) :where(.bf-search-and-filter-search-query) {
   color: var(--bf-color-text-default);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 :where(.bf-theme) :where(.bf-filter-panel-section) {
