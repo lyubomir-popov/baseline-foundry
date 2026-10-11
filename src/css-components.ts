@@ -608,7 +608,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-default)
 :where(.bf-theme) :where(.bf-switch) {
   align-items: flex-start;
   display: inline-flex;
-  gap: var(--bf-field-gap);
+  gap: var(--bf-leading-mark-gap);
   position: relative;
 }
 
