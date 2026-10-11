@@ -55,7 +55,8 @@ export function initTabs(options: TabsInitOptions = {}): () => void {
       probe.remove();
       if (baseline <= 0) continue;
       const height = list.getBoundingClientRect().height;
-      const closure = (baseline - (height % baseline)) % baseline;
+      const remainder = height % baseline;
+      const closure = remainder <= 0.01 || baseline - remainder <= 0.01 ? 0 : baseline - remainder;
       const rootSize = Number.parseFloat(win?.getComputedStyle(doc.documentElement).fontSize ?? "16");
       list.style.setProperty("--bf-tabs-equal-closure", `${closure / rootSize}rem`);
     }

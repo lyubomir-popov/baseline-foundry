@@ -591,7 +591,7 @@ ${bodyTypeStyles}  align-items: center;
   margin-block-end: var(--bf-interface-row-compensation-block-end);
   min-inline-size: 0;
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: calc(var(--bf-top-navigation-link-padding-inline) + var(--bf-component-inline-inset-action)) var(--bf-top-navigation-link-padding-inline);
+  padding-inline: var(--bf-component-inline-inset-action);
   position: relative;
   text-align: left;
   text-decoration: none;
@@ -795,7 +795,7 @@ ${bodyTypeStyles}  align-items: center;
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-dropdown-item) {
-    padding-inline: var(--bf-top-navigation-link-padding-inline);
+    padding-inline: var(--bf-component-inline-inset-action);
   }
 
   :where(.bf-theme) :where(.bf-top-navigation-search) {

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-spec-root="../../..">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Action inline spacing bucket · Baseline Foundry</title>
+    <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../../spec-shell.css" />
+    <style>
+      .bucket-page { max-inline-size: 90rem; }
+      .bucket-intro { max-inline-size: 68ch; }
+      .bucket-row { border-block-start: 0.0625rem solid var(--bf-color-border-neutral); padding-block: var(--bf-space-2); }
+      .bucket-row h2 { margin-block-end: var(--bf-space-1); }
+      .bucket-track { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--bf-space-2); padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      .bucket-sample { flex: 0 0 14rem; min-inline-size: 0; }
+      .bucket-caption { display: block; margin-block-end: var(--bf-space-1); }
+      .bucket-probe { position: relative; display: flow-root; min-inline-size: 0; }
+      .bucket-probe [data-target] { outline: 0.0625rem solid #cf534b; outline-offset: -0.0625rem; }
+      .bucket-probe > .bf-tabs, .bucket-probe > .bf-top-navigation, .bucket-probe > .bf-contextual-menu-dropdown, .bucket-probe > .bf-top-navigation-dropdown { inline-size: 100%; }
+      .bucket-probe .bf-tabs-list { overflow: visible; }
+      .bucket-probe .bf-contextual-menu-dropdown, .bucket-probe .bf-top-navigation-dropdown { display: block; position: relative; inset: auto; min-inline-size: 0; }
+      .bucket-probe .bf-top-navigation-dropdown-item { background: var(--bf-color-background-default); }
+      .bucket-probe .bf-top-navigation { position: relative; }
+      .bucket-probe .bf-top-navigation-nav { display: block; }
+      .bucket-probe .bf-top-navigation-list { display: block; }
+      .bucket-sample pre { font: 0.75rem/1.4 ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; margin-block: var(--bf-space-1) 0; }
+      .bucket-key { font: 0.8rem/1.4 ui-monospace, monospace; }
+    </style>
+  </head>
+  <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
+    <main class="bf-page is-fill bucket-page">
+      <header class="bf-stack is-dense bucket-intro">
+        <h1>02 · Action inline</h1>
+        <p>Pressed actions and horizontal top-navigation items keep the tier action inset at both inline edges. A leading icon keeps the same outer insets.</p>
+        <p class="bucket-key">Red outline = rendered action box. Values below each peer use computed styles and rendered label/icon bounds; the leading mark gap is shown for observation only.</p>
+      </header>
+      <div id="bucket-rows"></div>
+    </main>
+    <script type="module" src="./02-action-inline.js"></script>
+  </body>
+</html>
