@@ -86,8 +86,16 @@ function updateMeasurements() {
     const text = target.querySelector(".bucket-measured-text, [data-label]");
     const label = text?.getBoundingClientRect() || { left: target.getBoundingClientRect().left + parseFloat(style.paddingInlineStart), right: target.getBoundingClientRect().right - parseFloat(style.paddingInlineEnd) };
     const mark = target.matches(".bf-button:not(.is-icon)") ? { width: 0, height: 0, gap: 0, slot: 0, kind: "no mark; no reserved column", paint: "none" } : markGeometry(target, label);
+    const layoutHost = target.matches(".bf-switch-label") ? target.closest(".bf-switch") : target;
+    const columnGap = target.matches(".bf-checkbox-label, .bf-radio-label")
+      ? "n/a; mark→label comes from label padding"
+      : target.matches("select")
+        ? "n/a; caret room comes from field padding"
+        : target.matches(".bf-button:not(.is-icon)")
+          ? "n/a; no mark"
+          : `${getComputedStyle(layoutHost).columnGap} on .${layoutHost.classList[0]}`;
     const metrics = `font ${style.fontSize}; mark ${format(mark.width)} × ${format(mark.height)}; slot ${format(mark.slot)}\n` +
-      `column gap ${style.columnGap}; mark→label ${format(mark.gap)} (${mark.kind})\n` +
+      `column gap ${columnGap}; mark→label ${format(mark.gap)} (${mark.kind})\n` +
       `mark paint ${mark.paint}\n` +
       `label keyline ${format(label.left - target.getBoundingClientRect().left)}; label baseline in guide tick`;
     observations.push({ sample, target, owner, metrics });
