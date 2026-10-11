@@ -34,7 +34,7 @@ ${searchActionStroke.owner}
 
 :where(.bf-theme) :where(.bf-search-box-input) {
   margin-bottom: 0;
-  padding-inline-end: var(--bf-search-box-trailing-inline-size);
+  padding-inline-end: calc(var(--bf-search-box-trailing-inline-size) + var(--bf-component-inline-inset-field));
 }
 
 :where(.bf-theme) :where(.bf-search-box-reset, .bf-search-box-button) {

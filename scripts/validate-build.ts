@@ -1796,8 +1796,8 @@ function validateCommonCss(css: string): void {
     "position": "relative"
   }, "search boxes keep the canonical inline search layout");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-box-input)", {
-    "padding-inline-end": "var(--bf-search-box-trailing-inline-size)"
-  }, "search boxes reserve trailing space from the field padding token rather than a hard-coded baseline multiple");
+    "padding-inline-end": "calc(var(--bf-search-box-trailing-inline-size) + var(--bf-component-inline-inset-field))"
+  }, "search boxes keep the field edge outside their separate trailing action slots");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-search-and-filter)", {
     "display": "grid"
   }, "search-and-filter keeps the canonical outer grid shell");
@@ -1930,8 +1930,9 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree-toggle)", {
     "gap": "var(--bf-disclosure-gap)",
     "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
-    "padding-block": "var(--bf-interface-row-padding-block)"
-  }, "list-tree disclosures derive their text start from the shared mark canvas and gap");
+    "padding-block": "var(--bf-interface-row-padding-block)",
+    "padding-inline": "var(--bf-disclosure-group-inset) var(--bf-component-inline-inset-field)"
+  }, "list-tree disclosures preserve the mark canvas at start and the field edge at end");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-list-tree) :where(.bf-list-tree[aria-hidden='false'])", {
     "display": "block"
   }, "expanded list-tree branches reveal nested lists");

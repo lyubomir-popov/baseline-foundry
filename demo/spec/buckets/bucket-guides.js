@@ -17,7 +17,7 @@ function addExternalRig(target) {
 }
 
 export function installBaselineMarker(target) {
-  if (target.matches("input, select")) {
+  if (target.matches("input, select, textarea")) {
     addExternalRig(target);
     return;
   }
@@ -79,7 +79,7 @@ export function renderGuides(track, peers, reference) {
   const observations = peers.map(({ sample, target, owner, metrics }) => {
     const box = target.getBoundingClientRect();
     const ownerBox = owner.getBoundingClientRect();
-    const native = target.matches("input, select");
+    const native = target.matches("input, select, textarea");
     const marker = native ? null : target.querySelector(".bucket-baseline-marker");
     const externalBaseline = measureExternalBaseline(sample, target, box);
     sample.dataset.externalBaseline = externalBaseline === null ? "unavailable" : format(externalBaseline - trackBox.top);
@@ -94,7 +94,8 @@ export function renderGuides(track, peers, reference) {
     const reading = { top, baseline, end, x };
     sample.dataset.guideTop = format(top);
     sample.dataset.guideBaseline = baseline === null ? "unavailable (icon only or unmatched native rig)" : format(baseline);
-    sample.dataset.baselineSource = native ? "native control CSS baseline from matched clone"
+    sample.dataset.baselineSource = target.matches("textarea") ? "native textarea CSS alignment baseline from matched clone (below first text line)"
+      : native ? "native control CSS baseline from matched clone"
       : marker ? "inline browser layout marker" : "none (icon only)";
     sample.dataset.guideOccupiedEnd = format(end);
     sample.dataset.metrics = metrics;

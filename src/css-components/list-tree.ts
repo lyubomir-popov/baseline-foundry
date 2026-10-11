@@ -68,7 +68,7 @@ ${bodyTypeStyles}  align-items: center;
   gap: var(--bf-disclosure-gap);
   margin: 0 0 var(--bf-interface-row-compensation-block-end);
   padding-block: var(--bf-interface-row-padding-block);
-  padding-inline: var(--bf-disclosure-group-inset) var(--bf-inline-unit);
+  padding-inline: var(--bf-disclosure-group-inset) var(--bf-component-inline-inset-field);
   text-align: left;
   width: 100%;
 }
