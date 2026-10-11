@@ -1018,8 +1018,10 @@ ${chipBadgeStatusCss({
 }
 
 :where(.bf-theme) :where(.bf-chip-dismiss) {
+  align-self: center;
   block-size: var(--bf-icon-size-default);
   inline-size: var(--bf-icon-size-default);
+  z-index: 1;
 }
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):has(> .bf-chip-dismiss) {
