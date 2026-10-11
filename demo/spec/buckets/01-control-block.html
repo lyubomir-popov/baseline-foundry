@@ -7,25 +7,24 @@
     <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
     <link rel="stylesheet" href="../../spec-shell.css" />
     <style>
-      .bucket-page { max-inline-size: 90rem; }
+      .bucket-page { max-inline-size: none; }
       .bucket-intro { max-inline-size: 68ch; }
       .bucket-row { border-block-start: 0.0625rem solid var(--bf-color-border-neutral); padding-block: var(--bf-space-2); }
       .bucket-row h2 { margin-block-end: var(--bf-space-1); }
-      .bucket-track { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--bf-space-2); padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
-      .bucket-sample { flex: 0 0 12rem; min-inline-size: 0; }
-      .bucket-caption { display: block; margin-block-end: var(--bf-space-1); }
-      .bucket-probe { position: relative; display: flow-root; min-inline-size: 0; inset-block-start: var(--bucket-shift, 0rem); }
-      .bucket-probe::before, .bucket-probe::after { content: ""; position: absolute; inset-inline: 0; block-size: 0.0625rem; pointer-events: none; z-index: 4; }
-      .bucket-probe::before { inset-block-start: 0; background: #c33; }
-      .bucket-probe::after { inset-block-start: var(--bucket-baseline, 0rem); background: #2379cb; }
-      .bucket-probe > .bf-button:not(.is-icon), .bucket-probe > .bf-chip, .bucket-probe > .bf-contextual-menu-link, .bucket-probe > .bf-top-navigation-dropdown-item { inline-size: 100%; }
-      .bucket-probe > .bf-field-boundary { display: grid; }
-      .bucket-probe .bf-pagination, .bucket-probe .bf-tabs, .bucket-probe .bf-segmented-control { inline-size: 100%; }
+      .bucket-track { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      .bucket-sample { flex: 0 0 auto; inline-size: max-content; min-inline-size: 0; }
+      .bucket-caption { display: block; max-inline-size: 100%; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: 1.2; font-weight: 400; overflow-wrap: anywhere; }
+      .bucket-probe { position: relative; display: flow-root; inline-size: max-content; min-inline-size: 0; margin-block-start: var(--bucket-shift, 0rem); }
+      .bucket-guide { position: absolute; z-index: 20; pointer-events: none; box-sizing: border-box; border-block: .125rem solid #d32229; inset-block-start: var(--guide-top); inset-inline-start: var(--guide-left); inline-size: var(--guide-width); block-size: var(--guide-height); }
+      .bucket-guide::after { content: ""; position: absolute; inset-inline: 0; inset-block-start: var(--guide-baseline); border-block-start: .125rem solid #116bb8; }
+      .bucket-guide.is-icon-only::after { content: none; }
+      .bucket-probe > .bf-field-boundary { inline-size: var(--sample-width); }
+      .bucket-probe .bf-pagination, .bucket-probe .bf-tabs, .bucket-probe .bf-segmented-control { inline-size: max-content; }
       .bucket-probe .bf-segmented-control-list { padding: 0; }
-      .bucket-probe .bf-contextual-menu-dropdown { display: block; position: relative; inset: auto; inline-size: 100%; min-inline-size: 0; }
-      .bucket-probe .bf-top-navigation-dropdown { display: block; position: relative; inset: auto; inline-size: 100%; min-inline-size: 0; }
+      .bucket-probe .bf-contextual-menu-dropdown { display: block; position: relative; inset: auto; inline-size: 8rem; min-inline-size: 0; }
+      .bucket-probe .bf-top-navigation-dropdown { display: block; position: relative; inset: auto; inline-size: 8rem; min-inline-size: 0; }
       .bucket-probe .bf-top-navigation-dropdown-item { background: var(--bf-color-background-default); }
-      .bucket-sample pre { font: 0.75rem/1.4 ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; margin-block: var(--bf-space-1) 0; }
+      .bucket-sample pre { display: none; }
       .bucket-key { font: 0.8rem/1.4 ui-monospace, monospace; }
       .bucket-key b { color: #c33; } .bucket-key i { color: #2379cb; font-style: normal; }
     </style>
@@ -35,7 +34,7 @@
       <header class="bf-stack is-dense bucket-intro">
         <h1>01 · Control block</h1>
         <p>Standalone controls close individually. Tab strips and menu sets use equal row padding, touching paint, and one grid closure at the container end.</p>
-        <p class="bucket-key"><b>Red</b> = visible block start · <i>Blue</i> = estimated first text baseline. Box values use computed styles and rendered bounds; baseline uses font metrics.</p>
+        <p class="bucket-key"><b>Red</b> = visible box edges · <i>Blue</i> = estimated text baseline. Scroll sideways to compare every peer.</p>
       </header>
       <div id="bucket-rows"></div>
     </main>

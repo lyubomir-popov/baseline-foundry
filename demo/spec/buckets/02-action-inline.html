@@ -7,22 +7,28 @@
     <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
     <link rel="stylesheet" href="../../spec-shell.css" />
     <style>
-      .bucket-page { max-inline-size: 90rem; }
+      .bucket-page { max-inline-size: none; }
       .bucket-intro { max-inline-size: 68ch; }
       .bucket-row { border-block-start: 0.0625rem solid var(--bf-color-border-neutral); padding-block: var(--bf-space-2); }
       .bucket-row h2 { margin-block-end: var(--bf-space-1); }
-      .bucket-track { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--bf-space-2); padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
-      .bucket-sample { flex: 0 0 14rem; min-inline-size: 0; }
-      .bucket-caption { display: block; margin-block-end: var(--bf-space-1); }
-      .bucket-probe { position: relative; display: flow-root; min-inline-size: 0; }
-      .bucket-probe [data-target] { outline: 0.0625rem solid #cf534b; outline-offset: -0.0625rem; }
-      .bucket-probe > .bf-tabs, .bucket-probe > .bf-top-navigation, .bucket-probe > .bf-contextual-menu-dropdown, .bucket-probe > .bf-top-navigation-dropdown { inline-size: 100%; }
+      .bucket-track { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      .bucket-sample { flex: 0 0 auto; inline-size: max-content; min-inline-size: 0; }
+      .bucket-caption { display: block; max-inline-size: 100%; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: 1.2; font-weight: 400; overflow-wrap: anywhere; }
+      .bucket-probe { position: relative; display: flow-root; inline-size: max-content; min-inline-size: 0; margin-block-start: var(--bucket-shift, 0rem); }
+      .bucket-guide { position: absolute; z-index: 100; pointer-events: none; box-sizing: border-box; border: .125rem solid #d32229; inset-block-start: var(--guide-top); inset-inline-start: var(--guide-left); inline-size: var(--guide-width); block-size: var(--guide-height); }
+      .bucket-guide::after { content: ""; position: absolute; inset-inline: 0; inset-block-start: var(--guide-baseline); border-block-start: .125rem solid #116bb8; }
+      .bucket-probe > .bf-tabs, .bucket-probe > .bf-top-navigation { inline-size: max-content; }
+      .bucket-probe > .bf-contextual-menu-dropdown, .bucket-probe > .bf-top-navigation-dropdown { inline-size: 8rem; }
       .bucket-probe .bf-tabs-list { overflow: visible; }
       .bucket-probe .bf-contextual-menu-dropdown, .bucket-probe .bf-top-navigation-dropdown { display: block; position: relative; inset: auto; min-inline-size: 0; }
       .bucket-probe .bf-top-navigation-dropdown-item { background: var(--bf-color-background-default); }
       .bucket-probe .bf-top-navigation { position: relative; }
-      .bucket-sample pre { font: 0.75rem/1.4 ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; margin-block: var(--bf-space-1) 0; }
+      .bucket-probe .bf-top-navigation-nav, .bucket-probe .bf-top-navigation-list { flex-direction: row; flex-wrap: nowrap; }
+      .bucket-probe .bf-top-navigation-nav { display: flex; flex: 0 0 auto; }
+      .bucket-probe .bf-top-navigation-link { inline-size: auto; }
+      .bucket-sample pre { display: none; }
       .bucket-key { font: 0.8rem/1.4 ui-monospace, monospace; }
+      .bucket-key b { color: #c33; } .bucket-key i { color: #2379cb; font-style: normal; }
     </style>
   </head>
   <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
@@ -30,7 +36,7 @@
       <header class="bf-stack is-dense bucket-intro">
         <h1>02 · Action inline</h1>
         <p>Pressed actions and horizontal top-navigation items keep the tier action inset at both inline edges. A leading icon keeps the same outer insets.</p>
-        <p class="bucket-key">Red outline = rendered action box. Values below each peer use computed styles and rendered label/icon bounds; the leading mark gap is shown for observation only.</p>
+        <p class="bucket-key"><b>Red</b> = visible box edges · <i>Blue</i> = estimated text baseline. Scroll sideways to compare every peer.</p>
       </header>
       <div id="bucket-rows"></div>
     </main>

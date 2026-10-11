@@ -6,25 +6,26 @@
         ["Leading icon Button", '<button class="bf-button is-icon" type="button"><span class="bf-icon is-search" aria-hidden="true"></span><span class="bf-button-label">Search</span></button>'],
         ["Icon-only Button", '<button class="bf-button is-icon" type="button" aria-label="Search"><span class="bf-icon is-search" aria-hidden="true"></span></button>'],
         ["Standalone Chip", '<button class="bf-chip" type="button"><span class="bf-chip-value">Chip</span></button>'],
-        ["Text input", '<span class="bf-field-boundary"><input class="bf-input" type="text" value="Text input" aria-label="Text input" /></span>'],
-        ["Password input", '<span class="bf-field-boundary"><input class="bf-input" type="password" value="password" aria-label="Password input" /></span>'],
-        ["Number input", '<span class="bf-field-boundary"><input class="bf-input" type="number" value="42" aria-label="Number input" /></span>'],
-        ["Select", '<span class="bf-field-boundary"><select aria-label="Select"><option>Select an option</option></select></span>'],
+        ["Text input", '<span class="bf-field-boundary"><input class="bf-input" type="text" value="Text input" aria-label="Text input" /></span>', "calc(10ch + 2rem)"],
+        ["Password", '<span class="bf-field-boundary"><input class="bf-input" type="password" value="password" aria-label="Password input" /></span>', "calc(9ch + 2rem)"],
+        ["Number", '<span class="bf-field-boundary"><input class="bf-input" type="number" value="42" aria-label="Number input" /></span>', "calc(4ch + 3rem)"],
+        ["Select", '<span class="bf-field-boundary"><select aria-label="Select"><option>Select an option</option></select></span>', "calc(16ch + 3rem)"],
         ["Tabs · active/inactive", '<div class="bf-tabs"><ul class="bf-tabs-list" role="tablist"><li class="bf-tabs-item"><button class="bf-tabs-link is-active" type="button" role="tab" aria-selected="true" tabindex="0">Active</button></li><li class="bf-tabs-item"><button class="bf-tabs-link" type="button" role="tab" aria-selected="false" tabindex="-1">Inactive</button></li></ul></div>'],
-        ["SegmentedControl item", '<div class="bf-segmented-control"><ul class="bf-segmented-control-list"><li class="bf-segmented-control-item"><button class="bf-segmented-control-button" type="button">Segment</button></li></ul></div>'],
-        ["Pagination item", '<nav class="bf-pagination" aria-label="Bucket pagination"><ul class="bf-pagination-items"><li class="bf-pagination-item"><a class="bf-pagination-link" href="#bucket-rows">1</a></li></ul></nav>'],
-        ["Contextual menu set", '<ul class="bf-contextual-menu-dropdown" aria-hidden="false"><li class="bf-contextual-menu-group"><button class="bf-contextual-menu-link" type="button">Open</button><button class="bf-contextual-menu-link" type="button">Save</button></li></ul>'],
-        ["Top navigation menu set", '<ul class="bf-top-navigation-dropdown" aria-hidden="false"><li><a class="bf-top-navigation-dropdown-item" href="#bucket-rows">Open</a></li><li><a class="bf-top-navigation-dropdown-item" href="#bucket-rows">Save</a></li></ul>']
+        ["Segmented", '<div class="bf-segmented-control"><ul class="bf-segmented-control-list"><li class="bf-segmented-control-item"><button class="bf-segmented-control-button" type="button">Segment</button></li></ul></div>'],
+        ["Pagination", '<nav class="bf-pagination" aria-label="Bucket pagination"><ul class="bf-pagination-items"><li class="bf-pagination-item"><a class="bf-pagination-link" href="#bucket-rows">1</a></li></ul></nav>'],
+        ["Menu set", '<ul class="bf-contextual-menu-dropdown" aria-hidden="false"><li class="bf-contextual-menu-group"><button class="bf-contextual-menu-link" type="button">Open</button><button class="bf-contextual-menu-link" type="button">Save</button></li></ul>'],
+        ["Nav menu", '<ul class="bf-top-navigation-dropdown" aria-hidden="false"><li><a class="bf-top-navigation-dropdown-item" href="#bucket-rows">Open</a></li><li><a class="bf-top-navigation-dropdown-item" href="#bucket-rows">Save</a></li></ul>']
       ];
       const container = document.querySelector("#bucket-rows");
       const section = document.createElement("section");
       section.className = "bucket-row";
       section.innerHTML = '<h2 class="bf-h6">Shipped peers</h2><div class="bucket-track"></div>';
       const track = section.querySelector(".bucket-track");
-      peers.forEach(([caption, html]) => {
+      peers.forEach(([caption, html, width]) => {
         const sample = document.createElement("div");
         sample.className = "bucket-sample";
-        sample.innerHTML = `<span class="bucket-caption">${caption}</span><div class="bucket-probe">${html}</div><pre aria-label="Computed geometry"></pre>`;
+        sample.innerHTML = `<div class="bucket-probe">${html}<span class="bucket-guide" aria-hidden="true"></span></div><span class="bucket-caption">${caption}</span><pre hidden aria-label="Computed geometry"></pre>`;
+        if (width) sample.style.setProperty("--sample-width", width);
         track.append(sample);
       });
       container.append(section);
@@ -40,6 +41,11 @@
         document.body.append(insetProbe);
         const controlInset = parseFloat(getComputedStyle(insetProbe).paddingBlockStart);
         insetProbe.remove();
+        const observations = [];
+        for (const sample of document.querySelectorAll(".bucket-sample")) {
+          const probe = sample.querySelector(".bucket-probe");
+          probe.style.setProperty("--bucket-shift", "0px");
+        }
         for (const sample of document.querySelectorAll(".bucket-sample")) {
           const probe = sample.querySelector(".bucket-probe");
           const element = probe.firstElementChild;
@@ -51,40 +57,36 @@
           const ownerStyle = getComputedStyle(owner);
           const box = target.getBoundingClientRect();
           const ownerBox = owner.getBoundingClientRect();
-          const probeBox = probe.getBoundingClientRect();
           const margin = parseFloat(ownerStyle.marginBlockEnd) || 0;
           const line = parseFloat(style.lineHeight) || 0;
           context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-          const metrics = context.measureText("Hgp");
-          const ascent = metrics.fontBoundingBoxAscent || parseFloat(style.fontSize) * .8;
-          const descent = metrics.fontBoundingBoxDescent || parseFloat(style.fontSize) * .2;
-          const baseline = box.top - probeBox.top + parseFloat(style.paddingBlockStart) + (line - ascent - descent) / 2 + ascent;
-          probe.style.setProperty("--bucket-baseline", format(baseline));
+          const fontMetrics = context.measureText("Hgp");
+          const ascent = fontMetrics.fontBoundingBoxAscent || parseFloat(style.fontSize) * .8;
+          const descent = fontMetrics.fontBoundingBoxDescent || parseFloat(style.fontSize) * .2;
+          const iconOnly = target.matches(".bf-button.is-icon") && !target.querySelector(".bf-button-label");
+          const baseline = iconOnly ? box.top + box.height / 2 : box.top + parseFloat(style.paddingBlockStart) + (line - ascent - descent) / 2 + ascent;
           const inset = target.matches("p") ? 0 : controlInset;
           const groupedRows = element.matches(".bf-contextual-menu-dropdown, .bf-top-navigation-dropdown")
             ? [...element.querySelectorAll(".bf-contextual-menu-link, .bf-top-navigation-dropdown-item")]
             : element.matches(".bf-tabs") ? [target] : [];
           const closure = groupedRows.length ? ownerBox.height + margin - groupedRows.reduce((sum, row) => sum + row.getBoundingClientRect().height, 0) : 0;
-          sample.dataset.baseline = String(baseline);
-          sample.dataset.metrics = `font ${style.fontSize} / ${style.lineHeight}\ninset ${format(inset)} · nudge ${format(nudge)}\npad ${style.paddingBlockStart} / ${style.paddingBlockEnd}\nend margin ${format(margin)}${owner === target ? "" : " (owner)"}\nvisible ${format(box.height)} · occupied ${format(ownerBox.height + margin)}${groupedRows.length ? `\nset closure ${format(closure)}` : ""}\nborders ${style.borderBlockStartWidth} / ${style.borderBlockEndWidth}\nbaseline estimate ${format(baseline)}`;
+          const metrics = `font ${style.fontSize} / ${style.lineHeight}\ninset ${format(inset)} · nudge ${format(nudge)}\npad ${style.paddingBlockStart} / ${style.paddingBlockEnd}\nend margin ${format(margin)}${owner === target ? "" : " (owner)"}\nvisible ${format(box.height)} · occupied ${format(ownerBox.height + margin)}${groupedRows.length ? `\nset closure ${format(closure)}` : ""}\nborders ${style.borderBlockStartWidth} / ${style.borderBlockEndWidth}\nbaseline estimate ${iconOnly ? "none (icon only)" : format(baseline)}`;
+          observations.push({ sample, probe, target, baseline, baselineOffset: baseline - box.top, iconOnly, metrics });
         }
-        const lines = new Map();
-        for (const sample of document.querySelectorAll(".bucket-sample")) {
-          const top = Math.round(sample.getBoundingClientRect().top);
-          if (!lines.has(top)) lines.set(top, []);
-          lines.get(top).push(sample);
-        }
-        for (const samples of lines.values()) {
-          const commonBaseline = Math.max(...samples.map(sample => Number(sample.dataset.baseline)));
-          for (const sample of samples) {
-            const shift = commonBaseline - Number(sample.dataset.baseline);
-            sample.querySelector(".bucket-probe").style.setProperty("--bucket-shift", format(shift));
-          }
-          const reference = samples[0].querySelector(".bucket-probe").getBoundingClientRect().top + Number(samples[0].dataset.baseline);
-          for (const sample of samples) {
-            const actual = sample.querySelector(".bucket-probe").getBoundingClientRect().top + Number(sample.dataset.baseline);
-            sample.querySelector("pre").textContent = `${sample.dataset.metrics}\nestimated delta ${format(actual - reference)}`;
-          }
+        const commonBaseline = Math.max(...observations.filter(item => !item.iconOnly).map(item => item.baseline));
+        for (const item of observations) item.probe.style.setProperty("--bucket-shift", format(commonBaseline - item.baseline));
+        for (const { sample, probe, target, baselineOffset, iconOnly, metrics } of observations) {
+          const box = target.getBoundingClientRect();
+          const probeBox = probe.getBoundingClientRect();
+          const guide = probe.querySelector(".bucket-guide");
+          guide.classList.toggle("is-icon-only", iconOnly);
+          guide.style.setProperty("--guide-top", format(box.top - probeBox.top));
+          guide.style.setProperty("--guide-left", format(box.left - probeBox.left));
+          guide.style.setProperty("--guide-width", format(box.width));
+          guide.style.setProperty("--guide-height", format(box.height));
+          guide.style.setProperty("--guide-baseline", format(baselineOffset - parseFloat(getComputedStyle(guide).borderTopWidth)));
+          sample.dataset.metrics = metrics;
+          sample.querySelector("pre").textContent = `${metrics}\nestimated delta ${iconOnly ? "none (icon only)" : format(box.top + baselineOffset - commonBaseline)}`;
         }
       }
       const stylesheet = document.querySelector("#spec-tier-stylesheet");
