@@ -43,6 +43,24 @@ function centeredBox(rect, label, source) {
   if (!Number.isFinite(inline) || !Number.isFinite(block)) return null;
   return { inline, block, source };
 }
+function measuredTextBox(container) {
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+  let first = null;
+  let last = null;
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (!node.textContent.trim()) continue;
+    first ||= node;
+    last = node;
+  }
+  if (!first || !last) return null;
+  const range = document.createRange();
+  range.setStart(first, 0);
+  range.setEnd(last, last.textContent.length);
+  const rect = range.getBoundingClientRect();
+  if (![rect.left, rect.top, rect.width, rect.height].every(Number.isFinite) || !rect.width || !rect.height) return null;
+  return rect;
+}
 function transformCenterOffset(transform, origin, width, height) {
   if (!transform || transform === "none") return { x: 0, y: 0 };
   const [originXValue, originYValue] = origin.split(" ");
@@ -169,8 +187,10 @@ function updateMeasurements() {
     }
     const style = getComputedStyle(target);
     const text = target.querySelector(".bucket-measured-text") || target.querySelector("[data-label]");
-    const label = text?.getBoundingClientRect() || { left: target.getBoundingClientRect().left + parseFloat(style.paddingInlineStart), right: target.getBoundingClientRect().right - parseFloat(style.paddingInlineEnd) };
+    const textBox = text && measuredTextBox(text);
+    const label = textBox || text?.getBoundingClientRect() || { left: target.getBoundingClientRect().left + parseFloat(style.paddingInlineStart), right: target.getBoundingClientRect().right - parseFloat(style.paddingInlineEnd) };
     const mark = target.matches(".bf-button:not(.is-icon)") ? { width: 0, height: 0, gap: 0, slot: 0, kind: "no mark; no reserved column", paint: "none" } : markGeometry(target, label);
+    if (mark.center && textBox) mark.center.source += "; own text Range box";
     const layoutHost = target.matches(".bf-switch-label") ? target.closest(".bf-switch") : target;
     const columnGap = target.matches(".bf-checkbox-label, .bf-radio-label")
       ? "n/a; mark→label comes from label padding"
