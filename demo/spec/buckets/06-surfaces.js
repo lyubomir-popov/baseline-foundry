@@ -117,7 +117,8 @@ function measure() {
       }).join("; ") : "section seam unavailable";
       const tooltipText = owner.matches(".bf-tooltip-message") ? owner.querySelector(".bf-tooltip-text") : null;
       const tooltipTextPadding = tooltipText ? (() => { const p = edges(tooltipText, "padding"); return `${px(p.start)}/${px(p.end)} inline, ${px(p.before)}/${px(p.after)} block`; })() : "n/a";
-      const scrollOwner = owner.matches(".bf-card") ? owner.querySelector(".bf-card-scroll")
+      const scrollOwner = owner.matches(".bf-panel.bf-side-navigation") ? owner.querySelector(".bf-side-navigation-drawer-body")
+        : owner.matches(".bf-card") ? owner.querySelector(".bf-card-scroll")
         : owner.matches(".bf-modal-dialog") ? owner.querySelector(".bf-modal-body")
         : owner.matches(".bf-panel") ? owner.querySelector(".bf-panel-content")
         : owner.closest(".bf-side-navigation");
