@@ -81,7 +81,7 @@ function roleSelectedStartNudgeVar(roleName: string, fallback?: string): string 
   return fallback ? `var(--bf-${roleName}-nudge-start, ${fallback})` : `var(--bf-${roleName}-nudge-start)`;
 }
 
-export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[], siteScopes: string[] = []): string {
+export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[], siteScopes: string[] = [], defaultElementInlineGap?: string): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
@@ -132,6 +132,18 @@ ${codeSnippetDropdownStroke.owner}
 ${copiedCodeSnippetStroke.owner}
 ${navigationDrawerStroke.owner}
 ${applicationAsideStroke.owner}
+:where(.bf-theme) {
+  --bf-element-gap-inline: ${defaultElementInlineGap ?? "var(--bf-field-gap)"};
+}
+
+:where(.bf-theme.bf-tier-editorial, .bf-theme.bf-tier-documentation, .bf-theme.bf-tier-app) {
+  --bf-element-gap-inline: 0.5rem;
+}
+
+:where(.bf-theme.bf-tier-os) {
+  --bf-element-gap-inline: 0.25rem;
+}
+
 :where(.bf-theme) {
 ${foundryComponentColorVars("light")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
@@ -223,7 +235,7 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
 
 :where(.bf-theme) :where(.bf-field.is-range) {
   align-items: start;
-  column-gap: var(--bf-component-inline-inset-field);
+  column-gap: var(--bf-element-gap-inline);
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
   row-gap: var(--bf-field-gap);
@@ -772,12 +784,13 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
 
 :where(.bf-theme) :where(.bf-slider) {
   align-items: flex-start;
+  column-gap: var(--bf-element-gap-inline);
   display: inline-flex;
   flex-wrap: nowrap;
-  gap: var(--bf-field-gap);
   inline-size: 100%;
   max-inline-size: 100%;
   min-inline-size: 0;
+  row-gap: var(--bf-field-gap);
 }
 
 :where(.bf-theme) :where(.bf-slider.is-stacked),
@@ -1602,10 +1615,11 @@ ${typeStyles(h4, { includeCase: false })}  margin: 0 0 var(--bf-h4-margin-bottom
 :where(.bf-theme) :where(.bf-modal-footer) {
   align-items: start;
   border: 0;
+  column-gap: var(--bf-element-gap-inline);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--bf-field-gap);
   justify-content: flex-end;
+  row-gap: var(--bf-field-gap);
 }
 
 :where(.bf-theme) :where(.bf-modal-close) {

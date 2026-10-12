@@ -1250,7 +1250,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control) {\n    grid-column: auto / span 2;"), "Expected the control-grid recipe to map compact field cells onto the 8-column grid.");
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column grid.");
   assert(!css.includes(".bf-control-grid"), "Expected generated CSS to omit the deprecated bf-control-grid helper.");
-  assert(css.includes(":where(.bf-theme) :where(.bf-field.is-range) {\n  align-items: start;\n  column-gap: var(--bf-component-inline-inset-field);\n  display: grid;"), "Expected inline range fields to use the dedicated two-column field layout and horizontal field-space owner.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-field.is-range) {\n  align-items: start;\n  column-gap: var(--bf-element-gap-inline);\n  display: grid;"), "Expected inline range fields to use the dedicated two-column layout and selected semantic inline gap.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-slider) {\n  align-items: flex-start;\n  column-gap: var(--bf-element-gap-inline);\n  display: inline-flex;") && css.includes("  row-gap: var(--bf-field-gap);\n}\n\n:where(.bf-theme) :where(.bf-slider.is-stacked)"), "Expected slider peers to use the selected inline gap while retaining the current block gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-field.is-range.is-stacked) > :where(.bf-control, .bf-form-help) {\n  grid-column: 1;"), "Expected stacked range controls and help text to return to the explicit first column without creating an implicit narrow track.");
   assert(css.includes(":where(.bf-theme) :where(.bf-slider.is-stacked),\n:where(.bf-theme) :where(.bf-field.is-range.is-stacked) :where(.bf-slider) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--bf-field-gap);"), "Expected stacked slider pairs and stacked range fields to share the same stacked layout.");
   assert(!css.includes(".slider-pair"), "Expected compat CSS to omit the downstream slider wrapper aliases.");
@@ -1464,8 +1465,9 @@ function validateCommonCss(css: string): void {
     "column-gap": "var(--bf-grid-gap-inline)"
   }, "logo peers use the layout grid gutter rather than a label continuation keyline");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-inline-options-options)", {
-    "gap": "var(--bf-field-gap)"
-  }, "inline option peers use the governed item gap rather than a label continuation keyline");
+    "column-gap": "var(--bf-element-gap-inline)",
+    "row-gap": "var(--bf-field-gap)"
+  }, "inline option columns use the selected inline gap while preserving their current row flow");
   assert(!css.includes(":where(.bf-logo-section-items) {\n  align-items: center;\n  display: flex;\n  flex-wrap: wrap;\n  column-gap: var(--bf-component-inline-inset-continuation);") && !css.includes(":where(.bf-inline-options-options) {\n  display: flex;\n  flex-wrap: wrap;\n  gap: var(--bf-component-inline-inset-continuation);"), "Expected peer collections not to consume SP-10 label continuation as relationship spacing.");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "box-sizing", "badge sizing follows the shared border-box contract instead of a losing local content-box override");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "max-inline-size", "badges grow with wider counter content instead of clipping at an arbitrary character cap");

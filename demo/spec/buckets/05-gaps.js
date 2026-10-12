@@ -25,9 +25,10 @@ const rows = [
   ]],
   ["Existing inline item gaps", [
     ["Field · reference", fieldReference("gap-inline-reference"), ".bf-field", ".bf-field"],
-    ["Panel footer · actions", `<div class="bf-panel-footer" data-gap-owner="self" data-guide-owner="self">${footerButtons}</div>`, ".bf-panel-footer", ".bf-panel-footer"],
-    ["Modal footer · actions", `<div class="bf-modal-footer" data-gap-owner="self" data-guide-owner="self">${footerButtons}</div>`, ".bf-modal-footer", ".bf-modal-footer"],
-    ["Range · label and control", '<div class="bf-field is-range" data-gap-owner="self" data-guide-owner="self"><label class="bf-form-label" for="gap-range" data-target>Grid density</label><div class="bf-control"><div class="bf-slider"><input id="gap-range" type="range" min="0" max="100" value="64" /><span class="bf-field-boundary"><input class="bf-slider-input" type="number" min="0" max="100" value="64" aria-label="Grid density value" /></span></div></div></div>', ".bf-field.is-range", ".bf-field.is-range"]
+    ["Panel footer · selected inline role", `<div class="bf-panel-footer" data-gap-owner="self" data-guide-owner="self">${footerButtons}</div>`, ".bf-panel-footer", ".bf-panel-footer"],
+    ["Modal footer · selected inline role", `<div class="bf-modal-footer" data-gap-owner="self" data-guide-owner="self">${footerButtons}</div>`, ".bf-modal-footer", ".bf-modal-footer"],
+    ["Range · label, slider and number", '<div class="bf-field is-range" data-gap-owner="self" data-guide-owner="self"><label class="bf-form-label" for="gap-range" data-target>Grid density</label><div class="bf-control"><div class="bf-slider"><input id="gap-range" type="range" min="0" max="100" value="64" /><span class="bf-field-boundary"><input class="bf-slider-input" type="number" min="0" max="100" value="64" aria-label="Grid density value" /></span></div></div></div>', ".bf-field.is-range", ".bf-field.is-range"],
+    ["Choices · wrapped option columns", '<div class="bf-inline-options"><div class="bf-inline-options-heading">Background operator</div><div class="bf-inline-options-options" data-gap-owner="self" data-guide-owner="self"><label class="bf-inline-options-option" data-target><input type="radio" name="gap-choice" checked /> Lunar</label><label class="bf-inline-options-option"><input type="radio" name="gap-choice" /> Solar</label><label class="bf-inline-options-option"><input type="radio" name="gap-choice" /> Terrestrial</label></div></div>', ".bf-inline-options-options", ".bf-inline-options-options"]
   ]],
   ["Group spacing", [
     ["Paragraph · reference", '<p class="bf-body" data-gap-owner="self" data-guide-owner="self" data-target>Workspace summary sits here before its related settings.</p>', "[data-gap-owner]", "[data-guide-owner]"],
@@ -129,7 +130,7 @@ function updateMeasurements() {
       })() : null;
       const childMargins = children.map(margins).join(" · ") || "none";
       const marker = sample.querySelector(".bucket-baseline-marker");
-      const horizontalPair = gapOwner.matches(".bf-panel-footer, .bf-modal-footer, .bf-field.is-range");
+      const horizontalPair = gapOwner.matches(".bf-panel-footer, .bf-modal-footer, .bf-field.is-range, .bf-inline-options-options");
       const nextText = !horizontalPair && children[1] ? secondTextTarget(children[1]) : null;
       if (nextText && !nextText.querySelector(".bucket-baseline-marker") && nextText.matches("label, p, h1, h2, h3, h4, h5, h6, button")) {
         installBaselineMarker(nextText);
@@ -165,11 +166,17 @@ function updateMeasurements() {
           return `border-box seam ${format(borderGap)}; content-edge seam ${format(contentGap)}`;
         })()
         : "n/a";
+      const selectedInlineMember = gapOwner.matches(".bf-panel-footer, .bf-modal-footer, .bf-field.is-range, .bf-slider, .bf-inline-options-options");
+      const sameRowPair = children.find((child, index) => index > 0 && Math.abs(child.getBoundingClientRect().top - children[index - 1].getBoundingClientRect().top) < 1);
+      const inlineSeparation = sameRowPair
+        ? sameRowPair.getBoundingClientRect().left - children[children.indexOf(sameRowPair) - 1].getBoundingClientRect().right
+        : null;
       const metrics = `computed row/column gap ${style.rowGap} / ${style.columnGap}; flex gap ${style.gap}\n` +
         (innerSliderMetrics ? `${innerSliderMetrics}\n` : "") +
         `direct-child block margins ${childMargins}\n` +
         `owner border-box top ${format(ownerTop)}; first-to-second text baseline separation ${format(baselineSeparation)}; help lines ${helpLines ?? "n/a"}; adjacent section padding ${sectionInsets}; ${seam}\n` +
-        `following field starts ${format(followingOffset)} from prior field top with ${format(followingSeparation)} separation; inline item gap is current, unresolved`;
+        `following field starts ${format(followingOffset)} from prior field top with ${format(followingSeparation)} separation; ` +
+        (selectedInlineMember ? `selected inline owner column gap ${style.columnGap}; first same-row child separation ${format(inlineSeparation)}` : "reference-only row; no selected inline owner");
       sample.dataset.computedGapEvidence = metrics;
       observations.push({ sample, target, owner: guideOwner, metrics });
     }

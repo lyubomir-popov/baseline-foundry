@@ -614,7 +614,7 @@ ${tokenRowStroke.owner}
 
 ${tokenRowStroke.painter}
 
-${componentsCss(tokens, themeSurfaces, siteScopes)}
+${componentsCss(tokens, themeSurfaces, siteScopes, options.presetName === "os" ? "0.25rem" : options.presetName ? "0.5rem" : undefined)}
 
 ${gridCss(appScopes)}${presetCss}
 `;

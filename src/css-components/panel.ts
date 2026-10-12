@@ -92,13 +92,14 @@ export function panelCss(options: PanelCssOptions): string {
 :where(.bf-theme) :where(.bf-panel-footer) {
   align-items: center;
   border: 0;
+  column-gap: var(--bf-element-gap-inline);
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
-  gap: var(--bf-field-gap);
   justify-content: space-between;
   min-block-size: var(--bf-interface-row-occupied-block-size);
   padding: 0;
+  row-gap: var(--bf-field-gap);
 }
 
 :where(.bf-theme) :where(.bf-panel-footer.is-sticky) {

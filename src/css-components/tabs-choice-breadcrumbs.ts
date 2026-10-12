@@ -212,9 +212,10 @@ ${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-inline-options-options) {
+  column-gap: var(--bf-element-gap-inline);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--bf-field-gap);
+  row-gap: var(--bf-field-gap);
 }
 
 :where(.bf-theme) :where(.bf-inline-options-option) {
