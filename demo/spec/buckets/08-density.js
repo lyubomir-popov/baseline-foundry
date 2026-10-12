@@ -7,7 +7,7 @@ function tableRow(content, label) {
 }
 const specimens = [
   ["Plain-text table row · reference", tableRow(`<span class="bf-body" data-target>${bodyCopy}</span>`, "Plain text reference row"), "plain"],
-  ["Site table-cell Chip · enrolled subscriber", tableRow(`<span class="bf-chip" data-target data-chip>Active</span>`, "Table cell Chip subscriber"), "subscriber"],
+  ["Table-cell Chip · tier scope shown in caption", tableRow(`<span class="bf-chip" data-target data-chip>Active</span>`, "Table cell Chip subscriber"), "subscriber"],
   ["Button beside Site table-cell Chip · provider non-subscriber", tableRow(`<button class="bf-button" type="button" data-target data-button>Action</button> <span class="bf-chip" data-chip>Active</span>`, "Button beside table cell Chip"), "table-button"],
   ["Standalone Button · non-subscriber", `<button class="bf-button" type="button" data-target data-button>Action</button>`, "standalone-button"],
   ["Nested theme boundary · subscription reset", tableRow(`<span class="bf-theme density-reset-boundary"><span class="bf-chip" data-target data-chip>Reset boundary</span></span>`, "Nested theme reset boundary"), "reset"],
@@ -43,6 +43,13 @@ function measure() {
     const tableCell = chip?.closest(".bf-table td");
     const themeRoot = chip?.closest(".bf-theme");
     const siteSubscriber = tierName() === "editorial" && Boolean(tableCell) && themeRoot === document.body;
+    if (sample.dataset.kind === "subscriber") {
+      const caption = sample.querySelector(".density-caption");
+      caption.textContent = siteSubscriber
+        ? "Site table-cell Chip · enrolled subscriber"
+        : `${tierName()} table-cell Chip · not enrolled in this tier`;
+      sample.dataset.caption = caption.textContent;
+    }
     if (target && !target.querySelector(".bucket-baseline-marker")) installBaselineMarker(target);
     const owner = sample.querySelector("[data-host-row]") || sample.querySelector("[role=tab]") || sample.querySelector(".bf-side-navigation-item") || chip || target;
     const ownerRect = owner?.getBoundingClientRect();

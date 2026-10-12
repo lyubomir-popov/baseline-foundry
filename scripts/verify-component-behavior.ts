@@ -83,7 +83,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         if (!element) throw new Error("Missing spacing-audit element: " + selector);
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
-        return { left: rect.left, top: rect.top, paddingLeft: number(style.paddingLeft), gap: number(style.gap) };
+        return { left: rect.left, top: rect.top, width: rect.width, paddingLeft: number(style.paddingLeft), gap: number(style.gap) };
       };
       const pseudo = (selector, name = "::before") => {
         const element = document.querySelector(selector);
@@ -159,6 +159,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
         treeChildStart: textStart(".bf-list-tree .bf-list-tree .bf-list-tree-link"),
         brandTagStart: box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').left,
+        brandTagWidth: box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').width,
+        brandTagGap: textStart('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-title') - box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').left - box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').width,
         brandTitle: textStart('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-title'),
         brandIconLoaded: Boolean(brandIcon?.complete && brandIcon.naturalWidth > 0),
         sideNavigationPlainStart: textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
@@ -182,8 +184,10 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell and status-label text to share the green field-inset keyline.");
     assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), `Expected button, chip, segmented-control, tab, and pagination text to share the red Action keyline: ${JSON.stringify({ starts: alignmentGeometry.commandTextStarts, red: alignmentGeometry.redStart })}.`);
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
-    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart];
-    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, table of contents, and notification to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
+    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart];
+    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected accordion, list-tree disclosure/child, table of contents, and notification to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
+    assert(Math.abs(alignmentGeometry.brandTitle - alignmentGeometry.sideNavigationPlainStart) < 0.51, `Expected the tagged brand wordmark to continue the SideNavigation label keyline while preserving the tag-to-title offset; got ${JSON.stringify(alignmentGeometry)}.`);
+    assert(Math.abs(alignmentGeometry.brandTitle - alignmentGeometry.brandTagStart - alignmentGeometry.brandTagWidth - alignmentGeometry.brandTagGap) < 0.51 && Math.abs(alignmentGeometry.brandTagWidth - 22) < 0.51 && Math.abs(alignmentGeometry.brandTagGap - 4) < 0.51, `Expected the navigation brand's existing 22px tag and 4px wordmark gap to remain intact; got ${JSON.stringify(alignmentGeometry)}.`);
     assert(Math.abs(alignmentGeometry.panelStart - alignmentGeometry.expectedPanelStart) < 0.51, `Expected panel copy to start at the responsive page gutter; got ${JSON.stringify(alignmentGeometry)}.`);
     assert(Math.abs(alignmentGeometry.sideNavigationPlainStart - alignmentGeometry.sideNavigationDisclosureStart) < 0.51, `Expected plain and disclosure SideNavigation rows to share their panel-owned label keyline; got ${JSON.stringify(alignmentGeometry)}.`);
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent the active tier Action inset.");
@@ -231,6 +235,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           };
           const numberStyle = getComputedStyle(document.querySelector('input[type="number"]'));
           const numberField = document.querySelector('input[type="number"]');
+          const brandTag = document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').getBoundingClientRect();
+          const brandTitleStart = textStart('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-title');
           const panelCopy = document.querySelector(".bf-panel-content p");
           const panelRoot = panelCopy?.closest(".bf-panel");
           const panelStyle = panelRoot ? getComputedStyle(panelRoot) : null;
@@ -258,11 +264,11 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
               textStart(".bf-accordion-tab"),
               textStart(".bf-list-tree-toggle"),
               textStart(".bf-list-tree .bf-list-tree .bf-list-tree-link"),
-              document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').getBoundingClientRect().left,
               textStart(".bf-table-of-contents-heading"),
               textStart(".bf-table-of-contents-link"),
               document.querySelector(".bf-notification-title").getBoundingClientRect().left
             ],
+            brand: { titleStart: brandTitleStart, tagStart: brandTag.left, tagWidth: brandTag.width, tagGap: brandTitleStart - brandTag.left - brandTag.width },
             sideNavigation: [
               textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
               textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-accordion-button')
@@ -282,8 +288,9 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         assert(matrix.action.every(start => Math.abs(start - matrix.keylines.action) < 0.51), `Expected ${tier}/${tone} action copy to share the action inset: ${JSON.stringify(matrix)}.`);
         assert(matrix.panelContent.expectedStart !== null && Math.abs(matrix.panelContent.textStart - matrix.panelContent.expectedStart) < 0.51 && Math.abs(matrix.panelContent.selectedInset - matrix.panelContent.pageMargin) < 0.51, `Expected ${tier}/${tone} panel content to use the responsive page gutter: ${JSON.stringify(matrix.panelContent)}.`);
         assert(matrix.field.every(start => Math.abs(start - matrix.keylines.field) < 0.51), `Expected ${tier}/${tone} field copy to share the field inset: ${JSON.stringify(matrix)}.`);
-        assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, and notification copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
+        assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, list-tree, table-of-contents, and notification copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
         assert(Math.max(...matrix.sideNavigation) - Math.min(...matrix.sideNavigation) < 0.51, `Expected ${tier}/${tone} SideNavigation rows to share the panel label keyline: ${JSON.stringify(matrix)}.`);
+        assert(Math.abs(matrix.brand.titleStart - matrix.sideNavigation[0]) < 0.51 && Math.abs(matrix.brand.tagWidth - 22) < 0.51 && Math.abs(matrix.brand.tagGap - 4) < 0.51, `Expected ${tier}/${tone} navigation wordmark to share the label keyline while retaining the 22px tag and 4px gap: ${JSON.stringify(matrix.brand)}.`);
         assert(Math.max(...matrix.markCenters) - Math.min(...matrix.markCenters) < 0.51, `Expected ${tier}/${tone} leading marks to share one centre: ${JSON.stringify(matrix.markCenters)}.`);
         assert(matrix.numberInput.appearance === "auto" && matrix.numberInput.backgroundImage === "none", `Expected ${tier}/${tone} number input to retain its native pointer-accessible spinner: ${JSON.stringify(matrix.numberInput)}.`);
         assert(matrix.numberInput.rightAligned && matrix.numberInput.value === "123456789", `Expected ${tier}/${tone} number input to retain right-aligned numeric copy: ${JSON.stringify(matrix.numberInput)}.`);

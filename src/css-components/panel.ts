@@ -72,6 +72,13 @@ export function panelCss(options: PanelCssOptions): string {
   padding-inline-start: var(--bf-component-inline-inset-continuation);
 }
 
+/* In the composed SideNavigation header, continue the brand wordmark from the
+ * same derived label keyline used by navigation rows. Keep the shipped mark/tag
+ * size and gap intact by subtracting their inline footprint from the header inset. */
+:where(.bf-theme) :where(.bf-panel:has(> .bf-panel-content.is-flush > .bf-side-navigation)) > :where(.bf-panel-header.is-navigation-brand) {
+  padding-inline-start: calc(var(--bf-side-navigation-label-keyline) - var(--bf-top-navigation-logo-tag-inline-size) - var(--bf-top-navigation-logo-tag-gap));
+}
+
 :where(.bf-theme) :where(.bf-panel-header.is-navigation-brand) > :where(.bf-top-navigation-logo.is-canonical-tagged) {
   inline-size: 100%;
 }

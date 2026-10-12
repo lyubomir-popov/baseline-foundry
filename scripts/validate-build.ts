@@ -993,7 +993,7 @@ function validateCommonCss(css: string): void {
     "overflow": "hidden",
     "text-overflow": "ellipsis"
   }, "side-navigation labels retain overflow containment while their row can grow for wrapped copy");
-  assert(css.includes("--bf-side-navigation-gutter: var(--bf-page-margin);") && css.includes("--bf-side-navigation-icon-size: var(--bf-icon-size-default);") && css.includes("--bf-side-navigation-label-keyline: calc(var(--bf-side-navigation-gutter) + var(--bf-side-navigation-icon-size) + var(--bf-side-navigation-icon-gap));") && !css.includes("--bf-side-navigation-depth-step"), "Expected SideNavigation to derive one non-progressive label keyline from its page-margin gutter, tier icon and mark gap.");
+  assert(css.includes("--bf-side-navigation-gutter: var(--bf-page-margin);") && css.includes("--bf-side-navigation-icon-size: var(--bf-icon-size-default);") && css.includes("--bf-side-navigation-label-keyline: calc(var(--bf-page-margin) + var(--bf-icon-size-default) + var(--bf-side-navigation-icon-gap));") && !css.includes("--bf-side-navigation-depth-step"), "Expected SideNavigation and its composed brand header to share one non-progressive label keyline from the responsive margin, tier icon and mark gap.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-side-navigation-context-switcher)", {
     "padding-inline": "var(--bf-side-navigation-label-keyline) var(--bf-side-navigation-gutter)"
   }, "SideNavigation ContextSwitcher places its real select on the label keyline and keeps the opposing gutter");

@@ -11,6 +11,7 @@ export function navigationGeometryCss(): string {
   --bf-disclosure-icon-optical-offset-block: 0rem;
   --bf-side-navigation-icon-optical-offset-block: var(--bf-icon-label-optical-offset-block);
   --bf-side-navigation-icon-gap: var(--bf-leading-mark-gap);
+  --bf-side-navigation-label-keyline: calc(var(--bf-page-margin) + var(--bf-icon-size-default) + var(--bf-side-navigation-icon-gap));
   --bf-navigation-bar-min-block-size: calc(var(--bf-baseline) * 6);
   --bf-top-navigation-link-padding-inline: var(--bf-component-inline-inset-action);
   --bf-top-navigation-end-slot-inline-size: calc(var(--bf-icon-size-default) + var(--bf-leading-mark-gap));
