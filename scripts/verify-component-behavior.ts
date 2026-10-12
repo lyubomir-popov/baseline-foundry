@@ -126,6 +126,9 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         return host.left + mark.left + (mark.width / 2);
       };
       const page = box("main.bf-page");
+      const panelCopy = document.querySelector(".bf-panel-content p");
+      const panelRoot = panelCopy?.closest(".bf-panel");
+      const panelContentInset = panelRoot ? Number.parseFloat(getComputedStyle(panelRoot).paddingInlineStart) || 0 : 0;
       const actionProbe = document.createElement("i");
       actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);position:absolute;visibility:hidden";
       document.body.append(actionProbe);
@@ -164,6 +167,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         tableOfContentsLinkStart: textStart(".bf-table-of-contents-link"),
         notificationStart: box(".bf-notification-title").left,
         panelStart: box(".bf-panel-content p").left,
+        expectedPanelStart: panelRoot ? panelRoot.getBoundingClientRect().left + panelContentInset : page.left,
         redStart: red.getBoundingClientRect().left,
         greenStart: green.getBoundingClientRect().left,
         blueStart: blue.getBoundingClientRect().left,
@@ -180,7 +184,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
     const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart];
     assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, table of contents, and notification to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
-    assert(Math.abs(alignmentGeometry.panelStart - alignmentGeometry.redStart) < 0.51, `Expected panel copy to start at the root-owned Action inset; got ${JSON.stringify(alignmentGeometry)}.`);
+    assert(Math.abs(alignmentGeometry.panelStart - alignmentGeometry.expectedPanelStart) < 0.51, `Expected panel copy to start at the responsive page gutter; got ${JSON.stringify(alignmentGeometry)}.`);
     assert(Math.abs(alignmentGeometry.sideNavigationPlainStart - alignmentGeometry.sideNavigationDisclosureStart) < 0.51, `Expected plain and disclosure SideNavigation rows to share their panel-owned label keyline; got ${JSON.stringify(alignmentGeometry)}.`);
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent the active tier Action inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
@@ -227,6 +231,15 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           };
           const numberStyle = getComputedStyle(document.querySelector('input[type="number"]'));
           const numberField = document.querySelector('input[type="number"]');
+          const panelCopy = document.querySelector(".bf-panel-content p");
+          const panelRoot = panelCopy?.closest(".bf-panel");
+          const panelStyle = panelRoot ? getComputedStyle(panelRoot) : null;
+          const panelInset = Number.parseFloat(panelStyle?.paddingInlineStart || "0") || 0;
+          const pageMarginProbe = document.createElement("i");
+          pageMarginProbe.style.cssText = "inline-size:var(--bf-page-margin);position:absolute;visibility:hidden";
+          document.body.append(pageMarginProbe);
+          const pageMargin = pageMarginProbe.getBoundingClientRect().width;
+          pageMarginProbe.remove();
           const disclosureTranslation = selector => {
             const element = document.querySelector(selector);
             if (!element) throw new Error("Missing spacing matrix disclosure: " + selector + ".");
@@ -234,7 +247,13 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
             return { x: matrix.m41, y: matrix.m42 };
           };
           return {
-            action: [".bf-button", ".bf-chip", ".bf-chip.is-borderless", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link", ".bf-panel-content p"].map(textStart),
+            action: [".bf-button", ".bf-chip", ".bf-chip.is-borderless", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
+            panelContent: {
+              textStart: textStart(".bf-panel-content p"),
+              expectedStart: panelRoot ? panelRoot.getBoundingClientRect().left + panelInset : null,
+              selectedInset: panelInset,
+              pageMargin
+            },
             continuation: [
               textStart(".bf-accordion-tab"),
               textStart(".bf-list-tree-toggle"),
@@ -261,6 +280,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           };
         })()`);
         assert(matrix.action.every(start => Math.abs(start - matrix.keylines.action) < 0.51), `Expected ${tier}/${tone} action copy to share the action inset: ${JSON.stringify(matrix)}.`);
+        assert(matrix.panelContent.expectedStart !== null && Math.abs(matrix.panelContent.textStart - matrix.panelContent.expectedStart) < 0.51 && Math.abs(matrix.panelContent.selectedInset - matrix.panelContent.pageMargin) < 0.51, `Expected ${tier}/${tone} panel content to use the responsive page gutter: ${JSON.stringify(matrix.panelContent)}.`);
         assert(matrix.field.every(start => Math.abs(start - matrix.keylines.field) < 0.51), `Expected ${tier}/${tone} field copy to share the field inset: ${JSON.stringify(matrix)}.`);
         assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, and notification copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
         assert(Math.max(...matrix.sideNavigation) - Math.min(...matrix.sideNavigation) < 0.51, `Expected ${tier}/${tone} SideNavigation rows to share the panel label keyline: ${JSON.stringify(matrix)}.`);
@@ -1610,8 +1630,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     for (const boundary of [
       { width: 640, persistent: false, columns: 1, label: "at a narrow pattern allocation" },
       { width: 767, persistent: false, columns: 2, label: "below 48rem after the drawer releases space" },
-      { width: 768, persistent: true, columns: 2, allocation: 648, label: "at the first persistent-navigation viewport" },
-      { width: 775, persistent: true, columns: 2, allocation: 655, label: "above the intrinsic split threshold" }
+      { width: 768, persistent: true, columns: 2, allocation: 624, label: "at the first persistent-navigation viewport after the approved grid-gutter inset" },
+      { width: 775, persistent: true, columns: 2, allocation: 631, label: "above the intrinsic split threshold after the approved grid-gutter inset" }
     ] as const) {
       await page.setViewportSize({ width: boundary.width, height: 960 });
       await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -6745,7 +6765,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
   const expectedPanelPaddingPx = { editorial: 16, documentation: 12, app: 12, os: 8 } as const;
-  const expectedPanelInlinePx = { editorial: 16, documentation: 12, app: 12, os: 8 } as const;
+  const expectedPanelInlinePx = { editorial: 32, documentation: 32, app: 32, os: 32 } as const;
   const expectedPanelGapPx = { editorial: 24, documentation: 20, app: 20, os: 24 } as const;
   const expectedTooltipBlockPx = { editorial: 0, documentation: 4, app: 4, os: 0 } as const;
   const expectedTooltipInlinePx = { editorial: 8, documentation: 8, app: 8, os: 4 } as const;
@@ -6878,7 +6898,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
       assert(Math.abs(direct.fixedWidth - expectedCapPx[tier]) <= 1, `Expected direct ${tier} bf-fixed-width to resolve to ${expectedCapPx[tier]}px, got ${direct.fixedWidth}px.`);
       assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
       assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel roots to own ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
-      assert(direct.panelPaddingInlineStart === expectedPanelInlinePx[tier] && direct.panelPaddingInlineEnd === expectedPanelInlinePx[tier] && direct.panelGap === expectedPanelGapPx[tier], `Expected direct ${tier} panel roots to own ${expectedPanelInlinePx[tier]}px action insets and ${expectedPanelGapPx[tier]}px group gap: ${JSON.stringify(direct)}.`);
+      assert(direct.panelPaddingInlineStart === expectedPanelInlinePx[tier] && direct.panelPaddingInlineEnd === expectedPanelInlinePx[tier] && direct.panelGap === expectedPanelGapPx[tier], `Expected direct ${tier} panel roots to own ${expectedPanelInlinePx[tier]}px responsive grid-gutter insets and ${expectedPanelGapPx[tier]}px group gap: ${JSON.stringify(direct)}.`);
       assert(direct.headerPadding === 0 && direct.footerPaddingEnd === 0 && direct.footerPaddingInlineStart === 0, `Expected direct ${tier} panel sections to add no padding inside the root-owned surface inset: ${JSON.stringify(direct)}.`);
       assert(direct.tooltipInlineStart === expectedTooltipInlinePx[tier] && direct.tooltipInlineEnd === expectedTooltipInlinePx[tier] && direct.tooltipBlockStart === expectedTooltipBlockPx[tier] && direct.tooltipBlockEnd === expectedTooltipBlockPx[tier], `Expected direct ${tier} Tooltip outer compact padding to resolve from the ${expectedTooltipInlinePx[tier]}px field role and ${expectedTooltipBlockPx[tier]}px compact block role: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.tooltipContainmentDelta) <= 0.05 && direct.tooltipTextPaddingStart > 0 && direct.tooltipTextPaddingEnd === 0 && direct.tooltipTextMarginEnd >= direct.tooltipTextPaddingStart, `Expected direct ${tier} Tooltip to contain its inner metric nudge and SP13 end compensation independently from outer padding: ${JSON.stringify(direct)}.`);

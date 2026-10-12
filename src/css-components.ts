@@ -1576,7 +1576,7 @@ ${typeStyles(body, { includeCase: false })}  align-items: center;
   display: grid;
   gap: var(--bf-section-space-shallow);
   padding-block: var(--bf-panel-padding-block);
-  padding-inline: var(--bf-component-inline-inset-action);
+  padding-inline: var(--bf-page-margin);
 }
 
 :where(.bf-theme) :where(.bf-modal.is-workflow > .bf-modal-dialog) {

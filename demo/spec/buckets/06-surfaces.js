@@ -4,13 +4,13 @@ import { initPanelDrawers } from "../../../dist/index.js";
 
 const bodyText = "Keep this surface close to its related workspace controls and notes.";
 const modalBody = Array.from({ length: 18 }, (_, index) => `<p class="bf-body">${bodyText} The workflow keeps its header and footer in place while this content scrolls (${index + 1}).</p>`).join("");
-const cardPreview = `<article class="bf-card is-preview bf-span-2" data-card-owner data-card-preview>
+const cardPreview = `<article class="bf-card is-preview bf-span-4" data-card-owner data-card-preview>
   <div class="bf-card-preview"><img class="bf-card-preview-image" src="../../assets/aspect-wide.svg" alt="Layered landscape preview" /></div>
   <header class="bf-card-header"><h3 class="bf-h5">Workspace</h3><p class="bf-h4">Project settings</p></header>
   <div class="bf-card-content"><p class="bf-body">${bodyText}</p><div class="bf-card-scroll" role="region" tabindex="0" aria-label="Wide Card content"><table class="bf-table"><thead><tr><th>Token</th><th>Editorial</th><th>Documentation</th><th>Application</th><th>Operating system</th></tr></thead><tbody><tr><td>Component inline inset</td><td>Action</td><td>Action</td><td>Action</td><td>Action</td></tr></tbody></table></div></div>
   <footer class="bf-card-content"><p class="bf-body">Updated today</p></footer>
 </article>`;
-const cardText = `<article class="bf-card bf-span-2" data-card-owner>
+const cardText = `<article class="bf-card bf-span-4" data-card-owner>
   <header class="bf-card-header"><h3 class="bf-h5">Recent files</h3><p class="bf-h4">No image preview</p></header>
   <div class="bf-card-content"><p class="bf-body">A regular Card keeps its text inside the public frame.</p></div>
   <footer class="bf-card-content"><p class="bf-body">Updated yesterday</p></footer>
@@ -28,12 +28,12 @@ const sideNavigation = `<div class="bf-side-navigation is-sticky"><button class=
 const tooltip = `<div class="bf-tooltip" data-tooltip-positioned><button class="bf-button is-base" type="button">Help</button><p class="bf-tooltip-message" aria-hidden="false" data-owner><span class="bf-tooltip-text">${bodyText}</span></p></div>`;
 
 const rows = [
-  ["Card · public BF groups and inset prototype", "card", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current BF group · preview and text Cards", cardPair, null], ["Inline-inset prototype · preview and text Cards", cardPair, "card"]],
-  ["OptionCard · standard owner inset", "option", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current OptionCard", optionCard, null], ["Standard working candidate for O3", optionCard, "standard"]],
+  ["Card · frame and section inset", "card", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current BF group · preview and text Cards", cardPair, null], ["Selected Card owners · preview and text Cards", cardPair, null]],
+  ["OptionCard · standard owner inset", "option", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current OptionCard", optionCard, null], ["Selected standard inset", optionCard, null]],
   ["Tooltip · compact field/control alias", "tooltip", ["Compact reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current selected compact surface", tooltip, null], ["Compact role relationship", tooltip, null]],
-  ["Modal · major inline grid gutter", "modal", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current Modal · open-state proof", modal, null], ["Major inline working candidate · open-state proof", modal, "major"]],
-  ["SidePanel · major inline grid gutter", "panel", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current SidePanel · open-state proof", makePanel(), null], ["Major inline working candidate · open-state proof", makePanel(), "major"]],
-  ["SideNavigation · grid margin and label keyline", "navigation", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current public navigation anatomy", sideNavigation, null], ["Grid-margin working relationship for O3", sideNavigation, "navigation"]]
+  ["Modal · major inline grid gutter", "modal", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current Modal · open-state proof", modal, null], ["Selected grid-gutter inset · open-state proof", modal, null]],
+  ["SidePanel · major inline grid gutter", "panel", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current SidePanel · open-state proof", makePanel(), null], ["Selected grid-gutter inset · open-state proof", makePanel(), null]],
+  ["SideNavigation · grid margin and label keyline", "navigation", ["Paragraph reference", `<p class="bf-body surface-reference" data-target>${bodyText}</p>`, null], ["Current public navigation anatomy", sideNavigation, null], ["Selected grid-margin gutter relationship", sideNavigation, null]]
 ];
 
 const rowsRoot = document.querySelector("#surface-rows");
@@ -173,6 +173,7 @@ function measure() {
         const parentStyle = getComputedStyle(cardParent);
         const firstRect = cards[0]?.getBoundingClientRect();
         const secondRect = cards[1]?.getBoundingClientRect();
+        const sameRow = firstRect && secondRect && Math.abs(secondRect.top - firstRect.top) < 1;
         const preview = cards[0]?.querySelector(".bf-card-preview");
         const previewRect = preview?.getBoundingClientRect();
         const cardRect = cards[0]?.getBoundingClientRect();
@@ -186,9 +187,10 @@ function measure() {
           }).join(", ") || "no adjacent section seam";
           return `Card ${index + 1} frame padding ${cardStyle.paddingInlineStart}/${cardStyle.paddingInlineEnd} inline, ${cardStyle.paddingBlockStart}/${cardStyle.paddingBlockEnd} block; group gap ${cardStyle.rowGap}; ${seams}`;
         }).join("; ");
-        const physicalGap = firstRect && secondRect ? secondRect.left - firstRect.right : null;
+        const physicalGap = sameRow ? secondRect.left - firstRect.right : null;
+        const physicalRowSeparation = firstRect && secondRect && !sameRow ? px(secondRect.top - firstRect.bottom) : "not wrapped in this specimen";
         const previewBlockInset = previewRect && cardRect ? previewRect.top - cardRect.top : null;
-        return `BF parent .bf-grid with ${cards.length} sibling flex Cards (no Card subgrid); computed column gap ${parentStyle.columnGap}, physical card gap ${physicalGap === null ? "unavailable" : px(physicalGap)}; preview inline inset ${previewRect && cardRect ? px(previewRect.left - cardRect.left) : "unavailable"}, block inset ${previewBlockInset === null ? "unavailable" : px(previewBlockInset)}, width ${previewRect ? px(previewRect.width) : "unavailable"} vs frame ${cardRect ? px(cardRect.width) : "unavailable"}; ${cardDetails}`;
+        return `BF parent .bf-grid with ${cards.length} sibling flex Cards (no Card subgrid); computed column/row gaps ${parentStyle.columnGap}/${parentStyle.rowGap}, physical card gap ${physicalGap === null ? "unavailable (cards wrap or missing)" : px(physicalGap)}, physical row separation ${physicalRowSeparation}; preview inline inset ${previewRect && cardRect ? px(previewRect.left - cardRect.left) : "unavailable"}, block inset ${previewBlockInset === null ? "unavailable" : px(previewBlockInset)}, width ${previewRect ? px(previewRect.width) : "unavailable"} vs frame ${cardRect ? px(cardRect.width) : "unavailable"}; ${cardDetails}`;
       })() : "";
       const scrollOwner = owner.matches(".bf-panel.bf-side-navigation") ? owner.querySelector(".bf-side-navigation-drawer-body")
         : owner.matches(".bf-card") ? owner.querySelector(".bf-card-scroll")

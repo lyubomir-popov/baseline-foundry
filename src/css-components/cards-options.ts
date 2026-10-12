@@ -36,7 +36,13 @@ ${optionStroke.owner}
   max-inline-size: 100%;
   overflow: visible;
   padding-block: var(--bf-panel-padding-block);
-  padding-inline: var(--bf-component-inline-inset-action);
+  padding-inline: 0;
+}
+
+/* Card sections own the standard inline inset so an image-first preview can
+   run to the frame edges without changing the frame's vertical padding. */
+:where(.bf-theme) :where(.bf-card:has(> .bf-card-preview:first-child)) {
+  padding-block-start: 0;
 }
 
 :where(.bf-theme) :where(.bf-card.is-highlighted) {
@@ -125,15 +131,18 @@ ${optionStroke.owner}
   display: grid;
   gap: var(--bf-field-gap);
   padding-block-end: 0;
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(.bf-card-inner) {
   display: grid;
   gap: var(--bf-field-gap);
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 :where(.bf-theme) :where(.bf-card-content) {
   min-inline-size: 0;
+  padding-inline: var(--bf-component-inline-inset-action);
 }
 
 /* Card roots remain visible-overflow paint owners so owned overlays can cross

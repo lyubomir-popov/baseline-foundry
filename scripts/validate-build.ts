@@ -1031,7 +1031,6 @@ function validateCommonCss(css: string): void {
   assert(css.includes("--bf-component-inline-inset-field:") && css.includes("--bf-component-inline-inset-action:") && css.includes("--bf-component-inline-inset-continuation:") && !css.includes("--bf-disclosure-label-inline-offset:") && !css.includes("--bf-icon-label-inline-offset:"), "Expected field, action, and continuation to be authoritative component inset inputs rather than aliases of one component.");
   assert(css.includes("padding-inline-start: var(--bf-component-inline-inset-continuation);"), "Expected accordion panels to share the continuation inset.");
   for (const [selector, inset] of [
-    [":where(.bf-theme) :where(.bf-card, .bf-card.is-highlighted, .bf-card.is-overlay, .bf-card.is-muted)", "action"],
     [":where(.bf-theme) :where(.bf-option-card)", "action"],
     [":where(.bf-theme) :where(.bf-search-and-filter-panel)", "action"],
     [":where(.bf-theme) :where(.bf-contextual-menu-link)", "action"],
@@ -1080,8 +1079,8 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-modal-dialog)", {
     "gap": "var(--bf-section-space-shallow)",
     "padding-block": "var(--bf-panel-padding-block)",
-    "padding-inline": "var(--bf-component-inline-inset-action)"
-  }, "modal roots own standard surface insets and the group gap between sections");
+    "padding-inline": "var(--bf-page-margin)"
+  }, "modal roots own responsive grid-gutter inline insets and the group gap between sections");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-modal-header, .bf-modal-body, .bf-modal-footer)", {
     "padding": "0"
   }, "modal sections add no padding inside the root-owned surface spacing");
@@ -1298,12 +1297,24 @@ function validateCommonCss(css: string): void {
     "display": "flex",
     "flex-direction": "column",
     "gap": "var(--bf-section-space-shallow)",
+    "padding-block": "var(--bf-panel-padding-block)",
+    "padding-inline": "0",
     "overflow": "visible"
-  }, "card surfaces own the shared group gap while allowing owned popups to escape");
+  }, "card frames own block padding and the shared group gap while sections own inline insets and popups can escape");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-header)", {
     "border": "0",
-    "padding-block-end": "0"
-  }, "card sections add no block padding inside the surface-owned group gap");
+    "padding-block-end": "0",
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "card headers own the action inline inset without adding block padding inside the frame-owned group gap");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-inner)", {
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "nested Card sections own the shared action inline inset");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-content)", {
+    "padding-inline": "var(--bf-component-inline-inset-action)"
+  }, "Card content sections own the shared action inline inset");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card:has(> .bf-card-preview:first-child))", {
+    "padding-block-start": "0"
+  }, "a direct first preview keeps the approved full-bleed frame edge");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-card-scroll)", {
     "max-inline-size": "100%",
     "min-inline-size": "0",

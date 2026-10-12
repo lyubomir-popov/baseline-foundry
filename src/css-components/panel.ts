@@ -12,7 +12,7 @@ export function panelCss(options: PanelCssOptions): string {
   return `${footerStroke.owner}
 
 :where(.bf-theme) :where(.bf-panel) {
-  --bf-panel-content-padding-inline: var(--bf-component-inline-inset-action);
+  --bf-panel-content-padding-inline: var(--bf-page-margin);
   background: var(--bf-color-background-default);
   color: var(--bf-color-text-default);
   display: flex;
@@ -60,8 +60,7 @@ export function panelCss(options: PanelCssOptions): string {
 }
 
 /* The tagged Canonical brand preserves its established continuation keyline
- * inside the standard Action-inset surface. Ordinary panel sections add no
- * second inset. */
+ * inside the grid-gutter surface. Ordinary panel sections add no second inset. */
 :where(.bf-theme) :where(.bf-panel-header.is-navigation-brand) {
   gap: 0;
   padding: 0;
