@@ -43,6 +43,29 @@ function centeredBox(rect, label, source) {
   if (!Number.isFinite(inline) || !Number.isFinite(block)) return null;
   return { inline, block, source };
 }
+function transformCenterOffset(transform, origin, width, height) {
+  if (!transform || transform === "none") return { x: 0, y: 0 };
+  const [originXValue, originYValue] = origin.split(" ");
+  const originX = originXValue.endsWith("%") ? parseFloat(originXValue) * width / 100 : parseFloat(originXValue);
+  const originY = originYValue.endsWith("%") ? parseFloat(originYValue) * height / 100 : parseFloat(originYValue);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const matrix = transform.match(/^matrix\(([^)]+)\)$/)?.[1].split(",").map(Number);
+  if (matrix?.length === 6) {
+    return {
+      x: originX + matrix[0] * (centerX - originX) + matrix[2] * (centerY - originY) + matrix[4] - centerX,
+      y: originY + matrix[1] * (centerX - originX) + matrix[3] * (centerY - originY) + matrix[5] - centerY
+    };
+  }
+  const matrix3d = transform.match(/^matrix3d\(([^)]+)\)$/)?.[1].split(",").map(Number);
+  if (matrix3d?.length === 16) {
+    return {
+      x: originX + matrix3d[0] * (centerX - originX) + matrix3d[4] * (centerY - originY) + matrix3d[12] - centerX,
+      y: originY + matrix3d[1] * (centerX - originX) + matrix3d[5] * (centerY - originY) + matrix3d[13] - centerY
+    };
+  }
+  return null;
+}
 function computedPseudoBox(target, pseudo, label) {
   const style = getComputedStyle(target, pseudo);
   const width = parseFloat(style.inlineSize);
@@ -54,12 +77,14 @@ function computedPseudoBox(target, pseudo, label) {
   let top;
   if (target.matches(".bf-accordion-tab")) {
     left = owner.left + parseFloat(getComputedStyle(target).paddingInlineStart);
-    top = owner.top + owner.height / 2 - height / 2 + parseFloat(style.transform.match(/matrix\([^,]+, [^,]+, [^,]+, [^,]+, [^,]+, ([^)]+)\)/)?.[1] || 0);
+    top = owner.top + owner.height / 2 - height / 2;
   } else {
     left = owner.left + (parseFloat(style.insetInlineStart) || 0);
     top = owner.top + (parseFloat(style.insetBlockStart) || 0);
   }
-  return centeredBox({ left, top, width, height }, label, "computed ::before box center (paint is CSS background)");
+  const offset = transformCenterOffset(style.transform, style.transformOrigin, width, height);
+  if (!offset) return null;
+  return centeredBox({ left: left + offset.x, top: top + offset.y, width, height }, label, "computed ::before box center (paint is CSS background)");
 }
 function chipTargetEvidence(markElement) {
   const box = markElement.getBoundingClientRect();
@@ -107,7 +132,7 @@ function markGeometry(target, label) {
   }
   if (target.matches("select")) {
     const size = parseFloat(style.backgroundSize);
-    return { width: size, height: size, gap: parseFloat(style.paddingInlineEnd) - size - parseFloat(style.paddingInlineStart), slot: size, kind: "native select caret; painted geometry unavailable", paint: `${style.backgroundSize}; native caret center unavailable`, center: null };
+    return { width: size, height: size, gap: parseFloat(style.paddingInlineEnd) - size - parseFloat(style.paddingInlineStart), slot: size, kind: "computed CSS background caret; option text box unavailable", paint: `${style.backgroundSize} at ${style.backgroundPosition}`, center: null };
   }
   if (target.matches(".bf-side-navigation-link")) {
     const size = resolvedLength(target, "--bf-side-navigation-icon-size");
@@ -124,7 +149,7 @@ function markGeometry(target, label) {
 
 function centerText(center, kind) {
   if (!center) {
-    if (kind.includes("native select")) return "mark center − own label-box center: unavailable (native caret paint geometry)";
+    if (kind.includes("CSS background caret")) return "mark center − own label-box center: unavailable (native option text box geometry)";
     if (kind.includes("markless") || kind.includes("no mark")) return "mark center − own label-box center: n/a (peer has no mark)";
     return "mark center − own label-box center: unavailable (mark geometry not exposed)";
   }
@@ -143,7 +168,7 @@ function updateMeasurements() {
       sample.dataset.markerInstalled = "true";
     }
     const style = getComputedStyle(target);
-    const text = target.querySelector(".bucket-measured-text, [data-label]");
+    const text = target.querySelector(".bucket-measured-text") || target.querySelector("[data-label]");
     const label = text?.getBoundingClientRect() || { left: target.getBoundingClientRect().left + parseFloat(style.paddingInlineStart), right: target.getBoundingClientRect().right - parseFloat(style.paddingInlineEnd) };
     const mark = target.matches(".bf-button:not(.is-icon)") ? { width: 0, height: 0, gap: 0, slot: 0, kind: "no mark; no reserved column", paint: "none" } : markGeometry(target, label);
     const layoutHost = target.matches(".bf-switch-label") ? target.closest(".bf-switch") : target;
