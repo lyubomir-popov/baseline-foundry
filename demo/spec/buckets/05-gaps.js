@@ -27,7 +27,7 @@ const rows = [
     ["Field · reference", fieldReference("gap-inline-reference"), ".bf-field", ".bf-field"],
     ["Panel footer · actions", `<div class="bf-panel-footer" data-gap-owner="self" data-guide-owner="self">${footerButtons}</div>`, ".bf-panel-footer", ".bf-panel-footer"],
     ["Modal footer · actions", `<div class="bf-modal-footer" data-gap-owner="self" data-guide-owner="self">${footerButtons}</div>`, ".bf-modal-footer", ".bf-modal-footer"],
-    ["Range · label and control", '<div class="bf-field is-range" data-gap-owner="self" data-guide-owner="self"><label class="bf-form-label" for="gap-range" data-target>Grid density</label><div class="bf-control"><span class="bf-field-boundary"><input class="bf-input" id="gap-range" type="number" value="8" aria-label="Grid density" /></span></div></div>', ".bf-field", ".bf-field.is-range"]
+    ["Range · label and control", '<div class="bf-field is-range" data-gap-owner="self" data-guide-owner="self"><label class="bf-form-label" for="gap-range" data-target>Grid density</label><div class="bf-control"><div class="bf-slider"><input id="gap-range" type="range" min="0" max="100" value="64" /><span class="bf-field-boundary"><input class="bf-slider-input" type="number" min="0" max="100" value="64" aria-label="Grid density value" /></span></div></div></div>', ".bf-field.is-range", ".bf-field.is-range"]
   ]],
   ["Group spacing", [
     ["Paragraph · reference", '<p class="bf-body" data-gap-owner="self" data-guide-owner="self" data-target>Workspace summary sits here before its related settings.</p>', "[data-gap-owner]", "[data-guide-owner]"],
@@ -118,6 +118,15 @@ function updateMeasurements() {
       const style = getComputedStyle(gapOwner);
       const children = [...gapOwner.children];
       const ownerTop = gapOwner.getBoundingClientRect().top - track.getBoundingClientRect().top;
+      const innerSlider = gapOwner.matches(".bf-field.is-range") ? gapOwner.querySelector(".bf-slider") : null;
+      const innerSliderMetrics = innerSlider ? (() => {
+        const sliderStyle = getComputedStyle(innerSlider);
+        const sliderChildren = [...innerSlider.children];
+        const physicalSeparation = sliderChildren.length > 1
+          ? sliderChildren[1].getBoundingClientRect().left - sliderChildren[0].getBoundingClientRect().right
+          : null;
+        return `inner .bf-slider row/column gap ${sliderStyle.rowGap} / ${sliderStyle.columnGap}; flex gap ${sliderStyle.gap}; child separation ${format(physicalSeparation)}`;
+      })() : null;
       const childMargins = children.map(margins).join(" · ") || "none";
       const marker = sample.querySelector(".bucket-baseline-marker");
       const horizontalPair = gapOwner.matches(".bf-panel-footer, .bf-modal-footer, .bf-field.is-range");
@@ -157,6 +166,7 @@ function updateMeasurements() {
         })()
         : "n/a";
       const metrics = `computed row/column gap ${style.rowGap} / ${style.columnGap}; flex gap ${style.gap}\n` +
+        (innerSliderMetrics ? `${innerSliderMetrics}\n` : "") +
         `direct-child block margins ${childMargins}\n` +
         `owner border-box top ${format(ownerTop)}; first-to-second text baseline separation ${format(baselineSeparation)}; help lines ${helpLines ?? "n/a"}; adjacent section padding ${sectionInsets}; ${seam}\n` +
         `following field starts ${format(followingOffset)} from prior field top with ${format(followingSeparation)} separation; inline item gap is current, unresolved`;
