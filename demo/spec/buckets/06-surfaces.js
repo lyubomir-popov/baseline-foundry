@@ -138,6 +138,12 @@ function measure() {
         continue;
       }
       const style = getComputedStyle(owner);
+      const ownerRect = owner.getBoundingClientRect();
+      const navigationRoot = sample.dataset.kind === "navigation" ? sample.querySelector(".bf-side-navigation.is-sticky") : null;
+      const navigationState = navigationRoot
+        ? [...navigationRoot.classList].filter(name => name.startsWith("is-drawer-")).join(" ") || "default"
+        : "n/a";
+      const navigationHidden = Boolean(navigationRoot && (style.display === "none" || ownerRect.width <= 0 || ownerRect.height <= 0));
       const pad = edges(owner, "padding");
       const margin = edges(owner, "margin");
       const pageMargin = getComputedStyle(owner).getPropertyValue("--bf-page-margin").trim() || "unavailable";
@@ -205,10 +211,17 @@ function measure() {
         `alias source ${blockOwner}; --bf-page-margin ${pageMargin}; side-navigation gutter ${gutter}; label keyline ${labelKeyline}; major block current ${majorBlock}\n` +
         `section child padding ${sectionPadding}; ${seam}${cardParentEvidence ? `\n${cardParentEvidence}` : ""}\n` +
         (tooltipText ? `tooltip text-owner padding ${tooltipTextPadding}; frame padding above\n` : "") +
-        `paint owner overflow ${overflow}; z-index ${style.zIndex}; ${scrollEvidence}; ${candidateLabel}`;
+        `paint owner overflow ${overflow}; z-index ${style.zIndex}; ${scrollEvidence}; ${candidateLabel}` +
+        (navigationRoot ? `\nnavigation state ${navigationState}; ${navigationHidden ? "drawer geometry unavailable while hidden or zero-sized" : `drawer owner ${px(ownerRect.width)}×${px(ownerRect.height)} at ${px(ownerRect.left)},${px(ownerRect.top)}`}` : "");
       sample.dataset.surfaceEvidence = metrics;
       if (sample.dataset.kind === "modal" || sample.dataset.kind === "panel") {
         sample.querySelector("pre").textContent = `${metrics}\noverlay geometry excluded from shared page guides; see open-state snapshot`;
+      } else if (navigationHidden) {
+        sample.dataset.guideTop = "unavailable (drawer hidden)";
+        sample.dataset.guideBaseline = "unavailable (drawer hidden)";
+        sample.dataset.guideOccupiedEnd = "unavailable (drawer hidden)";
+        sample.dataset.baselineSource = "none (drawer hidden)";
+        sample.querySelector("pre").textContent = `${metrics}\nvisible top unavailable (drawer hidden)\ntext baseline unavailable (drawer hidden)\noccupied end unavailable (drawer hidden)`;
       } else {
         peers.push({ sample, target, owner, metrics });
       }
@@ -223,6 +236,12 @@ document.querySelector("#spec-tier-stylesheet").addEventListener("load", () => d
 window.addEventListener("resize", measure, { passive: true });
 await initSpecRuntime();
 initPanelDrawers({ root: rowsRoot });
+const navigationObserver = new MutationObserver(records => {
+  if (records.some(record => record.attributeName === "class")) requestAnimationFrame(measure);
+});
+for (const navigationRoot of rowsRoot.querySelectorAll(".bf-side-navigation.is-sticky")) {
+  navigationObserver.observe(navigationRoot, { attributes: true, attributeFilter: ["class"] });
+}
 for (const dialog of rowsRoot.querySelectorAll("dialog.surface-modal-proof")) dialog.addEventListener("close", () => requestAnimationFrame(measure));
 document.addEventListener("click", event => {
   const target = event.target instanceof Element ? event.target : null;

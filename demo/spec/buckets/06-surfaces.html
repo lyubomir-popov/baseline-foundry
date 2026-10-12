@@ -39,6 +39,18 @@
       .surface-probe .bf-tooltip-message { opacity: 1; visibility: visible; }
       .surface-probe .bf-panel-content { min-block-size: 0; }
       .surface-probe .bf-side-navigation-drawer { min-block-size: 8rem; }
+      /* Keep the shipped fixed drawer inside each narrow specimen so it cannot cover other samples. */
+      @media (max-width: 64.749rem) {
+        .surface-sample[data-kind="navigation"] .surface-probe { min-block-size: 14rem; }
+        .surface-sample[data-kind="navigation"] .bf-side-navigation-drawer {
+          position: absolute !important;
+          inset: 0 auto auto 0 !important;
+          inline-size: 100% !important;
+          block-size: 14rem !important;
+          max-block-size: 14rem !important;
+          z-index: 1 !important;
+        }
+      }
       .surface-probe .bf-side-navigation-list { display: block; }
       .surface-probe .bf-side-navigation-link { text-decoration: none; }
       .surface-baseline-marker { display: inline-block; inline-size: 0; block-size: 0; padding: 0; margin: 0; border: 0; vertical-align: baseline; }
@@ -59,6 +71,7 @@
         <p>Real Baseline Foundry surfaces compare current spacing with compact, standard and grid-gutter relationships. Standard and major rows are working candidates for O3; they are not approvals. Major block values remain the shipped values shown by inspection.</p>
         <p class="surface-note">Card compares separate public grid groups with two flex Cards each: one image preview and one text-only Card. The prototype keeps the shipped frame and child structure; it is not the Pragma shared-subgrid construction.</p>
         <p class="surface-note">Use each open control to inspect major spacing. Modal uses fixture buttons to call the browser dialog's showModal/close methods with BF's workflow CSS; SidePanel uses the shipped drawer initializer. Tooltip visibility is forced while its shipped positioning is retained.</p>
+        <p class="surface-note">At narrow widths, both navigation drawer specimens are contained inside their sample probe to prevent overlap with other rows; the fixture keeps BF's grid gutter and label keyline, and does not change product drawer behavior.</p>
         <p class="surface-note">The Card prototype moves inline inset ownership to its header/content and uses a zero block-start only for the first-child preview. BF's preview image still uses its shipped contained paint, so this does not represent Pragma's flush image treatment.</p>
         <p class="surface-key"><b>Red</b> = owner border-box start and occupied end · <i>Blue</i> = real text baseline. Shared 1px guides and short peer ticks; scroll sideways.</p>
       </header>
