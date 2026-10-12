@@ -181,6 +181,10 @@ function updateMeasurements() {
 const stylesheet = document.querySelector("#spec-tier-stylesheet");
 stylesheet.addEventListener("load", () => document.fonts.ready.then(() => requestAnimationFrame(updateMeasurements)));
 window.addEventListener("resize", updateMeasurements, { passive: true });
-await initSpecRuntime();
+await initSpecRuntime({
+  initComponents({ initRangeControls }) {
+    initRangeControls();
+  }
+});
 await document.fonts.ready;
 requestAnimationFrame(updateMeasurements);
