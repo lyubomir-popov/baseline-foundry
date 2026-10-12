@@ -15,6 +15,7 @@
       .surface-track { position: relative; display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
       .surface-row[data-kind="tooltip"] .surface-track { overflow: visible; }
       .surface-sample { flex: 0 0 auto; inline-size: 18rem; min-inline-size: 0; }
+      .surface-sample[data-kind="card"] { inline-size: 42rem; }
       .surface-probe { position: relative; min-block-size: 8rem; }
       .surface-sample[data-kind="tooltip"] .surface-probe { min-block-size: 12rem; }
       .surface-sample[data-kind="navigation"] .surface-probe { inline-size: 18rem; }
@@ -22,12 +23,19 @@
       .surface-reference { margin: 0; }
       .surface-working-standard [data-owner] { padding-block: var(--bf-panel-padding-block) !important; padding-inline: var(--bf-component-inline-inset-action) !important; }
       .surface-working-major [data-owner] { padding-inline: var(--bf-page-margin) !important; }
+      .surface-working-card .bf-card { padding-inline: 0 !important; }
+      .surface-working-card .bf-card[data-card-preview] { padding-block-start: 0 !important; }
+      .surface-working-card .bf-card-header, .surface-working-card .bf-card-content { padding-block: 0 !important; padding-inline: var(--bf-component-inline-inset-action) !important; }
+      /* Editorial's selected shallow group role is the 24px Site value. */
+      .surface-working-card .bf-card { gap: var(--bf-section-space-shallow) !important; }
       .surface-working-navigation [data-owner] { --bf-side-navigation-gutter: var(--bf-page-margin) !important; }
+      .surface-open-control { margin-block-end: var(--bf-space-1); }
+      .surface-panel-stage { block-size: 14rem; inline-size: 18rem; min-block-size: 14rem; }
+      .surface-panel-stage > .bf-main { min-block-size: 0; }
       .surface-probe > .bf-modal-dialog, .surface-probe > .bf-panel { inline-size: 18rem; min-block-size: 8rem; }
       .surface-probe > .bf-card { inline-size: 18rem; }
       .surface-probe > .bf-option-card { inline-size: 18rem; }
       .surface-probe .bf-card-content { min-inline-size: 0; }
-      .surface-probe .bf-card-preview { block-size: 3rem; }
       .surface-probe .bf-tooltip-message { opacity: 1; visibility: visible; }
       .surface-probe .bf-panel-content { min-block-size: 0; }
       .surface-probe .bf-side-navigation-drawer { min-block-size: 8rem; }
@@ -49,8 +57,9 @@
       <header class="bf-stack is-dense surface-intro">
         <h1>06 · Surfaces</h1>
         <p>Real Baseline Foundry surfaces compare current spacing with compact, standard and grid-gutter relationships. Standard and major rows are working candidates for O3; they are not approvals. Major block values remain the shipped values shown by inspection.</p>
-        <p class="surface-note">Card preserves its shipped content tracks and image; section padding and the physical content/footer seam are reported separately. The candidate uses the same public component anatomy.</p>
-        <p class="surface-note">Modal and SidePanel compare public inline anatomy, not native open-overlay interactions. Tooltip visibility is forced for inspection; its shipped positioning is retained.</p>
+        <p class="surface-note">Card compares separate public grid groups with two flex Cards each: one image preview and one text-only Card. The prototype keeps the shipped frame and child structure; it is not the Pragma shared-subgrid construction.</p>
+        <p class="surface-note">Use each open control to inspect major spacing. Modal uses fixture buttons to call the browser dialog's showModal/close methods with BF's workflow CSS; SidePanel uses the shipped drawer initializer. Tooltip visibility is forced while its shipped positioning is retained.</p>
+        <p class="surface-note">The Card prototype moves inline inset ownership to its header/content and uses a zero block-start only for the first-child preview. BF's preview image still uses its shipped contained paint, so this does not represent Pragma's flush image treatment.</p>
         <p class="surface-key"><b>Red</b> = owner border-box start and occupied end · <i>Blue</i> = real text baseline. Shared 1px guides and short peer ticks; scroll sideways.</p>
       </header>
       <div id="surface-rows"></div>
