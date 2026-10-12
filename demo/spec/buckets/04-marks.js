@@ -36,6 +36,57 @@ function resolvedLength(target, variable) {
   probe.remove();
   return length;
 }
+function centeredBox(rect, label, source) {
+  const labelRect = typeof label.getBoundingClientRect === "function" ? label.getBoundingClientRect() : label;
+  const inline = rect.left + rect.width / 2 - (labelRect.left + labelRect.width / 2);
+  const block = rect.top + rect.height / 2 - (labelRect.top + labelRect.height / 2);
+  if (!Number.isFinite(inline) || !Number.isFinite(block)) return null;
+  return { inline, block, source };
+}
+function computedPseudoBox(target, pseudo, label) {
+  const style = getComputedStyle(target, pseudo);
+  const width = parseFloat(style.inlineSize);
+  const height = parseFloat(style.blockSize);
+  const owner = target.getBoundingClientRect();
+  if (!Number.isFinite(width) || !Number.isFinite(height)) return null;
+
+  let left;
+  let top;
+  if (target.matches(".bf-accordion-tab")) {
+    left = owner.left + parseFloat(getComputedStyle(target).paddingInlineStart);
+    top = owner.top + owner.height / 2 - height / 2 + parseFloat(style.transform.match(/matrix\([^,]+, [^,]+, [^,]+, [^,]+, [^,]+, ([^)]+)\)/)?.[1] || 0);
+  } else {
+    left = owner.left + (parseFloat(style.insetInlineStart) || 0);
+    top = owner.top + (parseFloat(style.insetBlockStart) || 0);
+  }
+  return centeredBox({ left, top, width, height }, label, "computed ::before box center (paint is CSS background)");
+}
+function chipTargetEvidence(markElement) {
+  const box = markElement.getBoundingClientRect();
+  const style = getComputedStyle(markElement, "::after");
+  const width = parseFloat(style.minInlineSize);
+  const height = parseFloat(style.minBlockSize);
+  const matrix = style.transform.match(/^matrix\(([^)]+)\)$/)?.[1].split(",").map(Number);
+  const centered = Math.abs(parseFloat(style.left) - box.width / 2) < .01 && Math.abs(parseFloat(style.top) - box.height / 2) < .01
+    && matrix?.length === 6 && Math.abs(matrix[4] + width / 2) < .01 && Math.abs(matrix[5] + height / 2) < .01;
+  if (!Number.isFinite(width) || !Number.isFinite(height) || !centered) {
+    return { geometry: "unavailable (computed ::after target is not a centered measurable box)", pointer: "unavailable" };
+  }
+  const left = box.left + box.width / 2 - width / 2;
+  const top = box.top + box.height / 2 - height / 2;
+  const points = [[left + .5, top + .5], [left + width - .5, top + .5], [left + .5, top + height - .5], [left + width - .5, top + height - .5]];
+  const requiredTarget = parseFloat(getComputedStyle(markElement).getPropertyValue("--bf-pointer-target-minimum")) || 24;
+  const geometryHits = width >= requiredTarget && height >= requiredTarget && centered ? 4 : 0;
+  const viewport = { left: 0, top: 0, right: document.documentElement.clientWidth, bottom: document.documentElement.clientHeight };
+  const track = markElement.closest(".bucket-track");
+  const clip = track?.getBoundingClientRect();
+  const visible = points.every(([x, y]) => x >= viewport.left && x <= viewport.right && y >= viewport.top && y <= viewport.bottom
+    && (!clip || (x >= clip.left + track.clientLeft && x <= clip.right - track.clientLeft && y >= clip.top + track.clientTop && y <= clip.bottom - track.clientTop)));
+  const pointer = visible
+    ? `pointer hits ${points.filter(([x, y]) => document.elementFromPoint(x, y)?.closest(".bf-chip-dismiss") === markElement).length}/4`
+    : "pointer hits unavailable (offscreen or clipped)";
+  return { geometry: `geometry corners ${geometryHits}/4; computed ${width} × ${height}px min target (required ${requiredTarget}px, viewport independent)`, pointer };
+}
 function markGeometry(target, label) {
   const box = target.getBoundingClientRect();
   const style = getComputedStyle(target);
@@ -44,31 +95,40 @@ function markGeometry(target, label) {
     const rect = directMark.getBoundingClientRect();
     let kind = directMark.matches(".bf-switch-slider") ? "DOM switch track (not icon)" : "DOM mark box";
     let paint = "see element background";
+    let center = centeredBox(rect, label, "DOM box center");
     if (directMark.matches(".bf-chip-dismiss")) {
       const mask = getComputedStyle(directMark, "::before");
-      const targetStyle = getComputedStyle(directMark, "::after");
-      const points = [[-11.5, -11.5], [11.5, -11.5], [-11.5, 11.5], [11.5, 11.5]];
-      const corners = points.filter(([x, y]) => document.elementFromPoint(rect.left + rect.width / 2 + x, rect.top + rect.height / 2 + y)?.closest(".bf-chip-dismiss") === directMark).length;
+      const targetEvidence = chipTargetEvidence(directMark);
       kind = "DOM dismiss control";
-      paint = `mask ${mask.maskSize || mask.webkitMaskSize}; target ${targetStyle.minInlineSize} × ${targetStyle.minBlockSize}; corner hits ${corners}/4`;
+      center = centeredBox(rect, label, "DOM dismiss-control box center; ::before close paint is centered in it");
+      paint = `computed ::before close mask ${mask.maskSize || mask.webkitMaskSize}; ${targetEvidence.geometry}; ${targetEvidence.pointer}`;
     }
-    return { width: rect.width, height: rect.height, gap: directMark.matches(".bf-chip-dismiss") ? rect.left - label.right : label.left - rect.right, slot: rect.width, kind, paint };
+    return { width: rect.width, height: rect.height, gap: directMark.matches(".bf-chip-dismiss") ? rect.left - label.right : label.left - rect.right, slot: rect.width, kind, paint, center };
   }
   if (target.matches("select")) {
     const size = parseFloat(style.backgroundSize);
-    return { width: size, height: size, gap: parseFloat(style.paddingInlineEnd) - size - parseFloat(style.paddingInlineStart), slot: size, kind: "CSS background caret; reserved gap, glyph end unavailable", paint: style.backgroundSize };
+    return { width: size, height: size, gap: parseFloat(style.paddingInlineEnd) - size - parseFloat(style.paddingInlineStart), slot: size, kind: "native select caret; painted geometry unavailable", paint: `${style.backgroundSize}; native caret center unavailable`, center: null };
   }
   if (target.matches(".bf-side-navigation-link")) {
     const size = resolvedLength(target, "--bf-side-navigation-icon-size");
     const gutter = resolvedLength(target, "--bf-side-navigation-gutter");
-    return { width: 0, height: 0, gap: label.left - box.left - gutter - size, slot: size, kind: "markless reserved column", paint: "none" };
+    return { width: 0, height: 0, gap: label.left - box.left - gutter - size, slot: size, kind: "markless reserved column", paint: "none", center: null };
   }
   const pseudo = getComputedStyle(target, "::before");
   const size = parseFloat(pseudo.inlineSize);
   const start = target.matches(".bf-side-navigation-accordion-button")
     ? parseFloat(pseudo.insetInlineStart) : target.matches(".bf-accordion-tab") ? parseFloat(style.paddingInlineStart) : 0;
   const paint = target.matches(".bf-checkbox-label, .bf-radio-label") ? "full-box background fill" : pseudo.backgroundSize;
-  return { width: size, height: parseFloat(pseudo.blockSize), gap: label.left - box.left - start - size, slot: size, kind: "computed ::before box", paint };
+  return { width: size, height: parseFloat(pseudo.blockSize), gap: label.left - box.left - start - size, slot: size, kind: "computed ::before box", paint, center: computedPseudoBox(target, "::before", label) };
+}
+
+function centerText(center, kind) {
+  if (!center) {
+    if (kind.includes("native select")) return "mark center − own label-box center: unavailable (native caret paint geometry)";
+    if (kind.includes("markless") || kind.includes("no mark")) return "mark center − own label-box center: n/a (peer has no mark)";
+    return "mark center − own label-box center: unavailable (mark geometry not exposed)";
+  }
+  return `mark center − own label-box center: inline ${format(center.inline)}, block ${format(center.block)} (${center.source})`;
 }
 
 function updateMeasurements() {
@@ -96,6 +156,7 @@ function updateMeasurements() {
           : `${getComputedStyle(layoutHost).columnGap} on .${layoutHost.classList[0]}`;
     const metrics = `font ${style.fontSize}; mark ${format(mark.width)} × ${format(mark.height)}; slot ${format(mark.slot)}\n` +
       `column gap ${columnGap}; mark→label ${format(mark.gap)} (${mark.kind})\n` +
+      `${centerText(mark.center, mark.kind)}\n` +
       `mark paint ${mark.paint}\n` +
       `label keyline ${format(label.left - target.getBoundingClientRect().left)}; label baseline in guide tick`;
     observations.push({ sample, target, owner, metrics });
@@ -106,6 +167,7 @@ function updateMeasurements() {
 const stylesheet = document.querySelector("#spec-tier-stylesheet");
 stylesheet.addEventListener("load", () => document.fonts.ready.then(() => requestAnimationFrame(updateMeasurements)));
 window.addEventListener("resize", updateMeasurements, { passive: true });
+track.addEventListener("scroll", updateMeasurements, { passive: true });
 await initSpecRuntime();
 await document.fonts.ready;
 requestAnimationFrame(updateMeasurements);
