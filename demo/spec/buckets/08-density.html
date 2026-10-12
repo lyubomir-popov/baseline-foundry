@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" data-spec-root="../../..">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>08 · Density · Baseline Foundry</title>
+    <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../../spec-shell.css" />
+    <style>
+      .density-page { max-inline-size: none; }
+      .density-intro { max-inline-size: 72ch; }
+      .density-note { font-size: .875rem; }
+      .density-row { padding-block: var(--bf-space-2); }
+      .density-row h2 { margin-block-end: var(--bf-space-1); }
+      .density-track { position: relative; display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      .density-sample { flex: 0 0 18rem; inline-size: 18rem; min-inline-size: 0; }
+      .density-caption { display: block; max-inline-size: 18rem; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: 1.25; font-weight: 400; overflow-wrap: anywhere; }
+      .density-reference { margin: 0; }
+      .density-sample table { inline-size: 100%; }
+      .density-reset-boundary { display: inline; }
+      .density-sample pre { display: none; }
+    </style>
+  </head>
+  <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
+    <main class="bf-page is-fill density-page">
+      <header class="bf-stack is-dense density-intro">
+        <h1>08 · Density</h1>
+        <p>The Site table-cell policy enrolls a Chip in its table host. A nested theme resets that enrollment; standalone, Tabs and SideNavigation Chips remain outside this policy. Other tiers preserve their current control inset.</p>
+        <p class="density-note">The plain-text table row leads the comparison. Shared red start/end lines, a blue browser baseline and short peer ticks show the real host and Chip boxes. Numeric readings stay hidden for inspection.</p>
+      </header>
+      <section class="density-row">
+        <h2 class="bf-h6">Table, reset boundary and non-subscriber controls</h2>
+        <div id="density-track" class="density-track"><div class="bucket-guide-layer" aria-hidden="true"></div></div>
+      </section>
+    </main>
+    <script type="module" src="./08-density.js"></script>
+  </body>
+</html>
