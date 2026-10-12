@@ -35,6 +35,7 @@ function measure() {
   const referenceRow = samples[0].querySelector("[data-host-row]");
   const referenceRowHeight = referenceRow?.getBoundingClientRect().height ?? null;
   const tableButtonSize = samples.find(sample => sample.dataset.kind === "table-button")?.querySelector("[data-button]")?.getBoundingClientRect();
+  const standaloneButtonSize = samples.find(sample => sample.dataset.kind === "standalone-button")?.querySelector("[data-button]")?.getBoundingClientRect();
   for (const sample of samples) {
     const target = sample.querySelector("[data-target]");
     const chip = sample.querySelector(".bf-chip");
@@ -65,7 +66,7 @@ function measure() {
     const metrics = `viewport ${window.innerWidth}px; tier ${tierName()}; sample ${sample.dataset.caption}\n` +
       `subscriber ${subscriber}; reset boundary ${reset}; host ${sample.dataset.kind === "plain" ? ".bf-table td reference" : tableCell ? ".bf-table td" : chip?.closest(".bf-tabs") ? ".bf-tabs" : chip?.closest(".bf-side-navigation") ? ".bf-side-navigation" : button ? "standalone button" : "standalone"}\n` +
       `control inset default ${defaultInset}; dense member ${denseInset}; selected member ${selectedInset}; Chip line-height ${chipStyle?.lineHeight || "n/a"}; padding block ${chipStyle?.paddingBlockStart || "n/a"}/${chipStyle?.paddingBlockEnd || "n/a"}; text nudge ${textNudge}; compensation ${textCompensation}; margin end ${chipMarginEnd}\n` +
-      `Chip border box ${chipRect ? `${px(chipRect.width)}×${px(chipRect.height)}` : "n/a"}; Chip occupied block ${occupiedChipBlock === null ? "n/a" : px(occupiedChipBlock)}; Button border box ${buttonRect ? `${px(buttonRect.width)}×${px(buttonRect.height)}` : "n/a"}; provider Button size delta from same standalone control ${buttonRect && sample.dataset.kind === "standalone-button" && tableButtonSize ? `${px(buttonRect.width - tableButtonSize.width)}×${px(buttonRect.height - tableButtonSize.height)}` : "not this comparison"}; host ${ownerRect ? `${px(ownerRect.width)}×${px(ownerRect.height)}` : "n/a"}; table host row ${hostRowHeight === null ? "n/a" : px(hostRowHeight)}; delta from plain row ${heightDelta === null ? "n/a" : px(heightDelta)}`;
+      `Chip border box ${chipRect ? `${px(chipRect.width)}×${px(chipRect.height)}` : "n/a"}; Chip occupied block ${occupiedChipBlock === null ? "n/a" : px(occupiedChipBlock)}; Button border box ${buttonRect ? `${px(buttonRect.width)}×${px(buttonRect.height)}` : "n/a"}; provider Button vs standalone size delta ${tableButtonSize && standaloneButtonSize && sample.dataset.kind === "table-button" ? `${px(tableButtonSize.width - standaloneButtonSize.width)}×${px(tableButtonSize.height - standaloneButtonSize.height)}` : "shown on provider Button row"}; host ${ownerRect ? `${px(ownerRect.width)}×${px(ownerRect.height)}` : "n/a"}; table host row ${hostRowHeight === null ? "n/a" : px(hostRowHeight)}; delta from plain row ${heightDelta === null ? "n/a" : px(heightDelta)}`;
     sample.dataset.densityEvidence = metrics;
     if (target && owner) peers.push({ sample, target, owner, metrics });
   }
