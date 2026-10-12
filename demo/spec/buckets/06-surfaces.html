@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" data-spec-root="../../..">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>06 · Surfaces · Baseline Foundry</title>
+    <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../../spec-shell.css" />
+    <style>
+      .surface-page { max-inline-size: none; }
+      .surface-intro { max-inline-size: 72ch; }
+      .surface-note { font-size: .875rem; }
+      .surface-row { padding-block: var(--bf-space-2); }
+      .surface-row h2 { margin-block-end: var(--bf-space-1); }
+      .surface-track { position: relative; display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      .surface-row[data-kind="tooltip"] .surface-track { overflow: visible; }
+      .surface-sample { flex: 0 0 auto; inline-size: 18rem; min-inline-size: 0; }
+      .surface-probe { position: relative; min-block-size: 8rem; }
+      .surface-sample[data-kind="tooltip"] .surface-probe { min-block-size: 12rem; }
+      .surface-sample[data-kind="navigation"] .surface-probe { inline-size: 18rem; }
+      .surface-caption { display: block; max-inline-size: 18rem; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: 1.25; font-weight: 400; overflow-wrap: anywhere; }
+      .surface-reference { margin: 0; }
+      .surface-working-standard [data-owner] { padding-block: var(--bf-panel-padding-block) !important; padding-inline: var(--bf-component-inline-inset-action) !important; }
+      .surface-working-major [data-owner] { padding-inline: var(--bf-page-margin) !important; }
+      .surface-working-navigation [data-owner] { --bf-side-navigation-gutter: var(--bf-page-margin) !important; }
+      .surface-probe > .bf-modal-dialog, .surface-probe > .bf-panel { inline-size: 18rem; min-block-size: 8rem; }
+      .surface-probe > .bf-card { inline-size: 18rem; }
+      .surface-probe > .bf-option-card { inline-size: 18rem; }
+      .surface-probe .bf-card-content { min-inline-size: 0; }
+      .surface-probe .bf-card-preview { block-size: 3rem; }
+      .surface-probe .bf-tooltip-message { opacity: 1; visibility: visible; }
+      .surface-probe .bf-panel-content { min-block-size: 0; }
+      .surface-probe .bf-side-navigation-drawer { min-block-size: 8rem; }
+      .surface-probe .bf-side-navigation-list { display: block; }
+      .surface-probe .bf-side-navigation-link { text-decoration: none; }
+      .surface-baseline-marker { display: inline-block; inline-size: 0; block-size: 0; padding: 0; margin: 0; border: 0; vertical-align: baseline; }
+      .bucket-guide-layer { position: absolute; inset-block: 0; inset-inline-start: 0; z-index: 100; pointer-events: none; }
+      .bucket-guide-mark { position: absolute; pointer-events: none; }
+      .bucket-guide-mark.is-top, .bucket-guide-mark.is-end { background: #d32229; }
+      .bucket-guide-mark.is-baseline { background: #116bb8; }
+      .bucket-guide-mark.is-tick { transform: translateY(-.25rem); block-size: .5rem !important; inline-size: .0625rem !important; }
+      .surface-sample pre { display: none; }
+      .surface-key { font: .8rem/1.4 ui-monospace, monospace; }
+      .surface-key b { color: #c33; } .surface-key i { color: #2379cb; font-style: normal; }
+    </style>
+  </head>
+  <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
+    <main class="bf-page is-fill surface-page">
+      <header class="bf-stack is-dense surface-intro">
+        <h1>06 · Surfaces</h1>
+        <p>Real Baseline Foundry surfaces compare current spacing with compact, standard and grid-gutter relationships. Standard and major rows are working candidates for O3; they are not approvals. Major block values remain the shipped values shown by inspection.</p>
+        <p class="surface-note">Card preserves its shipped content tracks and image; section padding and the physical content/footer seam are reported separately. The candidate uses the same public component anatomy.</p>
+        <p class="surface-key"><b>Red</b> = owner border-box start and occupied end · <i>Blue</i> = real text baseline. Shared 1px guides and short peer ticks; scroll sideways.</p>
+      </header>
+      <div id="surface-rows"></div>
+    </main>
+    <script type="module" src="./06-surfaces.js"></script>
+  </body>
+</html>

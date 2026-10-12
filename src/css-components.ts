@@ -81,7 +81,12 @@ function roleSelectedStartNudgeVar(roleName: string, fallback?: string): string 
   return fallback ? `var(--bf-${roleName}-nudge-start, ${fallback})` : `var(--bf-${roleName}-nudge-start)`;
 }
 
-export function componentsCss(tokens: ThemeTokens, themeSurfaces?: ThemeSurface[], siteScopes: string[] = [], defaultElementInlineGap?: string): string {
+export function componentsCss(
+  tokens: ThemeTokens,
+  themeSurfaces?: ThemeSurface[],
+  siteScopes: string[] = [],
+  defaultElementInlineGap?: string
+): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
   const h5 = tokens.roles.h5 ?? body;
@@ -133,7 +138,9 @@ ${copiedCodeSnippetStroke.owner}
 ${navigationDrawerStroke.owner}
 ${applicationAsideStroke.owner}
 :where(.bf-theme) {
-  --bf-element-gap-inline: ${defaultElementInlineGap ?? "var(--bf-field-gap)"};
+  --bf-element-gap-inline: ${defaultElementInlineGap ?? "0.5rem"};
+  --bf-surface-compact-inset-inline: var(--bf-component-inline-inset-field);
+  --bf-surface-compact-inset-block: var(--bf-control-block-inset);
 }
 
 :where(.bf-theme.bf-tier-editorial, .bf-theme.bf-tier-documentation, .bf-theme.bf-tier-app) {
@@ -1225,8 +1232,8 @@ ${contextualMenuGroupStroke.painter}
   margin: 0;
   max-inline-size: min(20rem, calc(100vw - (var(--bf-baseline) * 4)));
   opacity: 0;
-  padding-block: var(--bf-control-block-inset);
-  padding-inline: var(--bf-component-inline-inset-field);
+  padding-block: var(--bf-surface-compact-inset-block);
+  padding-inline: var(--bf-surface-compact-inset-inline);
   pointer-events: none;
   position: absolute;
   top: 100%;

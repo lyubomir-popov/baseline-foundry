@@ -1045,8 +1045,8 @@ function validateCommonCss(css: string): void {
   }
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tooltip-message)", {
     "display": "flow-root",
-    "padding-block": "var(--bf-control-block-inset)",
-    "padding-inline": "var(--bf-component-inline-inset-field)"
+    "padding-block": "var(--bf-surface-compact-inset-block)",
+    "padding-inline": "var(--bf-surface-compact-inset-inline)"
   }, "Tooltip outer surface owns compact padding and contains its metric text child");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tooltip-text)", {
     "display": "block",
@@ -1251,6 +1251,8 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column grid.");
   assert(!css.includes(".bf-control-grid"), "Expected generated CSS to omit the deprecated bf-control-grid helper.");
   assert(css.includes(":where(.bf-theme) :where(.bf-field.is-range) {\n  align-items: start;\n  column-gap: var(--bf-element-gap-inline);\n  display: grid;"), "Expected inline range fields to use the dedicated two-column layout and selected semantic inline gap.");
+  assert(css.includes(":where(.bf-theme) {") && css.includes("  --bf-surface-compact-inset-block: var(--bf-control-block-inset);") && css.includes("  --bf-surface-compact-inset-inline: var(--bf-component-inline-inset-field);"), "Expected compact surface edges to alias the selected control/field insets.");
+  assert(css.includes(":where(.bf-theme) :where(.bf-tooltip-message) {") && css.includes("  padding-block: var(--bf-surface-compact-inset-block);") && css.includes("  padding-inline: var(--bf-surface-compact-inset-inline);"), "Expected compact Tooltip frame padding to consume the shared compact surface aliases.");
   assert(css.includes(":where(.bf-theme) :where(.bf-slider) {\n  align-items: flex-start;\n  column-gap: var(--bf-element-gap-inline);\n  display: inline-flex;") && css.includes("  row-gap: var(--bf-field-gap);\n}\n\n:where(.bf-theme) :where(.bf-slider.is-stacked)"), "Expected slider peers to use the selected inline gap while retaining the current block gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-field.is-range.is-stacked) > :where(.bf-control, .bf-form-help) {\n  grid-column: 1;"), "Expected stacked range controls and help text to return to the explicit first column without creating an implicit narrow track.");
   assert(css.includes(":where(.bf-theme) :where(.bf-slider.is-stacked),\n:where(.bf-theme) :where(.bf-field.is-range.is-stacked) :where(.bf-slider) {\n  align-items: stretch;\n  display: grid;\n  gap: var(--bf-field-gap);"), "Expected stacked slider pairs and stacked range fields to share the same stacked layout.");
