@@ -56,8 +56,11 @@ function measure() {
     const chipRect = chip?.getBoundingClientRect();
     const buttonRect = button?.getBoundingClientRect();
     const chipStyle = chip ? getComputedStyle(chip) : null;
-    const hostRowHeight = sample.querySelector("[data-host-row]")?.getBoundingClientRect().height ?? null;
+    const hostRowRect = sample.querySelector("[data-host-row]")?.getBoundingClientRect() ?? null;
+    const hostRowHeight = hostRowRect?.height ?? null;
     const heightDelta = hostRowHeight !== null && referenceRowHeight !== null ? hostRowHeight - referenceRowHeight : null;
+    const chipStartClearance = chipRect && hostRowRect ? chipRect.top - hostRowRect.top : null;
+    const chipEndClearance = chipRect && hostRowRect ? hostRowRect.bottom - chipRect.bottom : null;
     const textNudge = chipStyle?.getPropertyValue("--bf-body-nudge-start").trim() || "not exposed";
     const textCompensation = chipStyle?.getPropertyValue("--bf-body-margin-bottom").trim() || "not exposed";
     const chipMarginEnd = chipStyle?.marginBlockEnd || "n/a";
@@ -73,7 +76,7 @@ function measure() {
     const metrics = `viewport ${window.innerWidth}px; tier ${tierName()}; sample ${sample.dataset.caption}\n` +
       `subscriber ${subscriber}; reset boundary ${reset}; host ${sample.dataset.kind === "plain" ? ".bf-table td reference" : tableCell ? ".bf-table td" : chip?.closest(".bf-tabs") ? ".bf-tabs" : chip?.closest(".bf-side-navigation") ? ".bf-side-navigation" : button ? "standalone button" : "standalone"}\n` +
       `control inset default ${defaultInset}; dense member ${denseInset}; selected member ${selectedInset}; Chip line-height ${chipStyle?.lineHeight || "n/a"}; padding block ${chipStyle?.paddingBlockStart || "n/a"}/${chipStyle?.paddingBlockEnd || "n/a"}; text nudge ${textNudge}; compensation ${textCompensation}; margin end ${chipMarginEnd}\n` +
-      `Chip border box ${chipRect ? `${px(chipRect.width)}×${px(chipRect.height)}` : "n/a"}; Chip occupied block ${occupiedChipBlock === null ? "n/a" : px(occupiedChipBlock)}; Button border box ${buttonRect ? `${px(buttonRect.width)}×${px(buttonRect.height)}` : "n/a"}; provider Button vs standalone size delta ${tableButtonSize && standaloneButtonSize && sample.dataset.kind === "table-button" ? `${px(tableButtonSize.width - standaloneButtonSize.width)}×${px(tableButtonSize.height - standaloneButtonSize.height)}` : "shown on provider Button row"}; host ${ownerRect ? `${px(ownerRect.width)}×${px(ownerRect.height)}` : "n/a"}; table host row ${hostRowHeight === null ? "n/a" : px(hostRowHeight)}; delta from plain row ${heightDelta === null ? "n/a" : px(heightDelta)}`;
+      `Chip border box ${chipRect ? `${px(chipRect.width)}×${px(chipRect.height)}` : "n/a"}; Chip occupied block ${occupiedChipBlock === null ? "n/a" : px(occupiedChipBlock)}; Chip border-box clearance inside row start/end ${chipStartClearance === null ? "n/a" : `${px(chipStartClearance)}/${px(chipEndClearance)}`}; Button border box ${buttonRect ? `${px(buttonRect.width)}×${px(buttonRect.height)}` : "n/a"}; provider Button vs standalone size delta ${tableButtonSize && standaloneButtonSize && sample.dataset.kind === "table-button" ? `${px(tableButtonSize.width - standaloneButtonSize.width)}×${px(tableButtonSize.height - standaloneButtonSize.height)}` : "shown on provider Button row"}; host ${ownerRect ? `${px(ownerRect.width)}×${px(ownerRect.height)}` : "n/a"}; table host row ${hostRowHeight === null ? "n/a" : px(hostRowHeight)}; delta from plain row ${heightDelta === null ? "n/a" : px(heightDelta)}`;
     sample.dataset.densityEvidence = metrics;
     if (target && owner) peers.push({ sample, target, owner, metrics });
   }
