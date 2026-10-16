@@ -21,7 +21,7 @@ const tableCellTextareaSubscribers = [
 export const componentDensityPolicy = {
   version: 2,
   tableCell: {
-    products: ["editorial", "documentation", "app"],
+    products: ["editorial", "documentation", "app", "os"],
     provider: ".bf-table :is(td, th)",
     providerBoundaries: ["td", "th", ".bf-theme"],
     subscribers: {
@@ -56,6 +56,7 @@ export function tableCellDensityPolicySelectors(policy: TableCellDensityPolicy =
   fieldBoundaries: string;
   hosts: string;
   iconOnlyButtons: string;
+  labeledIconButtons: string;
   singleLineEntries: string;
   textareas: string;
 } {
@@ -65,6 +66,7 @@ export function tableCellDensityPolicySelectors(policy: TableCellDensityPolicy =
   const chips = bounded(policy.subscribers.chips);
   const boxedButtons = bounded(policy.subscribers.boxedButtons);
   const iconOnlyButtons = bounded(policy.subscribers.boxedButtons.map(button => `${button}:is(.is-icon:not(:has(.bf-button-label)))`));
+  const labeledIconButtons = bounded(policy.subscribers.boxedButtons.map(button => `${button}:is(.is-icon:has(.bf-button-label))`));
   const singleLineEntries = bounded(policy.subscribers.singleLineEntries);
   const textareas = bounded(policy.subscribers.textareas);
   // Bound the leaf search as well as its owner: a nested cell or product root
@@ -79,6 +81,7 @@ export function tableCellDensityPolicySelectors(policy: TableCellDensityPolicy =
     fieldBoundaries,
     hosts: `:scope:has(${members})`,
     iconOnlyButtons,
+    labeledIconButtons,
     singleLineEntries,
     textareas
   };

@@ -85,6 +85,8 @@ export function componentsCss(
   tokens: ThemeTokens,
   themeSurfaces?: ThemeSurface[],
   tableDensityScopes: string[] = [],
+  tableDensityStandardScopes: string[] = [],
+  tableDensityOsScopes: string[] = [],
   defaultElementInlineGap?: string
 ): string {
   const body = tokens.roles.body;
@@ -1016,6 +1018,8 @@ ${tableCss({
   bodyLineHeight,
   bodyTypeStyles,
   tableDensityScopes,
+  tableDensityStandardScopes,
+  tableDensityOsScopes,
 })}
 
 ${chipBadgeStatusCss({

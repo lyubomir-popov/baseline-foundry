@@ -3685,7 +3685,7 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
         const geometry = await page.evaluate(() => {
           const number = (value: string) => Number.parseFloat(value);
           const baseline = (target: HTMLElement): number | null => {
-            if (target.matches(".is-icon")) return null;
+            if (target.matches(".is-icon:not(:has(.bf-button-label))")) return null;
             if (target.matches("input, select, textarea")) {
               const rig = document.createElement("span");
               rig.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap";
@@ -3806,23 +3806,23 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           if (!defaultBoundary) throw new Error("Missing default field boundary.");
           return { plain: { row: plainRow.getBoundingClientRect().height, baseline: plainBaseline }, cases, standalone, stoppedOwners, textareaInteraction, defaultBoundaryMargin: number(getComputedStyle(defaultBoundary).marginBlockEnd), outerPadding: outer ? number(getComputedStyle(outer).paddingBlockStart) : null, productOuterPadding: productOuter ? number(getComputedStyle(productOuter).paddingBlockStart) : null };
         });
-        const supported = tier !== "os";
+        const denseInset = tier === "os" ? 0 : 4;
         const plain = geometry.plain;
         assert(Math.abs(geometry.cases.hidden.row - plain.row) < 0.1, `Expected ${tier}/${tone} hidden metadata to leave the plain table seat unchanged: ${JSON.stringify(geometry.cases.hidden)}.`);
         assert(geometry.stoppedOwners.every(owner => owner.display === "grid" && Math.abs(owner.marginEnd - geometry.defaultBoundaryMargin) < 0.01), `Expected ${tier}/${tone} a descendant input across a product root or cell boundary not to enroll the outer field owner: ${JSON.stringify(geometry.stoppedOwners)}.`);
         const members = ["button", "legacy-button", "legacy-input", "disabled", "leading", "chip", "click-chip", "dismiss-chip", "header", "neutral", "input", "neutral-input", "select", "nested-inner"];
-        if (supported) {
+        {
           for (const name of members) {
             const item = geometry.cases[name];
             assert(Math.abs(item.row - plain.row) < 0.1, `Expected ${tier}/${tone} ${name} to preserve the plain table row; got ${JSON.stringify(item)} vs ${JSON.stringify(plain)}.`);
-            assert(Math.abs(item.padding - 4) < 0.01 && Math.abs(item.selected - 4) < 0.01, `Expected ${tier}/${tone} ${name} to bind the existing 4px dense member: ${JSON.stringify(item)}.`);
+            assert(Math.abs(item.padding - denseInset) < 0.01 && Math.abs(item.selected - denseInset) < 0.01, `Expected ${tier}/${tone} ${name} to bind its existing ${denseInset}px member: ${JSON.stringify(item)}.`);
             assert(item.clearanceStart > 0 && item.clearanceEnd > 0, `Expected ${tier}/${tone} ${name} to retain positive painted clearance: ${JSON.stringify(item)}.`);
-            if (item.baseline !== null) assert(Math.abs(item.baseline - plain.baseline) <= 0.51, `Expected ${tier}/${tone} ${name} baseline to match the plain row (native inputs allow the observed half-pixel CSS baseline): ${JSON.stringify(item)} vs ${JSON.stringify(plain)}.`);
+            if (item.baseline !== null) assert(Math.abs(item.baseline - plain.baseline) <= (["input", "neutral-input", "legacy-input", "select"].includes(name) ? 0.51 : 0.02), `Expected ${tier}/${tone} ${name} baseline to match the plain row (native inputs allow the observed half-pixel CSS baseline): ${JSON.stringify(item)} vs ${JSON.stringify(plain)}.`);
           }
           const icon = geometry.cases.icon;
           assert(Math.abs(icon.row - plain.row) < 0.1 && Math.abs(icon.box - icon.width) < 0.1 && icon.verticalAlign === "top" && icon.clearanceStart > 0 && icon.clearanceEnd > 0, `Expected ${tier}/${tone} icon-only flow to stay square within the plain row with positive clearance: ${JSON.stringify(icon)}.`);
           assert(Math.abs(geometry.cases.link.row - plain.row) < 0.1 && geometry.cases.reset.row > plain.row, `Expected ${tier}/${tone} link-style Button to follow the plain-text seat while a nested product reset retains default boxed geometry: ${JSON.stringify(geometry.cases)}.`);
-          assert(Math.abs(geometry.outerPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["nested-inner"].cellStart - (geometry.cases.reset.cellStart - 4)) < 0.01, `Expected ${tier}/${tone} nested cells to select only their nearest owner: ${JSON.stringify(geometry)}.`);
+          assert(Math.abs(geometry.outerPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["nested-inner"].cellStart - (geometry.cases.reset.cellStart - denseInset)) < 0.01, `Expected ${tier}/${tone} nested cells to select only their nearest owner: ${JSON.stringify(geometry)}.`);
           const neutralInput = geometry.cases["neutral-input"];
           assert(neutralInput.boundaryDisplay === "inline-grid" && neutralInput.boundaryMarginStart === 0 && neutralInput.boundaryMarginEnd === 0, `Expected ${tier}/${tone} a neutral descendant wrapper to preserve the actual field-boundary seat and closure: ${JSON.stringify(neutralInput)}.`);
           assert(Math.abs(geometry.productOuterPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["product-inner"].row - geometry.cases["product-plain"].row) < 0.1 && geometry.cases["product-inner"].padding === 4, `Expected ${tier}/${tone} a nested product root to reset the outer provider and its own inner table to restart supported density: ${JSON.stringify(geometry)}.`);
@@ -3831,16 +3831,9 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           const standaloneTextarea = geometry.standalone[4];
           const denseContentViewport = textarea.contentViewport;
           const standaloneContentViewport = standaloneTextarea.contentViewport;
-          assert(textarea.padding === 4 && textarea.row > plain.row && textarea.clearanceStart > 0 && textarea.clearanceEnd > 0 && textarea.resize === "vertical" && textarea.rows === 2 && textarea.scrollHeight >= textarea.clientHeight, `Expected ${tier}/${tone} Textarea to preserve a configured two-line, vertically resizable viewport with dense edges and positive clearance: ${JSON.stringify(textarea)}.`);
+          assert(textarea.padding === denseInset && textarea.row > plain.row && textarea.clearanceStart > 0 && textarea.clearanceEnd > 0 && textarea.resize === "vertical" && textarea.rows === 2 && textarea.scrollHeight >= textarea.clientHeight, `Expected ${tier}/${tone} Textarea to preserve a configured two-line, vertically resizable viewport with dense edges and positive clearance: ${JSON.stringify(textarea)}.`);
           assert(standaloneTextarea.rows === 2 && standaloneTextarea.resize === "vertical" && Math.abs(denseContentViewport - standaloneContentViewport) <= 0.1, `Expected ${tier}/${tone} dense Textarea to preserve the standalone content viewport while only changing its edge seat: ${JSON.stringify({ textarea, standaloneTextarea, denseContentViewport, standaloneContentViewport })}.`);
           assert(Math.abs(textarea.row - geometry.cases["content-reference"].row) <= 0.1 && textarea.row >= geometry.cases["plain-two"].row, `Expected ${tier}/${tone} dense Textarea closure to match a plain row with the preserved content viewport while retaining the literal two-line diagnostic: ${JSON.stringify({ textarea, contentReference: geometry.cases["content-reference"], literalTwoLine: geometry.cases["plain-two"] })}.`);
-        } else {
-          for (const name of ["button", "chip", "input", "select"]) {
-            const item = geometry.cases[name];
-            const standaloneIndex = name === "button" ? 0 : name === "chip" ? 1 : name === "input" ? 2 : 3;
-            assert(item.row > plain.row && Math.abs(item.padding - geometry.standalone[standaloneIndex].padding) < 0.01, `Expected OS ${tone} shipping table ${name} to retain the standalone/default seat: ${JSON.stringify(item)}.`);
-          }
-          assert(Math.abs(geometry.productOuterPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["product-inner"].row - geometry.cases["product-plain"].row) < 0.1 && geometry.cases["product-inner"].padding === 4, `Expected OS ${tone} outer shipping scope to remain default while a nested supported product restarts table density: ${JSON.stringify(geometry)}.`);
         }
       }
     }
@@ -3853,7 +3846,7 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
       const row = sample.querySelector<HTMLElement>("[data-host-row]");
       return { caption: sample.querySelector(".density-caption")?.textContent ?? "", row: row?.getBoundingClientRect().height ?? 0, box: target?.getBoundingClientRect().height ?? 0, padding: target ? Number.parseFloat(getComputedStyle(target).paddingBlockStart) : -1 };
     }));
-    assert(osProposal.length === 7 && osProposal.slice(1, 4).every(item => item.row > osProposal[0].row) && osProposal.slice(4).every(item => Math.abs(item.row - osProposal[0].row) < 0.1 && item.padding === 0), `Expected the bucket-only OS proposal to compare unchanged shipping Button/Chip/input with fitted 0-inset candidates: ${JSON.stringify(osProposal)}.`);
+    assert(osProposal.length === 7 && osProposal.slice(1).every(item => Math.abs(item.row - osProposal[0].row) < 0.1 && item.padding === 0), `Expected every visible OS generated-source and demo-override Button/Chip/input to fit the same plain row using the existing 0 inset: ${JSON.stringify(osProposal)}.`);
     await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=before`, { waitUntil: "networkidle" });
     await page.locator("[data-page-chrome-tier-select]").selectOption("os");
     await page.waitForFunction(() => document.body.dataset.bfTier === "os");
@@ -3943,12 +3936,10 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
         }
         const main = proof.tracks[0];
         const members = main.peers.filter(peer => ["member", "plain-inline"].includes(peer.kind ?? ""));
-        if (tier !== "os") {
           for (const peer of members) assert(Math.abs(absoluteGridRequired ? peer.metricPhaseError : peer.contentMetricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - main.referenceHeight) < 0.1, `Expected ${tier}/${width} ${peer.caption} to match the plain row and ${absoluteGridRequired ? "absolute page-grid phase" : "intrinsic content-root phase only"}: ${JSON.stringify(peer)}.`);
-        } else {
-          const candidates = proof.tracks[1].peers.filter(peer => peer.kind === "os-proposal");
-          assert(candidates.length === 3 && candidates.every(peer => Math.abs(absoluteGridRequired ? peer.metricPhaseError : peer.contentMetricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - proof.tracks[1].referenceHeight) < 0.1), `Expected OS/${width} candidate text/rows to align with the plain row and ${absoluteGridRequired ? "document grid" : "intrinsic content-root flow only"}: ${JSON.stringify(candidates)}.`);
-        }
+        const secondary = proof.tracks[1];
+        const secondaryMembers = secondary.peers.filter(peer => ["os-shipping", "os-proposal"].includes(peer.kind ?? ""));
+        for (const peer of secondaryMembers) assert(Math.abs(absoluteGridRequired ? peer.metricPhaseError : peer.contentMetricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - secondary.referenceHeight) < 0.1, `Expected ${tier}/${width} every secondary source/override peer to match its plain row: ${JSON.stringify(peer)}.`);
       }
     }
   } finally {

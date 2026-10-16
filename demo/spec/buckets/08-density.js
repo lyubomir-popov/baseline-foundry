@@ -19,6 +19,7 @@ const tableSpecimens = [
   ["Plain-text table row · reference", tableRow(`<span data-target>${bodyCopy}</span>`, "Plain text reference row"), "plain"],
   ["Classed inline body · reference parity", tableRow(`<span class="bf-body" data-target>${bodyCopy}</span>`, "Classed inline body reference row"), "plain-inline"],
   ["Boxed Button · automatic table seat", tableRow(`<button class="bf-button" type="button" data-target>Active</button>`, "Table Button row"), "member"],
+  ["Leading-icon Button · text baseline", tableRow(`<button class="bf-button is-icon" type="button" data-target><span class="bf-icon is-search" aria-hidden="true"></span><span class="bf-button-label">Active</span></button>`, "Leading-icon table Button row"), "member"],
   ["Disabled Button · state keeps membership", tableRow(`<button class="bf-button" type="button" disabled data-target>Active</button>`, "Disabled table Button row"), "member"],
   ["Icon-only Button · square flow check", tableRow(`<button class="bf-button is-icon" type="button" aria-label="Search" data-target><span class="bf-icon is-search" aria-hidden="true"></span></button>`, "Icon Button row"), "icon"],
   ["Static Chip · automatic table seat", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">${bodyCopy}</span></span>`, "Static Chip row"), "member"],
@@ -39,9 +40,9 @@ const tableSpecimens = [
 
 const osSpecimens = [
   ["OS plain-text table row · reference", tableRow(`<span class="bf-body" data-target>${bodyCopy}</span>`, "OS plain text reference row"), "plain"],
-  ["OS shipping Button · unchanged", tableRow(`<button class="bf-button" type="button" data-target>Active</button>`, "OS shipping Button row"), "os-shipping"],
-  ["OS shipping Chip · unchanged", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "OS shipping Chip row"), "os-shipping"],
-  ["OS shipping input · unchanged", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" aria-label="OS shipping input" data-target /></span>`, "OS shipping input row"), "os-shipping"],
+  ["OS generated Button", tableRow(`<button class="bf-button" type="button" data-target>Active</button>`, "OS shipping Button row"), "os-shipping"],
+  ["OS generated Chip", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "OS shipping Chip row"), "os-shipping"],
+  ["OS generated input", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" aria-label="OS shipping input" data-target /></span>`, "OS shipping input row"), "os-shipping"],
   ["OS 0-inset proposal · Button", tableRow(`<button class="bf-button" type="button" data-target>Active</button>`, "OS proposed Button row", { proposal: true }), "os-proposal"],
   ["OS 0-inset proposal · Chip", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "OS proposed Chip row", { proposal: true }), "os-proposal"],
   ["OS 0-inset proposal · wrapped input", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" aria-label="OS proposed input" data-target /></span>`, "OS proposed input row", { proposal: true }), "os-proposal"]
@@ -71,7 +72,7 @@ const deferredSamples = createSamples(deferredTrack, deferredSpecimens);
 const px = value => `${Math.round(value * 100) / 100}px`;
 const tierName = () => document.body.dataset.bfTier || [...document.body.classList].find(name => name.startsWith("bf-tier-"))?.slice(8) || "unknown";
 const bundleVersion = () => stylesheet instanceof HTMLLinkElement && /\/before\//.test(new URL(stylesheet.href).pathname) ? "before" : "after";
-const isSupportedProduct = () => ["editorial", "documentation", "app"].includes(tierName());
+const isSupportedProduct = () => ["editorial", "documentation", "app", "os"].includes(tierName());
 
 function syncOsProposalState() {
   const active = tierName() === "os" && bundleVersion() === "after";
@@ -98,7 +99,7 @@ function updateCaption(sample, production, proposal) {
       : `${base} · inactive outside OS After comparison`;
   } else if (sample.dataset.kind === "os-shipping") {
     caption.textContent = tierName() === "os"
-      ? `${base} · ${bundleVersion() === "after" ? "current published default" : "frozen historical bundle"}`
+      ? `${base} · ${bundleVersion() === "after" ? "generated table seat" : "frozen historical bundle"}`
       : `${base} · ordinary ${tierName()} table seat`;
   } else if (["member", "icon", "multiline"].includes(sample.dataset.kind)) {
     caption.textContent = production ? `${base} · enrolled in ${tierName()}` : `${base} · current bundle/product does not enroll`;
@@ -166,7 +167,7 @@ function measureTrack(track, samples) {
 function measure() {
   syncOsProposalState();
   document.querySelector("#density-table-heading").textContent = tierName() === "os"
-    ? "OS shipping table controls · unsupported current-state diagnostic"
+    ? "OS generated table controls"
     : "Supported table seats and reset boundary";
   measureTrack(tableTrack, tableSamples);
   measureTrack(osTrack, osSamples);

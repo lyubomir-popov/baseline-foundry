@@ -721,6 +721,36 @@ async function validateExampleDogfooding(): Promise<void> {
   assert(!/\.(?:example)-(?:frame|fixed-width|hero|stack|actions|card|surface|callout|span-demo|span-row|tier-group|nested-specimens|stage-shell|stage-header)(?![a-z0-9_-])/.test(gridExamplesCss), "Expected grid examples CSS to avoid generic non-dogfooded wrapper/card classes.");
 }
 
+function validateTableDensityProductBindings(css: string, defaultProduct?: string): void {
+  const policy = componentDensityPolicy.tableCell;
+  const explicitTierClasses = policy.products.map(product => `.bf-tier-${product}`).join(", ");
+  const defaultScope = `(:where(.bf-theme:not(${explicitTierClasses}))) to (:where(.bf-theme))`;
+  const cellScope = "(:where(.bf-table :is(td, th))) to (:where(td, th, .bf-theme))";
+  const hostBindings = new Map<string, string[]>();
+
+  parseCss(css).walkDecls(policy.denseMember, declaration => {
+    const host = declaration.parent;
+    if (host?.type !== "rule" || !host.selector.startsWith(":scope:has(")) return;
+    const cell = host.parent;
+    const product = cell?.parent;
+    assert(cell?.type === "atrule" && cell.name === "scope" && cell.params === cellScope, "Expected table seats to stop at the nearest cell or product root.");
+    assert(product?.type === "atrule" && product.name === "scope", "Expected table seats to have a product scope.");
+    hostBindings.set(product.params, [...(hostBindings.get(product.params) ?? []), declaration.value]);
+  });
+
+  for (const product of policy.products) {
+    const productScope = `(:where(.bf-theme.bf-tier-${product})) to (:where(.bf-theme))`;
+    const expected = product === "os" ? "var(--bf-control-block-inset)" : "0.25rem";
+    assert(JSON.stringify(hostBindings.get(productScope)) === JSON.stringify([expected]), `Expected explicit ${product} table seats to bind ${expected}; got ${JSON.stringify(hostBindings.get(productScope))}.`);
+  }
+  const expectedDefault = defaultProduct === "os" ? "var(--bf-control-block-inset)" : "0.25rem";
+  assert(
+    JSON.stringify(hostBindings.get(defaultScope) ?? []) === JSON.stringify(defaultProduct ? [expectedDefault] : []),
+    `Expected the default table seat to belong only to ${defaultProduct ?? "an explicit tier"} and exclude every explicit tier class.`
+  );
+  assert(hostBindings.size === policy.products.length + (defaultProduct ? 1 : 0), "Expected exactly one table-seat binding per supported product scope.");
+}
+
 function validateCommonCss(css: string): void {
   // PostCSS-parsed view of the same bundle. New assertions and migrated
   // legacy ones should prefer the AST helpers (assertRuleHasDecl, etc.) over
@@ -1513,7 +1543,7 @@ function validateCommonCss(css: string): void {
     emittedSquareAliasCount += 1;
     emittedSquareAliases.set(parent.selector, declaration.value);
   });
-  assert([expectedSquareAliases.size + 2, expectedSquareAliases.size + 3].includes(emittedSquareAliasCount) && emittedSquareAliases.size === expectedSquareAliases.size, `Expected the six reviewed square-block states, with the table-context state emitted for the three explicit supported surfaces plus any supported default surface; got ${emittedSquareAliasCount} declarations and ${JSON.stringify([...emittedSquareAliases])}.`);
+  assert([expectedSquareAliases.size + 4, expectedSquareAliases.size + 5].includes(emittedSquareAliasCount) && emittedSquareAliases.size === expectedSquareAliases.size, `Expected the six reviewed square-block states, with the table-context state emitted for the four explicit supported surfaces plus any supported default surface; got ${emittedSquareAliasCount} declarations and ${JSON.stringify([...emittedSquareAliases])}.`);
   for (const [selector, value] of expectedSquareAliases) {
     assert(emittedSquareAliases.get(selector) === value, `Expected ${selector} to re-point --bf-square-block-size to ${value}, got ${emittedSquareAliases.get(selector) ?? "nothing"}.`);
   }
@@ -1709,7 +1739,7 @@ function validateCommonCss(css: string): void {
   const density = componentDensityPolicy.tableCell;
   assert(
     componentDensityPolicy.version === 2 &&
-    JSON.stringify(density.products) === JSON.stringify(["editorial", "documentation", "app"]) &&
+    JSON.stringify(density.products) === JSON.stringify(["editorial", "documentation", "app", "os"]) &&
     density.provider === ".bf-table :is(td, th)" &&
     JSON.stringify(density.providerBoundaries) === JSON.stringify(["td", "th", ".bf-theme"]) &&
     density.subscribers.chips.includes(".bf-chip") &&
@@ -1724,21 +1754,25 @@ function validateCommonCss(css: string): void {
     css.includes(`${density.comfortableMember}: var(--bf-control-block-inset);`) &&
     css.includes(`${density.denseMember}: var(--bf-space-half);`) &&
     css.includes(`${density.denseMember}: 0.25rem;`) &&
+    css.includes(`${density.denseMember}: var(--bf-control-block-inset);`) &&
     css.includes(`${density.currentMember}: var(${density.denseMember});`) &&
     Object.values(density.componentBindings).every(binding => css.includes(`${binding}: var(${density.currentMember}`)) &&
     css.includes("line-height: var(--bf-body-line-height);") &&
     css.includes("margin-block: 0;") &&
     css.includes("min-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(--bf-chip-control-block-inset) * 2)));"),
-    "Expected table members to bind the existing 4px dense member without a layout-border term or child compensation."
+    "Expected table members to bind the existing 4px or OS control inset through the shared seat without a layout-border term or child compensation."
   );
   assert(
     css.includes("@scope (:where(.bf-theme.bf-tier-editorial)) to (:where(.bf-theme))") &&
     css.includes("@scope (:where(.bf-theme.bf-tier-documentation)) to (:where(.bf-theme))") &&
     css.includes("@scope (:where(.bf-theme.bf-tier-app)) to (:where(.bf-theme))") &&
+    css.includes("@scope (:where(.bf-theme.bf-tier-os)) to (:where(.bf-theme))") &&
     css.includes("@scope (:where(.bf-table :is(td, th))) to (:where(td, th, .bf-theme))") &&
     css.includes(":scope:has(") && css.includes(".bf-button:not(.is-link)") &&
+    css.includes(":is(.is-icon:has(.bf-button-label))") &&
+    css.includes("align-items: baseline;") && css.includes("align-self: center;") &&
     !css.includes(".bf-dense-chip-host"),
-    "Expected automatic table enrollment to cross neutral descendants, stop at nearest cells/product roots, support three products, and expose no public host toggle."
+    "Expected automatic table enrollment to cross neutral descendants, stop at nearest cells/product roots, support all four products, and expose no public host toggle."
   );
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "border-block-width": "0"
@@ -2383,6 +2417,7 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   assert(layout.gridGapBlock === "1rem", "Expected the OS tier block grid gap token to provide the x-small 1rem gap.");
   assert(layout.pageMargin === "1rem", "Expected the OS tier page margin token to provide the x-small 1rem margin.");
   assert(components.radius === "0rem", "Expected the OS tier controls to stay square like PVR/Vanilla.");
+  assert(components.controlBlockInset === "0rem", "Expected the existing OS control block inset to remain zero for table seats and standalone controls.");
   assert(components.inlineInsetField === "0.25rem", "Expected the OS field inset to stay tighter than action surfaces.");
   assert(components.inlineInsetAction === "0.5rem", "Expected the OS action inset to adopt the Canonical two-unit command start.");
   assert(components.inlineInsetContinuation === "1.25rem", "Expected the OS continuation inset to adopt the Canonical five-unit copy start.");
@@ -2579,6 +2614,17 @@ async function main(): Promise<void> {
   runInvariant("Common CSS (OS)", () => validateCommonCss(osTier.css));
   runInvariant("Common CSS (prose preset)", () => validateCommonCss(prosePreset.css));
   runInvariant("Common CSS (app preset)", () => validateCommonCss(appTierPreset.css));
+  for (const [surface, defaultProduct] of Object.entries({
+    default: "editorial",
+    editorial: "editorial",
+    documentation: "documentation",
+    app: "app",
+    os: "os",
+    prose: "editorial",
+    "app-tier": "app"
+  })) {
+    runInvariant(`Table density product scopes (${surface})`, () => validateTableDensityProductBindings(generatedCssArtifacts[surface], defaultProduct));
+  }
   runInvariant("BF variable reference detector", () => {
     assert(findUndeclaredBfVariableReferences(":root { color: var(--bf-missing); }").includes("--bf-missing"), "Expected the BF variable reference detector to reject a fallback-free dangling reference.");
     assert(findUndeclaredBfVariableReferences(":root { color: var(--bf-optional, currentColor); }").length === 0, "Expected the BF variable reference detector to allow an optional reference with a fallback.");

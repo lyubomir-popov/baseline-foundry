@@ -11,18 +11,21 @@ pre-reset state of this inbox is in git history.
 
 ## Current dispatch
 
-The owner rejected the earlier visual handoff: peer equality did not prove
-page-grid alignment. Bucket08 now restores heading compensation and integral
-caption/scrollbar flow, with independent desktop document-grid proof. Its390px
-shared-header absolute-grid failure is explicitly open; local bucket flow is
-not all-width acceptance. The OS acceptance request is withdrawn; no value or
-visual approval was granted. Do not add control offsets to hide root drift.
+The owner's latest instruction requires every compared text baseline on the
+blue reference. Generated OS table seating now uses its existing 0 inset;
+other tiers retain 4px. Labeled icon Buttons use the label baseline while the
+icon stays centered. Every original demo specimen remains visible; OS source
+controls are tested independently of the earlier local override. Full tests,
+focused behavior, types and component QA pass. Root's dark DPR1.5 browser check
+compares source text with guides on/off. Whole-bench strict completion remains
+open for reset/default/multiline proof and the existing mobile page-grid gap.
+No owner visual or final OS token-value approval is inferred.
 
 Use the active brief08 in the canonical workspace above, not the former
 docs-bottom-compensation-spec worktree. The accepted R3 receipt permits the
 bounded table-density repair. Spec024 tasks own execution and owner sign-off;
 the next external checkpoint is its existing D2/R4, not another R3 review.
-OS0 is an isolated After-only bucket proposal, not shipping approval. Compound
+The earlier local OS override remains visible; it no longer substitutes for generated source coverage. Final D2 OS approval remains open. Compound
 Search/Color, segmented/pagination and Nav/Tabs remain coverage gaps. The owner
 reported Nav double indentation and a flush-left tag; investigation is deferred
 and must not expand this table repair. No push or merge.

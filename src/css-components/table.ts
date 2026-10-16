@@ -5,10 +5,12 @@ type TableCssOptions = {
   bodyLineHeight: string;
   bodyTypeStyles: string;
   tableDensityScopes: string[];
+  tableDensityStandardScopes: string[];
+  tableDensityOsScopes: string[];
 };
 
 export function tableCss(options: TableCssOptions): string {
-  const { bodyLineHeight, bodyTypeStyles, tableDensityScopes } = options;
+  const { bodyLineHeight, bodyTypeStyles, tableDensityScopes, tableDensityStandardScopes, tableDensityOsScopes } = options;
   const selectors = tableCellDensityPolicySelectors();
   const density = componentDensityPolicy.tableCell;
   const cellSelector = ":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)";
@@ -17,10 +19,13 @@ export function tableCss(options: TableCssOptions): string {
 /* Table.Cell selects the dense control-block member for every eligible boxed
    action and entry seat. The cell absorbs that seat once; the child restores
    it around its own body line, so text keeps the plain row baseline. */
-${tableCellDensityScopedCss(tableDensityScopes, selectors.hosts, `${density.denseMember}: 0.25rem;
-${density.currentMember}: var(${density.denseMember});
+${tableCellDensityScopedCss(tableDensityScopes, selectors.hosts, `${density.currentMember}: var(${density.denseMember});
 padding-block-end: max(0rem, calc(var(--bf-table-row-padding-block-end) - var(${density.currentMember})));
 padding-block-start: max(0rem, calc(var(--bf-table-row-padding-block-start) - var(${density.currentMember})));`)}
+
+${tableCellDensityScopedCss(tableDensityStandardScopes, selectors.hosts, `${density.denseMember}: 0.25rem;`)}
+
+${tableCellDensityScopedCss(tableDensityOsScopes, selectors.hosts, `${density.denseMember}: var(--bf-control-block-inset);`)}
 
 ${tableCellDensityScopedCss(tableDensityScopes, selectors.boxedButtons, `${density.componentBindings.button}: var(${density.currentMember});
 line-height: var(--bf-body-line-height);
@@ -29,6 +34,12 @@ padding-block: var(${density.componentBindings.button});`)}
 
 ${tableCellDensityScopedCss(tableDensityScopes, selectors.iconOnlyButtons, `--bf-square-block-size: calc(var(--bf-body-line-height) + (var(${density.componentBindings.button}) * 2));
 vertical-align: top;`)}
+
+/* An icon-first flex button otherwise exports the icon's synthesized baseline.
+   Keep the label as its baseline participant while centering the icon. */
+${tableCellDensityScopedCss(tableDensityScopes, selectors.labeledIconButtons, `align-items: baseline;`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, `${selectors.labeledIconButtons} > .bf-icon`, `align-self: center;`)}
 
 ${tableCellDensityScopedCss(tableDensityScopes, `${selectors.singleLineEntries}, ${selectors.textareas}`, `${density.componentBindings.entry}: var(${density.currentMember});
 block-size: auto;

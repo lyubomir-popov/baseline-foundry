@@ -275,14 +275,20 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
   const tableDensityDefaultProduct = options.presetName === "prose" ? "editorial"
     : options.presetName === "app-tier" ? "app"
     : options.presetName;
-  const tableDensityScopes = [
+  // A direct tier bundle uses its own default product only when no explicit
+  // tier class takes over; every class-switched surface gets its own scope.
+  const explicitTierClasses = componentDensityPolicy.tableCell.products.map(tier => `.bf-tier-${tier}`).join(", ");
+  const tableDensityScopesByProduct = [
     ...(tableDensityDefaultProduct && tableDensityProducts.has(tableDensityDefaultProduct)
-      ? [":where(.bf-theme:not(.bf-tier-documentation, .bf-tier-app, .bf-tier-os))"]
+      ? [{ product: tableDensityDefaultProduct, scope: `:where(.bf-theme:not(${explicitTierClasses}))` }]
       : []),
     ...componentDensityPolicy.tableCell.products
       .filter(tier => themeSurfaces.some(surface => surface.className === `bf-tier-${tier}`))
-      .map(tier => `:where(.bf-theme.bf-tier-${tier})`)
+      .map(tier => ({ product: tier, scope: `:where(.bf-theme.bf-tier-${tier})` }))
   ];
+  const tableDensityScopes = tableDensityScopesByProduct.map(({ scope }) => scope);
+  const tableDensityStandardScopes = tableDensityScopesByProduct.filter(({ product }) => product !== "os").map(({ scope }) => scope);
+  const tableDensityOsScopes = tableDensityScopesByProduct.filter(({ product }) => product === "os").map(({ scope }) => scope);
   const presetCss = includesAppSurface ? `\n${appTierPresetCss(appScopes)}` : "";
   const tokenRowStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-token-row)", { anchor: "relative", color: "var(--bf-color-rule)", width: "0.0625rem" });
 
@@ -623,6 +629,8 @@ ${componentsCss(
   tokens,
   themeSurfaces,
   tableDensityScopes,
+  tableDensityStandardScopes,
+  tableDensityOsScopes,
   options.presetName === "os" ? "0.25rem" : options.presetName ? "0.5rem" : undefined
 )}
 
