@@ -617,7 +617,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       assert(occupiedBlockGeometry.textRuns.length === 8, `Expected ${tier} unboxed-text bucket to contain the reference plus all seven distinct metric roles.`);
       assert(occupiedBlockGeometry.nested.length === 10, `Expected ${tier} nested bucket to contain the reference plus all nine supported host/content combinations.`);
       assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.allowedInputLine === occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.allowedInputMargin === 0 && occupiedBlockGeometry.nestedApi.allowedButtonMargin === 0, `Expected ${tier} allowlisted nested fields and bordered buttons to consume the nested contract: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
-      assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.rejectedDateLine > occupiedBlockGeometry.nestedApi.allowedInputLine && occupiedBlockGeometry.nestedApi.rejectedLinkLine > occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.rejectedDateMargin > 0, `Expected ${tier} date inputs and link buttons to reject the nested API and retain their non-nested line geometry: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
+      assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.rejectedDateLine >= occupiedBlockGeometry.nestedApi.allowedInputLine && occupiedBlockGeometry.nestedApi.rejectedLinkLine >= occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.rejectedDateMargin > 0, `Expected ${tier} date inputs and link buttons outside a table provider to retain their default closure rather than opt into the legacy nested seat: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
       const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
       assertSharedHeight("single-line interface", interfaceComponents);
@@ -3607,31 +3607,26 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
         assert(
           audit &&
             audit.badgeContained &&
-            (tier === "editorial"
-              ? Math.abs(audit.chipHeight - 32) <= 0.1
-              : audit.chipHeight <= audit.cellLineHeight + 0.1) &&
+            (tier === "os"
+              ? audit.chipHeight <= audit.cellLineHeight + 0.1
+              : Math.abs(audit.chipHeight - (audit.cellLineHeight + 8)) <= 0.1) &&
             audit.rowHeightDelta <= 0.1,
           `Expected ${tier}/${tone} nested badge to stay inside its governed table Chip without enlarging the row: ${JSON.stringify(audit)}.`
         );
         assert(
           audit &&
             audit.controlRowHeightDelta <= audit.rowBorderSize &&
-            audit.controlTargetHeights.every(
-              height => height <= audit.controlCellLineHeight + audit.rowBorderSize
-            ) &&
-            audit.controlTargetHeights.every(
-              (height, index) =>
-                audit.standaloneTargetHeights[index] - height > audit.rowBorderSize
-            ) &&
             audit.nestedSelectionMarkCenterDeltas.every(
               delta => delta <= audit.rowBorderSize
             ) &&
-            Math.abs(
-              audit.controlCellPaddingBlockStart - audit.plainCellPaddingBlockStart
-            ) <= audit.rowBorderSize &&
-            Math.abs(
-              audit.controlCellPaddingBlockEnd - audit.plainCellPaddingBlockEnd
-            ) <= audit.rowBorderSize &&
+            (tier === "os"
+              ? audit.controlTargetHeights.every(height => height <= audit.controlCellLineHeight + audit.rowBorderSize) &&
+                Math.abs(audit.controlCellPaddingBlockStart - audit.plainCellPaddingBlockStart) <= audit.rowBorderSize &&
+                Math.abs(audit.controlCellPaddingBlockEnd - audit.plainCellPaddingBlockEnd) <= audit.rowBorderSize
+              : audit.controlTargetHeights.slice(0, 3).every(height => Math.abs(height - (audit.controlCellLineHeight + 8)) <= 0.1) &&
+                audit.controlTargetHeights.slice(3).every(height => height <= audit.controlCellLineHeight + audit.rowBorderSize) &&
+                Math.abs(audit.controlCellPaddingBlockStart - (audit.plainCellPaddingBlockStart - 4)) <= 0.01 &&
+                Math.abs(audit.controlCellPaddingBlockEnd - (audit.plainCellPaddingBlockEnd - 4)) <= 0.01) &&
             audit.controlCellBorderBlockEnd === audit.plainCellBorderBlockEnd &&
             audit.controlCellOverflow === audit.plainCellOverflow,
           `Expected ${tier}/${tone} explicitly nested controls to fit inside the ordinary table-cell rhythm: ${JSON.stringify(audit)}.`
@@ -3645,318 +3640,224 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
   }
 }
 
-async function verifyDenseSiteChipEnrollment(origin: string): Promise<void> {
+async function verifyDenseTableEnrollment(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const tones = ["light", "dark"] as const;
   const browser = await openBrowser();
-
   try {
-    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-    await page.goto(`${origin}/demo/components/chip.html`, { waitUntil: "networkidle" });
-    await waitForFonts(page);
-
-    for (const tone of tones) {
-      const toneToggle = page.locator("[data-page-chrome-tone-toggle]");
-      const wantsDark = tone === "dark";
-      if (await toneToggle.isChecked() !== wantsDark) {
-        await toneToggle.setChecked(wantsDark, { force: true });
-      }
-
-      for (const tier of tiers) {
-        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
-        await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+    await page.addInitScript("globalThis.__name = value => value;");
+    for (const tier of tiers) {
+      for (const tone of tones) {
+        await page.setContent(`<!doctype html><html><head>
+          <link rel="stylesheet" href="${origin}/demo/demo-fonts.css">
+          <link rel="stylesheet" href="${origin}/dist/tiers/${tier}/styles.css">
+          </head><body class="bf-theme bf-tier-${tier} is-${tone}">
+          <table class="bf-table"><tbody><tr data-case="plain"><td><span data-text>Active</span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="hidden"><td><span data-target>Active</span><input class="bf-input" type="hidden" value="metadata"></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="plain-two"><td><span data-target>First line<br>Second line</span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="content-reference"><td><span data-target data-content-reference>First line<br>Second line</span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="button"><td><button class="bf-button" type="button" data-target>Active</button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="legacy-button"><td><button class="bf-button is-nested" type="button" data-target>Active</button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="legacy-input"><td><span class="bf-field-boundary"><input class="bf-input is-nested" type="text" value="Active" data-target></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="disabled"><td><button class="bf-button" type="button" disabled data-target>Active</button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="leading"><td><button class="bf-button is-icon" type="button" data-target><span class="bf-icon is-search" aria-hidden="true"></span><span class="bf-button-label">Active</span></button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="icon"><td><button class="bf-button is-icon" type="button" aria-label="Search" data-target><span class="bf-icon is-search"></span></button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="link"><td><button class="bf-button is-link" type="button" data-target>Active</button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="chip"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="click-chip"><td><button class="bf-chip" type="button" data-target><span class="bf-chip-value">Active</span></button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="dismiss-chip"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span><button class="bf-chip-dismiss" type="button" aria-label="Dismiss"></button></span></td></tr></tbody></table>
+          <table class="bf-table"><thead><tr data-case="header"><th><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></th></tr></thead></table>
+          <table class="bf-table"><tbody><tr data-case="neutral"><td><span data-neutral><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="input"><td><span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" data-target></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="neutral-input"><td><span class="bf-field-boundary"><span data-neutral><input class="bf-input" type="text" value="Active" data-target></span></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="select"><td><span class="bf-field-boundary"><select class="bf-input" data-target><option>Active</option></select></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="textarea"><td><span class="bf-field-boundary"><textarea class="bf-input" rows="2" data-target>First line\nSecond line</textarea></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="reset"><td><span class="bf-theme"><button class="bf-button" type="button" data-target>Active</button></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr><td><span class="bf-field-boundary" data-reset-owner><span class="bf-theme"><input class="bf-input" type="text" value="Reset" data-target></span></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr><td><span class="bf-field-boundary" data-cell-owner><table class="bf-table"><tbody><tr><td><input class="bf-input" type="text" value="Inner" data-target></td></tr></tbody></table></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="nested-outer"><td data-outer><table class="bf-table"><tbody><tr data-case="nested-inner"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></td></tr></tbody></table></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr><td data-product-outer><div class="bf-theme bf-tier-documentation"><table class="bf-table"><tbody><tr data-case="product-plain"><td><span data-target>Active</span></td></tr></tbody></table><table class="bf-table"><tbody><tr data-case="product-inner"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></td></tr></tbody></table></div></td></tr></tbody></table>
+          <div data-standalone><button class="bf-button" type="button" data-target>Active</button><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span><span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" data-target></span><span class="bf-field-boundary"><select class="bf-input" data-target><option>Active</option></select></span><span class="bf-field-boundary"><textarea class="bf-input" rows="2" data-target>First line\nSecond line</textarea></span></div>
+          </body></html>`, { waitUntil: "networkidle" });
+        await page.evaluate("globalThis.__name = value => value");
+        await waitForFonts(page);
         const geometry = await page.evaluate(() => {
-          const autoChip = document.querySelector<HTMLElement>("[data-dense-chip-auto]");
-          const classedChip = document.querySelector<HTMLElement>("[data-dense-chip-classed]");
-          const providerCell = document.querySelector<HTMLElement>("[data-dense-chip-provider]");
-          const plainCell = document.querySelector<HTMLElement>("[data-dense-chip-plain-row] td");
-          const plainRow = document.querySelector<HTMLElement>("[data-dense-chip-plain-row]");
-          const providerRow = document.querySelector<HTMLElement>("[data-dense-chip-provider-row]");
-          const classedRow = document.querySelector<HTMLElement>("[data-dense-chip-classed-row]");
-          const hostText = document.querySelector<HTMLElement>("[data-dense-chip-host-text]");
-          const chipValue = document.querySelector<HTMLElement>("[data-dense-chip-value]");
-          const nonSubscriber = document.querySelector<HTMLElement>("[data-dense-chip-non-subscriber]");
-          const standaloneChip = document.querySelector<HTMLElement>("[data-block-derived-chip='1']");
-          const classedOutside = document.querySelector<HTMLElement>("[data-dense-chip-classed-outside]");
-          const wrapperProvider = document.querySelector<HTMLElement>("[data-dense-chip-wrapper-provider]");
-          const neutralWrapper = document.querySelector<HTMLElement>("[data-dense-chip-neutral-wrapper]");
-          const wrapperHostText = document.querySelector<HTMLElement>("[data-dense-chip-wrapper-host-text]");
-          const wrapperChipValue = document.querySelector<HTMLElement>("[data-dense-chip-wrapper-value]");
-          const wrappedChips = document.querySelectorAll<HTMLElement>("[data-dense-chip-wrapped]");
-          const outerProvider = document.querySelector<HTMLElement>("[data-dense-chip-outer-provider]");
-          const innerProvider = document.querySelector<HTMLElement>("[data-dense-chip-inner-provider]");
-          const innerChip = document.querySelector<HTMLElement>("[data-dense-chip-inner]");
-          const nestedProductProvider = document.querySelector<HTMLElement>("[data-dense-chip-nested-product-provider]");
-          const nestedProductPlain = document.querySelector<HTMLElement>("[data-dense-chip-nested-product-plain]");
-          const nestedProductChip = document.querySelector<HTMLElement>("[data-dense-chip-nested-product-chip]");
-          const productOuterProvider = document.querySelector<HTMLElement>("[data-dense-chip-product-outer-provider]");
-          const productBoundaryChip = document.querySelector<HTMLElement>("[data-dense-chip-product-boundary-chip]");
-          const productBoundaryClassed = document.querySelector<HTMLElement>("[data-dense-chip-product-boundary-classed]");
-          const restartedSiteProvider = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-provider]");
-          const restartedSitePlain = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-plain]");
-          const restartedSiteChip = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-chip]");
-          const restartedSiteOutside = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-outside]");
-          const restartedSiteOutsideClassed = document.querySelector<HTMLElement>("[data-dense-chip-restarted-site-outside-classed]");
-          const wrapperTable = neutralWrapper?.closest<HTMLElement>("table");
-          if (!autoChip || !classedChip || !providerCell || !plainCell || !plainRow || !providerRow || !classedRow || !hostText || !chipValue || !nonSubscriber || !standaloneChip || !classedOutside || !wrapperProvider || !neutralWrapper || !wrapperHostText || !wrapperChipValue || !wrapperTable || wrappedChips.length !== 2 || !outerProvider || !innerProvider || !innerChip || !nestedProductProvider || !nestedProductPlain || !nestedProductChip || !productOuterProvider || !productBoundaryChip || !productBoundaryClassed || !restartedSiteProvider || !restartedSitePlain || !restartedSiteChip || !restartedSiteOutside || !restartedSiteOutsideClassed) {
-            throw new Error("Missing dense Site Chip enrollment fixture.");
-          }
-          const hostMarker = document.createElement("span");
-          hostMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;line-height:0;vertical-align:baseline";
-          hostText.append(hostMarker);
-          const hostBaseline = hostMarker.getBoundingClientRect().top;
-          hostMarker.remove();
-          const chipMarker = document.createElement("span");
-          chipMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;line-height:0;vertical-align:baseline";
-          chipValue.append(chipMarker);
-          const chipBaseline = chipMarker.getBoundingClientRect().top;
-          chipMarker.remove();
-          const wrapperHostMarker = document.createElement("span");
-          wrapperHostMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;line-height:0;vertical-align:baseline";
-          wrapperHostText.append(wrapperHostMarker);
-          const wrapperHostBaseline = wrapperHostMarker.getBoundingClientRect().top;
-          wrapperHostMarker.remove();
-          const wrapperChipMarker = document.createElement("span");
-          wrapperChipMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;line-height:0;vertical-align:baseline";
-          wrapperChipValue.append(wrapperChipMarker);
-          const wrapperChipBaseline = wrapperChipMarker.getBoundingClientRect().top;
-          wrapperChipMarker.remove();
-          const plainStyle = getComputedStyle(plainCell);
-          const providerStyle = getComputedStyle(providerCell);
-          const nonSubscriberStyle = getComputedStyle(nonSubscriber);
-          const standaloneStyle = getComputedStyle(standaloneChip);
-          const autoStyle = getComputedStyle(autoChip);
-          const classedStyle = getComputedStyle(classedChip);
-          const classedOutsideStyle = getComputedStyle(classedOutside);
-          const wrapperProviderStyle = getComputedStyle(wrapperProvider);
-          const outerProviderStyle = getComputedStyle(outerProvider);
-          const innerProviderStyle = getComputedStyle(innerProvider);
-          const innerChipStyle = getComputedStyle(innerChip);
-          const nestedProductProviderStyle = getComputedStyle(nestedProductProvider);
-          const nestedProductPlainStyle = getComputedStyle(nestedProductPlain);
-          const nestedProductChipStyle = getComputedStyle(nestedProductChip);
-          const productOuterProviderStyle = getComputedStyle(productOuterProvider);
-          const productBoundaryChipStyle = getComputedStyle(productBoundaryChip);
-          const productBoundaryClassedStyle = getComputedStyle(productBoundaryClassed);
-          const restartedSiteProviderStyle = getComputedStyle(restartedSiteProvider);
-          const restartedSitePlainStyle = getComputedStyle(restartedSitePlain);
-          const restartedSiteChipStyle = getComputedStyle(restartedSiteChip);
-          const restartedSiteOutsideStyle = getComputedStyle(restartedSiteOutside);
-          const restartedSiteOutsideClassedStyle = getComputedStyle(restartedSiteOutsideClassed);
-          const firstWrappedStyle = getComputedStyle(wrappedChips[0]);
-          const secondWrappedStyle = getComputedStyle(wrappedChips[1]);
-          const denseProbe = document.createElement("i");
-          denseProbe.style.cssText = "display:block;inline-size:var(--bf-control-block-inset-dense);block-size:0;position:absolute;visibility:hidden";
-          providerCell.append(denseProbe);
-          const denseMember = denseProbe.getBoundingClientRect().width;
-          denseProbe.remove();
-          const selectedProbe = document.createElement("i");
-          selectedProbe.style.cssText = "display:block;inline-size:var(--bf-density-control-block-inset);block-size:0;position:absolute;visibility:hidden";
-          providerCell.append(selectedProbe);
-          const selectedMember = selectedProbe.getBoundingClientRect().width;
-          selectedProbe.remove();
-          const previousWrapperTableStyle = wrapperTable.getAttribute("style");
-          wrapperTable.style.inlineSize = "6rem";
-          wrapperTable.style.tableLayout = "fixed";
-          const wrappedRowHeight = neutralWrapper.closest("tr")?.getBoundingClientRect().height ?? 0;
-          if (previousWrapperTableStyle === null) wrapperTable.removeAttribute("style");
-          else wrapperTable.setAttribute("style", previousWrapperTableStyle);
-          return {
-            auto: {
-              height: autoChip.getBoundingClientRect().height,
-              lineHeight: Number.parseFloat(autoStyle.lineHeight),
-              marginBlockEnd: Number.parseFloat(autoStyle.marginBlockEnd),
-              marginBlockStart: Number.parseFloat(autoStyle.marginBlockStart),
-              paddingBlockEnd: Number.parseFloat(autoStyle.paddingBlockEnd),
-              paddingBlockStart: Number.parseFloat(autoStyle.paddingBlockStart),
-              borderBlockEnd: Number.parseFloat(autoStyle.borderBlockEndWidth),
-              borderBlockStart: Number.parseFloat(autoStyle.borderBlockStartWidth),
-              strokeBoxShadow: autoStyle.boxShadow
-            },
-            classed: {
-              height: classedChip.getBoundingClientRect().height,
-              lineHeight: Number.parseFloat(classedStyle.lineHeight),
-              marginBlockEnd: Number.parseFloat(classedStyle.marginBlockEnd),
-              marginBlockStart: Number.parseFloat(classedStyle.marginBlockStart),
-              paddingBlockEnd: Number.parseFloat(classedStyle.paddingBlockEnd),
-              paddingBlockStart: Number.parseFloat(classedStyle.paddingBlockStart)
-            },
-            autoHasLegacyClass: autoChip.classList.contains("is-nested"),
-            classedHasLegacyClass: classedChip.classList.contains("is-nested"),
-            plainRowHeight: plainRow.getBoundingClientRect().height,
-            providerRowHeight: providerRow.getBoundingClientRect().height,
-            classedRowHeight: classedRow.getBoundingClientRect().height,
-            plainPaddingBlockStart: Number.parseFloat(plainStyle.paddingBlockStart),
-            plainPaddingBlockEnd: Number.parseFloat(plainStyle.paddingBlockEnd),
-            providerPaddingBlockStart: Number.parseFloat(providerStyle.paddingBlockStart),
-            providerPaddingBlockEnd: Number.parseFloat(providerStyle.paddingBlockEnd),
-            denseMember,
-            selectedMember,
-            hostBaseline,
-            chipBaseline,
-            nonSubscriberPaddingBlockStart: Number.parseFloat(nonSubscriberStyle.paddingBlockStart),
-            nonSubscriberPaddingBlockEnd: Number.parseFloat(nonSubscriberStyle.paddingBlockEnd),
-            nonSubscriberLineHeight: Number.parseFloat(nonSubscriberStyle.lineHeight),
-            standaloneHeight: standaloneChip.getBoundingClientRect().height,
-            standaloneMarginBlockEnd: Number.parseFloat(standaloneStyle.marginBlockEnd),
-            classedOutsideHeight: classedOutside.getBoundingClientRect().height,
-            classedOutsideLineHeight: Number.parseFloat(classedOutsideStyle.lineHeight),
-            classedOutsideMarginBlockEnd: Number.parseFloat(classedOutsideStyle.marginBlockEnd),
-            wrapperProviderPaddingBlockStart: Number.parseFloat(wrapperProviderStyle.paddingBlockStart),
-            wrapperProviderPaddingBlockEnd: Number.parseFloat(wrapperProviderStyle.paddingBlockEnd),
-            wrappedChipHeights: [wrappedChips[0].getBoundingClientRect().height, wrappedChips[1].getBoundingClientRect().height],
-            wrappedChipPaddings: [Number.parseFloat(firstWrappedStyle.paddingBlockStart), Number.parseFloat(secondWrappedStyle.paddingBlockStart)],
-            wrappedRowHeight,
-            wrapperDisplay: getComputedStyle(neutralWrapper).display,
-            wrapperHostBaseline,
-            wrapperChipBaseline,
-            outerProviderPaddingBlockStart: Number.parseFloat(outerProviderStyle.paddingBlockStart),
-            outerProviderPaddingBlockEnd: Number.parseFloat(outerProviderStyle.paddingBlockEnd),
-            innerProviderPaddingBlockStart: Number.parseFloat(innerProviderStyle.paddingBlockStart),
-            innerProviderPaddingBlockEnd: Number.parseFloat(innerProviderStyle.paddingBlockEnd),
-            innerChipHeight: innerChip.getBoundingClientRect().height,
-            innerChipPaddingBlockStart: Number.parseFloat(innerChipStyle.paddingBlockStart),
-            nestedProductProviderPaddingBlockStart: Number.parseFloat(nestedProductProviderStyle.paddingBlockStart),
-            nestedProductProviderPaddingBlockEnd: Number.parseFloat(nestedProductProviderStyle.paddingBlockEnd),
-            nestedProductPlainPaddingBlockStart: Number.parseFloat(nestedProductPlainStyle.paddingBlockStart),
-            nestedProductPlainPaddingBlockEnd: Number.parseFloat(nestedProductPlainStyle.paddingBlockEnd),
-            nestedProductChipHeight: nestedProductChip.getBoundingClientRect().height,
-            nestedProductChipLineHeight: Number.parseFloat(nestedProductChipStyle.lineHeight),
-            nestedProductChipPaddingBlockStart: Number.parseFloat(nestedProductChipStyle.paddingBlockStart),
-            productOuterProviderPaddingBlockStart: Number.parseFloat(productOuterProviderStyle.paddingBlockStart),
-            productOuterProviderPaddingBlockEnd: Number.parseFloat(productOuterProviderStyle.paddingBlockEnd),
-            productBoundaryChipHeight: productBoundaryChip.getBoundingClientRect().height,
-            productBoundaryChipLineHeight: Number.parseFloat(productBoundaryChipStyle.lineHeight),
-            productBoundaryChipPaddingBlockStart: Number.parseFloat(productBoundaryChipStyle.paddingBlockStart),
-            productBoundaryClassedHeight: productBoundaryClassed.getBoundingClientRect().height,
-            productBoundaryClassedLineHeight: Number.parseFloat(productBoundaryClassedStyle.lineHeight),
-            productBoundaryClassedPaddingBlockStart: Number.parseFloat(productBoundaryClassedStyle.paddingBlockStart),
-            restartedSiteProviderPaddingBlockStart: Number.parseFloat(restartedSiteProviderStyle.paddingBlockStart),
-            restartedSiteProviderPaddingBlockEnd: Number.parseFloat(restartedSiteProviderStyle.paddingBlockEnd),
-            restartedSitePlainPaddingBlockStart: Number.parseFloat(restartedSitePlainStyle.paddingBlockStart),
-            restartedSitePlainPaddingBlockEnd: Number.parseFloat(restartedSitePlainStyle.paddingBlockEnd),
-            restartedSiteChipHeight: restartedSiteChip.getBoundingClientRect().height,
-            restartedSiteChipLineHeight: Number.parseFloat(restartedSiteChipStyle.lineHeight),
-            restartedSiteChipPaddingBlockStart: Number.parseFloat(restartedSiteChipStyle.paddingBlockStart),
-            restartedSiteOutsideHeight: restartedSiteOutside.getBoundingClientRect().height,
-            restartedSiteOutsideMarginBlockEnd: Number.parseFloat(restartedSiteOutsideStyle.marginBlockEnd),
-            restartedSiteOutsideClassedHeight: restartedSiteOutsideClassed.getBoundingClientRect().height,
-            restartedSiteOutsideClassedLineHeight: Number.parseFloat(restartedSiteOutsideClassedStyle.lineHeight),
-            restartedSiteOutsideClassedPaddingBlockStart: Number.parseFloat(restartedSiteOutsideClassedStyle.paddingBlockStart),
-            restartedSiteOutsideClassedMarginBlockEnd: Number.parseFloat(restartedSiteOutsideClassedStyle.marginBlockEnd)
+          const number = (value: string) => Number.parseFloat(value);
+          const baseline = (target: HTMLElement): number | null => {
+            if (target.matches(".is-icon")) return null;
+            if (target.matches("input, select, textarea")) {
+              const rig = document.createElement("span");
+              rig.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap";
+              const clone = target.cloneNode(true) as HTMLElement;
+              const style = getComputedStyle(target);
+              clone.style.font = style.font;
+              clone.style.lineHeight = style.lineHeight;
+              clone.style.boxSizing = style.boxSizing;
+              clone.style.appearance = style.appearance;
+              clone.style.paddingBlock = `${style.paddingBlockStart} ${style.paddingBlockEnd}`;
+              clone.style.paddingInline = `${style.paddingInlineStart} ${style.paddingInlineEnd}`;
+              clone.style.inlineSize = `${target.getBoundingClientRect().width}px`;
+              clone.style.blockSize = `${target.getBoundingClientRect().height}px`;
+              const marker = document.createElement("span");
+              marker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;vertical-align:baseline";
+              rig.append(clone, marker);
+              document.body.append(rig);
+              const value = target.getBoundingClientRect().top + marker.getBoundingClientRect().top - clone.getBoundingClientRect().top;
+              rig.remove();
+              return value;
+            }
+            const text = [...target.querySelectorAll("*")].flatMap(element => [...element.childNodes])
+              .concat([...target.childNodes]).find(node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+            if (!text) return null;
+            const marker = document.createElement("span");
+            marker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;vertical-align:baseline";
+            text.parentNode?.insertBefore(marker, text.nextSibling);
+            const value = marker.getBoundingClientRect().top;
+            marker.remove();
+            return value;
           };
+          const read = (row: HTMLElement) => {
+            const target = row.querySelector<HTMLElement>("[data-target]");
+            const cell = target?.closest<HTMLElement>("td, th");
+            if (!target || !cell) throw new Error("Missing density fixture target.");
+            const rowBox = row.getBoundingClientRect();
+            const box = target.getBoundingClientRect();
+            const style = getComputedStyle(target);
+            const cellStyle = getComputedStyle(cell);
+            const boundary = target.closest<HTMLElement>(".bf-field-boundary");
+            const boundaryStyle = boundary ? getComputedStyle(boundary) : null;
+            const targetBaseline = baseline(target);
+            const selectedProbe = document.createElement("span");
+            selectedProbe.style.cssText = `position:absolute;visibility:hidden;block-size:0;inline-size:${style.getPropertyValue("--bf-density-control-block-inset")}`;
+            document.body.append(selectedProbe);
+            const selected = selectedProbe.getBoundingClientRect().width;
+            selectedProbe.remove();
+            return {
+              row: rowBox.height,
+              box: box.height,
+              width: box.width,
+              baseline: targetBaseline === null ? null : targetBaseline - rowBox.top,
+              padding: number(style.paddingBlockStart),
+              line: number(style.lineHeight),
+              marginStart: number(style.marginBlockStart),
+              marginEnd: number(style.marginBlockEnd),
+              cellStart: number(cellStyle.paddingBlockStart),
+              cellEnd: number(cellStyle.paddingBlockEnd),
+              clearanceStart: box.top - cell.getBoundingClientRect().top,
+              clearanceEnd: cell.getBoundingClientRect().bottom - box.bottom,
+              selected,
+              verticalAlign: style.verticalAlign,
+              minBlockSize: style.minBlockSize,
+              resize: style.resize,
+              scrollHeight: target.scrollHeight,
+              clientHeight: target.clientHeight,
+              rows: target instanceof HTMLTextAreaElement ? target.rows : null,
+              contentViewport: box.height - number(style.paddingBlockStart) - number(style.paddingBlockEnd) - number(style.borderBlockStartWidth) - number(style.borderBlockEndWidth),
+              boundaryDisplay: boundaryStyle?.display ?? null,
+              boundaryMarginStart: boundaryStyle ? number(boundaryStyle.marginBlockStart) : null,
+              boundaryMarginEnd: boundaryStyle ? number(boundaryStyle.marginBlockEnd) : null
+            };
+          };
+          const plainRow = document.querySelector<HTMLElement>("[data-case='plain']");
+          const plainText = plainRow?.querySelector<HTMLElement>("[data-text]");
+          if (!plainRow || !plainText) throw new Error("Missing plain density fixture.");
+          const standaloneTextarea = document.querySelector<HTMLTextAreaElement>("[data-standalone] textarea");
+          const contentReference = document.querySelector<HTMLElement>("[data-content-reference]");
+          if (!standaloneTextarea || !contentReference) throw new Error("Missing multiline density reference.");
+          const standaloneTextareaStyle = getComputedStyle(standaloneTextarea);
+          const standaloneContentViewport = standaloneTextarea.getBoundingClientRect().height - number(standaloneTextareaStyle.paddingBlockStart) - number(standaloneTextareaStyle.paddingBlockEnd) - number(standaloneTextareaStyle.borderBlockStartWidth) - number(standaloneTextareaStyle.borderBlockEndWidth);
+          contentReference.style.display = "block";
+          contentReference.style.blockSize = `${standaloneContentViewport}px`;
+          const plainMarker = document.createElement("span");
+          plainMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;vertical-align:baseline";
+          plainText.append(plainMarker);
+          const plainBaseline = plainMarker.getBoundingClientRect().top - plainRow.getBoundingClientRect().top;
+          plainMarker.remove();
+          const cases = Object.fromEntries([...document.querySelectorAll<HTMLElement>("tr[data-case]:not([data-case='plain'])")].map(row => [row.dataset.case, read(row)]));
+          const standalone = [...document.querySelectorAll<HTMLElement>("[data-standalone] [data-target]")].map(target => {
+            const style = getComputedStyle(target);
+            return { box: target.getBoundingClientRect().height, padding: number(style.paddingBlockStart), minBlockSize: style.minBlockSize, resize: style.resize, clientHeight: target.clientHeight, scrollHeight: target.scrollHeight, contentViewport: target.getBoundingClientRect().height - number(style.paddingBlockStart) - number(style.paddingBlockEnd) - number(style.borderBlockStartWidth) - number(style.borderBlockEndWidth), rows: target instanceof HTMLTextAreaElement ? target.rows : null };
+          });
+          const denseTextarea = document.querySelector<HTMLTextAreaElement>("[data-case='textarea'] textarea");
+          if (!denseTextarea) throw new Error("Missing dense textarea interaction fixture.");
+          const savedValue = denseTextarea.value;
+          const savedBlockSize = denseTextarea.style.blockSize;
+          const beforeHeight = denseTextarea.getBoundingClientRect().height;
+          denseTextarea.value = Array.from({ length: 12 }, (_, index) => `Line ${index + 1}`).join("\n");
+          denseTextarea.scrollTop = denseTextarea.scrollHeight;
+          const textareaScrolls = denseTextarea.scrollTop > 0 && denseTextarea.scrollHeight > denseTextarea.clientHeight && Math.abs(denseTextarea.getBoundingClientRect().height - beforeHeight) < 0.1;
+          denseTextarea.style.blockSize = `${beforeHeight + Number.parseFloat(getComputedStyle(denseTextarea).lineHeight) * 2}px`;
+          const resizedHeight = denseTextarea.getBoundingClientRect().height;
+          const resizedBoundaryHeight = denseTextarea.closest(".bf-field-boundary")?.getBoundingClientRect().height ?? 0;
+          denseTextarea.style.blockSize = savedBlockSize;
+          denseTextarea.value = savedValue;
+          denseTextarea.scrollTop = 0;
+          const textareaInteraction = { scrolls: textareaScrolls, beforeHeight, resizedHeight, resizedBoundaryHeight, rows: denseTextarea.rows };
+          const outer = document.querySelector<HTMLElement>("[data-outer]");
+          const productOuter = document.querySelector<HTMLElement>("[data-product-outer]");
+          const stoppedOwners = ["[data-reset-owner]", "[data-cell-owner]"].map(selector => {
+            const owner = document.querySelector<HTMLElement>(selector);
+            if (!owner) throw new Error("Missing stopped field owner.");
+            const style = getComputedStyle(owner);
+            return { display: style.display, marginEnd: number(style.marginBlockEnd) };
+          });
+          const defaultBoundary = document.querySelector<HTMLElement>("[data-standalone] .bf-field-boundary");
+          if (!defaultBoundary) throw new Error("Missing default field boundary.");
+          return { plain: { row: plainRow.getBoundingClientRect().height, baseline: plainBaseline }, cases, standalone, stoppedOwners, textareaInteraction, defaultBoundaryMargin: number(getComputedStyle(defaultBoundary).marginBlockEnd), outerPadding: outer ? number(getComputedStyle(outer).paddingBlockStart) : null, productOuterPadding: productOuter ? number(getComputedStyle(productOuter).paddingBlockStart) : null };
         });
-
-        assert(!geometry.autoHasLegacyClass && geometry.classedHasLegacyClass, `Expected ${tier}/${tone} fixtures to distinguish automatic provider enrollment from the legacy modifier: ${JSON.stringify(geometry)}.`);
-        assert(Math.abs(geometry.nonSubscriberPaddingBlockStart) < 0.01 && Math.abs(geometry.nonSubscriberPaddingBlockEnd) < 0.01, `Expected the ${tier}/${tone} table provider not to alter a non-subscriber: ${JSON.stringify(geometry)}.`);
-        assert(
-          Math.abs(geometry.classedOutsideHeight - geometry.standaloneHeight) < 0.01 &&
-          Math.abs(geometry.classedOutsideMarginBlockEnd - geometry.standaloneMarginBlockEnd) < 0.01,
-          `Expected ${tier}/${tone} the legacy class outside a named host not to opt a Chip into density: ${JSON.stringify(geometry)}.`
-        );
-        assert(
-          Math.abs(geometry.nestedProductProviderPaddingBlockStart - geometry.nestedProductPlainPaddingBlockStart) < 0.01 &&
-          Math.abs(geometry.nestedProductProviderPaddingBlockEnd - geometry.nestedProductPlainPaddingBlockEnd) < 0.01 &&
-          (Math.abs(geometry.nestedProductChipHeight - 32) > 0.1 || Math.abs(geometry.nestedProductChipLineHeight - 24) > 0.1 || Math.abs(geometry.nestedProductChipPaddingBlockStart - 4) > 0.1),
-          `Expected ${tier}/${tone} a nested Documentation product root to terminate Site provider and subscriber resolution: ${JSON.stringify(geometry)}.`
-        );
-        assert(
-          Math.abs(geometry.productOuterProviderPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01 &&
-          Math.abs(geometry.productOuterProviderPaddingBlockEnd - geometry.plainPaddingBlockEnd) < 0.01 &&
-          Math.abs(geometry.productBoundaryClassedHeight - geometry.productBoundaryChipHeight) < 0.01 &&
-          Math.abs(geometry.productBoundaryClassedLineHeight - geometry.productBoundaryChipLineHeight) < 0.01 &&
-          Math.abs(geometry.productBoundaryClassedPaddingBlockStart - geometry.productBoundaryChipPaddingBlockStart) < 0.01 &&
-          (Math.abs(geometry.productBoundaryChipHeight - 32) > 0.1 || Math.abs(geometry.productBoundaryChipLineHeight - 24) > 0.1 || Math.abs(geometry.productBoundaryChipPaddingBlockStart - 4) > 0.1),
-          `Expected ${tier}/${tone} a nested App root and both plain/classed Chips not to activate the outer table-cell provider or inherit its legacy density path: ${JSON.stringify(geometry)}.`
-        );
-        assert(
-          Math.abs(geometry.restartedSiteChipHeight - 32) < 0.1 &&
-          Math.abs(geometry.restartedSiteChipLineHeight - 24) < 0.01 &&
-          Math.abs(geometry.restartedSiteChipPaddingBlockStart - 4) < 0.01 &&
-          Math.abs(geometry.restartedSiteProviderPaddingBlockStart - (geometry.restartedSitePlainPaddingBlockStart - 4)) < 0.01 &&
-          Math.abs(geometry.restartedSiteProviderPaddingBlockEnd - (geometry.restartedSitePlainPaddingBlockEnd - 4)) < 0.01,
-          `Expected ${tier}/${tone} an explicit nested Site root to restart its own provider/subscriber resolution: ${JSON.stringify(geometry)}.`
-        );
-        assert(
-          Math.abs(geometry.restartedSiteOutsideClassedHeight - geometry.restartedSiteOutsideHeight) < 0.01 &&
-          Math.abs(geometry.restartedSiteOutsideClassedMarginBlockEnd - geometry.restartedSiteOutsideMarginBlockEnd) < 0.01 &&
-          Math.abs(geometry.restartedSiteOutsideClassedHeight + geometry.restartedSiteOutsideClassedMarginBlockEnd - 40) < 0.1 &&
-          (Math.abs(geometry.restartedSiteOutsideClassedHeight - 32) > 0.1 || Math.abs(geometry.restartedSiteOutsideClassedLineHeight - 24) > 0.1 || Math.abs(geometry.restartedSiteOutsideClassedPaddingBlockStart - 4) > 0.1),
-          `Expected ${tier}/${tone} a classed Chip in a restarted Site product but outside its own named host to keep standalone geometry: ${JSON.stringify(geometry)}.`
-        );
-
-        if (tier === "editorial") {
-          assert(
-            Math.abs(geometry.denseMember - 4) < 0.01 &&
-            Math.abs(geometry.selectedMember - geometry.denseMember) < 0.01 &&
-            Math.abs(geometry.auto.height - 32) < 0.1 &&
-            Math.abs(geometry.auto.lineHeight - 24) < 0.01 &&
-            Math.abs(geometry.auto.paddingBlockStart - 4) < 0.01 &&
-            Math.abs(geometry.auto.paddingBlockEnd - 4) < 0.01 &&
-            Math.abs(geometry.auto.marginBlockStart) < 0.01 &&
-            Math.abs(geometry.auto.marginBlockEnd) < 0.01 &&
-            geometry.auto.borderBlockStart === 0 &&
-            geometry.auto.borderBlockEnd === 0 &&
-            geometry.auto.strokeBoxShadow !== "none",
-            `Expected ${tier}/${tone} automatic Chip enrollment to bind the named 4px dense control-block member into a 32px paint-only box with no child compensation: ${JSON.stringify(geometry)}.`
-          );
-          assert(
-            Math.abs(geometry.classed.height - geometry.auto.height) < 0.01 &&
-            Math.abs(geometry.classed.lineHeight - geometry.auto.lineHeight) < 0.01 &&
-            Math.abs(geometry.classed.paddingBlockStart - geometry.auto.paddingBlockStart) < 0.01 &&
-            Math.abs(geometry.classed.paddingBlockEnd - geometry.auto.paddingBlockEnd) < 0.01,
-            `Expected ${tier}/${tone} legacy class presence not to toggle the governed Site table result: ${JSON.stringify(geometry)}.`
-          );
-          assert(
-            Math.abs(geometry.providerRowHeight - 40) < 0.1 &&
-            Math.abs(geometry.classedRowHeight - 40) < 0.1 &&
-            Math.abs(geometry.providerRowHeight - geometry.plainRowHeight) < 0.1 &&
-            Math.abs(geometry.providerPaddingBlockStart - (geometry.plainPaddingBlockStart - geometry.denseMember)) < 0.01 &&
-            Math.abs(geometry.providerPaddingBlockEnd - (geometry.plainPaddingBlockEnd - geometry.denseMember)) < 0.01,
-            `Expected ${tier}/${tone} table provider to absorb both dense edges and preserve the ordinary 40px host row: ${JSON.stringify(geometry)}.`
-          );
-          assert(Math.abs(geometry.hostBaseline - geometry.chipBaseline) < 0.01, `Expected ${tier}/${tone} outside host text and enrolled Chip text to share the exact baseline, not merely a modulo phase: ${JSON.stringify(geometry)}.`);
-          assert(Math.abs(geometry.standaloneHeight + geometry.standaloneMarginBlockEnd - 40) < 0.1, `Expected ${tier}/${tone} standalone Chip to retain its 40px occupied seat: ${JSON.stringify(geometry)}.`);
-          assert(
-            Math.abs(geometry.wrapperProviderPaddingBlockStart - (geometry.plainPaddingBlockStart - geometry.denseMember)) < 0.01 &&
-            Math.abs(geometry.wrapperProviderPaddingBlockEnd - (geometry.plainPaddingBlockEnd - geometry.denseMember)) < 0.01 &&
-            geometry.wrappedChipHeights.every(height => Math.abs(height - 32) < 0.1) &&
-            geometry.wrappedChipPaddings.every(padding => Math.abs(padding - 4) < 0.01) &&
-            geometry.wrapperDisplay === "inline" &&
-            Math.abs(geometry.wrapperHostBaseline - geometry.wrapperChipBaseline) < 0.01 &&
-            geometry.wrappedRowHeight > 40,
-            `Expected ${tier}/${tone} neutral wrappers, multiple Chips and a real wrap to preserve one provider selection and the 32px subscriber contract: ${JSON.stringify(geometry)}.`
-          );
-          assert(
-            Math.abs(geometry.outerProviderPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01 &&
-            Math.abs(geometry.outerProviderPaddingBlockEnd - geometry.plainPaddingBlockEnd) < 0.01 &&
-            Math.abs(geometry.innerProviderPaddingBlockStart - (geometry.plainPaddingBlockStart - geometry.denseMember)) < 0.01 &&
-            Math.abs(geometry.innerProviderPaddingBlockEnd - (geometry.plainPaddingBlockEnd - geometry.denseMember)) < 0.01 &&
-            Math.abs(geometry.innerChipHeight - 32) < 0.1 &&
-            Math.abs(geometry.innerChipPaddingBlockStart - 4) < 0.01,
-            `Expected ${tier}/${tone} nested tables to enroll only the nearest owning Table.Cell: ${JSON.stringify(geometry)}.`
-          );
+        const supported = tier !== "os";
+        const plain = geometry.plain;
+        assert(Math.abs(geometry.cases.hidden.row - plain.row) < 0.1, `Expected ${tier}/${tone} hidden metadata to leave the plain table seat unchanged: ${JSON.stringify(geometry.cases.hidden)}.`);
+        assert(geometry.stoppedOwners.every(owner => owner.display === "grid" && Math.abs(owner.marginEnd - geometry.defaultBoundaryMargin) < 0.01), `Expected ${tier}/${tone} a descendant input across a product root or cell boundary not to enroll the outer field owner: ${JSON.stringify(geometry.stoppedOwners)}.`);
+        const members = ["button", "legacy-button", "legacy-input", "disabled", "leading", "chip", "click-chip", "dismiss-chip", "header", "neutral", "input", "neutral-input", "select", "nested-inner"];
+        if (supported) {
+          for (const name of members) {
+            const item = geometry.cases[name];
+            assert(Math.abs(item.row - plain.row) < 0.1, `Expected ${tier}/${tone} ${name} to preserve the plain table row; got ${JSON.stringify(item)} vs ${JSON.stringify(plain)}.`);
+            assert(Math.abs(item.padding - 4) < 0.01 && Math.abs(item.selected - 4) < 0.01, `Expected ${tier}/${tone} ${name} to bind the existing 4px dense member: ${JSON.stringify(item)}.`);
+            assert(item.clearanceStart > 0 && item.clearanceEnd > 0, `Expected ${tier}/${tone} ${name} to retain positive painted clearance: ${JSON.stringify(item)}.`);
+            if (item.baseline !== null) assert(Math.abs(item.baseline - plain.baseline) <= 0.51, `Expected ${tier}/${tone} ${name} baseline to match the plain row (native inputs allow the observed half-pixel CSS baseline): ${JSON.stringify(item)} vs ${JSON.stringify(plain)}.`);
+          }
+          const icon = geometry.cases.icon;
+          assert(Math.abs(icon.row - plain.row) < 0.1 && Math.abs(icon.box - icon.width) < 0.1 && icon.verticalAlign === "top" && icon.clearanceStart > 0 && icon.clearanceEnd > 0, `Expected ${tier}/${tone} icon-only flow to stay square within the plain row with positive clearance: ${JSON.stringify(icon)}.`);
+          assert(Math.abs(geometry.cases.link.row - plain.row) < 0.1 && geometry.cases.reset.row > plain.row, `Expected ${tier}/${tone} link-style Button to follow the plain-text seat while a nested product reset retains default boxed geometry: ${JSON.stringify(geometry.cases)}.`);
+          assert(Math.abs(geometry.outerPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["nested-inner"].cellStart - (geometry.cases.reset.cellStart - 4)) < 0.01, `Expected ${tier}/${tone} nested cells to select only their nearest owner: ${JSON.stringify(geometry)}.`);
+          const neutralInput = geometry.cases["neutral-input"];
+          assert(neutralInput.boundaryDisplay === "inline-grid" && neutralInput.boundaryMarginStart === 0 && neutralInput.boundaryMarginEnd === 0, `Expected ${tier}/${tone} a neutral descendant wrapper to preserve the actual field-boundary seat and closure: ${JSON.stringify(neutralInput)}.`);
+          assert(Math.abs(geometry.productOuterPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["product-inner"].row - geometry.cases["product-plain"].row) < 0.1 && geometry.cases["product-inner"].padding === 4, `Expected ${tier}/${tone} a nested product root to reset the outer provider and its own inner table to restart supported density: ${JSON.stringify(geometry)}.`);
+          assert(geometry.textareaInteraction.scrolls && geometry.textareaInteraction.rows === 2 && geometry.textareaInteraction.resizedHeight > geometry.textareaInteraction.beforeHeight + 31 && Math.abs(geometry.textareaInteraction.resizedBoundaryHeight - geometry.textareaInteraction.resizedHeight) < 0.1, `Expected ${tier}/${tone} dense textarea to scroll in its configured viewport and its paint owner to follow an authored resize: ${JSON.stringify(geometry.textareaInteraction)}.`);
+          const textarea = geometry.cases.textarea;
+          const standaloneTextarea = geometry.standalone[4];
+          const denseContentViewport = textarea.contentViewport;
+          const standaloneContentViewport = standaloneTextarea.contentViewport;
+          assert(textarea.padding === 4 && textarea.row > plain.row && textarea.clearanceStart > 0 && textarea.clearanceEnd > 0 && textarea.resize === "vertical" && textarea.rows === 2 && textarea.scrollHeight >= textarea.clientHeight, `Expected ${tier}/${tone} Textarea to preserve a configured two-line, vertically resizable viewport with dense edges and positive clearance: ${JSON.stringify(textarea)}.`);
+          assert(standaloneTextarea.rows === 2 && standaloneTextarea.resize === "vertical" && Math.abs(denseContentViewport - standaloneContentViewport) <= 0.1, `Expected ${tier}/${tone} dense Textarea to preserve the standalone content viewport while only changing its edge seat: ${JSON.stringify({ textarea, standaloneTextarea, denseContentViewport, standaloneContentViewport })}.`);
+          assert(Math.abs(textarea.row - geometry.cases["content-reference"].row) <= 0.1 && textarea.row >= geometry.cases["plain-two"].row, `Expected ${tier}/${tone} dense Textarea closure to match a plain row with the preserved content viewport while retaining the literal two-line diagnostic: ${JSON.stringify({ textarea, contentReference: geometry.cases["content-reference"], literalTwoLine: geometry.cases["plain-two"] })}.`);
         } else {
-          assert(
-            Math.abs(geometry.auto.lineHeight - 24) > 0.1 ||
-            Math.abs(geometry.auto.paddingBlockStart - 4) > 0.1 ||
-            Math.abs(geometry.auto.height - 32) > 0.1,
-            `Expected ${tier}/${tone} not to inherit the Site-only 32px dense Chip contract: ${JSON.stringify(geometry)}.`
-          );
-          assert(
-            Math.abs(geometry.providerPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01 &&
-            Math.abs(geometry.providerPaddingBlockEnd - geometry.plainPaddingBlockEnd) < 0.01,
-            `Expected ${tier}/${tone} table cells not to absorb the Site-only dense member: ${JSON.stringify(geometry)}.`
-          );
-          assert(
-            Math.abs(geometry.wrapperProviderPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01 &&
-            Math.abs(geometry.wrapperProviderPaddingBlockEnd - geometry.plainPaddingBlockEnd) < 0.01 &&
-            Math.abs(geometry.outerProviderPaddingBlockStart - geometry.plainPaddingBlockStart) < 0.01,
-            `Expected ${tier}/${tone} wrapper and nested-table hosts not to activate the Site-only provider: ${JSON.stringify(geometry)}.`
-          );
+          for (const name of ["button", "chip", "input", "select"]) {
+            const item = geometry.cases[name];
+            const standaloneIndex = name === "button" ? 0 : name === "chip" ? 1 : name === "input" ? 2 : 3;
+            assert(item.row > plain.row && Math.abs(item.padding - geometry.standalone[standaloneIndex].padding) < 0.01, `Expected OS ${tone} shipping table ${name} to retain the standalone/default seat: ${JSON.stringify(item)}.`);
+          }
+          assert(Math.abs(geometry.productOuterPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["product-inner"].row - geometry.cases["product-plain"].row) < 0.1 && geometry.cases["product-inner"].padding === 4, `Expected OS ${tone} outer shipping scope to remain default while a nested supported product restarts table density: ${JSON.stringify(geometry)}.`);
         }
       }
     }
+
+    await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+    await page.locator("[data-page-chrome-tier-select]").selectOption("os");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "os" && document.body.dataset.densityOsProposal === "active");
+    const osProposal = await page.locator("#density-os-track .density-sample").evaluateAll(samples => samples.map(sample => {
+      const target = sample.querySelector<HTMLElement>("[data-target]");
+      const row = sample.querySelector<HTMLElement>("[data-host-row]");
+      return { caption: sample.querySelector(".density-caption")?.textContent ?? "", row: row?.getBoundingClientRect().height ?? 0, box: target?.getBoundingClientRect().height ?? 0, padding: target ? Number.parseFloat(getComputedStyle(target).paddingBlockStart) : -1 };
+    }));
+    assert(osProposal.length === 7 && osProposal.slice(1, 4).every(item => item.row > osProposal[0].row) && osProposal.slice(4).every(item => Math.abs(item.row - osProposal[0].row) < 0.1 && item.padding === 0), `Expected the bucket-only OS proposal to compare unchanged shipping Button/Chip/input with fitted 0-inset candidates: ${JSON.stringify(osProposal)}.`);
+    await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=before`, { waitUntil: "networkidle" });
+    await page.locator("[data-page-chrome-tier-select]").selectOption("os");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "os");
+    assert(await page.locator("body[data-density-os-proposal='active']").count() === 0, "Expected the frozen Before comparison never to activate the bucket-only OS proposal.");
   } finally {
     await browser.close();
   }
@@ -7865,6 +7766,13 @@ async function main(): Promise<void> {
   const { server, origin } = await createStaticServer(rootDir);
 
   try {
+    // Full verification stays the default; this flag isolates the changed
+    // table contract while iterating on a focused regression.
+    if (process.argv.includes("--density-table")) {
+      await verifyDenseTableEnrollment(origin);
+      console.log("Table density behavior verification passed.");
+      return;
+    }
     await verifyNativeNumberStepper(origin);
     await verifySideNavigationAccordionGeometry(origin);
     await verifySideNavigationPanelGeometry(origin);
@@ -7880,7 +7788,7 @@ async function main(): Promise<void> {
     await verifyInlineIconMetricAlignment(origin);
     await verifyInlineListSeparatorSpacing(origin);
     await verifyNestedAuxiliaryGeometry(origin);
-    await verifyDenseSiteChipEnrollment(origin);
+    await verifyDenseTableEnrollment(origin);
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);
     await verifyCommandPaintOwners(origin);

@@ -1502,7 +1502,8 @@ function validateCommonCss(css: string): void {
     [":where(.bf-theme) :where(.bf-badge)", "var(--bf-interface-row-line-height)"],
     [":where(.bf-theme) :where(.bf-badge.is-nested)", "var(--bf-nested-row-line-height)"],
     [":where(.bf-theme) :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label)))", "var(--bf-body-line-height)"],
-    [":where(.bf-theme) :where(.bf-notification-close)", "var(--bf-notification-close-painted-block-size)"]
+    [":where(.bf-theme) :where(.bf-notification-close)", "var(--bf-notification-close-painted-block-size)"],
+    [".bf-button:not(.is-link):is(.is-icon:not(:has(.bf-button-label))):not(.bf-theme):not(:scope td .bf-button:not(.is-link):is(.is-icon:not(:has(.bf-button-label))), :scope th .bf-button:not(.is-link):is(.is-icon:not(:has(.bf-button-label))), :scope .bf-theme .bf-button:not(.is-link):is(.is-icon:not(:has(.bf-button-label))))", "calc(var(--bf-body-line-height) + (var(--bf-button-control-block-inset) * 2))"]
   ]);
   const emittedSquareAliases = new Map<string, string>();
   let emittedSquareAliasCount = 0;
@@ -1512,7 +1513,7 @@ function validateCommonCss(css: string): void {
     emittedSquareAliasCount += 1;
     emittedSquareAliases.set(parent.selector, declaration.value);
   });
-  assert(emittedSquareAliasCount === expectedSquareAliases.size && emittedSquareAliases.size === expectedSquareAliases.size, `Expected exactly ${expectedSquareAliases.size} unique square-block alias states, got ${emittedSquareAliasCount} declarations and ${JSON.stringify([...emittedSquareAliases])}.`);
+  assert([expectedSquareAliases.size + 2, expectedSquareAliases.size + 3].includes(emittedSquareAliasCount) && emittedSquareAliases.size === expectedSquareAliases.size, `Expected the six reviewed square-block states, with the table-context state emitted for the three explicit supported surfaces plus any supported default surface; got ${emittedSquareAliasCount} declarations and ${JSON.stringify([...emittedSquareAliases])}.`);
   for (const [selector, value] of expectedSquareAliases) {
     assert(emittedSquareAliases.get(selector) === value, `Expected ${selector} to re-point --bf-square-block-size to ${value}, got ${emittedSquareAliases.get(selector) ?? "nothing"}.`);
   }
@@ -1705,33 +1706,39 @@ function validateCommonCss(css: string): void {
     "--bf-stroke-color": "var(--bf-ui-chip-border)",
     "padding-inline": "var(--bf-ui-chip-padding-inline)"
   }, "legacy table Chips use the reviewed paint-only compatibility anatomy");
-  const density = componentDensityPolicy.siteDenseChip;
+  const density = componentDensityPolicy.tableCell;
   assert(
-    componentDensityPolicy.version === 1 &&
-    density.product === "editorial" &&
-    density.provider === ".bf-table td" &&
-    JSON.stringify(density.providerBoundaries) === JSON.stringify(["td", ".bf-theme"]) &&
-    density.subscriber === ".bf-chip" &&
+    componentDensityPolicy.version === 2 &&
+    JSON.stringify(density.products) === JSON.stringify(["editorial", "documentation", "app"]) &&
+    density.provider === ".bf-table :is(td, th)" &&
+    JSON.stringify(density.providerBoundaries) === JSON.stringify(["td", "th", ".bf-theme"]) &&
+    density.subscribers.chips.includes(".bf-chip") &&
+    density.subscribers.boxedButtons.includes(".bf-button:not(.is-link)") &&
+    density.subscribers.singleLineEntries.some(selector => selector.startsWith("input.bf-input")) &&
+    density.subscribers.singleLineEntries.some(selector => selector.startsWith("select")) &&
+    density.subscribers.textareas.some(selector => selector.startsWith("textarea")) &&
     density.role === "spacing.inset.control.block",
-    `Expected the versioned dense Chip policy to name the exact product, nearest-provider boundaries, subscriber and role; got ${JSON.stringify(componentDensityPolicy)}.`
+    `Expected the versioned table-cell policy to name supported products, data/header hosts, bounded primitive seats and role; got ${JSON.stringify(componentDensityPolicy)}.`
   );
   assert(
     css.includes(`${density.comfortableMember}: var(--bf-control-block-inset);`) &&
     css.includes(`${density.denseMember}: var(--bf-space-half);`) &&
+    css.includes(`${density.denseMember}: 0.25rem;`) &&
     css.includes(`${density.currentMember}: var(${density.denseMember});`) &&
-    css.includes(`${density.componentBinding}: var(${density.currentMember}, var(--bf-control-block-inset));`) &&
-    css.includes(`padding-block: var(${density.componentBinding});`) &&
+    Object.values(density.componentBindings).every(binding => css.includes(`${binding}: var(${density.currentMember}`)) &&
     css.includes("line-height: var(--bf-body-line-height);") &&
     css.includes("margin-block: 0;") &&
     css.includes("min-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(--bf-chip-control-block-inset) * 2)));"),
-    "Expected the Site table provider and Chip subscriber to bind the named dense control-block member without a layout-border term or child compensation."
+    "Expected table members to bind the existing 4px dense member without a layout-border term or child compensation."
   );
   assert(
     css.includes("@scope (:where(.bf-theme.bf-tier-editorial)) to (:where(.bf-theme))") &&
-    css.includes("@scope (:where(.bf-table td)) to (:where(td, .bf-theme))") &&
-    css.includes(":scope:has(.bf-chip:not(.bf-theme):not(:scope td .bf-chip, :scope .bf-theme .bf-chip))") &&
+    css.includes("@scope (:where(.bf-theme.bf-tier-documentation)) to (:where(.bf-theme))") &&
+    css.includes("@scope (:where(.bf-theme.bf-tier-app)) to (:where(.bf-theme))") &&
+    css.includes("@scope (:where(.bf-table :is(td, th))) to (:where(td, th, .bf-theme))") &&
+    css.includes(":scope:has(") && css.includes(".bf-button:not(.is-link)") &&
     !css.includes(".bf-dense-chip-host"),
-    "Expected automatic dense Chip enrollment to cross neutral descendants, stop at nearest cells and product roots, and expose no public host toggle."
+    "Expected automatic table enrollment to cross neutral descendants, stop at nearest cells/product roots, support three products, and expose no public host toggle."
   );
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
     "border-block-width": "0"

@@ -1,24 +1,24 @@
-import { componentDensityPolicy, providerScopedCss, siteDenseChipPolicySelectors, siteDenseChipScopedCss } from "../component-density-policy.js";
+import { componentDensityPolicy, providerScopedCss, tableCellDensityPolicySelectors, tableCellDensityScopedCss } from "../component-density-policy.js";
 import { allSidedStrokeSelfPaintCss } from "./stroke-paint.js";
 
 type ChipBadgeStatusCssOptions = {
   bodyCaseTypeStyles: string;
   bodyTypeStyles: string;
-  siteScopes: string[];
+  tableDensityScopes: string[];
 };
 
 export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   const {
     bodyCaseTypeStyles,
     bodyTypeStyles,
-    siteScopes,
+    tableDensityScopes,
   } = options;
-  const density = componentDensityPolicy.siteDenseChip;
+  const density = componentDensityPolicy.tableCell;
   const chipSelector = ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)";
   const chipStrokeCss = allSidedStrokeSelfPaintCss(chipSelector, { color: "var(--bf-ui-chip-border)" });
-  const denseSiteChips = siteDenseChipPolicySelectors().chips;
-  const denseSiteChipCss = denseSiteChips
-    ? `\n/* Chip enrollment follows the versioned nearest-provider policy through any\n   neutral descendant path. The legacy class does not opt instances in/out. */\n${siteDenseChipScopedCss(siteScopes, denseSiteChips, `${density.componentBinding}: var(${density.currentMember}, var(--bf-control-block-inset));\nborder: 0;\n--bf-stroke-color: var(--bf-ui-chip-border);\nline-height: var(--bf-body-line-height);\nmargin-block: 0;\nmin-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(${density.componentBinding}) * 2)));\npadding-block: var(${density.componentBinding});\npadding-inline: var(--bf-ui-chip-padding-inline);`)}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips} :where(.bf-chip-lead, .bf-chip-value)`, "line-height: inherit;")}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips}:hover`, "--bf-stroke-color: var(--bf-ui-chip-border-hover);")}\n\n${siteDenseChipScopedCss(siteScopes, `${denseSiteChips}:is(:active, [aria-pressed='true'], .is-selected)`, "--bf-stroke-color: var(--bf-ui-chip-border-active);")}\n`
+  const denseTableChips = tableCellDensityPolicySelectors().chips;
+  const denseTableChipCss = denseTableChips
+    ? `\n/* Chip enrollment follows the versioned nearest-provider policy through any\n   neutral descendant path. The legacy class does not opt instances in/out. */\n${tableCellDensityScopedCss(tableDensityScopes, denseTableChips, `${density.componentBindings.chip}: var(${density.currentMember}, var(--bf-control-block-inset));\nborder: 0;\n--bf-stroke-color: var(--bf-ui-chip-border);\nline-height: var(--bf-body-line-height);\nmargin-block: 0;\nmin-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(${density.componentBindings.chip}) * 2)));\npadding-block: var(${density.componentBindings.chip});\npadding-inline: var(--bf-ui-chip-padding-inline);`)}\n\n${tableCellDensityScopedCss(tableDensityScopes, `${denseTableChips} :where(.bf-chip-lead, .bf-chip-value)`, "line-height: inherit;")}\n\n${tableCellDensityScopedCss(tableDensityScopes, `${denseTableChips}:hover`, "--bf-stroke-color: var(--bf-ui-chip-border-hover);")}\n\n${tableCellDensityScopedCss(tableDensityScopes, `${denseTableChips}:is(:active, [aria-pressed='true'], .is-selected)`, "--bf-stroke-color: var(--bf-ui-chip-border-active);")}\n`
     : "";
   const legacyNestedChipCss = (suffix: string, declarations: string) => [
     { provider: ".bf-table td", boundary: "td" },
@@ -264,6 +264,6 @@ ${legacyNestedChipRules}
   line-height: var(--bf-nested-row-line-height);
   vertical-align: middle;
 }
-${denseSiteChipCss}
+${denseTableChipCss}
 `;
 }

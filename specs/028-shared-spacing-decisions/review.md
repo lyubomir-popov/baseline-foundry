@@ -1,3 +1,17 @@
+# Current density repair and historical review record
+
+October16 owner-directed table work follows the accepted canonical Spec024
+brief08. The actual product diff and independent findings are reviewed in
+`H:/WSL_dev_projects/canonical-spacing-spec/specs/024-semantic-spacing-token-schema/reviews/BF-density-table-repair-review.md`;
+root integration and checks are in its adjacent integration report. Canonical
+tasks own current execution and owner decisions. Primitive Site/Docs/App table
+coverage does not complete contextual density; OS0 stays an unapproved demo
+candidate and compound Search/Color, segmented/pagination and Nav/Tabs remain
+gaps. The reported Nav indent/tag regression is deferred. No push or merge.
+
+The records below are historical and do not recreate old gates, seals,
+composite-page work or parked Spec026 requirements.
+
 # Current review outcome — mobile prerequisite completed
 
 ## ApplicationLayout mobile prerequisite completed — October 9

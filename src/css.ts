@@ -1,5 +1,6 @@
 import { gridCss } from "./css-grid.js";
 import { componentsCss } from "./css-components.js";
+import { componentDensityPolicy } from "./component-density-policy.js";
 import { blockStartStrokeOverlayCss } from "./css-components/stroke-paint.js";
 import { appTierPresetCss } from "./css-app-tier.js";
 import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_GRID_LIGHT_THEME_COLOR } from "./baseline-grid-theme.js";
@@ -270,13 +271,17 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
     ...(hasAppDefault ? [":where(.bf-theme)"] : []),
     ...(hasAppClassSurface ? [":where(.bf-theme.bf-tier-app)"] : [])
   ];
-  const siteScopes = [
-    ...((options.presetName === "editorial" || options.presetName === "prose")
+  const tableDensityProducts = new Set<string>(componentDensityPolicy.tableCell.products);
+  const tableDensityDefaultProduct = options.presetName === "prose" ? "editorial"
+    : options.presetName === "app-tier" ? "app"
+    : options.presetName;
+  const tableDensityScopes = [
+    ...(tableDensityDefaultProduct && tableDensityProducts.has(tableDensityDefaultProduct)
       ? [":where(.bf-theme:not(.bf-tier-documentation, .bf-tier-app, .bf-tier-os))"]
       : []),
-    ...(themeSurfaces.some(surface => surface.className === "bf-tier-editorial")
-      ? [":where(.bf-theme.bf-tier-editorial)"]
-      : [])
+    ...componentDensityPolicy.tableCell.products
+      .filter(tier => themeSurfaces.some(surface => surface.className === `bf-tier-${tier}`))
+      .map(tier => `:where(.bf-theme.bf-tier-${tier})`)
   ];
   const presetCss = includesAppSurface ? `\n${appTierPresetCss(appScopes)}` : "";
   const tokenRowStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-token-row)", { anchor: "relative", color: "var(--bf-color-rule)", width: "0.0625rem" });
@@ -617,7 +622,7 @@ ${tokenRowStroke.painter}
 ${componentsCss(
   tokens,
   themeSurfaces,
-  siteScopes,
+  tableDensityScopes,
   options.presetName === "os" ? "0.25rem" : options.presetName ? "0.5rem" : undefined
 )}
 

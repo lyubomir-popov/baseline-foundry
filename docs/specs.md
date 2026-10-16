@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
-| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | Scope reset 2026-10-10: approved spacing values applied in all four tiers; BF is the sandbox for Spec 024. Open: bucket comparison pages (Spec 024 T110) and owner sign-off per bucket. No chrome, re-pin or audit gates |
+| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | BF sandbox for canonical Spec024; its current tasks own execution. Primitive table density repair covers Site/Docs/App only; OS0 is an unapproved bucket proposal. Compound/action and Nav/Tabs coverage remains open. Bucket visual sign-off stays with the owner; no chrome, re-pin or audit gates |
 | 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Parked and excluded from BF by current owner direction; preserve branch/history and do not resume |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |

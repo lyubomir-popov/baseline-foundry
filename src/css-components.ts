@@ -84,7 +84,7 @@ function roleSelectedStartNudgeVar(roleName: string, fallback?: string): string 
 export function componentsCss(
   tokens: ThemeTokens,
   themeSurfaces?: ThemeSurface[],
-  siteScopes: string[] = [],
+  tableDensityScopes: string[] = [],
   defaultElementInlineGap?: string
 ): string {
   const body = tokens.roles.body;
@@ -1015,13 +1015,13 @@ ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-backgrou
 ${tableCss({
   bodyLineHeight,
   bodyTypeStyles,
-  siteScopes,
+  tableDensityScopes,
 })}
 
 ${chipBadgeStatusCss({
   bodyCaseTypeStyles: typeStyles(body),
   bodyTypeStyles,
-  siteScopes,
+  tableDensityScopes,
 })}
 
 :where(.bf-theme) :where(.bf-chip-dismiss, .bf-search-box-reset, .bf-search-and-filter-clear) {

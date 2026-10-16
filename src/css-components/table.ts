@@ -1,21 +1,48 @@
-import { componentDensityPolicy, siteDenseChipPolicySelectors, siteDenseChipScopedCss } from "../component-density-policy.js";
+import { componentDensityPolicy, tableCellDensityPolicySelectors, tableCellDensityScopedCss } from "../component-density-policy.js";
 import { blockEndStrokeOverlayCss } from "./stroke-paint.js";
 
 type TableCssOptions = {
   bodyLineHeight: string;
   bodyTypeStyles: string;
-  siteScopes: string[];
+  tableDensityScopes: string[];
 };
 
 export function tableCss(options: TableCssOptions): string {
-  const { bodyLineHeight, bodyTypeStyles, siteScopes } = options;
-  const denseChipHosts = siteDenseChipPolicySelectors().hosts;
-  const density = componentDensityPolicy.siteDenseChip;
+  const { bodyLineHeight, bodyTypeStyles, tableDensityScopes } = options;
+  const selectors = tableCellDensityPolicySelectors();
+  const density = componentDensityPolicy.tableCell;
   const cellSelector = ":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)";
   const cellStroke = blockEndStrokeOverlayCss(cellSelector, { anchor: "relative", color: "var(--bf-table-cell-stroke-color, transparent)", width: "var(--bf-table-row-border-size)" });
-  const denseChipHostCss = denseChipHosts
-    ? `\n/* A Site Table.Cell is the approved dense Chip provider. Nested scopes make\n   the nearest cell and product root authoritative through neutral wrappers. */\n${siteDenseChipScopedCss(siteScopes, denseChipHosts, `${density.currentMember}: var(${density.denseMember});\npadding-block-end: max(0rem, calc(var(--bf-table-row-padding-block-end) - var(${density.currentMember})));\npadding-block-start: max(0rem, calc(var(--bf-table-row-padding-block-start) - var(${density.currentMember})));`)}\n`
-    : "";
+  const densityCss = selectors.hosts ? `
+/* Table.Cell selects the dense control-block member for every eligible boxed
+   action and entry seat. The cell absorbs that seat once; the child restores
+   it around its own body line, so text keeps the plain row baseline. */
+${tableCellDensityScopedCss(tableDensityScopes, selectors.hosts, `${density.denseMember}: 0.25rem;
+${density.currentMember}: var(${density.denseMember});
+padding-block-end: max(0rem, calc(var(--bf-table-row-padding-block-end) - var(${density.currentMember})));
+padding-block-start: max(0rem, calc(var(--bf-table-row-padding-block-start) - var(${density.currentMember})));`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, selectors.boxedButtons, `${density.componentBindings.button}: var(${density.currentMember});
+line-height: var(--bf-body-line-height);
+margin-block: 0;
+padding-block: var(${density.componentBindings.button});`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, selectors.iconOnlyButtons, `--bf-square-block-size: calc(var(--bf-body-line-height) + (var(${density.componentBindings.button}) * 2));
+vertical-align: top;`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, `${selectors.singleLineEntries}, ${selectors.textareas}`, `${density.componentBindings.entry}: var(${density.currentMember});
+block-size: auto;
+line-height: var(--bf-body-line-height);
+margin-block: 0;
+padding-block: var(${density.componentBindings.entry});`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, selectors.textareas, `min-block-size: calc((var(--bf-interface-row-occupied-block-size) * 2) - var(--bf-interface-row-compensation-block-end) - ((var(--bf-interface-row-padding-block) - var(${density.componentBindings.entry})) * 2));`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, selectors.fieldBoundaries, `display: inline-grid;
+block-size: auto;
+margin-block: 0;
+vertical-align: baseline;`)}
+` : "";
 
   return `${cellStroke.owner}
 
@@ -126,6 +153,6 @@ ${cellStroke.painter}
     outline-offset: calc(var(--bf-table-row-border-size) * -1);
   }
 }
-${denseChipHostCss}
+${densityCss}
 `;
 }

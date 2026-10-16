@@ -1,5 +1,12 @@
 # Tasks
 
+Current density execution and owner decisions live in canonical Spec024
+`tasks.md` at `H:/WSL_dev_projects/canonical-spacing-spec`. The October16
+repair follows its accepted brief08. Historical Site Chip completion below
+proves that subset only, not the action/input family or all placements.
+OS, compound Search/Color, segmented/pagination and Nav/Tabs remain explicit
+coverage gaps. No historical done row grants semantic exemption or approval.
+
 ## Scope reset – 2026-10-10
 
 BF is a sandbox; the deliverables are in Spec 024 (see `spec.md`). Open work

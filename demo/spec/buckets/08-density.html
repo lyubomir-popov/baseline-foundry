@@ -27,19 +27,48 @@
       .bucket-guide-mark.is-baseline { background: #116bb8; }
       .bucket-guide-mark.is-tick { transform: translateY(-.25rem); block-size: .5rem !important; inline-size: .0625rem !important; }
       .density-reset-boundary { display: inline; }
+      .density-os-proposal-note { color: var(--bf-color-text-muted); }
       .density-sample pre { display: none; }
+
+      /* Review-only OS candidate. It is active on After bundle comparisons
+         and uses the existing OS 0 inset; it is not a published selector. */
+      body.bf-tier-os.density-os-proposal-active .density-os-proposal td:has(:where(.bf-chip, .bf-button:not(.is-link), input, select, textarea)) {
+        --bf-density-control-block-inset: var(--bf-control-block-inset);
+        padding-block-start: max(0rem, calc(var(--bf-table-row-padding-block-start) - var(--bf-density-control-block-inset)));
+        padding-block-end: max(0rem, calc(var(--bf-table-row-padding-block-end) - var(--bf-density-control-block-inset)));
+      }
+      body.bf-tier-os.density-os-proposal-active .density-os-proposal td :where(.bf-chip, .bf-button:not(.is-link), input, select, textarea) {
+        line-height: var(--bf-body-line-height);
+        margin-block: 0;
+        padding-block: var(--bf-density-control-block-inset);
+      }
+      body.bf-tier-os.density-os-proposal-active .density-os-proposal td .bf-field-boundary {
+        display: inline-grid;
+        margin-block: 0;
+        vertical-align: baseline;
+      }
     </style>
   </head>
   <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
     <main class="bf-page is-fill density-page">
       <header class="bf-stack is-dense density-intro">
         <h1>08 · Density</h1>
-        <p>The Site table-cell policy enrolls a Chip in its table host. A nested theme resets that enrollment; standalone, Tabs and SideNavigation Chips remain outside this policy. Other tiers preserve their current control inset.</p>
-        <p class="density-note">The plain-text table row leads the comparison. Shared red start/end lines, a blue browser baseline and short peer ticks show the real host and Chip boxes. Numeric readings stay hidden for inspection.</p>
+        <p>Table.Cell supplies one dense control seat to the repaired primitive boxed Buttons, Chips, text inputs, Select and Textarea in Site, Docs and App. A nested theme resets the seat. Standalone controls keep their defaults. Compound Search/Color seats, segmented/pagination actions, Nav and Tabs remain coverage gaps rather than semantic exclusions.</p>
+        <p class="density-note">The plain-text row leads the comparison. Shared red start/end lines, a blue browser baseline and short peer ticks show actual host and control geometry. The OS rows include the unchanged shipping result and an After-only proposal that uses its existing 0 inset; that proposal still awaits owner judgment.</p>
       </header>
       <section class="density-row">
-        <h2 class="bf-h6">Table, reset boundary and non-subscriber controls</h2>
+        <h2 id="density-table-heading" class="bf-h6">Supported table seats and reset boundary</h2>
         <div id="density-track" class="density-track"><div class="bucket-guide-layer" aria-hidden="true"></div></div>
+      </section>
+      <section class="density-row">
+        <h2 class="bf-h6">OS shipping default and provisional 0-inset comparison</h2>
+        <p class="density-note density-os-proposal-note">This track is evidence for an owner decision. The proposal activates only with the OS After bundle and does not change generated OS CSS.</p>
+        <div id="density-os-track" class="density-track"><div class="bucket-guide-layer" aria-hidden="true"></div></div>
+      </section>
+      <section class="density-row">
+        <h2 class="bf-h6">Deferred host diagnostics</h2>
+        <p class="density-note">Tabs and SideNavigation stay visible as current-state diagnostics. They are outside this table repair and are not compared to the shared table-row baseline.</p>
+        <div id="density-deferred-track" class="density-track"></div>
       </section>
     </main>
     <script type="module" src="./08-density.js"></script>
