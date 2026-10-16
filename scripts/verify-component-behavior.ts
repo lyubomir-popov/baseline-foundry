@@ -3656,7 +3656,6 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           <table class="bf-table"><tbody><tr data-case="plain"><td><span data-text>Active</span></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr data-case="hidden"><td><span data-target>Active</span><input class="bf-input" type="hidden" value="metadata"></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr data-case="plain-two"><td><span data-target>First line<br>Second line</span></td></tr></tbody></table>
-          <table class="bf-table"><tbody><tr data-case="content-reference"><td><span data-target data-content-reference>First line<br>Second line</span></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr data-case="button"><td><button class="bf-button" type="button" data-target>Active</button></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr data-case="legacy-button"><td><button class="bf-button is-nested" type="button" data-target>Active</button></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr data-case="legacy-input"><td><span class="bf-field-boundary"><input class="bf-input is-nested" type="text" value="Active" data-target></span></td></tr></tbody></table>
@@ -3674,6 +3673,7 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           <table class="bf-table"><tbody><tr data-case="select"><td><span class="bf-field-boundary"><select class="bf-input" data-target><option>Active</option></select></span></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr data-case="textarea"><td><span class="bf-field-boundary"><textarea class="bf-input" rows="2" data-target>First line\nSecond line</textarea></span></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr data-case="reset"><td><span class="bf-theme"><button class="bf-button" type="button" data-target>Active</button></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="reset-plain"><td data-reset-plain-outer><div class="bf-theme"><table class="bf-table"><tbody><tr><td><span data-target>Reset</span></td></tr></tbody></table></div></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr><td><span class="bf-field-boundary" data-reset-owner><span class="bf-theme"><input class="bf-input" type="text" value="Reset" data-target></span></span></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr><td><span class="bf-field-boundary" data-cell-owner><table class="bf-table"><tbody><tr><td><input class="bf-input" type="text" value="Inner" data-target></td></tr></tbody></table></span></td></tr></tbody></table>
           <table class="bf-table"><tbody><tr data-case="nested-outer"><td data-outer><table class="bf-table"><tbody><tr data-case="nested-inner"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></td></tr></tbody></table></td></tr></tbody></table>
@@ -3727,6 +3727,7 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
             const cellStyle = getComputedStyle(cell);
             const boundary = target.closest<HTMLElement>(".bf-field-boundary");
             const boundaryStyle = boundary ? getComputedStyle(boundary) : null;
+            const paintBox = (boundary ?? target).getBoundingClientRect();
             const targetBaseline = baseline(target);
             const selectedProbe = document.createElement("span");
             selectedProbe.style.cssText = `position:absolute;visibility:hidden;block-size:0;inline-size:${style.getPropertyValue("--bf-density-control-block-inset")}`;
@@ -3744,8 +3745,9 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
               marginEnd: number(style.marginBlockEnd),
               cellStart: number(cellStyle.paddingBlockStart),
               cellEnd: number(cellStyle.paddingBlockEnd),
-              clearanceStart: box.top - cell.getBoundingClientRect().top,
-              clearanceEnd: cell.getBoundingClientRect().bottom - box.bottom,
+              clearanceStart: paintBox.top - cell.getBoundingClientRect().top,
+              clearanceEnd: cell.getBoundingClientRect().bottom - paintBox.bottom,
+              paintOwner: boundary ? "field-boundary" : "target",
               selected,
               verticalAlign: style.verticalAlign,
               minBlockSize: style.minBlockSize,
@@ -3762,13 +3764,6 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           const plainRow = document.querySelector<HTMLElement>("[data-case='plain']");
           const plainText = plainRow?.querySelector<HTMLElement>("[data-text]");
           if (!plainRow || !plainText) throw new Error("Missing plain density fixture.");
-          const standaloneTextarea = document.querySelector<HTMLTextAreaElement>("[data-standalone] textarea");
-          const contentReference = document.querySelector<HTMLElement>("[data-content-reference]");
-          if (!standaloneTextarea || !contentReference) throw new Error("Missing multiline density reference.");
-          const standaloneTextareaStyle = getComputedStyle(standaloneTextarea);
-          const standaloneContentViewport = standaloneTextarea.getBoundingClientRect().height - number(standaloneTextareaStyle.paddingBlockStart) - number(standaloneTextareaStyle.paddingBlockEnd) - number(standaloneTextareaStyle.borderBlockStartWidth) - number(standaloneTextareaStyle.borderBlockEndWidth);
-          contentReference.style.display = "block";
-          contentReference.style.blockSize = `${standaloneContentViewport}px`;
           const plainMarker = document.createElement("span");
           plainMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;vertical-align:baseline";
           plainText.append(plainMarker);
@@ -3777,7 +3772,9 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           const cases = Object.fromEntries([...document.querySelectorAll<HTMLElement>("tr[data-case]:not([data-case='plain'])")].map(row => [row.dataset.case, read(row)]));
           const standalone = [...document.querySelectorAll<HTMLElement>("[data-standalone] [data-target]")].map(target => {
             const style = getComputedStyle(target);
-            return { box: target.getBoundingClientRect().height, padding: number(style.paddingBlockStart), minBlockSize: style.minBlockSize, resize: style.resize, clientHeight: target.clientHeight, scrollHeight: target.scrollHeight, contentViewport: target.getBoundingClientRect().height - number(style.paddingBlockStart) - number(style.paddingBlockEnd) - number(style.borderBlockStartWidth) - number(style.borderBlockEndWidth), rows: target instanceof HTMLTextAreaElement ? target.rows : null };
+            const box = target.getBoundingClientRect();
+            const textBaseline = baseline(target);
+            return { box: box.height, baselineFromTop: textBaseline === null ? null : textBaseline - box.top, padding: number(style.paddingBlockStart), marginStart: number(style.marginBlockStart), marginEnd: number(style.marginBlockEnd), minBlockSize: style.minBlockSize, resize: style.resize, clientHeight: target.clientHeight, scrollHeight: target.scrollHeight, contentViewport: box.height - number(style.paddingBlockStart) - number(style.paddingBlockEnd) - number(style.borderBlockStartWidth) - number(style.borderBlockEndWidth), rows: target instanceof HTMLTextAreaElement ? target.rows : null };
           });
           const denseTextarea = document.querySelector<HTMLTextAreaElement>("[data-case='textarea'] textarea");
           if (!denseTextarea) throw new Error("Missing dense textarea interaction fixture.");
@@ -3796,6 +3793,11 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           const textareaInteraction = { scrolls: textareaScrolls, beforeHeight, resizedHeight, resizedBoundaryHeight, rows: denseTextarea.rows };
           const outer = document.querySelector<HTMLElement>("[data-outer]");
           const productOuter = document.querySelector<HTMLElement>("[data-product-outer]");
+          const resetPlainOuter = document.querySelector<HTMLElement>("[data-reset-plain-outer]");
+          const plainCell = plainRow.querySelector<HTMLElement>("td");
+          if (!resetPlainOuter || !plainCell) throw new Error("Missing fresh-product reset reference.");
+          const resetPlainOuterStyle = getComputedStyle(resetPlainOuter);
+          const plainCellStyle = getComputedStyle(plainCell);
           const stoppedOwners = ["[data-reset-owner]", "[data-cell-owner]"].map(selector => {
             const owner = document.querySelector<HTMLElement>(selector);
             if (!owner) throw new Error("Missing stopped field owner.");
@@ -3804,7 +3806,7 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           });
           const defaultBoundary = document.querySelector<HTMLElement>("[data-standalone] .bf-field-boundary");
           if (!defaultBoundary) throw new Error("Missing default field boundary.");
-          return { plain: { row: plainRow.getBoundingClientRect().height, baseline: plainBaseline }, cases, standalone, stoppedOwners, textareaInteraction, defaultBoundaryMargin: number(getComputedStyle(defaultBoundary).marginBlockEnd), outerPadding: outer ? number(getComputedStyle(outer).paddingBlockStart) : null, productOuterPadding: productOuter ? number(getComputedStyle(productOuter).paddingBlockStart) : null };
+          return { plain: { row: plainRow.getBoundingClientRect().height, baseline: plainBaseline, cellStart: number(plainCellStyle.paddingBlockStart), cellEnd: number(plainCellStyle.paddingBlockEnd), line: number(getComputedStyle(plainText).lineHeight) }, cases, standalone, stoppedOwners, textareaInteraction, resetPlainOuter: { start: number(resetPlainOuterStyle.paddingBlockStart), end: number(resetPlainOuterStyle.paddingBlockEnd) }, defaultBoundaryMargin: number(getComputedStyle(defaultBoundary).marginBlockEnd), outerPadding: outer ? number(getComputedStyle(outer).paddingBlockStart) : null, productOuterPadding: productOuter ? number(getComputedStyle(productOuter).paddingBlockStart) : null };
         });
         const denseInset = tier === "os" ? 0 : 4;
         const plain = geometry.plain;
@@ -3822,9 +3824,17 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           const icon = geometry.cases.icon;
           assert(Math.abs(icon.row - plain.row) < 0.1 && Math.abs(icon.box - icon.width) < 0.1 && icon.verticalAlign === "top" && icon.clearanceStart > 0 && icon.clearanceEnd > 0, `Expected ${tier}/${tone} icon-only flow to stay square within the plain row with positive clearance: ${JSON.stringify(icon)}.`);
           assert(Math.abs(geometry.cases.link.row - plain.row) < 0.1 && geometry.cases.reset.row > plain.row, `Expected ${tier}/${tone} link-style Button to follow the plain-text seat while a nested product reset retains default boxed geometry: ${JSON.stringify(geometry.cases)}.`);
+          const reset = geometry.cases.reset;
+          const resetPlain = geometry.cases["reset-plain"];
+          const standaloneButton = geometry.standalone[0];
+          const standaloneChip = geometry.standalone[1];
+          assert(Math.abs(reset.baseline - resetPlain.baseline) < 0.02 && Math.abs(reset.row - resetPlain.row) < 0.1, `Expected ${tier}/${tone} the reset Button to share the first-line baseline and outer row with a fresh nested-product plain table seat: ${JSON.stringify({ reset, resetPlain })}.`);
+          assert(Math.abs(reset.cellStart - plain.cellStart) < 0.01 && Math.abs(reset.cellEnd - plain.cellEnd) < 0.01 && Math.abs(geometry.resetPlainOuter.start - plain.cellStart) < 0.01 && Math.abs(geometry.resetPlainOuter.end - plain.cellEnd) < 0.01, `Expected ${tier}/${tone} both outer reset cells to keep ordinary unseated padding: ${JSON.stringify({ outer: geometry.resetPlainOuter, plain })}.`);
+          assert(Math.abs(reset.padding - standaloneButton.padding) < 0.01 && Math.abs(reset.marginStart - standaloneButton.marginStart) < 0.01 && Math.abs(reset.marginEnd - standaloneButton.marginEnd) < 0.01 && Math.abs(reset.box - standaloneButton.box) < 0.1 && reset.clearanceStart > 0 && reset.clearanceEnd > 0, `Expected ${tier}/${tone} the nested product root to preserve standalone Button geometry and painted clearance: ${JSON.stringify({ reset, standaloneButton })}.`);
+          assert(standaloneButton.baselineFromTop !== null && standaloneChip.baselineFromTop !== null && Math.abs(standaloneButton.baselineFromTop - plain.baseline) < 0.02 && Math.abs(standaloneChip.baselineFromTop - plain.baseline) < 0.02, `Expected ${tier}/${tone} standalone Button/Chip text baselines from their own occupied-block tops to match the plain table row baseline from row top: ${JSON.stringify({ plain, standaloneButton, standaloneChip })}.`);
           assert(Math.abs(geometry.outerPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["nested-inner"].cellStart - (geometry.cases.reset.cellStart - denseInset)) < 0.01, `Expected ${tier}/${tone} nested cells to select only their nearest owner: ${JSON.stringify(geometry)}.`);
           const neutralInput = geometry.cases["neutral-input"];
-          assert(neutralInput.boundaryDisplay === "inline-grid" && neutralInput.boundaryMarginStart === 0 && neutralInput.boundaryMarginEnd === 0, `Expected ${tier}/${tone} a neutral descendant wrapper to preserve the actual field-boundary seat and closure: ${JSON.stringify(neutralInput)}.`);
+          assert(neutralInput.boundaryDisplay === "inline-grid" && neutralInput.boundaryMarginStart === 0 && neutralInput.boundaryMarginEnd === 0 && ["legacy-input", "input", "neutral-input", "select", "textarea"].every(name => geometry.cases[name].paintOwner === "field-boundary"), `Expected ${tier}/${tone} wrapped fields, including neutral descendants, to measure clearance at their painted boundary: ${JSON.stringify(neutralInput)}.`);
           assert(Math.abs(geometry.productOuterPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["product-inner"].row - geometry.cases["product-plain"].row) < 0.1 && geometry.cases["product-inner"].padding === 4, `Expected ${tier}/${tone} a nested product root to reset the outer provider and its own inner table to restart supported density: ${JSON.stringify(geometry)}.`);
           assert(geometry.textareaInteraction.scrolls && geometry.textareaInteraction.rows === 2 && geometry.textareaInteraction.resizedHeight > geometry.textareaInteraction.beforeHeight + 31 && Math.abs(geometry.textareaInteraction.resizedBoundaryHeight - geometry.textareaInteraction.resizedHeight) < 0.1, `Expected ${tier}/${tone} dense textarea to scroll in its configured viewport and its paint owner to follow an authored resize: ${JSON.stringify(geometry.textareaInteraction)}.`);
           const textarea = geometry.cases.textarea;
@@ -3833,7 +3843,8 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
           const standaloneContentViewport = standaloneTextarea.contentViewport;
           assert(textarea.padding === denseInset && textarea.row > plain.row && textarea.clearanceStart > 0 && textarea.clearanceEnd > 0 && textarea.resize === "vertical" && textarea.rows === 2 && textarea.scrollHeight >= textarea.clientHeight, `Expected ${tier}/${tone} Textarea to preserve a configured two-line, vertically resizable viewport with dense edges and positive clearance: ${JSON.stringify(textarea)}.`);
           assert(standaloneTextarea.rows === 2 && standaloneTextarea.resize === "vertical" && Math.abs(denseContentViewport - standaloneContentViewport) <= 0.1, `Expected ${tier}/${tone} dense Textarea to preserve the standalone content viewport while only changing its edge seat: ${JSON.stringify({ textarea, standaloneTextarea, denseContentViewport, standaloneContentViewport })}.`);
-          assert(Math.abs(textarea.row - geometry.cases["content-reference"].row) <= 0.1 && textarea.row >= geometry.cases["plain-two"].row, `Expected ${tier}/${tone} dense Textarea closure to match a plain row with the preserved content viewport while retaining the literal two-line diagnostic: ${JSON.stringify({ textarea, contentReference: geometry.cases["content-reference"], literalTwoLine: geometry.cases["plain-two"] })}.`);
+          const expectedTextareaRow = plain.row + denseContentViewport - plain.line;
+          assert(Math.abs(textarea.row - expectedTextareaRow) <= 0.1 && textarea.row >= geometry.cases["plain-two"].row && Math.abs(geometry.cases["plain-two"].baseline - plain.baseline) < 0.02, `Expected ${tier}/${tone} dense Textarea row growth to replace one body line with its preserved native content viewport while the natural two-line plain row keeps its first-line baseline: ${JSON.stringify({ textarea, expectedTextareaRow, literalTwoLine: geometry.cases["plain-two"], plain })}.`);
         }
       }
     }
@@ -3862,6 +3873,25 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
   // An exported native CSS baseline is a separate measurement from glyph paint.
   const flowTolerance = 0.2;
   const nativeBaselineTolerance = 0.51;
+  const expectedMainCaptions = [
+    "Plain-text table row · reference", "Classed inline body · reference parity",
+    "Boxed Button · automatic table seat", "Leading-icon Button · text baseline",
+    "Disabled Button · state keeps membership", "Icon-only Button · square flow check",
+    "Static Chip · automatic table seat", "Clickable Chip · action keeps membership",
+    "Dismissible Chip · legal sibling action", "Header cell Chip · native th host",
+    "Neutral wrapper · placement preserved", "Wrapped text input · wrapper owns paint",
+    "Neutral-wrapped input · boundary seat preserved", "Native Select · single-line entry",
+    "Two-line plain table row · multiline reference", "Textarea · two-line viewport diagnostic",
+    "Nested product root · plain inner row reference", "Nested product root · table seat resets",
+    "Standalone Button · product default", "Standalone Chip · product default",
+    "Standalone input · product default"
+  ];
+  const expectedOsCaptions = [
+    "OS plain-text table row · reference", "OS generated Button", "OS generated Chip",
+    "OS generated input", "OS 0-inset proposal · Button", "OS 0-inset proposal · Chip",
+    "OS 0-inset proposal · wrapped input"
+  ];
+  const expectedDeferredCaptions = ["Tabs Chip · deferred diagnostic", "SideNavigation Chip · deferred diagnostic"];
   const browser = await openBrowser();
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
@@ -3900,18 +3930,70 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
             const refBaseline = marker.getBoundingClientRect().top + window.scrollY;
             const baselineRule = track.querySelector<HTMLElement>(".bucket-guide-mark.is-baseline.is-line");
             const topRule = track.querySelector<HTMLElement>(".bucket-guide-mark.is-top.is-line");
-            const peers = [...track.querySelectorAll<HTMLElement>(".density-sample")].map(sample => {
+            const samples = [...track.querySelectorAll<HTMLElement>(".density-sample")];
+            const identity = samples.map(sample => {
+              const target = sample.querySelector<HTMLElement>("[data-target]");
+              const box = target?.getBoundingClientRect();
+              const style = target ? getComputedStyle(target) : null;
+              return { caption: sample.dataset.baseCaption, kind: sample.dataset.kind, visible: !!box && box.width > 0 && box.height > 0 && style?.display !== "none" && style?.visibility !== "hidden" };
+            });
+            const peers = samples.map(sample => {
               const target = sample.querySelector<HTMLElement>("[data-target]");
               const row = sample.querySelector<HTMLElement>("[data-host-row]");
               const marker = sample.querySelector<HTMLElement>("[data-target] .bucket-measured-text .bucket-baseline-marker");
               const absolute = marker ? marker.getBoundingClientRect().top + window.scrollY : Number.parseFloat(sample.dataset.absoluteBaseline ?? "");
-              return { kind: sample.dataset.kind, caption: sample.dataset.baseCaption, baseline: absolute, phase: phase(absolute), metricPhaseError: phase(absolute - metricTextPhase), contentMetricPhaseError: phase(absolute - metricTextPhase - contentPhase), native: target?.matches("input, select, textarea") ?? false, delta: absolute - refBaseline, row: row?.getBoundingClientRect().height ?? null, rig: sample.dataset.externalRig, value: target instanceof HTMLInputElement ? target.value : target?.textContent?.trim() };
+              const sampleBox = sample.getBoundingClientRect();
+              const topTarget = ["plain", "reset-reference"].includes(sample.dataset.kind ?? "") ? row : target;
+              return { kind: sample.dataset.kind, caption: sample.dataset.baseCaption, baseline: absolute, markerTop: marker?.getBoundingClientRect().top ?? null, phase: phase(absolute), metricPhaseError: phase(absolute - metricTextPhase), contentMetricPhaseError: phase(absolute - metricTextPhase - contentPhase), native: target?.matches("input, select, textarea") ?? false, delta: absolute - refBaseline, row: row?.getBoundingClientRect().height ?? null, rowEnd: row?.getBoundingClientRect().bottom ?? null, top: topTarget?.getBoundingClientRect().top ?? null, sampleLeft: sampleBox.left, sampleRight: sampleBox.right, rig: sample.dataset.externalRig, externalBaseline: sample.dataset.externalBaseline, guideBaseline: sample.dataset.guideBaseline, baselineSource: sample.dataset.baselineSource, context: sample.dataset.contextReference, contextDelta: Number.parseFloat(sample.dataset.contextBaselineDelta ?? ""), outerDelta: Number.parseFloat(sample.dataset.outerBaselineDelta ?? ""), gridDelta: Number.parseFloat(sample.dataset.pageGridDelta ?? ""), value: target instanceof HTMLInputElement ? target.value : target?.textContent?.trim() };
             });
-            return { referenceBaseline: refBaseline, referencePhase: phase(refBaseline), referenceMetricPhaseError: phase(refBaseline - metricTextPhase), contentReferenceMetricPhaseError: phase(refBaseline - metricTextPhase - contentPhase), contentStartPhase: phase(reference.getBoundingClientRect().top + window.scrollY - contentPhase), contentEndPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY - contentPhase), startPhase: phase(reference.getBoundingClientRect().top + window.scrollY), endPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY), referenceHeight: reference.getBoundingClientRect().height, baselinePaintDelta: baselineRule ? baselineRule.getBoundingClientRect().bottom - marker.getBoundingClientRect().top : null, topPaintDelta: topRule ? topRule.getBoundingClientRect().top - reference.getBoundingClientRect().top : null, peers };
+            const guideLines = [...track.querySelectorAll<HTMLElement>(".bucket-guide-mark.is-line")].map(mark => {
+              const box = mark.getBoundingClientRect();
+              return { kind: ["top", "baseline", "end"].find(kind => mark.classList.contains(`is-${kind}`)), context: mark.dataset.comparisonContext, left: box.left, right: box.right, top: box.top, bottom: box.bottom };
+            });
+            return { identity, guideLines, referenceBaseline: refBaseline, referencePhase: phase(refBaseline), referenceMetricPhaseError: phase(refBaseline - metricTextPhase), contentReferenceMetricPhaseError: phase(refBaseline - metricTextPhase - contentPhase), contentStartPhase: phase(reference.getBoundingClientRect().top + window.scrollY - contentPhase), contentEndPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY - contentPhase), startPhase: phase(reference.getBoundingClientRect().top + window.scrollY), endPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY), referenceHeight: reference.getBoundingClientRect().height, baselinePaintDelta: baselineRule ? baselineRule.getBoundingClientRect().bottom - marker.getBoundingClientRect().top : null, topPaintDelta: topRule ? topRule.getBoundingClientRect().top - reference.getBoundingClientRect().top : null, peers };
           };
-          return { unit, metricTextPhase, contentPhase, ubuntuLoaded: [...document.fonts].some(face => face.family.replaceAll('"', '') === "Ubuntu Sans" && face.status === "loaded"), tracks: [readTrack("#density-track"), readTrack("#density-os-track")] };
+          const deferredIdentity = [...document.querySelectorAll<HTMLElement>("#density-deferred-track .density-sample")].map(sample => {
+            const target = sample.querySelector<HTMLElement>("[data-target]");
+            const box = target?.getBoundingClientRect();
+            const style = target ? getComputedStyle(target) : null;
+            return { caption: sample.dataset.baseCaption, visible: !!box && box.width > 0 && box.height > 0 && style?.display !== "none" && style?.visibility !== "hidden" };
+          });
+          return { unit, metricTextPhase, contentPhase, deferredIdentity, ubuntuLoaded: [...document.fonts].some(face => face.family.replaceAll('"', '') === "Ubuntu Sans" && face.status === "loaded"), tracks: [readTrack("#density-track"), readTrack("#density-os-track")] };
         });
         assert(proof.ubuntuLoaded && proof.unit > 0, `Expected ${tier}/${width} actual Ubuntu Sans and a measurable page grid.`);
+        const mainIdentity = proof.tracks[0].identity;
+        const osIdentity = proof.tracks[1].identity;
+        assert(JSON.stringify(mainIdentity.map(item => item.caption)) === JSON.stringify(expectedMainCaptions) && mainIdentity.length === 21 && mainIdentity.every(item => item.visible), `Expected ${tier}/${width} all twenty original table/standalone specimens plus the added reset reference to remain visible in order: ${JSON.stringify(mainIdentity)}.`);
+        assert(JSON.stringify(mainIdentity.map(item => item.kind)) === JSON.stringify(["plain", "plain-inline", ...Array(12).fill("member").map((kind, index) => index === 3 ? "icon" : kind), "multiline-reference", "multiline", "reset-reference", "reset", "standalone", "standalone", "standalone"]), `Expected ${tier}/${width} the original main roles and added reset reference to keep their comparison identities: ${JSON.stringify(mainIdentity)}.`);
+        assert(JSON.stringify(osIdentity.map(item => item.caption)) === JSON.stringify(expectedOsCaptions) && osIdentity.length === 7 && osIdentity.every(item => item.visible), `Expected ${tier}/${width} every original OS source/proposal specimen to remain visible in order: ${JSON.stringify(osIdentity)}.`);
+        assert(JSON.stringify(osIdentity.map(item => item.kind)) === JSON.stringify(["plain", "os-shipping", "os-shipping", "os-shipping", "os-proposal", "os-proposal", "os-proposal"]), `Expected ${tier}/${width} OS source and proposal identities to remain distinct.`);
+        assert(JSON.stringify(proof.deferredIdentity.map(item => item.caption)) === JSON.stringify(expectedDeferredCaptions) && proof.deferredIdentity.length === 2 && proof.deferredIdentity.every(item => item.visible), `Expected ${tier}/${width} both original deferred Tabs/Nav diagnostics to remain visible in order: ${JSON.stringify(proof.deferredIdentity)}.`);
+        const mainGuideContexts = [
+          { name: "table-cell", start: 0, end: 13, reference: 0 },
+          { name: "multiline-first-line", start: 14, end: 15, reference: 14 },
+          { name: "reset-product", start: 16, end: 17, reference: 16 },
+          { name: "standalone-default", start: 18, end: 20, reference: 0 }
+        ];
+        const mainTrack = proof.tracks[0];
+        assert(mainTrack.guideLines.length === mainGuideContexts.length * 3, `Expected ${tier}/${width} exactly one top, first-line baseline and end guide per named context, with no specimen omitted: ${JSON.stringify(mainTrack.guideLines)}.`);
+        for (const context of mainGuideContexts) {
+          const rules = mainTrack.guideLines.filter(rule => rule.context === context.name);
+          const reference = mainTrack.peers[context.reference];
+          const first = mainTrack.peers[context.start];
+          const last = mainTrack.peers[context.end];
+          const top = rules.find(rule => rule.kind === "top");
+          const baseline = rules.find(rule => rule.kind === "baseline");
+          const end = rules.find(rule => rule.kind === "end");
+          assert(rules.length === 3 && !!top && !!baseline && !!end && Math.abs(top.left - first.sampleLeft) < 0.02 && Math.abs(top.right - last.sampleRight) < 0.02 && Math.abs(baseline.left - first.sampleLeft) < 0.02 && Math.abs(baseline.right - last.sampleRight) < 0.02 && Math.abs(end.left - first.sampleLeft) < 0.02 && Math.abs(end.right - last.sampleRight) < 0.02, `Expected ${tier}/${width} ${context.name} guides to span only their preserved specimens: ${JSON.stringify({ rules, first, last })}.`);
+          assert(Math.abs(top.top - reference.top) < 0.02 && reference.markerTop !== null && Math.abs(baseline.bottom - reference.markerTop) < 0.02 && reference.rowEnd !== null && Math.abs(end.top - reference.rowEnd) < 0.02, `Expected ${tier}/${width} ${context.name} guides to use the actual named reference row and text marker: ${JSON.stringify({ rules, reference })}.`);
+        }
+        const resetReference = mainTrack.peers[16];
+        const resetControl = mainTrack.peers[17];
+        assert(resetReference.context === "reset-product" && resetControl.context === "reset-product" && Math.abs(resetControl.markerTop - resetReference.markerTop) < 0.02 && Math.abs(resetControl.contextDelta) < 0.02 && Math.abs(resetControl.row - resetReference.row) < 0.1 && Number.isFinite(resetControl.outerDelta) && Number.isFinite(resetControl.gridDelta), `Expected ${tier}/${width} reset Button to match its real fresh-product reference while retaining the separate outer baseline and absolute grid phase: ${JSON.stringify({ resetReference, resetControl })}.`);
+        const textareaPeer = mainTrack.peers[15];
+        assert(textareaPeer.context === "multiline-first-line" && textareaPeer.guideBaseline?.startsWith("unavailable") && textareaPeer.baselineSource?.startsWith("native first-line baseline unavailable") && ((Number.isFinite(Number.parseFloat(textareaPeer.externalBaseline ?? "")) && textareaPeer.rig === "matched native clone box/font") || (textareaPeer.externalBaseline === "unavailable" && textareaPeer.rig === "unmatched native clone")), `Expected ${tier}/${width} Textarea first-line guide to stay unavailable while its separate native CSS baseline diagnostic remains recorded: ${JSON.stringify(textareaPeer)}.`);
+        const standaloneInput = mainTrack.peers[20];
+        assert(standaloneInput.native && Number.isFinite(Number.parseFloat(standaloneInput.externalBaseline ?? "")) && standaloneInput.rig === "matched native clone box/font", `Expected ${tier}/${width} standalone input to retain its separate native CSS baseline proxy without claiming painted glyph alignment: ${JSON.stringify(standaloneInput)}.`);
         const absoluteGridRequired = width === 1280;
         if (!absoluteGridRequired && proof.tracks.some(track => Math.abs(track.startPhase) > flowTolerance || Math.abs(track.endPhase) > flowTolerance || Math.abs(track.referenceMetricPhaseError) > flowTolerance)) {
           console.warn(`OPEN mobile page-grid diagnostic ${tier}/${width}: shared chrome starts content ${proof.contentPhase}px off the document grid; absolute alignment FAILS. Only intrinsic bucket flow is checked below. No control or guide offset repairs this.`);

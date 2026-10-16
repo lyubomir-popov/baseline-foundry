@@ -32,6 +32,7 @@ const tableSpecimens = [
   ["Native Select · single-line entry", tableRow(`<span class="bf-field-boundary"><select class="bf-input" aria-label="State" data-target><option>Active</option></select></span>`, "Select row"), "member"],
   ["Two-line plain table row · multiline reference", tableRow(`<span class="bf-body" data-target>First line<br />Second line</span>`, "Two-line plain reference row"), "multiline-reference"],
   ["Textarea · two-line viewport diagnostic", tableRow(`<span class="bf-field-boundary"><textarea class="bf-input" rows="2" aria-label="Notes" data-target>First line\nSecond line</textarea></span>`, "Textarea row"), "multiline"],
+  ["Nested product root · plain inner row reference", tableRow(`<div class="bf-theme"><table class="bf-table"><tbody><tr><td><span data-target>Reset</span></td></tr></tbody></table></div>`, "Nested product plain row reference"), "reset-reference"],
   ["Nested product root · table seat resets", tableRow(`<span class="bf-theme density-reset-boundary"><button class="bf-button" type="button" data-target>Reset</button></span>`, "Nested theme reset row"), "reset"],
   ["Standalone Button · product default", `<button class="bf-button" type="button" data-target>Active</button>`, "standalone"],
   ["Standalone Chip · product default", `<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "standalone"],
@@ -122,16 +123,18 @@ function measureTrack(track, samples) {
       installBaselineMarker(target);
       markedTargets.add(target);
     }
-    const owner = sample.querySelector("[data-host-row]") || sample.querySelector("[role=tab]") || sample.querySelector(".bf-side-navigation-item") || target;
+    const owner = sample.querySelector("[data-host-row]") || sample.querySelector("[role=tab]") || sample.querySelector(".bf-side-navigation-item") || target.closest(".bf-field-boundary") || target;
     const ownerBox = owner.getBoundingClientRect();
     const targetBox = target.getBoundingClientRect();
+    const paintOwner = target.closest(".bf-field-boundary") || target;
+    const paintBox = paintOwner.getBoundingClientRect();
     const targetStyle = getComputedStyle(target);
     const cellBox = cell?.getBoundingClientRect() ?? null;
     const cellStyle = cell ? getComputedStyle(cell) : null;
     const rowHeight = sample.querySelector("[data-host-row]")?.getBoundingClientRect().height ?? null;
     const comparisonHeight = sample.dataset.kind === "multiline" ? multilineReferenceHeight : referenceHeight;
-    const startClearance = cellBox ? targetBox.top - cellBox.top : null;
-    const endClearance = cellBox ? cellBox.bottom - targetBox.bottom : null;
+    const startClearance = cellBox ? paintBox.top - cellBox.top : null;
+    const endClearance = cellBox ? cellBox.bottom - paintBox.bottom : null;
     const selected = targetStyle.getPropertyValue("--bf-density-control-block-inset").trim() || "not exposed";
     const membership = production ? "automatic table-cell member"
       : proposal ? "review-only OS 0-inset proposal"
@@ -141,16 +144,30 @@ function measureTrack(track, samples) {
     const metrics = `loaded bundle ${bundleVersion()}; loaded tier ${tierName()}; ${membership}\n` +
       `host ${cell ? cell.tagName.toLowerCase() : owner.className || owner.tagName.toLowerCase()}; selected member ${selected}; line ${targetStyle.lineHeight}; padding ${targetStyle.paddingBlockStart}/${targetStyle.paddingBlockEnd}; margin ${targetStyle.marginBlockStart}/${targetStyle.marginBlockEnd}\n` +
       `target ${px(targetBox.width)}×${px(targetBox.height)}; host ${px(ownerBox.width)}×${px(ownerBox.height)}; row ${rowHeight === null ? "n/a" : px(rowHeight)}; row delta from ${sample.dataset.kind === "multiline" ? "two-line plain" : "one-line plain"} ${rowHeight === null || comparisonHeight === null ? "n/a" : px(rowHeight - comparisonHeight)}\n` +
-      `paint clearance start/end ${startClearance === null ? "n/a" : `${px(startClearance)}/${px(endClearance)}`}; cell padding ${cellStyle ? `${cellStyle.paddingBlockStart}/${cellStyle.paddingBlockEnd}` : "n/a"}; resize ${targetStyle.resize || "n/a"}; scroll ${target.scrollHeight ?? "n/a"}/${target.clientHeight ?? "n/a"}`;
+      `paint owner ${paintOwner.className || paintOwner.tagName.toLowerCase()}; clearance start/end ${startClearance === null ? "n/a" : `${px(startClearance)}/${px(endClearance)}`}; cell padding ${cellStyle ? `${cellStyle.paddingBlockStart}/${cellStyle.paddingBlockEnd}` : "n/a"}; resize ${targetStyle.resize || "n/a"}; scroll ${target.scrollHeight ?? "n/a"}/${target.clientHeight ?? "n/a"}`;
     // Plain text is the row reference, not the padded rectangle of an inline
     // bf-body span. The actual text marker is still measured inside the row.
-    peers.push({ sample, target: sample.dataset.kind === "plain" ? owner : target, owner, metrics });
+    peers.push({ sample, target: ["plain", "reset-reference"].includes(sample.dataset.kind) ? owner : target, owner, metrics, firstLineOnly: target.matches("textarea") });
   }
-  renderGuides(track, peers, 0);
+  const multilineIndex = samples.findIndex(sample => sample.dataset.kind === "multiline-reference");
+  const resetReferenceIndex = samples.findIndex(sample => sample.dataset.kind === "reset-reference");
+  const standaloneIndex = samples.findIndex(sample => sample.dataset.kind === "standalone");
+  const groups = resetReferenceIndex < 0 ? undefined : [
+    { start: 0, end: multilineIndex - 1, reference: 0, name: "table-cell" },
+    { start: multilineIndex, end: resetReferenceIndex - 1, reference: multilineIndex, name: "multiline-first-line" },
+    { start: resetReferenceIndex, end: standaloneIndex - 1, reference: resetReferenceIndex, name: "reset-product" },
+    { start: standaloneIndex, end: samples.length - 1, reference: 0, name: "standalone-default" }
+  ];
+  renderGuides(track, peers, 0, groups);
   const referenceBaseline = Number.parseFloat(samples[0].dataset.guideBaseline);
   for (const sample of samples) {
     const baseline = Number.parseFloat(sample.dataset.guideBaseline);
     const delta = Number.isFinite(baseline) && Number.isFinite(referenceBaseline) ? px(baseline - referenceBaseline) : "unavailable";
+    const group = groups?.find(group => group.start <= samples.indexOf(sample) && samples.indexOf(sample) <= group.end);
+    const groupBaseline = Number.parseFloat(samples[group?.reference ?? 0].dataset.guideBaseline);
+    sample.dataset.contextReference = group?.name ?? "table-cell";
+    sample.dataset.contextBaselineDelta = Number.isFinite(baseline) && Number.isFinite(groupBaseline) ? px(baseline - groupBaseline) : "unavailable";
+    sample.dataset.outerBaselineDelta = delta;
     const pre = sample.querySelector("pre");
     const grid = getComputedStyle(document.body, "::after");
     const gridUnit = Number.parseFloat(grid.backgroundSize.split(" ").at(-1));
@@ -160,7 +177,7 @@ function measureTrack(track, samples) {
       ? absoluteBaseline - origin - Math.round((absoluteBaseline - origin) / gridUnit) * gridUnit : null;
     sample.dataset.absoluteBaseline = absoluteBaseline === null ? "unavailable" : px(absoluteBaseline);
     sample.dataset.pageGridDelta = gridDelta === null ? "unavailable" : px(gridDelta);
-    pre.textContent += `\nbaseline delta from plain-row guide ${delta}; absolute document baseline ${sample.dataset.absoluteBaseline}; page-grid boundary delta ${sample.dataset.pageGridDelta}; marker geometry ${sample.dataset.markerGeometry || "not recorded"}; external rig ${sample.dataset.externalRig || "not used"}`;
+    pre.textContent += `\nbaseline delta from original outer plain row ${delta}; context ${sample.dataset.contextReference}; context baseline delta ${sample.dataset.contextBaselineDelta}; absolute document baseline ${sample.dataset.absoluteBaseline}; page-grid boundary delta ${sample.dataset.pageGridDelta}; marker geometry ${sample.dataset.markerGeometry || "not recorded"}; external rig ${sample.dataset.externalRig || "not used"}`;
   }
 }
 

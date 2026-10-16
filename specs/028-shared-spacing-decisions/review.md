@@ -1,13 +1,17 @@
 # Current density repair and historical review record
 
-The owner rejects the earlier all-clear. The latest source correction covers
-OS table seating with its existing 0 inset and labeled icon Buttons in every
-tier. Tests now include generated OS rows, independently of the local override;
-all original specimens remain visible. Full tests, focused behavior, types and
-component QA pass. Root inspected source glyphs with guides on/off in dark
-DPR1.5 Chrome. Strict whole-bench completion remains open: reset/default and
-multiline proof, plus the mobile shared-header absolute-grid failure. Canonical
-Spec024's current review addendum records the complete findings and limits.
+The continuation completes the bounded context-comparison proof from fb403ff.
+All original specimens and tracks remain visible. A genuine fresh-product
+plain row references Reset without altering its default geometry. Textarea
+first-line paint is checked against unchanged plain text in four tiers; its
+native CSS export is not first-line evidence. Behavior checks preserve viewport,
+scrolling, resize, paint-owner clearance and every specimen identity. Declared
+context guide bounds and source references are checked independently. The outer
+reset delta and absolute page-grid phase remain recorded; fresh-product phase
+and mobile shared-header drift remain open. Canonical Spec024's existing
+integration/review record owns the full passing tests/QA, final focused/types
+checks and qualified verdict. No owner
+visual or final OS token-value approval is inferred.
 
 October16 owner-directed table work follows the accepted canonical Spec024
 brief08. The actual product diff and independent findings are reviewed in

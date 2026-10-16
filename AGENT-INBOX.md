@@ -11,15 +11,17 @@ pre-reset state of this inbox is in git history.
 
 ## Current dispatch
 
-The owner's latest instruction requires every compared text baseline on the
-blue reference. Generated OS table seating now uses its existing 0 inset;
-other tiers retain 4px. Labeled icon Buttons use the label baseline while the
-icon stays centered. Every original demo specimen remains visible; OS source
-controls are tested independently of the earlier local override. Full tests,
-focused behavior, types and component QA pass. Root's dark DPR1.5 browser check
-compares source text with guides on/off. Whole-bench strict completion remains
-open for reset/default/multiline proof and the existing mobile page-grid gap.
-No owner visual or final OS token-value approval is inferred.
+The continuation completes bounded context-comparison proof from fb403ff.
+Every original specimen stays visible and in order; a plain inner table row
+inside a fresh product root now independently references the retained Reset
+control. Separate guide segments use declared context references, while the
+original outer delta and absolute page-grid phase remain recorded. Textarea
+first-line paint matches its natural plain reference in all four tiers; native
+CSS baseline export is explicitly separate, and the configured viewport,
+scrolling and resize remain preserved. Full tests, final focused behavior,
+types and component QA pass. Canonical Spec024 owns the final qualified receipt. Reset-context absolute phase and
+mobile shared-header global-grid drift stay open; this is not global alignment
+or owner visual/OS token-value approval. Nav remains deferred.
 
 Use the active brief08 in the canonical workspace above, not the former
 docs-bottom-compensation-spec worktree. The accepted R3 receipt permits the

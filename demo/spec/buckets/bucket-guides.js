@@ -72,18 +72,18 @@ function measureExternalBaseline(sample, target, box) {
   return match ? box.top + rig.querySelector(".bucket-baseline-marker").getBoundingClientRect().top - cloneBox.top : null;
 }
 
-export function renderGuides(track, peers, reference) {
+export function renderGuides(track, peers, reference, groups) {
   const trackBox = track.getBoundingClientRect();
   const layer = track.querySelector(".bucket-guide-layer");
   layer.replaceChildren();
-  const observations = peers.map(({ sample, target, owner, metrics }) => {
+  const observations = peers.map(({ sample, target, owner, metrics, firstLineOnly = false }) => {
     const box = target.getBoundingClientRect();
     const ownerBox = owner.getBoundingClientRect();
     const native = target.matches("input, select, textarea");
     const marker = native ? null : target.querySelector(".bucket-baseline-marker");
     const externalBaseline = measureExternalBaseline(sample, target, box);
     sample.dataset.externalBaseline = externalBaseline === null ? "unavailable" : format(externalBaseline - trackBox.top);
-    const baseline = native ? externalBaseline === null ? null : externalBaseline - trackBox.top
+    const baseline = native && firstLineOnly ? null : native ? externalBaseline === null ? null : externalBaseline - trackBox.top
       : marker ? marker.getBoundingClientRect().top - trackBox.top : null;
     if (!native && sample.querySelector(".bucket-external-rig")) {
       sample.dataset.externalParity = externalBaseline === null ? "unmatched" : format(externalBaseline - marker.getBoundingClientRect().top);
@@ -93,8 +93,9 @@ export function renderGuides(track, peers, reference) {
     const x = box.left - trackBox.left + track.scrollLeft;
     const reading = { top, baseline, end, x };
     sample.dataset.guideTop = format(top);
-    sample.dataset.guideBaseline = baseline === null ? "unavailable (icon only or unmatched native rig)" : format(baseline);
-    sample.dataset.baselineSource = target.matches("textarea") ? "native textarea CSS alignment baseline from matched clone (below first text line)"
+    sample.dataset.guideBaseline = baseline === null ? firstLineOnly ? "unavailable (native first line requires painted-text check)" : "unavailable (icon only or unmatched native rig)" : format(baseline);
+    sample.dataset.baselineSource = firstLineOnly ? "native first-line baseline unavailable; CSS alignment baseline stored separately"
+      : target.matches("textarea") ? "native textarea CSS alignment baseline from matched clone (below first text line)"
       : native ? "native control CSS baseline from matched clone"
       : marker ? "inline browser layout marker" : "none (icon only)";
     sample.dataset.guideOccupiedEnd = format(end);
@@ -104,19 +105,35 @@ export function renderGuides(track, peers, reference) {
   });
   const referenceReading = observations[reference];
   const width = track.scrollWidth;
-  const addMark = (kind, x, y, long) => {
+  const addMark = (kind, x, y, long, length = width, group) => {
     if (y === null) return;
     const mark = document.createElement("span");
     mark.className = `bucket-guide-mark is-${kind} ${long ? "is-line" : "is-tick"}`;
     mark.style.insetInlineStart = pixel(x);
     mark.style.insetBlockStart = pixel(y);
-    mark.style.inlineSize = pixel(long ? width : 9);
+    mark.style.inlineSize = pixel(long ? length : 9);
+    if (group) mark.dataset.comparisonContext = group;
     mark.style.blockSize = "1px";
     layer.append(mark);
   };
-  addMark("top", 0, referenceReading.top, true);
-  addMark("baseline", 0, referenceReading.baseline, true);
-  addMark("end", 0, referenceReading.end, true);
+  if (groups) {
+    // Each explicitly named product context has an independently authored row
+    // reference. Peer geometry never chooses the reference coordinate.
+    for (const group of groups) {
+      const startBox = peers[group.start].sample.getBoundingClientRect();
+      const endBox = peers[group.end].sample.getBoundingClientRect();
+      const x = startBox.left - trackBox.left + track.scrollLeft;
+      const length = endBox.right - startBox.left;
+      const reading = observations[group.reference];
+      addMark("top", x, reading.top, true, length, group.name);
+      addMark("baseline", x, reading.baseline, true, length, group.name);
+      addMark("end", x, reading.end, true, length, group.name);
+    }
+  } else {
+    addMark("top", 0, referenceReading.top, true);
+    addMark("baseline", 0, referenceReading.baseline, true);
+    addMark("end", 0, referenceReading.end, true);
+  }
   for (const { top, baseline, end, x } of observations) {
     addMark("top", x, top, false);
     addMark("baseline", x, baseline, false);
