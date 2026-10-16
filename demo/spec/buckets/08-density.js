@@ -16,34 +16,35 @@ function tableRow(content, label, { header = false, proposal = false } = {}) {
 }
 
 const tableSpecimens = [
-  ["Plain-text table row · reference", tableRow(`<span class="bf-body" data-target>${bodyCopy}</span>`, "Plain text reference row"), "plain"],
-  ["Boxed Button · automatic table seat", tableRow(`<button class="bf-button" type="button" data-target>Action</button>`, "Table Button row"), "member"],
-  ["Disabled Button · state keeps membership", tableRow(`<button class="bf-button" type="button" disabled data-target>Disabled</button>`, "Disabled table Button row"), "member"],
+  ["Plain-text table row · reference", tableRow(`<span data-target>${bodyCopy}</span>`, "Plain text reference row"), "plain"],
+  ["Classed inline body · reference parity", tableRow(`<span class="bf-body" data-target>${bodyCopy}</span>`, "Classed inline body reference row"), "plain-inline"],
+  ["Boxed Button · automatic table seat", tableRow(`<button class="bf-button" type="button" data-target>Active</button>`, "Table Button row"), "member"],
+  ["Disabled Button · state keeps membership", tableRow(`<button class="bf-button" type="button" disabled data-target>Active</button>`, "Disabled table Button row"), "member"],
   ["Icon-only Button · square flow check", tableRow(`<button class="bf-button is-icon" type="button" aria-label="Search" data-target><span class="bf-icon is-search" aria-hidden="true"></span></button>`, "Icon Button row"), "icon"],
   ["Static Chip · automatic table seat", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">${bodyCopy}</span></span>`, "Static Chip row"), "member"],
-  ["Clickable Chip · action keeps membership", tableRow(`<button class="bf-chip" type="button" data-target><span class="bf-chip-value">Open</span></button>`, "Clickable Chip row"), "member"],
-  ["Dismissible Chip · legal sibling action", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Filter</span><button class="bf-chip-dismiss" type="button" aria-label="Remove Filter"></button></span>`, "Dismissible Chip row"), "member"],
-  ["Header cell Chip · native th host", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">State</span></span>`, "Header Chip row", { header: true }), "member"],
-  ["Neutral wrapper · placement preserved", tableRow(`<span data-neutral-wrapper><span class="bf-chip" data-target><span class="bf-chip-value">Wrapped</span></span></span>`, "Neutral wrapper Chip row"), "member"],
+  ["Clickable Chip · action keeps membership", tableRow(`<button class="bf-chip" type="button" data-target><span class="bf-chip-value">Active</span></button>`, "Clickable Chip row"), "member"],
+  ["Dismissible Chip · legal sibling action", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Active</span><button class="bf-chip-dismiss" type="button" aria-label="Remove Filter"></button></span>`, "Dismissible Chip row"), "member"],
+  ["Header cell Chip · native th host", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "Header Chip row", { header: true }), "member"],
+  ["Neutral wrapper · placement preserved", tableRow(`<span data-neutral-wrapper><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></span>`, "Neutral wrapper Chip row"), "member"],
   ["Wrapped text input · wrapper owns paint", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" aria-label="Status" data-target /></span>`, "Wrapped text input row"), "member"],
   ["Neutral-wrapped input · boundary seat preserved", tableRow(`<span class="bf-field-boundary"><span data-neutral-wrapper><input class="bf-input" type="text" value="Active" aria-label="Neutral wrapped status" data-target /></span></span>`, "Neutral wrapped text input row"), "member"],
   ["Native Select · single-line entry", tableRow(`<span class="bf-field-boundary"><select class="bf-input" aria-label="State" data-target><option>Active</option></select></span>`, "Select row"), "member"],
   ["Two-line plain table row · multiline reference", tableRow(`<span class="bf-body" data-target>First line<br />Second line</span>`, "Two-line plain reference row"), "multiline-reference"],
   ["Textarea · two-line viewport diagnostic", tableRow(`<span class="bf-field-boundary"><textarea class="bf-input" rows="2" aria-label="Notes" data-target>First line\nSecond line</textarea></span>`, "Textarea row"), "multiline"],
   ["Nested product root · table seat resets", tableRow(`<span class="bf-theme density-reset-boundary"><button class="bf-button" type="button" data-target>Reset</button></span>`, "Nested theme reset row"), "reset"],
-  ["Standalone Button · product default", `<button class="bf-button" type="button" data-target>Action</button>`, "standalone"],
-  ["Standalone Chip · product default", `<span class="bf-chip" data-target><span class="bf-chip-value">Standalone</span></span>`, "standalone"],
+  ["Standalone Button · product default", `<button class="bf-button" type="button" data-target>Active</button>`, "standalone"],
+  ["Standalone Chip · product default", `<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "standalone"],
   ["Standalone input · product default", `<span class="bf-field-boundary"><input class="bf-input" type="text" value="Standalone" aria-label="Standalone input" data-target /></span>`, "standalone"]
 ];
 
 const osSpecimens = [
   ["OS plain-text table row · reference", tableRow(`<span class="bf-body" data-target>${bodyCopy}</span>`, "OS plain text reference row"), "plain"],
-  ["OS shipping Button · unchanged", tableRow(`<button class="bf-button" type="button" data-target>Shipping</button>`, "OS shipping Button row"), "os-shipping"],
-  ["OS shipping Chip · unchanged", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Shipping</span></span>`, "OS shipping Chip row"), "os-shipping"],
-  ["OS shipping input · unchanged", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Shipping" aria-label="OS shipping input" data-target /></span>`, "OS shipping input row"), "os-shipping"],
-  ["OS 0-inset proposal · Button", tableRow(`<button class="bf-button" type="button" data-target>Candidate</button>`, "OS proposed Button row", { proposal: true }), "os-proposal"],
-  ["OS 0-inset proposal · Chip", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Candidate</span></span>`, "OS proposed Chip row", { proposal: true }), "os-proposal"],
-  ["OS 0-inset proposal · wrapped input", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Candidate" aria-label="OS proposed input" data-target /></span>`, "OS proposed input row", { proposal: true }), "os-proposal"]
+  ["OS shipping Button · unchanged", tableRow(`<button class="bf-button" type="button" data-target>Active</button>`, "OS shipping Button row"), "os-shipping"],
+  ["OS shipping Chip · unchanged", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "OS shipping Chip row"), "os-shipping"],
+  ["OS shipping input · unchanged", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" aria-label="OS shipping input" data-target /></span>`, "OS shipping input row"), "os-shipping"],
+  ["OS 0-inset proposal · Button", tableRow(`<button class="bf-button" type="button" data-target>Active</button>`, "OS proposed Button row", { proposal: true }), "os-proposal"],
+  ["OS 0-inset proposal · Chip", tableRow(`<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "OS proposed Chip row", { proposal: true }), "os-proposal"],
+  ["OS 0-inset proposal · wrapped input", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" aria-label="OS proposed input" data-target /></span>`, "OS proposed input row", { proposal: true }), "os-proposal"]
 ];
 
 const deferredSpecimens = [
@@ -83,7 +84,7 @@ function syncOsProposalState() {
 function targetSeat(sample, target) {
   const cell = target.closest("td, th");
   const nearestTheme = target.closest(".bf-theme");
-  const production = bundleVersion() === "after" && Boolean(cell) && nearestTheme === document.body && isSupportedProduct() && !target.closest(".density-os-proposal");
+  const production = ["member", "icon", "multiline", "os-shipping"].includes(sample.dataset.kind) && bundleVersion() === "after" && Boolean(cell) && nearestTheme === document.body && isSupportedProduct() && !target.closest(".density-os-proposal");
   const proposal = sample.dataset.kind === "os-proposal" && document.body.dataset.densityOsProposal === "active";
   return { cell, production, proposal };
 }
@@ -140,7 +141,9 @@ function measureTrack(track, samples) {
       `host ${cell ? cell.tagName.toLowerCase() : owner.className || owner.tagName.toLowerCase()}; selected member ${selected}; line ${targetStyle.lineHeight}; padding ${targetStyle.paddingBlockStart}/${targetStyle.paddingBlockEnd}; margin ${targetStyle.marginBlockStart}/${targetStyle.marginBlockEnd}\n` +
       `target ${px(targetBox.width)}×${px(targetBox.height)}; host ${px(ownerBox.width)}×${px(ownerBox.height)}; row ${rowHeight === null ? "n/a" : px(rowHeight)}; row delta from ${sample.dataset.kind === "multiline" ? "two-line plain" : "one-line plain"} ${rowHeight === null || comparisonHeight === null ? "n/a" : px(rowHeight - comparisonHeight)}\n` +
       `paint clearance start/end ${startClearance === null ? "n/a" : `${px(startClearance)}/${px(endClearance)}`}; cell padding ${cellStyle ? `${cellStyle.paddingBlockStart}/${cellStyle.paddingBlockEnd}` : "n/a"}; resize ${targetStyle.resize || "n/a"}; scroll ${target.scrollHeight ?? "n/a"}/${target.clientHeight ?? "n/a"}`;
-    peers.push({ sample, target, owner, metrics });
+    // Plain text is the row reference, not the padded rectangle of an inline
+    // bf-body span. The actual text marker is still measured inside the row.
+    peers.push({ sample, target: sample.dataset.kind === "plain" ? owner : target, owner, metrics });
   }
   renderGuides(track, peers, 0);
   const referenceBaseline = Number.parseFloat(samples[0].dataset.guideBaseline);
@@ -148,7 +151,15 @@ function measureTrack(track, samples) {
     const baseline = Number.parseFloat(sample.dataset.guideBaseline);
     const delta = Number.isFinite(baseline) && Number.isFinite(referenceBaseline) ? px(baseline - referenceBaseline) : "unavailable";
     const pre = sample.querySelector("pre");
-    pre.textContent += `\nbaseline delta from plain-row guide ${delta}; marker geometry ${sample.dataset.markerGeometry || "not recorded"}; external rig ${sample.dataset.externalRig || "not used"}`;
+    const grid = getComputedStyle(document.body, "::after");
+    const gridUnit = Number.parseFloat(grid.backgroundSize.split(" ").at(-1));
+    const origin = document.body.getBoundingClientRect().top + window.scrollY + Number.parseFloat(grid.top);
+    const absoluteBaseline = Number.isFinite(baseline) ? track.getBoundingClientRect().top + window.scrollY + baseline : null;
+    const gridDelta = absoluteBaseline !== null && gridUnit > 0
+      ? absoluteBaseline - origin - Math.round((absoluteBaseline - origin) / gridUnit) * gridUnit : null;
+    sample.dataset.absoluteBaseline = absoluteBaseline === null ? "unavailable" : px(absoluteBaseline);
+    sample.dataset.pageGridDelta = gridDelta === null ? "unavailable" : px(gridDelta);
+    pre.textContent += `\nbaseline delta from plain-row guide ${delta}; absolute document baseline ${sample.dataset.absoluteBaseline}; page-grid boundary delta ${sample.dataset.pageGridDelta}; marker geometry ${sample.dataset.markerGeometry || "not recorded"}; external rig ${sample.dataset.externalRig || "not used"}`;
   }
 }
 
@@ -159,6 +170,8 @@ function measure() {
     : "Supported table seats and reset boundary";
   measureTrack(tableTrack, tableSamples);
   measureTrack(osTrack, osSamples);
+  document.body.dataset.densityMeasuredTier = tierName();
+  document.body.dataset.densityMeasuredWidth = String(window.innerWidth);
   for (const sample of deferredSamples) {
     const caption = sample.querySelector(".density-caption");
     caption.textContent = `${sample.dataset.baseCaption} · not part of table-row proof`;

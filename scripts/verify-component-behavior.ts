@@ -3863,6 +3863,99 @@ async function verifyDenseTableEnrollment(origin: string): Promise<void> {
   }
 }
 
+async function verifyDensityPageGrid(origin: string): Promise<void> {
+  // Layout edges must meet the grid. DOM text must share the browser's real
+  // BF metric-text phase, measured independently at the body grid origin.
+  // An exported native CSS baseline is a separate measurement from glyph paint.
+  const flowTolerance = 0.2;
+  const nativeBaselineTolerance = 0.51;
+  const browser = await openBrowser();
+  try {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await page.addInitScript("globalThis.__name = value => value;");
+    await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+    for (const width of [1280, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const tier of ["editorial", "documentation", "app", "os"]) {
+        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await waitForFonts(page);
+        await page.waitForFunction(({ tier, width }) => document.body.dataset.bfTier === tier
+          && document.body.dataset.densityMeasuredTier === tier
+          && document.body.dataset.densityMeasuredWidth === String(width), { tier, width });
+        const proof = await page.evaluate(() => {
+          const grid = getComputedStyle(document.body, "::after");
+          const unit = Number.parseFloat(grid.backgroundSize.split(" ").at(-1) ?? "");
+          const origin = document.body.getBoundingClientRect().top + window.scrollY + Number.parseFloat(grid.top);
+          const phase = (y: number) => y - origin - Math.round((y - origin) / unit) * unit;
+          const contentPhase = phase((document.querySelector(".pc-content")?.getBoundingClientRect().top ?? document.body.getBoundingClientRect().top) + window.scrollY);
+          const oracle = document.createElement("p");
+          oracle.className = "bf-body";
+          oracle.style.cssText = `position:absolute;inset-block-start:${grid.top};inset-inline-start:0;visibility:hidden`;
+          const oracleMarker = document.createElement("span");
+          oracleMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;padding:0;margin:0;border:0;vertical-align:baseline";
+          oracle.append("Active", oracleMarker);
+          document.body.append(oracle);
+          const metricTextPhase = phase(oracleMarker.getBoundingClientRect().top + window.scrollY);
+          oracle.remove();
+          const readTrack = (id: string) => {
+            const track = document.querySelector<HTMLElement>(id);
+            if (!track) throw new Error("Missing density page-grid track.");
+            const first = track.querySelector<HTMLElement>(".density-sample");
+            const reference = first?.querySelector<HTMLElement>("[data-host-row]");
+            const marker = first?.querySelector<HTMLElement>(".bucket-measured-text .bucket-baseline-marker");
+            if (!first || !reference || !marker) throw new Error("Missing actual table/text grid reference.");
+            const refBaseline = marker.getBoundingClientRect().top + window.scrollY;
+            const baselineRule = track.querySelector<HTMLElement>(".bucket-guide-mark.is-baseline.is-line");
+            const topRule = track.querySelector<HTMLElement>(".bucket-guide-mark.is-top.is-line");
+            const peers = [...track.querySelectorAll<HTMLElement>(".density-sample")].map(sample => {
+              const target = sample.querySelector<HTMLElement>("[data-target]");
+              const row = sample.querySelector<HTMLElement>("[data-host-row]");
+              const marker = sample.querySelector<HTMLElement>("[data-target] .bucket-measured-text .bucket-baseline-marker");
+              const absolute = marker ? marker.getBoundingClientRect().top + window.scrollY : Number.parseFloat(sample.dataset.absoluteBaseline ?? "");
+              return { kind: sample.dataset.kind, caption: sample.dataset.baseCaption, baseline: absolute, phase: phase(absolute), metricPhaseError: phase(absolute - metricTextPhase), contentMetricPhaseError: phase(absolute - metricTextPhase - contentPhase), native: target?.matches("input, select, textarea") ?? false, delta: absolute - refBaseline, row: row?.getBoundingClientRect().height ?? null, rig: sample.dataset.externalRig, value: target instanceof HTMLInputElement ? target.value : target?.textContent?.trim() };
+            });
+            return { referenceBaseline: refBaseline, referencePhase: phase(refBaseline), referenceMetricPhaseError: phase(refBaseline - metricTextPhase), contentReferenceMetricPhaseError: phase(refBaseline - metricTextPhase - contentPhase), contentStartPhase: phase(reference.getBoundingClientRect().top + window.scrollY - contentPhase), contentEndPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY - contentPhase), startPhase: phase(reference.getBoundingClientRect().top + window.scrollY), endPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY), referenceHeight: reference.getBoundingClientRect().height, baselinePaintDelta: baselineRule ? baselineRule.getBoundingClientRect().bottom - marker.getBoundingClientRect().top : null, topPaintDelta: topRule ? topRule.getBoundingClientRect().top - reference.getBoundingClientRect().top : null, peers };
+          };
+          return { unit, metricTextPhase, contentPhase, ubuntuLoaded: [...document.fonts].some(face => face.family.replaceAll('"', '') === "Ubuntu Sans" && face.status === "loaded"), tracks: [readTrack("#density-track"), readTrack("#density-os-track")] };
+        });
+        assert(proof.ubuntuLoaded && proof.unit > 0, `Expected ${tier}/${width} actual Ubuntu Sans and a measurable page grid.`);
+        const absoluteGridRequired = width === 1280;
+        if (!absoluteGridRequired && proof.tracks.some(track => Math.abs(track.startPhase) > flowTolerance || Math.abs(track.endPhase) > flowTolerance || Math.abs(track.referenceMetricPhaseError) > flowTolerance)) {
+          console.warn(`OPEN mobile page-grid diagnostic ${tier}/${width}: shared chrome starts content ${proof.contentPhase}px off the document grid; absolute alignment FAILS. Only intrinsic bucket flow is checked below. No control or guide offset repairs this.`);
+        }
+        for (const track of proof.tracks) {
+          const startPhase = absoluteGridRequired ? track.startPhase : track.contentStartPhase;
+          const endPhase = absoluteGridRequired ? track.endPhase : track.contentEndPhase;
+          const textPhaseError = absoluteGridRequired ? track.referenceMetricPhaseError : track.contentReferenceMetricPhaseError;
+          assert(Math.abs(startPhase) <= flowTolerance && Math.abs(endPhase) <= flowTolerance && Math.abs(textPhaseError) <= flowTolerance, `Expected ${tier}/${width} ${absoluteGridRequired ? "absolute document-grid alignment" : "intrinsic bucket flow only, not mobile absolute-grid acceptance"} with independent BF metric phase ${proof.metricTextPhase}, without calibrating from the specimen: ${JSON.stringify(track)}.`);
+          assert(track.baselinePaintDelta !== null && Math.abs(track.baselinePaintDelta) < 0.02 && track.topPaintDelta !== null && Math.abs(track.topPaintDelta) < 0.02, `Expected ${tier}/${width} guides to paint the same boundary edge as the page grid and use the actual reference row top: ${JSON.stringify(track)}.`);
+        }
+        if (tier === "documentation" && width === 1280) {
+          // Reintroduce the original fixture defect deliberately. An oracle
+          // based only on peer equality would still pass this displaced row.
+          const brokenHeading = await page.addStyleTag({ content: ".density-row h2 { margin-block-end: var(--bf-space-1); }" });
+          try {
+            const displaced = await page.locator("#density-track .density-sample[data-kind='plain'] .bucket-baseline-marker").evaluate(marker => marker.getBoundingClientRect().top + window.scrollY);
+            assert(Math.abs(displaced - proof.tracks[0].referenceBaseline) > 1, "Expected restoring the former heading margin to reproduce detectable absolute baseline drift.");
+          } finally {
+            await brokenHeading.evaluate(style => style.remove());
+          }
+        }
+        const main = proof.tracks[0];
+        const members = main.peers.filter(peer => ["member", "plain-inline"].includes(peer.kind ?? ""));
+        if (tier !== "os") {
+          for (const peer of members) assert(Math.abs(absoluteGridRequired ? peer.metricPhaseError : peer.contentMetricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - main.referenceHeight) < 0.1, `Expected ${tier}/${width} ${peer.caption} to match the plain row and ${absoluteGridRequired ? "absolute page-grid phase" : "intrinsic content-root phase only"}: ${JSON.stringify(peer)}.`);
+        } else {
+          const candidates = proof.tracks[1].peers.filter(peer => peer.kind === "os-proposal");
+          assert(candidates.length === 3 && candidates.every(peer => Math.abs(absoluteGridRequired ? peer.metricPhaseError : peer.contentMetricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - proof.tracks[1].referenceHeight) < 0.1), `Expected OS/${width} candidate text/rows to align with the plain row and ${absoluteGridRequired ? "document grid" : "intrinsic content-root flow only"}: ${JSON.stringify(candidates)}.`);
+        }
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const tones = ["light", "dark"] as const;
@@ -7770,6 +7863,7 @@ async function main(): Promise<void> {
     // table contract while iterating on a focused regression.
     if (process.argv.includes("--density-table")) {
       await verifyDenseTableEnrollment(origin);
+      await verifyDensityPageGrid(origin);
       console.log("Table density behavior verification passed.");
       return;
     }
@@ -7789,6 +7883,7 @@ async function main(): Promise<void> {
     await verifyInlineListSeparatorSpacing(origin);
     await verifyNestedAuxiliaryGeometry(origin);
     await verifyDenseTableEnrollment(origin);
+    await verifyDensityPageGrid(origin);
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);
     await verifyCommandPaintOwners(origin);

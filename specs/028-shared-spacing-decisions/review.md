@@ -1,5 +1,10 @@
 # Current density repair and historical review record
 
+The owner rejected the earlier visual alignment claim. The current canonical
+review addendum covers the corrected bucket08 heading/caption/scrollbar flow
+and independent desktop page-grid proof. The390px shared-header absolute-grid
+failure remains open; no all-width clean verdict or OS value approval exists.
+
 October16 owner-directed table work follows the accepted canonical Spec024
 brief08. The actual product diff and independent findings are reviewed in
 `H:/WSL_dev_projects/canonical-spacing-spec/specs/024-semantic-spacing-token-schema/reviews/BF-density-table-repair-review.md`;

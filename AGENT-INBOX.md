@@ -11,6 +11,13 @@ pre-reset state of this inbox is in git history.
 
 ## Current dispatch
 
+The owner rejected the earlier visual handoff: peer equality did not prove
+page-grid alignment. Bucket08 now restores heading compensation and integral
+caption/scrollbar flow, with independent desktop document-grid proof. Its390px
+shared-header absolute-grid failure is explicitly open; local bucket flow is
+not all-width acceptance. The OS acceptance request is withdrawn; no value or
+visual approval was granted. Do not add control offsets to hide root drift.
+
 Use the active brief08 in the canonical workspace above, not the former
 docs-bottom-compensation-spec worktree. The accepted R3 receipt permits the
 bounded table-density repair. Spec024 tasks own execution and owner sign-off;

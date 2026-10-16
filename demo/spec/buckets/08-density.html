@@ -9,12 +9,12 @@
     <style>
       .density-page { max-inline-size: none; }
       .density-intro { max-inline-size: 72ch; }
-      .density-note { font-size: .875rem; }
-      .density-row { padding-block: var(--bf-space-2); }
-      .density-row h2 { margin-block-end: var(--bf-space-1); }
+      .density-row { display: flow-root; padding-block: var(--bf-space-2); }
       .density-track { position: relative; display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      /* Native audit scrollbars consume whole baseline units. */
+      .density-track::-webkit-scrollbar { block-size: var(--bf-space-2); }
       .density-sample { flex: 0 0 18rem; inline-size: 18rem; min-inline-size: 0; }
-      .density-caption { display: block; max-inline-size: 18rem; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: 1.25; font-weight: 400; overflow-wrap: anywhere; }
+      .density-caption { display: block; max-inline-size: 18rem; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: var(--bf-body-line-height); font-weight: 400; overflow-wrap: anywhere; }
       .density-reference { margin: 0; }
       .density-sample table { inline-size: 100%; }
       .bucket-probe { position: relative; display: flow-root; inline-size: max-content; min-inline-size: 0; }
@@ -22,9 +22,12 @@
       .bucket-baseline-marker { display: inline-block; inline-size: 0; block-size: 0; padding: 0; margin: 0; border: 0; vertical-align: baseline; }
       .bucket-external-rig { position: absolute; inset-block-start: 0; inset-inline-start: 0; display: inline-block; visibility: hidden; pointer-events: none; white-space: nowrap; }
       .bucket-guide-layer { position: absolute; inset-block: 0; inset-inline-start: 0; z-index: 100; pointer-events: none; }
+      body:not(.u-baseline-grid) .bucket-guide-layer { display: none; }
       .bucket-guide-mark { position: absolute; pointer-events: none; }
       .bucket-guide-mark.is-top, .bucket-guide-mark.is-end { background: #d32229; }
-      .bucket-guide-mark.is-baseline { background: #116bb8; }
+      /* The body grid paints the pixel above a baseline boundary. Match that
+         paint edge; recorded marker coordinates remain the actual boundary. */
+      .bucket-guide-mark.is-baseline { background: #116bb8; margin-block-start: -0.0625rem; }
       .bucket-guide-mark.is-tick { transform: translateY(-.25rem); block-size: .5rem !important; inline-size: .0625rem !important; }
       .density-reset-boundary { display: inline; }
       .density-os-proposal-note { color: var(--bf-color-text-muted); }
@@ -54,7 +57,7 @@
       <header class="bf-stack is-dense density-intro">
         <h1>08 · Density</h1>
         <p>Table.Cell supplies one dense control seat to the repaired primitive boxed Buttons, Chips, text inputs, Select and Textarea in Site, Docs and App. A nested theme resets the seat. Standalone controls keep their defaults. Compound Search/Color seats, segmented/pagination actions, Nav and Tabs remain coverage gaps rather than semantic exclusions.</p>
-        <p class="density-note">The plain-text row leads the comparison. Shared red start/end lines, a blue browser baseline and short peer ticks show actual host and control geometry. The OS rows include the unchanged shipping result and an After-only proposal that uses its existing 0 inset; that proposal still awaits owner judgment.</p>
+        <p class="density-note">Every single-line peer uses the same text, Active. Red lines mark the reference row bounds; blue marks the actual text baseline. Compare these with the page grid as well as with each other. The OS track shows unchanged shipping controls beside an unapproved After-only 0-inset diagnostic. Exported native CSS baselines are recorded separately from painted text.</p>
       </header>
       <section class="density-row">
         <h2 id="density-table-heading" class="bf-h6">Supported table seats and reset boundary</h2>
