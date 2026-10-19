@@ -787,26 +787,36 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
       const brand = nav?.querySelector<HTMLElement>(".bf-panel-header.is-navigation-brand");
       const tag = brand?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
       const icon = brand?.querySelector<HTMLImageElement>(".bf-top-navigation-logo-icon");
-      if (!nav || !active || !brand || !tag) return null;
+      const title = brand?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
+      const activeLabel = active?.querySelector<HTMLElement>(".bf-side-navigation-label");
+      if (!nav || !active || !brand || !tag || !title || !activeLabel) return null;
       const navRect = nav.getBoundingClientRect();
       const activeRect = active.getBoundingClientRect();
+      const titleRange = document.createRange();
+      titleRange.selectNodeContents(title);
+      const labelRange = document.createRange();
+      labelRange.selectNodeContents(activeLabel);
       return {
         activeVisible: activeRect.top >= navRect.top && activeRect.bottom <= navRect.bottom,
         brandTop: brand.getBoundingClientRect().top,
+        brandStart: brand.getBoundingClientRect().left - navRect.left,
         iconLoaded: Boolean(icon?.complete && icon.naturalWidth > 0),
+        labelStart: labelRange.getBoundingClientRect().left - navRect.left,
         tagHeight: tag.getBoundingClientRect().height,
+        tagStart: tag.getBoundingClientRect().left - navRect.left,
         tagWidth: tag.getBoundingClientRect().width,
+        titleStart: titleRange.getBoundingClientRect().left - navRect.left,
         scrollTop: nav.scrollTop
       };
     });
 
     const navigatedState = await readNavigationState();
-    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0 && navigatedState.brandTop === 0 && navigatedState.iconLoaded && navigatedState.tagWidth === 22 && navigatedState.tagHeight === 38, `Expected page navigation to preserve its scrolled position and sticky tagged brand anatomy: ${JSON.stringify(navigatedState)}.`);
+    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0 && navigatedState.brandTop === 0 && navigatedState.iconLoaded && navigatedState.tagWidth === 22 && navigatedState.tagHeight === 38 && navigatedState.tagStart > navigatedState.brandStart && Math.abs(navigatedState.titleStart - navigatedState.labelStart) < 0.51, `Expected page navigation to preserve its scrolled position and align its sticky tagged brand with the SideNavigation label keyline: ${JSON.stringify(navigatedState)}.`);
 
     await page.reload({ waitUntil: "networkidle" });
     await page.waitForTimeout(80);
     const reloadedState = await readNavigationState();
-    assert(reloadedState?.activeVisible && reloadedState.brandTop === 0 && reloadedState.iconLoaded && reloadedState.tagWidth === 22 && reloadedState.tagHeight === 38 && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll and sticky tagged brand to survive reload; before=${JSON.stringify(navigatedState)}, after=${JSON.stringify(reloadedState)}.`);
+    assert(reloadedState?.activeVisible && reloadedState.brandTop === 0 && reloadedState.iconLoaded && reloadedState.tagWidth === 22 && reloadedState.tagHeight === 38 && reloadedState.tagStart > reloadedState.brandStart && Math.abs(reloadedState.titleStart - reloadedState.labelStart) < 0.51 && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll and aligned sticky tagged brand to survive reload; before=${JSON.stringify(navigatedState)}, after=${JSON.stringify(reloadedState)}.`);
 
     await page.evaluate(key => sessionStorage.removeItem(key), storageKey);
     await page.goto(`${origin}/demo/components/data-spotlight.html`, { waitUntil: "networkidle" });

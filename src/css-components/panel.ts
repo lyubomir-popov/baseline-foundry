@@ -79,6 +79,13 @@ export function panelCss(options: PanelCssOptions): string {
   padding-inline-start: calc(var(--bf-side-navigation-label-keyline) - var(--bf-top-navigation-logo-tag-inline-size) - var(--bf-top-navigation-logo-tag-gap));
 }
 
+/* A SideNavigation drawer may own the brand directly in its scrolling body,
+ * without an intervening Panel. Derive the same mark/title start here so the
+ * tag does not fall back to the drawer edge when the Panel inset is absent. */
+:where(.bf-theme) :where(.bf-side-navigation-drawer-body) > :where(.bf-panel-header.is-navigation-brand) {
+  padding-inline-start: calc(var(--bf-side-navigation-label-keyline) - var(--bf-top-navigation-logo-tag-inline-size) - var(--bf-top-navigation-logo-tag-gap));
+}
+
 :where(.bf-theme) :where(.bf-panel-header.is-navigation-brand) > :where(.bf-top-navigation-logo.is-canonical-tagged) {
   inline-size: 100%;
 }
