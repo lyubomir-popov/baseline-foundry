@@ -254,6 +254,12 @@ ${typeStyles(body, { includeCase: false })}  color: var(--bf-color-text-muted);
   grid-column: 1;
 }
 
+/* A horizontal Range is one interface row. Seat its label on the same
+   content offset as the numeric peer; stacked fields keep normal label flow. */
+:where(.bf-theme) :where(.bf-field.is-range:not(.is-stacked)) > :where(.bf-form-label) {
+  padding-block-start: var(--bf-interface-row-content-offset-block-start);
+}
+
 :where(.bf-theme) :where(.bf-field.is-range) > :where(.bf-control) {
   grid-column: 2;
   min-inline-size: 0;
@@ -839,9 +845,10 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
    the track within that real sibling height avoids a second nominal-height
    calculation that can diverge when rem borders are rasterised under zoom. */
 :where(.bf-theme) :where(.bf-slider:not(.is-stacked)):not(:where(.bf-field.is-range.is-stacked) :where(.bf-slider)) > :where(input[type='range']) {
-  --bf-slider-track-center-adjustment: calc(var(--bf-slider-track-offset) - ((var(--bf-slider-row-block-size) - var(--bf-slider-track-size)) / 2));
+  --bf-slider-composite-track-offset: calc(var(--bf-interface-row-content-offset-block-start) + ((var(--bf-interface-row-line-height) - var(--bf-slider-track-size)) / 2));
+  --bf-slider-track-center-adjustment: calc(var(--bf-slider-composite-track-offset) - ((var(--bf-slider-row-block-size) - var(--bf-slider-track-size)) / 2));
   align-self: stretch;
-  background-position: center var(--bf-slider-track-offset);
+  background-position: center var(--bf-slider-composite-track-offset);
   background-repeat: no-repeat;
   background-size: 100% var(--bf-slider-track-size);
   block-size: auto;

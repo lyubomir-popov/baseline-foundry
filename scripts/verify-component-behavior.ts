@@ -7365,6 +7365,12 @@ async function verifyNarrowTierSwitchRangeGeometry(origin: string): Promise<void
 
 async function verifyRangeAndSurfaceRepair(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const tierExpectations = {
+    editorial: { controlInset: 0, trackSize: 2 },
+    documentation: { controlInset: 4, trackSize: 1 },
+    app: { controlInset: 4, trackSize: 1 },
+    os: { controlInset: 0, trackSize: 1 }
+  } as const;
   const browser = await openBrowser();
 
   try {
@@ -7377,9 +7383,9 @@ async function verifyRangeAndSurfaceRepair(origin: string): Promise<void> {
 
     for (const tier of tiers) {
       await tierSelect.selectOption(tier);
-      await waitForFonts(page);
       await page.waitForFunction(expected => document.body.dataset.bfTier === expected, tier);
-      await page.waitForFunction(() => document.querySelector("#gap-range")?.closest(".bucket-sample")?.hasAttribute("data-computed-gap-evidence"));
+      await waitForFonts(page);
+      await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
       await range.scrollIntoViewIfNeeded();
       const before = await range.evaluate(element => {
         const input = element as HTMLInputElement;
@@ -7393,6 +7399,7 @@ async function verifyRangeAndSurfaceRepair(origin: string): Promise<void> {
         const sliderBox = slider.getBoundingClientRect();
         const numberBox = number.getBoundingClientRect();
         const inputStyle = getComputedStyle(input);
+        const labelStyle = getComputedStyle(label);
         const numberStyle = getComputedStyle(number);
         const backgroundParts = inputStyle.backgroundSize.split(" ");
         const positionParts = inputStyle.backgroundPosition.split(" ");
@@ -7401,21 +7408,36 @@ async function verifyRangeAndSurfaceRepair(origin: string): Promise<void> {
         adjustmentProbe.style.setProperty("--bf-slider-track-center-adjustment", inputStyle.getPropertyValue("--bf-slider-track-center-adjustment"));
         slider.append(adjustmentProbe);
         const adjustmentMatrix = new DOMMatrixReadOnly(getComputedStyle(adjustmentProbe).transform);
+        adjustmentProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-control-block-inset)";
+        const controlInset = adjustmentProbe.getBoundingClientRect().width;
         adjustmentProbe.remove();
         const trackSize = Number.parseFloat(backgroundParts.at(-1) ?? "");
         const trackStart = Number.parseFloat(positionParts.at(-1) ?? "");
         const labelTextRange = document.createRange();
         labelTextRange.selectNodeContents(label);
         const labelTextBox = labelTextRange.getBoundingClientRect();
-        const numberLineCenter = numberBox.top + Number.parseFloat(numberStyle.borderBlockStartWidth)
-          + Number.parseFloat(numberStyle.paddingBlockStart) + (Number.parseFloat(numberStyle.lineHeight) / 2);
+        const labelBox = label.getBoundingClientRect();
+        const labelLineStart = labelBox.top + Number.parseFloat(labelStyle.paddingBlockStart);
+        const numberLineStart = numberBox.top + Number.parseFloat(numberStyle.borderBlockStartWidth)
+          + Number.parseFloat(numberStyle.paddingBlockStart);
+        const labelBaseline = marker.getBoundingClientRect().top;
+        const labelBaselineOffset = labelBaseline - labelLineStart;
+        const numberLineCenter = numberLineStart + (Number.parseFloat(numberStyle.lineHeight) / 2);
         return {
           adjustment: adjustmentMatrix.m42,
           backgroundRepeat: inputStyle.backgroundRepeat,
           baseline: marker.getBoundingClientRect().top,
+          controlInset,
+          fontFamily: labelStyle.fontFamily,
           guideBaseline: Number.parseFloat(sample.dataset.guideBaseline ?? ""),
+          fontParity: labelStyle.fontFamily === numberStyle.fontFamily && labelStyle.fontSize === numberStyle.fontSize
+            && labelStyle.fontStyle === numberStyle.fontStyle && labelStyle.fontWeight === numberStyle.fontWeight
+            && labelStyle.lineHeight === numberStyle.lineHeight,
           input: { height: inputBox.height, top: inputBox.top, width: inputBox.width },
+          labelBaseline,
+          labelLineCenter: labelLineStart + (Number.parseFloat(labelStyle.lineHeight) / 2),
           labelTextCenter: labelTextBox.top + (labelTextBox.height / 2),
+          numberBaseline: numberLineStart + labelBaselineOffset,
           numberLineCenter,
           slider: { height: sliderBox.height, top: sliderBox.top },
           trackCenter: inputBox.top + trackStart + (trackSize / 2),
@@ -7423,9 +7445,12 @@ async function verifyRangeAndSurfaceRepair(origin: string): Promise<void> {
           translatedNativeCenter: inputBox.top + (inputBox.height / 2) + adjustmentMatrix.m42
         };
       });
-      assert(before.trackSize > 0 && before.trackSize <= 2.01 && before.backgroundRepeat === "no-repeat", `Expected ${tier} composite Range to paint one thin track rather than filling its occupied interaction row: ${JSON.stringify(before)}.`);
+      const expected = tierExpectations[tier];
+      assert(Math.abs(before.trackSize - expected.trackSize) < 0.02 && Math.abs(before.controlInset - expected.controlInset) < 0.02 && before.fontFamily.includes("Ubuntu Sans"), `Expected ${tier} Range measurement to use the loaded tier stylesheet and font metrics: ${JSON.stringify(before)}.`);
+      assert(before.backgroundRepeat === "no-repeat", `Expected ${tier} composite Range to paint one thin track rather than filling its occupied interaction row: ${JSON.stringify(before)}.`);
       assert(Math.abs(before.input.top - before.slider.top) < 0.02 && Math.abs(before.input.height - before.slider.height) < 0.02 && before.input.width > 80, `Expected ${tier} Range to keep the natural full-row interaction box without a relative overflow offset: ${JSON.stringify(before)}.`);
-      assert(Math.abs(before.trackCenter - before.labelTextCenter) < 0.52 && Math.abs(before.translatedNativeCenter - before.trackCenter) < 0.05, `Expected ${tier} Range fill, native track and thumb to share the label's metric visual center while retaining the numeric seat as a separate measurement: ${JSON.stringify(before)}.`);
+      assert(Math.abs(before.trackCenter - before.labelTextCenter) < 0.52 && Math.abs(before.translatedNativeCenter - before.trackCenter) < 0.05, `Expected ${tier} Range fill, native track and thumb to share the label's metric visual center: ${JSON.stringify(before)}.`);
+      assert(before.fontParity && Math.abs(before.labelLineCenter - before.numberLineCenter) < 0.02 && Math.abs(before.labelBaseline - before.numberBaseline) < 0.02, `Expected ${tier} horizontal Range label and numeric peer to share one text line and baseline seat: ${JSON.stringify(before)}.`);
       const sample = range.locator("xpath=ancestor::div[contains(@class,'bucket-sample')]");
       const track = sample.locator("xpath=ancestor::div[contains(@class,'bucket-track')]");
       const trackTop = await track.evaluate(element => element.getBoundingClientRect().top);
