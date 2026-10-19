@@ -7363,6 +7363,192 @@ async function verifyNarrowTierSwitchRangeGeometry(origin: string): Promise<void
   }
 }
 
+async function verifyRangeAndSurfaceRepair(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
+    await page.addInitScript("globalThis.__name = value => value;");
+    await page.goto(`${origin}/demo/spec/buckets/05-gaps.html?bundle=after`, { waitUntil: "networkidle" });
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+    const range = page.locator("#gap-range");
+    const numberInput = page.locator(".bf-slider-input").first();
+
+    for (const tier of tiers) {
+      await tierSelect.selectOption(tier);
+      await waitForFonts(page);
+      await page.waitForFunction(expected => document.body.dataset.bfTier === expected, tier);
+      await page.waitForFunction(() => document.querySelector("#gap-range")?.closest(".bucket-sample")?.hasAttribute("data-computed-gap-evidence"));
+      await range.scrollIntoViewIfNeeded();
+      const before = await range.evaluate(element => {
+        const input = element as HTMLInputElement;
+        const slider = input.closest<HTMLElement>(".bf-slider");
+        const number = slider?.querySelector<HTMLInputElement>(".bf-slider-input");
+        const sample = input.closest<HTMLElement>(".bucket-sample");
+        const label = sample?.querySelector<HTMLElement>("label[for='gap-range']");
+        const marker = label?.querySelector<HTMLElement>(".bucket-baseline-marker");
+        if (!slider || !number || !sample || !label || !marker) throw new Error("Missing Range repair fixture anatomy.");
+        const inputBox = input.getBoundingClientRect();
+        const sliderBox = slider.getBoundingClientRect();
+        const numberBox = number.getBoundingClientRect();
+        const inputStyle = getComputedStyle(input);
+        const numberStyle = getComputedStyle(number);
+        const backgroundParts = inputStyle.backgroundSize.split(" ");
+        const positionParts = inputStyle.backgroundPosition.split(" ");
+        const adjustmentProbe = document.createElement("i");
+        adjustmentProbe.style.cssText = "position:absolute;visibility:hidden;transform:translateY(var(--bf-slider-track-center-adjustment))";
+        adjustmentProbe.style.setProperty("--bf-slider-track-center-adjustment", inputStyle.getPropertyValue("--bf-slider-track-center-adjustment"));
+        slider.append(adjustmentProbe);
+        const adjustmentMatrix = new DOMMatrixReadOnly(getComputedStyle(adjustmentProbe).transform);
+        adjustmentProbe.remove();
+        const trackSize = Number.parseFloat(backgroundParts.at(-1) ?? "");
+        const trackStart = Number.parseFloat(positionParts.at(-1) ?? "");
+        const labelTextRange = document.createRange();
+        labelTextRange.selectNodeContents(label);
+        const labelTextBox = labelTextRange.getBoundingClientRect();
+        const numberLineCenter = numberBox.top + Number.parseFloat(numberStyle.borderBlockStartWidth)
+          + Number.parseFloat(numberStyle.paddingBlockStart) + (Number.parseFloat(numberStyle.lineHeight) / 2);
+        return {
+          adjustment: adjustmentMatrix.m42,
+          backgroundRepeat: inputStyle.backgroundRepeat,
+          baseline: marker.getBoundingClientRect().top,
+          guideBaseline: Number.parseFloat(sample.dataset.guideBaseline ?? ""),
+          input: { height: inputBox.height, top: inputBox.top, width: inputBox.width },
+          labelTextCenter: labelTextBox.top + (labelTextBox.height / 2),
+          numberLineCenter,
+          slider: { height: sliderBox.height, top: sliderBox.top },
+          trackCenter: inputBox.top + trackStart + (trackSize / 2),
+          trackSize,
+          translatedNativeCenter: inputBox.top + (inputBox.height / 2) + adjustmentMatrix.m42
+        };
+      });
+      assert(before.trackSize > 0 && before.trackSize <= 2.01 && before.backgroundRepeat === "no-repeat", `Expected ${tier} composite Range to paint one thin track rather than filling its occupied interaction row: ${JSON.stringify(before)}.`);
+      assert(Math.abs(before.input.top - before.slider.top) < 0.02 && Math.abs(before.input.height - before.slider.height) < 0.02 && before.input.width > 80, `Expected ${tier} Range to keep the natural full-row interaction box without a relative overflow offset: ${JSON.stringify(before)}.`);
+      assert(Math.abs(before.trackCenter - before.labelTextCenter) < 0.52 && Math.abs(before.translatedNativeCenter - before.trackCenter) < 0.05, `Expected ${tier} Range fill, native track and thumb to share the label's metric visual center while retaining the numeric seat as a separate measurement: ${JSON.stringify(before)}.`);
+      const sample = range.locator("xpath=ancestor::div[contains(@class,'bucket-sample')]");
+      const track = sample.locator("xpath=ancestor::div[contains(@class,'bucket-track')]");
+      const trackTop = await track.evaluate(element => element.getBoundingClientRect().top);
+      assert(Math.abs((before.baseline - trackTop) - before.guideBaseline) < 0.02, `Expected ${tier} Range label baseline to retain its measured guide coordinate: ${JSON.stringify(before)}.`);
+
+      await numberInput.fill("35");
+      const numericSync = await range.evaluate(element => ({
+        fill: Number.parseFloat(getComputedStyle(element).getPropertyValue("--bf-slider-fill-percent")),
+        value: (element as HTMLInputElement).value
+      }));
+      assert(numericSync.value === "35" && Math.abs(numericSync.fill - 35) < 0.01, `Expected ${tier} numeric peer input to update the native Range value and painted fill: ${JSON.stringify(numericSync)}.`);
+      await range.fill("20");
+      assert(await numberInput.inputValue() === "20", `Expected ${tier} native Range input to keep its number peer synchronized after input.`);
+      await range.focus();
+      await page.keyboard.press("ArrowRight");
+      assert(await range.inputValue() === "21" && await numberInput.inputValue() === "21", `Expected ${tier} Range keyboard interaction to update both native peers.`);
+      const box = await range.boundingBox();
+      assert(box, `Expected ${tier} Range to expose a pointer box.`);
+      await page.mouse.move(box.x + (box.width * 0.2), before.trackCenter);
+      await page.mouse.down();
+      await page.mouse.move(box.x + (box.width * 0.8), before.trackCenter, { steps: 12 });
+      await page.mouse.up();
+      const pointerState = await range.evaluate(element => {
+        const input = element as HTMLInputElement;
+        const slider = input.closest<HTMLElement>(".bf-slider");
+        const number = slider?.querySelector<HTMLInputElement>(".bf-slider-input");
+        const sample = input.closest<HTMLElement>(".bucket-sample");
+        const marker = sample?.querySelector<HTMLElement>("label[for='gap-range'] .bucket-baseline-marker");
+        return {
+          baseline: marker?.getBoundingClientRect().top ?? Number.NaN,
+          fill: Number.parseFloat(getComputedStyle(input).getPropertyValue("--bf-slider-fill-percent")),
+          number: number?.value,
+          value: Number(input.value)
+        };
+      });
+      assert(pointerState.value > 60 && pointerState.number === String(pointerState.value) && Math.abs(pointerState.fill - pointerState.value) < 0.01, `Expected ${tier} pointer interaction on the thin native track to update the Range and numeric peer: ${JSON.stringify(pointerState)}.`);
+      assert(Math.abs(pointerState.baseline - before.baseline) < 0.02, `Expected ${tier} Range interaction to preserve the label baseline: ${JSON.stringify({ before, pointerState })}.`);
+    }
+
+    await page.goto(`${origin}/demo/spec/buckets/06-surfaces.html?bundle=after`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const modalSamples = page.locator('.surface-sample[data-kind="modal"]:has(dialog)');
+    const panelSamples = page.locator('.surface-sample[data-kind="panel"]:has(.surface-panel-stage)');
+    assert(await modalSamples.count() === 2 && await panelSamples.count() === 2, "Expected BF06 to retain two independently launchable Modal and SidePanel comparisons.");
+
+    for (const sample of await modalSamples.all()) {
+      const dialog = sample.locator("dialog.surface-modal-proof");
+      assert(!await dialog.evaluate(element => (element as HTMLDialogElement).open), "Expected a Modal comparison launcher to describe a closed initial state truthfully.");
+      await sample.locator(":scope > .surface-probe [data-modal-open]:not(.bucket-external-clone)").click();
+      await dialog.waitFor({ state: "visible" });
+      const openGeometry = await dialog.evaluate(element => {
+        const dialog = element as HTMLDialogElement;
+        const owner = dialog.querySelector<HTMLElement>(".bf-modal-dialog");
+        const body = dialog.querySelector<HTMLElement>(".bf-modal-body");
+        if (!owner || !body) throw new Error("Missing open Modal anatomy.");
+        const box = owner.getBoundingClientRect();
+        return { height: box.height, open: dialog.open, scrollable: body.scrollHeight > body.clientHeight, width: box.width };
+      });
+      assert(openGeometry.open && openGeometry.width > 0 && openGeometry.height > 0 && openGeometry.scrollable, `Expected BF06 Modal launcher to expose the real open, scroll-owning surface: ${JSON.stringify(openGeometry)}.`);
+      await dialog.locator("[data-modal-close]").first().click();
+      await dialog.waitFor({ state: "hidden" });
+    }
+
+    for (const sample of await panelSamples.all()) {
+      const toggle = sample.locator(":scope > .surface-probe [data-panel-drawer-toggle]:not(.bucket-external-clone)");
+      const aside = sample.locator(".bf-aside.is-overlay");
+      assert(!await aside.evaluate(element => element.classList.contains("is-open")) && await toggle.getAttribute("aria-expanded") === "false", "Expected a SidePanel comparison launcher to describe a closed initial state truthfully.");
+      await toggle.click();
+      await aside.waitFor({ state: "visible" });
+      const openGeometry = await sample.evaluate(element => {
+        const aside = element.querySelector<HTMLElement>(".bf-aside.is-overlay");
+        const owner = aside?.querySelector<HTMLElement>(".bf-panel");
+        if (!aside || !owner) throw new Error("Missing open SidePanel anatomy.");
+        const ownerBox = owner.getBoundingClientRect();
+        return {
+          expanded: element.querySelector("[data-panel-drawer-toggle]:not(.bucket-external-clone)")?.getAttribute("aria-expanded"),
+          hasFields: owner.querySelectorAll(".bf-field").length === 2,
+          ownerVisible: ownerBox.width > 0 && ownerBox.height > 0,
+          visible: getComputedStyle(aside).visibility === "visible"
+        };
+      });
+      assert(openGeometry.expanded === "true" && openGeometry.visible && openGeometry.ownerVisible && openGeometry.hasFields, `Expected BF06 SidePanel launcher to expose the real open surface and content: ${JSON.stringify(openGeometry)}.`);
+      await aside.locator("[data-panel-drawer-close]").first().click();
+      await aside.waitFor({ state: "hidden" });
+    }
+
+    for (const width of [1600, 390]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+      const navigationSamples = page.locator('.surface-sample[data-kind="navigation"]:has([data-owner])');
+      if (width === 390) {
+        for (const sample of await navigationSamples.all()) {
+          await sample.locator(":scope > .surface-probe > .bf-side-navigation > .bf-side-navigation-toggle").click();
+          await sample.locator(".bf-top-navigation-logo-title").waitFor({ state: "visible" });
+        }
+      }
+      const navigationBrands = await navigationSamples.evaluateAll(samples => samples.map(sample => {
+        const panel = sample.querySelector<HTMLElement>("[data-owner]");
+        const logo = sample.querySelector<HTMLElement>(".bf-top-navigation-logo.is-canonical-tagged");
+        const link = logo?.querySelector<HTMLElement>(".bf-top-navigation-link");
+        const tag = link?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag:has(img.bf-top-navigation-logo-icon)");
+        const title = link?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
+        const heading = sample.querySelector<HTMLElement>(".bf-side-navigation-heading");
+        const rowLabel = sample.querySelector<HTMLElement>(".bf-side-navigation-link");
+        if (!panel || !logo || !link || !tag || !title || !heading || !rowLabel) return null;
+        const panelBox = panel.getBoundingClientRect();
+        const titleBox = title.getBoundingClientRect();
+        const rowLabelRange = document.createRange();
+        rowLabelRange.selectNodeContents(rowLabel);
+        return {
+          starts: [titleBox.left, heading.getBoundingClientRect().left, rowLabelRange.getBoundingClientRect().left],
+          titleClearsFrame: titleBox.left > panelBox.left + 1,
+          visible: titleBox.width > 0 && titleBox.height > 0
+        };
+      }));
+      assert(navigationBrands.length === 2 && navigationBrands.every(brand => brand?.titleClearsFrame && brand.visible && brand.starts.every(Number.isFinite) && Math.max(...brand.starts) - Math.min(...brand.starts) < 0.02), `Expected both BF06 SideNavigation comparisons at ${width}px to use the genuine tagged brand anatomy on the Projects and row-label keyline: ${JSON.stringify(navigationBrands)}.`);
+      if (width === 390) await page.keyboard.press("Escape");
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function verifyNestedGridScoping(origin: string): Promise<void> {
   const browser = await openBrowser();
 
@@ -8018,12 +8204,17 @@ async function main(): Promise<void> {
   const { server, origin } = await createStaticServer(rootDir);
 
   try {
-    // Full verification stays the default; this flag isolates the changed
-    // table contract while iterating on a focused regression.
+    // Full verification stays the default; focused flags isolate changed
+    // contracts while iterating on bounded regressions.
     if (process.argv.includes("--density-table")) {
       await verifyDenseTableEnrollment(origin);
       await verifyDensityPageGrid(origin);
       console.log("Table density behavior verification passed.");
+      return;
+    }
+    if (process.argv.includes("--range-surfaces")) {
+      await verifyRangeAndSurfaceRepair(origin);
+      console.log("Range and surface repair behavior verification passed.");
       return;
     }
     await verifyNativeNumberStepper(origin);
@@ -8058,6 +8249,7 @@ async function main(): Promise<void> {
     await verifyDirectAndClassSurfaceGeometry(origin);
     await verifyDtcgSpacingMatrix(origin);
     await verifyNarrowTierSwitchRangeGeometry(origin);
+    await verifyRangeAndSurfaceRepair(origin);
     await verifyNestedGridScoping(origin);
     await verifySkipLink(origin);
     await verifyParityInteractions(origin);

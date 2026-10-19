@@ -839,9 +839,24 @@ ${typeStyles(body, { includeCase: false })}  border-block: 0;
    the track within that real sibling height avoids a second nominal-height
    calculation that can diverge when rem borders are rasterised under zoom. */
 :where(.bf-theme) :where(.bf-slider:not(.is-stacked)):not(:where(.bf-field.is-range.is-stacked) :where(.bf-slider)) > :where(input[type='range']) {
+  --bf-slider-track-center-adjustment: calc(var(--bf-slider-track-offset) - ((var(--bf-slider-row-block-size) - var(--bf-slider-track-size)) / 2));
   align-self: stretch;
+  background-position: center var(--bf-slider-track-offset);
+  background-repeat: no-repeat;
+  background-size: 100% var(--bf-slider-track-size);
   block-size: auto;
+  inset-block-start: 0;
   margin-block: 0;
+}
+
+:where(.bf-theme) :where(.bf-slider:not(.is-stacked)):not(:where(.bf-field.is-range.is-stacked) :where(.bf-slider)) > :where(input[type='range'])::-webkit-slider-runnable-track {
+  transform: translateY(var(--bf-slider-track-center-adjustment));
+}
+
+:where(.bf-theme) :where(.bf-slider:not(.is-stacked)):not(:where(.bf-field.is-range.is-stacked) :where(.bf-slider)) > :where(input[type='range'])::-moz-range-track,
+:where(.bf-theme) :where(.bf-slider:not(.is-stacked)):not(:where(.bf-field.is-range.is-stacked) :where(.bf-slider)) > :where(input[type='range'])::-moz-range-progress,
+:where(.bf-theme) :where(.bf-slider:not(.is-stacked)):not(:where(.bf-field.is-range.is-stacked) :where(.bf-slider)) > :where(input[type='range'])::-moz-range-thumb {
+  transform: translateY(var(--bf-slider-track-center-adjustment));
 }
 
 :where(.bf-theme) :where(.bf-slider.is-stacked, .bf-field.is-range.is-stacked .bf-slider) :where(input[type='range']) {
