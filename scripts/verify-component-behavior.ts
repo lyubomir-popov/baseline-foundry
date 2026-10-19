@@ -3892,7 +3892,7 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
     "Neutral wrapper · placement preserved", "Wrapped text input · wrapper owns paint",
     "Neutral-wrapped input · boundary seat preserved", "Native Select · single-line entry",
     "Two-line plain table row · multiline reference", "Textarea · two-line viewport diagnostic",
-    "Nested product root · plain inner row reference", "Nested product root · table seat resets",
+    "Plain table text · fresh product root reference (not a Button)", "Default Button · fresh product root resets table density",
     "Standalone Button · product default", "Standalone Chip · product default",
     "Standalone input · product default"
   ];
@@ -3907,6 +3907,28 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     await page.addInitScript("globalThis.__name = value => value;");
     await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+    const readDensityLayout = () => page.evaluate(() => {
+      const rect = (element: Element) => {
+        const box = element.getBoundingClientRect();
+        return [box.left, box.top, box.width, box.height];
+      };
+      return {
+        document: [document.body.scrollWidth, document.body.scrollHeight],
+        tracks: [...document.querySelectorAll<HTMLElement>(".density-track")].map(track => ({
+          box: rect(track),
+          client: [track.clientWidth, track.clientHeight],
+          scroll: [track.scrollWidth, track.scrollHeight],
+          samples: [...track.querySelectorAll<HTMLElement>(".density-sample")].map(sample => ({
+            sample: rect(sample),
+            row: sample.querySelector("[data-host-row]") ? rect(sample.querySelector("[data-host-row]")!) : null,
+            target: sample.querySelector("[data-target]") ? rect(sample.querySelector("[data-target]")!) : null
+          }))
+        }))
+      };
+    });
+    const settleDensityLayout = () => page.evaluate(() => new Promise<void>(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    }));
     for (const width of [1280, 390]) {
       await page.setViewportSize({ width, height: 900 });
       for (const tier of ["editorial", "documentation", "app", "os"]) {
@@ -3915,6 +3937,16 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
         await page.waitForFunction(({ tier, width }) => document.body.dataset.bfTier === tier
           && document.body.dataset.densityMeasuredTier === tier
           && document.body.dataset.densityMeasuredWidth === String(width), { tier, width });
+        const baselineToggle = page.locator("[data-page-chrome-baseline-toggle]");
+        await baselineToggle.setChecked(false, { force: true });
+        await page.waitForFunction(() => !document.body.classList.contains("u-baseline-grid"));
+        await settleDensityLayout();
+        const guidesOffLayout = await readDensityLayout();
+        await baselineToggle.setChecked(true, { force: true });
+        await page.waitForFunction(() => document.body.classList.contains("u-baseline-grid"));
+        await settleDensityLayout();
+        const guidesOnLayout = await readDensityLayout();
+        assert(JSON.stringify(guidesOnLayout) === JSON.stringify(guidesOffLayout), `Expected ${tier}/${width} baseline guides to paint without changing document, track, scrollbar, or specimen geometry: off=${JSON.stringify(guidesOffLayout)}, on=${JSON.stringify(guidesOnLayout)}.`);
         const proof = await page.evaluate(() => {
           const grid = getComputedStyle(document.body, "::after");
           const unit = Number.parseFloat(grid.backgroundSize.split(" ").at(-1) ?? "");
@@ -3968,7 +4000,48 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
             const style = target ? getComputedStyle(target) : null;
             return { caption: sample.dataset.baseCaption, visible: !!box && box.width > 0 && box.height > 0 && style?.display !== "none" && style?.visibility !== "hidden" };
           });
-          return { unit, metricTextPhase, contentPhase, deferredIdentity, ubuntuLoaded: [...document.fonts].some(face => face.family.replaceAll('"', '') === "Ubuntu Sans" && face.status === "loaded"), tracks: [readTrack("#density-track"), readTrack("#density-os-track")] };
+          const resetReference = document.querySelector<HTMLElement>("#density-track .density-sample[data-kind='reset-reference']");
+          const resetControl = document.querySelector<HTMLElement>("#density-track .density-sample[data-kind='reset']");
+          const resetReferenceRow = resetReference?.querySelector<HTMLElement>("[data-host-row]");
+          const resetReferenceCell = resetReference?.querySelectorAll<HTMLElement>("td").item(1);
+          const resetReferenceTarget = resetReference?.querySelector<HTMLElement>("[data-target]");
+          const resetControlRow = resetControl?.querySelector<HTMLElement>("[data-host-row]");
+          const resetControlRoot = resetControl?.querySelector<HTMLElement>(".density-reset-boundary");
+          const resetControlButton = resetControl?.querySelector<HTMLElement>("button[data-target]");
+          if (!resetReference || !resetControl || !resetReferenceRow || !resetReferenceCell || !resetReferenceTarget || !resetControlRow || !resetControlRoot || !resetControlButton) throw new Error("Missing reset comparison anatomy.");
+          const resetReferenceBox = resetReferenceCell.getBoundingClientRect();
+          const resetButtonBox = resetControlButton.getBoundingClientRect();
+          const textBox = (element: HTMLElement) => {
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            return range.getBoundingClientRect();
+          };
+          const resetReferenceTextBox = textBox(resetReferenceTarget);
+          const resetButtonTextBox = textBox(resetControlButton);
+          return {
+            unit,
+            metricTextPhase,
+            contentPhase,
+            deferredIdentity,
+            resetAnatomy: {
+              referenceLabel: resetReference.querySelector("table")?.getAttribute("aria-label"),
+              controlLabel: resetControl.querySelector("table")?.getAttribute("aria-label"),
+              referenceHasButton: !!resetReference.querySelector("button"),
+              rootContainsButton: resetControlRoot.contains(resetControlButton),
+              referenceRow: resetReferenceRow.getBoundingClientRect().height,
+              controlRow: resetControlRow.getBoundingClientRect().height,
+              referencePaintHeight: resetReferenceBox.height,
+              controlPaintHeight: resetButtonBox.height,
+              paintTopDelta: resetButtonBox.top - resetReferenceBox.top,
+              referenceTextGaps: [resetReferenceTextBox.top - resetReferenceBox.top, resetReferenceBox.bottom - resetReferenceTextBox.bottom],
+              controlTextGaps: [resetButtonTextBox.top - resetButtonBox.top, resetButtonBox.bottom - resetButtonTextBox.bottom],
+              controlCompensation: Number.parseFloat(getComputedStyle(resetControlButton).marginBlockEnd),
+              rootHeight: resetControlRoot.getBoundingClientRect().height,
+              targetText: resetReferenceTarget.textContent?.trim()
+            },
+            ubuntuLoaded: [...document.fonts].some(face => face.family.replaceAll('"', '') === "Ubuntu Sans" && face.status === "loaded"),
+            tracks: [readTrack("#density-track"), readTrack("#density-os-track")]
+          };
         });
         assert(proof.ubuntuLoaded && proof.unit > 0, `Expected ${tier}/${width} actual Ubuntu Sans and a measurable page grid.`);
         const mainIdentity = proof.tracks[0].identity;
@@ -4000,6 +4073,9 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
         const resetReference = mainTrack.peers[16];
         const resetControl = mainTrack.peers[17];
         assert(resetReference.context === "reset-product" && resetControl.context === "reset-product" && Math.abs(resetControl.markerTop - resetReference.markerTop) < 0.02 && Math.abs(resetControl.contextDelta) < 0.02 && Math.abs(resetControl.row - resetReference.row) < 0.1 && Number.isFinite(resetControl.outerDelta) && Number.isFinite(resetControl.gridDelta), `Expected ${tier}/${width} reset Button to match its real fresh-product reference while retaining the separate outer baseline and absolute grid phase: ${JSON.stringify({ resetReference, resetControl })}.`);
+        const resetAnatomy = proof.resetAnatomy;
+        assert(resetAnatomy.referenceLabel?.includes("plain table text") && resetAnatomy.referenceLabel.includes("no Button") && resetAnatomy.controlLabel?.includes("default Button") && resetAnatomy.targetText === "Reset" && !resetAnatomy.referenceHasButton && resetAnatomy.rootContainsButton, `Expected ${tier}/${width} the reset comparison to identify plain table text and a default Button in separate fresh product roots: ${JSON.stringify(resetAnatomy)}.`);
+        assert(Math.abs(resetAnatomy.controlRow - resetAnatomy.referenceRow) < 0.1 && Math.abs(resetAnatomy.rootHeight - resetAnatomy.referencePaintHeight) < 0.02 && Math.abs(resetAnatomy.paintTopDelta) < 0.02 && Math.abs((resetAnatomy.referencePaintHeight - resetAnatomy.controlPaintHeight) - resetAnatomy.controlCompensation) < 0.02, `Expected ${tier}/${width} the fresh product root to own the complete reset seat while preserving the default Button's trailing baseline compensation: ${JSON.stringify(resetAnatomy)}.`);
         const textareaPeer = mainTrack.peers[15];
         assert(textareaPeer.context === "multiline-first-line" && textareaPeer.guideBaseline?.startsWith("unavailable") && textareaPeer.baselineSource?.startsWith("native first-line baseline unavailable") && ((Number.isFinite(Number.parseFloat(textareaPeer.externalBaseline ?? "")) && textareaPeer.rig === "matched native clone box/font") || (textareaPeer.externalBaseline === "unavailable" && textareaPeer.rig === "unmatched native clone")), `Expected ${tier}/${width} Textarea first-line guide to stay unavailable while its separate native CSS baseline diagnostic remains recorded: ${JSON.stringify(textareaPeer)}.`);
         const standaloneInput = mainTrack.peers[20];

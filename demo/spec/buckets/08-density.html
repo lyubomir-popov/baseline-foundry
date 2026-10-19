@@ -29,7 +29,9 @@
          paint edge; recorded marker coordinates remain the actual boundary. */
       .bucket-guide-mark.is-baseline { background: #116bb8; margin-block-start: -0.0625rem; }
       .bucket-guide-mark.is-tick { transform: translateY(-.25rem); block-size: .5rem !important; inline-size: .0625rem !important; }
-      .density-reset-boundary { display: inline; }
+      /* A real nested product root owns the complete default control seat.
+         It must not collapse to the text line while its Button overflows. */
+      .density-reset-boundary { display: block; }
       .density-os-proposal-note { color: var(--bf-color-text-muted); }
       .density-sample pre { display: none; }
 
@@ -56,8 +58,8 @@
     <main class="bf-page is-fill density-page">
       <header class="bf-stack is-dense density-intro">
         <h1>08 · Density</h1>
-        <p>Table.Cell supplies one dense control seat to the repaired primitive boxed Buttons, Chips, text inputs, Select and Textarea in all four tiers. OS uses its existing control inset; final token-value approval remains open. A nested theme resets the seat. Standalone controls keep their defaults. Compound Search/Color seats, segmented/pagination actions, Nav and Tabs remain coverage gaps rather than semantic exclusions.</p>
-        <p class="density-note">Compared single-line table members use the same text, Active. Reset and standalone diagnostics retain their own values and default spacing. Red lines mark reference row bounds. Blue marks the reference text baseline for each labeled context: table cells, multiline first lines, the fresh product root, and standalone defaults. The reset pair uses a real plain row inside that fresh product, not the outer row. Its absolute page-grid phase remains reported separately. Textarea preserves its native viewport; compare its first line, not its exported bottom CSS baseline. The OS track keeps generated controls beside the earlier After-only override so every displayed result stays visible. Both now use the existing OS inset; source controls must align independently of that override. Exported native CSS baselines are recorded separately from painted text.</p>
+        <p>Table.Cell supplies one dense control seat to the repaired primitive boxed Buttons, Chips, text inputs, Select and Textarea in all four tiers. OS uses its existing zero control inset. A nested theme resets the seat. Standalone controls keep their defaults. Compound Search/Color seats, segmented/pagination actions, Nav and Tabs remain coverage gaps rather than semantic exclusions.</p>
+        <p class="density-note">Compared single-line table members use the same text, Active. Reset and standalone diagnostics retain their own values and default spacing. Red lines mark reference row bounds. Blue marks the reference text baseline for each labeled context: table cells, multiline first lines, the fresh product root, and standalone defaults. In the reset pair, the left specimen is plain table text inside a fresh product root; only the right specimen is a default Button. Their paint owners remain visibly different while their row and text baseline are compared. The reset pair's absolute page-grid phase remains reported separately. Textarea preserves its native viewport; compare its first line, not its exported bottom CSS baseline. The OS track keeps generated controls beside the earlier After-only override so every displayed result stays visible. Both now use the existing OS inset; source controls must align independently of that override. Exported native CSS baselines are recorded separately from painted text.</p>
       </header>
       <section class="density-row">
         <h2 id="density-table-heading" class="bf-h6">Supported table seats and reset boundary</h2>

@@ -32,8 +32,8 @@ const tableSpecimens = [
   ["Native Select · single-line entry", tableRow(`<span class="bf-field-boundary"><select class="bf-input" aria-label="State" data-target><option>Active</option></select></span>`, "Select row"), "member"],
   ["Two-line plain table row · multiline reference", tableRow(`<span class="bf-body" data-target>First line<br />Second line</span>`, "Two-line plain reference row"), "multiline-reference"],
   ["Textarea · two-line viewport diagnostic", tableRow(`<span class="bf-field-boundary"><textarea class="bf-input" rows="2" aria-label="Notes" data-target>First line\nSecond line</textarea></span>`, "Textarea row"), "multiline"],
-  ["Nested product root · plain inner row reference", tableRow(`<div class="bf-theme"><table class="bf-table"><tbody><tr><td><span data-target>Reset</span></td></tr></tbody></table></div>`, "Nested product plain row reference"), "reset-reference"],
-  ["Nested product root · table seat resets", tableRow(`<span class="bf-theme density-reset-boundary"><button class="bf-button" type="button" data-target>Reset</button></span>`, "Nested theme reset row"), "reset"],
+  ["Plain table text · fresh product root reference (not a Button)", tableRow(`<div class="bf-theme"><table class="bf-table"><tbody><tr><td><span data-target>Reset</span></td></tr></tbody></table></div>`, "Fresh product root plain table text reference; no Button"), "reset-reference"],
+  ["Default Button · fresh product root resets table density", tableRow(`<div class="bf-theme density-reset-boundary"><button class="bf-button" type="button" data-target>Reset</button></div>`, "Fresh product root default Button after table-density reset"), "reset"],
   ["Standalone Button · product default", `<button class="bf-button" type="button" data-target>Active</button>`, "standalone"],
   ["Standalone Chip · product default", `<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "standalone"],
   ["Standalone input · product default", `<span class="bf-field-boundary"><input class="bf-input" type="text" value="Standalone" aria-label="Standalone input" data-target /></span>`, "standalone"]
