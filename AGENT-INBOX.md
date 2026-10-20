@@ -1,13 +1,16 @@
 # Agent inbox – spacing buckets; BF is the sandbox worker
 
-Date: 2026-10-16
+Date: 2026-10-20
 Branch: `feat/028-shared-spacing-decisions` (draft PR #5, unpushed commits ahead)
 
 The owner reset the spacing work on 2026-10-10. The deliverables live in the
 canonical spacing spec repository (Spec 024): the spacing article, the Pragma
 token spec and the semantic tokens; the owner's Pragma restyle PR is a stretch
 goal. BF is the sandbox where values are decided on real components. The
-pre-reset state of this inbox is in git history.
+pre-reset state of this inbox is in git history. The owner has approved the D1
+article and illustrations, approved D2 including OS dense 0, and accepted the
+exact private D3 implementation. Product adoption, publication and component
+visual approval remain separate.
 
 ## Current dispatch
 
@@ -19,18 +22,20 @@ original outer delta and absolute page-grid phase remain recorded. Textarea
 first-line paint matches its natural plain reference in all four tiers; native
 CSS baseline export is explicitly separate, and the configured viewport,
 scrolling and resize remain preserved. Full tests, final focused behavior,
-types and component QA pass. Canonical Spec024 owns the final qualified receipt. Reset-context absolute phase and
-mobile shared-header global-grid drift stay open; this is not global alignment
-or owner visual/OS token-value approval. Nav remains deferred.
+types and component QA pass. Canonical Spec 024 owns the final qualified
+receipt. Reset-context absolute phase and mobile shared-header global-grid drift
+stay open; this is not global alignment or owner bucket visual approval. Nav
+remains deferred.
 
 Use the active brief08 in the canonical workspace above, not the former
 docs-bottom-compensation-spec worktree. The accepted R3 receipt permits the
 bounded table-density repair. Spec024 tasks own execution and owner sign-off;
-the next external checkpoint is its existing D2/R4, not another R3 review.
-The earlier local OS override remains visible; it no longer substitutes for generated source coverage. Final D2 OS approval remains open. Compound
-Search/Color, segmented/pagination and Nav/Tabs remain coverage gaps. The owner
-reported Nav double indentation and a flush-left tag; investigation is deferred
-and must not expand this table repair. No push or merge.
+the existing D2/R4 checkpoint and OS dense 0 are approved, with no new R3
+review. Generated OS table seats now bind that approved 0 inset. This does not
+turn the historical Site Table/Chip proof into family/placement completion.
+Compound Search/Color, segmented/pagination and Nav/Tabs remain coverage gaps.
+The owner reported Nav double indentation and a flush-left tag; investigation
+is deferred and must not expand this table repair. No push or merge.
 
 ## Three repositories, three roles
 

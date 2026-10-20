@@ -2,9 +2,11 @@
 
 **Feature branch**: `feat/028-shared-spacing-decisions`
 
-**Status**: Scope reset 2026-10-10. Approved spacing values are applied to
-BF's real components in all four tiers. Remaining work: bucket comparison
-pages for owner sign-off. Earlier review history is below and in `tasks.md`.
+**Status**: Scope reset 2026-10-10. D2 and OS dense 0 are owner-approved, and
+the implemented BF seats apply the approved values in all four tiers. Density
+family/placement coverage remains incomplete: the historical Site Table/Chip
+proof does not cover compound seats/actions or Nav/Tabs. Owner bucket visual
+sign-off also remains open. Earlier review history is below and in `tasks.md`.
 
 ## Scope reset, 2026-10-10
 
@@ -30,8 +32,8 @@ Apply the approved and working shared-spacing rulings to Baseline Foundry's
 real built-in components and make those demo surfaces the visual review target.
 
 The governing rules and cross-repository status live in the Spec 024
-[rulings](../../../../canonical-spacing-spec-worktrees/docs-bottom-compensation-spec/docs/rulings.md)
-and [conformance board](../../../../canonical-spacing-spec-worktrees/docs-bottom-compensation-spec/specs/024-semantic-spacing-token-schema/conformance.md).
+[rulings](../../../../canonical-spacing-spec/docs/rulings.md)
+and [conformance board](../../../../canonical-spacing-spec/specs/024-semantic-spacing-token-schema/conformance.md).
 This package records only BF implementation, evidence and review state.
 
 ## Acceptance
