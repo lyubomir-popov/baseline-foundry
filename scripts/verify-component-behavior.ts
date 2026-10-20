@@ -4080,15 +4080,8 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
         assert(textareaPeer.context === "multiline-first-line" && textareaPeer.guideBaseline?.startsWith("unavailable") && textareaPeer.baselineSource?.startsWith("native first-line baseline unavailable") && ((Number.isFinite(Number.parseFloat(textareaPeer.externalBaseline ?? "")) && textareaPeer.rig === "matched native clone box/font") || (textareaPeer.externalBaseline === "unavailable" && textareaPeer.rig === "unmatched native clone")), `Expected ${tier}/${width} Textarea first-line guide to stay unavailable while its separate native CSS baseline diagnostic remains recorded: ${JSON.stringify(textareaPeer)}.`);
         const standaloneInput = mainTrack.peers[20];
         assert(standaloneInput.native && Number.isFinite(Number.parseFloat(standaloneInput.externalBaseline ?? "")) && standaloneInput.rig === "matched native clone box/font", `Expected ${tier}/${width} standalone input to retain its separate native CSS baseline proxy without claiming painted glyph alignment: ${JSON.stringify(standaloneInput)}.`);
-        const absoluteGridRequired = width === 1280;
-        if (!absoluteGridRequired && proof.tracks.some(track => Math.abs(track.startPhase) > flowTolerance || Math.abs(track.endPhase) > flowTolerance || Math.abs(track.referenceMetricPhaseError) > flowTolerance)) {
-          console.warn(`OPEN mobile page-grid diagnostic ${tier}/${width}: shared chrome starts content ${proof.contentPhase}px off the document grid; absolute alignment FAILS. Only intrinsic bucket flow is checked below. No control or guide offset repairs this.`);
-        }
         for (const track of proof.tracks) {
-          const startPhase = absoluteGridRequired ? track.startPhase : track.contentStartPhase;
-          const endPhase = absoluteGridRequired ? track.endPhase : track.contentEndPhase;
-          const textPhaseError = absoluteGridRequired ? track.referenceMetricPhaseError : track.contentReferenceMetricPhaseError;
-          assert(Math.abs(startPhase) <= flowTolerance && Math.abs(endPhase) <= flowTolerance && Math.abs(textPhaseError) <= flowTolerance, `Expected ${tier}/${width} ${absoluteGridRequired ? "absolute document-grid alignment" : "intrinsic bucket flow only, not mobile absolute-grid acceptance"} with independent BF metric phase ${proof.metricTextPhase}, without calibrating from the specimen: ${JSON.stringify(track)}.`);
+          assert(Math.abs(track.startPhase) <= flowTolerance && Math.abs(track.endPhase) <= flowTolerance && Math.abs(track.referenceMetricPhaseError) <= flowTolerance, `Expected ${tier}/${width} absolute document-grid alignment with independent BF metric phase ${proof.metricTextPhase}, without calibrating from the specimen: ${JSON.stringify(track)}.`);
           assert(track.baselinePaintDelta !== null && Math.abs(track.baselinePaintDelta) < 0.02 && track.topPaintDelta !== null && Math.abs(track.topPaintDelta) < 0.02, `Expected ${tier}/${width} guides to paint the same boundary edge as the page grid and use the actual reference row top: ${JSON.stringify(track)}.`);
         }
         if (tier === "documentation" && width === 1280) {
@@ -4104,10 +4097,10 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
         }
         const main = proof.tracks[0];
         const members = main.peers.filter(peer => ["member", "plain-inline"].includes(peer.kind ?? ""));
-          for (const peer of members) assert(Math.abs(absoluteGridRequired ? peer.metricPhaseError : peer.contentMetricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - main.referenceHeight) < 0.1, `Expected ${tier}/${width} ${peer.caption} to match the plain row and ${absoluteGridRequired ? "absolute page-grid phase" : "intrinsic content-root phase only"}: ${JSON.stringify(peer)}.`);
+        for (const peer of members) assert(Math.abs(peer.metricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - main.referenceHeight) < 0.1, `Expected ${tier}/${width} ${peer.caption} to match the plain row and absolute page-grid phase: ${JSON.stringify(peer)}.`);
         const secondary = proof.tracks[1];
         const secondaryMembers = secondary.peers.filter(peer => ["os-shipping", "os-proposal"].includes(peer.kind ?? ""));
-        for (const peer of secondaryMembers) assert(Math.abs(absoluteGridRequired ? peer.metricPhaseError : peer.contentMetricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - secondary.referenceHeight) < 0.1, `Expected ${tier}/${width} every secondary source/override peer to match its plain row: ${JSON.stringify(peer)}.`);
+        for (const peer of secondaryMembers) assert(Math.abs(peer.metricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - secondary.referenceHeight) < 0.1, `Expected ${tier}/${width} every secondary source/override peer to match its plain row and absolute page-grid phase: ${JSON.stringify(peer)}.`);
       }
     }
   } finally {
