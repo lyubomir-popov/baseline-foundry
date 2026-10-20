@@ -14,12 +14,21 @@
       /* Native audit scrollbars consume whole baseline units. */
       .density-track::-webkit-scrollbar { block-size: var(--bf-space-2); }
       .density-sample { flex: 0 0 18rem; inline-size: 18rem; min-inline-size: 0; }
+      .density-indicator-sample { flex-basis: 38rem; inline-size: 38rem; }
       .density-caption { display: block; max-inline-size: 18rem; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: var(--bf-body-line-height); font-weight: 400; overflow-wrap: anywhere; }
+      .density-indicator-sample > .density-caption { max-inline-size: 38rem; }
+      .indicator-placement-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: var(--bf-space-2); }
+      .indicator-placement-pair > div { min-inline-size: 0; }
+      .indicator-placement-pair table { inline-size: 100%; }
+      .indicator-variant-caption { display: block; margin-block-end: var(--bf-space-1); color: var(--bf-color-text-muted); font-size: .75rem; line-height: 1rem; }
+      .indicator-invariance { display: flex; align-items: flex-start; gap: var(--bf-space-2); }
+      .indicator-invariance-context { display: grid; align-items: start; gap: var(--bf-space-1); }
       .density-reference { margin: 0; }
       .density-sample table { inline-size: 100%; }
       .bucket-probe { position: relative; display: flow-root; inline-size: max-content; min-inline-size: 0; }
       .bucket-measured-text { display: inline; }
       .bucket-baseline-marker { display: inline-block; inline-size: 0; block-size: 0; padding: 0; margin: 0; border: 0; vertical-align: baseline; }
+      [data-indicator-status-host-text] { display: inline-block; }
       .bucket-external-rig { position: absolute; inset-block-start: 0; inset-inline-start: 0; display: inline-block; visibility: hidden; pointer-events: none; white-space: nowrap; }
       .bucket-guide-layer { position: absolute; inset-block: 0; inset-inline-start: 0; z-index: 100; pointer-events: none; }
       body:not(.u-baseline-grid) .bucket-guide-layer { display: none; }
@@ -66,6 +75,11 @@
         <h2 class="bf-h6">OS generated source and earlier 0-inset override</h2>
         <p class="density-note density-os-proposal-note">All original specimens remain visible. The source controls use generated CSS; the earlier local override activates only with the OS After bundle. A local override cannot establish source correctness.</p>
         <div id="density-os-track" class="density-track"><div class="bucket-guide-layer" aria-hidden="true"></div></div>
+      </section>
+      <section class="density-row">
+        <h2 id="density-indicator-heading" class="bf-h6">Invariant indicator fit</h2>
+        <p class="density-note">Each placement pairs the same Chip with and without a Badge. Badge and StatusLabel keep one indicator type within the host body line; table density does not resize them.</p>
+        <div id="density-indicator-track" class="density-track"></div>
       </section>
       <section class="density-row">
         <h2 class="bf-h6">Deferred host diagnostics</h2>

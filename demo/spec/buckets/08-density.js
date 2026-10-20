@@ -5,6 +5,7 @@ const bodyCopy = "Active";
 const stylesheet = document.querySelector("#spec-tier-stylesheet");
 const tableTrack = document.querySelector("#density-track");
 const osTrack = document.querySelector("#density-os-track");
+const indicatorTrack = document.querySelector("#density-indicator-track");
 const deferredTrack = document.querySelector("#density-deferred-track");
 const markedTargets = new WeakSet();
 
@@ -52,6 +53,55 @@ const deferredSpecimens = [
   ["SideNavigation Chip · deferred diagnostic", `<nav class="bf-panel bf-side-navigation" aria-label="Density navigation"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><div class="bf-side-navigation-group-header"><h3 class="bf-side-navigation-heading">Projects</h3></div><ul class="bf-side-navigation-list"><li class="bf-side-navigation-item" data-host-row><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Quarterly review</span><span class="bf-side-navigation-status"><span class="bf-chip is-positive is-nested" data-target>New</span></span></a></li></ul></section></div></nav>`, "deferred"]
 ];
 
+const baselineProbe = name => `<span class="bucket-baseline-marker" data-indicator-${name}-baseline aria-hidden="true"></span>`;
+
+function indicatorChip(withBadge) {
+  const badge = withBadge
+    ? `<span class="bf-badge is-nested" data-indicator-badge>3${baselineProbe("badge")}</span>`
+    : "";
+  return `<span class="bf-chip is-nested" data-indicator-chip><span class="bf-chip-value">Active${baselineProbe("host")}</span>${badge}</span>`;
+}
+
+function indicatorPair(placement, withBadge, withoutBadge) {
+  return `<div class="indicator-placement-pair" data-indicator-pair data-indicator-placement="${placement}">
+    <div data-indicator-variant="with"><span class="indicator-variant-caption">With Badge</span>${withBadge}</div>
+    <div data-indicator-variant="without"><span class="indicator-variant-caption">Without Badge</span>${withoutBadge}</div>
+  </div>`;
+}
+
+function indicatorTable(withBadge, label) {
+  return tableRow(indicatorChip(withBadge), label);
+}
+
+function indicatorNavigation(withBadge, label) {
+  return `<nav class="bf-panel bf-side-navigation" aria-label="${label}"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><ul class="bf-side-navigation-list"><li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#density-indicator-heading" data-indicator-host-row><span class="bf-side-navigation-label">State</span><span class="bf-side-navigation-status">${indicatorChip(withBadge)}</span></a></li></ul></section></div></nav>`;
+}
+
+function indicatorTab(withBadge, suffix) {
+  return `<div class="bf-tabs"><ul class="bf-tabs-list" role="tablist"><li class="bf-tabs-item"><button id="density-indicator-tab-${suffix}" class="bf-tabs-link is-active" type="button" role="tab" aria-selected="true" aria-controls="density-indicator-panel-${suffix}" tabindex="0" data-indicator-host-row><span>State</span>${indicatorChip(withBadge)}</button></li></ul><div id="density-indicator-panel-${suffix}" class="bf-tabs-panel" role="tabpanel" aria-hidden="false"><p class="bf-body">Selected state.</p></div></div>`;
+}
+
+function statusNavigation(withStatus, suffix) {
+  const status = withStatus ? `<span class="bf-side-navigation-status"><span class="bf-status-label is-positive is-nested" data-indicator-invariant="status">Ready${baselineProbe("status")}</span></span>` : "";
+  return `<nav class="bf-panel bf-side-navigation" aria-label="Status ${suffix}"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><ul class="bf-side-navigation-list"><li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#density-indicator-heading" data-status-host-row><span class="bf-side-navigation-label" data-indicator-status-host-text>State${baselineProbe("status-host")}</span>${status}</a></li></ul></section></div></nav>`;
+}
+
+function statusTable(withStatus, label) {
+  const status = withStatus ? `<span data-indicator-status-host-text>State${baselineProbe("status-host")}</span> <span class="bf-status-label is-positive is-nested" data-indicator-invariant="status">Ready${baselineProbe("status")}</span>` : "State";
+  return tableRow(status, label);
+}
+
+const indicatorSpecimens = [
+  ["Table cell · Badge-in-Chip fit", indicatorPair("table", indicatorTable(true, "Table Chip with Badge"), indicatorTable(false, "Table Chip without Badge")), "indicator-pair"],
+  ["SideNavigation row · Badge-in-Chip fit", indicatorPair("side-navigation", indicatorNavigation(true, "Navigation Chip with Badge"), indicatorNavigation(false, "Navigation Chip without Badge")), "indicator-pair"],
+  ["Tab · Badge-in-Chip fit", indicatorPair("tab", indicatorTab(true, "with"), indicatorTab(false, "without")), "indicator-pair"],
+  ["Badge and StatusLabel · standalone/default/dense invariance", `<div class="indicator-invariance" data-indicator-invariance>
+    <div class="indicator-invariance-context" data-indicator-context="standalone"><span class="indicator-variant-caption">Standalone</span><span class="bf-badge" data-indicator-invariant="badge">3</span><span class="bf-status-label is-positive" data-indicator-invariant="status">Ready</span></div>
+    <div class="indicator-invariance-context" data-indicator-context="default"><span class="indicator-variant-caption">Default nested</span>${statusNavigation(true, "default-with")}${statusNavigation(false, "default-without")}</div>
+    <div class="indicator-invariance-context" data-indicator-context="dense"><span class="indicator-variant-caption">Dense table</span>${statusTable(true, "Dense StatusLabel row")}${statusTable(false, "Dense plain row")}</div>
+  </div>`, "indicator-invariance"]
+];
+
 function createSamples(track, specimens) {
   return specimens.map(([caption, html, kind]) => {
   const sample = document.createElement("article");
@@ -66,6 +116,8 @@ function createSamples(track, specimens) {
 
 const tableSamples = createSamples(tableTrack, tableSpecimens);
 const osSamples = createSamples(osTrack, osSpecimens);
+const indicatorSamples = createSamples(indicatorTrack, indicatorSpecimens);
+for (const sample of indicatorSamples) sample.classList.add("density-indicator-sample");
 const deferredSamples = createSamples(deferredTrack, deferredSpecimens);
 
 const px = value => `${Math.round(value * 100) / 100}px`;
@@ -176,6 +228,86 @@ function measureTrack(track, samples) {
   }
 }
 
+function measureIndicatorTrack() {
+  const resolveLength = (element, property) => {
+    const probe = document.createElement("span");
+    probe.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;inline-size:var(${property});block-size:0;padding:0;border:0`;
+    element.append(probe);
+    const value = probe.getBoundingClientRect().width;
+    probe.remove();
+    return value;
+  };
+  for (const sample of indicatorSamples) {
+    const pre = sample.querySelector("pre");
+    const pair = sample.querySelector("[data-indicator-pair]");
+    if (pair) {
+      const withBadge = pair.querySelector("[data-indicator-variant='with']");
+      const withoutBadge = pair.querySelector("[data-indicator-variant='without']");
+      const badge = withBadge.querySelector("[data-indicator-badge]");
+      const chip = withBadge.querySelector("[data-indicator-chip]");
+      const plainChip = withoutBadge.querySelector("[data-indicator-chip]");
+      const host = withBadge.querySelector("[data-host-row], [data-indicator-host-row]");
+      const plainHost = withoutBadge.querySelector("[data-host-row], [data-indicator-host-row]");
+      const hostBaseline = withBadge.querySelector("[data-indicator-host-baseline]");
+      const badgeBaseline = withBadge.querySelector("[data-indicator-badge-baseline]");
+      const badgeStyle = getComputedStyle(badge);
+      const chipStyle = getComputedStyle(chip);
+      const badgeBox = badge.getBoundingClientRect();
+      const chipBox = chip.getBoundingClientRect();
+      const paintHeight = Number.parseFloat(badgeStyle.backgroundSize.split(",")[0].trim().split(/\s+/)[1]);
+      const paintInset = (badgeBox.height - paintHeight) / 2;
+      const chipStroke = resolveLength(chip, "--bf-stroke-width");
+      const clearances = {
+        blockStart: badgeBox.top + paintInset - (chipBox.top + chipStroke),
+        blockEnd: chipBox.bottom - chipStroke - (badgeBox.bottom - paintInset),
+        inlineStart: badgeBox.left - (chipBox.left + chipStroke),
+        inlineEnd: chipBox.right - chipStroke - badgeBox.right
+      };
+      const metrics = {
+        tier: tierName(),
+        placement: pair.dataset.indicatorPlacement,
+        fontSize: badgeStyle.fontSize,
+        lineHeight: badgeStyle.lineHeight,
+        baselineDelta: badgeBaseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top,
+        chipHeight: chipBox.height,
+        plainChipHeight: plainChip.getBoundingClientRect().height,
+        hostHeight: host.getBoundingClientRect().height,
+        plainHostHeight: plainHost.getBoundingClientRect().height,
+        badgeLineBoxHeight: badgeBox.height,
+        badgePaintHeight: paintHeight,
+        paintInset,
+        chipStroke,
+        clearances
+      };
+      sample.dataset.indicatorMetrics = JSON.stringify(metrics);
+      pre.textContent = JSON.stringify(metrics, null, 2);
+      continue;
+    }
+
+    const contexts = [...sample.querySelectorAll("[data-indicator-context]")].map(context => ({
+      name: context.dataset.indicatorContext,
+      indicators: [...context.querySelectorAll("[data-indicator-invariant]")].map(indicator => {
+        const style = getComputedStyle(indicator);
+        const indicatorBaseline = indicator.querySelector("[data-indicator-status-baseline]");
+        const hostBaseline = context.querySelector("[data-indicator-status-host-baseline]");
+        return {
+          kind: indicator.dataset.indicatorInvariant,
+          fontSize: style.fontSize,
+          lineHeight: style.lineHeight,
+          height: indicator.getBoundingClientRect().height,
+          baselineDelta: indicatorBaseline && hostBaseline
+            ? indicatorBaseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top
+            : null
+        };
+      }),
+      hostHeights: [...context.querySelectorAll("[data-host-row], [data-status-host-row]")].map(host => host.getBoundingClientRect().height)
+    }));
+    sample.dataset.indicatorMetrics = JSON.stringify({ tier: tierName(), contexts });
+    pre.textContent = JSON.stringify({ tier: tierName(), contexts }, null, 2);
+  }
+  document.body.dataset.indicatorMeasuredTier = tierName();
+}
+
 function measure() {
   syncOsProposalState();
   document.querySelector("#density-table-heading").textContent = tierName() === "os"
@@ -183,6 +315,7 @@ function measure() {
     : "Supported table seats and standalone defaults";
   measureTrack(tableTrack, tableSamples);
   measureTrack(osTrack, osSamples);
+  measureIndicatorTrack();
   document.body.dataset.densityMeasuredTier = tierName();
   document.body.dataset.densityMeasuredWidth = String(window.innerWidth);
   for (const sample of deferredSamples) {

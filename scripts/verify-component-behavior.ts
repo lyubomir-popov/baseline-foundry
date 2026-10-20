@@ -588,6 +588,12 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
             end: Number.parseFloat(statusStyles.paddingBlockEnd),
             start: Number.parseFloat(statusStyles.paddingBlockStart)
           } : null,
+          statusType: statusStyles ? {
+            fontSize: Number.parseFloat(statusStyles.fontSize),
+            lineHeight: Number.parseFloat(statusStyles.lineHeight),
+            marginStart: Number.parseFloat(statusStyles.marginBlockStart),
+            marginEnd: Number.parseFloat(statusStyles.marginBlockEnd)
+          } : null,
           scrollRows: scrollRows.map(row => {
             const cluster = row.querySelector<HTMLElement>(".bf-cluster.is-dense.is-nowrap");
             const firstProbe = cluster?.querySelector<HTMLElement>(".spacing-block-probe");
@@ -620,7 +626,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.rejectedDateLine >= occupiedBlockGeometry.nestedApi.allowedInputLine && occupiedBlockGeometry.nestedApi.rejectedLinkLine >= occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.rejectedDateMargin > 0, `Expected ${tier} date inputs and link buttons outside a table provider to retain their default closure rather than opt into the legacy nested seat: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
       const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
-      assertSharedHeight("single-line interface", interfaceComponents);
+      const bodyInterfaceComponents = interfaceComponents.filter(sample => sample.label !== "Status label");
+      assertSharedHeight("single-line interface", bodyInterfaceComponents);
       const sharesBaselinePhase = (position: number, reference: number) => {
         const delta = Math.abs(position - reference) % occupiedBlockGeometry.baseline;
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) <= renderedBorderTolerance;
@@ -631,8 +638,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         const positions = measured.map(sample => sample.textTop);
         return Math.max(...positions) - Math.min(...positions) < 0.51;
       };
-      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || sharesBaselinePhase(sample.textTop, interfaceReference.textTop)), `Expected ${tier} single-line interface text to share the five-letter reference baseline phase; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
-      assert(sharesExactTextTop(interfaceComponents), `Expected ${tier} measurable interface components to share one exact component text top; got ${JSON.stringify(interfaceComponents)}.`);
+      assert(interfaceReference.label === "Baseline reference" && bodyInterfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || sharesBaselinePhase(sample.textTop, interfaceReference.textTop)), `Expected ${tier} body-sized single-line interface text to share the five-letter reference baseline phase; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
+      assert(sharesExactTextTop(bodyInterfaceComponents), `Expected ${tier} measurable body-sized interface components to share one exact component text top; got ${JSON.stringify(bodyInterfaceComponents)}.`);
       assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
       const nestedReference = occupiedBlockGeometry.nested[0];
       const nestedHosts = occupiedBlockGeometry.nested.slice(1);
@@ -647,11 +654,13 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
       }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
       assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
-      const nonBadgeNestedHosts = nestedHostReferenceFamily.filter(sample => !sample.label.toLowerCase().includes("badge"));
-      assert(nonBadgeNestedHosts.every(sample => sample.textTop === null || nestedReference?.textTop === null || sharesBaselinePhase(sample.textTop, nestedReference.textTop)), `Expected ${tier} compact legacy host text to retain the page baseline phase while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
-      assert(sharesExactTextTop(nonBadgeNestedHosts), `Expected ${tier} measurable non-badge nested hosts to share one exact component text top; got ${JSON.stringify(nonBadgeNestedHosts)}.`);
+      const nonIndicatorNestedHosts = nestedHostReferenceFamily.filter(sample => !/(badge|status label)/i.test(sample.label));
+      assert(nonIndicatorNestedHosts.every(sample => sample.textTop === null || nestedReference?.textTop === null || sharesBaselinePhase(sample.textTop, nestedReference.textTop)), `Expected ${tier} compact legacy host text to retain the page baseline phase while invariant indicators use their approved smaller text; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
+      assert(sharesExactTextTop(nonIndicatorNestedHosts), `Expected ${tier} measurable non-indicator nested hosts to share one exact component text top; got ${JSON.stringify(nonIndicatorNestedHosts)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
-      assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
+      const expectedIndicatorSize = tier === "os" ? 10 : 12;
+      const expectedIndicatorHalfLeading = (expectedIndicatorSize - 16) / 2;
+      assert(status && Math.abs(status.height - expectedIndicatorSize) < 0.1 && occupiedBlockGeometry.statusType && Math.abs(occupiedBlockGeometry.statusType.fontSize - expectedIndicatorSize) < 0.01 && Math.abs(occupiedBlockGeometry.statusType.lineHeight - 16) < 0.01 && Math.abs(occupiedBlockGeometry.statusType.marginStart - expectedIndicatorHalfLeading) < 0.01 && Math.abs(occupiedBlockGeometry.statusType.marginEnd - expectedIndicatorHalfLeading) < 0.01, `Expected ${tier} StatusLabel to retain its approved invariant type and symmetric half-leading outside the body-sized control family; got ${JSON.stringify({ status, type: occupiedBlockGeometry.statusType })}.`);
       for (const label of ["Chip", "Tab action", "Color input", "Range control"] as const) {
         const specimen = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === label);
         assert(specimen && Math.abs(specimen.height - interfaceComponents[0].height) <= 0.1, `Expected ${tier} ${label} to resolve through the same rendered single-line height as the text control; control=${interfaceComponents[0].height}, specimen=${JSON.stringify(specimen)}.`);
@@ -3086,8 +3095,8 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
     { route: "/demo/components/controls.html", selector: ".pc-content .bf-form-label", label: "form label" },
     { route: "/demo/components/controls.html", selector: ".pc-content .bf-input", label: "input" },
     { route: "/demo/components/chip.html", selector: ".pc-content .bf-chip", label: "chip" },
-    { route: "/demo/components/status-label.html", selector: ".pc-content .bf-status-label", label: "status label" },
-    { route: "/demo/components/badge.html", selector: ".pc-content .bf-badge", label: "badge" },
+    { route: "/demo/components/status-label.html", selector: ".pc-content .bf-status-label", label: "status label", indicator: true },
+    { route: "/demo/components/badge.html", selector: ".pc-content .bf-badge", label: "badge", indicator: true },
     { route: "/demo/components/breadcrumbs.html", selector: ".pc-content .bf-breadcrumbs-item", label: "breadcrumb" },
     { route: "/demo/components/side-navigation.html", selector: ".pc-content .bf-side-navigation-link", label: "side-navigation link" },
     { route: "/demo/components/tabs.html", selector: ".pc-content .bf-tabs-link", label: "tab" },
@@ -3154,8 +3163,13 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
 
         assert(state, `Expected ${demo.label} typography state to be measurable in ${tier}.`);
         assert(state.bodyTier === tier, `Expected ${demo.label} page to switch to ${tier}, got ${state.bodyTier}.`);
-        assert(state.targetFontSize === state.resolvedBodyFontSize, `Expected ${demo.label} font-size to match the active body role in ${tier}. Body role ${state.bodyRoleFontSize} (${state.resolvedBodyFontSize}), target ${state.targetFontSize}.`);
-        assert(state.targetLineHeight === state.resolvedBodyLineHeight, `Expected ${demo.label} line-height to match the active body role in ${tier}. Body role ${state.bodyRoleLineHeight} (${state.resolvedBodyLineHeight}), target ${state.targetLineHeight}.`);
+        if ("indicator" in demo) {
+          const expectedFontSize = tier === "os" ? "10px" : "12px";
+          assert(state.targetFontSize === expectedFontSize && state.targetLineHeight === "16px", `Expected ${demo.label} to use the approved invariant indicator type in ${tier}; got ${state.targetFontSize}/${state.targetLineHeight}.`);
+        } else {
+          assert(state.targetFontSize === state.resolvedBodyFontSize, `Expected ${demo.label} font-size to match the active body role in ${tier}. Body role ${state.bodyRoleFontSize} (${state.resolvedBodyFontSize}), target ${state.targetFontSize}.`);
+          assert(state.targetLineHeight === state.resolvedBodyLineHeight, `Expected ${demo.label} line-height to match the active body role in ${tier}. Body role ${state.bodyRoleLineHeight} (${state.resolvedBodyLineHeight}), target ${state.targetLineHeight}.`);
+        }
 
         if (demo.route.endsWith("/accordion.html")) {
           const keyline = await page.evaluate(() => {
@@ -3441,7 +3455,11 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
         assert(navigation?.length === 5, `Expected ${tier}/${tone} side navigation to expose five nested auxiliary fixtures: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => Math.abs(item.hostHeight - item.plainHeight) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces not to enlarge side-navigation rows: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => item.childHeight <= item.hostLineHeight + 0.1), `Expected ${tier}/${tone} nested auxiliary paint to fit inside the host body line: ${JSON.stringify(navigation)}.`);
-        assert(navigation.every(item => item.marginBlockStart === 0 && item.marginBlockEnd === 0 && Math.abs(item.paddingBlockStart - item.paddingBlockEnd) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces to use zero block margins and symmetric padding: ${JSON.stringify(navigation)}.`);
+        const indicatorHalfLeading = tier === "os" ? -3 : -2;
+        assert(navigation.every(item => {
+          const expectedMargin = item.childKind === "status" ? indicatorHalfLeading : 0;
+          return Math.abs(item.marginBlockStart - expectedMargin) <= 0.01 && Math.abs(item.marginBlockEnd - expectedMargin) <= 0.01 && Math.abs(item.paddingBlockStart - item.paddingBlockEnd) <= 0.1;
+        }), `Expected ${tier}/${tone} nested Chips to keep zero margins and StatusLabel to keep approved symmetric half-leading, with symmetric padding: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => item.borderBlockStart === 0 && item.borderBlockEnd === 0 && (item.childKind !== "chip" || item.strokeBoxShadow !== "none")), `Expected ${tier}/${tone} nested Chip boundaries to self-paint without adding block footprint: ${JSON.stringify(navigation)}.`);
       }
     }
@@ -3545,6 +3563,10 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
           }
           const chipRect = nestedChip.getBoundingClientRect();
           const badgeRect = nestedBadge.getBoundingClientRect();
+          const badgeStyles = getComputedStyle(nestedBadge);
+          const badgePaintHeight = Number.parseFloat(badgeStyles.backgroundSize.split(",")[0]!.trim().split(/\s+/)[1]!);
+          const badgePaintTop = badgeRect.top + ((badgeRect.height - badgePaintHeight) / 2);
+          const badgePaintBottom = badgePaintTop + badgePaintHeight;
           const activeStyles = getComputedStyle(activeTab, "::after");
           const plainTextCellStyles = getComputedStyle(plainTextCell);
           const controlCellStyles = getComputedStyle(controlCell);
@@ -3563,8 +3585,8 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             chipHeight: chipRect.height,
             cellLineHeight: Number.parseFloat(getComputedStyle(nestedCell).lineHeight),
             badgeContained:
-              badgeRect.top >= chipRect.top - 0.1 &&
-              badgeRect.bottom <= chipRect.bottom + 0.1,
+              badgePaintTop >= chipRect.top - 0.1 &&
+              badgePaintBottom <= chipRect.bottom + 0.1,
             controlRowHeightDelta: Math.abs(
               controlRow.getBoundingClientRect().height -
                 plainTextRow.getBoundingClientRect().height
@@ -4066,6 +4088,443 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
   }
 }
 
+async function verifyIndicatorFit(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const expectedFontSize = { editorial: 12, documentation: 12, app: 12, os: 10 } as const;
+  const geometryTolerance = 0.1;
+  const baselineTolerance = 0.02;
+  const browser = await openBrowser();
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await page.addInitScript("globalThis.__name = value => value;");
+  const results: unknown[] = [];
+
+  try {
+    await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.indicatorMeasuredTier === expectedTier, tier);
+      const proof = await page.evaluate(() => {
+        const splitCssComponents = (value: string): string[] => {
+          const parts: string[] = [];
+          let current = "";
+          let depth = 0;
+          for (const character of value.trim()) {
+            if (character === "(") depth += 1;
+            else if (character === ")") depth -= 1;
+            if (/\s/.test(character) && depth === 0) {
+              if (current) {
+                parts.push(current);
+                current = "";
+              }
+            } else {
+              current += character;
+            }
+          }
+          if (current) parts.push(current);
+          return parts;
+        };
+        const splitCssLayers = (value: string): string[] => {
+          const layers: string[] = [];
+          let current = "";
+          let depth = 0;
+          for (const character of value.trim()) {
+            if (character === "(") depth += 1;
+            else if (character === ")") depth -= 1;
+            if (character === "," && depth === 0) {
+              layers.push(current.trim());
+              current = "";
+            } else {
+              current += character;
+            }
+          }
+          if (current) layers.push(current.trim());
+          return layers;
+        };
+        const lengthInPixels = (value: string, rootFontSize: number): number => {
+          if (value.endsWith("px")) return Number.parseFloat(value);
+          if (value.endsWith("rem")) return Number.parseFloat(value) * rootFontSize;
+          if (value === "0") return 0;
+          return Number.NaN;
+        };
+        const resolveLengthPercentage = (value: string, basis: number, rootFontSize: number): number => {
+          const trimmed = value.trim();
+          if (trimmed.endsWith("%")) return basis * Number.parseFloat(trimmed) / 100;
+          const directLength = lengthInPixels(trimmed, rootFontSize);
+          if (Number.isFinite(directLength)) return directLength;
+          const calc = trimmed.match(/^calc\(\s*([-+]?\d*\.?\d+)%\s*([+-])\s*([-+]?\d*\.?\d+)(px|rem)\s*\)$/);
+          if (!calc) return Number.NaN;
+          const percentage = basis * Number.parseFloat(calc[1]) / 100;
+          const length = Number.parseFloat(calc[3]) * (calc[4] === "rem" ? rootFontSize : 1);
+          return calc[2] === "+" ? percentage + length : percentage - length;
+        };
+        const resolvePosition = (value: string, basis: number, imageSize: number, rootFontSize: number): number => {
+          if (value === "center") return (basis - imageSize) / 2;
+          if (value.endsWith("%")) return (basis - imageSize) * Number.parseFloat(value) / 100;
+          return lengthInPixels(value, rootFontSize);
+        };
+        const resolveLength = (element: HTMLElement, property: string): number => {
+          const probe = document.createElement("span");
+          probe.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;inline-size:var(${property});block-size:0;padding:0;border:0`;
+          element.append(probe);
+          const value = probe.getBoundingClientRect().width;
+          probe.remove();
+          return value;
+        };
+        const pairs = [...document.querySelectorAll<HTMLElement>("[data-indicator-pair]")].map(pair => {
+          const withBadge = pair.querySelector<HTMLElement>("[data-indicator-variant='with']");
+          const withoutBadge = pair.querySelector<HTMLElement>("[data-indicator-variant='without']");
+          const badge = withBadge?.querySelector<HTMLElement>("[data-indicator-badge]");
+          const chip = withBadge?.querySelector<HTMLElement>("[data-indicator-chip]");
+          const plainChip = withoutBadge?.querySelector<HTMLElement>("[data-indicator-chip]");
+          const host = withBadge?.querySelector<HTMLElement>("[data-host-row], [data-indicator-host-row]");
+          const plainHost = withoutBadge?.querySelector<HTMLElement>("[data-host-row], [data-indicator-host-row]");
+          const hostBaseline = withBadge?.querySelector<HTMLElement>("[data-indicator-host-baseline]");
+          const badgeBaseline = withBadge?.querySelector<HTMLElement>("[data-indicator-badge-baseline]");
+          if (!withBadge || !withoutBadge || !badge || !chip || !plainChip || !host || !plainHost || !hostBaseline || !badgeBaseline) return null;
+          const badgeStyle = getComputedStyle(badge);
+          const chipStyle = getComputedStyle(chip);
+          const badgeBox = badge.getBoundingClientRect();
+          const chipBox = chip.getBoundingClientRect();
+          const hostTextBox = chip.querySelector<HTMLElement>(".bf-chip-value")?.getBoundingClientRect();
+          const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+          const sizeLayers = splitCssLayers(badgeStyle.backgroundSize);
+          const positionLayers = splitCssLayers(badgeStyle.backgroundPosition);
+          const layerBounds = sizeLayers.map((sizeLayer, index) => {
+            const sizeParts = splitCssComponents(sizeLayer);
+            const positionParts = splitCssComponents(positionLayers[index] ?? "0% 0%");
+            const width = resolveLengthPercentage(sizeParts[0] ?? "", badgeBox.width, rootFontSize);
+            const height = resolveLengthPercentage(sizeParts[1] ?? sizeParts[0] ?? "", badgeBox.height, rootFontSize);
+            const left = badgeBox.left + resolvePosition(positionParts[0] ?? "0%", badgeBox.width, width, rootFontSize);
+            const top = badgeBox.top + resolvePosition(positionParts[1] ?? positionParts[0] ?? "0%", badgeBox.height, height, rootFontSize);
+            return { left, right: left + width, top, bottom: top + height, width, height };
+          });
+          const paintBounds = {
+            left: Math.min(...layerBounds.map(layer => layer.left)),
+            right: Math.max(...layerBounds.map(layer => layer.right)),
+            top: Math.min(...layerBounds.map(layer => layer.top)),
+            bottom: Math.max(...layerBounds.map(layer => layer.bottom)),
+            width: 0,
+            height: 0
+          };
+          paintBounds.width = paintBounds.right - paintBounds.left;
+          paintBounds.height = paintBounds.bottom - paintBounds.top;
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          if (!context) return null;
+          context.font = `${badgeStyle.fontStyle} ${badgeStyle.fontWeight} ${badgeStyle.fontSize} ${badgeStyle.fontFamily}`;
+          const text = badge.childNodes[0]?.textContent?.trim() ?? badge.textContent?.trim() ?? "";
+          const textMetrics = context.measureText(text);
+          const baseline = badgeBaseline.getBoundingClientRect().top;
+          const textOrigin = badgeBox.left + ((badgeBox.width - textMetrics.width) / 2);
+          const inkBounds = {
+            left: textOrigin - textMetrics.actualBoundingBoxLeft,
+            right: textOrigin + textMetrics.actualBoundingBoxRight,
+            top: baseline - textMetrics.actualBoundingBoxAscent,
+            bottom: baseline + textMetrics.actualBoundingBoxDescent
+          };
+          const chipStroke = resolveLength(chip, "--bf-stroke-width");
+          return {
+            placement: pair.dataset.indicatorPlacement,
+            selector: `[data-indicator-pair][data-indicator-placement='${pair.dataset.indicatorPlacement}'] [data-indicator-badge]`,
+            fontSize: Number.parseFloat(badgeStyle.fontSize),
+            lineHeight: Number.parseFloat(badgeStyle.lineHeight),
+            backgroundImage: badgeStyle.backgroundImage,
+            backgroundPosition: badgeStyle.backgroundPosition,
+            backgroundRepeat: badgeStyle.backgroundRepeat,
+            backgroundSize: badgeStyle.backgroundSize,
+            isolation: badgeStyle.isolation,
+            ownerZIndex: badgeStyle.zIndex,
+            baselineDelta: badgeBaseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top,
+            chipHeightDelta: chipBox.height - plainChip.getBoundingClientRect().height,
+            hostHeightDelta: host.getBoundingClientRect().height - plainHost.getBoundingClientRect().height,
+            bodyLineHeight: resolveLength(chip, "--bf-body-line-height"),
+            badgeLineBoxHeight: badgeBox.height,
+            badgeBounds: { left: badgeBox.left, right: badgeBox.right, top: badgeBox.top, bottom: badgeBox.bottom, width: badgeBox.width, height: badgeBox.height },
+            chipBounds: { left: chipBox.left, right: chipBox.right, top: chipBox.top, bottom: chipBox.bottom, width: chipBox.width, height: chipBox.height },
+            hostTextBounds: hostTextBox ? { left: hostTextBox.left, right: hostTextBox.right, top: hostTextBox.top, bottom: hostTextBox.bottom, width: hostTextBox.width, height: hostTextBox.height } : null,
+            inkBounds,
+            layerBounds,
+            paintBounds,
+            effectivePaintInsets: {
+              blockStart: paintBounds.top - badgeBox.top,
+              blockEnd: badgeBox.bottom - paintBounds.bottom,
+              inlineStart: paintBounds.left - badgeBox.left,
+              inlineEnd: badgeBox.right - paintBounds.right
+            },
+            chipStroke,
+            paintClearance: {
+              blockStart: paintBounds.top - (chipBox.top + chipStroke),
+              blockEnd: chipBox.bottom - chipStroke - paintBounds.bottom,
+              inlineStart: paintBounds.left - (chipBox.left + chipStroke),
+              inlineEnd: chipBox.right - chipStroke - paintBounds.right
+            },
+            inkClearance: {
+              blockStart: inkBounds.top - paintBounds.top,
+              blockEnd: paintBounds.bottom - inkBounds.bottom,
+              inlineStart: inkBounds.left - paintBounds.left,
+              inlineEnd: paintBounds.right - inkBounds.right
+            },
+            text,
+            unclipped: badge.scrollWidth <= badge.clientWidth + 1 && badge.scrollHeight <= badge.clientHeight + 1
+          };
+        });
+        const invariants = [...document.querySelectorAll<HTMLElement>("[data-indicator-invariant]")].map(indicator => {
+          const context = indicator.closest<HTMLElement>("[data-indicator-context]");
+          const style = getComputedStyle(indicator);
+          const indicatorBaseline = indicator.querySelector<HTMLElement>("[data-indicator-status-baseline]");
+          const hostRow = indicator.closest<HTMLElement>("[data-status-host-row], [data-host-row]");
+          const hostBaseline = hostRow?.querySelector<HTMLElement>("[data-indicator-status-host-baseline]");
+          const hostText = hostRow?.querySelector<HTMLElement>("[data-indicator-status-host-text]");
+          const indicatorBox = indicator.getBoundingClientRect();
+          const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+          const sizeParts = splitCssComponents(style.backgroundSize.split(",")[0] ?? "");
+          const positionParts = splitCssComponents(style.backgroundPosition.split(",")[0] ?? "");
+          const paintWidth = resolveLengthPercentage(sizeParts[0] ?? "", indicatorBox.width, rootFontSize);
+          const paintHeight = resolveLengthPercentage(sizeParts[1] ?? sizeParts[0] ?? "", indicatorBox.height, rootFontSize);
+          const paintLeft = indicatorBox.left + resolvePosition(positionParts[0] ?? "0%", indicatorBox.width, paintWidth, rootFontSize);
+          const paintTop = indicatorBox.top + resolvePosition(positionParts[1] ?? positionParts[0] ?? "0%", indicatorBox.height, paintHeight, rootFontSize);
+          const paintBounds = { left: paintLeft, right: paintLeft + paintWidth, top: paintTop, bottom: paintTop + paintHeight, width: paintWidth, height: paintHeight };
+          const canvas = document.createElement("canvas");
+          const canvasContext = canvas.getContext("2d");
+          let inkBounds = null;
+          if (canvasContext && indicatorBaseline) {
+            canvasContext.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+            const text = indicator.childNodes[0]?.textContent?.trim() ?? indicator.textContent?.trim() ?? "";
+            const metrics = canvasContext.measureText(text);
+            const baseline = indicatorBaseline.getBoundingClientRect().top;
+            const origin = indicatorBox.left + ((indicatorBox.width - metrics.width) / 2);
+            inkBounds = { left: origin - metrics.actualBoundingBoxLeft, right: origin + metrics.actualBoundingBoxRight, top: baseline - metrics.actualBoundingBoxAscent, bottom: baseline + metrics.actualBoundingBoxDescent };
+          }
+          const hostLineBox = hostText?.getBoundingClientRect();
+          return {
+            kind: indicator.dataset.indicatorInvariant,
+            context: context?.dataset.indicatorContext,
+            fontSize: Number.parseFloat(style.fontSize),
+            lineHeight: Number.parseFloat(style.lineHeight),
+            height: indicatorBox.height,
+            baselineDelta: indicatorBaseline && hostBaseline
+              ? indicatorBaseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top
+              : null,
+            backgroundImage: style.backgroundImage,
+            paintBounds,
+            inkBounds,
+            hostLineBounds: hostLineBox ? { left: hostLineBox.left, right: hostLineBox.right, top: hostLineBox.top, bottom: hostLineBox.bottom, width: hostLineBox.width, height: hostLineBox.height } : null,
+            unclipped: indicator.scrollWidth <= indicator.clientWidth + 1 && indicator.scrollHeight <= indicator.clientHeight + 1
+          };
+        });
+        const statusHosts = [...document.querySelectorAll<HTMLElement>("[data-indicator-context='default'], [data-indicator-context='dense']")].map(context => ({
+          context: context.dataset.indicatorContext,
+          heights: [...context.querySelectorAll<HTMLElement>("[data-host-row], [data-status-host-row]")].map(host => host.getBoundingClientRect().height)
+        }));
+        return { pairs, invariants, statusHosts };
+      });
+
+      assert(proof.pairs.length === 3 && proof.pairs.every(pair => pair !== null), `Expected ${tier} to expose exactly three complete Badge-in-Chip placement pairs; got ${JSON.stringify(proof.pairs)}.`);
+      const pairs = proof.pairs.filter((pair): pair is NonNullable<typeof pair> => pair !== null);
+      assert(new Set(pairs.map(pair => pair.placement)).size === 3, `Expected ${tier} table, SideNavigation and Tab placements once each; got ${JSON.stringify(pairs)}.`);
+      for (const pair of pairs) {
+        assert(Math.abs(pair.fontSize - expectedFontSize[tier]) <= geometryTolerance && Math.abs(pair.lineHeight - 16) <= geometryTolerance, `Expected ${tier}/${pair.placement} approved indicator type ${expectedFontSize[tier]}px/16px; got ${JSON.stringify(pair)}.`);
+        assert(Math.abs(pair.baselineDelta) <= baselineTolerance, `Expected ${tier}/${pair.placement} Badge text to share the Chip label baseline; got ${JSON.stringify(pair)}.`);
+        assert(Math.abs(pair.chipHeightDelta) <= geometryTolerance && Math.abs(pair.hostHeightDelta) <= geometryTolerance, `Expected ${tier}/${pair.placement} Badge not to grow its Chip or placement row; got ${JSON.stringify(pair)}.`);
+        assert(pair.hostTextBounds && pair.paintBounds.height <= pair.hostTextBounds.height + geometryTolerance && pair.paintBounds.top >= pair.hostTextBounds.top - geometryTolerance && pair.paintBounds.bottom <= pair.hostTextBounds.bottom + geometryTolerance && pair.inkBounds.top >= pair.hostTextBounds.top - geometryTolerance && pair.inkBounds.bottom <= pair.hostTextBounds.bottom + geometryTolerance && pair.unclipped, `Expected ${tier}/${pair.placement} Badge paint and glyph ink to fit spatially inside the actual Chip label line while its approved 16px CSS line box remains layout-neutral; got ${JSON.stringify(pair)}.`);
+        assert(pair.backgroundImage.split("gradient(").length - 1 === 3 && pair.backgroundRepeat.split(",").every(value => value.trim() === "no-repeat") && pair.isolation === "auto" && pair.ownerZIndex === "auto" && Number.isFinite(pair.paintBounds.width) && Number.isFinite(pair.paintBounds.height), `Expected ${tier}/${pair.placement} Badge fill to expose three measurable owner-background layers without a stacking context; got ${JSON.stringify(pair)}.`);
+        assert(Math.abs(pair.paintBounds.height - pair.fontSize) <= geometryTolerance && Math.abs(pair.effectivePaintInsets.blockStart - pair.effectivePaintInsets.blockEnd) <= geometryTolerance, `Expected ${tier}/${pair.placement} computed background layers to centre one approved indicator em inside its line; got ${JSON.stringify(pair)}.`);
+        assert(pair.paintBounds.width >= pair.paintBounds.height && pair.layerBounds.length === 3 && Math.abs(pair.layerBounds[0].width - pair.paintBounds.height) <= geometryTolerance && Math.abs(pair.layerBounds[0].height - pair.paintBounds.height) <= geometryTolerance && Math.abs(pair.layerBounds[1].width - pair.paintBounds.height) <= geometryTolerance, `Expected ${tier}/${pair.placement} one-digit Badge fill to retain two circular end caps and a central rectangle; got ${JSON.stringify(pair)}.`);
+        assert(Object.values(pair.paintClearance).every(value => value > geometryTolerance), `Expected ${tier}/${pair.placement} strictly positive effective painted clearance on all four Chip edges; got ${JSON.stringify(pair)}.`);
+        assert(Object.values(pair.inkClearance).every(value => value > geometryTolerance), `Expected ${tier}/${pair.placement} measured glyph ink to remain inside the effective Badge fill; got ${JSON.stringify(pair)}.`);
+      }
+
+      const badgeInvariants = proof.invariants.filter(item => item.kind === "badge");
+      const statusInvariants = proof.invariants.filter(item => item.kind === "status");
+      assert(badgeInvariants.length >= 1 && statusInvariants.length === 3, `Expected ${tier} standalone Badge plus standalone/default/dense StatusLabel invariance samples; got ${JSON.stringify(proof.invariants)}.`);
+      for (const indicator of [...badgeInvariants, ...statusInvariants]) {
+        assert(Math.abs(indicator.fontSize - expectedFontSize[tier]) <= geometryTolerance && Math.abs(indicator.lineHeight - 16) <= geometryTolerance && indicator.height <= 16 + geometryTolerance, `Expected ${tier}/${indicator.kind}/${indicator.context} invariant approved type and line fit; got ${JSON.stringify(indicator)}.`);
+        if (indicator.baselineDelta !== null) assert(Math.abs(indicator.baselineDelta) <= baselineTolerance, `Expected ${tier}/${indicator.context} StatusLabel text to share its host baseline; got ${JSON.stringify(indicator)}.`);
+      }
+      for (const status of statusInvariants.filter(indicator => indicator.hostLineBounds && indicator.inkBounds)) {
+        assert(status.backgroundImage !== "none" && status.paintBounds.height <= status.hostLineBounds!.height + geometryTolerance && status.paintBounds.top >= status.hostLineBounds!.top - geometryTolerance && status.paintBounds.bottom <= status.hostLineBounds!.bottom + geometryTolerance, `Expected ${tier}/${status.context} StatusLabel paint to remain inside the host body line; got ${JSON.stringify(status)}.`);
+        assert(status.inkBounds!.left >= status.paintBounds.left - geometryTolerance && status.inkBounds!.right <= status.paintBounds.right + geometryTolerance && status.inkBounds!.top >= status.paintBounds.top - geometryTolerance && status.inkBounds!.bottom <= status.paintBounds.bottom + geometryTolerance && status.inkBounds!.top >= status.hostLineBounds!.top - geometryTolerance && status.inkBounds!.bottom <= status.hostLineBounds!.bottom + geometryTolerance && status.unclipped, `Expected ${tier}/${status.context} StatusLabel glyph ink to remain inside both its paint and host body line; got ${JSON.stringify(status)}.`);
+      }
+      for (const host of proof.statusHosts) {
+        assert(host.heights.length === 2 && Math.abs(host.heights[0] - host.heights[1]) <= geometryTolerance, `Expected ${tier}/${host.context} StatusLabel not to grow its placement row; got ${JSON.stringify(host)}.`);
+      }
+      results.push({ tier, pairs, invariants: proof.invariants, statusHosts: proof.statusHosts });
+    }
+
+    const mutationStyle = await page.addStyleTag({ content: "[data-indicator-badge] { background-size: 100% 100%, 100% 100%, 100% 100% !important; }" });
+    const sensitivityBase = await page.evaluate(() => {
+      const badge = document.querySelector<HTMLElement>("[data-indicator-badge]");
+      const chip = badge?.closest<HTMLElement>("[data-indicator-chip]");
+      if (!badge || !chip) return null;
+      const badgeBox = badge.getBoundingClientRect();
+      const chipBox = chip.getBoundingClientRect();
+      const probe = document.createElement("span");
+      probe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-stroke-width);block-size:0";
+      chip.append(probe);
+      const stroke = probe.getBoundingClientRect().width;
+      probe.remove();
+      return { badgeBox: { left: badgeBox.left, right: badgeBox.right, top: badgeBox.top, bottom: badgeBox.bottom }, backgroundSize: getComputedStyle(badge).backgroundSize, chipBox: { left: chipBox.left, right: chipBox.right, top: chipBox.top, bottom: chipBox.bottom }, stroke };
+    });
+    assert(sensitivityBase, "Expected the test-only painter mutation fixture.");
+    const sensitivity = {
+      backgroundSize: sensitivityBase.backgroundSize,
+      clearance: {
+        blockStart: sensitivityBase.badgeBox.top - (sensitivityBase.chipBox.top + sensitivityBase.stroke),
+        blockEnd: sensitivityBase.chipBox.bottom - sensitivityBase.stroke - sensitivityBase.badgeBox.bottom,
+        inlineStart: sensitivityBase.badgeBox.left - (sensitivityBase.chipBox.left + sensitivityBase.stroke),
+        inlineEnd: sensitivityBase.chipBox.right - sensitivityBase.stroke - sensitivityBase.badgeBox.right
+      }
+    };
+    assert(sensitivity.backgroundSize.split(",").every(value => value.trim() === "100% 100%") && Object.values(sensitivity.clearance).some(value => value <= geometryTolerance), `Expected a test-only full-box owner-background mutation to invalidate the positive-clearance proof; got ${JSON.stringify(sensitivity)}.`);
+    await mutationStyle.evaluate(element => element.remove());
+
+    const statusMutationStyle = await page.addStyleTag({ content: "[data-indicator-invariant='status'] { background-size: 100% 100% !important; }" });
+    const statusSensitivity = await page.locator("[data-indicator-context='default'] [data-indicator-invariant='status']").evaluate(indicator => {
+      const element = indicator as HTMLElement;
+      const hostText = element.closest<HTMLElement>("[data-status-host-row]")?.querySelector<HTMLElement>("[data-indicator-status-host-text]");
+      if (!hostText) return null;
+      const paint = element.getBoundingClientRect();
+      const host = hostText.getBoundingClientRect();
+      return { backgroundSize: getComputedStyle(element).backgroundSize, host: { top: host.top, bottom: host.bottom }, paint: { top: paint.top, bottom: paint.bottom } };
+    });
+    assert(statusSensitivity && statusSensitivity.backgroundSize === "100% 100%" && (statusSensitivity.paint.top < statusSensitivity.host.top - geometryTolerance || statusSensitivity.paint.bottom > statusSensitivity.host.bottom + geometryTolerance), `Expected a test-only full-line StatusLabel painter mutation to invalidate the host-line spatial proof; got ${JSON.stringify(statusSensitivity)}.`);
+    await statusMutationStyle.evaluate(element => element.remove());
+
+    await page.emulateMedia({ forcedColors: "active" });
+    const forcedColors = await page.locator("[data-indicator-badge]").first().evaluate(element => {
+      const style = getComputedStyle(element);
+      return {
+        backgroundColor: style.backgroundColor,
+        backgroundImage: style.backgroundImage,
+        color: style.color,
+        height: element.getBoundingClientRect().height,
+        overflow: style.overflow
+      };
+    });
+    assert(forcedColors.backgroundImage.split(",").every(value => value.trim() === "none") && forcedColors.color !== "rgba(0, 0, 0, 0)" && forcedColors.height <= 16 + geometryTolerance && forcedColors.overflow !== "hidden", `Expected forced-colors to suppress decorative fill while retaining visible, unclipped indicator text; got ${JSON.stringify(forcedColors)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+
+    let scaledPairCount = 0;
+    let scaledStatusCount = 0;
+    let minimumScaledPaintClearance = Number.POSITIVE_INFINITY;
+    for (const deviceScaleFactor of [1, 1.5]) {
+      const scalePage = await browser.newPage({ deviceScaleFactor, viewport: { width: 1920, height: 1400 } });
+      await scalePage.addInitScript("globalThis.__name = value => value;");
+      try {
+        await scalePage.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+        await waitForFonts(scalePage);
+        for (const rootFontSize of [14, 16, 20]) {
+          await scalePage.evaluate(size => { document.documentElement.style.fontSize = `${size}px`; }, rootFontSize);
+          for (const tier of tiers) {
+            await scalePage.locator("[data-page-chrome-tier-select]").selectOption(tier);
+            await scalePage.waitForFunction(expectedTier => document.body.dataset.indicatorMeasuredTier === expectedTier, tier);
+            const scaleProof = await scalePage.evaluate(() => {
+              const rect = (element: Element) => {
+                const value = element.getBoundingClientRect();
+                return { left: value.left, right: value.right, top: value.top, bottom: value.bottom, width: value.width, height: value.height };
+              };
+              const ink = (element: HTMLElement, baselineMarker: HTMLElement) => {
+                const style = getComputedStyle(element);
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d")!;
+                context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+                const text = element.childNodes[0]?.textContent?.trim() ?? element.textContent?.trim() ?? "";
+                const metrics = context.measureText(text);
+                const bounds = rect(element);
+                const origin = bounds.left + ((bounds.width - metrics.width) / 2);
+                const baseline = baselineMarker.getBoundingClientRect().top;
+                return { left: origin - metrics.actualBoundingBoxLeft, right: origin + metrics.actualBoundingBoxRight, top: baseline - metrics.actualBoundingBoxAscent, bottom: baseline + metrics.actualBoundingBoxDescent };
+              };
+              const strokeWidth = (chip: HTMLElement) => {
+                const probe = document.createElement("span");
+                probe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-stroke-width);block-size:0";
+                chip.append(probe);
+                const value = probe.getBoundingClientRect().width;
+                probe.remove();
+                return value;
+              };
+              const pairs = [...document.querySelectorAll<HTMLElement>("[data-indicator-pair]")].map(pair => {
+                const withBadge = pair.querySelector<HTMLElement>("[data-indicator-variant='with']")!;
+                const withoutBadge = pair.querySelector<HTMLElement>("[data-indicator-variant='without']")!;
+                const badge = withBadge.querySelector<HTMLElement>("[data-indicator-badge]")!;
+                const chip = withBadge.querySelector<HTMLElement>("[data-indicator-chip]")!;
+                const plainChip = withoutBadge.querySelector<HTMLElement>("[data-indicator-chip]")!;
+                const host = withBadge.querySelector<HTMLElement>("[data-host-row], [data-indicator-host-row]")!;
+                const plainHost = withoutBadge.querySelector<HTMLElement>("[data-host-row], [data-indicator-host-row]")!;
+                const badgeBaseline = withBadge.querySelector<HTMLElement>("[data-indicator-badge-baseline]")!;
+                const hostBaseline = withBadge.querySelector<HTMLElement>("[data-indicator-host-baseline]")!;
+                const hostText = chip.querySelector<HTMLElement>(".bf-chip-value")!;
+                const badgeBox = rect(badge);
+                const chipBox = rect(chip);
+                const hostTextBox = rect(hostText);
+                const style = getComputedStyle(badge);
+                const paintHeight = Number.parseFloat(style.backgroundSize.split(",")[0]!.trim().split(/\s+/)[1]!);
+                const paint = { left: badgeBox.left, right: badgeBox.right, top: badgeBox.top + ((badgeBox.height - paintHeight) / 2), bottom: badgeBox.bottom - ((badgeBox.height - paintHeight) / 2) };
+                const glyph = ink(badge, badgeBaseline);
+                const stroke = strokeWidth(chip);
+                return {
+                  placement: pair.dataset.indicatorPlacement,
+                  fontSize: Number.parseFloat(style.fontSize), lineHeight: Number.parseFloat(style.lineHeight),
+                  baselineDelta: badgeBaseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top,
+                  chipHeightDelta: chipBox.height - rect(plainChip).height,
+                  hostHeightDelta: rect(host).height - rect(plainHost).height,
+                  paintClearance: [paint.top - chipBox.top - stroke, chipBox.bottom - stroke - paint.bottom, paint.left - chipBox.left - stroke, chipBox.right - stroke - paint.right],
+                  paintInsideHostLine: paint.top >= hostTextBox.top && paint.bottom <= hostTextBox.bottom,
+                  inkInsidePaintAndHostLine: glyph.left >= paint.left && glyph.right <= paint.right && glyph.top >= paint.top && glyph.bottom <= paint.bottom && glyph.top >= hostTextBox.top && glyph.bottom <= hostTextBox.bottom
+                };
+              });
+              const statuses = [...document.querySelectorAll<HTMLElement>("[data-indicator-context='default'] [data-indicator-invariant='status'], [data-indicator-context='dense'] [data-indicator-invariant='status']")].map(status => {
+                const row = status.closest<HTMLElement>("[data-status-host-row], [data-host-row]")!;
+                const hostText = row.querySelector<HTMLElement>("[data-indicator-status-host-text]")!;
+                const baseline = status.querySelector<HTMLElement>("[data-indicator-status-baseline]")!;
+                const hostBaseline = row.querySelector<HTMLElement>("[data-indicator-status-host-baseline]")!;
+                const statusBox = rect(status);
+                const hostLine = rect(hostText);
+                const style = getComputedStyle(status);
+                const paintHeight = Number.parseFloat(style.backgroundSize.trim().split(/\s+/)[1]!);
+                const paint = { left: statusBox.left, right: statusBox.right, top: statusBox.top + ((statusBox.height - paintHeight) / 2), bottom: statusBox.bottom - ((statusBox.height - paintHeight) / 2) };
+                const glyph = ink(status, baseline);
+                return {
+                  context: status.closest<HTMLElement>("[data-indicator-context]")?.dataset.indicatorContext,
+                  fontSize: Number.parseFloat(style.fontSize), lineHeight: Number.parseFloat(style.lineHeight),
+                  baselineDelta: baseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top,
+                  paintInsideHostLine: paint.top >= hostLine.top && paint.bottom <= hostLine.bottom,
+                  inkInsidePaintAndHostLine: glyph.left >= paint.left && glyph.right <= paint.right && glyph.top >= paint.top && glyph.bottom <= paint.bottom && glyph.top >= hostLine.top && glyph.bottom <= hostLine.bottom
+                };
+              });
+              const statusHostDeltas = [...document.querySelectorAll<HTMLElement>("[data-indicator-context='default'], [data-indicator-context='dense']")].map(context => {
+                const heights = [...context.querySelectorAll<HTMLElement>("[data-host-row], [data-status-host-row]")].map(host => rect(host).height);
+                return heights[0]! - heights[1]!;
+              });
+              return { pairs, statuses, statusHostDeltas };
+            });
+            const expectedSize = expectedFontSize[tier] * rootFontSize / 16;
+            const expectedLine = rootFontSize;
+            for (const pair of scaleProof.pairs) {
+              assert(Math.abs(pair.fontSize - expectedSize) <= geometryTolerance && Math.abs(pair.lineHeight - expectedLine) <= geometryTolerance && Math.abs(pair.baselineDelta) <= baselineTolerance && Math.abs(pair.chipHeightDelta) <= geometryTolerance && Math.abs(pair.hostHeightDelta) <= geometryTolerance, `Expected ${tier}/${pair.placement} to retain approved type, baseline and no-growth at root ${rootFontSize}px/DPR ${deviceScaleFactor}; got ${JSON.stringify(pair)}.`);
+              assert(pair.paintClearance.every(value => value > 0.05) && pair.paintInsideHostLine && pair.inkInsidePaintAndHostLine, `Expected ${tier}/${pair.placement} actual paint and ink fit at root ${rootFontSize}px/DPR ${deviceScaleFactor}; got ${JSON.stringify(pair)}.`);
+              scaledPairCount += 1;
+              minimumScaledPaintClearance = Math.min(minimumScaledPaintClearance, ...pair.paintClearance);
+            }
+            for (const status of scaleProof.statuses) {
+              assert(Math.abs(status.fontSize - expectedSize) <= geometryTolerance && Math.abs(status.lineHeight - expectedLine) <= geometryTolerance && Math.abs(status.baselineDelta) <= baselineTolerance && status.paintInsideHostLine && status.inkInsidePaintAndHostLine, `Expected ${tier}/${status.context} StatusLabel fit at root ${rootFontSize}px/DPR ${deviceScaleFactor}; got ${JSON.stringify(status)}.`);
+              scaledStatusCount += 1;
+            }
+            assert(scaleProof.statusHostDeltas.every(delta => Math.abs(delta) <= geometryTolerance), `Expected ${tier} StatusLabel host no-growth at root ${rootFontSize}px/DPR ${deviceScaleFactor}; got ${JSON.stringify(scaleProof.statusHostDeltas)}.`);
+          }
+        }
+      } finally {
+        await scalePage.close();
+      }
+    }
+
+    const primaryPairs = results.reduce((count, result) => count + result.pairs.length, 0);
+    console.log(`Indicator fit measurements passed: ${primaryPairs} primary pairs, ${scaledPairCount} scaled pairs, ${scaledStatusCount} scaled StatusLabel placements; minimum scaled Badge paint clearance ${minimumScaledPaintClearance.toFixed(3)}px; painter mutations and forced-colors checks passed.`);
+  } finally {
+    await browser.close();
+  }
+}
 async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const tones = ["light", "dark"] as const;
@@ -8186,6 +8645,11 @@ async function main(): Promise<void> {
       console.log("Table density behavior verification passed.");
       return;
     }
+    if (process.argv.includes("--indicator-fit")) {
+      await verifyIndicatorFit(origin);
+      console.log("Indicator fit behavior verification passed.");
+      return;
+    }
     if (process.argv.includes("--range-surfaces")) {
       await verifyRangeAndSurfaceRepair(origin);
       console.log("Range and surface repair behavior verification passed.");
@@ -8208,6 +8672,7 @@ async function main(): Promise<void> {
     await verifyNestedAuxiliaryGeometry(origin);
     await verifyDenseTableEnrollment(origin);
     await verifyDensityPageGrid(origin);
+    await verifyIndicatorFit(origin);
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);
     await verifyCommandPaintOwners(origin);

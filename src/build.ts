@@ -27,6 +27,9 @@ import type {
   TypographyToken
 } from "./types.js";
 import { readSpacingProviderProbeOption } from "./internal/spacing-provider-probe.js";
+import { privateIndicatorTypography, type PrivateIndicatorTypography } from "./private-indicator-typography.js";
+
+const indicatorTypographyBySurface = new WeakMap<ThemeSurface, PrivateIndicatorTypography>();
 
 export interface AdditionalThemeSurfaceBuildConfig {
   name: string;
@@ -527,7 +530,7 @@ async function buildThemeSurface(
     fontFiles: createRuntimeFontFiles(config, resolvedConfigPath, resolvedOutputDir)
   };
 
-  return {
+  const surface: ThemeSurface = {
     name,
     label: options.label,
     className: options.className,
@@ -545,6 +548,15 @@ async function buildThemeSurface(
     ),
     metrics: runtimeMetricsTokens(baselineTokens, runtimeConfig.fontFiles)
   };
+
+  if (builtInName) {
+    indicatorTypographyBySurface.set(
+      surface,
+      privateIndicatorTypography(surface.tokens, canonicalProductForBuiltInTheme(builtInName))
+    );
+  }
+
+  return surface;
 }
 
 async function buildRelatedTierSurfaces(
@@ -670,7 +682,15 @@ async function buildTheme(
   const surfaces = [defaultSurface, ...relatedSurfaces, ...additionalSurfaces];
   assertUniqueSurfaceNames(surfaces);
   const surfaceManifest = buildSurfaceManifest(defaultSurfaceName, surfaces);
+  const indicatorSurfaceTypography = Object.fromEntries(
+    surfaces.flatMap(surface => {
+      const typography = indicatorTypographyBySurface.get(surface);
+      return surface.className && typography ? [[surface.className, typography]] : [];
+    })
+  );
   const css = generateFoundryCss(defaultSurface.tokens, {
+    indicatorTypography: indicatorTypographyBySurface.get(defaultSurface),
+    indicatorSurfaceTypography,
     presetName: builtInName,
     themeSurfaces: surfaces.filter(surface => surface.className)
   });

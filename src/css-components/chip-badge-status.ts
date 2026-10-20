@@ -4,6 +4,8 @@ import { allSidedStrokeSelfPaintCss } from "./stroke-paint.js";
 type ChipBadgeStatusCssOptions = {
   bodyCaseTypeStyles: string;
   bodyTypeStyles: string;
+  indicatorLineHeight: string;
+  indicatorTypeStyles: string;
   tableDensityScopes: string[];
 };
 
@@ -11,6 +13,8 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   const {
     bodyCaseTypeStyles,
     bodyTypeStyles,
+    indicatorLineHeight,
+    indicatorTypeStyles,
     tableDensityScopes,
   } = options;
   const density = componentDensityPolicy.tableCell;
@@ -177,48 +181,73 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative) {
-${bodyTypeStyles}  align-items: center;
-  background-color: var(--bf-color-text-default);
+${indicatorTypeStyles}  --bf-square-block-size: ${indicatorLineHeight};
+  --bf-ui-badge-background: var(--bf-color-text-default);
+  background-color: transparent;
+  background-image:
+    radial-gradient(circle closest-side, var(--bf-ui-badge-background) 100%, transparent 0),
+    radial-gradient(circle closest-side, var(--bf-ui-badge-background) 100%, transparent 0),
+    linear-gradient(var(--bf-ui-badge-background), var(--bf-ui-badge-background));
+  background-position: left center, right center, center center;
+  background-repeat: no-repeat;
+  background-size: 1em 1em, 1em 1em, calc(100% - 1em) 1em;
   border-radius: 1rem;
   color: var(--bf-color-background-default);
   display: inline-block;
   inline-size: fit-content;
   justify-self: start;
-  margin: 0;
+  /* Native baseline alignment is retained. Removing the symmetric half-leading
+     from flex sizing prevents a smaller type size on the shared 1rem line from
+     increasing the host's ascent/descent envelope at any root font size. */
+  margin-block: calc((1em - 1lh) / 2);
+  margin-inline: 0;
   min-inline-size: var(--bf-square-block-size);
   padding-block: 0;
   padding-inline: var(--bf-ui-badge-padding-inline);
   text-align: center;
   text-indent: 0;
+  vertical-align: baseline;
   white-space: nowrap;
 }
 
 :where(.bf-theme) :where(.bf-badge.is-negative) {
-  background-color: var(--bf-color-button-negative-default);
+  --bf-ui-badge-background: var(--bf-color-button-negative-default);
   color: var(--bf-color-button-negative-text);
 }
 
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information) :where(.bf-badge, .bf-badge.is-negative) {
-  align-self: center;
   margin-inline: 0;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-link):has(.bf-status-label) {
+  align-items: baseline;
+}
+
+:where(.bf-theme) :where(.bf-side-navigation-status):has(> .bf-status-label) {
+  align-items: baseline;
+  align-self: baseline;
 }
 
 :where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {
   --bf-ui-status-background: color-mix(in srgb, var(--bf-color-background-alt) 70%, black);
   --bf-ui-status-color: var(--bf-color-button-positive-text);
-  background-color: var(--bf-ui-status-background);
+  background-color: transparent;
+  background-image: linear-gradient(var(--bf-ui-status-background), var(--bf-ui-status-background));
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% calc(1em + (var(--bf-border-width) * 2));
   border-block: 0;
   color: var(--bf-ui-status-color);
   display: inline-block;
   inline-size: fit-content;
   justify-self: start;
-${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
-  /* Status paint is physically symmetric and shares the same occupied block
-     as a button; typography still comes from the body role. */
-  padding-block: var(--bf-interface-row-padding-block);
+${indicatorTypeStyles}  margin-block: calc((1em - 1lh) / 2);
+  margin-inline: 0;
+  padding-block: 0;
   padding-inline: var(--bf-component-inline-inset-field);
   text-align: center;
   text-decoration: none;
+  vertical-align: baseline;
   white-space: nowrap;
 }
 
@@ -242,25 +271,10 @@ ${bodyTypeStyles}  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   --bf-ui-status-color: var(--bf-color-button-negative-text);
 }
 
-/* Named legacy hosts retain the one-release is-nested compatibility path.
-   The governed Site Table.Cell/Chip policy above enrolls through ancestry;
-   the compatibility modifier has no effect outside its named hosts. */
-:where(.bf-theme) :where(.bf-status-label.is-nested) {
-  line-height: var(--bf-nested-row-line-height);
-  margin-block: 0;
-  padding-block: var(--bf-nested-row-padding-block);
-}
+/* Named legacy hosts retain the one-release Chip compatibility path.
+   Badge and StatusLabel compatibility classes intentionally inherit the same
+   indicator typography and seat at every level. */
 ${legacyNestedChipRules}
-
-:where(.bf-theme) :where(.bf-status-label.is-nested) {
-  border-block-width: 0;
-}
-
-:where(.bf-theme) :where(.bf-badge.is-nested) {
-  align-self: center;
-  line-height: var(--bf-nested-row-line-height);
-  vertical-align: middle;
-}
 ${denseTableChipCss}
 `;
 }

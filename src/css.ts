@@ -7,6 +7,7 @@ import { BASELINE_GRID_DARK_THEME_COLOR, BASELINE_GRID_DEFAULT_COLOR, BASELINE_G
 import { generateBaselineGridOverlayCss, generateBaselineGridThemeOverrideCss } from "./baseline-grid-overlay.js";
 import { bfSpacingCompatibilityAliases, dtcgSpacingCssProperty, dtcgSpacingTokenIds, dtcgSpacingValue, type ResolvedDtcgSpacing } from "./dtcg-spacing.js";
 import { foundryThemeRootColorVars, vanillaThemeColorVars } from "./vanilla-theme-colors.js";
+import type { PrivateIndicatorTypography } from "./private-indicator-typography.js";
 import type { BuiltInThemeName } from "./presets.js";
 import type { ThemeFontFile, ThemeSurface, ThemeTokens, TypographyToken } from "./types.js";
 
@@ -159,9 +160,13 @@ ${compatibility}
 `;
 }
 
-function themeSurfaceRule(selector: string, tokens: ThemeTokens): string {
+function themeSurfaceRule(selector: string, tokens: ThemeTokens, indicatorInput?: PrivateIndicatorTypography): string {
   const body = tokens.roles.body;
   const smallFontFallback = body?.fontSize ?? tokens.roles.h6?.fontSize ?? "1rem";
+  const indicator = indicatorInput ?? {
+    fontSize: body?.fontSize ?? "1rem",
+    lineHeight: body?.lineHeight ?? "1rem"
+  };
   return `${selector} {
 ${spacingVarDeclarations(tokens)}  --bf-space-0: 0rem;
   --bf-inline-unit: ${tokens.inlineUnit};
@@ -183,6 +188,8 @@ ${spacingVarDeclarations(tokens)}  --bf-space-0: 0rem;
   --bf-grid-gap-block: ${tokens.layout.gridGapBlock};
   --bf-page-margin: ${tokens.layout.pageMargin};
   --bf-component-inline-inset-continuation: ${tokens.components.inlineInsetContinuation};
+  --_bf-indicator-font-size: ${indicator.fontSize};
+  --_bf-indicator-line-height: ${indicator.lineHeight};
 ${Object.entries(tokens.roles).map(([roleName, token]) => roleVarDeclarations(roleName, token, tokens.baselineUnit)).join("")}  --bf-font-size-small: var(--bf-body-font-size, ${smallFontFallback});
  }
 `;
@@ -245,7 +252,7 @@ function selectorsForRole(roleName: string): string[] {
   return [...semanticSelectors, `:where(.bf-theme) .bf-${roleName}`];
 }
 
-export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: BuiltInThemeName; themeSurfaces?: ThemeSurface[]; } = {}): string {
+export function generateFoundryCss(tokens: ThemeTokens, options: { indicatorTypography?: PrivateIndicatorTypography; indicatorSurfaceTypography?: Record<string, PrivateIndicatorTypography>; presetName?: BuiltInThemeName; themeSurfaces?: ThemeSurface[]; } = {}): string {
   const body = tokens.roles.body;
   const baselineUnit = tokens.baselineUnit;
   const themeSurfaces = options.themeSurfaces ?? [];
@@ -276,7 +283,7 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
       .join("\n");
   const scopedThemeCss = themeSurfaces
     .filter(surface => surface.className)
-    .map(surface => themeSurfaceRule(`:where(.bf-theme.${surface.className})`, surface.tokens))
+    .map(surface => themeSurfaceRule(`:where(.bf-theme.${surface.className})`, surface.tokens, options.indicatorSurfaceTypography?.[surface.className!]))
     .join("\n");
 
   const appScopes = [
@@ -308,7 +315,7 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
 
   return `${fontFaces}${fontFaces ? "\n" : ""}${generateBaselineGridOverlayCss({ baselineUnit: tokens.baselineUnit })}
 
-${themeSurfaceRule(":where(.bf-theme)", tokens)}
+${themeSurfaceRule(":where(.bf-theme)", tokens, options.indicatorTypography)}
 ${scopedThemeCss}
 
 :where(.bf-theme) {

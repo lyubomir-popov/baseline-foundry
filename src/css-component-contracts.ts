@@ -58,13 +58,6 @@ ${componentInputDeclarations(tokens.components)}  /* Three authoritative compone
   --bf-tick-label-offset: var(--bf-leading-mark-offset);
 }
 
-:where(.bf-theme) :where(.bf-badge) {
-  --bf-square-block-size: var(--bf-interface-row-line-height);
-}
-
-:where(.bf-theme) :where(.bf-badge.is-nested) {
-  --bf-square-block-size: var(--bf-nested-row-line-height);
-}
 
 :where(.bf-theme) :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label))) {
   --bf-square-block-size: var(--bf-body-line-height);

@@ -550,12 +550,32 @@ async function validatePublicRuntimeAndTypes(indexDts: string, readmeMd: string)
   assert(screenshotOnlyPages.length === 1 && screenshotOnlyPages[0]?.name === "engine-illustration", "Expected only the static engine illustration to opt out of baseline verification explicitly.");
 }
 
-function assertSelectorUsesBodyTypography(css: string, selector: string, label: string): void {
-  const fontSizePattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?font-size: var\\(--bf-body-font-size,`);
-  const lineHeightPattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?line-height: var\\(--bf-body-line-height,`);
+function assertSelectorUsesRoleTypography(css: string, selector: string, label: string, role: string): void {
+  const fontSizePattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?font-size: var\\(--bf-${role}-font-size,`);
+  const lineHeightPattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?line-height: var\\(--bf-${role}-line-height,`);
 
-  assert(fontSizePattern.test(css), `Expected ${label} to resolve font-size from the active body role.`);
-  assert(lineHeightPattern.test(css), `Expected ${label} to resolve line-height from the active body role.`);
+  assert(fontSizePattern.test(css), `Expected ${label} to resolve font-size from the active ${role} role.`);
+  assert(lineHeightPattern.test(css), `Expected ${label} to resolve line-height from the active ${role} role.`);
+}
+
+function assertSelectorUsesBodyTypography(css: string, selector: string, label: string): void {
+  assertSelectorUsesRoleTypography(css, selector, label, "body");
+}
+
+function assertSelectorUsesPrivateIndicatorTypography(css: string, selector: string, label: string): void {
+  const fontSizePattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?font-size: var\\(--_bf-indicator-font-size,`);
+  const lineHeightPattern = new RegExp(`${escapeForRegex(selector)}\\s*\\{[\\s\\S]*?line-height: var\\(--_bf-indicator-line-height,`);
+
+  assert(fontSizePattern.test(css), `Expected ${label} to resolve font-size from the private product indicator input.`);
+  assert(lineHeightPattern.test(css), `Expected ${label} to resolve line-height from the private product indicator input.`);
+}
+
+function assertThemeScopeIndicatorInput(css: string, selector: string, fontSize: string, lineHeight: string): void {
+  const ast = parseCss(css);
+  assertRuleHasDecl(ast, selector, {
+    "--_bf-indicator-font-size": fontSize,
+    "--_bf-indicator-line-height": lineHeight
+  }, `${selector} owns the private built-in indicator input`);
 }
 
 function assertNoStyledDataSelectors(filePath: string, css: string): void {
@@ -766,11 +786,12 @@ function validateCommonCss(css: string): void {
       (selector === ":where(.bf-theme) :where(input[type='range'])::-webkit-slider-thumb" && declaration.prop === "margin-top" && declaration.value === "calc((var(--bf-slider-track-size) - var(--bf-control-visual-size)) / 2)") ||
       (selector === ":where(.bf-theme) :where(.bf-modal)" && declaration.prop === "margin" && declaration.value === "auto") ||
       (selector.includes(".bf-article-pagination-link.is-previous:not(:only-child) .bf-article-pagination-label") && declaration.prop === "margin" && declaration.value === "-0.0625rem") ||
+      ((selector.includes(".bf-badge") || selector.includes(".bf-status-label")) && declaration.prop === "margin-block" && declaration.value === "calc((1em - 1lh) / 2)") ||
       (selector.includes(".bf-equal-height-row.is-divider-1") && selector.includes(".is-divider-2") && declaration.prop === "margin" && declaration.value === "auto");
     assert(isOwnedException, `Expected ${selector} ${declaration.prop}:${declaration.value} not to allocate an unowned block-start margin.`);
     ownedBlockStartMarginExceptions.add(key);
   });
-  assert(ownedBlockStartMarginExceptions.size === 4, `Expected exactly four named native/accessibility/structural block-start margin exceptions, got ${JSON.stringify([...ownedBlockStartMarginExceptions])}.`);
+  assert(ownedBlockStartMarginExceptions.size === 6, `Expected exactly six named native/accessibility/structural/indicator-leading block-start margin exceptions, got ${JSON.stringify([...ownedBlockStartMarginExceptions])}.`);
   const splitMarginValues = (value: string): string[] => {
     const parts: string[] = [];
     let current = "";
@@ -813,11 +834,12 @@ function validateCommonCss(css: string): void {
       (selector === ":where(.bf-theme) :where(hr.is-highlighted)" && declaration.prop === "margin-block-end" && value === "calc(var(--bf-field-gap) - var(--bf-bar-thickness))") ||
       (selector.includes(".bf-article-pagination-link.is-previous:not(:only-child) .bf-article-pagination-label") && declaration.prop === "margin" && value === "-0.0625rem") ||
       (selector === ":where(.bf-theme) :where(.bf-modal)" && declaration.prop === "margin" && value === "auto") ||
+      ((selector.includes(".bf-badge") || selector.includes(".bf-status-label")) && declaration.prop === "margin-block" && value === "calc((1em - 1lh) / 2)") ||
       (selector.includes(".bf-equal-height-row.is-divider-1") && selector.includes(".is-divider-2") && declaration.prop === "margin" && value === "auto");
     assert(isOwnedException, `Expected ${selector} ${declaration.prop}:${declaration.value} to use metric/grid compensation or a named native/accessibility/divider exception at block end.`);
     ownedBlockEndMarginExceptions.add(key);
   });
-  assert(ownedBlockEndMarginExceptions.size === 6, `Expected exactly six named block-end exceptions beyond metric/grid compensation, got ${JSON.stringify([...ownedBlockEndMarginExceptions])}.`);
+  assert(ownedBlockEndMarginExceptions.size === 8, `Expected exactly eight named block-end exceptions beyond metric/grid compensation, got ${JSON.stringify([...ownedBlockEndMarginExceptions])}.`);
   const inlineMarginValues = (property: string, value: string): string[] => {
     if (property === "margin-inline" || property === "margin-left" || property === "margin-right") return [value.trim()];
     if (property === "margin-inline-start" || property === "margin-inline-end") return [value.trim()];
@@ -1437,6 +1459,10 @@ function validateCommonCss(css: string): void {
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", {
+    "background-color": "transparent",
+    "background-position": "left center, right center, center center",
+    "background-repeat": "no-repeat",
+    "background-size": "1em 1em, 1em 1em, calc(100% - 1em) 1em",
     "display": "inline-block",
     "inline-size": "fit-content",
     "justify-self": "start",
@@ -1444,8 +1470,10 @@ function validateCommonCss(css: string): void {
     "padding-inline": "var(--bf-ui-badge-padding-inline)",
     "text-align": "center",
     "text-indent": "0",
-    "white-space": "nowrap"
-  }, "badges keep the canonical body-sized pill geometry");
+    "white-space": "nowrap",
+    "vertical-align": "baseline",
+    "margin-block": "calc((1em - 1lh) / 2)"
+  }, "badges keep the invariant indicator pill, self painter and symmetric half-leading compensation");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):has(> :where(.bf-badge, .bf-badge.is-negative))", {
     "column-gap": "var(--bf-component-inline-inset-field)"
   }, "Chip parents own the field-sized relationship before direct badges");
@@ -1515,6 +1543,10 @@ function validateCommonCss(css: string): void {
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "max-inline-size", "badges grow with wider counter content instead of clipping at an arbitrary character cap");
   assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "overflow", "badges do not hide wider counter content");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", {
+    "background-color": "transparent",
+    "background-position": "center",
+    "background-repeat": "no-repeat",
+    "background-size": "100% calc(1em + (var(--bf-border-width) * 2))",
     "display": "inline-block",
     "inline-size": "fit-content",
     "justify-self": "start",
@@ -1523,13 +1555,12 @@ function validateCommonCss(css: string): void {
   }, "status labels keep the canonical inline label treatment");
   const statusLabelRuleStart = css.indexOf(":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative) {");
   const statusLabelRule = css.slice(statusLabelRuleStart, css.indexOf("}\n", statusLabelRuleStart) + 1);
-  assert(statusLabelRule.includes("border-block: 0") && statusLabelRule.includes("padding-block: var(--bf-interface-row-padding-block)") && statusLabelRule.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end)"), "Expected status-label geometry to use the symmetric zero-layout-border interface-row contract.");
+  assert(statusLabelRule.includes("border-block: 0") && statusLabelRule.includes("padding-block: 0") && statusLabelRule.includes("margin-block: calc((1em - 1lh) / 2)") && statusLabelRule.includes("vertical-align: baseline"), "Expected StatusLabel to keep its own paint and remove symmetric half-leading from host sizing while retaining native baseline alignment.");
   assert(css.includes("--bf-nested-row-line-height: calc(var(--bf-interface-row-line-height) - var(--bf-baseline));") && !css.includes("--bf-nested-row-line-height: max(") && css.includes("--bf-nested-row-padding-block: max(0rem, calc((var(--bf-interface-row-line-height) - var(--bf-nested-row-line-height)) / 2));") && css.includes("--bf-nested-row-painted-block-size: calc(var(--bf-nested-row-line-height) + (var(--bf-nested-row-padding-block) * 2));"), "Expected nested surface geometry to use the designed body-line-minus-baseline expression without silently selecting among unrelated constraints.");
   assert(css.includes("--bf-nested-row-visual-offset: calc(var(--bf-nested-row-padding-block) + ((var(--bf-nested-row-line-height) - var(--bf-control-visual-size)) / 2));") && !css.includes("--bf-nested-framed-row-"), "Expected nested interactive controls to share the zero-layout-border ledger within the host body line.");
   const expectedSquareAliases = new Map<string, string>([
     [":where(.bf-theme)", "var(--bf-interface-row-painted-block-size)"],
-    [":where(.bf-theme) :where(.bf-badge)", "var(--bf-interface-row-line-height)"],
-    [":where(.bf-theme) :where(.bf-badge.is-nested)", "var(--bf-nested-row-line-height)"],
+    [":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "private-indicator-line-height"],
     [":where(.bf-theme) :where(.bf-button.is-link.is-icon:not(.is-nested):not(:has(.bf-button-label)))", "var(--bf-body-line-height)"],
     [":where(.bf-theme) :where(.bf-notification-close)", "var(--bf-notification-close-painted-block-size)"],
     [".bf-button:not(.is-link):is(.is-icon:not(:has(.bf-button-label))):not(.bf-theme):not(:scope td .bf-button:not(.is-link):is(.is-icon:not(:has(.bf-button-label))), :scope th .bf-button:not(.is-link):is(.is-icon:not(:has(.bf-button-label))), :scope .bf-theme .bf-button:not(.is-link):is(.is-icon:not(:has(.bf-button-label))))", "calc(var(--bf-body-line-height) + (var(--bf-button-control-block-inset) * 2))"]
@@ -1542,9 +1573,14 @@ function validateCommonCss(css: string): void {
     emittedSquareAliasCount += 1;
     emittedSquareAliases.set(parent.selector, declaration.value);
   });
-  assert([expectedSquareAliases.size + 4, expectedSquareAliases.size + 5].includes(emittedSquareAliasCount) && emittedSquareAliases.size === expectedSquareAliases.size, `Expected the six reviewed square-block states, with the table-context state emitted for the four explicit supported surfaces plus any supported default surface; got ${emittedSquareAliasCount} declarations and ${JSON.stringify([...emittedSquareAliases])}.`);
+  assert([expectedSquareAliases.size + 4, expectedSquareAliases.size + 5].includes(emittedSquareAliasCount) && emittedSquareAliases.size === expectedSquareAliases.size, `Expected the reviewed square-block states, with the table-context state emitted for the four explicit supported surfaces plus any supported default surface; got ${emittedSquareAliasCount} declarations and ${JSON.stringify([...emittedSquareAliases])}.`);
   for (const [selector, value] of expectedSquareAliases) {
-    assert(emittedSquareAliases.get(selector) === value, `Expected ${selector} to re-point --bf-square-block-size to ${value}, got ${emittedSquareAliases.get(selector) ?? "nothing"}.`);
+    const emitted = emittedSquareAliases.get(selector);
+    if (value === "private-indicator-line-height") {
+      assert(/^var\(--_bf-indicator-line-height, (?:1|1\.25|1\.5)rem\)$/.test(emitted ?? ""), `Expected ${selector} to re-point --bf-square-block-size to the private indicator line with its current body fallback, got ${emitted ?? "nothing"}.`);
+    } else {
+      assert(emitted === value, `Expected ${selector} to re-point --bf-square-block-size to ${value}, got ${emitted ?? "nothing"}.`);
+    }
   }
   assert(!css.includes(":where(.bf-theme) :where(.bf-button.is-link.is-icon:not(:has(.bf-button-label)))"), "Expected the link-style alias to exclude the unsupported nested icon-only state at the production match boundary.");
   const expectedSquareConsumers = [
@@ -1707,11 +1743,7 @@ function validateCommonCss(css: string): void {
     "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
     "padding-block": "var(--bf-interface-row-padding-block)"
   }, "contextual-menu commands use equal block padding and trailing compensation");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
-    "line-height": "var(--bf-nested-row-line-height)",
-    "margin-block": "0",
-    "padding-block": "var(--bf-nested-row-padding-block)"
-  }, "nested status surfaces fit a host-owned body line");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-status-label.is-nested)"), "Expected StatusLabel compatibility classes not to change the invariant indicator seat.");
   for (const legacyChipSelector of [legacyTableChipSelector, legacySideNavigationChipSelector]) {
     assertRuleHasDecl(ast, legacyChipSelector, {
       "line-height": "var(--bf-nested-row-line-height)",
@@ -1772,14 +1804,7 @@ function validateCommonCss(css: string): void {
     !css.includes(".bf-dense-chip-host"),
     "Expected automatic table enrollment to cross neutral descendants, stop at nearest cells/product roots, support all four products, and expose no public host toggle."
   );
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-status-label.is-nested)", {
-    "border-block-width": "0"
-  }, "nested status labels remove their transparent block border footprint");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-badge.is-nested)", {
-    "align-self": "center",
-    "line-height": "var(--bf-nested-row-line-height)",
-    "vertical-align": "middle"
-  }, "nested badges fit and centre within a host-owned body line");
+  assert(!css.includes(":where(.bf-theme) :where(.bf-badge.is-nested)"), "Expected Badge compatibility classes not to change invariant type, alignment or paint.");
   assert(css.includes(".bf-button.is-nested"), "Expected bordered action targets to expose only the explicit nested composition modifier.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(input[type='number'])", {
     "appearance": "auto"
@@ -1797,10 +1822,12 @@ function validateCommonCss(css: string): void {
   }, "select artwork follows logical inline-end in RTL");
   assert(!css.includes("--bf-ui-icon-number-stepper") && !css.includes("::-webkit-inner-spin-button") && !css.includes("::-webkit-outer-spin-button"), "Expected number inputs not to paint inert replacement arrows or disable native spin buttons.");
   assert(css.includes("--bf-ui-badge-padding-inline: 0.0625rem;") && !css.includes("--bf-ui-badge-padding-inline: var(--bf-border-width);") && !css.includes("--bf-ui-badge-padding-inline: calc("), "Expected badge overflow padding to stay a named rem-scalable member independent of stroke width and typography.");
+  assert(css.includes("radial-gradient(circle closest-side, var(--bf-ui-badge-background) 100%, transparent 0)") && css.includes("calc(100% - 1em) 1em") && !css.includes("--bf-ui-badge-paint-inset-block"), "Expected Badge fill to use a one-em self-painted capsule without adding layout spacing or a stacking context.");
   assert(!css.includes("min-width: calc(var(--bf-body-line-height") && !css.includes("min-inline-size: calc(var(--bf-body-line-height"), "Expected badge inline floors to resolve through the cascade-repointed square contract rather than a build-time body-line interpolation.");
   assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-chip-lead + .bf-chip-value)::before", "chip value separators");
-  assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "badges");
-  assertSelectorUsesBodyTypography(css, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", "status labels");
+  assertSelectorUsesPrivateIndicatorTypography(css, ":where(.bf-theme) :where(.bf-badge, .bf-badge.is-negative)", "badges");
+  assertSelectorUsesPrivateIndicatorTypography(css, ":where(.bf-theme) :where(.bf-status-label, .bf-status-label.is-positive, .bf-status-label.is-caution, .bf-status-label.is-information, .bf-status-label.is-negative)", "status labels");
+  assert(!css.includes("--bf-indicator-") && !css.includes(".bf-indicator"), "Expected indicator typography not to publish role properties or a role utility selector.");
   assert(!css.includes(".bf-label"), "Expected generated CSS to omit the deprecated bf-label alias.");
   assert(css.includes(":where(.bf-modal.is-workflow)"), "Expected generated CSS to include the workflow modal variant.");
   assert(css.includes(":where(.bf-modal.is-workflow.is-resizable)"), "Expected generated CSS to include the resizable workflow modal modifier.");
@@ -2155,6 +2182,7 @@ function validateCommonTokens(tokens: Record<string, unknown>): {
 
   assert(roleNames.length > 0, "Expected generated tokens to include typography roles.");
   assert(roleNames.every(roleName => roleName === "body" || /^h[1-6]$/.test(roleName)), "Expected generated tokens to stay on the canonical body + h1-h6 role set.");
+  assert(!roles.indicator, "Expected indicator typography to remain private rather than entering public ThemeTokens roles.");
   assert(roles.body, 'Expected generated tokens to include a "body" role.');
   assert(roles.h1 && roles.h2 && roles.h3 && roles.h4 && roles.h5 && roles.h6, "Expected generated tokens to include the standard heading roles.");
   assert(fontFiles.length > 0, "Expected generated tokens to include at least one font file.");
@@ -2204,6 +2232,7 @@ function validateAppTierTheme(tokens: Record<string, unknown>, css: string): voi
   assert(ubuntuFontFile.emitFontFace === false, "Expected app built-in metadata to keep runtime font loading consumer-owned.");
   assert(roles.body.fontFamily === 'ubuntu-sans', "Expected the app-tier preset body role to use Ubuntu Sans.");
   assert(roles.body.fontSize === '0.875rem', "Expected the app-tier preset body role font size to be 0.875rem.");
+  assertThemeScopeIndicatorInput(css, ":where(.bf-theme)", "0.75rem", "1rem");
   assert(roles.body.lineHeight === '1.25rem', "Expected the app-tier preset body role line height to be 1.25rem.");
 
   assert(roles.h1.fontSize === '1.5rem', "Expected the app-tier preset h1 role font size to be 1.5rem.");
@@ -2228,6 +2257,7 @@ function validateIbmPlexEngineSmokeTheme(tokens: Record<string, unknown>, css: s
 
   assert(fontFiles.some(fontFile => fontFile.family === "ibm-plex-sans"), "Expected the IBM Plex smoke tokens to include IBM Plex Sans font metadata.");
   assert(roles.body.fontFamily === "ibm-plex-sans", "Expected the IBM Plex smoke body role to use IBM Plex Sans.");
+  assertThemeScopeIndicatorInput(css, ":where(.bf-theme)", roles.body.fontSize as string, roles.body.lineHeight as string);
   assert(roles.h1.fontSize === "8rem", "Expected the IBM Plex smoke h1 role font size to be 8rem.");
   assert(roles.h1.lineHeight === "9rem", "Expected the IBM Plex smoke h1 line height to be 9rem.");
   assert(roles.h2.fontSize === "4rem", "Expected the IBM Plex smoke h2 role font size to be 4rem.");
@@ -2311,6 +2341,7 @@ function validateDocumentationTheme(tokens: Record<string, unknown>, css: string
 
   assert(roles.body.fontFamily === "ubuntu-sans", "Expected the documentation tier body role to use ubuntu-sans.");
   assert(roles.body.fontSize === "0.875rem", "Expected the documentation tier body role font size to be 0.875rem.");
+  assertThemeScopeIndicatorInput(css, ":where(.bf-theme)", "0.75rem", "1rem");
   assert(roles.body.lineHeight === "1.25rem", "Expected the documentation tier body line height to be 1.25rem.");
   assert(roles.h1.fontSize === "2rem", "Expected the documentation tier h1 role font size to be 2rem.");
   assert(roles.h2.fontWeight === 300, "Expected the documentation tier h2 to keep the lighter paired weight.");
@@ -2339,6 +2370,7 @@ function validateDefaultTheme(tokens: Record<string, unknown>, css: string): voi
   const fontSizes = new Set(Object.values(roles).map(role => role.fontSize).filter(Boolean));
 
   assert(roles.body.fontSize === "1rem", "Expected the prose default body role font size to be 1rem.");
+  assertThemeScopeIndicatorInput(css, ":where(.bf-theme)", "0.75rem", "1rem");
   assert(roles.body.fontFamily === "ubuntu-sans", "Expected the prose default body role font family to be ubuntu-sans.");
   assert(roles.h1.fontSize === "2.625rem", "Expected the prose default h1 role font size to be 2.625rem.");
   assert(roles.h2.fontSize === "2.625rem", "Expected the prose default h2 role font size to be 2.625rem.");
@@ -2381,6 +2413,7 @@ function validateOsTheme(tokens: Record<string, unknown>, css: string): void {
   const ubuntuFontFile = fontFiles.find(fontFile => fontFile.family === "ubuntu-sans") ?? {};
 
   assert(roles.body.fontSize === "0.75rem", "Expected the OS tier body role font size to be 0.75rem.");
+  assertThemeScopeIndicatorInput(css, ":where(.bf-theme)", "0.625rem", "1rem");
   assert(roles.body.lineHeight === "1rem", "Expected the OS tier body line height to be 1rem.");
   assert(roles.h1.fontSize === "1.5rem", "Expected the OS tier h1 role font size to be 1.5rem.");
   assert(roles.h2.fontSize === "1.5rem", "Expected the OS tier h2 role font size to be 1.5rem.");

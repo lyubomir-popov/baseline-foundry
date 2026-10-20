@@ -53,7 +53,9 @@ function roleFontWeightVar(roleName: string, fallback?: number): string {
 
 function typeStyles(token: TypographyToken, options: {
   fontWeight?: number;
+  fontSize?: string;
   includeCase?: boolean;
+  lineHeight?: string;
 } = {}): string {
   const roleName = token.identifier;
   const fontVariantCaps = options.includeCase !== false && token.fontVariantCaps
@@ -67,10 +69,10 @@ function typeStyles(token: TypographyToken, options: {
     : "";
 
   if (!roleName) {
-    return `  font-family: ${token.fontStack};\n  font-size: ${token.fontSize};\n  font-style: ${token.fontStyle ?? "normal"};\n  font-weight: ${options.fontWeight ?? token.fontWeight ?? 400};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${token.lineHeight};\n`;
+    return `  font-family: ${token.fontStack};\n  font-size: ${options.fontSize ?? token.fontSize};\n  font-style: ${token.fontStyle ?? "normal"};\n  font-weight: ${options.fontWeight ?? token.fontWeight ?? 400};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${options.lineHeight ?? token.lineHeight};\n`;
   }
 
-  return `  font-family: ${roleFontFamilyVar(roleName, token.fontStack)};\n  font-size: ${roleFontSizeVar(roleName, token.fontSize)};\n  font-style: ${roleFontStyleVar(roleName, token.fontStyle ?? "normal")};\n  font-weight: ${options.fontWeight ?? roleFontWeightVar(roleName, token.fontWeight ?? 400)};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${roleLineHeightVar(roleName, token.lineHeight)};\n`;
+  return `  font-family: ${roleFontFamilyVar(roleName, token.fontStack)};\n  font-size: ${options.fontSize ?? roleFontSizeVar(roleName, token.fontSize)};\n  font-style: ${roleFontStyleVar(roleName, token.fontStyle ?? "normal")};\n  font-weight: ${options.fontWeight ?? roleFontWeightVar(roleName, token.fontWeight ?? 400)};\n${fontVariantCaps}${letterSpacing}${textTransform}  line-height: ${options.lineHeight ?? roleLineHeightVar(roleName, token.lineHeight)};\n`;
 }
 
 function roleLineHeightVar(roleName: string, fallback?: string): string {
@@ -99,6 +101,11 @@ export function componentsCss(
   const h5LineHeight = roleLineHeightVar("h5", h5.lineHeight);
   const h6LineHeight = roleLineHeightVar("h6", h6.lineHeight);
   const bodyTypeStyles = typeStyles(body, { includeCase: false });
+  const indicatorTypeStyles = typeStyles(body, {
+    fontSize: `var(--_bf-indicator-font-size, ${body.fontSize})`,
+    includeCase: false,
+    lineHeight: `var(--_bf-indicator-line-height, ${body.lineHeight})`
+  });
   const h6TypeStyles = typeStyles(h6, { includeCase: false });
   const paginationStroke = allSidedStrokeSelfPaintCss(":where(.bf-theme) :where(.bf-pagination-link, .bf-pagination-link.is-previous, .bf-pagination-link.is-next)", { color: "var(--bf-color-border-high-contrast)" });
   const fieldBoundarySelector = ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)";
@@ -1028,6 +1035,8 @@ ${tableCss({
 ${chipBadgeStatusCss({
   bodyCaseTypeStyles: typeStyles(body),
   bodyTypeStyles,
+  indicatorLineHeight: `var(--_bf-indicator-line-height, ${body.lineHeight})`,
+  indicatorTypeStyles,
   tableDensityScopes,
 })}
 

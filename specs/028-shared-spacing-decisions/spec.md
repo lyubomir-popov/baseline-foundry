@@ -64,6 +64,24 @@ dense members of `spacing.inset.control.block`. Metric nudges and
 compensation, continuation inset construction, deep region and strip spacing,
 grid gutters, page margins and `--bf-space-*` remain BF-owned.
 
+## Invariant indicator fit
+
+Badge and StatusLabel use one private built-in indicator type at every nesting
+level: Site, Docs and App use `0.75rem/1rem`; OS uses `0.625rem/1rem`.
+Custom themes retain their body-type fallback, and the indicator input is not a
+public theme role or generated token. Symmetric half-leading margins keep the
+native shared text baseline while preventing the smaller type's `1rem` line box
+from increasing a flex host's block size.
+
+Badge owns a three-layer rounded background whose painted height is `1em`.
+StatusLabel owns a centered background sized to its type and existing stroke.
+The bucket 08 proof compares same-label Chip twins in table, side-navigation
+and tab placements for all four products, and also checks standalone, default
+and dense StatusLabel samples. It derives effective paint and glyph-ink bounds,
+requires exact baselines and unchanged host heights, and exercises 14px, 16px
+and 20px roots at device scales 1 and 1.5. Chromium visual inspection remains
+an implementation check; owner bucket sign-off is recorded only in Spec 024.
+
 ## Acceptance
 
 - Every BF column on the conformance board names the implementation and check.

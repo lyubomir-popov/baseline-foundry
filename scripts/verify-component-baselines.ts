@@ -296,7 +296,7 @@ async function verifyComponentPage(
       const measurePx = rect.height + marginBottom;
       const offsetNearest = baselinePx === 0 ? offsetPx : Math.round(offsetPx / baselinePx) * baselinePx;
       const measureNearest = baselinePx === 0 ? measurePx : Math.round(measurePx / baselinePx) * baselinePx;
-      const offsetErrorPx = Math.abs(offsetPx - offsetNearest);
+      let offsetErrorPx = Math.abs(offsetPx - offsetNearest);
       let measureErrorPx = Math.abs(measurePx - measureNearest);
       if (groupedOwner && element.matches(".bf-tabs-link, .bf-contextual-menu-link")) {
         const rowStyle = getComputedStyle(element);
@@ -308,6 +308,31 @@ async function verifyComponentPage(
         const rows = Array.from(groupedOwner.querySelectorAll<HTMLElement>(".bf-contextual-menu-link"));
         const largestGap = Math.max(0, ...rows.slice(1).map((row, index) => Math.abs(row.getBoundingClientRect().top - rows[index].getBoundingClientRect().bottom)));
         measureErrorPx = Math.max(measureErrorPx, largestGap);
+      }
+      // The fixed indicator type is not itself a body baseline-size member.
+      // Keep this exception on the exact element and verify its complete type
+      // and half-leading contract; its real body-line ancestors retain the
+      // ordinary grid checks above. The behavior suite separately verifies the
+      // shared text baseline, host no-growth, paint and glyph bounds.
+      const isInvariantIndicatorSpecimen = (pageName === "badge" || pageName === "status-label")
+        && measured.matches(".bf-badge, .bf-status-label");
+      if (isInvariantIndicatorSpecimen) {
+        const expectedFontSize = document.body.dataset.bfTier === "os" ? 10 : 12;
+        const expectedLineHeight = 16;
+        const expectedHalfLeading = (expectedFontSize - expectedLineHeight) / 2;
+        const fontSize = Number.parseFloat(styles.fontSize);
+        const lineHeight = Number.parseFloat(styles.lineHeight);
+        const marginBlockStart = Number.parseFloat(styles.marginBlockStart);
+        const marginBlockEnd = Number.parseFloat(styles.marginBlockEnd);
+        offsetErrorPx = Math.max(
+          Math.abs(fontSize - expectedFontSize),
+          Math.abs(marginBlockStart - expectedHalfLeading),
+          Math.abs(marginBlockEnd - expectedHalfLeading)
+        );
+        measureErrorPx = Math.max(
+          Math.abs(lineHeight - expectedLineHeight),
+          Math.abs(rect.height - expectedLineHeight)
+        );
       }
       const label = (element.dataset.baselineLabel ?? "").replace(/\s+/g, " ").trim()
         || (element.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 80)
