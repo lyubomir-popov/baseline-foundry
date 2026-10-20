@@ -3892,7 +3892,6 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
     "Neutral wrapper · placement preserved", "Wrapped text input · wrapper owns paint",
     "Neutral-wrapped input · boundary seat preserved", "Native Select · single-line entry",
     "Two-line plain table row · multiline reference", "Textarea · two-line viewport diagnostic",
-    "Plain table text · fresh product root reference (not a Button)", "Default Button · fresh product root resets table density",
     "Standalone Button · product default", "Standalone Chip · product default",
     "Standalone input · product default"
   ];
@@ -3985,7 +3984,7 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
               const marker = sample.querySelector<HTMLElement>("[data-target] .bucket-measured-text .bucket-baseline-marker");
               const absolute = marker ? marker.getBoundingClientRect().top + window.scrollY : Number.parseFloat(sample.dataset.absoluteBaseline ?? "");
               const sampleBox = sample.getBoundingClientRect();
-              const topTarget = ["plain", "reset-reference"].includes(sample.dataset.kind ?? "") ? row : target;
+              const topTarget = sample.dataset.kind === "plain" ? row : target;
               return { kind: sample.dataset.kind, caption: sample.dataset.baseCaption, baseline: absolute, markerTop: marker?.getBoundingClientRect().top ?? null, phase: phase(absolute), metricPhaseError: phase(absolute - metricTextPhase), contentMetricPhaseError: phase(absolute - metricTextPhase - contentPhase), native: target?.matches("input, select, textarea") ?? false, delta: absolute - refBaseline, row: row?.getBoundingClientRect().height ?? null, rowEnd: row?.getBoundingClientRect().bottom ?? null, top: topTarget?.getBoundingClientRect().top ?? null, sampleLeft: sampleBox.left, sampleRight: sampleBox.right, rig: sample.dataset.externalRig, externalBaseline: sample.dataset.externalBaseline, guideBaseline: sample.dataset.guideBaseline, baselineSource: sample.dataset.baselineSource, context: sample.dataset.contextReference, contextDelta: Number.parseFloat(sample.dataset.contextBaselineDelta ?? ""), outerDelta: Number.parseFloat(sample.dataset.outerBaselineDelta ?? ""), gridDelta: Number.parseFloat(sample.dataset.pageGridDelta ?? ""), value: target instanceof HTMLInputElement ? target.value : target?.textContent?.trim() };
             });
             const guideLines = [...track.querySelectorAll<HTMLElement>(".bucket-guide-mark.is-line")].map(mark => {
@@ -4000,45 +3999,11 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
             const style = target ? getComputedStyle(target) : null;
             return { caption: sample.dataset.baseCaption, visible: !!box && box.width > 0 && box.height > 0 && style?.display !== "none" && style?.visibility !== "hidden" };
           });
-          const resetReference = document.querySelector<HTMLElement>("#density-track .density-sample[data-kind='reset-reference']");
-          const resetControl = document.querySelector<HTMLElement>("#density-track .density-sample[data-kind='reset']");
-          const resetReferenceRow = resetReference?.querySelector<HTMLElement>("[data-host-row]");
-          const resetReferenceCell = resetReference?.querySelectorAll<HTMLElement>("td").item(1);
-          const resetReferenceTarget = resetReference?.querySelector<HTMLElement>("[data-target]");
-          const resetControlRow = resetControl?.querySelector<HTMLElement>("[data-host-row]");
-          const resetControlRoot = resetControl?.querySelector<HTMLElement>(".density-reset-boundary");
-          const resetControlButton = resetControl?.querySelector<HTMLElement>("button[data-target]");
-          if (!resetReference || !resetControl || !resetReferenceRow || !resetReferenceCell || !resetReferenceTarget || !resetControlRow || !resetControlRoot || !resetControlButton) throw new Error("Missing reset comparison anatomy.");
-          const resetReferenceBox = resetReferenceCell.getBoundingClientRect();
-          const resetButtonBox = resetControlButton.getBoundingClientRect();
-          const textBox = (element: HTMLElement) => {
-            const range = document.createRange();
-            range.selectNodeContents(element);
-            return range.getBoundingClientRect();
-          };
-          const resetReferenceTextBox = textBox(resetReferenceTarget);
-          const resetButtonTextBox = textBox(resetControlButton);
           return {
             unit,
             metricTextPhase,
             contentPhase,
             deferredIdentity,
-            resetAnatomy: {
-              referenceLabel: resetReference.querySelector("table")?.getAttribute("aria-label"),
-              controlLabel: resetControl.querySelector("table")?.getAttribute("aria-label"),
-              referenceHasButton: !!resetReference.querySelector("button"),
-              rootContainsButton: resetControlRoot.contains(resetControlButton),
-              referenceRow: resetReferenceRow.getBoundingClientRect().height,
-              controlRow: resetControlRow.getBoundingClientRect().height,
-              referencePaintHeight: resetReferenceBox.height,
-              controlPaintHeight: resetButtonBox.height,
-              paintTopDelta: resetButtonBox.top - resetReferenceBox.top,
-              referenceTextGaps: [resetReferenceTextBox.top - resetReferenceBox.top, resetReferenceBox.bottom - resetReferenceTextBox.bottom],
-              controlTextGaps: [resetButtonTextBox.top - resetButtonBox.top, resetButtonBox.bottom - resetButtonTextBox.bottom],
-              controlCompensation: Number.parseFloat(getComputedStyle(resetControlButton).marginBlockEnd),
-              rootHeight: resetControlRoot.getBoundingClientRect().height,
-              targetText: resetReferenceTarget.textContent?.trim()
-            },
             ubuntuLoaded: [...document.fonts].some(face => face.family.replaceAll('"', '') === "Ubuntu Sans" && face.status === "loaded"),
             tracks: [readTrack("#density-track"), readTrack("#density-os-track")]
           };
@@ -4046,16 +4011,15 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
         assert(proof.ubuntuLoaded && proof.unit > 0, `Expected ${tier}/${width} actual Ubuntu Sans and a measurable page grid.`);
         const mainIdentity = proof.tracks[0].identity;
         const osIdentity = proof.tracks[1].identity;
-        assert(JSON.stringify(mainIdentity.map(item => item.caption)) === JSON.stringify(expectedMainCaptions) && mainIdentity.length === 21 && mainIdentity.every(item => item.visible), `Expected ${tier}/${width} all twenty original table/standalone specimens plus the added reset reference to remain visible in order: ${JSON.stringify(mainIdentity)}.`);
-        assert(JSON.stringify(mainIdentity.map(item => item.kind)) === JSON.stringify(["plain", "plain-inline", ...Array(12).fill("member").map((kind, index) => index === 3 ? "icon" : kind), "multiline-reference", "multiline", "reset-reference", "reset", "standalone", "standalone", "standalone"]), `Expected ${tier}/${width} the original main roles and added reset reference to keep their comparison identities: ${JSON.stringify(mainIdentity)}.`);
+        assert(JSON.stringify(mainIdentity.map(item => item.caption)) === JSON.stringify(expectedMainCaptions) && mainIdentity.length === 19 && mainIdentity.every(item => item.visible), `Expected ${tier}/${width} every supported table and standalone specimen to remain visible in order: ${JSON.stringify(mainIdentity)}.`);
+        assert(JSON.stringify(mainIdentity.map(item => item.kind)) === JSON.stringify(["plain", "plain-inline", ...Array(12).fill("member").map((kind, index) => index === 3 ? "icon" : kind), "multiline-reference", "multiline", "standalone", "standalone", "standalone"]), `Expected ${tier}/${width} supported main comparison identities to remain in order: ${JSON.stringify(mainIdentity)}.`);
         assert(JSON.stringify(osIdentity.map(item => item.caption)) === JSON.stringify(expectedOsCaptions) && osIdentity.length === 7 && osIdentity.every(item => item.visible), `Expected ${tier}/${width} every original OS source/proposal specimen to remain visible in order: ${JSON.stringify(osIdentity)}.`);
         assert(JSON.stringify(osIdentity.map(item => item.kind)) === JSON.stringify(["plain", "os-shipping", "os-shipping", "os-shipping", "os-proposal", "os-proposal", "os-proposal"]), `Expected ${tier}/${width} OS source and proposal identities to remain distinct.`);
         assert(JSON.stringify(proof.deferredIdentity.map(item => item.caption)) === JSON.stringify(expectedDeferredCaptions) && proof.deferredIdentity.length === 2 && proof.deferredIdentity.every(item => item.visible), `Expected ${tier}/${width} both original deferred Tabs/Nav diagnostics to remain visible in order: ${JSON.stringify(proof.deferredIdentity)}.`);
         const mainGuideContexts = [
           { name: "table-cell", start: 0, end: 13, reference: 0 },
           { name: "multiline-first-line", start: 14, end: 15, reference: 14 },
-          { name: "reset-product", start: 16, end: 17, reference: 16 },
-          { name: "standalone-default", start: 18, end: 20, reference: 0 }
+          { name: "standalone-default", start: 16, end: 18, reference: 0 }
         ];
         const mainTrack = proof.tracks[0];
         assert(mainTrack.guideLines.length === mainGuideContexts.length * 3, `Expected ${tier}/${width} exactly one top, first-line baseline and end guide per named context, with no specimen omitted: ${JSON.stringify(mainTrack.guideLines)}.`);
@@ -4070,15 +4034,9 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
           assert(rules.length === 3 && !!top && !!baseline && !!end && Math.abs(top.left - first.sampleLeft) < 0.02 && Math.abs(top.right - last.sampleRight) < 0.02 && Math.abs(baseline.left - first.sampleLeft) < 0.02 && Math.abs(baseline.right - last.sampleRight) < 0.02 && Math.abs(end.left - first.sampleLeft) < 0.02 && Math.abs(end.right - last.sampleRight) < 0.02, `Expected ${tier}/${width} ${context.name} guides to span only their preserved specimens: ${JSON.stringify({ rules, first, last })}.`);
           assert(Math.abs(top.top - reference.top) < 0.02 && reference.markerTop !== null && Math.abs(baseline.bottom - reference.markerTop) < 0.02 && reference.rowEnd !== null && Math.abs(end.top - reference.rowEnd) < 0.02, `Expected ${tier}/${width} ${context.name} guides to use the actual named reference row and text marker: ${JSON.stringify({ rules, reference })}.`);
         }
-        const resetReference = mainTrack.peers[16];
-        const resetControl = mainTrack.peers[17];
-        assert(resetReference.context === "reset-product" && resetControl.context === "reset-product" && Math.abs(resetControl.markerTop - resetReference.markerTop) < 0.02 && Math.abs(resetControl.contextDelta) < 0.02 && Math.abs(resetControl.row - resetReference.row) < 0.1 && Number.isFinite(resetControl.outerDelta) && Number.isFinite(resetControl.gridDelta), `Expected ${tier}/${width} reset Button to match its real fresh-product reference while retaining the separate outer baseline and absolute grid phase: ${JSON.stringify({ resetReference, resetControl })}.`);
-        const resetAnatomy = proof.resetAnatomy;
-        assert(resetAnatomy.referenceLabel?.includes("plain table text") && resetAnatomy.referenceLabel.includes("no Button") && resetAnatomy.controlLabel?.includes("default Button") && resetAnatomy.targetText === "Reset" && !resetAnatomy.referenceHasButton && resetAnatomy.rootContainsButton, `Expected ${tier}/${width} the reset comparison to identify plain table text and a default Button in separate fresh product roots: ${JSON.stringify(resetAnatomy)}.`);
-        assert(Math.abs(resetAnatomy.controlRow - resetAnatomy.referenceRow) < 0.1 && Math.abs(resetAnatomy.rootHeight - resetAnatomy.referencePaintHeight) < 0.02 && Math.abs(resetAnatomy.paintTopDelta) < 0.02 && Math.abs((resetAnatomy.referencePaintHeight - resetAnatomy.controlPaintHeight) - resetAnatomy.controlCompensation) < 0.02, `Expected ${tier}/${width} the fresh product root to own the complete reset seat while preserving the default Button's trailing baseline compensation: ${JSON.stringify(resetAnatomy)}.`);
         const textareaPeer = mainTrack.peers[15];
         assert(textareaPeer.context === "multiline-first-line" && textareaPeer.guideBaseline?.startsWith("unavailable") && textareaPeer.baselineSource?.startsWith("native first-line baseline unavailable") && ((Number.isFinite(Number.parseFloat(textareaPeer.externalBaseline ?? "")) && textareaPeer.rig === "matched native clone box/font") || (textareaPeer.externalBaseline === "unavailable" && textareaPeer.rig === "unmatched native clone")), `Expected ${tier}/${width} Textarea first-line guide to stay unavailable while its separate native CSS baseline diagnostic remains recorded: ${JSON.stringify(textareaPeer)}.`);
-        const standaloneInput = mainTrack.peers[20];
+        const standaloneInput = mainTrack.peers[18];
         assert(standaloneInput.native && Number.isFinite(Number.parseFloat(standaloneInput.externalBaseline ?? "")) && standaloneInput.rig === "matched native clone box/font", `Expected ${tier}/${width} standalone input to retain its separate native CSS baseline proxy without claiming painted glyph alignment: ${JSON.stringify(standaloneInput)}.`);
         for (const track of proof.tracks) {
           assert(Math.abs(track.startPhase) <= flowTolerance && Math.abs(track.endPhase) <= flowTolerance && Math.abs(track.referenceMetricPhaseError) <= flowTolerance, `Expected ${tier}/${width} absolute document-grid alignment with independent BF metric phase ${proof.metricTextPhase}, without calibrating from the specimen: ${JSON.stringify(track)}.`);
@@ -7077,38 +7035,40 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
 async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
   const canonicalExpected = {
-    editorial: [0.5, 0.5, 0.5, 1.5, 4.5, 8, 0.5, 1, 2, 1, 1, 4],
-    documentation: [0.25, 0.25, 0.5, 1.25, 2.5, 6, 0.5, 0.75, 1.875, 0.75, 0.75, 3],
-    app: [0.25, 0.25, 0.5, 1.25, 2.5, 2, 0.5, 0.75, 1.875, 0.75, 0.75, 3],
-    os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 0.5, 1.25, 0.5, 0.5, 2]
+    editorial: [0.5, 0.5, 0.5, 0.5, 1.5, 4.5, 1, 0.5, 0, 0.5, 0, 1, 1],
+    documentation: [0.25, 0.5, 0.5, 0.25, 1.25, 2.5, 0.75, 0.5, 0.25, 0.5, 0.25, 0.75, 0.75],
+    app: [0.25, 0.5, 0.5, 0.25, 1.25, 2.5, 0.75, 0.5, 0.25, 0.5, 0.25, 0.75, 0.75],
+    os: [0.25, 0.25, 0.25, 0.25, 1.5, 3, 0.5, 0.25, 0, 0.25, 0, 0.5, 0.5]
   } as const;
   const canonicalProperties = [
     "--spacing-baseline",
-    "--spacing-gap-field-block",
     "--spacing-gap-mark-inline",
+    "--spacing-gap-item-inline",
+    "--spacing-gap-item-block",
     "--spacing-gap-group-block",
-    "--spacing-gap-pattern-block",
-    "--spacing-gap-region-block",
-    "--spacing-inset-field-inline",
+    "--spacing-gap-section-block",
     "--spacing-inset-action-inline",
-    "--spacing-inset-continuation-inline",
-    "--spacing-inset-surface-inline",
-    "--spacing-inset-surface-block",
-    "--spacing-inset-strip-block"
+    "--spacing-inset-input-inline",
+    "--spacing-inset-control-block",
+    "--spacing-inset-surface-compact-inline",
+    "--spacing-inset-surface-compact-block",
+    "--spacing-inset-surface-standard-inline",
+    "--spacing-inset-surface-standard-block"
   ] as const;
   const aliases = [
     "--bf-baseline",
-    "--bf-field-gap",
     "--bf-leading-mark-gap",
+    "--bf-element-gap-inline",
+    "--bf-field-gap",
     "--bf-section-space-shallow",
     "--bf-section-space",
-    "--bf-section-space-deep",
-    "--bf-component-inline-inset-field",
     "--bf-component-inline-inset-action",
-    "--bf-component-inline-inset-continuation",
+    "--bf-component-inline-inset-field",
+    "--bf-control-block-inset",
+    "--bf-surface-compact-inset-inline",
+    "--bf-surface-compact-inset-block",
     "--bf-panel-padding-inline",
-    "--bf-panel-padding-block",
-    "--bf-strip-space"
+    "--bf-panel-padding-block"
   ] as const;
   const tiers = Object.keys(canonicalExpected) as Array<keyof typeof canonicalExpected>;
   const canonicalClass = {
@@ -7118,6 +7078,7 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     os: "os"
   } as const;
   const dimensionProperty = new Map<number, string>([
+    [0, "--dimension-000"],
     [0.25, "--dimension-050"],
     [0.5, "--dimension-100"],
     [0.75, "--dimension-150"],
@@ -7140,19 +7101,14 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
   const providerRules = providerSelectors.map((selector, ruleIndex) => {
     const tier = providerSelectorOrder[ruleIndex];
     const declarations = canonicalProperties.map((property, tokenIndex) => {
-      if (property === "--spacing-inset-continuation-inline") {
-        return `${property}:${canonicalExpected[tier][tokenIndex]}rem`;
-      }
       const primitive = dimensionProperty.get(canonicalExpected[tier][tokenIndex]);
       assert(primitive, `Expected a provider primitive for ${tier} ${property}.`);
       return `${property}:var(${primitive})`;
     }).join(";");
     return `${selector}{${declarations}}`;
   }).join("");
-  // Authored values use the provider's existing dimension primitives. The
-  // continuation value is a resolved Spec 024 working value derived from field
-  // inset + body-sized icon + mark gap, so this synthetic provider emits that
-  // result directly rather than pretending an upstream primitive exists.
+  // The independent stylesheet probe uses the provider's dimension scale to
+  // verify that BF aliases track the semantic properties in either load order.
   const canonicalProviderCss = `:root{${primitiveDeclarations}}@layer ds.tokens{${providerRules}}`;
   const browser = await openBrowser();
 

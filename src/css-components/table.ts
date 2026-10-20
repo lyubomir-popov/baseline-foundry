@@ -5,12 +5,10 @@ type TableCssOptions = {
   bodyLineHeight: string;
   bodyTypeStyles: string;
   tableDensityScopes: string[];
-  tableDensityStandardScopes: string[];
-  tableDensityOsScopes: string[];
 };
 
 export function tableCss(options: TableCssOptions): string {
-  const { bodyLineHeight, bodyTypeStyles, tableDensityScopes, tableDensityStandardScopes, tableDensityOsScopes } = options;
+  const { bodyLineHeight, bodyTypeStyles, tableDensityScopes } = options;
   const selectors = tableCellDensityPolicySelectors();
   const density = componentDensityPolicy.tableCell;
   const cellSelector = ":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)";
@@ -22,10 +20,6 @@ export function tableCss(options: TableCssOptions): string {
 ${tableCellDensityScopedCss(tableDensityScopes, selectors.hosts, `${density.currentMember}: var(${density.denseMember});
 padding-block-end: max(0rem, calc(var(--bf-table-row-padding-block-end) - var(${density.currentMember})));
 padding-block-start: max(0rem, calc(var(--bf-table-row-padding-block-start) - var(${density.currentMember})));`)}
-
-${tableCellDensityScopedCss(tableDensityStandardScopes, selectors.hosts, `${density.denseMember}: 0.25rem;`)}
-
-${tableCellDensityScopedCss(tableDensityOsScopes, selectors.hosts, `${density.denseMember}: var(--bf-control-block-inset);`)}
 
 ${tableCellDensityScopedCss(tableDensityScopes, selectors.boxedButtons, `${density.componentBindings.button}: var(${density.currentMember});
 line-height: var(--bf-body-line-height);

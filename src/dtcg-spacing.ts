@@ -7,21 +7,26 @@ import type { ThemeConfig } from "./types.js";
 
 export const dtcgSpacingTokenIds = [
   "spacing.baseline",
-  "spacing.gap.field.block",
   "spacing.gap.mark.inline",
+  "spacing.gap.item.inline",
+  "spacing.gap.item.block",
   "spacing.gap.group.block",
-  "spacing.gap.pattern.block",
-  "spacing.gap.region.block",
-  "spacing.inset.field.inline",
+  "spacing.gap.section.block",
   "spacing.inset.action.inline",
-  "spacing.inset.continuation.inline",
-  "spacing.inset.surface.inline",
-  "spacing.inset.surface.block",
-  "spacing.inset.strip.block"
+  "spacing.inset.input.inline",
+  "spacing.inset.control.block",
+  "spacing.inset.surface.compact.inline",
+  "spacing.inset.surface.compact.block",
+  "spacing.inset.surface.standard.inline",
+  "spacing.inset.surface.standard.block"
 ] as const;
 
 export type DtcgSpacingTokenId = (typeof dtcgSpacingTokenIds)[number];
 export type CanonicalProduct = "site" | "docs" | "app" | "os";
+
+export const publicDtcgSpacingTokenIds = dtcgSpacingTokenIds.filter(
+  id => id !== "spacing.baseline"
+) as Exclude<DtcgSpacingTokenId, "spacing.baseline">[];
 
 export interface ResolvedDtcgDimensionToken {
   $type: "dimension";
@@ -33,53 +38,59 @@ export interface ResolvedDtcgDimensionToken {
 
 export type ResolvedDtcgSpacing = Record<DtcgSpacingTokenId, ResolvedDtcgDimensionToken>;
 
-interface ResolvedDtcgSpacingArtifact {
-  format: "canonical-resolver-apply-spacing-v1";
-  integrity: {
-    algorithm: "sha256";
-    canonicalProducts: string;
-  };
-  source: {
-    package: "@canonical/design-tokens";
-    repository: string;
-    baseCommit: string;
-    resolver: string;
-    baseRole: "schema and resolver base only; does not generate the working product values below";
-    workingValues: {
-      repository: "canonical-spacing-spec";
-      commit: "7169231fcc3168032275d920d32856f9669107ac";
-      spec: "024-semantic-spacing-token-schema";
-      origin: "Spec 024 working-values override; not @canonical/design-tokens resolver product output";
-      status: "working override; canonical-main merge and design-tokens contribution pending";
-      regenerationGuard: "preserve this override until the owner lands equivalent rulings on canonical main and BF repins the resulting full main commit";
-      canonicalMain: {
-        observedCommit: "cad4aacf91b7e70bee81730552b76ef0d8291a34";
-        status: "pending equivalent-ruling merge to canonical main and final-main repin";
-      };
-    };
-  };
-  products: Record<CanonicalProduct, ResolvedDtcgSpacing>;
+export interface ResolvedDtcgSpacingDensity {
+  controlBlockDefault: ResolvedDtcgDimensionToken;
+  controlBlockDense: ResolvedDtcgDimensionToken;
 }
 
-export const canonicalSpacingSourceCommit = "18f57b95b1aa1dfe85a45746016b055c807d6628";
-export const canonicalSpacingProductsSha256 = "f8fa3f4ac6d94fa1e262ab0530bd2c6d41da2932dc91c06151c711ca093cf679";
-const canonicalSpacingSourceRepository = "https://github.com/canonical/design-tokens";
-const canonicalSpacingResolver = "tokens/canonical/canonical.resolver.json";
+export interface ResolvedDtcgSpacingProduct {
+  spacing: ResolvedDtcgSpacing;
+  density: ResolvedDtcgSpacingDensity;
+}
+
+interface ProviderArtifact {
+  path: string;
+  sha256: string;
+}
+
+interface Spec024SpacingManifest {
+  format: "spec-024-generated-css-spacing-v1";
+  source: {
+    repository: "canonical/DS-specs";
+    commit: string;
+    spec: "024-semantic-spacing-token-schema";
+    status: "accepted private prototype";
+  };
+  provider: {
+    primitives: ProviderArtifact;
+    modifiers: ProviderArtifact;
+    metadata: ProviderArtifact;
+  };
+  publicTokenIds: string[];
+  externalTokenIds: ["spacing.baseline"];
+  products: Record<CanonicalProduct, { selector: string; }>;
+}
+
+export const canonicalSpacingSourceCommit = "d7eaba0517800ba7461b6ca824dcd5b2c5408e5a";
+const canonicalSpacingSourceRepository = "canonical/DS-specs";
 const canonicalProductOrder: CanonicalProduct[] = ["site", "docs", "app", "os"];
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const defaultArtifactPath = path.resolve(moduleDir, "..", "config", "canonical-spacing.resolved.json");
 
 export const bfSpacingCompatibilityAliases: Record<DtcgSpacingTokenId, string> = {
   "spacing.baseline": "--bf-baseline",
-  "spacing.gap.field.block": "--bf-field-gap",
   "spacing.gap.mark.inline": "--bf-leading-mark-gap",
+  "spacing.gap.item.inline": "--bf-element-gap-inline",
+  "spacing.gap.item.block": "--bf-field-gap",
   "spacing.gap.group.block": "--bf-section-space-shallow",
-  "spacing.gap.pattern.block": "--bf-section-space",
-  "spacing.gap.region.block": "--bf-section-space-deep",
-  "spacing.inset.field.inline": "--bf-component-inline-inset-field",
+  "spacing.gap.section.block": "--bf-section-space",
   "spacing.inset.action.inline": "--bf-component-inline-inset-action",
-  "spacing.inset.continuation.inline": "--bf-component-inline-inset-continuation",
-  "spacing.inset.surface.inline": "--bf-panel-padding-inline",
-  "spacing.inset.surface.block": "--bf-panel-padding-block",
-  "spacing.inset.strip.block": "--bf-strip-space"
+  "spacing.inset.input.inline": "--bf-component-inline-inset-field",
+  "spacing.inset.control.block": "--bf-control-block-inset",
+  "spacing.inset.surface.compact.inline": "--bf-surface-compact-inset-inline",
+  "spacing.inset.surface.compact.block": "--bf-surface-compact-inset-block",
+  "spacing.inset.surface.standard.inline": "--bf-panel-padding-inline",
+  "spacing.inset.surface.standard.block": "--bf-panel-padding-block"
 };
 
 const productByTier: Record<TierName, CanonicalProduct> = {
@@ -89,108 +100,133 @@ const productByTier: Record<TierName, CanonicalProduct> = {
   os: "os"
 };
 
-const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const defaultArtifactPath = path.resolve(moduleDir, "..", "config", "canonical-spacing.resolved.json");
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function validateDimensionToken(value: unknown, location: string): asserts value is ResolvedDtcgDimensionToken {
-  if (!isRecord(value) || value.$type !== "dimension" || !isRecord(value.$value)) {
-    throw new Error(`Resolved spacing token "${location}" must use the DTCG dimension token shape.`);
-  }
+function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
 
-  const magnitude = value.$value.value;
-  if (typeof magnitude !== "number" || !Number.isFinite(magnitude) || magnitude < 0 || value.$value.unit !== "rem") {
-    throw new Error(`Resolved spacing token "${location}" must contain a finite non-negative rem value.`);
+function validateProviderArtifact(value: unknown, label: string): asserts value is ProviderArtifact {
+  if (!isRecord(value) || typeof value.path !== "string" || !value.path || typeof value.sha256 !== "string" || !/^[a-f0-9]{64}$/.test(value.sha256)) {
+    throw new Error(`Spec 024 spacing manifest ${label} must name a relative path and SHA-256.`);
+  }
+  if (path.isAbsolute(value.path) || value.path.split(/[\\/]/).includes("..")) {
+    throw new Error(`Spec 024 spacing manifest ${label} must stay inside config.`);
   }
 }
 
-function validateTokenSet(value: unknown, location: string): asserts value is ResolvedDtcgSpacing {
-  if (!isRecord(value)) {
-    throw new Error(`Resolved spacing product "${location}" must be an object.`);
-  }
-
-  const actualIds = Object.keys(value).sort();
-  const expectedIds = [...dtcgSpacingTokenIds].sort();
-  if (JSON.stringify(actualIds) !== JSON.stringify(expectedIds)) {
-    throw new Error(`Resolved spacing product "${location}" must contain exactly the twelve approved v1 token IDs.`);
-  }
-
-  for (const id of dtcgSpacingTokenIds) {
-    validateDimensionToken(value[id], `${location}:${id}`);
-  }
-}
-
-function canonicalProductsDigest(products: Record<CanonicalProduct, ResolvedDtcgSpacing>): string {
-  const payload = JSON.stringify(canonicalProductOrder.map(product => [
-    product,
-    dtcgSpacingTokenIds.map(id => [
-      id,
-      products[product][id].$type,
-      products[product][id].$value.value,
-      products[product][id].$value.unit
-    ])
-  ]));
-  return createHash("sha256").update(payload).digest("hex");
-}
-
-export function validateCanonicalSpacingArtifact(value: unknown): asserts value is ResolvedDtcgSpacingArtifact {
-  if (
-    !isRecord(value) ||
-    value.format !== "canonical-resolver-apply-spacing-v1" ||
-    !isRecord(value.integrity) ||
-    !isRecord(value.source) ||
-    !isRecord(value.products)
-  ) {
-    throw new Error("Canonical spacing artifact has an unsupported shape.");
+export function validateCanonicalSpacingArtifact(value: unknown): asserts value is Spec024SpacingManifest {
+  if (!isRecord(value) || value.format !== "spec-024-generated-css-spacing-v1" || !isRecord(value.source) || !isRecord(value.provider) || !isRecord(value.products)) {
+    throw new Error("Spec 024 spacing manifest has an unsupported shape.");
   }
   if (
-    value.integrity.algorithm !== "sha256" ||
-    value.integrity.canonicalProducts !== canonicalSpacingProductsSha256
-  ) {
-    throw new Error(`Canonical spacing artifact must declare product digest ${canonicalSpacingProductsSha256}.`);
-  }
-  if (
-    value.source.package !== "@canonical/design-tokens" ||
     value.source.repository !== canonicalSpacingSourceRepository ||
-    value.source.baseCommit !== canonicalSpacingSourceCommit ||
-    value.source.resolver !== canonicalSpacingResolver ||
-    value.source.baseRole !== "schema and resolver base only; does not generate the working product values below" ||
-    !isRecord(value.source.workingValues) ||
-    value.source.workingValues.repository !== "canonical-spacing-spec" ||
-    value.source.workingValues.commit !== "7169231fcc3168032275d920d32856f9669107ac" ||
-    value.source.workingValues.spec !== "024-semantic-spacing-token-schema" ||
-    value.source.workingValues.origin !== "Spec 024 working-values override; not @canonical/design-tokens resolver product output" ||
-    value.source.workingValues.status !== "working override; canonical-main merge and design-tokens contribution pending" ||
-    value.source.workingValues.regenerationGuard !== "preserve this override until the owner lands equivalent rulings on canonical main and BF repins the resulting full main commit" ||
-    !isRecord(value.source.workingValues.canonicalMain) ||
-    value.source.workingValues.canonicalMain.observedCommit !== "cad4aacf91b7e70bee81730552b76ef0d8291a34" ||
-    Object.hasOwn(value.source.workingValues.canonicalMain, "requiredAncestor") ||
-    value.source.workingValues.canonicalMain.status !== "pending equivalent-ruling merge to canonical main and final-main repin"
+    value.source.commit !== canonicalSpacingSourceCommit ||
+    value.source.spec !== "024-semantic-spacing-token-schema" ||
+    value.source.status !== "accepted private prototype"
   ) {
-    throw new Error(`Canonical spacing artifact must pin design-tokens ${canonicalSpacingSourceCommit}, preserve the full Spec 024 working override, and keep canonical-main activation pending.`);
+    throw new Error(`Spec 024 spacing manifest must pin accepted private source ${canonicalSpacingSourceCommit}.`);
   }
+  validateProviderArtifact(value.provider.primitives, "primitives");
+  validateProviderArtifact(value.provider.modifiers, "modifiers");
+  validateProviderArtifact(value.provider.metadata, "metadata");
+  if (JSON.stringify(value.publicTokenIds) !== JSON.stringify(publicDtcgSpacingTokenIds)) {
+    throw new Error("Spec 024 spacing manifest must list the twelve public semantic records in contract order.");
+  }
+  if (JSON.stringify(value.externalTokenIds) !== JSON.stringify(["spacing.baseline"])) {
+    throw new Error("Spec 024 spacing manifest must identify baseline as the external thirteenth input.");
+  }
+  if (JSON.stringify(Object.keys(value.products)) !== JSON.stringify(canonicalProductOrder)) {
+    throw new Error("Spec 024 spacing manifest must declare site, docs, app, and os in contract order.");
+  }
+  for (const product of canonicalProductOrder) {
+    if (!isRecord(value.products[product]) || value.products[product].selector !== `.${product}`) {
+      throw new Error(`Spec 024 spacing manifest must bind ${product} to .${product}.`);
+    }
+  }
+}
 
-  const actualProducts = Object.keys(value.products).sort();
-  const expectedProducts = ["app", "docs", "os", "site"];
-  if (JSON.stringify(actualProducts) !== JSON.stringify(expectedProducts)) {
-    throw new Error("Canonical spacing artifact must contain exactly site, docs, app, and os products.");
+function declarationsForSelector(css: string, selector: string): Map<string, string> {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = new RegExp(`(?:^|\\n)\\s*${escaped}\\s*\\{([^{}]*)\\}`, "m").exec(css);
+  if (!match) throw new Error(`Generated Spec 024 CSS is missing ${selector}.`);
+  const declarations = new Map<string, string>();
+  for (const declaration of match[1].matchAll(/^\s*(--[a-z0-9_-]+)\s*:\s*([^;]+);/gmi)) {
+    declarations.set(declaration[1], declaration[2].trim());
   }
+  return declarations;
+}
 
-  for (const product of expectedProducts as CanonicalProduct[]) {
-    validateTokenSet(value.products[product], product);
-  }
+function resolveRemProperty(properties: Map<string, string>, property: string, stack: string[] = []): number {
+  if (stack.includes(property)) throw new Error(`Generated Spec 024 CSS contains a reference cycle at ${[...stack, property].join(" -> ")}.`);
+  const value = properties.get(property);
+  if (!value) throw new Error(`Generated Spec 024 CSS is missing ${property}.`);
+  const reference = /^var\((--[a-z0-9_-]+)\)$/.exec(value);
+  if (reference) return resolveRemProperty(properties, reference[1], [...stack, property]);
+  const resolved = /^(\d+(?:\.\d+)?)rem$/.exec(value);
+  if (!resolved) throw new Error(`Generated Spec 024 CSS ${property} must resolve to a non-negative rem value, got ${value}.`);
+  return Number.parseFloat(resolved[1]);
+}
 
-  const actualDigest = canonicalProductsDigest(value.products as Record<CanonicalProduct, ResolvedDtcgSpacing>);
-  if (actualDigest !== canonicalSpacingProductsSha256) {
-    throw new Error(`Canonical spacing artifact product digest changed: expected ${canonicalSpacingProductsSha256}, received ${actualDigest}.`);
+function dimension(value: number): ResolvedDtcgDimensionToken {
+  return { $type: "dimension", $value: { value, unit: "rem" } };
+}
+
+export function resolveCanonicalSpacingCssProduct(
+  primitivesCss: string,
+  modifiersCss: string,
+  product: CanonicalProduct
+): ResolvedDtcgSpacingProduct {
+  const properties = new Map([
+    ...declarationsForSelector(primitivesCss, ":root"),
+    ...declarationsForSelector(modifiersCss, `.${product}`)
+  ]);
+  const spacing = Object.fromEntries(dtcgSpacingTokenIds.map(id => [
+    id,
+    dimension(resolveRemProperty(properties, dtcgSpacingCssProperty(id)))
+  ])) as ResolvedDtcgSpacing;
+  const density = {
+    controlBlockDefault: dimension(resolveRemProperty(properties, "--_spacing-inset-control-block-default")),
+    controlBlockDense: dimension(resolveRemProperty(properties, "--_spacing-inset-control-block-dense"))
+  };
+  if (dtcgSpacingValue(density.controlBlockDefault) !== dtcgSpacingValue(spacing["spacing.inset.control.block"])) {
+    throw new Error(`Generated Spec 024 CSS ${product} default density member must equal spacing.inset.control.block.`);
   }
+  return { spacing, density };
 }
 
 async function readJson(filePath: string): Promise<unknown> {
   return JSON.parse(await fs.readFile(filePath, "utf8")) as unknown;
+}
+
+function artifactPath(manifestPath: string, artifact: ProviderArtifact): string {
+  return path.resolve(path.dirname(manifestPath), artifact.path);
+}
+
+async function readVerifiedArtifact(manifestPath: string, artifact: ProviderArtifact, label: string): Promise<string> {
+  const value = await fs.readFile(artifactPath(manifestPath, artifact), "utf8");
+  const actual = sha256(value);
+  if (actual !== artifact.sha256) {
+    throw new Error(`Spec 024 spacing ${label} provider changed: expected ${artifact.sha256}, received ${actual}.`);
+  }
+  return value;
+}
+
+function validatePublicMetadata(value: unknown): void {
+  if (!isRecord(value)) throw new Error("Spec 024 public spacing metadata must be an object.");
+  const expectedProperties = publicDtcgSpacingTokenIds.map(dtcgSpacingCssProperty).sort();
+  if (JSON.stringify(Object.keys(value).sort()) !== JSON.stringify(expectedProperties)) {
+    throw new Error("Spec 024 public spacing metadata must contain exactly the twelve public semantic records.");
+  }
+  for (const id of publicDtcgSpacingTokenIds) {
+    const property = dtcgSpacingCssProperty(id);
+    const record = value[property];
+    if (!isRecord(record) || record.id !== id || record.cssVar !== property || record.visibility !== "public" || Object.hasOwn(record, "$value") || Object.hasOwn(record, "value")) {
+      throw new Error(`Spec 024 public spacing metadata ${property} must describe ${id} without carrying a value.`);
+    }
+  }
 }
 
 export function canonicalProductForBuiltInTheme(name: BuiltInThemeName): CanonicalProduct {
@@ -207,45 +243,51 @@ export function dtcgSpacingCssProperty(id: DtcgSpacingTokenId): string {
   return `--${id.replaceAll(".", "-")}`;
 }
 
-export function legacyThemeConfigSpacing(config: ThemeConfig): ResolvedDtcgSpacing {
-  const value = (magnitude: number): ResolvedDtcgDimensionToken => ({
-    $type: "dimension",
-    $value: { value: magnitude, unit: "rem" }
-  });
-
-  const bodyIdentifier = config.roles.body;
-  const body = config.elements.find(element => element.identifier === bodyIdentifier);
-  if (!body) {
-    throw new Error(`Cannot derive continuation inset: body role ${JSON.stringify(bodyIdentifier)} has no matching element.`);
-  }
-
+export function legacyThemeConfigSpacing(config: ThemeConfig): ResolvedDtcgSpacingProduct {
+  const baseline = config.baselineUnit;
+  const inlineUnit = config.inlineUnitRem;
+  const itemInline = config.components.markGapInlineUnits * inlineUnit;
+  const itemBlock = config.components.fieldGapBaselineUnits * baseline;
+  const actionInline = config.components.inlineInsetActionUnits * inlineUnit;
+  const inputInline = config.components.inlineInsetFieldUnits * inlineUnit;
+  const controlBlock = config.components.controlBlockInsetBaselineUnits * baseline;
   return {
-    "spacing.baseline": value(config.baselineUnit),
-    "spacing.gap.field.block": value(config.components.fieldGapBaselineUnits * config.baselineUnit),
-    "spacing.gap.mark.inline": value(config.components.markGapInlineUnits * config.inlineUnitRem),
-    "spacing.gap.group.block": value(config.layout.sectionSpaceShallowBaselineUnits * config.baselineUnit),
-    "spacing.gap.pattern.block": value(config.layout.sectionSpaceBaselineUnits * config.baselineUnit),
-    "spacing.gap.region.block": value(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
-    "spacing.inset.field.inline": value(config.components.inlineInsetFieldUnits * config.inlineUnitRem),
-    "spacing.inset.action.inline": value(config.components.inlineInsetActionUnits * config.inlineUnitRem),
-    "spacing.inset.continuation.inline": value(
-      (config.components.inlineInsetFieldUnits * config.inlineUnitRem) +
-      body.fontSize +
-      (config.components.markGapInlineUnits * config.inlineUnitRem)
-    ),
-    "spacing.inset.surface.inline": value(config.components.panelPaddingInlineUnits * config.inlineUnitRem),
-    "spacing.inset.surface.block": value(config.components.panelPaddingBlockBaselineUnits * config.baselineUnit),
-    "spacing.inset.strip.block": value(config.layout.stripSpaceBaselineUnits * config.baselineUnit)
+    spacing: {
+      "spacing.baseline": dimension(baseline),
+      "spacing.gap.mark.inline": dimension(itemInline),
+      "spacing.gap.item.inline": dimension(itemInline),
+      "spacing.gap.item.block": dimension(itemBlock),
+      "spacing.gap.group.block": dimension(config.layout.sectionSpaceShallowBaselineUnits * baseline),
+      "spacing.gap.section.block": dimension(config.layout.sectionSpaceBaselineUnits * baseline),
+      "spacing.inset.action.inline": dimension(actionInline),
+      "spacing.inset.input.inline": dimension(inputInline),
+      "spacing.inset.control.block": dimension(controlBlock),
+      "spacing.inset.surface.compact.inline": dimension(inputInline),
+      "spacing.inset.surface.compact.block": dimension(controlBlock),
+      "spacing.inset.surface.standard.inline": dimension(actionInline),
+      "spacing.inset.surface.standard.block": dimension(actionInline)
+    },
+    density: {
+      controlBlockDefault: dimension(controlBlock),
+      controlBlockDense: dimension(config.baselineUnit / 2)
+    }
   };
 }
 
 export async function readCanonicalSpacingProduct(
   product: CanonicalProduct,
   options: { artifactPath?: string; } = {}
-): Promise<ResolvedDtcgSpacing> {
-  const artifact = await readJson(options.artifactPath ?? defaultArtifactPath);
-  validateCanonicalSpacingArtifact(artifact);
-  return structuredClone(artifact.products[product]);
+): Promise<ResolvedDtcgSpacingProduct> {
+  const manifestPath = options.artifactPath ?? defaultArtifactPath;
+  const manifest = await readJson(manifestPath);
+  validateCanonicalSpacingArtifact(manifest);
+  const [primitivesCss, modifiersCss, metadataJson] = await Promise.all([
+    readVerifiedArtifact(manifestPath, manifest.provider.primitives, "primitive CSS"),
+    readVerifiedArtifact(manifestPath, manifest.provider.modifiers, "modifier CSS"),
+    readVerifiedArtifact(manifestPath, manifest.provider.metadata, "public metadata")
+  ]);
+  validatePublicMetadata(JSON.parse(metadataJson) as unknown);
+  return resolveCanonicalSpacingCssProduct(primitivesCss, modifiersCss, product);
 }
 
 export function assertSpacingSetsEqual(

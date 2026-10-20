@@ -4,7 +4,6 @@ function componentInputDeclarations(components: ComponentTokens): string {
   return `  --bf-border-width: ${components.borderWidth};
   --bf-bar-thickness: ${components.barThickness};
   --bf-radius: ${components.radius};
-  --bf-control-block-inset: ${components.controlBlockInset};
   --bf-control-visual-size: ${components.controlVisualSize};
 `;
 }

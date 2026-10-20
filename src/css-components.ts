@@ -84,10 +84,7 @@ function roleSelectedStartNudgeVar(roleName: string, fallback?: string): string 
 export function componentsCss(
   tokens: ThemeTokens,
   themeSurfaces?: ThemeSurface[],
-  tableDensityScopes: string[] = [],
-  tableDensityStandardScopes: string[] = [],
-  tableDensityOsScopes: string[] = [],
-  defaultElementInlineGap?: string
+  tableDensityScopes: string[] = []
 ): string {
   const body = tokens.roles.body;
   const h4 = tokens.roles.h4 ?? body;
@@ -139,20 +136,6 @@ ${codeSnippetDropdownStroke.owner}
 ${copiedCodeSnippetStroke.owner}
 ${navigationDrawerStroke.owner}
 ${applicationAsideStroke.owner}
-:where(.bf-theme) {
-  --bf-element-gap-inline: ${defaultElementInlineGap ?? "0.5rem"};
-  --bf-surface-compact-inset-inline: var(--bf-component-inline-inset-field);
-  --bf-surface-compact-inset-block: var(--bf-control-block-inset);
-}
-
-:where(.bf-theme.bf-tier-editorial, .bf-theme.bf-tier-documentation, .bf-theme.bf-tier-app) {
-  --bf-element-gap-inline: 0.5rem;
-}
-
-:where(.bf-theme.bf-tier-os) {
-  --bf-element-gap-inline: 0.25rem;
-}
-
 :where(.bf-theme) {
 ${foundryComponentColorVars("light")}
   --bf-ui-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.25 6.25 8 10l3.75-3.75'/%3E%3C/svg%3E");
@@ -1039,9 +1022,7 @@ ${typeStyles(body, { includeCase: false })}  background: var(--bf-color-backgrou
 ${tableCss({
   bodyLineHeight,
   bodyTypeStyles,
-  tableDensityScopes,
-  tableDensityStandardScopes,
-  tableDensityOsScopes,
+  tableDensityScopes
 })}
 
 ${chipBadgeStatusCss({

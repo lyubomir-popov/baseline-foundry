@@ -272,6 +272,7 @@ const COMPONENT_TOKEN_PROPERTIES: Record<string, string> = {
   inlineInsetField: "--bf-component-inline-inset-field",
   inlineInsetAction: "--bf-component-inline-inset-action",
   inlineInsetContinuation: "--bf-component-inline-inset-continuation",
+  controlBlockInset: "--bf-control-block-inset",
   controlVisualSize: "--bf-control-visual-size",
   fieldGap: "--bf-field-gap",
   panelPaddingInline: "--bf-panel-padding-inline",
@@ -280,17 +281,15 @@ const COMPONENT_TOKEN_PROPERTIES: Record<string, string> = {
 
 const CANONICAL_SPACING_BY_BF_ALIAS: Record<string, string> = {
   "--bf-baseline": "--spacing-baseline",
-  "--bf-field-gap": "--spacing-gap-field-block",
+  "--bf-field-gap": "--spacing-gap-item-block",
   "--bf-leading-mark-gap": "--spacing-gap-mark-inline",
   "--bf-section-space-shallow": "--spacing-gap-group-block",
-  "--bf-section-space": "--spacing-gap-pattern-block",
-  "--bf-section-space-deep": "--spacing-gap-region-block",
-  "--bf-component-inline-inset-field": "--spacing-inset-field-inline",
+  "--bf-section-space": "--spacing-gap-section-block",
+  "--bf-component-inline-inset-field": "--spacing-inset-input-inline",
   "--bf-component-inline-inset-action": "--spacing-inset-action-inline",
-  "--bf-component-inline-inset-continuation": "--spacing-inset-continuation-inline",
-  "--bf-panel-padding-inline": "--spacing-inset-surface-inline",
-  "--bf-panel-padding-block": "--spacing-inset-surface-block",
-  "--bf-strip-space": "--spacing-inset-strip-block"
+  "--bf-control-block-inset": "--spacing-inset-control-block",
+  "--bf-panel-padding-inline": "--spacing-inset-surface-standard-inline",
+  "--bf-panel-padding-block": "--spacing-inset-surface-standard-block"
 };
 
 function expectedTierProperties(tokens: Record<string, unknown>): Map<string, string> {
@@ -493,8 +492,8 @@ function validateTierPanelPaddingProgression(
     const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`);
 
     assert(components.panelPaddingInline === expected && components.panelPaddingBlock === expected, `Expected ${tierName} panel padding tokens to resolve to ${expected}; inline=${components.panelPaddingInline}, block=${components.panelPaddingBlock}.`);
-    assert(direct.get("--bf-panel-padding-inline") === "var(--spacing-inset-surface-inline)" && direct.get("--bf-panel-padding-block") === "var(--spacing-inset-surface-block)", `Expected direct ${tierName} panel fallback padding properties to alias the canonical surface insets.`);
-    assert(scoped.get("--bf-panel-padding-inline") === "var(--spacing-inset-surface-inline)" && scoped.get("--bf-panel-padding-block") === "var(--spacing-inset-surface-block)", `Expected scoped ${tierName} panel fallback padding properties to alias the canonical surface insets.`);
+    assert(direct.get("--bf-panel-padding-inline") === "var(--spacing-inset-surface-standard-inline)" && direct.get("--bf-panel-padding-block") === "var(--spacing-inset-surface-standard-block)", `Expected direct ${tierName} panel padding properties to alias the standard surface insets.`);
+    assert(scoped.get("--bf-panel-padding-inline") === "var(--spacing-inset-surface-standard-inline)" && scoped.get("--bf-panel-padding-block") === "var(--spacing-inset-surface-standard-block)", `Expected scoped ${tierName} panel padding properties to alias the standard surface insets.`);
     resolvedInline.push(parseRemValue(components.panelPaddingInline));
     resolvedBlock.push(parseRemValue(components.panelPaddingBlock));
   }
@@ -524,7 +523,7 @@ function validateTierStripSpaceProgression(
     const scoped = customPropertiesForSelector(sharedCss, `:where(.bf-theme.bf-tier-${tierName})`).get("--bf-strip-space");
 
     assert(layout.stripSpace === expected, `Expected ${tierName} strip spacing token to resolve to ${expected}, got ${layout.stripSpace}.`);
-    assert(direct === "var(--spacing-inset-strip-block)" && scoped === "var(--spacing-inset-strip-block)", `Expected ${tierName} direct/scoped strip spacing to alias the canonical strip inset; direct=${direct}, scoped=${scoped}.`);
+    assert(direct === expected && scoped === expected, `Expected ${tierName} direct/scoped strip spacing to remain BF-owned layout at ${expected}; direct=${direct}, scoped=${scoped}.`);
     resolved.push(parseRemValue(layout.stripSpace));
   }
 
@@ -728,7 +727,7 @@ function validateTableDensityProductBindings(css: string, defaultProduct?: strin
   const cellScope = "(:where(.bf-table :is(td, th))) to (:where(td, th, .bf-theme))";
   const hostBindings = new Map<string, string[]>();
 
-  parseCss(css).walkDecls(policy.denseMember, declaration => {
+  parseCss(css).walkDecls(policy.currentMember, declaration => {
     const host = declaration.parent;
     if (host?.type !== "rule" || !host.selector.startsWith(":scope:has(")) return;
     const cell = host.parent;
@@ -740,10 +739,10 @@ function validateTableDensityProductBindings(css: string, defaultProduct?: strin
 
   for (const product of policy.products) {
     const productScope = `(:where(.bf-theme.bf-tier-${product})) to (:where(.bf-theme))`;
-    const expected = product === "os" ? "var(--bf-control-block-inset)" : "0.25rem";
+    const expected = `var(${policy.denseMember})`;
     assert(JSON.stringify(hostBindings.get(productScope)) === JSON.stringify([expected]), `Expected explicit ${product} table seats to bind ${expected}; got ${JSON.stringify(hostBindings.get(productScope))}.`);
   }
-  const expectedDefault = defaultProduct === "os" ? "var(--bf-control-block-inset)" : "0.25rem";
+  const expectedDefault = `var(${policy.denseMember})`;
   assert(
     JSON.stringify(hostBindings.get(defaultScope) ?? []) === JSON.stringify(defaultProduct ? [expectedDefault] : []),
     `Expected the default table seat to belong only to ${defaultProduct ?? "an explicit tier"} and exclude every explicit tier class.`
@@ -1280,7 +1279,7 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-grid.bf-grid.is-controls) > :where(.bf-grid-item.is-control-pair) {\n    grid-column: auto / span 8;"), "Expected the control-grid recipe to keep paired inspector surfaces at half width on the 16-column grid.");
   assert(!css.includes(".bf-control-grid"), "Expected generated CSS to omit the deprecated bf-control-grid helper.");
   assert(css.includes(":where(.bf-theme) :where(.bf-field.is-range) {\n  align-items: start;\n  column-gap: var(--bf-element-gap-inline);\n  display: grid;"), "Expected inline range fields to use the dedicated two-column layout and selected semantic inline gap.");
-  assert(css.includes(":where(.bf-theme) {") && css.includes("  --bf-surface-compact-inset-block: var(--bf-control-block-inset);") && css.includes("  --bf-surface-compact-inset-inline: var(--bf-component-inline-inset-field);"), "Expected compact surface edges to alias the selected control/field insets.");
+  assert(css.includes(":where(.bf-theme) {") && css.includes("  --bf-surface-compact-inset-block: var(--spacing-inset-surface-compact-block);") && css.includes("  --bf-surface-compact-inset-inline: var(--spacing-inset-surface-compact-inline);"), "Expected compact surface edges to consume the generated compact surface aliases.");
   assert(css.includes(":where(.bf-theme) :where(.bf-tooltip-message) {") && css.includes("  padding-block: var(--bf-surface-compact-inset-block);") && css.includes("  padding-inline: var(--bf-surface-compact-inset-inline);"), "Expected compact Tooltip frame padding to consume the shared compact surface aliases.");
   assert(css.includes(":where(.bf-theme) :where(.bf-slider) {\n  align-items: flex-start;\n  column-gap: var(--bf-element-gap-inline);\n  display: inline-flex;") && css.includes("  row-gap: var(--bf-field-gap);\n}\n\n:where(.bf-theme) :where(.bf-slider.is-stacked)"), "Expected slider peers to use the selected inline gap while retaining the current block gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-field.is-range.is-stacked) > :where(.bf-control, .bf-form-help) {\n  grid-column: 1;"), "Expected stacked range controls and help text to return to the explicit first column without creating an implicit narrow track.");
@@ -1751,16 +1750,15 @@ function validateCommonCss(css: string): void {
     `Expected the versioned table-cell policy to name supported products, data/header hosts, bounded primitive seats and role; got ${JSON.stringify(componentDensityPolicy)}.`
   );
   assert(
-    css.includes(`${density.comfortableMember}: var(--bf-control-block-inset);`) &&
-    css.includes(`${density.denseMember}: var(--bf-space-half);`) &&
-    css.includes(`${density.denseMember}: 0.25rem;`) &&
-    css.includes(`${density.denseMember}: var(--bf-control-block-inset);`) &&
+    css.includes(`${density.comfortableMember}: var(--_spacing-inset-control-block-default);`) &&
+    css.includes(`${density.denseMember}: var(--_spacing-inset-control-block-dense);`) &&
+    css.includes(`${density.currentMember}: var(${density.comfortableMember});`) &&
     css.includes(`${density.currentMember}: var(${density.denseMember});`) &&
     Object.values(density.componentBindings).every(binding => css.includes(`${binding}: var(${density.currentMember}`)) &&
     css.includes("line-height: var(--bf-body-line-height);") &&
     css.includes("margin-block: 0;") &&
     css.includes("min-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(--bf-chip-control-block-inset) * 2)));"),
-    "Expected table members to bind the existing 4px or OS control inset through the shared seat without a layout-border term or child compensation."
+    "Expected table members to bind the generated default and dense control insets through the shared seat without a layout-border term or child compensation."
   );
   assert(
     css.includes("@scope (:where(.bf-theme.bf-tier-editorial)) to (:where(.bf-theme))") &&

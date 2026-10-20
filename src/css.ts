@@ -126,12 +126,16 @@ function roleVarDeclarations(roleName: string, token: TypographyToken, baselineU
 }
 
 function spacingVarDeclarations(tokens: ThemeTokens): string {
+  const density = componentDensityPolicy.tableCell;
   if (!tokens.canonicalSpacing) {
     const bfValues = dtcgSpacingTokenIds
       .map(id => `  ${bfSpacingCompatibilityAliases[id]}: ${dtcgSpacingValue(tokens.spacing[id])};`)
       .join("\n");
     return `  /* Theme-config spacing remains in BF's namespace; it does not claim Canonical provenance. */
 ${bfValues}
+  ${density.comfortableMember}: ${dtcgSpacingValue(tokens.spacingDensity.controlBlockDefault)};
+  ${density.denseMember}: ${dtcgSpacingValue(tokens.spacingDensity.controlBlockDense)};
+  ${density.currentMember}: var(${density.comfortableMember});
 `;
   }
 
@@ -142,11 +146,16 @@ ${bfValues}
     .map(id => `  ${bfSpacingCompatibilityAliases[id]}: var(${dtcgSpacingCssProperty(id)});`)
     .join("\n");
 
-  return `  /* Resolved Canonical DTCG spacing; these names always retain the pinned final matrix. */
+  const canonicalDensity = tokens.canonicalSpacingDensity ?? tokens.spacingDensity;
+  return `  /* Resolved Spec 024 spacing from the generated CSS provider. */
 ${canonical}
-  /* Temporary BF compatibility properties alias Canonical directly during
-     the bounded public-name deprecation window. */
+  --_spacing-inset-control-block-default: ${dtcgSpacingValue(canonicalDensity.controlBlockDefault)};
+  --_spacing-inset-control-block-dense: ${dtcgSpacingValue(canonicalDensity.controlBlockDense)};
+  /* BF consumer properties bind directly to the semantic provider roles. */
 ${compatibility}
+  ${density.comfortableMember}: var(--_spacing-inset-control-block-default);
+  ${density.denseMember}: var(--_spacing-inset-control-block-dense);
+  ${density.currentMember}: var(${density.comfortableMember});
 `;
 }
 
@@ -168,9 +177,12 @@ ${spacingVarDeclarations(tokens)}  --bf-space-0: 0rem;
   --bf-content-max-width: ${tokens.layout.contentMaxWidth};
   --bf-content-padding-inline: ${tokens.layout.contentPaddingInline};
   --bf-measure: ${tokens.layout.measure};
+  --bf-section-space-deep: ${tokens.layout.sectionSpaceDeep};
+  --bf-strip-space: ${tokens.layout.stripSpace};
   --bf-grid-gap-inline: ${tokens.layout.gridGapInline};
   --bf-grid-gap-block: ${tokens.layout.gridGapBlock};
   --bf-page-margin: ${tokens.layout.pageMargin};
+  --bf-component-inline-inset-continuation: ${tokens.components.inlineInsetContinuation};
 ${Object.entries(tokens.roles).map(([roleName, token]) => roleVarDeclarations(roleName, token, tokens.baselineUnit)).join("")}  --bf-font-size-small: var(--bf-body-font-size, ${smallFontFallback});
  }
 `;
@@ -287,8 +299,6 @@ export function generateFoundryCss(tokens: ThemeTokens, options: { presetName?: 
       .map(tier => ({ product: tier, scope: `:where(.bf-theme.bf-tier-${tier})` }))
   ];
   const tableDensityScopes = tableDensityScopesByProduct.map(({ scope }) => scope);
-  const tableDensityStandardScopes = tableDensityScopesByProduct.filter(({ product }) => product !== "os").map(({ scope }) => scope);
-  const tableDensityOsScopes = tableDensityScopesByProduct.filter(({ product }) => product === "os").map(({ scope }) => scope);
   const presetCss = includesAppSurface ? `\n${appTierPresetCss(appScopes)}` : "";
   const tokenRowStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-token-row)", { anchor: "relative", color: "var(--bf-color-rule)", width: "0.0625rem" });
 
@@ -628,10 +638,7 @@ ${tokenRowStroke.painter}
 ${componentsCss(
   tokens,
   themeSurfaces,
-  tableDensityScopes,
-  tableDensityStandardScopes,
-  tableDensityOsScopes,
-  options.presetName === "os" ? "0.25rem" : options.presetName ? "0.5rem" : undefined
+  tableDensityScopes
 )}
 
 ${gridCss(appScopes)}${presetCss}

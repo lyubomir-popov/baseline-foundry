@@ -32,8 +32,6 @@ const tableSpecimens = [
   ["Native Select · single-line entry", tableRow(`<span class="bf-field-boundary"><select class="bf-input" aria-label="State" data-target><option>Active</option></select></span>`, "Select row"), "member"],
   ["Two-line plain table row · multiline reference", tableRow(`<span class="bf-body" data-target>First line<br />Second line</span>`, "Two-line plain reference row"), "multiline-reference"],
   ["Textarea · two-line viewport diagnostic", tableRow(`<span class="bf-field-boundary"><textarea class="bf-input" rows="2" aria-label="Notes" data-target>First line\nSecond line</textarea></span>`, "Textarea row"), "multiline"],
-  ["Plain table text · fresh product root reference (not a Button)", tableRow(`<div class="bf-theme"><table class="bf-table"><tbody><tr><td><span data-target>Reset</span></td></tr></tbody></table></div>`, "Fresh product root plain table text reference; no Button"), "reset-reference"],
-  ["Default Button · fresh product root resets table density", tableRow(`<div class="bf-theme density-reset-boundary"><button class="bf-button" type="button" data-target>Reset</button></div>`, "Fresh product root default Button after table-density reset"), "reset"],
   ["Standalone Button · product default", `<button class="bf-button" type="button" data-target>Active</button>`, "standalone"],
   ["Standalone Chip · product default", `<span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span>`, "standalone"],
   ["Standalone input · product default", `<span class="bf-field-boundary"><input class="bf-input" type="text" value="Standalone" aria-label="Standalone input" data-target /></span>`, "standalone"]
@@ -138,7 +136,6 @@ function measureTrack(track, samples) {
     const selected = targetStyle.getPropertyValue("--bf-density-control-block-inset").trim() || "not exposed";
     const membership = production ? "automatic table-cell member"
       : proposal ? "review-only OS 0-inset proposal"
-      : sample.dataset.kind === "reset" ? "reset by nearest nested .bf-theme"
       : sample.dataset.kind === "deferred" ? "deferred Nav/Tabs diagnostic"
       : "product default / outside supported placement";
     const metrics = `loaded bundle ${bundleVersion()}; loaded tier ${tierName()}; ${membership}\n` +
@@ -147,15 +144,13 @@ function measureTrack(track, samples) {
       `paint owner ${paintOwner.className || paintOwner.tagName.toLowerCase()}; clearance start/end ${startClearance === null ? "n/a" : `${px(startClearance)}/${px(endClearance)}`}; cell padding ${cellStyle ? `${cellStyle.paddingBlockStart}/${cellStyle.paddingBlockEnd}` : "n/a"}; resize ${targetStyle.resize || "n/a"}; scroll ${target.scrollHeight ?? "n/a"}/${target.clientHeight ?? "n/a"}`;
     // Plain text is the row reference, not the padded rectangle of an inline
     // bf-body span. The actual text marker is still measured inside the row.
-    peers.push({ sample, target: ["plain", "reset-reference"].includes(sample.dataset.kind) ? owner : target, owner, metrics, firstLineOnly: target.matches("textarea") });
+    peers.push({ sample, target: sample.dataset.kind === "plain" ? owner : target, owner, metrics, firstLineOnly: target.matches("textarea") });
   }
   const multilineIndex = samples.findIndex(sample => sample.dataset.kind === "multiline-reference");
-  const resetReferenceIndex = samples.findIndex(sample => sample.dataset.kind === "reset-reference");
   const standaloneIndex = samples.findIndex(sample => sample.dataset.kind === "standalone");
-  const groups = resetReferenceIndex < 0 ? undefined : [
+  const groups = standaloneIndex < 0 ? undefined : [
     { start: 0, end: multilineIndex - 1, reference: 0, name: "table-cell" },
-    { start: multilineIndex, end: resetReferenceIndex - 1, reference: multilineIndex, name: "multiline-first-line" },
-    { start: resetReferenceIndex, end: standaloneIndex - 1, reference: resetReferenceIndex, name: "reset-product" },
+    { start: multilineIndex, end: standaloneIndex - 1, reference: multilineIndex, name: "multiline-first-line" },
     { start: standaloneIndex, end: samples.length - 1, reference: 0, name: "standalone-default" }
   ];
   renderGuides(track, peers, 0, groups);
@@ -185,7 +180,7 @@ function measure() {
   syncOsProposalState();
   document.querySelector("#density-table-heading").textContent = tierName() === "os"
     ? "OS generated table controls"
-    : "Supported table seats and reset boundary";
+    : "Supported table seats and standalone defaults";
   measureTrack(tableTrack, tableSamples);
   measureTrack(osTrack, osSamples);
   document.body.dataset.densityMeasuredTier = tierName();

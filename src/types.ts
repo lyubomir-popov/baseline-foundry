@@ -1,4 +1,4 @@
-import type { ResolvedDtcgSpacing } from "./dtcg-spacing.js";
+import type { ResolvedDtcgSpacing, ResolvedDtcgSpacingDensity } from "./dtcg-spacing.js";
 
 export interface ThemeFontFile {
   family: string;
@@ -118,7 +118,9 @@ export interface ThemeTokens {
   baselineUnit: string;
   inlineUnit: string;
   canonicalSpacing?: ResolvedDtcgSpacing;
+  canonicalSpacingDensity?: ResolvedDtcgSpacingDensity;
   spacing: ResolvedDtcgSpacing;
+  spacingDensity: ResolvedDtcgSpacingDensity;
   fontFiles: ThemeFontFile[];
   fontStacks: Record<string, string>;
   roles: Record<string, TypographyToken>;

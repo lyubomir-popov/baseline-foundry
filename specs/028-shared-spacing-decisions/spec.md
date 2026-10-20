@@ -36,6 +36,34 @@ The governing rules and cross-repository status live in the Spec 024
 and [conformance board](../../../../canonical-spacing-spec/specs/024-semantic-spacing-token-schema/conformance.md).
 This package records only BF implementation, evidence and review state.
 
+## Spec 024 consumer map
+
+BF reads the accepted private Spec 024 generated primitive and product CSS on
+every build. The generated CSS is the value provider; the adjacent public
+metadata describes the twelve public records and carries no values. BF keeps
+its existing property names as consumer aliases:
+
+| BF property | Spec 024 role |
+|---|---|
+| `--bf-baseline` | `spacing.baseline` (external baseline input) |
+| `--bf-leading-mark-gap` | `spacing.gap.mark.inline` |
+| `--bf-element-gap-inline` | `spacing.gap.item.inline` |
+| `--bf-field-gap` | `spacing.gap.item.block` |
+| `--bf-section-space-shallow` | `spacing.gap.group.block` |
+| `--bf-section-space` | `spacing.gap.section.block` |
+| `--bf-component-inline-inset-action` | `spacing.inset.action.inline` |
+| `--bf-component-inline-inset-field` | `spacing.inset.input.inline` |
+| `--bf-control-block-inset` | `spacing.inset.control.block` |
+| `--bf-surface-compact-inset-inline` | `spacing.inset.surface.compact.inline` |
+| `--bf-surface-compact-inset-block` | `spacing.inset.surface.compact.block` |
+| `--bf-panel-padding-inline` | `spacing.inset.surface.standard.inline` |
+| `--bf-panel-padding-block` | `spacing.inset.surface.standard.block` |
+
+The table-cell comfortable and dense members bind the generated default and
+dense members of `spacing.inset.control.block`. Metric nudges and
+compensation, continuation inset construction, deep region and strip spacing,
+grid gutters, page margins and `--bf-space-*` remain BF-owned.
+
 ## Acceptance
 
 - Every BF column on the conformance board names the implementation and check.

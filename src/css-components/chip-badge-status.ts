@@ -35,9 +35,6 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   return `${chipStrokeCss}
 
 :where(.bf-theme) {
-  ${density.comfortableMember}: var(--bf-control-block-inset);
-  ${density.denseMember}: var(--bf-space-half);
-  ${density.currentMember}: var(${density.comfortableMember});
   --bf-ui-chip-padding-inline: var(--bf-component-inline-inset-action);
   --bf-ui-chip-radius: 999rem;
   --bf-ui-badge-padding-inline: 0.0625rem;
