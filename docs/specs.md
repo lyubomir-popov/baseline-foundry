@@ -7,7 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
-| 028 Shared spacing decisions | `feat/028-shared-spacing-decisions` worktree | BF sandbox for canonical Spec 024; its current tasks own execution. D2 and OS dense 0 are owner-approved, and primitive table seats cover all four tiers. The historical Site Table/Chip proof does not establish the wider family/placement contract: compound seats/actions and Nav/Tabs coverage remain open. Bucket visual sign-off stays with the owner; no chrome, re-pin or audit gates |
+| 028 Shared spacing decisions | Canonical Spec 024 directs preserved BF feature worktrees | BF sandbox for canonical Spec 024; its current tasks own execution. D2 and OS dense 0 are owner-approved, primitive table seats cover all four tiers, and static Chips now bind automatically in shipped Tab actions and SideNavigation trailing link/text slots. Compound seats/actions, interactive navigation APIs, SideTab and wider Nav/Tab coverage remain open. Bucket visual sign-off stays with the owner; no chrome, re-pin or audit gates |
 | 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Parked and excluded from BF by current owner direction; preserve branch/history and do not resume |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |
 | 024 Semantic spacing token schema | `feat/024-semantic-spacing-token-schema` worktree | Pragma-targeted planning store; its package owns its status. Not BF execution order |

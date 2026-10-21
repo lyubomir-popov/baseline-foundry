@@ -48,13 +48,52 @@ const osSpecimens = [
   ["OS 0-inset proposal · wrapped input", tableRow(`<span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" aria-label="OS proposed input" data-target /></span>`, "OS proposed input row", { proposal: true }), "os-proposal"]
 ];
 
-const deferredSpecimens = [
-  ["Tabs Chip · deferred diagnostic", `<div class="bf-tabs"><ul class="bf-tabs-list" role="tablist"><li class="bf-tabs-item"><button id="density-tab-1" class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="density-tabs-panel-1" tabindex="0">Status <span class="bf-chip" data-target>3</span></button></li><li class="bf-tabs-item"><button id="density-tab-2" class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="density-tabs-panel-2" tabindex="-1">History</button></li></ul><div id="density-tabs-panel-1" class="bf-tabs-panel" role="tabpanel" aria-hidden="false"><p class="bf-body">Selected state.</p></div><div id="density-tabs-panel-2" class="bf-tabs-panel" role="tabpanel" aria-hidden="true"><p class="bf-body">Inactive state.</p></div></div>`, "deferred"],
-  ["SideNavigation Chip · deferred diagnostic", `<nav class="bf-panel bf-side-navigation" aria-label="Density navigation"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><div class="bf-side-navigation-group-header"><h3 class="bf-side-navigation-heading">Projects</h3></div><ul class="bf-side-navigation-list"><li class="bf-side-navigation-item" data-host-row><a class="bf-side-navigation-link" href="#"><span class="bf-side-navigation-label">Quarterly review</span><span class="bf-side-navigation-status"><span class="bf-chip is-positive is-nested" data-target>New</span></span></a></li></ul></section></div></nav>`, "deferred"]
-];
-
 const baselineProbe = name => `<span class="bucket-baseline-marker" data-indicator-${name}-baseline aria-hidden="true"></span>`;
 
+function staticNavigationLabel(text) {
+  return `<span data-static-navigation-label>${baselineProbe("static-host")}${text}</span>`;
+}
+
+function staticNavigationChip({ badge = false, nested = false, wrappers = 0, value = "3" } = {}) {
+  const badgeMarkup = badge ? `<span class="bf-badge" data-static-navigation-badge>3</span>` : "";
+  let markup = `<span class="bf-chip${nested ? " is-nested" : ""}" data-static-navigation-chip><span class="bf-chip-value">${value}${baselineProbe("static-chip")}</span>${badgeMarkup}</span>`;
+  for (let depth = 0; depth < wrappers; depth += 1) markup = `<span data-neutral-wrapper="${depth + 1}">${markup}</span>`;
+  return markup;
+}
+
+function staticTabComparison(equal, suffix) {
+  const placement = equal ? "equal-tab" : "ordinary-tab";
+  const variants = [
+    ["plain", "false", "-1", ""],
+    ["chip", "true", "0", staticNavigationChip({ wrappers: equal ? 1 : 0 })],
+    ["badge", "false", "-1", staticNavigationChip({ badge: true, wrappers: equal ? 2 : 0 })]
+  ];
+  const items = variants.map(([variant, selected, tabIndex, chip], index) => `<li class="bf-tabs-item"><button id="density-${suffix}-tab-${index + 1}" class="bf-tabs-link" type="button" role="tab" aria-selected="${selected}" aria-controls="density-${suffix}-panel-${index + 1}" tabindex="${tabIndex}" data-static-navigation-host data-static-placement="${placement}" data-static-variant="${variant}">${staticNavigationLabel(equal ? "Quarterly release status" : "State")}${chip}</button></li>`).join("");
+  const panels = variants.map(([, selected], index) => `<div id="density-${suffix}-panel-${index + 1}" class="bf-tabs-panel" role="tabpanel" aria-hidden="${selected === "true" ? "false" : "true"}"><p class="bf-body">${suffix} selected state.</p></div>`).join("");
+  return `<div class="bf-tabs${equal ? " is-equal density-static-equal-tabs" : ""}"><ul class="bf-tabs-list" role="tablist">${items}</ul>${panels}</div>`;
+}
+
+function staticSideNavigationComparison(rowKind, suffix) {
+  const ownerClass = rowKind === "text" ? "bf-side-navigation-text" : "bf-side-navigation-link";
+  const ownerTag = rowKind === "text" ? "span" : "a";
+  const href = rowKind === "text" ? "" : ` href="#density-navigation-heading"`;
+  const variants = [
+    ["plain", ""],
+    ["chip", `<span class="bf-side-navigation-status">${staticNavigationChip({ nested: rowKind === "text", wrappers: rowKind === "text" ? 2 : 0, value: "New" })}</span>`],
+    ["badge", `<span class="bf-side-navigation-status">${staticNavigationChip({ badge: true, wrappers: 1, value: "New" })}</span>`]
+  ];
+  const items = variants.map(([variant, status]) => `<li class="bf-side-navigation-item"><${ownerTag} class="${ownerClass}"${href} data-static-navigation-host data-static-placement="side-navigation-${rowKind}" data-static-variant="${variant}"><span class="bf-side-navigation-label">${staticNavigationLabel("Quarterly review")}</span>${status}</${ownerTag}></li>`).join("");
+  return `<nav class="bf-panel bf-side-navigation" aria-label="${rowKind === "text" ? "Inert" : "Linked"} density navigation"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><ul class="bf-side-navigation-list">${items}</ul></section></div></nav>`;
+}
+
+const deferredSpecimens = [
+  ["Tabs Chip · automatic static seat", `<div class="bf-tabs"><ul class="bf-tabs-list" role="tablist"><li class="bf-tabs-item"><button id="density-tab-1" class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="density-tabs-panel-1" tabindex="0" data-static-navigation-host data-static-placement="tab-original" data-static-variant="chip">${staticNavigationLabel("Status")} ${staticNavigationChip()}</button></li><li class="bf-tabs-item"><button id="density-tab-2" class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="density-tabs-panel-2" tabindex="-1">History</button></li></ul><div id="density-tabs-panel-1" class="bf-tabs-panel" role="tabpanel" aria-hidden="false"><p class="bf-body">Selected state.</p></div><div id="density-tabs-panel-2" class="bf-tabs-panel" role="tabpanel" aria-hidden="true"><p class="bf-body">Inactive state.</p></div></div>`, "supported-navigation"],
+  ["SideNavigation Chip · automatic trailing seat", `<nav class="bf-panel bf-side-navigation" aria-label="Density navigation"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><div class="bf-side-navigation-group-header"><h3 class="bf-side-navigation-heading">Projects</h3></div><ul class="bf-side-navigation-list"><li class="bf-side-navigation-item" data-host-row><a class="bf-side-navigation-link" href="#" data-static-navigation-host data-static-placement="side-navigation-original" data-static-variant="chip"><span class="bf-side-navigation-label">${staticNavigationLabel("Quarterly review")}</span><span class="bf-side-navigation-status">${staticNavigationChip({ nested: true, value: "New" })}</span></a></li></ul></section></div></nav>`, "supported-navigation"],
+  ["Ordinary Tabs · plain / Chip / Badge-in-Chip", staticTabComparison(false, "ordinary"), "supported-navigation-comparison"],
+  ["Equal Tabs · plain / Chip / Badge-in-Chip", staticTabComparison(true, "equal"), "supported-navigation-comparison"],
+  ["SideNavigation link rows · plain / Chip / Badge-in-Chip", staticSideNavigationComparison("link", "link"), "supported-navigation-comparison"],
+  ["SideNavigation text row · automatic trailing seat", staticSideNavigationComparison("text", "text"), "supported-navigation-comparison"]
+];
 function indicatorChip(withBadge) {
   const badge = withBadge
     ? `<span class="bf-badge is-nested" data-indicator-badge>3${baselineProbe("badge")}</span>`
@@ -320,8 +359,8 @@ function measure() {
   document.body.dataset.densityMeasuredWidth = String(window.innerWidth);
   for (const sample of deferredSamples) {
     const caption = sample.querySelector(".density-caption");
-    caption.textContent = `${sample.dataset.baseCaption} · not part of table-row proof`;
-    sample.querySelector("pre").textContent = `loaded bundle ${bundleVersion()}; loaded tier ${tierName()}; deferred current-state diagnostic`;
+    caption.textContent = `${sample.dataset.baseCaption} · automatic dense binding`;
+    sample.querySelector("pre").textContent = `loaded bundle ${bundleVersion()}; loaded tier ${tierName()}; automatic static Chip binding; layout-neutral selected and focus paint; SideTab API absent`;
   }
 }
 

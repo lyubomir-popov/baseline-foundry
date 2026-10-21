@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { closeServer, createStaticServer, waitForFonts } from "./component-demo-shared.ts";
 import { assert, disableDemoChromeHitTesting, openBrowser } from "./behavior/browser-helpers.ts";
+import { verifyStaticNavigationChipDensity } from "./behavior/static-navigation-chip-density.ts";
 import {
   verifyContentCardGeometry,
   verifyInteractiveTables,
@@ -3436,11 +3437,15 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             const host = child.closest<HTMLElement>(".bf-side-navigation-link, .bf-side-navigation-text");
             const childStyles = getComputedStyle(child);
             const hostStyles = host ? getComputedStyle(host) : null;
+            const childBox = child.getBoundingClientRect();
+            const hostBox = host?.getBoundingClientRect();
             return {
-              childHeight: child.getBoundingClientRect().height,
+              childHeight: childBox.height,
               childKind: child.classList.contains("bf-chip") ? "chip" : "status",
-              hostHeight: host?.getBoundingClientRect().height ?? 0,
+              hostHeight: hostBox?.height ?? 0,
               hostLineHeight: Number.parseFloat(hostStyles?.lineHeight ?? "0"),
+              hostClearanceStart: hostBox ? childBox.top - hostBox.top : 0,
+              hostClearanceEnd: hostBox ? hostBox.bottom - childBox.bottom : 0,
               marginBlockEnd: Number.parseFloat(childStyles.marginBlockEnd),
               marginBlockStart: Number.parseFloat(childStyles.marginBlockStart),
               paddingBlockEnd: Number.parseFloat(childStyles.paddingBlockEnd),
@@ -3454,7 +3459,9 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
         });
         assert(navigation?.length === 5, `Expected ${tier}/${tone} side navigation to expose five nested auxiliary fixtures: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => Math.abs(item.hostHeight - item.plainHeight) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces not to enlarge side-navigation rows: ${JSON.stringify(navigation)}.`);
-        assert(navigation.every(item => item.childHeight <= item.hostLineHeight + 0.1), `Expected ${tier}/${tone} nested auxiliary paint to fit inside the host body line: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => item.childKind === "chip"
+          ? item.hostClearanceStart > 0.1 && item.hostClearanceEnd > 0.1
+          : item.childHeight <= item.hostLineHeight + 0.1), `Expected ${tier}/${tone} governed dense Chips to clear their unchanged row edges and invariant StatusLabels to fit the host body line: ${JSON.stringify(navigation)}.`);
         const indicatorHalfLeading = tier === "os" ? -3 : -2;
         assert(navigation.every(item => {
           const expectedMargin = item.childKind === "status" ? indicatorHalfLeading : 0;
@@ -3922,7 +3929,14 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
     "OS generated input", "OS 0-inset proposal · Button", "OS 0-inset proposal · Chip",
     "OS 0-inset proposal · wrapped input"
   ];
-  const expectedDeferredCaptions = ["Tabs Chip · deferred diagnostic", "SideNavigation Chip · deferred diagnostic"];
+  const expectedNavigationCaptions = [
+    "Tabs Chip · automatic static seat",
+    "SideNavigation Chip · automatic trailing seat",
+    "Ordinary Tabs · plain / Chip / Badge-in-Chip",
+    "Equal Tabs · plain / Chip / Badge-in-Chip",
+    "SideNavigation link rows · plain / Chip / Badge-in-Chip",
+    "SideNavigation text row · automatic trailing seat"
+  ];
   const browser = await openBrowser();
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
@@ -4016,7 +4030,7 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
             return { identity, guideLines, referenceBaseline: refBaseline, referencePhase: phase(refBaseline), referenceMetricPhaseError: phase(refBaseline - metricTextPhase), contentReferenceMetricPhaseError: phase(refBaseline - metricTextPhase - contentPhase), contentStartPhase: phase(reference.getBoundingClientRect().top + window.scrollY - contentPhase), contentEndPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY - contentPhase), startPhase: phase(reference.getBoundingClientRect().top + window.scrollY), endPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY), referenceHeight: reference.getBoundingClientRect().height, baselinePaintDelta: baselineRule ? baselineRule.getBoundingClientRect().bottom - marker.getBoundingClientRect().top : null, topPaintDelta: topRule ? topRule.getBoundingClientRect().top - reference.getBoundingClientRect().top : null, peers };
           };
           const deferredIdentity = [...document.querySelectorAll<HTMLElement>("#density-deferred-track .density-sample")].map(sample => {
-            const target = sample.querySelector<HTMLElement>("[data-target]");
+            const target = sample.querySelector<HTMLElement>("[data-target], [data-static-navigation-host]");
             const box = target?.getBoundingClientRect();
             const style = target ? getComputedStyle(target) : null;
             return { caption: sample.dataset.baseCaption, visible: !!box && box.width > 0 && box.height > 0 && style?.display !== "none" && style?.visibility !== "hidden" };
@@ -4037,7 +4051,7 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
         assert(JSON.stringify(mainIdentity.map(item => item.kind)) === JSON.stringify(["plain", "plain-inline", ...Array(12).fill("member").map((kind, index) => index === 3 ? "icon" : kind), "multiline-reference", "multiline", "standalone", "standalone", "standalone"]), `Expected ${tier}/${width} supported main comparison identities to remain in order: ${JSON.stringify(mainIdentity)}.`);
         assert(JSON.stringify(osIdentity.map(item => item.caption)) === JSON.stringify(expectedOsCaptions) && osIdentity.length === 7 && osIdentity.every(item => item.visible), `Expected ${tier}/${width} every original OS source/proposal specimen to remain visible in order: ${JSON.stringify(osIdentity)}.`);
         assert(JSON.stringify(osIdentity.map(item => item.kind)) === JSON.stringify(["plain", "os-shipping", "os-shipping", "os-shipping", "os-proposal", "os-proposal", "os-proposal"]), `Expected ${tier}/${width} OS source and proposal identities to remain distinct.`);
-        assert(JSON.stringify(proof.deferredIdentity.map(item => item.caption)) === JSON.stringify(expectedDeferredCaptions) && proof.deferredIdentity.length === 2 && proof.deferredIdentity.every(item => item.visible), `Expected ${tier}/${width} both original deferred Tabs/Nav diagnostics to remain visible in order: ${JSON.stringify(proof.deferredIdentity)}.`);
+        assert(JSON.stringify(proof.deferredIdentity.map(item => item.caption)) === JSON.stringify(expectedNavigationCaptions) && proof.deferredIdentity.length === 6 && proof.deferredIdentity.every(item => item.visible), `Expected ${tier}/${width} the original Tab/Nav specimens and supported comparison twins to remain visible in order: ${JSON.stringify(proof.deferredIdentity)}.`);
         const mainGuideContexts = [
           { name: "table-cell", start: 0, end: 13, reference: 0 },
           { name: "multiline-first-line", start: 14, end: 15, reference: 14 },
@@ -8645,6 +8659,11 @@ async function main(): Promise<void> {
       console.log("Table density behavior verification passed.");
       return;
     }
+    if (process.argv.includes("--navigation-density")) {
+      await verifyStaticNavigationChipDensity(origin);
+      console.log("Static navigation density behavior verification passed.");
+      return;
+    }
     if (process.argv.includes("--indicator-fit")) {
       await verifyIndicatorFit(origin);
       console.log("Indicator fit behavior verification passed.");
@@ -8672,6 +8691,7 @@ async function main(): Promise<void> {
     await verifyNestedAuxiliaryGeometry(origin);
     await verifyDenseTableEnrollment(origin);
     await verifyDensityPageGrid(origin);
+    await verifyStaticNavigationChipDensity(origin);
     await verifyIndicatorFit(origin);
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);

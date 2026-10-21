@@ -2,10 +2,13 @@
 
 Current density execution and owner decisions live in canonical Spec024
 `tasks.md` at `H:/WSL_dev_projects/canonical-spacing-spec`. The October16
-repair follows its accepted brief08. Historical Site Chip completion below
-proves that subset only, not the action/input family or all placements.
-OS, compound Search/Color, segmented/pagination and Nav/Tabs remain explicit
-coverage gaps. No historical done row grants semantic exemption or approval.
+repair and October21 static-navigation correction follow its active brief08.
+BF now has the approved primitive OS table binding and automatic static Chip
+binding in shipped Tab actions and SideNavigation trailing link/text slots.
+Historical Site Chip completion below still proves that subset only:
+compound Search/Color, segmented/pagination, interactive navigation APIs,
+SideTab and wider placement coverage remain open. No historical done row
+grants semantic exemption or owner visual approval.
 
 ## Scope reset – 2026-10-10
 

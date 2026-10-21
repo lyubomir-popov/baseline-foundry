@@ -60,7 +60,9 @@ Read in this order:
 - Public styling uses flat `bf-*` classes and `is-*` modifiers. No styled
   `data-*` selectors, `ui-*` roles, `p-*` compatibility layer, BEM API, or
   consumer overrides masquerading as components.
-- Non-heading UI is body-sized unless a component exposes a real heading slot.
+- Non-heading UI is body-sized unless a component exposes a real heading slot;
+  the owner-approved private invariant indicator type is the narrow exception
+  for Badge and StatusLabel.
 - Generated files under `dist/` are outputs. Change config or source, then
   rebuild; never hand-edit generated CSS or JSON.
 - Demos dogfood BF contracts and include only the minimum local specimen CSS

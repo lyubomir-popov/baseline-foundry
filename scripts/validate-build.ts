@@ -825,6 +825,7 @@ function validateCommonCss(css: string): void {
     if (!value || /^0(?:rem|px|em|%)?$/.test(value)) return;
     const selector = ((declaration.parent as { selector?: string }).selector ?? "").replace(/\s+/g, " ");
     const isMetricCompensation = /var\(--bf-(?:body|h[1-6])-margin-bottom(?:,|\))/.test(value) || value === "var(--bf-interface-row-compensation-block-end)" ||
+      (selector === ":where(.bf-theme) :where(.bf-tabs-list)" && declaration.prop === "margin" && value === "var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end))") ||
       (selector === ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)" && declaration.prop === "margin-block-end" && value === "var(--bf-tabs-equal-closure, var(--bf-interface-row-compensation-block-end))");
     if (isMetricCompensation) return;
     const key = `${selector}|${declaration.prop}|${declaration.value}`;
@@ -1448,13 +1449,9 @@ function validateCommonCss(css: string): void {
     "min-inline-size": "min(100%, calc(var(--bf-interface-row-painted-block-size) + var(--bf-inline-unit)))"
   }, "short Action-framed chips retain a container-safe stadium silhouette independent of paint width");
   const legacyTableChipSelector = ":where(.bf-chip.is-nested:not(.bf-theme):not(:scope td .bf-chip, :scope .bf-theme .bf-chip))";
-  const legacySideNavigationChipSelector = ":where(.bf-chip.is-nested:not(.bf-theme):not(:scope .bf-side-navigation .bf-chip, :scope .bf-theme .bf-chip))";
   assertRuleHasDecl(ast, legacyTableChipSelector, {
     "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + var(--bf-inline-unit)))"
   }, "short Chips in named legacy hosts retain the same container-safe stadium contract");
-  assertRuleHasDecl(ast, legacySideNavigationChipSelector, {
-    "min-inline-size": "min(100%, calc(var(--bf-nested-row-painted-block-size) + var(--bf-inline-unit)))"
-  }, "short Chips in named legacy navigation hosts retain the same container-safe stadium contract");
   assert(css.includes("--bf-ui-chip-radius: 999rem;") && css.includes("border-radius: var(--bf-ui-chip-radius);"), "Expected standalone and nested chips to use the shared rem-based pill radius.");
   assert(!css.includes("--bf-ui-chip-border: var(--bf-color-border-default);"), "Expected generated CSS to avoid using the generic default border token for neutral chips.");
   assert(!css.includes("--bf-ui-chip-background: var(--bf-color-background-hover);"), "Expected generated CSS to avoid using the generic hover background token for neutral chips.");
@@ -1744,7 +1741,7 @@ function validateCommonCss(css: string): void {
     "padding-block": "var(--bf-interface-row-padding-block)"
   }, "contextual-menu commands use equal block padding and trailing compensation");
   assert(!css.includes(":where(.bf-theme) :where(.bf-status-label.is-nested)"), "Expected StatusLabel compatibility classes not to change the invariant indicator seat.");
-  for (const legacyChipSelector of [legacyTableChipSelector, legacySideNavigationChipSelector]) {
+  for (const legacyChipSelector of [legacyTableChipSelector]) {
     assertRuleHasDecl(ast, legacyChipSelector, {
       "line-height": "var(--bf-nested-row-line-height)",
       "margin-block": "0",
@@ -1759,7 +1756,7 @@ function validateCommonCss(css: string): void {
     }, "nested Chip parts inherit the compact host line so badges cannot enlarge it");
   }
   assert(!css.includes(":where(.bf-side-navigation .bf-chip.is-nested, .bf-table td .bf-chip.is-nested)"), "Expected the legacy Chip compatibility path to resolve only through scoped named hosts instead of a cross-product descendant selector.");
-  assert(css.includes("@scope (:where(.bf-theme)) to (:where(.bf-theme))") && css.includes("@scope (:where(.bf-side-navigation)) to (:where(.bf-side-navigation, .bf-theme))"), "Expected legacy nested Chips to stop at the nearest named host and product root.");
+  assert(css.includes("@scope (:where(.bf-theme)) to (:where(.bf-theme))"), "Expected legacy table Chips to stop at the nearest named host and product root.");
   /* The scoped legacy compatibility path and the governed Site policy share
      paint geometry, but only the Site Table.Cell path changes density. */
   assertRuleHasDecl(ast, legacyTableChipSelector, {
@@ -1769,7 +1766,7 @@ function validateCommonCss(css: string): void {
   }, "legacy table Chips use the reviewed paint-only compatibility anatomy");
   const density = componentDensityPolicy.tableCell;
   assert(
-    componentDensityPolicy.version === 2 &&
+    componentDensityPolicy.version === 3 &&
     JSON.stringify(density.products) === JSON.stringify(["editorial", "documentation", "app", "os"]) &&
     density.provider === ".bf-table :is(td, th)" &&
     JSON.stringify(density.providerBoundaries) === JSON.stringify(["td", "th", ".bf-theme"]) &&
@@ -1780,6 +1777,30 @@ function validateCommonCss(css: string): void {
     density.subscribers.textareas.some(selector => selector.startsWith("textarea")) &&
     density.role === "spacing.inset.control.block",
     `Expected the versioned table-cell policy to name supported products, data/header hosts, bounded primitive seats and role; got ${JSON.stringify(componentDensityPolicy)}.`
+  );
+  const staticNavigationChip = componentDensityPolicy.staticNavigationChip;
+  assert(
+    JSON.stringify(staticNavigationChip.products) === JSON.stringify(["editorial", "documentation", "app", "os"]) &&
+    staticNavigationChip.placements.tab.provider === ".bf-tabs .bf-tabs-link" &&
+    JSON.stringify(staticNavigationChip.placements.tab.providerBoundaries) === JSON.stringify([".bf-tabs-link", ".bf-theme"]) &&
+    staticNavigationChip.placements.tab.subscriber.startsWith("span.bf-chip") &&
+    staticNavigationChip.placements.sideNavigationTrailing.provider === ".bf-side-navigation :is(.bf-side-navigation-link, .bf-side-navigation-text)" &&
+    JSON.stringify(staticNavigationChip.placements.sideNavigationTrailing.providerBoundaries) === JSON.stringify([".bf-side-navigation-link", ".bf-side-navigation-text", ".bf-theme"]) &&
+    staticNavigationChip.placements.sideNavigationTrailing.subscriber.includes(".bf-side-navigation-status") &&
+    staticNavigationChip.role === "spacing.inset.control.block" &&
+    staticNavigationChip.denseMember === "--bf-control-block-inset-dense" &&
+    staticNavigationChip.componentBinding === "--bf-chip-control-block-inset",
+    `Expected the versioned static navigation policy to name the bounded Tab and SideNavigation trailing placements and existing dense role; got ${JSON.stringify(staticNavigationChip)}.`
+  );
+  assert(
+    css.includes("@scope (:where(.bf-tabs .bf-tabs-link)) to (:where(.bf-tabs-link, .bf-theme))") &&
+    css.includes("margin: 0 0 var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end));") &&
+    css.includes("@scope (:where(.bf-side-navigation :is(.bf-side-navigation-link, .bf-side-navigation-text))) to (:where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-theme))") &&
+    css.includes(`${staticNavigationChip.componentBinding}: var(${staticNavigationChip.denseMember});`) &&
+    css.includes("align-items: baseline;") &&
+    css.includes("padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-control-block-inset-dense)));") &&
+    !css.includes("@scope (:where(.bf-side-navigation)) to (:where(.bf-side-navigation, .bf-theme))"),
+    "Expected static navigation Chips and their actual hosts to use bounded generated placement rules, with no whole-SideNavigation legacy enrollment."
   );
   assert(
     css.includes(`${density.comfortableMember}: var(--_spacing-inset-control-block-default);`) &&
@@ -2028,8 +2049,8 @@ function validateCommonCss(css: string): void {
     "gap": "var(--bf-space-2)"
   }, "tabs own the relationship between their list and panel");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
-    "margin": "0 0 var(--bf-interface-row-compensation-block-end)"
-  }, "tab lists own one trailing closure after the painted strip");
+    "margin": "0 0 var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end))"
+  }, "tab lists own one measured-or-default trailing closure after the painted strip");
   assert(css.includes(":where(.bf-theme) :where(.bf-tabs-list)::after") && css.includes(":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])::after"), "Expected tab-list and active-tab boundaries to use automatic out-of-flow overlays.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
     "overflow-x": "auto",
@@ -2046,9 +2067,9 @@ function validateCommonCss(css: string): void {
     "margin-bottom": "0"
   }, "tab links inside strips leave closure to the list owner");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
-    "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
+    "margin": "0 0 var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end))",
     "padding": "0"
-  }, "tab strips close once after their visible row");
+  }, "tab strips close once after their visible row using measured or default closure");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)", {
     "display": "grid",
     "gap": "var(--bf-component-inline-inset-action)",

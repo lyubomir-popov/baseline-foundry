@@ -40,6 +40,7 @@
       .bucket-guide-mark.is-tick { transform: translateY(-.25rem); block-size: .5rem !important; inline-size: .0625rem !important; }
       .density-os-proposal-note { color: var(--bf-color-text-muted); }
       .density-sample pre { display: none; }
+      .density-static-equal-tabs { inline-size: 8rem; max-inline-size: 100%; }
 
       /* Review-only OS candidate. It is active on After bundle comparisons
          and uses the existing OS 0 inset; it is not a published selector. */
@@ -64,7 +65,7 @@
     <main class="bf-page is-fill density-page">
       <header class="bf-stack is-dense density-intro">
         <h1>08 · Density</h1>
-        <p>Table.Cell supplies one dense control seat to the repaired primitive boxed Buttons, Chips, text inputs, Select and Textarea in all four tiers. OS uses its existing zero control inset. Standalone controls keep their defaults. Compound Search/Color seats, segmented/pagination actions, Nav and Tabs remain coverage gaps rather than semantic exclusions.</p>
+        <p>Table.Cell supplies one dense control seat to the repaired primitive boxed Buttons, Chips, text inputs, Select and Textarea in all four tiers. OS uses its existing zero control inset. Standalone controls keep their defaults. Compound Search/Color seats and segmented/pagination actions remain coverage gaps. Static Chips in the shipped Tab action and SideNavigation trailing status slot now select the same generated dense member automatically.</p>
         <p class="density-note">Compared single-line table members use the same text, Active. Standalone diagnostics retain their own values and default spacing. Red lines mark reference row bounds. Blue marks the reference text baseline for table cells, multiline first lines and standalone defaults. Textarea preserves its native viewport; compare its first line, not its exported bottom CSS baseline. The OS track keeps generated controls beside the earlier After-only override so every displayed result stays visible. Both now use the existing OS inset; source controls must align independently of that override. Exported native CSS baselines are recorded separately from painted text.</p>
       </header>
       <section class="density-row">
@@ -82,8 +83,8 @@
         <div id="density-indicator-track" class="density-track"></div>
       </section>
       <section class="density-row">
-        <h2 class="bf-h6">Deferred host diagnostics</h2>
-        <p class="density-note">Tabs and SideNavigation stay visible as current-state diagnostics. They are outside this table repair and are not compared to the shared table-row baseline.</p>
+        <h2 id="density-navigation-heading" class="bf-h6">Static Tab and SideNavigation Chip seats</h2>
+        <p class="density-note">The original Status / 3 tab and Quarterly review / New navigation examples remain visible beside plain, Chip and Badge-in-Chip twins. Ordinary and equal Tabs plus linked and inert SideNavigation rows demonstrate the automatic dense Chip binding through neutral wrappers. The existing selected underline and inward keyboard-focus outline remain visible and layout-neutral; their host-owned paint may overlap the nested Chip. The equal-tab sample shows natural label wrapping; every specimen remains reachable by horizontal scrolling at narrow widths. BF has no SideTab API; interactive nested controls remain outside this static anatomy proof.</p>
         <div id="density-deferred-track" class="density-track"></div>
       </section>
     </main>

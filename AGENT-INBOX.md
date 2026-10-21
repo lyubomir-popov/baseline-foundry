@@ -1,41 +1,35 @@
 # Agent inbox – spacing buckets; BF is the sandbox worker
 
-Date: 2026-10-20
-Branch: `feat/028-shared-spacing-decisions` (draft PR #5, unpushed commits ahead)
+Date: 2026-10-21
+Branch: `feat/spacing-indicator-fit` (local-only continuation; no push or merge)
 
-The owner reset the spacing work on 2026-10-10. The deliverables live in the
-canonical spacing spec repository (Spec 024): the spacing article, the Pragma
-token spec and the semantic tokens; the owner's Pragma restyle PR is a stretch
-goal. BF is the sandbox where values are decided on real components. The
-pre-reset state of this inbox is in git history. The owner has approved the D1
-article and illustrations, approved D2 including OS dense 0, and accepted the
-exact private D3 implementation. Product adoption, publication and component
-visual approval remain separate.
+The owner reset the spacing work on 2026-10-10. The roadmap deliverables live
+in the canonical spacing spec repository (Spec 024): the spacing article, the
+Pragma token spec, the semantic tokens and the required all-existing-component
+Pragma React token demo. Owner bucket sign-off gates completion. BF is the
+sandbox where values are decided on real components. The pre-reset state of
+this inbox is in git history. The owner has approved the D1 article and
+illustrations, approved D2 including OS dense 0, and accepted the exact private
+D3 implementation. Later production adoption and the restyle PR, publication,
+Svelte/Lit parity and component visual approval remain separate.
 
 ## Current dispatch
 
-The continuation completes bounded context-comparison proof from fb403ff.
-Every original specimen stays visible and in order; a plain inner table row
-inside a fresh product root now independently references the retained Reset
-control. Separate guide segments use declared context references, while the
-original outer delta and absolute page-grid phase remain recorded. Textarea
-first-line paint matches its natural plain reference in all four tiers; native
-CSS baseline export is explicitly separate, and the configured viewport,
-scrolling and resize remain preserved. Full tests, final focused behavior,
-types and component QA pass. Canonical Spec 024 owns the final qualified
-receipt. Reset-context absolute phase and mobile shared-header global-grid drift
-stay open; this is not global alignment or owner bucket visual approval. Nav
-remains deferred.
+The local continuation implements the October 21 correction in canonical
+Spec 024 brief08: static Chips in shipped Tab actions and SideNavigation link
+or inert-text trailing status slots automatically use the generated dense
+member through neutral wrappers and stop at product roots. Plain, Chip and
+Badge-in-Chip comparisons preserve the host label baseline and equivalent
+single-line occupancy across all four tiers. Existing selected and inward
+focus paint remains visible and layout-neutral. Canonical Spec 024 `tasks.md`
+owns the qualified receipt and owner sign-off.
 
-Use the active brief08 in the canonical workspace above, not the former
-docs-bottom-compensation-spec worktree. The accepted R3 receipt permits the
-bounded table-density repair. Spec024 tasks own execution and owner sign-off;
-the existing D2/R4 checkpoint and OS dense 0 are approved, with no new R3
-review. Generated OS table seats now bind that approved 0 inset. This does not
-turn the historical Site Table/Chip proof into family/placement completion.
-Compound Search/Color, segmented/pagination and Nav/Tabs remain coverage gaps.
-The owner reported Nav double indentation and a flush-left tag; investigation
-is deferred and must not expand this table repair. No push or merge.
+Accepted token adoption `0521fb7` and invariant indicator fit `499ee5c` remain
+preserved in history. Do not repeat adoption, Reset removal or their receipts.
+Wider compound Search/Color and segmented/pagination coverage, interactive
+navigation APIs, SideTab (absent in BF), Pragma work and owner visual sign-off
+remain open in canonical Spec 024. This completed static placement does not
+claim all Nav/Tab coverage. No push or merge.
 
 ## Three repositories, three roles
 

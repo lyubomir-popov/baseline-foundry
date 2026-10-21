@@ -19,7 +19,7 @@ const tableCellTextareaSubscribers = [
 ] as const;
 
 export const componentDensityPolicy = {
-  version: 2,
+  version: 3,
   tableCell: {
     products: ["editorial", "documentation", "app", "os"],
     provider: ".bf-table :is(td, th)",
@@ -39,11 +39,35 @@ export const componentDensityPolicy = {
       button: "--bf-button-control-block-inset",
       entry: "--bf-entry-control-block-inset"
     }
+  },
+  staticNavigationChip: {
+    products: ["editorial", "documentation", "app", "os"],
+    placements: {
+      tab: {
+        provider: ".bf-tabs .bf-tabs-link",
+        providerBoundaries: [".bf-tabs-link", ".bf-theme"],
+        subscriber: "span.bf-chip:not([role='button']):not(:has(.bf-chip-dismiss))",
+        hostSubscriber: "span.bf-chip:not([role='button'])"
+      },
+      sideNavigationTrailing: {
+        provider: ".bf-side-navigation :is(.bf-side-navigation-link, .bf-side-navigation-text)",
+        providerBoundaries: [".bf-side-navigation-link", ".bf-side-navigation-text", ".bf-theme"],
+        subscriber: ":where(.bf-side-navigation-status) span.bf-chip:not([role='button']):not(:has(.bf-chip-dismiss))",
+        hostSubscriber: ":where(.bf-side-navigation-status) span.bf-chip:not([role='button'])"
+      }
+    },
+    role: "spacing.inset.control.block",
+    denseMember: "--bf-control-block-inset-dense",
+    componentBinding: "--bf-chip-control-block-inset"
   }
 } as const;
 
+type ProviderDensityPolicy = {
+  providerBoundaries: readonly string[];
+};
 type TableCellDensityPolicy = typeof componentDensityPolicy.tableCell;
-function boundedSubscriberSelector(subscriber: string, policy: TableCellDensityPolicy): string {
+
+export function boundedProviderSubscriberSelector(subscriber: string, policy: ProviderDensityPolicy): string {
   const boundaries = policy.providerBoundaries
     .map(boundary => `:scope ${boundary} ${subscriber}`)
     .join(", ");
@@ -61,7 +85,7 @@ export function tableCellDensityPolicySelectors(policy: TableCellDensityPolicy =
   textareas: string;
 } {
   const bounded = (subscribers: readonly string[]): string => subscribers
-    .map(subscriber => boundedSubscriberSelector(subscriber, policy))
+    .map(subscriber => boundedProviderSubscriberSelector(subscriber, policy))
     .join(", ");
   const chips = bounded(policy.subscribers.chips);
   const boxedButtons = bounded(policy.subscribers.boxedButtons);
@@ -72,7 +96,7 @@ export function tableCellDensityPolicySelectors(policy: TableCellDensityPolicy =
   // Bound the leaf search as well as its owner: a nested cell or product root
   // cannot enroll an outer field boundary merely by containing its own input.
   const entryLeaves = [singleLineEntries, textareas].join(", ");
-  const fieldBoundaries = boundedSubscriberSelector(`.bf-field-boundary:has(:where(${entryLeaves}))`, policy);
+  const fieldBoundaries = boundedProviderSubscriberSelector(`.bf-field-boundary:has(:where(${entryLeaves}))`, policy);
   const members = [chips, boxedButtons, singleLineEntries, textareas].filter(Boolean).join(", ");
 
   return {

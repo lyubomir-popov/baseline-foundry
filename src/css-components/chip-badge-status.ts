@@ -1,4 +1,4 @@
-import { componentDensityPolicy, providerScopedCss, tableCellDensityPolicySelectors, tableCellDensityScopedCss } from "../component-density-policy.js";
+import { boundedProviderSubscriberSelector, componentDensityPolicy, providerScopedCss, tableCellDensityPolicySelectors, tableCellDensityScopedCss } from "../component-density-policy.js";
 import { allSidedStrokeSelfPaintCss } from "./stroke-paint.js";
 
 type ChipBadgeStatusCssOptions = {
@@ -24,9 +24,45 @@ export function chipBadgeStatusCss(options: ChipBadgeStatusCssOptions): string {
   const denseTableChipCss = denseTableChips
     ? `\n/* Chip enrollment follows the versioned nearest-provider policy through any\n   neutral descendant path. The legacy class does not opt instances in/out. */\n${tableCellDensityScopedCss(tableDensityScopes, denseTableChips, `${density.componentBindings.chip}: var(${density.currentMember}, var(--bf-control-block-inset));\nborder: 0;\n--bf-stroke-color: var(--bf-ui-chip-border);\nline-height: var(--bf-body-line-height);\nmargin-block: 0;\nmin-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(${density.componentBindings.chip}) * 2)));\npadding-block: var(${density.componentBindings.chip});\npadding-inline: var(--bf-ui-chip-padding-inline);`)}\n\n${tableCellDensityScopedCss(tableDensityScopes, `${denseTableChips} :where(.bf-chip-lead, .bf-chip-value)`, "line-height: inherit;")}\n\n${tableCellDensityScopedCss(tableDensityScopes, `${denseTableChips}:hover`, "--bf-stroke-color: var(--bf-ui-chip-border-hover);")}\n\n${tableCellDensityScopedCss(tableDensityScopes, `${denseTableChips}:is(:active, [aria-pressed='true'], .is-selected)`, "--bf-stroke-color: var(--bf-ui-chip-border-active);")}\n`
     : "";
+  const staticNavigationChipPolicy = componentDensityPolicy.staticNavigationChip;
+  const staticNavigationChipCss = Object.values(staticNavigationChipPolicy.placements).map(placement => {
+    const chip = boundedProviderSubscriberSelector(placement.subscriber, placement);
+    const scoped = (selector: string, declarations: string) => providerScopedCss(
+      tableDensityScopes,
+      placement.provider,
+      placement.providerBoundaries,
+      selector,
+      declarations
+    );
+    const hostChip = boundedProviderSubscriberSelector(placement.hostSubscriber, placement);
+    const visibleHost = placement.provider.includes(".bf-side-navigation") ? ":not(.bf-navigation.is-collapsed *)" : "";
+    const hostHasStaticChip = `:scope${visibleHost}:has(${hostChip}):not(:has(${hostChip} .bf-chip-dismiss))`;
+    const transferredInset = "max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-control-block-inset-dense)))";
+    const hostPadding = `padding-block: ${transferredInset};`;
+    const hostAlignment = scoped(hostHasStaticChip, `align-items: baseline;\n${hostPadding}`);
+    const trailingSlotAlignment = placement.provider.includes(".bf-side-navigation")
+      ? scoped(`${hostHasStaticChip} :where(.bf-side-navigation-status)`, "align-items: baseline;\nalign-self: baseline;")
+      : "";
+    return `${hostAlignment}
+${trailingSlotAlignment ? `\n\n${trailingSlotAlignment}` : ""}
+
+${scoped(chip, `${staticNavigationChipPolicy.componentBinding}: var(${staticNavigationChipPolicy.denseMember});
+border: 0;
+--bf-stroke-color: var(--bf-ui-chip-border);
+line-height: var(--bf-body-line-height);
+margin-block: 0;
+min-inline-size: min(100%, calc(var(--bf-body-line-height) + (var(${staticNavigationChipPolicy.componentBinding}) * 2)));
+padding-block: var(${staticNavigationChipPolicy.componentBinding});
+padding-inline: var(--bf-ui-chip-padding-inline);`)}
+
+${scoped(`${chip} :where(.bf-chip-lead, .bf-chip-value)`, "line-height: inherit;")}
+
+${scoped(`${chip}:hover`, "--bf-stroke-color: var(--bf-ui-chip-border-hover);")}
+
+${scoped(`${chip}:is(:active, [aria-pressed='true'], .is-selected)`, "--bf-stroke-color: var(--bf-ui-chip-border-active);")}`;
+  }).join("\n\n");
   const legacyNestedChipCss = (suffix: string, declarations: string) => [
-    { provider: ".bf-table td", boundary: "td" },
-    { provider: ".bf-side-navigation", boundary: ".bf-side-navigation" }
+    { provider: ".bf-table td", boundary: "td" }
   ].map(host => providerScopedCss(
     [":where(.bf-theme)"],
     host.provider,
@@ -275,6 +311,7 @@ ${indicatorTypeStyles}  margin-block: calc((1em - 1lh) / 2);
    Badge and StatusLabel compatibility classes intentionally inherit the same
    indicator typography and seat at every level. */
 ${legacyNestedChipRules}
+${staticNavigationChipCss}
 ${denseTableChipCss}
 `;
 }

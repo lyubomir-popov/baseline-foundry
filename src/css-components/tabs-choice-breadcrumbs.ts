@@ -40,7 +40,7 @@ ${inlineOptionsStroke.owner}
   display: flex;
   gap: 0;
   list-style: none;
-  margin: 0 0 var(--bf-interface-row-compensation-block-end);
+  margin: 0 0 var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end));
   min-inline-size: 0;
   overflow-x: auto;
   padding: 0;
@@ -48,6 +48,8 @@ ${inlineOptionsStroke.owner}
 }
 
 :where(.bf-theme) :where(.bf-tabs-item) {
+  align-items: stretch;
+  display: flex;
   /* Long lists scroll rather than shrink tabs. */
   flex: 0 0 auto;
   margin: 0;
@@ -55,8 +57,12 @@ ${inlineOptionsStroke.owner}
   padding: 0;
 }
 
+:where(.bf-theme) :where(.bf-tabs-item) > :where(.bf-tabs-link) {
+  align-self: stretch;
+}
+
 :where(.bf-theme) :where(.bf-tabs-link) {
-${bodyTypeStyles}  align-items: center;
+${bodyTypeStyles}  align-items: var(--_bf-tabs-row-align, center);
   background: transparent;
   border: 0;
   border-block: 0;
