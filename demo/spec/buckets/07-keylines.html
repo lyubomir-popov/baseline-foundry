@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-spec-root="../../..">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>07 · Keylines · Baseline Foundry</title>
+    <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../../spec-shell.css" />
+    <style>
+      .keyline-page { max-inline-size: none; }
+      .keyline-intro { max-inline-size: 72ch; }
+      .keyline-note { font-size: .875rem; }
+      .keyline-row { padding-block: var(--bf-space-2); }
+      .keyline-row h2 { margin-block-end: var(--bf-space-1); }
+      .keyline-track { position: relative; display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); direction: ltr; }
+      .keyline-sample { position: relative; flex: 0 0 20rem; inline-size: 20rem; min-inline-size: 0; }
+      .keyline-reference { margin: 0; }
+      .keyline-caption { display: block; max-inline-size: 18rem; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: 1.25; font-weight: 400; overflow-wrap: anywhere; }
+      .keyline-guide-layer { position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: 100%; z-index: 100; pointer-events: none; }
+      .keyline-guide { position: absolute; inset-block-start: 0; inline-size: .0625rem; background: #116bb8; }
+      .keyline-tick { position: absolute; inline-size: .0625rem; block-size: .5rem; background: #d32229; }
+      .keyline-sample pre { display: none; }
+      .keyline-key { font: .8rem/1.4 ui-monospace, monospace; }
+      .keyline-blue { color: #116bb8; }
+      .keyline-red { color: #d32229; }
+    </style>
+  </head>
+  <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
+    <main class="bf-page is-fill keyline-page">
+      <header class="bf-stack is-dense keyline-intro">
+        <h1>07 · Keylines</h1>
+        <p>Continuation is calculated from the parent field inset, body text size, mark size and mark gap. Accordion content, navigation labels and the ContextSwitcher box use the derived keyline. The shipped panel brand header is included; its wordmark text and logo glyph are measured as separate starts.</p>
+        <p class="keyline-note"><span class="keyline-key keyline-blue">Blue guide</span> = Accordion title label start and SideNavigation parent keyline; <span class="keyline-key keyline-red">red 8px ticks</span> = measured peer labels and ContextSwitcher box/text starts. Scroll sideways to compare.</p>
+      </header>
+      <div id="keyline-rows"></div>
+    </main>
+    <script type="module" src="./07-keylines.js"></script>
+  </body>
+</html>

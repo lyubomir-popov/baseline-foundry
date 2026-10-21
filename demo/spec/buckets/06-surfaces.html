@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" data-spec-root="../../..">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>06 · Surfaces · Baseline Foundry</title>
+    <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../../spec-shell.css" />
+    <style>
+      .surface-page { max-inline-size: none; }
+      .surface-intro { max-inline-size: 72ch; }
+      .surface-note { font-size: .875rem; }
+      .surface-row { padding-block: var(--bf-space-2); }
+      .surface-row h2 { margin-block-end: var(--bf-space-1); }
+      .surface-track { position: relative; display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      .surface-row[data-kind="tooltip"] .surface-track { overflow: visible; }
+      .surface-sample { flex: 0 0 auto; inline-size: 18rem; min-inline-size: 0; }
+      .surface-sample[data-kind="card"] { inline-size: 42rem; }
+      @media (width < 38.75rem) { .surface-sample[data-kind="card"] { inline-size: 18rem; } }
+      .surface-probe { position: relative; min-block-size: 8rem; }
+      .surface-sample[data-kind="tooltip"] .surface-probe { min-block-size: 12rem; }
+      .surface-sample[data-kind="navigation"] .surface-probe { inline-size: 18rem; }
+      .surface-caption { display: block; max-inline-size: 18rem; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: 1.25; font-weight: 400; overflow-wrap: anywhere; }
+      .surface-reference { margin: 0; }
+      .surface-open-control { margin-block-end: var(--bf-space-1); }
+      .surface-panel-stage { block-size: 14rem; inline-size: 18rem; min-block-size: 14rem; }
+      .surface-panel-stage > .bf-main { min-block-size: 0; }
+      .surface-probe > .bf-modal-dialog, .surface-probe > .bf-panel { inline-size: 18rem; min-block-size: 8rem; }
+      .surface-probe > .bf-card { inline-size: 18rem; }
+      .surface-probe > .bf-option-card { inline-size: 18rem; }
+      .surface-probe .bf-card-content { min-inline-size: 0; }
+      .surface-probe .bf-tooltip-message { opacity: 1; visibility: visible; }
+      .surface-probe .bf-panel-content { min-block-size: 0; }
+      .surface-probe .bf-side-navigation-drawer { min-block-size: 8rem; }
+      /* Keep the shipped fixed drawer inside each narrow specimen so it cannot cover other samples. */
+      @media (max-width: 64.749rem) {
+        .surface-sample[data-kind="navigation"] .surface-probe { min-block-size: 14rem; }
+        .surface-sample[data-kind="navigation"] .bf-side-navigation-drawer {
+          position: absolute !important;
+          inset: 0 auto auto 0 !important;
+          inline-size: 100% !important;
+          block-size: 14rem !important;
+          max-block-size: 14rem !important;
+          z-index: 1 !important;
+        }
+      }
+      .surface-probe .bf-side-navigation-list { display: block; }
+      .surface-probe .bf-side-navigation-link { text-decoration: none; }
+      .bucket-measured-text { display: inline; }
+      .bucket-baseline-marker { display: inline-block; inline-size: 0; block-size: 0; padding: 0; margin: 0; border: 0; vertical-align: baseline; }
+      .bucket-external-rig { position: absolute; inset-block-start: 0; inset-inline-start: 0; display: inline-block; visibility: hidden; pointer-events: none; white-space: nowrap; }
+      .surface-baseline-marker { display: inline-block; inline-size: 0; block-size: 0; padding: 0; margin: 0; border: 0; vertical-align: baseline; }
+      .bucket-guide-layer { position: absolute; inset-block: 0; inset-inline-start: 0; z-index: 100; pointer-events: none; }
+      .bucket-guide-mark { position: absolute; pointer-events: none; }
+      .bucket-guide-mark.is-top, .bucket-guide-mark.is-end { background: #d32229; }
+      .bucket-guide-mark.is-baseline { background: #116bb8; }
+      .bucket-guide-mark.is-tick { transform: translateY(-.25rem); block-size: .5rem !important; inline-size: .0625rem !important; }
+      .surface-sample pre { display: none; }
+      .surface-key { font: .8rem/1.4 ui-monospace, monospace; }
+      .surface-key b { color: #c33; } .surface-key i { color: #2379cb; font-style: normal; }
+    </style>
+  </head>
+  <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
+    <main class="bf-page is-fill surface-page">
+      <header class="bf-stack is-dense surface-intro">
+        <h1>06 · Surfaces</h1>
+        <p>Real Baseline Foundry surfaces show compact, standard and grid-gutter relationships. Standard values and responsive major inline gutters are selected; major block values remain the shipped values shown by inspection.</p>
+        <p class="surface-note">Card compares separate public grid groups with two flex Cards each: one image preview and one text-only Card. At 390px the public four-column parent wraps the Cards; at 1280px its eight-column parent places them side by side. Card sections own the inline inset, a first-child preview is flush with the frame, and the grid row gap stays zero. BF retains its contained image paint and flex-Card structure, not Pragma's shared-subgrid construction.</p>
+        <p class="surface-note">Use each open control to inspect major spacing. Modal uses fixture buttons to call the browser dialog's showModal/close methods with BF's workflow CSS; SidePanel uses the shipped drawer initializer. Tooltip visibility is forced while its shipped positioning is retained.</p>
+        <p class="surface-note">At narrow widths, both navigation drawer specimens are contained inside their sample probe to prevent overlap with other rows; the fixture keeps BF's grid gutter and label keyline, and does not change product drawer behavior.</p>
+        <p class="surface-note">Card headers and content sections own standard inline inset; the Card frame owns block padding and group gap. Only a first-child preview drops the frame block-start inset. BF's preview image keeps its shipped contained paint, so it does not represent Pragma's flush image treatment.</p>
+        <p class="surface-key"><b>Red</b> = owner border-box start and occupied end · <i>Blue</i> = real text baseline. Shared 1px guides and short peer ticks; scroll sideways.</p>
+      </header>
+      <div id="surface-rows"></div>
+    </main>
+    <script type="module" src="./06-surfaces.js"></script>
+  </body>
+</html>

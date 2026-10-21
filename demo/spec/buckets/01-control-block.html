@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" data-spec-root="../../..">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control block spacing bucket · Baseline Foundry</title>
+    <link id="spec-tier-stylesheet" rel="stylesheet" href="../../../dist/tiers/editorial/styles.css" />
+    <link rel="stylesheet" href="../../spec-shell.css" />
+    <style>
+      .bucket-page { max-inline-size: none; }
+      .bucket-intro { max-inline-size: 68ch; }
+      .bucket-row { border-block-start: 0.0625rem solid var(--bf-color-border-neutral); padding-block: var(--bf-space-2); }
+      .bucket-row h2 { margin-block-end: var(--bf-space-1); }
+      .bucket-track { position: relative; display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--bf-space-2); overflow-x: auto; padding: var(--bf-space-1); background: var(--bf-color-background-alt); }
+      .bucket-sample { flex: 0 0 auto; inline-size: max-content; min-inline-size: 0; }
+      .bucket-caption { display: block; max-inline-size: 100%; margin-block-start: var(--bf-space-1); font-size: .75rem; line-height: 1.2; font-weight: 400; overflow-wrap: anywhere; }
+      .bucket-probe { position: relative; display: flow-root; inline-size: max-content; min-inline-size: 0; }
+      .bucket-measured-text { display: inline; }
+      .bucket-baseline-marker { display: inline-block; inline-size: 0; block-size: 0; padding: 0; margin: 0; border: 0; vertical-align: baseline; }
+      .bucket-external-rig { position: absolute; inset-block-start: 0; inset-inline-start: 0; display: inline-block; visibility: hidden; pointer-events: none; white-space: nowrap; }
+      .bucket-guide-layer { position: absolute; inset-block: 0; inset-inline-start: 0; z-index: 100; pointer-events: none; }
+      .bucket-guide-mark { position: absolute; pointer-events: none; }
+      .bucket-guide-mark.is-top, .bucket-guide-mark.is-end { background: #d32229; }
+      .bucket-guide-mark.is-baseline { background: #116bb8; }
+      .bucket-guide-mark.is-tick { transform: translateY(-.25rem); block-size: .5rem !important; inline-size: .0625rem !important; }
+      .bucket-probe > .bf-field-boundary { inline-size: var(--sample-width); }
+      .bucket-probe .bf-pagination, .bucket-probe .bf-tabs, .bucket-probe .bf-segmented-control { inline-size: max-content; }
+      .bucket-probe .bf-segmented-control-list { padding: 0; }
+      .bucket-probe .bf-contextual-menu-dropdown { display: block; position: relative; inset: auto; inline-size: 8rem; min-inline-size: 0; }
+      .bucket-probe .bf-top-navigation-dropdown { display: block; position: relative; inset: auto; inline-size: 8rem; min-inline-size: 0; }
+      .bucket-probe .bf-top-navigation-dropdown-item { background: var(--bf-color-background-default); }
+      .bucket-sample pre { display: none; }
+      .bucket-key { font: 0.8rem/1.4 ui-monospace, monospace; }
+      .bucket-key b { color: #c33; } .bucket-key i { color: #2379cb; font-style: normal; }
+    </style>
+  </head>
+  <body class="bf-theme bf-tier-editorial" data-page-tier-options="editorial,documentation,app,os" data-page-baseline-default="on" data-page-section-label="Spacing bucket">
+    <main class="bf-page is-fill bucket-page">
+      <header class="bf-stack is-dense bucket-intro">
+        <h1>01 · Control block</h1>
+        <p>Standalone controls close individually. Tab strips and menu sets use equal row padding, touching paint, and one grid closure at the container end.</p>
+        <p class="bucket-key"><b>Red</b> = Button box start and occupied end · <i>Blue</i> = browser baseline for text and native controls. Native values use a matching control clone; icon-only has no baseline tick. Short ticks show each peer’s geometry. Scroll sideways.</p>
+      </header>
+      <div id="bucket-rows"></div>
+    </main>
+    <script type="module" src="./01-control-block.js"></script>
+  </body>
+</html>

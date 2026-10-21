@@ -1,4 +1,5 @@
 import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initInPageNavigations, initInteractiveFeedback, initInteractiveTables, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
+import { BUNDLE_VERSION_OPTIONS, readBundleVersion, swapBundleStylesheet, writeBundleVersion } from "./bundle-version.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
@@ -200,7 +201,7 @@ async function initLockedManifestMode(stylesheetLink) {
   };
 }
 
-function initDefaultMode() {
+async function initDefaultMode(stylesheetLink) {
   const supportedTiers = supportedTierOptions();
   const supportedTierValues = supportedTiers.map(o => o.value);
   const pageTierDefault = document.body.dataset.pageTierDefault;
@@ -211,14 +212,19 @@ function initDefaultMode() {
       : (storedTier && supportedTierValues.includes(storedTier))
       ? storedTier
       : detectTier();
+  let currentSurface = initialSurface;
+  let currentVersion = readBundleVersion();
   applyTier(initialSurface);
+  await swapBundleStylesheet(stylesheetLink, currentVersion, initialSurface);
   const chrome = injectPageChrome({
     controls: {
       selectedTier: initialSurface,
+      selectedVersion: currentVersion,
       showBaseline: true,
       showTone: true,
       tierAriaLabel: "Tier",
-      tierOptions: supportedTiers
+      tierOptions: supportedTiers,
+      versionOptions: BUNDLE_VERSION_OPTIONS
     },
     currentPath: window.location.pathname,
     wrapBodyContent: true
@@ -227,7 +233,28 @@ function initDefaultMode() {
   return {
     chrome,
     initialSurface,
-    applySurface: surface => applyTier(surface),
+    applySurface: async surface => {
+      const previousSurface = currentSurface;
+      currentSurface = surface;
+      try {
+        await swapBundleStylesheet(stylesheetLink, currentVersion, currentSurface);
+        applyTier(surface);
+      } catch (error) {
+        currentSurface = previousSurface;
+        throw error;
+      }
+    },
+    applyVersion: async version => {
+      const previousVersion = currentVersion;
+      currentVersion = version;
+      try {
+        await swapBundleStylesheet(stylesheetLink, currentVersion, currentSurface);
+        writeBundleVersion(version);
+      } catch (error) {
+        currentVersion = previousVersion;
+        throw error;
+      }
+    },
     baselineShouldDefaultToOn
   };
 }
@@ -249,7 +276,7 @@ async function main() {
 
   const runtime = isLockedManifestMode()
     ? await initLockedManifestMode(stylesheetLink)
-    : initDefaultMode();
+    : await initDefaultMode(stylesheetLink);
 
   const { chrome, initialSurface } = runtime;
 
@@ -295,18 +322,41 @@ async function main() {
   }
 
   if (chrome.tierSelect instanceof HTMLSelectElement) {
-    chrome.tierSelect.addEventListener("change", event => {
+    chrome.tierSelect.addEventListener("change", async event => {
       if (!(event.currentTarget instanceof HTMLSelectElement)) {
         return;
       }
 
-      const nextSurface = event.currentTarget.value;
-      runtime.applySurface(nextSurface);
-      storeTier(nextSurface);
+      const select = event.currentTarget;
+      const nextSurface = select.value;
+      try {
+        await runtime.applySurface(nextSurface);
+        storeTier(nextSurface);
+      } catch (error) {
+        select.value = document.body.dataset.bfTier ?? initialSurface;
+        console.error(error);
+        return;
+      }
 
       if (chrome.baselineToggle instanceof HTMLInputElement && baselineMode === "auto") {
         chrome.baselineToggle.checked = runtime.baselineShouldDefaultToOn(nextSurface);
         chrome.baselineToggle.dispatchEvent(new Event("change"));
+      }
+    });
+  }
+
+  if (chrome.versionSelect instanceof HTMLSelectElement && typeof runtime.applyVersion === "function") {
+    chrome.versionSelect.addEventListener("change", async event => {
+      if (!(event.currentTarget instanceof HTMLSelectElement)) {
+        return;
+      }
+      const select = event.currentTarget;
+      try {
+        await runtime.applyVersion(select.value);
+      } catch (error) {
+        select.value = stylesheetLink.dataset.bundleVersion ?? "after";
+        writeBundleVersion(select.value);
+        console.error(error);
       }
     });
   }
@@ -329,4 +379,3 @@ async function main() {
 }
 
 void main();
-

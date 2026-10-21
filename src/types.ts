@@ -1,4 +1,4 @@
-import type { ResolvedDtcgSpacing } from "./dtcg-spacing.js";
+import type { ResolvedDtcgSpacing, ResolvedDtcgSpacingDensity } from "./dtcg-spacing.js";
 
 export interface ThemeFontFile {
   family: string;
@@ -43,8 +43,8 @@ export interface ThemeComponentsConfig {
   radiusRem: number;
   inlineInsetFieldUnits: number;
   inlineInsetActionUnits: number;
-  inlineInsetContinuationUnits: number;
   markGapInlineUnits: number;
+  controlBlockInsetBaselineUnits: number;
   controlVisualSizeRem: number;
   fieldGapBaselineUnits: number;
   panelPaddingInlineUnits: number;
@@ -107,6 +107,7 @@ export interface ComponentTokens {
   inlineInsetField: string;
   inlineInsetAction: string;
   inlineInsetContinuation: string;
+  controlBlockInset: string;
   controlVisualSize: string;
   fieldGap: string;
   panelPaddingInline: string;
@@ -117,7 +118,9 @@ export interface ThemeTokens {
   baselineUnit: string;
   inlineUnit: string;
   canonicalSpacing?: ResolvedDtcgSpacing;
+  canonicalSpacingDensity?: ResolvedDtcgSpacingDensity;
   spacing: ResolvedDtcgSpacing;
+  spacingDensity: ResolvedDtcgSpacingDensity;
   fontFiles: ThemeFontFile[];
   fontStacks: Record<string, string>;
   roles: Record<string, TypographyToken>;

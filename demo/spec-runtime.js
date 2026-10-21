@@ -1,4 +1,5 @@
 import { initAccordions, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initRangeControls, initSideNavigations, initTabs, initTooltips } from "../dist/index.js";
+import { BUNDLE_VERSION_OPTIONS, bundleStylesheetUrl, readBundleVersion, swapBundleStylesheet, writeBundleVersion } from "./bundle-version.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
 
@@ -78,6 +79,9 @@ function installHorizontalKeylineDebug() {
 let activeTierLoad = 0;
 let tierSelect = null;
 let toneToggle = null;
+let versionSelect = null;
+let currentVersion = "after";
+let tierStylesheetLink = null;
 
 const tierConfig = {
   editorial: {
@@ -117,12 +121,8 @@ function cacheBust(url) {
   return `${url}${sep}t=${Date.now()}`;
 }
 
-function runtimeStylesheetUrl() {
-  return cacheBust(assetUrl("dist/tiers/editorial/styles.css"));
-}
-
-function stylesheetArtifactUrl(tierName) {
-  return assetUrl(`dist/tiers/${tierName}/styles.css`);
+function stylesheetArtifactUrl(version, tierName) {
+  return bundleStylesheetUrl(version, tierName);
 }
 
 function tokensUrl(tierName) {
@@ -138,8 +138,26 @@ function setText(selector, value) {
 function setLink(kind, href) {
   for (const node of document.querySelectorAll(`[data-spec-artifact="${kind}"]`)) {
     if (node instanceof HTMLAnchorElement) {
-      node.href = href;
+      if (href) {
+        node.href = href;
+        node.removeAttribute("aria-disabled");
+        node.removeAttribute("title");
+      } else {
+        node.removeAttribute("href");
+        node.setAttribute("aria-disabled", "true");
+        node.title = "The pinned Before evidence contains CSS bundles only.";
+      }
     }
+  }
+}
+
+function clearTokenDiagnostics() {
+  for (const node of document.querySelectorAll("[data-spec-token]")) {
+    node.textContent = "Unavailable in pinned Before evidence";
+  }
+  const roleList = document.querySelector("[data-spec-role-list]");
+  if (roleList instanceof HTMLElement) {
+    roleList.textContent = "Before comparison is CSS-only; no matching token JSON was preserved.";
   }
 }
 
@@ -225,7 +243,7 @@ function updateStatus(message) {
 
   const tierName = detectTier();
   const tier = tierConfig[tierName] ?? tierConfig.editorial;
-  setText("[data-spec-status]", `${tier.label} tier active in ${currentTone()} mode.`);
+  setText("[data-spec-status]", `${currentVersion === "before" ? "Before" : "After"} bundle · ${tier.label} tier active in ${currentTone()} mode.`);
 }
 
 function syncBaselineGridColor() {
@@ -255,29 +273,39 @@ function applyTone(tone, { persist = true } = {}) {
 
 async function applyTier(tierName) {
   const tier = tierConfig[tierName];
-  if (!tier) {
+  if (!tier || !(tierStylesheetLink instanceof HTMLLinkElement)) {
     return;
   }
 
   activeTierLoad += 1;
   const loadId = activeTierLoad;
-  storeTier(tierName);
-
+  const requestedVersion = currentVersion;
   if (tierSelect instanceof HTMLSelectElement) {
     tierSelect.value = tierName;
   }
 
+  await swapBundleStylesheet(tierStylesheetLink, requestedVersion, tierName);
+  if (loadId !== activeTierLoad) {
+    return;
+  }
   document.body.classList.remove(...BUILT_IN_TIER_CLASSES);
   document.body.classList.add("bf-theme", tier.className);
   document.body.dataset.bfTier = tierName;
+  storeTier(tierName);
   updateHorizontalKeylineDebug?.();
 
   setText("[data-spec-current-tier]", tier.label);
   setText("[data-spec-tier-description]", tier.description);
   setText("[data-spec-tier-detail]", tier.detail);
-  setLink("css", stylesheetArtifactUrl(tierName));
-  setLink("tokens", tokensUrl(tierName));
+  setLink("css", stylesheetArtifactUrl(requestedVersion, tierName));
+  setLink("tokens", requestedVersion === "after" ? tokensUrl(tierName) : null);
   updateStatus();
+
+  if (requestedVersion === "before") {
+    clearTokenDiagnostics();
+    updateStatus(`Before bundle · ${tier.label} tier CSS active; matching token JSON was not preserved.`);
+    return;
+  }
 
   try {
     const response = await fetch(tokensUrl(tierName));
@@ -308,25 +336,29 @@ export async function initSpecRuntime({ initComponents } = {}) {
     throw new Error("Missing #spec-tier-stylesheet link.");
   }
 
-  stylesheetLink.href = runtimeStylesheetUrl();
+  tierStylesheetLink = stylesheetLink;
+  currentVersion = readBundleVersion();
 
   const supportedTiers = supportedTierNames().map(name => ({ value: name, label: tierConfig[name]?.label ?? name }));
   const currentTier = detectTier();
+  await swapBundleStylesheet(stylesheetLink, currentVersion, currentTier);
   const baselineTargetId = ensureTargetId(document.body, "spec-page");
   const chrome = injectPageChrome({
     controls: {
       baselineLabel: "Baseline grid",
       selectedTier: currentTier,
+      selectedVersion: currentVersion,
       showBaseline: true,
       showTone: true,
-      tierOptions: supportedTiers
+      tierOptions: supportedTiers,
+      versionOptions: BUNDLE_VERSION_OPTIONS
     },
     currentPath: window.location.pathname,
     sectionLabel: document.body.dataset.pageSectionLabel ?? (window.location.pathname.includes("/demo/spec/spacing-") ? "Spacing chapter" : undefined),
     wrapBodyContent: true
   });
 
-  if (!(chrome.tierSelect instanceof HTMLSelectElement) || !(chrome.toneToggle instanceof HTMLInputElement) || !(chrome.baselineToggle instanceof HTMLInputElement) || !baselineTargetId) {
+  if (!(chrome.tierSelect instanceof HTMLSelectElement) || !(chrome.versionSelect instanceof HTMLSelectElement) || !(chrome.toneToggle instanceof HTMLInputElement) || !(chrome.baselineToggle instanceof HTMLInputElement) || !baselineTargetId) {
     throw new Error("Unable to create the shared page chrome controls.");
   }
 
@@ -344,6 +376,7 @@ export async function initSpecRuntime({ initComponents } = {}) {
   initSideNavigations();
 
   tierSelect = chrome.tierSelect;
+  versionSelect = chrome.versionSelect;
   toneToggle = chrome.toneToggle;
 
   if (typeof initComponents === "function") {
@@ -358,9 +391,41 @@ export async function initSpecRuntime({ initComponents } = {}) {
   }
 
   if (tierSelect instanceof HTMLSelectElement) {
-    tierSelect.addEventListener("change", event => {
-      const nextTier = event.currentTarget instanceof HTMLSelectElement ? event.currentTarget.value : "editorial";
-      void applyTier(nextTier);
+    tierSelect.addEventListener("change", async event => {
+      if (!(event.currentTarget instanceof HTMLSelectElement)) {
+        return;
+      }
+      const select = event.currentTarget;
+      const nextTier = select.value;
+      try {
+        await applyTier(nextTier);
+      } catch (error) {
+        select.value = detectTier();
+        updateStatus("Unable to load the selected BF tier bundle.");
+        console.error(error);
+      }
+    });
+  }
+
+  if (versionSelect instanceof HTMLSelectElement) {
+    versionSelect.addEventListener("change", async event => {
+      if (!(event.currentTarget instanceof HTMLSelectElement)) {
+        return;
+      }
+      const select = event.currentTarget;
+      const nextVersion = select.value;
+      const previousVersion = currentVersion;
+      currentVersion = nextVersion === "before" ? "before" : "after";
+      try {
+        await applyTier(detectTier());
+        writeBundleVersion(currentVersion);
+      } catch (error) {
+        currentVersion = previousVersion;
+        select.value = previousVersion;
+        writeBundleVersion(previousVersion);
+        updateStatus("Unable to load the selected BF bundle; the previous bundle remains active.");
+        console.error(error);
+      }
     });
   }
 

@@ -1,4 +1,5 @@
 import { findPageByPath, normalizePagePath, pageCatalogSections, pageUrl } from "./page-catalog.js";
+import { preserveBundleVersion } from "./bundle-version.js";
 
 let chromeId = 0;
 const navigationScrollStorageKey = "bf-demo-page-navigation-scroll-top";
@@ -93,7 +94,7 @@ function renderSequenceLink(page, direction) {
 
   const label = direction === "previous" ? "Previous" : "Next";
   const icon = direction === "previous" ? "is-chevron-left" : "is-chevron-right";
-  return `<a class="bf-button is-base is-icon pc-sequence-link is-${direction}" href="${pageUrl(page.href)}" rel="${direction === "previous" ? "prev" : "next"}" aria-label="${label}: ${escapeHtml(page.title)}" title="${escapeHtml(page.title)}"><span class="bf-icon ${icon}" aria-hidden="true"></span></a>`;
+  return `<a class="bf-button is-base is-icon pc-sequence-link is-${direction}" href="${preserveBundleVersion(pageUrl(page.href))}" rel="${direction === "previous" ? "prev" : "next"}" aria-label="${label}: ${escapeHtml(page.title)}" title="${escapeHtml(page.title)}"><span class="bf-icon ${icon}" aria-hidden="true"></span></a>`;
 }
 
 function renderSequenceNavigation(currentPath) {
@@ -110,12 +111,13 @@ function renderSequenceNavigation(currentPath) {
     </nav>`;
 }
 
-function renderBreadcrumbs(page) {
+function renderBreadcrumbs(page, showProvenance) {
   return `
     <nav class="bf-breadcrumbs pc-breadcrumbs" aria-label="Breadcrumb">
       <ol class="bf-breadcrumbs-items">
         <li class="bf-breadcrumbs-item"><span>${escapeHtml(page.section)}</span></li>
         <li class="bf-breadcrumbs-item"><span aria-current="page">${escapeHtml(page.title)}</span></li>
+        ${showProvenance ? `<li class="bf-breadcrumbs-item"><a href="${pageUrl("/demo/spec-028/provenance.json")}">Bundle provenance</a></li>` : ""}
       </ol>
     </nav>`;
 }
@@ -124,7 +126,7 @@ function renderNavigationBrand() {
   return `
     <div class="bf-panel-header is-sticky is-navigation-brand">
       <div class="bf-top-navigation-logo is-canonical-tagged">
-        <a class="bf-top-navigation-link" href="${pageUrl("/demo/")}" aria-label="Baseline Foundry home">
+        <a class="bf-top-navigation-link" href="${preserveBundleVersion(pageUrl("/demo/"))}" aria-label="Baseline Foundry home">
           <span class="bf-top-navigation-logo-tag" aria-hidden="true">
             <img class="bf-top-navigation-logo-icon" src="${pageUrl("/demo/assets/canonical-mark.svg")}" alt="">
           </span>
@@ -143,7 +145,7 @@ function renderDrawerSections(currentPath) {
           const currentAttr = isCurrent ? ' aria-current="page"' : "";
           return `
             <li class="bf-side-navigation-item">
-              <a class="bf-side-navigation-link" href="${pageUrl(item.href)}"${currentAttr}>
+              <a class="bf-side-navigation-link" href="${preserveBundleVersion(pageUrl(item.href))}"${currentAttr}>
                 <span class="bf-side-navigation-label">${escapeHtml(item.title)}</span>
               </a>
             </li>`;
@@ -173,7 +175,7 @@ function renderSwitch(kind, label) {
     </label>`;
 }
 
-function renderSelect(options, selectedValue) {
+function renderSelect(kind, options, selectedValue, ariaLabel) {
   const optionMarkup = options
     .map(option => {
       const selectedAttr = option.value === selectedValue ? " selected" : "";
@@ -183,9 +185,11 @@ function renderSelect(options, selectedValue) {
 
   return `
     <div class="bf-control pc-select-wrap">
-      <select data-page-chrome-tier-select aria-label="Tier">
-        ${optionMarkup}
-      </select>
+      <span class="bf-field-boundary">
+        <select data-page-chrome-${kind}-select aria-label="${escapeHtml(ariaLabel)}">
+          ${optionMarkup}
+        </select>
+      </span>
     </div>`;
 }
 
@@ -199,6 +203,9 @@ function normalizeControls(controls) {
     showBaseline: controls.showBaseline !== false,
     toneLabel: controls.toneLabel ?? "Dark theme",
     baselineLabel: controls.baselineLabel ?? "Baseline grid",
+    versionOptions: controls.versionOptions ?? [],
+    selectedVersion: controls.selectedVersion ?? controls.versionOptions?.[0]?.value ?? "",
+    versionAriaLabel: controls.versionAriaLabel ?? "Bundle version",
     tierOptions: controls.tierOptions ?? [],
     selectedTier: controls.selectedTier ?? controls.tierOptions?.[0]?.value ?? "",
     tierAriaLabel: controls.tierAriaLabel ?? "Tier"
@@ -247,26 +254,38 @@ export function injectPageChrome(options = {}) {
         <div class="bf-cluster pc-controls">
           ${controls.showTone ? renderSwitch("tone", controls.toneLabel) : ""}
           ${controls.showBaseline ? renderSwitch("baseline", controls.baselineLabel) : ""}
-          ${controls.tierOptions.length > 0 ? renderSelect(controls.tierOptions, controls.selectedTier) : ""}
+          ${controls.versionOptions.length > 0 ? renderSelect("version", controls.versionOptions, controls.selectedVersion, controls.versionAriaLabel) : ""}
+          ${controls.tierOptions.length > 0 ? renderSelect("tier", controls.tierOptions, controls.selectedTier, controls.tierAriaLabel) : ""}
         </div>`
     : "";
   const sequenceMarkup = renderSequenceNavigation(currentPath);
-  const breadcrumbsMarkup = renderBreadcrumbs(currentPage);
+  const breadcrumbsMarkup = renderBreadcrumbs(currentPage, Boolean(controls?.versionOptions.length));
 
   const nav = document.createElement("aside");
   nav.classList.add("pc-root", "pc-nav");
-  nav.id = navId;
+  nav.id = `${navId}-shell`;
   nav.setAttribute("aria-label", "Page navigation");
   nav.dataset.pageChrome = "true";
   nav.dataset.captureIgnore = "true";
   nav.dataset.baselineIgnore = "true";
   nav.innerHTML = `
-    <nav class="bf-panel bf-side-navigation" aria-label="Page list">
-      ${renderNavigationBrand()}
-      <div class="bf-side-navigation-groups">
-        ${renderDrawerSections(currentPath)}
-      </div>
-    </nav>`;
+    <div class="bf-side-navigation is-drawer-hidden" id="${navId}">
+      <button class="bf-side-navigation-toggle" type="button" aria-controls="${navId}" aria-expanded="false">Pages</button>
+      <div class="bf-side-navigation-overlay" aria-controls="${navId}" aria-hidden="true"></div>
+      <nav class="bf-side-navigation-drawer" aria-label="Page list" aria-hidden="true">
+        <div class="bf-side-navigation-drawer-chrome">
+          <div class="bf-side-navigation-drawer-header">
+            <button class="bf-side-navigation-toggle is-in-drawer" type="button" aria-controls="${navId}" aria-expanded="false">Close</button>
+          </div>
+        </div>
+        <div class="bf-side-navigation-drawer-body">
+          ${renderNavigationBrand()}
+          <div class="bf-side-navigation-groups">
+            ${renderDrawerSections(currentPath)}
+          </div>
+        </div>
+      </nav>
+    </div>`;
 
   const header = document.createElement("header");
   header.classList.add("pc-root", "pc-header");
@@ -302,7 +321,7 @@ export function injectPageChrome(options = {}) {
     document.body.insertBefore(footer, firstScript ?? null);
     const reserveFooter = () => {
       const rootRem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-      document.body.style.setProperty("--pc-footer-block-size", `${footer.getBoundingClientRect().height / rootRem}rem`);
+      document.body.style.setProperty("--pc-footer-block-size", `calc(${footer.getBoundingClientRect().height / rootRem}rem + var(--bf-baseline))`);
     };
     reserveFooter();
     if (typeof ResizeObserver === "function") {
@@ -315,6 +334,7 @@ export function injectPageChrome(options = {}) {
   const toneToggle = footer?.querySelector("[data-page-chrome-tone-toggle]") ?? null;
   const baselineToggle = footer?.querySelector("[data-page-chrome-baseline-toggle]") ?? null;
   const tierSelect = footer?.querySelector("[data-page-chrome-tier-select]") ?? null;
+  const versionSelect = footer?.querySelector("[data-page-chrome-version-select]") ?? null;
 
   if (controls?.tierAriaLabel && tierSelect instanceof HTMLSelectElement) {
     tierSelect.setAttribute("aria-label", controls.tierAriaLabel);
@@ -328,6 +348,7 @@ export function injectPageChrome(options = {}) {
     nav,
     root: nav,
     tierSelect,
-    toneToggle
+    toneToggle,
+    versionSelect
   };
 }

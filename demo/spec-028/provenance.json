@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "before": {
+    "sourceCommit": "6deca99776f35b85afde01b68bb0fffe817e29aa",
+    "buildCommand": "npm run build",
+    "manifestSha256": "e9004646356afe62f7f53307305ba0e2ff57064a379b96ec9e52b3ccab6b80fc",
+    "bundles": {
+      "editorial": "bd3143fc909badc8fcd7c524a4eba0c701c55352a6ecae4ddb8c11e2a68a2812",
+      "documentation": "2d14f9340b617712346e6723dbc810b81b7a8e361ca85240902ecf7a38bec2bc",
+      "app": "c30634d9aca70628fe0f185ffbe2e8a162f1675e7554aac39ffa199768e7c580",
+      "os": "a5c6d152bdbfd1868ef84a26c586cb8627c93fc87e2c5925b767167d23228c1b"
+    }
+  },
+  "after": {
+    "semanticSourceCommit": "dd9db8588e549f8f8a21acf6fcdb9585200c60b1",
+    "bundleSourceCommit": "dd9db8588e549f8f8a21acf6fcdb9585200c60b1",
+    "buildCommand": "npm run build",
+    "bundles": {
+      "editorial": "da059c97e99cd8bca180ca22dcbd1e590c8cc7dd505d8ec6a9fdbb2f4e180730",
+      "documentation": "3aff4b1fecb44b29a7fca0d994a70094f8b7b4c6493fbd5a02d88052fbc00e72",
+      "app": "b85197d64994c14f20b36d3138fd6ed75fccf50594ea7794a02f1ce6d954664f",
+      "os": "a2e8b9f76d9a835695b712074ef4769fb3c0d4e2c1b882bd3e7850bd5488ee1b"
+    }
+  }
+}

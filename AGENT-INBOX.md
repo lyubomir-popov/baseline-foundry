@@ -1,60 +1,74 @@
-# Agent inbox
+# Agent inbox – spacing buckets; BF is the sandbox worker
 
-Live state only. Durable history lives in git, `docs/spec-archive/`, and the
-active package. Keep this file short; move anything settled to its owner.
+Date: 2026-10-21
+Integration: owner-authorized local `main` merge of accepted spacing work and
+review fixes; publication and pushes remain separate.
 
-## Worktrees and live work (2026-09-30)
+The owner reset the spacing work on 2026-10-10. The roadmap deliverables live
+in the canonical spacing spec repository (Spec 024): the spacing article, the
+Pragma token spec, the semantic tokens and the required all-existing-component
+Pragma React token demo. Owner bucket sign-off gates completion. BF is the
+sandbox where values are decided on real components. The pre-reset state of
+this inbox is in git history. The owner has approved the D1 article and
+illustrations, approved D2 including OS dense 0, and accepted the exact private
+D3 implementation. Later production adoption and the restyle PR, publication,
+Svelte/Lit parity and component visual approval remain separate.
 
-| Worktree | Branch | State |
+## Current dispatch
+
+Owner direction, October 21: review the latest BF spacing work, fix findings,
+merge it into local main and consume freshly built main assets in the spacing
+Pages site. This supersedes the earlier no-merge instructions for this bounded
+integration. Preserve historical evidence worktrees and receipts. Review fixes
+cover prose-link marker alignment, custom panel axes, desktop drawer elevation
+and current architecture documentation; they do not complete the remaining
+Spec 024 scope below.
+
+The local continuation implements the October 21 correction in canonical
+Spec 024 brief08: static Chips in shipped Tab actions and SideNavigation link
+or inert-text trailing status slots automatically use the generated dense
+member through neutral wrappers and stop at product roots. Plain, Chip and
+Badge-in-Chip comparisons preserve the host label baseline and equivalent
+single-line occupancy across all four tiers. Existing selected and inward
+focus paint remains visible and layout-neutral. Canonical Spec 024 `tasks.md`
+owns the qualified receipt and owner sign-off.
+
+Accepted token adoption `0521fb7` and invariant indicator fit `499ee5c` remain
+preserved in history. Do not repeat adoption, Reset removal or their receipts.
+Wider compound Search/Color and segmented/pagination coverage, interactive
+navigation APIs, SideTab (absent in BF), Pragma work and owner visual sign-off
+remain open in canonical Spec 024. This completed static placement does not
+claim all Nav/Tab coverage. No push or merge.
+
+## Three repositories, three roles
+
+| Folder | Role | The agent there |
 |---|---|---|
-| `baseline-foundry` (this checkout) | `main` | Clean, equal to `origin/main` at `v0.2.1` |
-| `../baseline-foundry-worktrees/feat-026-body-line-text-phase` | `feat/026-body-line-text-phase` | Pushed. Body-line rhythm default; awaiting owner browser review and D4 gap ruling |
-| `../baseline-foundry-worktrees/feat-025-compact-alignment-grid` | `feat/025-compact-alignment-grid` | All tasks done; closeout edits uncommitted; 6 behind `main` |
-| `../baseline-foundry-worktrees/feat-024-semantic-spacing-token-schema` | `feat/024-semantic-spacing-token-schema` | Pragma-targeted planning store run by a separate agent. Do not edit it from BF work |
-| `../baseline-foundry-worktrees/wip-bf-typography-cap-metric` | `wip/bf-typography-cap-metric` | Parked, unvalidated BF work recovered from the old 022 checkout |
-| `../baseline-foundry-worktrees/feat-020b-page-grid-token-adoption` | `feat/020b-page-grid-token-adoption` | Parked; blocked on a design-tokens page/grid provider |
+| `H:/WSL_dev_projects/canonical-spacing-spec` | **Orchestrator** and source of truth | Writes the bucket briefs, records owner decisions and sign-offs, requests reviews, writes the token spec and the article |
+| This worktree | **Sandbox worker** | Implements each bucket brief on real BF components and builds its bucket page under `demo/spec/buckets/` |
+| `H:/WSL_dev_projects/pragma`, in `.claude/worktrees/feat-spacing-bucket-preview` | **Preview worker** | Applies the same brief on Pragma's unpushed preview branch and adds a Storybook story per bucket |
 
-Execution order is in [`TODO.md`](TODO.md); package status is in
-[`docs/specs.md`](docs/specs.md).
+## If you are the agent in this folder
 
-## BF and Pragma
+You are the BF worker. Take your instructions from the BF worker prompt in
+`H:/WSL_dev_projects/canonical-spacing-spec/specs/024-semantic-spacing-token-schema/buckets/README.md`
+and the brief it names. Read nothing else from the spec repository.
 
-The boundary is in [`AGENTS.md`](AGENTS.md). Spec 022, the first inside-out
-Pragma spacing exploration, is archived at
-[`docs/spec-archive/022-pragma-spacing-adoption/`](docs/spec-archive/022-pragma-spacing-adoption/).
-Its implementation branch was too large to review or merge; Spec 024 owns the
-recut. Do not resume 022.
+- One commit and one bucket page per brief; reply with commit SHA, page URL
+  and open questions.
+- Gates: `npm run check:types` and `npm test`.
+- Do not change demo chrome or composite example pages (ApplicationLayout,
+  DrawerPanel, page shells) unless a bucket page cannot render.
+- No evidence manifests, hash ledgers, provenance re-pins or audit work. They
+  do not gate anything.
+- Do not push or merge; the owner decides when.
 
-## Cross-repository tokens
+If no brief is named yet, the orchestrator has not written the briefs. Say
+so and stop.
 
-The owner-approved governing contract is
-[`docs/cross-repo-token-architecture-spec.md`](docs/cross-repo-token-architecture-spec.md).
-The final independent sign-off is
-[`docs/cross-repo-token-architecture-signoff-review.md`](docs/cross-repo-token-architecture-signoff-review.md);
-its required corrections are incorporated. The durable execution sequence is
-[`docs/cross-repo-token-architecture-implementation-handoff.md`](docs/cross-repo-token-architecture-implementation-handoff.md).
-Design-tokens PRs 1 and 2 and BF contribution 3 (`2289a55`) are landed; 020a
-(`299f182`) removed the seven-point compatibility overlay. The other
-`docs/cross-repo-token-architecture-*` files are closed review evidence.
+## Still open in BF, outside the bucket work
 
-Settled policy: `spacing.baseline` is 0.5rem for Site and 0.25rem for
-Docs/App/OS; exact line heights are typography-owned dimensions carried by a
-Canonical extension because DTCG 2025.10 permits only a numeric multiplier;
-Site display is 84px/96px; Site secondary 14px/20px is the only semantic
-half-step family and knowingly exits on the half-phase; controls are intrinsic
-with no target height.
-
-## Last-known-green
-
-`main` at `8046424` (`v0.2.1`) passes `npm test` on 2026-09-30, including all
-component-baseline families and browser behavior. `npm run qa:components` was
-not rerun in that check.
-
-## Preserve
-
-- `tmp/chevron-audit/`, `tmp/chevron-harness/`, `tmp/vanilla-main/`, and
-  `tmp/repo-health-2026-09-30/` (backup of the old 022 checkout).
-- `stash@{0}` holds the same 022 checkout state. Drop it only after the owner
-  confirms the archive and WIP branch are sufficient.
-- The sibling Vanilla checkout has user changes in `yarn.lock`; do not clean or
-  update it.
+Nothing gates the buckets. Spec 025 and the parked Spec 026 keep their entries
+in `TODO.md`. The four ApplicationLayout Pin overlaps, the `source-map-js`
+audit and BF Firefox/Safari coverage are dropped from the spacing work; BF may
+pick them up on its own schedule.

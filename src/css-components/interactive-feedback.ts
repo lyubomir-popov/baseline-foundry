@@ -1,6 +1,15 @@
+import { allSidedStrokeOverlayCss, blockStartStrokeOverlayCss } from "./stroke-paint.js";
+
 /** Credential and transient-feedback compositions built on BF controls and type roles. */
 export function interactiveFeedbackCss(): string {
-  return `/* ------------------------------------------------------------------ */
+  const notificationStroke = allSidedStrokeOverlayCss(":where(.bf-theme) :where(.bf-notification:not(.is-borderless))", { anchor: "existing" });
+  const notificationMetaStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-notification-meta)", { anchor: "relative" });
+
+  return `${notificationStroke.owner}
+
+${notificationMetaStroke.owner}
+
+/* ------------------------------------------------------------------ */
 /* Credential reveal and repeated validation                           */
 /* ------------------------------------------------------------------ */
 
@@ -76,15 +85,15 @@ export function interactiveFeedbackCss(): string {
   --bf-notification-close-painted-block-size: calc((var(--bf-space-1) * 2) + var(--bf-icon-size-default));
   --bf-notification-rail-shortfall: max(0rem, calc(var(--bf-bar-thickness) + var(--bf-leading-mark-size) + var(--bf-leading-mark-gap) - var(--bf-component-inline-inset-continuation)));
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-default);
+  border: 0;
   color: var(--bf-color-text-default);
   margin-block: 0;
   max-inline-size: 100%;
   min-inline-size: 0;
   overflow-wrap: anywhere;
-  padding-block-end: max(0rem, calc(var(--bf-space-half) - var(--bf-border-width)));
+  padding-block-end: var(--bf-space-half);
   padding-block-start: 0;
-  padding-inline: calc(var(--bf-component-inline-inset-continuation) - var(--bf-border-width)) var(--bf-component-inline-inset-action);
+  padding-inline: var(--bf-component-inline-inset-continuation) var(--bf-component-inline-inset-action);
   position: relative;
 }
 
@@ -92,8 +101,8 @@ export function interactiveFeedbackCss(): string {
   background: var(--bf-notification-accent);
   content: "";
   inline-size: var(--bf-bar-thickness);
-  inset-block: calc(var(--bf-border-width) * -1);
-  inset-inline-start: calc((var(--bf-border-width) + var(--bf-notification-rail-shortfall)) * -1);
+  inset-block: 0;
+  inset-inline-start: calc(var(--bf-notification-rail-shortfall) * -1);
   pointer-events: none;
   position: absolute;
 }
@@ -124,9 +133,8 @@ export function interactiveFeedbackCss(): string {
   --bf-icon-size: var(--bf-leading-mark-size);
   background-color: var(--bf-notification-accent);
   background-image: none;
-  inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-h6-nudge-start) - var(--bf-border-width));
-  inset-inline-start: calc(var(--bf-component-inline-inset-continuation) - var(--bf-border-width) - var(--bf-leading-mark-size) - var(--bf-leading-mark-gap));
-  margin-block-start: 0;
+  inset-block-start: calc(((var(--bf-h6-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-h6-nudge-start));
+  inset-inline-start: calc(var(--bf-component-inline-inset-continuation) - var(--bf-leading-mark-size) - var(--bf-leading-mark-gap));
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm0 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm-.75 5.25h1.5v5h-1.5v-5zM8 3.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z'/%3E%3C/svg%3E");
   mask-position: center;
   mask-repeat: no-repeat;
@@ -152,7 +160,7 @@ export function interactiveFeedbackCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-notification.is-inline > .bf-notification-icon) {
-  inset-block-start: calc(((var(--bf-body-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-body-nudge-start) - var(--bf-border-width));
+  inset-block-start: calc(((var(--bf-body-line-height) - var(--bf-leading-mark-size)) / 2) + var(--bf-body-nudge-start));
 }
 
 :where(.bf-theme) :where(.bf-notification-content, .bf-notification-meta) {
@@ -160,9 +168,12 @@ export function interactiveFeedbackCss(): string {
   min-inline-size: 0;
 }
 
+:where(.bf-theme) :where(.bf-notification-content:not(.bf-stack, .bf-grid, .bf-cluster)) {
+  display: flow-root;
+}
+
 :where(.bf-theme) :where(.bf-notification-content) {
   /* Neutralise the shell's top border so the first metric role starts on-grid. */
-  margin-block: calc(var(--bf-border-width) * -1) 0;
   padding-block-start: 0;
   padding-inline-end: var(--bf-notification-close-painted-block-size);
 }
@@ -176,11 +187,11 @@ export function interactiveFeedbackCss(): string {
    and pair it with the full end inset. This keeps both the metadata boundary
    and the complete shell on-grid; simpler messages retain compact rhythm. */
 :where(.bf-theme) :where(.bf-notification:has(> .bf-notification-meta)) {
-  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
+  padding-block-end: var(--bf-space-1);
 }
 
 :where(.bf-theme) :where(.bf-notification.is-inline) {
-  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width));
+  padding-block-end: var(--bf-space-1);
 }
 
 /* Return the cancelled H6/body metric edges to the shell boundary. The
@@ -189,7 +200,7 @@ export function interactiveFeedbackCss(): string {
  * reopening the visible title/copy gap. Keep this after the shell variants so
  * the metric relationship owns their final compensation. */
 :where(.bf-theme) :where(.bf-notification:has(> .bf-notification-content.is-metric-flush):not(.is-borderless)) {
-  padding-block-end: calc(var(--bf-space-1) - var(--bf-border-width) + var(--bf-baseline) - var(--bf-h6-nudge-start) - var(--bf-body-margin-bottom));
+  padding-block-end: calc(var(--bf-space-1) + var(--bf-baseline) - var(--bf-h6-nudge-start) - var(--bf-body-nudge-end));
 }
 
 :where(.bf-theme) :where(.bf-notification-message, .bf-notification-timestamp) {
@@ -225,13 +236,13 @@ export function interactiveFeedbackCss(): string {
 
 :where(.bf-theme) :where(.bf-notification-meta) {
   align-items: flex-start;
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--bf-space-1) var(--bf-component-inline-inset-action);
   justify-content: space-between;
   margin-block-end: 0;
-  padding-block-start: calc(var(--bf-space-1) - var(--bf-border-width));
+  padding-block-start: var(--bf-space-1);
   padding-inline-end: var(--bf-component-inline-inset-action);
 }
 
@@ -261,5 +272,9 @@ export function interactiveFeedbackCss(): string {
   margin-block-end: var(--bf-body-margin-bottom);
   padding-block: var(--bf-body-nudge-start) 0;
 }
+
+${notificationStroke.painter}
+
+${notificationMetaStroke.painter}
 `;
 }

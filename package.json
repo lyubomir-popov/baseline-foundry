@@ -86,6 +86,7 @@
     "compare:inline-surfaces": "npm run build && tsx scripts/compare-inline-surfaces.ts",
     "verify:behavior": "npm run build && tsx scripts/verify-component-behavior.ts",
     "verify:components": "npm run build && tsx scripts/verify-component-baselines.ts",
+    "verify:spec-028-provenance": "tsx scripts/verify-spec-028-provenance.ts",
     "screenshots:components": "npm run build && tsx scripts/capture-component-screenshots.ts",
     "qa:components": "npm run build && tsx scripts/capture-component-screenshots.ts && tsx scripts/verify-component-baselines.ts",
     "build:app": "tsx examples/app-tier/build.ts",

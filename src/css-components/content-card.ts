@@ -23,7 +23,15 @@
  * reachable.
  */
 export function contentCardCss(): string {
-  return `/* ------------------------------------------------------------------ */
+  const cardSelector = ":where(.bf-theme) :where(.bf-content-card)";
+  const cardStroke = allSidedStrokeOverlayCss(cardSelector, { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+  const footerSelector = ":where(.bf-theme) :where(.bf-content-card-footer)";
+  const footerStroke = blockStartStrokeOverlayCss(footerSelector, { anchor: "relative", color: "var(--bf-color-border-low-contrast)" });
+
+  return `${cardStroke.owner}
+${footerStroke.owner}
+
+/* ------------------------------------------------------------------ */
 /* Content card — rich Vanilla parity, distinct from the bf-card primitive. */
 /* ------------------------------------------------------------------ */
 
@@ -80,7 +88,7 @@ export function contentCardCss(): string {
 
 :where(.bf-theme) :where(.bf-content-card) {
   background: var(--bf-color-background-default);
-  border: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
   box-sizing: border-box;
   color: var(--bf-color-text-default);
   container-name: bf-content-card;
@@ -91,30 +99,32 @@ export function contentCardCss(): string {
   min-inline-size: 0;
   overflow: hidden;
   position: relative;
-  transition: border-color 400ms ease-in-out;
+  transition: color 400ms ease-in-out;
 }
 
 :where(.bf-theme) :where(.bf-content-card:hover, .bf-content-card:focus-within) {
-  border-color: var(--bf-color-border-high-contrast);
+  --bf-stroke-color: var(--bf-color-border-high-contrast);
 }
+
+${cardStroke.painter}
 
 :where(.bf-theme) :where(.bf-content-card-frame) {
   align-items: stretch;
   display: flex;
   flex-direction: column;
   inline-size: 100%;
-  min-block-size: calc(var(--bf-space-12) - (var(--bf-border-width) * 2));
+  min-block-size: var(--bf-space-12);
   min-inline-size: 0;
   padding-block-start: var(--bf-space-2);
 }
 
 :where(.bf-theme) :where(.bf-content-card.is-image) :where(.bf-content-card-frame) {
-  min-block-size: calc((var(--bf-space-12) * 4) - (var(--bf-border-width) * 2));
+  min-block-size: calc(var(--bf-space-12) * 4);
   padding-block-start: 0;
 }
 
 :where(.bf-theme) :where(.bf-content-card:not(.is-image)) :where(.bf-content-card-frame) {
-  min-block-size: calc((var(--bf-space-12) * 2) - (var(--bf-border-width) * 2));
+  min-block-size: calc(var(--bf-space-12) * 2);
 }
 
 :where(.bf-theme) :where(.bf-content-card-media) {
@@ -296,6 +306,10 @@ export function contentCardCss(): string {
   min-block-size: 0;
 }
 
+:where(.bf-theme) :where(.bf-content-card.is-cols-8) :where(.bf-content-card-content) {
+  gap: var(--bf-space-2);
+}
+
 :where(.bf-theme) :where(.bf-content-card.is-cols-8) :where(.bf-content-card-description-panel) {
   flex: 1;
   opacity: 1;
@@ -305,11 +319,11 @@ export function contentCardCss(): string {
 :where(.bf-theme) :where(.bf-content-card.is-cols-8) :where(.bf-content-card-description) {
   -webkit-line-clamp: 2;
   line-clamp: 2;
-  margin-block-end: var(--bf-space-2);
+  margin-block-end: 0;
 }
 
 :where(.bf-theme) :where(.bf-content-card-footer) {
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
+  border: 0;
   inline-size: 100%;
   min-inline-size: 0;
 }
@@ -324,7 +338,7 @@ export function contentCardCss(): string {
   min-inline-size: 0;
   overflow-x: auto;
   padding-block-end: var(--bf-space-1);
-  padding-block-start: calc(0.5rem - var(--bf-border-width));
+  padding-block-start: var(--bf-field-gap);
   padding-inline: var(--bf-panel-padding-inline);
   position: relative;
   scrollbar-width: none;
@@ -357,8 +371,9 @@ export function contentCardCss(): string {
 
 :where(.bf-theme) :where(.bf-content-card-footer .bf-chip) {
   margin: 0;
-  margin-inline-end: var(--bf-component-inline-inset-continuation);
 }
+
+${footerStroke.painter}
 
 /* Internal geometry responds to the card's allocated width. The card root is
    only the container; the frame/media/body descendants own queried styles. */
@@ -370,7 +385,7 @@ export function contentCardCss(): string {
 @container bf-content-card (width < 28.75rem) {
   :where(.bf-theme) :where(.bf-content-card-frame:not(:has(.bf-content-card-footer))) {
     min-block-size: 0;
-    padding-block-end: calc(var(--bf-space-2) - (var(--bf-border-width) * 2));
+    padding-block-end: var(--bf-space-2);
   }
 }
 
@@ -378,12 +393,12 @@ export function contentCardCss(): string {
   :where(.bf-theme) :where(.bf-content-card:is(.is-cols-4, .is-cols-6)) :where(.bf-content-card-frame) {
     column-gap: var(--bf-panel-padding-inline);
     flex-direction: row;
-    min-block-size: calc((var(--bf-space-12) * 2) - (var(--bf-border-width) * 2));
+    min-block-size: calc(var(--bf-space-12) * 2);
     padding: var(--bf-space-2) var(--bf-panel-padding-inline) 0;
   }
 
   :where(.bf-theme) :where(.bf-content-card:is(.is-cols-4, .is-cols-6):not(.is-image)) :where(.bf-content-card-frame) {
-    min-block-size: calc((var(--bf-space-12) * 2) - (var(--bf-border-width) * 2));
+    min-block-size: calc(var(--bf-space-12) * 2);
   }
 
   :where(.bf-theme) :where(.bf-content-card:is(.is-cols-4, .is-cols-6)) :where(.bf-content-card-media) {
@@ -409,7 +424,7 @@ export function contentCardCss(): string {
   /* An explicit image-top modifier wins after the horizontal rules. */
   :where(.bf-theme) :where(.bf-content-card.is-image-top:is(.is-cols-4, .is-cols-6)) :where(.bf-content-card-frame) {
     flex-direction: column;
-    min-block-size: calc((var(--bf-space-12) * 4) - (var(--bf-border-width) * 2));
+    min-block-size: calc(var(--bf-space-12) * 4);
     padding: 0;
   }
 
@@ -433,7 +448,7 @@ export function contentCardCss(): string {
   :where(.bf-theme) :where(.bf-content-card.is-cols-8.is-image) :where(.bf-content-card-frame) {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    min-block-size: calc((var(--bf-space-12) * 3 + var(--bf-space-8)) - (var(--bf-border-width) * 2));
+    min-block-size: calc(var(--bf-space-12) * 3 + var(--bf-space-8));
     padding: 0;
   }
 
@@ -443,6 +458,7 @@ export function contentCardCss(): string {
   }
 
   :where(.bf-theme) :where(.bf-content-card.is-cols-8) :where(.bf-content-card-body) {
+    padding-block-end: 0;
     padding-block-start: var(--bf-space-2);
   }
 
@@ -517,3 +533,4 @@ export function contentCardCss(): string {
 }
 `;
 }
+import { allSidedStrokeOverlayCss, blockStartStrokeOverlayCss } from "./stroke-paint.js";

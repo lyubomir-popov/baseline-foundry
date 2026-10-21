@@ -8,7 +8,8 @@ import {
   legacyThemeConfigSpacing,
   readCanonicalSpacingProduct,
   type DtcgSpacingTokenId,
-  type ResolvedDtcgSpacing
+  type ResolvedDtcgSpacing,
+  type ResolvedDtcgSpacingDensity
 } from "./dtcg-spacing.js";
 import type { BuiltInThemeName, PresetName, TierName } from "./presets.js";
 import { normalizeBuiltInThemeName, presetNames, resolveBuiltInThemePath, resolvePresetPath, resolveTierPath, tierNames } from "./presets.js";
@@ -25,8 +26,10 @@ import type {
   ThemeTokens,
   TypographyToken
 } from "./types.js";
+import { readSpacingProviderProbeOption } from "./internal/spacing-provider-probe.js";
+import { privateIndicatorTypography, type PrivateIndicatorTypography } from "./private-indicator-typography.js";
 
-const DISCLOSURE_ICON_INLINE_SIZE_REM = 1;
+const indicatorTypographyBySurface = new WeakMap<ThemeSurface, PrivateIndicatorTypography>();
 
 export interface AdditionalThemeSurfaceBuildConfig {
   name: string;
@@ -106,8 +109,8 @@ const REQUIRED_COMPONENT_FIELDS = [
   "radiusRem",
   "inlineInsetFieldUnits",
   "inlineInsetActionUnits",
-  "inlineInsetContinuationUnits",
   "markGapInlineUnits",
+  "controlBlockInsetBaselineUnits",
   "controlVisualSizeRem",
   "fieldGapBaselineUnits",
   "panelPaddingInlineUnits",
@@ -176,8 +179,8 @@ export function validateThemeConfig(config: ThemeConfig): void {
     config.components.radiusRem < 0 ||
     config.components.inlineInsetFieldUnits < 0 ||
     config.components.inlineInsetActionUnits < 0 ||
-    config.components.inlineInsetContinuationUnits < 0 ||
     config.components.markGapInlineUnits < 0 ||
+    config.components.controlBlockInsetBaselineUnits < 0 ||
     config.components.fieldGapBaselineUnits < 0 ||
     config.components.panelPaddingInlineUnits < 0 ||
     config.components.panelPaddingBlockBaselineUnits < 0
@@ -188,7 +191,6 @@ export function validateThemeConfig(config: ThemeConfig): void {
   for (const field of [
     "inlineInsetFieldUnits",
     "inlineInsetActionUnits",
-    "inlineInsetContinuationUnits",
     "markGapInlineUnits",
     "panelPaddingInlineUnits"
   ] as const) {
@@ -197,19 +199,10 @@ export function validateThemeConfig(config: ThemeConfig): void {
     }
   }
 
-  if (config.components.inlineInsetActionUnits * config.inlineUnitRem < config.components.borderWidthRem) {
-    throw new Error("Component action inset must contain its bordered action edge.");
-  }
   if (
-    config.components.inlineInsetFieldUnits > config.components.inlineInsetActionUnits ||
-    config.components.inlineInsetActionUnits > config.components.inlineInsetContinuationUnits
+    config.components.inlineInsetFieldUnits > config.components.inlineInsetActionUnits
   ) {
-    throw new Error("Component inline inset counts must be ordered field <= action <= continuation.");
-  }
-  const authoredContinuation = config.components.inlineInsetContinuationUnits * config.inlineUnitRem;
-  const authoredDisclosureNeed = DISCLOSURE_ICON_INLINE_SIZE_REM + (config.components.markGapInlineUnits * config.inlineUnitRem);
-  if (authoredContinuation < authoredDisclosureNeed) {
-    throw new Error(`Component continuation inset ${toRem(authoredContinuation)} cannot contain its fixed disclosure canvas and mark gap ${toRem(authoredDisclosureNeed)}.`);
+    throw new Error("Component inline inset counts must be ordered field <= action.");
   }
 
   const elementIdentifiers = new Set<string>();
@@ -312,7 +305,11 @@ function toTypographyToken(identifier: string, token: BaselineGeneratorElementTo
   const elementConfig = config.elements.find(element => element.identifier === identifier);
   const fontFamily = token.fontFamily ?? config.fontFiles[0]?.family ?? "sans";
   const fontStack = config.fontStacks[fontFamily] ?? fontFamily;
-  const marginBottom = toRem(config.baselineUnit - parseRem(token.nudgeTop));
+  const lineHeight = parseRem(token.lineHeight);
+  const nudge = parseRem(token.nudgeTop);
+  const occupiedWithMinimumCompensation = lineHeight + (2 * nudge);
+  const closedBlockSize = Math.ceil((occupiedWithMinimumCompensation / config.baselineUnit) - 1e-10) * config.baselineUnit;
+  const marginBottom = toRem(closedBlockSize - lineHeight - nudge);
 
   return {
     ...token,
@@ -331,19 +328,29 @@ function spacingRem(spacing: ResolvedDtcgSpacing, id: DtcgSpacingTokenId): strin
 }
 
 function buildComponentTokens(config: ThemeConfig, spacing: ResolvedDtcgSpacing): ComponentTokens {
+  const bodyIdentifier = config.roles.body;
+  const body = config.elements.find(element => element.identifier === bodyIdentifier);
+  if (!body) {
+    throw new Error(`Cannot derive continuation inset: body role ${JSON.stringify(bodyIdentifier)} has no matching element.`);
+  }
   return {
     borderWidth: toRem(config.components.borderWidthRem),
     // Vanilla's shared $bar-thickness is represented as 0.1875rem so emphasis
     // bars and thin borders both scale with root text sizing.
     barThickness: toRem(3 / 16),
     radius: toRem(config.components.radiusRem),
-    inlineInsetField: spacingRem(spacing, "spacing.inset.field.inline"),
+    inlineInsetField: spacingRem(spacing, "spacing.inset.input.inline"),
     inlineInsetAction: spacingRem(spacing, "spacing.inset.action.inline"),
-    inlineInsetContinuation: spacingRem(spacing, "spacing.inset.continuation.inline"),
+    inlineInsetContinuation: toRem(
+      parseRem(spacingRem(spacing, "spacing.inset.input.inline")) +
+      body.fontSize +
+      parseRem(spacingRem(spacing, "spacing.gap.mark.inline"))
+    ),
+    controlBlockInset: spacingRem(spacing, "spacing.inset.control.block"),
     controlVisualSize: toRem(config.components.controlVisualSizeRem),
-    fieldGap: spacingRem(spacing, "spacing.gap.field.block"),
-    panelPaddingInline: spacingRem(spacing, "spacing.inset.surface.inline"),
-    panelPaddingBlock: spacingRem(spacing, "spacing.inset.surface.block")
+    fieldGap: spacingRem(spacing, "spacing.gap.item.block"),
+    panelPaddingInline: spacingRem(spacing, "spacing.inset.surface.standard.inline"),
+    panelPaddingBlock: spacingRem(spacing, "spacing.inset.surface.standard.block")
   };
 }
 
@@ -351,7 +358,9 @@ function buildThemeTokens(
   config: ThemeConfig,
   baselineTokens: BaselineGeneratorTokens,
   spacing: ResolvedDtcgSpacing,
-  canonicalSpacing?: ResolvedDtcgSpacing
+  spacingDensity: ResolvedDtcgSpacingDensity,
+  canonicalSpacing?: ResolvedDtcgSpacing,
+  canonicalSpacingDensity?: ResolvedDtcgSpacingDensity
 ): ThemeTokens {
   const elements = Object.fromEntries(
     Object.entries(baselineTokens.elements).map(([identifier, token]) => [identifier, toTypographyToken(identifier, token, config)])
@@ -383,26 +392,13 @@ function buildThemeTokens(
       `Nested line ${toRem(nestedLineHeight)} cannot contain the control visual ${toRem(config.components.controlVisualSizeRem)}.`
     );
   }
-  const nestedFramedPaint = nestedLineHeight + (config.components.borderWidthRem * 2);
-  if (nestedFramedPaint > parseRem(body.lineHeight)) {
-    throw new Error(
-      `Nested framed controls require ${toRem(nestedFramedPaint)}, which exceeds the body line ${body.lineHeight}.`
-    );
-  }
-
-  const leadingMarkNeed = config.components.controlVisualSizeRem +
-    spacing["spacing.gap.mark.inline"].$value.value;
-  if (spacing["spacing.inset.continuation.inline"].$value.value < leadingMarkNeed) {
-    throw new Error(
-      `Continuation inset ${spacingRem(spacing, "spacing.inset.continuation.inline")} cannot contain the leading mark and gap ${toRem(leadingMarkNeed)}.`
-    );
-  }
-
   return {
     baselineUnit: spacingRem(spacing, "spacing.baseline"),
     inlineUnit: toRem(config.inlineUnitRem),
     canonicalSpacing,
+    canonicalSpacingDensity,
     spacing,
+    spacingDensity,
     fontFiles: config.fontFiles,
     fontStacks: config.fontStacks,
     roles,
@@ -411,10 +407,10 @@ function buildThemeTokens(
       contentMaxWidth: toRem(config.layout.contentMaxWidthRem),
       contentPaddingInline: toRem(config.layout.contentPaddingInlineRem),
       measure: toRem(config.layout.measureRem),
-      sectionSpace: spacingRem(spacing, "spacing.gap.pattern.block"),
+      sectionSpace: spacingRem(spacing, "spacing.gap.section.block"),
       sectionSpaceShallow: spacingRem(spacing, "spacing.gap.group.block"),
-      sectionSpaceDeep: spacingRem(spacing, "spacing.gap.region.block"),
-      stripSpace: spacingRem(spacing, "spacing.inset.strip.block"),
+      sectionSpaceDeep: toRem(config.layout.sectionSpaceDeepBaselineUnits * config.baselineUnit),
+      stripSpace: toRem(config.layout.stripSpaceBaselineUnits * config.baselineUnit),
       gridGapInline: toRem(config.layout.gridGapInlineBaselineUnits * config.baselineUnit),
       gridGapBlock: toRem(config.layout.gridGapBlockBaselineUnits * config.baselineUnit),
       pageMargin: toRem(config.layout.pageMarginBaselineUnits * config.baselineUnit)
@@ -495,21 +491,26 @@ async function buildThemeSurface(
     className?: string;
     label?: string;
     engine?: string;
+    spacingArtifactPath?: string;
+    skipSpacingGeometryAssertion?: boolean;
   } = {}
 ): Promise<ThemeSurface> {
   const config = await readThemeConfig(resolvedConfigPath);
   const builtInName = inferBuiltInPresetName(resolvedConfigPath);
-  const legacySpacing = legacyThemeConfigSpacing(config);
-  const canonicalSpacing = builtInName
-    ? await readCanonicalSpacingProduct(canonicalProductForBuiltInTheme(builtInName))
+  const legacyProduct = legacyThemeConfigSpacing(config);
+  const canonicalProduct = builtInName
+    ? await readCanonicalSpacingProduct(canonicalProductForBuiltInTheme(builtInName), {
+      artifactPath: options.spacingArtifactPath
+    })
     : undefined;
-  const spacing = canonicalSpacing ? structuredClone(canonicalSpacing) : legacySpacing;
+  const spacing = structuredClone(canonicalProduct?.spacing ?? legacyProduct.spacing);
+  const spacingDensity = structuredClone(canonicalProduct?.density ?? legacyProduct.density);
 
-  if (builtInName) {
+  if (builtInName && !options.skipSpacingGeometryAssertion) {
     assertSpacingSetsEqual(
       spacing,
-      legacySpacing,
-      `Built-in ${builtInName} spacing authoring assertion (update the pinned Canonical artifact and matching tier counts together)`
+      legacyProduct.spacing,
+      `Built-in ${builtInName} spacing authoring assertion (update the generated Spec 024 provider and matching tier counts together)`
     );
   }
 
@@ -529,7 +530,7 @@ async function buildThemeSurface(
     fontFiles: createRuntimeFontFiles(config, resolvedConfigPath, resolvedOutputDir)
   };
 
-  return {
+  const surface: ThemeSurface = {
     name,
     label: options.label,
     className: options.className,
@@ -537,16 +538,34 @@ async function buildThemeSurface(
     configPath: resolvedConfigPath,
     baselineConfigPath,
     baselineTokensPath: path.join(resolvedBaselineDir, "tokens.json"),
-    tokens: buildThemeTokens(runtimeConfig, baselineTokens, spacing, canonicalSpacing),
+    tokens: buildThemeTokens(
+      runtimeConfig,
+      baselineTokens,
+      spacing,
+      spacingDensity,
+      canonicalProduct?.spacing,
+      canonicalProduct?.density
+    ),
     metrics: runtimeMetricsTokens(baselineTokens, runtimeConfig.fontFiles)
   };
+
+  if (builtInName) {
+    indicatorTypographyBySurface.set(
+      surface,
+      privateIndicatorTypography(surface.tokens, canonicalProductForBuiltInTheme(builtInName))
+    );
+  }
+
+  return surface;
 }
 
 async function buildRelatedTierSurfaces(
   resolvedConfigPath: string,
   currentSurfaceName: string,
   baselineDir: string,
-  outputDir: string
+  outputDir: string,
+  spacingArtifactPath?: string,
+  skipSpacingGeometryAssertion?: boolean
 ): Promise<ThemeSurface[]> {
   if (!inferBuiltInPresetName(resolvedConfigPath)) {
     return [];
@@ -565,7 +584,9 @@ async function buildRelatedTierSurfaces(
       path.join(baselineDir, "surfaces", tierName),
       outputDir,
       {
-        className: `bf-tier-${tierName}`
+        className: `bf-tier-${tierName}`,
+        spacingArtifactPath,
+        skipSpacingGeometryAssertion
       }
     ));
   }
@@ -576,7 +597,9 @@ async function buildRelatedTierSurfaces(
 async function buildAdditionalThemeSurfaces(
   surfaceConfigs: AdditionalThemeSurfaceBuildConfig[],
   baselineDir: string,
-  outputDir: string
+  outputDir: string,
+  spacingArtifactPath?: string,
+  skipSpacingGeometryAssertion?: boolean
 ): Promise<ThemeSurface[]> {
   const surfaces: ThemeSurface[] = [];
 
@@ -588,7 +611,9 @@ async function buildAdditionalThemeSurfaces(
       outputDir,
       {
         className: surfaceConfig.className,
-        label: surfaceConfig.label
+        label: surfaceConfig.label,
+        spacingArtifactPath,
+        skipSpacingGeometryAssertion
       }
     ));
   }
@@ -615,6 +640,8 @@ async function buildTheme(
   options: {
     surfaceLabel?: string;
     additionalSurfaces?: AdditionalThemeSurfaceBuildConfig[];
+    spacingArtifactPath?: string;
+    skipSpacingGeometryAssertion?: boolean;
   } = {}
 ): Promise<BuildThemeResult> {
   const resolvedDistDir = path.resolve(distDir);
@@ -632,24 +659,38 @@ async function buildTheme(
     resolvedDistDir,
     {
       label: options.surfaceLabel,
-      className: surfaceClassName(defaultSurfaceName)
+      className: surfaceClassName(defaultSurfaceName),
+      spacingArtifactPath: options.spacingArtifactPath,
+      skipSpacingGeometryAssertion: options.skipSpacingGeometryAssertion
     }
   );
   const relatedSurfaces = await buildRelatedTierSurfaces(
     resolvedConfigPath,
     defaultSurfaceName,
     resolvedBaselineDir,
-    resolvedDistDir
+    resolvedDistDir,
+    options.spacingArtifactPath,
+    options.skipSpacingGeometryAssertion
   );
   const additionalSurfaces = await buildAdditionalThemeSurfaces(
     options.additionalSurfaces ?? [],
     resolvedBaselineDir,
-    resolvedDistDir
+    resolvedDistDir,
+    options.spacingArtifactPath,
+    options.skipSpacingGeometryAssertion
   );
   const surfaces = [defaultSurface, ...relatedSurfaces, ...additionalSurfaces];
   assertUniqueSurfaceNames(surfaces);
   const surfaceManifest = buildSurfaceManifest(defaultSurfaceName, surfaces);
+  const indicatorSurfaceTypography = Object.fromEntries(
+    surfaces.flatMap(surface => {
+      const typography = indicatorTypographyBySurface.get(surface);
+      return surface.className && typography ? [[surface.className, typography]] : [];
+    })
+  );
   const css = generateFoundryCss(defaultSurface.tokens, {
+    indicatorTypography: indicatorTypographyBySurface.get(defaultSurface),
+    indicatorSurfaceTypography,
     presetName: builtInName,
     themeSurfaces: surfaces.filter(surface => surface.className)
   });
@@ -678,12 +719,15 @@ export async function buildThemeFromConfig(
   configPath = path.resolve("config/tiers/editorial.json"),
   options: BuildThemeFromConfigOptions = {}
 ): Promise<BuildThemeResult> {
+  const spacingProviderProbe = readSpacingProviderProbeOption(options);
   const resolvedConfigPath = path.resolve(configPath);
   const distDir = options.distDir ?? "dist";
   const baselineDir = options.baselineDir ?? "generated/baseline";
   return buildTheme(resolvedConfigPath, distDir, baselineDir, {
     surfaceLabel: options.surfaceLabel,
-    additionalSurfaces: options.additionalSurfaces
+    additionalSurfaces: options.additionalSurfaces,
+    spacingArtifactPath: spacingProviderProbe?.spacingArtifactPath,
+    skipSpacingGeometryAssertion: Boolean(spacingProviderProbe)
   });
 }
 

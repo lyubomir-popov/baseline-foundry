@@ -96,8 +96,8 @@
     "contentMaxWidthRem": 80,
     "contentPaddingInlineRem": 1.5,
     "measureRem": 38,
-    "sectionSpaceBaselineUnits": 12,
-    "sectionSpaceShallowBaselineUnits": 6,
+    "sectionSpaceBaselineUnits": 10,
+    "sectionSpaceShallowBaselineUnits": 5,
     "sectionSpaceDeepBaselineUnits": 24,
     "stripSpaceBaselineUnits": 12,
     "gridGapInlineBaselineUnits": 6,
@@ -109,11 +109,11 @@
     "radiusRem": 0,
     "inlineInsetFieldUnits": 2,
     "inlineInsetActionUnits": 3,
-    "inlineInsetContinuationUnits": 6,
     "markGapInlineUnits": 2,
+    "controlBlockInsetBaselineUnits": 1,
     "controlVisualSizeRem": 0.875,
-    "fieldGapBaselineUnits": 2,
-    "panelPaddingInlineUnits": 4,
-    "panelPaddingBlockBaselineUnits": 4
+    "fieldGapBaselineUnits": 1,
+    "panelPaddingInlineUnits": 3,
+    "panelPaddingBlockBaselineUnits": 3
   }
 }

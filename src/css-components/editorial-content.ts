@@ -5,8 +5,11 @@ type EditorialContentCssOptions = {
 /** Content-level editorial roles kept separate from layout composition. */
 export function editorialContentCss(options: EditorialContentCssOptions): string {
   const { noticeTitleTypeStyles } = options;
+  const noticeStroke = inlineStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-notice, .bf-notice.is-information, .bf-notice.is-positive, .bf-notice.is-caution, .bf-notice.is-negative)", { anchor: "relative", color: "var(--bf-notice-border)", width: "var(--bf-bar-thickness)" });
 
-  return `/* ------------------------------------------------------------------ */
+  return `${noticeStroke.owner}
+
+/* ------------------------------------------------------------------ */
 /* Editorial content roles                                             */
 /* ------------------------------------------------------------------ */
 
@@ -14,7 +17,7 @@ export function editorialContentCss(options: EditorialContentCssOptions): string
   --bf-notice-background: var(--bf-color-background-neutral-default);
   --bf-notice-border: var(--bf-color-border-neutral);
   background: var(--bf-notice-background);
-  border-inline-start: var(--bf-bar-thickness) solid var(--bf-notice-border);
+  border: 0;
   color: var(--bf-color-text-default);
   display: flow-root;
   margin: 0;
@@ -53,5 +56,8 @@ ${noticeTitleTypeStyles}  margin-block: 0 var(--bf-h4-margin-bottom);
   padding-block-end: 0;
   padding-block-start: var(--bf-h4-nudge-start);
 }
+
+${noticeStroke.painter}
 `;
 }
+import { inlineStartStrokeOverlayCss } from "./stroke-paint.js";

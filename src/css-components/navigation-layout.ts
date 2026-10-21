@@ -40,7 +40,7 @@ export function navigationLayoutCss(): string {
   box-sizing: border-box;
   display: flex;
   inline-size: var(--bf-top-navigation-logo-tag-inline-size);
-  inset-block-start: 0;
+  inset-block-start: var(--bf-top-navigation-logo-tag-start, 0);
   inset-inline-start: 0;
   justify-content: center;
   padding-block: 0 var(--bf-top-navigation-logo-icon-bottom-offset);
@@ -65,7 +65,7 @@ export function navigationLayoutCss(): string {
   align-self: start;
   color: var(--bf-color-text-default);
   font-size: var(--bf-top-navigation-logo-title-font-size, var(--bf-body-font-size, 1rem));
-  font-weight: 300;
+  font-weight: 400;
   line-height: var(--bf-top-navigation-logo-title-line-height, var(--bf-body-line-height, 1.5));
   overflow: visible;
   overflow-wrap: anywhere;

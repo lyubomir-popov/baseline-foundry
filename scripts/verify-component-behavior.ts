@@ -1,8 +1,10 @@
+import { verifyDrawerElevation } from "./behavior/drawer-elevation.ts";
 import { verifyProseLinkAlignment } from "./behavior/prose-link-alignment.ts";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { closeServer, createStaticServer, waitForFonts } from "./component-demo-shared.ts";
 import { assert, disableDemoChromeHitTesting, openBrowser } from "./behavior/browser-helpers.ts";
+import { verifyStaticNavigationChipDensity } from "./behavior/static-navigation-chip-density.ts";
 import {
   verifyContentCardGeometry,
   verifyInteractiveTables,
@@ -16,6 +18,28 @@ import {
 
 async function readAsideWidth(page: import("playwright").Page): Promise<number> {
   return page.locator(".bf-aside.is-pinned").evaluate(element => element.getBoundingClientRect().width);
+}
+
+async function readPseudoBorderBox(page: import("playwright").Page, selector: string, pseudoType: "after" | "before"): Promise<{ height: number; left: number; top: number; width: number }> {
+  const session = await page.context().newCDPSession(page);
+  try {
+    const documentResult = await session.send("DOM.getDocument", { depth: -1, pierce: true }) as { root: { nodeId: number } };
+    const queryResult = await session.send("DOM.querySelector", { nodeId: documentResult.root.nodeId, selector }) as { nodeId: number };
+    assert(queryResult.nodeId > 0, `Expected ${selector} to resolve for ${pseudoType} geometry.`);
+    const description = await session.send("DOM.describeNode", { depth: 1, nodeId: queryResult.nodeId, pierce: true }) as {
+      node: { pseudoElements?: Array<{ nodeId: number; pseudoType: string }> };
+    };
+    const pseudo = description.node.pseudoElements?.find(candidate => candidate.pseudoType === pseudoType);
+    assert(pseudo, `Expected ${selector}::${pseudoType} in Chromium's DOM tree.`);
+    const boxResult = await session.send("DOM.getBoxModel", { nodeId: pseudo.nodeId }) as { model: { border: number[] } };
+    const xs = boxResult.model.border.filter((_, index) => index % 2 === 0);
+    const ys = boxResult.model.border.filter((_, index) => index % 2 === 1);
+    const left = Math.min(...xs);
+    const top = Math.min(...ys);
+    return { height: Math.max(...ys) - top, left, top, width: Math.max(...xs) - left };
+  } finally {
+    await session.detach();
+  }
 }
 
 async function verifyNativeNumberStepper(origin: string): Promise<void> {
@@ -62,7 +86,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         if (!element) throw new Error("Missing spacing-audit element: " + selector);
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
-        return { left: rect.left, top: rect.top, paddingLeft: number(style.paddingLeft), gap: number(style.gap) };
+        return { left: rect.left, top: rect.top, width: rect.width, paddingLeft: number(style.paddingLeft), gap: number(style.gap) };
       };
       const pseudo = (selector, name = "::before") => {
         const element = document.querySelector(selector);
@@ -89,7 +113,11 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const radio = box(".bf-radio-label");
       const radioOuter = pseudo(".bf-radio-label");
       const radioDot = pseudo(".bf-radio-label", "::after");
-      const radioOuterStyle = getComputedStyle(document.querySelector(".bf-radio-label"), "::before");
+      const borderProbe = document.createElement("i");
+      borderProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-border-width);block-size:1px";
+      document.body.append(borderProbe);
+      const paintedBorderWidth = borderProbe.getBoundingClientRect().width;
+      borderProbe.remove();
       const checkbox = box(".bf-checkbox-label");
       const checkboxOuter = pseudo(".bf-checkbox-label");
       const checkboxCheck = pseudo(".bf-checkbox-label", "::after");
@@ -101,6 +129,9 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         return host.left + mark.left + (mark.width / 2);
       };
       const page = box("main.bf-page");
+      const panelCopy = document.querySelector(".bf-panel-content p");
+      const panelRoot = panelCopy?.closest(".bf-panel");
+      const panelContentInset = panelRoot ? Number.parseFloat(getComputedStyle(panelRoot).paddingInlineStart) || 0 : 0;
       const actionProbe = document.createElement("i");
       actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);position:absolute;visibility:hidden";
       document.body.append(actionProbe);
@@ -118,8 +149,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         radioCenterY: radio.top + radioOuter.top + (radioOuter.height / 2),
         radioDotCenterY: radio.top + radioDot.top + (radioDot.height / 2),
         radioDotWidth: radioDot.width,
-        borderWidth: number(radioOuterStyle.borderInlineStartWidth),
-        expectedRadioDotWidth: (radioOuter.width * 0.375) + number(radioOuterStyle.borderInlineStartWidth),
+        borderWidth: paintedBorderWidth,
+        expectedRadioDotWidth: (radioOuter.width * 0.375) + paintedBorderWidth,
         checkboxCenter: checkbox.left + checkboxOuter.left + (checkboxOuter.width / 2),
         checkboxCenterY: checkbox.top + checkboxOuter.top + (checkboxOuter.height / 2),
         checkboxCheckCenterY: checkbox.top + checkboxCheck.top + (checkboxCheck.height / 2),
@@ -131,6 +162,8 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         listTreeStart: iconLabelStart(".bf-list-tree-toggle"),
         treeChildStart: textStart(".bf-list-tree .bf-list-tree .bf-list-tree-link"),
         brandTagStart: box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').left,
+        brandTagWidth: box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').width,
+        brandTagGap: textStart('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-title') - box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').left - box('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').width,
         brandTitle: textStart('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-title'),
         brandIconLoaded: Boolean(brandIcon?.complete && brandIcon.naturalWidth > 0),
         sideNavigationPlainStart: textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
@@ -139,6 +172,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         tableOfContentsLinkStart: textStart(".bf-table-of-contents-link"),
         notificationStart: box(".bf-notification-title").left,
         panelStart: box(".bf-panel-content p").left,
+        expectedPanelStart: panelRoot ? panelRoot.getBoundingClientRect().left + panelContentInset : page.left,
         redStart: red.getBoundingClientRect().left,
         greenStart: green.getBoundingClientRect().left,
         blueStart: blue.getBoundingClientRect().left,
@@ -151,10 +185,14 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
     assert(Math.abs(alignmentGeometry.checkboxCenterY - alignmentGeometry.checkboxCheckCenterY) <= alignmentGeometry.borderWidth * 0.5, "Expected the checkbox check to sit optically within half a scalable border unit of the outer-box centre.");
     assert(alignmentGeometry.markedTextStarts.every(start => Math.abs(start - alignmentGeometry.blueStart) < 0.51), `Expected prose-list, list-row, checkbox, and radio text to share the blue continuation keyline: ${JSON.stringify({ starts: alignmentGeometry.markedTextStarts, blue: alignmentGeometry.blueStart })}.`);
     assert(alignmentGeometry.fieldTextStarts.every(start => Math.abs(start - alignmentGeometry.greenStart) < 0.51), "Expected table-cell and status-label text to share the green field-inset keyline.");
-    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), "Expected button, chip, segmented-control, tab, and pagination text to share the red Action keyline.");
+    assert(alignmentGeometry.commandTextStarts.every(start => Math.abs(start - alignmentGeometry.redStart) < 0.51), `Expected button, chip, segmented-control, tab, and pagination text to share the red Action keyline: ${JSON.stringify({ starts: alignmentGeometry.commandTextStarts, red: alignmentGeometry.redStart })}.`);
     assert(alignmentGeometry.brandIconLoaded && alignmentGeometry.brandTitle > alignmentGeometry.brandTagStart, `Expected the imported tagged brand asset and Baseline Foundry wordmark to render as one primary-navigation logo; got ${JSON.stringify(alignmentGeometry)}.`);
-    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.brandTagStart, alignmentGeometry.sideNavigationPlainStart, alignmentGeometry.sideNavigationDisclosureStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart, alignmentGeometry.panelStart];
-    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected the brand tag, accordion, list-tree disclosure/child, plain/disclosure side-navigation, table of contents, notification, and panel copy to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
+    const continuationStarts = [alignmentGeometry.accordionStart, alignmentGeometry.listTreeStart, alignmentGeometry.treeChildStart, alignmentGeometry.tableOfContentsHeadingStart, alignmentGeometry.tableOfContentsLinkStart, alignmentGeometry.notificationStart];
+    assert(Math.max(...continuationStarts) - Math.min(...continuationStarts) < 0.51, `Expected accordion, list-tree disclosure/child, table of contents, and notification to share one continuation inset; got ${JSON.stringify({ continuationStarts, alignmentGeometry })}.`);
+    assert(Math.abs(alignmentGeometry.brandTitle - alignmentGeometry.sideNavigationPlainStart) < 0.51, `Expected the tagged brand wordmark to continue the SideNavigation label keyline while preserving the tag-to-title offset; got ${JSON.stringify(alignmentGeometry)}.`);
+    assert(Math.abs(alignmentGeometry.brandTitle - alignmentGeometry.brandTagStart - alignmentGeometry.brandTagWidth - alignmentGeometry.brandTagGap) < 0.51 && Math.abs(alignmentGeometry.brandTagWidth - 22) < 0.51 && Math.abs(alignmentGeometry.brandTagGap - 4) < 0.51, `Expected the navigation brand's existing 22px tag and 4px wordmark gap to remain intact; got ${JSON.stringify(alignmentGeometry)}.`);
+    assert(Math.abs(alignmentGeometry.panelStart - alignmentGeometry.expectedPanelStart) < 0.51, `Expected panel copy to start at the responsive page gutter; got ${JSON.stringify(alignmentGeometry)}.`);
+    assert(Math.abs(alignmentGeometry.sideNavigationPlainStart - alignmentGeometry.sideNavigationDisclosureStart) < 0.51, `Expected plain and disclosure SideNavigation rows to share their panel-owned label keyline; got ${JSON.stringify(alignmentGeometry)}.`);
     assert(Math.abs(alignmentGeometry.redStart - alignmentGeometry.expectedRedStart) < 0.51, "Expected the red audit keyline to represent the active tier Action inset.");
     const tierSelect = page.getByLabel("Tier", { exact: true });
     const toneToggle = page.locator("[data-page-chrome-tone-toggle]");
@@ -200,6 +238,17 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           };
           const numberStyle = getComputedStyle(document.querySelector('input[type="number"]'));
           const numberField = document.querySelector('input[type="number"]');
+          const brandTag = document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').getBoundingClientRect();
+          const brandTitleStart = textStart('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-title');
+          const panelCopy = document.querySelector(".bf-panel-content p");
+          const panelRoot = panelCopy?.closest(".bf-panel");
+          const panelStyle = panelRoot ? getComputedStyle(panelRoot) : null;
+          const panelInset = Number.parseFloat(panelStyle?.paddingInlineStart || "0") || 0;
+          const pageMarginProbe = document.createElement("i");
+          pageMarginProbe.style.cssText = "inline-size:var(--bf-page-margin);position:absolute;visibility:hidden";
+          document.body.append(pageMarginProbe);
+          const pageMargin = pageMarginProbe.getBoundingClientRect().width;
+          pageMarginProbe.remove();
           const disclosureTranslation = selector => {
             const element = document.querySelector(selector);
             if (!element) throw new Error("Missing spacing matrix disclosure: " + selector + ".");
@@ -208,17 +257,24 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           };
           return {
             action: [".bf-button", ".bf-chip", ".bf-chip.is-borderless", ".bf-segmented-control-button", ".bf-tabs-link", ".bf-pagination-link"].map(textStart),
+            panelContent: {
+              textStart: textStart(".bf-panel-content p"),
+              expectedStart: panelRoot ? panelRoot.getBoundingClientRect().left + panelInset : null,
+              selectedInset: panelInset,
+              pageMargin
+            },
             continuation: [
               textStart(".bf-accordion-tab"),
               textStart(".bf-list-tree-toggle"),
               textStart(".bf-list-tree .bf-list-tree .bf-list-tree-link"),
-              document.querySelector('section[aria-label="Branded primary side navigation"] .bf-top-navigation-logo-tag').getBoundingClientRect().left,
-              textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
-              textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-accordion-button'),
               textStart(".bf-table-of-contents-heading"),
               textStart(".bf-table-of-contents-link"),
-              document.querySelector(".bf-notification-title").getBoundingClientRect().left,
-              textStart(".bf-panel-content p")
+              document.querySelector(".bf-notification-title").getBoundingClientRect().left
+            ],
+            brand: { titleStart: brandTitleStart, tagStart: brandTag.left, tagWidth: brandTag.width, tagGap: brandTitleStart - brandTag.left - brandTag.width },
+            sideNavigation: [
+              textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-link'),
+              textStart('section[aria-labelledby="horizontal-icon-navigation"] .bf-side-navigation-accordion-button')
             ],
             field: [".bf-table td", ".bf-status-label"].map(textStart),
             keylines: { action: line("action-inset"), field: line("field-text-start"), continuation: line("disclosure-label-start") },
@@ -233,8 +289,11 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           };
         })()`);
         assert(matrix.action.every(start => Math.abs(start - matrix.keylines.action) < 0.51), `Expected ${tier}/${tone} action copy to share the action inset: ${JSON.stringify(matrix)}.`);
+        assert(matrix.panelContent.expectedStart !== null && Math.abs(matrix.panelContent.textStart - matrix.panelContent.expectedStart) < 0.51 && Math.abs(matrix.panelContent.selectedInset - matrix.panelContent.pageMargin) < 0.51, `Expected ${tier}/${tone} panel content to use the responsive page gutter: ${JSON.stringify(matrix.panelContent)}.`);
         assert(matrix.field.every(start => Math.abs(start - matrix.keylines.field) < 0.51), `Expected ${tier}/${tone} field copy to share the field inset: ${JSON.stringify(matrix)}.`);
-        assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, navigation, notification, and panel copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
+        assert(matrix.continuation.every(start => Math.abs(start - matrix.keylines.continuation) < 0.51), `Expected ${tier}/${tone} disclosure, list-tree, table-of-contents, and notification copy to share the continuation inset: ${JSON.stringify(matrix)}.`);
+        assert(Math.max(...matrix.sideNavigation) - Math.min(...matrix.sideNavigation) < 0.51, `Expected ${tier}/${tone} SideNavigation rows to share the panel label keyline: ${JSON.stringify(matrix)}.`);
+        assert(Math.abs(matrix.brand.titleStart - matrix.sideNavigation[0]) < 0.51 && Math.abs(matrix.brand.tagWidth - 22) < 0.51 && Math.abs(matrix.brand.tagGap - 4) < 0.51, `Expected ${tier}/${tone} navigation wordmark to share the label keyline while retaining the 22px tag and 4px gap: ${JSON.stringify(matrix.brand)}.`);
         assert(Math.max(...matrix.markCenters) - Math.min(...matrix.markCenters) < 0.51, `Expected ${tier}/${tone} leading marks to share one centre: ${JSON.stringify(matrix.markCenters)}.`);
         assert(matrix.numberInput.appearance === "auto" && matrix.numberInput.backgroundImage === "none", `Expected ${tier}/${tone} number input to retain its native pointer-accessible spinner: ${JSON.stringify(matrix.numberInput)}.`);
         assert(matrix.numberInput.rightAligned && matrix.numberInput.value === "123456789", `Expected ${tier}/${tone} number input to retain right-aligned numeric copy: ${JSON.stringify(matrix.numberInput)}.`);
@@ -275,6 +334,69 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
     ]);
     assert(numberGeometry.appearance === "auto" && numberGeometry.backgroundImage === "none", `Expected the number field to expose the browser-owned spinner without inert replacement artwork; got ${JSON.stringify(numberGeometry)}.`);
     assert(["hidden", "clip"].includes(selectGeometry.overflow) && selectGeometry.textOverflow === "ellipsis" && selectGeometry.whiteSpace === "nowrap", `Expected constrained selects to truncate before their trailing chevron; got ${JSON.stringify(selectGeometry)}.`);
+    const boundaryGeometry = await page.evaluate(() => {
+      const native = document.querySelector<HTMLInputElement>('input[type="number"]');
+      const owner = native?.closest<HTMLElement>(".bf-field-boundary");
+      const select = document.querySelector<HTMLSelectElement>("select");
+      const selectOwner = select?.closest<HTMLElement>(".bf-field-boundary");
+      if (!native || !owner || !select || !selectOwner) throw new Error("Missing native field boundary specimens.");
+      const nativeStyles = getComputedStyle(native);
+      const ownerStyles = getComputedStyle(owner);
+      const overlayStyles = getComputedStyle(owner, "::after");
+      return {
+        nativeBorderWidths: [nativeStyles.borderBlockStartWidth, nativeStyles.borderBlockEndWidth, nativeStyles.borderInlineStartWidth, nativeStyles.borderInlineEndWidth],
+        nativeMarginBlockEnd: Number.parseFloat(nativeStyles.marginBlockEnd),
+        ownerMarginBlockEnd: Number.parseFloat(ownerStyles.marginBlockEnd),
+        overlayInsets: [overlayStyles.insetBlockStart, overlayStyles.insetBlockEnd, overlayStyles.insetInlineStart, overlayStyles.insetInlineEnd],
+        overlayPointerEvents: overlayStyles.pointerEvents,
+        overlayPosition: overlayStyles.position,
+        ownerHeight: owner.getBoundingClientRect().height,
+        nativeHeight: native.getBoundingClientRect().height,
+        selectOwnerHeight: selectOwner.getBoundingClientRect().height,
+        selectHeight: select.getBoundingClientRect().height
+      };
+    });
+    assert(boundaryGeometry.nativeBorderWidths.every(width => width === "0px") && boundaryGeometry.nativeMarginBlockEnd === 0 && boundaryGeometry.ownerMarginBlockEnd > 0, `Expected the named field boundary, rather than the replaced native element, to own paint and row compensation: ${JSON.stringify(boundaryGeometry)}.`);
+    assert(boundaryGeometry.overlayInsets.every(inset => inset === "0px") && boundaryGeometry.overlayPointerEvents === "none" && boundaryGeometry.overlayPosition === "absolute", `Expected the field stroke to use a non-intercepting automatic last-child overlay: ${JSON.stringify(boundaryGeometry)}.`);
+    assert(Math.abs(boundaryGeometry.ownerHeight - boundaryGeometry.nativeHeight) <= 0.1 && Math.abs(boundaryGeometry.selectOwnerHeight - boundaryGeometry.selectHeight) <= 0.1, `Expected native fields and their paint owners to share exact visible bounds: ${JSON.stringify(boundaryGeometry)}.`);
+    await number.focus();
+    const focusedFieldPaint = await number.evaluate(element => {
+      const owner = element.closest<HTMLElement>(".bf-field-boundary");
+      if (!owner) throw new Error("Missing focused number field owner.");
+      return {
+        nativeOutline: getComputedStyle(element).outlineStyle,
+        ownerPaint: getComputedStyle(owner, "::after").boxShadow
+      };
+    });
+    assert(focusedFieldPaint.nativeOutline === "none" && focusedFieldPaint.ownerPaint !== "none", `Expected keyboard focus to relay to the field overlay without adding native layout paint: ${JSON.stringify(focusedFieldPaint)}.`);
+    await page.emulateMedia({ forcedColors: "active" });
+    const forcedFieldPaint = await number.evaluate(element => {
+      const owner = element.closest<HTMLElement>(".bf-field-boundary");
+      if (!owner) throw new Error("Missing forced-colour number field owner.");
+      const overlay = getComputedStyle(owner, "::after");
+      const ownerStyle = getComputedStyle(owner);
+      return {
+        boundaryStyle: overlay.borderBlockEndStyle,
+        boundaryWidth: Number.parseFloat(overlay.borderBlockEndWidth),
+        focusStyle: ownerStyle.outlineStyle,
+        pointerEvents: overlay.pointerEvents
+      };
+    });
+    assert(forcedFieldPaint.boundaryStyle === "solid" && forcedFieldPaint.boundaryWidth > 0 && forcedFieldPaint.focusStyle !== "none" && forcedFieldPaint.pointerEvents === "none", `Expected the one-sided field rule and inward focus cue to remain explicit system-colour paint: ${JSON.stringify(forcedFieldPaint)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+    const textareaResize = await page.locator("textarea").evaluate(element => {
+      const owner = element.closest<HTMLElement>(".bf-field-boundary");
+      if (!owner) throw new Error("Missing textarea field owner.");
+      const before = owner.getBoundingClientRect().height;
+      element.style.blockSize = `${element.getBoundingClientRect().height + 32}px`;
+      return {
+        before,
+        after: owner.getBoundingClientRect().height,
+        nativeAfter: element.getBoundingClientRect().height,
+        resize: getComputedStyle(element).resize
+      };
+    });
+    assert(textareaResize.resize === "vertical" && textareaResize.after > textareaResize.before + 31 && Math.abs(textareaResize.after - textareaResize.nativeAfter) <= 0.1, `Expected textarea resizing to remain native while its boundary follows the visible box: ${JSON.stringify(textareaResize)}.`);
     const rtlTrailingGeometry = await page.evaluate(() => {
       const field = document.querySelector<HTMLSelectElement>("select");
       if (!field) throw new Error("Missing RTL select artwork specimen.");
@@ -324,13 +446,14 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const radioOuter = getComputedStyle(radioLabel, "::before");
       const radioDot = getComputedStyle(radioLabel, "::after");
       const actionProbe = document.createElement("i");
-      actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);position:absolute;visibility:hidden";
+      actionProbe.style.cssText = "inline-size:var(--bf-component-inline-inset-action);block-size:var(--bf-border-width);position:absolute;visibility:hidden";
       pageElement.append(actionProbe);
       const actionInset = actionProbe.getBoundingClientRect().width;
+      const paintedBorderWidth = actionProbe.getBoundingClientRect().height;
       actionProbe.remove();
       return {
         rootSize,
-        borderWidth: Number.parseFloat(radioOuter.borderInlineStartWidth),
+        borderWidth: paintedBorderWidth,
         lineWidth: Number.parseFloat(getComputedStyle(red).width),
         lineAuthoredWidth: red.style.width,
         lineAuthoredLeft: red.style.left,
@@ -360,7 +483,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const fieldLine = document.querySelector<HTMLElement>("[data-spacing-keyline='field-text-start']");
       const continuationLine = document.querySelector<HTMLElement>("[data-spacing-keyline='disclosure-label-start']");
       const field = document.querySelector<HTMLElement>(".bf-status-label");
-      const continuation = document.querySelector<HTMLElement>(".bf-panel-content p");
+      const continuation = document.querySelector<HTMLElement>(".bf-table-of-contents-link");
       if (!fieldLine || !continuationLine || !field || !continuation) throw new Error("Missing zoom keylines or specimens.");
       const fieldRange = document.createRange();
       fieldRange.selectNodeContents(field);
@@ -433,11 +556,14 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         rejectedDate.className = "bf-input is-nested";
         rejectedDate.type = "date";
         rejectedDate.style.cssText = "position:absolute;visibility:hidden";
+        const rejectedDateBoundary = document.createElement("span");
+        rejectedDateBoundary.className = "bf-field-boundary";
+        rejectedDateBoundary.append(rejectedDate);
         const rejectedLinkButton = document.createElement("button");
         rejectedLinkButton.className = "bf-button is-link is-nested";
         rejectedLinkButton.textContent = "Rejected link button";
         rejectedLinkButton.style.cssText = "position:absolute;visibility:hidden";
-        document.body.append(rejectedDate, rejectedLinkButton);
+        document.body.append(rejectedDateBoundary, rejectedLinkButton);
         const allowedNestedInput = document.querySelector<HTMLElement>("[aria-label='Table text input']");
         const allowedNestedButton = document.querySelector<HTMLElement>("[aria-label='Table control row fit comparison'] .bf-button.is-nested");
         const nestedApi = allowedNestedInput && allowedNestedButton ? {
@@ -446,11 +572,11 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           allowedInputLine: Number.parseFloat(getComputedStyle(allowedNestedInput).lineHeight),
           allowedInputMargin: Number.parseFloat(getComputedStyle(allowedNestedInput).marginBlockEnd),
           rejectedDateLine: Number.parseFloat(getComputedStyle(rejectedDate).lineHeight),
-          rejectedDateMargin: Number.parseFloat(getComputedStyle(rejectedDate).marginBlockEnd),
+          rejectedDateMargin: Number.parseFloat(getComputedStyle(rejectedDateBoundary).marginBlockEnd),
           rejectedLinkLine: Number.parseFloat(getComputedStyle(rejectedLinkButton).lineHeight),
           rejectedLinkMargin: Number.parseFloat(getComputedStyle(rejectedLinkButton).marginBlockEnd)
         } : null;
-        rejectedDate.remove();
+        rejectedDateBoundary.remove();
         rejectedLinkButton.remove();
         return {
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * rootSize,
@@ -464,6 +590,12 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
           statusPadding: statusStyles ? {
             end: Number.parseFloat(statusStyles.paddingBlockEnd),
             start: Number.parseFloat(statusStyles.paddingBlockStart)
+          } : null,
+          statusType: statusStyles ? {
+            fontSize: Number.parseFloat(statusStyles.fontSize),
+            lineHeight: Number.parseFloat(statusStyles.lineHeight),
+            marginStart: Number.parseFloat(statusStyles.marginBlockStart),
+            marginEnd: Number.parseFloat(statusStyles.marginBlockEnd)
           } : null,
           scrollRows: scrollRows.map(row => {
             const cluster = row.querySelector<HTMLElement>(".bf-cluster.is-dense.is-nowrap");
@@ -494,15 +626,28 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       assert(occupiedBlockGeometry.textRuns.length === 8, `Expected ${tier} unboxed-text bucket to contain the reference plus all seven distinct metric roles.`);
       assert(occupiedBlockGeometry.nested.length === 10, `Expected ${tier} nested bucket to contain the reference plus all nine supported host/content combinations.`);
       assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.allowedInputLine === occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.allowedInputMargin === 0 && occupiedBlockGeometry.nestedApi.allowedButtonMargin === 0, `Expected ${tier} allowlisted nested fields and bordered buttons to consume the nested contract: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
-      assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.rejectedDateLine > occupiedBlockGeometry.nestedApi.allowedInputLine && occupiedBlockGeometry.nestedApi.rejectedLinkLine > occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.rejectedDateMargin > 0, `Expected ${tier} date inputs and link buttons to reject the nested API and retain their non-nested line geometry: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
+      assert(occupiedBlockGeometry.nestedApi && occupiedBlockGeometry.nestedApi.rejectedDateLine >= occupiedBlockGeometry.nestedApi.allowedInputLine && occupiedBlockGeometry.nestedApi.rejectedLinkLine >= occupiedBlockGeometry.nestedApi.allowedButtonLine && occupiedBlockGeometry.nestedApi.rejectedDateMargin > 0, `Expected ${tier} date inputs and link buttons outside a table provider to retain their default closure rather than opt into the legacy nested seat: ${JSON.stringify(occupiedBlockGeometry.nestedApi)}.`);
       const interfaceReference = occupiedBlockGeometry.interfaceRows[0];
       const interfaceComponents = occupiedBlockGeometry.interfaceRows.slice(1);
-      assertSharedHeight("single-line interface", interfaceComponents);
-      assert(interfaceReference.label === "Baseline reference" && interfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || Math.abs(sample.textTop - interfaceReference.textTop) < 0.51), `Expected ${tier} single-line interface text to share the five-letter reference baseline; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
+      const bodyInterfaceComponents = interfaceComponents.filter(sample => sample.label !== "Status label");
+      assertSharedHeight("single-line interface", bodyInterfaceComponents);
+      const sharesBaselinePhase = (position: number, reference: number) => {
+        const delta = Math.abs(position - reference) % occupiedBlockGeometry.baseline;
+        return Math.min(delta, occupiedBlockGeometry.baseline - delta) <= renderedBorderTolerance;
+      };
+      const sharesExactTextTop = (samples: Array<{ label: string; textTop: number | null }>) => {
+        const measured = samples.filter((sample): sample is { label: string; textTop: number } => sample.textTop !== null);
+        if (measured.length < 2) return true;
+        const positions = measured.map(sample => sample.textTop);
+        return Math.max(...positions) - Math.min(...positions) < 0.51;
+      };
+      assert(interfaceReference.label === "Baseline reference" && bodyInterfaceComponents.every(sample => sample.textTop === null || interfaceReference.textTop === null || sharesBaselinePhase(sample.textTop, interfaceReference.textTop)), `Expected ${tier} body-sized single-line interface text to share the five-letter reference baseline phase; got ${JSON.stringify(occupiedBlockGeometry.interfaceRows)}.`);
+      assert(sharesExactTextTop(bodyInterfaceComponents), `Expected ${tier} measurable body-sized interface components to share one exact component text top; got ${JSON.stringify(bodyInterfaceComponents)}.`);
       assertSharedHeight("text-run", occupiedBlockGeometry.textRuns);
       const nestedReference = occupiedBlockGeometry.nested[0];
       const nestedHosts = occupiedBlockGeometry.nested.slice(1);
-      assertSharedHeight("nested host", nestedHosts);
+      const nestedHostReferenceFamily = nestedHosts;
+      assertSharedHeight("nested host", nestedHostReferenceFamily);
       const familyReferences = [interfaceReference, occupiedBlockGeometry.textRuns[0], nestedReference];
       const baselinePhase = (position: number) => ((position % occupiedBlockGeometry.baseline) + occupiedBlockGeometry.baseline) % occupiedBlockGeometry.baseline;
       const interfaceReferencePhase = interfaceReference.textTop === null ? null : baselinePhase(interfaceReference.textTop);
@@ -512,9 +657,13 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         return Math.min(delta, occupiedBlockGeometry.baseline - delta) < 0.51;
       }), `Expected ${tier} five-letter references to retain one page-wide baseline phase; references=${JSON.stringify(familyReferences)}, families=${JSON.stringify(occupiedBlockGeometry.familyGeometry)}, rows=${JSON.stringify(occupiedBlockGeometry.scrollRows)}, baseline=${occupiedBlockGeometry.baseline}.`);
       assert(occupiedBlockGeometry.textRuns.every(sample => sample.textTop === null || occupiedBlockGeometry.textRuns[0]?.textTop === null || Math.abs(sample.textTop - occupiedBlockGeometry.textRuns[0].textTop) < 0.51), `Expected ${tier} unboxed metric text to share the five-letter baseline; got ${JSON.stringify(occupiedBlockGeometry.textRuns)}.`);
-      assert(occupiedBlockGeometry.nested.filter(sample => !sample.label.includes("Badge")).every(sample => sample.textTop === null || nestedReference?.textTop === null || Math.abs(sample.textTop - nestedReference.textTop) <= renderedBorderTolerance), `Expected ${tier} nested host text to retain the page baseline while badges remain optically centred; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
+      const nonIndicatorNestedHosts = nestedHostReferenceFamily.filter(sample => !/(badge|status label)/i.test(sample.label));
+      assert(nonIndicatorNestedHosts.every(sample => sample.textTop === null || nestedReference?.textTop === null || sharesBaselinePhase(sample.textTop, nestedReference.textTop)), `Expected ${tier} compact legacy host text to retain the page baseline phase while invariant indicators use their approved smaller text; got ${JSON.stringify(occupiedBlockGeometry.nested)}.`);
+      assert(sharesExactTextTop(nonIndicatorNestedHosts), `Expected ${tier} measurable non-indicator nested hosts to share one exact component text top; got ${JSON.stringify(nonIndicatorNestedHosts)}.`);
       const status = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === "Status label");
-      assert(status?.height === interfaceComponents[0]?.height, `Expected ${tier} status label to share the control occupied height.`);
+      const expectedIndicatorSize = tier === "os" ? 10 : 12;
+      const expectedIndicatorHalfLeading = (expectedIndicatorSize - 16) / 2;
+      assert(status && Math.abs(status.height - expectedIndicatorSize) < 0.1 && occupiedBlockGeometry.statusType && Math.abs(occupiedBlockGeometry.statusType.fontSize - expectedIndicatorSize) < 0.01 && Math.abs(occupiedBlockGeometry.statusType.lineHeight - 16) < 0.01 && Math.abs(occupiedBlockGeometry.statusType.marginStart - expectedIndicatorHalfLeading) < 0.01 && Math.abs(occupiedBlockGeometry.statusType.marginEnd - expectedIndicatorHalfLeading) < 0.01, `Expected ${tier} StatusLabel to retain its approved invariant type and symmetric half-leading outside the body-sized control family; got ${JSON.stringify({ status, type: occupiedBlockGeometry.statusType })}.`);
       for (const label of ["Chip", "Tab action", "Color input", "Range control"] as const) {
         const specimen = occupiedBlockGeometry.interfaceRows.find(sample => sample.label === label);
         assert(specimen && Math.abs(specimen.height - interfaceComponents[0].height) <= 0.1, `Expected ${tier} ${label} to resolve through the same rendered single-line height as the text control; control=${interfaceComponents[0].height}, specimen=${JSON.stringify(specimen)}.`);
@@ -523,7 +672,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       const tableHeight = interfaceComponents.find(sample => sample.label === "Table cell")?.height ?? 0;
       const controlHeight = interfaceComponents[0].height;
       assert(Math.abs(tableHeight - controlHeight) <= renderedBorderTolerance, `Expected ${tier} table cells to target the same single-line height as controls; controls=${controlHeight}, table=${tableHeight}.`);
-      assert(nestedHosts.every(sample => Math.abs(sample.height - controlHeight) <= renderedBorderTolerance), `Expected ${tier} real nested hosts to retain the shared single-line height; controls=${controlHeight}, nested=${JSON.stringify(nestedHosts)}.`);
+      assert(nestedHostReferenceFamily.every(sample => Math.abs(sample.height - controlHeight) <= renderedBorderTolerance), `Expected ${tier} compact legacy hosts to retain the shared single-line height; controls=${controlHeight}, nested=${JSON.stringify(nestedHosts)}.`);
       const allSamples = [...occupiedBlockGeometry.interfaceRows, ...occupiedBlockGeometry.textRuns, ...occupiedBlockGeometry.nested];
       assert(allSamples.every(sample => Math.abs(sample.width - occupiedBlockGeometry.rootSize * 5) < 0.1), `Expected every ${tier} vertical specimen to retain the shared 5rem width; got ${JSON.stringify(allSamples)}.`);
       assert(occupiedBlockGeometry.scrollRows.every(row => row.overflowX === "auto" && row.clusterPaddingBlock === 0 && Math.abs(row.scrollbarBlockSize - (occupiedBlockGeometry.baseline * 2)) < 0.1 && row.probeStartDelta !== null && Math.abs(row.probeStartDelta) < 0.1), `Expected every ${tier} vertical audit bucket to use an unpadded BF cluster and a baseline-snapped scrollbar without displacing its probes; got ${JSON.stringify(occupiedBlockGeometry.scrollRows)}.`);
@@ -540,27 +689,66 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         document.body.classList.add(activeTheme);
         const aside = document.querySelector<HTMLElement>("#component-side-navigation-aside");
         const tag = aside?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
+        const tagIcon = tag?.querySelector<HTMLElement>(".bf-top-navigation-logo-icon");
         const title = aside?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
+        const navigation = aside?.querySelector<HTMLElement>(".bf-side-navigation");
         const plain = aside?.querySelector<HTMLElement>(".bf-side-navigation-item.is-title > .bf-side-navigation-link");
         const disclosure = aside?.querySelector<HTMLElement>(".bf-side-navigation-accordion-button");
-        if (!aside || !tag || !title || !plain || !disclosure) throw new Error("Missing branded primary side-navigation fixture.");
+        if (!aside || !navigation || !tag || !tagIcon || !title || !plain || !disclosure) throw new Error("Missing branded primary side-navigation fixture.");
         const plainNode = Array.from(plain.childNodes).find(node => node.textContent?.trim()) ?? plain;
         const disclosureNode = Array.from(disclosure.childNodes).find(node => node.textContent?.trim()) ?? disclosure;
         const plainRange = document.createRange();
         plainRange.selectNodeContents(plainNode);
         const disclosureRange = document.createRange();
         disclosureRange.selectNodeContents(disclosureNode);
+        const probe = document.createElement("span");
+        probe.style.cssText = "position:absolute;visibility:hidden;inline-size:calc(var(--bf-side-navigation-gutter) + var(--bf-side-navigation-icon-size) + var(--bf-side-navigation-icon-gap));block-size:0";
+        navigation.append(probe);
+        const expectedKeyline = probe.getBoundingClientRect().width;
+        probe.remove();
+        const asideRect = aside.getBoundingClientRect();
+        const tagRect = tag.getBoundingClientRect();
+        const iconRect = tagIcon.getBoundingClientRect();
         return {
+          asideLeft: asideRect.left,
+          navigationLeft: navigation.getBoundingClientRect().left,
           tagLeft: tag.getBoundingClientRect().left,
+          tagWidth: tagRect.width,
+          tagHeight: tagRect.height,
+          tagIconWidth: iconRect.width,
+          tagIconHeight: iconRect.height,
           tagBackground: getComputedStyle(tag).backgroundColor,
           title: title.textContent?.trim(),
+          expectedKeyline,
           plainStart: plainRange.getBoundingClientRect().left,
           disclosureStart: disclosureRange.getBoundingClientRect().left
         };
       }, theme);
       assert(primaryNavigationGeometry.title === "Baseline Foundry" && primaryNavigationGeometry.tagBackground === "rgb(233, 84, 32)", `Expected ${theme} primary navigation to expose the orange tagged Baseline Foundry brand; got ${JSON.stringify(primaryNavigationGeometry)}.`);
-      assert(Math.max(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) - Math.min(primaryNavigationGeometry.tagLeft, primaryNavigationGeometry.plainStart, primaryNavigationGeometry.disclosureStart) < 0.51, `Expected ${theme} brand tag, plain row, and disclosure row to share the continuation inset; got ${JSON.stringify(primaryNavigationGeometry)}.`);
+      assert(Math.abs(primaryNavigationGeometry.tagWidth - 22) < 0.51 && Math.abs(primaryNavigationGeometry.tagHeight - 38) < 0.51 && Math.abs(primaryNavigationGeometry.tagIconWidth - 16) < 0.51 && Math.abs(primaryNavigationGeometry.tagIconHeight - 16) < 0.51, `Expected ${theme} Canonical tagged brand to preserve its 38x22px tag and 16px mark anatomy; got ${JSON.stringify(primaryNavigationGeometry)}.`);
+      assert(Math.abs(primaryNavigationGeometry.plainStart - primaryNavigationGeometry.disclosureStart) < 0.51 && Math.abs((primaryNavigationGeometry.plainStart - primaryNavigationGeometry.navigationLeft) - primaryNavigationGeometry.expectedKeyline) < 0.51, `Expected ${theme} plain and disclosure SideNavigation rows to share gutter + icon + gap; got ${JSON.stringify(primaryNavigationGeometry)}.`);
     }
+    await page.setViewportSize({ width: 800, height: 900 });
+    const drawerSpacing = await page.evaluate(() => {
+      const drawer = document.querySelector<HTMLElement>("#component-side-navigation-docs .bf-side-navigation-drawer");
+      const chrome = drawer?.querySelector<HTMLElement>(":scope > .bf-side-navigation-drawer-chrome");
+      const header = chrome?.querySelector<HTMLElement>(".bf-side-navigation-drawer-header");
+      const body = drawer?.querySelector<HTMLElement>(":scope > .bf-side-navigation-drawer-body");
+      if (!drawer || !chrome || !header || !body) return null;
+      const probe = document.createElement("span");
+      probe.style.cssText = "position:absolute;visibility:hidden;block-size:var(--bf-section-space-shallow)";
+      drawer.append(probe);
+      const expectedGap = probe.getBoundingClientRect().height;
+      probe.remove();
+      return {
+        display: getComputedStyle(drawer).display,
+        expectedGap,
+        gap: body.getBoundingClientRect().top - chrome.getBoundingClientRect().bottom,
+        headerMarginEnd: Number.parseFloat(getComputedStyle(header).marginBlockEnd)
+      };
+    });
+    assert(drawerSpacing && drawerSpacing.display === "flex" && drawerSpacing.headerMarginEnd === 0 && Math.abs(drawerSpacing.gap - drawerSpacing.expectedGap) <= 0.1, `Expected the mobile SideNavigation drawer to own its chrome/body relationship through the governed group gap with no child margin; got ${JSON.stringify(drawerSpacing)}.`);
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`${origin}/demo/spec/spacing.html`, { waitUntil: "networkidle" });
     await page.waitForSelector("#spacing-horizontal-panel .spacing-audit-panel-content", { state: "attached" });
     await page.waitForSelector("#spacing-vertical-panel .spacing-audit-panel-content", { state: "attached" });
@@ -593,16 +781,16 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
 
     await page.goto(`${origin}/index.html`, { waitUntil: "networkidle" });
     await page.evaluate(key => sessionStorage.removeItem(key), storageKey);
-    const targetLink = page.locator(`.pc-nav a[href='${targetRoute}']`);
+    const targetLink = page.locator(`.pc-nav a[href^='${targetRoute}']`);
     await targetLink.scrollIntoViewIfNeeded();
     const scrollBeforeNavigation = await page.locator(".pc-nav").evaluate(nav => nav.scrollTop);
     assert(scrollBeforeNavigation > 0, "Expected the notification catalog link to require a scrolled navigation position.");
 
     await Promise.all([
-      page.waitForURL(`**${targetRoute}`),
+      page.waitForURL(`**${targetRoute}*`),
       targetLink.click()
     ]);
-    await page.locator(`.pc-nav a[href='${targetRoute}'][aria-current='page']`).waitFor({ state: "visible" });
+    await page.locator(`.pc-nav a[href^='${targetRoute}'][aria-current='page']`).waitFor({ state: "visible" });
     await page.waitForTimeout(80);
 
     const readNavigationState = () => page.evaluate(() => {
@@ -611,28 +799,36 @@ async function verifyPageChromeNavigationScroll(origin: string): Promise<void> {
       const brand = nav?.querySelector<HTMLElement>(".bf-panel-header.is-navigation-brand");
       const tag = brand?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
       const icon = brand?.querySelector<HTMLImageElement>(".bf-top-navigation-logo-icon");
-      const rootLink = nav?.querySelector<HTMLElement>(".bf-side-navigation-link");
-      if (!nav || !active || !brand || !tag || !rootLink) return null;
+      const title = brand?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
+      const activeLabel = active?.querySelector<HTMLElement>(".bf-side-navigation-label");
+      if (!nav || !active || !brand || !tag || !title || !activeLabel) return null;
       const navRect = nav.getBoundingClientRect();
       const activeRect = active.getBoundingClientRect();
-      const rootRange = document.createRange();
-      rootRange.selectNodeContents(rootLink);
+      const titleRange = document.createRange();
+      titleRange.selectNodeContents(title);
+      const labelRange = document.createRange();
+      labelRange.selectNodeContents(activeLabel);
       return {
         activeVisible: activeRect.top >= navRect.top && activeRect.bottom <= navRect.bottom,
         brandTop: brand.getBoundingClientRect().top,
+        brandStart: brand.getBoundingClientRect().left - navRect.left,
         iconLoaded: Boolean(icon?.complete && icon.naturalWidth > 0),
-        insetDelta: Math.abs(tag.getBoundingClientRect().left - rootRange.getBoundingClientRect().left),
+        labelStart: labelRange.getBoundingClientRect().left - navRect.left,
+        tagHeight: tag.getBoundingClientRect().height,
+        tagStart: tag.getBoundingClientRect().left - navRect.left,
+        tagWidth: tag.getBoundingClientRect().width,
+        titleStart: titleRange.getBoundingClientRect().left - navRect.left,
         scrollTop: nav.scrollTop
       };
     });
 
     const navigatedState = await readNavigationState();
-    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0 && navigatedState.brandTop === 0 && navigatedState.iconLoaded && navigatedState.insetDelta <= 0.1, `Expected page navigation to preserve its scrolled position, sticky loaded brand, and shared tag/text continuation inset: ${JSON.stringify(navigatedState)}.`);
+    assert(navigatedState?.activeVisible && navigatedState.scrollTop > 0 && navigatedState.brandTop === 0 && navigatedState.iconLoaded && navigatedState.tagWidth === 22 && navigatedState.tagHeight === 38 && navigatedState.tagStart > navigatedState.brandStart && Math.abs(navigatedState.titleStart - navigatedState.labelStart) < 0.51, `Expected page navigation to preserve its scrolled position and align its sticky tagged brand with the SideNavigation label keyline: ${JSON.stringify(navigatedState)}.`);
 
     await page.reload({ waitUntil: "networkidle" });
     await page.waitForTimeout(80);
     const reloadedState = await readNavigationState();
-    assert(reloadedState?.activeVisible && reloadedState.brandTop === 0 && reloadedState.iconLoaded && reloadedState.insetDelta <= 0.1 && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll and sticky tagged brand to survive reload; before=${JSON.stringify(navigatedState)}, after=${JSON.stringify(reloadedState)}.`);
+    assert(reloadedState?.activeVisible && reloadedState.brandTop === 0 && reloadedState.iconLoaded && reloadedState.tagWidth === 22 && reloadedState.tagHeight === 38 && reloadedState.tagStart > reloadedState.brandStart && Math.abs(reloadedState.titleStart - reloadedState.labelStart) < 0.51 && Math.abs(reloadedState.scrollTop - navigatedState.scrollTop) <= 1, `Expected page navigation scroll and aligned sticky tagged brand to survive reload; before=${JSON.stringify(navigatedState)}, after=${JSON.stringify(reloadedState)}.`);
 
     await page.evaluate(key => sessionStorage.removeItem(key), storageKey);
     await page.goto(`${origin}/demo/components/data-spotlight.html`, { waitUntil: "networkidle" });
@@ -664,7 +860,7 @@ async function verifySideNavigationAccordionGeometry(origin: string): Promise<vo
         document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os");
         document.body.classList.add(activeTier);
         const navigation = document.querySelector<HTMLElement>("#component-side-navigation-aside .bf-side-navigation");
-        if (navigation) navigation.style.inlineSize = "160px";
+        if (navigation) navigation.style.inlineSize = "10rem";
         const nested = document.querySelector<HTMLElement>("#side-navigation-app-machines");
         if (nested && !nested.querySelector("[data-bf-inline-pressure-probe]")) {
           const item = document.createElement("li");
@@ -749,7 +945,7 @@ async function verifySideNavigationAccordionGeometry(origin: string): Promise<vo
         assert(expanded.ordered && expanded.parentContainsNested && expanded.nestedClearsFollowing, `Expected ${tier} expanded navigation content to reserve its full row at ${rootFontSize}px root size in ${direction}; got ${JSON.stringify(expanded)}.`);
         assert(expanded.rootTracks.includes("minmax(") && expanded.rootTracks.includes("auto"), `Expected ${tier} navigation rows to retain a minimum and grow automatically; got ${expanded.rootTracks}.`);
         assert(expanded.labelWrapped && expanded.labelContained && expanded.labelOverflow === "hidden" && expanded.labelTextOverflow === "ellipsis" && expanded.labelWhiteSpace === "normal", `Expected ${tier} long navigation labels to wrap inside an automatically growing row; got ${JSON.stringify(expanded)}.`);
-        assert(expanded.navigationInlineContained, `Expected ${tier} nested accordion and unbreakable navigation row to remain within the 160px navigation rail at ${rootFontSize}px root size in ${direction}; got ${JSON.stringify(expanded)}.`);
+        assert(expanded.navigationInlineContained, `Expected ${tier} nested accordion and unbreakable navigation row to remain within the 10rem navigation rail at ${rootFontSize}px root size in ${direction}; got ${JSON.stringify(expanded)}.`);
         assert(Math.abs(expanded.disclosureTranslateX) <= 0.01 && Math.abs(expanded.disclosureTranslateY) <= 0.01, `Expected ${tier} centred accordion chevron not to receive a downward translation; got ${expanded.disclosureTransform}.`);
 
         await button.click();
@@ -769,6 +965,163 @@ async function verifySideNavigationAccordionGeometry(origin: string): Promise<vo
         });
         assert(collapsed?.nestedBlockSize === 0 && collapsed.parentClearsFollowing, `Expected ${tier} collapsed navigation to release nested content at ${rootFontSize}px root size in ${direction}; got ${JSON.stringify(collapsed)}.`);
         assert(Math.abs(collapsed.translateX) <= 0.01 && Math.abs(collapsed.translateY) <= 0.01, `Expected ${tier} centred collapsed chevron to rotate without sinking; got ${JSON.stringify(collapsed)}.`);
+        }
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifySideNavigationPanelGeometry(origin: string): Promise<void> {
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 1440, height: 1000 } });
+    await page.goto(`${origin}/demo/components/application-layout.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+
+    const expectedTierGeometry = {
+      "bf-tier-editorial": { fieldInset: 8, iconGap: 8, iconSize: 16 },
+      "bf-tier-documentation": { fieldInset: 8, iconGap: 8, iconSize: 14 },
+      "bf-tier-app": { fieldInset: 8, iconGap: 8, iconSize: 14 },
+      "bf-tier-os": { fieldInset: 4, iconGap: 4, iconSize: 12 }
+    } as const;
+
+    for (const [tier, expected] of Object.entries(expectedTierGeometry)) {
+      for (const viewportWidth of [390, 1440]) {
+        await page.setViewportSize({ width: viewportWidth, height: 1000 });
+        for (const direction of ["ltr", "rtl"] as const) {
+          await page.evaluate(({ activeTier, dir }) => {
+            document.body.classList.remove("bf-tier-editorial", "bf-tier-documentation", "bf-tier-app", "bf-tier-os");
+            document.body.classList.add(activeTier);
+            document.documentElement.dir = dir;
+            const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
+            navigation?.classList.remove("is-collapsed");
+          }, { activeTier: tier, dir: direction });
+
+          const geometry = await page.evaluate(() => {
+            const nav = document.querySelector<HTMLElement>("[data-flush-navigation-content] .bf-side-navigation");
+            const iconRow = nav?.querySelector<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item > .bf-side-navigation-link");
+            const icon = iconRow?.querySelector<HTMLElement>(".bf-side-navigation-icon");
+            const iconLabel = iconRow?.querySelector<HTMLElement>(".bf-side-navigation-label");
+            const headerLabel = nav?.querySelector<HTMLElement>(".bf-side-navigation-item.is-title .bf-side-navigation-label");
+            const groupHeader = nav?.querySelector<HTMLElement>("[data-icon-navigation-heading]");
+            const nestedLabel = nav?.querySelector<HTMLElement>(".bf-side-navigation-list .bf-side-navigation-list .bf-side-navigation-label");
+            const active = nav?.querySelector<HTMLElement>(".bf-side-navigation-link[aria-current='page']");
+            const switcher = nav?.querySelector<HTMLElement>("[data-side-navigation-context-switcher]");
+            const selectBoundary = switcher?.querySelector<HTMLElement>(".bf-field-boundary");
+            const select = switcher?.querySelector<HTMLSelectElement>("select");
+            if (!nav || !iconRow || !icon || !iconLabel || !headerLabel || !groupHeader || !nestedLabel || !active || !switcher || !selectBoundary || !select) return null;
+
+            const navRect = nav.getBoundingClientRect();
+            const direction = getComputedStyle(nav).direction;
+            const iconRect = icon.getBoundingClientRect();
+            const iconLabelRange = document.createRange();
+            iconLabelRange.selectNodeContents(iconLabel);
+            const iconLabelRect = iconLabelRange.getBoundingClientRect();
+            const headerRange = document.createRange();
+            headerRange.selectNodeContents(headerLabel);
+            const headerRect = headerRange.getBoundingClientRect();
+            const groupHeaderRange = document.createRange();
+            groupHeaderRange.selectNodeContents(groupHeader);
+            const groupHeaderRect = groupHeaderRange.getBoundingClientRect();
+            const groupHeaderBox = groupHeader.getBoundingClientRect();
+            const nestedLabelRange = document.createRange();
+            nestedLabelRange.selectNodeContents(nestedLabel);
+            const nestedLabelRect = nestedLabelRange.getBoundingClientRect();
+            const activeRect = active.getBoundingClientRect();
+            const selectRect = select.getBoundingClientRect();
+            const switcherRect = switcher.getBoundingClientRect();
+            const activeStyles = getComputedStyle(active);
+            const activePaint = getComputedStyle(active, "::after");
+            const selectStyles = getComputedStyle(select);
+            const fieldInsetProbe = document.createElement("span");
+            fieldInsetProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-component-inline-inset-field);block-size:0";
+            const gapProbe = document.createElement("span");
+            gapProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-side-navigation-icon-gap);block-size:0";
+            const gutterProbe = document.createElement("span");
+            gutterProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-side-navigation-gutter);block-size:0";
+            const iconSizeProbe = document.createElement("span");
+            iconSizeProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-side-navigation-icon-size);block-size:0";
+            const baselineProbe = document.createElement("span");
+            baselineProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-baseline);block-size:0";
+            const controlCompensationProbe = document.createElement("span");
+            controlCompensationProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-interface-row-compensation-block-end);block-size:0";
+            nav.append(fieldInsetProbe, gapProbe, gutterProbe, iconSizeProbe, baselineProbe, controlCompensationProbe);
+            const expectedFieldInset = fieldInsetProbe.getBoundingClientRect().width;
+            const expectedGap = gapProbe.getBoundingClientRect().width;
+            const expectedGutter = gutterProbe.getBoundingClientRect().width;
+            const expectedIconSize = iconSizeProbe.getBoundingClientRect().width;
+            const baseline = baselineProbe.getBoundingClientRect().width;
+            const expectedControlCompensation = controlCompensationProbe.getBoundingClientRect().width;
+            fieldInsetProbe.remove();
+            gapProbe.remove();
+            gutterProbe.remove();
+            iconSizeProbe.remove();
+            baselineProbe.remove();
+            controlCompensationProbe.remove();
+            return {
+              activeBoxShadow: activeStyles.boxShadow,
+              activeEndGutter: direction === "rtl" ? activeRect.left - navRect.left : navRect.right - activeRect.right,
+              activePaintBackground: activePaint.backgroundColor,
+              activePaintBorderInlineStartStyle: activePaint.borderInlineStartStyle,
+              activePaintBorderInlineStartWidth: Number.parseFloat(activePaint.borderInlineStartWidth),
+              activePaintInsetInlineStart: Number.parseFloat(activePaint.insetInlineStart),
+              activePaintPointerEvents: activePaint.pointerEvents,
+              activePaintWidth: Number.parseFloat(activePaint.inlineSize),
+              activeRowStart: direction === "rtl" ? navRect.right - activeRect.right : activeRect.left - navRect.left,
+              baseline,
+              contextSwitcherHeight: switcherRect.height,
+              contextSwitcherToHeading: groupHeaderBox.top - switcherRect.bottom,
+              expectedControlCompensation,
+              expectedFieldInset,
+              expectedGap,
+              expectedGutter,
+              expectedIconSize,
+              groupHeaderStart: direction === "rtl" ? navRect.right - groupHeaderRect.right : groupHeaderRect.left - navRect.left,
+              headerStart: direction === "rtl" ? navRect.right - headerRect.right : headerRect.left - navRect.left,
+              iconGap: direction === "rtl" ? iconRect.left - iconLabelRect.right : iconLabelRect.left - iconRect.right,
+              iconHeight: iconRect.height,
+              iconStart: direction === "rtl" ? navRect.right - iconRect.right : iconRect.left - navRect.left,
+              iconWidth: iconRect.width,
+              labelStart: direction === "rtl" ? navRect.right - iconLabelRect.right : iconLabelRect.left - navRect.left,
+              nestedLabelStart: direction === "rtl" ? navRect.right - nestedLabelRect.right : nestedLabelRect.left - navRect.left,
+              rowPaddingInlineEnd: Number.parseFloat(activeStyles.paddingInlineEnd),
+              rowPaddingInlineStart: Number.parseFloat(activeStyles.paddingInlineStart),
+              selectEndGutter: direction === "rtl" ? selectRect.left - navRect.left : navRect.right - selectRect.right,
+              selectPaddingInlineStart: Number.parseFloat(selectStyles.paddingInlineStart),
+              selectMarginBlockEnd: Number.parseFloat(getComputedStyle(selectBoundary).marginBlockEnd),
+              selectStart: direction === "rtl" ? navRect.right - selectRect.right : selectRect.left - navRect.left,
+              switcherPaddingInlineEnd: Number.parseFloat(getComputedStyle(switcher).paddingInlineEnd),
+              switcherPaddingInlineStart: Number.parseFloat(getComputedStyle(switcher).paddingInlineStart)
+            };
+          });
+
+          assert(geometry, `Expected ${tier}/${viewportWidth}/${direction} SideNavigation panel geometry.`);
+          const expectedKeyline = geometry.expectedGutter + geometry.expectedIconSize + geometry.expectedGap;
+          assert(Math.abs(geometry.expectedIconSize - expected.iconSize) < 0.1 && Math.abs(geometry.expectedGap - expected.iconGap) < 0.1 && Math.abs(geometry.expectedFieldInset - expected.fieldInset) < 0.1, `Expected ${tier} icon, gap and field values at ${viewportWidth}px/${direction}; got ${JSON.stringify(geometry)}.`);
+          assert(Math.abs(geometry.iconWidth - expected.iconSize) < 0.1 && Math.abs(geometry.iconHeight - expected.iconSize) < 0.1 && Math.abs(geometry.iconStart - geometry.expectedGutter) < 0.51 && Math.abs(geometry.iconGap - expected.iconGap) < 0.51, `Expected ${tier} icon slot to equal its tier icon and begin at the start gutter; got ${JSON.stringify(geometry)}.`);
+          assert([geometry.labelStart, geometry.headerStart, geometry.groupHeaderStart, geometry.nestedLabelStart, geometry.selectStart].every(value => Math.abs(value - expectedKeyline) < 0.51), `Expected ${tier} rows, Header, GroupHeader, nested rows and ContextSwitcher to share the label keyline at ${viewportWidth}px/${direction}; got ${JSON.stringify(geometry)}.`);
+          assert(Math.abs(geometry.rowPaddingInlineStart - expectedKeyline) < 0.1 && Math.abs(geometry.rowPaddingInlineEnd - geometry.expectedGutter) < 0.1 && Math.abs(geometry.switcherPaddingInlineStart - expectedKeyline) < 0.1 && Math.abs(geometry.switcherPaddingInlineEnd - geometry.expectedGutter) < 0.1, `Expected ${tier} SideNavigation to own page-margin gutters on both edges; got ${JSON.stringify(geometry)}.`);
+          assert(Math.abs(geometry.selectPaddingInlineStart - expected.fieldInset) < 0.1 && geometry.selectEndGutter >= geometry.expectedGutter - 0.51, `Expected ${tier} ContextSwitcher to retain its tier field inset inside the label-keyline box; got ${JSON.stringify(geometry)}.`);
+          const contextSwitcherPhase = ((geometry.contextSwitcherHeight % geometry.baseline) + geometry.baseline) % geometry.baseline;
+          assert(Math.abs(geometry.selectMarginBlockEnd - geometry.expectedControlCompensation) < 0.1 && Math.min(contextSwitcherPhase, geometry.baseline - contextSwitcherPhase) < 0.1 && Math.abs(geometry.contextSwitcherToHeading) < 0.1, `Expected ${tier} ContextSwitcher to retain control compensation, close on the baseline grid and hand off directly to the following heading; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.activeRowStart === 0 && geometry.activeEndGutter === 0 && geometry.activeBoxShadow === "none" && geometry.activePaintInsetInlineStart === 0 && geometry.activePaintPointerEvents === "none" && geometry.activePaintWidth > 0 && geometry.activePaintWidth <= geometry.expectedGutter, `Expected ${tier} selected paint to stay out of flow inside the start gutter; got ${JSON.stringify(geometry)}.`);
+
+          await page.emulateMedia({ forcedColors: "active" });
+          const forcedPaint = await page.locator("[data-flush-navigation-content] .bf-side-navigation-link[aria-current='page']").evaluate(element => {
+            const styles = getComputedStyle(element, "::after");
+            return {
+              background: styles.backgroundColor,
+              borderStyle: styles.borderInlineStartStyle,
+              borderWidth: Number.parseFloat(styles.borderInlineStartWidth),
+              pointerEvents: styles.pointerEvents,
+              width: Number.parseFloat(styles.inlineSize)
+            };
+          });
+          assert(forcedPaint.background === "rgba(255, 255, 255, 0)" && forcedPaint.borderStyle === "solid" && forcedPaint.borderWidth > 0 && forcedPaint.width === forcedPaint.borderWidth && forcedPaint.pointerEvents === "none", `Expected ${tier} selected gutter paint to become a one-sided system-color border in forced colors; got ${JSON.stringify(forcedPaint)}.`);
+          await page.emulateMedia({ forcedColors: "none" });
         }
       }
     }
@@ -819,6 +1172,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         footerBottomDelta: footer ? window.innerHeight - footer.getBoundingClientRect().bottom : null,
         footerHeight: footer?.getBoundingClientRect().height ?? null,
         reservedFooterSpace: Number.parseFloat(bodyStyles.paddingBlockEnd),
+        baseline: Number.parseFloat(bodyStyles.getPropertyValue("--bf-baseline")) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
         sequence: sequence.map(link => ({
           accessibleName: link.getAttribute("aria-label"),
           background: getComputedStyle(link).backgroundColor,
@@ -836,7 +1190,7 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
     assert(chrome.sequence.length === 2 && chrome.sequence.every(link => link.accessibleName && link.iconCount === 1 && link.text === "" && link.canonicalBase && !link.nestedTheme && link.background === "rgba(0, 0, 0, 0)" && link.color === "rgb(0, 0, 0)" && link.iconImage.includes("stroke='%23000'") && link.decoration === "none"), `Expected canonical light-tone base/icon link-buttons to inherit the page tone and expose accessible names: ${JSON.stringify(chrome.sequence)}.`);
     assert(chrome.brandText && chrome.crumbText && Math.abs(chrome.brandText.top - chrome.crumbText.top) <= 0.1 && Math.abs(chrome.brandText.bottom - chrome.crumbText.bottom) <= 0.1, `Expected the tagged brand title and breadcrumb to share one fixed header text line: ${JSON.stringify(chrome)}.`);
     assert(chrome.brandBlockSize !== null && chrome.headerHeight !== null && chrome.barHeight !== null && Math.abs(chrome.headerHeight - chrome.brandBlockSize) <= 0.1 && Math.abs(chrome.barHeight - chrome.brandBlockSize) <= 0.1, `Expected the header rule to paint in-box while the bar occupies exactly the derived tagged-brand block: ${JSON.stringify(chrome)}.`);
-    assert(chrome.footerBottomDelta !== null && Math.abs(chrome.footerBottomDelta) <= 0.1 && chrome.footerHeight !== null && Math.abs(chrome.reservedFooterSpace - chrome.footerHeight) <= 0.1, `Expected fixed bottom controls to reserve their measured height: ${JSON.stringify(chrome)}.`);
+    assert(chrome.footerBottomDelta !== null && Math.abs(chrome.footerBottomDelta) <= 0.1 && chrome.footerHeight !== null && Math.abs(chrome.reservedFooterSpace - chrome.footerHeight - chrome.baseline) <= 0.1, `Expected fixed bottom controls to reserve their measured height plus one baseline of unobscured scroll clearance: ${JSON.stringify(chrome)}.`);
 
     const toneControl = page.locator("label:has([data-page-chrome-tone-toggle])");
     await toneControl.click();
@@ -901,14 +1255,28 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         const secondRuleRect = secondRule.getBoundingClientRect();
         const secondRuleStyles = getComputedStyle(secondRule);
         const baseline = Number.parseFloat(getComputedStyle(navigation).getPropertyValue("--bf-baseline")) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const navigationItems = Array.from(navigation.querySelectorAll<HTMLElement>(".bf-side-navigation-list > .bf-side-navigation-item"));
+        const navigationItems = navigationGroups.flatMap(group =>
+          Array.from(group.querySelectorAll<HTMLElement>(":scope > .bf-side-navigation-list > .bf-side-navigation-item"))
+        );
         const linkRange = document.createRange();
         linkRange.selectNodeContents(firstLink);
-        const continuationProbe = document.createElement("span");
-        continuationProbe.style.cssText = "display:block;inline-size:var(--bf-component-inline-inset-continuation);position:absolute;visibility:hidden";
-        navigation.append(continuationProbe);
-        const continuationInset = continuationProbe.getBoundingClientRect().width;
-        continuationProbe.remove();
+        const labelKeylineProbe = document.createElement("span");
+        labelKeylineProbe.style.cssText = "display:block;inline-size:var(--bf-side-navigation-label-keyline);position:absolute;visibility:hidden";
+        const gutterProbe = document.createElement("span");
+        gutterProbe.style.cssText = "display:block;inline-size:var(--bf-side-navigation-gutter);position:absolute;visibility:hidden";
+        const groupGapProbe = document.createElement("span");
+        groupGapProbe.style.cssText = "display:block;inline-size:var(--bf-section-space-shallow);position:absolute;visibility:hidden";
+        const itemGapProbe = document.createElement("span");
+        itemGapProbe.style.cssText = "display:block;inline-size:var(--bf-field-gap);position:absolute;visibility:hidden";
+        navigation.append(labelKeylineProbe, gutterProbe, groupGapProbe, itemGapProbe);
+        const labelKeyline = labelKeylineProbe.getBoundingClientRect().width;
+        const gutter = gutterProbe.getBoundingClientRect().width;
+        const groupGapTarget = groupGapProbe.getBoundingClientRect().width;
+        const headingListGapTarget = itemGapProbe.getBoundingClientRect().width;
+        labelKeylineProbe.remove();
+        gutterProbe.remove();
+        groupGapProbe.remove();
+        itemGapProbe.remove();
 
         return {
           breadcrumbX: breadcrumb.getBoundingClientRect().left,
@@ -918,17 +1286,18 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
           })),
           rules,
           navigation: {
-            continuationInset,
+            gutter,
+            labelKeyline,
             groupGap: secondGroupRect.top - firstGroupRect.bottom,
-            groupGapTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 1.5,
+            groupGapTarget,
             headingListGap: firstListRect.top - firstHeaderRect.bottom,
-            headingListGapTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.5,
+            headingListGapTarget,
             headingTextInset: headingRect.left + Number.parseFloat(getComputedStyle(firstHeading).paddingInlineStart) - navigationRect.left,
             linkTextInset: linkRange.getBoundingClientRect().left - navigationRect.left,
             ruleInset: secondRuleRect.left - navigationRect.left,
             ruleEndSpread: navigationRect.right - secondRuleRect.right,
             ruleOccupiedBlock: secondRuleRect.height + Number.parseFloat(secondRuleStyles.marginBlockEnd),
-            ruleOccupiedBlockTarget: Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.5,
+            ruleOccupiedBlockTarget: headingListGapTarget,
             baseline,
             groupTops: navigationGroups.map(group => group.getBoundingClientRect().top),
             itemTracks: navigationItems.map(item => {
@@ -945,12 +1314,12 @@ async function verifyPageChromeHierarchyAndKeylines(origin: string): Promise<voi
         assert(geometry.fixed.every(region => Math.abs(region.x - geometry.breadcrumbX) <= 1), `Expected uncapped ${tier} specimen regions to share the page keyline: ${JSON.stringify(geometry)}.`);
       }
       assert(geometry.rules.plain.blockSize === "1px" && geometry.rules.plain.marginBlockEnd !== "0px", `Expected ${tier} bare semantic hr to carry the generic rule geometry and trailing compensation: ${JSON.stringify(geometry.rules)}.`);
-      assert(Math.abs(geometry.navigation.headingTextInset - geometry.navigation.continuationInset) <= 0.1 && Math.abs(geometry.navigation.linkTextInset - geometry.navigation.continuationInset) <= 0.1, `Expected ${tier} page-navigation headings and plain commands to land on the continuation inset: ${JSON.stringify(geometry.navigation)}.`);
-      assert(Math.abs(geometry.navigation.groupGap - geometry.navigation.groupGapTarget) <= 0.1, `Expected ${tier} page-navigation heading/list groups to be separated by 1.5rem: ${JSON.stringify(geometry.navigation)}.`);
-      assert(Math.abs(geometry.navigation.headingListGap - geometry.navigation.headingListGapTarget) <= 0.1, `Expected ${tier} page-navigation group headers to keep a 0.5rem transition to their lists: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.headingTextInset - geometry.navigation.labelKeyline) <= 0.1 && Math.abs(geometry.navigation.linkTextInset - geometry.navigation.labelKeyline) <= 0.1, `Expected ${tier} page-navigation headings and plain commands to land on the panel label keyline: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.groupGap - geometry.navigation.groupGapTarget) <= 0.1, `Expected ${tier} page-navigation groups to use the governed group gap: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.headingListGap - geometry.navigation.headingListGapTarget) <= 0.1, `Expected ${tier} page-navigation group headers to use the governed item gap before their lists: ${JSON.stringify(geometry.navigation)}.`);
       assert(geometry.navigation.headerGaps.every(gap => gap === 0), `Expected ${tier} page-navigation rules and headings to remain a tight zero-gap header unit: ${JSON.stringify(geometry.navigation)}.`);
-      assert(Math.abs(geometry.navigation.ruleInset - geometry.navigation.continuationInset) <= 0.1 && Math.abs(geometry.navigation.ruleEndSpread) <= 0.1, `Expected ${tier} page-navigation rules to start on the continuation text inset and reach the navigation end edge: ${JSON.stringify(geometry.navigation)}.`);
-      assert(Math.abs(geometry.navigation.ruleOccupiedBlock - geometry.navigation.ruleOccupiedBlockTarget) <= 0.1, `Expected ${tier} page-navigation rules to preserve the compensated half-rem occupied block: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.ruleInset - geometry.navigation.labelKeyline) <= 0.1 && Math.abs(geometry.navigation.ruleEndSpread - geometry.navigation.gutter) <= 0.1, `Expected ${tier} page-navigation rules to run from the label keyline to the end gutter: ${JSON.stringify(geometry.navigation)}.`);
+      assert(Math.abs(geometry.navigation.ruleOccupiedBlock - geometry.navigation.ruleOccupiedBlockTarget) <= 0.1, `Expected ${tier} page-navigation rules to preserve the governed item-gap occupied block: ${JSON.stringify(geometry.navigation)}.`);
       const phaseDistance = (a: number, b: number, baseline: number) => {
         const delta = Math.abs((((a - b) % baseline) + baseline) % baseline);
         return Math.min(delta, baseline - delta);
@@ -1071,17 +1440,20 @@ async function verifyPinnedAsideResize(origin: string): Promise<void> {
       if (!panel || !handle) return null;
       const handleRect = handle.getBoundingClientRect();
       const panelStyle = getComputedStyle(panel);
+      const panelOverlayStyle = getComputedStyle(panel, "::after");
       const dividerStyle = getComputedStyle(handle, "::after");
       const dividerWidth = Number.parseFloat(dividerStyle.width);
       return {
         background: dividerStyle.backgroundColor,
         borderWidth: Number.parseFloat(panelStyle.borderInlineStartWidth),
+        overlayPointerEvents: panelOverlayStyle.pointerEvents,
+        overlayShadow: panelOverlayStyle.boxShadow,
         dividerWidth,
         handleWidth: handleRect.width
       };
     });
     assert(idleDivider, "Expected the pinned-aside divider to be measurable.");
-    assert(idleDivider.background === "rgba(0, 0, 0, 0)" && idleDivider.borderWidth === 1 && idleDivider.dividerWidth === 2 && idleDivider.handleWidth >= 24, `Expected the idle resize affordance to preserve its hit target without double-painting the aside border; got ${JSON.stringify(idleDivider)}.`);
+    assert(idleDivider.background === "rgba(0, 0, 0, 0)" && idleDivider.borderWidth === 0 && idleDivider.overlayPointerEvents === "none" && idleDivider.overlayShadow !== "none" && idleDivider.dividerWidth === 2 && idleDivider.handleWidth >= 24, `Expected the idle resize affordance to preserve its hit target above the pointer-transparent aside overlay; got ${JSON.stringify(idleDivider)}.`);
 
     await handle.hover();
     await page.waitForTimeout(160);
@@ -1173,6 +1545,8 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
 
       const appRect = app.getBoundingClientRect();
       const asideRect = aside.getBoundingClientRect();
+      const asideStyle = getComputedStyle(aside);
+      const asidePaint = getComputedStyle(aside, "::after");
       return {
         appTop: appRect.top,
         appBottom: appRect.bottom,
@@ -1181,7 +1555,11 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
         asideBottom: asideRect.bottom,
         asideRight: asideRect.right,
         asideWidth: asideRect.width,
-        asideHeight: asideRect.height
+        asideHeight: asideRect.height,
+        borderInlineStartWidth: Number.parseFloat(asideStyle.borderInlineStartWidth),
+        rootShadow: asideStyle.boxShadow,
+        overlayShadow: asidePaint.boxShadow,
+        overlayPointerEvents: asidePaint.pointerEvents
       };
     });
 
@@ -1191,6 +1569,7 @@ async function verifyDrawerOverlay(origin: string): Promise<void> {
     assert(Math.abs(openGeometry.asideBottom - openGeometry.appBottom) <= 2, `Expected open drawer to attach to the bottom edge of the application. App bottom ${openGeometry.appBottom}px, drawer bottom ${openGeometry.asideBottom}px.`);
     assert(Math.abs(openGeometry.asideRight - openGeometry.appRight) <= 2, `Expected open drawer to attach to the right edge of the application. App right ${openGeometry.appRight}px, drawer right ${openGeometry.asideRight}px.`);
     assert(openGeometry.asideWidth >= 320, `Expected open drawer to have a substantial visible width. Got ${openGeometry.asideWidth}px.`);
+    assert(openGeometry.borderInlineStartWidth === 0 && openGeometry.rootShadow === "none" && openGeometry.overlayShadow !== "none" && openGeometry.overlayPointerEvents === "none", `Expected the open drawer edge and elevation to share its pointer-transparent overlay without layout paint; got ${JSON.stringify(openGeometry)}.`);
 
     await toggle.click();
     await page.waitForTimeout(220);
@@ -1280,8 +1659,8 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     for (const boundary of [
       { width: 640, persistent: false, columns: 1, label: "at a narrow pattern allocation" },
       { width: 767, persistent: false, columns: 2, label: "below 48rem after the drawer releases space" },
-      { width: 768, persistent: true, columns: 2, label: "at the start of the 768–779px App band where the Canonical continuation inset crosses the intrinsic split threshold" },
-      { width: 779, persistent: true, columns: 2, label: "at the end of the 768–779px App band where the previous continuation inset still left the composition below its intrinsic split threshold" }
+      { width: 768, persistent: true, columns: 2, allocation: 624, label: "at the first persistent-navigation viewport after the approved grid-gutter inset" },
+      { width: 775, persistent: true, columns: 2, allocation: 631, label: "above the intrinsic split threshold after the approved grid-gutter inset" }
     ] as const) {
       await page.setViewportSize({ width: boundary.width, height: 960 });
       await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
@@ -1314,6 +1693,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         const tieredHeader = fixture.querySelector<HTMLElement>(".bf-tiered-list-header");
         return {
           areas: getComputedStyle(application).gridTemplateAreas,
+          basicAllocation: basicLayout?.getBoundingClientRect().width ?? 0,
           basicColumns: basicLayout ? getComputedStyle(basicLayout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
           drawerHidden: drawer.getAttribute("aria-hidden"),
           drawerPosition: getComputedStyle(drawer).position,
@@ -1324,15 +1704,37 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       assert(state, `Expected application navigation state ${boundary.label}.`);
       assert(state.areas.includes('"navigation main') === boundary.persistent, `Expected application navigation persistence to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.drawerHidden === (boundary.persistent ? "false" : "true"), `Expected application navigation accessibility state to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
-      assert(state.drawerPosition === (boundary.persistent ? "static" : "fixed"), `Expected application navigation drawer positioning to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+      assert(state.drawerPosition === (boundary.persistent ? "relative" : "fixed"), `Expected application navigation drawer positioning to retain an overlay anchor while switching ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert((state.overlayDisplay === "none") === boundary.persistent, `Expected application navigation overlay lifecycle to switch ${boundary.label}; got ${JSON.stringify(state)}.`);
+      if ("allocation" in boundary) {
+        assert(state.basicAllocation === boundary.allocation, `Expected the root-owned App panel inset to leave a ${boundary.allocation}px basic-section allocation ${boundary.label}; got ${JSON.stringify(state)}.`);
+      }
       assert(state.basicColumns === boundary.columns, `Expected application basic-section to use ${boundary.columns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
       assert(state.tieredHeaderColumns === boundary.columns, `Expected application tiered-list header to use ${boundary.columns} column(s) ${boundary.label}; got ${JSON.stringify(state)}.`);
     }
 
+    const thresholdCases = await page.evaluate(() => [619, 620, 621].map(width => {
+      const fixture = document.createElement("section");
+      fixture.className = "bf-basic-section";
+      fixture.style.cssText = `inline-size:${width}px;position:fixed;visibility:hidden`;
+      fixture.innerHTML = `<div class="bf-basic-section-layout"><div class="bf-basic-section-header">Header</div><div class="bf-basic-section-content">Content</div></div>`;
+      document.body.append(fixture);
+      const layout = fixture.querySelector<HTMLElement>(".bf-basic-section-layout");
+      const result = {
+        allocation: layout?.getBoundingClientRect().width ?? 0,
+        columns: layout ? getComputedStyle(layout).gridTemplateColumns.split(/\s+/).filter(Boolean).length : 0,
+        width
+      };
+      fixture.remove();
+      return result;
+    }));
+    assert(thresholdCases[0].allocation === 619 && thresholdCases[0].columns === 1 && thresholdCases[1].allocation === 620 && thresholdCases[1].columns === 2 && thresholdCases[2].allocation === 621 && thresholdCases[2].columns === 2, `Expected the intrinsic 620px BasicSection split to hold immediately below, at, and above its sourced threshold; got ${JSON.stringify(thresholdCases)}.`);
+
     await page.setViewportSize({ width: 1440, height: 960 });
     await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(page);
+    await page.locator("[data-page-chrome-tier-select]").selectOption("editorial");
+    await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-tier]")?.dataset.bundleTier === "editorial");
     await disableDemoChromeHitTesting(page);
 
     const viewportFillState = await page.evaluate(() => {
@@ -1535,6 +1937,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const logoRect = logo.getBoundingClientRect();
       const tagRect = tag.getBoundingClientRect();
       const headerStyles = getComputedStyle(header);
+      const panelStyles = getComputedStyle(panel);
       return {
         headerLeft: headerRect.left,
         headerTop: headerRect.top,
@@ -1542,6 +1945,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         panelWidth: panelRect.width,
         panelLeft: panelRect.left,
         panelTop: panelRect.top,
+        panelPaddingBlockStart: Number.parseFloat(panelStyles.paddingBlockStart),
         paddingBlockStart: headerStyles.paddingBlockStart,
         paddingInlineStart: headerStyles.paddingInlineStart,
         tagHeight: tagRect.height,
@@ -1555,7 +1959,7 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     assert(navigationBrandState, "Expected the application navigation brand to be measurable.");
     assert(navigationBrandState.paddingBlockStart === "0px" && Number.parseFloat(navigationBrandState.paddingInlineStart) > 0, `Expected the navigation-brand header to remove block padding and retain the panel inline inset. Got block=${navigationBrandState.paddingBlockStart}, inline=${navigationBrandState.paddingInlineStart}.`);
-    assert(Math.abs(navigationBrandState.headerTop - navigationBrandState.panelTop) <= 1 && Math.abs(navigationBrandState.tagTop - navigationBrandState.panelTop) <= 1, `Expected the Canonical tag to meet the panel's top edge. Got panel=${navigationBrandState.panelTop}px, header=${navigationBrandState.headerTop}px, tag=${navigationBrandState.tagTop}px.`);
+    assert(Math.abs(navigationBrandState.headerTop - navigationBrandState.panelTop - navigationBrandState.panelPaddingBlockStart) <= 1 && Math.abs(navigationBrandState.tagTop - navigationBrandState.panelTop) <= 1, `Expected the header to begin at the root-owned surface inset while the Canonical tag extends to the panel edge. Got ${JSON.stringify(navigationBrandState)}.`);
     assert(Math.abs(navigationBrandState.headerLeft - navigationBrandState.panelLeft) <= 1 && Math.abs((navigationBrandState.tagLeft - navigationBrandState.panelLeft) - Number.parseFloat(navigationBrandState.paddingInlineStart)) <= 1, `Expected the Canonical tag to share the panel content inset. Got panel=${navigationBrandState.panelLeft}px, tag=${navigationBrandState.tagLeft}px, inset=${navigationBrandState.paddingInlineStart}.`);
     assert(Math.abs(navigationBrandState.tagWidth - 22) <= 1 && Math.abs(navigationBrandState.tagHeight - 38) <= 1, `Expected the Canonical tag to retain 22x38px geometry. Got ${navigationBrandState.tagWidth}x${navigationBrandState.tagHeight}px.`);
     assert(navigationBrandState.titleTransform === "none", `Expected the navigation-brand title to use the fixed brand-line centre without a second optical transform. Got ${navigationBrandState.titleTransform}.`);
@@ -1600,8 +2004,11 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const iconLabel = iconLink?.querySelector<HTMLElement>(".bf-side-navigation-label");
       const icon = iconLink?.querySelector<HTMLElement>(".bf-side-navigation-icon");
       const heading = content?.querySelector<HTMLElement>("[data-icon-navigation-heading]");
+      const nestedLabel = content?.querySelector<HTMLElement>(".bf-side-navigation-list .bf-side-navigation-list .bf-side-navigation-label");
+      const contextSwitcher = content?.querySelector<HTMLSelectElement>("[data-side-navigation-context-switcher] > .bf-field-boundary > select");
       const defaultContent = document.querySelector<HTMLElement>(".bf-main .bf-panel-content");
-      if (!content || !activeLink || !topLevelLink || !activeLabel || !iconLink || !iconLabel || !icon || !heading || !defaultContent) {
+      const defaultPanel = defaultContent?.closest<HTMLElement>(".bf-panel");
+      if (!content || !activeLink || !topLevelLink || !activeLabel || !iconLink || !iconLabel || !icon || !heading || !nestedLabel || !contextSwitcher || !defaultContent || !defaultPanel) {
         return null;
       }
 
@@ -1611,9 +2018,15 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const iconGapProbe = document.createElement("span");
       iconGapProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-leading-mark-gap);block-size:0;visibility:hidden";
       content.append(iconGapProbe);
-      const depthProbe = document.createElement("span");
-      depthProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-side-navigation-depth-step);block-size:0;visibility:hidden";
-      topLevelLink.append(depthProbe);
+      const gutterProbe = document.createElement("span");
+      gutterProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-side-navigation-gutter);block-size:0;visibility:hidden";
+      topLevelLink.append(gutterProbe);
+      const iconSizeProbe = document.createElement("span");
+      iconSizeProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-side-navigation-icon-size);block-size:0;visibility:hidden";
+      topLevelLink.append(iconSizeProbe);
+      const fieldInsetProbe = document.createElement("span");
+      fieldInsetProbe.style.cssText = "display:block;position:absolute;inline-size:var(--bf-component-inline-inset-field);block-size:0;visibility:hidden";
+      content.append(fieldInsetProbe);
 
       const contentRect = content.getBoundingClientRect();
       const activeRect = activeLink.getBoundingClientRect();
@@ -1621,17 +2034,27 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       const contentStyles = getComputedStyle(content);
       const activeStyles = getComputedStyle(activeLink);
       const topLevelStyles = getComputedStyle(topLevelLink);
+      const selectedPaintStyles = getComputedStyle(activeLink, "::after");
+      const switcherStyles = getComputedStyle(contextSwitcher);
       const defaultContentStyles = getComputedStyle(defaultContent);
+      const defaultPanelStyles = getComputedStyle(defaultPanel);
       const baselinePx = baselineProbe.getBoundingClientRect().width;
       const expectedIconGap = iconGapProbe.getBoundingClientRect().width;
-      const expectedDepthStep = depthProbe.getBoundingClientRect().width;
+      const expectedGutter = gutterProbe.getBoundingClientRect().width;
+      const expectedIconSize = iconSizeProbe.getBoundingClientRect().width;
+      const expectedFieldInset = fieldInsetProbe.getBoundingClientRect().width;
       baselineProbe.remove();
       iconGapProbe.remove();
-      depthProbe.remove();
+      gutterProbe.remove();
+      iconSizeProbe.remove();
+      fieldInsetProbe.remove();
 
       return {
         activeBackground: activeStyles.backgroundColor,
         activeBoxShadow: activeStyles.boxShadow,
+        activePaintInlineSize: Number.parseFloat(selectedPaintStyles.inlineSize),
+        activePaintInsetInlineStart: Number.parseFloat(selectedPaintStyles.insetInlineStart),
+        activePaintPointerEvents: selectedPaintStyles.pointerEvents,
         activeLeft: activeRect.left,
         activeRight: activeRect.right,
         contentLeft: contentRect.left,
@@ -1641,12 +2064,19 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
         contentPaddingInlineEnd: contentStyles.paddingInlineEnd,
         contentPaddingInlineStart: contentStyles.paddingInlineStart,
         defaultPaddingInlineStart: defaultContentStyles.paddingInlineStart,
+        defaultPanelPaddingInlineStart: defaultPanelStyles.paddingInlineStart,
         headingTextInset: heading.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(heading).paddingInlineStart) - contentRect.left,
         iconGap: iconLabel.getBoundingClientRect().left - icon.getBoundingClientRect().right,
         expectedIconGap,
-        expectedDepthStep,
+        expectedGutter,
+        expectedIconSize,
+        expectedFieldInset,
         iconLabelInset: iconLabel.getBoundingClientRect().left - contentRect.left,
         labelInset: activeLabelRect.left - contentRect.left,
+        nestedLabelInset: nestedLabel.getBoundingClientRect().left - contentRect.left,
+        contextSwitcherInset: contextSwitcher.getBoundingClientRect().left - contentRect.left,
+        contextSwitcherPaddingInlineStart: Number.parseFloat(switcherStyles.paddingInlineStart),
+        rowPaddingInlineEnd: Number.parseFloat(activeStyles.paddingInlineEnd),
         nestedPaddingInlineStart: Number.parseFloat(activeStyles.paddingInlineStart),
         topLevelPaddingInlineStart: Number.parseFloat(topLevelStyles.paddingInlineStart),
         baselinePx
@@ -1659,12 +2089,14 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(Math.abs(navigationCompositionState.activeLeft - navigationCompositionState.contentLeft) <= 1, `Expected active navigation background to reach the content start edge. Got active=${navigationCompositionState.activeLeft}, content=${navigationCompositionState.contentLeft}.`);
     assert(Math.abs(navigationCompositionState.activeRight - navigationCompositionState.contentRight) <= 1, `Expected active navigation background to reach the content end edge. Got active=${navigationCompositionState.activeRight}, content=${navigationCompositionState.contentRight}.`);
     assert(navigationCompositionState.activeBackground !== "rgba(0, 0, 0, 0)", `Expected active navigation row to retain a visible background. Got ${navigationCompositionState.activeBackground}.`);
-    assert(navigationCompositionState.activeBoxShadow !== "none", "Expected active navigation row to retain its inset edge highlight.");
-    assert(navigationCompositionState.labelInset > 0, `Expected active navigation label to retain component-owned indentation. Got ${navigationCompositionState.labelInset}px.`);
+    assert(navigationCompositionState.activeBoxShadow === "none" && navigationCompositionState.activePaintPointerEvents === "none" && navigationCompositionState.activePaintInlineSize > 0 && navigationCompositionState.activePaintInsetInlineStart === 0, `Expected active navigation paint to occupy the start gutter without affecting layout: ${JSON.stringify(navigationCompositionState)}.`);
+    assert(Math.abs(navigationCompositionState.labelInset - (navigationCompositionState.expectedGutter + navigationCompositionState.expectedIconSize + navigationCompositionState.expectedIconGap)) <= 1, `Expected the SideNavigation label keyline to equal gutter + icon + gap. Got ${JSON.stringify(navigationCompositionState)}.`);
     assert(Math.abs(navigationCompositionState.iconGap - navigationCompositionState.expectedIconGap) <= 1, `Expected icon-navigation labels to use the shared Canonical mark gap. Got ${navigationCompositionState.iconGap}px versus ${navigationCompositionState.expectedIconGap}px.`);
     assert(Math.abs(navigationCompositionState.headingTextInset - navigationCompositionState.iconLabelInset) <= 1, `Expected icon-navigation headings and labels to share an inline start. Got heading=${navigationCompositionState.headingTextInset}px, label=${navigationCompositionState.iconLabelInset}px.`);
-    assert(Math.abs((navigationCompositionState.nestedPaddingInlineStart - navigationCompositionState.topLevelPaddingInlineStart) - navigationCompositionState.expectedDepthStep) <= 1, `Expected nested navigation padding to add one horizontal depth step. Got nested=${navigationCompositionState.nestedPaddingInlineStart}px, top-level=${navigationCompositionState.topLevelPaddingInlineStart}px, step=${navigationCompositionState.expectedDepthStep}px.`);
-    assert(Number.parseFloat(navigationCompositionState.defaultPaddingInlineStart) > 0, `Expected ordinary panel content to remain padded. Got ${navigationCompositionState.defaultPaddingInlineStart}.`);
+    assert(Math.abs(navigationCompositionState.nestedPaddingInlineStart - navigationCompositionState.topLevelPaddingInlineStart) <= 0.1 && Math.abs(navigationCompositionState.nestedLabelInset - navigationCompositionState.iconLabelInset) <= 1, `Expected nested SideNavigation labels to retain their parent keyline. Got ${JSON.stringify(navigationCompositionState)}.`);
+    assert(Math.abs(navigationCompositionState.contextSwitcherInset - navigationCompositionState.iconLabelInset) <= 1 && Math.abs(navigationCompositionState.contextSwitcherPaddingInlineStart - navigationCompositionState.expectedFieldInset) <= 0.1, `Expected the ContextSwitcher box to begin on the label keyline and retain the field inset. Got ${JSON.stringify(navigationCompositionState)}.`);
+    assert(Math.abs(navigationCompositionState.rowPaddingInlineEnd - navigationCompositionState.expectedGutter) <= 0.1, `Expected SideNavigation rows to retain the grid-margin end gutter. Got ${JSON.stringify(navigationCompositionState)}.`);
+    assert(navigationCompositionState.defaultPaddingInlineStart === "0px" && Number.parseFloat(navigationCompositionState.defaultPanelPaddingInlineStart) > 0, `Expected ordinary panel content to rely on the root-owned surface inset. Got ${JSON.stringify(navigationCompositionState)}.`);
 
     await pinToggle.evaluate(element => {
       if (element instanceof HTMLElement) {
@@ -1692,12 +2124,11 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
 
     const mobilePage = await browser.newPage({
       deviceScaleFactor: 1,
-      viewport: { width: 767, height: 960 }
+      viewport: { width: 390, height: 960 }
     });
 
     await mobilePage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
     await waitForFonts(mobilePage);
-    await disableDemoChromeHitTesting(mobilePage);
 
     const mobileToggle = mobilePage.locator("[data-application-layout-toggle]").first();
     const mobileCollapsedBrandState = await mobilePage.evaluate(() => {
@@ -1721,7 +2152,62 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
       };
     });
     assert(mobileCollapsedBrandState.barAtApplicationStart && mobileCollapsedBrandState.compactVisible && !mobileCollapsedBrandState.drawerVisible && mobileCollapsedBrandState.visibleHomeLinks === 1, `Expected narrow collapsed navigation to expose one compact brand in the application-start row. Got ${JSON.stringify(mobileCollapsedBrandState)}.`);
-    await mobileToggle.click({ force: true });
+
+    const readApplicationChromeState = () => mobilePage.evaluate(() => {
+      const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+      const sharedHeader = document.querySelector<HTMLElement>(".pc-header");
+      const sharedFooter = document.querySelector<HTMLElement>(".pc-footer");
+      const sharedToggle = sharedNavigation?.querySelector<HTMLElement>(":scope > .bf-side-navigation > .bf-side-navigation-toggle");
+      const sharedControls = {
+        baseline: document.querySelector<HTMLElement>("[data-page-chrome-baseline-toggle]"),
+        pages: sharedToggle,
+        tier: document.querySelector<HTMLElement>("[data-page-chrome-tier-select]"),
+        tone: document.querySelector<HTMLElement>("[data-page-chrome-tone-toggle]"),
+        version: document.querySelector<HTMLElement>("[data-page-chrome-version-select]")
+      };
+      const drawerBrand = document.querySelector<HTMLElement>(".bf-navigation-drawer .bf-top-navigation-link");
+      const pin = document.querySelector<HTMLElement>("[data-application-layout-pin]");
+      const close = document.querySelector<HTMLElement>("[data-application-layout-close]");
+      if (!sharedNavigation || !sharedHeader || !sharedFooter || !sharedToggle || !drawerBrand || !pin || !close) return null;
+
+      const headerRect = sharedHeader.getBoundingClientRect();
+      const footerRect = sharedFooter.getBoundingClientRect();
+      const hitStates = Object.fromEntries(Object.entries({ brand: drawerBrand, close, pin, sharedToggle }).map(([name, target]) => {
+        const rect = target.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+        const label = target.closest("label");
+        return [name, { area: rect.width * rect.height, targetHit: Boolean(hit && (target.contains(hit) || label?.contains(hit))) }];
+      })) as Record<string, { area: number; targetHit: boolean }>;
+      const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+      const renderedDescendantCounts = Object.fromEntries(Object.entries({ footer: sharedFooter, header: sharedHeader, navigation: sharedNavigation }).map(([name, owner]) => [name, Array.from(owner.querySelectorAll<HTMLElement>(focusableSelector)).filter(element => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+      }).length])) as Record<string, number>;
+      const sharedControlHits = Object.fromEntries(Object.entries(sharedControls).map(([name, target]) => {
+        if (!target) return [name, false];
+        const rect = target.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+        return [name, Boolean(hit && (target.contains(hit) || target.closest("label")?.contains(hit)))];
+      })) as Record<string, boolean>;
+      return {
+        brand: hitStates.brand,
+        close: hitStates.close,
+        footerBoxRetained: footerRect.width > 0 && footerRect.height > 0,
+        footerVisibility: getComputedStyle(sharedFooter).visibility,
+        headerBoxRetained: headerRect.width > 0 && headerRect.height > 0,
+        headerVisibility: getComputedStyle(sharedHeader).visibility,
+        navigationDisplay: getComputedStyle(sharedNavigation).display,
+        pin: hitStates.pin,
+        renderedDescendants: renderedDescendantCounts,
+        sharedControlHits,
+        sharedToggle: hitStates.sharedToggle
+      };
+    });
+
+    const closedChromeState = await readApplicationChromeState();
+    assert(closedChromeState?.navigationDisplay !== "none" && closedChromeState.headerVisibility === "visible" && closedChromeState.footerVisibility === "visible" && Object.values(closedChromeState.sharedControlHits).every(Boolean), `Expected collapsed mobile ApplicationLayout to retain hit-testable Pages and all four shared footer controls; got ${JSON.stringify(closedChromeState)}.`);
+    await mobileToggle.click();
     await mobilePage.waitForTimeout(180);
 
     const mobileOpenState = await mobilePage.evaluate(() => {
@@ -1762,6 +2248,113 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(mobileOpenState.drawerLeft >= -2, `Expected mobile navigation drawer to be aligned to the viewport edge, got left=${mobileOpenState.drawerLeft}.`);
     assert(mobileOpenState.responsiveBarDisplay !== "none" && !mobileOpenState.compactBrandVisible && mobileOpenState.drawerBrandVisible && mobileOpenState.visibleHomeLinks === 1, `Expected narrow expanded navigation to retain its bar controls while exposing only the drawer brand. Got ${JSON.stringify(mobileOpenState)}.`);
 
+    const openChromeState = await readApplicationChromeState();
+    assert(openChromeState?.navigationDisplay === "none" && openChromeState.headerVisibility === "hidden" && openChromeState.footerVisibility === "hidden" && openChromeState.headerBoxRetained && openChromeState.footerBoxRetained && Object.values(openChromeState.renderedDescendants).every(count => count === 0), `Expected expanded mobile ApplicationLayout to suppress every rendered shared-rail/header/footer descendant while retaining the header/footer boxes; got ${JSON.stringify(openChromeState)}.`);
+    assert(openChromeState.brand.targetHit && openChromeState.pin.targetHit && openChromeState.close.targetHit, `Expected the real ApplicationLayout brand, Pin and Close controls to own their visible pointer coordinates; got ${JSON.stringify(openChromeState)}.`);
+
+    const mobilePin = mobilePage.locator("[data-application-layout-pin]");
+    const mobileClose = mobilePage.locator("[data-application-layout-close]");
+    const mobileNavigation = mobilePage.locator("#application-layout-navigation");
+    const runApplicationFocusCycle = async (direction: "Tab" | "Shift+Tab", anchorSelector: string) => {
+      const anchor = mobilePage.locator(anchorSelector);
+      await anchor.focus();
+      const renderedFocusStops = await mobilePage.evaluate(() => {
+        const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+        return Array.from(document.querySelectorAll<HTMLElement>(focusableSelector)).filter(element => {
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+        }).length;
+      });
+      const sharedOwners = new Set<string>();
+      const sharedControls = new Set<string>();
+      const hitSharedControls = new Set<string>();
+      let returnedToAnchor = false;
+      for (let index = 0; index < renderedFocusStops + 2; index += 1) {
+        await mobilePage.keyboard.press(direction);
+        const state = await mobilePage.evaluate(selector => {
+          const active = document.activeElement;
+          const expectedAnchor = document.querySelector(selector);
+          const owner = active?.closest<HTMLElement>(".pc-nav, .pc-header, .pc-footer");
+          const sharedControl = active?.matches(".pc-nav .bf-side-navigation-toggle:not(.is-in-drawer)") ? "pages"
+            : active?.matches("[data-page-chrome-tone-toggle]") ? "tone"
+            : active?.matches("[data-page-chrome-baseline-toggle]") ? "baseline"
+            : active?.matches("[data-page-chrome-version-select]") ? "version"
+            : active?.matches("[data-page-chrome-tier-select]") ? "tier"
+            : null;
+          const activeRect = active?.getBoundingClientRect();
+          const activeHit = activeRect ? document.elementFromPoint(activeRect.left + (activeRect.width / 2), activeRect.top + (activeRect.height / 2)) : null;
+          return {
+            controlHit: Boolean(active && activeHit && (active.contains(activeHit) || active.closest("label")?.contains(activeHit))),
+            owner: owner?.classList.contains("pc-nav") ? "navigation" : owner?.classList.contains("pc-header") ? "header" : owner?.classList.contains("pc-footer") ? "footer" : null,
+            returned: active === expectedAnchor,
+            sharedControl
+          };
+        }, anchorSelector);
+        if (state.owner) sharedOwners.add(state.owner);
+        if (state.sharedControl) sharedControls.add(state.sharedControl);
+        if (state.sharedControl && state.controlHit) hitSharedControls.add(state.sharedControl);
+        if (state.returned) {
+          returnedToAnchor = true;
+          break;
+        }
+      }
+      return { hitSharedControls: [...hitSharedControls], renderedFocusStops, returnedToAnchor, sharedControls: [...sharedControls], sharedOwners: [...sharedOwners] };
+    };
+
+    for (const direction of ["Tab", "Shift+Tab"] as const) {
+      const openCycle = await runApplicationFocusCycle(direction, "[data-application-layout-close]");
+      assert(openCycle.returnedToAnchor && openCycle.sharedOwners.length === 0 && openCycle.sharedControls.length === 0, `Expected one full ${direction} cycle from the real Close control through the expanded mobile ApplicationLayout to exclude hidden shared chrome; got ${JSON.stringify(openCycle)}.`);
+    }
+
+    await mobilePin.click();
+    assert(await mobilePin.getAttribute("aria-pressed") === "true" && await mobileNavigation.evaluate(element => element.classList.contains("is-pinned")), "Expected the unobscured mobile Pin control to apply the real product pinned state.");
+    const pinnedChromeState = await readApplicationChromeState();
+    assert(pinnedChromeState?.navigationDisplay === "none" && pinnedChromeState.pin.targetHit && pinnedChromeState.close.targetHit, `Expected the still-expanded pinned mobile drawer to retain ownership of Pin/Close coordinates; got ${JSON.stringify(pinnedChromeState)}.`);
+    await mobilePin.click();
+    assert(await mobilePin.getAttribute("aria-pressed") === "false", "Expected the real mobile Pin control to remove the product pinned state on its second pointer activation.");
+
+    await mobileClose.click();
+    await mobilePage.waitForFunction(() => document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
+    assert(await mobileToggle.evaluate(node => document.activeElement === node), "Expected the real mobile Close control to restore focus to the ApplicationLayout opener.");
+    const pointerClosedChromeState = await readApplicationChromeState();
+    assert(pointerClosedChromeState?.navigationDisplay !== "none" && pointerClosedChromeState.headerVisibility === "visible" && pointerClosedChromeState.footerVisibility === "visible", `Expected pointer-closing ApplicationLayout to restore shared review chrome; got ${JSON.stringify(pointerClosedChromeState)}.`);
+
+    for (const direction of ["Tab", "Shift+Tab"] as const) {
+      const restoredCycle = await runApplicationFocusCycle(direction, "[data-application-layout-toggle]");
+      assert(restoredCycle.returnedToAnchor && ["navigation", "header", "footer"].every(owner => restoredCycle.sharedOwners.includes(owner)) && ["pages", "tone", "baseline", "version", "tier"].every(control => restoredCycle.sharedControls.includes(control) && restoredCycle.hitSharedControls.includes(control)), `Expected one full ${direction} cycle after pointer Close to restore keyboard reach and focused-coordinate hits for Pages and all four shared footer controls; got ${JSON.stringify(restoredCycle)}.`);
+    }
+
+    const sharedPagesToggle = mobilePage.locator(".pc-nav > .bf-side-navigation > .bf-side-navigation-toggle");
+    await sharedPagesToggle.scrollIntoViewIfNeeded();
+    await sharedPagesToggle.click();
+    await mobilePage.waitForFunction(() => document.querySelector(".pc-nav > .bf-side-navigation")?.classList.contains("is-drawer-expanded"));
+    await mobilePage.keyboard.press("Escape");
+    assert(await sharedPagesToggle.getAttribute("aria-expanded") === "false" && await sharedPagesToggle.evaluate(node => document.activeElement === node), "Expected restored Pages to open by real pointer and close by Escape with focus restored after ApplicationLayout Close.");
+
+    await mobileToggle.click();
+    await mobilePage.waitForFunction(() => !document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
+
+    const adversarialCatalogState = await mobilePage.evaluate(() => {
+      const sharedRoot = document.querySelector<HTMLElement>(".pc-nav > .bf-side-navigation");
+      const sharedDrawer = sharedRoot?.querySelector<HTMLElement>(".bf-side-navigation-drawer");
+      const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+      if (!sharedRoot || !sharedDrawer || !sharedNavigation) return null;
+      sharedRoot.classList.add("is-drawer-expanded");
+      sharedDrawer.setAttribute("aria-hidden", "false");
+      const drawerVisibility = getComputedStyle(sharedDrawer).visibility;
+      const navigationDisplay = getComputedStyle(sharedNavigation).display;
+      const renderedSharedDescendants = Array.from(sharedNavigation.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])")).filter(element => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+      }).length;
+      sharedRoot.classList.remove("is-drawer-expanded");
+      sharedDrawer.setAttribute("aria-hidden", "true");
+      return { drawerVisibility, navigationDisplay, renderedSharedDescendants };
+    });
+    assert(adversarialCatalogState?.drawerVisibility === "visible" && adversarialCatalogState.navigationDisplay === "none" && adversarialCatalogState.renderedSharedDescendants === 0, `Expected the ApplicationLayout drawer to suppress even an adversarial pre-expanded shared catalog whose drawer restores descendant visibility; got ${JSON.stringify(adversarialCatalogState)}.`);
+
     await mobilePage.keyboard.press("Escape");
     await mobilePage.waitForTimeout(180);
 
@@ -1796,7 +2389,114 @@ async function verifyApplicationLayout(origin: string): Promise<void> {
     assert(mobileClosedState.overlayHidden === "true", `Expected mobile navigation overlay to hide after Escape, got aria-hidden=${mobileClosedState.overlayHidden}.`);
     assert(mobileClosedState.compactBrandVisible && !mobileClosedState.drawerBrandVisible && mobileClosedState.visibleHomeLinks === 1, `Expected Escape to restore exactly one compact application brand. Got ${JSON.stringify(mobileClosedState)}.`);
 
+    assert(await mobileToggle.evaluate(node => document.activeElement === node), "Expected Escape from the reopened mobile ApplicationLayout to restore focus to its real opener.");
+    const escapeClosedChromeState = await readApplicationChromeState();
+    assert(escapeClosedChromeState?.navigationDisplay !== "none" && escapeClosedChromeState.headerVisibility === "visible" && escapeClosedChromeState.footerVisibility === "visible", `Expected Escape to restore shared review chrome; got ${JSON.stringify(escapeClosedChromeState)}.`);
+    for (const direction of ["Tab", "Shift+Tab"] as const) {
+      const restoredCycle = await runApplicationFocusCycle(direction, "[data-application-layout-toggle]");
+      assert(restoredCycle.returnedToAnchor && ["pages", "tone", "baseline", "version", "tier"].every(control => restoredCycle.sharedControls.includes(control) && restoredCycle.hitSharedControls.includes(control)), `Expected one full ${direction} cycle after Escape to restore keyboard reach and focused-coordinate hits for Pages and all four shared footer controls; got ${JSON.stringify(restoredCycle)}.`);
+    }
+    await sharedPagesToggle.scrollIntoViewIfNeeded();
+    await sharedPagesToggle.click();
+    await mobilePage.waitForFunction(() => document.querySelector(".pc-nav > .bf-side-navigation")?.classList.contains("is-drawer-expanded"));
+    await mobilePage.keyboard.press("Escape");
+    assert(await sharedPagesToggle.getAttribute("aria-expanded") === "false" && await sharedPagesToggle.evaluate(node => document.activeElement === node), "Expected restored Pages to open by real pointer and close by Escape with focus restored after ApplicationLayout Escape.");
+
     await mobilePage.close();
+
+    const boundaryPage = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 767, height: 960 } });
+    for (const boundary of [
+      { width: 767, hidden: true },
+      { width: 768, hidden: false },
+      { width: 1035, hidden: false },
+      { width: 1036, hidden: false }
+    ] as const) {
+      await boundaryPage.setViewportSize({ width: boundary.width, height: 960 });
+      await boundaryPage.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+      await boundaryPage.locator("[data-application-layout-toggle]").first().click();
+      await boundaryPage.waitForTimeout(180);
+      const state = await boundaryPage.evaluate(() => {
+        const navigation = document.querySelector<HTMLElement>("#application-layout-navigation");
+        const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+        const sharedHeader = document.querySelector<HTMLElement>(".pc-header");
+        const sharedFooter = document.querySelector<HTMLElement>(".pc-footer");
+        if (!navigation || !sharedNavigation || !sharedHeader || !sharedFooter) return null;
+        return {
+          navigationCollapsed: navigation.classList.contains("is-collapsed"),
+          navigationDisplay: getComputedStyle(sharedNavigation).display,
+          headerVisibility: getComputedStyle(sharedHeader).visibility,
+          footerVisibility: getComputedStyle(sharedFooter).visibility
+        };
+      });
+      assert(state && !state.navigationCollapsed, `Expected ApplicationLayout navigation to expand at ${boundary.width}px.`);
+      assert((state.navigationDisplay === "none") === boundary.hidden && (state.headerVisibility === "hidden") === boundary.hidden && (state.footerVisibility === "hidden") === boundary.hidden, `Expected shared chrome suppression to follow the exact product mobile boundary at ${boundary.width}px; got ${JSON.stringify(state)}.`);
+
+      if (boundary.width === 768) {
+        await boundaryPage.locator("[data-application-layout-pin]").evaluate(element => (element as HTMLElement).click());
+        const pinnedDesktop = await boundaryPage.evaluate(() => ({
+          pinned: document.querySelector("#application-layout-navigation")?.classList.contains("is-pinned"),
+          sharedNavigationDisplay: getComputedStyle(document.querySelector(".pc-nav") as Element).display,
+          sharedHeaderVisibility: getComputedStyle(document.querySelector(".pc-header") as Element).visibility,
+          sharedFooterVisibility: getComputedStyle(document.querySelector(".pc-footer") as Element).visibility
+        }));
+        assert(pinnedDesktop.pinned && pinnedDesktop.sharedNavigationDisplay !== "none" && pinnedDesktop.sharedHeaderVisibility === "visible" && pinnedDesktop.sharedFooterVisibility === "visible", `Expected pinned desktop ApplicationLayout at the exact 48rem boundary to retain shared review chrome; got ${JSON.stringify(pinnedDesktop)}.`);
+      }
+    }
+    await boundaryPage.close();
+
+    const matrixPage = await browser.newPage({ deviceScaleFactor: 1, viewport: { width: 390, height: 844 } });
+    await matrixPage.goto(`${origin}${route}?bundle=before`, { waitUntil: "networkidle" });
+    for (const version of ["before", "after"] as const) {
+      await matrixPage.locator("[data-page-chrome-version-select]").selectOption(version);
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await matrixPage.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await matrixPage.waitForFunction(({ expectedTier, expectedVersion }) => {
+          const link = document.querySelector<HTMLLinkElement>("link[data-bundle-version]");
+          return link?.dataset.bundleTier === expectedTier && link.dataset.bundleVersion === expectedVersion;
+        }, { expectedTier: tier, expectedVersion: version });
+        await matrixPage.locator("[data-application-layout-toggle]").first().click();
+        await matrixPage.waitForFunction(() => !document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
+        await matrixPage.waitForFunction(() => {
+          const drawer = document.querySelector("#application-layout-navigation .bf-navigation-drawer");
+          if (!drawer || drawer.getAnimations().some(animation => animation.playState === "running")) return false;
+          return [
+            drawer.querySelector(".bf-top-navigation-link"),
+            drawer.querySelector("[data-application-layout-pin]"),
+            drawer.querySelector("[data-application-layout-close]")
+          ].every(target => {
+            if (!(target instanceof HTMLElement)) return false;
+            const rect = target.getBoundingClientRect();
+            const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+            return rect.width > 0 && rect.height > 0 && Boolean(hit && target.contains(hit));
+          });
+        });
+        const matrixState = await matrixPage.evaluate(() => {
+          const targets = {
+            brand: document.querySelector<HTMLElement>(".bf-navigation-drawer .bf-top-navigation-link"),
+            close: document.querySelector<HTMLElement>("[data-application-layout-close]"),
+            pin: document.querySelector<HTMLElement>("[data-application-layout-pin]")
+          };
+          const hits = Object.fromEntries(Object.entries(targets).map(([name, target]) => {
+            const rect = target?.getBoundingClientRect();
+            if (!target || !rect) return [name, false];
+            const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+            return [name, Boolean(hit && target.contains(hit))];
+          })) as Record<string, boolean>;
+          return {
+            brandHit: hits.brand,
+            closeHit: hits.close,
+            footerVisibility: getComputedStyle(document.querySelector(".pc-footer") as Element).visibility,
+            headerVisibility: getComputedStyle(document.querySelector(".pc-header") as Element).visibility,
+            navigationDisplay: getComputedStyle(document.querySelector(".pc-nav") as Element).display,
+            pinHit: hits.pin
+          };
+        });
+        assert(matrixState.navigationDisplay === "none" && matrixState.headerVisibility === "hidden" && matrixState.footerVisibility === "hidden" && matrixState.brandHit && matrixState.pinHit && matrixState.closeHit, `Expected ${version}/${tier}/390px expanded ApplicationLayout brand, Pin and Close to own their pointer coordinates with shared chrome suppressed; got ${JSON.stringify(matrixState)}.`);
+        await matrixPage.locator("[data-application-layout-close]").click();
+        await matrixPage.waitForFunction(() => document.querySelector("#application-layout-navigation")?.classList.contains("is-collapsed"));
+      }
+    }
+    await matrixPage.close();
   } finally {
     await browser.close();
   }
@@ -1836,7 +2536,10 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         const tag = navigation?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag");
         const icon = navigation?.querySelector<SVGSVGElement>(".bf-top-navigation-logo-icon");
         const title = navigation?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
-        if (!navigation || !row || !banner || !primaryNavigation || !contentGrid || !active || !logoLink || !tag || !icon || !title) return null;
+        const dropdownToggle = navigation?.querySelector<HTMLElement>(".bf-top-navigation-dropdown-toggle");
+        const searchToggle = navigation?.querySelector<HTMLElement>(".bf-top-navigation-search-toggle");
+        const plainNavigationLink = navigation?.querySelector<HTMLElement>(".bf-top-navigation-item.is-selected > .bf-top-navigation-link");
+        if (!navigation || !row || !banner || !primaryNavigation || !contentGrid || !active || !logoLink || !tag || !icon || !title || !dropdownToggle || !searchToggle || !plainNavigationLink) return null;
 
         const navigationRect = navigation.getBoundingClientRect();
         const rowRect = row.getBoundingClientRect();
@@ -1852,6 +2555,10 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         const tagStyles = getComputedStyle(tag);
         const iconStyles = getComputedStyle(icon);
         const titleStyles = getComputedStyle(title);
+        const activeIndicatorStyles = getComputedStyle(active, "::before");
+        const navigationBoundaryStyles = getComputedStyle(navigation, "::after");
+        const dropdownIconStyles = getComputedStyle(dropdownToggle, "::after");
+        const searchIconStyles = getComputedStyle(searchToggle, "::after");
         const viewBox = icon.viewBox.baseVal;
         const graphicBox = icon.getBBox();
         const graphicScale = iconRect.width / viewBox.width;
@@ -1867,7 +2574,16 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         return {
           tier: document.body.dataset.bfTier,
           barThicknessToken: getComputedStyle(navigation).getPropertyValue("--bf-bar-thickness").trim(),
-          activeShadow: getComputedStyle(active).boxShadow,
+          activeIndicatorBlockSize: Number.parseFloat(activeIndicatorStyles.blockSize),
+          activeIndicatorInlineSize: Number.parseFloat(activeIndicatorStyles.inlineSize),
+          activeIndicatorPosition: activeIndicatorStyles.position,
+          activeIndicatorPointerEvents: activeIndicatorStyles.pointerEvents,
+          navigationBoundaryBoxShadow: navigationBoundaryStyles.boxShadow,
+          navigationBoundaryPosition: navigationBoundaryStyles.position,
+          navigationBoundaryPointerEvents: navigationBoundaryStyles.pointerEvents,
+          dropdownIconSize: Number.parseFloat(dropdownIconStyles.inlineSize),
+          searchIconSize: Number.parseFloat(searchIconStyles.inlineSize),
+          endSlotSize: Number.parseFloat(getComputedStyle(dropdownToggle).paddingInlineEnd) - Number.parseFloat(getComputedStyle(plainNavigationLink).paddingInlineEnd),
           rowLeft: rowRect.left,
           rowWidth: rowRect.width,
           contentGridLeft: contentGridRect.left,
@@ -1902,7 +2618,13 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         assert(taggedGeometry, `Expected tagged top-navigation geometry for ${tier} at ${width}px.`);
         assert(taggedGeometry.tier === tier, `Expected tagged top-navigation fixture to use ${tier}, got ${taggedGeometry.tier}.`);
         assert(taggedGeometry.barThicknessToken === "0.1875rem", `Expected ${tier} to expose the shared 0.1875rem emphasis bar, got ${taggedGeometry.barThicknessToken}.`);
-        assert(taggedGeometry.activeShadow.includes("-3px"), `Expected ${tier} desktop top-navigation highlight to resolve to 3px, got ${taggedGeometry.activeShadow}.`);
+        assert(Math.abs(taggedGeometry.activeIndicatorBlockSize - 3) <= 0.1 && taggedGeometry.activeIndicatorInlineSize > 0, `Expected ${tier} desktop top-navigation highlight to paint a 3px block-end bar, got ${JSON.stringify(taggedGeometry)}.`);
+        assert(taggedGeometry.activeIndicatorPosition === "absolute" && taggedGeometry.activeIndicatorPointerEvents === "none", `Expected ${tier} desktop selection paint to stay out of layout and pointer routing.`);
+        assert(taggedGeometry.navigationBoundaryBoxShadow !== "none" && taggedGeometry.navigationBoundaryPosition === "absolute" && taggedGeometry.navigationBoundaryPointerEvents === "none", `Expected ${tier} navigation boundary to use the automatic out-of-flow paint overlay.`);
+        const expectedStandardIconSize = tier === "editorial" ? 16 : tier === "os" ? 12 : 14;
+        const expectedEndSlotSize = tier === "editorial" ? 24 : tier === "os" ? 16 : 22;
+        assert(Math.abs(taggedGeometry.dropdownIconSize - expectedStandardIconSize) <= 0.1 && Math.abs(taggedGeometry.searchIconSize - expectedStandardIconSize) <= 0.1, `Expected ${tier} top-navigation glyphs to follow the ${expectedStandardIconSize}px tier icon size, got dropdown=${taggedGeometry.dropdownIconSize}px search=${taggedGeometry.searchIconSize}px.`);
+        assert(Math.abs(taggedGeometry.endSlotSize - expectedEndSlotSize) <= 0.1, `Expected ${tier} dropdown end slot to combine its icon and mark gap (${expectedEndSlotSize}px), got ${taggedGeometry.endSlotSize}px.`);
         assert(Math.abs(taggedGeometry.rowLeft - taggedGeometry.contentGridLeft) <= 0.1 && Math.abs(taggedGeometry.rowWidth - taggedGeometry.contentGridWidth) <= 0.1, `Expected ${tier} navigation and content grids to share bounds at ${width}px.`);
         assert(Math.abs(taggedGeometry.bannerLeft - taggedGeometry.contentGridLeft) <= 0.1, `Expected ${tier} banner to begin at content column one at ${width}px.`);
         assert(Math.abs(taggedGeometry.primaryNavigationLeft - taggedGeometry.thirdContentColumnStart) <= 0.1, `Expected ${tier} primary navigation to begin at content column three at ${width}px; nav=${taggedGeometry.primaryNavigationLeft}, column=${taggedGeometry.thirdContentColumnStart}.`);
@@ -1927,6 +2649,23 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     }
 
     await desktopPage.setViewportSize({ width: 1440, height: 960 });
+    await desktopPage.emulateMedia({ forcedColors: "active" });
+    const forcedDesktopPaint = await desktopPage.evaluate(() => {
+      const navigation = document.querySelector<HTMLElement>("#top-navigation-default");
+      const active = navigation?.querySelector<HTMLElement>(".bf-top-navigation-item.is-selected > .bf-top-navigation-link");
+      if (!navigation || !active) return null;
+      const boundary = getComputedStyle(navigation, "::after");
+      const selection = getComputedStyle(active, "::before");
+      return {
+        boundaryWidth: Number.parseFloat(boundary.borderBlockEndWidth),
+        boundaryStyle: boundary.borderBlockEndStyle,
+        selectionBackground: selection.backgroundColor
+      };
+    });
+    assert(forcedDesktopPaint, "Expected forced-colors top-navigation paint to be measurable.");
+    assert(forcedDesktopPaint.boundaryWidth > 0 && forcedDesktopPaint.boundaryStyle === "solid", `Expected forced-colors navigation boundary to become a real out-of-flow system-color border. Got ${JSON.stringify(forcedDesktopPaint)}.`);
+    assert(forcedDesktopPaint.selectionBackground !== "rgba(0, 0, 0, 0)", `Expected forced-colors navigation selection to keep its one-sided system-color cue. Got ${JSON.stringify(forcedDesktopPaint)}.`);
+    await desktopPage.emulateMedia({ forcedColors: "none" });
 
     const desktopDropdownToggle = desktopPage.locator(".bf-top-navigation-dropdown-toggle").first();
     await desktopDropdownToggle.waitFor({ state: "visible" });
@@ -1945,6 +2684,13 @@ async function verifyTopNavigation(origin: string): Promise<void> {
       }
 
       const dropdownStyles = getComputedStyle(dropdownElement);
+      const dropdownPaint = getComputedStyle(dropdownElement, "::after");
+      const navigationRect = navigationElement.getBoundingClientRect();
+      const dropdownRect = dropdownElement.getBoundingClientRect();
+      const contentRect = document.querySelector<HTMLElement>("[data-baseline-label='top navigation content']")?.getBoundingClientRect();
+      const probeX = dropdownRect.left + Math.min(8, dropdownRect.width / 2);
+      const probeY = Math.min(dropdownRect.bottom - 1, navigationRect.bottom + 4);
+      const hit = document.elementFromPoint(probeX, probeY);
 
       return {
         menuOpen: Array.from(navigationElement.querySelectorAll<HTMLElement>(".bf-top-navigation-menu-toggle")).some(toggle => toggle.getAttribute("aria-expanded") === "true"),
@@ -1953,7 +2699,15 @@ async function verifyTopNavigation(origin: string): Promise<void> {
         expanded: dropdownToggle.getAttribute("aria-expanded"),
         hidden: dropdownElement.getAttribute("aria-hidden"),
         display: dropdownStyles.display,
-        position: dropdownStyles.position
+        position: dropdownStyles.position,
+        borderTopWidth: Number.parseFloat(dropdownStyles.borderTopWidth),
+        paintBoundary: dropdownPaint.boxShadow,
+        paintPointerEvents: dropdownPaint.pointerEvents,
+        escapesNavigation: dropdownRect.bottom > navigationRect.bottom,
+        overlapsFollowingContent: contentRect ? dropdownRect.bottom > contentRect.top : false,
+        hitOwnsPopup: Boolean(hit?.closest(".bf-top-navigation-dropdown") === dropdownElement),
+        navigationIsolation: getComputedStyle(navigationElement).isolation,
+        navigationZIndex: getComputedStyle(navigationElement).zIndex
       };
     });
 
@@ -1964,6 +2718,23 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     assert(desktopDropdownState.hidden === "false", `Expected desktop dropdown aria-hidden=false, got ${desktopDropdownState.hidden}.`);
     assert(desktopDropdownState.display === "block", `Expected desktop dropdown display to become block, got ${desktopDropdownState.display}.`);
     assert(desktopDropdownState.position === "absolute", `Expected desktop dropdown to be absolutely positioned, got ${desktopDropdownState.position}.`);
+    assert(desktopDropdownState.borderTopWidth === 0 && desktopDropdownState.paintBoundary !== "none" && desktopDropdownState.paintPointerEvents === "none", `Expected desktop dropdown boundary and elevation to use its pointer-transparent overlay without a layout border, got ${JSON.stringify(desktopDropdownState)}.`);
+    assert(desktopDropdownState.escapesNavigation && desktopDropdownState.overlapsFollowingContent && desktopDropdownState.hitOwnsPopup, `Expected the real desktop dropdown to escape the navigation box and remain interactive above following content. Got ${JSON.stringify(desktopDropdownState)}.`);
+    assert(desktopDropdownState.navigationIsolation === "isolate" && desktopDropdownState.navigationZIndex === "98", `Expected the pre-existing sticky navigation popup layer to remain the containing stack owner. Got ${JSON.stringify(desktopDropdownState)}.`);
+
+    await desktopPage.emulateMedia({ forcedColors: "active" });
+    const forcedDesktopDropdown = await desktopPage.locator(".bf-top-navigation-dropdown[aria-hidden='false']").evaluate(element => {
+      const paint = getComputedStyle(element, "::after");
+      return {
+        blockStartWidth: Number.parseFloat(paint.borderBlockStartWidth),
+        outlineStyle: paint.outlineStyle,
+        outlineWidth: Number.parseFloat(paint.outlineWidth),
+        pointerEvents: paint.pointerEvents,
+        shadow: paint.boxShadow
+      };
+    });
+    assert(forcedDesktopDropdown.blockStartWidth === 0 && forcedDesktopDropdown.outlineStyle === "solid" && forcedDesktopDropdown.outlineWidth > 0 && forcedDesktopDropdown.pointerEvents === "none" && forcedDesktopDropdown.shadow === "none", `Expected the desktop dropdown to switch from the mobile one-sided edge to an all-sided system outline. Got ${JSON.stringify(forcedDesktopDropdown)}.`);
+    await desktopPage.emulateMedia({ forcedColors: "none" });
 
     const desktopSearchToggle = desktopPage.locator(".bf-top-navigation-nav .bf-top-navigation-search-toggle").first();
     await desktopSearchToggle.waitFor({ state: "visible" });
@@ -2255,6 +3026,31 @@ async function verifyTopNavigation(origin: string): Promise<void> {
     assert(mobileDropdownState.hidden === "false", `Expected mobile dropdown aria-hidden=false, got ${mobileDropdownState.hidden}.`);
     assert(mobileDropdownState.display === "block", `Expected mobile dropdown display to become block, got ${mobileDropdownState.display}.`);
 
+    await mobilePage.emulateMedia({ forcedColors: "active" });
+    const forcedMobilePaint = await mobilePage.evaluate(() => {
+      const navigationItem = document.querySelector<HTMLElement>("#top-navigation-default .bf-top-navigation-nav .bf-top-navigation-item");
+      const dropdown = document.querySelector<HTMLElement>("#top-navigation-default .bf-top-navigation-dropdown[aria-hidden='false']");
+      const dividedItem = dropdown?.querySelector<HTMLElement>("li + li > .bf-top-navigation-dropdown-item");
+      if (!navigationItem || !dropdown || !dividedItem) return null;
+      const navigationDivider = getComputedStyle(navigationItem, "::before");
+      const itemDivider = getComputedStyle(dividedItem, "::before");
+      const dropdownPaint = getComputedStyle(dropdown, "::after");
+      return {
+        navigationDividerBackground: navigationDivider.backgroundColor,
+        navigationDividerHeight: Number.parseFloat(navigationDivider.blockSize),
+        itemDividerBackground: itemDivider.backgroundColor,
+        itemDividerHeight: Number.parseFloat(itemDivider.blockSize),
+        dropdownBlockStartStyle: dropdownPaint.borderBlockStartStyle,
+        dropdownBlockStartWidth: Number.parseFloat(dropdownPaint.borderBlockStartWidth),
+        dropdownPointerEvents: dropdownPaint.pointerEvents
+      };
+    });
+    assert(forcedMobilePaint, "Expected forced-colors mobile navigation separators to be measurable.");
+    assert(forcedMobilePaint.navigationDividerBackground !== "rgba(0, 0, 0, 0)" && forcedMobilePaint.navigationDividerHeight > 0, `Expected the mobile navigation divider to retain an out-of-flow system-color cue. Got ${JSON.stringify(forcedMobilePaint)}.`);
+    assert(forcedMobilePaint.itemDividerBackground !== "rgba(0, 0, 0, 0)" && forcedMobilePaint.itemDividerHeight > 0, `Expected mobile dropdown item separators to retain out-of-flow system-color cues. Got ${JSON.stringify(forcedMobilePaint)}.`);
+    assert(forcedMobilePaint.dropdownBlockStartStyle === "solid" && forcedMobilePaint.dropdownBlockStartWidth > 0 && forcedMobilePaint.dropdownPointerEvents === "none", `Expected the mobile dropdown popup to retain its pointer-transparent one-sided forced-colors boundary. Got ${JSON.stringify(forcedMobilePaint)}.`);
+    await mobilePage.emulateMedia({ forcedColors: "none" });
+
     await mobilePage.keyboard.press("Escape");
     await mobilePage.waitForTimeout(180);
 
@@ -2302,8 +3098,8 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
     { route: "/demo/components/controls.html", selector: ".pc-content .bf-form-label", label: "form label" },
     { route: "/demo/components/controls.html", selector: ".pc-content .bf-input", label: "input" },
     { route: "/demo/components/chip.html", selector: ".pc-content .bf-chip", label: "chip" },
-    { route: "/demo/components/status-label.html", selector: ".pc-content .bf-status-label", label: "status label" },
-    { route: "/demo/components/badge.html", selector: ".pc-content .bf-badge", label: "badge" },
+    { route: "/demo/components/status-label.html", selector: ".pc-content .bf-status-label", label: "status label", indicator: true },
+    { route: "/demo/components/badge.html", selector: ".pc-content .bf-badge", label: "badge", indicator: true },
     { route: "/demo/components/breadcrumbs.html", selector: ".pc-content .bf-breadcrumbs-item", label: "breadcrumb" },
     { route: "/demo/components/side-navigation.html", selector: ".pc-content .bf-side-navigation-link", label: "side-navigation link" },
     { route: "/demo/components/tabs.html", selector: ".pc-content .bf-tabs-link", label: "tab" },
@@ -2370,8 +3166,13 @@ async function verifyBodySizedUiTypography(origin: string): Promise<void> {
 
         assert(state, `Expected ${demo.label} typography state to be measurable in ${tier}.`);
         assert(state.bodyTier === tier, `Expected ${demo.label} page to switch to ${tier}, got ${state.bodyTier}.`);
-        assert(state.targetFontSize === state.resolvedBodyFontSize, `Expected ${demo.label} font-size to match the active body role in ${tier}. Body role ${state.bodyRoleFontSize} (${state.resolvedBodyFontSize}), target ${state.targetFontSize}.`);
-        assert(state.targetLineHeight === state.resolvedBodyLineHeight, `Expected ${demo.label} line-height to match the active body role in ${tier}. Body role ${state.bodyRoleLineHeight} (${state.resolvedBodyLineHeight}), target ${state.targetLineHeight}.`);
+        if ("indicator" in demo) {
+          const expectedFontSize = tier === "os" ? "10px" : "12px";
+          assert(state.targetFontSize === expectedFontSize && state.targetLineHeight === "16px", `Expected ${demo.label} to use the approved invariant indicator type in ${tier}; got ${state.targetFontSize}/${state.targetLineHeight}.`);
+        } else {
+          assert(state.targetFontSize === state.resolvedBodyFontSize, `Expected ${demo.label} font-size to match the active body role in ${tier}. Body role ${state.bodyRoleFontSize} (${state.resolvedBodyFontSize}), target ${state.targetFontSize}.`);
+          assert(state.targetLineHeight === state.resolvedBodyLineHeight, `Expected ${demo.label} line-height to match the active body role in ${tier}. Body role ${state.bodyRoleLineHeight} (${state.resolvedBodyLineHeight}), target ${state.targetLineHeight}.`);
+        }
 
         if (demo.route.endsWith("/accordion.html")) {
           const keyline = await page.evaluate(() => {
@@ -2537,16 +3338,21 @@ async function verifyInlineListSeparatorSpacing(origin: string): Promise<void> {
             }
 
             const listStyles = getComputedStyle(list);
+            const plainListStyles = getComputedStyle(plainList);
             const result = {
               columnGap: Number.parseFloat(listStyles.columnGap),
               direction: listStyles.direction,
               display: listStyles.display,
               flexWrap: listStyles.flexWrap,
               itemMargins: items.map(item => Number.parseFloat(getComputedStyle(item).marginInlineEnd)),
+              plainColumnGap: Number.parseFloat(plainListStyles.columnGap),
+              plainDisplay: plainListStyles.display,
+              plainFlexWrap: plainListStyles.flexWrap,
               plainItemMargins: Array.from(plainList.querySelectorAll<HTMLElement>(".bf-inline-list-item")).map(item => Number.parseFloat(getComputedStyle(item).marginInlineEnd)),
               rootFontSize: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
               separatorContents: items.map(item => getComputedStyle(item, "::after").content),
               separatorMargins: items.map(item => Number.parseFloat(getComputedStyle(item, "::after").marginInlineStart)),
+              separatorPaddings: items.map(item => Number.parseFloat(getComputedStyle(item, "::after").paddingInlineStart)),
               sharedSpace: listStyles.getPropertyValue("--bf-inline-list-space").trim()
             };
 
@@ -2556,10 +3362,10 @@ async function verifyInlineListSeparatorSpacing(origin: string): Promise<void> {
           }, direction);
 
           assert(geometry, `Expected ${tier}/${tone}/${direction} middot-list geometry to be measurable.`);
-          assert(geometry.display === "flex" && geometry.flexWrap === "wrap", `Expected ${tier}/${tone}/${direction} middot lists to remove inline source-whitespace from separator geometry; got ${JSON.stringify(geometry)}.`);
-          assert(geometry.sharedSpace === "0.5rem" && Math.abs(geometry.columnGap - (geometry.rootFontSize * 0.5)) <= 0.01, `Expected ${tier}/${tone}/${direction} middot separators to reserve the shared 0.5rem after the dot; got ${JSON.stringify(geometry)}.`);
-          assert(geometry.separatorMargins.slice(0, -1).every(margin => Math.abs(margin - geometry.columnGap) <= 0.01), `Expected ${tier}/${tone}/${direction} middot separators to reserve the same 0.5rem before the dot; got ${JSON.stringify(geometry)}.`);
-          assert(geometry.plainItemMargins.slice(0, -1).every(margin => Math.abs(margin - geometry.columnGap) <= 0.01) && geometry.plainItemMargins.at(-1) === 0, `Expected ${tier}/${tone}/${direction} the plain inline list to share the fixed 0.5rem inline spacing rule; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.display === "flex" && geometry.flexWrap === "wrap" && geometry.plainDisplay === "flex" && geometry.plainFlexWrap === "wrap", `Expected ${tier}/${tone}/${direction} inline lists to remove inline source-whitespace from relationship geometry; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.sharedSpace === "0.5rem" && Math.abs(geometry.columnGap - (geometry.rootFontSize * 0.5)) <= 0.01 && Math.abs(geometry.plainColumnGap - geometry.columnGap) <= 0.01, `Expected ${tier}/${tone}/${direction} inline-list parents to own the shared 0.5rem relationship gap; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.separatorMargins.every(margin => margin === 0) && geometry.separatorPaddings.slice(0, -1).every(padding => Math.abs(padding - geometry.columnGap) <= 0.01), `Expected ${tier}/${tone}/${direction} middot separators to use owned padding before the dot instead of a relationship margin; got ${JSON.stringify(geometry)}.`);
+          assert(geometry.plainItemMargins.every(margin => margin === 0), `Expected ${tier}/${tone}/${direction} plain inline-list items to leave relationship spacing to the parent gap; got ${JSON.stringify(geometry)}.`);
           assert(geometry.itemMargins.every(margin => margin === 0), `Expected ${tier}/${tone}/${direction} middot items not to add a second trailing spacing owner; got ${JSON.stringify(geometry)}.`);
           assert(geometry.separatorContents.slice(0, -1).every(content => content === '"•"') && geometry.separatorContents.at(-1) === "none", `Expected ${tier}/${tone}/${direction} only inter-item positions to paint a middot separator; got ${JSON.stringify(geometry)}.`);
           assert(geometry.direction === direction, `Expected middot-list logical spacing to mirror in ${direction}; got ${JSON.stringify(geometry)}.`);
@@ -2633,27 +3439,37 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             const host = child.closest<HTMLElement>(".bf-side-navigation-link, .bf-side-navigation-text");
             const childStyles = getComputedStyle(child);
             const hostStyles = host ? getComputedStyle(host) : null;
+            const childBox = child.getBoundingClientRect();
+            const hostBox = host?.getBoundingClientRect();
             return {
-              childHeight: child.getBoundingClientRect().height,
+              childHeight: childBox.height,
               childKind: child.classList.contains("bf-chip") ? "chip" : "status",
-              hostHeight: host?.getBoundingClientRect().height ?? 0,
+              hostHeight: hostBox?.height ?? 0,
               hostLineHeight: Number.parseFloat(hostStyles?.lineHeight ?? "0"),
+              hostClearanceStart: hostBox ? childBox.top - hostBox.top : 0,
+              hostClearanceEnd: hostBox ? hostBox.bottom - childBox.bottom : 0,
               marginBlockEnd: Number.parseFloat(childStyles.marginBlockEnd),
               marginBlockStart: Number.parseFloat(childStyles.marginBlockStart),
               paddingBlockEnd: Number.parseFloat(childStyles.paddingBlockEnd),
               paddingBlockStart: Number.parseFloat(childStyles.paddingBlockStart),
               borderBlockEnd: Number.parseFloat(childStyles.borderBlockEndWidth),
               borderBlockStart: Number.parseFloat(childStyles.borderBlockStartWidth),
-              boxShadow: childStyles.boxShadow,
+              strokeBoxShadow: childStyles.boxShadow,
               plainHeight
             };
           });
         });
         assert(navigation?.length === 5, `Expected ${tier}/${tone} side navigation to expose five nested auxiliary fixtures: ${JSON.stringify(navigation)}.`);
         assert(navigation.every(item => Math.abs(item.hostHeight - item.plainHeight) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces not to enlarge side-navigation rows: ${JSON.stringify(navigation)}.`);
-        assert(navigation.every(item => item.childHeight <= item.hostLineHeight + 0.1), `Expected ${tier}/${tone} nested auxiliary paint to fit inside the host body line: ${JSON.stringify(navigation)}.`);
-        assert(navigation.every(item => item.marginBlockStart === 0 && item.marginBlockEnd === 0 && Math.abs(item.paddingBlockStart - item.paddingBlockEnd) <= 0.1), `Expected ${tier}/${tone} nested auxiliary surfaces to use zero block margins and symmetric padding: ${JSON.stringify(navigation)}.`);
-        assert(navigation.every(item => item.borderBlockStart === 0 && item.borderBlockEnd === 0 && (item.childKind !== "chip" || item.boxShadow !== "none")), `Expected ${tier}/${tone} nested auxiliary borders to paint without adding block footprint: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => item.childKind === "chip"
+          ? item.hostClearanceStart > 0.1 && item.hostClearanceEnd > 0.1
+          : item.childHeight <= item.hostLineHeight + 0.1), `Expected ${tier}/${tone} governed dense Chips to clear their unchanged row edges and invariant StatusLabels to fit the host body line: ${JSON.stringify(navigation)}.`);
+        const indicatorHalfLeading = tier === "os" ? -3 : -2;
+        assert(navigation.every(item => {
+          const expectedMargin = item.childKind === "status" ? indicatorHalfLeading : 0;
+          return Math.abs(item.marginBlockStart - expectedMargin) <= 0.01 && Math.abs(item.marginBlockEnd - expectedMargin) <= 0.01 && Math.abs(item.paddingBlockStart - item.paddingBlockEnd) <= 0.1;
+        }), `Expected ${tier}/${tone} nested Chips to keep zero margins and StatusLabel to keep approved symmetric half-leading, with symmetric padding: ${JSON.stringify(navigation)}.`);
+        assert(navigation.every(item => item.borderBlockStart === 0 && item.borderBlockEnd === 0 && (item.childKind !== "chip" || item.strokeBoxShadow !== "none")), `Expected ${tier}/${tone} nested Chip boundaries to self-paint without adding block footprint: ${JSON.stringify(navigation)}.`);
       }
     }
 
@@ -2711,18 +3527,22 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
           );
           const plainTextCell = plainTextRow?.querySelector<HTMLElement>("td");
           const controlCell = controlRow?.querySelector<HTMLElement>("td");
+          const nestedTextInput = controlRow?.querySelector<HTMLElement>("[aria-label='Table text input']");
+          const nestedNumberInput = controlRow?.querySelector<HTMLElement>("[aria-label='Table number input']");
           const controlTargets = controlRow
             ? [
-                controlRow.querySelector<HTMLElement>("[aria-label='Table text input']"),
-                controlRow.querySelector<HTMLElement>("[aria-label='Table number input']"),
+                nestedTextInput?.closest<HTMLElement>(".bf-field-boundary") ?? null,
+                nestedNumberInput?.closest<HTMLElement>(".bf-field-boundary") ?? null,
                 controlRow.querySelector<HTMLElement>(".bf-button"),
                 controlRow.querySelector<HTMLElement>(".bf-checkbox-label"),
                 controlRow.querySelector<HTMLElement>(".bf-radio-label")
               ]
             : [];
+          const standaloneTextInput = document.querySelector<HTMLElement>("[aria-label='Text input'] .bf-input");
+          const standaloneNumberInput = document.querySelector<HTMLElement>("[aria-label='Number input'] .bf-input");
           const standaloneTargets = [
-            document.querySelector<HTMLElement>("[aria-label='Text input'] .bf-input"),
-            document.querySelector<HTMLElement>("[aria-label='Number input'] .bf-input"),
+            standaloneTextInput?.closest<HTMLElement>(".bf-field-boundary") ?? null,
+            standaloneNumberInput?.closest<HTMLElement>(".bf-field-boundary") ?? null,
             document.querySelector<HTMLElement>("[aria-label='Button'] .bf-button"),
             document.querySelector<HTMLElement>("[aria-label='Checkbox'] .bf-checkbox-label"),
             document.querySelector<HTMLElement>("[aria-label='Radio'] .bf-radio-label")
@@ -2752,7 +3572,11 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
           }
           const chipRect = nestedChip.getBoundingClientRect();
           const badgeRect = nestedBadge.getBoundingClientRect();
-          const activeStyles = getComputedStyle(activeTab);
+          const badgeStyles = getComputedStyle(nestedBadge);
+          const badgePaintHeight = Number.parseFloat(badgeStyles.backgroundSize.split(",")[0]!.trim().split(/\s+/)[1]!);
+          const badgePaintTop = badgeRect.top + ((badgeRect.height - badgePaintHeight) / 2);
+          const badgePaintBottom = badgePaintTop + badgePaintHeight;
+          const activeStyles = getComputedStyle(activeTab, "::after");
           const plainTextCellStyles = getComputedStyle(plainTextCell);
           const controlCellStyles = getComputedStyle(controlCell);
           const rowBorderSize = Number.parseFloat(
@@ -2770,8 +3594,8 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
             chipHeight: chipRect.height,
             cellLineHeight: Number.parseFloat(getComputedStyle(nestedCell).lineHeight),
             badgeContained:
-              badgeRect.top >= chipRect.top - 0.1 &&
-              badgeRect.bottom <= chipRect.bottom + 0.1,
+              badgePaintTop >= chipRect.top - 0.1 &&
+              badgePaintBottom <= chipRect.bottom + 0.1,
             controlRowHeightDelta: Math.abs(
               controlRow.getBoundingClientRect().height -
                 plainTextRow.getBoundingClientRect().height
@@ -2824,29 +3648,26 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
         assert(
           audit &&
             audit.badgeContained &&
-            audit.chipHeight <= audit.cellLineHeight + 0.1 &&
+            (tier === "os"
+              ? audit.chipHeight <= audit.cellLineHeight + 0.1
+              : Math.abs(audit.chipHeight - (audit.cellLineHeight + 8)) <= 0.1) &&
             audit.rowHeightDelta <= 0.1,
-          `Expected ${tier}/${tone} nested badge to fit inside the compact table chip without enlarging its row: ${JSON.stringify(audit)}.`
+          `Expected ${tier}/${tone} nested badge to stay inside its governed table Chip without enlarging the row: ${JSON.stringify(audit)}.`
         );
         assert(
           audit &&
             audit.controlRowHeightDelta <= audit.rowBorderSize &&
-            audit.controlTargetHeights.every(
-              height => height <= audit.controlCellLineHeight + audit.rowBorderSize
-            ) &&
-            audit.controlTargetHeights.every(
-              (height, index) =>
-                audit.standaloneTargetHeights[index] - height > audit.rowBorderSize
-            ) &&
             audit.nestedSelectionMarkCenterDeltas.every(
               delta => delta <= audit.rowBorderSize
             ) &&
-            Math.abs(
-              audit.controlCellPaddingBlockStart - audit.plainCellPaddingBlockStart
-            ) <= audit.rowBorderSize &&
-            Math.abs(
-              audit.controlCellPaddingBlockEnd - audit.plainCellPaddingBlockEnd
-            ) <= audit.rowBorderSize &&
+            (tier === "os"
+              ? audit.controlTargetHeights.every(height => height <= audit.controlCellLineHeight + audit.rowBorderSize) &&
+                Math.abs(audit.controlCellPaddingBlockStart - audit.plainCellPaddingBlockStart) <= audit.rowBorderSize &&
+                Math.abs(audit.controlCellPaddingBlockEnd - audit.plainCellPaddingBlockEnd) <= audit.rowBorderSize
+              : audit.controlTargetHeights.slice(0, 3).every(height => Math.abs(height - (audit.controlCellLineHeight + 8)) <= 0.1) &&
+                audit.controlTargetHeights.slice(3).every(height => height <= audit.controlCellLineHeight + audit.rowBorderSize) &&
+                Math.abs(audit.controlCellPaddingBlockStart - (audit.plainCellPaddingBlockStart - 4)) <= 0.01 &&
+                Math.abs(audit.controlCellPaddingBlockEnd - (audit.plainCellPaddingBlockEnd - 4)) <= 0.01) &&
             audit.controlCellBorderBlockEnd === audit.plainCellBorderBlockEnd &&
             audit.controlCellOverflow === audit.plainCellOverflow,
           `Expected ${tier}/${tone} explicitly nested controls to fit inside the ordinary table-cell rhythm: ${JSON.stringify(audit)}.`
@@ -2860,6 +3681,866 @@ async function verifyNestedAuxiliaryGeometry(origin: string): Promise<void> {
   }
 }
 
+async function verifyDenseTableEnrollment(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const tones = ["light", "dark"] as const;
+  const browser = await openBrowser();
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+    await page.addInitScript("globalThis.__name = value => value;");
+    for (const tier of tiers) {
+      for (const tone of tones) {
+        await page.setContent(`<!doctype html><html><head>
+          <link rel="stylesheet" href="${origin}/demo/demo-fonts.css">
+          <link rel="stylesheet" href="${origin}/dist/tiers/${tier}/styles.css">
+          </head><body class="bf-theme bf-tier-${tier} is-${tone}">
+          <table class="bf-table"><tbody><tr data-case="plain"><td><span data-text>Active</span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="hidden"><td><span data-target>Active</span><input class="bf-input" type="hidden" value="metadata"></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="plain-two"><td><span data-target>First line<br>Second line</span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="button"><td><button class="bf-button" type="button" data-target>Active</button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="legacy-button"><td><button class="bf-button is-nested" type="button" data-target>Active</button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="legacy-input"><td><span class="bf-field-boundary"><input class="bf-input is-nested" type="text" value="Active" data-target></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="disabled"><td><button class="bf-button" type="button" disabled data-target>Active</button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="leading"><td><button class="bf-button is-icon" type="button" data-target><span class="bf-icon is-search" aria-hidden="true"></span><span class="bf-button-label">Active</span></button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="icon"><td><button class="bf-button is-icon" type="button" aria-label="Search" data-target><span class="bf-icon is-search"></span></button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="link"><td><button class="bf-button is-link" type="button" data-target>Active</button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="chip"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="click-chip"><td><button class="bf-chip" type="button" data-target><span class="bf-chip-value">Active</span></button></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="dismiss-chip"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span><button class="bf-chip-dismiss" type="button" aria-label="Dismiss"></button></span></td></tr></tbody></table>
+          <table class="bf-table"><thead><tr data-case="header"><th><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></th></tr></thead></table>
+          <table class="bf-table"><tbody><tr data-case="neutral"><td><span data-neutral><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="input"><td><span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" data-target></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="neutral-input"><td><span class="bf-field-boundary"><span data-neutral><input class="bf-input" type="text" value="Active" data-target></span></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="select"><td><span class="bf-field-boundary"><select class="bf-input" data-target><option>Active</option></select></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="textarea"><td><span class="bf-field-boundary"><textarea class="bf-input" rows="2" data-target>First line\nSecond line</textarea></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="reset"><td><span class="bf-theme"><button class="bf-button" type="button" data-target>Active</button></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="reset-plain"><td data-reset-plain-outer><div class="bf-theme"><table class="bf-table"><tbody><tr><td><span data-target>Reset</span></td></tr></tbody></table></div></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr><td><span class="bf-field-boundary" data-reset-owner><span class="bf-theme"><input class="bf-input" type="text" value="Reset" data-target></span></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr><td><span class="bf-field-boundary" data-cell-owner><table class="bf-table"><tbody><tr><td><input class="bf-input" type="text" value="Inner" data-target></td></tr></tbody></table></span></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr data-case="nested-outer"><td data-outer><table class="bf-table"><tbody><tr data-case="nested-inner"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></td></tr></tbody></table></td></tr></tbody></table>
+          <table class="bf-table"><tbody><tr><td data-product-outer><div class="bf-theme bf-tier-documentation"><table class="bf-table"><tbody><tr data-case="product-plain"><td><span data-target>Active</span></td></tr></tbody></table><table class="bf-table"><tbody><tr data-case="product-inner"><td><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span></td></tr></tbody></table></div></td></tr></tbody></table>
+          <div data-standalone><button class="bf-button" type="button" data-target>Active</button><span class="bf-chip" data-target><span class="bf-chip-value">Active</span></span><span class="bf-field-boundary"><input class="bf-input" type="text" value="Active" data-target></span><span class="bf-field-boundary"><select class="bf-input" data-target><option>Active</option></select></span><span class="bf-field-boundary"><textarea class="bf-input" rows="2" data-target>First line\nSecond line</textarea></span></div>
+          </body></html>`, { waitUntil: "networkidle" });
+        await page.evaluate("globalThis.__name = value => value");
+        await waitForFonts(page);
+        const geometry = await page.evaluate(() => {
+          const number = (value: string) => Number.parseFloat(value);
+          const baseline = (target: HTMLElement): number | null => {
+            if (target.matches(".is-icon:not(:has(.bf-button-label))")) return null;
+            if (target.matches("input, select, textarea")) {
+              const rig = document.createElement("span");
+              rig.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap";
+              const clone = target.cloneNode(true) as HTMLElement;
+              const style = getComputedStyle(target);
+              clone.style.font = style.font;
+              clone.style.lineHeight = style.lineHeight;
+              clone.style.boxSizing = style.boxSizing;
+              clone.style.appearance = style.appearance;
+              clone.style.paddingBlock = `${style.paddingBlockStart} ${style.paddingBlockEnd}`;
+              clone.style.paddingInline = `${style.paddingInlineStart} ${style.paddingInlineEnd}`;
+              clone.style.inlineSize = `${target.getBoundingClientRect().width}px`;
+              clone.style.blockSize = `${target.getBoundingClientRect().height}px`;
+              const marker = document.createElement("span");
+              marker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;vertical-align:baseline";
+              rig.append(clone, marker);
+              document.body.append(rig);
+              const value = target.getBoundingClientRect().top + marker.getBoundingClientRect().top - clone.getBoundingClientRect().top;
+              rig.remove();
+              return value;
+            }
+            const text = [...target.querySelectorAll("*")].flatMap(element => [...element.childNodes])
+              .concat([...target.childNodes]).find(node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+            if (!text) return null;
+            const marker = document.createElement("span");
+            marker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;vertical-align:baseline";
+            text.parentNode?.insertBefore(marker, text.nextSibling);
+            const value = marker.getBoundingClientRect().top;
+            marker.remove();
+            return value;
+          };
+          const read = (row: HTMLElement) => {
+            const target = row.querySelector<HTMLElement>("[data-target]");
+            const cell = target?.closest<HTMLElement>("td, th");
+            if (!target || !cell) throw new Error("Missing density fixture target.");
+            const rowBox = row.getBoundingClientRect();
+            const box = target.getBoundingClientRect();
+            const style = getComputedStyle(target);
+            const cellStyle = getComputedStyle(cell);
+            const boundary = target.closest<HTMLElement>(".bf-field-boundary");
+            const boundaryStyle = boundary ? getComputedStyle(boundary) : null;
+            const paintBox = (boundary ?? target).getBoundingClientRect();
+            const targetBaseline = baseline(target);
+            const selectedProbe = document.createElement("span");
+            selectedProbe.style.cssText = `position:absolute;visibility:hidden;block-size:0;inline-size:${style.getPropertyValue("--bf-density-control-block-inset")}`;
+            document.body.append(selectedProbe);
+            const selected = selectedProbe.getBoundingClientRect().width;
+            selectedProbe.remove();
+            return {
+              row: rowBox.height,
+              box: box.height,
+              width: box.width,
+              baseline: targetBaseline === null ? null : targetBaseline - rowBox.top,
+              padding: number(style.paddingBlockStart),
+              line: number(style.lineHeight),
+              marginStart: number(style.marginBlockStart),
+              marginEnd: number(style.marginBlockEnd),
+              cellStart: number(cellStyle.paddingBlockStart),
+              cellEnd: number(cellStyle.paddingBlockEnd),
+              clearanceStart: paintBox.top - cell.getBoundingClientRect().top,
+              clearanceEnd: cell.getBoundingClientRect().bottom - paintBox.bottom,
+              paintOwner: boundary ? "field-boundary" : "target",
+              selected,
+              verticalAlign: style.verticalAlign,
+              minBlockSize: style.minBlockSize,
+              resize: style.resize,
+              scrollHeight: target.scrollHeight,
+              clientHeight: target.clientHeight,
+              rows: target instanceof HTMLTextAreaElement ? target.rows : null,
+              contentViewport: box.height - number(style.paddingBlockStart) - number(style.paddingBlockEnd) - number(style.borderBlockStartWidth) - number(style.borderBlockEndWidth),
+              boundaryDisplay: boundaryStyle?.display ?? null,
+              boundaryMarginStart: boundaryStyle ? number(boundaryStyle.marginBlockStart) : null,
+              boundaryMarginEnd: boundaryStyle ? number(boundaryStyle.marginBlockEnd) : null
+            };
+          };
+          const plainRow = document.querySelector<HTMLElement>("[data-case='plain']");
+          const plainText = plainRow?.querySelector<HTMLElement>("[data-text]");
+          if (!plainRow || !plainText) throw new Error("Missing plain density fixture.");
+          const plainMarker = document.createElement("span");
+          plainMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;margin:0;padding:0;border:0;vertical-align:baseline";
+          plainText.append(plainMarker);
+          const plainBaseline = plainMarker.getBoundingClientRect().top - plainRow.getBoundingClientRect().top;
+          plainMarker.remove();
+          const cases = Object.fromEntries([...document.querySelectorAll<HTMLElement>("tr[data-case]:not([data-case='plain'])")].map(row => [row.dataset.case, read(row)]));
+          const standalone = [...document.querySelectorAll<HTMLElement>("[data-standalone] [data-target]")].map(target => {
+            const style = getComputedStyle(target);
+            const box = target.getBoundingClientRect();
+            const textBaseline = baseline(target);
+            return { box: box.height, baselineFromTop: textBaseline === null ? null : textBaseline - box.top, padding: number(style.paddingBlockStart), marginStart: number(style.marginBlockStart), marginEnd: number(style.marginBlockEnd), minBlockSize: style.minBlockSize, resize: style.resize, clientHeight: target.clientHeight, scrollHeight: target.scrollHeight, contentViewport: box.height - number(style.paddingBlockStart) - number(style.paddingBlockEnd) - number(style.borderBlockStartWidth) - number(style.borderBlockEndWidth), rows: target instanceof HTMLTextAreaElement ? target.rows : null };
+          });
+          const denseTextarea = document.querySelector<HTMLTextAreaElement>("[data-case='textarea'] textarea");
+          if (!denseTextarea) throw new Error("Missing dense textarea interaction fixture.");
+          const savedValue = denseTextarea.value;
+          const savedBlockSize = denseTextarea.style.blockSize;
+          const beforeHeight = denseTextarea.getBoundingClientRect().height;
+          denseTextarea.value = Array.from({ length: 12 }, (_, index) => `Line ${index + 1}`).join("\n");
+          denseTextarea.scrollTop = denseTextarea.scrollHeight;
+          const textareaScrolls = denseTextarea.scrollTop > 0 && denseTextarea.scrollHeight > denseTextarea.clientHeight && Math.abs(denseTextarea.getBoundingClientRect().height - beforeHeight) < 0.1;
+          denseTextarea.style.blockSize = `${beforeHeight + Number.parseFloat(getComputedStyle(denseTextarea).lineHeight) * 2}px`;
+          const resizedHeight = denseTextarea.getBoundingClientRect().height;
+          const resizedBoundaryHeight = denseTextarea.closest(".bf-field-boundary")?.getBoundingClientRect().height ?? 0;
+          denseTextarea.style.blockSize = savedBlockSize;
+          denseTextarea.value = savedValue;
+          denseTextarea.scrollTop = 0;
+          const textareaInteraction = { scrolls: textareaScrolls, beforeHeight, resizedHeight, resizedBoundaryHeight, rows: denseTextarea.rows };
+          const outer = document.querySelector<HTMLElement>("[data-outer]");
+          const productOuter = document.querySelector<HTMLElement>("[data-product-outer]");
+          const resetPlainOuter = document.querySelector<HTMLElement>("[data-reset-plain-outer]");
+          const plainCell = plainRow.querySelector<HTMLElement>("td");
+          if (!resetPlainOuter || !plainCell) throw new Error("Missing fresh-product reset reference.");
+          const resetPlainOuterStyle = getComputedStyle(resetPlainOuter);
+          const plainCellStyle = getComputedStyle(plainCell);
+          const stoppedOwners = ["[data-reset-owner]", "[data-cell-owner]"].map(selector => {
+            const owner = document.querySelector<HTMLElement>(selector);
+            if (!owner) throw new Error("Missing stopped field owner.");
+            const style = getComputedStyle(owner);
+            return { display: style.display, marginEnd: number(style.marginBlockEnd) };
+          });
+          const defaultBoundary = document.querySelector<HTMLElement>("[data-standalone] .bf-field-boundary");
+          if (!defaultBoundary) throw new Error("Missing default field boundary.");
+          return { plain: { row: plainRow.getBoundingClientRect().height, baseline: plainBaseline, cellStart: number(plainCellStyle.paddingBlockStart), cellEnd: number(plainCellStyle.paddingBlockEnd), line: number(getComputedStyle(plainText).lineHeight) }, cases, standalone, stoppedOwners, textareaInteraction, resetPlainOuter: { start: number(resetPlainOuterStyle.paddingBlockStart), end: number(resetPlainOuterStyle.paddingBlockEnd) }, defaultBoundaryMargin: number(getComputedStyle(defaultBoundary).marginBlockEnd), outerPadding: outer ? number(getComputedStyle(outer).paddingBlockStart) : null, productOuterPadding: productOuter ? number(getComputedStyle(productOuter).paddingBlockStart) : null };
+        });
+        const denseInset = tier === "os" ? 0 : 4;
+        const plain = geometry.plain;
+        assert(Math.abs(geometry.cases.hidden.row - plain.row) < 0.1, `Expected ${tier}/${tone} hidden metadata to leave the plain table seat unchanged: ${JSON.stringify(geometry.cases.hidden)}.`);
+        assert(geometry.stoppedOwners.every(owner => owner.display === "grid" && Math.abs(owner.marginEnd - geometry.defaultBoundaryMargin) < 0.01), `Expected ${tier}/${tone} a descendant input across a product root or cell boundary not to enroll the outer field owner: ${JSON.stringify(geometry.stoppedOwners)}.`);
+        const members = ["button", "legacy-button", "legacy-input", "disabled", "leading", "chip", "click-chip", "dismiss-chip", "header", "neutral", "input", "neutral-input", "select", "nested-inner"];
+        {
+          for (const name of members) {
+            const item = geometry.cases[name];
+            assert(Math.abs(item.row - plain.row) < 0.1, `Expected ${tier}/${tone} ${name} to preserve the plain table row; got ${JSON.stringify(item)} vs ${JSON.stringify(plain)}.`);
+            assert(Math.abs(item.padding - denseInset) < 0.01 && Math.abs(item.selected - denseInset) < 0.01, `Expected ${tier}/${tone} ${name} to bind its existing ${denseInset}px member: ${JSON.stringify(item)}.`);
+            assert(item.clearanceStart > 0 && item.clearanceEnd > 0, `Expected ${tier}/${tone} ${name} to retain positive painted clearance: ${JSON.stringify(item)}.`);
+            if (item.baseline !== null) assert(Math.abs(item.baseline - plain.baseline) <= (["input", "neutral-input", "legacy-input", "select"].includes(name) ? 0.51 : 0.02), `Expected ${tier}/${tone} ${name} baseline to match the plain row (native inputs allow the observed half-pixel CSS baseline): ${JSON.stringify(item)} vs ${JSON.stringify(plain)}.`);
+          }
+          const icon = geometry.cases.icon;
+          assert(Math.abs(icon.row - plain.row) < 0.1 && Math.abs(icon.box - icon.width) < 0.1 && icon.verticalAlign === "top" && icon.clearanceStart > 0 && icon.clearanceEnd > 0, `Expected ${tier}/${tone} icon-only flow to stay square within the plain row with positive clearance: ${JSON.stringify(icon)}.`);
+          assert(Math.abs(geometry.cases.link.row - plain.row) < 0.1 && geometry.cases.reset.row > plain.row, `Expected ${tier}/${tone} link-style Button to follow the plain-text seat while a nested product reset retains default boxed geometry: ${JSON.stringify(geometry.cases)}.`);
+          const reset = geometry.cases.reset;
+          const resetPlain = geometry.cases["reset-plain"];
+          const standaloneButton = geometry.standalone[0];
+          const standaloneChip = geometry.standalone[1];
+          assert(Math.abs(reset.baseline - resetPlain.baseline) < 0.02 && Math.abs(reset.row - resetPlain.row) < 0.1, `Expected ${tier}/${tone} the reset Button to share the first-line baseline and outer row with a fresh nested-product plain table seat: ${JSON.stringify({ reset, resetPlain })}.`);
+          assert(Math.abs(reset.cellStart - plain.cellStart) < 0.01 && Math.abs(reset.cellEnd - plain.cellEnd) < 0.01 && Math.abs(geometry.resetPlainOuter.start - plain.cellStart) < 0.01 && Math.abs(geometry.resetPlainOuter.end - plain.cellEnd) < 0.01, `Expected ${tier}/${tone} both outer reset cells to keep ordinary unseated padding: ${JSON.stringify({ outer: geometry.resetPlainOuter, plain })}.`);
+          assert(Math.abs(reset.padding - standaloneButton.padding) < 0.01 && Math.abs(reset.marginStart - standaloneButton.marginStart) < 0.01 && Math.abs(reset.marginEnd - standaloneButton.marginEnd) < 0.01 && Math.abs(reset.box - standaloneButton.box) < 0.1 && reset.clearanceStart > 0 && reset.clearanceEnd > 0, `Expected ${tier}/${tone} the nested product root to preserve standalone Button geometry and painted clearance: ${JSON.stringify({ reset, standaloneButton })}.`);
+          assert(standaloneButton.baselineFromTop !== null && standaloneChip.baselineFromTop !== null && Math.abs(standaloneButton.baselineFromTop - plain.baseline) < 0.02 && Math.abs(standaloneChip.baselineFromTop - plain.baseline) < 0.02, `Expected ${tier}/${tone} standalone Button/Chip text baselines from their own occupied-block tops to match the plain table row baseline from row top: ${JSON.stringify({ plain, standaloneButton, standaloneChip })}.`);
+          assert(Math.abs(geometry.outerPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["nested-inner"].cellStart - (geometry.cases.reset.cellStart - denseInset)) < 0.01, `Expected ${tier}/${tone} nested cells to select only their nearest owner: ${JSON.stringify(geometry)}.`);
+          const neutralInput = geometry.cases["neutral-input"];
+          assert(neutralInput.boundaryDisplay === "inline-grid" && neutralInput.boundaryMarginStart === 0 && neutralInput.boundaryMarginEnd === 0 && ["legacy-input", "input", "neutral-input", "select", "textarea"].every(name => geometry.cases[name].paintOwner === "field-boundary"), `Expected ${tier}/${tone} wrapped fields, including neutral descendants, to measure clearance at their painted boundary: ${JSON.stringify(neutralInput)}.`);
+          assert(Math.abs(geometry.productOuterPadding - geometry.cases.reset.cellStart) < 0.01 && Math.abs(geometry.cases["product-inner"].row - geometry.cases["product-plain"].row) < 0.1 && geometry.cases["product-inner"].padding === 4, `Expected ${tier}/${tone} a nested product root to reset the outer provider and its own inner table to restart supported density: ${JSON.stringify(geometry)}.`);
+          assert(geometry.textareaInteraction.scrolls && geometry.textareaInteraction.rows === 2 && geometry.textareaInteraction.resizedHeight > geometry.textareaInteraction.beforeHeight + 31 && Math.abs(geometry.textareaInteraction.resizedBoundaryHeight - geometry.textareaInteraction.resizedHeight) < 0.1, `Expected ${tier}/${tone} dense textarea to scroll in its configured viewport and its paint owner to follow an authored resize: ${JSON.stringify(geometry.textareaInteraction)}.`);
+          const textarea = geometry.cases.textarea;
+          const standaloneTextarea = geometry.standalone[4];
+          const denseContentViewport = textarea.contentViewport;
+          const standaloneContentViewport = standaloneTextarea.contentViewport;
+          assert(textarea.padding === denseInset && textarea.row > plain.row && textarea.clearanceStart > 0 && textarea.clearanceEnd > 0 && textarea.resize === "vertical" && textarea.rows === 2 && textarea.scrollHeight >= textarea.clientHeight, `Expected ${tier}/${tone} Textarea to preserve a configured two-line, vertically resizable viewport with dense edges and positive clearance: ${JSON.stringify(textarea)}.`);
+          assert(standaloneTextarea.rows === 2 && standaloneTextarea.resize === "vertical" && Math.abs(denseContentViewport - standaloneContentViewport) <= 0.1, `Expected ${tier}/${tone} dense Textarea to preserve the standalone content viewport while only changing its edge seat: ${JSON.stringify({ textarea, standaloneTextarea, denseContentViewport, standaloneContentViewport })}.`);
+          const expectedTextareaRow = plain.row + denseContentViewport - plain.line;
+          assert(Math.abs(textarea.row - expectedTextareaRow) <= 0.1 && textarea.row >= geometry.cases["plain-two"].row && Math.abs(geometry.cases["plain-two"].baseline - plain.baseline) < 0.02, `Expected ${tier}/${tone} dense Textarea row growth to replace one body line with its preserved native content viewport while the natural two-line plain row keeps its first-line baseline: ${JSON.stringify({ textarea, expectedTextareaRow, literalTwoLine: geometry.cases["plain-two"], plain })}.`);
+        }
+      }
+    }
+
+    await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+    await page.locator("[data-page-chrome-tier-select]").selectOption("os");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "os" && document.body.dataset.densityOsProposal === "active");
+    const osProposal = await page.locator("#density-os-track .density-sample").evaluateAll(samples => samples.map(sample => {
+      const target = sample.querySelector<HTMLElement>("[data-target]");
+      const row = sample.querySelector<HTMLElement>("[data-host-row]");
+      return { caption: sample.querySelector(".density-caption")?.textContent ?? "", row: row?.getBoundingClientRect().height ?? 0, box: target?.getBoundingClientRect().height ?? 0, padding: target ? Number.parseFloat(getComputedStyle(target).paddingBlockStart) : -1 };
+    }));
+    assert(osProposal.length === 7 && osProposal.slice(1).every(item => Math.abs(item.row - osProposal[0].row) < 0.1 && item.padding === 0), `Expected every visible OS generated-source and demo-override Button/Chip/input to fit the same plain row using the existing 0 inset: ${JSON.stringify(osProposal)}.`);
+    await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=before`, { waitUntil: "networkidle" });
+    await page.locator("[data-page-chrome-tier-select]").selectOption("os");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "os");
+    assert(await page.locator("body[data-density-os-proposal='active']").count() === 0, "Expected the frozen Before comparison never to activate the bucket-only OS proposal.");
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyDensityPageGrid(origin: string): Promise<void> {
+  // Layout edges must meet the grid. DOM text must share the browser's real
+  // BF metric-text phase, measured independently at the body grid origin.
+  // An exported native CSS baseline is a separate measurement from glyph paint.
+  const flowTolerance = 0.2;
+  const nativeBaselineTolerance = 0.51;
+  const expectedMainCaptions = [
+    "Plain-text table row · reference", "Classed inline body · reference parity",
+    "Boxed Button · automatic table seat", "Leading-icon Button · text baseline",
+    "Disabled Button · state keeps membership", "Icon-only Button · square flow check",
+    "Static Chip · automatic table seat", "Clickable Chip · action keeps membership",
+    "Dismissible Chip · legal sibling action", "Header cell Chip · native th host",
+    "Neutral wrapper · placement preserved", "Wrapped text input · wrapper owns paint",
+    "Neutral-wrapped input · boundary seat preserved", "Native Select · single-line entry",
+    "Two-line plain table row · multiline reference", "Textarea · two-line viewport diagnostic",
+    "Standalone Button · product default", "Standalone Chip · product default",
+    "Standalone input · product default"
+  ];
+  const expectedOsCaptions = [
+    "OS plain-text table row · reference", "OS generated Button", "OS generated Chip",
+    "OS generated input", "OS 0-inset proposal · Button", "OS 0-inset proposal · Chip",
+    "OS 0-inset proposal · wrapped input"
+  ];
+  const expectedNavigationCaptions = [
+    "Tabs Chip · automatic static seat",
+    "SideNavigation Chip · automatic trailing seat",
+    "Ordinary Tabs · plain / Chip / Badge-in-Chip",
+    "Equal Tabs · plain / Chip / Badge-in-Chip",
+    "SideNavigation link rows · plain / Chip / Badge-in-Chip",
+    "SideNavigation text row · automatic trailing seat"
+  ];
+  const browser = await openBrowser();
+  try {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await page.addInitScript("globalThis.__name = value => value;");
+    await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+    const readDensityLayout = () => page.evaluate(() => {
+      const rect = (element: Element) => {
+        const box = element.getBoundingClientRect();
+        return [box.left, box.top, box.width, box.height];
+      };
+      return {
+        document: [document.body.scrollWidth, document.body.scrollHeight],
+        tracks: [...document.querySelectorAll<HTMLElement>(".density-track")].map(track => ({
+          box: rect(track),
+          client: [track.clientWidth, track.clientHeight],
+          scroll: [track.scrollWidth, track.scrollHeight],
+          samples: [...track.querySelectorAll<HTMLElement>(".density-sample")].map(sample => ({
+            sample: rect(sample),
+            row: sample.querySelector("[data-host-row]") ? rect(sample.querySelector("[data-host-row]")!) : null,
+            target: sample.querySelector("[data-target]") ? rect(sample.querySelector("[data-target]")!) : null
+          }))
+        }))
+      };
+    });
+    const settleDensityLayout = () => page.evaluate(() => new Promise<void>(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    }));
+    for (const width of [1280, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const tier of ["editorial", "documentation", "app", "os"]) {
+        await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+        await waitForFonts(page);
+        await page.waitForFunction(({ tier, width }) => document.body.dataset.bfTier === tier
+          && document.body.dataset.densityMeasuredTier === tier
+          && document.body.dataset.densityMeasuredWidth === String(width), { tier, width });
+        const baselineToggle = page.locator("[data-page-chrome-baseline-toggle]");
+        await baselineToggle.setChecked(false, { force: true });
+        await page.waitForFunction(() => !document.body.classList.contains("u-baseline-grid"));
+        await settleDensityLayout();
+        const guidesOffLayout = await readDensityLayout();
+        await baselineToggle.setChecked(true, { force: true });
+        await page.waitForFunction(() => document.body.classList.contains("u-baseline-grid"));
+        await settleDensityLayout();
+        const guidesOnLayout = await readDensityLayout();
+        assert(JSON.stringify(guidesOnLayout) === JSON.stringify(guidesOffLayout), `Expected ${tier}/${width} baseline guides to paint without changing document, track, scrollbar, or specimen geometry: off=${JSON.stringify(guidesOffLayout)}, on=${JSON.stringify(guidesOnLayout)}.`);
+        const proof = await page.evaluate(() => {
+          const grid = getComputedStyle(document.body, "::after");
+          const unit = Number.parseFloat(grid.backgroundSize.split(" ").at(-1) ?? "");
+          const origin = document.body.getBoundingClientRect().top + window.scrollY + Number.parseFloat(grid.top);
+          const phase = (y: number) => y - origin - Math.round((y - origin) / unit) * unit;
+          const contentPhase = phase((document.querySelector(".pc-content")?.getBoundingClientRect().top ?? document.body.getBoundingClientRect().top) + window.scrollY);
+          const oracle = document.createElement("p");
+          oracle.className = "bf-body";
+          oracle.style.cssText = `position:absolute;inset-block-start:${grid.top};inset-inline-start:0;visibility:hidden`;
+          const oracleMarker = document.createElement("span");
+          oracleMarker.style.cssText = "display:inline-block;inline-size:0;block-size:0;padding:0;margin:0;border:0;vertical-align:baseline";
+          oracle.append("Active", oracleMarker);
+          document.body.append(oracle);
+          const metricTextPhase = phase(oracleMarker.getBoundingClientRect().top + window.scrollY);
+          oracle.remove();
+          const readTrack = (id: string) => {
+            const track = document.querySelector<HTMLElement>(id);
+            if (!track) throw new Error("Missing density page-grid track.");
+            const first = track.querySelector<HTMLElement>(".density-sample");
+            const reference = first?.querySelector<HTMLElement>("[data-host-row]");
+            const marker = first?.querySelector<HTMLElement>(".bucket-measured-text .bucket-baseline-marker");
+            if (!first || !reference || !marker) throw new Error("Missing actual table/text grid reference.");
+            const refBaseline = marker.getBoundingClientRect().top + window.scrollY;
+            const baselineRule = track.querySelector<HTMLElement>(".bucket-guide-mark.is-baseline.is-line");
+            const topRule = track.querySelector<HTMLElement>(".bucket-guide-mark.is-top.is-line");
+            const samples = [...track.querySelectorAll<HTMLElement>(".density-sample")];
+            const identity = samples.map(sample => {
+              const target = sample.querySelector<HTMLElement>("[data-target]");
+              const box = target?.getBoundingClientRect();
+              const style = target ? getComputedStyle(target) : null;
+              return { caption: sample.dataset.baseCaption, kind: sample.dataset.kind, visible: !!box && box.width > 0 && box.height > 0 && style?.display !== "none" && style?.visibility !== "hidden" };
+            });
+            const peers = samples.map(sample => {
+              const target = sample.querySelector<HTMLElement>("[data-target]");
+              const row = sample.querySelector<HTMLElement>("[data-host-row]");
+              const marker = sample.querySelector<HTMLElement>("[data-target] .bucket-measured-text .bucket-baseline-marker");
+              const absolute = marker ? marker.getBoundingClientRect().top + window.scrollY : Number.parseFloat(sample.dataset.absoluteBaseline ?? "");
+              const sampleBox = sample.getBoundingClientRect();
+              const topTarget = sample.dataset.kind === "plain" ? row : target;
+              return { kind: sample.dataset.kind, caption: sample.dataset.baseCaption, baseline: absolute, markerTop: marker?.getBoundingClientRect().top ?? null, phase: phase(absolute), metricPhaseError: phase(absolute - metricTextPhase), contentMetricPhaseError: phase(absolute - metricTextPhase - contentPhase), native: target?.matches("input, select, textarea") ?? false, delta: absolute - refBaseline, row: row?.getBoundingClientRect().height ?? null, rowEnd: row?.getBoundingClientRect().bottom ?? null, top: topTarget?.getBoundingClientRect().top ?? null, sampleLeft: sampleBox.left, sampleRight: sampleBox.right, rig: sample.dataset.externalRig, externalBaseline: sample.dataset.externalBaseline, guideBaseline: sample.dataset.guideBaseline, baselineSource: sample.dataset.baselineSource, context: sample.dataset.contextReference, contextDelta: Number.parseFloat(sample.dataset.contextBaselineDelta ?? ""), outerDelta: Number.parseFloat(sample.dataset.outerBaselineDelta ?? ""), gridDelta: Number.parseFloat(sample.dataset.pageGridDelta ?? ""), value: target instanceof HTMLInputElement ? target.value : target?.textContent?.trim() };
+            });
+            const guideLines = [...track.querySelectorAll<HTMLElement>(".bucket-guide-mark.is-line")].map(mark => {
+              const box = mark.getBoundingClientRect();
+              return { kind: ["top", "baseline", "end"].find(kind => mark.classList.contains(`is-${kind}`)), context: mark.dataset.comparisonContext, left: box.left, right: box.right, top: box.top, bottom: box.bottom };
+            });
+            return { identity, guideLines, referenceBaseline: refBaseline, referencePhase: phase(refBaseline), referenceMetricPhaseError: phase(refBaseline - metricTextPhase), contentReferenceMetricPhaseError: phase(refBaseline - metricTextPhase - contentPhase), contentStartPhase: phase(reference.getBoundingClientRect().top + window.scrollY - contentPhase), contentEndPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY - contentPhase), startPhase: phase(reference.getBoundingClientRect().top + window.scrollY), endPhase: phase(reference.getBoundingClientRect().bottom + window.scrollY), referenceHeight: reference.getBoundingClientRect().height, baselinePaintDelta: baselineRule ? baselineRule.getBoundingClientRect().bottom - marker.getBoundingClientRect().top : null, topPaintDelta: topRule ? topRule.getBoundingClientRect().top - reference.getBoundingClientRect().top : null, peers };
+          };
+          const deferredIdentity = [...document.querySelectorAll<HTMLElement>("#density-deferred-track .density-sample")].map(sample => {
+            const target = sample.querySelector<HTMLElement>("[data-target], [data-static-navigation-host]");
+            const box = target?.getBoundingClientRect();
+            const style = target ? getComputedStyle(target) : null;
+            return { caption: sample.dataset.baseCaption, visible: !!box && box.width > 0 && box.height > 0 && style?.display !== "none" && style?.visibility !== "hidden" };
+          });
+          return {
+            unit,
+            metricTextPhase,
+            contentPhase,
+            deferredIdentity,
+            ubuntuLoaded: [...document.fonts].some(face => face.family.replaceAll('"', '') === "Ubuntu Sans" && face.status === "loaded"),
+            tracks: [readTrack("#density-track"), readTrack("#density-os-track")]
+          };
+        });
+        assert(proof.ubuntuLoaded && proof.unit > 0, `Expected ${tier}/${width} actual Ubuntu Sans and a measurable page grid.`);
+        const mainIdentity = proof.tracks[0].identity;
+        const osIdentity = proof.tracks[1].identity;
+        assert(JSON.stringify(mainIdentity.map(item => item.caption)) === JSON.stringify(expectedMainCaptions) && mainIdentity.length === 19 && mainIdentity.every(item => item.visible), `Expected ${tier}/${width} every supported table and standalone specimen to remain visible in order: ${JSON.stringify(mainIdentity)}.`);
+        assert(JSON.stringify(mainIdentity.map(item => item.kind)) === JSON.stringify(["plain", "plain-inline", ...Array(12).fill("member").map((kind, index) => index === 3 ? "icon" : kind), "multiline-reference", "multiline", "standalone", "standalone", "standalone"]), `Expected ${tier}/${width} supported main comparison identities to remain in order: ${JSON.stringify(mainIdentity)}.`);
+        assert(JSON.stringify(osIdentity.map(item => item.caption)) === JSON.stringify(expectedOsCaptions) && osIdentity.length === 7 && osIdentity.every(item => item.visible), `Expected ${tier}/${width} every original OS source/proposal specimen to remain visible in order: ${JSON.stringify(osIdentity)}.`);
+        assert(JSON.stringify(osIdentity.map(item => item.kind)) === JSON.stringify(["plain", "os-shipping", "os-shipping", "os-shipping", "os-proposal", "os-proposal", "os-proposal"]), `Expected ${tier}/${width} OS source and proposal identities to remain distinct.`);
+        assert(JSON.stringify(proof.deferredIdentity.map(item => item.caption)) === JSON.stringify(expectedNavigationCaptions) && proof.deferredIdentity.length === 6 && proof.deferredIdentity.every(item => item.visible), `Expected ${tier}/${width} the original Tab/Nav specimens and supported comparison twins to remain visible in order: ${JSON.stringify(proof.deferredIdentity)}.`);
+        const mainGuideContexts = [
+          { name: "table-cell", start: 0, end: 13, reference: 0 },
+          { name: "multiline-first-line", start: 14, end: 15, reference: 14 },
+          { name: "standalone-default", start: 16, end: 18, reference: 0 }
+        ];
+        const mainTrack = proof.tracks[0];
+        assert(mainTrack.guideLines.length === mainGuideContexts.length * 3, `Expected ${tier}/${width} exactly one top, first-line baseline and end guide per named context, with no specimen omitted: ${JSON.stringify(mainTrack.guideLines)}.`);
+        for (const context of mainGuideContexts) {
+          const rules = mainTrack.guideLines.filter(rule => rule.context === context.name);
+          const reference = mainTrack.peers[context.reference];
+          const first = mainTrack.peers[context.start];
+          const last = mainTrack.peers[context.end];
+          const top = rules.find(rule => rule.kind === "top");
+          const baseline = rules.find(rule => rule.kind === "baseline");
+          const end = rules.find(rule => rule.kind === "end");
+          assert(rules.length === 3 && !!top && !!baseline && !!end && Math.abs(top.left - first.sampleLeft) < 0.02 && Math.abs(top.right - last.sampleRight) < 0.02 && Math.abs(baseline.left - first.sampleLeft) < 0.02 && Math.abs(baseline.right - last.sampleRight) < 0.02 && Math.abs(end.left - first.sampleLeft) < 0.02 && Math.abs(end.right - last.sampleRight) < 0.02, `Expected ${tier}/${width} ${context.name} guides to span only their preserved specimens: ${JSON.stringify({ rules, first, last })}.`);
+          assert(Math.abs(top.top - reference.top) < 0.02 && reference.markerTop !== null && Math.abs(baseline.bottom - reference.markerTop) < 0.02 && reference.rowEnd !== null && Math.abs(end.top - reference.rowEnd) < 0.02, `Expected ${tier}/${width} ${context.name} guides to use the actual named reference row and text marker: ${JSON.stringify({ rules, reference })}.`);
+        }
+        const textareaPeer = mainTrack.peers[15];
+        assert(textareaPeer.context === "multiline-first-line" && textareaPeer.guideBaseline?.startsWith("unavailable") && textareaPeer.baselineSource?.startsWith("native first-line baseline unavailable") && ((Number.isFinite(Number.parseFloat(textareaPeer.externalBaseline ?? "")) && textareaPeer.rig === "matched native clone box/font") || (textareaPeer.externalBaseline === "unavailable" && textareaPeer.rig === "unmatched native clone")), `Expected ${tier}/${width} Textarea first-line guide to stay unavailable while its separate native CSS baseline diagnostic remains recorded: ${JSON.stringify(textareaPeer)}.`);
+        const standaloneInput = mainTrack.peers[18];
+        assert(standaloneInput.native && Number.isFinite(Number.parseFloat(standaloneInput.externalBaseline ?? "")) && standaloneInput.rig === "matched native clone box/font", `Expected ${tier}/${width} standalone input to retain its separate native CSS baseline proxy without claiming painted glyph alignment: ${JSON.stringify(standaloneInput)}.`);
+        for (const track of proof.tracks) {
+          assert(Math.abs(track.startPhase) <= flowTolerance && Math.abs(track.endPhase) <= flowTolerance && Math.abs(track.referenceMetricPhaseError) <= flowTolerance, `Expected ${tier}/${width} absolute document-grid alignment with independent BF metric phase ${proof.metricTextPhase}, without calibrating from the specimen: ${JSON.stringify(track)}.`);
+          assert(track.baselinePaintDelta !== null && Math.abs(track.baselinePaintDelta) < 0.02 && track.topPaintDelta !== null && Math.abs(track.topPaintDelta) < 0.02, `Expected ${tier}/${width} guides to paint the same boundary edge as the page grid and use the actual reference row top: ${JSON.stringify(track)}.`);
+        }
+        if (tier === "documentation" && width === 1280) {
+          // Reintroduce the original fixture defect deliberately. An oracle
+          // based only on peer equality would still pass this displaced row.
+          const brokenHeading = await page.addStyleTag({ content: ".density-row h2 { margin-block-end: var(--bf-space-1); }" });
+          try {
+            const displaced = await page.locator("#density-track .density-sample[data-kind='plain'] .bucket-baseline-marker").evaluate(marker => marker.getBoundingClientRect().top + window.scrollY);
+            assert(Math.abs(displaced - proof.tracks[0].referenceBaseline) > 1, "Expected restoring the former heading margin to reproduce detectable absolute baseline drift.");
+          } finally {
+            await brokenHeading.evaluate(style => style.remove());
+          }
+        }
+        const main = proof.tracks[0];
+        const members = main.peers.filter(peer => ["member", "plain-inline"].includes(peer.kind ?? ""));
+        for (const peer of members) assert(Math.abs(peer.metricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - main.referenceHeight) < 0.1, `Expected ${tier}/${width} ${peer.caption} to match the plain row and absolute page-grid phase: ${JSON.stringify(peer)}.`);
+        const secondary = proof.tracks[1];
+        const secondaryMembers = secondary.peers.filter(peer => ["os-shipping", "os-proposal"].includes(peer.kind ?? ""));
+        for (const peer of secondaryMembers) assert(Math.abs(peer.metricPhaseError) <= (peer.native ? nativeBaselineTolerance : flowTolerance) && Math.abs(peer.delta) <= (peer.native ? nativeBaselineTolerance : 0.02) && Math.abs((peer.row ?? 0) - secondary.referenceHeight) < 0.1, `Expected ${tier}/${width} every secondary source/override peer to match its plain row and absolute page-grid phase: ${JSON.stringify(peer)}.`);
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyIndicatorFit(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const expectedFontSize = { editorial: 12, documentation: 12, app: 12, os: 10 } as const;
+  const geometryTolerance = 0.1;
+  const baselineTolerance = 0.02;
+  const browser = await openBrowser();
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await page.addInitScript("globalThis.__name = value => value;");
+  const results: unknown[] = [];
+
+  try {
+    await page.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.indicatorMeasuredTier === expectedTier, tier);
+      const proof = await page.evaluate(() => {
+        const splitCssComponents = (value: string): string[] => {
+          const parts: string[] = [];
+          let current = "";
+          let depth = 0;
+          for (const character of value.trim()) {
+            if (character === "(") depth += 1;
+            else if (character === ")") depth -= 1;
+            if (/\s/.test(character) && depth === 0) {
+              if (current) {
+                parts.push(current);
+                current = "";
+              }
+            } else {
+              current += character;
+            }
+          }
+          if (current) parts.push(current);
+          return parts;
+        };
+        const splitCssLayers = (value: string): string[] => {
+          const layers: string[] = [];
+          let current = "";
+          let depth = 0;
+          for (const character of value.trim()) {
+            if (character === "(") depth += 1;
+            else if (character === ")") depth -= 1;
+            if (character === "," && depth === 0) {
+              layers.push(current.trim());
+              current = "";
+            } else {
+              current += character;
+            }
+          }
+          if (current) layers.push(current.trim());
+          return layers;
+        };
+        const lengthInPixels = (value: string, rootFontSize: number): number => {
+          if (value.endsWith("px")) return Number.parseFloat(value);
+          if (value.endsWith("rem")) return Number.parseFloat(value) * rootFontSize;
+          if (value === "0") return 0;
+          return Number.NaN;
+        };
+        const resolveLengthPercentage = (value: string, basis: number, rootFontSize: number): number => {
+          const trimmed = value.trim();
+          if (trimmed.endsWith("%")) return basis * Number.parseFloat(trimmed) / 100;
+          const directLength = lengthInPixels(trimmed, rootFontSize);
+          if (Number.isFinite(directLength)) return directLength;
+          const calc = trimmed.match(/^calc\(\s*([-+]?\d*\.?\d+)%\s*([+-])\s*([-+]?\d*\.?\d+)(px|rem)\s*\)$/);
+          if (!calc) return Number.NaN;
+          const percentage = basis * Number.parseFloat(calc[1]) / 100;
+          const length = Number.parseFloat(calc[3]) * (calc[4] === "rem" ? rootFontSize : 1);
+          return calc[2] === "+" ? percentage + length : percentage - length;
+        };
+        const resolvePosition = (value: string, basis: number, imageSize: number, rootFontSize: number): number => {
+          if (value === "center") return (basis - imageSize) / 2;
+          if (value.endsWith("%")) return (basis - imageSize) * Number.parseFloat(value) / 100;
+          return lengthInPixels(value, rootFontSize);
+        };
+        const resolveLength = (element: HTMLElement, property: string): number => {
+          const probe = document.createElement("span");
+          probe.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;inline-size:var(${property});block-size:0;padding:0;border:0`;
+          element.append(probe);
+          const value = probe.getBoundingClientRect().width;
+          probe.remove();
+          return value;
+        };
+        const pairs = [...document.querySelectorAll<HTMLElement>("[data-indicator-pair]")].map(pair => {
+          const withBadge = pair.querySelector<HTMLElement>("[data-indicator-variant='with']");
+          const withoutBadge = pair.querySelector<HTMLElement>("[data-indicator-variant='without']");
+          const badge = withBadge?.querySelector<HTMLElement>("[data-indicator-badge]");
+          const chip = withBadge?.querySelector<HTMLElement>("[data-indicator-chip]");
+          const plainChip = withoutBadge?.querySelector<HTMLElement>("[data-indicator-chip]");
+          const host = withBadge?.querySelector<HTMLElement>("[data-host-row], [data-indicator-host-row]");
+          const plainHost = withoutBadge?.querySelector<HTMLElement>("[data-host-row], [data-indicator-host-row]");
+          const hostBaseline = withBadge?.querySelector<HTMLElement>("[data-indicator-host-baseline]");
+          const badgeBaseline = withBadge?.querySelector<HTMLElement>("[data-indicator-badge-baseline]");
+          if (!withBadge || !withoutBadge || !badge || !chip || !plainChip || !host || !plainHost || !hostBaseline || !badgeBaseline) return null;
+          const badgeStyle = getComputedStyle(badge);
+          const chipStyle = getComputedStyle(chip);
+          const badgeBox = badge.getBoundingClientRect();
+          const chipBox = chip.getBoundingClientRect();
+          const hostTextBox = chip.querySelector<HTMLElement>(".bf-chip-value")?.getBoundingClientRect();
+          const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+          const sizeLayers = splitCssLayers(badgeStyle.backgroundSize);
+          const positionLayers = splitCssLayers(badgeStyle.backgroundPosition);
+          const layerBounds = sizeLayers.map((sizeLayer, index) => {
+            const sizeParts = splitCssComponents(sizeLayer);
+            const positionParts = splitCssComponents(positionLayers[index] ?? "0% 0%");
+            const width = resolveLengthPercentage(sizeParts[0] ?? "", badgeBox.width, rootFontSize);
+            const height = resolveLengthPercentage(sizeParts[1] ?? sizeParts[0] ?? "", badgeBox.height, rootFontSize);
+            const left = badgeBox.left + resolvePosition(positionParts[0] ?? "0%", badgeBox.width, width, rootFontSize);
+            const top = badgeBox.top + resolvePosition(positionParts[1] ?? positionParts[0] ?? "0%", badgeBox.height, height, rootFontSize);
+            return { left, right: left + width, top, bottom: top + height, width, height };
+          });
+          const paintBounds = {
+            left: Math.min(...layerBounds.map(layer => layer.left)),
+            right: Math.max(...layerBounds.map(layer => layer.right)),
+            top: Math.min(...layerBounds.map(layer => layer.top)),
+            bottom: Math.max(...layerBounds.map(layer => layer.bottom)),
+            width: 0,
+            height: 0
+          };
+          paintBounds.width = paintBounds.right - paintBounds.left;
+          paintBounds.height = paintBounds.bottom - paintBounds.top;
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          if (!context) return null;
+          context.font = `${badgeStyle.fontStyle} ${badgeStyle.fontWeight} ${badgeStyle.fontSize} ${badgeStyle.fontFamily}`;
+          const text = badge.childNodes[0]?.textContent?.trim() ?? badge.textContent?.trim() ?? "";
+          const textMetrics = context.measureText(text);
+          const baseline = badgeBaseline.getBoundingClientRect().top;
+          const textOrigin = badgeBox.left + ((badgeBox.width - textMetrics.width) / 2);
+          const inkBounds = {
+            left: textOrigin - textMetrics.actualBoundingBoxLeft,
+            right: textOrigin + textMetrics.actualBoundingBoxRight,
+            top: baseline - textMetrics.actualBoundingBoxAscent,
+            bottom: baseline + textMetrics.actualBoundingBoxDescent
+          };
+          const chipStroke = resolveLength(chip, "--bf-stroke-width");
+          return {
+            placement: pair.dataset.indicatorPlacement,
+            selector: `[data-indicator-pair][data-indicator-placement='${pair.dataset.indicatorPlacement}'] [data-indicator-badge]`,
+            fontSize: Number.parseFloat(badgeStyle.fontSize),
+            lineHeight: Number.parseFloat(badgeStyle.lineHeight),
+            backgroundImage: badgeStyle.backgroundImage,
+            backgroundPosition: badgeStyle.backgroundPosition,
+            backgroundRepeat: badgeStyle.backgroundRepeat,
+            backgroundSize: badgeStyle.backgroundSize,
+            isolation: badgeStyle.isolation,
+            ownerZIndex: badgeStyle.zIndex,
+            baselineDelta: badgeBaseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top,
+            chipHeightDelta: chipBox.height - plainChip.getBoundingClientRect().height,
+            hostHeightDelta: host.getBoundingClientRect().height - plainHost.getBoundingClientRect().height,
+            bodyLineHeight: resolveLength(chip, "--bf-body-line-height"),
+            badgeLineBoxHeight: badgeBox.height,
+            badgeBounds: { left: badgeBox.left, right: badgeBox.right, top: badgeBox.top, bottom: badgeBox.bottom, width: badgeBox.width, height: badgeBox.height },
+            chipBounds: { left: chipBox.left, right: chipBox.right, top: chipBox.top, bottom: chipBox.bottom, width: chipBox.width, height: chipBox.height },
+            hostTextBounds: hostTextBox ? { left: hostTextBox.left, right: hostTextBox.right, top: hostTextBox.top, bottom: hostTextBox.bottom, width: hostTextBox.width, height: hostTextBox.height } : null,
+            inkBounds,
+            layerBounds,
+            paintBounds,
+            effectivePaintInsets: {
+              blockStart: paintBounds.top - badgeBox.top,
+              blockEnd: badgeBox.bottom - paintBounds.bottom,
+              inlineStart: paintBounds.left - badgeBox.left,
+              inlineEnd: badgeBox.right - paintBounds.right
+            },
+            chipStroke,
+            paintClearance: {
+              blockStart: paintBounds.top - (chipBox.top + chipStroke),
+              blockEnd: chipBox.bottom - chipStroke - paintBounds.bottom,
+              inlineStart: paintBounds.left - (chipBox.left + chipStroke),
+              inlineEnd: chipBox.right - chipStroke - paintBounds.right
+            },
+            inkClearance: {
+              blockStart: inkBounds.top - paintBounds.top,
+              blockEnd: paintBounds.bottom - inkBounds.bottom,
+              inlineStart: inkBounds.left - paintBounds.left,
+              inlineEnd: paintBounds.right - inkBounds.right
+            },
+            text,
+            unclipped: badge.scrollWidth <= badge.clientWidth + 1 && badge.scrollHeight <= badge.clientHeight + 1
+          };
+        });
+        const invariants = [...document.querySelectorAll<HTMLElement>("[data-indicator-invariant]")].map(indicator => {
+          const context = indicator.closest<HTMLElement>("[data-indicator-context]");
+          const style = getComputedStyle(indicator);
+          const indicatorBaseline = indicator.querySelector<HTMLElement>("[data-indicator-status-baseline]");
+          const hostRow = indicator.closest<HTMLElement>("[data-status-host-row], [data-host-row]");
+          const hostBaseline = hostRow?.querySelector<HTMLElement>("[data-indicator-status-host-baseline]");
+          const hostText = hostRow?.querySelector<HTMLElement>("[data-indicator-status-host-text]");
+          const indicatorBox = indicator.getBoundingClientRect();
+          const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+          const sizeParts = splitCssComponents(style.backgroundSize.split(",")[0] ?? "");
+          const positionParts = splitCssComponents(style.backgroundPosition.split(",")[0] ?? "");
+          const paintWidth = resolveLengthPercentage(sizeParts[0] ?? "", indicatorBox.width, rootFontSize);
+          const paintHeight = resolveLengthPercentage(sizeParts[1] ?? sizeParts[0] ?? "", indicatorBox.height, rootFontSize);
+          const paintLeft = indicatorBox.left + resolvePosition(positionParts[0] ?? "0%", indicatorBox.width, paintWidth, rootFontSize);
+          const paintTop = indicatorBox.top + resolvePosition(positionParts[1] ?? positionParts[0] ?? "0%", indicatorBox.height, paintHeight, rootFontSize);
+          const paintBounds = { left: paintLeft, right: paintLeft + paintWidth, top: paintTop, bottom: paintTop + paintHeight, width: paintWidth, height: paintHeight };
+          const canvas = document.createElement("canvas");
+          const canvasContext = canvas.getContext("2d");
+          let inkBounds = null;
+          if (canvasContext && indicatorBaseline) {
+            canvasContext.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+            const text = indicator.childNodes[0]?.textContent?.trim() ?? indicator.textContent?.trim() ?? "";
+            const metrics = canvasContext.measureText(text);
+            const baseline = indicatorBaseline.getBoundingClientRect().top;
+            const origin = indicatorBox.left + ((indicatorBox.width - metrics.width) / 2);
+            inkBounds = { left: origin - metrics.actualBoundingBoxLeft, right: origin + metrics.actualBoundingBoxRight, top: baseline - metrics.actualBoundingBoxAscent, bottom: baseline + metrics.actualBoundingBoxDescent };
+          }
+          const hostLineBox = hostText?.getBoundingClientRect();
+          return {
+            kind: indicator.dataset.indicatorInvariant,
+            context: context?.dataset.indicatorContext,
+            fontSize: Number.parseFloat(style.fontSize),
+            lineHeight: Number.parseFloat(style.lineHeight),
+            height: indicatorBox.height,
+            baselineDelta: indicatorBaseline && hostBaseline
+              ? indicatorBaseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top
+              : null,
+            backgroundImage: style.backgroundImage,
+            paintBounds,
+            inkBounds,
+            hostLineBounds: hostLineBox ? { left: hostLineBox.left, right: hostLineBox.right, top: hostLineBox.top, bottom: hostLineBox.bottom, width: hostLineBox.width, height: hostLineBox.height } : null,
+            unclipped: indicator.scrollWidth <= indicator.clientWidth + 1 && indicator.scrollHeight <= indicator.clientHeight + 1
+          };
+        });
+        const statusHosts = [...document.querySelectorAll<HTMLElement>("[data-indicator-context='default'], [data-indicator-context='dense']")].map(context => ({
+          context: context.dataset.indicatorContext,
+          heights: [...context.querySelectorAll<HTMLElement>("[data-host-row], [data-status-host-row]")].map(host => host.getBoundingClientRect().height)
+        }));
+        return { pairs, invariants, statusHosts };
+      });
+
+      assert(proof.pairs.length === 3 && proof.pairs.every(pair => pair !== null), `Expected ${tier} to expose exactly three complete Badge-in-Chip placement pairs; got ${JSON.stringify(proof.pairs)}.`);
+      const pairs = proof.pairs.filter((pair): pair is NonNullable<typeof pair> => pair !== null);
+      assert(new Set(pairs.map(pair => pair.placement)).size === 3, `Expected ${tier} table, SideNavigation and Tab placements once each; got ${JSON.stringify(pairs)}.`);
+      for (const pair of pairs) {
+        assert(Math.abs(pair.fontSize - expectedFontSize[tier]) <= geometryTolerance && Math.abs(pair.lineHeight - 16) <= geometryTolerance, `Expected ${tier}/${pair.placement} approved indicator type ${expectedFontSize[tier]}px/16px; got ${JSON.stringify(pair)}.`);
+        assert(Math.abs(pair.baselineDelta) <= baselineTolerance, `Expected ${tier}/${pair.placement} Badge text to share the Chip label baseline; got ${JSON.stringify(pair)}.`);
+        assert(Math.abs(pair.chipHeightDelta) <= geometryTolerance && Math.abs(pair.hostHeightDelta) <= geometryTolerance, `Expected ${tier}/${pair.placement} Badge not to grow its Chip or placement row; got ${JSON.stringify(pair)}.`);
+        assert(pair.hostTextBounds && pair.paintBounds.height <= pair.hostTextBounds.height + geometryTolerance && pair.paintBounds.top >= pair.hostTextBounds.top - geometryTolerance && pair.paintBounds.bottom <= pair.hostTextBounds.bottom + geometryTolerance && pair.inkBounds.top >= pair.hostTextBounds.top - geometryTolerance && pair.inkBounds.bottom <= pair.hostTextBounds.bottom + geometryTolerance && pair.unclipped, `Expected ${tier}/${pair.placement} Badge paint and glyph ink to fit spatially inside the actual Chip label line while its approved 16px CSS line box remains layout-neutral; got ${JSON.stringify(pair)}.`);
+        assert(pair.backgroundImage.split("gradient(").length - 1 === 3 && pair.backgroundRepeat.split(",").every(value => value.trim() === "no-repeat") && pair.isolation === "auto" && pair.ownerZIndex === "auto" && Number.isFinite(pair.paintBounds.width) && Number.isFinite(pair.paintBounds.height), `Expected ${tier}/${pair.placement} Badge fill to expose three measurable owner-background layers without a stacking context; got ${JSON.stringify(pair)}.`);
+        assert(Math.abs(pair.paintBounds.height - pair.fontSize) <= geometryTolerance && Math.abs(pair.effectivePaintInsets.blockStart - pair.effectivePaintInsets.blockEnd) <= geometryTolerance, `Expected ${tier}/${pair.placement} computed background layers to centre one approved indicator em inside its line; got ${JSON.stringify(pair)}.`);
+        assert(pair.paintBounds.width >= pair.paintBounds.height && pair.layerBounds.length === 3 && Math.abs(pair.layerBounds[0].width - pair.paintBounds.height) <= geometryTolerance && Math.abs(pair.layerBounds[0].height - pair.paintBounds.height) <= geometryTolerance && Math.abs(pair.layerBounds[1].width - pair.paintBounds.height) <= geometryTolerance, `Expected ${tier}/${pair.placement} one-digit Badge fill to retain two circular end caps and a central rectangle; got ${JSON.stringify(pair)}.`);
+        assert(Object.values(pair.paintClearance).every(value => value > geometryTolerance), `Expected ${tier}/${pair.placement} strictly positive effective painted clearance on all four Chip edges; got ${JSON.stringify(pair)}.`);
+        assert(Object.values(pair.inkClearance).every(value => value > geometryTolerance), `Expected ${tier}/${pair.placement} measured glyph ink to remain inside the effective Badge fill; got ${JSON.stringify(pair)}.`);
+      }
+
+      const badgeInvariants = proof.invariants.filter(item => item.kind === "badge");
+      const statusInvariants = proof.invariants.filter(item => item.kind === "status");
+      assert(badgeInvariants.length >= 1 && statusInvariants.length === 3, `Expected ${tier} standalone Badge plus standalone/default/dense StatusLabel invariance samples; got ${JSON.stringify(proof.invariants)}.`);
+      for (const indicator of [...badgeInvariants, ...statusInvariants]) {
+        assert(Math.abs(indicator.fontSize - expectedFontSize[tier]) <= geometryTolerance && Math.abs(indicator.lineHeight - 16) <= geometryTolerance && indicator.height <= 16 + geometryTolerance, `Expected ${tier}/${indicator.kind}/${indicator.context} invariant approved type and line fit; got ${JSON.stringify(indicator)}.`);
+        if (indicator.baselineDelta !== null) assert(Math.abs(indicator.baselineDelta) <= baselineTolerance, `Expected ${tier}/${indicator.context} StatusLabel text to share its host baseline; got ${JSON.stringify(indicator)}.`);
+      }
+      for (const status of statusInvariants.filter(indicator => indicator.hostLineBounds && indicator.inkBounds)) {
+        assert(status.backgroundImage !== "none" && status.paintBounds.height <= status.hostLineBounds!.height + geometryTolerance && status.paintBounds.top >= status.hostLineBounds!.top - geometryTolerance && status.paintBounds.bottom <= status.hostLineBounds!.bottom + geometryTolerance, `Expected ${tier}/${status.context} StatusLabel paint to remain inside the host body line; got ${JSON.stringify(status)}.`);
+        assert(status.inkBounds!.left >= status.paintBounds.left - geometryTolerance && status.inkBounds!.right <= status.paintBounds.right + geometryTolerance && status.inkBounds!.top >= status.paintBounds.top - geometryTolerance && status.inkBounds!.bottom <= status.paintBounds.bottom + geometryTolerance && status.inkBounds!.top >= status.hostLineBounds!.top - geometryTolerance && status.inkBounds!.bottom <= status.hostLineBounds!.bottom + geometryTolerance && status.unclipped, `Expected ${tier}/${status.context} StatusLabel glyph ink to remain inside both its paint and host body line; got ${JSON.stringify(status)}.`);
+      }
+      for (const host of proof.statusHosts) {
+        assert(host.heights.length === 2 && Math.abs(host.heights[0] - host.heights[1]) <= geometryTolerance, `Expected ${tier}/${host.context} StatusLabel not to grow its placement row; got ${JSON.stringify(host)}.`);
+      }
+      results.push({ tier, pairs, invariants: proof.invariants, statusHosts: proof.statusHosts });
+    }
+
+    const mutationStyle = await page.addStyleTag({ content: "[data-indicator-badge] { background-size: 100% 100%, 100% 100%, 100% 100% !important; }" });
+    const sensitivityBase = await page.evaluate(() => {
+      const badge = document.querySelector<HTMLElement>("[data-indicator-badge]");
+      const chip = badge?.closest<HTMLElement>("[data-indicator-chip]");
+      if (!badge || !chip) return null;
+      const badgeBox = badge.getBoundingClientRect();
+      const chipBox = chip.getBoundingClientRect();
+      const probe = document.createElement("span");
+      probe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-stroke-width);block-size:0";
+      chip.append(probe);
+      const stroke = probe.getBoundingClientRect().width;
+      probe.remove();
+      return { badgeBox: { left: badgeBox.left, right: badgeBox.right, top: badgeBox.top, bottom: badgeBox.bottom }, backgroundSize: getComputedStyle(badge).backgroundSize, chipBox: { left: chipBox.left, right: chipBox.right, top: chipBox.top, bottom: chipBox.bottom }, stroke };
+    });
+    assert(sensitivityBase, "Expected the test-only painter mutation fixture.");
+    const sensitivity = {
+      backgroundSize: sensitivityBase.backgroundSize,
+      clearance: {
+        blockStart: sensitivityBase.badgeBox.top - (sensitivityBase.chipBox.top + sensitivityBase.stroke),
+        blockEnd: sensitivityBase.chipBox.bottom - sensitivityBase.stroke - sensitivityBase.badgeBox.bottom,
+        inlineStart: sensitivityBase.badgeBox.left - (sensitivityBase.chipBox.left + sensitivityBase.stroke),
+        inlineEnd: sensitivityBase.chipBox.right - sensitivityBase.stroke - sensitivityBase.badgeBox.right
+      }
+    };
+    assert(sensitivity.backgroundSize.split(",").every(value => value.trim() === "100% 100%") && Object.values(sensitivity.clearance).some(value => value <= geometryTolerance), `Expected a test-only full-box owner-background mutation to invalidate the positive-clearance proof; got ${JSON.stringify(sensitivity)}.`);
+    await mutationStyle.evaluate(element => element.remove());
+
+    const statusMutationStyle = await page.addStyleTag({ content: "[data-indicator-invariant='status'] { background-size: 100% 100% !important; }" });
+    const statusSensitivity = await page.locator("[data-indicator-context='default'] [data-indicator-invariant='status']").evaluate(indicator => {
+      const element = indicator as HTMLElement;
+      const hostText = element.closest<HTMLElement>("[data-status-host-row]")?.querySelector<HTMLElement>("[data-indicator-status-host-text]");
+      if (!hostText) return null;
+      const paint = element.getBoundingClientRect();
+      const host = hostText.getBoundingClientRect();
+      return { backgroundSize: getComputedStyle(element).backgroundSize, host: { top: host.top, bottom: host.bottom }, paint: { top: paint.top, bottom: paint.bottom } };
+    });
+    assert(statusSensitivity && statusSensitivity.backgroundSize === "100% 100%" && (statusSensitivity.paint.top < statusSensitivity.host.top - geometryTolerance || statusSensitivity.paint.bottom > statusSensitivity.host.bottom + geometryTolerance), `Expected a test-only full-line StatusLabel painter mutation to invalidate the host-line spatial proof; got ${JSON.stringify(statusSensitivity)}.`);
+    await statusMutationStyle.evaluate(element => element.remove());
+
+    await page.emulateMedia({ forcedColors: "active" });
+    const forcedColors = await page.locator("[data-indicator-badge]").first().evaluate(element => {
+      const style = getComputedStyle(element);
+      return {
+        backgroundColor: style.backgroundColor,
+        backgroundImage: style.backgroundImage,
+        color: style.color,
+        height: element.getBoundingClientRect().height,
+        overflow: style.overflow
+      };
+    });
+    assert(forcedColors.backgroundImage.split(",").every(value => value.trim() === "none") && forcedColors.color !== "rgba(0, 0, 0, 0)" && forcedColors.height <= 16 + geometryTolerance && forcedColors.overflow !== "hidden", `Expected forced-colors to suppress decorative fill while retaining visible, unclipped indicator text; got ${JSON.stringify(forcedColors)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+
+    let scaledPairCount = 0;
+    let scaledStatusCount = 0;
+    let minimumScaledPaintClearance = Number.POSITIVE_INFINITY;
+    for (const deviceScaleFactor of [1, 1.5]) {
+      const scalePage = await browser.newPage({ deviceScaleFactor, viewport: { width: 1920, height: 1400 } });
+      await scalePage.addInitScript("globalThis.__name = value => value;");
+      try {
+        await scalePage.goto(`${origin}/demo/spec/buckets/08-density.html?bundle=after`, { waitUntil: "networkidle" });
+        await waitForFonts(scalePage);
+        for (const rootFontSize of [14, 16, 20]) {
+          await scalePage.evaluate(size => { document.documentElement.style.fontSize = `${size}px`; }, rootFontSize);
+          for (const tier of tiers) {
+            await scalePage.locator("[data-page-chrome-tier-select]").selectOption(tier);
+            await scalePage.waitForFunction(expectedTier => document.body.dataset.indicatorMeasuredTier === expectedTier, tier);
+            const scaleProof = await scalePage.evaluate(() => {
+              const rect = (element: Element) => {
+                const value = element.getBoundingClientRect();
+                return { left: value.left, right: value.right, top: value.top, bottom: value.bottom, width: value.width, height: value.height };
+              };
+              const ink = (element: HTMLElement, baselineMarker: HTMLElement) => {
+                const style = getComputedStyle(element);
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d")!;
+                context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+                const text = element.childNodes[0]?.textContent?.trim() ?? element.textContent?.trim() ?? "";
+                const metrics = context.measureText(text);
+                const bounds = rect(element);
+                const origin = bounds.left + ((bounds.width - metrics.width) / 2);
+                const baseline = baselineMarker.getBoundingClientRect().top;
+                return { left: origin - metrics.actualBoundingBoxLeft, right: origin + metrics.actualBoundingBoxRight, top: baseline - metrics.actualBoundingBoxAscent, bottom: baseline + metrics.actualBoundingBoxDescent };
+              };
+              const strokeWidth = (chip: HTMLElement) => {
+                const probe = document.createElement("span");
+                probe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-stroke-width);block-size:0";
+                chip.append(probe);
+                const value = probe.getBoundingClientRect().width;
+                probe.remove();
+                return value;
+              };
+              const pairs = [...document.querySelectorAll<HTMLElement>("[data-indicator-pair]")].map(pair => {
+                const withBadge = pair.querySelector<HTMLElement>("[data-indicator-variant='with']")!;
+                const withoutBadge = pair.querySelector<HTMLElement>("[data-indicator-variant='without']")!;
+                const badge = withBadge.querySelector<HTMLElement>("[data-indicator-badge]")!;
+                const chip = withBadge.querySelector<HTMLElement>("[data-indicator-chip]")!;
+                const plainChip = withoutBadge.querySelector<HTMLElement>("[data-indicator-chip]")!;
+                const host = withBadge.querySelector<HTMLElement>("[data-host-row], [data-indicator-host-row]")!;
+                const plainHost = withoutBadge.querySelector<HTMLElement>("[data-host-row], [data-indicator-host-row]")!;
+                const badgeBaseline = withBadge.querySelector<HTMLElement>("[data-indicator-badge-baseline]")!;
+                const hostBaseline = withBadge.querySelector<HTMLElement>("[data-indicator-host-baseline]")!;
+                const hostText = chip.querySelector<HTMLElement>(".bf-chip-value")!;
+                const badgeBox = rect(badge);
+                const chipBox = rect(chip);
+                const hostTextBox = rect(hostText);
+                const style = getComputedStyle(badge);
+                const paintHeight = Number.parseFloat(style.backgroundSize.split(",")[0]!.trim().split(/\s+/)[1]!);
+                const paint = { left: badgeBox.left, right: badgeBox.right, top: badgeBox.top + ((badgeBox.height - paintHeight) / 2), bottom: badgeBox.bottom - ((badgeBox.height - paintHeight) / 2) };
+                const glyph = ink(badge, badgeBaseline);
+                const stroke = strokeWidth(chip);
+                return {
+                  placement: pair.dataset.indicatorPlacement,
+                  fontSize: Number.parseFloat(style.fontSize), lineHeight: Number.parseFloat(style.lineHeight),
+                  baselineDelta: badgeBaseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top,
+                  chipHeightDelta: chipBox.height - rect(plainChip).height,
+                  hostHeightDelta: rect(host).height - rect(plainHost).height,
+                  paintClearance: [paint.top - chipBox.top - stroke, chipBox.bottom - stroke - paint.bottom, paint.left - chipBox.left - stroke, chipBox.right - stroke - paint.right],
+                  paintInsideHostLine: paint.top >= hostTextBox.top && paint.bottom <= hostTextBox.bottom,
+                  inkInsidePaintAndHostLine: glyph.left >= paint.left && glyph.right <= paint.right && glyph.top >= paint.top && glyph.bottom <= paint.bottom && glyph.top >= hostTextBox.top && glyph.bottom <= hostTextBox.bottom
+                };
+              });
+              const statuses = [...document.querySelectorAll<HTMLElement>("[data-indicator-context='default'] [data-indicator-invariant='status'], [data-indicator-context='dense'] [data-indicator-invariant='status']")].map(status => {
+                const row = status.closest<HTMLElement>("[data-status-host-row], [data-host-row]")!;
+                const hostText = row.querySelector<HTMLElement>("[data-indicator-status-host-text]")!;
+                const baseline = status.querySelector<HTMLElement>("[data-indicator-status-baseline]")!;
+                const hostBaseline = row.querySelector<HTMLElement>("[data-indicator-status-host-baseline]")!;
+                const statusBox = rect(status);
+                const hostLine = rect(hostText);
+                const style = getComputedStyle(status);
+                const paintHeight = Number.parseFloat(style.backgroundSize.trim().split(/\s+/)[1]!);
+                const paint = { left: statusBox.left, right: statusBox.right, top: statusBox.top + ((statusBox.height - paintHeight) / 2), bottom: statusBox.bottom - ((statusBox.height - paintHeight) / 2) };
+                const glyph = ink(status, baseline);
+                return {
+                  context: status.closest<HTMLElement>("[data-indicator-context]")?.dataset.indicatorContext,
+                  fontSize: Number.parseFloat(style.fontSize), lineHeight: Number.parseFloat(style.lineHeight),
+                  baselineDelta: baseline.getBoundingClientRect().top - hostBaseline.getBoundingClientRect().top,
+                  paintInsideHostLine: paint.top >= hostLine.top && paint.bottom <= hostLine.bottom,
+                  inkInsidePaintAndHostLine: glyph.left >= paint.left && glyph.right <= paint.right && glyph.top >= paint.top && glyph.bottom <= paint.bottom && glyph.top >= hostLine.top && glyph.bottom <= hostLine.bottom
+                };
+              });
+              const statusHostDeltas = [...document.querySelectorAll<HTMLElement>("[data-indicator-context='default'], [data-indicator-context='dense']")].map(context => {
+                const heights = [...context.querySelectorAll<HTMLElement>("[data-host-row], [data-status-host-row]")].map(host => rect(host).height);
+                return heights[0]! - heights[1]!;
+              });
+              return { pairs, statuses, statusHostDeltas };
+            });
+            const expectedSize = expectedFontSize[tier] * rootFontSize / 16;
+            const expectedLine = rootFontSize;
+            for (const pair of scaleProof.pairs) {
+              assert(Math.abs(pair.fontSize - expectedSize) <= geometryTolerance && Math.abs(pair.lineHeight - expectedLine) <= geometryTolerance && Math.abs(pair.baselineDelta) <= baselineTolerance && Math.abs(pair.chipHeightDelta) <= geometryTolerance && Math.abs(pair.hostHeightDelta) <= geometryTolerance, `Expected ${tier}/${pair.placement} to retain approved type, baseline and no-growth at root ${rootFontSize}px/DPR ${deviceScaleFactor}; got ${JSON.stringify(pair)}.`);
+              assert(pair.paintClearance.every(value => value > 0.05) && pair.paintInsideHostLine && pair.inkInsidePaintAndHostLine, `Expected ${tier}/${pair.placement} actual paint and ink fit at root ${rootFontSize}px/DPR ${deviceScaleFactor}; got ${JSON.stringify(pair)}.`);
+              scaledPairCount += 1;
+              minimumScaledPaintClearance = Math.min(minimumScaledPaintClearance, ...pair.paintClearance);
+            }
+            for (const status of scaleProof.statuses) {
+              assert(Math.abs(status.fontSize - expectedSize) <= geometryTolerance && Math.abs(status.lineHeight - expectedLine) <= geometryTolerance && Math.abs(status.baselineDelta) <= baselineTolerance && status.paintInsideHostLine && status.inkInsidePaintAndHostLine, `Expected ${tier}/${status.context} StatusLabel fit at root ${rootFontSize}px/DPR ${deviceScaleFactor}; got ${JSON.stringify(status)}.`);
+              scaledStatusCount += 1;
+            }
+            assert(scaleProof.statusHostDeltas.every(delta => Math.abs(delta) <= geometryTolerance), `Expected ${tier} StatusLabel host no-growth at root ${rootFontSize}px/DPR ${deviceScaleFactor}; got ${JSON.stringify(scaleProof.statusHostDeltas)}.`);
+          }
+        }
+      } finally {
+        await scalePage.close();
+      }
+    }
+
+    const primaryPairs = results.reduce((count, result) => count + result.pairs.length, 0);
+    console.log(`Indicator fit measurements passed: ${primaryPairs} primary pairs, ${scaledPairCount} scaled pairs, ${scaledStatusCount} scaled StatusLabel placements; minimum scaled Badge paint clearance ${minimumScaledPaintClearance.toFixed(3)}px; painter mutations and forced-colors checks passed.`);
+  } finally {
+    await browser.close();
+  }
+}
 async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const tones = ["light", "dark"] as const;
@@ -2997,8 +4678,29 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
     }
   };
 
-  const assertExtendedPointerTarget = async (selector: string, label: string): Promise<void> => {
-    const targets = await page.locator(selector).evaluateAll(elements => elements.map(element => {
+  const assertExtendedPointerTarget = async (selector: string, label: string, ensureViewport = true): Promise<void> => {
+    const matched = page.locator(selector);
+    const targets: Array<{
+      paintWidth: number;
+      paintHeight: number;
+      extensionWidth: number;
+      extensionHeight: number;
+      extensionPosition: string;
+      extensionPointerEvents: string;
+      hitEdges: boolean[];
+      interiorMisses: number;
+      interiorSamples: number;
+      matchIndex: number;
+      rect: { top: number; right: number; bottom: number; left: number };
+      viewport: { width: number; height: number };
+      firstMiss: { x: number; y: number; tag: string | null; className: string | null } | null;
+    }> = [];
+    for (let index = 0; index < await matched.count(); index += 1) {
+      const locator = matched.nth(index);
+      if (ensureViewport) {
+        await locator.evaluate(element => element.scrollIntoView({ block: "center", inline: "center" }));
+      }
+      targets.push(await locator.evaluate((element, matchIndex) => {
       const target = element as HTMLElement;
       const rect = target.getBoundingClientRect();
       const extension = getComputedStyle(target, "::after");
@@ -3021,9 +4723,14 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         [right, bottom],
         [left, bottom]
       ];
+      let firstMiss: { x: number; y: number; tag: string | null; className: string | null } | null = null;
       const hitEdges = points.map(([x, y]) => {
         const hit = document.elementFromPoint(x, y);
-        return hit === target || (hit instanceof Node && target.contains(hit));
+        const matches = hit === target || (hit instanceof Node && target.contains(hit));
+        if (!matches && !firstMiss) {
+          firstMiss = { x, y, tag: hit?.tagName ?? null, className: hit instanceof HTMLElement ? hit.className : null };
+        }
+        return matches;
       });
       let interiorSamples = 0;
       let interiorMisses = 0;
@@ -3031,7 +4738,12 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         for (let x = left; x <= right; x += 1) {
           const hit = document.elementFromPoint(x, y);
           interiorSamples += 1;
-          if (!(hit === target || (hit instanceof Node && target.contains(hit)))) interiorMisses += 1;
+          if (!(hit === target || (hit instanceof Node && target.contains(hit)))) {
+            interiorMisses += 1;
+            if (!firstMiss) {
+              firstMiss = { x, y, tag: hit?.tagName ?? null, className: hit instanceof HTMLElement ? hit.className : null };
+            }
+          }
         }
       }
       return {
@@ -3043,9 +4755,14 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         extensionPointerEvents: extension.pointerEvents,
         hitEdges,
         interiorMisses,
-        interiorSamples
+        interiorSamples,
+        matchIndex,
+        rect: { top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left },
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+        firstMiss
       };
-    }));
+      }, index));
+    }
 
     for (const target of targets) {
       assert(
@@ -3163,11 +4880,12 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
           probe.style.cssText = "padding-inline-start:var(--bf-component-inline-inset-field);position:fixed;visibility:hidden";
           badge.parentElement?.append(probe);
           const expected = Number.parseFloat(getComputedStyle(probe).paddingInlineStart);
-          const actual = Number.parseFloat(getComputedStyle(badge).marginInlineStart);
+          const actual = Number.parseFloat(getComputedStyle(badge.parentElement as HTMLElement).columnGap);
+          const badgeMargin = Number.parseFloat(getComputedStyle(badge).marginInlineStart) + Number.parseFloat(getComputedStyle(badge).marginInlineEnd);
           probe.remove();
-          return { actual, expected };
+          return { actual, badgeMargin, expected };
         });
-        assert(Math.abs(compositeBadgeGap.actual - compositeBadgeGap.expected) <= 0.01, `Expected ${tier}/${tone} moving the chip's outer keyline to leave its internal badge gap on Field; got ${JSON.stringify(compositeBadgeGap)}.`);
+        assert(Math.abs(compositeBadgeGap.actual - compositeBadgeGap.expected) <= 0.01 && compositeBadgeGap.badgeMargin === 0, `Expected ${tier}/${tone} the Chip parent to own its badge relationship as the Field gap with zero child margin; got ${JSON.stringify(compositeBadgeGap)}.`);
       }
     }
 
@@ -3242,25 +4960,29 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         }
         const excludedNested = await page.locator("[data-excluded-nested-icon-button]").evaluate(element => {
           const style = getComputedStyle(element);
-          const extension = getComputedStyle(element, "::after");
+          const extension = getComputedStyle(element, "::before");
           return {
             minInlineSize: style.minInlineSize,
             paddingInlineStart: Number.parseFloat(style.paddingInlineStart),
             paddingInlineEnd: Number.parseFloat(style.paddingInlineEnd),
-            extensionContent: extension.content
+            extensionContent: extension.content,
+            strokeBoxShadow: style.boxShadow
           };
         });
-        assert(excludedNested.paddingInlineStart > 0 && excludedNested.paddingInlineEnd > 0 && excludedNested.extensionContent === "none", `Expected ${tier}/${tone} the unsupported bordered nested icon-only button to remain outside block-derived geometry and pointer-target extension; got ${JSON.stringify(excludedNested)}.`);
+        assert(excludedNested.paddingInlineStart > 0 && excludedNested.paddingInlineEnd > 0 && excludedNested.extensionContent === "none" && excludedNested.strokeBoxShadow !== "none", `Expected ${tier}/${tone} the unsupported nested icon-only button to remain outside block-derived geometry and pointer-target extension while retaining paint-only stroke; got ${JSON.stringify(excludedNested)}.`);
         await assertExtendedPointerTarget("[data-block-derived-icon-button]", `${tier}/${tone} icon-only button`);
         const adjacentTargetGeometry = await page.locator("[data-adjacent-icon-target-fixture]").evaluateAll(groups => groups.map(group => {
           const targets = Array.from(group.querySelectorAll<HTMLElement>("[data-adjacent-icon-target]"));
           const rects = targets.map(target => target.getBoundingClientRect());
+          const groupStyle = getComputedStyle(group);
+          const separationSource = groupStyle.getPropertyValue("--bf-pointer-target-separation").trim();
+          const targetSeparation = Number.parseFloat(separationSource) * (separationSource.endsWith("rem") ? Number.parseFloat(getComputedStyle(document.documentElement).fontSize) : 1);
           return {
             kind: group.getAttribute("data-adjacent-icon-target-fixture"),
-            gap: Number.parseFloat(getComputedStyle(group).columnGap),
-            rowGap: Number.parseFloat(getComputedStyle(group).rowGap),
-            borderWidth: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-border-width")),
-            baseline: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-baseline")),
+            gap: Number.parseFloat(groupStyle.columnGap),
+            rowGap: Number.parseFloat(groupStyle.rowGap),
+            targetSeparation,
+            baseline: Number.parseFloat(groupStyle.getPropertyValue("--bf-baseline")),
             targetMarginBlockStart: targets[0] ? Number.parseFloat(getComputedStyle(targets[0]).marginBlockStart) : Number.POSITIVE_INFINITY,
             centreDistance: rects.length === 2
               ? Math.abs((rects[1].left + (rects[1].width / 2)) - (rects[0].left + (rects[0].width / 2)))
@@ -3269,7 +4991,7 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         }));
         assert(adjacentTargetGeometry.every(geometry => {
           const blockRemainder = geometry.rowGap % geometry.baseline;
-          return geometry.gap > 0 && geometry.centreDistance >= 24 + geometry.borderWidth - 0.01 &&
+          return geometry.gap > 0 && geometry.targetSeparation === 1 && geometry.centreDistance >= 24 + geometry.targetSeparation - 0.01 &&
             Math.abs(geometry.targetMarginBlockStart) <= 0.01 &&
             (blockRemainder <= 0.01 || Math.abs(blockRemainder - geometry.baseline) <= 0.01);
         }), `Expected ${tier}/${tone} each ordinary BF container to preserve inline target clearance, keep child block margins neutral, and hold its row-gap floor on phase; got ${JSON.stringify(adjacentTargetGeometry)}.`);
@@ -3291,16 +5013,19 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
         const wrappedTargetGeometry = await page.locator("[data-adjacent-icon-target-fixture]").evaluateAll(groups => groups.map(group => {
           const targets = Array.from(group.querySelectorAll<HTMLElement>("[data-adjacent-icon-target]"));
           const rects = targets.map(target => target.getBoundingClientRect());
+          const groupStyle = getComputedStyle(group);
+          const separationSource = groupStyle.getPropertyValue("--bf-pointer-target-separation").trim();
+          const targetSeparation = Number.parseFloat(separationSource) * (separationSource.endsWith("rem") ? Number.parseFloat(getComputedStyle(document.documentElement).fontSize) : 1);
           return {
             kind: group.getAttribute("data-adjacent-icon-target-fixture"),
-            borderWidth: Number.parseFloat(getComputedStyle(group).getPropertyValue("--bf-border-width")),
-            rowGap: Number.parseFloat(getComputedStyle(group).rowGap),
+            targetSeparation,
+            rowGap: Number.parseFloat(groupStyle.rowGap),
             centreDistance: rects.length === 2
               ? Math.abs((rects[1].top + (rects[1].height / 2)) - (rects[0].top + (rects[0].height / 2)))
               : 0
           };
         }));
-        assert(wrappedTargetGeometry.every(geometry => geometry.rowGap > 0 && geometry.centreDistance >= 24 + geometry.borderWidth - 0.01), `Expected ${tier}/${tone} wrapped actions and clusters to retain a positive row-gap and block-axis clearance between 24 CSS-pixel targets; got ${JSON.stringify(wrappedTargetGeometry)}.`);
+        assert(wrappedTargetGeometry.every(geometry => geometry.rowGap > 0 && geometry.targetSeparation === 1 && geometry.centreDistance >= 24 + geometry.targetSeparation - 0.01), `Expected ${tier}/${tone} wrapped actions and clusters to retain the explicit non-paint separation between 24 CSS-pixel targets without depending on stroke width; got ${JSON.stringify(wrappedTargetGeometry)}.`);
         await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} wrapped adjacent link-style icon-only button`);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "rtl"));
         await assertExtendedPointerTarget("[data-adjacent-icon-target]", `${tier}/${tone} RTL wrapped adjacent link-style icon-only button`);
@@ -3320,7 +5045,7 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
           const extension = target ? getComputedStyle(target, "::after") : null;
           const targetStyle = target ? getComputedStyle(target) : null;
           return {
-            baseline: Number.parseFloat(style.getPropertyValue("--bf-baseline")),
+            baseline: Number.parseFloat(style.getPropertyValue("--bf-baseline")) * 16,
             paddingBlockStart: Number.parseFloat(style.paddingBlockStart),
             paddingBlockEnd: Number.parseFloat(style.paddingBlockEnd),
             paddingInlineStart: Number.parseFloat(style.paddingInlineStart),
@@ -3330,26 +5055,26 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
             requiredBlockOverflow: targetRect && extension ? Math.max(0, (Number.parseFloat(extension.height) - targetRect.height) / 2) : Number.POSITIVE_INFINITY
           };
         });
-        const blockPhaseRemainder = scrollportGeometry.targetMarginBlockStart % scrollportGeometry.baseline;
+        const blockPhaseRemainder = scrollportGeometry.paddingBlockStart % scrollportGeometry.baseline;
         assert(
-          Math.abs(scrollportGeometry.paddingBlockStart) <= 0.01 &&
-          Math.abs(scrollportGeometry.paddingBlockEnd) <= 0.01 &&
+          Math.abs(scrollportGeometry.paddingBlockStart - scrollportGeometry.paddingBlockEnd) <= 0.01 &&
           Math.abs(scrollportGeometry.paddingInlineStart) <= 0.01 &&
           Math.abs(scrollportGeometry.paddingInlineEnd) <= 0.01 &&
-          Math.abs(scrollportGeometry.targetMarginBlockStart - scrollportGeometry.targetMarginBlockEnd) <= 0.01 &&
+          Math.abs(scrollportGeometry.targetMarginBlockStart) <= 0.01 &&
+          Math.abs(scrollportGeometry.targetMarginBlockEnd) <= 0.01 &&
           (blockPhaseRemainder <= 0.01 || Math.abs(blockPhaseRemainder - scrollportGeometry.baseline) <= 0.01) &&
-          scrollportGeometry.targetMarginBlockStart >= scrollportGeometry.requiredBlockOverflow - 0.01,
-          `Expected ${tier}/${tone} only the icon target to reserve symmetric, sufficient, baseline-rounded clearance inside an otherwise unpadded nowrap scrollport; got ${JSON.stringify(scrollportGeometry)}.`
+          scrollportGeometry.paddingBlockStart >= scrollportGeometry.requiredBlockOverflow - 0.01,
+          `Expected ${tier}/${tone} the nowrap scrollport containing icon targets to own symmetric, sufficient, baseline-rounded block clearance while its target remains margin-neutral; got ${JSON.stringify(scrollportGeometry)}.`
         );
         await actionsFixture.evaluate(element => { element.scrollLeft = 0; });
-        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} nowrap-scrollport start icon target`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} nowrap-scrollport start icon target`, false);
         await actionsFixture.evaluate(element => { element.scrollLeft = element.scrollWidth; });
-        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} nowrap-scrollport end icon target`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} nowrap-scrollport end icon target`, false);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "rtl"));
         await actionsFixture.evaluate(element => { element.scrollLeft = 0; });
-        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} RTL nowrap-scrollport start icon target`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:first-child", `${tier}/${tone} RTL nowrap-scrollport start icon target`, false);
         await actionsFixture.evaluate(element => { element.scrollLeft = -element.scrollWidth; });
-        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} RTL nowrap-scrollport end icon target`);
+        await assertExtendedPointerTarget("[data-adjacent-icon-target='actions']:last-child", `${tier}/${tone} RTL nowrap-scrollport end icon target`, false);
         await page.locator("html").evaluate(element => element.setAttribute("dir", "ltr"));
         await actionsFixture.evaluate(element => {
           element.classList.remove("is-nowrap");
@@ -3372,6 +5097,8 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
       const targetStyle = target ? getComputedStyle(target) : null;
       const result = {
         rowGapFloor,
+        paddingBlockStart: Number.parseFloat(getComputedStyle(element).paddingBlockStart),
+        paddingBlockEnd: Number.parseFloat(getComputedStyle(element).paddingBlockEnd),
         targetMarginBlockStart: targetStyle ? Number.parseFloat(targetStyle.marginBlockStart) : Number.POSITIVE_INFINITY
       };
       element.classList.remove("is-nowrap");
@@ -3381,9 +5108,9 @@ async function verifyBlockDerivedInlineGeometry(origin: string): Promise<void> {
       return result;
     }, bodyLine);
     const nearMinimumClearance = await customClearance("1.4375rem");
-    assert(Math.abs(nearMinimumClearance.rowGapFloor - 4) <= 0.01 && Math.abs(nearMinimumClearance.targetMarginBlockStart - 4) <= 0.01, `Expected a sub-baseline custom row and per-edge target shortfall to round up to one complete baseline; got ${JSON.stringify(nearMinimumClearance)}.`);
+    assert(Math.abs(nearMinimumClearance.rowGapFloor - 4) <= 0.01 && Math.abs(nearMinimumClearance.paddingBlockStart - 4) <= 0.01 && Math.abs(nearMinimumClearance.paddingBlockEnd - 4) <= 0.01 && Math.abs(nearMinimumClearance.targetMarginBlockStart) <= 0.01, `Expected a sub-baseline custom row and per-edge target shortfall to round up to one complete owner-provided baseline; got ${JSON.stringify(nearMinimumClearance)}.`);
     const multiBaselineClearance = await customClearance("0.5rem");
-    assert(Math.abs(multiBaselineClearance.rowGapFloor - 20) <= 0.01 && Math.abs(multiBaselineClearance.targetMarginBlockStart - 8) <= 0.01, `Expected a large custom inter-row shortfall and per-edge nowrap shortfall to round independently above one baseline instead of being capped; got ${JSON.stringify(multiBaselineClearance)}.`);
+    assert(Math.abs(multiBaselineClearance.rowGapFloor - 20) <= 0.01 && Math.abs(multiBaselineClearance.paddingBlockStart - 8) <= 0.01 && Math.abs(multiBaselineClearance.paddingBlockEnd - 8) <= 0.01 && Math.abs(multiBaselineClearance.targetMarginBlockStart) <= 0.01, `Expected a large custom inter-row shortfall and per-edge nowrap shortfall to round independently above one owner-provided baseline; got ${JSON.stringify(multiBaselineClearance)}.`);
 
     await page.goto(`${origin}/demo/components/actions.html`, { waitUntil: "networkidle" });
     await waitForFonts(page);
@@ -3496,9 +5223,7 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const browser = await openBrowser({ forceDeviceScaleFactor: 1.5 });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-  const shapeTolerance = 1.05;
-  let sawFractionalBorder = false;
-  let exercisedRasterAllowance = false;
+  const shapeTolerance = 0.02;
 
   try {
     await page.goto(`${origin}/demo/components/button.html`, { waitUntil: "networkidle" });
@@ -3509,21 +5234,22 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
       const boxes = await page.locator("[data-block-derived-icon-button]:not(.is-link)").evaluateAll(elements => elements.map(element => {
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
+        const stroke = getComputedStyle(element, "::after");
         return {
           width: rect.width,
           height: rect.height,
           borderBlockStartWidth: Number.parseFloat(style.borderBlockStartWidth),
-          borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth)
+          borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth),
+          rootBoxShadow: style.boxShadow,
+          targetPosition: stroke.position,
+          targetPointerEvents: stroke.pointerEvents
         };
       }));
       assert(boxes.length === 2, `Expected two bordered icon-only controls in the forced-scale ${tier} sweep.`);
       for (const box of boxes) {
         const difference = Math.abs(box.width - box.height);
-        assert(difference <= shapeTolerance, `Expected forced-scale ${tier} icon-only paint to stay square within one authored rasterised border; got ${JSON.stringify(box)}.`);
-        if ([box.borderBlockStartWidth, box.borderBlockEndWidth].some(width => width > 0.65 && width < 0.68)) {
-          sawFractionalBorder = true;
-        }
-        if (difference > 0.51) exercisedRasterAllowance = true;
+        assert(difference <= shapeTolerance, `Expected forced-scale ${tier} icon-only paint to stay exactly square without a layout-border allowance; got ${JSON.stringify(box)}.`);
+        assert(box.borderBlockStartWidth === 0 && box.borderBlockEndWidth === 0 && box.rootBoxShadow !== "none" && box.targetPosition === "absolute" && box.targetPointerEvents === "auto", `Expected forced-scale ${tier} named icon-only controls to keep zero layout borders, self-painted stroke slots, and their out-of-flow pointer target; got ${JSON.stringify(box)}.`);
       }
     }
 
@@ -3535,23 +5261,861 @@ async function verifyFractionalScaleBlockDerivedGeometry(origin: string): Promis
       const chip = await page.locator("[data-block-derived-chip]:not(.is-nested)").first().evaluate(element => {
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
+        const stroke = getComputedStyle(element, "::after");
         return {
           width: rect.width,
           height: rect.height,
           borderBlockStartWidth: Number.parseFloat(style.borderBlockStartWidth),
-          borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth)
+          borderBlockEndWidth: Number.parseFloat(style.borderBlockEndWidth),
+          ownerBoxShadow: style.boxShadow,
+          ownerPosition: style.position
         };
       });
       assert(chip.width > chip.height + shapeTolerance, `Expected the forced-scale ${tier} Action-framed chip to remain a stadium with its bounded paint-derived floor; got ${JSON.stringify(chip)}.`);
-      if ([chip.borderBlockStartWidth, chip.borderBlockEndWidth].some(width => width > 0.65 && width < 0.68)) {
-        sawFractionalBorder = true;
-      }
+      assert(chip.borderBlockStartWidth === 0 && chip.borderBlockEndWidth === 0 && chip.ownerBoxShadow !== "none" && chip.ownerPosition === "relative", `Expected forced-scale ${tier} Chip to retain its pre-existing anchor while self-painting an exact zero-layout-border boundary; got ${JSON.stringify(chip)}.`);
     }
-
-    assert(sawFractionalBorder, "Expected the forced 1.5 device scale sweep to rasterise an authored 1px border to roughly 2/3 CSS px.");
-    assert(exercisedRasterAllowance, "Expected the forced 1.5 device scale sweep to exercise more than 0.51px of the reviewed 1.05px shape tolerance.");
   } finally {
     await page.close();
+    await browser.close();
+  }
+}
+
+async function verifyCommandPaintOwners(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const cases = [
+    { route: "/demo/components/button.html", selector: ".bf-button:not(.is-link):not(.is-icon)", expectedPosition: "static" },
+    { route: "/demo/components/chip.html", selector: ".bf-chip", expectedPosition: "relative" },
+    { route: "/demo/components/choice-row.html", selector: ".bf-choice-row", expectedPosition: "static" },
+    { route: "/demo/components/segmented-control.html", selector: ".bf-segmented-control-button:not(.is-active)", expectedPosition: "static" },
+    { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-previous", expectedPosition: "static" },
+    { route: "/demo/components/pagination.html", selector: ".bf-pagination-link.is-next", expectedPosition: "static" }
+  ] as const;
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+
+  try {
+    for (const testCase of cases) {
+      await page.goto(`${origin}${testCase.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const geometry = await page.locator(testCase.selector).first().evaluate(element => {
+        const node = element as HTMLElement;
+        const owner = getComputedStyle(node);
+        const unusedAfter = getComputedStyle(node, "::after");
+        const probe = document.createElement("span");
+        probe.style.cssText = "position:absolute;inset:0;pointer-events:none";
+        node.append(probe);
+        const containsProbe = probe.offsetParent === node;
+        probe.remove();
+        return {
+          borderWidths: [owner.borderBlockStartWidth, owner.borderBlockEndWidth, owner.borderInlineStartWidth, owner.borderInlineEndWidth],
+          containsProbe,
+          height: node.getBoundingClientRect().height,
+          isolation: owner.isolation,
+          ownerBoxShadow: owner.boxShadow,
+          ownerPosition: owner.position,
+          ownerZIndex: owner.zIndex,
+          unusedAfterContent: unusedAfter.content,
+          width: node.getBoundingClientRect().width
+        };
+      });
+      assert(geometry.borderWidths.every(width => Number.parseFloat(width) === 0), `Expected ${testCase.selector} to retain zero layout borders; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.isolation === "auto" && geometry.ownerZIndex === "auto" && geometry.ownerBoxShadow !== "none", `Expected ${testCase.selector} to compose its own stroke slots without isolation or a stacking index; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.ownerPosition === testCase.expectedPosition && geometry.containsProbe === (testCase.expectedPosition === "relative"), `Expected ${testCase.selector} to avoid a new containing block unless its existing anatomy requires one; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.unusedAfterContent === "none", `Expected ${testCase.selector} self-paint to leave its last-child pseudo free; got ${JSON.stringify(geometry)}.`);
+      await page.emulateMedia({ forcedColors: "active" });
+      const forcedGeometry = await page.locator(testCase.selector).first().evaluate(element => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        const overlay = getComputedStyle(element, "::after");
+        return {
+          borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth].map(Number.parseFloat),
+          height: rect.height,
+          overlayContent: overlay.content,
+          overlayOutlineStyle: overlay.outlineStyle,
+          overlayOutlineWidth: Number.parseFloat(overlay.outlineWidth),
+          overlayPointerEvents: overlay.pointerEvents,
+          overlayPosition: overlay.position,
+          ownerPosition: style.position,
+          shadow: style.boxShadow,
+          width: rect.width
+        };
+      });
+      assert(forcedGeometry.borderWidths.every(width => width === 0) && forcedGeometry.shadow === "none" && forcedGeometry.overlayContent === '""' && forcedGeometry.overlayOutlineStyle === "solid" && forcedGeometry.overlayOutlineWidth > 0 && forcedGeometry.overlayPointerEvents === "none" && forcedGeometry.overlayPosition === "absolute", `Expected ${testCase.selector} forced colors to use a named out-of-flow system-color layer with zero layout borders; got ${JSON.stringify(forcedGeometry)}.`);
+      assert(Math.abs(forcedGeometry.width - geometry.width) <= 0.1 && Math.abs(forcedGeometry.height - geometry.height) <= 0.1 && forcedGeometry.ownerPosition === "relative", `Expected ${testCase.selector} forced-colors paint to preserve geometry and establish only its bounded accessibility anchor; normal=${JSON.stringify(geometry)}, forced=${JSON.stringify(forcedGeometry)}.`);
+      await page.emulateMedia({ forcedColors: "none" });
+    }
+
+    await page.goto(`${origin}/demo/components/chip.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const dismiss = page.locator("[data-dismissible-chip] .bf-chip-dismiss");
+      const geometry = await dismiss.evaluate(element => {
+        const rect = element.getBoundingClientRect();
+        const previousRect = element.previousElementSibling?.getBoundingClientRect();
+        const parent = element.parentElement as HTMLElement | null;
+        const owner = getComputedStyle(element);
+        const icon = getComputedStyle(element, "::before");
+        const target = getComputedStyle(element, "::after");
+        const points = [
+          [rect.left + (rect.width / 2) - 11.5, rect.top + (rect.height / 2) - 11.5],
+          [rect.left + (rect.width / 2) + 11.5, rect.top + (rect.height / 2) - 11.5],
+          [rect.left + (rect.width / 2) - 11.5, rect.top + (rect.height / 2) + 11.5],
+          [rect.left + (rect.width / 2) + 11.5, rect.top + (rect.height / 2) + 11.5]
+        ];
+        return {
+          iconSize: Number.parseFloat(owner.getPropertyValue("--bf-icon-size-default")),
+          ownerHeight: rect.height,
+          ownerWidth: rect.width,
+          parentGap: parent ? Number.parseFloat(getComputedStyle(parent).columnGap) : -1,
+          visualGap: previousRect ? rect.left - previousRect.right : -1,
+          iconHeight: Number.parseFloat(icon.height),
+          iconWidth: Number.parseFloat(icon.width),
+          iconBackground: icon.backgroundColor,
+          iconMask: icon.maskImage || icon.webkitMaskImage,
+          iconMaskSize: icon.maskSize || icon.webkitMaskSize,
+          targetHeight: Number.parseFloat(target.minHeight),
+          targetWidth: Number.parseFloat(target.minWidth),
+          targetPointerEvents: target.pointerEvents,
+          cornerHits: points.map(([x, y]) => document.elementFromPoint(x, y)?.closest(".bf-chip-dismiss") === element)
+        };
+      });
+      const expectedIconSize = { editorial: 16, documentation: 14, app: 14, os: 12 }[tier];
+      const expectedMarkGap = { editorial: 8, documentation: 8, app: 8, os: 4 }[tier];
+      assert(Math.abs(geometry.ownerHeight - expectedIconSize) <= 0.1 && Math.abs(geometry.ownerWidth - expectedIconSize) <= 0.1 && Math.abs(geometry.iconHeight - expectedIconSize) <= 0.1 && Math.abs(geometry.iconWidth - expectedIconSize) <= 0.1, `Expected ${tier} Chip dismiss paint and slot to follow the ${expectedIconSize}px tier icon token; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.iconMask !== "none" && geometry.iconBackground !== "rgba(0, 0, 0, 0)" && geometry.iconMaskSize.split(/\s+/).every(value => Math.abs(Number.parseFloat(value) - expectedIconSize) <= 0.1), `Expected ${tier} Chip dismiss to paint a full-size currentColor mask instead of a theme-fixed SVG image; got ${JSON.stringify(geometry)}.`);
+      assert(Math.abs(geometry.parentGap - expectedMarkGap) <= 0.1 && Math.abs(geometry.visualGap - expectedMarkGap) <= 0.1, `Expected ${tier} Chip parent to own the governed ${expectedMarkGap}px mark gap before its dismiss icon; got ${JSON.stringify(geometry)}.`);
+      assert(geometry.targetHeight >= 24 && geometry.targetWidth >= 24 && geometry.targetPointerEvents === "auto" && geometry.cornerHits.every(Boolean), `Expected ${tier} Chip dismiss to retain a fully routed 24px target without enlarging its icon slot; got ${JSON.stringify(geometry)}.`);
+    }
+
+    await page.emulateMedia({ forcedColors: "active" });
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const forcedIcon = await page.locator("[data-dismissible-chip] .bf-chip-dismiss").evaluate(element => {
+        const icon = getComputedStyle(element, "::before");
+        return {
+          background: icon.backgroundColor,
+          color: getComputedStyle(element).color,
+          maskImage: icon.maskImage || icon.webkitMaskImage
+        };
+      });
+      assert(forcedIcon.maskImage !== "none" && forcedIcon.background !== "rgba(0, 0, 0, 0)" && forcedIcon.background === forcedIcon.color, `Expected ${tier} Chip dismiss to remain a system-currentColor mask in forced colors; got ${JSON.stringify(forcedIcon)}.`);
+    }
+    await page.emulateMedia({ forcedColors: "none" });
+
+    await page.goto(`${origin}/demo/components/pagination.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const arrows = await page.evaluate(() => {
+      const previous = document.querySelector<HTMLElement>(".bf-pagination-link.is-previous");
+      const next = document.querySelector<HTMLElement>(".bf-pagination-link.is-next");
+      if (!previous || !next) return null;
+      return {
+        previousArrow: getComputedStyle(previous, "::before").backgroundImage,
+        previousStroke: getComputedStyle(previous).boxShadow,
+        nextArrow: getComputedStyle(next, "::before").backgroundImage,
+        nextStroke: getComputedStyle(next).boxShadow
+      };
+    });
+    assert(arrows && arrows.previousArrow !== "none" && arrows.nextArrow !== "none" && arrows.previousStroke !== "none" && arrows.nextStroke !== "none", `Expected pagination directional arrows and their variant-specific paint pseudos to coexist; got ${JSON.stringify(arrows)}.`);
+
+    await page.goto(`${origin}/demo/components/choice-row.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const nestedSlots = await page.locator(".bf-choice-row").first().evaluate(parent => {
+      (parent as HTMLElement).style.setProperty("--bf-overlay-stroke-layer", "inset 0 0 0 0.5rem magenta");
+      const child = document.createElement("span");
+      child.className = "bf-chip";
+      child.textContent = "Nested";
+      parent.append(child);
+      const childStyle = getComputedStyle(child);
+      const result = {
+        parentStroke: getComputedStyle(parent).getPropertyValue("--bf-overlay-stroke-layer").trim(),
+        childStroke: childStyle.getPropertyValue("--bf-overlay-stroke-layer").trim(),
+        childSelection: childStyle.getPropertyValue("--bf-overlay-selection-layer").trim(),
+        childFocus: childStyle.getPropertyValue("--bf-overlay-focus-layer").trim(),
+        childElevation: childStyle.getPropertyValue("--bf-overlay-elevation-layer").trim()
+      };
+      child.remove();
+      return result;
+    });
+    assert(nestedSlots.parentStroke.includes("magenta") && !nestedSlots.childStroke.includes("magenta") && [nestedSlots.childSelection, nestedSlots.childFocus, nestedSlots.childElevation].every(value => value === "0 0 0 0 transparent"), `Expected nested paint owners to reset every slot locally; got ${JSON.stringify(nestedSlots)}.`);
+
+    await page.goto(`${origin}/demo/components/segmented-control.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    await page.emulateMedia({ forcedColors: "active" });
+    const active = page.locator(".bf-segmented-control-button.is-active");
+    await active.focus();
+    const forced = await active.evaluate(element => {
+      const owner = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      return {
+        boundaryOutlineStyle: overlay.outlineStyle,
+        boundaryOutlineWidth: Number.parseFloat(overlay.outlineWidth),
+        focusOutlineStyle: owner.outlineStyle,
+        focusOutlineWidth: Number.parseFloat(owner.outlineWidth),
+        ownerPosition: owner.position,
+        selectionBorderStyle: overlay.borderBlockEndStyle,
+        selectionBorderWidth: Number.parseFloat(overlay.borderBlockEndWidth),
+        strokeShadow: overlay.boxShadow
+      };
+    });
+    assert(forced.boundaryOutlineStyle === "solid" && forced.boundaryOutlineWidth > 0 && forced.selectionBorderStyle === "solid" && forced.selectionBorderWidth >= 3 && forced.focusOutlineStyle === "solid" && forced.focusOutlineWidth >= 2 && forced.ownerPosition === "relative" && forced.strokeShadow === "none", `Expected forced colors to expose distinct system boundary, selected edge and keyboard focus on the bounded leaf accessibility layer; got ${JSON.stringify(forced)}.`);
+    await active.blur();
+    const forcedSelected = await active.evaluate(element => ({
+      borderBlockEndStyle: getComputedStyle(element, "::after").borderBlockEndStyle,
+      borderBlockEndWidth: Number.parseFloat(getComputedStyle(element, "::after").borderBlockEndWidth),
+      outlineStyle: getComputedStyle(element).outlineStyle
+    }));
+    assert(forcedSelected.borderBlockEndStyle === "solid" && forcedSelected.borderBlockEndWidth >= 3 && forcedSelected.outlineStyle === "none", `Expected the unfocused selected leaf to retain its one-sided forced-colors system border without a focus outline; got ${JSON.stringify(forcedSelected)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+  } finally {
+    await page.close();
+    await browser.close();
+  }
+}
+
+async function verifySurfacePaintOwners(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 1000 } });
+  const cases = [
+    { route: "/demo/components/contextual-menu.html", selector: ".bf-contextual-menu-dropdown", forcedSide: "outline" },
+    { route: "/demo/components/contextual-menu.html", selector: ".bf-contextual-menu-group + .bf-contextual-menu-group", forcedSide: "blockStart" },
+    { route: "/demo/components/tooltip.html", selector: ".bf-tooltip.is-detached .bf-tooltip-message", forcedSide: "outline" },
+    { route: "/demo/components/modal.html", selector: ".bf-modal-dialog", forcedSide: "outline" },
+    { route: "/demo/components/modal.html", selector: ".bf-modal-header", forcedSide: "blockEnd" },
+    { route: "/demo/components/modal.html", selector: ".bf-modal-footer", forcedSide: "blockStart" },
+    { route: "/demo/components/code-snippet.html", selector: ".bf-code-snippet.is-bordered", forcedSide: "outline" },
+    { route: "/demo/components/code-snippet.html", selector: ".bf-code-snippet-header", forcedSide: "blockEnd" },
+    { route: "/demo/components/code-snippet.html", selector: ".bf-code-snippet-header.is-stacked .bf-code-snippet-dropdowns", forcedSide: "blockStart" },
+    { route: "/demo/components/search-and-filter.html", selector: ".bf-search-and-filter-panel[aria-hidden='false']", forcedSide: "attachedPanel" },
+    { route: "/demo/components/search-and-filter.html", selector: ".bf-filter-panel-section:not(:last-child)", forcedSide: "blockEnd" },
+    { route: "/demo/components/search-box.html", selector: ".bf-search-box-button", forcedSide: "inlineStart" },
+    { route: "/demo/components/notice.html", selector: ".bf-notice", forcedSide: "inlineStart" },
+    { route: "/demo/components/notification.html", selector: ".bf-notification:not(.is-borderless)", forcedSide: "outline" },
+    { route: "/demo/components/notification.html", selector: ".bf-notification-meta", forcedSide: "blockStart" },
+    { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer", forcedSide: "blockStart" },
+    { route: "/demo/components/application-layout.html", selector: ".bf-navigation-drawer", forcedSide: "inlineEnd" },
+    { route: "/demo/components/application-layout.html", selector: ".bf-aside.is-pinned", forcedSide: "inlineStart" },
+    { route: "/demo/components/table.html", selector: ".bf-table tbody tr:not(:last-child) td", forcedSide: "blockEnd", widthVariable: "--bf-table-row-border-size" },
+    { route: "/demo/components/table-mobile-card.html", selector: ".table-demo-narrow .bf-table.is-mobile-card > tbody > tr", forcedSide: "outline" },
+    { route: "/demo/components/list.html", selector: ".bf-list.is-divided > li + li", forcedSide: "blockStart" },
+    { route: "/demo/components/tabs.html", selector: ".bf-tabs-list", forcedSide: "blockEnd" },
+    { route: "/demo/components/tabs.html", selector: ".bf-tabs-link[aria-selected='true']", forcedSide: "blockEnd", widthVariable: "--bf-bar-thickness" },
+    { route: "/demo/components/inline-options.html", selector: ".bf-inline-options", forcedSide: "blockEnd" },
+    { route: "/demo/components/cta-block.html", selector: ".bf-cta-block.is-bordered", forcedSide: "blockStart" },
+    { route: "/demo/components/hero.html", selector: ".bf-hero:not(.is-borderless)", forcedSide: "blockStart" }
+  ] as const;
+
+  try {
+    for (const testCase of cases) {
+      await page.emulateMedia({ forcedColors: "none" });
+      await page.goto(`${origin}${testCase.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const owner = page.locator(testCase.selector).first();
+      await owner.scrollIntoViewIfNeeded();
+      const widthVariable = "widthVariable" in testCase ? testCase.widthVariable : "--bf-stroke-width";
+      const normal = await owner.evaluate((element, localWidthVariable) => {
+        const node = element as HTMLElement;
+        const ownerStyle = getComputedStyle(node);
+        const overlay = getComputedStyle(node, "::after");
+        const before = node.getBoundingClientRect();
+        const overlayBoxShadow = overlay.boxShadow;
+        const overlayBoxSizing = overlay.boxSizing;
+        const overlayContent = overlay.content;
+        const overlayInset = overlay.inset;
+        const overlayPointerEvents = overlay.pointerEvents;
+        const overlayPosition = overlay.position;
+        const overlayZIndex = overlay.zIndex;
+        node.style.setProperty(localWidthVariable, "6px");
+        const after = node.getBoundingClientRect();
+        const widenedOverlay = getComputedStyle(node, "::after");
+        const result = {
+          before: { height: before.height, width: before.width },
+          after: { height: after.height, width: after.width },
+          borderWidths: [ownerStyle.borderBlockStartWidth, ownerStyle.borderBlockEndWidth, ownerStyle.borderInlineStartWidth, ownerStyle.borderInlineEndWidth].map(Number.parseFloat),
+          isolation: ownerStyle.isolation,
+          overlayBoxShadow,
+          overlayBoxSizing,
+          overlayContent,
+          overlayInset,
+          overlayPointerEvents,
+          overlayPosition,
+          overlayZIndex,
+          widenedOverlayBoxShadow: widenedOverlay.boxShadow
+        };
+        node.style.removeProperty(localWidthVariable);
+        return result;
+      }, widthVariable);
+      assert(normal.borderWidths.every(width => width === 0), `Expected ${testCase.selector} to use zero layout borders; got ${JSON.stringify(normal)}.`);
+      assert(normal.isolation === "auto" && normal.overlayZIndex === "auto", `Expected ${testCase.selector} paint to add no isolation or overlay stacking index; got ${JSON.stringify(normal)}.`);
+      assert(normal.overlayBoxShadow !== "none" && normal.widenedOverlayBoxShadow !== normal.overlayBoxShadow, `Expected ${testCase.selector} to paint its boundary from the local stroke-width slot; got ${JSON.stringify(normal)}.`);
+      assert(normal.overlayBoxSizing === "border-box" && normal.overlayContent === '\"\"' && normal.overlayInset === "0px" && normal.overlayPointerEvents === "none" && normal.overlayPosition === "absolute", `Expected ${testCase.selector}::after to be the exact pointer-transparent paint owner; got ${JSON.stringify(normal)}.`);
+      assert(normal.before.width === normal.after.width && normal.before.height === normal.after.height, `Expected ${testCase.selector} occupied geometry to be independent of paint width; got ${JSON.stringify(normal)}.`);
+
+      await page.emulateMedia({ forcedColors: "active" });
+      const forced = await owner.evaluate((element, forcedSide) => {
+        const overlay = getComputedStyle(element, "::after");
+        return {
+          forcedSide,
+          outlineStyle: overlay.outlineStyle,
+          outlineWidth: Number.parseFloat(overlay.outlineWidth),
+          blockStartStyle: overlay.borderBlockStartStyle,
+          blockStartWidth: Number.parseFloat(overlay.borderBlockStartWidth),
+          blockEndStyle: overlay.borderBlockEndStyle,
+          blockEndWidth: Number.parseFloat(overlay.borderBlockEndWidth),
+          inlineStartStyle: overlay.borderInlineStartStyle,
+          inlineStartWidth: Number.parseFloat(overlay.borderInlineStartWidth),
+          inlineEndStyle: overlay.borderInlineEndStyle,
+          inlineEndWidth: Number.parseFloat(overlay.borderInlineEndWidth),
+          shadow: overlay.boxShadow
+        };
+      }, testCase.forcedSide);
+      if (testCase.forcedSide === "outline") {
+        assert(forced.outlineStyle === "solid" && forced.outlineWidth > 0, `Expected ${testCase.selector} to retain a real forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "blockStart") {
+        assert(forced.blockStartStyle === "solid" && forced.blockStartWidth > 0, `Expected ${testCase.selector} to retain its block-start forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "blockEnd") {
+        assert(forced.blockEndStyle === "solid" && forced.blockEndWidth > 0, `Expected ${testCase.selector} to retain its block-end forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "inlineStart") {
+        assert(forced.inlineStartStyle === "solid" && forced.inlineStartWidth > 0, `Expected ${testCase.selector} to retain its inline-start forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "inlineEnd") {
+        assert(forced.inlineEndStyle === "solid" && forced.inlineEndWidth > 0, `Expected ${testCase.selector} to retain its inline-end forced-colors boundary; got ${JSON.stringify(forced)}.`);
+      } else if (testCase.forcedSide === "attachedPanel") {
+        assert(forced.blockStartWidth === 0 && forced.blockEndStyle === "solid" && forced.blockEndWidth > 0 && forced.inlineStartStyle === "solid" && forced.inlineStartWidth > 0 && forced.inlineEndStyle === "solid" && forced.inlineEndWidth > 0, `Expected attached SearchAndFilter paint to retain exactly three forced-colors edges; got ${JSON.stringify(forced)}.`);
+      }
+      assert(forced.shadow === "none", `Expected ${testCase.selector} forced-colors paint to use system borders/outlines rather than shadows; got ${JSON.stringify(forced)}.`);
+    }
+
+    await page.emulateMedia({ forcedColors: "none" });
+
+    await page.goto(`${origin}/demo/components/table.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const tableTierSelect = page.getByLabel("Tier", { exact: true });
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await tableTierSelect.selectOption(tier);
+      await page.waitForSelector(`body.bf-tier-${tier}`);
+      const rawTable = await page.evaluate(() => {
+        const owner = document.createElement("div");
+        owner.style.position = "relative";
+        owner.innerHTML = "<table><thead><tr><th>Raw heading</th></tr></thead><tbody><tr><td><span style='position:absolute'>Raw popup</span>Clipped raw cell copy</td></tr><tr><td>Last row</td></tr></tbody></table>";
+        document.body.append(owner);
+        const heading = owner.querySelector<HTMLElement>("th");
+        const cell = owner.querySelector<HTMLElement>("td");
+        const probe = owner.querySelector<HTMLElement>("span");
+        if (!heading || !cell || !probe) throw new Error("Missing raw table probes.");
+        const cellRect = cell.getBoundingClientRect();
+        const result = {
+          cellHeight: cellRect.height,
+          cellPosition: getComputedStyle(cell).position,
+          headingShadow: getComputedStyle(heading).boxShadow,
+          offsetParentIsOwner: probe.offsetParent === owner,
+          overflow: getComputedStyle(cell).overflow,
+          rowShadow: getComputedStyle(cell).boxShadow,
+          textOverflow: getComputedStyle(cell).textOverflow
+        };
+        owner.dataset.rawTableProbe = "";
+        return result;
+      });
+      assert(rawTable.cellPosition === "static" && rawTable.offsetParentIsOwner && rawTable.overflow === "hidden" && rawTable.textOverflow === "ellipsis" && rawTable.headingShadow !== "none" && rawTable.rowShadow !== "none", `Expected ${tier} raw tables to preserve clipping and row paint without becoming containing blocks; got ${JSON.stringify(rawTable)}.`);
+      await page.emulateMedia({ forcedColors: "active" });
+      const rawForced = await page.locator("[data-raw-table-probe] tbody tr:first-child td").evaluate(element => ({
+        height: element.getBoundingClientRect().height,
+        outlineStyle: getComputedStyle(element).outlineStyle,
+        outlineWidth: Number.parseFloat(getComputedStyle(element).outlineWidth),
+        position: getComputedStyle(element).position
+      }));
+      assert(rawForced.outlineStyle === "solid" && rawForced.outlineWidth > 0 && Math.abs(rawForced.height - rawTable.cellHeight) <= 0.1 && rawForced.position === "static", `Expected ${tier} raw table forced-colors fallback to preserve geometry and positioning while painting the documented all-sided system outline; got ${JSON.stringify(rawForced)}.`);
+      await page.emulateMedia({ forcedColors: "none" });
+      await page.locator("[data-raw-table-probe]").evaluate(element => element.remove());
+      const bfCellContainment = await page.locator(".bf-table-scroll > .bf-table tbody tr:first-child td:first-child").evaluate(cell => {
+        const node = cell as HTMLElement;
+        const probe = document.createElement("span");
+        probe.textContent = "Bounded BF absolute probe";
+        probe.style.cssText = "position:absolute;inset-block-start:100%;inset-inline-start:0;z-index:20";
+        node.append(probe);
+        const cellRect = node.getBoundingClientRect();
+        const probeRect = probe.getBoundingClientRect();
+        const hit = document.elementFromPoint(probeRect.left + 1, cellRect.bottom + 1);
+        const result = {
+          clippedBelowCell: hit !== probe,
+          offsetParentIsCell: probe.offsetParent === node,
+          overflow: getComputedStyle(node).overflow,
+          position: getComputedStyle(node).position
+        };
+        probe.remove();
+        return result;
+      });
+      assert(bfCellContainment.position === "relative" && bfCellContainment.overflow === "hidden" && bfCellContainment.offsetParentIsCell && bfCellContainment.clippedBelowCell, `Expected ${tier} arbitrary absolute descendants in explicit BF cells to retain the bounded overlay-owner containment contract; got ${JSON.stringify(bfCellContainment)}.`);
+      const breaker = page.locator("[data-table-popup-breaker]");
+      const toggle = breaker.locator(".bf-contextual-menu-toggle");
+      await toggle.click();
+      await page.waitForSelector("[data-table-popup-breaker] .bf-contextual-menu-dropdown[aria-hidden='false']");
+      const popupGeometry = await breaker.evaluate(element => {
+        const cells = Array.from(element.querySelectorAll<HTMLElement>("th, td"));
+        const rows = Array.from(element.querySelectorAll<HTMLElement>("tr"));
+        const popupCell = element.querySelector<HTMLElement>("td:has(.bf-contextual-menu)");
+        const popup = element.querySelector<HTMLElement>(".bf-contextual-menu-dropdown");
+        const action = element.querySelector<HTMLElement>("[data-table-popup-action]");
+        if (!popupCell || !popup || !action) throw new Error("Missing the real table popup breaker.");
+        const cellRect = popupCell.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
+        const actionRect = action.getBoundingClientRect();
+        const hit = document.elementFromPoint(actionRect.left + (actionRect.width / 2), Math.min(actionRect.bottom - 1, Math.max(cellRect.bottom + 1, actionRect.top + 1)));
+        return {
+          cellOverflow: getComputedStyle(popupCell).overflow,
+          cellPositions: cells.map(cell => getComputedStyle(cell).position),
+          crossesCell: popupRect.bottom > cellRect.bottom + 1,
+          hitAction: hit?.closest("[data-table-popup-action]") === action,
+          popupVisible: getComputedStyle(popup).display !== "none" && getComputedStyle(popup).visibility === "visible",
+          rowPositions: rows.map(row => getComputedStyle(row).position)
+        };
+      });
+      assert(popupGeometry.cellPositions.every(position => position === "relative") && popupGeometry.rowPositions.every(position => position === "static"), `Expected ${tier} BF row rules to remain cell-owned without broadening containing blocks to raw tables or rows; got ${JSON.stringify(popupGeometry)}.`);
+      assert(popupGeometry.cellOverflow === "visible" && popupGeometry.crossesCell && popupGeometry.popupVisible && popupGeometry.hitAction, `Expected ${tier} real contextual-menu paint and input to escape its table cell; got ${JSON.stringify(popupGeometry)}.`);
+      await breaker.locator("[data-table-popup-action]").click();
+      assert(await breaker.locator(".bf-contextual-menu-dropdown").getAttribute("aria-hidden") === "true", `Expected ${tier} the real table popup action to route and close through BF initialization.`);
+    }
+
+    await page.goto(`${origin}/demo/components/form-atlas.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const fieldTierSelect = page.getByLabel("Tier", { exact: true });
+    for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+      await fieldTierSelect.selectOption(tier);
+      await page.waitForSelector(`body.bf-tier-${tier}`);
+      const nativeCompatibility = await page.locator("[data-native-field-compatibility]").evaluate(element => {
+        const bare = [
+          element.querySelector<HTMLInputElement>("input[aria-label='Bare compatibility input']"),
+          element.querySelector<HTMLInputElement>("input[aria-label='Bare default compatibility input']"),
+          element.querySelector<HTMLSelectElement>("select[aria-label='Bare compatibility select']"),
+          element.querySelector<HTMLTextAreaElement>("textarea[aria-label='Bare compatibility textarea']")
+        ];
+        const wrapped = [
+          element.querySelector<HTMLInputElement>("input[aria-label='Wrapped compatibility input']"),
+          element.querySelector<HTMLSelectElement>("select[aria-label='Wrapped compatibility select']"),
+          element.querySelector<HTMLTextAreaElement>("textarea[aria-label='Wrapped compatibility textarea']")
+        ];
+        const owners = Array.from(element.querySelectorAll<HTMLElement>(".bf-field-boundary"));
+        const validation = element.querySelector<HTMLInputElement>("input[aria-label='Bare compatibility validation input']");
+        if (bare.some(field => !field) || wrapped.some(field => !field) || owners.length !== 3 || !validation) {
+          throw new Error("Missing native-field compatibility fixtures.");
+        }
+        const validationProbe = document.createElement("i");
+        validationProbe.style.color = getComputedStyle(validation).getPropertyValue("--bf-native-field-stroke-color").trim();
+        element.append(validationProbe);
+        const validationResolvedColor = getComputedStyle(validationProbe).color;
+        validationProbe.remove();
+        return {
+          bare: bare.map(field => {
+            const style = getComputedStyle(field as HTMLElement);
+            return {
+              borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth],
+              height: (field as HTMLElement).getBoundingClientRect().height,
+              marginBlockEnd: Number.parseFloat(style.marginBlockEnd),
+              width: (field as HTMLElement).getBoundingClientRect().width,
+              shadow: style.boxShadow
+            };
+          }),
+          owners: owners.map(owner => ({
+            height: owner.getBoundingClientRect().height,
+            marginBlockEnd: Number.parseFloat(getComputedStyle(owner).marginBlockEnd),
+            shadow: getComputedStyle(owner, "::after").boxShadow
+          })),
+          validationColor: getComputedStyle(validation).getPropertyValue("--bf-native-field-stroke-color").trim(),
+          validationResolvedColor,
+          validationShadow: getComputedStyle(validation).boxShadow,
+          wrapped: wrapped.map(field => getComputedStyle(field as HTMLElement).boxShadow)
+        };
+      });
+      assert(nativeCompatibility.bare.every(field => field.borderWidths.every(width => width === "0px") && field.shadow !== "none"), `Expected ${tier} bare input/select/textarea compatibility boundaries to self-paint without layout borders: ${JSON.stringify(nativeCompatibility)}.`);
+      assert(nativeCompatibility.wrapped.every(shadow => shadow === "none") && nativeCompatibility.owners.every(owner => owner.shadow !== "none"), `Expected ${tier} wrapped fields to paint exactly once on bf-field-boundary: ${JSON.stringify(nativeCompatibility)}.`);
+      assert(nativeCompatibility.bare.slice(0, 3).every(field => field.marginBlockEnd > 0 && Math.abs((field.height + field.marginBlockEnd) - (nativeCompatibility.owners[0].height + nativeCompatibility.owners[0].marginBlockEnd)) <= 0.1), `Expected ${tier} bare single-line fields to preserve the wrapped field's occupied row and trailing compensation: ${JSON.stringify(nativeCompatibility)}.`);
+      assert(nativeCompatibility.validationColor !== "" && nativeCompatibility.validationShadow.includes(nativeCompatibility.validationResolvedColor), `Expected ${tier} bare validation paint to use the validation stroke colour: ${JSON.stringify(nativeCompatibility)}.`);
+
+      await page.emulateMedia({ forcedColors: "active" });
+      const forcedCompatibility = await page.locator("[data-native-field-compatibility]").evaluate(element => {
+        const bare = Array.from(element.querySelectorAll<HTMLElement>("input[aria-label^='Bare compatibility'], input[aria-label='Bare default compatibility input'], select[aria-label='Bare compatibility select'], textarea[aria-label='Bare compatibility textarea']"));
+        const wrapped = Array.from(element.querySelectorAll<HTMLElement>(".bf-field-boundary > input, .bf-field-boundary > select, .bf-field-boundary > textarea"));
+        const owners = Array.from(element.querySelectorAll<HTMLElement>(".bf-field-boundary"));
+        return {
+          bare: bare.map(field => {
+            const style = getComputedStyle(field);
+            const painted = { height: field.getBoundingClientRect().height, width: field.getBoundingClientRect().width };
+            field.style.outline = "none";
+            const unpainted = { height: field.getBoundingClientRect().height, width: field.getBoundingClientRect().width };
+            field.style.removeProperty("outline");
+            return {
+              borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth].map(Number.parseFloat),
+              height: painted.height,
+              noOutlineHeight: unpainted.height,
+              noOutlineWidth: unpainted.width,
+              outlineOffset: Number.parseFloat(style.outlineOffset),
+              outlineStyle: style.outlineStyle,
+              outlineWidth: Number.parseFloat(style.outlineWidth),
+              shadow: style.boxShadow,
+              width: painted.width
+            };
+          }),
+          owners: owners.map(owner => {
+            const overlay = getComputedStyle(owner, "::after");
+            return { blockEndStyle: overlay.borderBlockEndStyle, blockEndWidth: Number.parseFloat(overlay.borderBlockEndWidth) };
+          }),
+          wrapped: wrapped.map(field => Number.parseFloat(getComputedStyle(field).borderBlockEndWidth))
+        };
+      });
+      assert(forcedCompatibility.bare.every(field => field.borderWidths.every(width => width === 0) && field.outlineStyle === "solid" && field.outlineWidth > 0 && field.outlineOffset < 0 && field.shadow === "none"), `Expected ${tier} bare native fields to retain an inset forced-colours boundary with zero layout borders: ${JSON.stringify(forcedCompatibility)}.`);
+      assert(forcedCompatibility.bare.every(field => Math.abs(field.width - field.noOutlineWidth) <= 0.01 && Math.abs(field.height - field.noOutlineHeight) <= 0.01), `Expected ${tier} forced-colours fallback paint not to change bare native-field geometry: ${JSON.stringify(forcedCompatibility.bare)}.`);
+      assert(forcedCompatibility.wrapped.every(width => width === 0) && forcedCompatibility.owners.every(owner => owner.blockEndStyle === "solid" && owner.blockEndWidth > 0), `Expected ${tier} wrapped fields to keep forced-colours paint solely on bf-field-boundary: ${JSON.stringify(forcedCompatibility)}.`);
+      await page.emulateMedia({ forcedColors: "none" });
+    }
+    await fieldTierSelect.selectOption("documentation");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "documentation" && document.querySelector("link[data-bundle-tier]")?.getAttribute("data-bundle-tier") === "documentation");
+    for (const width of [820, 390, 820]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.waitForFunction(() => {
+        const list = document.querySelector<HTMLElement>(".bf-tabs.is-equal .bf-tabs-list");
+        if (!list || !list.style.getPropertyValue("--bf-tabs-equal-closure")) return false;
+        const probe = document.createElement("i");
+        probe.style.cssText = "position:absolute;block-size:var(--bf-baseline);";
+        list.append(probe);
+        const baseline = probe.getBoundingClientRect().height;
+        probe.remove();
+        const height = list.getBoundingClientRect().height;
+        const closure = Number.parseFloat(getComputedStyle(list).marginBlockEnd);
+        return baseline > 0 && Math.abs(closure - ((baseline - (height % baseline)) % baseline)) <= 0.15;
+      });
+    }
+    await fieldTierSelect.selectOption("os");
+    await page.waitForFunction(() => document.body.dataset.bfTier === "os" && document.querySelector("link[data-bundle-tier]")?.getAttribute("data-bundle-tier") === "os");
+    const fieldset = page.locator("[data-fieldset-paint-owner]");
+    const fieldsetNormal = await fieldset.evaluate(element => {
+      const node = element as HTMLElement;
+      const before = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      const legend = node.querySelector<HTMLElement>("legend");
+      const filled = node.querySelector<HTMLElement>(".bf-stack");
+      node.style.setProperty("--bf-border-width", "6px");
+      const after = node.getBoundingClientRect();
+      const widenedShadow = getComputedStyle(node).boxShadow;
+      node.style.removeProperty("--bf-border-width");
+      return {
+        before: { width: before.width, height: before.height },
+        after: { width: after.width, height: after.height },
+        borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth].map(Number.parseFloat),
+        filledBackground: filled ? getComputedStyle(filled).backgroundColor : "",
+        legendBackground: legend ? getComputedStyle(legend).backgroundColor : "",
+        shadow: style.boxShadow,
+        widenedShadow
+      };
+    });
+    assert(fieldsetNormal.borderWidths.every(width => width === 0) && fieldsetNormal.shadow !== "none" && fieldsetNormal.widenedShadow !== fieldsetNormal.shadow && fieldsetNormal.before.width === fieldsetNormal.after.width && fieldsetNormal.before.height === fieldsetNormal.after.height, `Expected the named fieldset/legend anatomy to self-paint without layout geometry; got ${JSON.stringify(fieldsetNormal)}.`);
+    assert(fieldsetNormal.legendBackground !== "rgba(0, 0, 0, 0)" && fieldsetNormal.filledBackground !== "rgba(0, 0, 0, 0)", `Expected the legend and filled-child specimen to exercise the fieldset's below-content paint order; got ${JSON.stringify(fieldsetNormal)}.`);
+    const markerGeometry = await page.locator("main.bf-page").evaluate(element => {
+      const selectors = [".bf-checkbox-label", ".bf-radio-label", ".bf-switch-slider"];
+      return selectors.map(selector => {
+        const marker = element.querySelector<HTMLElement>(selector);
+        if (!marker) throw new Error(`Missing marker specimen ${selector}.`);
+        const before = getComputedStyle(marker, "::before");
+        const initial = { width: Number.parseFloat(before.width), height: Number.parseFloat(before.height) };
+        const initialBorders = [before.borderBlockStartWidth, before.borderBlockEndWidth, before.borderInlineStartWidth, before.borderInlineEndWidth].map(Number.parseFloat);
+        const initialShadow = before.boxShadow;
+        marker.style.setProperty("--bf-border-width", "6px");
+        const widened = getComputedStyle(marker, "::before");
+        const result = {
+          selector,
+          initial,
+          widened: { width: Number.parseFloat(widened.width), height: Number.parseFloat(widened.height) },
+          borders: initialBorders,
+          shadow: initialShadow,
+          widenedShadow: widened.boxShadow
+        };
+        marker.style.removeProperty("--bf-border-width");
+        return result;
+      });
+    });
+    assert(markerGeometry.every(marker => marker.borders.every(width => width === 0) && marker.shadow !== "none" && marker.widenedShadow !== marker.shadow && marker.initial.width === marker.widened.width && marker.initial.height === marker.widened.height), `Expected checkbox, radio, and switch marker frames to self-paint without changing their native slots; got ${JSON.stringify(markerGeometry)}.`);
+    await page.emulateMedia({ forcedColors: "active" });
+    const fieldsetForced = await fieldset.evaluate(element => {
+      const style = getComputedStyle(element);
+      return { shadow: style.boxShadow, outlineStyle: style.outlineStyle, outlineWidth: Number.parseFloat(style.outlineWidth) };
+    });
+    assert(fieldsetForced.shadow === "none" && fieldsetForced.outlineStyle === "solid" && fieldsetForced.outlineWidth > 0, `Expected the fieldset exception to use a real forced-colors outline; got ${JSON.stringify(fieldsetForced)}.`);
+    const markersForced = await page.locator("main.bf-page").evaluate(element => [".bf-checkbox-label", ".bf-radio-label", ".bf-switch-slider"].map(selector => {
+      const marker = element.querySelector<HTMLElement>(selector);
+      if (!marker) throw new Error(`Missing forced-colors marker ${selector}.`);
+      const style = getComputedStyle(marker, "::before");
+      return { selector, borderWidth: Number.parseFloat(style.borderInlineStartWidth), outlineStyle: style.outlineStyle, outlineWidth: Number.parseFloat(style.outlineWidth), shadow: style.boxShadow };
+    }));
+    assert(markersForced.every(marker => marker.borderWidth === 0 && marker.outlineStyle === "solid" && marker.outlineWidth > 0 && marker.shadow === "none"), `Expected native marker exceptions to use inset all-sided system outlines without layout borders; got ${JSON.stringify(markersForced)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+
+    await page.goto(`${origin}/demo/components/code-snippet.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const dropdowns = page.locator(".bf-code-snippet-header.is-stacked .bf-code-snippet-dropdowns").first();
+    await dropdowns.evaluate(element => {
+      const first = element.querySelector<HTMLElement>(".bf-code-snippet-dropdown");
+      if (!first) throw new Error("Missing code-snippet dropdown fixture.");
+      const adjacent = first.cloneNode(true) as HTMLElement;
+      adjacent.textContent = "Copy URL";
+      element.append(adjacent);
+    });
+    const inlineDivider = await dropdowns.locator(".bf-code-snippet-dropdown + .bf-code-snippet-dropdown").evaluate(element => {
+      const owner = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      return {
+        borderInlineStart: Number.parseFloat(owner.borderInlineStartWidth),
+        shadow: overlay.boxShadow,
+        pointerEvents: overlay.pointerEvents
+      };
+    });
+    assert(inlineDivider.borderInlineStart === 0 && inlineDivider.shadow !== "none" && inlineDivider.pointerEvents === "none", `Expected adjacent code actions to retain an out-of-flow inline-start divider; got ${JSON.stringify(inlineDivider)}.`);
+    const copiedBlock = page.locator(".bf-code-snippet-block.is-icon").first();
+    const copiedState = await copiedBlock.evaluate(element => {
+      const node = element as HTMLElement;
+      const before = node.getBoundingClientRect();
+      node.classList.add("is-copied");
+      const after = node.getBoundingClientRect();
+      const owner = getComputedStyle(node);
+      const overlay = getComputedStyle(node, "::after");
+      return {
+        borderWidths: [owner.borderBlockStartWidth, owner.borderBlockEndWidth, owner.borderInlineStartWidth, owner.borderInlineEndWidth].map(Number.parseFloat),
+        heightDelta: after.height - before.height,
+        overlayPointerEvents: overlay.pointerEvents,
+        overlayShadow: overlay.boxShadow,
+        widthDelta: after.width - before.width
+      };
+    });
+    assert(copiedState.borderWidths.every(width => width === 0) && copiedState.heightDelta === 0 && copiedState.widthDelta === 0 && copiedState.overlayPointerEvents === "none" && copiedState.overlayShadow !== "none", `Expected copied CodeSnippet state to paint without changing its occupied box or click target; got ${JSON.stringify(copiedState)}.`);
+    const rtlInlineDividerShadow = await dropdowns.evaluate(element => {
+      element.setAttribute("dir", "rtl");
+      const adjacent = element.querySelector<HTMLElement>(".bf-code-snippet-dropdown + .bf-code-snippet-dropdown");
+      return adjacent ? getComputedStyle(adjacent, "::after").boxShadow : "none";
+    });
+    assert(rtlInlineDividerShadow.includes("-1px 0px 0px"), `Expected a locally nested RTL code-action divider to paint on logical inline-start; got ${rtlInlineDividerShadow}.`);
+
+    await page.goto(`${origin}/demo/components/search-box.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const searchBox = page.locator(".bf-search-box").first();
+    await searchBox.evaluate(element => element.setAttribute("dir", "rtl"));
+    const rtlSearchShadow = await searchBox.locator(".bf-search-box-button").evaluate(element => getComputedStyle(element, "::after").boxShadow);
+    assert(rtlSearchShadow.includes("-1px 0px 0px"), `Expected a locally nested RTL SearchBox action divider to paint on logical inline-start; got ${rtlSearchShadow}.`);
+    await page.emulateMedia({ forcedColors: "active" });
+    const rtlSearchForced = await searchBox.locator(".bf-search-box-button").evaluate(element => {
+      const overlay = getComputedStyle(element, "::after");
+      return {
+        left: Number.parseFloat(overlay.borderLeftWidth),
+        right: Number.parseFloat(overlay.borderRightWidth)
+      };
+    });
+    assert(rtlSearchForced.right > 0 && rtlSearchForced.left === 0, `Expected a locally nested RTL SearchBox separator to use the physical right forced-colors edge; got ${JSON.stringify(rtlSearchForced)}.`);
+    await page.emulateMedia({ forcedColors: "none" });
+
+    const interactions = [
+      { route: "/demo/components/contextual-menu.html", selector: ".bf-contextual-menu-link" },
+      { route: "/demo/components/modal.html", selector: ".bf-modal-close" },
+      { route: "/demo/components/code-snippet.html", selector: ".bf-code-snippet-dropdown" },
+      { route: "/demo/components/search-and-filter.html", selector: ".bf-search-and-filter-panel[aria-hidden='false'] .bf-chip" },
+      { route: "/demo/components/search-box.html", selector: ".bf-search-box-button" },
+      { route: "/demo/components/application-layout.html", selector: ".bf-main .bf-panel-footer a" }
+    ] as const;
+    for (const interaction of interactions) {
+      await page.goto(`${origin}${interaction.route}`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const target = page.locator(interaction.selector).first();
+      await target.scrollIntoViewIfNeeded();
+      await target.evaluate(element => {
+        (element as HTMLElement).dataset.surfacePointerRoute = "pending";
+        element.addEventListener("click", () => {
+          (element as HTMLElement).dataset.surfacePointerRoute = "routed";
+        }, { once: true });
+      });
+      await target.click();
+      const clicked = await target.getAttribute("data-surface-pointer-route") === "routed";
+      assert(clicked, `Expected ${interaction.selector} interaction to route through the pointer-transparent surface overlay.`);
+    }
+  } finally {
+    await page.close();
+    await browser.close();
+  }
+}
+
+async function verifyTooltipPaintBounds(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const viewports = [
+    { label: "desktop", width: 1100, height: 800 },
+    { label: "mobile", width: 390, height: 844 }
+  ] as const;
+
+  try {
+    for (const viewport of viewports) {
+      const page = await browser.newPage({ viewport });
+      await page.goto(`${origin}/demo/components/tooltip.html`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const tierSelect = page.getByLabel("Tier", { exact: true });
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await tierSelect.selectOption(tier);
+        await page.waitForSelector(`body.bf-tier-${tier}`);
+        const detached = page.locator(".bf-tooltip.is-detached .bf-tooltip-message");
+        const positionedOwner = page.locator("[data-tooltip-positioned]");
+        const positionedTrigger = positionedOwner.locator(".bf-button");
+        const positioned = positionedOwner.locator(".bf-tooltip-message");
+        await page.mouse.move(0, viewport.height - 1);
+        await positionedTrigger.focus();
+        await page.waitForFunction(() => getComputedStyle(document.querySelector("[data-tooltip-positioned] .bf-tooltip-message") as Element).visibility === "visible");
+
+        for (const mode of ["normal", "forced"] as const) {
+          await page.emulateMedia({ forcedColors: mode === "forced" ? "active" : "none" });
+          const geometry = await page.evaluate(`(() => {
+            const read = selector => {
+              const element = document.querySelector(selector);
+              if (!element) throw new Error("Missing tooltip message " + selector + ".");
+              const rect = element.getBoundingClientRect();
+              const overlay = getComputedStyle(element, "::after");
+              return {
+                height: rect.height,
+                left: rect.left,
+                overlayPointerEvents: overlay.pointerEvents,
+                overlayPosition: overlay.position,
+                position: getComputedStyle(element).position,
+                top: rect.top,
+                visibility: getComputedStyle(element).visibility,
+                width: rect.width
+              };
+            };
+            return {
+              detached: read(".bf-tooltip.is-detached .bf-tooltip-message"),
+              positioned: read("[data-tooltip-positioned] .bf-tooltip-message"),
+              viewportWidth: window.innerWidth
+            };
+          })()`);
+          const detachedOverlay = await readPseudoBorderBox(page, ".bf-tooltip.is-detached .bf-tooltip-message", "after");
+          const positionedOverlay = await readPseudoBorderBox(page, "[data-tooltip-positioned] .bf-tooltip-message", "after");
+          const matchesOwner = (owner: typeof geometry.detached, overlay: typeof detachedOverlay) =>
+            Math.abs(owner.left - overlay.left) <= 0.1 && Math.abs(owner.top - overlay.top) <= 0.1 && Math.abs(owner.width - overlay.width) <= 0.1 && Math.abs(owner.height - overlay.height) <= 0.1;
+          assert(geometry.viewportWidth === viewport.width, `Expected the ${tier}/${viewport.label} Tooltip breaker to use the real ${viewport.width}px viewport.`);
+          assert(geometry.detached.position === "relative" && geometry.positioned.position === "absolute", `Expected ${tier}/${viewport.label}/${mode} detached Tooltip paint to establish its own anchor while positioned Tooltip placement remains absolute: ${JSON.stringify(geometry)}.`);
+          assert(geometry.detached.visibility === "visible" && geometry.positioned.visibility === "visible", `Expected ${tier}/${viewport.label}/${mode} detached and focused positioned messages to remain visible.`);
+          assert(geometry.detached.overlayPosition === "absolute" && geometry.positioned.overlayPosition === "absolute" && geometry.detached.overlayPointerEvents === "none" && geometry.positioned.overlayPointerEvents === "none", `Expected ${tier}/${viewport.label}/${mode} Tooltip paint to stay out of flow and pointer-transparent: ${JSON.stringify(geometry)}.`);
+          assert(matchesOwner(geometry.detached, detachedOverlay) && matchesOwner(geometry.positioned, positionedOverlay), `Expected ${tier}/${viewport.label}/${mode} Tooltip overlay bounds to equal their actual message bounds: owners=${JSON.stringify(geometry)}, detached=${JSON.stringify(detachedOverlay)}, positioned=${JSON.stringify(positionedOverlay)}.`);
+        }
+        await page.emulateMedia({ forcedColors: "none" });
+        await page.mouse.move(0, viewport.height - 1);
+        await positionedTrigger.blur();
+        await page.waitForFunction(() => getComputedStyle(document.querySelector("[data-tooltip-positioned] .bf-tooltip-message") as Element).visibility === "hidden");
+        await positionedTrigger.hover();
+        await page.waitForFunction(() => getComputedStyle(document.querySelector("[data-tooltip-positioned] .bf-tooltip-message") as Element).visibility === "visible");
+      }
+      await page.close();
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyCardOverflowOwnership(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const viewports = [
+    { label: "desktop", width: 1100, height: 800 },
+    { label: "mobile", width: 390, height: 844 }
+  ] as const;
+
+  try {
+    for (const viewport of viewports) {
+      const page = await browser.newPage({ viewport });
+      await page.goto(`${origin}/demo/components/cards.html`, { waitUntil: "networkidle" });
+      await waitForFonts(page);
+      const tierSelect = page.getByLabel("Tier", { exact: true });
+      for (const tier of ["editorial", "documentation", "app", "os"] as const) {
+        await tierSelect.selectOption(tier);
+        await page.waitForSelector(`body.bf-tier-${tier}`);
+        const wideCard = page.locator("[data-card-wide-content]");
+        const scrollOwner = wideCard.locator(".bf-card-scroll");
+        const scrollGeometry = await scrollOwner.evaluate(element => {
+          const node = element as HTMLElement;
+          node.scrollLeft = node.scrollWidth;
+          const card = node.closest<HTMLElement>(".bf-card");
+          const popup = document.querySelector<HTMLElement>("[data-card-popup]");
+          const cardRect = card?.getBoundingClientRect();
+          const scrollRect = node.getBoundingClientRect();
+          return {
+            cardOverflow: card ? getComputedStyle(card).overflow : "missing",
+            cardRect: cardRect ? { height: cardRect.height, width: cardRect.width } : null,
+            clientWidth: node.clientWidth,
+            documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+            overflowX: getComputedStyle(node).overflowX,
+            popupInsideScrollOwner: popup ? node.contains(popup) : true,
+            scrollRect: { height: scrollRect.height, width: scrollRect.width },
+            scrollLeft: node.scrollLeft,
+            scrollWidth: node.scrollWidth,
+            viewportWidth: window.innerWidth
+          };
+        });
+        assert(scrollGeometry.viewportWidth === viewport.width && scrollGeometry.cardOverflow === "visible" && scrollGeometry.overflowX === "auto", `Expected ${tier}/${viewport.label} to use the real viewport with visible Card root overflow and an inner BF scroll owner; got ${JSON.stringify(scrollGeometry)}.`);
+        assert(scrollGeometry.scrollWidth > scrollGeometry.clientWidth + 1 && scrollGeometry.scrollLeft > 0 && scrollGeometry.documentOverflow <= 1 && !scrollGeometry.popupInsideScrollOwner, `Expected ${tier}/${viewport.label} wide Card content to scroll internally without capturing the popup or widening the page; got ${JSON.stringify(scrollGeometry)}.`);
+
+        await scrollOwner.evaluate(element => { (element as HTMLElement).scrollLeft = 0; });
+        await scrollOwner.focus();
+        await page.keyboard.press("ArrowRight");
+        await page.waitForFunction(() => {
+          const owner = document.querySelector<HTMLElement>("[data-card-wide-content] .bf-card-scroll");
+          return owner && owner.scrollLeft > 0;
+        });
+        const keyboardScroll = await scrollOwner.evaluate(element => ({
+          focused: document.activeElement === element,
+          scrollLeft: (element as HTMLElement).scrollLeft
+        }));
+        assert(keyboardScroll.focused && keyboardScroll.scrollLeft > 0, `Expected ${tier}/${viewport.label} the documented tabindex Card scroll owner to retain focus and scroll with ArrowRight; got ${JSON.stringify(keyboardScroll)}.`);
+
+        await page.emulateMedia({ forcedColors: "active" });
+        const forcedGeometry = await scrollOwner.evaluate(element => {
+          const node = element as HTMLElement;
+          const card = node.closest<HTMLElement>(".bf-card");
+          const cardRect = card?.getBoundingClientRect();
+          const scrollRect = node.getBoundingClientRect();
+          return {
+            cardOverflow: card ? getComputedStyle(card).overflow : "missing",
+            cardRect: cardRect ? { height: cardRect.height, width: cardRect.width } : null,
+            overflowX: getComputedStyle(node).overflowX,
+            scrollRect: { height: scrollRect.height, width: scrollRect.width }
+          };
+        });
+        const sameSize = (before: { height: number; width: number } | null, after: { height: number; width: number } | null) =>
+          Boolean(before && after && Math.abs(before.height - after.height) <= 0.1 && Math.abs(before.width - after.width) <= 0.1);
+        assert(forcedGeometry.cardOverflow === "visible" && forcedGeometry.overflowX === "auto" && sameSize(scrollGeometry.cardRect, forcedGeometry.cardRect) && sameSize(scrollGeometry.scrollRect, forcedGeometry.scrollRect), `Expected ${tier}/${viewport.label} forced-colors paint to preserve Card/root scroll ownership and geometry; normal=${JSON.stringify(scrollGeometry)}, forced=${JSON.stringify(forcedGeometry)}.`);
+        await page.emulateMedia({ forcedColors: "none" });
+
+        const popupCard = page.locator("[data-card-popup-owner]").locator("xpath=ancestor::article[contains(@class,'bf-card')]");
+        const popup = page.locator("[data-card-popup]");
+        const popupAction = popup.locator(".bf-contextual-menu-link").last();
+        await popupCard.scrollIntoViewIfNeeded();
+        const popupGeometry = await popupAction.evaluate(action => {
+          const popup = action.closest<HTMLElement>("[data-card-popup]");
+          const card = action.closest<HTMLElement>(".bf-card");
+          if (!popup || !card) throw new Error("Missing Card popup geometry.");
+          const popupRect = popup.getBoundingClientRect();
+          const cardRect = card.getBoundingClientRect();
+          const actionRect = (action as HTMLElement).getBoundingClientRect();
+          const hit = document.elementFromPoint(actionRect.left + (actionRect.width / 2), actionRect.top + (actionRect.height / 2));
+          return {
+            cardOverflow: getComputedStyle(card).overflow,
+            crossesCard: popupRect.bottom > cardRect.bottom + 1,
+            hitAction: hit?.closest(".bf-contextual-menu-link") === action,
+            popupVisible: getComputedStyle(popup).display !== "none"
+          };
+        });
+        assert(popupGeometry.cardOverflow === "visible" && popupGeometry.crossesCard && popupGeometry.hitAction && popupGeometry.popupVisible, `Expected ${tier}/${viewport.label} the real Card popup to cross the root and remain pointer-routable; got ${JSON.stringify(popupGeometry)}.`);
+        await popupAction.click();
+        assert(await popup.getAttribute("aria-hidden") === "true", `Expected ${tier}/${viewport.label} the Card popup action to close its real menu.`);
+        const toggle = page.locator("[data-card-popup-owner] .bf-contextual-menu-toggle");
+        await toggle.click();
+        assert(await popup.getAttribute("aria-hidden") === "false", `Expected ${tier}/${viewport.label} the Card popup toggle to reopen its real menu.`);
+        await page.keyboard.press("Escape");
+        assert(await popup.getAttribute("aria-hidden") === "true" && await toggle.getAttribute("aria-expanded") === "false", `Expected ${tier}/${viewport.label} Escape to close the real Card popup and restore its toggle state.`);
+        await toggle.click();
+      }
+      await page.close();
+    }
+  } finally {
     await browser.close();
   }
 }
@@ -3959,7 +6523,38 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
         chip.textContent = "Content-sized chip";
         chipStack.append(chip);
 
-        fixture.append(internalStack, sectionStack, ...densityStacks.map(({ stack }) => stack), basicLayout, chipStack);
+        const flushPanel = document.createElement("div");
+        flushPanel.className = "bf-panel-content is-flush";
+        const flushPanelText = document.createElement("p");
+        flushPanelText.textContent = "Contained final panel margin";
+        flushPanel.append(flushPanelText);
+
+        const flushPanelStack = document.createElement("div");
+        flushPanelStack.className = "bf-panel-content bf-stack is-flush";
+        const flushStackFirst = document.createElement("p");
+        flushStackFirst.textContent = "First stacked panel row";
+        const flushStackLast = document.createElement("p");
+        flushStackLast.textContent = "Final stacked panel row";
+        flushPanelStack.append(flushStackFirst, flushStackLast);
+
+        const densePanelStack = document.createElement("div");
+        densePanelStack.className = "bf-panel-content bf-stack is-dense";
+        densePanelStack.append(document.createElement("p"), document.createElement("p"));
+
+        const prose = document.createElement("div");
+        prose.className = "bf-prose";
+        const proseList = document.createElement("ul");
+        const proseListItem = document.createElement("li");
+        proseListItem.textContent = "Contained final list margin";
+        proseList.append(proseListItem);
+        prose.append(proseList);
+
+        const proseStackList = document.createElement("ul");
+        proseStackList.className = "bf-stack is-dense";
+        proseStackList.append(document.createElement("li"), document.createElement("li"));
+        prose.append(proseStackList);
+
+        fixture.append(internalStack, sectionStack, ...densityStacks.map(({ stack }) => stack), basicLayout, chipStack, flushPanel, flushPanelStack, densePanelStack, prose);
         document.body.append(fixture);
 
         const firstStylesBefore = getComputedStyle(internalFirst);
@@ -3970,6 +6565,7 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
           paddingTop: Number.parseFloat(firstStylesBefore.paddingTop),
           paddingBottom: Number.parseFloat(firstStylesBefore.paddingBottom),
           marginBottom: Number.parseFloat(firstStylesBefore.marginBottom),
+          lineHeight: Number.parseFloat(firstStylesBefore.lineHeight),
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
         };
         internalFirst.style.setProperty("--bf-body-space-after", "99rem");
@@ -3981,6 +6577,7 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
           paddingTop: Number.parseFloat(firstStylesAfter.paddingTop),
           paddingBottom: Number.parseFloat(firstStylesAfter.paddingBottom),
           marginBottom: Number.parseFloat(firstStylesAfter.marginBottom),
+          lineHeight: Number.parseFloat(firstStylesAfter.lineHeight),
           baseline: Number.parseFloat(getComputedStyle(document.body).getPropertyValue("--bf-baseline")) * 16
         };
         const ruleRect = rule.getBoundingClientRect();
@@ -3998,8 +6595,26 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
         const densityGaps = Object.fromEntries(
           densityStacks.map(({ modifier, stack }) => [modifier, Number.parseFloat(getComputedStyle(stack).rowGap)])
         );
+        const flushPanelTextStyle = getComputedStyle(flushPanelText);
+        const proseListItemStyle = getComputedStyle(proseListItem);
+        const containment = {
+          flushPanelDisplay: getComputedStyle(flushPanel).display,
+          flushPanelHeight: flushPanel.getBoundingClientRect().height,
+          flushPanelTextHeight: flushPanelText.getBoundingClientRect().height,
+          flushPanelTextMarginEnd: Number.parseFloat(flushPanelTextStyle.marginBlockEnd),
+          flushStackDisplay: getComputedStyle(flushPanelStack).display,
+          flushStackGap: Number.parseFloat(getComputedStyle(flushPanelStack).rowGap),
+          densePanelStackDisplay: getComputedStyle(densePanelStack).display,
+          densePanelStackGap: Number.parseFloat(getComputedStyle(densePanelStack).rowGap),
+          proseListDisplay: getComputedStyle(proseList).display,
+          proseListHeight: proseList.getBoundingClientRect().height,
+          proseListItemHeight: proseListItem.getBoundingClientRect().height,
+          proseListItemMarginEnd: Number.parseFloat(proseListItemStyle.marginBlockEnd),
+          proseStackListDisplay: getComputedStyle(proseStackList).display,
+          proseStackListGap: Number.parseFloat(getComputedStyle(proseStackList).rowGap)
+        };
         fixture.remove();
-        return { before, after, regressions, densityGaps };
+        return { before, after, regressions, densityGaps, containment };
       });
 
       const tolerance = 0.1;
@@ -4007,22 +6622,41 @@ async function verifyContainerOwnedSpacing(origin: string): Promise<void> {
       assert(state.before.sectionGap > state.before.internalGap, `Expected ${tier} bf-stack.is-section gap (${state.before.sectionGap}px) to exceed the internal gap (${state.before.internalGap}px).`);
       assert(Math.abs(state.before.firstToSecond - (state.before.internalGap + state.before.marginBottom)) <= tolerance, `Expected ${tier} adjacent stack geometry to comprise the container gap plus baseline-compensation margin.`);
       assert(state.before.paddingBottom === 0, `Expected ${tier} text roles to retain zero padding-block-end, got ${state.before.paddingBottom}px.`);
-      assert(Math.abs(state.before.paddingTop + state.before.marginBottom - state.before.baseline) <= tolerance, `Expected ${tier} top nudge plus bottom-margin compensation to equal one ${state.before.baseline}px baseline unit.`);
+      const expectedCompensation = (Math.ceil(((state.before.lineHeight + (2 * state.before.paddingTop)) / state.before.baseline) - 1e-10) * state.before.baseline) - state.before.lineHeight - state.before.paddingTop;
+      assert(state.before.marginBottom + tolerance >= state.before.paddingTop, `Expected ${tier} bottom compensation to be at least the metric nudge.`);
+      assert(Math.abs(state.before.marginBottom - expectedCompensation) <= tolerance, `Expected ${tier} bottom compensation to be the smallest grid-closing value at least equal to its nudge.`);
       assert(JSON.stringify(state.after) === JSON.stringify(state.before), `Expected ${tier} legacy --bf-body-space-after overrides not to affect production geometry. Before=${JSON.stringify(state.before)}, after=${JSON.stringify(state.after)}.`);
       assert(state.regressions.basicRowGap === 0, `Expected ${tier} bf-basic-section-layout to suppress the generic stack row gap, got ${state.regressions.basicRowGap}px.`);
       assert(Math.abs(state.regressions.ruleToHeader - state.regressions.ruleMarginBottom) <= tolerance, `Expected ${tier} basic-section text to follow only the rule's own trailing compensation. Distance=${state.regressions.ruleToHeader}px, margin=${state.regressions.ruleMarginBottom}px.`);
       assert(state.regressions.chipWidth < state.regressions.chipStackWidth, `Expected ${tier} chip grid items to hug content. Chip=${state.regressions.chipWidth}px, stack=${state.regressions.chipStackWidth}px.`);
       assert(state.regressions.chipJustifySelf === "start", `Expected ${tier} chips to opt out of grid-item stretch, got justify-self=${state.regressions.chipJustifySelf}.`);
+      assert(state.containment.flushPanelDisplay === "flow-root", `Expected ${tier} standalone flush panel content to establish a flow root, got ${state.containment.flushPanelDisplay}.`);
+      assert(Math.abs(state.containment.flushPanelHeight - state.containment.flushPanelTextHeight - state.containment.flushPanelTextMarginEnd) <= tolerance, `Expected ${tier} standalone flush panel content to contain its final text margin. Owner=${state.containment.flushPanelHeight}px, child=${state.containment.flushPanelTextHeight}px, margin=${state.containment.flushPanelTextMarginEnd}px.`);
+      assert(state.containment.flushStackDisplay === "grid" && state.containment.flushStackGap === 0, `Expected ${tier} stack-composed flush panel content to preserve its grid utility and zero gap, got display=${state.containment.flushStackDisplay}, gap=${state.containment.flushStackGap}px.`);
+      assert(state.containment.densePanelStackDisplay === "grid" && Math.abs(state.containment.densePanelStackGap - state.before.baseline) <= tolerance, `Expected ${tier} dense stack-composed panel content to preserve its grid utility and one-baseline gap, got display=${state.containment.densePanelStackDisplay}, gap=${state.containment.densePanelStackGap}px.`);
+      assert(state.containment.proseListDisplay === "flow-root", `Expected ${tier} prose lists to establish a flow root, got ${state.containment.proseListDisplay}.`);
+      assert(Math.abs(state.containment.proseListHeight - state.containment.proseListItemHeight - state.containment.proseListItemMarginEnd) <= tolerance, `Expected ${tier} prose lists to contain their final item margin. Owner=${state.containment.proseListHeight}px, child=${state.containment.proseListItemHeight}px, margin=${state.containment.proseListItemMarginEnd}px.`);
+      assert(state.containment.proseStackListDisplay === "grid" && Math.abs(state.containment.proseStackListGap - state.before.baseline) <= tolerance, `Expected ${tier} prose lists composed with a dense stack to preserve grid layout and one-baseline gap, got display=${state.containment.proseStackListDisplay}, gap=${state.containment.proseStackListGap}px.`);
       assert(state.densityGaps["is-flush"] === 0, `Expected ${tier} flush stacks to use a zero gap.`);
       assert(Math.abs(state.densityGaps["is-extra-dense"] - state.before.baseline / 2) <= tolerance, `Expected ${tier} extra-dense stacks to use half a baseline.`);
       assert(Math.abs(state.densityGaps["is-dense"] - state.before.baseline) <= tolerance, `Expected ${tier} dense stacks to use one baseline.`);
       assert(Math.abs(state.densityGaps["is-loose"] - state.before.baseline * 2) <= tolerance, `Expected ${tier} loose stacks to use two baselines.`);
       assert(Math.abs(state.densityGaps["is-section-shallow"] - state.before.internalGap) <= tolerance, `Expected ${tier} explicit shallow stacks to match the default pattern gap.`);
-      assert(state.densityGaps["is-section-deep"] > state.before.sectionGap, `Expected ${tier} deep section stacks to exceed the regular section gap.`);
+      const approvedGaps = {
+        editorial: { group: 24, section: 72 },
+        documentation: { group: 20, section: 40 },
+        app: { group: 20, section: 40 },
+        os: { group: 24, section: 48 }
+      }[tier];
+      assert(Math.abs(state.before.internalGap - approvedGaps.group) <= tolerance, `Expected ${tier} group stacks to resolve to ${approvedGaps.group}px, got ${state.before.internalGap}px.`);
+      assert(Math.abs(state.before.sectionGap - approvedGaps.section) <= tolerance, `Expected ${tier} section stacks to resolve to ${approvedGaps.section}px, got ${state.before.sectionGap}px.`);
+      if (tier === "app") {
+        assert(Math.abs(state.densityGaps["is-section-deep"] - 32) <= tolerance, `Expected App's separately governed region gap to remain 32px, got ${state.densityGaps["is-section-deep"]}px.`);
+      } else {
+        assert(state.densityGaps["is-section-deep"] > state.before.sectionGap, `Expected ${tier} deep section stacks to exceed the regular section gap.`);
+      }
 
       if (tier === "editorial") {
-        assert(Math.abs(state.before.internalGap - 24) <= tolerance, `Expected Sites/editorial internal stacks to resolve to 1.5rem (24px), got ${state.before.internalGap}px.`);
-        assert(Math.abs(state.before.sectionGap - 64) <= tolerance, `Expected Sites/editorial section stacks to resolve to 4rem (64px), got ${state.before.sectionGap}px.`);
         assert(Math.abs(state.densityGaps["is-section-deep"] - 128) <= tolerance, `Expected Sites/editorial deep section stacks to resolve to 8rem (128px), got ${state.densityGaps["is-section-deep"]}px.`);
       }
     }
@@ -4121,6 +6755,10 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
       await page.goto(`${origin}/demo/components/article-pagination.html`, { waitUntil: "networkidle" });
       await waitForFonts(page);
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const paginationIcon = await page.evaluate(() => {
         const link = document.querySelector<HTMLElement>(".bf-article-pagination-link.is-previous");
         const direction = link?.querySelector<HTMLElement>(".bf-article-pagination-direction");
@@ -4176,6 +6814,10 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
       await page.goto(`${origin}/demo/components/button.html`, { waitUntil: "networkidle" });
       await waitForFonts(page);
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const buttonIcon = await page.evaluate(() => {
         const button = Array.from(document.querySelectorAll<HTMLElement>(".bf-button.is-icon"))
           .find(candidate => candidate.textContent?.includes("Continue"));
@@ -4345,18 +6987,29 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
     await waitForFonts(page);
     for (const tier of ["editorial", "documentation", "app", "os"] as const) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const tabRule = await page.evaluate(() => {
         const list = document.querySelector<HTMLElement>(".bf-tabs-list");
         const active = document.querySelector<HTMLElement>(".bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true']");
         if (!list || !active) return null;
         const styles = getComputedStyle(active);
+        const overlay = getComputedStyle(active, "::after");
+        const compensation = Number.parseFloat(getComputedStyle(list).marginBlockEnd);
+        const visibleBottom = active.getBoundingClientRect().bottom;
+        const listBottom = list.getBoundingClientRect().bottom;
         return {
-          boxShadow: styles.boxShadow,
-          gap: Math.abs(list.getBoundingClientRect().bottom - active.getBoundingClientRect().bottom),
+          boxShadow: overlay.boxShadow,
+          occupiedGap: Math.abs(listBottom - visibleBottom),
+          visibleGap: listBottom - visibleBottom,
+          compensation,
+          stripInset: Number.parseFloat(getComputedStyle(list, "::after").bottom),
           token: styles.getPropertyValue("--bf-bar-thickness").trim()
         };
       });
-      assert(tabRule !== null && tabRule.gap <= 1.1, `Expected ${tier} active tab rule to meet the list boundary, got ${tabRule?.gap}px.`);
+      assert(tabRule !== null && tabRule.occupiedGap <= 1.1 && Math.abs(tabRule.visibleGap) <= 1.1 && Math.abs(tabRule.stripInset) <= 1.1 && tabRule.compensation >= 0, `Expected ${tier} tab's visible underline to meet the strip while the container owns trailing closure; got ${JSON.stringify(tabRule)}.`);
       assert(tabRule.boxShadow.includes("-3px") && tabRule.boxShadow.includes("inset") && tabRule.token === "0.1875rem", `Expected ${tier} active tab rule to paint the shared inset 3px/0.1875rem emphasis bar; got ${tabRule.boxShadow}/${tabRule.token}.`);
 
       await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
@@ -4375,8 +7028,11 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
         const activeRect = active?.getBoundingClientRect();
         return {
           activeIndex: active ? links.indexOf(active) : -1,
-          activeBarGap: activeRect ? Math.abs(listRect.bottom - activeRect.bottom) : null,
-          activeBoxShadow: active ? getComputedStyle(active).boxShadow : "",
+          activeOccupiedGap: activeRect ? Math.abs(listRect.bottom - activeRect.bottom) : null,
+          activeVisibleGap: activeRect ? listRect.bottom - activeRect.bottom : null,
+          activeCompensation: Number.parseFloat(getComputedStyle(list).marginBlockEnd),
+          stripInset: Number.parseFloat(getComputedStyle(list, "::after").bottom),
+          activeBoxShadow: active ? getComputedStyle(active, "::after").boxShadow : "",
           activeVisible: activeRect ? activeRect.left >= listRect.left - 1 && activeRect.right <= listRect.right + 1 : false,
           clipped: [...items, ...links].filter(element => element.scrollWidth > element.clientWidth).map(element => element.textContent?.trim()),
           componentOverflow: tabs.getBoundingClientRect().right - parent.getBoundingClientRect().right,
@@ -4398,7 +7054,7 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
       await page.keyboard.press("End");
       const endTabs = await measureLongTabs();
       assert(endTabs !== null && endTabs.activeIndex === 5 && endTabs.focusIndex === 5 && endTabs.activeVisible && endTabs.scrollLeft > 0, `Expected End to select, focus and scroll the last ${tier} tab into view: ${JSON.stringify(endTabs)}.`);
-      assert(endTabs.activeBarGap !== null && endTabs.activeBarGap <= 1.1 && endTabs.activeBoxShadow.includes("-3px"), `Expected the scrolled ${tier} active tab to keep its thick bar on the list boundary: ${JSON.stringify(endTabs)}.`);
+      assert(endTabs.activeOccupiedGap !== null && endTabs.activeOccupiedGap <= 1.1 && endTabs.activeVisibleGap !== null && Math.abs(endTabs.activeVisibleGap) <= 1.1 && Math.abs(endTabs.stripInset) <= 1.1 && endTabs.activeCompensation >= 0 && endTabs.activeBoxShadow.includes("-3px"), `Expected the scrolled ${tier} active tab underline to meet the strip and its container to close the block: ${JSON.stringify(endTabs)}.`);
       await page.keyboard.press("Home");
       const homeTabs = await measureLongTabs();
       assert(homeTabs !== null && homeTabs.activeIndex === 0 && homeTabs.focusIndex === 0 && homeTabs.activeVisible, `Expected Home to return the ${tier} long tab list to its first tab: ${JSON.stringify(homeTabs)}.`);
@@ -4408,16 +7064,25 @@ async function verifyRenewalCompositionContracts(origin: string): Promise<void> 
     await page.goto(`${origin}/demo/components/notice.html`, { waitUntil: "networkidle" });
     const noticeSemantics = await page.locator(".bf-notice").evaluateAll(elements => elements.map(element => {
       const styles = getComputedStyle(element);
+      const overlay = getComputedStyle(element, "::after");
+      const probe = document.createElement("i");
+      probe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-stroke-width);block-size:1px";
+      element.append(probe);
+      const paintedWidth = probe.getBoundingClientRect().width;
+      probe.remove();
       return {
-        barThickness: Number.parseFloat(styles.borderInlineStartWidth),
+        barThickness: paintedWidth,
         barThicknessToken: styles.getPropertyValue("--bf-bar-thickness").trim(),
+        layoutBorder: Number.parseFloat(styles.borderInlineStartWidth),
+        overlayPointerEvents: overlay.pointerEvents,
+        overlayShadow: overlay.boxShadow,
         role: element.getAttribute("role"),
         titleTag: element.querySelector(".bf-notice-title")?.tagName ?? null
       };
     }));
     assert(noticeSemantics.length === 5, "Expected all five notice variants in the semantic fixture.");
     assert(noticeSemantics.every(notice => notice.role === "note" && notice.titleTag === "H2"), "Expected static notices to retain note landmarks and semantic h2 titles.");
-    assert(noticeSemantics.every(notice => notice.barThickness === 3 && notice.barThicknessToken === "0.1875rem"), "Expected every notice variant to use the shared 3px/0.1875rem emphasis bar.");
+    assert(noticeSemantics.every(notice => notice.barThickness === 3 && notice.barThicknessToken === "0.1875rem" && notice.layoutBorder === 0 && notice.overlayPointerEvents === "none" && notice.overlayShadow !== "none"), "Expected every notice variant to paint the shared 3px/0.1875rem emphasis bar in a pointer-transparent overlay without a layout border.");
 
     await page.setContent(`<!doctype html><link rel="stylesheet" href="${origin}/dist/tiers/editorial/styles.css"><body class="bf-theme">Scoped reset</body>`);
     await page.waitForFunction(() => Array.from(document.styleSheets).some(sheet => sheet.href?.includes("/dist/tiers/editorial/styles.css")));
@@ -4442,6 +7107,10 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
     await waitForFonts(page);
     for (const tier of tiers) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const measurements = await page.evaluate((widths) => {
         const nav = document.querySelector<HTMLElement>(".article-pagination-demo-narrow .bf-article-pagination");
         if (!nav) return null;
@@ -4541,6 +7210,10 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
     await waitForFonts(page);
     for (const tier of tiers) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const measurements = await page.evaluate((widths) => {
         const selectors = {
           default: ".bf-tiered-list:not(.is-description-full-width):not(.is-list-full-width):not(.is-flush):not(.is-triple)",
@@ -4631,6 +7304,10 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
     await waitForFonts(page);
     for (const tier of tiers) {
       await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => {
+        const link = document.querySelector<HTMLLinkElement>("link[data-bundle-tier]");
+        return document.body.dataset.bfTier === expectedTier && link?.dataset.bundleTier === expectedTier;
+      }, tier);
       const measurement = await page.evaluate(() => {
         const row = document.querySelector<HTMLElement>(".bf-equal-height-row:not(.is-wrap)");
         if (!row) return null;
@@ -4673,8 +7350,11 @@ async function verifyAdversarialResponsiveGeometry(origin: string): Promise<void
 async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void> {
   const tiers = ["editorial", "documentation", "app", "os"] as const;
   const expectedCapPx = { editorial: 1440, documentation: 1280, app: 960, os: 960 } as const;
-  const expectedPanelPaddingPx = { editorial: 16, documentation: 16, app: 12, os: 8 } as const;
-  const expectedPanelInlinePx = { editorial: 32, documentation: 24, app: 24, os: 20 } as const;
+  const expectedPanelPaddingPx = { editorial: 16, documentation: 12, app: 12, os: 8 } as const;
+  const expectedPanelInlinePx = { editorial: 32, documentation: 32, app: 32, os: 32 } as const;
+  const expectedPanelGapPx = { editorial: 24, documentation: 20, app: 20, os: 24 } as const;
+  const expectedTooltipBlockPx = { editorial: 0, documentation: 4, app: 4, os: 0 } as const;
+  const expectedTooltipInlinePx = { editorial: 8, documentation: 8, app: 8, os: 4 } as const;
   const browser = await openBrowser();
 
   try {
@@ -4686,11 +7366,13 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
         <body class="bf-theme ${bodyClass}" style="margin:0">
           <div class="bf-page"><div class="bf-grid"><span>Fluid grid</span></div></div>
           <div class="bf-fixed-width is-start-aligned">Bounded row</div>
-          <input class="bf-input" value="Parity">
+          <span class="bf-field-boundary"><input class="bf-input" value="Parity"></span>
           <button class="bf-button">Parity</button>
-          <input class="bf-input is-nested" type="text" value="Nested parity">
+          <span class="bf-field-boundary"><input class="bf-input is-nested" type="text" value="Nested parity"></span>
           <table class="bf-table"><tbody><tr><td>Table parity</td></tr></tbody></table>
           <section class="bf-panel"><header class="bf-panel-header"><h2 class="bf-panel-title">Parity</h2></header><footer class="bf-panel-footer"><button class="bf-panel-toggle">Footer</button></footer></section>
+          <span class="bf-tooltip"><button class="bf-button">Tip</button><p class="bf-tooltip-message"><span class="bf-tooltip-text">Metric tip</span></p></span>
+          <span class="bf-tooltip is-detached"><button class="bf-button">Detached</button><p class="bf-tooltip-message"><span class="bf-tooltip-text">Detached tip</span></p></span>
           <span class="bf-status-label">Parity</span>
         </body>`);
       await page.waitForFunction(expected => Array.from(document.styleSheets).some(sheet => sheet.href?.includes(expected)), stylesheet);
@@ -4698,16 +7380,22 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
       return page.evaluate(() => {
         const input = document.querySelector<HTMLElement>(".bf-input");
+        const inputBoundary = input?.closest<HTMLElement>(".bf-field-boundary");
         const button = document.querySelector<HTMLElement>(".bf-button");
         const nestedInput = document.querySelector<HTMLElement>(".bf-input.is-nested");
+        const nestedInputBoundary = nestedInput?.closest<HTMLElement>(".bf-field-boundary");
         const tableRow = document.querySelector<HTMLElement>(".bf-table tr");
+        const panel = document.querySelector<HTMLElement>(".bf-panel");
         const header = document.querySelector<HTMLElement>(".bf-panel-header");
         const footer = document.querySelector<HTMLElement>(".bf-panel-footer");
         const status = document.querySelector<HTMLElement>(".bf-status-label");
         const appPage = document.querySelector<HTMLElement>(".bf-page");
         const appGrid = appPage?.querySelector<HTMLElement>(".bf-grid");
         const fixedWidth = document.querySelector<HTMLElement>(".bf-fixed-width");
-        if (!input || !button || !nestedInput || !tableRow || !header || !footer || !status || !appPage || !appGrid || !fixedWidth) {
+        const tooltip = document.querySelector<HTMLElement>(".bf-tooltip:not(.is-detached) .bf-tooltip-message");
+        const tooltipText = tooltip?.querySelector<HTMLElement>(".bf-tooltip-text");
+        const detachedTooltip = document.querySelector<HTMLElement>(".bf-tooltip.is-detached .bf-tooltip-message");
+        if (!input || !inputBoundary || !button || !nestedInput || !nestedInputBoundary || !tableRow || !panel || !header || !footer || !status || !appPage || !appGrid || !fixedWidth || !tooltip || !tooltipText || !detachedTooltip) {
           throw new Error("Missing surface parity fixture.");
         }
 
@@ -4715,7 +7403,7 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           "--bf-body-line-height",
           "--bf-in-box-row-padding-block-end",
           "--bf-in-box-row-padding-block-start",
-          "--bf-nested-framed-row-painted-block-size",
+          "--bf-nested-row-painted-block-size",
           "--bf-interface-row-compensation-block-end",
           "--bf-interface-row-occupied-block-size",
           "--bf-interface-row-painted-block-size"
@@ -4729,34 +7417,54 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
           return [property, value];
         }));
 
-        const inputStyles = getComputedStyle(input);
+        const inputStyles = getComputedStyle(inputBoundary);
         const buttonStyles = getComputedStyle(button);
+        const panelStyles = getComputedStyle(panel);
         const headerStyles = getComputedStyle(header);
         const footerStyles = getComputedStyle(footer);
+        const tooltipStyles = getComputedStyle(tooltip);
+        const tooltipTextStyles = getComputedStyle(tooltipText);
         return {
-          inputHeight: input.getBoundingClientRect().height,
+          inputHeight: inputBoundary.getBoundingClientRect().height,
           inputMarginBottom: Number.parseFloat(inputStyles.marginBottom) || 0,
           buttonHeight: button.getBoundingClientRect().height,
           buttonMarginBottom: Number.parseFloat(buttonStyles.marginBottom) || 0,
           bodyLine: contractValues["--bf-body-line-height"],
           inBoxPaddingEnd: contractValues["--bf-in-box-row-padding-block-end"],
           inBoxPaddingStart: contractValues["--bf-in-box-row-padding-block-start"],
-          nestedFramedPainted: contractValues["--bf-nested-framed-row-painted-block-size"],
-          nestedInputHeight: nestedInput.getBoundingClientRect().height,
+          nestedPainted: contractValues["--bf-nested-row-painted-block-size"],
+          nestedInputHeight: nestedInputBoundary.getBoundingClientRect().height,
           regularCompensation: contractValues["--bf-interface-row-compensation-block-end"],
           regularOccupied: contractValues["--bf-interface-row-occupied-block-size"],
           regularPainted: contractValues["--bf-interface-row-painted-block-size"],
           tableRowHeight: tableRow.getBoundingClientRect().height,
-          panelPaddingStart: Number.parseFloat(headerStyles.paddingBlockStart) || 0,
-          panelPaddingEnd: Number.parseFloat(headerStyles.paddingBlockEnd) || 0,
-          panelGap: Number.parseFloat(headerStyles.gap) || 0,
+          panelPaddingStart: Number.parseFloat(panelStyles.paddingBlockStart) || 0,
+          panelPaddingEnd: Number.parseFloat(panelStyles.paddingBlockEnd) || 0,
+          panelPaddingInlineStart: Number.parseFloat(panelStyles.paddingInlineStart) || 0,
+          panelPaddingInlineEnd: Number.parseFloat(panelStyles.paddingInlineEnd) || 0,
+          panelGap: Number.parseFloat(panelStyles.gap) || 0,
+          headerPadding: Number.parseFloat(headerStyles.paddingBlockStart) + Number.parseFloat(headerStyles.paddingBlockEnd) + Number.parseFloat(headerStyles.paddingInlineStart) + Number.parseFloat(headerStyles.paddingInlineEnd),
           footerPaddingEnd: Number.parseFloat(footerStyles.paddingBlockEnd) || 0,
           footerPaddingInlineStart: Number.parseFloat(footerStyles.paddingInlineStart) || 0,
           statusHeight: status.getBoundingClientRect().height,
           pageWidth: appPage.getBoundingClientRect().width,
           gridWidth: appGrid.getBoundingClientRect().width,
           fixedStart: fixedWidth.getBoundingClientRect().left,
-          fixedWidth: fixedWidth.getBoundingClientRect().width
+          fixedWidth: fixedWidth.getBoundingClientRect().width,
+          tooltipArrowPresent: getComputedStyle(tooltip, "::before").content === "none" ? 0 : 1,
+          tooltipBlockEnd: Number.parseFloat(tooltipStyles.paddingBlockEnd) || 0,
+          tooltipBlockStart: Number.parseFloat(tooltipStyles.paddingBlockStart) || 0,
+          tooltipContainmentDelta: tooltip.getBoundingClientRect().height
+            - (Number.parseFloat(tooltipStyles.paddingBlockStart) || 0)
+            - (Number.parseFloat(tooltipStyles.paddingBlockEnd) || 0)
+            - tooltipText.getBoundingClientRect().height
+            - (Number.parseFloat(tooltipTextStyles.marginBlockEnd) || 0),
+          tooltipDetachedArrowAbsent: getComputedStyle(detachedTooltip, "::before").content === "none" ? 1 : 0,
+          tooltipInlineEnd: Number.parseFloat(tooltipStyles.paddingInlineEnd) || 0,
+          tooltipInlineStart: Number.parseFloat(tooltipStyles.paddingInlineStart) || 0,
+          tooltipTextMarginEnd: Number.parseFloat(tooltipTextStyles.marginBlockEnd) || 0,
+          tooltipTextPaddingEnd: Number.parseFloat(tooltipTextStyles.paddingBlockEnd) || 0,
+          tooltipTextPaddingStart: Number.parseFloat(tooltipTextStyles.paddingBlockStart) || 0
         };
       });
     };
@@ -4775,12 +7483,16 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
       assert(Math.abs(direct.fixedWidth - expectedCapPx[tier]) <= 1, `Expected direct ${tier} bf-fixed-width to resolve to ${expectedCapPx[tier]}px, got ${direct.fixedWidth}px.`);
       assert(Math.abs(direct.fixedStart) <= 1 && Math.abs(classSwitched.fixedStart) <= 1, `Expected direct/scoped ${tier} fixed rows to remain aligned to the logical start; direct=${direct.fixedStart}px, scoped=${classSwitched.fixedStart}px.`);
-      assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel headers to use ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
-      assert(direct.footerPaddingEnd === expectedPanelPaddingPx[tier] && direct.footerPaddingInlineStart === expectedPanelInlinePx[tier], `Expected direct ${tier} panel footers to use ${expectedPanelPaddingPx[tier]}px block-end padding and the ${expectedPanelInlinePx[tier]}px Canonical continuation inset, got ${direct.footerPaddingEnd}/${direct.footerPaddingInlineStart}px.`);
+      assert(direct.panelPaddingStart === expectedPanelPaddingPx[tier] && direct.panelPaddingEnd === expectedPanelPaddingPx[tier], `Expected direct ${tier} panel roots to own ${expectedPanelPaddingPx[tier]}px block padding, got ${direct.panelPaddingStart}/${direct.panelPaddingEnd}px.`);
+      assert(direct.panelPaddingInlineStart === expectedPanelInlinePx[tier] && direct.panelPaddingInlineEnd === expectedPanelInlinePx[tier] && direct.panelGap === expectedPanelGapPx[tier], `Expected direct ${tier} panel roots to own ${expectedPanelInlinePx[tier]}px responsive grid-gutter insets and ${expectedPanelGapPx[tier]}px group gap: ${JSON.stringify(direct)}.`);
+      assert(direct.headerPadding === 0 && direct.footerPaddingEnd === 0 && direct.footerPaddingInlineStart === 0, `Expected direct ${tier} panel sections to add no padding inside the root-owned surface inset: ${JSON.stringify(direct)}.`);
+      assert(direct.tooltipInlineStart === expectedTooltipInlinePx[tier] && direct.tooltipInlineEnd === expectedTooltipInlinePx[tier] && direct.tooltipBlockStart === expectedTooltipBlockPx[tier] && direct.tooltipBlockEnd === expectedTooltipBlockPx[tier], `Expected direct ${tier} Tooltip outer compact padding to resolve from the ${expectedTooltipInlinePx[tier]}px field role and ${expectedTooltipBlockPx[tier]}px compact block role: ${JSON.stringify(direct)}.`);
+      assert(Math.abs(direct.tooltipContainmentDelta) <= 0.05 && direct.tooltipTextPaddingStart > 0 && direct.tooltipTextPaddingEnd === 0 && direct.tooltipTextMarginEnd >= direct.tooltipTextPaddingStart, `Expected direct ${tier} Tooltip to contain its inner metric nudge and SP13 end compensation independently from outer padding: ${JSON.stringify(direct)}.`);
+      assert(direct.tooltipArrowPresent === 1 && direct.tooltipDetachedArrowAbsent === 1, `Expected direct ${tier} Tooltip arrow anatomy to remain present while detached mode suppresses it: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.regularPainted + direct.regularCompensation - direct.regularOccupied) <= 0.05, `Expected direct ${tier} painted row plus compensation to equal its occupied row: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.inputHeight + direct.inputMarginBottom - direct.regularOccupied) <= 0.05 && Math.abs(direct.buttonHeight + direct.buttonMarginBottom - direct.regularOccupied) <= 0.05, `Expected direct ${tier} fields and buttons to consume one complete regular occupied row: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.bodyLine + direct.inBoxPaddingStart + direct.inBoxPaddingEnd - direct.regularOccupied) <= 0.05, `Expected direct ${tier} in-box start, body line, and end compensation to equal the occupied row: ${JSON.stringify(direct)}.`);
-      assert(Math.abs(direct.nestedInputHeight - direct.nestedFramedPainted) <= 0.05 && direct.nestedInputHeight <= direct.bodyLine + 0.05, `Expected direct ${tier} nested framed fields to use the derived paint ledger and fit inside the host body line: ${JSON.stringify(direct)}.`);
+      assert(Math.abs(direct.nestedInputHeight - direct.nestedPainted) <= 0.05 && direct.nestedInputHeight <= direct.bodyLine + 0.05, `Expected direct ${tier} nested framed fields to use the derived paint ledger and fit inside the host body line: ${JSON.stringify(direct)}.`);
       assert(Math.abs(direct.tableRowHeight - direct.regularOccupied) <= 0.1, `Expected direct ${tier} table rows to absorb the shared occupied contract in-box: ${JSON.stringify(direct)}.`);
       directCaps.push(direct.fixedWidth);
       if (tier === "app") {
@@ -4798,38 +7510,40 @@ async function verifyDirectAndClassSurfaceGeometry(origin: string): Promise<void
 
 async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
   const canonicalExpected = {
-    editorial: [0.5, 0.5, 0.5, 1.5, 4, 8, 0.5, 1, 2, 1, 1, 4],
-    documentation: [0.25, 0.5, 0.5, 1.5, 3, 6, 0.5, 0.75, 1.5, 1, 1, 3],
-    app: [0.25, 0.5, 0.25, 0.5, 1, 2, 0.25, 0.75, 1.5, 0.75, 0.75, 3],
-    os: [0.25, 0.25, 0.25, 1.5, 3, 6, 0.25, 0.5, 1.25, 0.5, 0.5, 2]
+    editorial: [0.5, 0.5, 0.5, 0.5, 1.5, 4.5, 1, 0.5, 0, 0.5, 0, 1, 1],
+    documentation: [0.25, 0.5, 0.5, 0.25, 1.25, 2.5, 0.75, 0.5, 0.25, 0.5, 0.25, 0.75, 0.75],
+    app: [0.25, 0.5, 0.5, 0.25, 1.25, 2.5, 0.75, 0.5, 0.25, 0.5, 0.25, 0.75, 0.75],
+    os: [0.25, 0.25, 0.25, 0.25, 1.5, 3, 0.5, 0.25, 0, 0.25, 0, 0.5, 0.5]
   } as const;
   const canonicalProperties = [
     "--spacing-baseline",
-    "--spacing-gap-field-block",
     "--spacing-gap-mark-inline",
+    "--spacing-gap-item-inline",
+    "--spacing-gap-item-block",
     "--spacing-gap-group-block",
-    "--spacing-gap-pattern-block",
-    "--spacing-gap-region-block",
-    "--spacing-inset-field-inline",
+    "--spacing-gap-section-block",
     "--spacing-inset-action-inline",
-    "--spacing-inset-continuation-inline",
-    "--spacing-inset-surface-inline",
-    "--spacing-inset-surface-block",
-    "--spacing-inset-strip-block"
+    "--spacing-inset-input-inline",
+    "--spacing-inset-control-block",
+    "--spacing-inset-surface-compact-inline",
+    "--spacing-inset-surface-compact-block",
+    "--spacing-inset-surface-standard-inline",
+    "--spacing-inset-surface-standard-block"
   ] as const;
   const aliases = [
     "--bf-baseline",
-    "--bf-field-gap",
     "--bf-leading-mark-gap",
+    "--bf-element-gap-inline",
+    "--bf-field-gap",
     "--bf-section-space-shallow",
     "--bf-section-space",
-    "--bf-section-space-deep",
-    "--bf-component-inline-inset-field",
     "--bf-component-inline-inset-action",
-    "--bf-component-inline-inset-continuation",
+    "--bf-component-inline-inset-field",
+    "--bf-control-block-inset",
+    "--bf-surface-compact-inset-inline",
+    "--bf-surface-compact-inset-block",
     "--bf-panel-padding-inline",
-    "--bf-panel-padding-block",
-    "--bf-strip-space"
+    "--bf-panel-padding-block"
   ] as const;
   const tiers = Object.keys(canonicalExpected) as Array<keyof typeof canonicalExpected>;
   const canonicalClass = {
@@ -4839,6 +7553,7 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     os: "os"
   } as const;
   const dimensionProperty = new Map<number, string>([
+    [0, "--dimension-000"],
     [0.25, "--dimension-050"],
     [0.5, "--dimension-100"],
     [0.75, "--dimension-150"],
@@ -4846,8 +7561,10 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     [1.25, "--dimension-250"],
     [1.5, "--dimension-300"],
     [2, "--dimension-400"],
+    [2.5, "--dimension-500"],
     [3, "--dimension-600"],
     [4, "--dimension-800"],
+    [4.5, "--dimension-900"],
     [6, "--dimension-1200"],
     [8, "--dimension-1600"]
   ]);
@@ -4865,10 +7582,8 @@ async function verifyDtcgSpacingMatrix(origin: string): Promise<void> {
     }).join(";");
     return `${selector}{${declarations}}`;
   }).join("");
-  // Primitive references and ds.tokens match the current generated
-  // sets.primitive.css + sets.semantic.css output. The product selectors are a
-  // synthetic forward-compatibility guard for Canonical's documented future
-  // shape; the pinned provider currently emits only :root spacing declarations.
+  // The independent stylesheet probe uses the provider's dimension scale to
+  // verify that BF aliases track the semantic properties in either load order.
   const canonicalProviderCss = `:root{${primitiveDeclarations}}@layer ds.tokens{${providerRules}}`;
   const browser = await openBrowser();
 
@@ -5004,6 +7719,37 @@ async function verifyNarrowTierSwitchRangeGeometry(origin: string): Promise<void
       </body>`);
     await page.waitForFunction(() => document.fonts.status === "loaded");
 
+    const cssomPage = await browser.newPage({ viewport: { width: 600, height: 480 } });
+    await cssomPage.goto(`${origin}/demo/components/range.html`, { waitUntil: "networkidle" });
+    await cssomPage.emulateMedia({ forcedColors: "active" });
+    const forcedThumbRules = await cssomPage.evaluate(() => {
+      const matched: Array<{ outline: string; selector: string }> = [];
+      const pending: CSSRule[] = [];
+      for (const sheet of Array.from(document.styleSheets)) {
+        try {
+          pending.push(...Array.from(sheet.cssRules));
+        } catch {
+          // Font stylesheets may be cross-origin; the tier stylesheet is local.
+        }
+      }
+      while (pending.length > 0) {
+        const rule = pending.pop();
+        if (!rule) continue;
+        if (rule instanceof CSSStyleRule && rule.selectorText.includes("::-webkit-slider-thumb")) {
+          matched.push({ outline: rule.style.outline, selector: rule.selectorText });
+        }
+        if ("cssRules" in rule) {
+          pending.push(...Array.from((rule as CSSGroupingRule).cssRules));
+        }
+      }
+      return matched;
+    });
+    assert(
+      forcedThumbRules.some(rule => rule.selector.includes("input[type=") && rule.selector.includes("range") && rule.outline.includes("CanvasText")),
+      `Expected Chromium to retain the forced-colors WebKit thumb outline as a valid CSSOM rule; got ${JSON.stringify(forcedThumbRules)}.`
+    );
+    await cssomPage.close();
+
     const range = page.locator("#tier-density");
     await range.dispatchEvent("input");
     const initialBox = await range.boundingBox();
@@ -5036,6 +7782,217 @@ async function verifyNarrowTierSwitchRangeGeometry(origin: string): Promise<void
     assert(state.footerOverflow <= 1 && state.rangeOverflow <= 1 && state.rangeWidth >= initialBox.width - 1, `Expected tier switching to preserve a usable, non-overflowing range; footer overflow=${state.footerOverflow}px, range overflow=${state.rangeOverflow}px, width=${state.rangeWidth}px.`);
     assert(state.samples.every(sample => sample.right - sample.left >= 300), `Expected every tier transition to retain the range's usable track width, got ${JSON.stringify(state.samples)}.`);
     await page.close();
+  } finally {
+    await browser.close();
+  }
+}
+
+async function verifyRangeAndSurfaceRepair(origin: string): Promise<void> {
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const tierExpectations = {
+    editorial: { controlInset: 0, trackSize: 2 },
+    documentation: { controlInset: 4, trackSize: 1 },
+    app: { controlInset: 4, trackSize: 1 },
+    os: { controlInset: 0, trackSize: 1 }
+  } as const;
+  const browser = await openBrowser();
+
+  try {
+    const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
+    await page.addInitScript("globalThis.__name = value => value;");
+    await page.goto(`${origin}/demo/spec/buckets/05-gaps.html?bundle=after`, { waitUntil: "networkidle" });
+    const tierSelect = page.locator("[data-page-chrome-tier-select]");
+    const range = page.locator("#gap-range");
+    const numberInput = page.locator(".bf-slider-input").first();
+
+    for (const tier of tiers) {
+      await tierSelect.selectOption(tier);
+      await page.waitForFunction(expected => document.body.dataset.bfTier === expected, tier);
+      await waitForFonts(page);
+      await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+      await range.scrollIntoViewIfNeeded();
+      const before = await range.evaluate(element => {
+        const input = element as HTMLInputElement;
+        const slider = input.closest<HTMLElement>(".bf-slider");
+        const number = slider?.querySelector<HTMLInputElement>(".bf-slider-input");
+        const sample = input.closest<HTMLElement>(".bucket-sample");
+        const label = sample?.querySelector<HTMLElement>("label[for='gap-range']");
+        const marker = label?.querySelector<HTMLElement>(".bucket-baseline-marker");
+        if (!slider || !number || !sample || !label || !marker) throw new Error("Missing Range repair fixture anatomy.");
+        const inputBox = input.getBoundingClientRect();
+        const sliderBox = slider.getBoundingClientRect();
+        const numberBox = number.getBoundingClientRect();
+        const inputStyle = getComputedStyle(input);
+        const labelStyle = getComputedStyle(label);
+        const numberStyle = getComputedStyle(number);
+        const backgroundParts = inputStyle.backgroundSize.split(" ");
+        const positionParts = inputStyle.backgroundPosition.split(" ");
+        const adjustmentProbe = document.createElement("i");
+        adjustmentProbe.style.cssText = "position:absolute;visibility:hidden;transform:translateY(var(--bf-slider-track-center-adjustment))";
+        adjustmentProbe.style.setProperty("--bf-slider-track-center-adjustment", inputStyle.getPropertyValue("--bf-slider-track-center-adjustment"));
+        slider.append(adjustmentProbe);
+        const adjustmentMatrix = new DOMMatrixReadOnly(getComputedStyle(adjustmentProbe).transform);
+        adjustmentProbe.style.cssText = "position:absolute;visibility:hidden;inline-size:var(--bf-control-block-inset)";
+        const controlInset = adjustmentProbe.getBoundingClientRect().width;
+        adjustmentProbe.remove();
+        const trackSize = Number.parseFloat(backgroundParts.at(-1) ?? "");
+        const trackStart = Number.parseFloat(positionParts.at(-1) ?? "");
+        const labelTextRange = document.createRange();
+        labelTextRange.selectNodeContents(label);
+        const labelTextBox = labelTextRange.getBoundingClientRect();
+        const labelBox = label.getBoundingClientRect();
+        const labelLineStart = labelBox.top + Number.parseFloat(labelStyle.paddingBlockStart);
+        const numberLineStart = numberBox.top + Number.parseFloat(numberStyle.borderBlockStartWidth)
+          + Number.parseFloat(numberStyle.paddingBlockStart);
+        const labelBaseline = marker.getBoundingClientRect().top;
+        const labelBaselineOffset = labelBaseline - labelLineStart;
+        const numberLineCenter = numberLineStart + (Number.parseFloat(numberStyle.lineHeight) / 2);
+        return {
+          adjustment: adjustmentMatrix.m42,
+          backgroundRepeat: inputStyle.backgroundRepeat,
+          baseline: marker.getBoundingClientRect().top,
+          controlInset,
+          fontFamily: labelStyle.fontFamily,
+          guideBaseline: Number.parseFloat(sample.dataset.guideBaseline ?? ""),
+          fontParity: labelStyle.fontFamily === numberStyle.fontFamily && labelStyle.fontSize === numberStyle.fontSize
+            && labelStyle.fontStyle === numberStyle.fontStyle && labelStyle.fontWeight === numberStyle.fontWeight
+            && labelStyle.lineHeight === numberStyle.lineHeight,
+          input: { height: inputBox.height, top: inputBox.top, width: inputBox.width },
+          labelBaseline,
+          labelLineCenter: labelLineStart + (Number.parseFloat(labelStyle.lineHeight) / 2),
+          labelTextCenter: labelTextBox.top + (labelTextBox.height / 2),
+          numberBaseline: numberLineStart + labelBaselineOffset,
+          numberLineCenter,
+          slider: { height: sliderBox.height, top: sliderBox.top },
+          trackCenter: inputBox.top + trackStart + (trackSize / 2),
+          trackSize,
+          translatedNativeCenter: inputBox.top + (inputBox.height / 2) + adjustmentMatrix.m42
+        };
+      });
+      const expected = tierExpectations[tier];
+      assert(Math.abs(before.trackSize - expected.trackSize) < 0.02 && Math.abs(before.controlInset - expected.controlInset) < 0.02 && before.fontFamily.includes("Ubuntu Sans"), `Expected ${tier} Range measurement to use the loaded tier stylesheet and font metrics: ${JSON.stringify(before)}.`);
+      assert(before.backgroundRepeat === "no-repeat", `Expected ${tier} composite Range to paint one thin track rather than filling its occupied interaction row: ${JSON.stringify(before)}.`);
+      assert(Math.abs(before.input.top - before.slider.top) < 0.02 && Math.abs(before.input.height - before.slider.height) < 0.02 && before.input.width > 80, `Expected ${tier} Range to keep the natural full-row interaction box without a relative overflow offset: ${JSON.stringify(before)}.`);
+      assert(Math.abs(before.trackCenter - before.labelTextCenter) < 0.52 && Math.abs(before.translatedNativeCenter - before.trackCenter) < 0.05, `Expected ${tier} Range fill, native track and thumb to share the label's metric visual center: ${JSON.stringify(before)}.`);
+      assert(before.fontParity && Math.abs(before.labelLineCenter - before.numberLineCenter) < 0.02 && Math.abs(before.labelBaseline - before.numberBaseline) < 0.02, `Expected ${tier} horizontal Range label and numeric peer to share one text line and baseline seat: ${JSON.stringify(before)}.`);
+      const sample = range.locator("xpath=ancestor::div[contains(@class,'bucket-sample')]");
+      const track = sample.locator("xpath=ancestor::div[contains(@class,'bucket-track')]");
+      const trackTop = await track.evaluate(element => element.getBoundingClientRect().top);
+      assert(Math.abs((before.baseline - trackTop) - before.guideBaseline) < 0.02, `Expected ${tier} Range label baseline to retain its measured guide coordinate: ${JSON.stringify(before)}.`);
+
+      await numberInput.fill("35");
+      const numericSync = await range.evaluate(element => ({
+        fill: Number.parseFloat(getComputedStyle(element).getPropertyValue("--bf-slider-fill-percent")),
+        value: (element as HTMLInputElement).value
+      }));
+      assert(numericSync.value === "35" && Math.abs(numericSync.fill - 35) < 0.01, `Expected ${tier} numeric peer input to update the native Range value and painted fill: ${JSON.stringify(numericSync)}.`);
+      await range.fill("20");
+      assert(await numberInput.inputValue() === "20", `Expected ${tier} native Range input to keep its number peer synchronized after input.`);
+      await range.focus();
+      await page.keyboard.press("ArrowRight");
+      assert(await range.inputValue() === "21" && await numberInput.inputValue() === "21", `Expected ${tier} Range keyboard interaction to update both native peers.`);
+      const box = await range.boundingBox();
+      assert(box, `Expected ${tier} Range to expose a pointer box.`);
+      await page.mouse.move(box.x + (box.width * 0.2), before.trackCenter);
+      await page.mouse.down();
+      await page.mouse.move(box.x + (box.width * 0.8), before.trackCenter, { steps: 12 });
+      await page.mouse.up();
+      const pointerState = await range.evaluate(element => {
+        const input = element as HTMLInputElement;
+        const slider = input.closest<HTMLElement>(".bf-slider");
+        const number = slider?.querySelector<HTMLInputElement>(".bf-slider-input");
+        const sample = input.closest<HTMLElement>(".bucket-sample");
+        const marker = sample?.querySelector<HTMLElement>("label[for='gap-range'] .bucket-baseline-marker");
+        return {
+          baseline: marker?.getBoundingClientRect().top ?? Number.NaN,
+          fill: Number.parseFloat(getComputedStyle(input).getPropertyValue("--bf-slider-fill-percent")),
+          number: number?.value,
+          value: Number(input.value)
+        };
+      });
+      assert(pointerState.value > 60 && pointerState.number === String(pointerState.value) && Math.abs(pointerState.fill - pointerState.value) < 0.01, `Expected ${tier} pointer interaction on the thin native track to update the Range and numeric peer: ${JSON.stringify(pointerState)}.`);
+      assert(Math.abs(pointerState.baseline - before.baseline) < 0.02, `Expected ${tier} Range interaction to preserve the label baseline: ${JSON.stringify({ before, pointerState })}.`);
+    }
+
+    await page.goto(`${origin}/demo/spec/buckets/06-surfaces.html?bundle=after`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    const modalSamples = page.locator('.surface-sample[data-kind="modal"]:has(dialog)');
+    const panelSamples = page.locator('.surface-sample[data-kind="panel"]:has(.surface-panel-stage)');
+    assert(await modalSamples.count() === 2 && await panelSamples.count() === 2, "Expected BF06 to retain two independently launchable Modal and SidePanel comparisons.");
+
+    for (const sample of await modalSamples.all()) {
+      const dialog = sample.locator("dialog.surface-modal-proof");
+      assert(!await dialog.evaluate(element => (element as HTMLDialogElement).open), "Expected a Modal comparison launcher to describe a closed initial state truthfully.");
+      await sample.locator(":scope > .surface-probe [data-modal-open]:not(.bucket-external-clone)").click();
+      await dialog.waitFor({ state: "visible" });
+      const openGeometry = await dialog.evaluate(element => {
+        const dialog = element as HTMLDialogElement;
+        const owner = dialog.querySelector<HTMLElement>(".bf-modal-dialog");
+        const body = dialog.querySelector<HTMLElement>(".bf-modal-body");
+        if (!owner || !body) throw new Error("Missing open Modal anatomy.");
+        const box = owner.getBoundingClientRect();
+        return { height: box.height, open: dialog.open, scrollable: body.scrollHeight > body.clientHeight, width: box.width };
+      });
+      assert(openGeometry.open && openGeometry.width > 0 && openGeometry.height > 0 && openGeometry.scrollable, `Expected BF06 Modal launcher to expose the real open, scroll-owning surface: ${JSON.stringify(openGeometry)}.`);
+      await dialog.locator("[data-modal-close]").first().click();
+      await dialog.waitFor({ state: "hidden" });
+    }
+
+    for (const sample of await panelSamples.all()) {
+      const toggle = sample.locator(":scope > .surface-probe [data-panel-drawer-toggle]:not(.bucket-external-clone)");
+      const aside = sample.locator(".bf-aside.is-overlay");
+      assert(!await aside.evaluate(element => element.classList.contains("is-open")) && await toggle.getAttribute("aria-expanded") === "false", "Expected a SidePanel comparison launcher to describe a closed initial state truthfully.");
+      await toggle.click();
+      await aside.waitFor({ state: "visible" });
+      const openGeometry = await sample.evaluate(element => {
+        const aside = element.querySelector<HTMLElement>(".bf-aside.is-overlay");
+        const owner = aside?.querySelector<HTMLElement>(".bf-panel");
+        if (!aside || !owner) throw new Error("Missing open SidePanel anatomy.");
+        const ownerBox = owner.getBoundingClientRect();
+        return {
+          expanded: element.querySelector("[data-panel-drawer-toggle]:not(.bucket-external-clone)")?.getAttribute("aria-expanded"),
+          hasFields: owner.querySelectorAll(".bf-field").length === 2,
+          ownerVisible: ownerBox.width > 0 && ownerBox.height > 0,
+          visible: getComputedStyle(aside).visibility === "visible"
+        };
+      });
+      assert(openGeometry.expanded === "true" && openGeometry.visible && openGeometry.ownerVisible && openGeometry.hasFields, `Expected BF06 SidePanel launcher to expose the real open surface and content: ${JSON.stringify(openGeometry)}.`);
+      await aside.locator("[data-panel-drawer-close]").first().click();
+      await aside.waitFor({ state: "hidden" });
+    }
+
+    for (const width of [1600, 390]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+      const navigationSamples = page.locator('.surface-sample[data-kind="navigation"]:has([data-owner])');
+      if (width === 390) {
+        for (const sample of await navigationSamples.all()) {
+          await sample.locator(":scope > .surface-probe > .bf-side-navigation > .bf-side-navigation-toggle").click();
+          await sample.locator(".bf-top-navigation-logo-title").waitFor({ state: "visible" });
+        }
+      }
+      const navigationBrands = await navigationSamples.evaluateAll(samples => samples.map(sample => {
+        const panel = sample.querySelector<HTMLElement>("[data-owner]");
+        const logo = sample.querySelector<HTMLElement>(".bf-top-navigation-logo.is-canonical-tagged");
+        const link = logo?.querySelector<HTMLElement>(".bf-top-navigation-link");
+        const tag = link?.querySelector<HTMLElement>(".bf-top-navigation-logo-tag:has(img.bf-top-navigation-logo-icon)");
+        const title = link?.querySelector<HTMLElement>(".bf-top-navigation-logo-title");
+        const heading = sample.querySelector<HTMLElement>(".bf-side-navigation-heading");
+        const rowLabel = sample.querySelector<HTMLElement>(".bf-side-navigation-link");
+        if (!panel || !logo || !link || !tag || !title || !heading || !rowLabel) return null;
+        const panelBox = panel.getBoundingClientRect();
+        const titleBox = title.getBoundingClientRect();
+        const rowLabelRange = document.createRange();
+        rowLabelRange.selectNodeContents(rowLabel);
+        return {
+          starts: [titleBox.left, heading.getBoundingClientRect().left, rowLabelRange.getBoundingClientRect().left],
+          titleClearsFrame: titleBox.left > panelBox.left + 1,
+          visible: titleBox.width > 0 && titleBox.height > 0
+        };
+      }));
+      assert(navigationBrands.length === 2 && navigationBrands.every(brand => brand?.titleClearsFrame && brand.visible && brand.starts.every(Number.isFinite) && Math.max(...brand.starts) - Math.min(...brand.starts) < 0.02), `Expected both BF06 SideNavigation comparisons at ${width}px to use the genuine tagged brand anatomy on the Projects and row-label keyline: ${JSON.stringify(navigationBrands)}.`);
+      if (width === 390) await page.keyboard.press("Escape");
+    }
   } finally {
     await browser.close();
   }
@@ -5240,7 +8197,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           const iconRect = (notification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
           const notificationStyle = getComputedStyle(notification);
           const accentStyle = getComputedStyle(notification, "::before");
-          const accentEnd = notificationRect.left + Number.parseFloat(notificationStyle.borderInlineStartWidth) + Number.parseFloat(accentStyle.insetInlineStart) + Number.parseFloat(accentStyle.inlineSize);
+          const accentEnd = notificationRect.left + Number.parseFloat(accentStyle.insetInlineStart) + Number.parseFloat(accentStyle.inlineSize);
           return iconRect.left - accentEnd;
         });
         const iconToTextGaps = notifications.map(notification => {
@@ -5290,6 +8247,28 @@ async function verifyParityInteractions(origin: string): Promise<void> {
             required: close.getBoundingClientRect().width + Number.parseFloat(closeStyle.insetInlineEnd)
           }];
         });
+        const shellClosures = notifications.map(notification => {
+          const rootRect = notification.getBoundingClientRect();
+          const rootStyle = getComputedStyle(notification);
+          const flowChildren = Array.from(notification.children).filter(child => getComputedStyle(child).position !== "absolute") as HTMLElement[];
+          const last = flowChildren.at(-1);
+          const lastRect = last?.getBoundingClientRect();
+          const lastStyle = last ? getComputedStyle(last) : null;
+          const lastInset = lastStyle ? Number.parseFloat(lastStyle.insetBlockStart) : 0;
+          const flowBottom = (lastRect?.bottom ?? rootRect.top) - (Number.isFinite(lastInset) ? lastInset : 0);
+          const expectedBottom = flowBottom
+            + (lastStyle ? Number.parseFloat(lastStyle.marginBlockEnd) : 0)
+            + Number.parseFloat(rootStyle.paddingBlockEnd)
+            + Number.parseFloat(rootStyle.borderBlockEndWidth);
+          const remainder = ((rootRect.height % baseline) + baseline) % baseline;
+          return {
+            kind: notification.className,
+            height: rootRect.height,
+            endPadding: Number.parseFloat(rootStyle.paddingBlockEnd),
+            closureDelta: rootRect.bottom - expectedBottom,
+            gridDelta: Math.min(remainder, baseline - remainder)
+          };
+        });
         const documentElement = document.documentElement;
         const originalDirection = documentElement.getAttribute("dir");
         documentElement.setAttribute("dir", "rtl");
@@ -5297,10 +8276,9 @@ async function verifyParityInteractions(origin: string): Promise<void> {
         const rtlNotificationRect = rtlNotification.getBoundingClientRect();
         const rtlIconRect = (rtlNotification.querySelector(".bf-notification-icon") as HTMLElement).getBoundingClientRect();
         const rtlContentRect = (rtlNotification.querySelector(".bf-notification-content") as HTMLElement).getBoundingClientRect();
-        const rtlNotificationStyle = getComputedStyle(rtlNotification);
         const rtlAccentStyle = getComputedStyle(rtlNotification, "::before");
         const rtlBarWidth = Number.parseFloat(rtlAccentStyle.inlineSize);
-        const rtlAccentStart = rtlNotificationRect.right - Number.parseFloat(rtlNotificationStyle.borderInlineStartWidth) - Number.parseFloat(rtlAccentStyle.insetInlineStart) - rtlBarWidth;
+        const rtlAccentStart = rtlNotificationRect.right - Number.parseFloat(rtlAccentStyle.insetInlineStart) - rtlBarWidth;
         const rtlClose = document.querySelector<HTMLElement>(".bf-notification-close");
         const rtlCloseRootRect = (rtlClose?.closest(".bf-notification") as HTMLElement).getBoundingClientRect();
         const rtlCloseRect = rtlClose?.getBoundingClientRect();
@@ -5332,6 +8310,7 @@ async function verifyParityInteractions(origin: string): Promise<void> {
           iconFirstLineCentreDeltas,
           metricFlushPairs,
           closeClearances,
+          shellClosures,
           rtlGeometry,
           expectedLeadingIconGap: Math.max(0, continuationInset - referenceIconSize - markGap - referenceBarWidth),
           expectedIconToTextGap: markGap,
@@ -5341,13 +8320,14 @@ async function verifyParityInteractions(origin: string): Promise<void> {
       });
       assert(geometry.baseline > 0, `Expected ${tier} notification fixture to resolve a positive baseline.`);
       assert(geometry.barThicknessToken === "0.1875rem" && geometry.accentWidths.every(width => width === 3), `Expected ${tier} notification accents to use the shared 3px/0.1875rem emphasis bar; got ${geometry.accentWidths.join(", ")}px/${geometry.barThicknessToken}.`);
-      assert(geometry.rootLeadingBorders.every(width => width === 1), `Expected ${tier} notification accent paint not to consume the continuation rail; root borders=${geometry.rootLeadingBorders.join(", ")}px.`);
+      assert(geometry.rootLeadingBorders.every(width => width === 0), `Expected ${tier} notification boundary paint to remain out of flow; root borders=${geometry.rootLeadingBorders.join(", ")}px.`);
       assert(geometry.paddingBlockStarts.every(padding => padding === 0), `Expected ${tier} notification roots to have no top padding; got ${geometry.paddingBlockStarts.join(", ")}px.`);
       assert(geometry.leadingIconGaps.every(gap => gap >= -0.05 && Math.abs(gap - geometry.expectedLeadingIconGap) <= 0.05), `Expected ${tier} notification accent paint not to overlap the leading icon while preserving the shared continuation (${geometry.expectedLeadingIconGap}px after the bar); got ${geometry.leadingIconGaps.join(", ")}px.`);
       assert(geometry.iconToTextGaps.every(gap => Math.abs(gap - geometry.expectedIconToTextGap) <= 0.05), `Expected ${tier} notification icon-to-text gaps to equal the shared Canonical mark gap (${geometry.expectedIconToTextGap}px); got ${geometry.iconToTextGaps.join(", ")}px.`);
       assert(geometry.iconFirstLineCentreDeltas.every(delta => delta <= 0.05), `Expected ${tier} notification severity icons to align to the first title/body line; centre deltas=${geometry.iconFirstLineCentreDeltas.join(", ")}px.`);
       assert(geometry.metricFlushPairs.length === 4 && geometry.metricFlushPairs.every(pair => pair.marginEnd === 0 && pair.paddingStart === 0 && pair.stackGap === 0 && pair.glyphGap <= geometry.baseline + 1), `Expected ${tier} separate notification roles to use the metric-flush relationship; got ${JSON.stringify(geometry.metricFlushPairs)} at ${geometry.baseline}px baseline.`);
       assert(geometry.closeClearances.every(clearance => clearance.reserved >= clearance.required), `Expected ${tier} notification copy to clear the close control; got ${JSON.stringify(geometry.closeClearances)}.`);
+      assert(geometry.shellClosures.every(shell => Math.abs(shell.closureDelta) <= 0.1 && shell.endPadding >= 0 && (shell.kind.includes("is-borderless") || shell.gridDelta <= 0.1)), `Expected ${tier} notification shells to close exactly around their final flow child with nonnegative owner padding, and bordered/inline shells to close to the active baseline; the embedded borderless state may wrap inside its external surface owner. Got ${JSON.stringify(geometry.shellClosures)}.`);
       assert(Math.abs(geometry.rtlGeometry.leadingIconGap - geometry.expectedLeadingIconGap) <= 0.05 && Math.abs(geometry.rtlGeometry.iconToTextGap - geometry.expectedIconToTextGap) <= 0.05 && geometry.rtlGeometry.closeAtInlineEnd, `Expected ${tier} notification leading geometry and close control to mirror in RTL; got ${JSON.stringify(geometry.rtlGeometry)}.`);
       assert(geometry.overflow.every(delta => delta <= 1), `Expected ${tier} notifications to avoid inline overflow; deltas=${geometry.overflow.join(", ")}.`);
       assert(geometry.notificationTitlesUseH6 && geometry.inlineUsesSingleBodyRun && geometry.notificationFontSizes.length > 0 && geometry.notificationFontSizes.every(fontSize => fontSize === geometry.h6FontSize), `Expected ${tier} separate notification headings to use bf-h6 while inline feedback stays one strong-plus-regular body run; heading classes=${geometry.notificationTitlesUseH6}, inline=${geometry.inlineUsesSingleBodyRun}, sizes=${geometry.notificationFontSizes.join(", ")}.`);
@@ -5368,14 +8348,339 @@ async function verifyParityInteractions(origin: string): Promise<void> {
   }
 }
 
+async function verifySpec028ReviewDemo(origin: string): Promise<void> {
+  const browser = await openBrowser();
+  const provenance = JSON.parse(await fs.readFile(path.resolve("demo/spec-028/provenance.json"), "utf8")) as {
+    before: { bundles: Record<string, string> };
+    after: { bundles: Record<string, string> };
+  };
+  const tiers = ["editorial", "documentation", "app", "os"] as const;
+  const versions = ["before", "after"] as const;
+  const viewports = [{ label: "desktop", width: 1100, height: 800 }, { label: "mobile", width: 390, height: 844 }] as const;
+  const pages = [
+    { label: "vertical spacing", route: "/demo/spec/spacing-vertical.html", sentinel: "#spacing-vertical-audit" },
+    { label: "Tooltip", route: "/demo/components/tooltip.html", sentinel: "[data-tooltip-positioned]" },
+    { label: "Cards", route: "/demo/components/cards.html", sentinel: "[data-card-wide-content]" },
+    { label: "Form", route: "/demo/components/form-atlas.html", sentinel: "input, select, textarea" },
+    { label: "SideNavigation", route: "/demo/components/side-navigation.html", sentinel: "#component-side-navigation-docs" }
+  ] as const;
+
+  try {
+    const redirectPage = await browser.newPage({ viewport: { width: 1100, height: 800 } });
+    await redirectPage.goto(`${origin}/demo/spec-028/index.html?bundle=before#vertical-controls`, { waitUntil: "networkidle" });
+    assert(redirectPage.url().includes("/demo/spec/spacing-vertical.html?bundle=before#vertical-controls"), `Expected the retired Spec 028 route to preserve query/hash while redirecting to the real vertical-spacing page; got ${redirectPage.url()}.`);
+    await redirectPage.close();
+
+    for (const viewport of viewports) {
+      for (const pageSpec of pages) {
+        const page = await browser.newPage({ deviceScaleFactor: 1, viewport });
+        const runtimeErrors: string[] = [];
+        page.on("pageerror", error => runtimeErrors.push(error.message));
+        page.on("console", message => { if (message.type() === "error") runtimeErrors.push(message.text()); });
+        await page.goto(`${origin}${pageSpec.route}?bundle=before`, { waitUntil: "networkidle" });
+        await waitForFonts(page);
+
+        const versionSelect = page.locator("[data-page-chrome-version-select]");
+        const tierSelect = page.locator("[data-page-chrome-tier-select]");
+        const sentinelHandle = await page.locator(pageSpec.sentinel).first().elementHandle();
+        assert(await versionSelect.count() === 1 && await tierSelect.count() === 1 && sentinelHandle, `Expected ${pageSpec.label}/${viewport.label} to use the real specimen page and shared BF toolbar.`);
+        if (viewport.label === "mobile") {
+          const drawerToggle = page.locator(".pc-nav > .bf-side-navigation > .bf-side-navigation-toggle");
+          const specimenRoot = page.locator("#component-side-navigation-docs");
+          const specimenToggle = specimenRoot.locator(":scope > .bf-side-navigation-toggle");
+          const specimenClose = specimenRoot.locator(".bf-side-navigation-drawer .bf-side-navigation-toggle.is-in-drawer");
+          const verifySpecimenViewportOwnership = async (state: "initial" | "reopened"): Promise<void> => {
+            await page.waitForFunction(() => {
+              const drawer = document.querySelector("#component-side-navigation-docs .bf-side-navigation-drawer");
+              const brand = drawer?.querySelector(".bf-top-navigation-link");
+              if (!(brand instanceof HTMLElement) || !drawer || drawer.getAnimations().some(animation => animation.playState === "running")) return false;
+              const rect = brand.getBoundingClientRect();
+              const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+              return rect.width > 0 && rect.height > 0 && Boolean(hit && brand.contains(hit));
+            });
+            const ownership = await page.evaluate(() => {
+              const sharedNavigation = document.querySelector<HTMLElement>(".pc-nav");
+              const sharedHeader = document.querySelector<HTMLElement>(".pc-header");
+              const sharedFooter = document.querySelector<HTMLElement>(".pc-footer");
+              const sharedToggle = sharedNavigation?.querySelector<HTMLElement>(":scope > .bf-side-navigation > .bf-side-navigation-toggle");
+              const specimen = document.querySelector<HTMLElement>("#component-side-navigation-docs");
+              const brand = specimen?.querySelector<HTMLElement>(".bf-top-navigation-link");
+              if (!sharedNavigation || !sharedHeader || !sharedFooter || !sharedToggle || !specimen || !brand) return null;
+              const brandRect = brand.getBoundingClientRect();
+              const headerRect = sharedHeader.getBoundingClientRect();
+              const footerRect = sharedFooter.getBoundingClientRect();
+              const sharedRect = sharedToggle.getBoundingClientRect();
+              const brandHit = document.elementFromPoint(brandRect.left + (brandRect.width / 2), brandRect.top + (brandRect.height / 2));
+              const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+              const renderedFocusStops = Array.from(document.querySelectorAll<HTMLElement>(focusableSelector)).filter(element => {
+                const style = getComputedStyle(element);
+                const rect = element.getBoundingClientRect();
+                return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+              }).length;
+              return {
+                brandHit: Boolean(brandHit && brand.contains(brandHit)),
+                brandVisible: brandRect.width > 0 && brandRect.height > 0 && getComputedStyle(brand).visibility === "visible",
+                footerBoxRetained: footerRect.width > 0 && footerRect.height > 0,
+                footerVisibility: getComputedStyle(sharedFooter).visibility,
+                headerBoxRetained: headerRect.width > 0 && headerRect.height > 0,
+                headerVisibility: getComputedStyle(sharedHeader).visibility,
+                renderedFocusStops,
+                sharedDisplay: getComputedStyle(sharedNavigation).display,
+                sharedToggleArea: sharedRect.width * sharedRect.height,
+                specimenExpanded: specimen.classList.contains("is-drawer-expanded")
+              };
+            });
+            assert(ownership?.specimenExpanded && ownership.brandVisible && ownership.brandHit && ownership.sharedDisplay === "none" && ownership.sharedToggleArea === 0, `Expected the ${state} expanded SideNavigation specimen to own the mobile viewport without shared chrome covering its visible brand; got ${JSON.stringify(ownership)}.`);
+
+            await specimenClose.focus();
+            assert(await specimenClose.evaluate(node => document.activeElement === node), `Expected the ${state} expanded SideNavigation specimen close control to receive focus before the Tab regression.`);
+            const sharedFocusStops: string[] = [];
+            let returnedToClose = false;
+            for (let index = 0; index < ownership.renderedFocusStops + 2; index += 1) {
+              await page.keyboard.press("Tab");
+              const focusState = await page.evaluate(() => {
+                const active = document.activeElement;
+                const specimenCloseControl = document.querySelector("#component-side-navigation-docs .bf-side-navigation-drawer .bf-side-navigation-toggle.is-in-drawer");
+                const owner = active?.closest(".pc-header, .pc-footer, .pc-nav");
+                if (!(active instanceof HTMLElement)) return { returnedToClose: false, sharedChrome: null };
+                if (!(owner instanceof HTMLElement)) return { returnedToClose: active === specimenCloseControl, sharedChrome: null };
+                const ownerName = owner.classList.contains("pc-header") ? "header" : owner.classList.contains("pc-footer") ? "footer" : "navigation";
+                return {
+                  returnedToClose: active === specimenCloseControl,
+                  sharedChrome: `${ownerName}:${active.tagName.toLowerCase()}${active.id ? `#${active.id}` : ""}${active.className ? `.${String(active.className).trim().replace(/\s+/g, ".")}` : ""}`
+                };
+              });
+              if (focusState.sharedChrome) sharedFocusStops.push(focusState.sharedChrome);
+              if (focusState.returnedToClose) {
+                returnedToClose = true;
+                break;
+              }
+            }
+            assert(sharedFocusStops.length === 0, `Expected Tab from the ${state} specimen close control never to reach hidden shared header/footer/navigation controls; reached ${sharedFocusStops.join(", ")}.`);
+            assert(returnedToClose, `Expected Tab from the ${state} specimen close control to complete one full document focus cycle without entering shared chrome.`);
+            assert(ownership.headerVisibility === "hidden" && ownership.footerVisibility === "hidden" && ownership.headerBoxRetained && ownership.footerBoxRetained, `Expected the ${state} expanded SideNavigation specimen to hide shared header/footer rendering and focus while retaining their layout boxes; got ${JSON.stringify(ownership)}.`);
+
+            await page.keyboard.press("Escape");
+            await page.waitForFunction(() => !document.querySelector("#component-side-navigation-docs")?.classList.contains("is-drawer-expanded") && getComputedStyle(document.querySelector(".pc-nav") as Element).display !== "none");
+            if (state === "reopened") {
+              assert(await specimenToggle.evaluate(node => document.activeElement === node), "Expected Escape after the keyboard-reopened Tab regression to close the specimen drawer and restore focus to its own trigger.");
+            } else {
+              await specimenToggle.focus();
+              assert(await specimenToggle.evaluate(node => document.activeElement === node), "Expected the initially expanded specimen trigger to accept focus after Escape closes its markup-open drawer.");
+            }
+
+            const expectedSharedControls = ["navigation", "tone", "baseline", "version", "tier"] as const;
+            const reachedSharedControls = new Map<string, boolean>();
+            const restoredFocusStopCount = await page.evaluate(() => {
+              const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+              return Array.from(document.querySelectorAll<HTMLElement>(focusableSelector)).filter(element => {
+                const style = getComputedStyle(element);
+                const rect = element.getBoundingClientRect();
+                return style.display !== "none" && style.visibility === "visible" && rect.width > 0 && rect.height > 0;
+              }).length;
+            });
+            let restoredCycleComplete = false;
+            for (let index = 0; index < restoredFocusStopCount + 2; index += 1) {
+              await page.keyboard.press("Tab");
+              const focusState = await page.evaluate(() => {
+                const active = document.activeElement;
+                const specimenTrigger = document.querySelector("#component-side-navigation-docs > .bf-side-navigation-toggle");
+                if (!(active instanceof HTMLElement)) return { cycleComplete: false, hit: false, key: null };
+                const key = active.matches(".pc-nav > .bf-side-navigation > .bf-side-navigation-toggle") ? "navigation"
+                  : active.matches("[data-page-chrome-tone-toggle]") ? "tone"
+                    : active.matches("[data-page-chrome-baseline-toggle]") ? "baseline"
+                      : active.matches("[data-page-chrome-version-select]") ? "version"
+                        : active.matches("[data-page-chrome-tier-select]") ? "tier"
+                          : null;
+                const interactionOwner = active.closest<HTMLElement>("label") ?? active;
+                const rect = interactionOwner.getBoundingClientRect();
+                const hit = document.elementFromPoint(rect.left + (rect.width / 2), rect.top + (rect.height / 2));
+                return {
+                  cycleComplete: active === specimenTrigger,
+                  hit: Boolean(hit && (hit === interactionOwner || interactionOwner.contains(hit))),
+                  key
+                };
+              });
+              if (focusState.key) reachedSharedControls.set(focusState.key, focusState.hit);
+              if (focusState.cycleComplete) {
+                restoredCycleComplete = true;
+                break;
+              }
+            }
+            assert(restoredCycleComplete && expectedSharedControls.every(control => reachedSharedControls.get(control)), `Expected one real Tab cycle after Escape from the ${state} specimen drawer to reach hit-testable shared navigation and all four footer controls; got ${JSON.stringify(Object.fromEntries(reachedSharedControls))}.`);
+          };
+
+          if (pageSpec.label === "SideNavigation") {
+            await verifySpecimenViewportOwnership("initial");
+          }
+
+          await drawerToggle.focus();
+          await drawerToggle.press("Enter");
+          await page.waitForFunction(() => document.querySelector(".pc-nav > .bf-side-navigation")?.classList.contains("is-drawer-expanded"));
+          assert(await page.locator(".pc-nav .bf-side-navigation-drawer").getAttribute("aria-hidden") === "false", `Expected ${pageSpec.label}/mobile the shared BF drawer toggle to expose the catalog.`);
+          await page.keyboard.press("Escape");
+          assert(await page.locator(".pc-nav .bf-side-navigation-drawer").getAttribute("aria-hidden") === "true" && await drawerToggle.getAttribute("aria-expanded") === "false" && await drawerToggle.evaluate(node => document.activeElement === node), `Expected ${pageSpec.label}/mobile Escape to close the shared BF catalog drawer and restore focus.`);
+
+          if (pageSpec.label === "SideNavigation") {
+            await specimenToggle.focus();
+            await specimenToggle.press("Space");
+            await page.waitForFunction(() => document.querySelector("#component-side-navigation-docs")?.classList.contains("is-drawer-expanded"));
+            assert(await page.locator(".pc-nav").evaluate(node => getComputedStyle(node).display === "none") && !await page.locator(".pc-nav > .bf-side-navigation").evaluate(node => node.classList.contains("is-drawer-expanded")), "Expected the specimen and shared page-navigation toggles to preserve independent drawer state.");
+            await verifySpecimenViewportOwnership("reopened");
+          }
+
+          await page.locator("main, .pc-content").first().scrollIntoViewIfNeeded();
+          await versionSelect.focus();
+          await page.keyboard.press("End");
+          await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-version]")?.dataset.bundleVersion === "after");
+          await page.keyboard.press("Home");
+          await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-version]")?.dataset.bundleVersion === "before");
+          await tierSelect.focus();
+          await page.keyboard.press("End");
+          await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-tier]")?.dataset.bundleTier === "os");
+          await page.keyboard.press("Home");
+          await page.waitForFunction(() => document.querySelector<HTMLLinkElement>("link[data-bundle-tier]")?.dataset.bundleTier === "editorial");
+        }
+
+        for (const version of versions) {
+          await versionSelect.selectOption(version);
+          for (const tier of tiers) {
+            await tierSelect.selectOption(tier);
+            await page.waitForFunction(({ expectedTier, expectedVersion }) => {
+              const link = document.querySelector<HTMLLinkElement>("link[data-bundle-version]");
+              return link?.dataset.bundleTier === expectedTier && link.dataset.bundleVersion === expectedVersion && document.body.dataset.bfTier === expectedTier;
+            }, { expectedTier: tier, expectedVersion: version });
+            await waitForFonts(page);
+
+            const state = await page.evaluate(async ({ expectedVersion, expectedWidth }) => {
+              const link = document.querySelector<HTMLLinkElement>("link[data-bundle-version]");
+              const footer = document.querySelector<HTMLElement>("[data-page-chrome].pc-footer");
+              const nav = document.querySelector<HTMLElement>("[data-page-chrome].pc-nav");
+              const response = link ? await fetch(link.href, { cache: "no-store" }) : null;
+              const bytes = response ? new Uint8Array(await response.arrayBuffer()) : new Uint8Array();
+              const digest = bytes.length > 0 ? await crypto.subtle.digest("SHA-256", bytes) : null;
+              const sha256 = digest ? Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("") : "";
+              const footerRect = footer?.getBoundingClientRect();
+              const versionControl = document.querySelector<HTMLElement>("[data-page-chrome-version-select]");
+              const versionRect = versionControl?.getBoundingClientRect();
+              const versionHit = versionRect ? document.elementFromPoint(versionRect.left + (versionRect.width / 2), versionRect.top + (versionRect.height / 2)) : null;
+              const tierControl = document.querySelector<HTMLElement>("[data-page-chrome-tier-select]");
+              const tierRect = tierControl?.getBoundingClientRect();
+              const tierHit = tierRect ? document.elementFromPoint(tierRect.left + (tierRect.width / 2), tierRect.top + (tierRect.height / 2)) : null;
+              return {
+                bodyTier: document.body.dataset.bfTier,
+                documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+                footerBottom: footerRect ? window.innerHeight - footerRect.bottom : null,
+                footerPosition: footer ? getComputedStyle(footer).position : null,
+                href: link?.href,
+                innerWidth: window.innerWidth,
+                navPosition: nav ? getComputedStyle(nav).position : null,
+                pageLinksPreserveVersion: Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-page-chrome] a[href]"))
+                  .filter(anchor => anchor.href.startsWith(window.location.origin))
+                  .every(anchor => new URL(anchor.href).searchParams.get("bundle") === expectedVersion),
+                selectedTier: (document.querySelector("[data-page-chrome-tier-select]") as HTMLSelectElement | null)?.value,
+                selectedVersion: (document.querySelector("[data-page-chrome-version-select]") as HTMLSelectElement | null)?.value,
+                sha256,
+                urlVersion: new URL(window.location.href).searchParams.get("bundle"),
+                tierControlHit: Boolean(tierControl && tierHit && (tierHit === tierControl || tierHit.closest("[data-page-chrome-tier-select]") === tierControl)),
+                versionControlHit: Boolean(versionControl && versionHit && (versionHit === versionControl || versionHit.closest("[data-page-chrome-version-select]") === versionControl)),
+                viewportMatches: window.matchMedia(`(width: ${expectedWidth}px)`).matches,
+                wholePageUsesSharedChrome: document.querySelectorAll(".review-controls, .review-provenance, [data-review-canvas]").length === 0
+              };
+            }, { expectedVersion: version, expectedWidth: viewport.width });
+
+            const expectedHref = version === "before" ? `/demo/spec-028/before/${tier}.css` : `/dist/tiers/${tier}/styles.css`;
+            assert(state.innerWidth === viewport.width && state.viewportMatches, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to use a real ${viewport.width}px viewport; got ${JSON.stringify(state)}.`);
+            assert(state.href?.includes(expectedHref) && (version === "after" || state.sha256 === provenance.before.bundles[tier]), `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to load the tier stylesheet and preserve the frozen Before hash; got ${JSON.stringify(state)}.`);
+            assert(state.bodyTier === tier && state.selectedTier === tier && state.selectedVersion === version && state.urlVersion === version, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} controls, URL and body tier to stay synchronized; got ${JSON.stringify(state)}.`);
+            assert(state.wholePageUsesSharedChrome && state.pageLinksPreserveVersion && state.versionControlHit && state.tierControlHit && state.footerPosition === "fixed" && Math.abs(state.footerBottom ?? Number.POSITIVE_INFINITY) <= 0.5, `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to reuse hit-testable sticky shared BF chrome and preserve the selected bundle in navigation; got ${JSON.stringify(state)}.`);
+            assert(state.documentOverflow <= 1 && state.navPosition === (viewport.label === "mobile" ? "static" : "fixed"), `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} to use the responsive BF layout without fake mobile framing or horizontal overflow; got ${JSON.stringify(state)}.`);
+            assert(await sentinelHandle.evaluate(node => node.isConnected), `Expected ${pageSpec.label}/${version}/${tier}/${viewport.label} version switching to preserve the actual specimen node.`);
+
+            if (version === "after") {
+              if (pageSpec.label === "Tooltip") {
+                const trigger = page.locator("[data-tooltip-positioned] > .bf-button");
+                const message = page.locator("[data-tooltip-positioned] > .bf-tooltip-message");
+                await page.mouse.move(0, 0);
+                await trigger.blur();
+                await page.waitForFunction(() => document.querySelector("[data-tooltip-positioned] > .bf-tooltip-message")?.getAttribute("aria-hidden") === "true");
+                await trigger.focus();
+                await page.waitForFunction(() => {
+                  const tooltipMessage = document.querySelector("[data-tooltip-positioned] > .bf-tooltip-message");
+                  return tooltipMessage?.getAttribute("aria-hidden") === "false" && getComputedStyle(tooltipMessage).visibility === "visible";
+                });
+                assert(await message.getAttribute("aria-hidden") === "false", `Expected ${tier}/${viewport.label} Tooltip focus to expose its real message.`);
+                await trigger.blur();
+                await trigger.hover();
+                await page.waitForFunction(() => getComputedStyle(document.querySelector("[data-tooltip-positioned] > .bf-tooltip-message") as Element).visibility === "visible");
+              } else if (pageSpec.label === "Cards") {
+                const toggle = page.locator("[data-card-popup-owner] .bf-contextual-menu-toggle");
+                const popup = page.locator("[data-card-popup]");
+                if (await popup.getAttribute("aria-hidden") === "true") {
+                  await toggle.click();
+                  assert(await popup.getAttribute("aria-hidden") === "false", `Expected ${tier}/${viewport.label} Card menu toggle to open the real popup.`);
+                }
+                await toggle.click();
+                assert(await popup.getAttribute("aria-hidden") === "true", `Expected ${tier}/${viewport.label} Card menu toggle to close the real popup.`);
+                await toggle.click();
+                await page.keyboard.press("Escape");
+                assert(await popup.getAttribute("aria-hidden") === "true" && await toggle.getAttribute("aria-expanded") === "false", `Expected ${tier}/${viewport.label} Escape to close the real Card popup.`);
+                await toggle.click();
+              } else if (pageSpec.label === "Form") {
+                const field = page.locator("input:not([type='hidden']):not([disabled])").first();
+                await field.focus();
+                assert(await field.evaluate(node => document.activeElement === node), `Expected ${tier}/${viewport.label} the real Form field to remain interactive after bundle switching.`);
+              }
+            }
+          }
+        }
+
+        const baselineToggle = page.locator("[data-page-chrome-baseline-toggle]");
+        const beforeBaseline = await baselineToggle.isChecked();
+        await baselineToggle.locator("..").click();
+        assert(await page.locator("body").evaluate((body, before) => body.classList.contains("u-baseline-grid") !== before, beforeBaseline), `Expected ${pageSpec.label}/${viewport.label} the shared BF baseline toggle to control the real page.`);
+        assert(runtimeErrors.length === 0, `Expected ${pageSpec.label}/${viewport.label} version matrix to avoid runtime errors; got ${runtimeErrors.join(" | ")}.`);
+        await page.close();
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function main(): Promise<void> {
   const rootDir = path.resolve(".");
   const { server, origin } = await createStaticServer(rootDir);
 
   try {
+    // Full verification stays the default; focused flags isolate changed
+    // contracts while iterating on bounded regressions.
+    if (process.argv.includes("--density-table")) {
+      await verifyDenseTableEnrollment(origin);
+      await verifyDensityPageGrid(origin);
+      console.log("Table density behavior verification passed.");
+      return;
+    }
+    if (process.argv.includes("--navigation-density")) {
+      await verifyStaticNavigationChipDensity(origin);
+      console.log("Static navigation density behavior verification passed.");
+      return;
+    }
+    if (process.argv.includes("--indicator-fit")) {
+      await verifyIndicatorFit(origin);
+      console.log("Indicator fit behavior verification passed.");
+      return;
+    }
+    if (process.argv.includes("--range-surfaces")) {
+      await verifyRangeAndSurfaceRepair(origin);
+      console.log("Range and surface repair behavior verification passed.");
+      return;
+    }
+    await verifyDrawerElevation(origin);
     await verifyProseLinkAlignment(origin);
     await verifyNativeNumberStepper(origin);
     await verifySideNavigationAccordionGeometry(origin);
+    await verifySideNavigationPanelGeometry(origin);
     await verifyPageChromeNavigationScroll(origin);
     await verifyPageChromeHierarchyAndKeylines(origin);
     await verifyExamplePreferencesBeforePaint(origin);
@@ -5388,8 +8693,16 @@ async function main(): Promise<void> {
     await verifyInlineIconMetricAlignment(origin);
     await verifyInlineListSeparatorSpacing(origin);
     await verifyNestedAuxiliaryGeometry(origin);
+    await verifyDenseTableEnrollment(origin);
+    await verifyDensityPageGrid(origin);
+    await verifyStaticNavigationChipDensity(origin);
+    await verifyIndicatorFit(origin);
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);
+    await verifyCommandPaintOwners(origin);
+    await verifySurfacePaintOwners(origin);
+    await verifyTooltipPaintBounds(origin);
+    await verifyCardOverflowOwnership(origin);
     await verifyQualifiedAnchorStates(origin);
     await verifySemanticRoleClassPrecedence(origin);
     await verifyContainerOwnedSpacing(origin);
@@ -5399,6 +8712,7 @@ async function main(): Promise<void> {
     await verifyDirectAndClassSurfaceGeometry(origin);
     await verifyDtcgSpacingMatrix(origin);
     await verifyNarrowTierSwitchRangeGeometry(origin);
+    await verifyRangeAndSurfaceRepair(origin);
     await verifyNestedGridScoping(origin);
     await verifySkipLink(origin);
     await verifyParityInteractions(origin);
@@ -5410,6 +8724,7 @@ async function main(): Promise<void> {
     await verifyContentCardGeometry(origin);
     await verifyLinkedLogoAndStickyFooterGeometry(origin);
     await verifySiteShellPrimitiveGeometry(origin);
+    await verifySpec028ReviewDemo(origin);
 
     console.log("Component behavior verification passed.");
   } finally {

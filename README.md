@@ -457,8 +457,11 @@ At minimum, define:
 > `ThemeConfig`/`ThemeComponentsConfig` shape and therefore also changes what
 > `readThemeConfig` accepts. Existing custom themes must add
 > `inlineUnitRem` (the built-in value is `0.25`) and replace
-> `inlineInsetFieldRem`, `inlineInsetActionRem`, and
-> `inlineInsetContinuationRem` with whole-unit `inlineInset*Units` counts. Add
+> `inlineInsetFieldRem` and `inlineInsetActionRem` with whole-unit
+> `inlineInsetFieldUnits` and
+> `inlineInsetActionUnits` counts. Remove authored continuation values; the
+> continuation inset is derived from input inset, icon canvas and mark gap. Add
+> `controlBlockInsetBaselineUnits` for the control block inset and
 > `markGapInlineUnits`, and replace `panelPaddingInlineBaselineUnits` with
 > `panelPaddingInlineUnits`. Convert a previous rem value with
 > `rem / inlineUnitRem`; convert the previous panel baseline count with
@@ -503,6 +506,7 @@ Example sketch for a downstream Ubuntu Sans theme:
 		"contentPaddingInlineRem": 1,
 		"measureRem": 40,
 		"sectionSpaceBaselineUnits": 8,
+		"sectionSpaceShallowBaselineUnits": 3,
 		"sectionSpaceDeepBaselineUnits": 16,
 		"stripSpaceBaselineUnits": 8,
 		"gridGapInlineBaselineUnits": 2,
@@ -514,7 +518,7 @@ Example sketch for a downstream Ubuntu Sans theme:
 		"radiusRem": 0,
 		"inlineInsetFieldUnits": 2,
 		"inlineInsetActionUnits": 4,
-		"inlineInsetContinuationUnits": 8,
+		"controlBlockInsetBaselineUnits": 0,
 		"markGapInlineUnits": 2,
 		"controlVisualSizeRem": 0.75,
 		"fieldGapBaselineUnits": 1,

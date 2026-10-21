@@ -176,8 +176,8 @@ export function staticContentPortsCss(): string {
 }
 
 :where(.bf-theme) :where(.bf-divided-section-list) {
-  --bf-divided-section-rule-to-content: calc(0.5rem - var(--bf-border-width));
-  --bf-stack-space: 1.5rem;
+  --bf-divided-section-rule-to-content: var(--bf-field-gap);
+  --bf-stack-space: var(--bf-section-space-shallow);
   list-style: none;
   margin: 0;
   padding: 0;

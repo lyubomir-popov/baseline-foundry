@@ -1,17 +1,61 @@
+import { componentDensityPolicy, tableCellDensityPolicySelectors, tableCellDensityScopedCss } from "../component-density-policy.js";
+import { blockEndStrokeOverlayCss } from "./stroke-paint.js";
+
 type TableCssOptions = {
   bodyLineHeight: string;
-  bodyMediumTypeStyles: string;
   bodyTypeStyles: string;
+  tableDensityScopes: string[];
 };
 
 export function tableCss(options: TableCssOptions): string {
-  const { bodyLineHeight, bodyMediumTypeStyles, bodyTypeStyles } = options;
+  const { bodyLineHeight, bodyTypeStyles, tableDensityScopes } = options;
+  const selectors = tableCellDensityPolicySelectors();
+  const density = componentDensityPolicy.tableCell;
+  const cellSelector = ":where(.bf-theme) :where(.bf-table > thead > tr > th:not([aria-sort]), .bf-table > thead > tr > td, .bf-table > tbody > tr > th:not([aria-sort]), .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th:not([aria-sort]), .bf-table > tfoot > tr > td)";
+  const cellStroke = blockEndStrokeOverlayCss(cellSelector, { anchor: "relative", color: "var(--bf-table-cell-stroke-color, transparent)", width: "var(--bf-table-row-border-size)" });
+  const densityCss = selectors.hosts ? `
+/* Table.Cell selects the dense control-block member for every eligible boxed
+   action and entry seat. The cell absorbs that seat once; the child restores
+   it around its own body line, so text keeps the plain row baseline. */
+${tableCellDensityScopedCss(tableDensityScopes, selectors.hosts, `${density.currentMember}: var(${density.denseMember});
+padding-block-end: max(0rem, calc(var(--bf-table-row-padding-block-end) - var(${density.currentMember})));
+padding-block-start: max(0rem, calc(var(--bf-table-row-padding-block-start) - var(${density.currentMember})));`)}
 
-  return `:where(.bf-theme) {
+${tableCellDensityScopedCss(tableDensityScopes, selectors.boxedButtons, `${density.componentBindings.button}: var(${density.currentMember});
+line-height: var(--bf-body-line-height);
+margin-block: 0;
+padding-block: var(${density.componentBindings.button});`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, selectors.iconOnlyButtons, `--bf-square-block-size: calc(var(--bf-body-line-height) + (var(${density.componentBindings.button}) * 2));
+vertical-align: top;`)}
+
+/* An icon-first flex button otherwise exports the icon's synthesized baseline.
+   Keep the label as its baseline participant while centering the icon. */
+${tableCellDensityScopedCss(tableDensityScopes, selectors.labeledIconButtons, `align-items: baseline;`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, `${selectors.labeledIconButtons} > .bf-icon`, `align-self: center;`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, `${selectors.singleLineEntries}, ${selectors.textareas}`, `${density.componentBindings.entry}: var(${density.currentMember});
+block-size: auto;
+line-height: var(--bf-body-line-height);
+margin-block: 0;
+padding-block: var(${density.componentBindings.entry});`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, selectors.textareas, `min-block-size: calc((var(--bf-interface-row-occupied-block-size) * 2) - var(--bf-interface-row-compensation-block-end) - ((var(--bf-interface-row-padding-block) - var(${density.componentBindings.entry})) * 2));`)}
+
+${tableCellDensityScopedCss(tableDensityScopes, selectors.fieldBoundaries, `display: inline-grid;
+block-size: auto;
+margin-block: 0;
+vertical-align: baseline;`)}
+` : "";
+
+  return `${cellStroke.owner}
+
+:where(.bf-theme) {
   --bf-table-row-border-size: var(--bf-border-width);
   --bf-table-row-padding-block-start: var(--bf-in-box-row-padding-block-start);
   --bf-table-row-block-size: var(--bf-interface-row-occupied-block-size);
-  --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start) - var(--bf-table-row-border-size)));
+  --bf-table-row-padding-block-end: max(0rem, calc(var(--bf-table-row-block-size) - ${bodyLineHeight} - var(--bf-table-row-padding-block-start)));
   --bf-table-row-line-height: ${bodyLineHeight};
 }
 
@@ -46,8 +90,9 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
 }
 
 :where(.bf-theme) :where(th, td) {
+  --bf-table-cell-stroke-color: transparent;
   border: 0;
-  border-block-end: var(--bf-table-row-border-size) solid transparent;
+  box-shadow: inset 0 calc(var(--bf-table-row-border-size) * -1) 0 var(--bf-table-cell-stroke-color);
   color: var(--bf-color-text-default);
   line-height: var(--bf-table-row-line-height);
   margin: 0;
@@ -58,6 +103,17 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   text-align: left;
   text-overflow: ellipsis;
   vertical-align: top;
+}
+
+:where(.bf-theme) :where(.bf-table > thead > tr > th, .bf-table > thead > tr > td, .bf-table > tbody > tr > th, .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th, .bf-table > tfoot > tr > td) {
+  box-shadow: none;
+}
+
+/* A real popup inside a BF cell is an explicit escape owner. Raw native table
+   cells retain their original clipping while no longer becoming containing
+   blocks merely to paint the row rule. */
+:where(.bf-theme) :where(.bf-table > thead > tr > th, .bf-table > thead > tr > td, .bf-table > tbody > tr > th, .bf-table > tbody > tr > td, .bf-table > tfoot > tr > th, .bf-table > tfoot > tr > td):has(.bf-contextual-menu) {
+  overflow: visible;
 }
 
 :where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder) {
@@ -74,18 +130,34 @@ ${bodyTypeStyles}  color: var(--bf-color-text-muted);
   font-weight: var(--bf-body-font-weight, 400);
 }
 
+:where(.bf-theme) :where(thead th, thead td) {
+  --bf-table-cell-stroke-color: var(--bf-color-border-default);
+}
+
 :where(.bf-theme) :where(thead th) {
-${bodyMediumTypeStyles}  color: var(--bf-color-text-default);
-  border-block-end-color: var(--bf-color-border-default);
+${bodyTypeStyles}  color: var(--bf-color-text-default);
   line-height: var(--bf-table-row-line-height);
 }
 
-:where(.bf-theme) :where(tbody tr:not(:last-child) td, tfoot td) {
-  border-block-end-color: var(--bf-color-border-low-contrast);
+:where(.bf-theme) :where(tbody tr:not(:last-child) > th, tbody tr:not(:last-child) > td, tfoot tr > th, tfoot tr > td) {
+  --bf-table-cell-stroke-color: var(--bf-color-border-low-contrast);
 }
 
 :where(.bf-theme) :where(tbody tr:hover td) {
   background: color-mix(in srgb, var(--bf-color-background-hover) 68%, transparent);
 }
+${cellStroke.painter}
+
+/* Raw native tables have no class-owned overlay anchor. In forced colors they
+   use an inset system outline: the boundary becomes all-sided, but remains
+   paint-only and preserves raw cell geometry and containing-block behavior. */
+@media (forced-colors: active) {
+  :where(.bf-theme) :where(th, td):not(.bf-table > thead > tr > *, .bf-table > tbody > tr > *, .bf-table > tfoot > tr > *) {
+    box-shadow: none;
+    outline: var(--bf-table-row-border-size) solid CanvasText;
+    outline-offset: calc(var(--bf-table-row-border-size) * -1);
+  }
+}
+${densityCss}
 `;
 }

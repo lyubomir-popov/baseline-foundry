@@ -1,0 +1,302 @@
+type StrokeOverlayOptions = {
+  anchor: "relative" | "existing";
+  color?: string;
+  width?: string;
+};
+
+type StrokeOverlayCss = {
+  owner: string;
+  painter: string;
+};
+
+/**
+ * Paints an all-sided boundary directly on a leaf component. This keeps the
+ * composable paint slots without creating a normal-mode containing block or
+ * consuming a pseudo-element. Forced colors alone installs a bounded overlay
+ * anchor so system boundary, selection and focus paint remain distinct.
+ */
+export function allSidedStrokeSelfPaintCss(ownerSelector: string, options: Omit<StrokeOverlayOptions, "anchor">): string {
+  const color = options.color ?? "var(--bf-color-border-default)";
+  const width = options.width ?? "var(--bf-border-width)";
+
+  return `${ownerSelector} {
+  --bf-stroke-color: ${color};
+  --bf-stroke-width: ${width};
+  --bf-overlay-stroke-layer: inset 0 0 0 var(--bf-stroke-width) var(--bf-stroke-color);
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: 0 0 0 0 transparent;
+  --bf-overlay-selection-block-start-width: 0rem;
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-inline-start-width: 0rem;
+  --bf-overlay-selection-inline-end-width: 0rem;
+  box-shadow: var(--bf-overlay-stroke-layer), var(--bf-overlay-selection-layer), var(--bf-overlay-focus-layer), var(--bf-overlay-elevation-layer);
+}
+
+@media (forced-colors: active) {
+  ${ownerSelector} {
+    box-shadow: none;
+    position: relative;
+  }
+
+  ${ownerSelector}::after {
+    background: none;
+    border: 0 solid transparent;
+    border-block-end: var(--bf-overlay-selection-block-end-width) solid SelectedItem;
+    border-block-start: var(--bf-overlay-selection-block-start-width) solid SelectedItem;
+    border-inline-end: var(--bf-overlay-selection-inline-end-width) solid SelectedItem;
+    border-inline-start: var(--bf-overlay-selection-inline-start-width) solid SelectedItem;
+    border-radius: inherit;
+    box-shadow: none;
+    box-sizing: border-box;
+    content: "";
+    inset: 0;
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width) * -1);
+    pointer-events: none;
+    position: absolute;
+  }
+}`;
+}
+
+/**
+ * Paints a component boundary in an automatic last-child pseudo-element.
+ * Every owner resets the four composable paint slots locally so nested paint
+ * owners cannot inherit a parent state. The overlay never participates in
+ * layout or pointer routing and introduces no wrapper, isolation, or z-index.
+ */
+export function allSidedStrokeOverlayCss(ownerSelector: string, options: StrokeOverlayOptions): StrokeOverlayCss {
+  const color = options.color ?? "var(--bf-color-border-default)";
+  const width = options.width ?? "var(--bf-border-width)";
+  const anchorDeclaration = options.anchor === "relative" ? "\n  position: relative;" : "";
+
+  return {
+    owner: `${ownerSelector} {
+  --bf-stroke-color: ${color};
+  --bf-stroke-width: ${width};
+  --bf-overlay-stroke-layer: inset 0 0 0 var(--bf-stroke-width) var(--bf-stroke-color);
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: 0 0 0 0 transparent;
+  --bf-overlay-selection-block-start-width: 0rem;
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-inline-start-width: 0rem;
+  --bf-overlay-selection-inline-end-width: 0rem;${anchorDeclaration}
+}`,
+    painter: `${ownerSelector}::after {
+  background: none;
+  border: 0 solid transparent;
+  border-radius: inherit;
+  block-size: auto;
+  box-shadow: var(--bf-overlay-stroke-layer), var(--bf-overlay-selection-layer), var(--bf-overlay-focus-layer), var(--bf-overlay-elevation-layer);
+  box-sizing: border-box;
+  content: "";
+  display: block;
+  inset: 0;
+  inline-size: auto;
+  pointer-events: none;
+  position: absolute;
+  transform: none;
+}
+
+@media (forced-colors: active) {
+  ${ownerSelector}::after {
+    border-block-end: var(--bf-overlay-selection-block-end-width) solid SelectedItem;
+    border-block-start: var(--bf-overlay-selection-block-start-width) solid SelectedItem;
+    border-inline-end: var(--bf-overlay-selection-inline-end-width) solid SelectedItem;
+    border-inline-start: var(--bf-overlay-selection-inline-start-width) solid SelectedItem;
+    box-shadow: none;
+    outline: var(--bf-stroke-width) solid CanvasText;
+    outline-offset: calc(var(--bf-stroke-width) * -1);
+  }
+}`
+  };
+}
+
+/**
+ * Paints a field's one-sided block-end boundary without contributing a layout
+ * border. Forced colours use a real out-of-flow logical border on the same
+ * automatic last-child overlay.
+ */
+export function blockEndStrokeOverlayCss(ownerSelector: string, options: StrokeOverlayOptions): StrokeOverlayCss {
+  const color = options.color ?? "var(--bf-color-border-high-contrast)";
+  const width = options.width ?? "var(--bf-border-width)";
+  const anchorDeclaration = options.anchor === "relative" ? "\n  position: relative;" : "";
+
+  return {
+    owner: `${ownerSelector} {
+  --bf-stroke-color: ${color};
+  --bf-stroke-width: ${width};
+  --bf-overlay-stroke-layer: inset 0 calc(var(--bf-stroke-width) * -1) 0 var(--bf-stroke-color);
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: 0 0 0 0 transparent;
+  --bf-overlay-selection-block-start-width: 0rem;
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-inline-start-width: 0rem;
+  --bf-overlay-selection-inline-end-width: 0rem;${anchorDeclaration}
+}`,
+    painter: `${ownerSelector}::after {
+  background: none;
+  border: 0 solid transparent;
+  border-radius: inherit;
+  block-size: auto;
+  box-shadow: var(--bf-overlay-stroke-layer), var(--bf-overlay-selection-layer), var(--bf-overlay-focus-layer), var(--bf-overlay-elevation-layer);
+  box-sizing: border-box;
+  content: "";
+  display: block;
+  inset: 0;
+  inline-size: auto;
+  pointer-events: none;
+  position: absolute;
+  transform: none;
+}
+
+@media (forced-colors: active) {
+  ${ownerSelector}::after {
+    border-block-end: var(--bf-stroke-width) solid CanvasText;
+    box-shadow: none;
+  }
+}`
+  };
+}
+
+/** Paints a one-sided block-start rule on the automatic overlay. */
+export function blockStartStrokeOverlayCss(ownerSelector: string, options: StrokeOverlayOptions): StrokeOverlayCss {
+  const color = options.color ?? "var(--bf-color-border-low-contrast)";
+  const width = options.width ?? "var(--bf-border-width)";
+  const anchorDeclaration = options.anchor === "relative" ? "\n  position: relative;" : "";
+
+  return {
+    owner: `${ownerSelector} {
+  --bf-stroke-color: ${color};
+  --bf-stroke-width: ${width};
+  --bf-overlay-stroke-layer: inset 0 var(--bf-stroke-width) 0 var(--bf-stroke-color);
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: 0 0 0 0 transparent;
+  --bf-overlay-selection-block-start-width: 0rem;
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-inline-start-width: 0rem;
+  --bf-overlay-selection-inline-end-width: 0rem;${anchorDeclaration}
+}`,
+    painter: `${ownerSelector}::after {
+  background: none;
+  border: 0 solid transparent;
+  border-radius: inherit;
+  block-size: auto;
+  box-shadow: var(--bf-overlay-stroke-layer), var(--bf-overlay-selection-layer), var(--bf-overlay-focus-layer), var(--bf-overlay-elevation-layer);
+  box-sizing: border-box;
+  content: "";
+  display: block;
+  inset: 0;
+  inline-size: auto;
+  pointer-events: none;
+  position: absolute;
+  transform: none;
+}
+
+@media (forced-colors: active) {
+  ${ownerSelector}::after {
+    border-block-start: var(--bf-stroke-width) solid CanvasText;
+    box-shadow: none;
+  }
+}`
+  };
+}
+
+/** Paints a one-sided inline-start rule on the automatic overlay. */
+export function inlineStartStrokeOverlayCss(ownerSelector: string, options: StrokeOverlayOptions): StrokeOverlayCss {
+  const color = options.color ?? "var(--bf-color-border-low-contrast)";
+  const width = options.width ?? "var(--bf-border-width)";
+  const anchorDeclaration = options.anchor === "relative" ? "\n  position: relative;" : "";
+
+  return {
+    owner: `${ownerSelector} {
+  --bf-stroke-color: ${color};
+  --bf-stroke-width: ${width};
+  --bf-overlay-stroke-layer: inset var(--bf-stroke-width) 0 0 var(--bf-stroke-color);
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: 0 0 0 0 transparent;
+  --bf-overlay-selection-block-start-width: 0rem;
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-inline-start-width: 0rem;
+  --bf-overlay-selection-inline-end-width: 0rem;${anchorDeclaration}
+}
+
+${ownerSelector}:dir(rtl) {
+  --bf-overlay-stroke-layer: inset calc(var(--bf-stroke-width) * -1) 0 0 var(--bf-stroke-color);
+}`,
+    painter: `${ownerSelector}::after {
+  background: none;
+  border: 0 solid transparent;
+  border-radius: inherit;
+  block-size: auto;
+  box-shadow: var(--bf-overlay-stroke-layer), var(--bf-overlay-selection-layer), var(--bf-overlay-focus-layer), var(--bf-overlay-elevation-layer);
+  box-sizing: border-box;
+  content: "";
+  display: block;
+  inset: 0;
+  inline-size: auto;
+  pointer-events: none;
+  position: absolute;
+  transform: none;
+}
+
+@media (forced-colors: active) {
+  ${ownerSelector}::after {
+    border-inline-start: var(--bf-stroke-width) solid CanvasText;
+    box-shadow: none;
+  }
+}`
+  };
+}
+
+/** Paints a one-sided inline-end rule on the automatic overlay. */
+export function inlineEndStrokeOverlayCss(ownerSelector: string, options: StrokeOverlayOptions): StrokeOverlayCss {
+  const color = options.color ?? "var(--bf-color-border-low-contrast)";
+  const width = options.width ?? "var(--bf-border-width)";
+  const anchorDeclaration = options.anchor === "relative" ? "\n  position: relative;" : "";
+
+  return {
+    owner: `${ownerSelector} {
+  --bf-stroke-color: ${color};
+  --bf-stroke-width: ${width};
+  --bf-overlay-stroke-layer: inset calc(var(--bf-stroke-width) * -1) 0 0 var(--bf-stroke-color);
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+  --bf-overlay-focus-layer: 0 0 0 0 transparent;
+  --bf-overlay-elevation-layer: 0 0 0 0 transparent;
+  --bf-overlay-selection-block-start-width: 0rem;
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-inline-start-width: 0rem;
+  --bf-overlay-selection-inline-end-width: 0rem;${anchorDeclaration}
+}
+
+${ownerSelector}:dir(rtl) {
+  --bf-overlay-stroke-layer: inset var(--bf-stroke-width) 0 0 var(--bf-stroke-color);
+}`,
+    painter: `${ownerSelector}::after {
+  background: none;
+  border: 0 solid transparent;
+  border-radius: inherit;
+  block-size: auto;
+  box-shadow: var(--bf-overlay-stroke-layer), var(--bf-overlay-selection-layer), var(--bf-overlay-focus-layer), var(--bf-overlay-elevation-layer);
+  box-sizing: border-box;
+  content: "";
+  display: block;
+  inset: 0;
+  inline-size: auto;
+  pointer-events: none;
+  position: absolute;
+  transform: none;
+}
+
+@media (forced-colors: active) {
+  ${ownerSelector}::after {
+    border-inline-end: var(--bf-stroke-width) solid CanvasText;
+    box-shadow: none;
+  }
+}`
+  };
+}

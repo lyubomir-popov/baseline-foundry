@@ -1,5 +1,9 @@
 export function tieredListEqualHeightRowCss(): string {
-  return `/* ------------------------------------------------------------------ */
+  const columnStroke = blockStartStrokeOverlayCss(":where(.bf-theme) :where(.bf-equal-height-row-col:not(.is-borderless))", { anchor: "existing", color: "var(--bf-color-border-low-contrast)" });
+
+  return `${columnStroke.owner}
+
+/* ------------------------------------------------------------------ */
 /* Tiered list                                                         */
 /* Editorial pattern (Vanilla parity): paired list of titles +         */
 /* descriptions under a top-level title + description, with optional   */
@@ -113,25 +117,26 @@ export function tieredListEqualHeightRowCss(): string {
 /* ------------------------------------------------------------------ */
 :where(.bf-theme) :where(.bf-equal-height-row) {
   container-type: inline-size;
+  column-gap: var(--bf-grid-gap-inline);
   display: grid;
-  gap: var(--bf-grid-gap-block) var(--bf-grid-gap-inline);
   /* Keep the logical track system on the query container itself. Container
      queries cannot style their own container, so responsive descendants span
      these tracks instead of relying on an ineligible self-query. */
   grid-template-columns: repeat(8, minmax(0, 1fr));
   margin: 0;
   position: relative;
+  row-gap: calc(var(--bf-grid-gap-block) + var(--bf-field-gap));
 }
 
 :where(.bf-theme) :where(.bf-equal-height-row-col) {
-  border-block-start: var(--bf-border-width) solid var(--bf-color-border-low-contrast);
   display: grid;
   grid-column: 1 / -1;
   grid-row: span 4;
   grid-template-rows: subgrid;
-  margin-block-end: var(--bf-space-1);
   position: relative;
 }
+
+${columnStroke.painter}
 
 /* Responsive aspect media can make a shared subgrid track land between
    baselines. Snap that media box itself; the surrounding composition still
@@ -140,10 +145,6 @@ export function tieredListEqualHeightRowCss(): string {
   :where(.bf-theme) :where(.bf-equal-height-row-item) > :where(.bf-aspect) {
     block-size: calc-size(auto, round(up, size, var(--bf-baseline)));
   }
-}
-
-:where(.bf-theme) :where(.bf-equal-height-row-col.is-borderless) {
-  border-block-start: 0;
 }
 
 @container (width >= 38.75rem) {
@@ -175,10 +176,13 @@ export function tieredListEqualHeightRowCss(): string {
 }
 
 @container (width >= 64.75rem) {
+  :where(.bf-theme) :where(.bf-equal-height-row) {
+    row-gap: var(--bf-grid-gap-block);
+  }
+
   :where(.bf-theme) :where(.bf-equal-height-row-col) {
-    border-block-start: 0;
+    --bf-stroke-width: 0rem;
     grid-column: span 2;
-    margin-block-end: 0;
   }
 }
 
@@ -284,3 +288,4 @@ export function tieredListEqualHeightRowCss(): string {
 }
 `;
 }
+import { blockStartStrokeOverlayCss } from "./stroke-paint.js";

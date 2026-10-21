@@ -181,13 +181,14 @@ function syncInitialState(root: ParentNode): void {
   for (const sideNavigation of getRoots(root)) {
     const expanded = isDrawerOpen(sideNavigation);
     if (getDrawer(sideNavigation)) {
-      if (isLargeViewport(sideNavigation)) {
+      const largeViewport = isLargeViewport(sideNavigation);
+      if (largeViewport) {
         sideNavigation.classList.remove(DRAWER_HIDDEN_CLASS, DRAWER_COLLAPSED_CLASS);
       } else if (!expanded) {
         sideNavigation.classList.add(DRAWER_HIDDEN_CLASS);
       }
 
-      updateDrawerA11y(sideNavigation, expanded && !sideNavigation.classList.contains(DRAWER_HIDDEN_CLASS));
+      updateDrawerA11y(sideNavigation, largeViewport || (expanded && !sideNavigation.classList.contains(DRAWER_HIDDEN_CLASS)));
     }
 
     for (const toggle of Array.from(sideNavigation.querySelectorAll<HTMLElement>(EXPAND_SELECTOR))) {
