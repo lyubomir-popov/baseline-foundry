@@ -602,12 +602,17 @@ function extractGeneratedSelectors(css: string): string[] {
 }
 
 function validateTypographySelectorOwnership(css: string): void {
-  const selectors = extractGeneratedSelectors(css);
+  // Preserve commas inside functional selectors and exclude CSS comments.
+  const selectors: string[] = [];
+  parseCss(css).walkRules(rule => { selectors.push(...rule.selectors); });
   const proseBoundarySelector = ":where(.bf-theme) :where(.bf-prose) > :last-child:not(:where(ul)):not(:where(ol))";
 
+  // This selector targets the nested anchor, not its role-owning paragraph.
+  const inlineProseLinkSelector = ":where(.bf-theme) :where(.bf-prose :is(p, li, blockquote) a.bf-text-link)";
+  assert(selectors.includes(inlineProseLinkSelector), "Expected prose links to inherit their enclosing text box.");
   for (const element of ["p", "h1", "h2", "h3", "h4", "h5", "h6", "figcaption"]) {
     const proseElementPattern = new RegExp(`\\.bf-prose(?:\\s+|>\\s*)(?::(?:where|is)\\(\\s*)?${element}(?=$|[.#:[\\s)>+~])`);
-    assert(!selectors.some(selector => proseElementPattern.test(selector)), `Expected ${element} typography to remain role-owned instead of being duplicated under .bf-prose.`);
+    assert(!selectors.some(selector => selector !== inlineProseLinkSelector && proseElementPattern.test(selector)), `Expected ${element} typography to remain role-owned instead of being duplicated under .bf-prose.`);
   }
 
   for (const element of ["p", "h1", "h2", "h3", "h4", "h5", "h6"]) {

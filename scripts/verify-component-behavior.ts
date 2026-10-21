@@ -1,3 +1,4 @@
+import { verifyProseLinkAlignment } from "./behavior/prose-link-alignment.ts";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { closeServer, createStaticServer, waitForFonts } from "./component-demo-shared.ts";
@@ -5372,6 +5373,7 @@ async function main(): Promise<void> {
   const { server, origin } = await createStaticServer(rootDir);
 
   try {
+    await verifyProseLinkAlignment(origin);
     await verifyNativeNumberStepper(origin);
     await verifySideNavigationAccordionGeometry(origin);
     await verifyPageChromeNavigationScroll(origin);

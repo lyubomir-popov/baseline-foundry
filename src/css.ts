@@ -343,6 +343,15 @@ ${generateBaselineGridThemeOverrideCss()}
   padding-block: var(--bf-body-nudge-start) 0;
 }
 
+/* Prose text already owns its metric box. A link inside that text stays
+ * inline so its nudge and compensation are not applied a second time. */
+:where(.bf-theme) :where(.bf-prose :is(p, li, blockquote) a.bf-text-link) {
+  display: inline;
+  font: inherit;
+  margin-block: 0;
+  padding-block: 0;
+}
+
 :where(.bf-theme) :where(code) {
   font-family: "Ubuntu Sans Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.95em;

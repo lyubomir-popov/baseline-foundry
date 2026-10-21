@@ -15,7 +15,7 @@
  <blockquote data-baseline-check="flow" data-baseline-label="prose blockquote">
  Baseline alignment stays immutable. The component surface can shrink, but the rhythm contract should not.
  </blockquote>
- <h3 data-baseline-check="flow" data-baseline-label="prose h3">List behavior</h3>
+ <h3 id="list-behavior" data-baseline-check="flow" data-baseline-label="prose h3">List behavior</h3>
  <ul data-baseline-check="flow" data-baseline-label="unordered list">
  <li data-baseline-check="box" data-baseline-label="list item 1">Unordered lists use the body-text nudge.</li>
  <li data-baseline-check="box" data-baseline-label="list item 2">Each item keeps bottom compensation instead of ad hoc inter-item margin.</li>
@@ -26,7 +26,7 @@
  <section class="bf-prose" data-final-list-probe>
   <h3 data-baseline-check="flow" data-baseline-label="final list title">Final-list boundary</h3>
   <ul data-baseline-check="flow" data-baseline-label="final unordered list">
-   <li data-baseline-check="box" data-baseline-label="final list item">A final list item retains body-role metric compensation.</li>
+   <li data-baseline-check="box" data-baseline-label="final list item"><a class="bf-text-link" href="#list-behavior">A final list item retains body-role metric compensation.</a></li>
   </ul>
  </section>
  <h3 data-baseline-check="flow" data-baseline-label="following section title">The following section keeps a readable boundary.</h3>
