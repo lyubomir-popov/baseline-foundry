@@ -1206,6 +1206,14 @@ function validateCommonCss(css: string): void {
   }
   assert(!css.includes("--bf-table-row-padding:") && !css.includes(":where(.bf-theme.is-dark),\n:where(.bf-theme.is-dark)"), "Expected generated CSS to omit retired table alignment variables and duplicate dark-theme selectors.");
   assert(css.includes("padding-block: var(--bf-interface-row-padding-block);"), "Expected bordered controls and body-sized single-line rows to share one regular padding contract.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button, .bf-button.is-base)", {
+    "--bf-stroke-color": "var(--bf-color-border-high-contrast)",
+    "border": "0"
+  }, "text buttons share the paint-only high-contrast boundary without adding a layout border");
+  assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-button.is-base)", "--bf-stroke-color", "base Buttons retain the canonical command boundary rather than becoming borderless text");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-button:not(.is-link):is(:active, [aria-pressed='true']))", {
+    "background-color": "var(--bf-color-background-active)"
+  }, "bordered text buttons share active-state feedback");
   for (const [selector, strokeColor, backgroundColor, label] of [
     [":where(.bf-theme) :where(.bf-button.is-positive)", "var(--bf-color-button-positive-default)", "var(--bf-color-button-positive-default)", "positive"],
     [":where(.bf-theme) :where(.bf-button.is-positive:hover)", "var(--bf-color-button-positive-hover)", "var(--bf-color-button-positive-hover)", "positive hover"],

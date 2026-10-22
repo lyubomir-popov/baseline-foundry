@@ -47,7 +47,6 @@ ${buttonStrokeCss}
 }
 
 :where(.bf-theme) :where(.bf-button.is-base) {
-  --bf-stroke-color: transparent;
   background-color: transparent;
 }
 
@@ -62,7 +61,7 @@ ${buttonStrokeCss}
   text-decoration: none;
 }
 
-:where(.bf-theme) :where(.bf-button:not(.is-base):is(:active, [aria-pressed='true'])) {
+:where(.bf-theme) :where(.bf-button:not(.is-link):is(:active, [aria-pressed='true'])) {
   background-color: var(--bf-color-background-active);
 }
 
@@ -237,7 +236,7 @@ ${buttonStrokeCss}
     outline-offset: -0.1875rem;
   }
 
-  :where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))):focus-visible, .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))):focus-visible) {
+  :where(.bf-theme) :where(.bf-button:not(.is-icon:not(.is-nested):not(:has(.bf-button-label))), .bf-button.is-base:not(.is-icon:not(.is-nested):not(:has(.bf-button-label)))):focus-visible {
     outline: 0.125rem solid Highlight;
     outline-offset: -0.1875rem;
   }

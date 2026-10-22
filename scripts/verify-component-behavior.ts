@@ -368,7 +368,7 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
         ownerPaint: getComputedStyle(owner, "::after").boxShadow
       };
     });
-    assert(focusedFieldPaint.nativeOutline === "none" && focusedFieldPaint.ownerPaint !== "none", `Expected keyboard focus to relay to the field overlay without adding native layout paint: ${JSON.stringify(focusedFieldPaint)}.`);
+    assert(focusedFieldPaint.nativeOutline === "none" && focusedFieldPaint.ownerPaint.includes("inset"), `Expected keyboard focus to relay to an inward field overlay that remains visible inside clipping parents without adding native layout paint: ${JSON.stringify(focusedFieldPaint)}.`);
     await page.emulateMedia({ forcedColors: "active" });
     const forcedFieldPaint = await number.evaluate(element => {
       const owner = element.closest<HTMLElement>(".bf-field-boundary");
@@ -378,11 +378,12 @@ async function verifyNativeNumberStepper(origin: string): Promise<void> {
       return {
         boundaryStyle: overlay.borderBlockEndStyle,
         boundaryWidth: Number.parseFloat(overlay.borderBlockEndWidth),
+        focusOffset: Number.parseFloat(ownerStyle.outlineOffset),
         focusStyle: ownerStyle.outlineStyle,
         pointerEvents: overlay.pointerEvents
       };
     });
-    assert(forcedFieldPaint.boundaryStyle === "solid" && forcedFieldPaint.boundaryWidth > 0 && forcedFieldPaint.focusStyle !== "none" && forcedFieldPaint.pointerEvents === "none", `Expected the one-sided field rule and inward focus cue to remain explicit system-colour paint: ${JSON.stringify(forcedFieldPaint)}.`);
+    assert(forcedFieldPaint.boundaryStyle === "solid" && forcedFieldPaint.boundaryWidth > 0 && forcedFieldPaint.focusStyle !== "none" && forcedFieldPaint.focusOffset < 0 && forcedFieldPaint.pointerEvents === "none", `Expected the one-sided field rule and inward focus cue to remain explicit system-colour paint inside clipping parents: ${JSON.stringify(forcedFieldPaint)}.`);
     await page.emulateMedia({ forcedColors: "none" });
     const textareaResize = await page.locator("textarea").evaluate(element => {
       const owner = element.closest<HTMLElement>(".bf-field-boundary");
@@ -5342,6 +5343,54 @@ async function verifyCommandPaintOwners(origin: string): Promise<void> {
       });
       assert(forcedGeometry.borderWidths.every(width => width === 0) && forcedGeometry.shadow === "none" && forcedGeometry.overlayContent === '""' && forcedGeometry.overlayOutlineStyle === "solid" && forcedGeometry.overlayOutlineWidth > 0 && forcedGeometry.overlayPointerEvents === "none" && forcedGeometry.overlayPosition === "absolute", `Expected ${testCase.selector} forced colors to use a named out-of-flow system-color layer with zero layout borders; got ${JSON.stringify(forcedGeometry)}.`);
       assert(Math.abs(forcedGeometry.width - geometry.width) <= 0.1 && Math.abs(forcedGeometry.height - geometry.height) <= 0.1 && forcedGeometry.ownerPosition === "relative", `Expected ${testCase.selector} forced-colors paint to preserve geometry and establish only its bounded accessibility anchor; normal=${JSON.stringify(geometry)}, forced=${JSON.stringify(forcedGeometry)}.`);
+      await page.emulateMedia({ forcedColors: "none" });
+    }
+
+    await page.goto(`${origin}/demo/components/button.html`, { waitUntil: "networkidle" });
+    await waitForFonts(page);
+    for (const tier of tiers) {
+      await page.locator("[data-page-chrome-tier-select]").selectOption(tier);
+      await page.waitForFunction(expectedTier => document.body.dataset.bfTier === expectedTier, tier);
+      const baseButtons = page.locator(".bf-button.is-base:not(.is-link):not(.is-icon)");
+      assert(await baseButtons.count() === 2, `Expected ${tier} Button demo to expose default and pressed base text controls.`);
+      const normal = await baseButtons.first().evaluate(element => {
+        const style = getComputedStyle(element);
+        const strokeProbe = document.createElement("i");
+        strokeProbe.style.color = "var(--bf-stroke-color)";
+        element.append(strokeProbe);
+        const strokeColor = getComputedStyle(strokeProbe).color;
+        strokeProbe.remove();
+        return {
+          borderWidths: [style.borderBlockStartWidth, style.borderBlockEndWidth, style.borderInlineStartWidth, style.borderInlineEndWidth].map(Number.parseFloat),
+          boxShadow: style.boxShadow,
+          strokeColor
+        };
+      });
+      const pressed = await baseButtons.nth(1).evaluate(element => ({
+        backgroundColor: getComputedStyle(element).backgroundColor,
+        boxShadow: getComputedStyle(element).boxShadow
+      }));
+      assert(normal.borderWidths.every(width => width === 0) && normal.boxShadow !== "none" && !["transparent", "rgba(0, 0, 0, 0)"].includes(normal.strokeColor) && pressed.boxShadow !== "none" && pressed.backgroundColor !== "rgba(0, 0, 0, 0)", `Expected ${tier} base text Buttons to retain their visible paint-only boundary and active feedback: normal=${JSON.stringify(normal)}, pressed=${JSON.stringify(pressed)}.`);
+
+      await baseButtons.first().focus();
+      const focusPaint = await baseButtons.first().evaluate(element => ({
+        focusVisible: element.matches(":focus-visible"),
+        boxShadow: getComputedStyle(element).boxShadow,
+        focusLayer: getComputedStyle(element).getPropertyValue("--bf-overlay-focus-layer").trim()
+      }));
+      assert(focusPaint.focusVisible && focusPaint.boxShadow.includes("inset") && focusPaint.focusLayer.includes("inset"), `Expected ${tier} base text Button keyboard focus to remain inward and unclipped: ${JSON.stringify(focusPaint)}.`);
+
+      await page.emulateMedia({ forcedColors: "active" });
+      await baseButtons.first().focus();
+      const forcedFocusPaint = await baseButtons.first().evaluate(element => ({
+        borderWidths: [getComputedStyle(element).borderBlockStartWidth, getComputedStyle(element).borderBlockEndWidth, getComputedStyle(element).borderInlineStartWidth, getComputedStyle(element).borderInlineEndWidth].map(Number.parseFloat),
+        focusVisible: element.matches(":focus-visible"),
+        outlineOffset: Number.parseFloat(getComputedStyle(element).outlineOffset),
+        outlineStyle: getComputedStyle(element).outlineStyle,
+        outlineWidth: Number.parseFloat(getComputedStyle(element).outlineWidth),
+        overlayPointerEvents: getComputedStyle(element, "::after").pointerEvents
+      }));
+      assert(forcedFocusPaint.focusVisible && forcedFocusPaint.borderWidths.every(width => width === 0) && forcedFocusPaint.outlineStyle === "solid" && forcedFocusPaint.outlineWidth > 0 && forcedFocusPaint.outlineOffset < 0 && forcedFocusPaint.overlayPointerEvents === "none", `Expected ${tier} base text Button forced-colors keyboard focus to remain explicit, inward and layout-neutral: ${JSON.stringify(forcedFocusPaint)}.`);
       await page.emulateMedia({ forcedColors: "none" });
     }
 

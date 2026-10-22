@@ -14,6 +14,21 @@ illustrations, approved D2 including OS dense 0, and accepted the exact private
 D3 implementation. Later production adoption and the restyle PR, publication,
 Svelte/Lit parity and component visual approval remain separate.
 
+## Owner-requested control follow-up (2026-10-22)
+
+The Diagram Generator owner explicitly requested upstream inset focus and
+visibly bordered buttons, an upstream Git source push, then downstream adoption.
+Main was clean at a668f531 before this work. Current BF already supplies inset
+field/select focus; the bounded repair restores the is-base button's paint-only
+stroke and active feedback with zero layout border, and strengthens all-tier
+focus/forced-colors/browser assertions. This source-push authorization supersedes
+the earlier spacing no-push instruction for the requested latest BF checkpoint;
+it does not authorize npm publication or close the remaining spacing work.
+Generator Spec108 owns the downstream review package and qualification record.
+Final source gates passed: npm test (19,044 static checks, 332 baseline reports,
+full behavior) and qa:components (86 captures, 332 baseline reports). Forced-colors
+focus specificity and the verifier''s stale initial-tier comparison are repaired.
+
 ## Current dispatch
 
 Owner direction, October 21: review the latest BF spacing work, fix findings,

@@ -448,7 +448,8 @@ async function main(): Promise<void> {
       const surfaces = plannedSurfaceOptions(surfaceState);
 
       for (const surface of surfaces) {
-        if (surface.value !== surfaceState.selectedValue) {
+        const currentSurface = await page.evaluate(() => document.body.dataset.bfTier ?? "editorial");
+        if (surface.value !== currentSurface) {
           await selectSurface(page, surface);
         }
 
