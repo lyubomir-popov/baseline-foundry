@@ -3,8 +3,9 @@
 Current density execution and owner decisions live in canonical Spec024
 `tasks.md` at `H:/WSL_dev_projects/canonical-spacing-spec`. The October16
 repair and October21 static-navigation correction follow its active brief08.
-BF now has the approved primitive OS table binding and automatic static Chip
-binding in shipped Tab actions and SideNavigation trailing link/text slots.
+BF now has the approved primitive OS table binding, automatic static Chip
+binding in SideNavigation trailing link/text slots, and static Badge indicators
+inside Tabs. The October 22 owner correction prohibits Chips inside Tabs.
 Historical Site Chip completion below still proves that subset only:
 compound Search/Color, segmented/pagination, interactive navigation APIs,
 SideTab and wider placement coverage remain open. No historical done row

@@ -43,12 +43,6 @@ export const componentDensityPolicy = {
   staticNavigationChip: {
     products: ["editorial", "documentation", "app", "os"],
     placements: {
-      tab: {
-        provider: ".bf-tabs .bf-tabs-link",
-        providerBoundaries: [".bf-tabs-link", ".bf-theme"],
-        subscriber: "span.bf-chip:not([role='button']):not(:has(.bf-chip-dismiss))",
-        hostSubscriber: "span.bf-chip:not([role='button'])"
-      },
       sideNavigationTrailing: {
         provider: ".bf-side-navigation :is(.bf-side-navigation-link, .bf-side-navigation-text)",
         providerBoundaries: [".bf-side-navigation-link", ".bf-side-navigation-text", ".bf-theme"],

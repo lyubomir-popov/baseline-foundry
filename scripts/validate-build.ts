@@ -830,7 +830,6 @@ function validateCommonCss(css: string): void {
     if (!value || /^0(?:rem|px|em|%)?$/.test(value)) return;
     const selector = ((declaration.parent as { selector?: string }).selector ?? "").replace(/\s+/g, " ");
     const isMetricCompensation = /var\(--bf-(?:body|h[1-6])-margin-bottom(?:,|\))/.test(value) || value === "var(--bf-interface-row-compensation-block-end)" ||
-      (selector === ":where(.bf-theme) :where(.bf-tabs-list)" && declaration.prop === "margin" && value === "var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end))") ||
       (selector === ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)" && declaration.prop === "margin-block-end" && value === "var(--bf-tabs-equal-closure, var(--bf-interface-row-compensation-block-end))");
     if (isMetricCompensation) return;
     const key = `${selector}|${declaration.prop}|${declaration.value}`;
@@ -1794,26 +1793,32 @@ function validateCommonCss(css: string): void {
   const staticNavigationChip = componentDensityPolicy.staticNavigationChip;
   assert(
     JSON.stringify(staticNavigationChip.products) === JSON.stringify(["editorial", "documentation", "app", "os"]) &&
-    staticNavigationChip.placements.tab.provider === ".bf-tabs .bf-tabs-link" &&
-    JSON.stringify(staticNavigationChip.placements.tab.providerBoundaries) === JSON.stringify([".bf-tabs-link", ".bf-theme"]) &&
-    staticNavigationChip.placements.tab.subscriber.startsWith("span.bf-chip") &&
+    Object.keys(staticNavigationChip.placements).length === 1 &&
     staticNavigationChip.placements.sideNavigationTrailing.provider === ".bf-side-navigation :is(.bf-side-navigation-link, .bf-side-navigation-text)" &&
     JSON.stringify(staticNavigationChip.placements.sideNavigationTrailing.providerBoundaries) === JSON.stringify([".bf-side-navigation-link", ".bf-side-navigation-text", ".bf-theme"]) &&
     staticNavigationChip.placements.sideNavigationTrailing.subscriber.includes(".bf-side-navigation-status") &&
     staticNavigationChip.role === "spacing.inset.control.block" &&
     staticNavigationChip.denseMember === "--bf-control-block-inset-dense" &&
     staticNavigationChip.componentBinding === "--bf-chip-control-block-inset",
-    `Expected the versioned static navigation policy to name the bounded Tab and SideNavigation trailing placements and existing dense role; got ${JSON.stringify(staticNavigationChip)}.`
+    `Expected the versioned static navigation policy to name only the bounded SideNavigation trailing placement and existing dense role; got ${JSON.stringify(staticNavigationChip)}.`
   );
   assert(
-    css.includes("@scope (:where(.bf-tabs .bf-tabs-link)) to (:where(.bf-tabs-link, .bf-theme))") &&
-    css.includes("margin: 0 0 var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end));") &&
     css.includes("@scope (:where(.bf-side-navigation :is(.bf-side-navigation-link, .bf-side-navigation-text))) to (:where(.bf-side-navigation-link, .bf-side-navigation-text, .bf-theme))") &&
     css.includes(`${staticNavigationChip.componentBinding}: var(${staticNavigationChip.denseMember});`) &&
     css.includes("align-items: baseline;") &&
     css.includes("padding-block: max(0rem, calc(var(--bf-interface-row-padding-block) - var(--bf-control-block-inset-dense)));") &&
     !css.includes("@scope (:where(.bf-side-navigation)) to (:where(.bf-side-navigation, .bf-theme))"),
-    "Expected static navigation Chips and their actual hosts to use bounded generated placement rules, with no whole-SideNavigation legacy enrollment."
+    !css.includes("@scope (:where(.bf-tabs .bf-tabs-link))") &&
+    !css.includes("--_bf-tabs-static-closure") &&
+    !css.includes("--_bf-tabs-row-align"),
+    "Expected static SideNavigation Chips and their actual hosts to use bounded generated placement rules, with no Tab Chip route or whole-SideNavigation legacy enrollment."
+  );
+  assert(
+    css.includes(":where(.bf-tabs-link):has(:where(.bf-badge, .bf-badge.is-negative))") &&
+    css.includes("align-items: baseline;") &&
+    css.includes("margin: 0 0 var(--bf-interface-row-compensation-block-end);") &&
+    !css.includes(":where(.bf-tabs-link):has(:where(.bf-chip"),
+    "Expected Tabs to baseline-align static Badge indicators while exposing no Chip-specific tab construction."
   );
   assert(
     css.includes(`${density.comfortableMember}: var(--_spacing-inset-control-block-default);`) &&
@@ -2062,8 +2067,8 @@ function validateCommonCss(css: string): void {
     "gap": "var(--bf-space-2)"
   }, "tabs own the relationship between their list and panel");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
-    "margin": "0 0 var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end))"
-  }, "tab lists own one measured-or-default trailing closure after the painted strip");
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)"
+  }, "tab lists own one default trailing closure after the painted strip");
   assert(css.includes(":where(.bf-theme) :where(.bf-tabs-list)::after") && css.includes(":where(.bf-theme) :where(.bf-tabs-link.is-active, .bf-tabs-link[aria-selected='true'])::after"), "Expected tab-list and active-tab boundaries to use automatic out-of-flow overlays.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
     "overflow-x": "auto",
@@ -2080,9 +2085,9 @@ function validateCommonCss(css: string): void {
     "margin-bottom": "0"
   }, "tab links inside strips leave closure to the list owner");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs-list)", {
-    "margin": "0 0 var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end))",
+    "margin": "0 0 var(--bf-interface-row-compensation-block-end)",
     "padding": "0"
-  }, "tab strips close once after their visible row using measured or default closure");
+  }, "tab strips close once after their visible row using the default closure");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-tabs.is-equal) :where(.bf-tabs-list)", {
     "display": "grid",
     "gap": "var(--bf-component-inline-inset-action)",

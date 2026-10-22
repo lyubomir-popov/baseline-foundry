@@ -75,9 +75,9 @@ from increasing a flex host's block size.
 
 Badge owns a three-layer rounded background whose painted height is `1em`.
 StatusLabel owns a centered background sized to its type and existing stroke.
-The bucket 08 proof compares same-label Chip twins in table, side-navigation
-and tab placements for all four products, and also checks standalone, default
-and dense StatusLabel samples. It derives effective paint and glyph-ink bounds,
+The bucket 08 proof compares same-label Chip twins in table and side-navigation
+placements for all four products, and separately checks static Badge indicators
+in Tabs plus standalone, default and dense StatusLabel samples. It derives effective paint and glyph-ink bounds,
 requires exact baselines and unchanged host heights, and exercises 14px, 16px
 and 20px roots at device scales 1 and 1.5. Chromium visual inspection remains
 an implementation check; owner bucket sign-off is recorded only in Spec 024.

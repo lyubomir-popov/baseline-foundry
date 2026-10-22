@@ -40,7 +40,7 @@ ${inlineOptionsStroke.owner}
   display: flex;
   gap: 0;
   list-style: none;
-  margin: 0 0 var(--_bf-tabs-static-closure, var(--bf-interface-row-compensation-block-end));
+  margin: 0 0 var(--bf-interface-row-compensation-block-end);
   min-inline-size: 0;
   overflow-x: auto;
   padding: 0;
@@ -48,8 +48,6 @@ ${inlineOptionsStroke.owner}
 }
 
 :where(.bf-theme) :where(.bf-tabs-item) {
-  align-items: stretch;
-  display: flex;
   /* Long lists scroll rather than shrink tabs. */
   flex: 0 0 auto;
   margin: 0;
@@ -57,12 +55,8 @@ ${inlineOptionsStroke.owner}
   padding: 0;
 }
 
-:where(.bf-theme) :where(.bf-tabs-item) > :where(.bf-tabs-link) {
-  align-self: stretch;
-}
-
 :where(.bf-theme) :where(.bf-tabs-link) {
-${bodyTypeStyles}  align-items: var(--_bf-tabs-row-align, center);
+${bodyTypeStyles}  align-items: center;
   background: transparent;
   border: 0;
   border-block: 0;
@@ -75,6 +69,12 @@ ${bodyTypeStyles}  align-items: var(--_bf-tabs-row-align, center);
   padding-block: var(--bf-interface-row-padding-block);
   padding-inline: var(--bf-component-inline-inset-action);
   text-decoration: none;
+}
+
+/* A static Badge is part of the tab's single action. Its private indicator
+   type shares the label baseline and stays inside the existing body line. */
+:where(.bf-theme) :where(.bf-tabs-link):has(:where(.bf-badge, .bf-badge.is-negative)) {
+  align-items: baseline;
 }
 
 :where(.bf-theme) :where(.bf-tabs-list .bf-tabs-link) {

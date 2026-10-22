@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { closeServer, createStaticServer, waitForFonts } from "./component-demo-shared.ts";
 import { assert, disableDemoChromeHitTesting, openBrowser } from "./behavior/browser-helpers.ts";
-import { verifyStaticNavigationChipDensity } from "./behavior/static-navigation-chip-density.ts";
+import { verifyStaticNavigationIndicators } from "./behavior/static-navigation-chip-density.ts";
 import {
   verifyContentCardGeometry,
   verifyInteractiveTables,
@@ -3933,10 +3933,10 @@ async function verifyDensityPageGrid(origin: string): Promise<void> {
     "OS 0-inset proposal · wrapped input"
   ];
   const expectedNavigationCaptions = [
-    "Tabs Chip · automatic static seat",
+    "Tabs Badge · static indicator",
     "SideNavigation Chip · automatic trailing seat",
-    "Ordinary Tabs · plain / Chip / Badge-in-Chip",
-    "Equal Tabs · plain / Chip / Badge-in-Chip",
+    "Ordinary Tabs · plain / Badge indicators",
+    "Equal Tabs · plain / Badge indicators",
     "SideNavigation link rows · plain / Chip / Badge-in-Chip",
     "SideNavigation text row · automatic trailing seat"
   ];
@@ -4337,9 +4337,9 @@ async function verifyIndicatorFit(origin: string): Promise<void> {
         return { pairs, invariants, statusHosts };
       });
 
-      assert(proof.pairs.length === 3 && proof.pairs.every(pair => pair !== null), `Expected ${tier} to expose exactly three complete Badge-in-Chip placement pairs; got ${JSON.stringify(proof.pairs)}.`);
+      assert(proof.pairs.length === 2 && proof.pairs.every(pair => pair !== null), `Expected ${tier} to expose exactly two legal Badge-in-Chip placement pairs; got ${JSON.stringify(proof.pairs)}.`);
       const pairs = proof.pairs.filter((pair): pair is NonNullable<typeof pair> => pair !== null);
-      assert(new Set(pairs.map(pair => pair.placement)).size === 3, `Expected ${tier} table, SideNavigation and Tab placements once each; got ${JSON.stringify(pairs)}.`);
+      assert(new Set(pairs.map(pair => pair.placement)).size === 2 && pairs.some(pair => pair.placement === "table") && pairs.some(pair => pair.placement === "side-navigation"), `Expected ${tier} table and SideNavigation placements once each, with no Chip-in-tab pair; got ${JSON.stringify(pairs)}.`);
       for (const pair of pairs) {
         assert(Math.abs(pair.fontSize - expectedFontSize[tier]) <= geometryTolerance && Math.abs(pair.lineHeight - 16) <= geometryTolerance, `Expected ${tier}/${pair.placement} approved indicator type ${expectedFontSize[tier]}px/16px; got ${JSON.stringify(pair)}.`);
         assert(Math.abs(pair.baselineDelta) <= baselineTolerance, `Expected ${tier}/${pair.placement} Badge text to share the Chip label baseline; got ${JSON.stringify(pair)}.`);
@@ -8711,8 +8711,8 @@ async function main(): Promise<void> {
       return;
     }
     if (process.argv.includes("--navigation-density")) {
-      await verifyStaticNavigationChipDensity(origin);
-      console.log("Static navigation density behavior verification passed.");
+      await verifyStaticNavigationIndicators(origin);
+      console.log("Static navigation indicator behavior verification passed.");
       return;
     }
     if (process.argv.includes("--indicator-fit")) {
@@ -8744,7 +8744,7 @@ async function main(): Promise<void> {
     await verifyNestedAuxiliaryGeometry(origin);
     await verifyDenseTableEnrollment(origin);
     await verifyDensityPageGrid(origin);
-    await verifyStaticNavigationChipDensity(origin);
+    await verifyStaticNavigationIndicators(origin);
     await verifyIndicatorFit(origin);
     await verifyBlockDerivedInlineGeometry(origin);
     await verifyFractionalScaleBlockDerivedGeometry(origin);
