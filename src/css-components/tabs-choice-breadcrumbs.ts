@@ -326,28 +326,29 @@ ${bodyTypeStyles}  align-items: center;
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs) {
-  display: block;
+  /* Contain the trail's one trailing metric compensation. */
+  display: flow-root;
   margin: 0;
   width: 100%;
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-items) {
-  align-items: center;
+${bodyCaseTypeStyles}  align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--bf-baseline) * 0.5) var(--bf-leading-mark-gap);
+  /* Wrapped rows are text lines, not separately spaced stack items. */
+  gap: 0 var(--bf-leading-mark-gap);
   list-style: none;
-  margin: 0;
+  margin: 0 0 var(--bf-body-margin-bottom);
   min-inline-size: 0;
-  padding: 0;
+  padding: var(--bf-body-nudge-start) 0 0;
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) {
-${bodyCaseTypeStyles}  color: var(--bf-color-text-muted);
-  margin: 0 0 var(--bf-body-margin-bottom);
+  color: var(--bf-color-text-muted);
+  margin: 0;
   min-inline-size: 0;
-  padding-block-end: 0;
-  padding-block-start: var(--bf-body-nudge-start);
+  padding: 0;
 }
 
 :where(.bf-theme) :where(.bf-breadcrumbs-item) + :where(.bf-breadcrumbs-item)::before {

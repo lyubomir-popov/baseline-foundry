@@ -179,15 +179,10 @@ body.u-baseline-grid::after {
   }
 
   /* Once the catalog rail becomes its own row, the breadcrumb header no
-   * longer shares the brand keyline. Let wrapped breadcrumb rows start at
-   * the row edge and separate them by one baseline so the following content
-   * keeps the document grid phase in every tier. */
+   * longer shares the brand keyline. Keep its row-edge placement; the trail
+   * owns paragraph leading and closes on the grid once as a whole. */
   .pc-breadcrumbs {
     padding-block-start: 0;
-  }
-
-  .pc-breadcrumbs > .bf-breadcrumbs-items {
-    row-gap: var(--bf-baseline);
   }
 
   body:has(> .pc-root) > .pc-footer {

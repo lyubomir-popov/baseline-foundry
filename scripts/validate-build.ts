@@ -386,8 +386,8 @@ function validateHorizontalAxisSeparation(css: string, label: string): void {
   assert(declarations > 0, `Expected ${label} axis audit to inspect horizontal spacing declarations.`);
   assert(css.includes("--bf-inline-unit: 0.25rem;"), `Expected ${label} to emit the independently authored 0.25rem inline unit.`);
   assert(
-    css.includes("gap: calc(var(--bf-baseline) * 0.5) var(--bf-leading-mark-gap);"),
-    `Expected ${label} breadcrumb shorthand to separate its vertical row gap from the horizontal mark gap.`
+    css.includes("gap: 0 var(--bf-leading-mark-gap);"),
+    `Expected ${label} breadcrumb shorthand to keep paragraph rows gapless and preserve the horizontal mark gap.`
   );
 }
 
@@ -1407,15 +1407,18 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-breadcrumbs-items)", {
     "display": "flex",
     "flex-wrap": "wrap",
-    "gap": "calc(var(--bf-baseline) * 0.5) var(--bf-leading-mark-gap)",
+    "gap": "0 var(--bf-leading-mark-gap)",
     "list-style": "none",
-    "padding": "0"
-  }, "breadcrumbs keep the canonical wrapped trail layout");
-  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-breadcrumbs-item)", {
     "margin": "0 0 var(--bf-body-margin-bottom)",
-    "padding-block-end": "0",
-    "padding-block-start": "var(--bf-body-nudge-start)"
-  }, "breadcrumb text retains the body role's metric baseline compensation");
+    "padding": "var(--bf-body-nudge-start) 0 0"
+  }, "breadcrumb lines share paragraph leading and one whole-trail metric compensation");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-breadcrumbs)", {
+    "display": "flow-root"
+  }, "breadcrumbs contain their whole-trail metric compensation");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-breadcrumbs-item)", {
+    "margin": "0",
+    "padding": "0"
+  }, "breadcrumb items do not repeat metric compensation on wrapped rows");
   assert(css.includes(":where(.bf-pagination-items)"), "Expected generated CSS to include pagination styling.");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(table, .bf-table)", {
     "border-collapse": "separate",
