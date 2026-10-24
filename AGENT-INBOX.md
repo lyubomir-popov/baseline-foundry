@@ -14,6 +14,23 @@ visual approval remain separate.
 
 ## Current dispatch
 
+### 2026-10-20 owner directions — dispatched once and completed
+
+- **Spec 024 token adoption is done.** It was implemented once in the isolated
+  `feat/spacing-token-adoption` worktree and accepted at exact commit
+  `0521fb7054036f5048b513251f381eb69cb78ae2`. Do not start a second worker for
+  this dispatch.
+- **The unsupported Reset pair is removed** from the density page together
+  with its Reset-context absolute-phase check. Product roots remain supported
+  at page and section boundaries.
+- **Every table cell remains a density placement**, whatever the table is for;
+  `.bf-table :is(td, th)` remains universal.
+- No push or merge without the owner.
+
+The table-repair receipt below predates this completed dispatch. Its retained
+Reset/open Reset-phase statements are superseded by the intentional Reset
+removal above.
+
 The continuation completes bounded context-comparison proof from fb403ff.
 Every original specimen stays visible and in order; a plain inner table row
 inside a fresh product root now independently references the retained Reset
