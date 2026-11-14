@@ -1299,6 +1299,13 @@ function validateCommonCss(css: string): void {
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) {\n  display: grid;\n  gap: var(--bf-space-1);\n  inline-size: 100%;\n  margin: 0;\n}"), "Expected bf-figure to stay externally neutral while owning its caption gap.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure) > :where(img, picture, video, canvas, svg) {\n  block-size: auto;\n  display: block;\n  inline-size: 100%;"), "Expected bf-figure to size embedded media to 100% of its container.");
   assert(css.includes(":where(.bf-theme) :where(.bf-figure-caption) {\n  color: var(--bf-color-text-default);\n  display: block;\n  font-style: italic;"), "Expected bf-figure-caption to render as an italic block beneath the media.");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-figure-caption)", {
+    "margin-block-start": "0"
+  }, "figure captions reset only their semantic start margin");
+  for (const property of ["margin", "margin-block", "margin-block-end", "margin-bottom"]) {
+    assertRuleMissingDecl(ast, ":where(.bf-theme) :where(.bf-figure-caption)", property,
+      "figure captions preserve the selected text role's metric end compensation");
+  }
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect) {\n  aspect-ratio: 16 / 9;"), "Expected generated CSS to define the bf-aspect default 16:9 slot.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-16-9) {\n  aspect-ratio: 16 / 9;"), "Expected bf-aspect.is-16-9 modifier to apply the 16:9 ratio.");
   assert(css.includes(":where(.bf-theme) :where(.bf-aspect.is-3-2) {\n  aspect-ratio: 3 / 2;"), "Expected bf-aspect.is-3-2 modifier to apply the 3:2 ratio.");
