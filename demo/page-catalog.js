@@ -67,6 +67,7 @@ export const componentSections = [
       { title: "List", href: "/demo/components/list.html" },
       { title: "Inline list", href: "/demo/components/inline-list.html" },
       { title: "Figure", href: "/demo/components/figure.html" },
+      { title: "Image comparison", href: "/demo/components/image-comparison.html" },
       { title: "Aspect", href: "/demo/components/aspect.html" },
       { title: "Table", href: "/demo/components/table.html" }
     ]

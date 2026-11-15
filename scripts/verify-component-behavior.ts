@@ -1,5 +1,6 @@
 import { verifyBreadcrumbParagraphLeading } from "./behavior/breadcrumb-paragraph.ts";
 import { verifyFigureCaptionCompensation } from "./behavior/figure-caption-compensation.ts";
+import { verifyImageComparison } from "./verify-image-comparison-behavior.ts";
 import { verifyDrawerElevation } from "./behavior/drawer-elevation.ts";
 import { verifyProseLinkAlignment } from "./behavior/prose-link-alignment.ts";
 import fs from "node:fs/promises";
@@ -8706,6 +8707,10 @@ async function main(): Promise<void> {
   try {
     // Full verification stays the default; focused flags isolate changed
     // contracts while iterating on bounded regressions.
+    if (process.argv.includes("--image-comparison")) {
+      await verifyImageComparison(origin);
+      return;
+    }
     if (process.argv.includes("--density-table")) {
       await verifyDenseTableEnrollment(origin);
       await verifyDensityPageGrid(origin);
@@ -8728,6 +8733,7 @@ async function main(): Promise<void> {
       return;
     }
     await verifyDrawerElevation(origin);
+    await verifyImageComparison(origin);
     await verifyProseLinkAlignment(origin);
     await verifyBreadcrumbParagraphLeading(origin);
     await verifyFigureCaptionCompensation(origin);

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image comparison demo</title>
+  <link rel="stylesheet" href="../../dist/tiers/editorial/styles.css">
+  <link rel="stylesheet" href="../component-shell.css">
+</head>
+<body class="bf-theme is-dark" data-component-capture>
+<section class="bf-stack" data-baseline-check="box" data-baseline-label="image comparison specimens">
+  <h5 data-baseline-check="flow" data-baseline-label="image comparison heading">Image comparison</h5>
+  <p data-baseline-check="flow" data-baseline-label="image comparison instructions">Drag the stage or use the keyboard to reveal each panel.</p>
+  <label id="comparison-ltr-label" for="comparison-ltr" data-baseline-check="flow" data-baseline-label="left to right label">Day and night</label>
+  <div class="bf-image-comparison" data-baseline-check="box" data-baseline-label="left to right comparison" style="inline-size:min(100%, 32rem)">
+    <div class="bf-image-comparison-stage" style="block-size:10rem">
+      <div class="bf-image-comparison-layer is-second" style="background:#243d62"><img alt="Night panel" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2780%27 height=%27160%27%3E%3Crect width=%2780%27 height=%27160%27 fill=%27%237796bd%27/%3E%3Ccircle cx=%2740%27 cy=%2740%27 r=%2720%27 fill=%27%23fff%27/%3E%3C/svg%3E"></div>
+      <div class="bf-image-comparison-layer is-first" style="background:#d99558"><img alt="Day panel" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27320%27 height=%27160%27%3E%3Crect width=%27320%27 height=%27160%27 fill=%27%23e5b47b%27/%3E%3Ccircle cx=%2780%27 cy=%2740%27 r=%2720%27 fill=%27%23fff%27/%3E%3C/svg%3E"></div>
+      <div class="bf-image-comparison-seam" aria-hidden="true"></div>
+      <input class="bf-image-comparison-value" data-baseline-ignore="true" id="comparison-ltr" type="range" min="0" max="100" step="1" value="50" aria-labelledby="comparison-ltr-label">
+      <div class="bf-image-comparison-grip" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><rect x="6" y="3" width="1.5" height="14" rx="0.75"/><rect x="9.25" y="3" width="1.5" height="14" rx="0.75"/><rect x="12.5" y="3" width="1.5" height="14" rx="0.75"/></svg></div>
+    </div>
+  </div>
+  <label id="comparison-rtl-label" for="comparison-rtl" data-baseline-check="flow" data-baseline-label="right to left label">Right to left comparison</label>
+  <div class="bf-image-comparison" dir="rtl" data-baseline-check="box" data-baseline-label="right to left comparison" style="inline-size:min(100%, 32rem)">
+    <div class="bf-image-comparison-stage" style="block-size:10rem">
+      <div class="bf-image-comparison-layer is-second" style="background:#355c44" aria-hidden="true"></div>
+      <div class="bf-image-comparison-layer is-first" style="background:#9d7354" aria-hidden="true"></div>
+      <div class="bf-image-comparison-seam" aria-hidden="true"></div>
+      <input class="bf-image-comparison-value" data-baseline-ignore="true" id="comparison-rtl" type="range" min="0" max="100" step="1" value="50" aria-labelledby="comparison-rtl-label">
+      <div class="bf-image-comparison-grip" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><rect x="6" y="3" width="1.5" height="14" rx="0.75"/><rect x="9.25" y="3" width="1.5" height="14" rx="0.75"/><rect x="12.5" y="3" width="1.5" height="14" rx="0.75"/></svg></div>
+    </div>
+  </div>
+</section>
+<script type="module" src="../component-demo.js"></script>
+</body>
+</html>

@@ -32,6 +32,13 @@ positioning and clip orientation respond to computed direction; physical client
 coordinates are converted from left in LTR and right in RTL. Read current
 geometry/direction during a gesture rather than freezing them at pointerdown.
 
+The runtime owns a flat `is-rtl` modifier derived from the stage's computed
+direction during setup/render, metadata update and pointer/native handling.
+This controls physical clip/translation and also supports CSS direction overrides,
+which `:dir()` alone cannot represent. Consumers changing direction while idle
+call `update({})`; no broad mutation observer is introduced. During capture,
+direction refresh occurs even when the normalized percentage is unchanged.
+
 **Coordinator-approved geometry:** preserve the proven source's 1.5rem grip
 width and fixed 80px decorative height across all four tiers. Do not convert
 80px to 5rem or invent per-tier values. Document narrowly scoped CSS style inputs

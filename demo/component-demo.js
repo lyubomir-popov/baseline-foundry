@@ -1,4 +1,4 @@
-import { initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initInPageNavigations, initInteractiveFeedback, initInteractiveTables, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
+import { setupImageComparison, initAccordions, initApplicationLayouts, initBaselineGridToggles, initCodeSnippets, initContextualMenus, initInPageNavigations, initInteractiveFeedback, initInteractiveTables, initListTree, initPanelDrawers, initRangeControls, initResizableAsides, initSideNavigations, initTabs, initTooltips, initTopNavigations } from "../dist/index.js";
 import { BUNDLE_VERSION_OPTIONS, readBundleVersion, swapBundleStylesheet, writeBundleVersion } from "./bundle-version.js";
 import { ensureTargetId, injectPageChrome } from "./page-chrome.js";
 import { readStoredBaseline, readStoredTier, readStoredTone, storeBaseline, storeTier, storeTone } from "./page-chrome-storage.js";
@@ -369,7 +369,11 @@ async function main() {
   initInteractiveTables();
   initListTree();
   initPanelDrawers();
-  initRangeControls();
+  initRangeControls({ rangeSelector: "input[type=range]:not(.bf-image-comparison-value)" });
+  document.querySelectorAll(".bf-image-comparison").forEach(element => {
+    const input = element.querySelector(".bf-image-comparison-value");
+    setupImageComparison(element, { initialValue: input.valueAsNumber, firstLabel: "Before", secondLabel: "After" });
+  });
   initResizableAsides();
   initSideNavigations();
   initTopNavigations();

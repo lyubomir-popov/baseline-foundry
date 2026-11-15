@@ -338,6 +338,8 @@ Package root exports:
 - `initCodeSnippets`
 - `initContextualMenus`
 - `initInPageNavigations`
+- `setupImageComparison`
+- `ImageComparisonController`, `ImageComparisonOptions`, `ImageComparisonMetadata`, and `ImageComparisonChangeDetail`
 - `initInteractiveFeedback`
 - `initNotificationDismissals`
 - `initPasswordReveals`
@@ -418,6 +420,95 @@ Example OS-default entrypoint when class switching is not needed:
 ```html
 <link rel="stylesheet" href="baseline-foundry/tiers/os.css" />
 ```
+
+### Image comparison
+
+`bf-image-comparison` supplies a two-slot reveal frame and one native range.
+Its runtime owns the percentage; a consumer owns images/fallbacks, visible
+labels, aspect ratio or snapped stage height, headings and captions. It requires
+the stage, two layers, seam, grip and exactly one named native range shown here:
+
+```html
+<label id="comparison-label" for="comparison-value">Original and revised</label>
+<div class="bf-image-comparison">
+  <div class="bf-image-comparison-stage" style="aspect-ratio:16 / 9">
+    <div class="bf-image-comparison-layer is-second"><img src="revised.jpg" alt="Revised artwork"></div>
+    <div class="bf-image-comparison-layer is-first"><img src="original.jpg" alt="Original artwork"></div>
+    <div class="bf-image-comparison-seam" aria-hidden="true"></div>
+    <input class="bf-image-comparison-value" id="comparison-value" type="range"
+      min="0" max="100" step="1" value="50" aria-labelledby="comparison-label">
+    <div class="bf-image-comparison-grip" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <rect x="6" y="3" width="1.5" height="14" rx="0.75"/>
+        <rect x="9.25" y="3" width="1.5" height="14" rx="0.75"/>
+        <rect x="12.5" y="3" width="1.5" height="14" rx="0.75"/>
+      </svg>
+    </div>
+  </div>
+</div>
+```
+
+```ts
+import { setupImageComparison } from "baseline-foundry";
+
+const host = document.querySelector<HTMLElement>(".bf-image-comparison")!;
+const comparison = setupImageComparison(host, {
+  initialValue: 50,
+  firstLabel: "Original",
+  secondLabel: "Revised"
+});
+host.addEventListener("bf-image-comparison-change", event => {
+  // CustomEvent<ImageComparisonChangeDetail>: { value, phase, source }
+  console.log((event as CustomEvent).detail);
+});
+comparison.setValue(75); // Silent authoritative update; no event echo.
+comparison.update({ firstLabel: "Earlier" }); // Retains the selected value.
+comparison.getValue();
+comparison.destroy(); // Idempotent; removes handlers/capture and restores writes.
+```
+
+The default is 50; explicit zero is valid. Finite values clamp to 0–100 and
+round to step 1. Invalid initial values use 50; invalid later updates do nothing.
+One shared value drives clipping, seam, grip and native value text. Native
+arrows/Home/End and direct stage pointer/touch input operate the same controller.
+The first slot grows from inline-start; zero fully exposes the second slot.
+The complete grip remains visible beyond the image inside component-owned
+runway, with no surrounding image frame or duplicate control rows.
+
+Repeated setup of a live host returns the same handle without applying new
+initial options. Slot descendants may change without setup; replacing the
+stage/input requires destroy/setup. A framework adapter mounts once, keeps no
+competing native value prop/React numeric state, updates metadata through the
+handle, and destroys on unmount. Changed external `setValue` ends an older
+gesture and wins; same-value calls are no-ops. Strict continuously controlled
+wrappers and deferred acknowledgement arbitration are outside this minimal API.
+
+The bubbling `bf-image-comparison-change` event reports `phase` as `input`,
+`change` or `cancel`, and `source` as `pointer` or `native`. Values are applied
+before notification; cancel restores the starting value. Subscribe to this custom
+channel rather than both it and native events. API/metadata changes emit no event
+and do not synthesize native events. Synchronous listeners may update or destroy
+the controller safely. Existing visible native labels take precedence over the
+optional `accessibleName` fallback. Actual spoken labels still require AT testing.
+
+Direction follows the stage's computed direction, including CSS overrides.
+After changing direction while idle, call `comparison.update({})` to refresh the
+runtime's `is-rtl` modifier; active gesture/value handling rereads direction.
+Do not set the runtime-owned position or modality/direction modifiers yourself.
+The same contract ships in all four tiers, including their direct/shared bundles.
+
+Supported per-host CSS style inputs are `--bf-image-comparison-grip-inline-size`
+(default `1.5rem`), `--bf-image-comparison-grip-block-size` (`80px`),
+`--bf-image-comparison-focus-width` (`2px`) and
+`--bf-image-comparison-focus-offset` (`3px`). Runway derives from half the grip
+width plus focus width/offset. The fixed-height grip is out of text flow; it
+does not prescribe a native/text control occupied height. Panels accept direct
+images or picture images with full-frame contain fitting. Source loading/error
+presentation and any baseline snapping remain consumer responsibilities.
+
+See `/demo/components/image-comparison.html` for the independent synthetic/real
+media specimen. Physical touch, AT and native browser zoom need their own proof;
+automated root-size/forced-color checks do not replace them.
 
 ## Downstream Fonts
 

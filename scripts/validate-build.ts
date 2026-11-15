@@ -780,6 +780,23 @@ function validateCommonCss(css: string): void {
   // legacy ones should prefer the AST helpers (assertRuleHasDecl, etc.) over
   // brittle multi-line substring checks. See scripts/css-ast-helpers.ts.
   const ast = parseCss(css);
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-image-comparison)", {
+    "--bf-image-comparison-grip-inline-size": "1.5rem",
+    "--bf-image-comparison-grip-block-size": "80px",
+    "--bf-image-comparison-focus-width": "2px",
+    "--bf-image-comparison-focus-offset": "3px",
+    "padding-inline": "calc(var(--bf-image-comparison-grip-inline-size) / 2 + var(--bf-image-comparison-focus-width) + var(--bf-image-comparison-focus-offset))"
+  }, "comparison endpoint runway is derived from exposed grip and focus dimensions");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-image-comparison-stage)", {
+    "min-inline-size": "0", "overflow": "visible", "touch-action": "pan-y pinch-zoom"
+  }, "comparison stage preserves intrinsic shrink and touch scrolling");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-image-comparison-value)", {
+    "opacity": "0", "pointer-events": "none", "position": "absolute"
+  }, "native comparison range is keyboard accessible while stage owns pointers");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-image-comparison-grip)::after", {
+    "pointer-events": "none", "position": "absolute", "border": "0 solid transparent"
+  }, "comparison grip stroke is paint rather than layout");
+  assert(css.includes(":where(.bf-image-comparison.is-rtl .bf-image-comparison-layer.is-first)") && css.includes("clip-path: inset(0 0 0 calc(100% - var(--bf-image-comparison-position)))"), "Comparison clipping follows inline start in RTL.");
   const ownedBlockStartMarginExceptions = new Set<string>();
   ast.walkDecls(declaration => {
     if (!["margin", "margin-block", "margin-block-start", "margin-top"].includes(declaration.prop)) return;
@@ -888,8 +905,8 @@ function validateCommonCss(css: string): void {
   const normativeTargetMinimums = css.match(/24px\b/g) ?? [];
   assert(
     normativeTargetMinimums.length === 1 &&
-    !/-?(?:\d+(?:\.\d+)?|\.\d+)px\b/.test(css.replaceAll("24px", "")),
-    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except for one shared 24 CSS-pixel target-minimum input.",
+    !/-?(?:\d+(?:\.\d+)?|\.\d+)px\b/.test(css.replaceAll("24px", "").replace("--bf-image-comparison-grip-block-size: 80px;", "").replace("--bf-image-comparison-focus-width: 2px;", "").replace("--bf-image-comparison-focus-offset: 3px;", "")),
+    "Expected generated CSS lengths to use scalable rem units or shared rem-based tokens except the shared target minimum and reviewed image-comparison decoration.",
   );
   assert(css.includes("@container (width >= 38.75rem)"), "Expected CSS to use the Canonical 38.75rem threshold for the 8-column grid.");
   assert(css.includes("@container (width >= 105.0625rem)"), "Expected CSS to use the Canonical 105.0625rem threshold for the 16-column grid.");
@@ -1688,6 +1705,8 @@ function validateCommonCss(css: string): void {
     ":where(.bf-theme) :where(.bf-field-boundary) => var(--bf-radius)",
     ":where(.bf-theme) :where(.bf-field-boundary, .bf-color-control, .bf-search-box, .bf-search-and-filter-search-container)::after => inherit",
     ":where(.bf-theme) :where(.bf-input, input:not([type]), input[type='text'], input[type='number'], input[type='search'], input[type='password'], input[type='email'], input[type='url'], textarea, select) => var(--bf-radius)",
+    ":where(.bf-theme) :where(.bf-image-comparison-grip) => calc(var(--bf-image-comparison-grip-inline-size) / 2)",
+    ":where(.bf-theme) :where(.bf-image-comparison-grip)::after => inherit",
     ":where(.bf-theme) :where(.bf-media-object-media.is-round > :where(img, picture, svg, video)) => 50%",
     ":where(.bf-theme) :where(.bf-modal-dialog)::after => inherit",
     ":where(.bf-theme) :where(.bf-modal-footer)::after => inherit",
@@ -2548,6 +2567,9 @@ async function validateScalableAuthoredLengths(): Promise<void> {
       const occurrences = source.match(/24px\b/g) ?? [];
       normativeTargetOccurrences += occurrences.length;
       if (/px\b/.test(source.replaceAll("24px", ""))) violations.push(relativePath);
+    } else if (relativePath === "src/css-components/image-comparison.ts") {
+      const allowed = source.replace("--bf-image-comparison-grip-block-size: 80px;", "").replace("--bf-image-comparison-focus-width: 2px;", "").replace("--bf-image-comparison-focus-offset: 3px;", "");
+      if (/px\b/.test(allowed)) violations.push(relativePath);
     } else if (/px\b/.test(source)) {
       violations.push(path.relative(process.cwd(), filePath));
     }
@@ -2565,7 +2587,7 @@ async function validateScalableAuthoredLengths(): Promise<void> {
   }
 
   assert(normativeTargetOccurrences === 1, `Expected exactly one shared authored 24 CSS-pixel target-minimum input, got ${normativeTargetOccurrences}.`);
-  assert(violations.length === 0, `Expected authored component and demo styles to use rem-scalable lengths except for the reviewed 24 CSS-pixel target minimum; found other px units in ${violations.join(", ")}.`);
+  assert(violations.length === 0, `Expected authored component and demo styles to use rem-scalable lengths except for the reviewed target minimum and image-comparison decoration; found other px units in ${violations.join(", ")}.`);
 }
 
 async function main(): Promise<void> {
