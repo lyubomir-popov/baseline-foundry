@@ -23,6 +23,8 @@ independent evidence is under reviews/evidence/astra/. No private consumer paint
 override, font nudge, target height, library filter state engine or generated
 source edit was introduced. Pointer active alone does not select the mark.
 
-Prepare and qualify an immutable package next, then adopt only public markup in
-portfolio. This acceptance does not publish, merge, approve final portfolio
+The [qualified immutable package](artifact.md) is now adopted through public
+markup at portfolio `75b5d6a`, with separate final consumer Astra acceptance.
+The receipt records actual hashes, archive differences, public verification and
+consumer proof. This acceptance does not publish, merge, approve final portfolio
 visuals, clear CP4 or establish physical-device/AT/native200%zoom coverage.

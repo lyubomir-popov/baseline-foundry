@@ -1,7 +1,8 @@
 # Spec 031: Uniform checkmarked filter chips
 
 Branch: `feat/031-checkable-chip`. Created: 2026-11-15.
-Status: technically accepted at `08fe52c`; immutable candidate qualification follows.
+Status: technically accepted at `08fe52c`; immutable candidate qualified from
+`90d9053` and consumed at portfolio `75b5d6a`, with final consumer Astra acceptance.
 Base: `0b026be`, preserving the accepted comparison/caption/Tab/Breadcrumb work.
 
 ## Intent and authority
@@ -16,6 +17,11 @@ This is an independent owner-requested scope, not spacing-bucket execution or
 a reopening of Spec 030. There is no new owner planning gate. Source/rendered
 independent Astra review and full required BF checks precede candidate adoption.
 No merge, push, publication, deployment or portfolio CP4 clearance is implied.
+
+The [artifact receipt](artifact.md) owns exact archive identity, public-package
+verification and the completed consumer handoff. All bounded tasks are complete;
+this package stays on its isolated branch pending separate owner integration
+direction. Final owner visual/portfolio checkpoint decisions remain open.
 
 ## Outcomes and acceptance
 

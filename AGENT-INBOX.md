@@ -8,8 +8,12 @@ review fixes; publication and pushes remain separate.
 
 Follow [Spec 031](specs/031-checkable-chip/spec.md), plan/tasks and proof matrix
 on `feat/031-checkable-chip`, isolated from accepted comparison Spec030. Owner
-selected uniform outlines plus a checkmark for portfolio filters. Implement the
-supported opt-in BF treatment, prove/review and package before consumer use.
+selected uniform outlines plus a checkmark for portfolio filters. Product
+`08fe52c` passes full suites and independent Astra source/rendered review.
+The [qualified immutable candidate](specs/031-checkable-chip/artifact.md) packed
+from `90d9053` is consumed at portfolio `75b5d6a`; final consumer Astra accepts
+95/95 independent checks. Bounded tasks are complete; preserve the branch and
+follow the receipt's separate owner/portfolio boundaries before further work.
 No merge, push, publication or portfolio CP4 clearance is authorized.
 
 ## Preserved comparison technical acceptance (2026-11-15)
