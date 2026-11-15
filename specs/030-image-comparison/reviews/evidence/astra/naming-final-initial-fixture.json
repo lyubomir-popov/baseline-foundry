@@ -1,0 +1,137 @@
+{
+  "head": "2524b24e54a8f10dc938bf76fb111d6ae8b7dbd6",
+  "distSha256": "cd42f2fbe49b3788e80979881a5f075a753dc24921de802ade242f18faa49478",
+  "cases": [
+    {
+      "kind": "text",
+      "pass": true,
+      "before": {
+        "i": "<input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" id=\"v\" aria-valuetext=\"19% A, 81% B\">",
+        "style": "--bf-image-comparison-position: 19%;"
+      },
+      "initial": "- slider \"Consumer name\": \"19\"",
+      "updated": "- slider \"Live name\": \"19\"",
+      "final": "- slider \"Live name\": \"50\"",
+      "attrs": {
+        "name": "Live name",
+        "color": "blue",
+        "position": ""
+      }
+    },
+    {
+      "kind": "image-alt",
+      "pass": true,
+      "before": {
+        "i": "<input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" id=\"v\" aria-valuetext=\"19% A, 81% B\">",
+        "style": "--bf-image-comparison-position: 19%;"
+      },
+      "initial": "- slider \"Consumer name\": \"19\"",
+      "updated": "- slider \"Live name\": \"19\"",
+      "final": "- slider \"Live name\": \"50\"",
+      "attrs": {
+        "name": "Live name",
+        "color": "blue",
+        "position": ""
+      }
+    },
+    {
+      "kind": "label-aria-label",
+      "pass": true,
+      "before": {
+        "i": "<input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" id=\"v\" aria-valuetext=\"19% A, 81% B\">",
+        "style": "--bf-image-comparison-position: 19%;"
+      },
+      "initial": "- slider \"Consumer name\": \"19\"",
+      "updated": "- slider \"Live name\": \"19\"",
+      "final": "- slider \"Live name\": \"50\"",
+      "attrs": {
+        "name": "Live name",
+        "color": "blue",
+        "position": ""
+      }
+    },
+    {
+      "kind": "labelledby-aria-label",
+      "pass": true,
+      "before": {
+        "i": "<input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" id=\"v\" aria-labelledby=\"label\" aria-valuetext=\"19% A, 81% B\">",
+        "style": "--bf-image-comparison-position: 19%;"
+      },
+      "initial": "- slider \"Consumer name\": \"19\"",
+      "updated": "- slider \"Live name\": \"19\"",
+      "final": "- slider \"Live name\": \"50\"",
+      "attrs": {
+        "name": "Live name",
+        "color": "blue",
+        "position": ""
+      }
+    },
+    {
+      "kind": "labelledby-image-alt",
+      "pass": true,
+      "before": {
+        "i": "<input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" id=\"v\" aria-labelledby=\"label\" aria-valuetext=\"19% A, 81% B\">",
+        "style": "--bf-image-comparison-position: 19%;"
+      },
+      "initial": "- slider \"Consumer name\": \"19\"",
+      "updated": "- slider \"Live name\": \"19\"",
+      "final": "- slider \"Live name\": \"50\"",
+      "attrs": {
+        "name": "Live name",
+        "color": "blue",
+        "position": ""
+      }
+    },
+    {
+      "kind": "native-aria-label",
+      "pass": true,
+      "before": {
+        "i": "<input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" id=\"v\" aria-label=\"Consumer name\" aria-valuetext=\"19% A, 81% B\">",
+        "style": "--bf-image-comparison-position: 19%;"
+      },
+      "initial": "- slider \"Consumer name\": \"19\"",
+      "updated": "- slider \"Live name\": \"19\"",
+      "final": "- slider \"Live name\": \"50\"",
+      "attrs": {
+        "name": "Live name",
+        "color": "blue",
+        "position": ""
+      }
+    },
+    {
+      "kind": "native-title",
+      "pass": false,
+      "before": {
+        "i": "<input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" id=\"v\" title=\"Consumer name\" aria-valuetext=\"19% A, 81% B\">",
+        "style": "--bf-image-comparison-position: 19%;"
+      },
+      "initial": "- slider: \"19\"",
+      "updated": "- slider \"Live name\": \"19\"",
+      "final": "- slider \"Live name\": \"50\"",
+      "attrs": {
+        "name": "Live name",
+        "color": "blue",
+        "position": ""
+      }
+    },
+    {
+      "kind": "unnamed-consumer-error",
+      "pass": true,
+      "before": {
+        "i": "<input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" id=\"v\" aria-valuetext=\"19% A, 81% B\">",
+        "style": "--bf-image-comparison-position: 19%;"
+      },
+      "initial": "- slider: \"19\"",
+      "updated": "- slider \"Live name\": \"19\"",
+      "final": "- slider \"Live name\": \"50\"",
+      "attrs": {
+        "name": "Live name",
+        "color": "blue",
+        "position": ""
+      }
+    }
+  ],
+  "errors": [
+    "native-title"
+  ]
+}

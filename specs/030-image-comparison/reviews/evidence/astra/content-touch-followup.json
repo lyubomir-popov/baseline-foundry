@@ -1,0 +1,24 @@
+{
+  "errors": [],
+  "verticalBefore": {
+    "value": "1",
+    "scroll": 0
+  },
+  "verticalAfter": {
+    "value": "1",
+    "scroll": 174
+  },
+  "broken": {
+    "value": "37",
+    "imageFailed": true
+  },
+  "fallback": {
+    "value": "37",
+    "text": "Consumer fallback"
+  },
+  "zero": {
+    "value": "37",
+    "width": 0
+  },
+  "recoveredValue": "66"
+}

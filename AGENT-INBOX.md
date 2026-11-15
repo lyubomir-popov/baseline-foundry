@@ -4,7 +4,7 @@ Date: 2026-10-21
 Integration: owner-authorized local `main` merge of accepted spacing work and
 review fixes; publication and pushes remain separate.
 
-## Current branch: comparison planning (2026-11-15)
+## Current branch: comparison technical acceptance (2026-11-15)
 
 On `feat/030-image-comparison`, follow
 [Spec 030](specs/030-image-comparison/spec.md), its plan and tasks. This isolated
@@ -13,7 +13,9 @@ fresh portfolio T046 Astra acceptance at `027e95a` (review receipt `4f88cb9`)
 and inspected/committed the revised minimal planning. Product implementation is
 authorized through this package's independent BF technical review. The package is
 independent of bucket/parked work and Chip triage; do not change other worktrees.
-No merge, push, publication or portfolio checkpoint clearance is implied.
+Source `2524b24` is independently accepted after required full tests/component QA;
+follow package T009 for verified immutable candidate preparation and downstream
+handoff. No merge, push, publication or portfolio checkpoint clearance is implied.
 
 ## Preserved caption-repair package (2026-11-14)
 

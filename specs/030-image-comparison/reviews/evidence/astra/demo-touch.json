@@ -1,0 +1,258 @@
+{
+  "distSha256": "9e6aabbce9b62902e481a599369c08675a4c938f203eab0992500d17ace618c3",
+  "cases": [
+    {
+      "tier": "editorial",
+      "shared": false,
+      "dom": {
+        "value": "100",
+        "name": "comparison-ltr-label",
+        "rangeCount": 1
+      },
+      "name": "- slider \"Day and night\": \"100\"",
+      "media": [
+        {
+          "loaded": true,
+          "natural": [
+            80,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        },
+        {
+          "loaded": true,
+          "natural": [
+            320,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        }
+      ]
+    },
+    {
+      "tier": "editorial",
+      "shared": true,
+      "dom": {
+        "value": "100",
+        "name": "comparison-ltr-label",
+        "rangeCount": 1
+      },
+      "name": "- slider \"Day and night\": \"100\"",
+      "media": [
+        {
+          "loaded": true,
+          "natural": [
+            80,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        },
+        {
+          "loaded": true,
+          "natural": [
+            320,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        }
+      ]
+    },
+    {
+      "tier": "documentation",
+      "shared": false,
+      "dom": {
+        "value": "100",
+        "name": "comparison-ltr-label",
+        "rangeCount": 1
+      },
+      "name": "- slider \"Day and night\": \"100\"",
+      "media": [
+        {
+          "loaded": true,
+          "natural": [
+            80,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        },
+        {
+          "loaded": true,
+          "natural": [
+            320,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        }
+      ]
+    },
+    {
+      "tier": "documentation",
+      "shared": true,
+      "dom": {
+        "value": "100",
+        "name": "comparison-ltr-label",
+        "rangeCount": 1
+      },
+      "name": "- slider \"Day and night\": \"100\"",
+      "media": [
+        {
+          "loaded": true,
+          "natural": [
+            80,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        },
+        {
+          "loaded": true,
+          "natural": [
+            320,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        }
+      ]
+    },
+    {
+      "tier": "app",
+      "shared": false,
+      "dom": {
+        "value": "100",
+        "name": "comparison-ltr-label",
+        "rangeCount": 1
+      },
+      "name": "- slider \"Day and night\": \"100\"",
+      "media": [
+        {
+          "loaded": true,
+          "natural": [
+            80,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        },
+        {
+          "loaded": true,
+          "natural": [
+            320,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        }
+      ]
+    },
+    {
+      "tier": "app",
+      "shared": true,
+      "dom": {
+        "value": "100",
+        "name": "comparison-ltr-label",
+        "rangeCount": 1
+      },
+      "name": "- slider \"Day and night\": \"100\"",
+      "media": [
+        {
+          "loaded": true,
+          "natural": [
+            80,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        },
+        {
+          "loaded": true,
+          "natural": [
+            320,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        }
+      ]
+    },
+    {
+      "tier": "os",
+      "shared": false,
+      "dom": {
+        "value": "100",
+        "name": "comparison-ltr-label",
+        "rangeCount": 1
+      },
+      "name": "- slider \"Day and night\": \"100\"",
+      "media": [
+        {
+          "loaded": true,
+          "natural": [
+            80,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        },
+        {
+          "loaded": true,
+          "natural": [
+            320,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        }
+      ]
+    },
+    {
+      "tier": "os",
+      "shared": true,
+      "dom": {
+        "value": "100",
+        "name": "comparison-ltr-label",
+        "rangeCount": 1
+      },
+      "name": "- slider \"Day and night\": \"100\"",
+      "media": [
+        {
+          "loaded": true,
+          "natural": [
+            80,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        },
+        {
+          "loaded": true,
+          "natural": [
+            320,
+            160
+          ],
+          "fit": "contain",
+          "transform": "none"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "touchHorizontal": "78",
+  "touchCancel": "78",
+  "vertical": {
+    "value": "78",
+    "before": 0,
+    "after": 0
+  },
+  "multiTouch": {
+    "value": "78",
+    "scale": 1.5551999807357788
+  },
+  "disabledDuringGesture": "50"
+}

@@ -2,7 +2,7 @@
 
 **Feature branch**: `feat/030-image-comparison`
 **Created**: 2026-11-15
-**Status**: Implementation authorized after fresh portfolio T046 Astra acceptance
+**Status**: Technically accepted at `2524b24`; immutable candidate preparation follows
 **Base**: `df966ac80338b48eb798e42a5c2def76613720e8`
 
 ## Scope and authority
@@ -23,6 +23,12 @@ native zoom and inherited specimen-overflow limits. It does not accept a future
 BF implementation or owner CP4. The local prerequisite is satisfied. Revised
 minimal lifecycle and fixed decorative geometry are coordinator-approved;
 product tasks may proceed.
+
+Source `2524b24` now passes full required tests/component QA and
+[independent Astra review](review.md), including the naming-ownership, opaque
+layer-canvas and teardown corrections. [Validation](validation.md) records exact
+scope and limitations. This permits candidate preparation under T009; no owner
+visual acceptance, portfolio CP4 clearance or publication is inferred.
 
 This is independently requested comparison work, separate from spacing buckets,
 parked packages and Chip triage/design. It adds no owner planning checkpoint.
