@@ -71,6 +71,51 @@ export async function verifyImageComparison(origin: string): Promise<void> {
     await page.mouse.move(grip.x + grip.width + 30, grip.y + grip.height / 2); await page.mouse.up();
   }
   try {
+    const namingPage = await browser.newPage({ viewport: { width: 600, height: 900 } });
+    for (const kind of ["empty HTML label", "whitespace HTML label", "visible HTML label", "empty labelledby target", "missing labelledby target", "empty labelledby attribute", "visible labelledby target"]) {
+      await mount(namingPage);
+      const expected = kind.startsWith("visible") ? "Visible author name" : "Comparison fallback";
+      await namingPage.evaluate(kind => {
+        const w = window as any; w.controller.destroy();
+        const input = w.host.querySelector("input"); input.id = "naming-range"; input.removeAttribute("aria-label");
+        if (kind.includes("HTML label")) {
+          const label = document.createElement("label"); label.htmlFor = input.id;
+          label.textContent = kind.startsWith("visible") ? "Visible author name" : kind.startsWith("whitespace") ? "  \n " : "";
+          w.host.before(label);
+        } else {
+          input.setAttribute("aria-labelledby", kind === "empty labelledby attribute" ? "" : "naming-target");
+          if (kind !== "missing labelledby target" && kind !== "empty labelledby attribute") {
+            const label = document.createElement("span"); label.id = "naming-target"; label.textContent = kind.startsWith("visible") ? "Visible author name" : ""; w.host.before(label);
+          }
+        }
+        w.namingSnapshot = w.host.parentElement.outerHTML;
+        w.namingAssociation = input.getAttribute("aria-labelledby");
+        w.controller = w.api.setupImageComparison(w.host, { accessibleName: "Comparison fallback" });
+      }, kind);
+      const range = namingPage.getByRole("slider");
+      const named = await range.ariaSnapshot();
+      check(named.includes(`slider "${expected}"`), `${kind}: public setup returns a named native slider`, named);
+      check(await range.getAttribute("aria-label") === (kind.startsWith("visible") ? null : "Comparison fallback"), `${kind}: fallback respects nonempty author names`);
+      await namingPage.evaluate(() => (window as any).controller.update({ accessibleName: "Updated fallback" }));
+      check((await range.ariaSnapshot()).includes(`slider "${kind.startsWith("visible") ? "Visible author name" : "Updated fallback"}"`), `${kind}: metadata refresh keeps effective native name`);
+      check(await namingPage.evaluate(() => { const w = window as any; return w.host.querySelector("input").getAttribute("aria-labelledby") === w.namingAssociation; }), `${kind}: authored association remains intact`);
+      if (kind === "empty HTML label") {
+        await namingPage.evaluate(() => { const w = window as any; document.querySelector("label")!.textContent = "New visible author name"; w.controller.update({}); });
+        check(await range.getAttribute("aria-label") === null && (await range.ariaSnapshot()).includes('slider "New visible author name"'), "empty-to-visible label withdraws only runtime fallback");
+        await namingPage.evaluate(() => { const w = window as any; document.querySelector("label")!.textContent = ""; w.controller.update({}); });
+        check(await range.getAttribute("aria-label") === "Updated fallback" && (await range.ariaSnapshot()).includes('slider "Updated fallback"'), "visible-to-empty label recovers configured fallback after update({})");
+        await namingPage.evaluate(() => { const w = window as any; w.host.querySelector("input").setAttribute("aria-label", "New authored override"); document.querySelector("label")!.textContent = "Visible author text"; w.controller.update({}); });
+        check(await range.getAttribute("aria-label") === "New authored override", "label refresh preserves an independently authored name attribute");
+        await namingPage.evaluate(() => { document.querySelector("label")!.textContent = ""; });
+      }
+      await namingPage.evaluate(() => (window as any).controller.destroy());
+      check(await namingPage.evaluate(() => { const w = window as any; return w.host.parentElement.outerHTML === w.namingSnapshot; }), `${kind}: destroy restores complete author snapshot`);
+    }
+    await namingPage.close();
+    if (process.argv.includes("--naming")) {
+      console.log(`Image comparison naming passed (${records.length} checks, Chrome).`);
+      return;
+    }
     // All direct/shared tiers, both native directions and both root sizes.
     for (const tier of ["editorial", "documentation", "app", "os"]) for (const shared of [false, true]) for (const dir of ["ltr", "rtl"]) {
       const page = await browser.newPage({ viewport: { width: 1100, height: 900 }, reducedMotion: "reduce" });
@@ -263,7 +308,7 @@ export async function verifyImageComparison(origin: string): Promise<void> {
   } finally {
     await browser.close();
     await fs.mkdir("tmp/image-comparison", { recursive: true });
-    await fs.writeFile("tmp/image-comparison/behavior.json", JSON.stringify({ checks: records.length, records, errors }, null, 2) + "\n");
+    await fs.writeFile(`tmp/image-comparison/${process.argv.includes("--naming") ? "naming" : "behavior"}.json`, JSON.stringify({ checks: records.length, records, errors }, null, 2) + "\n");
   }
 }
 

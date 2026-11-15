@@ -70,9 +70,10 @@ export function setupImageComparison(element: HTMLElement, options: ImageCompari
   const doc = element.ownerDocument;
   const win = doc.defaultView;
   if (!win) throw new Error("Image comparison requires a live document.");
-  const nativeName = (): boolean => Boolean(text(input.getAttribute("aria-label")) ||
+  const authorLabelName = (): boolean => Boolean(
     input.getAttribute("aria-labelledby")?.split(/\s+/).some(id => text(doc.getElementById(id)?.textContent)) ||
     Array.from(input.labels ?? []).some(label => text(label.textContent)));
+  const nativeName = (): boolean => Boolean(text(input.getAttribute("aria-label")) || authorLabelName());
   if (!nativeName() && !text(options.accessibleName)) throw new Error("Image comparison requires a named native range.");
 
   const snapshots = {
@@ -84,6 +85,8 @@ export function setupImageComparison(element: HTMLElement, options: ImageCompari
   let value = normalize(options.initialValue as number) ?? 50;
   let firstLabel = text(options.firstLabel) ?? "First";
   let secondLabel = text(options.secondLabel) ?? "Second";
+  let fallbackName = text(options.accessibleName);
+  let runtimeName: string | undefined;
   let destroyed = false;
   let gesture: Gesture | null = null;
   const enabled = (): boolean => !input.matches(":disabled") && !input.closest("[inert]");
@@ -196,9 +199,19 @@ export function setupImageComparison(element: HTMLElement, options: ImageCompari
     if (destroyed) return;
     firstLabel = text(metadata.firstLabel) ?? firstLabel;
     secondLabel = text(metadata.secondLabel) ?? secondLabel;
-    const name = text(metadata.accessibleName);
-    // Visible HTML labels/labelledby remain the preferred naming channel.
-    if (name && !input.hasAttribute("aria-labelledby") && !(input.labels?.length)) input.setAttribute("aria-label", name);
+    const suppliedName = text(metadata.accessibleName);
+    fallbackName = suppliedName ?? fallbackName;
+    // A label association alone may be empty or broken. Preserve nonempty
+    // author labels, withdrawing only our own fallback when one gains a name.
+    // Retain the configured fallback across update({}) for empty-label recovery.
+    const currentName = input.getAttribute("aria-label");
+    if (authorLabelName()) {
+      if (runtimeName !== undefined && currentName === runtimeName) restoreAttribute(input, "aria-label", snapshots.name);
+      runtimeName = undefined;
+    } else if (fallbackName && (suppliedName || !text(currentName) || currentName === runtimeName)) {
+      input.setAttribute("aria-label", fallbackName);
+      runtimeName = fallbackName;
+    }
     render();
   };
   const controller: ImageComparisonController = {
