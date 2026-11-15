@@ -1,0 +1,209 @@
+{
+  "head": "f99b3191db00cddbd089b76f5b2e56f9a76cb74a",
+  "archive": "tmp/package-030/baseline-foundry-0.2.1.tgz",
+  "size": 638382,
+  "sha256": "7561a221347ea4f8953e331ae89fce48e9cfad12b951f671e0379b2380f29277",
+  "integrity": "sha512-ad4XMSlSNaA8xE3XzNAo5f7Djh5TmEQI8kUaob6qFhWO/GM2u7A+Z+ffaGkYS7wqjU0Vp0IWmPkayiZe56Dyig==",
+  "fileCount": 175,
+  "packReport": {
+    "fileCount": 175,
+    "size": 638382,
+    "integrity": "sha512-ad4XMSlSNaA8xE3XzNAo5f7Djh5TmEQI8kUaob6qFhWO/GM2u7A+Z+ffaGkYS7wqjU0Vp0IWmPkayiZe56Dyig=="
+  },
+  "matchesAllCurrentPackageFiles": true,
+  "mismatches": [],
+  "forbiddenPaths": [],
+  "exportTargets": [
+    {
+      "entry": ".",
+      "condition": "types",
+      "target": "./dist/index.d.ts",
+      "present": true
+    },
+    {
+      "entry": ".",
+      "condition": "import",
+      "target": "./dist/index.js",
+      "present": true
+    },
+    {
+      "entry": "./build",
+      "condition": "types",
+      "target": "./dist/build.d.ts",
+      "present": true
+    },
+    {
+      "entry": "./build",
+      "condition": "import",
+      "target": "./dist/build.js",
+      "present": true
+    },
+    {
+      "entry": "./presets",
+      "condition": "types",
+      "target": "./dist/presets.d.ts",
+      "present": true
+    },
+    {
+      "entry": "./presets",
+      "condition": "import",
+      "target": "./dist/presets.js",
+      "present": true
+    },
+    {
+      "entry": "./types",
+      "condition": "types",
+      "target": "./dist/types.d.ts",
+      "present": true
+    },
+    {
+      "entry": "./types",
+      "condition": "import",
+      "target": "./dist/types.js",
+      "present": true
+    },
+    {
+      "entry": "./styles.css",
+      "target": "./dist/styles.css",
+      "present": true
+    },
+    {
+      "entry": "./tokens.json",
+      "target": "./dist/tokens.json",
+      "present": true
+    },
+    {
+      "entry": "./surfaces.json",
+      "target": "./dist/surfaces.json",
+      "present": true
+    },
+    {
+      "entry": "./tiers/editorial.css",
+      "target": "./dist/tiers/editorial/styles.css",
+      "present": true
+    },
+    {
+      "entry": "./tiers/documentation.css",
+      "target": "./dist/tiers/documentation/styles.css",
+      "present": true
+    },
+    {
+      "entry": "./tiers/app.css",
+      "target": "./dist/tiers/app/styles.css",
+      "present": true
+    },
+    {
+      "entry": "./tiers/os.css",
+      "target": "./dist/tiers/os/styles.css",
+      "present": true
+    },
+    {
+      "entry": "./tiers/editorial.tokens.json",
+      "target": "./dist/tiers/editorial/tokens.json",
+      "present": true
+    },
+    {
+      "entry": "./tiers/documentation.tokens.json",
+      "target": "./dist/tiers/documentation/tokens.json",
+      "present": true
+    },
+    {
+      "entry": "./tiers/app.tokens.json",
+      "target": "./dist/tiers/app/tokens.json",
+      "present": true
+    },
+    {
+      "entry": "./tiers/os.tokens.json",
+      "target": "./dist/tiers/os/tokens.json",
+      "present": true
+    },
+    {
+      "entry": "./tiers/editorial.surfaces.json",
+      "target": "./dist/tiers/editorial/surfaces.json",
+      "present": true
+    },
+    {
+      "entry": "./tiers/documentation.surfaces.json",
+      "target": "./dist/tiers/documentation/surfaces.json",
+      "present": true
+    },
+    {
+      "entry": "./tiers/app.surfaces.json",
+      "target": "./dist/tiers/app/surfaces.json",
+      "present": true
+    },
+    {
+      "entry": "./tiers/os.surfaces.json",
+      "target": "./dist/tiers/os/surfaces.json",
+      "present": true
+    },
+    {
+      "entry": "./presets/prose.css",
+      "target": "./dist/presets/prose/styles.css",
+      "present": true
+    },
+    {
+      "entry": "./presets/app-tier.css",
+      "target": "./dist/presets/app-tier/styles.css",
+      "present": true
+    },
+    {
+      "entry": "./presets/prose.tokens.json",
+      "target": "./dist/presets/prose/tokens.json",
+      "present": true
+    },
+    {
+      "entry": "./presets/app-tier.tokens.json",
+      "target": "./dist/presets/app-tier/tokens.json",
+      "present": true
+    },
+    {
+      "entry": "./presets/prose.surfaces.json",
+      "target": "./dist/presets/prose/surfaces.json",
+      "present": true
+    },
+    {
+      "entry": "./presets/app-tier.surfaces.json",
+      "target": "./dist/presets/app-tier/surfaces.json",
+      "present": true
+    }
+  ],
+  "comparisonRuntimeSha256": "cd42f2fbe49b3788e80979881a5f075a753dc24921de802ade242f18faa49478",
+  "editorialCSSSha256": "378225f35294851017d32cb9ad4672b20b51c92dc27cff02d7d3db323ab2c410",
+  "comparisonTypes": "/** Endpoint value-text metadata. The consumer owns the native accessible name. */\nexport interface ImageComparisonMetadata {\n    firstLabel?: string;\n    secondLabel?: string;\n}\nexport interface ImageComparisonOptions extends ImageComparisonMetadata {\n    initialValue?: number;\n}\nexport interface ImageComparisonChangeDetail {\n    value: number;\n    phase: \"input\" | \"change\" | \"cancel\";\n    source: \"pointer\" | \"native\";\n}\nexport interface ImageComparisonController {\n    getValue(): number;\n    /** Silent, authoritative update. A changed value interrupts an active gesture. */\n    setValue(value: number): void;\n    /** Refresh metadata and computed direction after an idle consumer style change. */\n    update(metadata: ImageComparisonMetadata): void;\n    destroy(): void;\n}\n/**\n * Enhance stable comparison slots and a native 0–100/step-1 range.\n * Consumers must supply its accessible name using HTML/ARIA; setup does not\n * infer or validate the browser's accessible-name computation.\n * Invalid structures throw before installing handlers or changing markup.\n * Replace slot contents freely; destroy before replacing the stage or range.\n * Nested image-comparison hosts are outside this minimal composition contract.\n */\nexport declare function setupImageComparison(element: HTMLElement, options?: ImageComparisonOptions): ImageComparisonController;\n",
+  "publicRootExports": [
+    "generateBaselineGridOverlayCss",
+    "generateBaselineGridThemeOverrideCss",
+    "initAccordions",
+    "initApplicationLayouts",
+    "initBaselineGridToggles",
+    "initCodeSnippets",
+    "initContextualMenus",
+    "initExpandingTables",
+    "initInPageNavigations",
+    "initInteractiveFeedback",
+    "initInteractiveTables",
+    "initListTree",
+    "initMobileCardTables",
+    "initNotificationDismissals",
+    "initPanelDrawers",
+    "initPasswordReveals",
+    "initRangeControls",
+    "initResizableAsides",
+    "initSideNavigations",
+    "initSortableTables",
+    "initTabs",
+    "initTooltips",
+    "initTopNavigations",
+    "isTierName",
+    "setupBaselineGridToggle",
+    "setupImageComparison",
+    "setupRangeControl",
+    "tierDescriptions",
+    "tierNames",
+    "toggleAccordionButton",
+    "updateRangeFill"
+  ],
+  "comparisonPublicType": "function",
+  "inspectionNote": "In-memory tar inspection; public import is checkout self-reference after all packaged file bytes match. Coordinator separately exercised actual clean installed tarball."
+}

@@ -2,8 +2,9 @@
 
 **Current boundary:** source `2524b24` passes required full tests/component QA
 and [independent Astra review](review.md). T003–T008 are technically complete.
-Prepare and verify an immutable public candidate under T009, then hand off to
-portfolio consumption. No owner visual/CP4 clearance, merge, push or publication.
+The [immutable public candidate](artifact.md) is verified and consumed by
+portfolio `399eba8`; its adapter review remains downstream-owned. No owner
+visual/CP4 clearance, merge, push or publication.
 
 - [x] T001 Resolve catalog/inboxes/constitution; create the isolated matching
   worktree from `df966ac`; define user stories, minimal API and proof matrix.
@@ -29,7 +30,7 @@ portfolio consumption. No owner visual/CP4 clearance, merge, push or publication
 - [x] T008 Obtain independent adversarial source/API and rendered demo review;
   resolve material findings and record actual reviewer/verdict in review.md.
   Technical closeout is not owner visual acceptance or portfolio CP4 clearance.
-- [ ] T009 After technical acceptance, prepare a verified immutable packaged
+- [x] T009 After technical acceptance, prepare a verified immutable packaged
   candidate from public exports and hand source/hash to portfolio for its thin
   adapter and equivalent-consumption proof. No merge/push/publication implied.
 

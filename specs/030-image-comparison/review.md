@@ -63,6 +63,23 @@ Final `npm run qa:components` also exits 0 on unchanged `2524b24`: **87 captures
 
 ## Boundaries
 
-No React dependency, portfolio media state, snapping algorithm or source loader is introduced. Consumer content/ratio policy remains outside BF; CSS uses flat classes/logical position and the shared stroke helper with paint-only borders. The component is assembled into all direct/shared bundles and catalog baseline/capture tooling. Caption/Tab/Breadcrumb source is untouched, with final full-suite regression receipts retained. Packaging file/export declarations include generated runtime/types/CSS, but no immutable candidate has been accepted by this review yet; candidate and downstream public-consumption proof remain the next authorized work.
+No React dependency, portfolio media state, snapping algorithm or source loader is introduced. Consumer content/ratio policy remains outside BF; CSS uses flat classes/logical position and the shared stroke helper with paint-only borders. The component is assembled into all direct/shared bundles and catalog baseline/capture tooling. Caption/Tab/Breadcrumb source is untouched, with final full-suite regression receipts retained. Packaging file/export declarations include generated runtime/types/CSS. The later bounded packaging addendum below extends review to one identified candidate; downstream public-consumption proof remains separate.
 
 Actual screen-reader output, physical touch hardware, native browser UI zoom and non-Chrome engines remain unverified. No CUA/native UI input was attempted. The owner retains visual approval, portfolio CP4 and every merge/push/publication decision. Subsequent product changes require an appropriate review recheck; this acceptance is bound to the recorded revision.
+
+## Bounded packaging and verifier follow-up
+
+**Disposition: accept the identified immutable candidate and the bounded verifier correction for package preparation/consumer qualification.** This adds no portfolio-adapter, normal consumer-install/build, owner visual, CP4 or publication acceptance.
+
+The candidate was packed from `f99b3191db00cddbd089b76f5b2e56f9a76cb74a`, whose changes after reviewed product `2524b24` are review/workflow records. Independent `git diff` confirms no changes to `src`, README, package manifest/lock or config across those commits. The candidate remains internal version `0.2.1`; its immutable bytes, not that version alone, identify it:
+
+- Archive: `tmp/package-030/baseline-foundry-0.2.1.tgz`.
+- SHA-256: `7561a221347ea4f8953e331ae89fce48e9cfad12b951f671e0379b2380f29277`.
+- Integrity: `sha512-ad4XMSlSNaA8xE3XzNAo5f7Djh5TmEQI8kUaob6qFhWO/GM2u7A+Z+ffaGkYS7wqjU0Vp0IWmPkayiZe56Dyig==`.
+- Size: 638,382 bytes; 175 file entries, matching the adjacent npm pack report.
+
+[Independent in-memory tar inspection](reviews/evidence/astra/package-inspection.json), produced by [the saved inspection script](reviews/evidence/astra/package-inspection.mjs), recomputes both hashes, checks every packed file byte-for-byte against the current package outputs, confirms every declared export target exists, and finds no packaged `src`, `scripts`, `demo`, `specs`, `tmp` or nested `node_modules`. The packaged comparison runtime hash is the already reviewed `cd42f2fbe49b3788e80979881a5f075a753dc24921de802ade242f18faa49478`; generated editorial CSS also matches the reviewed repaired output. The packaged declarations expose endpoint metadata and omit the removed accessible-name convenience API.
+
+The checkout's public self-reference import, whose packaged file bytes were all matched, has 31 root exports and `setupImageComparison` is a function. Separately, the coordinator reports the actual tarball passed the clean temporary-package verifier with 31 root exports and 21 asset entry points. The reviewer inspected the full verifier implementation and exact two-line repair: change the stale expected root count from 30 to 31 and add an explicit `typeof root.setupImageComparison === "function"` assertion. Existing version, forbidden-path, build API, tier registry, types-module and asset-resolution checks remain intact. This is a correction for the deliberately added public export, not suppression of a missing/broken export.
+
+That verifier uses `npm install --ignore-scripts --no-audit --no-fund` in its temporary package. Its green result is therefore public package install/import/asset smoke evidence; it is not normal lifecycle-script execution, a security audit or proof of the downstream portfolio adapter. No reviewer reinstall or full-suite rerun was needed for this verifier-only edit. The helper is not packed, so its repair changes no candidate bytes. `git diff --check` passes. The portfolio must still pin these exact bytes and prove its own normal install/build, adapter lifecycle and route/font/caption behavior.

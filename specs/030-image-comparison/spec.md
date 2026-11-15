@@ -2,7 +2,7 @@
 
 **Feature branch**: `feat/030-image-comparison`
 **Created**: 2026-11-15
-**Status**: Technically accepted at `2524b24`; immutable candidate preparation follows
+**Status**: Technically accepted at `2524b24`; immutable candidate verified and handed to portfolio
 **Base**: `df966ac80338b48eb798e42a5c2def76613720e8`
 
 ## Scope and authority
