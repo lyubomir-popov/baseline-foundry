@@ -4,7 +4,18 @@ Date: 2026-10-21
 Integration: owner-authorized local `main` merge of accepted spacing work and
 review fixes; publication and pushes remain separate.
 
-## Current branch: owner-requested caption repair (2026-11-14)
+## Current branch: comparison planning (2026-11-15)
+
+On `feat/030-image-comparison`, follow
+[Spec 030](specs/030-image-comparison/spec.md), its plan and tasks. This isolated
+worktree starts at caption-preserving `df966ac`. Planning is authorized; product
+extraction waits for the coordinator's confirmation of fresh portfolio T046
+Astra acceptance. No product files or commits are authorized by this planning
+dispatch. The coordinator inspects planning before a commit. The package is
+independent of bucket/parked work and Chip triage; do not change other worktrees.
+No merge, push, publication or portfolio checkpoint clearance is implied.
+
+## Preserved caption-repair package (2026-11-14)
 
 On `feat/029-figure-caption-compensation`, follow
 [Spec 029](specs/029-figure-caption-compensation/spec.md), its plan/tasks and
