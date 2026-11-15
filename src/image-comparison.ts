@@ -1,6 +1,5 @@
-/** Mount-only initialization and live accessible metadata for image comparisons. */
+/** Endpoint value-text metadata. The consumer owns the native accessible name. */
 export interface ImageComparisonMetadata {
-  accessibleName?: string;
   firstLabel?: string;
   secondLabel?: string;
 }
@@ -41,7 +40,9 @@ const normalize = (value: number): number | undefined => typeof value === "numbe
 const text = (value: unknown): string | undefined => typeof value === "string" && value.trim() ? value.trim() : undefined;
 
 /**
- * Enhance stable comparison slots and a named native 0–100/step-1 range.
+ * Enhance stable comparison slots and a native 0–100/step-1 range.
+ * Consumers must supply its accessible name using HTML/ARIA; setup does not
+ * infer or validate the browser's accessible-name computation.
  * Invalid structures throw before installing handlers or changing markup.
  * Replace slot contents freely; destroy before replacing the stage or range.
  * Nested image-comparison hosts are outside this minimal composition contract.
@@ -70,23 +71,16 @@ export function setupImageComparison(element: HTMLElement, options: ImageCompari
   const doc = element.ownerDocument;
   const win = doc.defaultView;
   if (!win) throw new Error("Image comparison requires a live document.");
-  const authorLabelName = (): boolean => Boolean(
-    input.getAttribute("aria-labelledby")?.split(/\s+/).some(id => text(doc.getElementById(id)?.textContent)) ||
-    Array.from(input.labels ?? []).some(label => text(label.textContent)));
-  const nativeName = (): boolean => Boolean(text(input.getAttribute("aria-label")) || authorLabelName());
-  if (!nativeName() && !text(options.accessibleName)) throw new Error("Image comparison requires a named native range.");
-
   const snapshots = {
+    hadStyle: element.hasAttribute("style"),
     position: element.style.getPropertyValue(positionProperty), priority: element.style.getPropertyPriority(positionProperty),
     pointer: element.classList.contains(pointerClass), rtl: element.classList.contains("is-rtl"), value: input.value,
-    name: input.getAttribute("aria-label"), valueText: input.getAttribute("aria-valuetext"),
+    valueText: input.getAttribute("aria-valuetext"),
     seamHidden: seam.getAttribute("aria-hidden"), gripHidden: grip.getAttribute("aria-hidden")
   };
   let value = normalize(options.initialValue as number) ?? 50;
   let firstLabel = text(options.firstLabel) ?? "First";
   let secondLabel = text(options.secondLabel) ?? "Second";
-  let fallbackName = text(options.accessibleName);
-  let runtimeName: string | undefined;
   let destroyed = false;
   let gesture: Gesture | null = null;
   const enabled = (): boolean => !input.matches(":disabled") && !input.closest("[inert]");
@@ -199,19 +193,6 @@ export function setupImageComparison(element: HTMLElement, options: ImageCompari
     if (destroyed) return;
     firstLabel = text(metadata.firstLabel) ?? firstLabel;
     secondLabel = text(metadata.secondLabel) ?? secondLabel;
-    const suppliedName = text(metadata.accessibleName);
-    fallbackName = suppliedName ?? fallbackName;
-    // A label association alone may be empty or broken. Preserve nonempty
-    // author labels, withdrawing only our own fallback when one gains a name.
-    // Retain the configured fallback across update({}) for empty-label recovery.
-    const currentName = input.getAttribute("aria-label");
-    if (authorLabelName()) {
-      if (runtimeName !== undefined && currentName === runtimeName) restoreAttribute(input, "aria-label", snapshots.name);
-      runtimeName = undefined;
-    } else if (fallbackName && (suppliedName || !text(currentName) || currentName === runtimeName)) {
-      input.setAttribute("aria-label", fallbackName);
-      runtimeName = fallbackName;
-    }
     render();
   };
   const controller: ImageComparisonController = {
@@ -242,8 +223,8 @@ export function setupImageComparison(element: HTMLElement, options: ImageCompari
       element.classList.toggle("is-rtl", snapshots.rtl);
       if (snapshots.position) element.style.setProperty(positionProperty, snapshots.position, snapshots.priority);
       else element.style.removeProperty(positionProperty);
+      if (!snapshots.hadStyle && element.getAttribute("style") === "") element.removeAttribute("style");
       input.value = snapshots.value;
-      restoreAttribute(input, "aria-label", snapshots.name);
       restoreAttribute(input, "aria-valuetext", snapshots.valueText);
       restoreAttribute(seam, "aria-hidden", snapshots.seamHidden);
       restoreAttribute(grip, "aria-hidden", snapshots.gripHidden);

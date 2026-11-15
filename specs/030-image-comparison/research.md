@@ -49,6 +49,19 @@ with zero layout border in normal and forced-colors modes.
 
 ## Intentional exclusions
 
+Independent Astra review rejected the initial textContent-based naming heuristic:
+it accepts hidden-only text and rejects valid rich/image/ARIA labels. Coordinator
+and reviewer chose a smaller ownership contract before release: consumers own
+native accessible naming entirely, the runtime owns only endpoint value text,
+and no accessible-name convenience API or validator ships. Positive browser AX
+checks still verify actual demo/adapter names; unnamed markup remains a consumer
+accessibility error, not a promised initializer rejection. No speculative AccName
+algorithm or runtime dependency is added.
+
+The review also found unequal-ratio contain images could leak the second panel
+through first-panel letterboxing at 100. Default opaque theme canvas on each
+layer closes that gap; explicit transparent overrides waive opaque full reveal.
+
 The old handoff's delegated preset subsystem is unnecessary after the owner
 removed duplicate visible controls; external consumer actions can call setValue.
 Generic comparison does not own image sources/load/error UI, captions, project

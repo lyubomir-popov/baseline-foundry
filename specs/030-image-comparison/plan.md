@@ -66,11 +66,16 @@ Proposed public entry: `setupImageComparison(element, options)` returns an
 `ImageComparisonController`; a WeakMap makes repeated setup of the same live
 element return the same handle without applying new initial options. Required
 elements are resolved at setup. The options select a mount-only `initialValue`
-(default 50). Metadata comprises the accessible name and first/second endpoint
-names; native HTML labelling remains preferred over an overriding aria-label.
+(default 50). Metadata comprises only first/second endpoint names. Consumers
+author the native accessible name through HTML/ARIA. The runtime never infers
+AccName, rejects rich labels based on textContent, or rewrites aria-label/
+aria-labelledby/label content. Effective naming remains a consumer precondition
+verified on demo/adapter controls. Setup validates structure, not effective
+AccName; unnamed author markup is an accessibility error that this initializer
+does not detect. No accessible-name convenience option ships.
 
-The handle exposes `getValue()`, `setValue(number)`, `update({ accessibleName?,
-firstLabel?, secondLabel? })` and `destroy()`. `setValue` normalizes finite
+The handle exposes `getValue()`, `setValue(number)`, `update({ firstLabel?,
+secondLabel? })` and `destroy()`. `setValue` normalizes finite
 numbers, silently applies the accepted value and synchronizes every visual/AT
 representation. Invalid updates do nothing. A changed normalized value terminates
 active capture before applying the new value, so old pointerup cannot overwrite
@@ -78,8 +83,8 @@ an external update. A same-value setValue is an explicit no-op and leaves an
 active gesture intact. `update` refreshes names/value text without changing
 value or rebuilding gesture handlers. No hidden source/preset observer owns
 state. Changing DOM labels and calling update is safe during a source rerender.
-Preserve author labelling
-attributes unless explicitly supplied through the metadata API.
+Preserve all author labelling attributes and external name edits through destroy;
+the runtime owns only its value text, not the control's accessible name.
 
 The sole canonical value is the controller's current value, mirrored by the
 native input and render output. Gesture bookkeeping may hold the starting value,

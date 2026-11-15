@@ -27,6 +27,7 @@ ${stroke.painter}
 }
 
 :where(.bf-theme) :where(.bf-image-comparison-layer) {
+  background: var(--bf-color-bg);
   position: absolute;
   inset: 0;
   overflow: hidden;

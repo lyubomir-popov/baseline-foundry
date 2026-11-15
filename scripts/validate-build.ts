@@ -790,6 +790,9 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-image-comparison-stage)", {
     "min-inline-size": "0", "overflow": "visible", "touch-action": "pan-y pinch-zoom"
   }, "comparison stage preserves intrinsic shrink and touch scrolling");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-image-comparison-layer)", {
+    "background": "var(--bf-color-bg)", "overflow": "hidden", "position": "absolute"
+  }, "comparison layers provide an opaque theme canvas for complete reveal");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-image-comparison-value)", {
     "opacity": "0", "pointer-events": "none", "position": "absolute"
   }, "native comparison range is keyboard accessible while stage owns pointers");

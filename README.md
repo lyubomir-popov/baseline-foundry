@@ -488,8 +488,14 @@ The bubbling `bf-image-comparison-change` event reports `phase` as `input`,
 before notification; cancel restores the starting value. Subscribe to this custom
 channel rather than both it and native events. API/metadata changes emit no event
 and do not synthesize native events. Synchronous listeners may update or destroy
-the controller safely. Existing visible native labels take precedence over the
-optional `accessibleName` fallback. Actual spoken labels still require AT testing.
+the controller safely. Native accessible naming belongs entirely to consumer
+HTML/ARIA; the runtime never infers, rewrites or certifies it. Supply a genuinely
+named range through a label, aria-labelledby, aria-label or another valid native
+mechanism, and verify its effective name. Unnamed markup is a consumer
+accessibility error that setup does not detect. Rich/image labels and external
+name edits are preserved through update/destroy. The runtime owns only percentage
+value text and endpoint-name metadata. Actual spoken value labels still require
+AT testing. Nested comparisons are unsupported and rejected.
 
 Direction follows the stage's computed direction, including CSS overrides.
 After changing direction while idle, call `comparison.update({})` to refresh the
@@ -503,7 +509,11 @@ Supported per-host CSS style inputs are `--bf-image-comparison-grip-inline-size`
 `--bf-image-comparison-focus-offset` (`3px`). Runway derives from half the grip
 width plus focus width/offset. The fixed-height grip is out of text flow; it
 does not prescribe a native/text control occupied height. Panels accept direct
-images or picture images with full-frame contain fitting. Source loading/error
+images or picture images with full-frame contain fitting. Each layer defaults
+to the opaque theme canvas so the other slot does not show through transparent
+pixels or letterbox gaps at full reveal. Explicitly overriding that canvas with
+transparency opts into showing the underlying slot; opaque full reveal is then
+outside the contract. Source loading/error
 presentation and any baseline snapping remain consumer responsibilities.
 
 See `/demo/components/image-comparison.html` for the independent synthetic/real

@@ -79,6 +79,15 @@ has independently validated reuse.
   a visible consumer label where available. Decorative seam/grip have no
   independent slider role/tab stop. No external duplicate slider, presets or
   output row and no surrounding image-stage frame are introduced.
+- Consumers own the actual native accessible name using HTML/ARIA. The runtime
+  does not infer, validate or rewrite AccName from textContent and exposes no
+  accessible-name convenience API; it owns only value text/endpoint metadata.
+  Unnamed markup is a consumer accessibility error that setup does not detect.
+  Demo/adapter controls must still be effectively named, including rich/image
+  labels. External name/association edits survive metadata update/destroy.
+- Layers default to an opaque theme canvas: full reveal must not leak the other
+  slot through contained-image letterboxing or transparent pixels. An explicit
+  consumer transparent-canvas override opts out of opaque full-reveal behavior.
 - Pointer geometry measures the current image stage, excluding outer endpoint
   runway. The exact selected percentage controls the mask, seam and grip; do not
   clamp the grip independently. Reserve enough outer runway for half the grip

@@ -72,44 +72,61 @@ export async function verifyImageComparison(origin: string): Promise<void> {
   }
   try {
     const namingPage = await browser.newPage({ viewport: { width: 600, height: 900 } });
-    for (const kind of ["empty HTML label", "whitespace HTML label", "visible HTML label", "empty labelledby target", "missing labelledby target", "empty labelledby attribute", "visible labelledby target"]) {
+    for (const [kind, expected] of [["text label", "Native text label"], ["aria-label", "Native ARIA label"], ["aria-labelledby", "Native reference label"], ["image-alt label", "Native image label"], ["rich label", "Rich native label"], ["ARIA reference", "Native ARIA reference"], ["title", "Native title name"], ["hidden-only label", ""]]) {
       await mount(namingPage);
-      const expected = kind.startsWith("visible") ? "Visible author name" : "Comparison fallback";
       await namingPage.evaluate(kind => {
         const w = window as any; w.controller.destroy();
         const input = w.host.querySelector("input"); input.id = "naming-range"; input.removeAttribute("aria-label");
-        if (kind.includes("HTML label")) {
-          const label = document.createElement("label"); label.htmlFor = input.id;
-          label.textContent = kind.startsWith("visible") ? "Visible author name" : kind.startsWith("whitespace") ? "  \n " : "";
-          w.host.before(label);
+        if (kind === "aria-label") input.setAttribute("aria-label", "Native ARIA label");
+        else if (kind === "title") input.title = "Native title name";
+        else if (kind === "aria-labelledby" || kind === "ARIA reference") {
+          const label = document.createElement("span"); label.id = "naming-target";
+          if (kind === "ARIA reference") label.setAttribute("aria-label", "Native ARIA reference");
+          else label.textContent = "Native reference label";
+          input.setAttribute("aria-labelledby", label.id); w.host.before(label);
         } else {
-          input.setAttribute("aria-labelledby", kind === "empty labelledby attribute" ? "" : "naming-target");
-          if (kind !== "missing labelledby target" && kind !== "empty labelledby attribute") {
-            const label = document.createElement("span"); label.id = "naming-target"; label.textContent = kind.startsWith("visible") ? "Visible author name" : ""; w.host.before(label);
-          }
+          const label = document.createElement("label"); label.htmlFor = input.id;
+          if (kind === "text label") label.textContent = "Native text label";
+          if (kind === "rich label") label.innerHTML = "<span>Rich</span> <strong>native label</strong>";
+          if (kind === "image-alt label") label.innerHTML = '<img alt="Native image label" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221%22 height=%221%22/%3E">';
+          if (kind === "hidden-only label") label.innerHTML = '<span aria-hidden="true">This text is not a native name</span>';
+          w.host.before(label);
         }
-        w.namingSnapshot = w.host.parentElement.outerHTML;
-        w.namingAssociation = input.getAttribute("aria-labelledby");
-        w.controller = w.api.setupImageComparison(w.host, { accessibleName: "Comparison fallback" });
+        w.nativeNameSnapshot = ["aria-label", "aria-labelledby", "title", "id"].map(name => input.getAttribute(name));
+        w.controller = w.api.setupImageComparison(w.host, { firstLabel: "Before", secondLabel: "After" });
       }, kind);
       const range = namingPage.getByRole("slider");
       const named = await range.ariaSnapshot();
-      check(named.includes(`slider "${expected}"`), `${kind}: public setup returns a named native slider`, named);
-      check(await range.getAttribute("aria-label") === (kind.startsWith("visible") ? null : "Comparison fallback"), `${kind}: fallback respects nonempty author names`);
-      await namingPage.evaluate(() => (window as any).controller.update({ accessibleName: "Updated fallback" }));
-      check((await range.ariaSnapshot()).includes(`slider "${kind.startsWith("visible") ? "Visible author name" : "Updated fallback"}"`), `${kind}: metadata refresh keeps effective native name`);
-      check(await namingPage.evaluate(() => { const w = window as any; return w.host.querySelector("input").getAttribute("aria-labelledby") === w.namingAssociation; }), `${kind}: authored association remains intact`);
-      if (kind === "empty HTML label") {
-        await namingPage.evaluate(() => { const w = window as any; document.querySelector("label")!.textContent = "New visible author name"; w.controller.update({}); });
-        check(await range.getAttribute("aria-label") === null && (await range.ariaSnapshot()).includes('slider "New visible author name"'), "empty-to-visible label withdraws only runtime fallback");
-        await namingPage.evaluate(() => { const w = window as any; document.querySelector("label")!.textContent = ""; w.controller.update({}); });
-        check(await range.getAttribute("aria-label") === "Updated fallback" && (await range.ariaSnapshot()).includes('slider "Updated fallback"'), "visible-to-empty label recovers configured fallback after update({})");
-        await namingPage.evaluate(() => { const w = window as any; w.host.querySelector("input").setAttribute("aria-label", "New authored override"); document.querySelector("label")!.textContent = "Visible author text"; w.controller.update({}); });
-        check(await range.getAttribute("aria-label") === "New authored override", "label refresh preserves an independently authored name attribute");
-        await namingPage.evaluate(() => { document.querySelector("label")!.textContent = ""; });
-      }
+      check(expected ? named.includes(`slider "${expected}"`) : named.startsWith("- slider:"), `${kind}: browser computes consumer-owned native name${expected ? "" : " (documented consumer error; setup does not validate)"}`, named);
+      await namingPage.evaluate(() => { const w = window as any; w.controller.update({ firstLabel: "Original", secondLabel: "Revised" }); w.host.querySelector(".is-first").innerHTML = "New source descendants"; w.controller.setValue(37); });
+      const refreshed = await range.ariaSnapshot();
+      check(expected ? refreshed.includes(`slider "${expected}"`) : refreshed.startsWith("- slider:"), `${kind}: source/value/endpoint metadata preserve native name`, refreshed);
+      check(await namingPage.evaluate(() => { const w = window as any; return JSON.stringify(["aria-label", "aria-labelledby", "title", "id"].map(name => w.host.querySelector("input").getAttribute(name))) === JSON.stringify(w.nativeNameSnapshot); }), `${kind}: runtime never writes consumer name attributes`);
+      await namingPage.evaluate(() => {
+        const w = window as any, input = w.host.querySelector("input");
+        const label = document.createElement("span"); label.id = "edited-name"; label.textContent = "Consumer edited association"; w.host.before(label);
+        input.setAttribute("aria-labelledby", label.id); input.setAttribute("aria-label", "Consumer edited ARIA label"); input.title = "Consumer edited title";
+        w.editedNameSnapshot = ["aria-label", "aria-labelledby", "title", "id"].map(name => input.getAttribute(name));
+        w.controller.update({});
+      });
+      check((await range.ariaSnapshot()).includes('slider "Consumer edited association"'), `${kind}: consumer can change native association during lifetime`);
       await namingPage.evaluate(() => (window as any).controller.destroy());
-      check(await namingPage.evaluate(() => { const w = window as any; return w.host.parentElement.outerHTML === w.namingSnapshot; }), `${kind}: destroy restores complete author snapshot`);
+      check(await namingPage.evaluate(() => { const w = window as any; return JSON.stringify(["aria-label", "aria-labelledby", "title", "id"].map(name => w.host.querySelector("input").getAttribute(name))) === JSON.stringify(w.editedNameSnapshot); }) && (await range.ariaSnapshot()).includes('slider "Consumer edited association"'), `${kind}: destroy preserves all external name/association edits`);
+    }
+    for (const kind of ["absent", "authored empty", "authored style", "consumer added style"]) {
+      await mount(namingPage);
+      const restored = await namingPage.evaluate(kind => {
+        const w = window as any; w.controller.destroy();
+        if (kind === "absent" || kind === "consumer added style") w.host.removeAttribute("style");
+        if (kind === "authored empty") w.host.setAttribute("style", "");
+        if (kind === "authored style") w.host.setAttribute("style", "color: red; --bf-image-comparison-position: 31% !important;");
+        const before = w.host.outerHTML, style = w.host.getAttribute("style");
+        w.controller = w.api.setupImageComparison(w.host, { initialValue: 63 });
+        if (kind === "consumer added style") w.host.style.color = "blue";
+        w.controller.destroy();
+        return { before, after: w.host.outerHTML, styleBefore: style, styleAfter: w.host.getAttribute("style"), position: w.host.style.getPropertyValue("--bf-image-comparison-position"), color: w.host.style.color };
+      }, kind);
+      check(kind === "consumer added style" ? restored.color === "blue" && !restored.position : restored.before === restored.after && restored.styleBefore === restored.styleAfter, `${kind}: destroy restores owned style without adding/removing author attributes`, restored);
     }
     await namingPage.close();
     if (process.argv.includes("--naming")) {
@@ -149,9 +166,9 @@ export async function verifyImageComparison(origin: string): Promise<void> {
       await page.evaluate(raw => (window as any).controller.setValue(raw), raw); await geometry(page, `API normalization ${raw}`, expected);
     }
     check((await state(page)).events.length === 0 && (await state(page)).nativeEvents.length === 0, "imperative updates synthesize no events");
-    await page.evaluate(() => { const w = window as any; w.controller.update({ firstLabel: "Original", secondLabel: "Revised", accessibleName: "Updated comparison" }); w.host.querySelector(".is-first").innerHTML = "Replaced source descendants"; w.other = w.api.setupImageComparison(document.getElementById("other"), { initialValue: 0 }); });
+    await page.evaluate(() => { const w = window as any; w.controller.update({ firstLabel: "Original", secondLabel: "Revised" }); w.host.querySelector(".is-first").innerHTML = "Replaced source descendants"; w.other = w.api.setupImageComparison(document.getElementById("other"), { initialValue: 0 }); });
     await geometry(page, "metadata/source rerender preserves value", 100);
-    check(await range.getAttribute("aria-valuetext") === "100% Original, 0% Revised" && await range.getAttribute("aria-label") === "Updated comparison", "metadata updates native name/value text");
+    check(await range.getAttribute("aria-valuetext") === "100% Original, 0% Revised" && await range.getAttribute("aria-label") === "Synthetic image comparison", "metadata updates value text while preserving consumer native name");
     check(await page.evaluate(() => (window as any).other.getValue()) === 0, "multiple controllers remain independent");
     // Same-value echoes keep capture; changed external values defeat stale release.
     await page.evaluate(() => (window as any).controller.setValue(50));
@@ -233,14 +250,13 @@ export async function verifyImageComparison(origin: string): Promise<void> {
     check(await page.evaluate(() => { const w = window as any; return w.host.outerHTML === w.snapshot && w.events.length === w.beforeDestroyEvents; }), "idempotent destruction restores snapshots and removes Escape/capture work");
     await page.evaluate(() => { const w = window as any; w.controller = w.api.setupImageComparison(w.host, { initialValue: 12 }); });
     await geometry(page, "remount gets new controller and initial value", 12);
-    // Invalid initial value, required structure and naming validation are atomic.
+    // Invalid initial values and required structure are handled independently of naming.
     await page.evaluate(() => { const w = window as any; w.controller.destroy(); w.controller = w.api.setupImageComparison(w.host, { initialValue: Infinity }); });
     await geometry(page, "invalid initial falls back to 50", 50);
     const invalid = await page.evaluate(() => {
       const w = window as any;
-      return ["name", "step", "stage", "duplicate", "combined layers", "nested host"].map(kind => {
+      return ["step", "stage", "duplicate", "combined layers", "nested host"].map(kind => {
         const clone = w.host.cloneNode(true) as HTMLElement; clone.id = `invalid-${kind}`;
-        if (kind === "name") clone.querySelector("input")!.removeAttribute("aria-label");
         if (kind === "step") (clone.querySelector("input") as HTMLInputElement).step = "2";
         if (kind === "stage") clone.querySelector(".bf-image-comparison-stage")!.classList.remove("bf-image-comparison-stage");
         if (kind === "duplicate") clone.querySelector("input")!.after(clone.querySelector("input")!.cloneNode());
@@ -251,13 +267,13 @@ export async function verifyImageComparison(origin: string): Promise<void> {
         const unchanged = clone.outerHTML === before; clone.remove(); return { kind, threw, unchanged };
       });
     });
-    check(invalid.every(x => x.threw && x.unchanged), "invalid structures/names rejected before mutation", invalid);
+    check(invalid.every(x => x.threw && x.unchanged), "invalid structures rejected before mutation", invalid);
     await page.evaluate(() => {
       const w = window as any; w.controller.destroy(); const input = w.host.querySelector("input");
       input.removeAttribute("aria-label"); input.setAttribute("aria-labelledby", "visible-comparison-name");
       const label = document.createElement("span"); label.id = "visible-comparison-name"; label.textContent = "Visible comparison name"; w.host.before(label);
-      w.controller = w.api.setupImageComparison(w.host, { accessibleName: "Do not override visible label", initialValue: 50 });
-      w.controller.update({ accessibleName: "Still preserve visible label" });
+      w.controller = w.api.setupImageComparison(w.host, { initialValue: 50 });
+      w.controller.update({ firstLabel: "Before" });
     });
     check(await range.getAttribute("aria-label") === null && await range.getAttribute("aria-labelledby") === "visible-comparison-name" && (await range.ariaSnapshot()).includes("Visible comparison name"), "native visible label remains preferred over metadata name");
     await page.evaluate(() => { const w = window as any; w.controller.setValue(41); (w.host.querySelector("input") as HTMLInputElement).disabled = true; w.events = []; });
