@@ -1,3 +1,4 @@
+import { verifyCheckableChip } from "./verify-checkable-chip-behavior.ts";
 import { verifyBreadcrumbParagraphLeading } from "./behavior/breadcrumb-paragraph.ts";
 import { verifyFigureCaptionCompensation } from "./behavior/figure-caption-compensation.ts";
 import { verifyImageComparison } from "./verify-image-comparison-behavior.ts";
@@ -8707,6 +8708,10 @@ async function main(): Promise<void> {
   try {
     // Full verification stays the default; focused flags isolate changed
     // contracts while iterating on bounded regressions.
+    if (process.argv.includes("--checkable-chip")) {
+      await verifyCheckableChip(origin);
+      return;
+    }
     if (process.argv.includes("--image-comparison")) {
       await verifyImageComparison(origin);
       return;
@@ -8734,6 +8739,7 @@ async function main(): Promise<void> {
     }
     await verifyDrawerElevation(origin);
     await verifyImageComparison(origin);
+    await verifyCheckableChip(origin);
     await verifyProseLinkAlignment(origin);
     await verifyBreadcrumbParagraphLeading(origin);
     await verifyFigureCaptionCompensation(origin);

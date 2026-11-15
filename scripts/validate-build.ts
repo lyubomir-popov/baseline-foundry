@@ -1471,6 +1471,12 @@ function validateCommonCss(css: string): void {
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(th.is-icon-placeholder, td.is-icon-placeholder, .bf-table-cell.is-icon-placeholder)", {
     "padding-inline-start": "calc(var(--bf-component-inline-inset-field) + var(--bf-leading-icon-size) + var(--bf-leading-icon-gap))"
   }, "table icon-placeholder cells keep the leading-icon gutter");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-checkable):is(:active, [aria-pressed='true'], .is-selected)", {
+    "--bf-overlay-selection-block-end-width": "0rem", "--bf-overlay-selection-layer": "0 0 0 0 transparent"
+  }, "checkable chip suppresses the selection bar while retaining the normal stroke and focus slots");
+  assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip.is-checkable > .bf-chip-mark)", {
+    "inline-size": "var(--bf-icon-size-default)", "block-size": "var(--bf-icon-size-default)", "visibility": "hidden", "pointer-events": "none"
+  }, "checkable chip reserves the governed mark slot without a focus target");
   assertRuleHasDecl(ast, ":where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information)", {
     "--bf-ui-chip-border": "var(--bf-color-border-neutral)",
     "--bf-ui-chip-background": "var(--bf-color-background-neutral-default)",

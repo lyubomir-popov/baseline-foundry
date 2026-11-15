@@ -379,6 +379,9 @@ async function main() {
   initTopNavigations();
   initTabs();
   initTooltips();
+  document.querySelectorAll("[data-checkable-chip]").forEach(button => {
+    button.addEventListener("click", () => button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true")));
+  });
   initAccordions();
 }
 

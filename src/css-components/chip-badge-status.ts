@@ -177,6 +177,31 @@ ${bodyTypeStyles}  align-items: baseline;
   background-color: var(--bf-ui-chip-background-active);
 }
 
+/* Checkable chips reserve the leading mark in every state. The selection
+   is conveyed by that mark, so the normal selected bar is not painted. */
+:where(.bf-theme) :where(.bf-chip.is-checkable) {
+  column-gap: var(--bf-leading-mark-gap);
+}
+
+:where(.bf-theme) :where(.bf-chip.is-checkable):is(:active, [aria-pressed='true'], .is-selected) {
+  --bf-overlay-selection-block-end-width: 0rem;
+  --bf-overlay-selection-layer: 0 0 0 0 transparent;
+}
+
+:where(.bf-theme) :where(.bf-chip.is-checkable > .bf-chip-mark) {
+  align-self: center;
+  block-size: var(--bf-icon-size-default);
+  display: block;
+  flex: 0 0 var(--bf-icon-size-default);
+  inline-size: var(--bf-icon-size-default);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+:where(.bf-theme) :where(.bf-chip.is-checkable:is([aria-pressed='true'], .is-selected) > .bf-chip-mark) {
+  visibility: visible;
+}
+
 :where(.bf-theme) :where(.bf-chip, .bf-chip.is-positive, .bf-chip.is-caution, .bf-chip.is-negative, .bf-chip.is-information):focus:not(:focus-visible) {
   --bf-overlay-focus-layer: 0 0 0 0 transparent;
   outline: none;
