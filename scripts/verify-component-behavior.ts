@@ -1,4 +1,5 @@
 import { verifyBreadcrumbParagraphLeading } from "./behavior/breadcrumb-paragraph.ts";
+import { verifyFigureCaptionCompensation } from "./behavior/figure-caption-compensation.ts";
 import { verifyDrawerElevation } from "./behavior/drawer-elevation.ts";
 import { verifyProseLinkAlignment } from "./behavior/prose-link-alignment.ts";
 import fs from "node:fs/promises";
@@ -8729,6 +8730,7 @@ async function main(): Promise<void> {
     await verifyDrawerElevation(origin);
     await verifyProseLinkAlignment(origin);
     await verifyBreadcrumbParagraphLeading(origin);
+    await verifyFigureCaptionCompensation(origin);
     await verifyNativeNumberStepper(origin);
     await verifySideNavigationAccordionGeometry(origin);
     await verifySideNavigationPanelGeometry(origin);

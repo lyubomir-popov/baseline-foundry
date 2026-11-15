@@ -34,8 +34,8 @@ ${borderedCtaStroke.painter}
 /* Figure (Vanilla parity).                                            */
 /* Native <figure> wrapper for an image, video, or other media plus    */
 /* an italic caption. The owning stack sets external spacing; the      */
-/* caption owns its own top space so the                               */
-/* image sits flush against the next baseline above its caption.       */
+/* figure grid owns the media/caption gap. Text keeps its metric nudge  */
+/* and end compensation so following content retains its grid phase.   */
 /* ------------------------------------------------------------------ */
 
 :where(.bf-theme) :where(.bf-figure) {
@@ -64,7 +64,7 @@ ${borderedCtaStroke.painter}
   display: block;
   font-style: italic;
   inline-size: 100%;
-  margin-block: 0;
+  margin-block-start: 0;
 }
 
 /* ------------------------------------------------------------------ */

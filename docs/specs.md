@@ -7,6 +7,7 @@ order lives in `TODO.md`; per-feature detail lives in the package.
 
 | Spec | Where | Status |
 |---|---|---|
+| 029 Figure-caption compensation | `feat/029-figure-caption-compensation`, `specs/029-figure-caption-compensation/` | Technically validated bounded repair from the exact portfolio candidate source; isolated consumer candidate authorized, not merged/published. Separate from spacing buckets and generator work; portfolio CP2 remains pending |
 | 028 Shared spacing decisions | Canonical Spec 024 directs preserved BF feature worktrees | BF sandbox for canonical Spec 024; its current tasks own execution. D2 and OS dense 0 are owner-approved, primitive table control layouts cover all four tiers, static Chips bind automatically in SideNavigation trailing link/text slots, and Tabs support static Badge indicators. Chips are not valid tab children. Compound control layouts/actions, interactive navigation APIs, SideTab and wider Nav/Tab coverage remain open. Bucket visual sign-off stays with the owner; no chrome, re-pin or audit gates |
 | 026 Body-line text phase | `feat/026-body-line-text-phase` worktree | Parked and excluded from BF by current owner direction; preserve branch/history and do not resume |
 | 025 Compact alignment grid | `feat/025-compact-alignment-grid` worktree | Implementation complete; closeout and landing pending |

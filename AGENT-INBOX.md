@@ -4,6 +4,15 @@ Date: 2026-10-21
 Integration: owner-authorized local `main` merge of accepted spacing work and
 review fixes; publication and pushes remain separate.
 
+## Current branch: owner-requested caption repair (2026-11-14)
+
+On `feat/029-figure-caption-compensation`, follow
+[Spec 029](specs/029-figure-caption-compensation/spec.md), its plan/tasks and
+review. The portfolio owner requested this bounded regression repair from
+source `18857d9`. This is independent of the spacing-bucket dispatch below;
+do not resume bucket/parked work or change other worktrees. Technical review
+does not clear portfolio CP2; no merge/push/publication.
+
 The owner reset the spacing work on 2026-10-10. The roadmap deliverables live
 in the canonical spacing spec repository (Spec 024): the spacing article, the
 Pragma token spec, the semantic tokens and the required all-existing-component
