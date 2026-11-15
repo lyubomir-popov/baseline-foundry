@@ -61,14 +61,20 @@ function staticNavigationChip({ badge = false, nested = false, wrappers = 0, val
   return markup;
 }
 
+function staticTabBadge({ wrappers = 0, value = "3" } = {}) {
+  let markup = `<span class="bf-badge" data-static-navigation-badge>${value}${baselineProbe("static-badge")}</span>`;
+  for (let depth = 0; depth < wrappers; depth += 1) markup = `<span data-neutral-wrapper="${depth + 1}">${markup}</span>`;
+  return markup;
+}
+
 function staticTabComparison(equal, suffix) {
   const placement = equal ? "equal-tab" : "ordinary-tab";
   const variants = [
     ["plain", "false", "-1", ""],
-    ["chip", "true", "0", staticNavigationChip({ wrappers: equal ? 1 : 0 })],
-    ["badge", "false", "-1", staticNavigationChip({ badge: true, wrappers: equal ? 2 : 0 })]
+    ["badge", "true", "0", staticTabBadge({ wrappers: equal ? 1 : 0 })],
+    ["long-badge", "false", "-1", staticTabBadge({ wrappers: equal ? 2 : 0, value: "99+" })]
   ];
-  const items = variants.map(([variant, selected, tabIndex, chip], index) => `<li class="bf-tabs-item"><button id="density-${suffix}-tab-${index + 1}" class="bf-tabs-link" type="button" role="tab" aria-selected="${selected}" aria-controls="density-${suffix}-panel-${index + 1}" tabindex="${tabIndex}" data-static-navigation-host data-static-placement="${placement}" data-static-variant="${variant}">${staticNavigationLabel(equal ? "Quarterly release status" : "State")}${chip}</button></li>`).join("");
+  const items = variants.map(([variant, selected, tabIndex, indicator], index) => `<li class="bf-tabs-item"><button id="density-${suffix}-tab-${index + 1}" class="bf-tabs-link" type="button" role="tab" aria-selected="${selected}" aria-controls="density-${suffix}-panel-${index + 1}" tabindex="${tabIndex}" data-static-navigation-host data-static-placement="${placement}" data-static-variant="${variant}">${staticNavigationLabel(equal ? "Quarterly release status" : "State")}${indicator}</button></li>`).join("");
   const panels = variants.map(([, selected], index) => `<div id="density-${suffix}-panel-${index + 1}" class="bf-tabs-panel" role="tabpanel" aria-hidden="${selected === "true" ? "false" : "true"}"><p class="bf-body">${suffix} selected state.</p></div>`).join("");
   return `<div class="bf-tabs${equal ? " is-equal density-static-equal-tabs" : ""}"><ul class="bf-tabs-list" role="tablist">${items}</ul>${panels}</div>`;
 }
@@ -87,10 +93,10 @@ function staticSideNavigationComparison(rowKind, suffix) {
 }
 
 const deferredSpecimens = [
-  ["Tabs Chip · automatic static seat", `<div class="bf-tabs"><ul class="bf-tabs-list" role="tablist"><li class="bf-tabs-item"><button id="density-tab-1" class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="density-tabs-panel-1" tabindex="0" data-static-navigation-host data-static-placement="tab-original" data-static-variant="chip">${staticNavigationLabel("Status")} ${staticNavigationChip()}</button></li><li class="bf-tabs-item"><button id="density-tab-2" class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="density-tabs-panel-2" tabindex="-1">History</button></li></ul><div id="density-tabs-panel-1" class="bf-tabs-panel" role="tabpanel" aria-hidden="false"><p class="bf-body">Selected state.</p></div><div id="density-tabs-panel-2" class="bf-tabs-panel" role="tabpanel" aria-hidden="true"><p class="bf-body">Inactive state.</p></div></div>`, "supported-navigation"],
+  ["Tabs Badge · static indicator", `<div class="bf-tabs"><ul class="bf-tabs-list" role="tablist"><li class="bf-tabs-item"><button id="density-tab-1" class="bf-tabs-link" type="button" role="tab" aria-selected="true" aria-controls="density-tabs-panel-1" tabindex="0" data-static-navigation-host data-static-placement="tab-original" data-static-variant="badge">${staticNavigationLabel("Status")} ${staticTabBadge()}</button></li><li class="bf-tabs-item"><button id="density-tab-2" class="bf-tabs-link" type="button" role="tab" aria-selected="false" aria-controls="density-tabs-panel-2" tabindex="-1">History</button></li></ul><div id="density-tabs-panel-1" class="bf-tabs-panel" role="tabpanel" aria-hidden="false"><p class="bf-body">Selected state.</p></div><div id="density-tabs-panel-2" class="bf-tabs-panel" role="tabpanel" aria-hidden="true"><p class="bf-body">Inactive state.</p></div></div>`, "supported-navigation"],
   ["SideNavigation Chip · automatic trailing seat", `<nav class="bf-panel bf-side-navigation" aria-label="Density navigation"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><div class="bf-side-navigation-group-header"><h3 class="bf-side-navigation-heading">Projects</h3></div><ul class="bf-side-navigation-list"><li class="bf-side-navigation-item" data-host-row><a class="bf-side-navigation-link" href="#" data-static-navigation-host data-static-placement="side-navigation-original" data-static-variant="chip"><span class="bf-side-navigation-label">${staticNavigationLabel("Quarterly review")}</span><span class="bf-side-navigation-status">${staticNavigationChip({ nested: true, value: "New" })}</span></a></li></ul></section></div></nav>`, "supported-navigation"],
-  ["Ordinary Tabs · plain / Chip / Badge-in-Chip", staticTabComparison(false, "ordinary"), "supported-navigation-comparison"],
-  ["Equal Tabs · plain / Chip / Badge-in-Chip", staticTabComparison(true, "equal"), "supported-navigation-comparison"],
+  ["Ordinary Tabs · plain / Badge indicators", staticTabComparison(false, "ordinary"), "supported-navigation-comparison"],
+  ["Equal Tabs · plain / Badge indicators", staticTabComparison(true, "equal"), "supported-navigation-comparison"],
   ["SideNavigation link rows · plain / Chip / Badge-in-Chip", staticSideNavigationComparison("link", "link"), "supported-navigation-comparison"],
   ["SideNavigation text row · automatic trailing seat", staticSideNavigationComparison("text", "text"), "supported-navigation-comparison"]
 ];
@@ -116,10 +122,6 @@ function indicatorNavigation(withBadge, label) {
   return `<nav class="bf-panel bf-side-navigation" aria-label="${label}"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><ul class="bf-side-navigation-list"><li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#density-indicator-heading" data-indicator-host-row><span class="bf-side-navigation-label">State</span><span class="bf-side-navigation-status">${indicatorChip(withBadge)}</span></a></li></ul></section></div></nav>`;
 }
 
-function indicatorTab(withBadge, suffix) {
-  return `<div class="bf-tabs"><ul class="bf-tabs-list" role="tablist"><li class="bf-tabs-item"><button id="density-indicator-tab-${suffix}" class="bf-tabs-link is-active" type="button" role="tab" aria-selected="true" aria-controls="density-indicator-panel-${suffix}" tabindex="0" data-indicator-host-row><span>State</span>${indicatorChip(withBadge)}</button></li></ul><div id="density-indicator-panel-${suffix}" class="bf-tabs-panel" role="tabpanel" aria-hidden="false"><p class="bf-body">Selected state.</p></div></div>`;
-}
-
 function statusNavigation(withStatus, suffix) {
   const status = withStatus ? `<span class="bf-side-navigation-status"><span class="bf-status-label is-positive is-nested" data-indicator-invariant="status">Ready${baselineProbe("status")}</span></span>` : "";
   return `<nav class="bf-panel bf-side-navigation" aria-label="Status ${suffix}"><div class="bf-side-navigation-groups"><section class="bf-side-navigation-group"><ul class="bf-side-navigation-list"><li class="bf-side-navigation-item"><a class="bf-side-navigation-link" href="#density-indicator-heading" data-status-host-row><span class="bf-side-navigation-label" data-indicator-status-host-text>State${baselineProbe("status-host")}</span>${status}</a></li></ul></section></div></nav>`;
@@ -133,7 +135,6 @@ function statusTable(withStatus, label) {
 const indicatorSpecimens = [
   ["Table cell · Badge-in-Chip fit", indicatorPair("table", indicatorTable(true, "Table Chip with Badge"), indicatorTable(false, "Table Chip without Badge")), "indicator-pair"],
   ["SideNavigation row · Badge-in-Chip fit", indicatorPair("side-navigation", indicatorNavigation(true, "Navigation Chip with Badge"), indicatorNavigation(false, "Navigation Chip without Badge")), "indicator-pair"],
-  ["Tab · Badge-in-Chip fit", indicatorPair("tab", indicatorTab(true, "with"), indicatorTab(false, "without")), "indicator-pair"],
   ["Badge and StatusLabel · standalone/default/dense invariance", `<div class="indicator-invariance" data-indicator-invariance>
     <div class="indicator-invariance-context" data-indicator-context="standalone"><span class="indicator-variant-caption">Standalone</span><span class="bf-badge" data-indicator-invariant="badge">3</span><span class="bf-status-label is-positive" data-indicator-invariant="status">Ready</span></div>
     <div class="indicator-invariance-context" data-indicator-context="default"><span class="indicator-variant-caption">Default nested</span>${statusNavigation(true, "default-with")}${statusNavigation(false, "default-without")}</div>
@@ -359,8 +360,8 @@ function measure() {
   document.body.dataset.densityMeasuredWidth = String(window.innerWidth);
   for (const sample of deferredSamples) {
     const caption = sample.querySelector(".density-caption");
-    caption.textContent = `${sample.dataset.baseCaption} · automatic dense binding`;
-    sample.querySelector("pre").textContent = `loaded bundle ${bundleVersion()}; loaded tier ${tierName()}; automatic static Chip binding; layout-neutral selected and focus paint; SideTab API absent`;
+    caption.textContent = `${sample.dataset.baseCaption} · approved static anatomy`;
+    sample.querySelector("pre").textContent = `loaded bundle ${bundleVersion()}; loaded tier ${tierName()}; static Badge tabs and dense SideNavigation Chips; layout-neutral selected and focus paint; SideTab API absent`;
   }
 }
 

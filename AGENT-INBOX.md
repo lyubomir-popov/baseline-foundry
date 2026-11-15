@@ -39,14 +39,14 @@ cover prose-link marker alignment, custom panel axes, desktop drawer elevation
 and current architecture documentation; they do not complete the remaining
 Spec 024 scope below.
 
-The local continuation implements the October 21 correction in canonical
-Spec 024 brief08: static Chips in shipped Tab actions and SideNavigation link
-or inert-text trailing status slots automatically use the generated dense
-member through neutral wrappers and stop at product roots. Plain, Chip and
-Badge-in-Chip comparisons preserve the host label baseline and equivalent
-single-line occupancy across all four tiers. Existing selected and inward
-focus paint remains visible and layout-neutral. Canonical Spec 024 `tasks.md`
-owns the qualified receipt and owner sign-off.
+The October 22 owner correction supersedes the earlier positive Chip-in-tab
+construction: Chips are never tab children. Static Chips in SideNavigation
+link or inert-text trailing status slots still use the generated dense member
+through neutral wrappers and stop at product roots. Tabs support static Badge
+indicators within their single action; Badge shares the label baseline without
+growing the host. Existing selected and inward focus paint remains visible and
+layout-neutral. Canonical Spec 024 `tasks.md` owns the qualified receipt and
+owner sign-off.
 
 Accepted token adoption `0521fb7` and invariant indicator fit `499ee5c` remain
 preserved in history. Do not repeat adoption, Reset removal or their receipts.
