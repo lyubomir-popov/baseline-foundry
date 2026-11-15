@@ -2,7 +2,7 @@
 
 **Feature branch**: `feat/030-image-comparison`
 **Created**: 2026-11-15
-**Status**: Planning prepared; product extraction awaits fresh portfolio T046 Astra acceptance
+**Status**: Implementation authorized after fresh portfolio T046 Astra acceptance
 **Base**: `df966ac80338b48eb798e42a5c2def76613720e8`
 
 ## Scope and authority
@@ -13,6 +13,16 @@ The latest endpoint/presentation correction is portfolio T046, source `a4882b2`.
 Its fresh independent acceptance must be confirmed by the coordinating agent
 before product extraction starts. Older drag/focus reviews do not satisfy this
 dependency. Planning may proceed while that review runs.
+
+Coordinator confirmation: independent `gpt-6-astra` accepts portfolio product
+`027e95a60d277d8a52633404b336ec06698f6533`, including comparison source `a4882b2`.
+The complete report is portfolio Spec 001
+`reviews/2026-11-15-comparison-stage-astra-review.md`, committed at `4f88cb9`.
+It accepts bounded local interaction/geometry and lockfile repair, retaining AT/
+native zoom and inherited specimen-overflow limits. It does not accept a future
+BF implementation or owner CP4. The local prerequisite is satisfied. Revised
+minimal lifecycle and fixed decorative geometry are coordinator-approved;
+product tasks may proceed.
 
 This is independently requested comparison work, separate from spacing buckets,
 parked packages and Chip triage/design. It adds no owner planning checkpoint.

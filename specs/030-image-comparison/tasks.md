@@ -1,12 +1,13 @@
 # Tasks: Portable image comparison
 
-**Current boundary:** planning only. T002 blocks every product task until the
-coordinator confirms the fresh T046 Astra verdict. No product code, commit,
-merge, push or publication has been performed by this package preparation.
+**Current boundary:** T046 fresh Astra acceptance at portfolio `027e95a` is
+confirmed by the coordinator. Revised minimal API and geometry are accepted for
+implementation. Execute T003–T008 through BF technical review; immutable candidate
+preparation follows acceptance. No merge, push or publication is authorized.
 
 - [x] T001 Resolve catalog/inboxes/constitution; create the isolated matching
   worktree from `df966ac`; define user stories, minimal API and proof matrix.
-- [ ] T002 Record the actual fresh Astra acceptance of portfolio T046 at
+- [x] T002 Record the actual fresh Astra acceptance of portfolio T046 at
   `a4882b2` or reviewed successor. Coordinator has accepted the plan's fixed
   decorative grip defaults/style inputs; inspect revised planning before
   committing. This is the technical

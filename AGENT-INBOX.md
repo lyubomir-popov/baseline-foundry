@@ -8,10 +8,10 @@ review fixes; publication and pushes remain separate.
 
 On `feat/030-image-comparison`, follow
 [Spec 030](specs/030-image-comparison/spec.md), its plan and tasks. This isolated
-worktree starts at caption-preserving `df966ac`. Planning is authorized; product
-extraction waits for the coordinator's confirmation of fresh portfolio T046
-Astra acceptance. No product files or commits are authorized by this planning
-dispatch. The coordinator inspects planning before a commit. The package is
+worktree starts at caption-preserving `df966ac`. The coordinator has confirmed
+fresh portfolio T046 Astra acceptance at `027e95a` (review receipt `4f88cb9`)
+and inspected/committed the revised minimal planning. Product implementation is
+authorized through this package's independent BF technical review. The package is
 independent of bucket/parked work and Chip triage; do not change other worktrees.
 No merge, push, publication or portfolio checkpoint clearance is implied.
 
