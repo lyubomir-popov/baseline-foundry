@@ -1,7 +1,7 @@
 # Spec 031: Uniform checkmarked filter chips
 
 Branch: `feat/031-checkable-chip`. Created: 2026-11-15.
-Status: owner-directed implementation, separate from accepted Spec 030.
+Status: technically accepted at `08fe52c`; immutable candidate qualification follows.
 Base: `0b026be`, preserving the accepted comparison/caption/Tab/Breadcrumb work.
 
 ## Intent and authority

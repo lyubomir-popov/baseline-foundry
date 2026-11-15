@@ -1,0 +1,247 @@
+{
+  "Source": "08fe52c32e7e700f1bc0063d41961d39af484e58",
+  "Pairs": 48,
+  "Failures": 0,
+  "Results": [
+    {
+      "Name": "editorial/direct/16/light/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/16/light/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/16/dark/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/16/dark/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/16/forced/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/16/forced/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/20/light/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/20/light/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/20/dark/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/20/dark/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/20/forced/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "editorial/direct/20/forced/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/16/light/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/16/light/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/16/dark/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/16/dark/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/16/forced/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/16/forced/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/20/light/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/20/light/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/20/dark/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/20/dark/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/20/forced/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "documentation/direct/20/forced/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/16/light/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/16/light/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/16/dark/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/16/dark/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/16/forced/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/16/forced/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/20/light/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/20/light/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/20/dark/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/20/dark/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/20/forced/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "app/direct/20/forced/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/16/light/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/16/light/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/16/dark/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/16/dark/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/16/forced/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/16/forced/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/20/light/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/20/light/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/20/dark/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/20/dark/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/20/forced/ltr actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    },
+    {
+      "Name": "os/direct/20/forced/rtl actual click selects with stable keyline and paint",
+      "Equal": true,
+      "Differences": []
+    }
+  ]
+}
