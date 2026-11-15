@@ -4,7 +4,19 @@ Date: 2026-10-21
 Integration: owner-authorized local `main` merge of accepted spacing work and
 review fixes; publication and pushes remain separate.
 
-## Current branch: comparison technical acceptance (2026-11-15)
+## Current branch: owner-selected checkable Chips (2026-11-15)
+
+Follow [Spec 031](specs/031-checkable-chip/spec.md), plan/tasks and proof matrix
+on `feat/031-checkable-chip`, isolated from accepted comparison Spec030. Owner
+selected uniform outlines plus a checkmark for portfolio filters. Product
+`08fe52c` passes full suites and independent Astra source/rendered review.
+The [qualified immutable candidate](specs/031-checkable-chip/artifact.md) packed
+from `90d9053` is consumed at portfolio `75b5d6a`; final consumer Astra accepts
+95/95 independent checks. Bounded tasks are complete; preserve the branch and
+follow the receipt's separate owner/portfolio boundaries before further work.
+No merge, push, publication or portfolio CP4 clearance is authorized.
+
+## Preserved comparison technical acceptance (2026-11-15)
 
 On `feat/030-image-comparison`, follow
 [Spec 030](specs/030-image-comparison/spec.md), its plan and tasks. This isolated

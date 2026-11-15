@@ -520,6 +520,33 @@ See `/demo/components/image-comparison.html` for the independent synthetic/real
 media specimen. Physical touch, AT and native browser zoom need their own proof;
 automated root-size/forced-color checks do not replace them.
 
+### Checkable filter Chips
+
+Use `bf-chip is-checkable` for a filter toggle with a uniform outline and a
+selected checkmark. Keep one decorative `bf-chip-mark` before the value:
+
+```html
+<button class="bf-chip is-checkable is-positive" type="button" aria-pressed="true">
+  <svg class="bf-chip-mark" aria-hidden="true" focusable="false"
+    viewBox="0 0 16 16" fill="none">
+    <path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2"/>
+  </svg>
+  <span class="bf-chip-value">Brand</span>
+</button>
+```
+
+The mark reserves its governed icon width and leading gap in every state, so
+selection does not shift the label or occupied box. It becomes visible for
+`aria-pressed="true"`/`is-selected`; pointer press alone does not check it. This
+mode retains the existing semantic fill, one paint-only all-sided stroke and
+independent keyboard focus, and suppresses the ordinary bottom selection bar.
+Chips without `is-checkable` keep their existing treatment.
+
+The consumer owns filtering/toggling and updates truthful `aria-pressed` on the
+native button. The decorative mark adds no accessible-name text or focus stop;
+do not substitute a second checkbox/control. Built-in tiers and RTL use the same
+anatomy. See `/demo/components/chip.html` for the independent interactive specimen.
+
 ## Downstream Fonts
 
 The built-in default is Ubuntu Sans Variable, but downstream repos are not locked to it.
